@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>The PowerVR SDK Browser</title>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="./images/img-icon.png">
+</head>
+
+<body>
+	<div id="GlobalHeaderContainer">
+		<div id="GlobalHeader">
+			<div class="logo">
+				<a href="http://www.powervrinsider.com" target="_blank"><img src="./images/PVRlogo.png" width="40%" height="40%" /></a>
+            </div>
+			<div class="sitetitle">PowerVR SDK Browser</div>
+		</div>
+	</div>
+	<div id="NavContainer">
+		<nav>
+			<div class="navlink">
+				<a href="Home.html">Home</a>
+			</div>
+			<div class="navlink">
+				<a href="GettingStarted.html">Getting Started</a>
+			</div>
+			<div class="navlink">
+				<a href="Examples.html" class="current">Examples</a>
+			</div>
+			<div class="navlink">
+				<a href="Framework.html">Framework</a>
+			</div>
+			<div class="navlink">
+				<a href="Documentation.html">Documentation</a>
+			</div>
+			<div class="navlink">
+				<a href="PowerVRTools.html">PowerVR Tools</a>
+			</div>
+			<div class="navlink">
+				<a href="ReleaseNotes.html">Release Notes</a>
+			</div>
+			<div class="navlink">
+				<a href="Contact.html">Contact Us</a>
+			</div>
+		</nav>
+	</div>
+
+<!--API_TAB-->
+
+    <div class="content">
+        <div id="Section" class="section">
+<!--API_DESCRIPTION-->
+<h1>OpenCL 1.x Examples</h1>
+<p>
+OpenCL is a cross-platform API for parallel computing on modern processors, including CPUs, GPUs and custom accelerators. It is available both on desktop and embedded platforms, with an embedded profile which is used for more efficient rendering on mobile devices. Rather than being bottlenecked by the CPU, an application can use OpenCL to make use of processors like the GPU that may otherwise remain starved of work, accelerating the application. Also, many workloads that are typically run serially on a CPU are able to complete significantly faster by parallelizing the algorithm and executing them on a GPU. This API is available on PowerVR Series6 GPUs and later.
+</p>
+</OCL_OGLES2>
+		<p><a href="#Beginner" class="link">Beginner</a>  |  <a href="#Intermediate" class="link">Intermediate</a>  |  <a href="#Advanced" class="link">Advanced</a></p>
+<!--EXAMPLE_TEMPLATE-->
+<div id="Beginner""><h2>Beginner</h2><ul class="accordion">
+				<li id="HelloAPI">
+					<div class="title">
+						<a href="../../Examples/Beginner/01_HelloAPI/OCL_OGLES2HelloAPI.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/01_HelloAPI/OCL_OGLES2HelloAPI.png" alt="HelloAPI" /></a>
+						<input type="checkbox" id="HelloAPIFull2">
+							<label for="HelloAPIFull2" title="Click for more information"><h3>HelloAPI</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>How to invoke an OpenCL kernel
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>A basic tutorial that shows step-by-step how to initialize OpenCL, create a kernel and then execute it. A kernel is a C-like language used for writing programs. 
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Beginner/01_HelloAPI/OCL_OGLES2/OCL_OGLES2HelloAPI.cpp" target="_blank">OCL_OGLES2HelloAPI.cpp</a>  |  <a href="../../Examples/Beginner/01_HelloAPI/OCL_OGLES2/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li></div></ul><div id="Intermediate""><h2>Intermediate</h2><ul class="accordion">
+				<li id="ImageConvolution">
+					<div class="title">
+						<a href="../../Examples/Intermediate/ImageConvolution/ImageConvolution.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/ImageConvolution/ImageConvolution.png" alt="ImageConvolution" /></a>
+						<input type="checkbox" id="ImageConvolutionFull2">
+							<label for="ImageConvolutionFull2" title="Click for more information"><h3>ImageConvolution</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>Introduction to image processing using OpenCL API.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This demonstration deals with image processing. It illustrates the usage of OpenCL to write linear and non-linear filter kernels.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/ImageConvolution/OCL_OGLES2/OCL_OGLES2ImageConvolution.cpp" target="_blank">OCL_OGLES2ImageConvolution.cpp</a>  |  <a href="../../Examples/Intermediate/ImageConvolution/OCL_OGLES2/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="ZeroCopyCamera">
+					<div class="title">
+						<a href="../../Examples/Intermediate/ZeroCopyCamera/ZeroCopyCamera.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/ZeroCopyCamera/ZeroCopyCamera.png" alt="ZeroCopyCamera" /></a>
+						<input type="checkbox" id="ZeroCopyCameraFull2">
+							<label for="ZeroCopyCameraFull2" title="Click for more information"><h3>ZeroCopyCamera</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This example demonstrates the most optimal path to stream textures from the Camera of a mobile device and then Share it across API's
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>Streaming texture data from a camera source to a graphics API is a technique which can be very costly if hardware and software optimisations are not used correctly. This example demonstrates the correct usage for platform-specific texture streaming using native APIs relevant for each platform.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/ZeroCopyCamera/OCL_OGLES2/OCL_OGLES2ZeroCopyCamera.cpp" target="_blank">OCL_OGLES2ZeroCopyCamera.cpp</a>  |  <a href="../../Examples/Intermediate/ZeroCopyCamera/OCL_OGLES2/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li></div></ul><div id="Advanced""><h2>Advanced</h2><ul class="accordion">
+				<li id="GameOfLife">
+					<div class="title">
+						<a href="../../Examples/Advanced/GameOfLife/GameOfLife.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/GameOfLife/GameOfLife.png" alt="GameOfLife" /></a>
+						<input type="checkbox" id="GameOfLifeFull2">
+							<label for="GameOfLifeFull2" title="Click for more information"><h3>GameOfLife</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>Implementation of John Conway's Game of Life using OpenCL.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This demo utilises OpenCL to take advantage of the GPU computation available in PowerVR Series6 to implement John Conway's Game of Life simulation, updating every aspect of the grid where all the particles are stored. OpenGL then retrieves the result of that computation and presents it on the screen.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p> Left and right arrows : Switch between evolution functions.</p><p> Up    : Pause simulation.</p><p> Down  : Generate new population.</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/GameOfLife/OCL_OGLES2/OCL_OGLES2GameOfLife.cpp" target="_blank">OCL_OGLES2GameOfLife.cpp</a>  |  <a href="../../Examples/Advanced/GameOfLife/OCL_OGLES2/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="ParticleSystem">
+					<div class="title">
+						<a href="../../Examples/Advanced/ParticleSystem/ParticleSystem.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/ParticleSystem/ParticleSystem.png" alt="ParticleSystem" /></a>
+						<input type="checkbox" id="ParticleSystemFull2">
+							<label for="ParticleSystemFull2" title="Click for more information"><h3>ParticleSystem</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>Shows how to implement a simple particle system using OpenCL and the GPU.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>The demo utilises OpenCL to implement a particle system. Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques. Furthermore, it also highlights the interaction between OpenCL and OpenGL (plus OpenGL ES 2).
+</p><p>- left and right arrows - Decrease and increase number of particles
+</p><p>- up and down arrows - Switch between OpenCL and CPU Particle System implementation.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/ParticleSystem/OCL_OGLES2/OCL_OGLES2ParticleSystem.cpp" target="_blank">OCL_OGLES2ParticleSystem.cpp</a>  |  <a href="../../Examples/Advanced/ParticleSystem/OCL_OGLES2/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="ProceduralTextures">
+					<div class="title">
+						<a href="../../Examples/Advanced/ProceduralTextures/ProceduralTextures.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/ProceduralTextures/ProceduralTextures.png" alt="ProceduralTextures" /></a>
+						<input type="checkbox" id="ProceduralTexturesFull2">
+							<label for="ProceduralTexturesFull2" title="Click for more information"><h3>ProceduralTextures</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>Shows how to generate procedural textures using OpenCL.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>Utilises OpenCL to generate procedural textures using Steven Worley's cellular texture basis functions. Procedural textures are computer-generated images created using an algorithm intended to create a realistic representation of natural elements such as wood or marble.
+</p><p>- left and right arrows - Switch between distance metrics
+</p><p>- up and down arrows - Switch between linear combination of weights
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/ProceduralTextures/OCL_OGLES2/OCL_OGLES2ProceduralTextures.cpp" target="_blank">OCL_OGLES2ProceduralTextures.cpp</a>  |  <a href="../../Examples/Advanced/ProceduralTextures/OCL_OGLES2/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li></div></ul>		</div>
+	</div>
+	
+	<div id="FooterMainContainer">
+		<div id="FooterContainer">
+			<div class="footerlogo">
+				<a href="http://www.imgtec.com" target="_blank"><img src="./images/img-footer-logo-grey.png" width="100%" height="100%" /></a>
+			</div>
+			<div class="copyright">&copy; Imagination Technologies Limited<br> All rights reserved</div>
+		</div>
+	</div>
+	
+</body>
+
+</html>
