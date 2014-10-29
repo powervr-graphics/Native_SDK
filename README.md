@@ -18,7 +18,7 @@ The Getting Started guide of our SDK Browser provides step-by-step instructions 
 Our documentation (architecture guides, performance recommendations & white papers) can be found on the Imagination website [here](http://community.imgtec.com/developers/powervr/documentation/).
 
 ## Support ##
-If you have any questions about the SDK, PowerVR device optimization/debugging or our tools, please contact us through our [public forum](http://forum.imgtec.com/categories/powervr-graphics). We also recommend checking out our [FAQ](forum.imgtec.com/categories/powervr-faq) to see if your question has already been answered.
+If you have any questions about the SDK, PowerVR device optimization/debugging or our tools, please contact us through our [public forum](http://forum.imgtec.com/categories/powervr-graphics). We also recommend checking out our [FAQ](http://forum.imgtec.com/categories/powervr-faq) to see if your question has already been answered.
 If you would prefer to contact us confidentially, you can file a support ticket [here](https://pvrsupport.imgtec.com/new-ticket).
 
 ## License ##
