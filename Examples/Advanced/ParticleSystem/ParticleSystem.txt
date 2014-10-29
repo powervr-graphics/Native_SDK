@@ -1,0 +1,11 @@
+:Title:
+ParticleSystem
+:ShortDescription:
+Shows how to implement a simple particle system using OpenCL and the GPU.
+
+:FullDescription:
+The demo utilises OpenCL to implement a particle system. Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques. Furthermore, it also highlights the interaction between OpenCL and OpenGL (plus OpenGL ES 2).
+
+- left and right arrows - Decrease and increase number of particles
+- up and down arrows - Switch between OpenCL and CPU Particle System implementation.
+

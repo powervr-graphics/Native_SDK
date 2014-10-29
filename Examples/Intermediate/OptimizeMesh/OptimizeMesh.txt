@@ -1,0 +1,11 @@
+:Title:
+OptimizeMesh
+
+:ShortDescription:
+A demonstration of the performance gained when using optimized indexed triangle lists.
+
+:FullDescription:	
+Shows a textured model rendered in two different modes: one using a non-optimized triangle list and one using an optimized triangle list. The demo switches modes after a few seconds or after the user presses the action key. Both models were exported with the PVRGeoPOD plug-in from the SDK. The optimized triangle list case was generated using the PVRTTriStrip triangle sorting option from PVRGeoPOD.  
+
+Controls:
+	-	Esc	-	Close the application

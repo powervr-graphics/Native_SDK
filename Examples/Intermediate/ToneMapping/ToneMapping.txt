@@ -1,0 +1,13 @@
+:Title:
+ToneMapping
+
+:ShortDescription:
+This example demonstrates floating point textures using the OES_texture_float extension and mapping this texture to the colour buffer using several different tone mapping operators.
+
+:FullDescription:
+Tone mapping is a technique used to map a set of colours to a renderable representation. This is generally used for High Dynamic Range rendering or visualisation - such as in this example. The texture supplied with this example is a full-precision 32bit IEEE floating point image which is then mapped to the colour buffer via a set of tone mapping operators executed at the fragment shader stage. A number of operators are supplied and descriptions are included with the PFX file. The example allows the user to alter the exposure of the image by a number of stops, demonstrating the usefulness of floating point textures.
+
+Controls:
+	-	Esc	-	Close the application
+	-	Up/Down	- 	Change the tone mapping operator
+	-	Left/Right -	Alter the exposure value

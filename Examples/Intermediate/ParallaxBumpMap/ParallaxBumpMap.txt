@@ -1,0 +1,11 @@
+:Title:
+ParallaxBumpmap
+
+:ShortDescription:
+This training course serves as an example of implementing the parallax bump mapping effect.
+
+:FullDescription:
+Parallax bump mapping is a technique for simulating bumps and wrinkles on the surface of an object. This is very similar to normal bump mapping but with the addition of a parallax effect based on the view vector. This training course serves as an example of implementing the parallax bump mapping effect.
+
+Controls:
+	-	Esc	-	Close the application

@@ -1,0 +1,13 @@
+:Title:
+GameOfLife
+:ShortDescription:
+Implementation of John Conway's Game of Life using OpenCL.
+
+:FullDescription:
+This demo utilises OpenCL to take advantage of the GPU computation available in PowerVR Series6 to implement John Conway's Game of Life simulation, updating every aspect of the grid where all the particles are stored. OpenGL then retrieves the result of that computation and presents it on the screen.
+
+:Controls:
+- Left and right arrows - Switch between evolution functions.
+- Up    - Pause simulation.
+- Down  - Generate new population.
+

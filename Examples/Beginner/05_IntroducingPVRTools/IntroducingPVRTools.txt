@@ -1,0 +1,12 @@
+:Title:
+IntroducingPVRTools
+
+:ShortDescription:
+This training course introduces the PVRTools libraries.
+
+:FullDescription:
+This training course introduces the PVRTools libraries.  These libraries provide various modules to help developers perform many of the common tasks associated with hardware accelerated graphics rendering.  
+
+Controls:
+	-	Esc	-	Close the application
+

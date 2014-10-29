@@ -1,0 +1,18 @@
+:Title:
+FastTnL
+
+:ShortDescription:
+This training course serves as an example of a fast transformation and lighting vertex shader.
+
+:FullDescription:
+This training course shows how to use a fast transformation and lighting vertex shader. This technique is appropriate for situations when a high performance shader is required.
+
+Controls:
+	-	Esc	-	Close the application
+
+:PolyCount:
+4480
+
+:VertexCount:
+2238
+

@@ -1,0 +1,11 @@
+:Title: 
+Skybox2
+
+:ShortDescription:
+This demo is a shader based version of the original OpenGL ES Skybox demo. This time it shows various shaders applied to the balloon.
+
+:FullDescription:	
+This demo is a shader based version of the original OpenGL ES Skybox demo. It shows various shaders applied to the balloon, and is compressed using PVRTC4 using the PVRTexTool skybox compression feature.
+
+Controls:
+	-	Esc	-	Close the application

@@ -1,0 +1,9 @@
+:Title:
+IntroducingPrint3D
+
+:ShortDescription:
+This training course introduces the Print3D class featured within the PVRTools library.
+
+:FullDescription:
+This training course introduces the Print3D class from the PVRTools library. Print3D can be used to display text in both 2D and 3D modes. The default projection mode is 2D but supplying a modelview and projection matrices allow the user to render the text in 3D. Text in different colours is also possible.
+

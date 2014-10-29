@@ -1,0 +1,18 @@
+:Title:
+Fog
+
+:ShortDescription:
+This training course demonstrates how to create a fog effect using shaders.
+
+:FullDescription:
+This training course demonstrates how to create a fog effect using shaders. Fog is used to help with the perception of distance in a 3D world - objects that are further way are increasingly coloured with a fog colour.
+
+Controls:
+	-	Left/Right	-	Cycle fog mode
+	-	Esc	-	Close the application
+	
+:PolyCount:
+4480
+
+:Vertex Count:
+2238

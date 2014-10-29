@@ -1,0 +1,11 @@
+:Title:
+Lighting
+
+:ShortDescription:
+A demonstration of a model being lit with 8 point lights at high performance.
+
+:FullDescription:	
+This demo shows a sphere lit by 8 differently coloured spotlights using ambient, diffuse and specular components. Ambient light is a light source of fixed intensity and colour, whilst a diffuse reflection is a reflection of light from a surface at many angles rather than just one. A specular highlight is a visual cue regarding the shape and location of an object in respect to the light source in a scene.
+
+Controls:
+	-	Esc	-	Close the application

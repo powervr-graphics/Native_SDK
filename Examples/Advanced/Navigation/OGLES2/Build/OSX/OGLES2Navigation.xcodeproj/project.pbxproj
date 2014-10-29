@@ -1,0 +1,553 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		49068F5D13DDA30C00C8DC21 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49068F5C13DDA30C00C8DC21 /* Cocoa.framework */; };
+		49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */; };
+		DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
+		DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
+		DB3A55CC15C937F1004CE8F1 /* libGLESv2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */; };
+		DB3A55CD15C9380E004CE8F1 /* libGLESv2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */; };
+		DB5C32B615C7F65000B1A208 /* libOGLES2Tools.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB5C32AC15C7F32B00B1A208 /* libOGLES2Tools.a */; };
+		495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0013E2EE09000FD6B4 /* MainMenu.xib */; };
+		495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */; };
+		DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */ = {isa = PBXBuildFile; fileRef = DB3A55D015C938EC004CE8F1 /* IMG.icns */; };
+		F820EB7D351BF9B2DCB03064 /* OGLES2Navigation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F846099BB6557110DF07F3B8 /* OGLES2Navigation.cpp */; };
+		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
+		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */; };
+		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */; };
+		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F891AC7DBA4A33CDD5897EA8 /* main.m */; };
+		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F83056A1463D3149D54E9E82 /* AppController.mm */; };
+		F86C60508704F3D1C5C0A4DA /* cameratrack.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8DEE3668124FCB791B91358 /* cameratrack.pod */; };
+		F882BF40B39769FA9062B9D0 /* Landmark_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8B15CEDF6130B9CB3D7F6FC /* Landmark_meshes.nav */; };
+		F8EE4E5B0727C6CAD41E5EA4 /* LandUseA_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8F9B959915ED8780067D3E1 /* LandUseA_meshes.nav */; };
+		F853CA70D6A75D7950A22211 /* LandUseB_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8E2651F91782D1541DF06B9 /* LandUseB_meshes.nav */; };
+		F820535678154BBDC9E7AF96 /* MajHwys_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F862EEC552043AA1DDBBEBE2 /* MajHwys_meshes.nav */; };
+		F864FA71D68C9A2692AABAB8 /* MajHwyShield_text.nav in Resources */ = {isa = PBXBuildFile; fileRef = F88585AD92FD976E79130DB8 /* MajHwyShield_text.nav */; };
+		F864EB27CFECB932775A0553 /* RailRds_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8AAC130D2A0C3D55604A4E1 /* RailRds_meshes.nav */; };
+		F8325D62E75A29FCAEC541F3 /* SecHwys_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F878B58D65E5DF3F5CE17501 /* SecHwys_meshes.nav */; };
+		F8C728A340C16A994E69C520 /* SecHwyShield_text.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8F9A8DEB9B51BBA306FD4E0 /* SecHwyShield_text.nav */; };
+		F83BBDE7BCE43500BD3060A7 /* Signs_billboards.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8C722F451A0179FB37696F3 /* Signs_billboards.nav */; };
+		F87B5D7C69318E2FFE0B8734 /* Streets_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8FE474EA5E4A3E9B13D7F8F /* Streets_meshes.nav */; };
+		F8D228360D2D68D109DB2199 /* Streets_text.nav in Resources */ = {isa = PBXBuildFile; fileRef = F81C9256757DC7B298945A27 /* Streets_text.nav */; };
+		F845768680986648D6E0C932 /* WaterPoly_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F828FFB11F07490D2196B852 /* WaterPoly_meshes.nav */; };
+		F8368E4B2AAD715FA94839A3 /* WaterSeg_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8EECB2B69296F7B6C2762F6 /* WaterSeg_meshes.nav */; };
+		F820BB95C591AB1FF9424531 /* StreetSigns.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F88D48AFA35401497B02559B /* StreetSigns.pvr */; };
+		F810D3282DDF6468FD4EE4A5 /* Alphabet.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8178C89954EA58AF78F59AE /* Alphabet.pvr */; };
+		F8F0856D2FC13B3AECDE6952 /* Road.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81A110A2FDE0878B7B1D559 /* Road.pvr */; };
+		F8BEE47D0C3E443D7399CEB1 /* AlphaMaskFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F898EF43560556BB36139593 /* AlphaMaskFragShader.fsh */; };
+		F885103BFE48D35F1E80A214 /* AntiAliasedLinesFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8C225170F0FCFCE8D867C6A /* AntiAliasedLinesFragShader.fsh */; };
+		F892E400C821A7ACEC1070F6 /* AntiAliasedLinesVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F851EDD75F7EDD7AB449FDAC /* AntiAliasedLinesVertShader.vsh */; };
+		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */; };
+		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81AE783867359F7612A30AC /* VertShader.vsh */; };
+		F86B71E37E086B108BB5E4C6 /* PivotQuadFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F89B9A37971F516C9A88C4D2 /* PivotQuadFragShader.fsh */; };
+		F839674DFA4751DCDF646E46 /* PivotQuadMaskedFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F87822277E9CA852B430F997 /* PivotQuadMaskedFragShader.fsh */; };
+		F89A834C1A4A1596BE2014D6 /* PivotQuadVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BB0BC887C12EEFB24B20EB /* PivotQuadVertShader.vsh */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DB5C32AB15C7F32B00B1A208 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 49BA94F413E00AC600827842;
+			remoteInfo = OGLES2Tools;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DB3A55C515C92213004CE8F1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DB3A55CD15C9380E004CE8F1 /* libGLESv2.dylib in CopyFiles */,
+				DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		49068F5C13DDA30C00C8DC21 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		49068F5F13DDA30C00C8DC21 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		49068F6013DDA30C00C8DC21 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		49068F6113DDA30C00C8DC21 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		49068F5813DDA30C00C8DC21 /* OGLES2Navigation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLES2Navigation.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		49FE311813E2CEE900B32DAC /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
+		DB3A55C715C92647004CE8F1 /* libEGL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libEGL.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libEGL.dylib"; sourceTree = "<group>"; };
+		DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLESv2.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libGLESv2.dylib"; sourceTree = "<group>"; };
+		DB3A55CE15C938D4004CE8F1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		DB3A55D015C938EC004CE8F1 /* IMG.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = IMG.icns; path = "../../../../../../Builds/OSX/Resources/IMG.icns"; sourceTree = "<group>"; };
+		DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OGLES2Tools.xcodeproj; path = "../../../../../../Tools/OGLES2/Build/OSX/OGLES2Tools.xcodeproj"; sourceTree = "<group>"; };
+		495B9D0113E2EE09000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
+		495B9D0513E2EE16000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
+		F846099BB6557110DF07F3B8 /* OGLES2Navigation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES2Navigation.cpp; path = ../../OGLES2Navigation.cpp; sourceTree = SOURCE_ROOT; };
+		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
+		F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/KEGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
+		F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellOS.cpp; path = ../../../../../../Shell/OS/OSX/PVRShellOS.cpp; sourceTree = SOURCE_ROOT; };
+		F891AC7DBA4A33CDD5897EA8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ../../../../../../Shell/OS/OSX/main.m; sourceTree = SOURCE_ROOT; };
+		F83056A1463D3149D54E9E82 /* AppController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = AppController.mm; path = ../../../../../../Shell/OS/OSX/AppController.mm; sourceTree = SOURCE_ROOT; };
+		F8E876C58B8E589D704582A8 /* PVRShell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShell.h; path = ../../../../../../Shell/PVRShell.h; sourceTree = SOURCE_ROOT; };
+		F83032EAFB076689D05BCCA4 /* PVRShellImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellImpl.h; path = ../../../../../../Shell/PVRShellImpl.h; sourceTree = SOURCE_ROOT; };
+		F84F75300A266FB04DD95145 /* PVRShellAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellAPI.h; path = ../../../../../../Shell/API/KEGL/PVRShellAPI.h; sourceTree = SOURCE_ROOT; };
+		F8D43C90E6E9634EF07F3500 /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/OSX/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
+		F8D9FEE5B9D56BCDCB605B86 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/OSX/AppController.h; sourceTree = SOURCE_ROOT; };
+		F8DEE3668124FCB791B91358 /* cameratrack.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = cameratrack.pod; path = ../../../Data/cameratrack.pod; sourceTree = SOURCE_ROOT; };
+		F8B15CEDF6130B9CB3D7F6FC /* Landmark_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Landmark_meshes.nav; path = ../../../Data/Landmark_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F8F9B959915ED8780067D3E1 /* LandUseA_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = LandUseA_meshes.nav; path = ../../../Data/LandUseA_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F8E2651F91782D1541DF06B9 /* LandUseB_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = LandUseB_meshes.nav; path = ../../../Data/LandUseB_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F862EEC552043AA1DDBBEBE2 /* MajHwys_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = MajHwys_meshes.nav; path = ../../../Data/MajHwys_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F88585AD92FD976E79130DB8 /* MajHwyShield_text.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = MajHwyShield_text.nav; path = ../../../Data/MajHwyShield_text.nav; sourceTree = SOURCE_ROOT; };
+		F8AAC130D2A0C3D55604A4E1 /* RailRds_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = RailRds_meshes.nav; path = ../../../Data/RailRds_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F878B58D65E5DF3F5CE17501 /* SecHwys_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = SecHwys_meshes.nav; path = ../../../Data/SecHwys_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F8F9A8DEB9B51BBA306FD4E0 /* SecHwyShield_text.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = SecHwyShield_text.nav; path = ../../../Data/SecHwyShield_text.nav; sourceTree = SOURCE_ROOT; };
+		F8C722F451A0179FB37696F3 /* Signs_billboards.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Signs_billboards.nav; path = ../../../Data/Signs_billboards.nav; sourceTree = SOURCE_ROOT; };
+		F8FE474EA5E4A3E9B13D7F8F /* Streets_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Streets_meshes.nav; path = ../../../Data/Streets_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F81C9256757DC7B298945A27 /* Streets_text.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Streets_text.nav; path = ../../../Data/Streets_text.nav; sourceTree = SOURCE_ROOT; };
+		F828FFB11F07490D2196B852 /* WaterPoly_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = WaterPoly_meshes.nav; path = ../../../Data/WaterPoly_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F8EECB2B69296F7B6C2762F6 /* WaterSeg_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = WaterSeg_meshes.nav; path = ../../../Data/WaterSeg_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F88D48AFA35401497B02559B /* StreetSigns.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = StreetSigns.pvr; path = ../../StreetSigns.pvr; sourceTree = SOURCE_ROOT; };
+		F8178C89954EA58AF78F59AE /* Alphabet.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Alphabet.pvr; path = ../../../Data/Alphabet.pvr; sourceTree = SOURCE_ROOT; };
+		F81A110A2FDE0878B7B1D559 /* Road.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Road.pvr; path = ../../../Data/Road.pvr; sourceTree = SOURCE_ROOT; };
+		F898EF43560556BB36139593 /* AlphaMaskFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = AlphaMaskFragShader.fsh; path = ../../AlphaMaskFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F8C225170F0FCFCE8D867C6A /* AntiAliasedLinesFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = AntiAliasedLinesFragShader.fsh; path = ../../AntiAliasedLinesFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F851EDD75F7EDD7AB449FDAC /* AntiAliasedLinesVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = AntiAliasedLinesVertShader.vsh; path = ../../AntiAliasedLinesVertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F81AE783867359F7612A30AC /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F89B9A37971F516C9A88C4D2 /* PivotQuadFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PivotQuadFragShader.fsh; path = ../../PivotQuadFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F87822277E9CA852B430F997 /* PivotQuadMaskedFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PivotQuadMaskedFragShader.fsh; path = ../../PivotQuadMaskedFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F8BB0BC887C12EEFB24B20EB /* PivotQuadVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PivotQuadVertShader.vsh; path = ../../PivotQuadVertShader.vsh; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		49068F5513DDA30C00C8DC21 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */,
+				49068F5D13DDA30C00C8DC21 /* Cocoa.framework in Frameworks */,
+				DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */,
+				DB3A55CC15C937F1004CE8F1 /* libGLESv2.dylib in Frameworks */,
+				DB5C32B615C7F65000B1A208 /* libOGLES2Tools.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		49068F4D13DDA30C00C8DC21 = {
+			isa = PBXGroup;
+			children = (
+				49068F7913DDA51C00C8DC21 /* Source */,
+				DB5C32B515C7F60F00B1A208 /* Content */,
+				DB3A55D015C938EC004CE8F1 /* IMG.icns */,
+				DB5C32B415C7F5D100B1A208 /* Libraries */,
+				49068F5B13DDA30C00C8DC21 /* Frameworks */,
+				DB5C32AE15C7F50500B1A208 /* Resources */,
+				49068F6313DDA30C00C8DC21 /* Supporting Files */,
+				49068F5913DDA30C00C8DC21 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		49068F5913DDA30C00C8DC21 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49068F5813DDA30C00C8DC21 /* OGLES2Navigation.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		49068F5B13DDA30C00C8DC21 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				49068F5F13DDA30C00C8DC21 /* AppKit.framework */,
+				49068F6013DDA30C00C8DC21 /* CoreData.framework */,
+				49068F6113DDA30C00C8DC21 /* Foundation.framework */,
+				49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */,
+				49068F5C13DDA30C00C8DC21 /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		49068F6313DDA30C00C8DC21 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				49FE311813E2CEE900B32DAC /* Prefix.pch */,
+				495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			path = OGLES2Navigation;
+			sourceTree = "<group>";
+		};
+		49068F7913DDA51C00C8DC21 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+		49068F7C13DDA57800C8DC21 /* Shell */,
+				F846099BB6557110DF07F3B8 /* OGLES2Navigation.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+				49068F7C13DDA57800C8DC21 /* Shell */ = {
+			isa = PBXGroup;
+			children = (
+				F8264787AE86D57C8A7666DE /* PVRShell.cpp */,
+				F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */,
+				F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */,
+				F891AC7DBA4A33CDD5897EA8 /* main.m */,
+				F83056A1463D3149D54E9E82 /* AppController.mm */,
+				F8E876C58B8E589D704582A8 /* PVRShell.h */,
+				F83032EAFB076689D05BCCA4 /* PVRShellImpl.h */,
+				F84F75300A266FB04DD95145 /* PVRShellAPI.h */,
+				F8D43C90E6E9634EF07F3500 /* PVRShellOS.h */,
+				F8D9FEE5B9D56BCDCB605B86 /* AppController.h */,
+			);
+			name = Shell;
+			sourceTree = "<group>";
+		};
+		DB5C329915C7F19D00B1A208 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DB5C32AC15C7F32B00B1A208 /* libOGLES2Tools.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DB5C32AE15C7F50500B1A208 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DB3A55CE15C938D4004CE8F1 /* Info.plist */,
+				495B9D0013E2EE09000FD6B4 /* MainMenu.xib */,
+			);
+			name = Resources;
+			path = OGLES2Navigation;
+			sourceTree = "<group>";
+		};
+		DB5C32B415C7F5D100B1A208 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */,
+				DB3A55C715C92647004CE8F1 /* libEGL.dylib */,
+				DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		DB5C32B515C7F60F00B1A208 /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				DBE6ED4E15C2AB9C00275129 /* Generic */,
+				DBE6ED4D15C2AB8E00275129 /* Models */,
+				DBE6ED4C15C2AB7E00275129 /* Textures */,
+				DBE6ED4A15C2AB7000275129 /* Shaders */,
+			);
+			name = Content;
+			sourceTree = "<group>";
+		};
+		DBE6ED4A15C2AB7000275129 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				F898EF43560556BB36139593 /* AlphaMaskFragShader.fsh */,
+				F8C225170F0FCFCE8D867C6A /* AntiAliasedLinesFragShader.fsh */,
+				F851EDD75F7EDD7AB449FDAC /* AntiAliasedLinesVertShader.vsh */,
+				F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */,
+				F81AE783867359F7612A30AC /* VertShader.vsh */,
+				F89B9A37971F516C9A88C4D2 /* PivotQuadFragShader.fsh */,
+				F87822277E9CA852B430F997 /* PivotQuadMaskedFragShader.fsh */,
+				F8BB0BC887C12EEFB24B20EB /* PivotQuadVertShader.vsh */,
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
+		DBE6ED4C15C2AB7E00275129 /* Textures */ = {
+			isa = PBXGroup;
+			children = (
+				F88D48AFA35401497B02559B /* StreetSigns.pvr */,
+				F8178C89954EA58AF78F59AE /* Alphabet.pvr */,
+				F81A110A2FDE0878B7B1D559 /* Road.pvr */,
+			);
+			name = Textures;
+			sourceTree = "<group>";
+		};
+		DBE6ED4D15C2AB8E00275129 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F8DEE3668124FCB791B91358 /* cameratrack.pod */,
+				F8B15CEDF6130B9CB3D7F6FC /* Landmark_meshes.nav */,
+				F8F9B959915ED8780067D3E1 /* LandUseA_meshes.nav */,
+				F8E2651F91782D1541DF06B9 /* LandUseB_meshes.nav */,
+				F862EEC552043AA1DDBBEBE2 /* MajHwys_meshes.nav */,
+				F88585AD92FD976E79130DB8 /* MajHwyShield_text.nav */,
+				F8AAC130D2A0C3D55604A4E1 /* RailRds_meshes.nav */,
+				F878B58D65E5DF3F5CE17501 /* SecHwys_meshes.nav */,
+				F8F9A8DEB9B51BBA306FD4E0 /* SecHwyShield_text.nav */,
+				F8C722F451A0179FB37696F3 /* Signs_billboards.nav */,
+				F8FE474EA5E4A3E9B13D7F8F /* Streets_meshes.nav */,
+				F81C9256757DC7B298945A27 /* Streets_text.nav */,
+				F828FFB11F07490D2196B852 /* WaterPoly_meshes.nav */,
+				F8EECB2B69296F7B6C2762F6 /* WaterSeg_meshes.nav */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		DBE6ED4E15C2AB9C00275129 /* Generic */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Generic;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		49068F5713DDA30C00C8DC21 /* OGLES2Navigation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49068F7613DDA30C00C8DC21 /* Build configuration list for PBXNativeTarget "OGLES2Navigation" */;
+			buildPhases = (
+				49068F5413DDA30C00C8DC21 /* Sources */,
+				49068F5513DDA30C00C8DC21 /* Frameworks */,
+				49068F5613DDA30C00C8DC21 /* Resources */,
+				DB3A55C515C92213004CE8F1 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OGLES2Navigation;
+			productName = OGLES2Navigation;
+			productReference = 49068F5813DDA30C00C8DC21 /* OGLES2Navigation.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		49068F4F13DDA30C00C8DC21 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
+			buildConfigurationList = 49068F5213DDA30C00C8DC21 /* Build configuration list for PBXProject "OGLES2Navigation" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 49068F4D13DDA30C00C8DC21;
+			productRefGroup = 49068F5913DDA30C00C8DC21 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = DB5C329915C7F19D00B1A208 /* Products */;
+					ProjectRef = DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				49068F5713DDA30C00C8DC21 /* OGLES2Navigation */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		DB5C32AC15C7F32B00B1A208 /* libOGLES2Tools.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libOGLES2Tools.a;
+			remoteRef = DB5C32AB15C7F32B00B1A208 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		49068F5613DDA30C00C8DC21 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */,
+				495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */,
+				F86C60508704F3D1C5C0A4DA /* cameratrack.pod in Resources */,
+				F882BF40B39769FA9062B9D0 /* Landmark_meshes.nav in Resources */,
+				F8EE4E5B0727C6CAD41E5EA4 /* LandUseA_meshes.nav in Resources */,
+				F853CA70D6A75D7950A22211 /* LandUseB_meshes.nav in Resources */,
+				F820535678154BBDC9E7AF96 /* MajHwys_meshes.nav in Resources */,
+				F864FA71D68C9A2692AABAB8 /* MajHwyShield_text.nav in Resources */,
+				F864EB27CFECB932775A0553 /* RailRds_meshes.nav in Resources */,
+				F8325D62E75A29FCAEC541F3 /* SecHwys_meshes.nav in Resources */,
+				F8C728A340C16A994E69C520 /* SecHwyShield_text.nav in Resources */,
+				F83BBDE7BCE43500BD3060A7 /* Signs_billboards.nav in Resources */,
+				F87B5D7C69318E2FFE0B8734 /* Streets_meshes.nav in Resources */,
+				F8D228360D2D68D109DB2199 /* Streets_text.nav in Resources */,
+				F845768680986648D6E0C932 /* WaterPoly_meshes.nav in Resources */,
+				F8368E4B2AAD715FA94839A3 /* WaterSeg_meshes.nav in Resources */,
+				F820BB95C591AB1FF9424531 /* StreetSigns.pvr in Resources */,
+				F810D3282DDF6468FD4EE4A5 /* Alphabet.pvr in Resources */,
+				F8F0856D2FC13B3AECDE6952 /* Road.pvr in Resources */,
+				F8BEE47D0C3E443D7399CEB1 /* AlphaMaskFragShader.fsh in Resources */,
+				F885103BFE48D35F1E80A214 /* AntiAliasedLinesFragShader.fsh in Resources */,
+				F892E400C821A7ACEC1070F6 /* AntiAliasedLinesVertShader.vsh in Resources */,
+				F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */,
+				F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */,
+				F86B71E37E086B108BB5E4C6 /* PivotQuadFragShader.fsh in Resources */,
+				F839674DFA4751DCDF646E46 /* PivotQuadMaskedFragShader.fsh in Resources */,
+				F89A834C1A4A1596BE2014D6 /* PivotQuadVertShader.vsh in Resources */,
+				DB3A55CF15C938D4004CE8F1 /* Info.plist in Resources */,
+				DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		49068F5413DDA30C00C8DC21 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F820EB7D351BF9B2DCB03064 /* OGLES2Navigation.cpp in Sources */,
+				F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */,
+				F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */,
+				F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */,
+				F8511E325A14C7B1512D37CC /* main.m in Sources */,
+				F869BEBD44384AC2147622A7 /* AppController.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		495B9D0013E2EE09000FD6B4 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				495B9D0113E2EE09000FD6B4 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				495B9D0513E2EE16000FD6B4 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		49068F7413DDA30C00C8DC21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"_DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		49068F7513DDA30C00C8DC21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		49068F7713DDA30C00C8DC21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					BUILD_OGLES2,
+				);
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = ("$(inherited)","../../../../../../Builds/OSX/x86/Lib");
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Tools/OGLES2 ../../../../../../Tools";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		49068F7813DDA30C00C8DC21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES2;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = ("$(inherited)","../../../../../../Builds/OSX/x86/Lib");
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Tools/OGLES2 ../../../../../../Tools";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		49068F5213DDA30C00C8DC21 /* Build configuration list for PBXProject "OGLES2Navigation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49068F7413DDA30C00C8DC21 /* Debug */,
+				49068F7513DDA30C00C8DC21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49068F7613DDA30C00C8DC21 /* Build configuration list for PBXNativeTarget "OGLES2Navigation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49068F7713DDA30C00C8DC21 /* Debug */,
+				49068F7813DDA30C00C8DC21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 49068F4F13DDA30C00C8DC21 /* Project object */;
+}

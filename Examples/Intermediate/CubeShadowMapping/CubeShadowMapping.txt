@@ -1,0 +1,6 @@
+:Title:
+CubeShadowMapping
+:ShortDescription:
+Shows how to use cube shadow maps for point light sources.
+:FullDescription:
+Shows how to dynamically update the cube shadow map for a point light source and cast shadows using that cube shadow map. Shadow Mapping is a process by which shadows are added to 3D computer graphics by testing whether a pixel is visible from the light source, and comparing it to a z-buffer or depth image of the light source's view.

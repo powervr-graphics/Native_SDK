@@ -1,0 +1,16 @@
+:Title:
+AntialiasedLines
+
+:ShortDescription:
+This training course demonstrates how to render anti-aliased lines without enabling full screen anti-aliasing.
+
+:FullDescription:
+Full screen antialiasing can be too expensive or unavailable on some platforms, but it is possible to render smooth lines without it. This training course shows how to render anti-aliased lines with round caps using texture filtering and blending.
+
+Controls:
+	-	Esc	-	Close the application
+
+:PolyCount:
+174
+:VertexCount:
+58-232

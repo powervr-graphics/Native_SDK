@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Content Files">
+      <UniqueIdentifier>{900022e4-757a-46fb-bd53-6dfc20b3d893}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content Files\Scene Files">
+      <UniqueIdentifier>{2c3d4c8c-5d1a-459a-a05a-a4e4b608a44e}</UniqueIdentifier>
+      <Extensions>pod</Extensions>
+    </Filter>
+    <Filter Include="Content Files\Textures">
+      <UniqueIdentifier>{2c3d4c8c-5d1a-459a-a05a-a4e4b608a44e}</UniqueIdentifier>
+      <Extensions>ico;bmp;gif;jpg;jpeg;jpe;tiff;tif;png;pvr</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Shell\PVRShell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Shell\PVRShellImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Shell\API\KEGL\PVRShellAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Shell\OS\Windows\PVRShellOS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Builds\Windows\Resources\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\..\..\..\Builds\Windows\Resources\shared.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\OGLESFilmTV.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Shell\PVRShell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Shell\API\KEGL\PVRShellAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Shell\OS\Windows\PVRShellOS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\Table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\Floor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\Wall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\TV.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\TVCase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\TVSpeaker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\Alum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\Skirting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\FilmTVScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+<ItemGroup>
+    <CustomBuild Include="..\..\FilmTVScene.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+  <CustomBuild Include="..\..\TV.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\TVCase.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\Skirting.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\Wall.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\Camera.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\Floor.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\TVSpeaker.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\Table.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\Alum.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  </ItemGroup>
+</Project>

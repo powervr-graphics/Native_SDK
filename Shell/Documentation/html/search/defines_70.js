@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['pvrshell_5fdir_5fsym',['PVRSHELL_DIR_SYM',['../_android_2_p_v_r_shell_o_s_8h.html#a522f3727663f8280fa618c3fe72e8791',1,'PVRSHELL_DIR_SYM():&#160;PVRShellOS.h'],['../_black_berry10_2_p_v_r_shell_o_s_8h.html#a522f3727663f8280fa618c3fe72e8791',1,'PVRSHELL_DIR_SYM():&#160;PVRShellOS.h'],['../i_o_s_2_p_v_r_shell_o_s_8h.html#a522f3727663f8280fa618c3fe72e8791',1,'PVRSHELL_DIR_SYM():&#160;PVRShellOS.h'],['../_linux_null_w_s_2_p_v_r_shell_o_s_8h.html#a522f3727663f8280fa618c3fe72e8791',1,'PVRSHELL_DIR_SYM():&#160;PVRShellOS.h'],['../_linux_x11_2_p_v_r_shell_o_s_8h.html#a522f3727663f8280fa618c3fe72e8791',1,'PVRSHELL_DIR_SYM():&#160;PVRShellOS.h'],['../_o_s_x_2_p_v_r_shell_o_s_8h.html#a522f3727663f8280fa618c3fe72e8791',1,'PVRSHELL_DIR_SYM():&#160;PVRShellOS.h'],['../_windows_2_p_v_r_shell_o_s_8h.html#a522f3727663f8280fa618c3fe72e8791',1,'PVRSHELL_DIR_SYM():&#160;PVRShellOS.h']]],
+  ['pvrshell_5funreferenced_5fparameter',['PVRSHELL_UNREFERENCED_PARAMETER',['../_p_v_r_shell_8h.html#a5ba47b87778f3c433212710648ef07c7',1,'PVRShell.h']]]
+];

@@ -1,0 +1,12 @@
+:Title:
+Multitexture
+
+:ShortDescription:
+This training course is an example of how to combine multiple textures.
+
+:FullDescription:
+This training course demonstrates how to combine multiple textures in six different ways using glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, param). "param" can be any of the following six options: GL_MODULATE, GL_ADD, GL_ADD_SIGNED	, GL_REPLACE, GL_SUBTRACT, GL_DOT3_RGB.
+
+Controls:
+	-	Esc	-	Close the application
+

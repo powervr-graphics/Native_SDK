@@ -1,0 +1,12 @@
+:Title:
+Shaders
+
+:ShortDescription:
+A demonstration of a variety of different shaders implemented on a selection of meshes.
+:FullDescription:	
+The Shader demo presents a variety of shaders that can be applied to a scene, such as Environment Mapping and Phong Lighting. The demo also features a selection of surfaces to display the shaders on. 
+	
+Controls:
+	-	Left/Right	-	Cycle backwards/forwards through the list of shaders
+	-	Up/Down	-	Cycle backwards/forwards through the list of objects
+	-	Esc	-	Close the application

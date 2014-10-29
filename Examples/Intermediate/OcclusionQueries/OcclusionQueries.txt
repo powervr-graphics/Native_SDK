@@ -1,0 +1,10 @@
+:Title:
+Occlusion Queries
+:ShortDescription:
+Shows how to use occlusion queries to determine visible objects.
+:FullDescription:
+Shows how to use occlusion queries to determine visible objects and cull invisible ones to increase run-time performance.
+:PolygonCount:
+40991
+:VertexCount:
+26136

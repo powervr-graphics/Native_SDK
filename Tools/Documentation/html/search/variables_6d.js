@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['m_5fbinit',['m_bInit',['../class_c_p_v_r_t_background.html#a1d785e3aca51620e5a5e2ad80d0a7f32',1,'CPVRTBackground']]],
+  ['m_5fbloaded',['m_bLoaded',['../class_c_p_v_r_t_p_f_x_effect.html#ab12644ddc3b426ca11a09ddda24847c3',1,'CPVRTPFXEffect']]],
+  ['m_5fbmemoryfile',['m_bMemoryFile',['../class_c_p_v_r_t_resource_file.html#a82ef86109fc5e7a9fd28452469b338e7',1,'CPVRTResourceFile']]],
+  ['m_5fbopen',['m_bOpen',['../class_c_p_v_r_t_resource_file.html#a0113f0853749ba67242015401aed2083',1,'CPVRTResourceFile']]],
+  ['m_5fcapacity',['m_Capacity',['../class_c_p_v_r_t_string.html#aaefbb02d87806b3bf36902a543e9a07a',1,'CPVRTString']]],
+  ['m_5fhandle',['m_Handle',['../class_c_p_v_r_t_resource_file.html#a51f473069987bf0e9432ec6703565731',1,'CPVRTResourceFile']]],
+  ['m_5fneffect',['m_nEffect',['../class_c_p_v_r_t_p_f_x_effect.html#a7f10d8c173ce28907d336dbc4c05e74d',1,'CPVRTPFXEffect']]],
+  ['m_5fpapi',['m_pAPI',['../class_c_p_v_r_t_background.html#ac82bfb7b1a15c79264855373714597da',1,'CPVRTBackground']]],
+  ['m_5fparray',['m_pArray',['../class_c_p_v_r_t_array.html#a84fc25c9ea9aa750c18169240e96427b',1,'CPVRTArray']]],
+  ['m_5fpdata',['m_pData',['../class_c_p_v_r_t_resource_file.html#af4c67ce3c2b0b6893fe5b066828edcd3',1,'CPVRTResourceFile']]],
+  ['m_5fpparser',['m_pParser',['../class_c_p_v_r_t_p_f_x_effect.html#a9311c47c27000a82503b00036955c3c4',1,'CPVRTPFXEffect']]],
+  ['m_5fpscontext',['m_psContext',['../class_c_p_v_r_t_p_f_x_effect.html#a6d3c027f051810ba226e43eb262872da',1,'CPVRTPFXEffect']]],
+  ['m_5fpstring',['m_pString',['../class_c_p_v_r_t_string.html#ab18740beb7cff172a602739a8acf46d4',1,'CPVRTString']]],
+  ['m_5fsemantics',['m_Semantics',['../class_c_p_v_r_t_p_f_x_effect.html#aca70e6d60db356114e46c86bcb7c35f6',1,'CPVRTPFXEffect']]],
+  ['m_5fsize',['m_Size',['../class_c_p_v_r_t_resource_file.html#af7cbef6362baefd16211aeb2e0580dc4',1,'CPVRTResourceFile::m_Size()'],['../class_c_p_v_r_t_string.html#a4519f2290c133aada40dbd82198c1630',1,'CPVRTString::m_Size()']]],
+  ['m_5ftextures',['m_Textures',['../class_c_p_v_r_t_p_f_x_effect.html#a298e2fd65258370518c4ac1670681520',1,'CPVRTPFXEffect']]],
+  ['m_5fuicapacity',['m_uiCapacity',['../class_c_p_v_r_t_array.html#afb47b1c6e7c3ff459af7177fedfe8cb6',1,'CPVRTArray']]],
+  ['m_5fuiprogram',['m_uiProgram',['../class_c_p_v_r_t_p_f_x_effect.html#a4f842c3a525b0ccbdebbead196e18b36',1,'CPVRTPFXEffect']]],
+  ['m_5fuisize',['m_uiSize',['../class_c_p_v_r_t_array.html#a89038c7d7f01037c1b8c2ad18821e217',1,'CPVRTArray']]],
+  ['m_5funiforms',['m_Uniforms',['../class_c_p_v_r_t_p_f_x_effect.html#a741d6896eeb3b740028dbc8e29c73eac',1,'CPVRTPFXEffect']]],
+  ['munpackmatrix',['mUnpackMatrix',['../struct_s_p_o_d_mesh.html#aec4e642cca903963adccca5198861f00',1,'SPODMesh']]]
+];

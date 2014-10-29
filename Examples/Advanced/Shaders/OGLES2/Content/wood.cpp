@@ -1,0 +1,113 @@
+// This file was created by Filewrap 1.2
+// Little endian mode
+// DO NOT EDIT
+
+#include "../PVRTMemoryFileSystem.h"
+
+// using 32 bit to guarantee alignment.
+#ifndef A32BIT
+ #define A32BIT static const unsigned int
+#endif
+
+// ******** Start: wood.pfx ********
+
+// File data
+static const char _wood_pfx[] = 
+	"[HEADER]\n"
+	"\tVERSION\t\t00.00.00.00\n"
+	"\tDESCRIPTION Wood Example\n"
+	"\tCOPYRIGHT\tImagination Technologies Ltd.\n"
+	"[/HEADER]\n"
+	"\n"
+	"[TEXTURES]\n"
+	"[/TEXTURES]\n"
+	"\n"
+	"[VERTEXSHADER]\n"
+	"\tNAME myVertShader\n"
+	"\t[GLSL_CODE]\n"
+	"\t\tattribute highp vec4\tmyVertex;\n"
+	"\t\tattribute mediump vec3\tmyNormal;\n"
+	"\t\tattribute mediump vec4\tmyUV;\n"
+	"\t\tuniform mediump mat4\tmyMVPMatrix;\n"
+	"\t\tuniform mediump mat3\tmyModelViewIT;\n"
+	"\t\tuniform mediump mat4\tmyModelView;\n"
+	"\n"
+	"\t\tconst mediump vec3\t\tLightPosition = vec3(0.0, 0.0, 4.0);\n"
+	"\t\tconst mediump float\t\tScale = 0.25;\n"
+	"\n"
+	"\t\tvarying mediump float lightIntensity;\n"
+	"\t\tvarying mediump vec3 Position;\n"
+	"\n"
+	"\t\tvoid main(void)\n"
+	"\t\t{\n"
+	"\t\t\tmediump vec4 pos = myModelView * myVertex;\n"
+	"\t\t\tPosition = vec3(myVertex) * Scale;\n"
+	"\t\t\tmediump vec3 tnorm = myModelViewIT * myNormal;\n"
+	"\t\t\tlightIntensity = abs(dot(normalize(LightPosition - vec3(pos)), tnorm)) * 1.5;\n"
+	"\t\t\tgl_Position = myMVPMatrix * myVertex;\n"
+	"\t\t}\n"
+	"\t[/GLSL_CODE]\n"
+	"[/VERTEXSHADER]\n"
+	"\n"
+	"[FRAGMENTSHADER]\n"
+	"\tNAME myFragShader\n"
+	"\t[GLSL_CODE]\n"
+	"\t\tconst mediump float GrainSizeRecip = 7.0;\n"
+	"\t\tconst mediump vec3  DarkColor = vec3(0.6, 0.3, 0.1);\n"
+	"\t\tconst  mediump vec3 spread = vec3(0.15, 0.075, 0.0);\n"
+	"\n"
+	"\t\tvarying mediump float lightIntensity; \n"
+	"\t\tvarying highp vec3 Position;\n"
+	"\n"
+	"\t\tvoid main (void)\n"
+	"\t\t{\n"
+	"\t\t\t//\n"
+	"\t\t\t// cheap noise\n"
+	"\t\t\t//\n"
+	"\t\t\tmediump vec3 location = Position;\n"
+	"\t\t\tmediump vec3 floorvec = vec3(floor(10.0 * Position.x), 0.0, floor(10.0 * Position.z));\n"
+	"\t\t\tmediump vec3 noise = Position * 10.0 - floorvec - 0.5;\n"
+	"\t\t\tnoise *= noise;\n"
+	"\t\t\tlocation += noise * 0.12;\n"
+	"\t\t\n"
+	"\t\t\t//\n"
+	"\t\t\t// distance from axis\n"
+	"\t\t\t//\n"
+	"\t\t\tmediump float dist = location.x * location.x + location.z * location.z;\n"
+	"\t\t\tmediump float grain = dist * GrainSizeRecip;\n"
+	"\n"
+	"\t\t\t//\n"
+	"\t\t\t// grain effects as function of distance\n"
+	"\t\t\t//\n"
+	"\t\t\tmediump float brightness = fract(grain);    \n"
+	"\t\t\tif (brightness > 0.5) \n"
+	"\t\t\t\tbrightness = 1.0 - brightness;\n"
+	"\t\t\tmediump vec3 color = DarkColor + brightness * spread;\n"
+	"\n"
+	"\t\t\t//\n"
+	"\t\t\t// apply lighting effects from vertex processor\n"
+	"\t\t\t//\n"
+	"\t\t\tcolor = clamp(color * lightIntensity, 0.0, 1.0); \n"
+	"\n"
+	"\t\t\tgl_FragColor = vec4(color, 1.0);\n"
+	"\t\t}\n"
+	"\t[/GLSL_CODE]\n"
+	"[/FRAGMENTSHADER]\n"
+	"\n"
+	"[EFFECT]\n"
+	"\tNAME myEffect\n"
+	"\n"
+	"\tATTRIBUTE\tmyVertex\t\t\tPOSITION\n"
+	"\tATTRIBUTE\tmyNormal\t\t\tNORMAL\n"
+	"\tUNIFORM\t\tmyMVPMatrix\t\t\tWORLDVIEWPROJECTION\n"
+	"\tUNIFORM\t\tmyModelViewIT\t\tWORLDVIEWIT\n"
+	"\n"
+	"\tVERTEXSHADER myVertShader\n"
+	"\tFRAGMENTSHADER myFragShader\n"
+	"[/EFFECT]\n";
+
+// Register wood.pfx in memory file system at application startup time
+static CPVRTMemoryFileSystem RegisterFile_wood_pfx("wood.pfx", _wood_pfx, 2247);
+
+// ******** End: wood.pfx ********
+

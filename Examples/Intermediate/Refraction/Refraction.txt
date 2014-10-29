@@ -1,0 +1,12 @@
+:Title:
+Refraction
+
+:ShortDescription:
+This training course demonstrates a simulation of glass-like materials.
+
+:FullDescription:
+This training course combines an object with a background in order to achieve a refraction effect. The background texture is applied to the model but the sample coordinates are affected by the normals of the geometry in order to simulate how light would be bent through a material with differing refractive index to the air around it.
+
+Controls:
+	-	Left/Right	-	Cycle Specular reflection on or off
+	-	Esc	-	Close the application
