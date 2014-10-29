@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>The PowerVR SDK Browser</title>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="./images/img-icon.png">
+</head>
+
+<body>
+	<div id="GlobalHeaderContainer">
+		<div id="GlobalHeader">
+			<div class="logo">
+				<a href="http://www.powervrinsider.com" target="_blank"><img src="./images/PVRlogo.png" width="40%" height="40%" /></a>
+            </div>
+			<div class="sitetitle">PowerVR SDK Browser</div>
+		</div>
+	</div>
+	<div id="NavContainer">
+		<nav>
+			<div class="navlink">
+				<a href="Home.html">Home</a>
+			</div>
+			<div class="navlink">
+				<a href="GettingStarted.html">Getting Started</a>
+			</div>
+			<div class="navlink">
+				<a href="Examples.html">Examples</a>
+			</div>
+			<div class="navlink">
+				<a href="Framework.html">Framework</a>
+			</div>
+			<div class="navlink">
+				<a href="Documentation.html">Documentation</a>
+			</div>
+			<div class="navlink">
+				<a href="PowerVRTools.html">PowerVR Tools</a>
+			</div>
+			<div class="navlink">
+				<a href="ReleaseNotes.html" class="current">Release Notes</a>
+			</div>
+			<div class="navlink">
+				<a href="Contact.html">Contact Us</a>
+			</div>
+		</nav>
+	</div>
+
+    <div class="content">
+        <h1>Release Notes</h1>
+		<p><a href="#3.4" class="link">v3.4</a>  |  <a href="#3.3" class="link">v3.3</a>
+		<div id="3.4">
+			<h2>PowerVR Tools and SDK v3.4</h2>
+			<h3>Overview</h3>
+				<p>In this release PVRShaderEditor adds the latest compilers for Series6, Series6 FP16, and Series6XT to provide more up-to-date profiling. PVRShaderEditor also adds new functionality to access the GLSL disassembly for these compilers, as well as full instruction set documentation. In addition, several performance optimizations have been made for the different utilities in the PowerVR Tools suite. New SDKs have been added including WebGL, Android 64bit and Linux MIPS. Furthermore, a fully redesigned PowerVR SDK Browser is now supplied with the distribution for improving accessibility of the SDK contents.</p>
+			<h3>Builds</h3>
+				<ul>
+					<li>Added support for Android arm64-v8a, x86_64 and mips64.</li>
+				</ul>
+			<h3>Examples</h3>
+				<ul>
+					<li>PVRScopeExample and PVRScopeRemote: updated for PVRScope changes.</li>
+					<li>PVRScopeExample: CPVRScopeGraph::SetActiveGroup() now accepts a group number even if there are no counters in that group, if there are higher groups. This allows PVRScopeExample to pass an empty group, to reach a higher, populated group number. Allows for 'invalid' group numbers – i.e. SW counters.</li>
+					<li>PVRScopeRemote:</li>
+					<ul>
+						<li>Make use of PVRScopeComms new support for nested begin/ends.</li>
+						<li>Utilise the CPPLProcessingScoped helper class where appropriate.</li>
+						<li>Use the optional pplWaitForConnection() function.</li>
+						<li>Instrumented all remaining functions in the app (LoadTextures, LoadShaders, LoadVbos), using CPPLProcessingScoped. Also made use of the __FUNCTION__ define.</li>
+					</ul>
+					<li>OGLES3ProceduralTextures: corrected input flags for glMemoryBarrier.</li>
+				</ul>
+			<h3>PVRShell</h3>
+				<ul>
+					<li>CPVRTPrint3D: Fixed out-of-bounds access.</li>
+				</ul>
+			<h3>PVRTools</h3>
+				<ul>
+					<li>CPVRTPFXEffect: Fixed the Destroy() function to destroy the texture data.</li>
+					<li>Fixed a bug in the implementation of PVRTMap where calling ‘Remove’ might have incorrect behaviour.</li>
+				</ul>
+			<h3>PVRShaman v2.2.2</h3>
+				<ul>
+					<li>Incorporated new icons in the GUI.</li>
+				</ul>
+			<h3>PVRTexTool v4.1.4</h3>
+				<ul>
+					<li>Increased performance of ETC decompression. It’s now up to about 20% faster per surface, depending on the compression scheme.</li>
+					<li>Fixed scaling issue. All test cases now work 100% correctly when downscaling.</li>
+					<li>Fixed crash when saving a texture with MIP Maps to a KTX file.</li>
+				</ul>
+				<p>PVRTexToolGUI</p>
+				<ul>
+					<li>Updated icons to new consistent style.</li>
+				</ul>
+				<p>PVRTexToolCLI</p>
+				<ul>
+					<li>Fixed padding argument so that they actually pad the metadata.</li>
+					<li>Fixed bug with '-squarecanvas +' where size was being set to the largest of width and depth instead of width and height.</li>
+				</ul>
+				<p>PVRTexLib</p>
+				<ul>
+					<li>Updated PVRTC Compressor to version 1.190, which fixes the single region crash, which caused small PVRTC2 textures (or MIP Maps) to crash the tool.</li>
+					<li>Fixed bug in PVRTC2 compressor where it won't properly compress textures that generate a single PVRTC region in the Y dimension (i.e. any texture, or MIP Map level in a texture, with a height of 4 or lower).</li>
+				</ul>
+				<p>PVRTexTool Plugins</p>
+				<ul>
+					<li>Added 2015 versions of Autodesk 3DSMax and Maya.</li>
+					<li>Fixed channel order when loading PVR files in Maya.</li>
+				</ul>					
+			<h3>PVRVFrame v10.0</h3>
+				<ul>
+					<li>Performance improvements.</li>
+					<li>Added support for OpenGL ES 3.0 on OSX.</li>
+					<li>Added Windows XP support.</li>
+					<li>Added support for KHR_blend_equation_advanced and KHR_blend_equation_advanced_coherent.</li>
+					<li>Added support for EXT_texture_sRGB_decode.</li>
+					<li>Added support for GL_EXT_robustness.</li>
+					<li>Added seamless cube map support for OpenGL ES 3.0+ contexts.</li>
+					<li>Fixed glTexStorage2D when format GL_DEPTH24_STENCIL8 is used.</li>
+					<li>Fixed shaders of different versions being linkable.</li>
+					<li>Fixed GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH always returning 0.</li>
+					<li>Fixed a possible data race situation when using textures in multiple threads.</li>
+					<li>Fixed a bug in glTranslatex where values were not being converted correctly.</li>
+					<li>Fixed a possible crash on OSX when sharing contexts.</li>
+					<li>Fixed STENCIL_INDEX8 format textures not being allowed with an ES 3.1 context.</li>
+					<li>Fixed a bug in eglCreateWindowSurface where allowed attributes weren't being checked correctly.</li>
+					<li>Fixed error checking of requested major/minor version in eglCreateContext.</li>
+					<li>Fixed an issue on Linux where contexts would be initialized incorrectly when using mesa OpenGL drivers.</li>
+					<li>Fixed gl_FragData in shaders not being translated correctly.</li>
+					<li>Fixed a bug in GLSL translator where textureCubeLODEXT was not being translated.</li>
+				</ul>
+			<h3>PVRVTune v14.88</h3>
+				<ul>
+					<li>Renamed TA to Tiler, and 3D to Renderer.</li>
+					<li>Added counters:</li>
+					<ul>
+						<li>Shader proportion: pixel.</li>
+						<li>Shader proportion: vertex.</li>
+						<li>Shader proportion: compute.</li>
+						<li>Vertices per batch.</li>
+						<li>Shader slot scheduled count: compute.</li>
+						<li>Shader slot scheduled count: pixel.</li>
+						<li>Shader slot scheduled count: vertex.</li>
+						<li>Shader slot size: pixel.</li>
+						<li>Shader slot size: vertex.</li>
+						<li>GPU task time per frame: Tiler core.</li>
+						<li>GPU task time per frame: Renderer core.</li>
+						<li>GPU task time per frame: 2D core.</li>
+						<li>GPU task time per frame: Compute core.</li>
+					</ul>
+					<li>Complete build and custom counter groups:</li>
+					<ul>
+						<li>Custom counters: editable fourth column.</li>
+						<li>Rename the count modes "unary" and "binary".</li>
+						<li>Added a filter input box for the first three columns.</li>
+						<li>Set the stretch factors to give the rightmost two columns more space.</li>
+						<li>Removed uniformItemSizes for the first list. That also affects width, which means the horizontal scroll bar wasn't appearing soon enough.</li>
+						<li>Fixed tab order, and put the focus in the filter box by default.</li>
+						<li>Now saves and restores the dialog's geometry each time.</li>
+						<li>Now create counters for custom HW sources.</li>
+						<li>BVNC string parsing. Should now handle V="cb" or V="3p" style BVNCs. When automatically creating per frame and per second counters for HW sources, now also creates a per clock counter.</li>
+						<li>When automatically creating per frame and per second counters for HW sources, now also creates a raw counter. This lets you see the actual count in the time period. Perhaps useful in the counter table, but not in the graph.</li>
+						<li>SGX XT counter: "Shader load: Compute".</li>
+						<li>New counter: Batches per frame.</li>
+						<li>New counter: Shader proportion: event.</li>
+						<li>PVRTune regression fix: Counter Table group combo box now correctly displays the chosen group.</li>
+						<li>Fixed some counter sources not being visible after choosing them in a custom group.</li>
+					</ul>
+				</ul>
+				<p>PVRTuneGUI</p>
+				<ul>
+					<li>PID docking-window: fixed occasional disappearance of known application names (they are only received if PVRPerfServer is run with the -pid option).</li>
+					<li>Monitor docking-window:</li>
+					<ul>
+						<li>Data no longer "pauses" during periods of no GPU activity.</li>
+						<li>Added the missing shader core load, for Rogue.</li>
+					</ul>
+					<li>Counter properties docking-window:</li>
+					<ul>
+						<li>No longer lets the window size grow due to a long counter Name or Source string.</li>
+						<li>Also sets the Name and Source strings as StatusTips (ToolTips are too distracting) - allows larger strings be read.</li>
+					</ul>
+					<li>Added support for nested user timelines. PVRTune renders these as a "flame graph".</li>
+					<li>Connection screen:</li>
+					<ul>
+						<li>URL buttons now automatically shrink their text to fit (lost during port to Qt).</li>
+						<li>"Connect To:" box now gets the focus by default, as it should, and as it used to. Can once again simply run and press Enter to go straight to the last connection.</li>
+						<li>Now convert all file path slashes to '/'. This fixes/removes the possibility of two 'matching' paths in the file history but with different slashes on Windows.</li>
+						<li>Status bar: now has a visual semaphore indicating connection warnings; click to show the PVRPerfServer Details dialog box.</li>
+						<li>Added more feedback to PVRPerfServer details: now shows warnings at the bottom.</li>
+						<li>Complete build: additional info.</li>
+						<li>Fixed some rare crashes.</li>
+						<li>Main window: fixed the 'empty window' behind the splash screen during first (no preferences file) start up.</li>
+					</ul>
+					<li>Changed the default docking-window layout:</li>
+					<ul>
+						<li>Top Dock left to right: counter table (default top-most), search, remote editor.</li>
+						<li>Bottom: Monitor (default top-most), Props, RS override, PID.</li>
+					</ul>
+					<li>Mouse hover over the Monitor now causes counters to highlight. Also, in the bar chart style, empty components will now have a hit-test result.</li>
+					<li>The Counter Table context menu now has a new option "Properties", which enables and brings the Counter Properties docking window foremost, and sets the focus to the Y-Axis input box.</li>
+					<li>Graphs:</li>
+					<ul>
+						<li>Graphs now scroll more smoothly even when received data is intermittent.</li>
+						<li>Fixed an issue where start-up with a zoom value of one (1) would mean that the mouse-wheel could not be used to zoom out, but other methods could.</li>
+						<li>Fixed vertical centering of timeline labels on Windows and Linux.</li>
+						<li>Renderstate Override: sets vertical policy to preferred, rather than fixed. Makes it a much more polite docking window.</li>
+						<li>Fixed a case where scrolled graph rendering could show pixel corruption (refresh would fix).</li>
+					</ul>
+					<li>PVRTune performance optimisations.</li>
+					<li>Bug-fix: restore proper counter tool-tips.</li>
+					<li>Updated PVRTuneComplete's welcome message in light of it being covered by the NDA licence, rather than the DDK source licence.</li>
+					<li>No longer remember zoom or position between sessions. When loading from a file, automatically "view all" when complete.</li>
+					<li>New icons.</li>
+				</ul>
+			<p>PVRPerfServer</p>
+			<ul>
+				<li>PVRPerfServer command-line:</li>
+				<ul>
+					<li>All non-single-character commands must now be prefixed with two dashes, e.g. --pid rather than -pid.</li>
+					<li>Added new command line option quit after time (qat) e.g. "--qat=4.2" which commands PVRPerfServer to auto-quit after a time of 4.2 seconds.</li>
+				</ul>
+				<li>PVRPerfServer for Linux, BB10 and Android: made unnecessary and removed command line option "--disable-user-input".</li>
+			</ul>
+			<p>PVRScope Library</p>
+			<ul>
+				<li>PVRScopeComms.h:</li>
+				<ul>
+					<li>Don't prefix strings with psz (thereby specifying NULL-terminated), when in fact there is a string-length parameter. pplSendMark() comment improved: the input string is not time-stamped, it's done internally.</li>
+					<li>New class: CPPLProcessingScoped. Helper class which will send a processing begin/end pair around its scope. You would typically instantiate these at the top of a function or after the opening curly-brace of a new scope within a function.</li>
+					<li>PVRScopeComms.h: updated comments; pplSendProcessingBegin() / pplSendProcessingEnd() pairs can now be nested.</li>
+				</ul>
+				<li>PVRScope: Headers should work with C code.</li>
+				<li>PVRScopeReadCountersThenSetGroup(): removed nTimeUS parameter as it is now queried internally.</li>
+				<li>Split PVRScopeReadCountersThenSetGroup() into two new functions: PVRScopeReadCounters() and PVRScopeSetGroup().</li>
+				<li>PVRScopeStats: new function PVRScopeFindStandardCounter().</li>
+				<li>Fix for per-render counters (per-frame were ok).</li>
+				<li>Fixed a regression in the first SDK 3.3 release that could cause noisy data.</li>
+			</ul>
+			<h3>PVRShaderEditor v2.5</h3>
+				<ul>
+					<li>Increased stability for heavy use.</li>
+					<li>Fixed keyboard shortcuts for consistency across Linux, Windows, and OSX.</li>
+					<li>Added support for new OGLCompiler Performance Simulation flag.</li>
+					<li>Added support for OCLCompiler flags.</li>
+					<li>Compiler options layout redesign, adding support to do per-file configuration.</li>
+				</ul>
+			<h3>PVRGeoPOD v2.16.3</h3>
+				<ul>
+					<li>CLI: Updated the command-line. Old commands will still work for release but are now undocumented.</li>
+					<li>Blender: Fixed the exporting of cameras that are the children of other objects.</li>
+					<li>Fixed a bug where meshes were split even if we weren't exporting materials.</li>
+					<li>Added support for 3ds max 2015 SP 2 (igame version 17.2.259.0).</li>
+				</ul>
+			<h3>PVRTrace v3.4</h3>
+				<ul>
+					<li>Added data compression for trace files to reduce their size.</li>
+					<li>PVRTrace will now output an error message if you attempt to load a trace file with a file format newer than the latest format recognised.</li>
+					<li>PVRTrace files are no longer allowed to have ':' in their name. This caused issues when recording on Android where it is allowed and trying to pull the file on to Windows where it isn't.</li>
+					<li>glTexEnv and glGetTexEnv now show the enum values as strings where appropriate.</li>
+					<li>Frame count now begins at 0 to match the recorder.</li>
+					<li>Export frame stats now exports information from the first frame.</li>
+					<li>Significantly reduced memory usage.</li>
+					<li>glStencilMask now shows its mask as a hex value instead of an unsigned int.</li>
+					<li>Fixed a bug in the renderstate tracking of glCopyBufferSubData.</li>
+				</ul>
+				<p>PVRTraceGUI</p>
+				<ul>
+					<li>Fixed an issue with the generation of the PowerVR depth complexity for some trace files.</li>
+					<li>You can now view the attributes of a config used for context and window creation by hovering over the config parameter of their respective eglCreate* functions.</li>
+					<li>We now display an error message if the profiling compiler fails to compile a shader.</li>
+					<li>Added the GL_EXT_debug_marker functions.</li>
+					<li>The image analysis spinning loading symbol now scales with the window.</li>
+					<li>glIsQueryEXT now loads the return value.</li>
+					<li>The static analysis now shows errors for shaders that failed to compile and programs that failed to link if and only if the trace was recorded with the latest version. Also, if you hover over the call in the static analysis window it'll mention the compilation/linking information log.</li>
+					<li>The call summary export now includes lists all API calls instead of just the ones used. This should make is easier to diff application runs.</li>
+					<li>Fixed call highlighting on Linux.</li>
+					<li>The "cancel" button has been removed from the search dialog. Now, if a search is running the "find" button becomes the "cancel" button.</li>
+					<li>Softened the static analysis warning about using scissor rectangles as this only applies to SGX.</li>
+					<li>If the trace file was recorded with the save framebuffers option you can now export the framebuffers to a folder as separate images.</li>
+					<li>Fixed a crash that occurred if the statistics dialog was open when exiting.</li>
+					<li>The call view can now be navigated with the page up and down keys.</li>
+					<li>Fixed the function quick help which was broken for some functions.</li>
+					<li>Added the function quick help to extension functions where possible.</li>
+					<li>Fixed a bug where the thread list would not get cleared when loading multiple trace files.</li>
+					<li>Play failed calls is now disabled by default.</li>
+				</ul>
+				<p>PVRTracePlayback</p>
+				<ul>
+					<li>By default we now playback calls that caused errors during recording. This can be disabled within the GUI or in playback via the command-line.</li>
+					<li>Fixed an issue with playing back uniform blocks.</li>
+					<li>Added support for the query EXT functions. </li>
+					<li>Added --robust that will force the use of EGL_EXT_create_context_robustness and GL_EXT_robustness and will check the reset status of the GL context after each call. If you do --robust=0 it will disable the use of those extensions.</li>
+					<li>Added support for playing back eglCreateImageKHR with targets:</li>
+					<ul>
+						<li>EGL_GL_TEXTURE_2D_KHR</li>
+						<li>EGL_GL_TEXTURE_CUBE_MAP_POSITIVE_X_KHR</li>
+						<li>EGL_GL_TEXTURE_CUBE_MAP_NEGATIVE_X_KHR</li>
+						<li>EGL_GL_TEXTURE_CUBE_MAP_POSITIVE_Y_KHR</li>
+						<li>EGL_GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_KHR</li>
+						<li>EGL_GL_TEXTURE_CUBE_MAP_POSITIVE_Z_KHR</li>
+						<li>EGL_GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_KHR</li>
+						<li>EGL_GL_TEXTURE_3D_KHR</li>
+						<li>EGL_GL_RENDERBUFFER_KHR</li>
+					</ul>
+				</ul>
+				<p>PVRTrace Recorder</p>
+				<ul>
+					<li>Fixed 2x2 texture override when the application is using texture 3D and 2D array.</li>
+					<li>Fixed force flat colour fragment shader for applications that use GLSL 300 ES shaders.</li>
+					<li>You can now set the default states of the renderstate overrides in the config.</li>
+				</ul>
+			<h3>PVRHub v2.1</h3>
+				<p>Android</p>
+				<ul>
+					<li>Added an option to compress data in trace files.</li>
+					<li>Added an option to enable/disable the gathering of CPU usage data when profiling is enabled.</li>
+					<li>The recording output level is now configurable.</li>
+					<li>You can now set the initial state of the renderstate overrides.</li>
+					<ul>
+						<li>Added option to disable the appending of the PVRTrace version to the GL_RENDERER and EGL_VERSION strings.</li>
+					</ul>
+					<li>Added the option to send markers to PVRTune when profiling.</li>
+					<li>The "Application list" gets cached at PVRHub launch time (there is an option to refresh it) decreasing substantially the load time.</li>
+					<li>User Interface</li>
+					<ul>
+						<li>Added new icons.</li>
+						<li>Other minor UI changes such as simplification.</li>
+						<li>Added option to share trace files. </li>
+						<li>Added a "File Manager" option to help developer manage the recordings captured.</li>
+					</ul>
+				</ul>
+			<h3>Documentation</h3>
+				<ul>
+					<li>New SDK Browser to make easier to find the material contained in the PowerVR SDK with full explanations, hyperlinks and enhanced installation instructions.</li>
+					<li>Major styling improvements brought about to the Shell, Tools, PVRTexLib and PVRScope documentation.</li>
+					<li>Major overhaul of various user manuals in order to better address the needs for the intended audience of developers.</li>
+					<li>PowerVR Supported Extensions documentation:</li>
+					<ul>
+						<li>Added GL_OES_texture_stencil8.</li>
+						<li>Updated extensions listing to match current driver support. </li>
+					</ul>
+				</ul>
+			<h3>Installer</h3>
+				<ul>
+					<li>Added Android OpenGL ES 3.0 SDK.</li>
+					<li>Fixed all Utilities shortcuts on Windows and Linux.</li>
+					<li>Fixed file association on Linux.</li>
+					<li>Added TextureStreaming demo missing from the installer.</li>
+					<li>Added missing OpenGL ES 3 iOS deliverable.</li>
+					<li>Fixed VS2010 redistributable install logic and fixed behaviour when Microsoft installation is cancelled.</li>
+				</ul>
+				<br>
+		</div>
+		
+		<div id="3.3">
+			<h2>PowerVR Tools and SDK v3.3</h2>
+			<h3><strong>PowerVR Tools and SDK v3.3 Release 2</strong></h3>
+			<h3>Overview</h3>
+				<ul>
+					<li>New: OpenGL ES 3.0 SDKs for iOS and Android.</li>
+					<li>New: OpenGL ES 3.1 SDK for Windows and Linux emulation.</li>
+					<li>New: TextureStreaming demo for iOS and Android. Demonstrates how live camera data can be efficiently uploaded to OpenGL ES.</li>
+					<li>New: PVRShaderEditor now supports syntax highlighting for GLSL ES 3.10 shaders.</li>
+				</ul>
+			<h3>Builds</h3>
+				<ul>
+					<li>Added OpenGL ES 3.1 PC Emulation SDK for Windows and Linux.</li>
+					<li>Added OpenGL ES 3.0 SDK for iOS and Android.</li>
+				</ul>
+			<h3>Examples</h3>
+				<ul>
+					<li>IntroducingPOD: Always write an alpha value of 1.0 in the fragment shader to avoid potential OS compositor artefacts.</li>
+					<li>Skybox2: Tweaked the precision modifiers.</li>
+					<li>Android, OGLES2TextureStreaming: Added Android demo which makes use of the Camera Interface.</li>
+					<li>iOS, OGLES2TextureStreaming: Added missing CameraInterface dependencies.</li>
+					<li>iOS, OGLES2TextureStreaming: Changed mapping iOS camera texture to the recommended GL_LUMINANCE and GL_LUMINANCE_ALPHA (which works in OGLES2/3).</li>
+					<li>iOS, OGLES2MultiThreading: Changed main application file from .cpp to .mm to enable correctly including relevant objective-c style header files.</li>
+					<li>iOS, OGLES2Glass: Fixed run time error on iOS when binding the default FBO object.</li>
+				</ul>
+			<h3>PVRShell</h3>
+				<ul>
+					<li>Context creation failures updated to contain requested API version.</li>
+				</ul>
+			<h3>PVRTools</h3>
+				<ul>
+					<li>Added Android Camera Interface.</li>
+				</ul>
+			<h3>PVRShaman v2.2.1</h3>
+				<ul>
+					<li>Added missing types, qualifiers & built-ins for GLSL ES 3.00 syntax highlighting.</li>
+					<li>Added GLSL ES 3.10 syntax highlighting.</li>
+				</ul>
+			<h3>PVRTexTool v4.1.2</h3>
+				<p>PVRTexToolGUI</p>
+				<ul>
+					<li>Fixed crash when trying to compare images of different sizes. Error message is now correctly displayed.</li>
+					<li>Fixed floating point texture loads so that they don't get converted to 8-bit unorm on load.</li>
+				</ul>
+				<p>PVRTexLib</p>
+					<ul>
+						<li>Fixed shared version of the library's compression algorithm to remove artefacts caused by a VS2010 compiler optimisation gone awry.</li>
+						<li>Fixed d3d format to PVR format conversion for D3DFMT_A16B16G16R16F.</li>
+					</ul>
+				<p>PVRTexTool Plugins</p>
+					<ul>
+						<li>Maya: Fixed channel order when loading PVR files in Maya.</li>
+					</ul>
+			<h3>PVRVFrame v9.9</h3>
+				<ul>
+					<li>Fixed a bug where glGet(GL_NUM_EXTENSIONS) would return the wrong value.</li>
+					<li>Fixed a bug in GLSL translation where #define may be stripped incorrectly.</li>
+					<li>No longer erroneously exposes glShaderStorageBlockBinding.</li>
+					<li>Added support for proper creation of ES 3.1 contexts.</li>
+					<li>Fixed memory leaks.</li>
+					<li>Fixed symbols not being exported correctly:</li>
+					<ul>
+						<li>glBindVertexBuffer</li>
+						<li>glVertexAttribBinding</li>
+						<li>glVertexAttribFormat</li>
+						<li>glVertexAttribIFormat</li>
+						<li>glVertexBindingDivisor</li>
+						<li>glCreateShaderProgramv</li>
+						<li>glGetBooleani_v</li>
+						<li>glGetTexLevelParameterfv</li>
+						<li>glGetTexLevelParameteriv</li>
+						<li>glMemoryBarrierByRegion</li>
+					</ul>
+					<li>Fixed glPointSizePointerOES not being exported on Linux.</li>
+				</ul>
+			<h3>PVRTune v14.15.2</h3>
+				<ul>
+					<li>Counter renaming: US, USC and USSE to Shader.</li>
+					<li>Added Rogue counters: Shader load: Compute and Shader ALU efficiency.</li>
+					<li>Restored some missing counters when running with Series6 HW.</li>
+				</ul>
+				<p>PVRTuneGUI</p>
+				<ul>
+					<li>Fixed a crash at start-up when the "hide unnecessary tabs" option is disabled.</li>
+					<li>Counter results in a Search window are now interactive. Hover to highlight; click to select; drag and drop onto graph views, underscore if highlighted elsewhere.</li>
+					<li>Added counters per PID, per GPU core task time counters, alongside existing task load counters. (BRN47467).</li>
+					<li>Search and Monitor no longer consume CPU time when their dock window is not topmost.</li>
+					<li>Counter table: restore old behaviour: Inactive counters now fade before disappearing (if 'hide inactive' is enabled).</li>
+					<li>"Search" widget dropdown box items should be listed chronologically (BRN45741).</li>
+					<li>Counter Table and Search windows no longer force themselves to be top-most at app start-up.</li>
+					<li>Fix for per-core CPU usage on Linux/Android when cores are being enabled/disabled on the fly (BRN47850).</li>
+				</ul>
+				<p>PVRPerfServer</p>
+				<ul>
+					<li>When the '-pid' option is used, now also send the executable name for all PIDs seen using the GPU.</li>
+					<li>Fixed a crash when using the ‘-sendto’ option along with applications that use PVRScope (BRN47848).</li>
+						</ul>
+				<p>PVRScope Library</p>
+				<ul>
+					<li>Fix for per-render counters only (per-frame were ok) that caused the data to be out by a factor of two.</li>
+					<li>Fix a regression in the first SDK 3.3 release that could cause noisy data.</li>
+				</ul>
+			<h3>PVRShaderEditor v2.4</h3>
+				<ul>
+					<li>Added missing types, qualifiers & built-ins for GLSL ES 3.00 syntax highlighting.</li>
+					<li>Shader type is detected by file extension first. If the extension is unknown, fuzzy logic is used to guess the shader type.</li>
+					<li>Added GLSL ES syntax highlighting for the following extensions:</li>
+					<ul>
+						<li>EXT_shader_framebuffer_fetch</li>
+						<li>EXT_shader_pixel_local_storage</li>
+						<li>OES_shader_multisample_interpolation</li> 
+						<li>GL_KHR_blend_equation_advanced</li> 
+						<li>EXT_shader_pixel_local_storage</li> 
+						<li>OES_sample_variables</li> 
+						<li>OES_shader_image_atomic</li> 
+						<li>OES_texture_storage_multisample_2d_array</li>
+					</ul>
+					<li>Added GLSL ES 3.10 syntax highlighting.</li>
+					<li>Updated the New File wizard to support GLSL ES 3.10 vertex, fragment and compute shaders.</li>
+					<li>Added background compilation for GLSL ES 3.10 vertex, fragment and compute shaders when a GLSL ES 3.10 capable compiler is active (a pre-release version of our GLSL ES 3.10 compiler can be downloaded from our support portal: https://pvrsupport.imgtec.com/downloads).</li>
+				</ul>
+			<h3>PVRGeoPOD v2.16.2</h3>
+				<ul>
+					<li>Added support for IGame version 16.5.277.0 and 17.1.149.0.</li>
+					<li>Added support for 3DSMax 2015 (IGame 17.0.630.0) and Maya 2015.</li>
+					<li>The exporter now exports mesh nodes as dummy nodes when the "export geometry" option is unticked. This fixes a crash that can occur if the mesh is the parent of another type of node, e.g., light.</li>
+				</ul>
+			<h3>PVRTrace v3.3.1</h3>
+				<ul>
+					<li>The image analysis image now uses bilinear filtering when scaling the image below 100%.</li>
+					<li>These enums are now represented by strings in the GUI:</li>
+					<ul>
+						<li>EGL_NATIVE_BUFFER_ANDROID</li>
+						<li>GL_CONSTANT_COLOR</li> 
+						<li>GL_ONE_MINUS_CONSTANT_COLOR</li> 
+						<li>GL_ONE_MINUS_CONSTANT_COLOR</li> 
+						<li>GL_ONE_MINUS_CONSTANT_ALPHA</li>
+					</ul>
+					<li>Added missing types, qualifiers & built-ins for GLSL ES 3.00 syntax highlighting.</li>
+					<li>Added GLSL ES 3.10 syntax highlighting.</li>
+				</ul>
+				<p>PVRTrace Recorder</p>
+				<ul>
+					<li>The recording of clientbuffers now supports sampling the data once at time of egl image creation using config value 3.</li>
+				</ul>
+				<p>PVRTracePlayback</p>
+				<ul>
+					<li>Fixed playback of glVertexAttribDivisor.</li>
+					<li>Fixed the playback for some traces which would fail to create a window surface if they weren't the first trace file open.</li>
+				</ul>
+			<h3>PVRHub v2.0</h3>
+				<p>Android</p>
+				<ul>
+					<li>Added a dialog to help the user kill an already running app.</li>
+					<li>Changed the PVRHubDaemon backend implementation.</li>
+					<li>Improved stability and speed.</li>
+					<li>The backups are now made (and restored) every time the Android build ID changes (i.e. system upgrade).</li>
+				</ul>
+				<p>Linux</p>
+				<ul>
+					<li>Scripts now generate a pvrtraceconfig.json file.</li>
+					<li>Added OpenGL ES 3.0 support.</li>
+				</ul>
+			<h3>PVRMonitor v1.01</h3>
+				<ul>
+					<li>Added a new CPU widget that displays multiple cores as vertical bars on the same lines as PVRTune.</li>
+					<li>Now the GPU values can be smoothed over 0.5seconds, similar to the CPU values.</li>
+					<li>Few minor UI tweaks.</li>
+				</ul>
+			<h3>Documentation</h3>
+				<ul>
+					<li>Extensions: Updated GL_OES_EGL_image/GL_OES_EGL_image_external descriptions to match their actual behaviour.</li>
+					<li>PVRTrace user manual: Updated the document with revised manual Android installation instructions (rooted).</li>
+					<li>PVRGeoPOD user manual: Updated compatibility table to show support for new 3dsMax 2014/2015 and Maya 2015 versions.</li>
+				</ul>
+			<h3>Installer</h3>
+				<ul>
+					<li>Updated InstallBuilder to v9 to solve the problem with cached files after an installation failure.</li>
+					<li>Removed MSVC2010 redistributable installer as it was causing SDK installations to fail.</li>
+					<li>Fixed missing PVRTune documentation shortcut.</li>
+				</ul>
+			<hr/>
+			<h3><strong>PowerVR Tools and SDK v3.3 Release 1</strong></h3>
+			<h3>Overview</h3>
+				<ul>
+					<li>The PowerVR Graphics SDK v3.3 includes support for the recently ratified OpenGL ES 3.1 in PVRVFrame, our desktop emulation libraries.</li>
+					<li>PVRTrace now includes full recording capabilities on Android 4.4 (KiKat) and the handling of Android Native Buffers has been improved. Developers also now benefit from enhanced search and remote recording capabilities and complete support for OpenGL ES 3.0 API.</li>
+					<li>PVRTune implements a new ‘monitor’ window which provides a simplified and high-level overview of CPU, memory and graphics loading, allowing developers to quickly isolate application bottlenecks. It also has improved highlight and selection capabilities and implements new per-PID stats.</li>
+					<li>In addition, the SDK’s documentation has been comprehensively reviewed and updated.</li>
+				</ul>
+			<h3>Note</h3>
+			Full support for the recently ratified OpenGL ES 3.1 API has been added to PVRVFrame. Please note that this support is only intended for early development, as an OpenGL ES 3.1 conformance test has not yet been released. To use it, please download the header files from the Khronos website. We will shortly release a full SDK highlighting the most important features of this new API.
+			<h3>Examples</h3>
+				<ul>
+					<li>ToneMapping: Now it uses point sampling for its float texture.</li>
+					<li>OcclusionQueries: Fixed the name of the texture variable in the effect.pfxs.</li>
+					<li>ShadowMapping: Fixed a typo in the OGLES3 effect.pfx file which resulted in the texture coordinates being uninitialised.</li>
+					<li>EdgeDetection: Moved initialisation of timer to InitView so the first value is valid. This fixes the problem using -fft command-line option.</li>
+					<li>MagicLantern: Moved initialisation of timer to InitView so the first value is valid. This fixes the problem using -fft command-line option.</li>
+					<li>Water: Updated with new assets including a new skybox, ship and terrain.</li>
+					<li>Shaders: Improved command-line parsing so it doesn't attempt to match any option that begins with -s or -m.</li>
+					<li>DeferredShading: Stencil buffer was not requested in the EGLConfig for ES3, but was assumed and used. Now updated to always request a stencil buffer.</li>
+					<li>TextureStreaming: New example for Android and iOS.</li>
+					<li>Added OGLES3 iOS project files for all examples capable of running on iOS.</li>
+				</ul>
+			<h3>PVRTools</h3>
+				<ul>
+					<li>PVRTString: Added positional variants of the format commands.</li>
+					<li>PVRTTexture: Added PVRTC sRGB texture support.</li>
+					<li>PVRTPFXParser: Fixed crash while processing texture wrap parameters.</li>
+					<li>PVRTArray: Changed the Sort() method to use merge sort instead of bubble sort.</li>
+					<li>PVRTError: Fixed warning in PVRTError.h as the format parameter to printf was not a string literal.</li>
+					<li>PVRTResourceFile: Added a null pointer check in GetFile.</li>
+					<li>Added a new CameraInterface library for Android and iOS which allows quick initialisation and usage of hardware cameras to stream textures to OpenGLES.</li>
+				</ul>
+			<h3>PVRShell</h3>
+				<ul>
+					<li>Improved the Android OS lifecycle.</li>
+					<li>Modified PVRShellOutputDebug on Windows to dynamically allocate its buffer instead of using a fixed size of 1024</li>
+				</ul>
+			<h3>PVRShaman v2.2.0</h3>
+				<ul>
+					<li>Fixed bug in which the Save POD icon would be greyed out.</li>
+					<li>Added the displaying of POD textures such as bump and specular level to the Material Properties dialog.</li>
+					<li>Fixed bug when using external shader files in a PFX material. The material would fail to pass validation.</li>
+				</ul>
+			<h3>PVRTexTool v4.1.3</h3>
+				<p>PVRTexLib</p>
+				<ul>
+					<li>Fixed issue with BC1 Compression producing holes in fully opaque textures when an entire block was the same colour.</li>
+					<li>Fixed memory leak in ETC2 Codec.</li>
+					<li>Integrated latest version of PVRTC codec, which should produce generally better quality images, and manages threads a bit more smartly.</li>
+					<li>Fixed issue with certain ETC textures not compressing correctly under Windows.</li>
+				</ul>
+				<p>PVRTexToolGUI</p>
+				<ul>
+					<li>Font texture generation now outputs white textures rather than black.</li>
+					<li>Fixed channel swapping so that when multiple file sources are selected, it correctly copies the channels.</li>
+					<li>Fixed memory leak when zooming in/out of Diff window.</li>
+					<li>Added RGBA/RGB distinction for PVRTCv1.</li>
+					<li>Added PVRTC sRGB support.</li>
+					<li>"Single" display mode now zooms to/from the mouse position, rather than the corner of the screen.</li>
+				</ul>
+			<h3>PVRVFrame v9.8</h3>
+				<ul>
+					<li>Added OpenGL ES 3.1 support.</li>
+					<li>Fixed vertex_array_object extension not being emulated on OSX.</li>
+					<li>Fixed GLSL translator where reserved identifiers were erroneously added to the GLSL source.</li>
+					<li>Fixed EGL_SUCCESS not being reported by some EGL functions in cases where it should.</li>
+					<li>EGL_BAD_ALLOC now reported by eglCreateWindowSurface on Windows platforms if the application attempts to re-use an HWND for which the pixel format has already been set.</li>
+					<li>Fixed EGL context ids where it would not always be unique.</li>
+					<li>Fixed GL_LUMINANCE texture data clamping to [0,1].</li>
+					<li>Fixed glBindRenderbuffer where it would not work with names not generated by glGenRenderbuffer.</li>
+					<li>Fixed a crash in glDeleteSamplers.</li>
+				</ul>
+			<h3>PVRTune v14.73</h3>
+				<ul>
+					<li>PVRScope library only: Reduced noise in per-core activity counters.</li>
+					<li>PVRScopeStats.h, PVRScopeReadCountersThenSetGroup(): Updated comment to consider standalone performance-tracking applications such as PVRMonitor or a logging app.</li>
+					<li>PVRPerfServer can now send CPU usage info for 'interesting' PIDs that it sees: apps that connect via PVRScope, PIDs shown in HWPerf timing data, and PIDs specified on the command line. To enable it, specify "-pid" on the command line. To additionally watch specific PIDs, specify "-pid=A,B" etc.</li>
+					<li>Added per-core task time counters.</li>
+					<li>Added per-PID stats: TA Busy %, 3D Busy %, 2D Busy %, Compute Busy %, 3D SPM %.</li>
+					<li>Dynamic counters created per PID or CID now place the PID/CID number first; gives easier sorting.</li>
+					<li>CPU usage can now be sent per core and per PID.</li>
+					<li>Memory usage can now be sent for the system and per PID. Added counters: Memory use, Memory total, Memory load, PID %u: Memory use.</li>
+					<li>Added new docking window: Monitor. This gives a simplified 'at a glance' view of the CPU, memory and graphics loading.</li>
+					<li>Fixed: When connecting, disconnecting and reconnecting, pause was enabled by default.</li>
+					<li>Search window
+					<ul>
+						<li>The "select" tick box has been removed.</li>
+						<li>Mouse-over search results now highlights the relevant time range (if any) in the graph views.</li>
+						<li>Single-click on a result now pans the view, rather than panning + zooming.</li>
+						<li>Double-click on a result now pans and zooms the view.</li>
+						<li>Holding the Ctrl key while doing either of the above also selects the time range. (Similar to how Ctrl+click in a graph view is used to alter the selected time range).</li>
+						<li>Hold Ctrl+Shift to extend the existing selection.</li>
+						<li>Added View\Find - Ctrl+F now works to bring up Search (shows, raises and sets focus to the input box).</li>
+					</ul>
+					</li>
+					<li>Graph Views
+					<ul>
+						<li>Now display the highlighted time range.</li>
+						<li>Ensure selection/highlight range draws are always at least 1 pixel wide.</li>
+						<li>If there is a task under the mouse, highlight the entire time range.</li>
+						<li>Ctrl must be held to modify the selection - don't suddenly allow Shift by itself to extend the selection.</li>
+						<li>Ctrl+clicking on a task now sets the selection to be the entire task time-range - giving 'snap' behaviour. Additionally, hold Shift to instead extend the existing selection.</li>
+					</ul>	
+					</li>
+					<li>Counter Table
+					<ul>
+						<li>Added a new counter table column: Highlight.</li>
+						<li>Counter Table default columns are now: 1s, Selected, View.</li>
+					</ul>
+					</li>
+					<li>Counters
+					<ul>
+						<li>Enable SPM counter in Developer build.</li>
+						<li>Renamed some US counters to USC.</li>
+						<li>Increase the maximum graph y-axis value that may be entered.</li>
+					</ul>
+					</li>
+				</ul>
+			<h3>PVRShaderEditor v2.3</h3>
+				<ul>
+					<li>Performing a search when the ASM Output widget has focus now searches the ASM widget instead of the main editor.</li>
+					<li>Deleting or moving a file which is currently open in PVRShaderEditor will now correctly prompt whether to discard the file or keep the file in the editor.</li>
+					<li>Fixed bug in which re-opening the editor when closed with a blank file and the option 'Save Session' selected would display an IOError.</li>
+					<li>Fixed bug which meant that PFX line cycle counts and errors were only being displayed for the entire GLSL block, rather than per-line, if the GLSL code is embedded.</li>
+				</ul>
+			<h3>PVRGeoPOD v2.16</h3>
+				<ul>
+					<li>Fixed the exporting of .h/.cpp files from Maya and Max.</li>
+				</ul>
+			<h3>PVRTrace v3.3</h3>
+			<p>PVRTraceGUI</p>
+				<ul>
+					<li>Fixed the saving of the wireframe colour to the preferences.</li>
+					<li>The call summary now allows the addition of highlights to the calls in the call viewer, as well as to find all occurrences of that call using the search feature.</li>
+					<li>The call summary now supports multiple selection of calls using Ctrl+left mouse click and Shift+left mouse click.</li>
+					<li>It is now possible to search calls within a specific frame range and by thread.</li>
+					<li>Status bar messages no longer timeout.</li>
+					<li>The minimum number of characters that can now be searched for is 1.</li>
+					<li>Search results can now be selected with Enter when navigating with arrow keys.</li>
+					<li>Tidied up/simplified the Remote Controller interface.</li>
+					<li>The default for the number of search results has been raised from 100 to 500</li>
+					<li>Added the EGL_CONTEXT_PRIORITY enums as recognised values.</li>
+					<li>Tweaked the Find functionality.</li>
+					<li>Render targets are now listed in chronological order.</li>
+					<li>The Android version of the PVRTrace libraries now export a subset of the extensions that the NDK's version of libGLESv1_CM and libGLESv2 export.</li>
+					<li>Added an extra counter to the profiling that shows the total number of API calls in a frame.</li>
+					<li>Modified the call summary export so the rows and columns are switched.</li>
+				</ul>
+			<p>PVRTrace Recorder</p>
+				<ul>
+					<li>Added support for recording on Android 4.4, KitKat.</li>
+					<li>Added support for recording eglImages created from EGL_NATIVE_BUFFER_ANDROID client buffers.</li>
+					<li>Supports JSON-formatted configuration files.</li>
+					<li>It is no longer needed to specify the Android drivers to use when recording in the config file as the recording libraries will locate them as long as they are located in /system/lib/egl or /vendior/lib/egl.</li>
+					<li>Fixed a failure to open the recording file on Android if %pname is used and the process name has slashes in.</li>
+					<li>Renamed some command-line options: --windowsToUse becomes --window, --delayRenderFrame becomes --delay and --iterations becomes --repeat.</li>
+					<li>Fixed multidraw support.</li>
+					<li>Added missing ES3.0 functionality.</li>
+				</ul>
+			<h3>Documentation</h3>
+				<ul>
+					<li>Extensions: Added GL_EXT_shader_framebuffer_fetch and added EXT_separate_shader_objects.</li>
+					<li>Fixed an error in the User Guide where it incorrectly stated the FSAA command for the PVRShell as "-FSAAMode=N" instead of the new "-aasamples=N".</li>
+					<li>Fixed an error in the network recording instructions that specified to use 'Network Panel' to now correctly reference the 'Remote Controller'.</li>
+					<li>Fixed an error in the instructions for Installation on Linux where the Scripts folder was not correctly capitalised.</li>
+					<li>Fixed an error in the instructions for Installation on Linux where a space was missing before a closing square bracket in the .bashrc entry.</li>
+					<li>Updated PVRTexTool User Manual.</li>
+					<li>Enhanced PVRScope User Manual.</li>
+					<li>Enhanced PVRTrace User Manual and Quick Start Guide.</li>
+					<li>Enhanced PVRTune User Manual and Quick Start Guide.</li>
+					<li>Enhanced PVRHub User Manual.</li>
+				</ul>
+		</div>
+    </div>
+	<br>
+    <div id="FooterMainContainer">
+		<div id="FooterContainer">
+			<div class="footerlogo">
+				<a href="http://www.imgtec.com" target="_blank"><img src="./images/img-footer-logo-grey.png" width="100%" height="100%" /></a>
+			</div>
+			<div class="copyright">&copy; Imagination Technologies Limited<br> All rights reserved</div>
+		</div>
+	</div>
+</body>
+
+</html>

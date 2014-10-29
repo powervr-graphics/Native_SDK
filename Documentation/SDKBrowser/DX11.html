@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>The PowerVR SDK Browser</title>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="./images/img-icon.png">
+</head>
+
+<body>
+	<div id="GlobalHeaderContainer">
+		<div id="GlobalHeader">
+			<div class="logo">
+				<a href="http://www.powervrinsider.com" target="_blank"><img src="./images/PVRlogo.png" width="40%" height="40%" /></a>
+            </div>
+			<div class="sitetitle">PowerVR SDK Browser</div>
+		</div>
+	</div>
+	<div id="NavContainer">
+		<nav>
+			<div class="navlink">
+				<a href="Home.html">Home</a>
+			</div>
+			<div class="navlink">
+				<a href="GettingStarted.html">Getting Started</a>
+			</div>
+			<div class="navlink">
+				<a href="Examples.html" class="current">Examples</a>
+			</div>
+			<div class="navlink">
+				<a href="Framework.html">Framework</a>
+			</div>
+			<div class="navlink">
+				<a href="Documentation.html">Documentation</a>
+			</div>
+			<div class="navlink">
+				<a href="PowerVRTools.html">PowerVR Tools</a>
+			</div>
+			<div class="navlink">
+				<a href="ReleaseNotes.html">Release Notes</a>
+			</div>
+			<div class="navlink">
+				<a href="Contact.html">Contact Us</a>
+			</div>
+		</nav>
+	</div>
+
+<!--API_TAB-->
+
+    <div class="content">
+        <div id="Section" class="section">
+<!--API_DESCRIPTION-->
+<h1>DirectX 11 Examples</h1>
+<p>
+DirectX 11 is the latest API for 2D and 3D graphics from Microsoft intended for desktop devices and consoles. 
+</p>
+</DX11>		<p><a href="#Beginner" class="link">Beginner</a>  |  <a href="#Intermediate" class="link">Intermediate</a>  |  <a href="#Advanced" class="link">Advanced</a></p>
+<!--EXAMPLE_TEMPLATE-->
+<div id="Beginner""><h2>Beginner</h2><ul class="accordion">
+				<li id="HelloAPI">
+					<div class="title">
+						<a href="../../Examples/Beginner/01_HelloAPI/HelloAPI.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/01_HelloAPI/HelloAPI.png" alt="HelloAPI" /></a>
+						<input type="checkbox" id="HelloAPIFull2">
+							<label for="HelloAPIFull2" title="Click for more information"><h3>HelloAPI</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>Draw a triangle to the screen using hardware acceleration.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>A basic tutorial that guides the user, step-by-step, through the process of initializing a window using :API:, drawing a triangle in it using hardware acceleration, and then terminating the window.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Beginner/01_HelloAPI/DX11/DX11HelloAPI.cpp" target="_blank">DX11HelloAPI.cpp</a>  |  <a href="../../Examples/Beginner/01_HelloAPI/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="IntroducingPVRShell">
+					<div class="title">
+						<a href="../../Examples/Beginner/02_IntroducingPVRShell/IntroducingPVRShell.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/02_IntroducingPVRShell/IntroducingPVRShell.png" alt="IntroducingPVRShell" /></a>
+						<input type="checkbox" id="IntroducingPVRShellFull2">
+							<label for="IntroducingPVRShellFull2" title="Click for more information"><h3>IntroducingPVRShell</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course introduces the PVRShell library.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This demo deals with the PVRShell library.  The PowerVR shell handles all OS specific initialisation code, and has several built in command line features which allow for the specifying of attributes. The library is constructed around a 'PVRShell' base class, and object of which is constructed and returned from a 'NewDemo' function.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Beginner/02_IntroducingPVRShell/DX11/DX11IntroducingPVRShell.cpp" target="_blank">DX11IntroducingPVRShell.cpp</a>  |  <a href="../../Examples/Beginner/02_IntroducingPVRShell/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="Texturing">
+					<div class="title">
+						<a href="../../Examples/Beginner/03_Texturing/Texturing.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/03_Texturing/Texturing.png" alt="Texturing" /></a>
+						<input type="checkbox" id="TexturingFull2">
+							<label for="TexturingFull2" title="Click for more information"><h3>Texturing</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course demonstrates how to apply a texture to a polygon in :API:.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This training course demonstrates how to apply a texture to a polygon in :API:. The texture is generated procedurally during initialisation and then loaded into :API:. The triangle is then drawn with UV values so that the texture can be applied to it.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Beginner/03_Texturing/DX11/DX11Texturing.cpp" target="_blank">DX11Texturing.cpp</a>  |  <a href="../../Examples/Beginner/03_Texturing/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="BasicTnL">
+					<div class="title">
+						<a href="../../Examples/Beginner/04_BasicTnL/BasicTnL.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/04_BasicTnL/BasicTnL.png" alt="BasicTnL" /></a>
+						<input type="checkbox" id="BasicTnLFull2">
+							<label for="BasicTnLFull2" title="Click for more information"><h3>BasicTnL</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course consists of a demonstration of basic transformation and lighting.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This training course consists of a demonstration of basic transformation and lighting, growing on the basic drawing techniques learnt in HelloTriangle.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Beginner/04_BasicTnL/DX11/DX11BasicTnL.cpp" target="_blank">DX11BasicTnL.cpp</a>  |  <a href="../../Examples/Beginner/04_BasicTnL/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="IntroducingPVRTools">
+					<div class="title">
+						<a href="../../Examples/Beginner/05_IntroducingPVRTools/IntroducingPVRTools.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/05_IntroducingPVRTools/IntroducingPVRTools.png" alt="IntroducingPVRTools" /></a>
+						<input type="checkbox" id="IntroducingPVRToolsFull2">
+							<label for="IntroducingPVRToolsFull2" title="Click for more information"><h3>IntroducingPVRTools</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course introduces the PVRTools libraries.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This training course introduces the PVRTools libraries.  These libraries provide various modules to help developers perform many of the common tasks associated with hardware accelerated graphics rendering.  
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Beginner/05_IntroducingPVRTools/DX11/DX11IntroducingPVRTools.cpp" target="_blank">DX11IntroducingPVRTools.cpp</a>  |  <a href="../../Examples/Beginner/05_IntroducingPVRTools/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="IntroducingPrint3D">
+					<div class="title">
+						<a href="../../Examples/Beginner/06_IntroducingPrint3D/IntroducingPrint3D.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/06_IntroducingPrint3D/IntroducingPrint3D.png" alt="IntroducingPrint3D" /></a>
+						<input type="checkbox" id="IntroducingPrint3DFull2">
+							<label for="IntroducingPrint3DFull2" title="Click for more information"><h3>IntroducingPrint3D</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course introduces the Print3D class featured within the PVRTools library.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This training course introduces the Print3D class from the PVRTools library. Print3D can be used to display text in both 2D and 3D modes. The default projection mode is 2D but supplying a modelview and projection matrices allow the user to render the text in 3D. Text in different colours is also possible.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Beginner/06_IntroducingPrint3D/DX11/DX11IntroducingPrint3D.cpp" target="_blank">DX11IntroducingPrint3D.cpp</a>  |  <a href="../../Examples/Beginner/06_IntroducingPrint3D/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="IntroducingPOD">
+					<div class="title">
+						<a href="../../Examples/Beginner/07_IntroducingPOD/IntroducingPOD.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/07_IntroducingPOD/IntroducingPOD.png" alt="IntroducingPOD" /></a>
+						<input type="checkbox" id="IntroducingPODFull2">
+							<label for="IntroducingPODFull2" title="Click for more information"><h3>IntroducingPOD</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course introduces the PowerVR Object Data (.pod) format.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This training course introduces the PowerVR Object Data (.pod) format.  It goes into detail on how to open .pod files, load any .pfx and .pvr files that have been referenced, and set up the cameras and lights from the .pod file.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Beginner/07_IntroducingPOD/DX11/DX11IntroducingPOD.cpp" target="_blank">DX11IntroducingPOD.cpp</a>  |  <a href="../../Examples/Beginner/07_IntroducingPOD/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li></div></ul><div id="Intermediate""><h2>Intermediate</h2><ul class="accordion">
+				<li id="AlphaBlend">
+					<div class="title">
+						<a href="../../Examples/Intermediate/AlphaBlend/AlphaBlend.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/AlphaBlend/AlphaBlend.png" alt="AlphaBlend" /></a>
+						<input type="checkbox" id="AlphaBlendFull2">
+							<label for="AlphaBlendFull2" title="Click for more information"><h3>AlphaBlend</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course illustrates how transparency effects can be achieved with blending and the use of some common blending modes.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>Blending is a fragment operation that combines the colour value of fragments as they are drawn with values that are already present in the colour buffer. This allows transparent objects to be simulated. This training course shows how to draw blended geometry using four different types of blending modes set with glBlendFunc().  
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/AlphaBlend/DX11/DX11AlphaBlend.cpp" target="_blank">DX11AlphaBlend.cpp</a>  |  <a href="../../Examples/Intermediate/AlphaBlend/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="DisplacementMap">
+					<div class="title">
+						<a href="../../Examples/Intermediate/DisplacementMap/DisplacementMap.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/DisplacementMap/DisplacementMap.png" alt="DisplacementMap" /></a>
+						<input type="checkbox" id="DisplacementMapFull2">
+							<label for="DisplacementMapFull2" title="Click for more information"><h3>DisplacementMap</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course demonstrates displacement mapping using a texture read from the vertex shader.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>Displacement mapping is an alternative to bump mapping, normal mapping, and parallax mapping, that causes the actual geometric position of points over a textured surface to be displaced, often along the local surface normal, according to the value the texture function evaluates to at each point on the surface. 
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/DisplacementMap/DX11/DX11DisplacementMap.cpp" target="_blank">DX11DisplacementMap.cpp</a>  |  <a href="../../Examples/Intermediate/DisplacementMap/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="Reflections">
+					<div class="title">
+						<a href="../../Examples/Intermediate/Reflections/Reflections.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/Reflections/Reflections.png" alt="Reflections" /></a>
+						<input type="checkbox" id="ReflectionsFull2">
+							<label for="ReflectionsFull2" title="Click for more information"><h3>Reflections</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course demonstrates the creation of a reflection effect from a 2D map and a cube map.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This training course demonstrates the creation of a reflection effect from a 2D map and a cube map. This technique is also known as environment mapping in that the environment around an object is rendered into a texture (in this case as a pre-baked step) and then this environment is sampled per fragment in order to simulate the effect of light from the environment being reflected from the object. Two variations on the technique are shown using either a 2D map or a cube map.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Left/Right	:	Swap mapping type</p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/Reflections/DX11/DX11Reflections.cpp" target="_blank">DX11Reflections.cpp</a>  |  <a href="../../Examples/Intermediate/Reflections/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="Refraction">
+					<div class="title">
+						<a href="../../Examples/Intermediate/Refraction/Refraction.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/Refraction/Refraction.png" alt="Refraction" /></a>
+						<input type="checkbox" id="RefractionFull2">
+							<label for="RefractionFull2" title="Click for more information"><h3>Refraction</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course demonstrates a simulation of glass-like materials.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This training course combines an object with a background in order to achieve a refraction effect. The background texture is applied to the model but the sample coordinates are affected by the normals of the geometry in order to simulate how light would be bent through a material with differing refractive index to the air around it.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Left/Right	:	Cycle Specular reflection on or off</p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/Refraction/DX11/DX11Refraction.cpp" target="_blank">DX11Refraction.cpp</a>  |  <a href="../../Examples/Intermediate/Refraction/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="RenderToTexture">
+					<div class="title">
+						<a href="../../Examples/Intermediate/RenderToTexture/RenderToTexture.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/RenderToTexture/RenderToTexture.png" alt="RenderToTexture" /></a>
+						<input type="checkbox" id="RenderToTextureFull2">
+							<label for="RenderToTextureFull2" title="Click for more information"><h3>RenderToTexture</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course demonstrates the use of rendering to a texture.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This training course demonstrates rendering a scene to a pBuffer surface or FBO, then binding and applying that render to an object in an additional render pass.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Left	:	Toggles multisampling of the FBOs</p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/RenderToTexture/DX11/DX11RenderToTexture.cpp" target="_blank">DX11RenderToTexture.cpp</a>  |  <a href="../../Examples/Intermediate/RenderToTexture/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="Skinning">
+					<div class="title">
+						<a href="../../Examples/Intermediate/Skinning/Skinning.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/Skinning/Skinning.png" alt="Skinning" /></a>
+						<input type="checkbox" id="SkinningFull2">
+							<label for="SkinningFull2" title="Click for more information"><h3>Skinning</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This training course demonstrates how to implement hardware accelerated skinning using .pod files.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This training course demonstrates how to implement hardware accelerated skinning using the .pod file loading tools found in the PVRTools library.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Left/Right	:	Rotate model clockwise/anti-clockwise</p><p>	Up/Down	:	Zoom out/in</p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/Skinning/DX11/DX11Skinning.cpp" target="_blank">DX11Skinning.cpp</a>  |  <a href="../../Examples/Intermediate/Skinning/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li></div></ul><div id="Advanced""><h2>Advanced</h2><ul class="accordion">
+				<li id="Coverflow">
+					<div class="title">
+						<a href="../../Examples/Advanced/Coverflow/Coverflow.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/Coverflow/Coverflow.png" alt="Coverflow" /></a>
+						<input type="checkbox" id="CoverflowFull2">
+							<label for="CoverflowFull2" title="Click for more information"><h3>Coverflow</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>A demonstration of a coverflow style effect.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This demo serves as an example of a coverflow style effect, which is a three dimensional GUI used to display information as a stack of snapshots.  
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Left/Right	:	Flow covers left/right</p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/Coverflow/DX11/DX11Coverflow.cpp" target="_blank">DX11Coverflow.cpp</a>  |  <a href="../../Examples/Advanced/Coverflow/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="Fractal">
+					<div class="title">
+						<a href="../../Examples/Advanced/Fractal/Fractal.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/Fractal/Fractal.png" alt="Fractal" /></a>
+						<input type="checkbox" id="FractalFull2">
+							<label for="FractalFull2" title="Click for more information"><h3>Fractal</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>A demonstration of drawing a fractal using render to texture.
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>A recursive fractal effect is demonstrated here using the render to texture technique. This technique is a useful method to create a variety of effects. Basically, a scene is rendered as usual, but in a texture for future reuse. 
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Esc	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/Fractal/DX11/DX11Fractal.cpp" target="_blank">DX11Fractal.cpp</a>  |  <a href="../../Examples/Advanced/Fractal/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="Water">
+					<div class="title">
+						<a href="../../Examples/Advanced/Water/Water.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/Water/Water.png" alt="Water" /></a>
+						<input type="checkbox" id="WaterFull2">
+							<label for="WaterFull2" title="Click for more information"><h3>Water</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p><p>This demo shows how to render a water effect on a given plane
+</p></p></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p><p>This demo utilises a combination of different techniques to produce a water effect. User input controls the elements that are implemented in the effect so that users can determine the effect that would best suit their needs. When reflection, refraction and depth effects are off, the water colours alpha value is used to blend the plane in with the rest of the rendered world. This adds to the quality of the basic effect for very little cost.
+</p></p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Left/Right : Cycle backwards/forwards through available options</p><p>	Up/Down : Change (Toggle or Increase/Decrease) the currently selected option</p><p>	1/Space	:	Toggle Pause/Unpause</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/Water/DX11/DX11Water.cpp" target="_blank">DX11Water.cpp</a>  |  <a href="../../Examples/Advanced/Water/DX11/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li></div></ul>		</div>
+	</div>
+	
+	<div id="FooterMainContainer">
+		<div id="FooterContainer">
+			<div class="footerlogo">
+				<a href="http://www.imgtec.com" target="_blank"><img src="./images/img-footer-logo-grey.png" width="100%" height="100%" /></a>
+			</div>
+			<div class="copyright">&copy; Imagination Technologies Limited<br> All rights reserved</div>
+		</div>
+	</div>
+	
+</body>
+
+</html>
