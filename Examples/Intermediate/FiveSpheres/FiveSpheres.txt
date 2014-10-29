@@ -1,0 +1,12 @@
+:Title:
+FiveShpheres
+
+:ShortDescription:
+A demonstration of different primitive types.
+
+:FullDescription:	
+This demo displays five spheres, each one displaying a different primitive type. These types are GL_POINTS, GL_TRIANGLES, GL_LINE_STRIP, GL_TRIANGLE_FAN, and GL_TRIANGLE_STRIP.
+
+Controls:
+	-	Esc	-	Close the application
+	

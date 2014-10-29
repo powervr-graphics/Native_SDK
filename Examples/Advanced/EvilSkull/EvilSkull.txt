@@ -1,0 +1,11 @@
+:Title:
+EvilSkull
+
+:ShortDescription:
+A demonstration of morphing in combination with multi-texturing. 
+
+:FullDescription:	
+Morphing creates the final object using weighted blending between a number of different configurations of the same object. Each configuration controls a certain aspect of the object. In the case of EvilSkull the different configurations represent the position of the eyebrows and cheekbones. By setting different weights it is possible to generate a huge variety of facial expressions. Meanwhile the background shows multi-texturing with two independently animated layers.  
+
+Controls:
+	-	Esc	-	Close the application

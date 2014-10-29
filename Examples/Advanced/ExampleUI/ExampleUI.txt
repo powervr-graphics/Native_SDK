@@ -1,0 +1,11 @@
+:Title:
+ExampleUI
+
+:ShortDescription:
+Shows how to efficiently render sprites and interface elements.
+
+:FullDescription:
+Rendering graphical user interfaces may seem like a trivial exercise, however without careful consideration a simple interface may be unresponsive and sluggish due to poor graphics performance. The purpose of this demo is to highlight and demonstrate techniques that can be used to improve user interface performance for software running on PowerVR platforms. Indeed, any generic 2D sprite-based applications can benefit from the recommendations given in this demo including games, applications and interfaces.
+
+Controls:
+	-	Esc	-	Close the application

@@ -1,0 +1,7 @@
+:Title:
+DeferredShading
+:ShortDescription:
+Demonstrates deferred shading using multiple render targets.
+
+:FullDescription:	
+Traditional rendering algorithms submit geometry and immediately apply shading effects to the rasterized primitives. Complex shading effects may require multiple render passes to produce the final pixel colour, with the geometry submitted every pass. Deferred shading (a.k.a. Quad Shading) is an alternative rendering technique that submits the scene geometry only once, storing per-pixel attributes into local video memory to be used in the subsequent rendering passes. In these later passes, light volume primitives are rendered, and the per-pixel attributes contained in the buffer are retrieved at a 1:1 mapping ratio so that each pixel is shaded individually.

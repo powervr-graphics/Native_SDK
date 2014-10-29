@@ -1,0 +1,18 @@
+:Title:
+ComplexLighting
+
+:ShortDescription:
+This training course demonstrates how to implement complex lighting techniques.
+
+:FullDescription:
+This training course demonstrates how to implement various forms of more complex lighting techniques than the basic lighting training courses. Specifically, it shows how to implement directional, point and spot lighting with a diffuse and a specular component using branching in the vertex shader.  
+
+Controls:
+	-	Left/Right	-	Cycle through the available modes
+	-	Esc	-	Close the application
+
+:PolyCount:
+4480
+
+:VertexCount:
+2238

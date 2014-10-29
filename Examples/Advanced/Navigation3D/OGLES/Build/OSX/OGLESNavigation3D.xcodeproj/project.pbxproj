@@ -1,0 +1,1117 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		49068F5D13DDA30C00C8DC21 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49068F5C13DDA30C00C8DC21 /* Cocoa.framework */; };
+		49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */; };
+		DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
+		DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
+		DB3A55CC15C937F1004CE8F1 /* libGLESv1_CM.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv1_CM.dylib */; };
+		DB3A55CD15C9380E004CE8F1 /* libGLESv1_CM.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv1_CM.dylib */; };
+		DB5C32B615C7F65000B1A208 /* libOGLESTools.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB5C32AC15C7F32B00B1A208 /* libOGLESTools.a */; };
+		495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0013E2EE09000FD6B4 /* MainMenu.xib */; };
+		495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */; };
+		DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */ = {isa = PBXBuildFile; fileRef = DB3A55D015C938EC004CE8F1 /* IMG.icns */; };
+		F8A78F38B2A786C6DC0F62A0 /* OGLESNavigation3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F81386C8394A4B712CEBA406 /* OGLESNavigation3D.cpp */; };
+		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
+		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */; };
+		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */; };
+		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F891AC7DBA4A33CDD5897EA8 /* main.m */; };
+		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F83056A1463D3149D54E9E82 /* AppController.mm */; };
+		F8421BE65AE2BB8BDA76431B /* modelindex.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8369D1389B20FDD3A8DAAEE /* modelindex.nav */; };
+		F857FC0BF21BCF9EC2A60899 /* occlusiondata.nav in Resources */ = {isa = PBXBuildFile; fileRef = F804D70432DFBF831F15A09F /* occlusiondata.nav */; };
+		F86C60508704F3D1C5C0A4DA /* cameratrack.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8DEE3668124FCB791B91358 /* cameratrack.pod */; };
+		F8449B2B62A697A02DFE249F /* CM_US_IL_CHICAGO_008_015_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F81BABDBBDFC9691D17B8492 /* CM_US_IL_CHICAGO_008_015_L.DAE.pod */; };
+		F8E0B8A86B7A8C260AD9BD87 /* CM_US_IL_CHICAGO_008_016_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F83428E43FB6E5CCF288B1E4 /* CM_US_IL_CHICAGO_008_016_L.DAE.pod */; };
+		F8935CA2323F3B511A7F481D /* CM_US_IL_CHICAGO_009_014_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F85DF1ED988E729C3DD5BA79 /* CM_US_IL_CHICAGO_009_014_L.DAE.pod */; };
+		F81A2D83FCEE183761183B34 /* CM_US_IL_CHICAGO_009_015_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8A88A1FC78FAC885630F091 /* CM_US_IL_CHICAGO_009_015_L.DAE.pod */; };
+		F859D887E1BDB8259EE111B8 /* CM_US_IL_CHICAGO_009_016_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F861F12D80D1FF36CE815426 /* CM_US_IL_CHICAGO_009_016_L.DAE.pod */; };
+		F84E57AEEF17E513CFC24A95 /* CM_US_IL_CHICAGO_009_017_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8895095640B3E60DE70909B /* CM_US_IL_CHICAGO_009_017_L.DAE.pod */; };
+		F83700F13BCA3F0EE2B75766 /* CM_US_IL_CHICAGO_009_018_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8DA4EEC1F978FDDA1736AB3 /* CM_US_IL_CHICAGO_009_018_L.DAE.pod */; };
+		F82FB57BEDEB1579B974EFD8 /* CM_US_IL_CHICAGO_010_014_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8AE1038612917D10FEBE640 /* CM_US_IL_CHICAGO_010_014_L.DAE.pod */; };
+		F8D82B5568FE592A6B318492 /* CM_US_IL_CHICAGO_010_015_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F83005E5C4A7639E79157419 /* CM_US_IL_CHICAGO_010_015_L.DAE.pod */; };
+		F8EC826CB91EBB022A6249AC /* CM_US_IL_CHICAGO_010_015_H.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F89E7CC73AE7463FF862FD20 /* CM_US_IL_CHICAGO_010_015_H.DAE.pod */; };
+		F80E25DAFB8A9ACA146EF699 /* CM_US_IL_CHICAGO_010_016_H.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8B48265B4CDFFEE3FE66A16 /* CM_US_IL_CHICAGO_010_016_H.DAE.pod */; };
+		F8FA164CE348DC480E695306 /* CM_US_IL_CHICAGO_010_016_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F80E98C9A373DBD43A7F0C30 /* CM_US_IL_CHICAGO_010_016_L.DAE.pod */; };
+		F8488A229EB0AEAA3FEABE76 /* CM_US_IL_CHICAGO_010_017_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8E4EF5399D7399C3365B222 /* CM_US_IL_CHICAGO_010_017_L.DAE.pod */; };
+		F827BE22A82B77CA7779D078 /* CM_US_IL_CHICAGO_010_017_H.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8518668A6769BDE870ECC45 /* CM_US_IL_CHICAGO_010_017_H.DAE.pod */; };
+		F85B8810D94B473060251E93 /* CM_US_IL_CHICAGO_010_018_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8D6904AD1983CFE180882AC /* CM_US_IL_CHICAGO_010_018_L.DAE.pod */; };
+		F8AFA5839BAD3A5F398296F5 /* CM_US_IL_CHICAGO_011_013_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F819EAE3F223FD4082D8F596 /* CM_US_IL_CHICAGO_011_013_L.DAE.pod */; };
+		F81D1ACE075BE37872B37519 /* CM_US_IL_CHICAGO_011_014_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8A9C7B4BC150D141876708D /* CM_US_IL_CHICAGO_011_014_L.DAE.pod */; };
+		F8E2EAE181250AAC836D6E9F /* CM_US_IL_CHICAGO_011_015_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8E40C90C34817B385D35698 /* CM_US_IL_CHICAGO_011_015_L.DAE.pod */; };
+		F81104D1EB77CE219FF5B3E4 /* CM_US_IL_CHICAGO_011_015_H.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F83A53CF4682849807AD62B7 /* CM_US_IL_CHICAGO_011_015_H.DAE.pod */; };
+		F801648E91BFB5D61B9F9E00 /* CM_US_IL_CHICAGO_011_016_H.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F80D486B088931A3CC36F26A /* CM_US_IL_CHICAGO_011_016_H.DAE.pod */; };
+		F839E4DE34330696BB43A9F9 /* CM_US_IL_CHICAGO_011_016_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F87517913DCFD572C3480619 /* CM_US_IL_CHICAGO_011_016_L.DAE.pod */; };
+		F858617EBF01BF5C1B2B868E /* CM_US_IL_CHICAGO_011_017_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F89B437914DD2D285448C48C /* CM_US_IL_CHICAGO_011_017_L.DAE.pod */; };
+		F8574450F0E66F3D3564E76C /* CM_US_IL_CHICAGO_011_017_H.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F87217DA86FF29A789E50B3E /* CM_US_IL_CHICAGO_011_017_H.DAE.pod */; };
+		F8FB2220603CF99F350AEEF8 /* CM_US_IL_CHICAGO_011_018_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8DE9A7BC226261CB5A9050D /* CM_US_IL_CHICAGO_011_018_L.DAE.pod */; };
+		F8FF0967827FDF0DC5DBB301 /* CM_US_IL_CHICAGO_012_014_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8960999434C2078FAF745B2 /* CM_US_IL_CHICAGO_012_014_L.DAE.pod */; };
+		F8863DC2E6FC70614ABA6BA7 /* CM_US_IL_CHICAGO_012_015_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F886495B0C6B36BEF83E7883 /* CM_US_IL_CHICAGO_012_015_L.DAE.pod */; };
+		F8150852DBF9ECCD76BF3D67 /* CM_US_IL_CHICAGO_012_016_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F84E1B41B3C95F4D2D02F079 /* CM_US_IL_CHICAGO_012_016_L.DAE.pod */; };
+		F8448370747648651F4FADD3 /* CM_US_IL_CHICAGO_012_017_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F85DDC57F8DC21B7F7A1B49D /* CM_US_IL_CHICAGO_012_017_L.DAE.pod */; };
+		F8042BA66282A3C1CFBE9DEC /* CM_US_IL_CHICAGO_013_015_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F812EA161594AD3FA00F70CF /* CM_US_IL_CHICAGO_013_015_L.DAE.pod */; };
+		F8012BF148F55ABADB3176DD /* CM_US_IL_CHICAGO_013_016_L.DAE.pod in Resources */ = {isa = PBXBuildFile; fileRef = F846322CAECA795435625218 /* CM_US_IL_CHICAGO_013_016_L.DAE.pod */; };
+		F8D89310F46162BF08200C53 /* skybox1.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F89C8601B7F0E5B21274653D /* skybox1.pvr */; };
+		F808203BEC69F39F1E52B716 /* skybox2.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86F2DF9EF3278FCE8EE59E3 /* skybox2.pvr */; };
+		F81FC32C5DA35B9DFB59F099 /* skybox3.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8191204E3228A42DAFCDC67 /* skybox3.pvr */; };
+		F898120B045BF40A1C806D6A /* skybox4.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BAF3A6CE56825159392674 /* skybox4.pvr */; };
+		F8A62C71A1063D171874247E /* skybox5.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C58331B4EDDAD84123D2AE /* skybox5.pvr */; };
+		F81ECB0A0EBA83EC39135017 /* skybox6.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D6D12D9E029E181E600148 /* skybox6.pvr */; };
+		F8739B5094DFAAB1C4325929 /* UIElements.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F898454EC7DA066131013FEA /* UIElements.pvr */; };
+		F8E6D019DD3C9C6FADF44E89 /* 006_RUS.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83E30CE1E3FB8AC6DEB142C /* 006_RUS.PNG.pvr */; };
+		F83F8B522EE7679442184165 /* 007_RUG.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F870CACF311F13F92259F18F /* 007_RUG.PNG.pvr */; };
+		F82B7E4395A54B0FDDF57F3D /* 008_RUG.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8FEC118C2A2F702D14C6497 /* 008_RUG.PNG.pvr */; };
+		F83187779520A05C8215F8C1 /* 009_RUG.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8610185F4BCDDC1988B88DC /* 009_RUG.PNG.pvr */; };
+		F87207F4831F4538C4770C93 /* 011_GIE.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B21C35C322D0206B0AC90D /* 011_GIE.PNG.pvr */; };
+		F87D1C7B3F380F1348DE8DB1 /* 012_RSR.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87D5577DBE24D11CC8663FD /* 012_RSR.PNG.pvr */; };
+		F8816F737F1FFE3817CD2BAF /* 016_FOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8934FCA04BE709329B92C69 /* 016_FOC.PNG.pvr */; };
+		F825AE09CAF58F3961FBD755 /* 016_RTR.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F89FCA22C22CF5703DA20813 /* 016_RTR.PNG.pvr */; };
+		F8016506BF6C43B1FA6F8C04 /* 017_FOD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F820C93BF03DAE8ED2F32BD3 /* 017_FOD.PNG.pvr */; };
+		F86AF5F8E94080B9F659FF5E /* 018_FOD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84FDDAA2BFBB0058E7E6A14 /* 018_FOD.PNG.pvr */; };
+		F89045DD73EE03E3527F855E /* 019_FOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80ADEF5F87AB8E70FAA4395 /* 019_FOC.PNG.pvr */; };
+		F8A80D005DC91A370024AE4F /* 019_GOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F88E770D555009953C01824E /* 019_GOC.PNG.pvr */; };
+		F881FEFE6E63FABE81677F6C /* 019_RZG.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E8F6095423FD9F45D26968 /* 019_RZG.PNG.pvr */; };
+		F85AF068FF4F387E202AA27D /* 020_FOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BCB6BEC2EA635B57B2E408 /* 020_FOC.PNG.pvr */; };
+		F86D5C319B690148EAAD00DE /* 021_FOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F85BF82FDBA4F7E33993A8B1 /* 021_FOC.PNG.pvr */; };
+		F8EE54652AD35A395E84B098 /* 022_FOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82CFD9698C619D0A21390F7 /* 022_FOC.PNG.pvr */; };
+		F8F48C64820A32A0EFA3467C /* 022_RUG.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8870D848752A5FD913A2022 /* 022_RUG.PNG.pvr */; };
+		F8938230FD3B3F9BA4251CB3 /* 023_FOB.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F860BD5E2B677F8086D9A359 /* 023_FOB.PNG.pvr */; };
+		F80F399AC451CBD0E7BA693D /* 023_RUG.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F831BD880054D9BF830B4172 /* 023_RUG.PNG.pvr */; };
+		F872A975A97D5E5A83E56633 /* 024_FOB.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87C70F0BF94578A218F9CC9 /* 024_FOB.PNG.pvr */; };
+		F80986110F49A3BE0893BCF1 /* 025_FOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F843BAFEA9982ED26F454025 /* 025_FOC.PNG.pvr */; };
+		F85C222C189B051DCA553320 /* 025_RUW.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B5FDA24868C96F1D88C4D2 /* 025_RUW.PNG.pvr */; };
+		F8F1EDEB69168D5B5FDFD9B1 /* 026_FOD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A1893924EFBC7A9053BF55 /* 026_FOD.PNG.pvr */; };
+		F8A062DD282E35BDB9100004 /* 026_RUW.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F2F343997CF226CF8ED3B1 /* 026_RUW.PNG.pvr */; };
+		F81019EB448A68E149C13ED5 /* 027_FOD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F857388241833CB3CB2C74CB /* 027_FOD.PNG.pvr */; };
+		F83961D2D4A4245F7B904FFA /* 027_RUW.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F897978A3B240CDE5603C3ED /* 027_RUW.PNG.pvr */; };
+		F83DA56BEF3D63EC2AF0BCC1 /* 028_GOF.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F89902A9293198B7D32887F3 /* 028_GOF.PNG.pvr */; };
+		F8A5CACA036E53E507108173 /* 029_GCC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F850C7159AF6A4E546D29DF0 /* 029_GCC.PNG.pvr */; };
+		F83F2609631D72F80A8AEE7D /* 030_GOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F88EE91102C14DB255E8FC03 /* 030_GOC.PNG.pvr */; };
+		F84EE74F3F81756F39DBACD3 /* 031_GOD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F847236E03DCDC8088CD612D /* 031_GOD.PNG.pvr */; };
+		F85D8DCB2B7421E8859AE6A8 /* 032_FOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EBEB571A83540E20E2877A /* 032_FOC.PNG.pvr */; };
+		F80A08BD2A56DD5D20A2F655 /* 032_GOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80A761E8F76FDA69A32DCD0 /* 032_GOC.PNG.pvr */; };
+		F8CCE9AD71208C37BE91241A /* 033_FOA.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80ECB46F44727E654AAF288 /* 033_FOA.PNG.pvr */; };
+		F817AF1BED4CE30B9D16020E /* 033_GOA.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8ACD8787F6DBD0846E0C301 /* 033_GOA.PNG.pvr */; };
+		F81A6F8E2AB12FC26229AF99 /* 034_FOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8725342965C295AB0AA34A6 /* 034_FOC.PNG.pvr */; };
+		F856CE54554C18C00BC6A517 /* 034_GOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86D3A36B62CCA030882B167 /* 034_GOC.PNG.pvr */; };
+		F8372CE79348D8EEDBAEEE68 /* 035_FOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F821EA8040DAF2F10D326057 /* 035_FOC.PNG.pvr */; };
+		F8231276A735ED358EB8D6C9 /* 035_GOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84BB5152CA088736462F92E /* 035_GOC.PNG.pvr */; };
+		F80BBA9E64AB4B6EFF0DA47E /* 036_FOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82DC22929430387C66F87D6 /* 036_FOC.PNG.pvr */; };
+		F84F439D433AD55A8DCC29AF /* 036_GOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F88F4FB17C1E82692FC509D2 /* 036_GOC.PNG.pvr */; };
+		F8DBEF4E569D2898F2796B50 /* 037_FOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C36BC8D8F75AD0958C9EF8 /* 037_FOC.PNG.pvr */; };
+		F8086ADB6B03EFA8288E62AD /* 037_GOC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80AB971B33A670163F03587 /* 037_GOC.PNG.pvr */; };
+		F8CFDBA70D0C6CF2BF26B584 /* 041_FRB.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F819B064437620A81EE9C502 /* 041_FRB.PNG.pvr */; };
+		F82662DBF9F32A4C40BF61C5 /* 041_GRB.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C2C06F6F48386A9663C8C0 /* 041_GRB.PNG.pvr */; };
+		F877B064CC8BD8E8A7C0FD62 /* 044_GRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87605C668C9C196AD7BA2E9 /* 044_GRC.PNG.pvr */; };
+		F8CA3E94AA275C048BBA1ACF /* 046_GRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E47F06E5FE3931C8589C3E /* 046_GRC.PNG.pvr */; };
+		F896A8F6D16489798397BEB9 /* 054_GRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82EA4C2F2622A6CDC4DB618 /* 054_GRC.PNG.pvr */; };
+		F8C61A11194D01F17B9E39B4 /* 055_GRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D45527DD7955ED304F4F16 /* 055_GRC.PNG.pvr */; };
+		F85C9B0F8D17AD04B18500F4 /* 056_GRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86834E86885194626166373 /* 056_GRC.PNG.pvr */; };
+		F8BCB610A2D45067EE388260 /* 059_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F88249ED22C8C3FFE1343D8C /* 059_FRC.PNG.pvr */; };
+		F8CB99FE81E1C63687B24E64 /* 060_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F810D33526BB4FEED67B1F27 /* 060_FRC.PNG.pvr */; };
+		F8A41E70CB7EECBFDA3A2E1F /* 061_FRD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80FEFEB21A411E3EC79507F /* 061_FRD.PNG.pvr */; };
+		F8B31E7F35871F0276ADFF71 /* 063_GRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A8BEA950FA4FD3406C5788 /* 063_GRC.PNG.pvr */; };
+		F8CF9BF95FD0A9917258F3B7 /* 064_GRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A098F93799DAF782C2A447 /* 064_GRC.PNG.pvr */; };
+		F8E44EF6E3367A39EAB531C0 /* 066_FCB.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F824B5DC3B0D005990A75EAF /* 066_FCB.PNG.pvr */; };
+		F8D96BA3989D916BFDFE0AF0 /* 066_GCB.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81C58FFE2051F08A50DA224 /* 066_GCB.PNG.pvr */; };
+		F833DF0A6DB97D0055EB68C2 /* 067_FCC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86DBD2F985543BE2DD59B98 /* 067_FCC.PNG.pvr */; };
+		F8BEE5BFAED1D035BCEF369E /* 067_GCC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BC1B6B31AEEDF6238C2453 /* 067_GCC.PNG.pvr */; };
+		F81AA9A727F820B7778A2AEC /* 068_GCD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F85ECE7F9D6EF30F648562C0 /* 068_GCD.PNG.pvr */; };
+		F8C06103EDD6A36138D69957 /* 069_FCA.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A5787A0B50B667827A6CA7 /* 069_FCA.PNG.pvr */; };
+		F81A3B442C8D9A4067B4BB70 /* 069_GCA.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86313F60991EFE5155B9B81 /* 069_GCA.PNG.pvr */; };
+		F8FCA1457C45A5E1B4C5F599 /* 070_GOD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86E18F53882615F0AB65F2A /* 070_GOD.PNG.pvr */; };
+		F8E45454EAAB2EDD66D79ADB /* 071_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F805766D037F7D2997160D5E /* 071_FRC.PNG.pvr */; };
+		F88BFBDB4F2A4EA214265F24 /* 072_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BD8EF61D3197A3221EF492 /* 072_FRC.PNG.pvr */; };
+		F84F382BFC55A9ED92A0DBE0 /* 073_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F89FD622F53B62C8FFFA6A58 /* 073_FRC.PNG.pvr */; };
+		F85A531D1A4F394D84AFEAEC /* 074_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80070183AEB59826B1F4DE2 /* 074_FRC.PNG.pvr */; };
+		F8BDB5AD46119803B64CD293 /* 075_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B4F6157AD4E06C06DCBBCF /* 075_FRC.PNG.pvr */; };
+		F804CD931E0A2A06F1BE7336 /* 076_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84EA821673C0334C67E4A63 /* 076_FRC.PNG.pvr */; };
+		F8B778FA72FE6F321A8C9592 /* 077_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B403F857571303F6A03BEB /* 077_FRC.PNG.pvr */; };
+		F8B991BAB64890B164D70DF2 /* 080_GCB.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EFC6CEFF573BE8F2E31296 /* 080_GCB.PNG.pvr */; };
+		F83A2675207F91F35CBAA4EA /* 082_FCD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82D2440A91CCA0DB0FD604F /* 082_FCD.PNG.pvr */; };
+		F83233723EBB96992A6AFE5E /* 083_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F828EABFDC0F53258F778D56 /* 083_FRC.PNG.pvr */; };
+		F838E9998F1F15C911DFEA23 /* 085_GRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83314873729125602BF038C /* 085_GRC.PNG.pvr */; };
+		F80E3292575C64A9AFF9E3AE /* 086_FOF.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81F2F04C819C147E841B589 /* 086_FOF.PNG.pvr */; };
+		F892D572461B2661FDFF1FBA /* 086_GOF.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BC9587D7F38423DDA0E93B /* 086_GOF.PNG.pvr */; };
+		F878155F48483B68CE72E6C4 /* 087_FCA.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87BC53AABB6D5DA6574189B /* 087_FCA.PNG.pvr */; };
+		F80B0D6306E321A78186ED94 /* 087_GCA.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8598FCF275D7BDFED537E96 /* 087_GCA.PNG.pvr */; };
+		F8A7060FDA737A879EF6DBD6 /* 087_GCC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86AF83E1F3F500AF797E8B7 /* 087_GCC.PNG.pvr */; };
+		F865D00CD4479A4CCE428ED7 /* 088_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8581E2A5380E375238AF1E2 /* 088_FRC.PNG.pvr */; };
+		F88BCF3BDA275A2CC8D4A15B /* 089_FRC.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A0E1968B2792B0EBE912EF /* 089_FRC.PNG.pvr */; };
+		F8307EBEE53615E998FE6C9C /* 092_GCA.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8676C803DC9A562B7FC1BB2 /* 092_GCA.PNG.pvr */; };
+		F8E1557E392D9F4E8A4FD679 /* 094_FOD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8ABA2455430D001DD52F1E0 /* 094_FOD.PNG.pvr */; };
+		F87703AAC790C327A9D9933D /* 095_FOD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F890BE7BA7312593EB2878B0 /* 095_FOD.PNG.pvr */; };
+		F8EFF942037E6693A9049B60 /* US_IL_13443_CHICAGO_35EAST_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B467E3F38018F8019C1B81 /* US_IL_13443_CHICAGO_35EAST_L.PNG.pvr */; };
+		F8D0F27C9361D3B29A0E447D /* US_IL_13444_CHICAGO_LEOBURNETT_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E706A64D01AA09B046D1DF /* US_IL_13444_CHICAGO_LEOBURNETT_L.PNG.pvr */; };
+		F8E0475454BBD0C2CEF3D6BA /* US_IL_13447_CHICAGO_REIDMURDOCH_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D8CAB2C202487B784EFE55 /* US_IL_13447_CHICAGO_REIDMURDOCH_L.PNG.pvr */; };
+		F806A2C5EC57B084B2C16C5C /* US_IL_13448_CHICAGO_CARBIDE_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84934C31C548FC2E798A3AA /* US_IL_13448_CHICAGO_CARBIDE_L.PNG.pvr */; };
+		F8EB7B444CC4ECA5BEAEC2A9 /* US_IL_13449_CHICAGO_CROWNFOUNTAIN_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C98DE4B7B66F16643DB9F9 /* US_IL_13449_CHICAGO_CROWNFOUNTAIN_L.PNG.pvr */; };
+		F82CDD3DE24E6A4A3089CCB6 /* US_IL_13451_CHICAGO_CULTURAL_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F89C6B69607569FB1FD2BF3D /* US_IL_13451_CHICAGO_CULTURAL_L.PNG.pvr */; };
+		F8CC0B51EAEE22C49202544C /* US_IL_13453_CHICAGO_PRUDENTIAL_PART1_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F89E3887FBEA9A19A4FBAE2A /* US_IL_13453_CHICAGO_PRUDENTIAL_PART1_L.PNG.pvr */; };
+		F87A342093F336E329BDFE45 /* US_IL_13454_CHICAGO_UNITED_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80814EBB1F0A8C6E8DB9232 /* US_IL_13454_CHICAGO_UNITED_L.PNG.pvr */; };
+		F8658ABA0F6AD27A847108AE /* US_IL_13456_CHICAGO_SEVENTEENTH_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F6E7B1F25BC788674AB906 /* US_IL_13456_CHICAGO_SEVENTEENTH_L.PNG.pvr */; };
+		F8130BC2A68DAF3C06D65A76 /* US_IL_13458_CHICAGO_SMURFIT_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80EA618B0A196788669C8AB /* US_IL_13458_CHICAGO_SMURFIT_L.PNG.pvr */; };
+		F80E31F368E52B0E965DE940 /* US_IL_13459_CHICAGO_LASALLE_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8CCB1E2DBA8763E6200955A /* US_IL_13459_CHICAGO_LASALLE_L.PNG.pvr */; };
+		F88DBEC1211C1A25E3039ACB /* US_IL_13460_CHICAGO_TRUMP_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F819D36621FD1860A89D3585 /* US_IL_13460_CHICAGO_TRUMP_L.PNG.pvr */; };
+		F84CDFC6E519DD6B22FAFB07 /* US_IL_13461_CHICAGO_UNITRIN_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D4F2A4CEDA24BB3220448B /* US_IL_13461_CHICAGO_UNITRIN_L.PNG.pvr */; };
+		F836A8E9640A951D78AE1991 /* US_IL_13462_CHICAGO_WILLOUGHBY_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86D55DFC36EC49F6093AEF8 /* US_IL_13462_CHICAGO_WILLOUGHBY_L.PNG.pvr */; };
+		F87CF976615B648AD448D285 /* US_IL_13490_CHICAGO_PRUDENTIAL_PART2_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B895F561C1B5296DF663B5 /* US_IL_13490_CHICAGO_PRUDENTIAL_PART2_L.PNG.pvr */; };
+		F89B56A9D8CA24024D935BE8 /* US_IL_CHICAGO_AONCENTER_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8CA9CBD61F0639BF3C61757 /* US_IL_CHICAGO_AONCENTER_L.PNG.pvr */; };
+		F869D750AF1B20EB0671155F /* US_IL_CHICAGO_ARTINSTITUTE_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F895FE0CC6FC9D8E9385206B /* US_IL_CHICAGO_ARTINSTITUTE_L.PNG.pvr */; };
+		F85AC924E4C4044AB6517A8B /* US_IL_CHICAGO_BOARDOFTHETRADE_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80217D569D3728FCB5DACF5 /* US_IL_CHICAGO_BOARDOFTHETRADE_L.PNG.pvr */; };
+		F8380568D6E340C18EE40DFA /* US_IL_CHICAGO_BOEINGBUILDING_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BA08CE5DBE723CA22A10B3 /* US_IL_CHICAGO_BOEINGBUILDING_L.PNG.pvr */; };
+		F8AD060692F16E8D45A2DAD7 /* US_IL_CHICAGO_CHICAGOTHEATRE_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EA8AE0789D6401C7220F67 /* US_IL_CHICAGO_CHICAGOTHEATRE_L.PNG.pvr */; };
+		F84BDC909403743333C15F46 /* US_IL_CHICAGO_CITYHALL_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8CEC321627BF36F627D686C /* US_IL_CHICAGO_CITYHALL_L.PNG.pvr */; };
+		F89950DE65CF5D47038E9D1A /* US_IL_CHICAGO_DALEY_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BB7EAA7F56275C9B202DDF /* US_IL_CHICAGO_DALEY_L.PNG.pvr */; };
+		F8862254AB74EE81A730DD7B /* US_IL_CHICAGO_HILTON_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D21AD72EA208FC4D0A6BE3 /* US_IL_CHICAGO_HILTON_L.PNG.pvr */; };
+		F81EA4268D5581293906A879 /* US_IL_CHICAGO_JAMESTHOMPSON_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87BF88AA88FA3AD8E0E1674 /* US_IL_CHICAGO_JAMESTHOMPSON_L.PNG.pvr */; };
+		F8B42B71F4E3EA4C53FAC7FE /* US_IL_CHICAGO_LIBRARY_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F85093A1045A5CEF174B4A4D /* US_IL_CHICAGO_LIBRARY_L.PNG.pvr */; };
+		F8D055CC466BEB61F42C325A /* US_IL_CHICAGO_MILLENIUMPARK1_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F856689096C5CCDF7DB99C82 /* US_IL_CHICAGO_MILLENIUMPARK1_L.PNG.pvr */; };
+		F8D67047A79501BDE950A306 /* US_IL_CHICAGO_MILLENIUMPARK2_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F28C3D3B7B8E90D927C2D3 /* US_IL_CHICAGO_MILLENIUMPARK2_L.PNG.pvr */; };
+		F89A8AD4CA838DD26372E01B /* US_IL_CHICAGO_MMART_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F806116CACD35C6CC948726D /* US_IL_CHICAGO_MMART_L.PNG.pvr */; };
+		F80AB43D83F9FEB6A8CF58BD /* US_IL_CHICAGO_OGILVIE_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F899114BEC910FD92BF3D354 /* US_IL_CHICAGO_OGILVIE_L.PNG.pvr */; };
+		F8B7F355EAA98E4A8485E74F /* US_IL_CHICAGO_SEARSTOWER_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C29FEEC271CBFA8B828036 /* US_IL_CHICAGO_SEARSTOWER_L.PNG.pvr */; };
+		F83630AEB6FB7BF0A7F26EC7 /* US_IL_CHICAGO_UNIONSTATION_L.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F891A7460EE5C85ABC5D02F5 /* US_IL_CHICAGO_UNIONSTATION_L.PNG.pvr */; };
+		F8E49FB844C4A31D6E5417ED /* US_L_CONCRETE-COLOUR.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F18EFF34FDBD3352CBDDD0 /* US_L_CONCRETE-COLOUR.PNG.pvr */; };
+		F80A34D73D7D9E46919268BE /* US_L_CONCRETE-DETAIL.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F86D4AC330F984E5A86A98 /* US_L_CONCRETE-DETAIL.PNG.pvr */; };
+		F83BE96351FF51473BC1487A /* US_L_PARK-COLOUR.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D906B66F5349E5BB0F1294 /* US_L_PARK-COLOUR.PNG.pvr */; };
+		F823E109234B6511AF6C195F /* US_L_WATER-COLOUR.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82FFCFAC845E102B8B76AEA /* US_L_WATER-COLOUR.PNG.pvr */; };
+		F8936F4FA6354DE03F5996DA /* US_R_CONCRETE.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82BF4175902481B4AB3E318 /* US_R_CONCRETE.PNG.pvr */; };
+		F8393EED18A4021EE56AF2A4 /* US_R_HIGHWAY-SOLID.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8ACF6FBB320ECF639ED2702 /* US_R_HIGHWAY-SOLID.PNG.pvr */; };
+		F80FE43C761FA78D143BED09 /* US_R_STREET-DASHED.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8539B39B6247F28A6149093 /* US_R_STREET-DASHED.PNG.pvr */; };
+		F8BCA92152C4980A724C9C26 /* US_R_STREET-INNER-SHOULDER.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C94D649D2743887586F56C /* US_R_STREET-INNER-SHOULDER.PNG.pvr */; };
+		F818C90C089A4F9DC489222A /* US_R_STREET-LANE-FILLER.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E90E15D033159726278EED /* US_R_STREET-LANE-FILLER.PNG.pvr */; };
+		F86509CBD08D23BF13F6AB72 /* US_R_STREET-SOLID.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F818267A96AE76D64B218D6C /* US_R_STREET-SOLID.PNG.pvr */; };
+		F841CD9A1BA808330D268817 /* US_R_STREET-UNMARKED.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F822649166D951111D132279 /* US_R_STREET-UNMARKED.PNG.pvr */; };
+		F84F49F164D50339747C20AF /* US_R_WALKWAY-SOLID.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F867D5466955E1AA031B3FB7 /* US_R_WALKWAY-SOLID.PNG.pvr */; };
+		F83A78A697A8C74126F6BC10 /* US_R_WALKWAY-UNMARKED.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83620612E09A0B8BE14E130 /* US_R_WALKWAY-UNMARKED.PNG.pvr */; };
+		F87DC43D95D3CD5D1364C53B /* US_T_RAILROAD.PNG.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F77E18A1C44D5CE09A8211 /* US_T_RAILROAD.PNG.pvr */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DB5C32AB15C7F32B00B1A208 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBE6ED1B15C2A1D300275129 /* OGLESTools.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 49BA94F413E00AC600827842;
+			remoteInfo = OGLESTools;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DB3A55C515C92213004CE8F1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DB3A55CD15C9380E004CE8F1 /* libGLESv1_CM.dylib in CopyFiles */,
+				DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		49068F5C13DDA30C00C8DC21 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		49068F5F13DDA30C00C8DC21 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		49068F6013DDA30C00C8DC21 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		49068F6113DDA30C00C8DC21 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		49068F5813DDA30C00C8DC21 /* OGLESNavigation3D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLESNavigation3D.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		49FE311813E2CEE900B32DAC /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
+		DB3A55C715C92647004CE8F1 /* libEGL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libEGL.dylib; path = "../../../../../../Builds//OSX/x86/Lib/libEGL.dylib"; sourceTree = "<group>"; };
+		DB3A55CB15C937F1004CE8F1 /* libGLESv1_CM.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLESv1_CM.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libGLESv1_CM.dylib"; sourceTree = "<group>"; };
+		DB3A55CE15C938D4004CE8F1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		DB3A55D015C938EC004CE8F1 /* IMG.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = IMG.icns; path = "../../../../../../Builds/OSX/Resources/IMG.icns"; sourceTree = "<group>"; };
+		DBE6ED1B15C2A1D300275129 /* OGLESTools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OGLESTools.xcodeproj; path = "../../../../../../Tools/OGLES/Build/OSX/OGLESTools.xcodeproj"; sourceTree = "<group>"; };
+		495B9D0113E2EE09000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
+		495B9D0513E2EE16000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
+		F81386C8394A4B712CEBA406 /* OGLESNavigation3D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESNavigation3D.cpp; path = ../../OGLESNavigation3D.cpp; sourceTree = SOURCE_ROOT; };
+		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
+		F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/KEGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
+		F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellOS.cpp; path = ../../../../../../Shell/OS/OSX/PVRShellOS.cpp; sourceTree = SOURCE_ROOT; };
+		F891AC7DBA4A33CDD5897EA8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ../../../../../../Shell/OS/OSX/main.m; sourceTree = SOURCE_ROOT; };
+		F83056A1463D3149D54E9E82 /* AppController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = AppController.mm; path = ../../../../../../Shell/OS/OSX/AppController.mm; sourceTree = SOURCE_ROOT; };
+		F8E876C58B8E589D704582A8 /* PVRShell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShell.h; path = ../../../../../../Shell/PVRShell.h; sourceTree = SOURCE_ROOT; };
+		F83032EAFB076689D05BCCA4 /* PVRShellImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellImpl.h; path = ../../../../../../Shell/PVRShellImpl.h; sourceTree = SOURCE_ROOT; };
+		F84F75300A266FB04DD95145 /* PVRShellAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellAPI.h; path = ../../../../../../Shell/API/KEGL/PVRShellAPI.h; sourceTree = SOURCE_ROOT; };
+		F8D43C90E6E9634EF07F3500 /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/OSX/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
+		F8D9FEE5B9D56BCDCB605B86 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/OSX/AppController.h; sourceTree = SOURCE_ROOT; };
+		F8369D1389B20FDD3A8DAAEE /* modelindex.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = modelindex.nav; path = ../../../Data/modelindex.nav; sourceTree = SOURCE_ROOT; };
+		F804D70432DFBF831F15A09F /* occlusiondata.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = occlusiondata.nav; path = ../../../Data/occlusiondata.nav; sourceTree = SOURCE_ROOT; };
+		F8DEE3668124FCB791B91358 /* cameratrack.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = cameratrack.pod; path = ../../../Data/cameratrack.pod; sourceTree = SOURCE_ROOT; };
+		F81BABDBBDFC9691D17B8492 /* CM_US_IL_CHICAGO_008_015_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_008_015_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_008_015_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F83428E43FB6E5CCF288B1E4 /* CM_US_IL_CHICAGO_008_016_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_008_016_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_008_016_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F85DF1ED988E729C3DD5BA79 /* CM_US_IL_CHICAGO_009_014_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_009_014_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_009_014_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8A88A1FC78FAC885630F091 /* CM_US_IL_CHICAGO_009_015_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_009_015_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_009_015_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F861F12D80D1FF36CE815426 /* CM_US_IL_CHICAGO_009_016_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_009_016_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_009_016_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8895095640B3E60DE70909B /* CM_US_IL_CHICAGO_009_017_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_009_017_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_009_017_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8DA4EEC1F978FDDA1736AB3 /* CM_US_IL_CHICAGO_009_018_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_009_018_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_009_018_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8AE1038612917D10FEBE640 /* CM_US_IL_CHICAGO_010_014_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_010_014_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_010_014_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F83005E5C4A7639E79157419 /* CM_US_IL_CHICAGO_010_015_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_010_015_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_010_015_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F89E7CC73AE7463FF862FD20 /* CM_US_IL_CHICAGO_010_015_H.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_010_015_H.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_010_015_H.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8B48265B4CDFFEE3FE66A16 /* CM_US_IL_CHICAGO_010_016_H.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_010_016_H.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_010_016_H.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F80E98C9A373DBD43A7F0C30 /* CM_US_IL_CHICAGO_010_016_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_010_016_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_010_016_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8E4EF5399D7399C3365B222 /* CM_US_IL_CHICAGO_010_017_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_010_017_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_010_017_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8518668A6769BDE870ECC45 /* CM_US_IL_CHICAGO_010_017_H.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_010_017_H.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_010_017_H.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8D6904AD1983CFE180882AC /* CM_US_IL_CHICAGO_010_018_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_010_018_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_010_018_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F819EAE3F223FD4082D8F596 /* CM_US_IL_CHICAGO_011_013_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_011_013_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_011_013_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8A9C7B4BC150D141876708D /* CM_US_IL_CHICAGO_011_014_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_011_014_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_011_014_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8E40C90C34817B385D35698 /* CM_US_IL_CHICAGO_011_015_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_011_015_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_011_015_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F83A53CF4682849807AD62B7 /* CM_US_IL_CHICAGO_011_015_H.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_011_015_H.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_011_015_H.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F80D486B088931A3CC36F26A /* CM_US_IL_CHICAGO_011_016_H.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_011_016_H.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_011_016_H.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F87517913DCFD572C3480619 /* CM_US_IL_CHICAGO_011_016_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_011_016_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_011_016_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F89B437914DD2D285448C48C /* CM_US_IL_CHICAGO_011_017_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_011_017_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_011_017_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F87217DA86FF29A789E50B3E /* CM_US_IL_CHICAGO_011_017_H.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_011_017_H.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_011_017_H.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8DE9A7BC226261CB5A9050D /* CM_US_IL_CHICAGO_011_018_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_011_018_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_011_018_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F8960999434C2078FAF745B2 /* CM_US_IL_CHICAGO_012_014_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_012_014_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_012_014_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F886495B0C6B36BEF83E7883 /* CM_US_IL_CHICAGO_012_015_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_012_015_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_012_015_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F84E1B41B3C95F4D2D02F079 /* CM_US_IL_CHICAGO_012_016_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_012_016_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_012_016_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F85DDC57F8DC21B7F7A1B49D /* CM_US_IL_CHICAGO_012_017_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_012_017_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_012_017_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F812EA161594AD3FA00F70CF /* CM_US_IL_CHICAGO_013_015_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_013_015_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_013_015_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F846322CAECA795435625218 /* CM_US_IL_CHICAGO_013_016_L.DAE.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = CM_US_IL_CHICAGO_013_016_L.DAE.pod; path = ../../../Data/CM_US_IL_CHICAGO_013_016_L.DAE.pod; sourceTree = SOURCE_ROOT; };
+		F89C8601B7F0E5B21274653D /* skybox1.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = skybox1.pvr; path = ../../skybox1.pvr; sourceTree = SOURCE_ROOT; };
+		F86F2DF9EF3278FCE8EE59E3 /* skybox2.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = skybox2.pvr; path = ../../skybox2.pvr; sourceTree = SOURCE_ROOT; };
+		F8191204E3228A42DAFCDC67 /* skybox3.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = skybox3.pvr; path = ../../skybox3.pvr; sourceTree = SOURCE_ROOT; };
+		F8BAF3A6CE56825159392674 /* skybox4.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = skybox4.pvr; path = ../../skybox4.pvr; sourceTree = SOURCE_ROOT; };
+		F8C58331B4EDDAD84123D2AE /* skybox5.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = skybox5.pvr; path = ../../skybox5.pvr; sourceTree = SOURCE_ROOT; };
+		F8D6D12D9E029E181E600148 /* skybox6.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = skybox6.pvr; path = ../../skybox6.pvr; sourceTree = SOURCE_ROOT; };
+		F898454EC7DA066131013FEA /* UIElements.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = UIElements.pvr; path = ../../../Data/UIElements.pvr; sourceTree = SOURCE_ROOT; };
+		F83E30CE1E3FB8AC6DEB142C /* 006_RUS.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 006_RUS.PNG.pvr; path = ../../../Data/006_RUS.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F870CACF311F13F92259F18F /* 007_RUG.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 007_RUG.PNG.pvr; path = ../../../Data/007_RUG.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8FEC118C2A2F702D14C6497 /* 008_RUG.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 008_RUG.PNG.pvr; path = ../../../Data/008_RUG.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8610185F4BCDDC1988B88DC /* 009_RUG.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 009_RUG.PNG.pvr; path = ../../../Data/009_RUG.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8B21C35C322D0206B0AC90D /* 011_GIE.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 011_GIE.PNG.pvr; path = ../../../Data/011_GIE.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F87D5577DBE24D11CC8663FD /* 012_RSR.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 012_RSR.PNG.pvr; path = ../../../Data/012_RSR.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8934FCA04BE709329B92C69 /* 016_FOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 016_FOC.PNG.pvr; path = ../../../Data/016_FOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F89FCA22C22CF5703DA20813 /* 016_RTR.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 016_RTR.PNG.pvr; path = ../../../Data/016_RTR.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F820C93BF03DAE8ED2F32BD3 /* 017_FOD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 017_FOD.PNG.pvr; path = ../../../Data/017_FOD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F84FDDAA2BFBB0058E7E6A14 /* 018_FOD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 018_FOD.PNG.pvr; path = ../../../Data/018_FOD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F80ADEF5F87AB8E70FAA4395 /* 019_FOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 019_FOC.PNG.pvr; path = ../../../Data/019_FOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F88E770D555009953C01824E /* 019_GOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 019_GOC.PNG.pvr; path = ../../../Data/019_GOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8E8F6095423FD9F45D26968 /* 019_RZG.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 019_RZG.PNG.pvr; path = ../../../Data/019_RZG.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8BCB6BEC2EA635B57B2E408 /* 020_FOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 020_FOC.PNG.pvr; path = ../../../Data/020_FOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F85BF82FDBA4F7E33993A8B1 /* 021_FOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 021_FOC.PNG.pvr; path = ../../../Data/021_FOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F82CFD9698C619D0A21390F7 /* 022_FOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 022_FOC.PNG.pvr; path = ../../../Data/022_FOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8870D848752A5FD913A2022 /* 022_RUG.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 022_RUG.PNG.pvr; path = ../../../Data/022_RUG.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F860BD5E2B677F8086D9A359 /* 023_FOB.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 023_FOB.PNG.pvr; path = ../../../Data/023_FOB.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F831BD880054D9BF830B4172 /* 023_RUG.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 023_RUG.PNG.pvr; path = ../../../Data/023_RUG.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F87C70F0BF94578A218F9CC9 /* 024_FOB.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 024_FOB.PNG.pvr; path = ../../../Data/024_FOB.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F843BAFEA9982ED26F454025 /* 025_FOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 025_FOC.PNG.pvr; path = ../../../Data/025_FOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8B5FDA24868C96F1D88C4D2 /* 025_RUW.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 025_RUW.PNG.pvr; path = ../../../Data/025_RUW.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8A1893924EFBC7A9053BF55 /* 026_FOD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 026_FOD.PNG.pvr; path = ../../../Data/026_FOD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8F2F343997CF226CF8ED3B1 /* 026_RUW.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 026_RUW.PNG.pvr; path = ../../../Data/026_RUW.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F857388241833CB3CB2C74CB /* 027_FOD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 027_FOD.PNG.pvr; path = ../../../Data/027_FOD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F897978A3B240CDE5603C3ED /* 027_RUW.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 027_RUW.PNG.pvr; path = ../../../Data/027_RUW.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F89902A9293198B7D32887F3 /* 028_GOF.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 028_GOF.PNG.pvr; path = ../../../Data/028_GOF.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F850C7159AF6A4E546D29DF0 /* 029_GCC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 029_GCC.PNG.pvr; path = ../../../Data/029_GCC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F88EE91102C14DB255E8FC03 /* 030_GOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 030_GOC.PNG.pvr; path = ../../../Data/030_GOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F847236E03DCDC8088CD612D /* 031_GOD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 031_GOD.PNG.pvr; path = ../../../Data/031_GOD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8EBEB571A83540E20E2877A /* 032_FOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 032_FOC.PNG.pvr; path = ../../../Data/032_FOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F80A761E8F76FDA69A32DCD0 /* 032_GOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 032_GOC.PNG.pvr; path = ../../../Data/032_GOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F80ECB46F44727E654AAF288 /* 033_FOA.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 033_FOA.PNG.pvr; path = ../../../Data/033_FOA.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8ACD8787F6DBD0846E0C301 /* 033_GOA.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 033_GOA.PNG.pvr; path = ../../../Data/033_GOA.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8725342965C295AB0AA34A6 /* 034_FOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 034_FOC.PNG.pvr; path = ../../../Data/034_FOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F86D3A36B62CCA030882B167 /* 034_GOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 034_GOC.PNG.pvr; path = ../../../Data/034_GOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F821EA8040DAF2F10D326057 /* 035_FOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 035_FOC.PNG.pvr; path = ../../../Data/035_FOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F84BB5152CA088736462F92E /* 035_GOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 035_GOC.PNG.pvr; path = ../../../Data/035_GOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F82DC22929430387C66F87D6 /* 036_FOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 036_FOC.PNG.pvr; path = ../../../Data/036_FOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F88F4FB17C1E82692FC509D2 /* 036_GOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 036_GOC.PNG.pvr; path = ../../../Data/036_GOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8C36BC8D8F75AD0958C9EF8 /* 037_FOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 037_FOC.PNG.pvr; path = ../../../Data/037_FOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F80AB971B33A670163F03587 /* 037_GOC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 037_GOC.PNG.pvr; path = ../../../Data/037_GOC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F819B064437620A81EE9C502 /* 041_FRB.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 041_FRB.PNG.pvr; path = ../../../Data/041_FRB.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8C2C06F6F48386A9663C8C0 /* 041_GRB.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 041_GRB.PNG.pvr; path = ../../../Data/041_GRB.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F87605C668C9C196AD7BA2E9 /* 044_GRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 044_GRC.PNG.pvr; path = ../../../Data/044_GRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8E47F06E5FE3931C8589C3E /* 046_GRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 046_GRC.PNG.pvr; path = ../../../Data/046_GRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F82EA4C2F2622A6CDC4DB618 /* 054_GRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 054_GRC.PNG.pvr; path = ../../../Data/054_GRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8D45527DD7955ED304F4F16 /* 055_GRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 055_GRC.PNG.pvr; path = ../../../Data/055_GRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F86834E86885194626166373 /* 056_GRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 056_GRC.PNG.pvr; path = ../../../Data/056_GRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F88249ED22C8C3FFE1343D8C /* 059_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 059_FRC.PNG.pvr; path = ../../../Data/059_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F810D33526BB4FEED67B1F27 /* 060_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 060_FRC.PNG.pvr; path = ../../../Data/060_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F80FEFEB21A411E3EC79507F /* 061_FRD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 061_FRD.PNG.pvr; path = ../../../Data/061_FRD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8A8BEA950FA4FD3406C5788 /* 063_GRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 063_GRC.PNG.pvr; path = ../../../Data/063_GRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8A098F93799DAF782C2A447 /* 064_GRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 064_GRC.PNG.pvr; path = ../../../Data/064_GRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F824B5DC3B0D005990A75EAF /* 066_FCB.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 066_FCB.PNG.pvr; path = ../../../Data/066_FCB.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F81C58FFE2051F08A50DA224 /* 066_GCB.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 066_GCB.PNG.pvr; path = ../../../Data/066_GCB.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F86DBD2F985543BE2DD59B98 /* 067_FCC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 067_FCC.PNG.pvr; path = ../../../Data/067_FCC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8BC1B6B31AEEDF6238C2453 /* 067_GCC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 067_GCC.PNG.pvr; path = ../../../Data/067_GCC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F85ECE7F9D6EF30F648562C0 /* 068_GCD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 068_GCD.PNG.pvr; path = ../../../Data/068_GCD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8A5787A0B50B667827A6CA7 /* 069_FCA.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 069_FCA.PNG.pvr; path = ../../../Data/069_FCA.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F86313F60991EFE5155B9B81 /* 069_GCA.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 069_GCA.PNG.pvr; path = ../../../Data/069_GCA.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F86E18F53882615F0AB65F2A /* 070_GOD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 070_GOD.PNG.pvr; path = ../../../Data/070_GOD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F805766D037F7D2997160D5E /* 071_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 071_FRC.PNG.pvr; path = ../../../Data/071_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8BD8EF61D3197A3221EF492 /* 072_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 072_FRC.PNG.pvr; path = ../../../Data/072_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F89FD622F53B62C8FFFA6A58 /* 073_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 073_FRC.PNG.pvr; path = ../../../Data/073_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F80070183AEB59826B1F4DE2 /* 074_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 074_FRC.PNG.pvr; path = ../../../Data/074_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8B4F6157AD4E06C06DCBBCF /* 075_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 075_FRC.PNG.pvr; path = ../../../Data/075_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F84EA821673C0334C67E4A63 /* 076_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 076_FRC.PNG.pvr; path = ../../../Data/076_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8B403F857571303F6A03BEB /* 077_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 077_FRC.PNG.pvr; path = ../../../Data/077_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8EFC6CEFF573BE8F2E31296 /* 080_GCB.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 080_GCB.PNG.pvr; path = ../../../Data/080_GCB.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F82D2440A91CCA0DB0FD604F /* 082_FCD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 082_FCD.PNG.pvr; path = ../../../Data/082_FCD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F828EABFDC0F53258F778D56 /* 083_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 083_FRC.PNG.pvr; path = ../../../Data/083_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F83314873729125602BF038C /* 085_GRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 085_GRC.PNG.pvr; path = ../../../Data/085_GRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F81F2F04C819C147E841B589 /* 086_FOF.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 086_FOF.PNG.pvr; path = ../../../Data/086_FOF.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8BC9587D7F38423DDA0E93B /* 086_GOF.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 086_GOF.PNG.pvr; path = ../../../Data/086_GOF.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F87BC53AABB6D5DA6574189B /* 087_FCA.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 087_FCA.PNG.pvr; path = ../../../Data/087_FCA.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8598FCF275D7BDFED537E96 /* 087_GCA.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 087_GCA.PNG.pvr; path = ../../../Data/087_GCA.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F86AF83E1F3F500AF797E8B7 /* 087_GCC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 087_GCC.PNG.pvr; path = ../../../Data/087_GCC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8581E2A5380E375238AF1E2 /* 088_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 088_FRC.PNG.pvr; path = ../../../Data/088_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8A0E1968B2792B0EBE912EF /* 089_FRC.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 089_FRC.PNG.pvr; path = ../../../Data/089_FRC.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8676C803DC9A562B7FC1BB2 /* 092_GCA.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 092_GCA.PNG.pvr; path = ../../../Data/092_GCA.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8ABA2455430D001DD52F1E0 /* 094_FOD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 094_FOD.PNG.pvr; path = ../../../Data/094_FOD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F890BE7BA7312593EB2878B0 /* 095_FOD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = 095_FOD.PNG.pvr; path = ../../../Data/095_FOD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8B467E3F38018F8019C1B81 /* US_IL_13443_CHICAGO_35EAST_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13443_CHICAGO_35EAST_L.PNG.pvr; path = ../../../Data/US_IL_13443_CHICAGO_35EAST_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8E706A64D01AA09B046D1DF /* US_IL_13444_CHICAGO_LEOBURNETT_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13444_CHICAGO_LEOBURNETT_L.PNG.pvr; path = ../../../Data/US_IL_13444_CHICAGO_LEOBURNETT_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8D8CAB2C202487B784EFE55 /* US_IL_13447_CHICAGO_REIDMURDOCH_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13447_CHICAGO_REIDMURDOCH_L.PNG.pvr; path = ../../../Data/US_IL_13447_CHICAGO_REIDMURDOCH_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F84934C31C548FC2E798A3AA /* US_IL_13448_CHICAGO_CARBIDE_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13448_CHICAGO_CARBIDE_L.PNG.pvr; path = ../../../Data/US_IL_13448_CHICAGO_CARBIDE_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8C98DE4B7B66F16643DB9F9 /* US_IL_13449_CHICAGO_CROWNFOUNTAIN_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13449_CHICAGO_CROWNFOUNTAIN_L.PNG.pvr; path = ../../../Data/US_IL_13449_CHICAGO_CROWNFOUNTAIN_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F89C6B69607569FB1FD2BF3D /* US_IL_13451_CHICAGO_CULTURAL_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13451_CHICAGO_CULTURAL_L.PNG.pvr; path = ../../../Data/US_IL_13451_CHICAGO_CULTURAL_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F89E3887FBEA9A19A4FBAE2A /* US_IL_13453_CHICAGO_PRUDENTIAL_PART1_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13453_CHICAGO_PRUDENTIAL_PART1_L.PNG.pvr; path = ../../../Data/US_IL_13453_CHICAGO_PRUDENTIAL_PART1_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F80814EBB1F0A8C6E8DB9232 /* US_IL_13454_CHICAGO_UNITED_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13454_CHICAGO_UNITED_L.PNG.pvr; path = ../../../Data/US_IL_13454_CHICAGO_UNITED_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8F6E7B1F25BC788674AB906 /* US_IL_13456_CHICAGO_SEVENTEENTH_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13456_CHICAGO_SEVENTEENTH_L.PNG.pvr; path = ../../../Data/US_IL_13456_CHICAGO_SEVENTEENTH_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F80EA618B0A196788669C8AB /* US_IL_13458_CHICAGO_SMURFIT_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13458_CHICAGO_SMURFIT_L.PNG.pvr; path = ../../../Data/US_IL_13458_CHICAGO_SMURFIT_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8CCB1E2DBA8763E6200955A /* US_IL_13459_CHICAGO_LASALLE_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13459_CHICAGO_LASALLE_L.PNG.pvr; path = ../../../Data/US_IL_13459_CHICAGO_LASALLE_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F819D36621FD1860A89D3585 /* US_IL_13460_CHICAGO_TRUMP_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13460_CHICAGO_TRUMP_L.PNG.pvr; path = ../../../Data/US_IL_13460_CHICAGO_TRUMP_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8D4F2A4CEDA24BB3220448B /* US_IL_13461_CHICAGO_UNITRIN_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13461_CHICAGO_UNITRIN_L.PNG.pvr; path = ../../../Data/US_IL_13461_CHICAGO_UNITRIN_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F86D55DFC36EC49F6093AEF8 /* US_IL_13462_CHICAGO_WILLOUGHBY_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13462_CHICAGO_WILLOUGHBY_L.PNG.pvr; path = ../../../Data/US_IL_13462_CHICAGO_WILLOUGHBY_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8B895F561C1B5296DF663B5 /* US_IL_13490_CHICAGO_PRUDENTIAL_PART2_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_13490_CHICAGO_PRUDENTIAL_PART2_L.PNG.pvr; path = ../../../Data/US_IL_13490_CHICAGO_PRUDENTIAL_PART2_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8CA9CBD61F0639BF3C61757 /* US_IL_CHICAGO_AONCENTER_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_AONCENTER_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_AONCENTER_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F895FE0CC6FC9D8E9385206B /* US_IL_CHICAGO_ARTINSTITUTE_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_ARTINSTITUTE_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_ARTINSTITUTE_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F80217D569D3728FCB5DACF5 /* US_IL_CHICAGO_BOARDOFTHETRADE_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_BOARDOFTHETRADE_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_BOARDOFTHETRADE_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8BA08CE5DBE723CA22A10B3 /* US_IL_CHICAGO_BOEINGBUILDING_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_BOEINGBUILDING_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_BOEINGBUILDING_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8EA8AE0789D6401C7220F67 /* US_IL_CHICAGO_CHICAGOTHEATRE_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_CHICAGOTHEATRE_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_CHICAGOTHEATRE_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8CEC321627BF36F627D686C /* US_IL_CHICAGO_CITYHALL_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_CITYHALL_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_CITYHALL_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8BB7EAA7F56275C9B202DDF /* US_IL_CHICAGO_DALEY_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_DALEY_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_DALEY_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8D21AD72EA208FC4D0A6BE3 /* US_IL_CHICAGO_HILTON_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_HILTON_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_HILTON_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F87BF88AA88FA3AD8E0E1674 /* US_IL_CHICAGO_JAMESTHOMPSON_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_JAMESTHOMPSON_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_JAMESTHOMPSON_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F85093A1045A5CEF174B4A4D /* US_IL_CHICAGO_LIBRARY_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_LIBRARY_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_LIBRARY_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F856689096C5CCDF7DB99C82 /* US_IL_CHICAGO_MILLENIUMPARK1_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_MILLENIUMPARK1_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_MILLENIUMPARK1_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8F28C3D3B7B8E90D927C2D3 /* US_IL_CHICAGO_MILLENIUMPARK2_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_MILLENIUMPARK2_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_MILLENIUMPARK2_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F806116CACD35C6CC948726D /* US_IL_CHICAGO_MMART_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_MMART_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_MMART_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F899114BEC910FD92BF3D354 /* US_IL_CHICAGO_OGILVIE_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_OGILVIE_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_OGILVIE_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8C29FEEC271CBFA8B828036 /* US_IL_CHICAGO_SEARSTOWER_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_SEARSTOWER_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_SEARSTOWER_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F891A7460EE5C85ABC5D02F5 /* US_IL_CHICAGO_UNIONSTATION_L.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_IL_CHICAGO_UNIONSTATION_L.PNG.pvr; path = ../../../Data/US_IL_CHICAGO_UNIONSTATION_L.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8F18EFF34FDBD3352CBDDD0 /* US_L_CONCRETE-COLOUR.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_L_CONCRETE-COLOUR.PNG.pvr; path = ../../../Data/US_L_CONCRETE-COLOUR.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8F86D4AC330F984E5A86A98 /* US_L_CONCRETE-DETAIL.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_L_CONCRETE-DETAIL.PNG.pvr; path = ../../../Data/US_L_CONCRETE-DETAIL.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8D906B66F5349E5BB0F1294 /* US_L_PARK-COLOUR.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_L_PARK-COLOUR.PNG.pvr; path = ../../../Data/US_L_PARK-COLOUR.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F82FFCFAC845E102B8B76AEA /* US_L_WATER-COLOUR.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_L_WATER-COLOUR.PNG.pvr; path = ../../../Data/US_L_WATER-COLOUR.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F82BF4175902481B4AB3E318 /* US_R_CONCRETE.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_R_CONCRETE.PNG.pvr; path = ../../../Data/US_R_CONCRETE.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8ACF6FBB320ECF639ED2702 /* US_R_HIGHWAY-SOLID.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_R_HIGHWAY-SOLID.PNG.pvr; path = ../../../Data/US_R_HIGHWAY-SOLID.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8539B39B6247F28A6149093 /* US_R_STREET-DASHED.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_R_STREET-DASHED.PNG.pvr; path = ../../../Data/US_R_STREET-DASHED.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8C94D649D2743887586F56C /* US_R_STREET-INNER-SHOULDER.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_R_STREET-INNER-SHOULDER.PNG.pvr; path = ../../../Data/US_R_STREET-INNER-SHOULDER.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8E90E15D033159726278EED /* US_R_STREET-LANE-FILLER.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_R_STREET-LANE-FILLER.PNG.pvr; path = ../../../Data/US_R_STREET-LANE-FILLER.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F818267A96AE76D64B218D6C /* US_R_STREET-SOLID.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_R_STREET-SOLID.PNG.pvr; path = ../../../Data/US_R_STREET-SOLID.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F822649166D951111D132279 /* US_R_STREET-UNMARKED.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_R_STREET-UNMARKED.PNG.pvr; path = ../../../Data/US_R_STREET-UNMARKED.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F867D5466955E1AA031B3FB7 /* US_R_WALKWAY-SOLID.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_R_WALKWAY-SOLID.PNG.pvr; path = ../../../Data/US_R_WALKWAY-SOLID.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F83620612E09A0B8BE14E130 /* US_R_WALKWAY-UNMARKED.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_R_WALKWAY-UNMARKED.PNG.pvr; path = ../../../Data/US_R_WALKWAY-UNMARKED.PNG.pvr; sourceTree = SOURCE_ROOT; };
+		F8F77E18A1C44D5CE09A8211 /* US_T_RAILROAD.PNG.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = US_T_RAILROAD.PNG.pvr; path = ../../../Data/US_T_RAILROAD.PNG.pvr; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		49068F5513DDA30C00C8DC21 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */,
+				49068F5D13DDA30C00C8DC21 /* Cocoa.framework in Frameworks */,
+				DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */,
+				DB3A55CC15C937F1004CE8F1 /* libGLESv1_CM.dylib in Frameworks */,
+				DB5C32B615C7F65000B1A208 /* libOGLESTools.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		49068F4D13DDA30C00C8DC21 = {
+			isa = PBXGroup;
+			children = (
+				49068F7913DDA51C00C8DC21 /* Source */,
+				DB5C32B515C7F60F00B1A208 /* Content */,
+				DB3A55D015C938EC004CE8F1 /* IMG.icns */,
+				DB5C32B415C7F5D100B1A208 /* Libraries */,
+				49068F5B13DDA30C00C8DC21 /* Frameworks */,
+				DB5C32AE15C7F50500B1A208 /* Resources */,
+				49068F6313DDA30C00C8DC21 /* Supporting Files */,
+				49068F5913DDA30C00C8DC21 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		49068F5913DDA30C00C8DC21 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49068F5813DDA30C00C8DC21 /* OGLESNavigation3D.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		49068F5B13DDA30C00C8DC21 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				49068F5F13DDA30C00C8DC21 /* AppKit.framework */,
+				49068F6013DDA30C00C8DC21 /* CoreData.framework */,
+				49068F6113DDA30C00C8DC21 /* Foundation.framework */,
+				49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */,
+				49068F5C13DDA30C00C8DC21 /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		49068F6313DDA30C00C8DC21 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				49FE311813E2CEE900B32DAC /* Prefix.pch */,
+				495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			path = OGLESNavigation3D;
+			sourceTree = "<group>";
+		};
+		49068F7913DDA51C00C8DC21 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+		49068F7C13DDA57800C8DC21 /* Shell */,
+				F81386C8394A4B712CEBA406 /* OGLESNavigation3D.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+				49068F7C13DDA57800C8DC21 /* Shell */ = {
+			isa = PBXGroup;
+			children = (
+				F8264787AE86D57C8A7666DE /* PVRShell.cpp */,
+				F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */,
+				F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */,
+				F891AC7DBA4A33CDD5897EA8 /* main.m */,
+				F83056A1463D3149D54E9E82 /* AppController.mm */,
+				F8E876C58B8E589D704582A8 /* PVRShell.h */,
+				F83032EAFB076689D05BCCA4 /* PVRShellImpl.h */,
+				F84F75300A266FB04DD95145 /* PVRShellAPI.h */,
+				F8D43C90E6E9634EF07F3500 /* PVRShellOS.h */,
+				F8D9FEE5B9D56BCDCB605B86 /* AppController.h */,
+			);
+			name = Shell;
+			sourceTree = "<group>";
+		};
+		DB5C329915C7F19D00B1A208 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DB5C32AC15C7F32B00B1A208 /* libOGLESTools.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DB5C32AE15C7F50500B1A208 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DB3A55CE15C938D4004CE8F1 /* Info.plist */,
+				495B9D0013E2EE09000FD6B4 /* MainMenu.xib */,
+			);
+			name = Resources;
+			path = OGLESNavigation3D;
+			sourceTree = "<group>";
+		};
+		DB5C32B415C7F5D100B1A208 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				DBE6ED1B15C2A1D300275129 /* OGLESTools.xcodeproj */,
+				DB3A55C715C92647004CE8F1 /* libEGL.dylib */,
+				DB3A55CB15C937F1004CE8F1 /* libGLESv1_CM.dylib */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		DB5C32B515C7F60F00B1A208 /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				DBE6ED4E15C2AB9C00275129 /* Generic */,
+				DBE6ED4D15C2AB8E00275129 /* Models */,
+				DBE6ED4C15C2AB7E00275129 /* Textures */,
+			);
+			name = Content;
+			sourceTree = "<group>";
+		};
+		DBE6ED4C15C2AB7E00275129 /* Textures */ = {
+			isa = PBXGroup;
+			children = (
+				F89C8601B7F0E5B21274653D /* skybox1.pvr */,
+				F86F2DF9EF3278FCE8EE59E3 /* skybox2.pvr */,
+				F8191204E3228A42DAFCDC67 /* skybox3.pvr */,
+				F8BAF3A6CE56825159392674 /* skybox4.pvr */,
+				F8C58331B4EDDAD84123D2AE /* skybox5.pvr */,
+				F8D6D12D9E029E181E600148 /* skybox6.pvr */,
+				F898454EC7DA066131013FEA /* UIElements.pvr */,
+				F83E30CE1E3FB8AC6DEB142C /* 006_RUS.PNG.pvr */,
+				F870CACF311F13F92259F18F /* 007_RUG.PNG.pvr */,
+				F8FEC118C2A2F702D14C6497 /* 008_RUG.PNG.pvr */,
+				F8610185F4BCDDC1988B88DC /* 009_RUG.PNG.pvr */,
+				F8B21C35C322D0206B0AC90D /* 011_GIE.PNG.pvr */,
+				F87D5577DBE24D11CC8663FD /* 012_RSR.PNG.pvr */,
+				F8934FCA04BE709329B92C69 /* 016_FOC.PNG.pvr */,
+				F89FCA22C22CF5703DA20813 /* 016_RTR.PNG.pvr */,
+				F820C93BF03DAE8ED2F32BD3 /* 017_FOD.PNG.pvr */,
+				F84FDDAA2BFBB0058E7E6A14 /* 018_FOD.PNG.pvr */,
+				F80ADEF5F87AB8E70FAA4395 /* 019_FOC.PNG.pvr */,
+				F88E770D555009953C01824E /* 019_GOC.PNG.pvr */,
+				F8E8F6095423FD9F45D26968 /* 019_RZG.PNG.pvr */,
+				F8BCB6BEC2EA635B57B2E408 /* 020_FOC.PNG.pvr */,
+				F85BF82FDBA4F7E33993A8B1 /* 021_FOC.PNG.pvr */,
+				F82CFD9698C619D0A21390F7 /* 022_FOC.PNG.pvr */,
+				F8870D848752A5FD913A2022 /* 022_RUG.PNG.pvr */,
+				F860BD5E2B677F8086D9A359 /* 023_FOB.PNG.pvr */,
+				F831BD880054D9BF830B4172 /* 023_RUG.PNG.pvr */,
+				F87C70F0BF94578A218F9CC9 /* 024_FOB.PNG.pvr */,
+				F843BAFEA9982ED26F454025 /* 025_FOC.PNG.pvr */,
+				F8B5FDA24868C96F1D88C4D2 /* 025_RUW.PNG.pvr */,
+				F8A1893924EFBC7A9053BF55 /* 026_FOD.PNG.pvr */,
+				F8F2F343997CF226CF8ED3B1 /* 026_RUW.PNG.pvr */,
+				F857388241833CB3CB2C74CB /* 027_FOD.PNG.pvr */,
+				F897978A3B240CDE5603C3ED /* 027_RUW.PNG.pvr */,
+				F89902A9293198B7D32887F3 /* 028_GOF.PNG.pvr */,
+				F850C7159AF6A4E546D29DF0 /* 029_GCC.PNG.pvr */,
+				F88EE91102C14DB255E8FC03 /* 030_GOC.PNG.pvr */,
+				F847236E03DCDC8088CD612D /* 031_GOD.PNG.pvr */,
+				F8EBEB571A83540E20E2877A /* 032_FOC.PNG.pvr */,
+				F80A761E8F76FDA69A32DCD0 /* 032_GOC.PNG.pvr */,
+				F80ECB46F44727E654AAF288 /* 033_FOA.PNG.pvr */,
+				F8ACD8787F6DBD0846E0C301 /* 033_GOA.PNG.pvr */,
+				F8725342965C295AB0AA34A6 /* 034_FOC.PNG.pvr */,
+				F86D3A36B62CCA030882B167 /* 034_GOC.PNG.pvr */,
+				F821EA8040DAF2F10D326057 /* 035_FOC.PNG.pvr */,
+				F84BB5152CA088736462F92E /* 035_GOC.PNG.pvr */,
+				F82DC22929430387C66F87D6 /* 036_FOC.PNG.pvr */,
+				F88F4FB17C1E82692FC509D2 /* 036_GOC.PNG.pvr */,
+				F8C36BC8D8F75AD0958C9EF8 /* 037_FOC.PNG.pvr */,
+				F80AB971B33A670163F03587 /* 037_GOC.PNG.pvr */,
+				F819B064437620A81EE9C502 /* 041_FRB.PNG.pvr */,
+				F8C2C06F6F48386A9663C8C0 /* 041_GRB.PNG.pvr */,
+				F87605C668C9C196AD7BA2E9 /* 044_GRC.PNG.pvr */,
+				F8E47F06E5FE3931C8589C3E /* 046_GRC.PNG.pvr */,
+				F82EA4C2F2622A6CDC4DB618 /* 054_GRC.PNG.pvr */,
+				F8D45527DD7955ED304F4F16 /* 055_GRC.PNG.pvr */,
+				F86834E86885194626166373 /* 056_GRC.PNG.pvr */,
+				F88249ED22C8C3FFE1343D8C /* 059_FRC.PNG.pvr */,
+				F810D33526BB4FEED67B1F27 /* 060_FRC.PNG.pvr */,
+				F80FEFEB21A411E3EC79507F /* 061_FRD.PNG.pvr */,
+				F8A8BEA950FA4FD3406C5788 /* 063_GRC.PNG.pvr */,
+				F8A098F93799DAF782C2A447 /* 064_GRC.PNG.pvr */,
+				F824B5DC3B0D005990A75EAF /* 066_FCB.PNG.pvr */,
+				F81C58FFE2051F08A50DA224 /* 066_GCB.PNG.pvr */,
+				F86DBD2F985543BE2DD59B98 /* 067_FCC.PNG.pvr */,
+				F8BC1B6B31AEEDF6238C2453 /* 067_GCC.PNG.pvr */,
+				F85ECE7F9D6EF30F648562C0 /* 068_GCD.PNG.pvr */,
+				F8A5787A0B50B667827A6CA7 /* 069_FCA.PNG.pvr */,
+				F86313F60991EFE5155B9B81 /* 069_GCA.PNG.pvr */,
+				F86E18F53882615F0AB65F2A /* 070_GOD.PNG.pvr */,
+				F805766D037F7D2997160D5E /* 071_FRC.PNG.pvr */,
+				F8BD8EF61D3197A3221EF492 /* 072_FRC.PNG.pvr */,
+				F89FD622F53B62C8FFFA6A58 /* 073_FRC.PNG.pvr */,
+				F80070183AEB59826B1F4DE2 /* 074_FRC.PNG.pvr */,
+				F8B4F6157AD4E06C06DCBBCF /* 075_FRC.PNG.pvr */,
+				F84EA821673C0334C67E4A63 /* 076_FRC.PNG.pvr */,
+				F8B403F857571303F6A03BEB /* 077_FRC.PNG.pvr */,
+				F8EFC6CEFF573BE8F2E31296 /* 080_GCB.PNG.pvr */,
+				F82D2440A91CCA0DB0FD604F /* 082_FCD.PNG.pvr */,
+				F828EABFDC0F53258F778D56 /* 083_FRC.PNG.pvr */,
+				F83314873729125602BF038C /* 085_GRC.PNG.pvr */,
+				F81F2F04C819C147E841B589 /* 086_FOF.PNG.pvr */,
+				F8BC9587D7F38423DDA0E93B /* 086_GOF.PNG.pvr */,
+				F87BC53AABB6D5DA6574189B /* 087_FCA.PNG.pvr */,
+				F8598FCF275D7BDFED537E96 /* 087_GCA.PNG.pvr */,
+				F86AF83E1F3F500AF797E8B7 /* 087_GCC.PNG.pvr */,
+				F8581E2A5380E375238AF1E2 /* 088_FRC.PNG.pvr */,
+				F8A0E1968B2792B0EBE912EF /* 089_FRC.PNG.pvr */,
+				F8676C803DC9A562B7FC1BB2 /* 092_GCA.PNG.pvr */,
+				F8ABA2455430D001DD52F1E0 /* 094_FOD.PNG.pvr */,
+				F890BE7BA7312593EB2878B0 /* 095_FOD.PNG.pvr */,
+				F8B467E3F38018F8019C1B81 /* US_IL_13443_CHICAGO_35EAST_L.PNG.pvr */,
+				F8E706A64D01AA09B046D1DF /* US_IL_13444_CHICAGO_LEOBURNETT_L.PNG.pvr */,
+				F8D8CAB2C202487B784EFE55 /* US_IL_13447_CHICAGO_REIDMURDOCH_L.PNG.pvr */,
+				F84934C31C548FC2E798A3AA /* US_IL_13448_CHICAGO_CARBIDE_L.PNG.pvr */,
+				F8C98DE4B7B66F16643DB9F9 /* US_IL_13449_CHICAGO_CROWNFOUNTAIN_L.PNG.pvr */,
+				F89C6B69607569FB1FD2BF3D /* US_IL_13451_CHICAGO_CULTURAL_L.PNG.pvr */,
+				F89E3887FBEA9A19A4FBAE2A /* US_IL_13453_CHICAGO_PRUDENTIAL_PART1_L.PNG.pvr */,
+				F80814EBB1F0A8C6E8DB9232 /* US_IL_13454_CHICAGO_UNITED_L.PNG.pvr */,
+				F8F6E7B1F25BC788674AB906 /* US_IL_13456_CHICAGO_SEVENTEENTH_L.PNG.pvr */,
+				F80EA618B0A196788669C8AB /* US_IL_13458_CHICAGO_SMURFIT_L.PNG.pvr */,
+				F8CCB1E2DBA8763E6200955A /* US_IL_13459_CHICAGO_LASALLE_L.PNG.pvr */,
+				F819D36621FD1860A89D3585 /* US_IL_13460_CHICAGO_TRUMP_L.PNG.pvr */,
+				F8D4F2A4CEDA24BB3220448B /* US_IL_13461_CHICAGO_UNITRIN_L.PNG.pvr */,
+				F86D55DFC36EC49F6093AEF8 /* US_IL_13462_CHICAGO_WILLOUGHBY_L.PNG.pvr */,
+				F8B895F561C1B5296DF663B5 /* US_IL_13490_CHICAGO_PRUDENTIAL_PART2_L.PNG.pvr */,
+				F8CA9CBD61F0639BF3C61757 /* US_IL_CHICAGO_AONCENTER_L.PNG.pvr */,
+				F895FE0CC6FC9D8E9385206B /* US_IL_CHICAGO_ARTINSTITUTE_L.PNG.pvr */,
+				F80217D569D3728FCB5DACF5 /* US_IL_CHICAGO_BOARDOFTHETRADE_L.PNG.pvr */,
+				F8BA08CE5DBE723CA22A10B3 /* US_IL_CHICAGO_BOEINGBUILDING_L.PNG.pvr */,
+				F8EA8AE0789D6401C7220F67 /* US_IL_CHICAGO_CHICAGOTHEATRE_L.PNG.pvr */,
+				F8CEC321627BF36F627D686C /* US_IL_CHICAGO_CITYHALL_L.PNG.pvr */,
+				F8BB7EAA7F56275C9B202DDF /* US_IL_CHICAGO_DALEY_L.PNG.pvr */,
+				F8D21AD72EA208FC4D0A6BE3 /* US_IL_CHICAGO_HILTON_L.PNG.pvr */,
+				F87BF88AA88FA3AD8E0E1674 /* US_IL_CHICAGO_JAMESTHOMPSON_L.PNG.pvr */,
+				F85093A1045A5CEF174B4A4D /* US_IL_CHICAGO_LIBRARY_L.PNG.pvr */,
+				F856689096C5CCDF7DB99C82 /* US_IL_CHICAGO_MILLENIUMPARK1_L.PNG.pvr */,
+				F8F28C3D3B7B8E90D927C2D3 /* US_IL_CHICAGO_MILLENIUMPARK2_L.PNG.pvr */,
+				F806116CACD35C6CC948726D /* US_IL_CHICAGO_MMART_L.PNG.pvr */,
+				F899114BEC910FD92BF3D354 /* US_IL_CHICAGO_OGILVIE_L.PNG.pvr */,
+				F8C29FEEC271CBFA8B828036 /* US_IL_CHICAGO_SEARSTOWER_L.PNG.pvr */,
+				F891A7460EE5C85ABC5D02F5 /* US_IL_CHICAGO_UNIONSTATION_L.PNG.pvr */,
+				F8F18EFF34FDBD3352CBDDD0 /* US_L_CONCRETE-COLOUR.PNG.pvr */,
+				F8F86D4AC330F984E5A86A98 /* US_L_CONCRETE-DETAIL.PNG.pvr */,
+				F8D906B66F5349E5BB0F1294 /* US_L_PARK-COLOUR.PNG.pvr */,
+				F82FFCFAC845E102B8B76AEA /* US_L_WATER-COLOUR.PNG.pvr */,
+				F82BF4175902481B4AB3E318 /* US_R_CONCRETE.PNG.pvr */,
+				F8ACF6FBB320ECF639ED2702 /* US_R_HIGHWAY-SOLID.PNG.pvr */,
+				F8539B39B6247F28A6149093 /* US_R_STREET-DASHED.PNG.pvr */,
+				F8C94D649D2743887586F56C /* US_R_STREET-INNER-SHOULDER.PNG.pvr */,
+				F8E90E15D033159726278EED /* US_R_STREET-LANE-FILLER.PNG.pvr */,
+				F818267A96AE76D64B218D6C /* US_R_STREET-SOLID.PNG.pvr */,
+				F822649166D951111D132279 /* US_R_STREET-UNMARKED.PNG.pvr */,
+				F867D5466955E1AA031B3FB7 /* US_R_WALKWAY-SOLID.PNG.pvr */,
+				F83620612E09A0B8BE14E130 /* US_R_WALKWAY-UNMARKED.PNG.pvr */,
+				F8F77E18A1C44D5CE09A8211 /* US_T_RAILROAD.PNG.pvr */,
+			);
+			name = Textures;
+			sourceTree = "<group>";
+		};
+		DBE6ED4D15C2AB8E00275129 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F8369D1389B20FDD3A8DAAEE /* modelindex.nav */,
+				F804D70432DFBF831F15A09F /* occlusiondata.nav */,
+				F8DEE3668124FCB791B91358 /* cameratrack.pod */,
+				F81BABDBBDFC9691D17B8492 /* CM_US_IL_CHICAGO_008_015_L.DAE.pod */,
+				F83428E43FB6E5CCF288B1E4 /* CM_US_IL_CHICAGO_008_016_L.DAE.pod */,
+				F85DF1ED988E729C3DD5BA79 /* CM_US_IL_CHICAGO_009_014_L.DAE.pod */,
+				F8A88A1FC78FAC885630F091 /* CM_US_IL_CHICAGO_009_015_L.DAE.pod */,
+				F861F12D80D1FF36CE815426 /* CM_US_IL_CHICAGO_009_016_L.DAE.pod */,
+				F8895095640B3E60DE70909B /* CM_US_IL_CHICAGO_009_017_L.DAE.pod */,
+				F8DA4EEC1F978FDDA1736AB3 /* CM_US_IL_CHICAGO_009_018_L.DAE.pod */,
+				F8AE1038612917D10FEBE640 /* CM_US_IL_CHICAGO_010_014_L.DAE.pod */,
+				F83005E5C4A7639E79157419 /* CM_US_IL_CHICAGO_010_015_L.DAE.pod */,
+				F89E7CC73AE7463FF862FD20 /* CM_US_IL_CHICAGO_010_015_H.DAE.pod */,
+				F8B48265B4CDFFEE3FE66A16 /* CM_US_IL_CHICAGO_010_016_H.DAE.pod */,
+				F80E98C9A373DBD43A7F0C30 /* CM_US_IL_CHICAGO_010_016_L.DAE.pod */,
+				F8E4EF5399D7399C3365B222 /* CM_US_IL_CHICAGO_010_017_L.DAE.pod */,
+				F8518668A6769BDE870ECC45 /* CM_US_IL_CHICAGO_010_017_H.DAE.pod */,
+				F8D6904AD1983CFE180882AC /* CM_US_IL_CHICAGO_010_018_L.DAE.pod */,
+				F819EAE3F223FD4082D8F596 /* CM_US_IL_CHICAGO_011_013_L.DAE.pod */,
+				F8A9C7B4BC150D141876708D /* CM_US_IL_CHICAGO_011_014_L.DAE.pod */,
+				F8E40C90C34817B385D35698 /* CM_US_IL_CHICAGO_011_015_L.DAE.pod */,
+				F83A53CF4682849807AD62B7 /* CM_US_IL_CHICAGO_011_015_H.DAE.pod */,
+				F80D486B088931A3CC36F26A /* CM_US_IL_CHICAGO_011_016_H.DAE.pod */,
+				F87517913DCFD572C3480619 /* CM_US_IL_CHICAGO_011_016_L.DAE.pod */,
+				F89B437914DD2D285448C48C /* CM_US_IL_CHICAGO_011_017_L.DAE.pod */,
+				F87217DA86FF29A789E50B3E /* CM_US_IL_CHICAGO_011_017_H.DAE.pod */,
+				F8DE9A7BC226261CB5A9050D /* CM_US_IL_CHICAGO_011_018_L.DAE.pod */,
+				F8960999434C2078FAF745B2 /* CM_US_IL_CHICAGO_012_014_L.DAE.pod */,
+				F886495B0C6B36BEF83E7883 /* CM_US_IL_CHICAGO_012_015_L.DAE.pod */,
+				F84E1B41B3C95F4D2D02F079 /* CM_US_IL_CHICAGO_012_016_L.DAE.pod */,
+				F85DDC57F8DC21B7F7A1B49D /* CM_US_IL_CHICAGO_012_017_L.DAE.pod */,
+				F812EA161594AD3FA00F70CF /* CM_US_IL_CHICAGO_013_015_L.DAE.pod */,
+				F846322CAECA795435625218 /* CM_US_IL_CHICAGO_013_016_L.DAE.pod */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		DBE6ED4E15C2AB9C00275129 /* Generic */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Generic;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		49068F5713DDA30C00C8DC21 /* OGLESNavigation3D */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49068F7613DDA30C00C8DC21 /* Build configuration list for PBXNativeTarget "OGLESNavigation3D" */;
+			buildPhases = (
+				49068F5413DDA30C00C8DC21 /* Sources */,
+				49068F5513DDA30C00C8DC21 /* Frameworks */,
+				49068F5613DDA30C00C8DC21 /* Resources */,
+				DB3A55C515C92213004CE8F1 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OGLESNavigation3D;
+			productName = OGLESNavigation3D;
+			productReference = 49068F5813DDA30C00C8DC21 /* OGLESNavigation3D.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		49068F4F13DDA30C00C8DC21 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
+			buildConfigurationList = 49068F5213DDA30C00C8DC21 /* Build configuration list for PBXProject "OGLESNavigation3D" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 49068F4D13DDA30C00C8DC21;
+			productRefGroup = 49068F5913DDA30C00C8DC21 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = DB5C329915C7F19D00B1A208 /* Products */;
+					ProjectRef = DBE6ED1B15C2A1D300275129 /* OGLESTools.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				49068F5713DDA30C00C8DC21 /* OGLESNavigation3D */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		DB5C32AC15C7F32B00B1A208 /* libOGLESTools.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libOGLESTools.a;
+			remoteRef = DB5C32AB15C7F32B00B1A208 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		49068F5613DDA30C00C8DC21 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */,
+				495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */,
+				F8421BE65AE2BB8BDA76431B /* modelindex.nav in Resources */,
+				F857FC0BF21BCF9EC2A60899 /* occlusiondata.nav in Resources */,
+				F86C60508704F3D1C5C0A4DA /* cameratrack.pod in Resources */,
+				F8449B2B62A697A02DFE249F /* CM_US_IL_CHICAGO_008_015_L.DAE.pod in Resources */,
+				F8E0B8A86B7A8C260AD9BD87 /* CM_US_IL_CHICAGO_008_016_L.DAE.pod in Resources */,
+				F8935CA2323F3B511A7F481D /* CM_US_IL_CHICAGO_009_014_L.DAE.pod in Resources */,
+				F81A2D83FCEE183761183B34 /* CM_US_IL_CHICAGO_009_015_L.DAE.pod in Resources */,
+				F859D887E1BDB8259EE111B8 /* CM_US_IL_CHICAGO_009_016_L.DAE.pod in Resources */,
+				F84E57AEEF17E513CFC24A95 /* CM_US_IL_CHICAGO_009_017_L.DAE.pod in Resources */,
+				F83700F13BCA3F0EE2B75766 /* CM_US_IL_CHICAGO_009_018_L.DAE.pod in Resources */,
+				F82FB57BEDEB1579B974EFD8 /* CM_US_IL_CHICAGO_010_014_L.DAE.pod in Resources */,
+				F8D82B5568FE592A6B318492 /* CM_US_IL_CHICAGO_010_015_L.DAE.pod in Resources */,
+				F8EC826CB91EBB022A6249AC /* CM_US_IL_CHICAGO_010_015_H.DAE.pod in Resources */,
+				F80E25DAFB8A9ACA146EF699 /* CM_US_IL_CHICAGO_010_016_H.DAE.pod in Resources */,
+				F8FA164CE348DC480E695306 /* CM_US_IL_CHICAGO_010_016_L.DAE.pod in Resources */,
+				F8488A229EB0AEAA3FEABE76 /* CM_US_IL_CHICAGO_010_017_L.DAE.pod in Resources */,
+				F827BE22A82B77CA7779D078 /* CM_US_IL_CHICAGO_010_017_H.DAE.pod in Resources */,
+				F85B8810D94B473060251E93 /* CM_US_IL_CHICAGO_010_018_L.DAE.pod in Resources */,
+				F8AFA5839BAD3A5F398296F5 /* CM_US_IL_CHICAGO_011_013_L.DAE.pod in Resources */,
+				F81D1ACE075BE37872B37519 /* CM_US_IL_CHICAGO_011_014_L.DAE.pod in Resources */,
+				F8E2EAE181250AAC836D6E9F /* CM_US_IL_CHICAGO_011_015_L.DAE.pod in Resources */,
+				F81104D1EB77CE219FF5B3E4 /* CM_US_IL_CHICAGO_011_015_H.DAE.pod in Resources */,
+				F801648E91BFB5D61B9F9E00 /* CM_US_IL_CHICAGO_011_016_H.DAE.pod in Resources */,
+				F839E4DE34330696BB43A9F9 /* CM_US_IL_CHICAGO_011_016_L.DAE.pod in Resources */,
+				F858617EBF01BF5C1B2B868E /* CM_US_IL_CHICAGO_011_017_L.DAE.pod in Resources */,
+				F8574450F0E66F3D3564E76C /* CM_US_IL_CHICAGO_011_017_H.DAE.pod in Resources */,
+				F8FB2220603CF99F350AEEF8 /* CM_US_IL_CHICAGO_011_018_L.DAE.pod in Resources */,
+				F8FF0967827FDF0DC5DBB301 /* CM_US_IL_CHICAGO_012_014_L.DAE.pod in Resources */,
+				F8863DC2E6FC70614ABA6BA7 /* CM_US_IL_CHICAGO_012_015_L.DAE.pod in Resources */,
+				F8150852DBF9ECCD76BF3D67 /* CM_US_IL_CHICAGO_012_016_L.DAE.pod in Resources */,
+				F8448370747648651F4FADD3 /* CM_US_IL_CHICAGO_012_017_L.DAE.pod in Resources */,
+				F8042BA66282A3C1CFBE9DEC /* CM_US_IL_CHICAGO_013_015_L.DAE.pod in Resources */,
+				F8012BF148F55ABADB3176DD /* CM_US_IL_CHICAGO_013_016_L.DAE.pod in Resources */,
+				F8D89310F46162BF08200C53 /* skybox1.pvr in Resources */,
+				F808203BEC69F39F1E52B716 /* skybox2.pvr in Resources */,
+				F81FC32C5DA35B9DFB59F099 /* skybox3.pvr in Resources */,
+				F898120B045BF40A1C806D6A /* skybox4.pvr in Resources */,
+				F8A62C71A1063D171874247E /* skybox5.pvr in Resources */,
+				F81ECB0A0EBA83EC39135017 /* skybox6.pvr in Resources */,
+				F8739B5094DFAAB1C4325929 /* UIElements.pvr in Resources */,
+				F8E6D019DD3C9C6FADF44E89 /* 006_RUS.PNG.pvr in Resources */,
+				F83F8B522EE7679442184165 /* 007_RUG.PNG.pvr in Resources */,
+				F82B7E4395A54B0FDDF57F3D /* 008_RUG.PNG.pvr in Resources */,
+				F83187779520A05C8215F8C1 /* 009_RUG.PNG.pvr in Resources */,
+				F87207F4831F4538C4770C93 /* 011_GIE.PNG.pvr in Resources */,
+				F87D1C7B3F380F1348DE8DB1 /* 012_RSR.PNG.pvr in Resources */,
+				F8816F737F1FFE3817CD2BAF /* 016_FOC.PNG.pvr in Resources */,
+				F825AE09CAF58F3961FBD755 /* 016_RTR.PNG.pvr in Resources */,
+				F8016506BF6C43B1FA6F8C04 /* 017_FOD.PNG.pvr in Resources */,
+				F86AF5F8E94080B9F659FF5E /* 018_FOD.PNG.pvr in Resources */,
+				F89045DD73EE03E3527F855E /* 019_FOC.PNG.pvr in Resources */,
+				F8A80D005DC91A370024AE4F /* 019_GOC.PNG.pvr in Resources */,
+				F881FEFE6E63FABE81677F6C /* 019_RZG.PNG.pvr in Resources */,
+				F85AF068FF4F387E202AA27D /* 020_FOC.PNG.pvr in Resources */,
+				F86D5C319B690148EAAD00DE /* 021_FOC.PNG.pvr in Resources */,
+				F8EE54652AD35A395E84B098 /* 022_FOC.PNG.pvr in Resources */,
+				F8F48C64820A32A0EFA3467C /* 022_RUG.PNG.pvr in Resources */,
+				F8938230FD3B3F9BA4251CB3 /* 023_FOB.PNG.pvr in Resources */,
+				F80F399AC451CBD0E7BA693D /* 023_RUG.PNG.pvr in Resources */,
+				F872A975A97D5E5A83E56633 /* 024_FOB.PNG.pvr in Resources */,
+				F80986110F49A3BE0893BCF1 /* 025_FOC.PNG.pvr in Resources */,
+				F85C222C189B051DCA553320 /* 025_RUW.PNG.pvr in Resources */,
+				F8F1EDEB69168D5B5FDFD9B1 /* 026_FOD.PNG.pvr in Resources */,
+				F8A062DD282E35BDB9100004 /* 026_RUW.PNG.pvr in Resources */,
+				F81019EB448A68E149C13ED5 /* 027_FOD.PNG.pvr in Resources */,
+				F83961D2D4A4245F7B904FFA /* 027_RUW.PNG.pvr in Resources */,
+				F83DA56BEF3D63EC2AF0BCC1 /* 028_GOF.PNG.pvr in Resources */,
+				F8A5CACA036E53E507108173 /* 029_GCC.PNG.pvr in Resources */,
+				F83F2609631D72F80A8AEE7D /* 030_GOC.PNG.pvr in Resources */,
+				F84EE74F3F81756F39DBACD3 /* 031_GOD.PNG.pvr in Resources */,
+				F85D8DCB2B7421E8859AE6A8 /* 032_FOC.PNG.pvr in Resources */,
+				F80A08BD2A56DD5D20A2F655 /* 032_GOC.PNG.pvr in Resources */,
+				F8CCE9AD71208C37BE91241A /* 033_FOA.PNG.pvr in Resources */,
+				F817AF1BED4CE30B9D16020E /* 033_GOA.PNG.pvr in Resources */,
+				F81A6F8E2AB12FC26229AF99 /* 034_FOC.PNG.pvr in Resources */,
+				F856CE54554C18C00BC6A517 /* 034_GOC.PNG.pvr in Resources */,
+				F8372CE79348D8EEDBAEEE68 /* 035_FOC.PNG.pvr in Resources */,
+				F8231276A735ED358EB8D6C9 /* 035_GOC.PNG.pvr in Resources */,
+				F80BBA9E64AB4B6EFF0DA47E /* 036_FOC.PNG.pvr in Resources */,
+				F84F439D433AD55A8DCC29AF /* 036_GOC.PNG.pvr in Resources */,
+				F8DBEF4E569D2898F2796B50 /* 037_FOC.PNG.pvr in Resources */,
+				F8086ADB6B03EFA8288E62AD /* 037_GOC.PNG.pvr in Resources */,
+				F8CFDBA70D0C6CF2BF26B584 /* 041_FRB.PNG.pvr in Resources */,
+				F82662DBF9F32A4C40BF61C5 /* 041_GRB.PNG.pvr in Resources */,
+				F877B064CC8BD8E8A7C0FD62 /* 044_GRC.PNG.pvr in Resources */,
+				F8CA3E94AA275C048BBA1ACF /* 046_GRC.PNG.pvr in Resources */,
+				F896A8F6D16489798397BEB9 /* 054_GRC.PNG.pvr in Resources */,
+				F8C61A11194D01F17B9E39B4 /* 055_GRC.PNG.pvr in Resources */,
+				F85C9B0F8D17AD04B18500F4 /* 056_GRC.PNG.pvr in Resources */,
+				F8BCB610A2D45067EE388260 /* 059_FRC.PNG.pvr in Resources */,
+				F8CB99FE81E1C63687B24E64 /* 060_FRC.PNG.pvr in Resources */,
+				F8A41E70CB7EECBFDA3A2E1F /* 061_FRD.PNG.pvr in Resources */,
+				F8B31E7F35871F0276ADFF71 /* 063_GRC.PNG.pvr in Resources */,
+				F8CF9BF95FD0A9917258F3B7 /* 064_GRC.PNG.pvr in Resources */,
+				F8E44EF6E3367A39EAB531C0 /* 066_FCB.PNG.pvr in Resources */,
+				F8D96BA3989D916BFDFE0AF0 /* 066_GCB.PNG.pvr in Resources */,
+				F833DF0A6DB97D0055EB68C2 /* 067_FCC.PNG.pvr in Resources */,
+				F8BEE5BFAED1D035BCEF369E /* 067_GCC.PNG.pvr in Resources */,
+				F81AA9A727F820B7778A2AEC /* 068_GCD.PNG.pvr in Resources */,
+				F8C06103EDD6A36138D69957 /* 069_FCA.PNG.pvr in Resources */,
+				F81A3B442C8D9A4067B4BB70 /* 069_GCA.PNG.pvr in Resources */,
+				F8FCA1457C45A5E1B4C5F599 /* 070_GOD.PNG.pvr in Resources */,
+				F8E45454EAAB2EDD66D79ADB /* 071_FRC.PNG.pvr in Resources */,
+				F88BFBDB4F2A4EA214265F24 /* 072_FRC.PNG.pvr in Resources */,
+				F84F382BFC55A9ED92A0DBE0 /* 073_FRC.PNG.pvr in Resources */,
+				F85A531D1A4F394D84AFEAEC /* 074_FRC.PNG.pvr in Resources */,
+				F8BDB5AD46119803B64CD293 /* 075_FRC.PNG.pvr in Resources */,
+				F804CD931E0A2A06F1BE7336 /* 076_FRC.PNG.pvr in Resources */,
+				F8B778FA72FE6F321A8C9592 /* 077_FRC.PNG.pvr in Resources */,
+				F8B991BAB64890B164D70DF2 /* 080_GCB.PNG.pvr in Resources */,
+				F83A2675207F91F35CBAA4EA /* 082_FCD.PNG.pvr in Resources */,
+				F83233723EBB96992A6AFE5E /* 083_FRC.PNG.pvr in Resources */,
+				F838E9998F1F15C911DFEA23 /* 085_GRC.PNG.pvr in Resources */,
+				F80E3292575C64A9AFF9E3AE /* 086_FOF.PNG.pvr in Resources */,
+				F892D572461B2661FDFF1FBA /* 086_GOF.PNG.pvr in Resources */,
+				F878155F48483B68CE72E6C4 /* 087_FCA.PNG.pvr in Resources */,
+				F80B0D6306E321A78186ED94 /* 087_GCA.PNG.pvr in Resources */,
+				F8A7060FDA737A879EF6DBD6 /* 087_GCC.PNG.pvr in Resources */,
+				F865D00CD4479A4CCE428ED7 /* 088_FRC.PNG.pvr in Resources */,
+				F88BCF3BDA275A2CC8D4A15B /* 089_FRC.PNG.pvr in Resources */,
+				F8307EBEE53615E998FE6C9C /* 092_GCA.PNG.pvr in Resources */,
+				F8E1557E392D9F4E8A4FD679 /* 094_FOD.PNG.pvr in Resources */,
+				F87703AAC790C327A9D9933D /* 095_FOD.PNG.pvr in Resources */,
+				F8EFF942037E6693A9049B60 /* US_IL_13443_CHICAGO_35EAST_L.PNG.pvr in Resources */,
+				F8D0F27C9361D3B29A0E447D /* US_IL_13444_CHICAGO_LEOBURNETT_L.PNG.pvr in Resources */,
+				F8E0475454BBD0C2CEF3D6BA /* US_IL_13447_CHICAGO_REIDMURDOCH_L.PNG.pvr in Resources */,
+				F806A2C5EC57B084B2C16C5C /* US_IL_13448_CHICAGO_CARBIDE_L.PNG.pvr in Resources */,
+				F8EB7B444CC4ECA5BEAEC2A9 /* US_IL_13449_CHICAGO_CROWNFOUNTAIN_L.PNG.pvr in Resources */,
+				F82CDD3DE24E6A4A3089CCB6 /* US_IL_13451_CHICAGO_CULTURAL_L.PNG.pvr in Resources */,
+				F8CC0B51EAEE22C49202544C /* US_IL_13453_CHICAGO_PRUDENTIAL_PART1_L.PNG.pvr in Resources */,
+				F87A342093F336E329BDFE45 /* US_IL_13454_CHICAGO_UNITED_L.PNG.pvr in Resources */,
+				F8658ABA0F6AD27A847108AE /* US_IL_13456_CHICAGO_SEVENTEENTH_L.PNG.pvr in Resources */,
+				F8130BC2A68DAF3C06D65A76 /* US_IL_13458_CHICAGO_SMURFIT_L.PNG.pvr in Resources */,
+				F80E31F368E52B0E965DE940 /* US_IL_13459_CHICAGO_LASALLE_L.PNG.pvr in Resources */,
+				F88DBEC1211C1A25E3039ACB /* US_IL_13460_CHICAGO_TRUMP_L.PNG.pvr in Resources */,
+				F84CDFC6E519DD6B22FAFB07 /* US_IL_13461_CHICAGO_UNITRIN_L.PNG.pvr in Resources */,
+				F836A8E9640A951D78AE1991 /* US_IL_13462_CHICAGO_WILLOUGHBY_L.PNG.pvr in Resources */,
+				F87CF976615B648AD448D285 /* US_IL_13490_CHICAGO_PRUDENTIAL_PART2_L.PNG.pvr in Resources */,
+				F89B56A9D8CA24024D935BE8 /* US_IL_CHICAGO_AONCENTER_L.PNG.pvr in Resources */,
+				F869D750AF1B20EB0671155F /* US_IL_CHICAGO_ARTINSTITUTE_L.PNG.pvr in Resources */,
+				F85AC924E4C4044AB6517A8B /* US_IL_CHICAGO_BOARDOFTHETRADE_L.PNG.pvr in Resources */,
+				F8380568D6E340C18EE40DFA /* US_IL_CHICAGO_BOEINGBUILDING_L.PNG.pvr in Resources */,
+				F8AD060692F16E8D45A2DAD7 /* US_IL_CHICAGO_CHICAGOTHEATRE_L.PNG.pvr in Resources */,
+				F84BDC909403743333C15F46 /* US_IL_CHICAGO_CITYHALL_L.PNG.pvr in Resources */,
+				F89950DE65CF5D47038E9D1A /* US_IL_CHICAGO_DALEY_L.PNG.pvr in Resources */,
+				F8862254AB74EE81A730DD7B /* US_IL_CHICAGO_HILTON_L.PNG.pvr in Resources */,
+				F81EA4268D5581293906A879 /* US_IL_CHICAGO_JAMESTHOMPSON_L.PNG.pvr in Resources */,
+				F8B42B71F4E3EA4C53FAC7FE /* US_IL_CHICAGO_LIBRARY_L.PNG.pvr in Resources */,
+				F8D055CC466BEB61F42C325A /* US_IL_CHICAGO_MILLENIUMPARK1_L.PNG.pvr in Resources */,
+				F8D67047A79501BDE950A306 /* US_IL_CHICAGO_MILLENIUMPARK2_L.PNG.pvr in Resources */,
+				F89A8AD4CA838DD26372E01B /* US_IL_CHICAGO_MMART_L.PNG.pvr in Resources */,
+				F80AB43D83F9FEB6A8CF58BD /* US_IL_CHICAGO_OGILVIE_L.PNG.pvr in Resources */,
+				F8B7F355EAA98E4A8485E74F /* US_IL_CHICAGO_SEARSTOWER_L.PNG.pvr in Resources */,
+				F83630AEB6FB7BF0A7F26EC7 /* US_IL_CHICAGO_UNIONSTATION_L.PNG.pvr in Resources */,
+				F8E49FB844C4A31D6E5417ED /* US_L_CONCRETE-COLOUR.PNG.pvr in Resources */,
+				F80A34D73D7D9E46919268BE /* US_L_CONCRETE-DETAIL.PNG.pvr in Resources */,
+				F83BE96351FF51473BC1487A /* US_L_PARK-COLOUR.PNG.pvr in Resources */,
+				F823E109234B6511AF6C195F /* US_L_WATER-COLOUR.PNG.pvr in Resources */,
+				F8936F4FA6354DE03F5996DA /* US_R_CONCRETE.PNG.pvr in Resources */,
+				F8393EED18A4021EE56AF2A4 /* US_R_HIGHWAY-SOLID.PNG.pvr in Resources */,
+				F80FE43C761FA78D143BED09 /* US_R_STREET-DASHED.PNG.pvr in Resources */,
+				F8BCA92152C4980A724C9C26 /* US_R_STREET-INNER-SHOULDER.PNG.pvr in Resources */,
+				F818C90C089A4F9DC489222A /* US_R_STREET-LANE-FILLER.PNG.pvr in Resources */,
+				F86509CBD08D23BF13F6AB72 /* US_R_STREET-SOLID.PNG.pvr in Resources */,
+				F841CD9A1BA808330D268817 /* US_R_STREET-UNMARKED.PNG.pvr in Resources */,
+				F84F49F164D50339747C20AF /* US_R_WALKWAY-SOLID.PNG.pvr in Resources */,
+				F83A78A697A8C74126F6BC10 /* US_R_WALKWAY-UNMARKED.PNG.pvr in Resources */,
+				F87DC43D95D3CD5D1364C53B /* US_T_RAILROAD.PNG.pvr in Resources */,
+				DB3A55CF15C938D4004CE8F1 /* Info.plist in Resources */,
+				DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		49068F5413DDA30C00C8DC21 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8A78F38B2A786C6DC0F62A0 /* OGLESNavigation3D.cpp in Sources */,
+				F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */,
+				F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */,
+				F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */,
+				F8511E325A14C7B1512D37CC /* main.m in Sources */,
+				F869BEBD44384AC2147622A7 /* AppController.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		495B9D0013E2EE09000FD6B4 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				495B9D0113E2EE09000FD6B4 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				495B9D0513E2EE16000FD6B4 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		49068F7413DDA30C00C8DC21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"_DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		49068F7513DDA30C00C8DC21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		49068F7713DDA30C00C8DC21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					BUILD_OGLES,
+				);
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = ("$(inherited)","../../../../../../Builds/OSX/x86/Lib");
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Tools/OGLES ../../../../../../Tools";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		49068F7813DDA30C00C8DC21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = ("$(inherited)","../../../../../../Builds/OSX/x86/Lib");
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Tools/OGLES ../../../../../../Tools";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		49068F5213DDA30C00C8DC21 /* Build configuration list for PBXProject "OGLESNavigation3D" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49068F7413DDA30C00C8DC21 /* Debug */,
+				49068F7513DDA30C00C8DC21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49068F7613DDA30C00C8DC21 /* Build configuration list for PBXNativeTarget "OGLESNavigation3D" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49068F7713DDA30C00C8DC21 /* Debug */,
+				49068F7813DDA30C00C8DC21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 49068F4F13DDA30C00C8DC21 /* Project object */;
+}

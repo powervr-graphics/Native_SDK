@@ -1,0 +1,16 @@
+:Title:
+Water
+
+:ShortDescription:
+This demo shows how to render a water effect on a given plane
+
+:FullDescription:
+This demo utilises a combination of different techniques to produce a water effect. User input controls the elements that are implemented in the effect so that users can determine the effect that would best suit their needs. When reflection, refraction and depth effects are off, the water colours alpha value is used to blend the plane in with the rest of the rendered world. This adds to the quality of the basic effect for very little cost.
+
+Controls:
+	-	Left/Right - Cycle backwards/forwards through available options
+	-	Up/Down - Change (Toggle or Increase/Decrease) the currently selected option
+	-	1/Space	-	Toggle Pause/Unpause
+	
+:WhitePaper:
+Shader Based Water Effects

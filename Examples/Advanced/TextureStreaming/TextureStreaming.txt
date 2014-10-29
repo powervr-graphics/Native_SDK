@@ -1,0 +1,12 @@
+:Title:
+TextureStreaming
+
+:ShortDescription:
+This example demonstrates texture streaming using platform-specific functionality.
+
+:FullDescription:
+Streaming texture data from a camera source to a graphics API is a technique which can be very costly if hardware and software optimisations are not used correctly. This example demonstrates the correct usage for platform-specific texture streaming using native APIs relevant for each platform.
+
+Controls:
+	-	Esc	-	Close the application
+

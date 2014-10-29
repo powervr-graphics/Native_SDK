@@ -1,0 +1,12 @@
+:Title:
+Trilinear
+
+:ShortDescription:
+This demo illustrates the visual difference between different texture filter modes.
+
+:FullDescription:	
+This demo illustrates the visual difference between the following different texture filter modes: GL_LINEAR (Bilinear with no MIPMapping), GL_LINEAR_MIPMAP_NEAREST (Bilinear with MIPMapping), GL_LINEAR_MIPMAP_LINEAR (Trilinear). 
+
+Controls:
+	-	Esc	-	Close the application
+

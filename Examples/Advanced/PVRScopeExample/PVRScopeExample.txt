@@ -1,0 +1,8 @@
+:Title:
+PVRScopeExample
+
+:ShortDescription:
+Demonstrates the use of PVRScope and the example graphing code.
+
+:FullDescription:
+This demo shows the use of PVRScope and the example graphing code that allows an application to return performance statistics from the GPU in real time. For further details, refer to the PVRScope User Manual. 

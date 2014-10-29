@@ -1,0 +1,13 @@
+:Title:
+Reflections
+
+:ShortDescription:
+This training course demonstrates the creation of a reflection effect from a 2D map and a cube map.
+
+:FullDescription:
+This training course demonstrates the creation of a reflection effect from a 2D map and a cube map. This technique is also known as environment mapping in that the environment around an object is rendered into a texture (in this case as a pre-baked step) and then this environment is sampled per fragment in order to simulate the effect of light from the environment being reflected from the object. Two variations on the technique are shown using either a 2D map or a cube map.
+
+Controls:
+	-	Left/Right	-	Swap mapping type
+	-	Esc	-	Close the application
+

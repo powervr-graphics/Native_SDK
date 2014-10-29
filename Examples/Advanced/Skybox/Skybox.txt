@@ -1,0 +1,11 @@
+:Title:
+Skybox
+
+:ShortDescription:
+A demonstration of a skybox using PVRTC.
+
+:FullDescription:	
+A demonstration of a skybox using PVRTC. The PVRTCs are compressed using PVRTexTool's skybox compression feature; a special tool used to remove the hard edges of skyboxes.
+
+Controls:
+	-	Esc	-	Close the application

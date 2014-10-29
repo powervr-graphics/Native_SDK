@@ -1,0 +1,12 @@
+:Title:
+MaximumIntensityProjection
+
+:ShortDescription:
+This examples demonstrates a technique known as Maximum Intensity Projection using the EXT_blend_minmax OpenGL ES 2.0 extension.
+
+:FullDescription:
+Maximum Intensity Projection is a technique predominantly used in the medical and scientific visualisation industry. Typically it is used to display PET scan slices retaining the maximum intensity for a given projected pixel. This example uses the EXT_blend_minmax extension to demonstrate this technique.
+
+Controls:
+	-	Esc	-	Close the application
+

@@ -1,0 +1,20 @@
+:Title:
+IntroducingPOD
+
+:ShortDescription:
+This training course introduces the PowerVR Object Data (.pod) format.
+
+:FullDescription:
+This training course introduces the PowerVR Object Data (.pod) format.  It goes into detail on how to open .pod files, load any .pfx and .pvr files that have been referenced, and set up the cameras and lights from the .pod file.
+
+Controls:
+	-	Esc	-	Close the application
+
+:VGP:
+Not Required
+
+:Polygon Count:
+1190
+
+:Vertex Count:
+605

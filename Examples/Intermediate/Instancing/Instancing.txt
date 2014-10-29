@@ -1,0 +1,10 @@
+:Title:
+Instancing
+:ShortDescription:
+Shows how to use instancing to draw several instances of the same mesh with a single draw call. 
+:FullDescription:
+This example shows how to use instancing to draw several instances of the same mesh with a single draw call.
+:PolygonCount:
+4480
+:VertexCount:
+2238

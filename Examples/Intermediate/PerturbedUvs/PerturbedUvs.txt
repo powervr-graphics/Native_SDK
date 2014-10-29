@@ -1,0 +1,11 @@
+:Title:
+PerturbedUVs
+
+:ShortDescription:
+This training course demonstrates the use of environment mapping with perturbed UVs.
+
+:FullDescription:
+This training course demonstrates the use of environment mapping with perturbed UVs. For any given surface on the object a normal map value is read, an angle of reflection between that normal and the eye direction is used to generate a new UV co-ordinate and finally, this UV co-ordinate is used to find the correct colour to reflect from the environment map. 
+
+Controls:
+	-	Esc	-	Close the application

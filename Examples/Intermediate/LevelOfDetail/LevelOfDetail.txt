@@ -1,0 +1,13 @@
+:Title:
+Level of Detail
+
+:ShortDescription:
+This training course demonstrates a switch in the detail of an object based on its distance from the camera.
+
+:FullDescription:
+This training course demonstrates a switch in the detail of an object based on its distance from the camera. The vertex and fragment shaders implement two techniques for reflections. Which technique is used depends on the value of bHighDetail (which varies based on distance). If bHighDetail is true the method described in OGLES2PerturbedUVs is used; if bHighDetail is false the method described in OGLES2Reflections is used. Additionally, when the training course is in 'low detail' mode it uses a different mesh, this mesh contains only 7% of the original meshes vertices.
+
+
+Controls:
+	-	Esc	-	Close the application
+

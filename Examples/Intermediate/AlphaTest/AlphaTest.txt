@@ -1,0 +1,20 @@
+:Title:
+AlphaTest
+
+:ShortDescription:
+This training course illustrates how to perform alpha testing and provides a visual comparison between alpha blending and alpha testing.
+
+:FullDescription:
+Alpha testing is a technique through which a test is conducted on a per-fragment basis to determine whether that fragment should be discarded and not contribute to the final scene. This can allow complex shapes to be drawn using very simple geometries, but often at the price of hardware optimisations in the graphics pipeline. In programmable graphics pipelines supporting GLSL this is done through the use of the 'discard' keyword in the fragment shader while in the fixed function pipeline API OpenGL ES 1.x this is performed by calling either glEnable(GL_BLEND) or glEnable(GL_ALPHA_TEST).
+
+Controls:
+	-	Esc	-	Close the application
+
+:VGP:
+Not Required
+
+:PolygonCount:
+16
+
+:VertexCount:
+32

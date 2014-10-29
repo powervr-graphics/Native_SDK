@@ -1,0 +1,6 @@
+:Title:
+ImageConvolution
+:ShortDescription:
+Introduction to image processing using OpenCL API.
+:FullDescription:
+This demonstration deals with image processing. It illustrates the usage of OpenCL to write linear and non-linear filter kernels.

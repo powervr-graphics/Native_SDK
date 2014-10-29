@@ -1,0 +1,12 @@
+attribute highp vec4  inVertex;
+attribute highp vec2  inTexCoord;
+
+uniform highp mat4  MVPMatrix;
+
+varying mediump vec2  TexCoord;
+
+void main()
+{
+	gl_Position = MVPMatrix * inVertex;
+	TexCoord = inTexCoord;
+}

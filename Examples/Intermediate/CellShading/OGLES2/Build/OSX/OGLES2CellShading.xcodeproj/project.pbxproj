@@ -1,0 +1,469 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		49068F5D13DDA30C00C8DC21 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49068F5C13DDA30C00C8DC21 /* Cocoa.framework */; };
+		49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */; };
+		DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
+		DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
+		DB3A55CC15C937F1004CE8F1 /* libGLESv2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */; };
+		DB3A55CD15C9380E004CE8F1 /* libGLESv2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */; };
+		DB5C32B615C7F65000B1A208 /* libOGLES2Tools.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB5C32AC15C7F32B00B1A208 /* libOGLES2Tools.a */; };
+		495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0013E2EE09000FD6B4 /* MainMenu.xib */; };
+		495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */; };
+		DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */ = {isa = PBXBuildFile; fileRef = DB3A55D015C938EC004CE8F1 /* IMG.icns */; };
+		F86A64D6825ACA6345BB793C /* OGLES2CellShading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8BDC90F57743C0D24FA4F8A /* OGLES2CellShading.cpp */; };
+		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
+		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */; };
+		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */; };
+		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F891AC7DBA4A33CDD5897EA8 /* main.m */; };
+		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F83056A1463D3149D54E9E82 /* AppController.mm */; };
+		F8A4642FE52E6F4311AE3E78 /* Mask.pod in Resources */ = {isa = PBXBuildFile; fileRef = F82D4335198133BEEEEAB4A8 /* Mask.pod */; };
+		F84882A7B82B63CFD02E7BCB /* Shading.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8958C479DF394278F512A5F /* Shading.pvr */; };
+		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */; };
+		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81AE783867359F7612A30AC /* VertShader.vsh */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DB5C32AB15C7F32B00B1A208 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 49BA94F413E00AC600827842;
+			remoteInfo = OGLES2Tools;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DB3A55C515C92213004CE8F1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DB3A55CD15C9380E004CE8F1 /* libGLESv2.dylib in CopyFiles */,
+				DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		49068F5C13DDA30C00C8DC21 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		49068F5F13DDA30C00C8DC21 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		49068F6013DDA30C00C8DC21 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		49068F6113DDA30C00C8DC21 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		49068F5813DDA30C00C8DC21 /* OGLES2CellShading.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLES2CellShading.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		49FE311813E2CEE900B32DAC /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
+		DB3A55C715C92647004CE8F1 /* libEGL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libEGL.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libEGL.dylib"; sourceTree = "<group>"; };
+		DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLESv2.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libGLESv2.dylib"; sourceTree = "<group>"; };
+		DB3A55CE15C938D4004CE8F1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		DB3A55D015C938EC004CE8F1 /* IMG.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = IMG.icns; path = "../../../../../../Builds/OSX/Resources/IMG.icns"; sourceTree = "<group>"; };
+		DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OGLES2Tools.xcodeproj; path = "../../../../../../Tools/OGLES2/Build/OSX/OGLES2Tools.xcodeproj"; sourceTree = "<group>"; };
+		495B9D0113E2EE09000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
+		495B9D0513E2EE16000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
+		F8BDC90F57743C0D24FA4F8A /* OGLES2CellShading.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES2CellShading.cpp; path = ../../OGLES2CellShading.cpp; sourceTree = SOURCE_ROOT; };
+		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
+		F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/KEGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
+		F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellOS.cpp; path = ../../../../../../Shell/OS/OSX/PVRShellOS.cpp; sourceTree = SOURCE_ROOT; };
+		F891AC7DBA4A33CDD5897EA8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ../../../../../../Shell/OS/OSX/main.m; sourceTree = SOURCE_ROOT; };
+		F83056A1463D3149D54E9E82 /* AppController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = AppController.mm; path = ../../../../../../Shell/OS/OSX/AppController.mm; sourceTree = SOURCE_ROOT; };
+		F8E876C58B8E589D704582A8 /* PVRShell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShell.h; path = ../../../../../../Shell/PVRShell.h; sourceTree = SOURCE_ROOT; };
+		F83032EAFB076689D05BCCA4 /* PVRShellImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellImpl.h; path = ../../../../../../Shell/PVRShellImpl.h; sourceTree = SOURCE_ROOT; };
+		F84F75300A266FB04DD95145 /* PVRShellAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellAPI.h; path = ../../../../../../Shell/API/KEGL/PVRShellAPI.h; sourceTree = SOURCE_ROOT; };
+		F8D43C90E6E9634EF07F3500 /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/OSX/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
+		F8D9FEE5B9D56BCDCB605B86 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/OSX/AppController.h; sourceTree = SOURCE_ROOT; };
+		F82D4335198133BEEEEAB4A8 /* Mask.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mask.pod; path = ../../Mask.pod; sourceTree = SOURCE_ROOT; };
+		F8958C479DF394278F512A5F /* Shading.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Shading.pvr; path = ../../Shading.pvr; sourceTree = SOURCE_ROOT; };
+		F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F81AE783867359F7612A30AC /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		49068F5513DDA30C00C8DC21 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */,
+				49068F5D13DDA30C00C8DC21 /* Cocoa.framework in Frameworks */,
+				DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */,
+				DB3A55CC15C937F1004CE8F1 /* libGLESv2.dylib in Frameworks */,
+				DB5C32B615C7F65000B1A208 /* libOGLES2Tools.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		49068F4D13DDA30C00C8DC21 = {
+			isa = PBXGroup;
+			children = (
+				49068F7913DDA51C00C8DC21 /* Source */,
+				DB5C32B515C7F60F00B1A208 /* Content */,
+				DB3A55D015C938EC004CE8F1 /* IMG.icns */,
+				DB5C32B415C7F5D100B1A208 /* Libraries */,
+				49068F5B13DDA30C00C8DC21 /* Frameworks */,
+				DB5C32AE15C7F50500B1A208 /* Resources */,
+				49068F6313DDA30C00C8DC21 /* Supporting Files */,
+				49068F5913DDA30C00C8DC21 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		49068F5913DDA30C00C8DC21 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49068F5813DDA30C00C8DC21 /* OGLES2CellShading.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		49068F5B13DDA30C00C8DC21 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				49068F5F13DDA30C00C8DC21 /* AppKit.framework */,
+				49068F6013DDA30C00C8DC21 /* CoreData.framework */,
+				49068F6113DDA30C00C8DC21 /* Foundation.framework */,
+				49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */,
+				49068F5C13DDA30C00C8DC21 /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		49068F6313DDA30C00C8DC21 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				49FE311813E2CEE900B32DAC /* Prefix.pch */,
+				495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			path = OGLES2CellShading;
+			sourceTree = "<group>";
+		};
+		49068F7913DDA51C00C8DC21 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+		49068F7C13DDA57800C8DC21 /* Shell */,
+				F8BDC90F57743C0D24FA4F8A /* OGLES2CellShading.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+				49068F7C13DDA57800C8DC21 /* Shell */ = {
+			isa = PBXGroup;
+			children = (
+				F8264787AE86D57C8A7666DE /* PVRShell.cpp */,
+				F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */,
+				F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */,
+				F891AC7DBA4A33CDD5897EA8 /* main.m */,
+				F83056A1463D3149D54E9E82 /* AppController.mm */,
+				F8E876C58B8E589D704582A8 /* PVRShell.h */,
+				F83032EAFB076689D05BCCA4 /* PVRShellImpl.h */,
+				F84F75300A266FB04DD95145 /* PVRShellAPI.h */,
+				F8D43C90E6E9634EF07F3500 /* PVRShellOS.h */,
+				F8D9FEE5B9D56BCDCB605B86 /* AppController.h */,
+			);
+			name = Shell;
+			sourceTree = "<group>";
+		};
+		DB5C329915C7F19D00B1A208 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DB5C32AC15C7F32B00B1A208 /* libOGLES2Tools.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DB5C32AE15C7F50500B1A208 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DB3A55CE15C938D4004CE8F1 /* Info.plist */,
+				495B9D0013E2EE09000FD6B4 /* MainMenu.xib */,
+			);
+			name = Resources;
+			path = OGLES2CellShading;
+			sourceTree = "<group>";
+		};
+		DB5C32B415C7F5D100B1A208 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */,
+				DB3A55C715C92647004CE8F1 /* libEGL.dylib */,
+				DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		DB5C32B515C7F60F00B1A208 /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				DBE6ED4E15C2AB9C00275129 /* Generic */,
+				DBE6ED4D15C2AB8E00275129 /* Models */,
+				DBE6ED4C15C2AB7E00275129 /* Textures */,
+				DBE6ED4A15C2AB7000275129 /* Shaders */,
+			);
+			name = Content;
+			sourceTree = "<group>";
+		};
+		DBE6ED4A15C2AB7000275129 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */,
+				F81AE783867359F7612A30AC /* VertShader.vsh */,
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
+		DBE6ED4C15C2AB7E00275129 /* Textures */ = {
+			isa = PBXGroup;
+			children = (
+				F8958C479DF394278F512A5F /* Shading.pvr */,
+			);
+			name = Textures;
+			sourceTree = "<group>";
+		};
+		DBE6ED4D15C2AB8E00275129 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F82D4335198133BEEEEAB4A8 /* Mask.pod */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		DBE6ED4E15C2AB9C00275129 /* Generic */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Generic;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		49068F5713DDA30C00C8DC21 /* OGLES2CellShading */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49068F7613DDA30C00C8DC21 /* Build configuration list for PBXNativeTarget "OGLES2CellShading" */;
+			buildPhases = (
+				49068F5413DDA30C00C8DC21 /* Sources */,
+				49068F5513DDA30C00C8DC21 /* Frameworks */,
+				49068F5613DDA30C00C8DC21 /* Resources */,
+				DB3A55C515C92213004CE8F1 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OGLES2CellShading;
+			productName = OGLES2CellShading;
+			productReference = 49068F5813DDA30C00C8DC21 /* OGLES2CellShading.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		49068F4F13DDA30C00C8DC21 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
+			buildConfigurationList = 49068F5213DDA30C00C8DC21 /* Build configuration list for PBXProject "OGLES2CellShading" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 49068F4D13DDA30C00C8DC21;
+			productRefGroup = 49068F5913DDA30C00C8DC21 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = DB5C329915C7F19D00B1A208 /* Products */;
+					ProjectRef = DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				49068F5713DDA30C00C8DC21 /* OGLES2CellShading */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		DB5C32AC15C7F32B00B1A208 /* libOGLES2Tools.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libOGLES2Tools.a;
+			remoteRef = DB5C32AB15C7F32B00B1A208 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		49068F5613DDA30C00C8DC21 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */,
+				495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */,
+				F8A4642FE52E6F4311AE3E78 /* Mask.pod in Resources */,
+				F84882A7B82B63CFD02E7BCB /* Shading.pvr in Resources */,
+				F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */,
+				F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */,
+				DB3A55CF15C938D4004CE8F1 /* Info.plist in Resources */,
+				DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		49068F5413DDA30C00C8DC21 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F86A64D6825ACA6345BB793C /* OGLES2CellShading.cpp in Sources */,
+				F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */,
+				F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */,
+				F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */,
+				F8511E325A14C7B1512D37CC /* main.m in Sources */,
+				F869BEBD44384AC2147622A7 /* AppController.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		495B9D0013E2EE09000FD6B4 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				495B9D0113E2EE09000FD6B4 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				495B9D0513E2EE16000FD6B4 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		49068F7413DDA30C00C8DC21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"_DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		49068F7513DDA30C00C8DC21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		49068F7713DDA30C00C8DC21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					BUILD_OGLES2,
+				);
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = ("$(inherited)","../../../../../../Builds/OSX/x86/Lib");
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Tools/OGLES2 ../../../../../../Tools";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		49068F7813DDA30C00C8DC21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES2;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = ("$(inherited)","../../../../../../Builds/OSX/x86/Lib");
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Tools/OGLES2 ../../../../../../Tools";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		49068F5213DDA30C00C8DC21 /* Build configuration list for PBXProject "OGLES2CellShading" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49068F7413DDA30C00C8DC21 /* Debug */,
+				49068F7513DDA30C00C8DC21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49068F7613DDA30C00C8DC21 /* Build configuration list for PBXNativeTarget "OGLES2CellShading" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49068F7713DDA30C00C8DC21 /* Debug */,
+				49068F7813DDA30C00C8DC21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 49068F4F13DDA30C00C8DC21 /* Project object */;
+}

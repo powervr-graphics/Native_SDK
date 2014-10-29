@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['bdiscardframecolor',['bDiscardFrameColor',['../struct_p_v_r_shell_data.html#a44f3ba725085dc2c7e59c568ecbc467d',1,'PVRShellData']]],
+  ['bdiscardframedepth',['bDiscardFrameDepth',['../struct_p_v_r_shell_data.html#a634ac2c58169dce20fcdc4456fc3a346',1,'PVRShellData']]],
+  ['bdiscardframestencil',['bDiscardFrameStencil',['../struct_p_v_r_shell_data.html#a968b0e95ccd13de9e311f55eb9199304',1,'PVRShellData']]],
+  ['bforceframetime',['bForceFrameTime',['../struct_p_v_r_shell_data.html#a102519b3c44090d80d95b863c3bab1ce',1,'PVRShellData']]],
+  ['bfullscreen',['bFullScreen',['../struct_p_v_r_shell_data.html#acaed6a0a872d005e5e9fb057a7fca389',1,'PVRShellData']]],
+  ['blandscape',['bLandscape',['../struct_p_v_r_shell_data.html#a6bab92dd53e597be3ab6655722823361',1,'PVRShellData']]],
+  ['blockablebackbuffer',['bLockableBackBuffer',['../struct_p_v_r_shell_data.html#abfcfeee3305dc2b03b754e0d17f7175a',1,'PVRShellData']]],
+  ['bneedalphaformatpre',['bNeedAlphaFormatPre',['../struct_p_v_r_shell_data.html#a91a9c0aa9e8a90aac672cbe6d2bdae1a',1,'PVRShellData']]],
+  ['bneedpbuffer',['bNeedPbuffer',['../struct_p_v_r_shell_data.html#adb7dcb92721adcb3361425e8483a5ed0',1,'PVRShellData']]],
+  ['bneedpixmap',['bNeedPixmap',['../struct_p_v_r_shell_data.html#ae05b7b197352650f87de28f169f151a0',1,'PVRShellData']]],
+  ['bneedpixmapdisablecopy',['bNeedPixmapDisableCopy',['../struct_p_v_r_shell_data.html#aace01d10102fd454f9238554e2be6e13',1,'PVRShellData']]],
+  ['bneedstencilbuffer',['bNeedStencilBuffer',['../struct_p_v_r_shell_data.html#ab3f6a20c714a67b2f337d1ca578e54ad',1,'PVRShellData']]],
+  ['bneedzbuffer',['bNeedZbuffer',['../struct_p_v_r_shell_data.html#a89301344798402c755de76d18db45f64',1,'PVRShellData']]],
+  ['bnoshellswapbuffer',['bNoShellSwapBuffer',['../struct_p_v_r_shell_data.html#a7b5110e4d5f7b25326f2513348f5a644',1,'PVRShellData']]],
+  ['boutputinfo',['bOutputInfo',['../struct_p_v_r_shell_data.html#a4c2223efb52a1872dc001f2847c5bc30',1,'PVRShellData']]],
+  ['bshellposwasdefault',['bShellPosWasDefault',['../struct_p_v_r_shell_data.html#aeeb549968c28f17dc93cd2fd6007cf63',1,'PVRShellData']]],
+  ['bsoftwarerender',['bSoftwareRender',['../struct_p_v_r_shell_data.html#a00023238c5b38ebd6a2da64d61084465',1,'PVRShellData']]],
+  ['busingpowersaving',['bUsingPowerSaving',['../struct_p_v_r_shell_data.html#ac0fb0a4fe6f36e7cf6b3aba9340a58c3',1,'PVRShellData']]]
+];

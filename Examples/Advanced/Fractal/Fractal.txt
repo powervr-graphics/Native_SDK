@@ -1,0 +1,12 @@
+:Title:
+Fractal
+
+:ShortDescription:
+A demonstration of drawing a fractal using render to texture.
+
+:FullDescription:	
+A recursive fractal effect is demonstrated here using the render to texture technique. This technique is a useful method to create a variety of effects. Basically, a scene is rendered as usual, but in a texture for future reuse. 
+
+Controls:
+	-	Esc	-	Close the application
+	

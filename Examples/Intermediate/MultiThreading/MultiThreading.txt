@@ -1,0 +1,12 @@
+:Title:
+MultiThreading
+
+:ShortDescription:
+This training course is an example of how to correctly use synchronisation techniques to achieve multi-threaded rendering.
+
+:FullDescription:
+This training course demonstrates how to load resources on a separate thread to the main rendering thread. While this may seem a trivial exercise, API extension functionality must be utilised in order to achieve correct results.
+
+Controls:
+	-	Esc	-	Close the application
+

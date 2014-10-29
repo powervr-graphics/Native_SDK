@@ -1,0 +1,11 @@
+:Title:
+DisplacementMap
+
+:ShortDescription:
+This training course demonstrates displacement mapping using a texture read from the vertex shader.
+
+:FullDescription:
+Displacement mapping is an alternative to bump mapping, normal mapping, and parallax mapping, that causes the actual geometric position of points over a textured surface to be displaced, often along the local surface normal, according to the value the texture function evaluates to at each point on the surface. 
+
+Controls:
+	-	Esc	-	Close the application

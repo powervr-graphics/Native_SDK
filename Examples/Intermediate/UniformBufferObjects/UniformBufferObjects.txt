@@ -1,0 +1,6 @@
+:Title:
+Uniform Buffer Objects
+:ShortDescription:
+Shows how to use uniform buffer objects. 
+:FullDescription:
+This demonstration shows how to use uniform buffer objects to set the values of several shader uniforms at once. A uniform buffer object stores uniform data for a shader program, and is often used becuase switching between uniform buffer bindings is faster than swithcing several uniforms in a program.  

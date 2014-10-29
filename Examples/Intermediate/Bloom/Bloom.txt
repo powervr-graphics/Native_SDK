@@ -1,0 +1,24 @@
+:Title:
+Bloom
+
+:ShortDescription:
+This training course demonstrates a simple implementation of a 'bloom' effect.
+
+:FullDescription:
+This training course demonstrates a simple implementation of a 'bloom' post processing effect. The bright parts of the picture are extracted in a post processing step, blurred and added over the final image to create a glow around the object's borders.
+
+Controls:
+	-	Up/Down	-	Toggle the bloom effect On/Off
+	-	Esc	-	Close the application
+
+:VGP:
+Not Required
+
+:PolyCount:
+0
+
+:Vertex Count:
+0
+
+:WhitePaper:
+PowerVR.Post Processing Effects Development Recommendations

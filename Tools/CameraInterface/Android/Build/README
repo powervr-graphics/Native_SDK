@@ -1,0 +1,15 @@
+How to use in your own project:
+
+1) Build the interface as you would build any other Android library project. Notice that 14 (ICS) is the minimum Android API supported.
+	Note: "android update lib-project ..." instead of "android update project ..."
+2) Copy the bin/classes.jar inside the libs/ directory of your project.
+3) Add the following lines in your project's Android.mk:
+	# This variable points to the CameraInterface directory
+	CAMERA_INTERFACE_DIR := /path/to/SDK/Tools/CameraInterface/Android/jni
+	# Include the CameraInterface headers
+	LOCAL_C_INCLUDES += $(CAMERA_INTERFACE_DIR)
+	# Link with the libCameraInterface.so
+	LOCAL_SHARED_LIBRARIES := CameraInterface
+	# Build libCameraInterface.so (place this line after "include $(BUILD_SHARED_LIBRARY)
+	include $(CAMERA_INTERFACE_DIR)/Android.mk
+4) That's it! :-)

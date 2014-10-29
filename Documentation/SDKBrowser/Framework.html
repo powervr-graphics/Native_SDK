@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>The PowerVR SDK Browser</title>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="./images/img-icon.png">
+</head>
+
+<body>
+	<div id="GlobalHeaderContainer">
+		<div id="GlobalHeader">
+			<div class="logo">
+				<a href="http://www.powervrinsider.com" target="_blank"><img src="./images/PVRlogo.png" width="40%" height="40%" /></a>
+            </div>
+			<div class="sitetitle">PowerVR SDK Browser</div>
+		</div>
+	</div>
+	<div id="NavContainer">
+		<nav>
+			<div class="navlink">
+				<a href="Home.html">Home</a>
+			</div>
+			<div class="navlink">
+				<a href="GettingStarted.html">Getting Started</a>
+			</div>
+			<div class="navlink">
+				<a href="Examples.html">Examples</a>
+			</div>
+			<div class="navlink">
+				<a href="Framework.html" class="current">Framework</a>
+			</div>
+			<div class="navlink">
+				<a href="Documentation.html">Documentation</a>
+			</div>
+			<div class="navlink">
+				<a href="PowerVRTools.html">PowerVR Tools</a>
+			</div>
+			<div class="navlink">
+				<a href="ReleaseNotes.html">Release Notes</a>
+			</div>
+			<div class="navlink">
+				<a href="Contact.html">Contact Us</a>
+			</div>
+		</nav>
+	</div>
+
+    <div class="content">
+        <h1>Framework</h1>
+		<p>The PowerVR Graphics SDK provides a framework which is made up of PVRShell and PVRTools. 
+		PVRShell is a simple, light-weight architecture for the barebones of application setup, shutdown and event handling. 
+		It is designed to streamline the process of writing cross-platform graphics applications. 
+		PVRTools, on the other hand, is a cross-platform tools library containing the most commonly used functionality in a 3D graphics application.</p>
+		<hr/>
+		<p><a href="#PVRShell" class="link">PVRShell</a>  |  <a href="#PVRTools" class="link">PVRTools</a></p>
+		<div id="PVRShell">
+			<h2>PVRShell</h2>
+			<p>PVRShell is used in all our <a href="Examples.html">Examples</a> (except for HelloAPI) to provide a common framework for developing OpenGL ES applications on any PowerVR platform. The shell takes a set of command-line arguments which allow items like the position and size of the example to be controlled. The table below identifies these options.</p>
+			<table>
+				<thead>
+					<th>Option</th><th>Description</th>
+				</thead>
+				<tr>
+					<td>-aasamples=N</td><td>Sets the number of samples to use for full screen anti-aliasing, e.g., 0, 2, 4, 8.</td>
+				</tr>
+				<tr>
+					<td>-c=N</td><td>Save a single screenshot or a range, for a given frame or frame range, e.g., -c=14, -c=1-10.</td>
+				</tr>
+				<tr>
+					<td>-colourbpp=N or -cbpp=N</td><td>Frame buffer colour bits per pixel. When choosing an EGL config, N will be used as the value for EGL_BUFFER_SIZE.</td>
+				</tr>
+				<tr>
+					<td>-config=N</td><td>Force the shell to use the EGL config with ID N.</td>
+				</tr>
+				<tr>
+					<td>-depthbpp=N or -dbpp=N</td><td>Depth buffer bits per pixel. When choosing an EGL config, N will be used as the value for EGL_DEPTH_SIZE.</td>
+				</tr>
+				<tr>
+					<td>-discardframeall</td><td>Selects whether to explicitly request a discard of all contents of the relevant framebuffer at the end of every frame to save bandwidth.</td>
+				</tr>
+				<tr>
+					<td>-discardframecolour</td><td>Selects whether to explicitly request a discard of the frame colour of the relevant framebuffer at the end of every frame to save bandwidth. Default: false.</td>
+				</tr>
+				<tr>
+					<td>-discardframedepth</td><td>Selects whether to explicitly request a discard of the frame depth of the relevant framebuffer at the end of every frame to save bandwidth. Default: true.</td>
+				</tr>
+				<tr>
+					<td>-discardframestencil</td><td>Selects whether to explicitly request a discard of the frame stencil of the relevant framebuffer at the end of every frame to save bandwidth. Default: true.</td>
+				</tr>
+				<tr>
+					<td>-display</td><td>EGL only. Allows specifying the native display to use if the device has more than one.</td>
+				</tr>
+				<tr>
+					<td>-forceframetime=N or -fft=N</td><td>Force PVRShellGetTime to report fixed frame time.</td>
+				</tr>
+				<tr>
+					<td>-fps</td><td>Output frames per second.</td>
+				</tr>
+				<tr>
+					<td>-fullscreen=[1,0]</td><td>Runs in full-screen mode (1) or windowed (0).</td>
+				</tr>
+				<tr>
+					<td>-height=N</td><td>Sets the viewport height to N.</td>
+				</tr>
+				<tr>
+					<td>-info</td><td>Output setup information to the debug output.</td>
+				</tr>
+				<tr>
+					<td>-posx=N</td><td>Sets the x coordinate of the viewport.</td>
+				</tr>
+				<tr>
+					<td>-posy=N</td><td>Sets the y coordinate of the viewport.</td>
+				</tr>
+				<tr>
+					<td>-powersaving=[1,0] or -ps=[1,0]</td><td>Where available enable/disable power saving.</td>
+				</tr>
+				<tr>
+					<td>-priority=N</td><td>Sets the priority of the EGL context.</td>
+				</tr>
+				<tr>
+					<td>-quitafterframe=N or -qaf=N</td><td>Specify the frame after which to quit.</td>
+				</tr>
+				<tr>
+					<td>-quitaftertime=N or -qat=N</td><td>Specify the time after which to quit.</td>
+				</tr>
+				<tr>
+					<td>-rotatekeys=N</td><td>Sets the orientation of the keyboard input. N can be 0-3, where 0 is no rotation.</td>
+				</tr>
+				<tr>
+					<td>-screenshotscale=N</td><td>Allows to scale up screenshots to a bigger size (pixel replication).</td>
+				</tr>
+				<tr>
+					<td>-sw</td><td>Software render.</td>
+				</tr>
+				<tr>
+					<td>-version</td><td>Output the SDK version to the debug output.</td>
+				</tr>
+				<tr>
+					<td>-vsync=N</td><td>Where available modify the app's vsync parameters.</td>
+				</tr>
+				<tr>
+					<td>-width=N</td><td>Sets the viewport width to N.</td>
+				</tr>
+			</table>
+			<p>PVRShell also provides limited keyboard input which may vary depending on your actual platform. If your platform has full keyboard support, the <span class="code">Q</span> key will quit the application and the cursor keys will allow looping through the application options.</p>
+			<p>The PVRShell source can be found in the <a href="../../Shell/">Shell</a> folder in the SDK package. Further documentation is available at <a href="../../Shell/Documentation/Index.html">Shell/Documentation</a>.</p>
+		</div>
+		<div id="PVRTools">
+			<h2>PVRTools</h2>
+			<p>The PVRTools library consists of various modules designed to facilitate common tasks associated with hardware accelerated graphics rendering. This includes:</p>
+			<ul>
+				<li><p><strong>Vector, matrix and quaternion mathematics:</strong> Helpers to calculate and operate transformation matrices and other associated mathematical operations.</p></li>
+				<li><p><strong>OpenGL ES extension handling:</strong> This helps to load and use OpenGL ES extension functions and capabilities.</p></li>
+				<li><p><strong>3D font drawing:</strong> A very flexible engine to handle font maps.</p></li>
+				<li><p><strong>POD loader:</strong> Helpers to load and access the model data included in PowerVR Object Data (POD) files.</p></li>
+				<li><p><strong>PVR loader:</strong> Helpers to upload and manage textures exported to the PVR texture container format.</p></li>
+				<li><p><strong>PFX loader:</strong> Helpers to load and access PowerVR Effects (PFX) files, which contain vertex and fragment shaders.</p></li>
+			</ul>
+			<p>The Tools library is used extensively throughout the PowerVR SDK. The PVRTools source can be found in the <a href="../../Tools/">Tools</a> folder in the SDK package. Further documentation is available at <a href="../../Tools/Documentation/Index.html">Tools/Documentation</a>.</p>
+		</div>
+	</div>
+	<br>
+    <div id="FooterMainContainer">
+		<div id="FooterContainer">
+			<div class="footerlogo">
+				<a href="http://www.imgtec.com" target="_blank"><img src="./images/img-footer-logo-grey.png" width="100%" height="100%" /></a>
+			</div>
+			<div class="copyright">&copy; Imagination Technologies Limited<br> All rights reserved</div>
+		</div>
+	</div>
+</body>
+
+</html>

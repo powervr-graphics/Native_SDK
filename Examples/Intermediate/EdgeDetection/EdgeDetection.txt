@@ -1,0 +1,15 @@
+:Title:
+EdgeDetection
+
+:ShortDescription:
+This training course demonstrates a means of simple edge detection. 
+
+:FullDescription:
+Four highlighting modes for edge detection are available in this demonstration.'Edge Detection' mode locates the edges of each object and highlights them with a black line. 'Edge Detection: Inverse' mode locates the edge of each object and highlights them with an inverted colour, all other areas are coloured black. 'Edge Detection: Blur' mode locates the edge of each object and sets the colour of the edge to be a mixture of the surrounding fragments to produce a blur effect.
+
+Controls:
+	-	Up/Down	-	Cycle through highlighting modes
+	-	Left	-	Decrease the width of edge highlights
+	-	Right	-	Increase the width of edge highlights
+	-	Esc	-	Close the application
+	

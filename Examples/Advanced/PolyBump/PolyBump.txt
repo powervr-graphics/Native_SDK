@@ -1,0 +1,12 @@
+:Title:
+PolyBump
+
+:ShortDescription:
+This demonstration illustrates the PolyBump technology developed by Crytek (commonly referred to as normal or bump mapping). 
+
+:FullDescription:	
+This demo illustrates the Polybump technology developed by Crytek to enhance 3D-rendering quality without increasing the overhead in real-time rendering. It allows users to create and render an extremely low poly model using per pixel DOT3 lighting. The DOT3 NormalMap is automatically generated from a high poly model. As a result when displaying the low polygon model with the DOT3 map generated from the high polygon object there is virtually no visible difference between the two. Rendering time is greatly decreased and bandwidth is compressed. In this demo a model of a detailed human head is show even though there are only 276 polygons in the model. 
+
+Controls:
+	-	1	-	Toggle normal map on/off
+	-	Esc	-	Close the application

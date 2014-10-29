@@ -1,0 +1,12 @@
+:Title:
+ProceduralTextures
+:ShortDescription:
+Shows how to generate procedural textures using OpenCL.
+
+:FullDescription:
+Utilises OpenCL to generate procedural textures using Steven Worley's cellular texture basis functions. Procedural textures are computer-generated images created using an algorithm intended to create a realistic representation of natural elements such as wood or marble.
+
+- left and right arrows - Switch between distance metrics
+- up and down arrows - Switch between linear combination of weights
+
+

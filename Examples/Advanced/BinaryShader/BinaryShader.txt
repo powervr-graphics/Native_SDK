@@ -1,0 +1,22 @@
+:Title:
+BinaryShader
+
+:ShortDescription:
+This training course shows how to save and load binary shaders in a program to avoid recompiling the shaders each time.
+
+:FullDescription:
+This training course demonstrates how to save and load binary shaders at runtime. The code will compile a binary shader on first run, save it to disk and then on subsequent runs it will load in the binary shaders and use these without unnecessary recompilation. This can save time at startup, especially if many complex shaders are used.  The triangle will appear red if the original shader is used, and green if the binary shader is used.
+
+Controls:
+	-	Esc	-	Close the application
+
+This training course does not use the OGLES2Tools library and will only function on platforms that support the GL_OES_get_program_binary extension.
+
+:VGP:
+Not Required
+
+:Polygon Count:
+1
+
+:Vertex Count:
+3
