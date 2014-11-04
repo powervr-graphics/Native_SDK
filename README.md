@@ -22,4 +22,4 @@ If you have any questions about the SDK, PowerVR device optimization/debugging o
 If you would prefer to contact us confidentially, you can file a support ticket [here](https://pvrsupport.imgtec.com/new-ticket).
 
 ## License ##
-The SDK is distributed under a permissive licence so it can easily be integrated into commercial and non-commercial applications. You can find the license [here](https://github.com/powervr-graphics/Native_SDK/blob/master/LICENSE.txt).
+The SDK is distributed under a permissive license so it can easily be integrated into commercial and non-commercial applications. You can find the license [here](https://github.com/powervr-graphics/Native_SDK/blob/master/LICENSE.txt). To further clarify the terms, we also have an SDK license FAQ (available [here](http://community.imgtec.com/developers/powervr/faq-about-the-sdk-eula/)).
