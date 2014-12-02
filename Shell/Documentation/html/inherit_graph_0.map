@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$interface_app_controller.html" title="Main controller class for OSX apps. " alt="" coords="266,56,366,83"/>
+<area shape="rect" id="node4" href="$protocol_e_a_g_l_view_delegate-p.html" title="Delegate object which receives a callback when the surfaced attached to the EAGLView is resized..." alt="" coords="240,107,392,133"/>
+</map>

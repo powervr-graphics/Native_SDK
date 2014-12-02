@@ -1,0 +1,338 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9DAFEE32-19F6-4410-AA09-2B564FB86F62}</ProjectGuid>
+    <RootNamespace>OGLES2Glass</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>BUILD_OGLES2;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Shell;..\..\..\..\..\..\Shell\API\KEGL;..\..\..\..\..\..\Shell\OS\Windows;..\..\..\..\..\..\Builds\Include;..\..\..\..\..\..\Tools\OGLES2;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\..\..\..\..\..\Builds\Windows\x86_32\Lib;..\..\..\..\..\..\Tools\OGLES2\Build\WindowsVC2010\$(IntDir);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;OGLES2Tools.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>BUILD_OGLES2;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Shell;..\..\..\..\..\..\Shell\API\KEGL;..\..\..\..\..\..\Shell\OS\Windows;..\..\..\..\..\..\Builds\Include;..\..\..\..\..\..\Tools\OGLES2;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\..\..\..\..\..\Builds\Windows\x86_64\Lib;..\..\..\..\..\..\Tools\OGLES2\Build\WindowsVC2010\$(IntDir);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;OGLES2Tools.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>BUILD_OGLES2;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Shell;..\..\..\..\..\..\Shell\API\KEGL;..\..\..\..\..\..\Shell\OS\Windows;..\..\..\..\..\..\Builds\Include;..\..\..\..\..\..\Tools\OGLES2;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>..\..\..\..\..\..\Builds\Windows\x86_32\Lib;..\..\..\..\..\..\Tools\OGLES2\Build\WindowsVC2010\$(IntDir);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;OGLES2Tools.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>BUILD_OGLES2;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\..\..\..\Shell;..\..\..\..\..\..\Shell\API\KEGL;..\..\..\..\..\..\Shell\OS\Windows;..\..\..\..\..\..\Builds\Include;..\..\..\..\..\..\Tools\OGLES2;</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>..\..\..\..\..\..\Builds\Windows\x86_64\Lib;..\..\..\..\..\..\Tools\OGLES2\Build\WindowsVC2010\$(IntDir);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libEGL.lib;libGLESv2.lib;OGLES2Tools.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\OGLES2Glass.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Shell\PVRShell.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Shell\API\KEGL\PVRShellAPI.cpp" />
+    <ClCompile Include="..\..\..\..\..\..\Shell\OS\Windows\PVRShellOS.cpp" />
+    <ClCompile Include="..\..\Content\DefaultVertShader.cpp" />
+    <ClCompile Include="..\..\Content\DefaultFragShader.cpp" />
+    <ClCompile Include="..\..\Content\ParaboloidVertShader.cpp" />
+    <ClCompile Include="..\..\Content\SkyboxVertShader.cpp" />
+    <ClCompile Include="..\..\Content\SkyboxFragShader.cpp" />
+    <ClCompile Include="..\..\Content\EffectVertShader.cpp" />
+    <ClCompile Include="..\..\Content\EffectFragShader.cpp" />
+    <ClCompile Include="..\..\Content\Balloon.cpp" />
+    <ClCompile Include="..\..\Content\Ball.cpp" />
+    <ClCompile Include="..\..\Content\BalloonTex.cpp" />
+    <ClCompile Include="..\..\Content\SkyboxTex.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Shell\PVRShell.h" />
+    <ClInclude Include="..\..\..\..\..\..\Shell\PVRShellImpl.h" />
+    <ClInclude Include="..\..\..\..\..\..\Shell\API\KEGL\PVRShellAPI.h" />
+    <ClInclude Include="..\..\..\..\..\..\Shell\OS\Windows\PVRShellOS.h" />
+    <ClInclude Include="..\..\..\..\..\..\Builds\Windows\Resources\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\..\..\..\Builds\Windows\Resources\shared.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\Balloon.pod">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping scene file ..\..\Balloon.pod as ..\..\Content\Balloon.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\Balloon.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\Balloon.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping scene file ..\..\Balloon.pod as ..\..\Content\Balloon.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\Balloon.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\Balloon.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping scene file ..\..\Balloon.pod as ..\..\Content\Balloon.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\Balloon.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\Balloon.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping scene file ..\..\Balloon.pod as ..\..\Content\Balloon.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\Balloon.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\Balloon.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Ball.pod">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping scene file ..\..\Ball.pod as ..\..\Content\Ball.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\Ball.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\Ball.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping scene file ..\..\Ball.pod as ..\..\Content\Ball.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\Ball.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\Ball.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping scene file ..\..\Ball.pod as ..\..\Content\Ball.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\Ball.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\Ball.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping scene file ..\..\Ball.pod as ..\..\Content\Ball.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\Ball.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\Ball.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\DefaultVertShader.vsh">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping shader ..\..\DefaultVertShader.vsh as ..\..\Content\DefaultVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\DefaultVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\DefaultVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping shader ..\..\DefaultVertShader.vsh as ..\..\Content\DefaultVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\DefaultVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\DefaultVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping shader ..\..\DefaultVertShader.vsh as ..\..\Content\DefaultVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\DefaultVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\DefaultVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping shader ..\..\DefaultVertShader.vsh as ..\..\Content\DefaultVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\DefaultVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\DefaultVertShader.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\DefaultFragShader.fsh">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping shader ..\..\DefaultFragShader.fsh as ..\..\Content\DefaultFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\DefaultFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\DefaultFragShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping shader ..\..\DefaultFragShader.fsh as ..\..\Content\DefaultFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\DefaultFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\DefaultFragShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping shader ..\..\DefaultFragShader.fsh as ..\..\Content\DefaultFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\DefaultFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\DefaultFragShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping shader ..\..\DefaultFragShader.fsh as ..\..\Content\DefaultFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\DefaultFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\DefaultFragShader.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\ParaboloidVertShader.vsh">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping shader ..\..\ParaboloidVertShader.vsh as ..\..\Content\ParaboloidVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\ParaboloidVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\ParaboloidVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping shader ..\..\ParaboloidVertShader.vsh as ..\..\Content\ParaboloidVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\ParaboloidVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\ParaboloidVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping shader ..\..\ParaboloidVertShader.vsh as ..\..\Content\ParaboloidVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\ParaboloidVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\ParaboloidVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping shader ..\..\ParaboloidVertShader.vsh as ..\..\Content\ParaboloidVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\ParaboloidVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\ParaboloidVertShader.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\SkyboxVertShader.vsh">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping shader ..\..\SkyboxVertShader.vsh as ..\..\Content\SkyboxVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\SkyboxVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\SkyboxVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping shader ..\..\SkyboxVertShader.vsh as ..\..\Content\SkyboxVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\SkyboxVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\SkyboxVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping shader ..\..\SkyboxVertShader.vsh as ..\..\Content\SkyboxVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\SkyboxVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\SkyboxVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping shader ..\..\SkyboxVertShader.vsh as ..\..\Content\SkyboxVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\SkyboxVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\SkyboxVertShader.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\SkyboxFragShader.fsh">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping shader ..\..\SkyboxFragShader.fsh as ..\..\Content\SkyboxFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\SkyboxFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\SkyboxFragShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping shader ..\..\SkyboxFragShader.fsh as ..\..\Content\SkyboxFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\SkyboxFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\SkyboxFragShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping shader ..\..\SkyboxFragShader.fsh as ..\..\Content\SkyboxFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\SkyboxFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\SkyboxFragShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping shader ..\..\SkyboxFragShader.fsh as ..\..\Content\SkyboxFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\SkyboxFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\SkyboxFragShader.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\EffectVertShader.vsh">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping shader ..\..\EffectVertShader.vsh as ..\..\Content\EffectVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\EffectVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\EffectVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping shader ..\..\EffectVertShader.vsh as ..\..\Content\EffectVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\EffectVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\EffectVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping shader ..\..\EffectVertShader.vsh as ..\..\Content\EffectVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\EffectVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\EffectVertShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping shader ..\..\EffectVertShader.vsh as ..\..\Content\EffectVertShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\EffectVertShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\EffectVertShader.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\EffectFragShader.fsh">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping shader ..\..\EffectFragShader.fsh as ..\..\Content\EffectFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\EffectFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\EffectFragShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping shader ..\..\EffectFragShader.fsh as ..\..\Content\EffectFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\EffectFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\EffectFragShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping shader ..\..\EffectFragShader.fsh as ..\..\Content\EffectFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\EffectFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\EffectFragShader.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping shader ..\..\EffectFragShader.fsh as ..\..\Content\EffectFragShader.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -s -o "..\..\Content\EffectFragShader.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\EffectFragShader.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\SkyboxTex.pvr">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping texture ..\..\SkyboxTex.pvr as ..\..\Content\SkyboxTex.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\SkyboxTex.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\SkyboxTex.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping texture ..\..\SkyboxTex.pvr as ..\..\Content\SkyboxTex.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\SkyboxTex.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\SkyboxTex.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping texture ..\..\SkyboxTex.pvr as ..\..\Content\SkyboxTex.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\SkyboxTex.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\SkyboxTex.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping texture ..\..\SkyboxTex.pvr as ..\..\Content\SkyboxTex.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\SkyboxTex.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\SkyboxTex.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\BalloonTex.pvr">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping texture ..\..\BalloonTex.pvr as ..\..\Content\BalloonTex.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\BalloonTex.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\BalloonTex.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping texture ..\..\BalloonTex.pvr as ..\..\Content\BalloonTex.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\BalloonTex.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\BalloonTex.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping texture ..\..\BalloonTex.pvr as ..\..\Content\BalloonTex.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\BalloonTex.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\BalloonTex.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping texture ..\..\BalloonTex.pvr as ..\..\Content\BalloonTex.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\BalloonTex.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\BalloonTex.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+</ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

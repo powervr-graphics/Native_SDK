@@ -1,0 +1,13 @@
+:Title:
+UserClipPlanes
+
+:ShortDescription:
+This demo illustrates how to use user clip planes.
+
+:FullDescription:	
+This demo illustrates how to use user clip planes. In this case a rotating sphere is shown cut by six user clip planes. 
+
+Controls:
+	-	Esc	-	Close the application
+
+This demo requires 3D hardware which supports user clip planes.

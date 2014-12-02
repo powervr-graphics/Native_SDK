@@ -1,0 +1,17 @@
+:Title:
+CellShading
+
+:ShortDescription:
+This training course demonstrates how to implement cell shading.
+
+:FullDescription:
+This training course demonstrates how to implement cell shading.  Cell-shaded animation (also known as Cell shading or Toon shading) is a type of non-photorealistic rendering designed to make computer graphics appear to be hand-drawn. Cell-shading is often used to mimic the style of a comic book or cartoon and is predominantly used in video games.
+
+Controls:
+	-	Esc	-	Close the application
+
+:PolyCount:
+4480
+
+:Vertex Count:
+2238

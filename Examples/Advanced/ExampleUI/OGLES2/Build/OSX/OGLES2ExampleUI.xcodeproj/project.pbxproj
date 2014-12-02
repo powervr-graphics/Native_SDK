@@ -1,0 +1,605 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		49068F5D13DDA30C00C8DC21 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49068F5C13DDA30C00C8DC21 /* Cocoa.framework */; };
+		49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */; };
+		DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
+		DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
+		DB3A55CC15C937F1004CE8F1 /* libGLESv2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */; };
+		DB3A55CD15C9380E004CE8F1 /* libGLESv2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */; };
+		DB5C32B615C7F65000B1A208 /* libOGLES2Tools.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB5C32AC15C7F32B00B1A208 /* libOGLES2Tools.a */; };
+		495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0013E2EE09000FD6B4 /* MainMenu.xib */; };
+		495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */; };
+		DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */ = {isa = PBXBuildFile; fileRef = DB3A55D015C938EC004CE8F1 /* IMG.icns */; };
+		F87720C516F154FD82EEEF63 /* OGLES2ExampleUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8FA059ED54A06B09295A0DF /* OGLES2ExampleUI.cpp */; };
+		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
+		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */; };
+		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */; };
+		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F891AC7DBA4A33CDD5897EA8 /* main.m */; };
+		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F83056A1463D3149D54E9E82 /* AppController.mm */; };
+		F8E24673365C0181DC71ACEC /* container-corner.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EF4F6C0EC03EF94E33963E /* container-corner.pvr */; };
+		F864A267B61CF521B384449E /* container-vertical.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EE7ECED970289542EC2F7D /* container-vertical.pvr */; };
+		F8B3BEF3B1F4BD49B4B3EA44 /* container-horizontal.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F879A63B7CDC146AF9B01C28 /* container-horizontal.pvr */; };
+		F8279E6A28FC7C83AA6E4CBB /* topbar.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F892B89350EE6B6D7F9341D2 /* topbar.pvr */; };
+		F81AC49331E17F883417212A /* background.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E9DEEFE54C612E035634A3 /* background.pvr */; };
+		F85AF1BBAF1BAADFF6BFFFCE /* clock-face.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80EDA05FBBFBD4D90B2F776 /* clock-face.pvr */; };
+		F8A3187599D3B4505C1A96D3 /* clock-face-small.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EA5E51ED6B7C3A5EF46718 /* clock-face-small.pvr */; };
+		F8FCF6D3FCA8287A2E2E2D04 /* hand.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87D0A4A8D282A8454B64C81 /* hand.pvr */; };
+		F8D5AF2DFF0BB82B842928DD /* hand-small.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F95B900B11FF3B8059C111 /* hand-small.pvr */; };
+		F8F7923BDEC7765E445A37DC /* battery.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F834ED331CA75CFAD7CCAE51 /* battery.pvr */; };
+		F8FA134AB32B8B2636DFF777 /* internet-web-browser.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C23579F8D5FADA0BC8906A /* internet-web-browser.pvr */; };
+		F8CDEF23980A2E1498ED3DF7 /* mail-message-new.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F839D0D3295C53B94A09D096 /* mail-message-new.pvr */; };
+		F8EBD38DF66278BEBF240AAD /* network-wireless.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86C7EC9BCA69964E0E750EB /* network-wireless.pvr */; };
+		F8BC8D66F79418D4E036C6E1 /* office-calendar.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F852841AB1B653BA264E1523 /* office-calendar.pvr */; };
+		F8F20F8D39FAF2EC17613B70 /* weather-sun-cloud.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87A60D93C49363347DC1800 /* weather-sun-cloud.pvr */; };
+		F8969C40AAEC0A8890659A79 /* weather-storm.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D51AD1859D3D8024C14345 /* weather-storm.pvr */; };
+		F88A88CB786ACAB3607BE18F /* weather-rain.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F837FA1A8DB32629C6FBE588 /* weather-rain.pvr */; };
+		F8CC2BC37578D78F4D11DA05 /* text1.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8520C604CBC3C17E3B20D15 /* text1.pvr */; };
+		F837B56A01D98FDF9DBAE89C /* text2.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F849F9BE00AD7CCC4981C6AC /* text2.pvr */; };
+		F84195EFF412058B84A28379 /* text-weather.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82AF3189D523F641A4DB5C8 /* text-weather.pvr */; };
+		F8B31C58D129935CFC29DE97 /* text-fri.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F0583FDBDDE415D3E1EC2D /* text-fri.pvr */; };
+		F841A4909F77B8709D75BA28 /* text-sat.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F890055598E063C6E63131D0 /* text-sat.pvr */; };
+		F8524D1AE9D977777B3562A0 /* text-sun.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BC01EE6F1CAAB09F1DB224 /* text-sun.pvr */; };
+		F89AEE770BF9A44B3D072F94 /* text-mon.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E59D65A89C889985F62BB1 /* text-mon.pvr */; };
+		F86A83AD277B91A5EB5611EB /* weather-sun-cloud-big.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F852A1CB148E57AAF0C3CB70 /* weather-sun-cloud-big.pvr */; };
+		F81010204D200FDC3D613F9B /* window-bottom.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F821DCBB4BB26789A6E8CD72 /* window-bottom.pvr */; };
+		F83162606C994D64BAE53B7F /* window-bottomcorner.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86818C4C63A7E74F69E18D3 /* window-bottomcorner.pvr */; };
+		F83573655FCA0F00D6522D83 /* window-side.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F835D3B0C4D3DC09C47297D8 /* window-side.pvr */; };
+		F8FF9D737938DDDE6ACB35D2 /* window-top.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81BC02246055D244BE2C724 /* window-top.pvr */; };
+		F857E41EF5EFC7A415B0EE36 /* window-topleft.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80DBC6B6641D29144FD499E /* window-topleft.pvr */; };
+		F80F9DDCE08A413E2AC0CC5B /* window-topright.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8070EC8BBE889154515FBC6 /* window-topright.pvr */; };
+		F86BA40FB5D34947FBE7C345 /* loremipsum.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A72B0D5E690A307AB03F98 /* loremipsum.pvr */; };
+		F89E34C5C94290AD21FF027C /* SpriteShaderF.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F817DA7A5BBFD4AFB8150320 /* SpriteShaderF.fsh */; };
+		F8BC684B509C621F7A4EC8A3 /* SpriteShaderV.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8EECC2A132E6F8A83B66328 /* SpriteShaderV.vsh */; };
+		F8E4989AFD388D2C3EBAE6E4 /* TexColShaderF.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F849B858DAE2D36CA221496A /* TexColShaderF.fsh */; };
+		F855B72488E2F422D14A14CA /* TexColShaderV.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8C27D38F72F4B4F6D28140C /* TexColShaderV.vsh */; };
+		F8D6BE6D4ABDC99B4C7D1D27 /* ColShaderF.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F868C7A3FB87E36F44A6E92D /* ColShaderF.fsh */; };
+		F8F3A0F8E671F5C6C2213D07 /* ColShaderV.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F861E722906AD264538DAC14 /* ColShaderV.vsh */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DB5C32AB15C7F32B00B1A208 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 49BA94F413E00AC600827842;
+			remoteInfo = OGLES2Tools;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DB3A55C515C92213004CE8F1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DB3A55CD15C9380E004CE8F1 /* libGLESv2.dylib in CopyFiles */,
+				DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		49068F5C13DDA30C00C8DC21 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		49068F5F13DDA30C00C8DC21 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		49068F6013DDA30C00C8DC21 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		49068F6113DDA30C00C8DC21 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		49068F5813DDA30C00C8DC21 /* OGLES2ExampleUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLES2ExampleUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		49FE311813E2CEE900B32DAC /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
+		DB3A55C715C92647004CE8F1 /* libEGL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libEGL.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libEGL.dylib"; sourceTree = "<group>"; };
+		DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLESv2.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libGLESv2.dylib"; sourceTree = "<group>"; };
+		DB3A55CE15C938D4004CE8F1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		DB3A55D015C938EC004CE8F1 /* IMG.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = IMG.icns; path = "../../../../../../Builds/OSX/Resources/IMG.icns"; sourceTree = "<group>"; };
+		DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OGLES2Tools.xcodeproj; path = "../../../../../../Tools/OGLES2/Build/OSX/OGLES2Tools.xcodeproj"; sourceTree = "<group>"; };
+		495B9D0113E2EE09000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
+		495B9D0513E2EE16000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
+		F8FA059ED54A06B09295A0DF /* OGLES2ExampleUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES2ExampleUI.cpp; path = ../../OGLES2ExampleUI.cpp; sourceTree = SOURCE_ROOT; };
+		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
+		F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/KEGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
+		F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellOS.cpp; path = ../../../../../../Shell/OS/OSX/PVRShellOS.cpp; sourceTree = SOURCE_ROOT; };
+		F891AC7DBA4A33CDD5897EA8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ../../../../../../Shell/OS/OSX/main.m; sourceTree = SOURCE_ROOT; };
+		F83056A1463D3149D54E9E82 /* AppController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = AppController.mm; path = ../../../../../../Shell/OS/OSX/AppController.mm; sourceTree = SOURCE_ROOT; };
+		F8E876C58B8E589D704582A8 /* PVRShell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShell.h; path = ../../../../../../Shell/PVRShell.h; sourceTree = SOURCE_ROOT; };
+		F83032EAFB076689D05BCCA4 /* PVRShellImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellImpl.h; path = ../../../../../../Shell/PVRShellImpl.h; sourceTree = SOURCE_ROOT; };
+		F84F75300A266FB04DD95145 /* PVRShellAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellAPI.h; path = ../../../../../../Shell/API/KEGL/PVRShellAPI.h; sourceTree = SOURCE_ROOT; };
+		F8D43C90E6E9634EF07F3500 /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/OSX/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
+		F8D9FEE5B9D56BCDCB605B86 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/OSX/AppController.h; sourceTree = SOURCE_ROOT; };
+		F8EF4F6C0EC03EF94E33963E /* container-corner.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = container-corner.pvr; path = ../../container-corner.pvr; sourceTree = SOURCE_ROOT; };
+		F8EE7ECED970289542EC2F7D /* container-vertical.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = container-vertical.pvr; path = ../../container-vertical.pvr; sourceTree = SOURCE_ROOT; };
+		F879A63B7CDC146AF9B01C28 /* container-horizontal.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = container-horizontal.pvr; path = ../../container-horizontal.pvr; sourceTree = SOURCE_ROOT; };
+		F892B89350EE6B6D7F9341D2 /* topbar.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = topbar.pvr; path = ../../topbar.pvr; sourceTree = SOURCE_ROOT; };
+		F8E9DEEFE54C612E035634A3 /* background.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = background.pvr; path = ../../background.pvr; sourceTree = SOURCE_ROOT; };
+		F80EDA05FBBFBD4D90B2F776 /* clock-face.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = clock-face.pvr; path = ../../clock-face.pvr; sourceTree = SOURCE_ROOT; };
+		F8EA5E51ED6B7C3A5EF46718 /* clock-face-small.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = clock-face-small.pvr; path = ../../clock-face-small.pvr; sourceTree = SOURCE_ROOT; };
+		F87D0A4A8D282A8454B64C81 /* hand.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = hand.pvr; path = ../../hand.pvr; sourceTree = SOURCE_ROOT; };
+		F8F95B900B11FF3B8059C111 /* hand-small.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = hand-small.pvr; path = ../../hand-small.pvr; sourceTree = SOURCE_ROOT; };
+		F834ED331CA75CFAD7CCAE51 /* battery.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = battery.pvr; path = ../../battery.pvr; sourceTree = SOURCE_ROOT; };
+		F8C23579F8D5FADA0BC8906A /* internet-web-browser.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = internet-web-browser.pvr; path = ../../internet-web-browser.pvr; sourceTree = SOURCE_ROOT; };
+		F839D0D3295C53B94A09D096 /* mail-message-new.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = mail-message-new.pvr; path = ../../mail-message-new.pvr; sourceTree = SOURCE_ROOT; };
+		F86C7EC9BCA69964E0E750EB /* network-wireless.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = network-wireless.pvr; path = ../../network-wireless.pvr; sourceTree = SOURCE_ROOT; };
+		F852841AB1B653BA264E1523 /* office-calendar.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = office-calendar.pvr; path = ../../office-calendar.pvr; sourceTree = SOURCE_ROOT; };
+		F87A60D93C49363347DC1800 /* weather-sun-cloud.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-sun-cloud.pvr; path = ../../weather-sun-cloud.pvr; sourceTree = SOURCE_ROOT; };
+		F8D51AD1859D3D8024C14345 /* weather-storm.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-storm.pvr; path = ../../weather-storm.pvr; sourceTree = SOURCE_ROOT; };
+		F837FA1A8DB32629C6FBE588 /* weather-rain.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-rain.pvr; path = ../../weather-rain.pvr; sourceTree = SOURCE_ROOT; };
+		F8520C604CBC3C17E3B20D15 /* text1.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text1.pvr; path = ../../text1.pvr; sourceTree = SOURCE_ROOT; };
+		F849F9BE00AD7CCC4981C6AC /* text2.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text2.pvr; path = ../../text2.pvr; sourceTree = SOURCE_ROOT; };
+		F82AF3189D523F641A4DB5C8 /* text-weather.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-weather.pvr; path = ../../text-weather.pvr; sourceTree = SOURCE_ROOT; };
+		F8F0583FDBDDE415D3E1EC2D /* text-fri.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-fri.pvr; path = ../../text-fri.pvr; sourceTree = SOURCE_ROOT; };
+		F890055598E063C6E63131D0 /* text-sat.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-sat.pvr; path = ../../text-sat.pvr; sourceTree = SOURCE_ROOT; };
+		F8BC01EE6F1CAAB09F1DB224 /* text-sun.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-sun.pvr; path = ../../text-sun.pvr; sourceTree = SOURCE_ROOT; };
+		F8E59D65A89C889985F62BB1 /* text-mon.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-mon.pvr; path = ../../text-mon.pvr; sourceTree = SOURCE_ROOT; };
+		F852A1CB148E57AAF0C3CB70 /* weather-sun-cloud-big.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-sun-cloud-big.pvr; path = ../../weather-sun-cloud-big.pvr; sourceTree = SOURCE_ROOT; };
+		F821DCBB4BB26789A6E8CD72 /* window-bottom.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-bottom.pvr; path = ../../window-bottom.pvr; sourceTree = SOURCE_ROOT; };
+		F86818C4C63A7E74F69E18D3 /* window-bottomcorner.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-bottomcorner.pvr; path = ../../window-bottomcorner.pvr; sourceTree = SOURCE_ROOT; };
+		F835D3B0C4D3DC09C47297D8 /* window-side.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-side.pvr; path = ../../window-side.pvr; sourceTree = SOURCE_ROOT; };
+		F81BC02246055D244BE2C724 /* window-top.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-top.pvr; path = ../../window-top.pvr; sourceTree = SOURCE_ROOT; };
+		F80DBC6B6641D29144FD499E /* window-topleft.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-topleft.pvr; path = ../../window-topleft.pvr; sourceTree = SOURCE_ROOT; };
+		F8070EC8BBE889154515FBC6 /* window-topright.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-topright.pvr; path = ../../window-topright.pvr; sourceTree = SOURCE_ROOT; };
+		F8A72B0D5E690A307AB03F98 /* loremipsum.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = loremipsum.pvr; path = ../../loremipsum.pvr; sourceTree = SOURCE_ROOT; };
+		F817DA7A5BBFD4AFB8150320 /* SpriteShaderF.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SpriteShaderF.fsh; path = ../../SpriteShaderF.fsh; sourceTree = SOURCE_ROOT; };
+		F8EECC2A132E6F8A83B66328 /* SpriteShaderV.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SpriteShaderV.vsh; path = ../../SpriteShaderV.vsh; sourceTree = SOURCE_ROOT; };
+		F849B858DAE2D36CA221496A /* TexColShaderF.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexColShaderF.fsh; path = ../../TexColShaderF.fsh; sourceTree = SOURCE_ROOT; };
+		F8C27D38F72F4B4F6D28140C /* TexColShaderV.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexColShaderV.vsh; path = ../../TexColShaderV.vsh; sourceTree = SOURCE_ROOT; };
+		F868C7A3FB87E36F44A6E92D /* ColShaderF.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ColShaderF.fsh; path = ../../ColShaderF.fsh; sourceTree = SOURCE_ROOT; };
+		F861E722906AD264538DAC14 /* ColShaderV.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ColShaderV.vsh; path = ../../ColShaderV.vsh; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		49068F5513DDA30C00C8DC21 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */,
+				49068F5D13DDA30C00C8DC21 /* Cocoa.framework in Frameworks */,
+				DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */,
+				DB3A55CC15C937F1004CE8F1 /* libGLESv2.dylib in Frameworks */,
+				DB5C32B615C7F65000B1A208 /* libOGLES2Tools.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		49068F4D13DDA30C00C8DC21 = {
+			isa = PBXGroup;
+			children = (
+				49068F7913DDA51C00C8DC21 /* Source */,
+				DB5C32B515C7F60F00B1A208 /* Content */,
+				DB3A55D015C938EC004CE8F1 /* IMG.icns */,
+				DB5C32B415C7F5D100B1A208 /* Libraries */,
+				49068F5B13DDA30C00C8DC21 /* Frameworks */,
+				DB5C32AE15C7F50500B1A208 /* Resources */,
+				49068F6313DDA30C00C8DC21 /* Supporting Files */,
+				49068F5913DDA30C00C8DC21 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		49068F5913DDA30C00C8DC21 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49068F5813DDA30C00C8DC21 /* OGLES2ExampleUI.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		49068F5B13DDA30C00C8DC21 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				49068F5F13DDA30C00C8DC21 /* AppKit.framework */,
+				49068F6013DDA30C00C8DC21 /* CoreData.framework */,
+				49068F6113DDA30C00C8DC21 /* Foundation.framework */,
+				49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */,
+				49068F5C13DDA30C00C8DC21 /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		49068F6313DDA30C00C8DC21 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				49FE311813E2CEE900B32DAC /* Prefix.pch */,
+				495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			path = OGLES2ExampleUI;
+			sourceTree = "<group>";
+		};
+		49068F7913DDA51C00C8DC21 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+		49068F7C13DDA57800C8DC21 /* Shell */,
+				F8FA059ED54A06B09295A0DF /* OGLES2ExampleUI.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+				49068F7C13DDA57800C8DC21 /* Shell */ = {
+			isa = PBXGroup;
+			children = (
+				F8264787AE86D57C8A7666DE /* PVRShell.cpp */,
+				F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */,
+				F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */,
+				F891AC7DBA4A33CDD5897EA8 /* main.m */,
+				F83056A1463D3149D54E9E82 /* AppController.mm */,
+				F8E876C58B8E589D704582A8 /* PVRShell.h */,
+				F83032EAFB076689D05BCCA4 /* PVRShellImpl.h */,
+				F84F75300A266FB04DD95145 /* PVRShellAPI.h */,
+				F8D43C90E6E9634EF07F3500 /* PVRShellOS.h */,
+				F8D9FEE5B9D56BCDCB605B86 /* AppController.h */,
+			);
+			name = Shell;
+			sourceTree = "<group>";
+		};
+		DB5C329915C7F19D00B1A208 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DB5C32AC15C7F32B00B1A208 /* libOGLES2Tools.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DB5C32AE15C7F50500B1A208 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DB3A55CE15C938D4004CE8F1 /* Info.plist */,
+				495B9D0013E2EE09000FD6B4 /* MainMenu.xib */,
+			);
+			name = Resources;
+			path = OGLES2ExampleUI;
+			sourceTree = "<group>";
+		};
+		DB5C32B415C7F5D100B1A208 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */,
+				DB3A55C715C92647004CE8F1 /* libEGL.dylib */,
+				DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		DB5C32B515C7F60F00B1A208 /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				DBE6ED4E15C2AB9C00275129 /* Generic */,
+				DBE6ED4D15C2AB8E00275129 /* Models */,
+				DBE6ED4C15C2AB7E00275129 /* Textures */,
+				DBE6ED4A15C2AB7000275129 /* Shaders */,
+			);
+			name = Content;
+			sourceTree = "<group>";
+		};
+		DBE6ED4A15C2AB7000275129 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				F817DA7A5BBFD4AFB8150320 /* SpriteShaderF.fsh */,
+				F8EECC2A132E6F8A83B66328 /* SpriteShaderV.vsh */,
+				F849B858DAE2D36CA221496A /* TexColShaderF.fsh */,
+				F8C27D38F72F4B4F6D28140C /* TexColShaderV.vsh */,
+				F868C7A3FB87E36F44A6E92D /* ColShaderF.fsh */,
+				F861E722906AD264538DAC14 /* ColShaderV.vsh */,
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
+		DBE6ED4C15C2AB7E00275129 /* Textures */ = {
+			isa = PBXGroup;
+			children = (
+				F8EF4F6C0EC03EF94E33963E /* container-corner.pvr */,
+				F8EE7ECED970289542EC2F7D /* container-vertical.pvr */,
+				F879A63B7CDC146AF9B01C28 /* container-horizontal.pvr */,
+				F892B89350EE6B6D7F9341D2 /* topbar.pvr */,
+				F8E9DEEFE54C612E035634A3 /* background.pvr */,
+				F80EDA05FBBFBD4D90B2F776 /* clock-face.pvr */,
+				F8EA5E51ED6B7C3A5EF46718 /* clock-face-small.pvr */,
+				F87D0A4A8D282A8454B64C81 /* hand.pvr */,
+				F8F95B900B11FF3B8059C111 /* hand-small.pvr */,
+				F834ED331CA75CFAD7CCAE51 /* battery.pvr */,
+				F8C23579F8D5FADA0BC8906A /* internet-web-browser.pvr */,
+				F839D0D3295C53B94A09D096 /* mail-message-new.pvr */,
+				F86C7EC9BCA69964E0E750EB /* network-wireless.pvr */,
+				F852841AB1B653BA264E1523 /* office-calendar.pvr */,
+				F87A60D93C49363347DC1800 /* weather-sun-cloud.pvr */,
+				F8D51AD1859D3D8024C14345 /* weather-storm.pvr */,
+				F837FA1A8DB32629C6FBE588 /* weather-rain.pvr */,
+				F8520C604CBC3C17E3B20D15 /* text1.pvr */,
+				F849F9BE00AD7CCC4981C6AC /* text2.pvr */,
+				F82AF3189D523F641A4DB5C8 /* text-weather.pvr */,
+				F8F0583FDBDDE415D3E1EC2D /* text-fri.pvr */,
+				F890055598E063C6E63131D0 /* text-sat.pvr */,
+				F8BC01EE6F1CAAB09F1DB224 /* text-sun.pvr */,
+				F8E59D65A89C889985F62BB1 /* text-mon.pvr */,
+				F852A1CB148E57AAF0C3CB70 /* weather-sun-cloud-big.pvr */,
+				F821DCBB4BB26789A6E8CD72 /* window-bottom.pvr */,
+				F86818C4C63A7E74F69E18D3 /* window-bottomcorner.pvr */,
+				F835D3B0C4D3DC09C47297D8 /* window-side.pvr */,
+				F81BC02246055D244BE2C724 /* window-top.pvr */,
+				F80DBC6B6641D29144FD499E /* window-topleft.pvr */,
+				F8070EC8BBE889154515FBC6 /* window-topright.pvr */,
+				F8A72B0D5E690A307AB03F98 /* loremipsum.pvr */,
+			);
+			name = Textures;
+			sourceTree = "<group>";
+		};
+		DBE6ED4D15C2AB8E00275129 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		DBE6ED4E15C2AB9C00275129 /* Generic */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Generic;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		49068F5713DDA30C00C8DC21 /* OGLES2ExampleUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49068F7613DDA30C00C8DC21 /* Build configuration list for PBXNativeTarget "OGLES2ExampleUI" */;
+			buildPhases = (
+				49068F5413DDA30C00C8DC21 /* Sources */,
+				49068F5513DDA30C00C8DC21 /* Frameworks */,
+				49068F5613DDA30C00C8DC21 /* Resources */,
+				DB3A55C515C92213004CE8F1 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OGLES2ExampleUI;
+			productName = OGLES2ExampleUI;
+			productReference = 49068F5813DDA30C00C8DC21 /* OGLES2ExampleUI.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		49068F4F13DDA30C00C8DC21 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
+			buildConfigurationList = 49068F5213DDA30C00C8DC21 /* Build configuration list for PBXProject "OGLES2ExampleUI" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 49068F4D13DDA30C00C8DC21;
+			productRefGroup = 49068F5913DDA30C00C8DC21 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = DB5C329915C7F19D00B1A208 /* Products */;
+					ProjectRef = DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				49068F5713DDA30C00C8DC21 /* OGLES2ExampleUI */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		DB5C32AC15C7F32B00B1A208 /* libOGLES2Tools.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libOGLES2Tools.a;
+			remoteRef = DB5C32AB15C7F32B00B1A208 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		49068F5613DDA30C00C8DC21 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */,
+				495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */,
+				F8E24673365C0181DC71ACEC /* container-corner.pvr in Resources */,
+				F864A267B61CF521B384449E /* container-vertical.pvr in Resources */,
+				F8B3BEF3B1F4BD49B4B3EA44 /* container-horizontal.pvr in Resources */,
+				F8279E6A28FC7C83AA6E4CBB /* topbar.pvr in Resources */,
+				F81AC49331E17F883417212A /* background.pvr in Resources */,
+				F85AF1BBAF1BAADFF6BFFFCE /* clock-face.pvr in Resources */,
+				F8A3187599D3B4505C1A96D3 /* clock-face-small.pvr in Resources */,
+				F8FCF6D3FCA8287A2E2E2D04 /* hand.pvr in Resources */,
+				F8D5AF2DFF0BB82B842928DD /* hand-small.pvr in Resources */,
+				F8F7923BDEC7765E445A37DC /* battery.pvr in Resources */,
+				F8FA134AB32B8B2636DFF777 /* internet-web-browser.pvr in Resources */,
+				F8CDEF23980A2E1498ED3DF7 /* mail-message-new.pvr in Resources */,
+				F8EBD38DF66278BEBF240AAD /* network-wireless.pvr in Resources */,
+				F8BC8D66F79418D4E036C6E1 /* office-calendar.pvr in Resources */,
+				F8F20F8D39FAF2EC17613B70 /* weather-sun-cloud.pvr in Resources */,
+				F8969C40AAEC0A8890659A79 /* weather-storm.pvr in Resources */,
+				F88A88CB786ACAB3607BE18F /* weather-rain.pvr in Resources */,
+				F8CC2BC37578D78F4D11DA05 /* text1.pvr in Resources */,
+				F837B56A01D98FDF9DBAE89C /* text2.pvr in Resources */,
+				F84195EFF412058B84A28379 /* text-weather.pvr in Resources */,
+				F8B31C58D129935CFC29DE97 /* text-fri.pvr in Resources */,
+				F841A4909F77B8709D75BA28 /* text-sat.pvr in Resources */,
+				F8524D1AE9D977777B3562A0 /* text-sun.pvr in Resources */,
+				F89AEE770BF9A44B3D072F94 /* text-mon.pvr in Resources */,
+				F86A83AD277B91A5EB5611EB /* weather-sun-cloud-big.pvr in Resources */,
+				F81010204D200FDC3D613F9B /* window-bottom.pvr in Resources */,
+				F83162606C994D64BAE53B7F /* window-bottomcorner.pvr in Resources */,
+				F83573655FCA0F00D6522D83 /* window-side.pvr in Resources */,
+				F8FF9D737938DDDE6ACB35D2 /* window-top.pvr in Resources */,
+				F857E41EF5EFC7A415B0EE36 /* window-topleft.pvr in Resources */,
+				F80F9DDCE08A413E2AC0CC5B /* window-topright.pvr in Resources */,
+				F86BA40FB5D34947FBE7C345 /* loremipsum.pvr in Resources */,
+				F89E34C5C94290AD21FF027C /* SpriteShaderF.fsh in Resources */,
+				F8BC684B509C621F7A4EC8A3 /* SpriteShaderV.vsh in Resources */,
+				F8E4989AFD388D2C3EBAE6E4 /* TexColShaderF.fsh in Resources */,
+				F855B72488E2F422D14A14CA /* TexColShaderV.vsh in Resources */,
+				F8D6BE6D4ABDC99B4C7D1D27 /* ColShaderF.fsh in Resources */,
+				F8F3A0F8E671F5C6C2213D07 /* ColShaderV.vsh in Resources */,
+				DB3A55CF15C938D4004CE8F1 /* Info.plist in Resources */,
+				DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		49068F5413DDA30C00C8DC21 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F87720C516F154FD82EEEF63 /* OGLES2ExampleUI.cpp in Sources */,
+				F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */,
+				F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */,
+				F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */,
+				F8511E325A14C7B1512D37CC /* main.m in Sources */,
+				F869BEBD44384AC2147622A7 /* AppController.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		495B9D0013E2EE09000FD6B4 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				495B9D0113E2EE09000FD6B4 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				495B9D0513E2EE16000FD6B4 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		49068F7413DDA30C00C8DC21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"_DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		49068F7513DDA30C00C8DC21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		49068F7713DDA30C00C8DC21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					BUILD_OGLES2,
+				);
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = ("$(inherited)","../../../../../../Builds/OSX/x86/Lib");
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Tools/OGLES2 ../../../../../../Tools";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		49068F7813DDA30C00C8DC21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES2;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = ("$(inherited)","../../../../../../Builds/OSX/x86/Lib");
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Tools/OGLES2 ../../../../../../Tools";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		49068F5213DDA30C00C8DC21 /* Build configuration list for PBXProject "OGLES2ExampleUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49068F7413DDA30C00C8DC21 /* Debug */,
+				49068F7513DDA30C00C8DC21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49068F7613DDA30C00C8DC21 /* Build configuration list for PBXNativeTarget "OGLES2ExampleUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49068F7713DDA30C00C8DC21 /* Debug */,
+				49068F7813DDA30C00C8DC21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 49068F4F13DDA30C00C8DC21 /* Project object */;
+}

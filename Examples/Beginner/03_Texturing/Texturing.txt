@@ -1,0 +1,11 @@
+:Title:
+Texturing
+
+:ShortDescription:
+This training course demonstrates how to apply a texture to a polygon in :API:.
+
+:FullDescription:
+This training course demonstrates how to apply a texture to a polygon in :API:. The texture is generated procedurally during initialisation and then loaded into :API:. The triangle is then drawn with UV values so that the texture can be applied to it.
+
+Controls:
+	-	Esc	-	Close the application

@@ -1,0 +1,21 @@
+:Title:
+IntroducingPFX
+
+:ShortDescription:
+This training course demonstrates how to use the PVRTools library to load and use .pfx files.
+
+:FullDescription:
+This training course demonstrates how to use the PVRTools library to load and use .pfx files. PFX is both a file format and an API, and stands for PowerVR Effects. 
+
+Controls:
+	-	Esc	-	Close the application
+
+:VGP:
+Not Required
+
+:Polygon Count:
+4480
+
+:Vertex Count:
+2238
+

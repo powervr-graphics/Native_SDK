@@ -1,0 +1,18 @@
+:Title:
+AnisotropicLighting
+
+:ShortDescription:
+In this training course two techniques are shown for generating an anisotropic lighting effect, one technique using per vertex/pixel calculations, and the other using a texture lookup.
+
+:FullDescription:
+In this training course two techniques are shown for generating an anisotropic lighting effect (the effect of surface grain on materials such as brushed metal, velvet etc.).  The first technique uses per vertex and pixel calculations to calculate the shading and thus generate the effect on the fly.  The second technique uses a texture lookup to determine the shading and would be useful in situations where bandwidth was more readily available than processing time.
+
+Controls:
+	-	Left/Right Arrow	-	Toggle effect
+	-	Esc	-	Close application
+	
+:PolygonCount:
+4480
+
+:VertexCount:
+2238

@@ -1,0 +1,11 @@
+:Title:
+FilmTV
+
+:ShortDescription:
+A demonstration of a render to texture effect.
+
+:FullDescription:	
+A demonstration of a render to texture effect is shown in this demo. FBOs are used as render targets each frame, with the previous frames FBOs used as the source of the view from the camera.
+
+Controls:
+	-	Esc	-	Close the application

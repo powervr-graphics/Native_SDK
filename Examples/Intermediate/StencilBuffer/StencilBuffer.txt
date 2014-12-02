@@ -1,0 +1,12 @@
+:Title:
+Stencil Buffer
+
+:ShortDescription:
+This training course demonstrates how to use the stencil buffer to mask areas of the screen when rendering.
+
+:FullDescription:	
+This training course demonstrates how to use the stencil buffer to mask areas of the screen when rendering. A sphere and a cylinder are drawn intersecting.  The sphere is drawn first, then a stencil test performed using the cylinder. This test is used to determine what colour should be drawn for a given area of the sphere.
+
+Controls:
+	-	Esc	-	Close the application
+

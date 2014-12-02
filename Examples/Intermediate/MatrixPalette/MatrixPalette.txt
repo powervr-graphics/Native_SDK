@@ -1,0 +1,12 @@
+:Title:
+MatrixPalette
+
+:ShortDescription:
+This training course demonstrates how to use matrix palettes to animate a skinned character.
+
+:FullDescription:
+This training course demonstrates how to use matrix palettes to animate a skinned character loaded from a .pod file. A skinned character is an animated mesh which has had a texture applied to it. 
+
+Controls:
+	-	Esc	-	Close the application
+

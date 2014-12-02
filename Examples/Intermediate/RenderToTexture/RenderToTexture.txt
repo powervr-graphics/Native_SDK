@@ -1,0 +1,12 @@
+:Title:
+RenderToTexture
+
+:ShortDescription:
+This training course demonstrates the use of rendering to a texture.
+
+:FullDescription:
+This training course demonstrates rendering a scene to a pBuffer surface or FBO, then binding and applying that render to an object in an additional render pass.
+
+Controls:
+	-	Left	-	Toggles multisampling of the FBOs
+	-	Esc	-	Close the application

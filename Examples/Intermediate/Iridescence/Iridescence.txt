@@ -1,0 +1,14 @@
+:Title:
+Iridescence
+
+:ShortDescription:
+This training course demonstrates how to implement an iridescence effect.
+
+:FullDescription:
+This training course demonstrates how to implement an iridescence effect. Iridescence (also known as goniochromism) is generally known as the property of certain surfaces which appear to change colour as the angle of view or the angle of illumination changes. Iridescence is commonly seen in items such as soap bubbles, butterfly wings, and sea shells. The effect demonstrated in this training course mimics the behaviour of light reflecting off a surface covered by a translucent film of variable thickness.
+
+Controls:
+	-	Up/Down	-	Increase/Decrease the maximum variation
+	-	Left/Right	-	Decrease/Increase the maximum thickness
+	-	Esc	-	Close the application
+

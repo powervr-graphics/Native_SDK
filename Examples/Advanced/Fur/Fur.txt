@@ -1,0 +1,12 @@
+:Title:
+Fur
+
+:ShortDescription:
+A demonstration of a fur effect on a simple duck model.
+
+:FullDescription:	
+Demonstrates a method for rendering fur. Multiple translucent "shells" of the original model are rendered, each slightly larger than the previous. The texture applied to these layers contains a "dot" in the alpha channel to show where a hair passes through the "shell".
+
+Controls:
+	-	Left/Right	-	Cycle Left/Right through explanation pages
+	-	Esc	-	Close the application

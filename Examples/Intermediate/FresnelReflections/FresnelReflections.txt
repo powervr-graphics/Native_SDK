@@ -1,0 +1,18 @@
+:Title:
+Fresnel Reflection
+
+:ShortDescription:
+This training course demonstrates an implementation of Fresnel reflection.
+
+:FullDescription:
+This training course demonstrates an implementation of Fresnel reflection. The Fresnel equations (or Fresnel conditions) describe the behaviour of light when moving between media of differing refractive indices. The reflection of light that the equations predict is known as Fresnel reflection.  
+
+Controls:
+	-	Up/Down	-	Increase/Decrease the refractive index of the surface material
+	-	Esc	-	Close the application
+
+:PolyCount:
+4480
+
+:VertexCount:
+2238

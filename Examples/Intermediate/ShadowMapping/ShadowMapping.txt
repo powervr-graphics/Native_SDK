@@ -1,0 +1,12 @@
+:Title:
+ShadowMapping
+
+:ShortDescription:
+This training course demonstrates a shadow mapping technique.
+
+:FullDescription:
+This training course demonstrates a shadow mapping technique.  This technique begins by determining whether a given area can be seen from the light. Each fragment that is not visible is marked in one render pass and used to create a texture. In a second render pass this texture is applied to the scene to create the shadow effect.
+
+Controls:
+	-	Esc	-	Close the application
+	

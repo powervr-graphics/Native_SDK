@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['f',['f',['../class_p_v_r_t_m_a_t_r_i_xf.html#ae5886dec268d81c4a98add18785b968e',1,'PVRTMATRIXf::f()'],['../class_p_v_r_t_m_a_t_r_i_xx.html#a69e6f00c29a304afd13c957d89123538',1,'PVRTMATRIXx::f()'],['../class_p_v_r_t_m_a_t_r_i_x3f.html#a408b3177ed9af195f5a59d570020f4f1',1,'PVRTMATRIX3f::f()'],['../class_p_v_r_t_m_a_t_r_i_x3x.html#a3bf8a60f129bd1c00ffb77ba5cc8d213',1,'PVRTMATRIX3x::f()']]],
+  ['fcenter',['fCenter',['../struct_header_struct___mesh.html#a37e4935f854e0e7d5d529e1d50065eb8',1,'HeaderStruct_Mesh']]],
+  ['fconstantattenuation',['fConstantAttenuation',['../struct_s_p_o_d_light.html#a1aa0452799cfda2c3a358e48c3e9c822',1,'SPODLight']]],
+  ['ffalloffangle',['fFalloffAngle',['../struct_s_p_o_d_light.html#ae86b850d6d902b0b40cff229a8a98e9b',1,'SPODLight']]],
+  ['ffalloffexponent',['fFalloffExponent',['../struct_s_p_o_d_light.html#a6f57b5edb1af09a7e6381b1e7ebaffdc',1,'SPODLight']]],
+  ['ffar',['fFar',['../struct_s_p_o_d_camera.html#a110c9dfd95bfbbbc16e9d6beffa1f8d2',1,'SPODCamera']]],
+  ['ffov',['fFOV',['../struct_s_p_o_d_camera.html#a9f4b6d0b87a0428fadda754d733fe0bf',1,'SPODCamera']]],
+  ['filename',['FileName',['../struct_s_p_v_r_t_p_f_x_parser_texture.html#a24895d4fa65e02230825c3533a492e06',1,'SPVRTPFXParserTexture']]],
+  ['flags',['flags',['../struct_s_p_v_r_t_p_f_x_texture.html#ae1e94f4103dff9c2005375e77e757520',1,'SPVRTPFXTexture']]],
+  ['flinearattenuation',['fLinearAttenuation',['../struct_s_p_o_d_light.html#a6bba814b949bb2070220df71824a59c1',1,'SPODLight']]],
+  ['fmatopacity',['fMatOpacity',['../struct_s_p_o_d_material.html#a102d6aa05b4097f6b49fce64b6bf2c9c',1,'SPODMaterial']]],
+  ['fmatshininess',['fMatShininess',['../struct_s_p_o_d_material.html#a1555077cee6268d272b597017e1e6a82',1,'SPODMaterial']]],
+  ['fnear',['fNear',['../struct_s_p_o_d_camera.html#ac9bf09d3c1bd4fb4c163dced9ae0bb96',1,'SPODCamera']]],
+  ['fquadraticattenuation',['fQuadraticAttenuation',['../struct_s_p_o_d_light.html#a184cc38286b6eaf32bf571d818f86d80',1,'SPODLight']]],
+  ['fragmentshadername',['FragmentShaderName',['../struct_s_p_v_r_t_p_f_x_parser_effect.html#a986b9820ee15c9baaccf7da2fbf15157',1,'SPVRTPFXParserEffect']]],
+  ['funits',['fUnits',['../struct_s_p_o_d_scene.html#a56ec6b8edeed418236ba15b41e63d71b',1,'SPODScene']]]
+];

@@ -1,0 +1,13 @@
+:Title:
+Skinning
+
+:ShortDescription:
+This training course demonstrates how to implement hardware accelerated skinning using .pod files.
+
+:FullDescription:
+This training course demonstrates how to implement hardware accelerated skinning using the .pod file loading tools found in the PVRTools library.
+
+Controls:
+	-	Left/Right	-	Rotate model clockwise/anti-clockwise
+	-	Up/Down	-	Zoom out/in
+	-	Esc	-	Close the application

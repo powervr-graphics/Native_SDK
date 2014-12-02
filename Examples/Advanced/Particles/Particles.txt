@@ -1,0 +1,11 @@
+:Title:
+Particles
+
+:ShortDescription:
+A demonstration of particle effects with frame buffer blending.
+
+:FullDescription:	
+This demo shows a physics based particle effect displaying a total of 900 particles (600 real + 300 reflected). This effect was generated using alpha blending, which involves combining a translucent foreground color with a background colour, producing a new blended color as a result. 
+
+Controls:
+	-	Esc	-	Close the application

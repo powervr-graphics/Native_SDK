@@ -1,0 +1,14 @@
+:Title:
+TextureArray
+
+:ShortDescription:
+Shows how to use the texture array functionality.
+
+:FullDescription:
+This demo shows how to use a texture array in the fragment shader by using three parameters. These are the index of the texture to be sampled, and the sampling coordinates. 
+ 
+
+:Polygon Count:
+1
+:Vertex Count:
+3

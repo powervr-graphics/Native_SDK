@@ -1,0 +1,8 @@
+:Title:
+PVRScopeRemote
+
+:ShortDescription:
+Demonstrates the use of PVRScope's remote communication features.
+
+:FullDescription:
+This example shows how to use the editable data and custom mark functionality of PVRScope. PVRTune must be running and connected to an instance of PVRPerfServer running on the target device for this demo to function.

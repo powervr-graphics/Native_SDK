@@ -1,0 +1,11 @@
+:Title:
+3D Navigation
+
+:ShortDescription:
+A demonstration of how to implement rendering algorithms for 3D Navigation software. 
+
+:FullDescription:	
+This demo serves as an example of how to implement rendering algorithms for 3D Navigation software. Several techniques such as frustrum culling, visibility based culling and dynamic stencil-shadow volumes are employed. The demo also provides an example of how to use culling and batching to optimize rendering.
+
+Controls:
+	-	Esc	-	Close the application

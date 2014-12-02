@@ -1,0 +1,1108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Content Files">
+      <UniqueIdentifier>{900022e4-757a-46fb-bd53-6dfc20b3d893}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content Files\Scene Files">
+      <UniqueIdentifier>{2c3d4c8c-5d1a-459a-a05a-a4e4b608a44e}</UniqueIdentifier>
+      <Extensions>pod</Extensions>
+    </Filter>
+    <Filter Include="Content Files\Shaders">
+      <UniqueIdentifier>{2c3d4c8c-5d1a-459a-a05a-a4e4b608a44e}</UniqueIdentifier>
+      <Extensions>fsh;psh;glsl;frag;vert</Extensions>
+    </Filter>
+    <Filter Include="Content Files\Textures">
+      <UniqueIdentifier>{2c3d4c8c-5d1a-459a-a05a-a4e4b608a44e}</UniqueIdentifier>
+      <Extensions>ico;bmp;gif;jpg;jpeg;jpe;tiff;tif;png;pvr</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Shell\PVRShell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Shell\PVRShellImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Shell\API\KEGL\PVRShellAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Shell\OS\Windows\PVRShellOS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Builds\Windows\Resources\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\..\..\..\Builds\Windows\Resources\shared.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\OGLES3Navigation3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Shell\PVRShell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Shell\API\KEGL\PVRShellAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Shell\OS\Windows\PVRShellOS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\UIVertShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\UIFragShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\SkyboxFragShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\SkyboxVertShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\BuildingFragShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\BuildingVertShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\FullscreenVertShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\FullscreenFragShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\ShadowVolVertShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\ShadowVolFragShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\modelindex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\occlusiondata.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\cameratrack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\UIElements.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_008_015_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_008_016_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_009_014_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_009_015_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_009_016_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_009_017_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_009_018_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_010_014_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_010_015_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_010_015_H.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_010_016_H.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_010_016_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_010_017_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_010_017_H.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_010_018_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_011_013_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_011_014_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_011_015_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_011_015_H.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_011_016_H.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_011_016_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_011_017_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_011_017_H.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_011_018_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_012_014_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_012_015_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_012_016_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_012_017_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_013_015_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\CM_US_IL_CHICAGO_013_016_L.DAE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\006_RUS.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\007_RUG.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\008_RUG.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\009_RUG.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\011_GIE.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\012_RSR.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\016_FOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\016_RTR.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\017_FOD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\018_FOD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\019_FOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\019_GOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\019_RZG.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\020_FOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\021_FOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\022_FOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\022_RUG.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\023_FOB.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\023_RUG.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\024_FOB.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\025_FOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\025_RUW.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\026_FOD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\026_RUW.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\027_FOD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\027_RUW.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\028_GOF.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\029_GCC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\030_GOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\031_GOD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\032_FOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\032_GOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\033_FOA.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\033_GOA.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\034_FOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\034_GOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\035_FOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\035_GOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\036_FOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\036_GOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\037_FOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\037_GOC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\041_FRB.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\041_GRB.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\044_GRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\046_GRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\054_GRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\055_GRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\056_GRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\059_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\060_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\061_FRD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\063_GRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\064_GRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\066_FCB.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\066_GCB.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\067_FCC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\067_GCC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\068_GCD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\069_FCA.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\069_GCA.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\070_GOD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\071_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\072_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\073_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\074_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\075_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\076_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\077_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\080_GCB.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\082_FCD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\083_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\085_GRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\086_FOF.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\086_GOF.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\087_FCA.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\087_GCA.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\087_GCC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\088_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\089_FRC.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\092_GCA.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\094_FOD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\095_FOD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13443_CHICAGO_35EAST_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13444_CHICAGO_LEOBURNETT_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13447_CHICAGO_REIDMURDOCH_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13448_CHICAGO_CARBIDE_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13449_CHICAGO_CROWNFOUNTAIN_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13451_CHICAGO_CULTURAL_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13453_CHICAGO_PRUDENTIAL_PART1_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13454_CHICAGO_UNITED_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13456_CHICAGO_SEVENTEENTH_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13458_CHICAGO_SMURFIT_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13459_CHICAGO_LASALLE_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13460_CHICAGO_TRUMP_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13461_CHICAGO_UNITRIN_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13462_CHICAGO_WILLOUGHBY_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_13490_CHICAGO_PRUDENTIAL_PART2_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_AONCENTER_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_ARTINSTITUTE_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_BOARDOFTHETRADE_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_BOEINGBUILDING_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_CHICAGOTHEATRE_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_CITYHALL_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_DALEY_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_HILTON_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_JAMESTHOMPSON_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_LIBRARY_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_MILLENIUMPARK1_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_MILLENIUMPARK2_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_MMART_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_OGILVIE_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_SEARSTOWER_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_IL_CHICAGO_UNIONSTATION_L.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_L_CONCRETE-COLOUR.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_L_CONCRETE-DETAIL.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_L_PARK-COLOUR.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_L_WATER-COLOUR.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_R_CONCRETE.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_R_HIGHWAY-SOLID.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_R_STREET-DASHED.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_R_STREET-INNER-SHOULDER.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_R_STREET-LANE-FILLER.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_R_STREET-SOLID.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_R_STREET-UNMARKED.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_R_WALKWAY-SOLID.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_R_WALKWAY-UNMARKED.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Data\Content\US_T_RAILROAD.PNG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+<ItemGroup>
+    <CustomBuild Include="..\..\..\Data\modelindex.nav">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\occlusiondata.nav">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\cameratrack.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_008_015_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_008_016_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_009_014_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_009_015_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_009_016_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_009_017_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_009_018_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_010_014_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_010_015_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_010_015_H.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_010_016_H.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_010_016_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_010_017_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_010_017_H.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_010_018_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_011_013_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_011_014_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_011_015_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_011_015_H.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_011_016_H.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_011_016_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_011_017_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_011_017_H.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_011_018_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_012_014_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_012_015_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_012_016_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_012_017_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_013_015_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\Data\CM_US_IL_CHICAGO_013_016_L.DAE.pod">
+      <Filter>Content Files\Scene Files</Filter>
+    </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_SEARSTOWER_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\032_FOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13449_CHICAGO_CROWNFOUNTAIN_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\089_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\032_GOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\034_GOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\069_FCA.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_R_STREET-LANE-FILLER.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\030_GOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\033_GOA.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\022_RUG.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\075_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_MILLENIUMPARK1_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\008_RUG.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\028_GOF.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\011_GIE.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\033_FOA.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_BOARDOFTHETRADE_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\059_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13490_CHICAGO_PRUDENTIAL_PART2_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13444_CHICAGO_LEOBURNETT_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\023_FOB.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\077_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\016_RTR.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_ARTINSTITUTE_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\031_GOD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\066_GCB.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_T_RAILROAD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\067_FCC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\UIElements.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\023_RUG.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_JAMESTHOMPSON_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_R_STREET-DASHED.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\027_FOD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\070_GOD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13454_CHICAGO_UNITED_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\083_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\060_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\036_FOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\037_GOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\082_FCD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_OGILVIE_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13462_CHICAGO_WILLOUGHBY_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_R_HIGHWAY-SOLID.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\012_RSR.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\087_GCC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\063_GRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_R_STREET-UNMARKED.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\022_FOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\073_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\029_GCC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\095_FOD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\035_GOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_R_WALKWAY-UNMARKED.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\086_GOF.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\017_FOD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\034_FOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\074_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\025_RUW.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\007_RUG.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13458_CHICAGO_SMURFIT_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_MILLENIUMPARK2_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\035_FOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_BOEINGBUILDING_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\019_GOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\080_GCB.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\069_GCA.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\019_RZG.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_CITYHALL_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\009_RUG.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13447_CHICAGO_REIDMURDOCH_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13443_CHICAGO_35EAST_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\086_FOF.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\067_GCC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_UNIONSTATION_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\027_RUW.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\072_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\025_FOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_L_CONCRETE-DETAIL.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_MMART_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\Skybox.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_CHICAGOTHEATRE_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\021_FOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\071_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\055_GRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_L_WATER-COLOUR.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\088_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_LIBRARY_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\020_FOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\044_GRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\061_FRD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\036_GOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13453_CHICAGO_PRUDENTIAL_PART1_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\094_FOD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\037_FOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\085_GRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\087_FCA.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\016_FOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\068_GCD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\024_FOB.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_L_CONCRETE-COLOUR.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_R_STREET-INNER-SHOULDER.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\046_GRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_R_CONCRETE.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_DALEY_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\066_FCB.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13460_CHICAGO_TRUMP_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\019_FOC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_AONCENTER_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\026_RUW.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\056_GRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\064_GRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13456_CHICAGO_SEVENTEENTH_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_CHICAGO_HILTON_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_R_WALKWAY-SOLID.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\018_FOD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13459_CHICAGO_LASALLE_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\006_RUS.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\054_GRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\026_FOD.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\076_FRC.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13461_CHICAGO_UNITRIN_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\092_GCA.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13448_CHICAGO_CARBIDE_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_R_STREET-SOLID.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_L_PARK-COLOUR.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\US_IL_13451_CHICAGO_CULTURAL_L.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\087_GCA.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\041_GRB.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\..\Data\041_FRB.PNG.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\UIVertShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\UIFragShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\SkyboxFragShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\SkyboxVertShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\BuildingFragShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\BuildingVertShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\FullscreenVertShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\FullscreenFragShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\ShadowVolVertShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\ShadowVolFragShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,12 @@
+:Title:
+LightMap
+
+:ShortDescription:
+This training course shows how to use light maps.
+
+:FullDescription:
+This training course demonstrates how to use light mapping to project a shadow texture from an arbitrary point, in an arbitrary direction, onto a model which has a base and reflection texture.
+
+Controls:
+	-	Esc	-	Close the application
+

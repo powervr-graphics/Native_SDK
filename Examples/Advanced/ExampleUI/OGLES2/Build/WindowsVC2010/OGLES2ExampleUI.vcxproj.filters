@@ -1,0 +1,294 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Content Files">
+      <UniqueIdentifier>{900022e4-757a-46fb-bd53-6dfc20b3d893}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content Files\Shaders">
+      <UniqueIdentifier>{2c3d4c8c-5d1a-459a-a05a-a4e4b608a44e}</UniqueIdentifier>
+      <Extensions>fsh;psh;glsl;frag;vert</Extensions>
+    </Filter>
+    <Filter Include="Content Files\Textures">
+      <UniqueIdentifier>{2c3d4c8c-5d1a-459a-a05a-a4e4b608a44e}</UniqueIdentifier>
+      <Extensions>ico;bmp;gif;jpg;jpeg;jpe;tiff;tif;png;pvr</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Shell\PVRShell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Shell\PVRShellImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Shell\API\KEGL\PVRShellAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Shell\OS\Windows\PVRShellOS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Builds\Windows\Resources\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\..\..\..\Builds\Windows\Resources\shared.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\OGLES2ExampleUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Shell\PVRShell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Shell\API\KEGL\PVRShellAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Shell\OS\Windows\PVRShellOS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\SpriteShaderF.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\SpriteShaderV.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\TexColShaderF.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\TexColShaderV.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\ColShaderF.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\ColShaderV.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\container-corner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\container-vertical.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\container-horizontal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\topbar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\background.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\clock-face.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\clock-face-small.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\hand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\hand-small.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\battery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\internet-web-browser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\mail-message-new.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\network-wireless.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\office-calendar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\weather-sun-cloud.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\weather-storm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\weather-rain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\text1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\text2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\text-weather.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\text-fri.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\text-sat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\text-sun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\text-mon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\weather-sun-cloud-big.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\window-bottom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\window-bottomcorner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\window-side.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\window-top.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\window-topleft.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\window-topright.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Content\loremipsum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+<ItemGroup>
+  <CustomBuild Include="..\..\weather-storm.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\clock-face-small.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\window-bottomcorner.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\weather-sun-cloud.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\window-topleft.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\window-side.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\window-bottom.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\weather-sun-cloud-big.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\container-corner.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\office-calendar.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\text-sun.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\weather-rain.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\text-mon.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\text-weather.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\hand.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\container-vertical.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\container-horizontal.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\text-sat.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\clock-face.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\text1.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\text2.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\text-fri.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\window-top.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\loremipsum.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\background.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\internet-web-browser.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\network-wireless.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\window-topright.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\mail-message-new.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\topbar.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\hand-small.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\battery.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\SpriteShaderF.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\SpriteShaderV.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\TexColShaderF.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\TexColShaderV.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\ColShaderF.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\ColShaderV.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </CustomBuild>
+  </ItemGroup>
+</Project>

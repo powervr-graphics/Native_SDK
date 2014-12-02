@@ -1,0 +1,11 @@
+:Title:
+MagicLantern
+
+:ShortDescription:
+A demonstration of dynamic lighting using spherical projection.
+
+:FullDescription:
+MagicLantern shows how to project a dynamic light-map onto a scene. It uses a cube map to hold the projected image and calculates the mapping coordinates using the direction from the light source to the vertices.
+
+Controls:
+	-	Esc	-	Close the application

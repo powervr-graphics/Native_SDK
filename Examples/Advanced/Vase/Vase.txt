@@ -1,0 +1,14 @@
+:Title:
+Vase
+
+:ShortDescription:
+This demo shows a transparent vase with dynamic reflections on its metallic sections.
+
+:FullDescription:	
+This demo shows a transparent vase with dynamic reflections on its metallic sections. The effect is achieved through a mixture of texturing blending, and a two pass render that draws both the back and front face of the glass object separately with different culling modes.
+
+Controls:
+	-	Esc	-	Close the application
+
+
+

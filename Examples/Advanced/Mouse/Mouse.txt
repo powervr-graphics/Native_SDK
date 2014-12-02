@@ -1,0 +1,12 @@
+:Title:
+Mouse
+
+:ShortDescription:
+A demonstration of a cell-shading (a.k.a. Toon shading) effect applied on an animated model.
+
+:FullDescription:	
+Cell-Shading is the "art" of rendering your objects to look like cartoons. This demo shows a dancing mouse with a hard black outline and banded shading to achieve the desired cartoon-look. Both effects are set up using optimised software routines.
+
+Controls:
+	-	Esc	-	Close the application
+	
