@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Intermediate/ShadowMapping/OGLES3/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles3tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles3tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES3/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles3tools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLES3ShadowMapping
 include $(CLEAR_VARS)
@@ -42,35 +45,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/Scene.pod \
-	$(ASSETDIR)/effect.pfx \
-	$(ASSETDIR)/Mask.pvr \
-	$(ASSETDIR)/TableCover.pvr \
-	$(ASSETDIR)/Torus.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/Mask.pvr: $(PVRSDKDIR)/Examples/Intermediate/ShadowMapping/OGLES3/Mask.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/TableCover.pvr: $(PVRSDKDIR)/Examples/Intermediate/ShadowMapping/OGLES3/TableCover.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Torus.pvr: $(PVRSDKDIR)/Examples/Intermediate/ShadowMapping/OGLES3/Torus.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Scene.pod: $(PVRSDKDIR)/Examples/Intermediate/ShadowMapping/OGLES3/Scene.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/effect.pfx: $(PVRSDKDIR)/Examples/Intermediate/ShadowMapping/OGLES3/effect.pfx $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-
-

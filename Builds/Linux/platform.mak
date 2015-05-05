@@ -15,20 +15,6 @@ PLAT_SUFFIX = $(patsubst Linux_%,%,$(PLATFORM))
 include $(SDKDIR)/Builds/Linux/$(PLAT_SUFFIX)/platform.mak
 include $(SDKDIR)/Builds/Linux/$(PLAT_SUFFIX)/api.mak
 
-ifndef WS
-ifeq "$(X11BUILD)" "1"
-ifndef X11ROOT
-$(error When building an X11 BUILD you must set X11ROOT to point at the location where your X11 headers and libs can be found.)
-endif
-
-ifeq "$(EWSBUILD)" "1"
-$(error Cannot have both X11BUILD and EWSBUILD enabled at the same time)
-endif
-endif
-
-include $(SDKDIR)/Builds/Linux/$(PLAT_SUFFIX)/ws.mak
-endif
-
 PLAT_OBJPATH ?= ../$(PLATFORM)/$(DEBUG_RELEASE)$(WS)
 
 API_INC ?= $(APIS)
@@ -212,6 +198,26 @@ endif
 
 ifdef LIBDIR
 PLAT_LINK += -L$(LIBDIR) -Wl,--rpath-link,$(LIBDIR)
+endif
+
+ifndef WS
+ifeq "$(X11BUILD)" "1"
+ifndef X11ROOT
+$(error When building an X11 BUILD you must set X11ROOT to point at the location where your X11 headers and libs can be found.)
+endif
+
+ifeq "$(EWSBUILD)" "1"
+$(error Cannot have both X11BUILD and EWSBUILD enabled at the same time)
+endif
+endif
+
+ifeq "$(DRMBUILD)" "1"
+ifndef DRMROOT
+$(error When building a DRM BUILD you must set DRMROOT to point at the location where your Direct Rendering Manager headers and libs can be found.)
+endif
+endif
+
+include $(SDKDIR)/Builds/Linux/$(PLAT_SUFFIX)/ws.mak
 endif
 
 # Remove any duplicates

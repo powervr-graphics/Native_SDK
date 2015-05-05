@@ -48,9 +48,9 @@
     <ClCompile Include="..\..\..\OGLES2\PVRTPFXParserAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-	<ClCompile Include="..\..\..\OGLES2\PVRTPFXSemantics.cpp">
+    <ClCompile Include="..\..\..\OGLES2\PVRTPFXSemantics.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>    
+    </ClCompile>
     <ClCompile Include="..\..\..\PVRTPrint3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -158,9 +158,6 @@
     <ClInclude Include="..\..\..\OGLES2\PVRTPFXParserAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-	<ClCompile Include="..\..\..\OGLES2\PVRTPFXSemantics.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>        
     <ClInclude Include="..\..\..\PVRTPrint3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -207,6 +204,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PVRTVertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\OGLES2\PVRTPFXSemantics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -42,19 +42,19 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Cylinder.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Cylinder.cpp: $(CONTENTDIR) ./Cylinder.pod
 	$(FILEWRAP)  -o $@ ./Cylinder.pod
 
-$(CONTENTDIR)/Sphere.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Sphere.cpp: $(CONTENTDIR) ./Sphere.pod
 	$(FILEWRAP)  -o $@ ./Sphere.pod
 
-$(CONTENTDIR)/Lattice.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Lattice.cpp: $(CONTENTDIR) ./Lattice.pvr
 	$(FILEWRAP)  -o $@ ./Lattice.pvr
 
-$(CONTENTDIR)/Stone.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Stone.cpp: $(CONTENTDIR) ./Stone.pvr
 	$(FILEWRAP)  -o $@ ./Stone.pvr
 
-$(CONTENTDIR)/Tile.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Tile.cpp: $(CONTENTDIR) ./Tile.pvr
 	$(FILEWRAP)  -o $@ ./Tile.pvr
 
 ############################################################################

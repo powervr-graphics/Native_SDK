@@ -45,32 +45,32 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./FragShader.fsc
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./VertShader.vsc
 
-$(CONTENTDIR)/ShadowFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ShadowFragShader.cpp: $(CONTENTDIR) ./ShadowFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./ShadowFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./ShadowFragShader.fsc
 
-$(CONTENTDIR)/ShadowVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ShadowVertShader.cpp: $(CONTENTDIR) ./ShadowVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./ShadowVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./ShadowVertShader.vsc
 
-$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR) ./Scene.pod
 	$(FILEWRAP)  -o $@ ./Scene.pod
 
-$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR) ./Mask.pvr
 	$(FILEWRAP)  -o $@ ./Mask.pvr
 
-$(CONTENTDIR)/TableCover.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/TableCover.cpp: $(CONTENTDIR) ./TableCover.pvr
 	$(FILEWRAP)  -o $@ ./TableCover.pvr
 
-$(CONTENTDIR)/Torus.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Torus.cpp: $(CONTENTDIR) ./Torus.pvr
 	$(FILEWRAP)  -o $@ ./Torus.pvr
 
 ############################################################################

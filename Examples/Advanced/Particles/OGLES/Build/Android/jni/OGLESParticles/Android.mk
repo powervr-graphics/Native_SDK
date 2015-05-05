@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/Particles/OGLES/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module oglestools
+include $(CLEAR_VARS)
+LOCAL_MODULE := oglestools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES/Build/Android/obj/local/$(TARGET_ARCH_ABI)/liboglestools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLESParticles
 include $(CLEAR_VARS)
@@ -42,22 +45,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/LightTex.pvr \
-	$(ASSETDIR)/FloorTex8.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/LightTex.pvr: $(PVRSDKDIR)/Examples/Advanced/Particles/OGLES/LightTex.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/FloorTex8.pvr: $(PVRSDKDIR)/Examples/Advanced/Particles/OGLES/FloorTex8.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-

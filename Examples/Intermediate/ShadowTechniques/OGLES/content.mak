@@ -41,16 +41,16 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Blob.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Blob.cpp: $(CONTENTDIR) ./Blob.pvr
 	$(FILEWRAP)  -o $@ ./Blob.pvr
 
-$(CONTENTDIR)/TableCover.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/TableCover.cpp: $(CONTENTDIR) ./TableCover.pvr
 	$(FILEWRAP)  -o $@ ./TableCover.pvr
 
-$(CONTENTDIR)/Kettle.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Kettle.cpp: $(CONTENTDIR) ./Kettle.pvr
 	$(FILEWRAP)  -o $@ ./Kettle.pvr
 
-$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR) ./Scene.pod
 	$(FILEWRAP)  -o $@ ./Scene.pod
 
 ############################################################################

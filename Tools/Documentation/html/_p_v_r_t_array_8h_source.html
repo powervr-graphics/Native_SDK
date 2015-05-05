@@ -401,7 +401,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
 <div class="line"><a name="l00311"></a><span class="lineno"><a class="code" href="class_c_p_v_r_t_array.html#a265910f8a2d0d9136c67f31f8afed9a6">  311</a></span>&#160;    T&amp; <a class="code" href="class_c_p_v_r_t_array.html#a265910f8a2d0d9136c67f31f8afed9a6" title="Indexed access into array. Note that this has no error checking whatsoever. ">operator[]</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> uiIndex)</div>
 <div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    {</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        <a class="code" href="_p_v_r_t_global_8h.html#a301e1dc16521419c0ace45a202b96bbb">_ASSERT</a>(uiIndex &lt; <a class="code" href="class_c_p_v_r_t_array.html#afb47b1c6e7c3ff459af7177fedfe8cb6">m_uiCapacity</a>);</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        <a class="code" href="_p_v_r_t_global_8h.html#a301e1dc16521419c0ace45a202b96bbb">_ASSERT</a>(uiIndex &lt; <a class="code" href="class_c_p_v_r_t_array.html#a89038c7d7f01037c1b8c2ad18821e217">m_uiSize</a>);</div>
 <div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="class_c_p_v_r_t_array.html#a84fc25c9ea9aa750c18169240e96427b">m_pArray</a>[uiIndex];</div>
 <div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    }</div>
 <div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;</div>
@@ -412,7 +412,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
 <div class="line"><a name="l00322"></a><span class="lineno"><a class="code" href="class_c_p_v_r_t_array.html#a24aa3d87c50596e9402906969873b4c3">  322</a></span>&#160;    <span class="keyword">const</span> T&amp; <a class="code" href="class_c_p_v_r_t_array.html#a24aa3d87c50596e9402906969873b4c3" title="Indexed access into array. Note that this has no error checking whatsoever. ">operator[]</a>(<span class="keyword">const</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> uiIndex)<span class="keyword"> const</span></div>
 <div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        <a class="code" href="_p_v_r_t_global_8h.html#a301e1dc16521419c0ace45a202b96bbb">_ASSERT</a>(uiIndex &lt; <a class="code" href="class_c_p_v_r_t_array.html#afb47b1c6e7c3ff459af7177fedfe8cb6">m_uiCapacity</a>);</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        <a class="code" href="_p_v_r_t_global_8h.html#a301e1dc16521419c0ace45a202b96bbb">_ASSERT</a>(uiIndex &lt; <a class="code" href="class_c_p_v_r_t_array.html#a89038c7d7f01037c1b8c2ad18821e217">m_uiSize</a>);</div>
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="class_c_p_v_r_t_array.html#a84fc25c9ea9aa750c18169240e96427b">m_pArray</a>[uiIndex];</div>
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    }</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;</div>
@@ -761,7 +761,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 		<div class="copyright"><p>&copy; Imagination Technologies Limited<br> All rights reserved</p></div>
 	</div>
 </div>
-<!--Generated on Tue Sep 30 2014 15:42:15 for Tools by &#160;<a href="http://www.doxygen.org/index.html">
+<!--Generated on Fri Apr 17 2015 10:34:57 for Tools by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.4-->
 </body>

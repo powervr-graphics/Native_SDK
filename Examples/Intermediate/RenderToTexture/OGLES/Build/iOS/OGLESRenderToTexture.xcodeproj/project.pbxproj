@@ -25,15 +25,15 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F80CF1499FD240BE3C7D6905 /* OGLESRenderToTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8052647DA6A20F7FFFA1F11 /* OGLESRenderToTexture.cpp */; };
+		F80CF1499FD240BE3C7D6905 /* OGLESRenderToTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E4D787591CF2799D9FA9CF /* OGLESRenderToTexture.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F84B38C854359A3F6B91E7C5 /* RenderToTexture.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8F73E52C6FB884D539BA33B /* RenderToTexture.pod */; };
-		F8A3A6A41FEF5DA8983E8F3D /* YellowWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A7917557AF37FF51D809AE /* YellowWood.pvr */; };
+		F84B38C854359A3F6B91E7C5 /* RenderToTexture.pod in Resources */ = {isa = PBXBuildFile; fileRef = F876D1ECDC3CBF9825699D8A /* RenderToTexture.pod */; };
+		F8A3A6A41FEF5DA8983E8F3D /* YellowWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C3E846AD5BB03CAB8B5AD2 /* YellowWood.pvr */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,7 +98,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F8052647DA6A20F7FFFA1F11 /* OGLESRenderToTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESRenderToTexture.cpp; path = ../../OGLESRenderToTexture.cpp; sourceTree = SOURCE_ROOT; };
+		F8E4D787591CF2799D9FA9CF /* OGLESRenderToTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESRenderToTexture.cpp; path = ../../OGLESRenderToTexture.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -111,8 +111,8 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F8F73E52C6FB884D539BA33B /* RenderToTexture.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = RenderToTexture.pod; path = ../../RenderToTexture.pod; sourceTree = SOURCE_ROOT; };
-		F8A7917557AF37FF51D809AE /* YellowWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = YellowWood.pvr; path = ../../YellowWood.pvr; sourceTree = SOURCE_ROOT; };
+		F876D1ECDC3CBF9825699D8A /* RenderToTexture.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = RenderToTexture.pod; path = ../../RenderToTexture.pod; sourceTree = SOURCE_ROOT; };
+		F8C3E846AD5BB03CAB8B5AD2 /* YellowWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = YellowWood.pvr; path = ../../YellowWood.pvr; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,7 +208,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F8052647DA6A20F7FFFA1F11 /* OGLESRenderToTexture.cpp */,
+				F8E4D787591CF2799D9FA9CF /* OGLESRenderToTexture.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -235,7 +235,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F8F73E52C6FB884D539BA33B /* RenderToTexture.pod */,
+				F876D1ECDC3CBF9825699D8A /* RenderToTexture.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -250,7 +250,7 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F8A7917557AF37FF51D809AE /* YellowWood.pvr */,
+				F8C3E846AD5BB03CAB8B5AD2 /* YellowWood.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -299,6 +299,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLESTools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

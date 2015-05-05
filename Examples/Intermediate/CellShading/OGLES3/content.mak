@@ -41,16 +41,16 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 
-$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR) ./Mask.pod
 	$(FILEWRAP)  -o $@ ./Mask.pod
 
-$(CONTENTDIR)/Shading.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Shading.cpp: $(CONTENTDIR) ./Shading.pvr
 	$(FILEWRAP)  -o $@ ./Shading.pvr
 
 ############################################################################

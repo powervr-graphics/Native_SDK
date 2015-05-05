@@ -83,8 +83,10 @@ enum EPVRScopeStandardCounter
 	ePVRScopeStandardCounter_Load_2D,				///< 2D core load
 	ePVRScopeStandardCounter_Load_Renderer,			///< Renderer core load
 	ePVRScopeStandardCounter_Load_Tiler,			///< Tiler core load
+	ePVRScopeStandardCounter_Load_Compute,			///< Tiler core load
 	ePVRScopeStandardCounter_Load_Shader_Pixel,		///< Shader core load due to pixels
 	ePVRScopeStandardCounter_Load_Shader_Vertex,	///< Shader core load due to vertices
+	ePVRScopeStandardCounter_Load_Shader_Compute,	///< Shader core load due to compute
 };
 
 /****************************************************************************
@@ -171,18 +173,24 @@ int PVRScopeGetCounters(
 
 /*!**************************************************************************
  @brief			Helper function to query for the counter index of one of a set
-				of "standard" counters.
+				of "standard" counters. The index will be into the results array
+				(from PVRScopeReadCounters) not into the counter array (from
+				PVRScopeGetCounters)
 ****************************************************************************/
 unsigned int PVRScopeFindStandardCounter(
-	struct SPVRScopeImplData		* const psData,		///< Context data
-	enum EPVRScopeStandardCounter	eCounter			///< Counter to be found
+	const unsigned int					nCount,				///< Returned number of counters, from PVRScopeGetCounters
+	const struct SPVRScopeCounterDef	* const psCounters,	///< Returned counter array, from PVRScopeGetCounters
+	const unsigned int					nGroup,				///< Group that will be active
+	enum EPVRScopeStandardCounter		eCounter			///< Counter to be found
 );
 
 /*!**************************************************************************
  @brief	        Call regularly to allow PVRScope to track the latest hardware
                 performance data. If psReading is not NULL, PVRScope will also
 				calculate and return counter values to the application.
- @details       This function should be called "regularly"; two use cases are
+ @details       Returns 0 if no data is currently available; psReading will
+				not be filled with valid data. Try again later.
+				This function should be called "regularly"; two use cases are
                 considered:
                 1) A 3D application rendering a performance HUD (e.g. the on-
 				screen graphs in PVRScopeExample). Such an application should

@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/DeferredShading/OGLES3/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles3tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles3tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES3/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles3tools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLES3DeferredShading
 include $(CLEAR_VARS)
@@ -42,39 +45,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/scene.pod \
-	$(ASSETDIR)/pointlight.pod \
-	$(ASSETDIR)/effect.pfx \
-	$(ASSETDIR)/light_cubemap.pvr \
-	$(ASSETDIR)/mask_texture.pvr \
-	$(ASSETDIR)/mask_bump.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/light_cubemap.pvr: $(PVRSDKDIR)/Examples/Advanced/DeferredShading/OGLES3/light_cubemap.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/mask_texture.pvr: $(PVRSDKDIR)/Examples/Advanced/DeferredShading/OGLES3/mask_texture.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/mask_bump.pvr: $(PVRSDKDIR)/Examples/Advanced/DeferredShading/OGLES3/mask_bump.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/scene.pod: $(PVRSDKDIR)/Examples/Advanced/DeferredShading/OGLES3/scene.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/pointlight.pod: $(PVRSDKDIR)/Examples/Advanced/DeferredShading/OGLES3/pointlight.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/effect.pfx: $(PVRSDKDIR)/Examples/Advanced/DeferredShading/OGLES3/effect.pfx $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-
-

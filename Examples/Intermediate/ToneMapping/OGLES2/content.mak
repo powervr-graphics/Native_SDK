@@ -39,10 +39,10 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/effects.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/effects.cpp: $(CONTENTDIR) ./effects.pfx
 	$(FILEWRAP)  -s  -o $@ ./effects.pfx
 
-$(CONTENTDIR)/hdrscene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/hdrscene.cpp: $(CONTENTDIR) ./hdrscene.pvr
 	$(FILEWRAP)  -o $@ ./hdrscene.pvr
 
 ############################################################################

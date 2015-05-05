@@ -39,10 +39,10 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/LightTex.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/LightTex.cpp: $(CONTENTDIR) ./LightTex.pvr
 	$(FILEWRAP)  -o $@ ./LightTex.pvr
 
-$(CONTENTDIR)/FloorTex8.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FloorTex8.cpp: $(CONTENTDIR) ./FloorTex8.pvr
 	$(FILEWRAP)  -o $@ ./FloorTex8.pvr
 
 ############################################################################

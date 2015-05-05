@@ -43,22 +43,22 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 
-$(CONTENTDIR)/man.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/man.cpp: $(CONTENTDIR) ./man.pod
 	$(FILEWRAP)  -o $@ ./man.pod
 
-$(CONTENTDIR)/Body.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Body.cpp: $(CONTENTDIR) ./Body.pvr
 	$(FILEWRAP)  -o $@ ./Body.pvr
 
-$(CONTENTDIR)/Legs.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Legs.cpp: $(CONTENTDIR) ./Legs.pvr
 	$(FILEWRAP)  -o $@ ./Legs.pvr
 
-$(CONTENTDIR)/Belt.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Belt.cpp: $(CONTENTDIR) ./Belt.pvr
 	$(FILEWRAP)  -o $@ ./Belt.pvr
 
 ############################################################################

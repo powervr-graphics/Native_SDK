@@ -4,7 +4,7 @@
 
  @Title        Introducing the POD 3D file format
 
- @Version      
+ @Version
 
  @Copyright    Copyright (c) Imagination Technologies Limited.
 
@@ -116,18 +116,18 @@ bool OGLES2IntroducingPOD::LoadTextures(CPVRTString* pErrorStr)
 	*/
 	m_puiTextureIDs = new GLuint[m_Scene.nNumMaterial];
 
-	if(!m_puiTextureIDs)
+	if (!m_puiTextureIDs)
 	{
 		*pErrorStr = "ERROR: Insufficient memory.";
 		return false;
 	}
 
-	for(int i = 0; i < (int) m_Scene.nNumMaterial; ++i)
+	for (int i = 0; i < (int) m_Scene.nNumMaterial; ++i)
 	{
 		m_puiTextureIDs[i] = 0;
 		SPODMaterial* pMaterial = &m_Scene.pMaterial[i];
 
-		if(pMaterial->nIdxTexDiffuse != -1)
+		if (pMaterial->nIdxTexDiffuse != -1)
 		{
 			/*
 				Using the tools function PVRTTextureLoadFromPVR load the textures required by the pod file.
@@ -139,15 +139,15 @@ bool OGLES2IntroducingPOD::LoadTextures(CPVRTString* pErrorStr)
 
 			CPVRTString sTextureName = m_Scene.pTexture[pMaterial->nIdxTexDiffuse].pszName;
 
-			if(PVRTTextureLoadFromPVR(sTextureName.c_str(), &m_puiTextureIDs[i]) != PVR_SUCCESS)
+			if (PVRTTextureLoadFromPVR(sTextureName.c_str(), &m_puiTextureIDs[i]) != PVR_SUCCESS)
 			{
 				*pErrorStr = "ERROR: Failed to load " + sTextureName + ".";
 
 				// Check to see if we're trying to load .pvr or not
 				CPVRTString sFileExtension = PVRTStringGetFileExtension(sTextureName);
 
-				if(sFileExtension.toLower() != "pvr")
-					*pErrorStr += "Note: IntroducingPOD can only load pvr files.";
+				if (sFileExtension.toLower() != "pvr")
+				{ *pErrorStr += "Note: IntroducingPOD can only load pvr files."; }
 
 				return false;
 			}
@@ -171,14 +171,14 @@ bool OGLES2IntroducingPOD::LoadShaders(CPVRTString* pErrorStr)
 		Binary shaders are tried first, source shaders
 		are used as fallback.
 	*/
-	if(PVRTShaderLoadFromFile(
-			c_szVertShaderBinFile, c_szVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiVertShader, pErrorStr) != PVR_SUCCESS)
+	if (PVRTShaderLoadFromFile(
+	      c_szVertShaderBinFile, c_szVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiVertShader, pErrorStr) != PVR_SUCCESS)
 	{
 		return false;
 	}
 
 	if (PVRTShaderLoadFromFile(
-			c_szFragShaderBinFile, c_szFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_uiFragShader, pErrorStr) != PVR_SUCCESS)
+	      c_szFragShaderBinFile, c_szFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_uiFragShader, pErrorStr) != PVR_SUCCESS)
 	{
 		return false;
 	}
@@ -188,8 +188,8 @@ bool OGLES2IntroducingPOD::LoadShaders(CPVRTString* pErrorStr)
 	*/
 	const char* aszAttribs[] = { "inVertex", "inNormal", "inTexCoord" };
 
-	if(PVRTCreateProgram(
-			&m_ShaderProgram.uiId, m_uiVertShader, m_uiFragShader, aszAttribs, 3, pErrorStr) != PVR_SUCCESS)
+	if (PVRTCreateProgram(
+	      &m_ShaderProgram.uiId, m_uiVertShader, m_uiFragShader, aszAttribs, 3, pErrorStr) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, pErrorStr->c_str());
 		return false;
@@ -211,14 +211,15 @@ bool OGLES2IntroducingPOD::LoadShaders(CPVRTString* pErrorStr)
 ******************************************************************************/
 bool OGLES2IntroducingPOD::LoadVbos(CPVRTString* pErrorStr)
 {
-	if(!m_Scene.pMesh[0].pInterleaved)
+	if (!m_Scene.pMesh[0].pInterleaved)
 	{
-		*pErrorStr = "ERROR: IntroducingPOD requires the pod data to be interleaved. Please re-export with the interleaved option enabled.";
+		*pErrorStr =
+		  "ERROR: IntroducingPOD requires the pod data to be interleaved. Please re-export with the interleaved option enabled.";
 		return false;
 	}
 
-	if (!m_puiVbo)      m_puiVbo = new GLuint[m_Scene.nNumMesh];
-	if (!m_puiIndexVbo) m_puiIndexVbo = new GLuint[m_Scene.nNumMesh];
+	if (!m_puiVbo)      { m_puiVbo = new GLuint[m_Scene.nNumMesh]; }
+	if (!m_puiIndexVbo) { m_puiIndexVbo = new GLuint[m_Scene.nNumMesh]; }
 
 	/*
 		Load vertex data of all meshes in the scene into VBOs
@@ -278,21 +279,21 @@ bool OGLES2IntroducingPOD::InitApplication()
 	CPVRTResourceFile::SetLoadReleaseFunctions(PVRShellGet(prefLoadFileFunc), PVRShellGet(prefReleaseFileFunc));
 
 	// Load the scene
-	if(m_Scene.ReadFromFile(c_szSceneFile) != PVR_SUCCESS)
+	if (m_Scene.ReadFromFile(c_szSceneFile) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, "ERROR: Couldn't load the .pod file\n");
 		return false;
 	}
 
 	// The cameras are stored in the file. We check it contains at least one.
-	if(m_Scene.nNumCamera == 0)
+	if (m_Scene.nNumCamera == 0)
 	{
 		PVRShellSet(prefExitMessage, "ERROR: The scene does not contain a camera. Please add one and re-export.\n");
 		return false;
 	}
 
 	// We also check that the scene contains at least one light
-	if(m_Scene.nNumLight == 0)
+	if (m_Scene.nNumLight == 0)
 	{
 		PVRShellSet(prefExitMessage, "ERROR: The scene does not contain a light. Please add one and re-export.\n");
 		return false;
@@ -321,7 +322,7 @@ bool OGLES2IntroducingPOD::QuitApplication()
 	delete[] m_puiVbo;
 	delete[] m_puiIndexVbo;
 
-    return true;
+	return true;
 }
 
 /*!****************************************************************************
@@ -339,7 +340,7 @@ bool OGLES2IntroducingPOD::InitView()
 	/*
 		Initialize VBO data
 	*/
-	if(!LoadVbos(&ErrorStr))
+	if (!LoadVbos(&ErrorStr))
 	{
 		PVRShellSet(prefExitMessage, ErrorStr.c_str());
 		return false;
@@ -348,7 +349,7 @@ bool OGLES2IntroducingPOD::InitView()
 	/*
 		Load textures
 	*/
-	if(!LoadTextures(&ErrorStr))
+	if (!LoadTextures(&ErrorStr))
 	{
 		PVRShellSet(prefExitMessage, ErrorStr.c_str());
 		return false;
@@ -357,7 +358,7 @@ bool OGLES2IntroducingPOD::InitView()
 	/*
 		Load and compile the shaders & link programs
 	*/
-	if(!LoadShaders(&ErrorStr))
+	if (!LoadShaders(&ErrorStr))
 	{
 		PVRShellSet(prefExitMessage, ErrorStr.c_str());
 		return false;
@@ -368,7 +369,7 @@ bool OGLES2IntroducingPOD::InitView()
 	*/
 	bool bRotate = PVRShellGet(prefIsRotated) && PVRShellGet(prefFullScreen);
 
-	if(m_Print3D.SetTextures(0,PVRShellGet(prefWidth),PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
+	if (m_Print3D.SetTextures(0, PVRShellGet(prefWidth), PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, "ERROR: Cannot initialise Print3D\n");
 		return false;
@@ -444,13 +445,13 @@ bool OGLES2IntroducingPOD::RenderScene()
 	*/
 	unsigned long ulTime = PVRShellGetTime();
 
-	if(m_ulTimePrev > ulTime)
-		m_ulTimePrev = ulTime;
+	if (m_ulTimePrev > ulTime)
+	{ m_ulTimePrev = ulTime; }
 
 	unsigned long ulDeltaTime = ulTime - m_ulTimePrev;
 	m_ulTimePrev	= ulTime;
 	m_fFrame += (float)ulDeltaTime * g_fDemoFrameRate;
-	if (m_fFrame > m_Scene.nNumFrame - 1) m_fFrame = 0;
+	if (m_fFrame > m_Scene.nNumFrame - 1) { m_fFrame = 0; }
 
 	// Sets the scene animation to this frame
 	m_Scene.SetFrame(m_fFrame);
@@ -476,10 +477,10 @@ bool OGLES2IntroducingPOD::RenderScene()
 	int i32CamID = m_Scene.pNode[m_Scene.nNumMeshNode + m_Scene.nNumLight + g_ui32Camera].nIdx;
 
 	// Get the camera position, target and field of view (fov)
-	if(m_Scene.pCamera[i32CamID].nIdxTarget != -1) // Does the camera have a target?
-		fFOV = m_Scene.GetCameraPos( vFrom, vTo, g_ui32Camera); // vTo is taken from the target node
+	if (m_Scene.pCamera[i32CamID].nIdxTarget != -1) // Does the camera have a target?
+	{ fFOV = m_Scene.GetCameraPos(vFrom, vTo, g_ui32Camera); }  // vTo is taken from the target node
 	else
-		fFOV = m_Scene.GetCamera( vFrom, vTo, vUp, g_ui32Camera); // vTo is calculated from the rotation
+	{ fFOV = m_Scene.GetCamera(vFrom, vTo, vUp, g_ui32Camera); }  // vTo is calculated from the rotation
 
 	// We can build the model view matrix from the camera position, target and an up vector.
 	// For this we use PVRTMat4::LookAtRH()
@@ -487,7 +488,8 @@ bool OGLES2IntroducingPOD::RenderScene()
 
 	// Calculate the projection matrix
 	bool bRotate = PVRShellGet(prefIsRotated) && PVRShellGet(prefFullScreen);
-	mProjection = PVRTMat4::PerspectiveFovRH(fFOV, (float)PVRShellGet(prefWidth)/(float)PVRShellGet(prefHeight), g_fCameraNear, g_fCameraFar, PVRTMat4::OGL, bRotate);
+	mProjection = PVRTMat4::PerspectiveFovRH(fFOV, (float)PVRShellGet(prefWidth) / (float)PVRShellGet(prefHeight), g_fCameraNear,
+	              g_fCameraFar, PVRTMat4::OGL, bRotate);
 
 	/*
 		A scene is composed of nodes. There are 3 types of nodes:
@@ -527,8 +529,8 @@ bool OGLES2IntroducingPOD::RenderScene()
 		// Load the correct texture using our texture lookup table
 		GLuint uiTex = 0;
 
-		if(Node.nIdxMaterial != -1)
-			uiTex = m_puiTextureIDs[Node.nIdxMaterial];
+		if (Node.nIdxMaterial != -1)
+		{ uiTex = m_puiTextureIDs[Node.nIdxMaterial]; }
 
 		glBindTexture(GL_TEXTURE_2D, uiTex);
 
@@ -580,20 +582,20 @@ void OGLES2IntroducingPOD::DrawMesh(int i32NodeIndex)
 		- Non-Indexed Triangle strips
 	*/
 
-	if(pMesh->nNumStrips == 0)
+	if (pMesh->nNumStrips == 0)
 	{
-		if(m_puiIndexVbo[i32MeshIndex])
+		if (m_puiIndexVbo[i32MeshIndex])
 		{
 			// Indexed Triangle list
 
 			// Are our face indices unsigned shorts? If they aren't, then they are unsigned ints
 			GLenum type = (pMesh->sFaces.eType == EPODDataUnsignedShort) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-			glDrawElements(GL_TRIANGLES, pMesh->nNumFaces*3, type, 0);
+			glDrawElements(GL_TRIANGLES, pMesh->nNumFaces * 3, type, 0);
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			glDrawArrays(GL_TRIANGLES, 0, pMesh->nNumFaces*3);
+			glDrawArrays(GL_TRIANGLES, 0, pMesh->nNumFaces * 3);
 		}
 	}
 	else
@@ -603,19 +605,19 @@ void OGLES2IntroducingPOD::DrawMesh(int i32NodeIndex)
 		// Are our face indices unsigned shorts? If they aren't, then they are unsigned ints
 		GLenum type = (pMesh->sFaces.eType == EPODDataUnsignedShort) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
-		for(int i = 0; i < (int)pMesh->nNumStrips; ++i)
+		for (int i = 0; i < (int)pMesh->nNumStrips; ++i)
 		{
-			if(m_puiIndexVbo[i32MeshIndex])
+			if (m_puiIndexVbo[i32MeshIndex])
 			{
 				// Indexed Triangle strips
-				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i]+2, type, (void*) (offset * pMesh->sFaces.nStride));
+				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i] + 2, type, (void*)(size_t)(offset * pMesh->sFaces.nStride));
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				glDrawArrays(GL_TRIANGLE_STRIP, offset, pMesh->pnStripLength[i]+2);
+				glDrawArrays(GL_TRIANGLE_STRIP, offset, pMesh->pnStripLength[i] + 2);
 			}
-			offset += pMesh->pnStripLength[i]+2;
+			offset += pMesh->pnStripLength[i] + 2;
 		}
 	}
 

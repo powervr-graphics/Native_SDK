@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Intermediate/MaximumIntensityProjection/OGLES2/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles2tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles2tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES2/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles2tools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLES2MaximumIntensityProjection
 include $(CLEAR_VARS)
@@ -41,26 +44,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/blend_minmax_scene.POD \
-	$(ASSETDIR)/effect.pfx \
-	$(ASSETDIR)/skinTex.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/skinTex.pvr: $(PVRSDKDIR)/Examples/Intermediate/MaximumIntensityProjection/OGLES2/skinTex.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/blend_minmax_scene.POD: $(PVRSDKDIR)/Examples/Intermediate/MaximumIntensityProjection/OGLES2/blend_minmax_scene.POD $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/effect.pfx: $(PVRSDKDIR)/Examples/Intermediate/MaximumIntensityProjection/OGLES2/effect.pfx $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-

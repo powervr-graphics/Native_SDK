@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Intermediate/AlphaBlend/OGLES/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module oglestools
+include $(CLEAR_VARS)
+LOCAL_MODULE := oglestools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES/Build/Android/obj/local/$(TARGET_ARCH_ABI)/liboglestools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLESAlphaBlend
 include $(CLEAR_VARS)
@@ -41,22 +44,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/Background.pvr \
-	$(ASSETDIR)/Foreground.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/Background.pvr: $(PVRSDKDIR)/Examples/Intermediate/AlphaBlend/OGLES/Background.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Foreground.pvr: $(PVRSDKDIR)/Examples/Intermediate/AlphaBlend/OGLES/Foreground.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-

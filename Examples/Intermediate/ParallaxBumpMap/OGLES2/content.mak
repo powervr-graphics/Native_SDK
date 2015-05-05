@@ -44,27 +44,27 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./FragShader.fsc
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./VertShader.vsc
 
-$(CONTENTDIR)/Box.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Box.cpp: $(CONTENTDIR) ./Box.POD
 	$(FILEWRAP)  -o $@ ./Box.POD
 
-$(CONTENTDIR)/base_COLOR.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/base_COLOR.cpp: $(CONTENTDIR) ./base_COLOR.pvr
 	$(FILEWRAP)  -o $@ ./base_COLOR.pvr
 
-$(CONTENTDIR)/base_NRM.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/base_NRM.cpp: $(CONTENTDIR) ./base_NRM.pvr
 	$(FILEWRAP)  -o $@ ./base_NRM.pvr
 
-$(CONTENTDIR)/base_DISP.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/base_DISP.cpp: $(CONTENTDIR) ./base_DISP.pvr
 	$(FILEWRAP)  -o $@ ./base_DISP.pvr
 
-$(CONTENTDIR)/base_SPEC.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/base_SPEC.cpp: $(CONTENTDIR) ./base_SPEC.pvr
 	$(FILEWRAP)  -o $@ ./base_SPEC.pvr
 
 ############################################################################

@@ -50,6 +50,34 @@
 class CPVRTgles3Ext
 {
 public:
+    // typedef definition for pointers to functions returned by eglGetProcAddress
+    typedef void (GL_APIENTRYP PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXT)(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
+    typedef void (GL_APIENTRYP PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEEXT)(GLenum, GLenum, GLenum, GLuint,GLint, GLsizei);
+    
+    typedef void (GL_APIENTRYP PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG)(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
+    typedef void (GL_APIENTRYP PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG)(GLenum, GLenum, GLenum, GLuint,GLint, GLsizei);
+    
+    // GL_IMG_multisampled_render_to_texture
+#if !defined(GL_IMG_multisampled_render_to_texture)
+#define GL_RENDERBUFFER_SAMPLES_IMG                 0x9133
+#define GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_IMG   0x9134
+#define GL_MAX_SAMPLES_IMG                          0x9135
+#define GL_TEXTURE_SAMPLES_IMG                      0x9136
+#endif
+    
+    // GL_EXT_multisampled_render_to_texture
+#if !defined(GL_EXT_multisampled_render_to_texture)
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_SAMPLES_EXT           0x8D6C
+#define GL_RENDERBUFFER_SAMPLES_EXT                             0x8CAB
+#define GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT               0x8D56
+#define GL_MAX_SAMPLES_EXT                                      0x8D57
+#endif
+    
+    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXT glRenderbufferStorageMultisampleEXT;
+    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG glRenderbufferStorageMultisampleIMG;
+    PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEEXT glFramebufferTexture2DMultisampleEXT;
+    PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG glFramebufferTexture2DMultisampleIMG;
+    
 	/*!***********************************************************************
 	@brief		Initialises IMG extensions
 	*************************************************************************/

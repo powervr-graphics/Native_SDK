@@ -38,7 +38,7 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Image.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Image.cpp: $(CONTENTDIR) ./Image.pvr
 	$(FILEWRAP)  -o $@ ./Image.pvr
 
 ############################################################################

@@ -48,6 +48,14 @@ CPVRScopeGraph::CPVRScopeGraph()
 	, m_fGraphH(0.0f)
 	, m_nUpdateInterval(0)
 	, m_nUpdateIntervalCounter(0)
+	, m_nIdxFPS((unsigned int)0-1)
+	, m_nIdx2D((unsigned int)0-1)
+	, m_nIdx3D((unsigned int)0-1)
+	, m_nIdxTA((unsigned int)0 - 1)
+	, m_nIdxCompute((unsigned int)0 - 1)
+	, m_nIdxShaderPixel((unsigned int)0 - 1)
+	, m_nIdxShaderVertex((unsigned int)0 - 1)
+	, m_nIdxShaderCompute((unsigned int)0 - 1)
 {
 	m_sReading.pfValueBuf			= NULL;
 	m_sReading.nValueCnt			= 0;
@@ -104,6 +112,17 @@ void CPVRScopeGraph::Ping()
 		if(m_bActiveGroupChanged)
 		{
 			PVRScopeSetGroup(m_pPVRScopeData, m_nActiveGroupSelect);
+
+			// When the active group is changed, retrieve new indices
+			m_nIdxFPS			= PVRScopeFindStandardCounter(m_nCounterNum, m_pCounters, m_nActiveGroupSelect, ePVRScopeStandardCounter_FPS);
+			m_nIdx2D			= PVRScopeFindStandardCounter(m_nCounterNum, m_pCounters, m_nActiveGroupSelect, ePVRScopeStandardCounter_Load_2D);
+			m_nIdx3D			= PVRScopeFindStandardCounter(m_nCounterNum, m_pCounters, m_nActiveGroupSelect, ePVRScopeStandardCounter_Load_Renderer);
+			m_nIdxTA			= PVRScopeFindStandardCounter(m_nCounterNum, m_pCounters, m_nActiveGroupSelect, ePVRScopeStandardCounter_Load_Tiler);
+			m_nIdxCompute		= PVRScopeFindStandardCounter(m_nCounterNum, m_pCounters, m_nActiveGroupSelect, ePVRScopeStandardCounter_Load_Compute);
+			m_nIdxShaderPixel	= PVRScopeFindStandardCounter(m_nCounterNum, m_pCounters, m_nActiveGroupSelect, ePVRScopeStandardCounter_Load_Shader_Pixel);
+			m_nIdxShaderVertex	= PVRScopeFindStandardCounter(m_nCounterNum, m_pCounters, m_nActiveGroupSelect, ePVRScopeStandardCounter_Load_Shader_Vertex);
+			m_nIdxShaderCompute	= PVRScopeFindStandardCounter(m_nCounterNum, m_pCounters, m_nActiveGroupSelect, ePVRScopeStandardCounter_Load_Shader_Compute);
+
 			m_bActiveGroupChanged = false;
 		}
 
@@ -242,6 +261,54 @@ const char *CPVRScopeGraph::GetCounterName(const unsigned int i) const
 		return "";
 
 	return m_pCounters[i].pszName;
+}
+
+float CPVRScopeGraph::GetStandardFPS() const
+{
+	const float fRet = m_nIdxFPS < m_sReading.nValueCnt ? m_sReading.pfValueBuf[m_nIdxFPS] : -1.0f;
+	return fRet;
+}
+
+float CPVRScopeGraph::GetStandard2D() const
+{
+	const float fRet = m_nIdx2D < m_sReading.nValueCnt ? m_sReading.pfValueBuf[m_nIdx2D] : -1.0f;
+	return fRet;
+}
+
+float CPVRScopeGraph::GetStandard3D() const
+{
+	const float fRet = m_nIdx3D < m_sReading.nValueCnt ? m_sReading.pfValueBuf[m_nIdx3D] : -1.0f;
+	return fRet;
+}
+
+float CPVRScopeGraph::GetStandardTA() const
+{
+	const float fRet = m_nIdxTA < m_sReading.nValueCnt ? m_sReading.pfValueBuf[m_nIdxTA] : -1.0f;
+	return fRet;
+}
+
+float CPVRScopeGraph::GetStandardCompute() const
+{
+	const float fRet = m_nIdxCompute < m_sReading.nValueCnt ? m_sReading.pfValueBuf[m_nIdxCompute] : -1.0f;
+	return fRet;
+}
+
+float CPVRScopeGraph::GetStandardShaderPixel() const
+{
+	const float fRet = m_nIdxShaderPixel < m_sReading.nValueCnt ? m_sReading.pfValueBuf[m_nIdxShaderPixel] : -1.0f;
+	return fRet;
+}
+
+float CPVRScopeGraph::GetStandardShaderVertex() const
+{
+	const float fRet = m_nIdxShaderVertex < m_sReading.nValueCnt ? m_sReading.pfValueBuf[m_nIdxShaderVertex] : -1.0f;
+	return fRet;
+}
+
+float CPVRScopeGraph::GetStandardShaderCompute() const
+{
+	const float fRet = m_nIdxShaderCompute < m_sReading.nValueCnt ? m_sReading.pfValueBuf[m_nIdxShaderCompute] : -1.0f;
+	return fRet;
 }
 
 int CPVRScopeGraph::GetCounterGroup(const unsigned int i) const

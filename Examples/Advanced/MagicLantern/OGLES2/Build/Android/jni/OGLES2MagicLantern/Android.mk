@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/MagicLantern/OGLES2/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles2tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles2tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES2/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles2tools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLES2MagicLantern
 include $(CLEAR_VARS)
@@ -41,34 +44,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/MagicLantern.pod \
-	$(ASSETDIR)/MagicLanternShaders.pfx \
-	$(ASSETDIR)/Marble.pvr \
-	$(ASSETDIR)/Floor.pvr \
-	$(ASSETDIR)/LanternCubemap.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/Marble.pvr: $(PVRSDKDIR)/Examples/Advanced/MagicLantern/OGLES2/Marble.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Floor.pvr: $(PVRSDKDIR)/Examples/Advanced/MagicLantern/OGLES2/Floor.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/LanternCubemap.pvr: $(PVRSDKDIR)/Examples/Advanced/MagicLantern/OGLES2/LanternCubemap.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/MagicLantern.pod: $(PVRSDKDIR)/Examples/Advanced/MagicLantern/OGLES2/MagicLantern.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/MagicLanternShaders.pfx: $(PVRSDKDIR)/Examples/Advanced/MagicLantern/OGLES2/MagicLanternShaders.pfx $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-

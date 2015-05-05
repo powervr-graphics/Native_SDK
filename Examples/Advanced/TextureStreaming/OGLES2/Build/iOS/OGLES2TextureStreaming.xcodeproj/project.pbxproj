@@ -44,8 +44,8 @@
 		F83269F62E70E6C461460776 /* recordred.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A394A7E9A71AB8BF182487 /* recordred.pvr */; };
 		F86BA04F424A85080B5AC2BB /* silver.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8CA4A79A77070C659230BEE /* silver.pvr */; };
 		F8D5F25280341AC91906CE22 /* tv.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C925A03F2F344503898E70 /* tv.pvr */; };
-		F8CFDA07723CBC264223D1BB /* TVShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8F707DCC2A753E57E460653 /* TVShader.vsh */; };
-		F837299FDA805A112E48933A /* TVShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8CC2C6DC7971821D5D45E31 /* TVShader.fsh */; };
+		F8FA40952D449DF7BE75BFE0 /* TVVertexShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F858361357C4BF92900DC168 /* TVVertexShader.vsh */; };
+		F8225DB379793D2B85DFF541 /* TVFragmentShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F878783E55E7E3F488B4AC82 /* TVFragmentShader.fsh */; };
 		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */; };
 		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81AE783867359F7612A30AC /* VertShader.vsh */; };
 /* End PBXBuildFile section */
@@ -157,8 +157,8 @@
 		F8A394A7E9A71AB8BF182487 /* recordred.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = recordred.pvr; path = ../../recordred.pvr; sourceTree = SOURCE_ROOT; };
 		F8CA4A79A77070C659230BEE /* silver.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = silver.pvr; path = ../../silver.pvr; sourceTree = SOURCE_ROOT; };
 		F8C925A03F2F344503898E70 /* tv.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = tv.pvr; path = ../../tv.pvr; sourceTree = SOURCE_ROOT; };
-		F8F707DCC2A753E57E460653 /* TVShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TVShader.vsh; path = ../../TVShader.vsh; sourceTree = SOURCE_ROOT; };
-		F8CC2C6DC7971821D5D45E31 /* TVShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TVShader.fsh; path = ../../TVShader.fsh; sourceTree = SOURCE_ROOT; };
+		F858361357C4BF92900DC168 /* TVVertexShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TVVertexShader.vsh; path = ../../TVVertexShader.vsh; sourceTree = SOURCE_ROOT; };
+		F878783E55E7E3F488B4AC82 /* TVFragmentShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TVFragmentShader.fsh; path = ../../TVFragmentShader.fsh; sourceTree = SOURCE_ROOT; };
 		F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
 		F81AE783867359F7612A30AC /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -330,8 +330,8 @@
 		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F8F707DCC2A753E57E460653 /* TVShader.vsh */,
-				F8CC2C6DC7971821D5D45E31 /* TVShader.fsh */,
+				F858361357C4BF92900DC168 /* TVVertexShader.vsh */,
+				F878783E55E7E3F488B4AC82 /* TVFragmentShader.fsh */,
 				F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */,
 				F81AE783867359F7612A30AC /* VertShader.vsh */,
 			);
@@ -439,8 +439,8 @@
 				F83269F62E70E6C461460776 /* recordred.pvr in Resources */,
 				F86BA04F424A85080B5AC2BB /* silver.pvr in Resources */,
 				F8D5F25280341AC91906CE22 /* tv.pvr in Resources */,
-				F8CFDA07723CBC264223D1BB /* TVShader.vsh in Resources */,
-				F837299FDA805A112E48933A /* TVShader.fsh in Resources */,
+				F8FA40952D449DF7BE75BFE0 /* TVVertexShader.vsh in Resources */,
+				F8225DB379793D2B85DFF541 /* TVFragmentShader.fsh in Resources */,
 				F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */,
 				F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */,
 			);

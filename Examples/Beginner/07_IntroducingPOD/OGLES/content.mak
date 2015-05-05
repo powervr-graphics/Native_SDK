@@ -40,13 +40,13 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/IntroducingPOD.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/IntroducingPOD.cpp: $(CONTENTDIR) ./IntroducingPOD.pod
 	$(FILEWRAP)  -o $@ ./IntroducingPOD.pod
 
-$(CONTENTDIR)/tex_base.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/tex_base.cpp: $(CONTENTDIR) ./tex_base.pvr
 	$(FILEWRAP)  -o $@ ./tex_base.pvr
 
-$(CONTENTDIR)/tex_arm.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/tex_arm.cpp: $(CONTENTDIR) ./tex_arm.pvr
 	$(FILEWRAP)  -o $@ ./tex_arm.pvr
 
 ############################################################################

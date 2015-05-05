@@ -129,7 +129,7 @@ hr {
 
 #GlobalHeader {
 	max-width: 960px;
-	height: 83px;
+	min-height: 83px;
 	margin: 0px auto;
 	display: block;
 	overflow: hidden;
@@ -158,12 +158,12 @@ hr {
 	width: 100%;
 	background-color: #650f4d;
 	border-top: 1px solid #300b33;
+	min-height: 41px;
 }
 
 nav {
-	width: 960px;
+	max-width: 960px;
 	margin: 0px auto;
-	min-height: 41px;
 	border-left: 1px solid #510c3e;
 }
 
@@ -176,7 +176,7 @@ nav .navlink {
 	border-left: 1px solid #75275f;
 	border-right: 1px solid #510c3e;
 	position: relative;
-	height: 41px;
+	background-color: #650f4d;
 }
 
 .navlink:hover {
@@ -211,12 +211,13 @@ nav .navlink {
 	box-shadow: 0 -5px 0 #cd2da0;
 }
 
-/* Subnavigation Styles */
+/* Sub-navigation Styles */
 
 #SubNavContainer {
 	width: 100%;
 	background-color: #650f4d;
-	border-top: 1px solid #fff;
+	border-top: 5px solid #300b33;
+	min-height: 41px;
 }
 
 nav .subnavlink {
@@ -228,7 +229,6 @@ nav .subnavlink {
 	border-left: 1px solid #75275f;
 	border-right: 1px solid #510c3e;
 	position: relative;
-	height: 41px;
 }
 
 .subnavlink:hover {
@@ -414,58 +414,24 @@ ul.utility > li:last-child {
 }
 
 /*---------------------------------------------------------------*/
-/* Media Queries. These are used for making the page responsive to different screen sizes.
+/* Media Queries
 /*---------------------------------------------------------------*/
 
-@media screen and (max-width:720px) {
+@media screen and (max-width:960px) {
 
-#GlobalHeader .logo {
-	display: none;
+#GlobalHeader {
+	min-height: 78px;
 }
 
-#GlobalHeader .sitetitle {
-	float: left;
+#NavContainer {
+	overflow: hidden;
 }
-
-#FooterContainer .footerlogo {
-	float: left;
-}
-
-#FooterContainer .copyright {
-	float: left;
-	text-align: left;
-	margin-left: -136px;
-}
-}
-
-@media screen and (max-width:480px) {
 
 nav {
+	border-top: 5px solid #300b33;
+}
+
+#SubNavContainer {
 	overflow: hidden;
-	padding-top: 5px;
-}
-
-nav .navlink {
-	float: center;
-}
-
-nav .subnavlink {
-	float: center;
-}
-}
-
-@media (max-width: 370px) {
-
-#GlobalHeader .sitetitle {
-	font-size: 20px;
-	text-align: center;
-	margin-top: 30px;
-}
-}
-
-@media (max-width: 223px) {
-
-#GlobalHeader .sitetitle {
-	margin-top: 20px;
-}
+	border-top: 0px;
 }

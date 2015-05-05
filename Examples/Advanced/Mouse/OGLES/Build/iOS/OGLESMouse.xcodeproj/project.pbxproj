@@ -25,18 +25,18 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F8DEAF77FDE5BD447A269701 /* OGLESMouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F881EABD388F0F0097A2CE04 /* OGLESMouse.cpp */; };
+		F8DEAF77FDE5BD447A269701 /* OGLESMouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8BF40644A942F6F16E1350D /* OGLESMouse.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F85B27B650DB6309594EF55F /* Mouse.pod in Resources */ = {isa = PBXBuildFile; fileRef = F87F4FD6344423E06E63583F /* Mouse.pod */; };
-		F8F71C850AD2CE2F0A05B43A /* FloorToon.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87A57D9703CEC84A24B86B9 /* FloorToon.pvr */; };
-		F8FDAFDEB99D7E22EDF83FBC /* MouseToon.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83DAD6BF88972A3A49C8E35 /* MouseToon.pvr */; };
-		F80C4BD2AC721C20960CD3AD /* Toon.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84645EA8A2F3FA0E5A71EA0 /* Toon.pvr */; };
-		F81462517F2F0859F3EDA907 /* WallToon.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F832FD6C46C766CADAD99A8B /* WallToon.pvr */; };
+		F85B27B650DB6309594EF55F /* Mouse.pod in Resources */ = {isa = PBXBuildFile; fileRef = F89AB6D3D1FCC4117BC72C34 /* Mouse.pod */; };
+		F8F71C850AD2CE2F0A05B43A /* FloorToon.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F831487E5A2B11A44D3790D3 /* FloorToon.pvr */; };
+		F8FDAFDEB99D7E22EDF83FBC /* MouseToon.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87C372AFEBE9708404738B0 /* MouseToon.pvr */; };
+		F80C4BD2AC721C20960CD3AD /* Toon.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81EDCA0975773700A3E788E /* Toon.pvr */; };
+		F81462517F2F0859F3EDA907 /* WallToon.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80956482E1A0EDA9F2076F5 /* WallToon.pvr */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,7 +101,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F881EABD388F0F0097A2CE04 /* OGLESMouse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESMouse.cpp; path = ../../OGLESMouse.cpp; sourceTree = SOURCE_ROOT; };
+		F8BF40644A942F6F16E1350D /* OGLESMouse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESMouse.cpp; path = ../../OGLESMouse.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -114,11 +114,11 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F87F4FD6344423E06E63583F /* Mouse.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mouse.pod; path = ../../Mouse.pod; sourceTree = SOURCE_ROOT; };
-		F87A57D9703CEC84A24B86B9 /* FloorToon.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = FloorToon.pvr; path = ../../FloorToon.pvr; sourceTree = SOURCE_ROOT; };
-		F83DAD6BF88972A3A49C8E35 /* MouseToon.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = MouseToon.pvr; path = ../../MouseToon.pvr; sourceTree = SOURCE_ROOT; };
-		F84645EA8A2F3FA0E5A71EA0 /* Toon.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Toon.pvr; path = ../../Toon.pvr; sourceTree = SOURCE_ROOT; };
-		F832FD6C46C766CADAD99A8B /* WallToon.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = WallToon.pvr; path = ../../WallToon.pvr; sourceTree = SOURCE_ROOT; };
+		F89AB6D3D1FCC4117BC72C34 /* Mouse.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mouse.pod; path = ../../Mouse.pod; sourceTree = SOURCE_ROOT; };
+		F831487E5A2B11A44D3790D3 /* FloorToon.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = FloorToon.pvr; path = ../../FloorToon.pvr; sourceTree = SOURCE_ROOT; };
+		F87C372AFEBE9708404738B0 /* MouseToon.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = MouseToon.pvr; path = ../../MouseToon.pvr; sourceTree = SOURCE_ROOT; };
+		F81EDCA0975773700A3E788E /* Toon.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Toon.pvr; path = ../../Toon.pvr; sourceTree = SOURCE_ROOT; };
+		F80956482E1A0EDA9F2076F5 /* WallToon.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = WallToon.pvr; path = ../../WallToon.pvr; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -214,7 +214,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F881EABD388F0F0097A2CE04 /* OGLESMouse.cpp */,
+				F8BF40644A942F6F16E1350D /* OGLESMouse.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -241,7 +241,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F87F4FD6344423E06E63583F /* Mouse.pod */,
+				F89AB6D3D1FCC4117BC72C34 /* Mouse.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -256,10 +256,10 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F87A57D9703CEC84A24B86B9 /* FloorToon.pvr */,
-				F83DAD6BF88972A3A49C8E35 /* MouseToon.pvr */,
-				F84645EA8A2F3FA0E5A71EA0 /* Toon.pvr */,
-				F832FD6C46C766CADAD99A8B /* WallToon.pvr */,
+				F831487E5A2B11A44D3790D3 /* FloorToon.pvr */,
+				F87C372AFEBE9708404738B0 /* MouseToon.pvr */,
+				F81EDCA0975773700A3E788E /* Toon.pvr */,
+				F80956482E1A0EDA9F2076F5 /* WallToon.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -308,6 +308,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLESTools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

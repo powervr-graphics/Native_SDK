@@ -12,7 +12,7 @@ var searchData=
   ['remove',['Remove',['../class_c_p_v_r_t_array.html#a152331cd27411d227f7dfaa995ffed01',1,'CPVRTArray::Remove()'],['../class_c_p_v_r_t_array_managed_pointers.html#ab316479721a0bceee282049d0341751b',1,'CPVRTArrayManagedPointers::Remove()'],['../class_c_p_v_r_t_map.html#a6fae78bce2b89a6fe484ef87a9755ef6',1,'CPVRTMap::Remove()']]],
   ['removelast',['RemoveLast',['../class_c_p_v_r_t_array.html#ad804568ace15ce5c5bac5bd331ffab95',1,'CPVRTArray::RemoveLast()'],['../class_c_p_v_r_t_array_managed_pointers.html#afd1a21aefc381f30b3de14f0ffe2ea2d',1,'CPVRTArrayManagedPointers::RemoveLast()']]],
   ['removeuniformsemantic',['RemoveUniformSemantic',['../class_c_p_v_r_t_p_f_x_effect.html#a8cd988fd9b9fc6712221484cad2fe63e',1,'CPVRTPFXEffect']]],
-  ['reserve',['Reserve',['../class_c_p_v_r_t_map.html#a049c627938bcc677a6ca7acabe5d396f',1,'CPVRTMap::Reserve()'],['../class_c_p_v_r_t_string.html#a073a2ea4628b55e63a0cab38e0c4996c',1,'CPVRTString::reserve()']]],
+  ['reserve',['reserve',['../class_c_p_v_r_t_string.html#a073a2ea4628b55e63a0cab38e0c4996c',1,'CPVRTString::reserve()'],['../class_c_p_v_r_t_map.html#a049c627938bcc677a6ca7acabe5d396f',1,'CPVRTMap::Reserve()']]],
   ['reserved',['reserved',['../struct_s_p_v_r_t_context.html#aa2226a4f6f4760d1ccada08fd607182d',1,'SPVRTContext']]],
   ['reset',['Reset',['../class_c_p_o_d_data.html#a6c98d68031a2f94daa59cc3101ab8219',1,'CPODData']]],
   ['resize',['resize',['../class_c_p_v_r_t_string.html#a69df81652ae94c401c2c7071e827789e',1,'CPVRTString::resize()'],['../class_c_p_v_r_t_array.html#a00a9fef0228cc45482ece29697b3c709',1,'CPVRTArray::Resize()']]],

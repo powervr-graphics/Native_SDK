@@ -71,10 +71,17 @@ ParticleSystemGPU::~ParticleSystemGPU()
 ******************************************************************************/
 bool ParticleSystemGPU::Init(CPVRTString& errorStr)
 {
-	if (!CompileComputeShader(errorStr)) { return false; }
+	if (!CompileComputeShader(errorStr)) { 
+		return false; 
+	}
 
-	if (m_ParticleConfigUbo == 0) { glGenBuffers(1, &m_ParticleConfigUbo); }
-	if (m_SpheresUbo == 0) { glGenBuffers(1, &m_SpheresUbo); }
+	if (m_ParticleConfigUbo == 0) { 
+		glGenBuffers(1, &m_ParticleConfigUbo); 
+	}
+
+	if (m_SpheresUbo == 0) { 
+		glGenBuffers(1, &m_SpheresUbo); 
+	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, m_SpheresUbo);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_ParticleConfigUbo);
@@ -96,11 +103,20 @@ bool ParticleSystemGPU::CompileComputeShader(CPVRTString& errorStr)
 	sprintf(&defines[15], "%d", m_ui32WorkgroupSize);
 	char* defines_buffer = &defines[0];
 
-	if (m_glComputeShader) { glDeleteShader(m_glComputeShader); m_glComputeShader = 0; }
-	if (m_glProgram) { glDeleteProgram(m_glProgram); m_glProgram = 0; }
+	if (m_glComputeShader) { 
+		glDeleteShader(m_glComputeShader); 
+		m_glComputeShader = 0; 
+	}
 
-	if (PVRTShaderLoadFromFile(c_szComputeShaderBinFile, c_szComputeShaderSrcFile, GL_COMPUTE_SHADER, GL_SGX_BINARY_IMG, &m_glComputeShader, &errorStr, &m_PVRTContext, &defines_buffer, 1) != PVR_SUCCESS)
-	{ errorStr = "Particle Compute Shader : " + errorStr; return false; }
+	if (m_glProgram) { 
+		glDeleteProgram(m_glProgram); 
+		m_glProgram = 0; 
+	}
+
+	if (PVRTShaderLoadFromFile(c_szComputeShaderBinFile, c_szComputeShaderSrcFile, GL_COMPUTE_SHADER, GL_SGX_BINARY_IMG, &m_glComputeShader, &errorStr, &m_PVRTContext, &defines_buffer, 1) != PVR_SUCCESS) {
+		errorStr = "Particle Compute Shader : " + errorStr;
+		return false;
+	}
 
 	m_glProgram = glCreateProgram();
 	glAttachShader(m_glProgram, m_glComputeShader);
@@ -118,6 +134,7 @@ bool ParticleSystemGPU::CompileComputeShader(CPVRTString& errorStr)
 		delete [] pszInfoLog;
 		return false;
 	}
+
 	return true;
 }
 
@@ -170,6 +187,7 @@ bool ParticleSystemGPU::SetNumberOfParticles(unsigned int numParticles)
 		m_pParticleArrayData[i].vPosition.z = ((float)rand() / RAND_MAX) * 50.f - 25.f;
 		m_pParticleArrayData[i].vVelocity = m_pParticleArrayData[i].vPosition * .2;
 	}
+
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_ParticleArrayVboSsbo);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Particle)*numParticles, m_pParticleArrayData, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, PARTICLES_SSBO_BINDING_INDEX, m_ParticleArrayVboSsbo);

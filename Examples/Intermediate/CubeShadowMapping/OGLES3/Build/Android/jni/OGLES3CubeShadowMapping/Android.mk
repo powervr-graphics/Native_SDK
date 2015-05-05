@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Intermediate/CubeShadowMapping/OGLES3/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles3tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles3tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES3/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles3tools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLES3CubeShadowMapping
 include $(CLEAR_VARS)
@@ -42,47 +45,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/scene.pod \
-	$(ASSETDIR)/effect.pfx \
-	$(ASSETDIR)/wall_left.pvr \
-	$(ASSETDIR)/wall_right.pvr \
-	$(ASSETDIR)/wall_top.pvr \
-	$(ASSETDIR)/wall_bottom.pvr \
-	$(ASSETDIR)/wall_back.pvr \
-	$(ASSETDIR)/mask.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/wall_left.pvr: $(PVRSDKDIR)/Examples/Intermediate/CubeShadowMapping/OGLES3/wall_left.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/wall_right.pvr: $(PVRSDKDIR)/Examples/Intermediate/CubeShadowMapping/OGLES3/wall_right.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/wall_top.pvr: $(PVRSDKDIR)/Examples/Intermediate/CubeShadowMapping/OGLES3/wall_top.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/wall_bottom.pvr: $(PVRSDKDIR)/Examples/Intermediate/CubeShadowMapping/OGLES3/wall_bottom.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/wall_back.pvr: $(PVRSDKDIR)/Examples/Intermediate/CubeShadowMapping/OGLES3/wall_back.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/mask.pvr: $(PVRSDKDIR)/Examples/Intermediate/CubeShadowMapping/OGLES3/mask.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/scene.pod: $(PVRSDKDIR)/Examples/Intermediate/CubeShadowMapping/OGLES3/scene.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/effect.pfx: $(PVRSDKDIR)/Examples/Intermediate/CubeShadowMapping/OGLES3/effect.pfx $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-
-

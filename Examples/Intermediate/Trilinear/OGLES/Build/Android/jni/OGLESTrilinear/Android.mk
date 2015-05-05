@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Intermediate/Trilinear/OGLES/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module oglestools
+include $(CLEAR_VARS)
+LOCAL_MODULE := oglestools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES/Build/Android/obj/local/$(TARGET_ARCH_ABI)/liboglestools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLESTrilinear
 include $(CLEAR_VARS)
@@ -41,34 +44,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/o_model.pod \
-	$(ASSETDIR)/Back.pvr \
-	$(ASSETDIR)/Tape.pvr \
-	$(ASSETDIR)/Ball.pvr \
-	$(ASSETDIR)/Info.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/Back.pvr: $(PVRSDKDIR)/Examples/Intermediate/Trilinear/OGLES/Back.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Tape.pvr: $(PVRSDKDIR)/Examples/Intermediate/Trilinear/OGLES/Tape.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Ball.pvr: $(PVRSDKDIR)/Examples/Intermediate/Trilinear/OGLES/Ball.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Info.pvr: $(PVRSDKDIR)/Examples/Intermediate/Trilinear/OGLES/Info.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/o_model.pod: $(PVRSDKDIR)/Examples/Intermediate/Trilinear/OGLES/o_model.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-

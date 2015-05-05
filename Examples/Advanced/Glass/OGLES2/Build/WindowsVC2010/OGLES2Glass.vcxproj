@@ -160,6 +160,7 @@
     <ClCompile Include="..\..\Content\Balloon.cpp" />
     <ClCompile Include="..\..\Content\Ball.cpp" />
     <ClCompile Include="..\..\Content\BalloonTex.cpp" />
+    <ClCompile Include="..\..\Content\BalloonTex2.cpp" />
     <ClCompile Include="..\..\Content\SkyboxTex.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -330,6 +331,20 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping texture ..\..\BalloonTex.pvr as ..\..\Content\BalloonTex.cpp</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\BalloonTex.cpp" "%(FullPath)"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\BalloonTex.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\BalloonTex2.pvr">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Wrapping texture ..\..\BalloonTex2.pvr as ..\..\Content\BalloonTex2.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\BalloonTex2.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Content\BalloonTex2.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Wrapping texture ..\..\BalloonTex2.pvr as ..\..\Content\BalloonTex2.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\BalloonTex2.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\Content\BalloonTex2.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Wrapping texture ..\..\BalloonTex2.pvr as ..\..\Content\BalloonTex2.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\BalloonTex2.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Content\BalloonTex2.cpp;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Wrapping texture ..\..\BalloonTex2.pvr as ..\..\Content\BalloonTex2.cpp</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(ProjectDir)..\..\..\..\..\..\Utilities\Filewrap\Windows_x86_32\Filewrap.exe" -o "..\..\Content\BalloonTex2.cpp" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\Content\BalloonTex2.cpp;%(Outputs)</Outputs>
     </CustomBuild>
 </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -94,7 +94,6 @@ class OGLES3FilmTV : public PVRShell
 	int		m_i32CurrentFBO;
 	int		m_uiTVScreen;
 	int		m_i32Frame;
-
 	PVRTMat4 m_MiniCamView;
 	PVRTMat4 m_MiniCamViewProj;
 	PVRTMat4 m_View;
@@ -105,6 +104,18 @@ class OGLES3FilmTV : public PVRShell
 
 	// Start time
 	unsigned long m_ulStartTime;
+
+	// Multisampled Rendering info
+	GLint m_iMaxSamples;
+
+	bool m_bMultisampledRenderToTextureEXTSupported;
+    CPVRTgles3Ext::PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEEXT glFramebufferTexture2DMultisampleEXT;
+	CPVRTgles3Ext::PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXT glRenderbufferStorageMultisampleEXT;
+
+	bool m_bMultisampledRenderToTextureIMGSupported;
+	CPVRTgles3Ext::PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG glFramebufferTexture2DMultisampleIMG;
+	CPVRTgles3Ext::PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG glRenderbufferStorageMultisampleIMG;
+
 
 public:
 	virtual bool InitApplication();
@@ -438,6 +449,39 @@ bool OGLES3FilmTV::InitView()
 	// Get the currently bound frame buffer object. On most platforms this just gives 0.
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &m_i32OriginalFB);
 
+	// Multisampled Texture functions
+    CPVRTgles3Ext ext;
+    ext.LoadExtensions();
+    if (CPVRTgles3Ext::IsGLExtensionSupported("GL_EXT_multisampled_render_to_texture"))
+	{
+		m_bMultisampledRenderToTextureEXTSupported = true;
+        glFramebufferTexture2DMultisampleEXT = ext.glFramebufferTexture2DMultisampleEXT;
+		glRenderbufferStorageMultisampleEXT = ext.glRenderbufferStorageMultisampleEXT;
+		glGetIntegerv(GL_MAX_SAMPLES, &m_iMaxSamples);
+	}
+	else
+	{
+		m_bMultisampledRenderToTextureEXTSupported = false;
+		glFramebufferTexture2DMultisampleEXT = 0;
+		glRenderbufferStorageMultisampleEXT = 0;
+
+		if (CPVRTgles3Ext::IsGLExtensionSupported("GL_IMG_multisampled_render_to_texture"))
+		{
+			m_bMultisampledRenderToTextureIMGSupported = true;
+			glFramebufferTexture2DMultisampleIMG = ext.glFramebufferTexture2DMultisampleIMG;
+			glRenderbufferStorageMultisampleIMG = ext.glRenderbufferStorageMultisampleIMG;
+			glGetIntegerv(GL_MAX_SAMPLES, &m_iMaxSamples);
+		}
+		else
+		{
+			m_bMultisampledRenderToTextureIMGSupported = false;
+			glFramebufferTexture2DMultisampleIMG = 0;
+			glRenderbufferStorageMultisampleIMG = 0;
+			m_iMaxSamples = 1;
+		}
+	}
+
+
 	for(int i = 0; i < 2; ++i)
 	{
 		// Create texture for the FBO
@@ -453,12 +497,34 @@ bool OGLES3FilmTV::InitView()
 		// Create FBO
 		glGenFramebuffers(1, &m_uiFbo[i]);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_uiFbo[i]);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_uiTexture[i], 0);
+		if (m_bMultisampledRenderToTextureEXTSupported)
+		{
+			glFramebufferTexture2DMultisampleEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_uiTexture[i], 0, m_iMaxSamples);
+		}
+		else if (m_bMultisampledRenderToTextureIMGSupported)
+		{
+			glFramebufferTexture2DMultisampleIMG(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_uiTexture[i], 0, m_iMaxSamples);
+		}
+		else
+		{
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_uiTexture[i], 0);
+		}
 
 		glGenRenderbuffers(1, &m_uiDepthBuffer[i]);
 		glBindRenderbuffer(GL_RENDERBUFFER, m_uiDepthBuffer[i]);
 
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, m_i32TexSize, m_i32TexSize);
+		if (m_bMultisampledRenderToTextureEXTSupported)
+		{
+			glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER, m_iMaxSamples, GL_DEPTH_COMPONENT16, m_i32TexSize, m_i32TexSize);
+		}
+		else if (m_bMultisampledRenderToTextureIMGSupported)
+		{
+			glRenderbufferStorageMultisampleIMG(GL_RENDERBUFFER, m_iMaxSamples, GL_DEPTH_COMPONENT16, m_i32TexSize, m_i32TexSize);
+		}
+		else
+		{
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, m_i32TexSize, m_i32TexSize);
+		}
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_uiDepthBuffer[i]);
 
         // Check that our FBO creation was successful

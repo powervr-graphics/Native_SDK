@@ -39,10 +39,10 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/RenderToTexture.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/RenderToTexture.cpp: $(CONTENTDIR) ./RenderToTexture.pod
 	$(FILEWRAP)  -o $@ ./RenderToTexture.pod
 
-$(CONTENTDIR)/YellowWood.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/YellowWood.cpp: $(CONTENTDIR) ./YellowWood.pvr
 	$(FILEWRAP)  -o $@ ./YellowWood.pvr
 
 ############################################################################

@@ -147,7 +147,7 @@
 		glBindFramebufferOES(GL_FRAMEBUFFER_OES, oldFramebuffer);
 	}
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, oldRenderbuffer);
-#elif defined(BUILD_OGLES2) || defined(BUILD_OGLES3)
+#elif defined(BUILD_OGLES2)
 	glGetIntegerv(GL_RENDERBUFFER_BINDING, (GLint *) &oldRenderbuffer);
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, (GLint *) &oldFramebuffer);
 	
@@ -248,6 +248,112 @@
 		glBindFramebuffer(GL_FRAMEBUFFER, oldFramebuffer);
 	}
 	glBindRenderbuffer(GL_RENDERBUFFER, oldRenderbuffer);
+	
+#elif defined(BUILD_OGLES3)
+	glGetIntegerv(GL_RENDERBUFFER_BINDING, (GLint *) &oldRenderbuffer);
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, (GLint *) &oldFramebuffer);
+	
+	glGenRenderbuffers(1, &_renderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, _renderbuffer);
+	
+	if(![_context renderbufferStorage:GL_RENDERBUFFER fromDrawable:eaglLayer])
+	{
+		glDeleteRenderbuffers(1, &_renderbuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER_BINDING, oldRenderbuffer);
+		return NO;
+	}
+	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width);
+	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &height);
+	
+	glGenFramebuffers(1, &_framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _renderbuffer);
+	if (_depthFormat)
+	{
+		glGenRenderbuffers(1, &_depthBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, _depthBuffer);
+		if(_stencilFormat)
+		{
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthBuffer);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthBuffer);
+		}
+		else
+		{
+			glRenderbufferStorage(GL_RENDERBUFFER, _depthFormat, width, height);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthBuffer);
+		}
+	}
+	
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+		NSLog(@"failed to make complete framebuffer object %x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+		return NO;
+	}
+
+	//MSAA
+	const GLubyte *str = glGetString(GL_EXTENSIONS);
+	//NSLog(@"%s",str);
+	_enableMSAA = (strstr((const char *)str, "GL_APPLE_framebuffer_multisample") != NULL);
+	_enableFramebufferDiscard = (strstr((const char *)str, "GL_EXT_discard_framebuffer") != NULL);
+	
+	if (_msaaMaxSamples && _enableMSAA)
+	{
+		GLint maxSamplesAllowed,samplesToUse;
+		glGetIntegerv(GL_MAX_SAMPLES, &maxSamplesAllowed);
+		samplesToUse = _msaaMaxSamples < maxSamplesAllowed ? _msaaMaxSamples : maxSamplesAllowed;
+		
+		if(samplesToUse) {
+			glGenFramebuffers(1, &_msaaFrameBuffer);
+			glBindFramebuffer(GL_FRAMEBUFFER, _msaaFrameBuffer);
+			
+			glGenRenderbuffers(1, &_msaaColourBuffer);
+			glBindRenderbuffer(GL_RENDERBUFFER, _msaaColourBuffer);
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, samplesToUse, GL_RGBA8, width, height);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _msaaColourBuffer);
+			
+			if (_depthFormat)
+			{
+				glGenRenderbuffers(1, &_msaaDepthBuffer);
+				glBindRenderbuffer(GL_RENDERBUFFER, _msaaDepthBuffer);
+				if(_stencilFormat)
+				{
+					glRenderbufferStorageMultisample(GL_RENDERBUFFER, samplesToUse, GL_DEPTH24_STENCIL8, width, height);
+					glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _msaaDepthBuffer);
+					glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _msaaDepthBuffer);
+				}
+				else
+				{
+					glRenderbufferStorageMultisample(GL_RENDERBUFFER, samplesToUse, _depthFormat, width, height);
+					glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _msaaDepthBuffer);
+				}
+			}
+			if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+				NSLog(@"failed to make complete framebuffer object %x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+				return NO;
+			}
+		}
+	}
+	
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+		NSLog(@"failed to make complete framebuffer object %x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+		return NO;
+	}
+	
+	_size.width = width;
+	_size.height = height;
+	if(!_hasBeenCurrent) {
+		glViewport(0, 0, width, height);
+		glScissor(0, 0, width, height);
+		_hasBeenCurrent = YES;
+	}
+	else {
+		glBindFramebuffer(GL_FRAMEBUFFER, oldFramebuffer);
+	}
+	glBindRenderbuffer(GL_RENDERBUFFER, oldRenderbuffer);
+	
+	
+	
+	
 #endif
 	
 	PRINT_GL_ERROR();
@@ -451,7 +557,7 @@
 	}
 #endif	
 	
-#if defined(BUILD_OGLES2) || defined(BUILD_OGLES3)
+#if defined(BUILD_OGLES2)
 	//MSAA
 	if(_msaaMaxSamples && _enableMSAA)
 	{
@@ -478,7 +584,33 @@
 	glBindRenderbuffer(GL_RENDERBUFFER, _renderbuffer);
 	if(![_context presentRenderbuffer:GL_RENDERBUFFER])
 		printf("Failed to swap renderbuffer in %s\n", __FUNCTION__);
+#elif defined(BUILD_OGLES3)
+//MSAA
+	if(_msaaMaxSamples && _enableMSAA)
+	{
+		glDisable(GL_SCISSOR_TEST);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, _msaaFrameBuffer);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _framebuffer);
+		//glResolveMultisampleFramebufferAPPLE();
+		
+		// Assuming some attachments have been chosen, discard them.
+		if (currentAttachment!=0)
+		{
+			glInvalidateFramebuffer(GL_READ_FRAMEBUFFER,currentAttachment,attachments);
+		}
+	}
+	else
+	{
+		// Assuming some attachments have been chosen, discard them.
+		if (currentAttachment!=0)
+		{
+			glInvalidateFramebuffer(GL_FRAMEBUFFER,currentAttachment,attachments);
+		}
+	}
 	
+	glBindRenderbuffer(GL_RENDERBUFFER, _renderbuffer);
+	if(![_context presentRenderbuffer:GL_RENDERBUFFER])
+		printf("Failed to swap renderbuffer in %s\n", __FUNCTION__);
 #elif defined(BUILD_OGLES)
 	//MSAA
 	if(_msaaMaxSamples && _enableMSAA){

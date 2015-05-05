@@ -25,17 +25,17 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F8B3BBCC348179A4CC53A9B4 /* OGLES2Refraction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F840665D186F96D15A999F4C /* OGLES2Refraction.cpp */; };
+		F8B3BBCC348179A4CC53A9B4 /* OGLES2Refraction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F81EB3A3BFE1997DA052543A /* OGLES2Refraction.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F8A4642FE52E6F4311AE3E78 /* Mask.pod in Resources */ = {isa = PBXBuildFile; fileRef = F86047DCC61064DF7714ABDF /* Mask.pod */; };
-		F821B47AD1C0AE2BBFB268F9 /* Basetex.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80DBBC89408C2090F5D3B76 /* Basetex.pvr */; };
-		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F895137C16F9AE9B63DD3558 /* FragShader.fsh */; };
-		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */; };
+		F8A4642FE52E6F4311AE3E78 /* Mask.pod in Resources */ = {isa = PBXBuildFile; fileRef = F82D4335198133BEEEEAB4A8 /* Mask.pod */; };
+		F821B47AD1C0AE2BBFB268F9 /* Basetex.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F866DA95B6275F8A4EEB2AC3 /* Basetex.pvr */; };
+		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */; };
+		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81AE783867359F7612A30AC /* VertShader.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -110,7 +110,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F840665D186F96D15A999F4C /* OGLES2Refraction.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES2Refraction.cpp; path = ../../OGLES2Refraction.cpp; sourceTree = SOURCE_ROOT; };
+		F81EB3A3BFE1997DA052543A /* OGLES2Refraction.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES2Refraction.cpp; path = ../../OGLES2Refraction.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -123,10 +123,10 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F86047DCC61064DF7714ABDF /* Mask.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mask.pod; path = ../../Mask.pod; sourceTree = SOURCE_ROOT; };
-		F80DBBC89408C2090F5D3B76 /* Basetex.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Basetex.pvr; path = ../../Basetex.pvr; sourceTree = SOURCE_ROOT; };
-		F895137C16F9AE9B63DD3558 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F82D4335198133BEEEEAB4A8 /* Mask.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mask.pod; path = ../../Mask.pod; sourceTree = SOURCE_ROOT; };
+		F866DA95B6275F8A4EEB2AC3 /* Basetex.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Basetex.pvr; path = ../../Basetex.pvr; sourceTree = SOURCE_ROOT; };
+		F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F81AE783867359F7612A30AC /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -231,7 +231,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F840665D186F96D15A999F4C /* OGLES2Refraction.cpp */,
+				F81EB3A3BFE1997DA052543A /* OGLES2Refraction.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -258,7 +258,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F86047DCC61064DF7714ABDF /* Mask.pod */,
+				F82D4335198133BEEEEAB4A8 /* Mask.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -273,7 +273,7 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F80DBBC89408C2090F5D3B76 /* Basetex.pvr */,
+				F866DA95B6275F8A4EEB2AC3 /* Basetex.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -281,8 +281,8 @@
 		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F895137C16F9AE9B63DD3558 /* FragShader.fsh */,
-				F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */,
+				F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */,
+				F81AE783867359F7612A30AC /* VertShader.vsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -332,6 +332,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLES2Tools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

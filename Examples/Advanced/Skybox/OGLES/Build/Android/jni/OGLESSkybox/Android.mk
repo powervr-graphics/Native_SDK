@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/Skybox/OGLES/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module oglestools
+include $(CLEAR_VARS)
+LOCAL_MODULE := oglestools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES/Build/Android/obj/local/$(TARGET_ARCH_ABI)/liboglestools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLESSkybox
 include $(CLEAR_VARS)
@@ -41,46 +44,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/HotAirBalloon.pod \
-	$(ASSETDIR)/balloon.pvr \
-	$(ASSETDIR)/skybox1.pvr \
-	$(ASSETDIR)/skybox2.pvr \
-	$(ASSETDIR)/skybox3.pvr \
-	$(ASSETDIR)/skybox4.pvr \
-	$(ASSETDIR)/skybox5.pvr \
-	$(ASSETDIR)/skybox6.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/balloon.pvr: $(PVRSDKDIR)/Examples/Advanced/Skybox/OGLES/balloon.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/skybox1.pvr: $(PVRSDKDIR)/Examples/Advanced/Skybox/OGLES/skybox1.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/skybox2.pvr: $(PVRSDKDIR)/Examples/Advanced/Skybox/OGLES/skybox2.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/skybox3.pvr: $(PVRSDKDIR)/Examples/Advanced/Skybox/OGLES/skybox3.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/skybox4.pvr: $(PVRSDKDIR)/Examples/Advanced/Skybox/OGLES/skybox4.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/skybox5.pvr: $(PVRSDKDIR)/Examples/Advanced/Skybox/OGLES/skybox5.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/skybox6.pvr: $(PVRSDKDIR)/Examples/Advanced/Skybox/OGLES/skybox6.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/HotAirBalloon.pod: $(PVRSDKDIR)/Examples/Advanced/Skybox/OGLES/HotAirBalloon.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-

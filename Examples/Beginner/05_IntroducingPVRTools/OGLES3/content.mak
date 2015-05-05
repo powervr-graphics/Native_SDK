@@ -40,13 +40,13 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 
-$(CONTENTDIR)/Image.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Image.cpp: $(CONTENTDIR) ./Image.pvr
 	$(FILEWRAP)  -o $@ ./Image.pvr
 
 ############################################################################

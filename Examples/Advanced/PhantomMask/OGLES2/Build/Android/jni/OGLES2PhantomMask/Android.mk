@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/PhantomMask/OGLES2/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles2tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles2tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES2/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles2tools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLES2PhantomMask
 include $(CLEAR_VARS)
@@ -41,38 +44,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/PhantomMask.pod \
-	$(ASSETDIR)/MaskMain.pvr \
-	$(ASSETDIR)/RoomStill.pvr \
-	$(ASSETDIR)/FragShader.fsh \
-	$(ASSETDIR)/SHVertShader.vsh \
-	$(ASSETDIR)/DiffuseVertShader.vsh
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/MaskMain.pvr: $(PVRSDKDIR)/Examples/Advanced/PhantomMask/OGLES2/MaskMain.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/RoomStill.pvr: $(PVRSDKDIR)/Examples/Advanced/PhantomMask/OGLES2/RoomStill.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/FragShader.fsh: $(PVRSDKDIR)/Examples/Advanced/PhantomMask/OGLES2/FragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/SHVertShader.vsh: $(PVRSDKDIR)/Examples/Advanced/PhantomMask/OGLES2/SHVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/DiffuseVertShader.vsh: $(PVRSDKDIR)/Examples/Advanced/PhantomMask/OGLES2/DiffuseVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/PhantomMask.pod: $(PVRSDKDIR)/Examples/Advanced/PhantomMask/OGLES2/PhantomMask.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-

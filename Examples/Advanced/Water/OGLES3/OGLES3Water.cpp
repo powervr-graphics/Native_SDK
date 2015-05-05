@@ -4,7 +4,7 @@
 
  @Title        Water
 
- @Version      
+ @Version
 
  @Copyright    Copyright (c) Imagination Technologies Limited.
 
@@ -91,17 +91,17 @@ enum EUserInterface
 	eARTEFACT_FIX,
 	eRENDER_WATER_SCREEN_RES,
 #ifdef DEBUG_MODE
-	#ifdef FREE_CAMERA_MODE
-		eMOVE_X,
-		eMOVE_Y,
-		eMOVE_Z,
-		eCAMERA_X,
-		eCAMERA_Y,
-		eCAMERA_Z,
-		eLOOK_AT_X,
-		eLOOK_AT_Y,
-		eLOOK_AT_Z,
-	#endif
+#ifdef FREE_CAMERA_MODE
+	eMOVE_X,
+	eMOVE_Y,
+	eMOVE_Z,
+	eCAMERA_X,
+	eCAMERA_Y,
+	eCAMERA_Z,
+	eLOOK_AT_X,
+	eLOOK_AT_Y,
+	eLOOK_AT_Z,
+#endif
 	eWATER_HEIGHT,
 	eWATER_COLOUR_R,
 	eWATER_COLOUR_G,
@@ -201,7 +201,7 @@ struct STexture
 
 // Water plane equations
 static const GLuint c_uiNumberOfSkyboxTextures = 1;
-static const GLuint c_uiNoOfDefines[eDEFINE_SHADER_SIZE] = {3,2,2,1,1,2,2};
+static const GLuint c_uiNoOfDefines[eDEFINE_SHADER_SIZE] = {3, 2, 2, 1, 1, 2, 2};
 static const float c_fDemoFrameRate = 1.0f / 30.0f;	// Used during animation
 static const GLuint c_uiCamera = 0;					// The camera to use from the .pod file
 
@@ -223,7 +223,7 @@ static const char* c_aszNodeNames[eNODE_SIZE] =
 ******************************************************************************/
 
 // Source and binary shaders
-const char * const c_aszFragShaderSrcFile[eSHADER_SIZE] =
+const char* const c_aszFragShaderSrcFile[eSHADER_SIZE] =
 {
 	"FragShader.fsh",
 	"SkyboxFShader.fsh",
@@ -231,7 +231,7 @@ const char * const c_aszFragShaderSrcFile[eSHADER_SIZE] =
 	"Tex2DFShader.fsh",
 	"PlaneTexFShader.fsh"
 };
-const char * const c_aszFragShaderBinFile[eSHADER_SIZE] =
+const char* const c_aszFragShaderBinFile[eSHADER_SIZE] =
 {
 	"FragShader.fsc",
 	"SkyboxFShader.fsc",
@@ -239,7 +239,7 @@ const char * const c_aszFragShaderBinFile[eSHADER_SIZE] =
 	"Tex2DFShader.fsc",
 	"PlaneTexFShader.fsc"
 };
-const char * const c_aszVertShaderSrcFile[eSHADER_SIZE] =
+const char* const c_aszVertShaderSrcFile[eSHADER_SIZE] =
 {
 	"VertShader.vsh",
 	"SkyboxVShader.vsh",
@@ -247,7 +247,7 @@ const char * const c_aszVertShaderSrcFile[eSHADER_SIZE] =
 	"Tex2DVShader.vsh",
 	"PlaneTexVShader.vsh"
 };
-const char * const c_aszVertShaderBinFile[eSHADER_SIZE] =
+const char* const c_aszVertShaderBinFile[eSHADER_SIZE] =
 {
 	"VertShader.vsc",
 	"SkyboxVShader.vsc",
@@ -257,7 +257,7 @@ const char * const c_aszVertShaderBinFile[eSHADER_SIZE] =
 };
 
 // PVR texture files
-const char * const c_aszTextureNames[eTEX_NAME_SIZE] =
+const char* const c_aszTextureNames[eTEX_NAME_SIZE] =
 {
 	"skybox.pvr",
 	"normalmap.pvr"
@@ -422,11 +422,11 @@ public:
 
 	bool LoadTextures(CPVRTString* pErrorStr);
 	bool LoadWaterShader(WaterShader& shaderProgram, GLuint uiShaderId, CPVRTString* pErrorStr);
-	bool LoadModelShader(ModelShader& shaderProgram,GLuint uiShaderId, CPVRTString* pErrorStr);
+	bool LoadModelShader(ModelShader& shaderProgram, GLuint uiShaderId, CPVRTString* pErrorStr);
 	bool LoadShaders(CPVRTString* pErrorStr);
 	bool LoadVbos(CPVRTString* pErrorStr);
 
-	void SetProjection(const float fFOV = 60.0f * (PVRT_PI/180.0f), const float fFarClip = CAM_FAR);
+	void SetProjection(const float fFOV = 60.0f * (PVRT_PI / 180.0f), const float fFarClip = CAM_FAR);
 	void SetView();
 
 	void ResetVariables();
@@ -438,17 +438,18 @@ public:
 	void DrawMesh(int i32NodeIndex, const ModelShader& shaderProgram);
 
 	void DrawInfinitePlane(const PVRTVec4& vPlane, float fFarDistance = CAM_FAR);
-	void DrawWater(const WaterShader& shaderProgram, GLuint uiViewPortWidth, GLuint uiViewPortHeight, const PVRTVec4& vPlane, float fFarDistance = CAM_FAR);
+	void DrawWater(const WaterShader& shaderProgram, GLuint uiViewPortWidth, GLuint uiViewPortHeight, const PVRTVec4& vPlane,
+	               float fFarDistance = CAM_FAR);
 	void DrawWaterFromTexture(float farDistance = CAM_FAR);
 	void DrawSkybox(GLuint uiCubeMapHandle, const SkyboxShader& shaderProgram, GLuint uiVboId,
-					const PVRTVec3& vTranslation = PVRTVec3(0.0f,0.0f,0.0f));
+	                const PVRTVec3& vTranslation = PVRTVec3(0.0f, 0.0f, 0.0f));
 
 	void DrawScene();
 	void DrawRefractionScene();
 
-	void DrawTestQuad(GLuint uiTextureHandle, const PVRTVec2 &vBottomLeftPosition = PVRTVec2(-1,-1));
+	void DrawTestQuad(GLuint uiTextureHandle, const PVRTVec2& vBottomLeftPosition = PVRTVec2(-1, -1));
 
-	void ModifyProjectionForClipping(const PVRTVec4 &vClipPlane);
+	void ModifyProjectionForClipping(const PVRTVec4& vClipPlane);
 	bool GenerateNormalisationCubeMap(int uiTextureSize = 32);
 
 	void UpdateTimer();
@@ -465,8 +466,8 @@ public:
 ******************************************************************************/
 GLfloat OGLES3Water::sgn(GLfloat a)
 {
-	if(a > 0.0f) return(1.0f);
-	if(a < 0.0f) return(-1.0f);
+	if (a > 0.0f) { return (1.0f); }
+	if (a < 0.0f) { return (-1.0f); }
 	return 0.0f;
 }
 
@@ -482,9 +483,9 @@ bool OGLES3Water::LoadTextures(CPVRTString* const pErrorStr)
 	GLuint i = 0;
 
 	// Load cubemaps first
-	for(; i < c_uiNumberOfSkyboxTextures; ++i)
+	for (; i < c_uiNumberOfSkyboxTextures; ++i)
 	{
-		if(PVRTTextureLoadFromPVR(c_aszTextureNames[i], &m_auiTextureIds[i]) != PVR_SUCCESS)
+		if (PVRTTextureLoadFromPVR(c_aszTextureNames[i], &m_auiTextureIds[i]) != PVR_SUCCESS)
 		{
 			*pErrorStr = CPVRTString("ERROR: Could not open texture file ") + c_aszTextureNames[i];
 			return false;
@@ -496,9 +497,9 @@ bool OGLES3Water::LoadTextures(CPVRTString* const pErrorStr)
 	}
 
 	// Load remaining textures
-	for(; i < eTEX_NAME_SIZE; ++i)
+	for (; i < eTEX_NAME_SIZE; ++i)
 	{
-		if(PVRTTextureLoadFromPVR(c_aszTextureNames[i],&m_auiTextureIds[i]) != PVR_SUCCESS)
+		if (PVRTTextureLoadFromPVR(c_aszTextureNames[i], &m_auiTextureIds[i]) != PVR_SUCCESS)
 		{
 			*pErrorStr = CPVRTString("ERROR: Could not open texture file ") + c_aszTextureNames[i];
 			return false;
@@ -522,7 +523,7 @@ bool OGLES3Water::LoadTextures(CPVRTString* const pErrorStr)
 
 	glGenTextures(eFBO_SIZE, m_auiRendToTexture);
 	// Allocate textures for reflection and refraction FBOs
-	for(i = 0; i < eFBO_SIZE - 1; ++i)
+	for (i = 0; i < eFBO_SIZE - 1; ++i)
 	{
 		glBindTexture(GL_TEXTURE_2D, m_auiRendToTexture[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB/*A*/, m_uiTexSize, m_uiTexSize, 0, GL_RGB/*A*/, GL_UNSIGNED_BYTE, 0);
@@ -546,19 +547,19 @@ bool OGLES3Water::LoadTextures(CPVRTString* const pErrorStr)
 	// Load all textures for each model
 	m_apuiModelTextureIds = new STexture[m_Mesh.nNumMaterial];
 
-	if(!m_apuiModelTextureIds)
+	if (!m_apuiModelTextureIds)
 	{
 		*pErrorStr = "ERROR: Insufficient memory.";
 		return false;
 	}
 
-	for(int i = 0; i < (int) m_Mesh.nNumMaterial; ++i)
+	for (int i = 0; i < (int) m_Mesh.nNumMaterial; ++i)
 	{
 		m_apuiModelTextureIds[i].uiDiffuse  = 0;
 		m_apuiModelTextureIds[i].uiSpecular = 0;
 		SPODMaterial* pMaterial = &m_Mesh.pMaterial[i];
 
-		if(pMaterial->nIdxTexDiffuse != -1)
+		if (pMaterial->nIdxTexDiffuse != -1)
 		{
 			/*
 				Using the tools function PVRTTextureLoadFromPVR load the textures required by the pod file.
@@ -570,14 +571,14 @@ bool OGLES3Water::LoadTextures(CPVRTString* const pErrorStr)
 
 			CPVRTString sTextureName = m_Mesh.pTexture[pMaterial->nIdxTexDiffuse].pszName;
 
-			if(PVRTTextureLoadFromPVR(sTextureName.c_str(), &m_apuiModelTextureIds[i].uiDiffuse) != PVR_SUCCESS)
+			if (PVRTTextureLoadFromPVR(sTextureName.c_str(), &m_apuiModelTextureIds[i].uiDiffuse) != PVR_SUCCESS)
 			{
 				*pErrorStr = "ERROR: Failed to load " + sTextureName + ". ";
 
 				// Check to see if we're trying to load .pvr or not
 				CPVRTString sFileExtension = PVRTStringGetFileExtension(sTextureName);
 
-				if(sFileExtension.toLower() != "pvr")
+				if (sFileExtension.toLower() != "pvr")
 				{
 					*pErrorStr += "Note: Demo can only load pvr files.";
 				}
@@ -587,7 +588,7 @@ bool OGLES3Water::LoadTextures(CPVRTString* const pErrorStr)
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			if(sTextureName == "sand.pvr" || sTextureName == "coins.pvr")
+			if (sTextureName == "sand.pvr" || sTextureName == "coins.pvr")
 			{
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -598,7 +599,7 @@ bool OGLES3Water::LoadTextures(CPVRTString* const pErrorStr)
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			}
 		}
-		if(pMaterial->nIdxTexSpecularLevel != -1)
+		if (pMaterial->nIdxTexSpecularLevel != -1)
 		{
 			/*
 			 Using the tools function PVRTTextureLoadFromPVR load the textures required by the pod file.
@@ -610,14 +611,14 @@ bool OGLES3Water::LoadTextures(CPVRTString* const pErrorStr)
 
 			CPVRTString sTextureName = m_Mesh.pTexture[pMaterial->nIdxTexSpecularLevel].pszName;
 
-			if(PVRTTextureLoadFromPVR(sTextureName.c_str(), &m_apuiModelTextureIds[i].uiSpecular) != PVR_SUCCESS)
+			if (PVRTTextureLoadFromPVR(sTextureName.c_str(), &m_apuiModelTextureIds[i].uiSpecular) != PVR_SUCCESS)
 			{
 				*pErrorStr = "ERROR: Failed to load " + sTextureName + ".";
 
 				// Check to see if we're trying to load .pvr or not
 				CPVRTString sFileExtension = PVRTStringGetFileExtension(sTextureName);
 
-				if(sFileExtension.toLower() != "pvr")
+				if (sFileExtension.toLower() != "pvr")
 				{
 					*pErrorStr += "Note: Demo can only load pvr files.";
 				}
@@ -627,7 +628,7 @@ bool OGLES3Water::LoadTextures(CPVRTString* const pErrorStr)
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			if(sTextureName == "coins-specular.pvr")
+			if (sTextureName == "coins-specular.pvr")
 			{
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -654,7 +655,8 @@ bool OGLES3Water::LoadTextures(CPVRTString* const pErrorStr)
 bool OGLES3Water::LoadWaterShader(WaterShader& shaderProgram, GLuint uiShaderId, CPVRTString* pErrorStr)
 {
 	const char* aszWaterAttribs[] = { "inVertex"};
-	if (PVRTCreateProgram(&shaderProgram.uiId, m_auiVertShaderIds[uiShaderId], m_auiFragShaderIds[uiShaderId], aszWaterAttribs, 1, pErrorStr))
+	if (PVRTCreateProgram(&shaderProgram.uiId, m_auiVertShaderIds[uiShaderId], m_auiFragShaderIds[uiShaderId], aszWaterAttribs, 1,
+	                      pErrorStr))
 	{
 		PVRShellSet(prefExitMessage, pErrorStr->c_str());
 		return false;
@@ -662,9 +664,9 @@ bool OGLES3Water::LoadWaterShader(WaterShader& shaderProgram, GLuint uiShaderId,
 
 	// Set the sampler2D variables
 	glUniform1i(glGetUniformLocation(shaderProgram.uiId, "NormalTex"), 0);
-	glUniform1i(glGetUniformLocation(shaderProgram.uiId, "ReflectionTex"),1);
-	glUniform1i(glGetUniformLocation(shaderProgram.uiId, "RefractionTex"),2);
-	glUniform1i(glGetUniformLocation(shaderProgram.uiId, "NormalisationCubeMap"),3);
+	glUniform1i(glGetUniformLocation(shaderProgram.uiId, "ReflectionTex"), 1);
+	glUniform1i(glGetUniformLocation(shaderProgram.uiId, "RefractionTex"), 2);
+	glUniform1i(glGetUniformLocation(shaderProgram.uiId, "NormalisationCubeMap"), 3);
 
 	// Store the location of uniforms for later use
 	shaderProgram.uiMVMatrixLoc					= glGetUniformLocation(shaderProgram.uiId, "ModelViewMatrix");
@@ -691,17 +693,18 @@ bool OGLES3Water::LoadWaterShader(WaterShader& shaderProgram, GLuint uiShaderId,
  @Return		bool			true if no error occured
  @Description	Loads and compiles a model shader and links it to a shader program
 ******************************************************************************/
-bool OGLES3Water::LoadModelShader(ModelShader &shaderProgram, GLuint uiShaderId, CPVRTString *pErrorStr)
+bool OGLES3Water::LoadModelShader(ModelShader& shaderProgram, GLuint uiShaderId, CPVRTString* pErrorStr)
 {
 	const char* aszModelAttribs[] = { "inVertex", "inNormal", "inTexCoord"};
-	if (PVRTCreateProgram(&shaderProgram.uiId, m_auiVertShaderIds[uiShaderId], m_auiFragShaderIds[uiShaderId], aszModelAttribs, 3, pErrorStr))
+	if (PVRTCreateProgram(&shaderProgram.uiId, m_auiVertShaderIds[uiShaderId], m_auiFragShaderIds[uiShaderId], aszModelAttribs, 3,
+	                      pErrorStr))
 	{
 		PVRShellSet(prefExitMessage, pErrorStr->c_str());
 		return false;
 	}
 
-	glUniform1i(glGetUniformLocation(shaderProgram.uiId, "ModelTexture"),0);
-	glUniform1i(glGetUniformLocation(shaderProgram.uiId, "ModelTextureSpec"),1);
+	glUniform1i(glGetUniformLocation(shaderProgram.uiId, "ModelTexture"), 0);
+	glUniform1i(glGetUniformLocation(shaderProgram.uiId, "ModelTextureSpec"), 1);
 
 	shaderProgram.uiMVPMatrixLoc				= glGetUniformLocation(shaderProgram.uiId, "MVPMatrix");
 	shaderProgram.uiModelMatrixLoc				= glGetUniformLocation(shaderProgram.uiId, "ModelMatrix");
@@ -732,45 +735,51 @@ bool OGLES3Water::LoadShaders(CPVRTString* pErrorStr)
 		are used as fallback.
 	*/
 
-	for(GLuint i = 0; i < eSHADER_SIZE; ++i)
+	for (GLuint i = 0; i < eSHADER_SIZE; ++i)
 	{
-		if(PVRTShaderLoadFromFile(
-			c_aszVertShaderBinFile[i],c_aszVertShaderSrcFile[i],GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_auiVertShaderIds[i], pErrorStr) != PVR_SUCCESS)
+		if (PVRTShaderLoadFromFile(
+		      c_aszVertShaderBinFile[i], c_aszVertShaderSrcFile[i], GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_auiVertShaderIds[i],
+		      pErrorStr) != PVR_SUCCESS)
 		{
 			return false;
 		}
 
-		if(PVRTShaderLoadFromFile(
-			c_aszFragShaderBinFile[i],c_aszFragShaderSrcFile[i],GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_auiFragShaderIds[i], pErrorStr) != PVR_SUCCESS)
+		if (PVRTShaderLoadFromFile(
+		      c_aszFragShaderBinFile[i], c_aszFragShaderSrcFile[i], GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_auiFragShaderIds[i],
+		      pErrorStr) != PVR_SUCCESS)
 		{
 			return false;
 		}
 	}
 	// Assign pointers to the original source files the defines need to be prepended to
 	const char* pDefVertShaderSrcFile[eDEFINE_SHADER_SIZE] = {	c_aszVertShaderSrcFile[eREFLECTION_ONLY_SHADER],
-																c_aszVertShaderSrcFile[eREFLECTION_ONLY_SHADER],
-																c_aszVertShaderSrcFile[eMODEL_SHADER],
-																c_aszVertShaderSrcFile[eMODEL_SHADER],
-																c_aszVertShaderSrcFile[eREFLECTION_ONLY_SHADER],
+	                                                            c_aszVertShaderSrcFile[eREFLECTION_ONLY_SHADER],
 	                                                            c_aszVertShaderSrcFile[eMODEL_SHADER],
-	                                                            c_aszVertShaderSrcFile[eMODEL_SHADER]};
+	                                                            c_aszVertShaderSrcFile[eMODEL_SHADER],
+	                                                            c_aszVertShaderSrcFile[eREFLECTION_ONLY_SHADER],
+	                                                            c_aszVertShaderSrcFile[eMODEL_SHADER],
+	                                                            c_aszVertShaderSrcFile[eMODEL_SHADER]
+	                                                         };
 	const char* pDefFragShaderSrcFile[eDEFINE_SHADER_SIZE] = {	c_aszFragShaderSrcFile[eREFLECTION_ONLY_SHADER],
-																c_aszFragShaderSrcFile[eREFLECTION_ONLY_SHADER],
-																c_aszFragShaderSrcFile[eMODEL_SHADER],
-																c_aszFragShaderSrcFile[eMODEL_SHADER],
-																c_aszFragShaderSrcFile[eREFLECTION_ONLY_SHADER],
+	                                                            c_aszFragShaderSrcFile[eREFLECTION_ONLY_SHADER],
 	                                                            c_aszFragShaderSrcFile[eMODEL_SHADER],
-																c_aszFragShaderSrcFile[eMODEL_SHADER]};
+	                                                            c_aszFragShaderSrcFile[eMODEL_SHADER],
+	                                                            c_aszFragShaderSrcFile[eREFLECTION_ONLY_SHADER],
+	                                                            c_aszFragShaderSrcFile[eMODEL_SHADER],
+	                                                            c_aszFragShaderSrcFile[eMODEL_SHADER]
+	                                                         };
 
 	// Load shaders using defines
-	for(GLuint i = 0; i < eDEFINE_SHADER_SIZE; ++i)
+	for (GLuint i = 0; i < eDEFINE_SHADER_SIZE; ++i)
 	{
-		if(PVRTShaderLoadFromFile(0,pDefVertShaderSrcFile[i],GL_VERTEX_SHADER, 0, &m_auiVertShaderIds[eSHADER_SIZE + i], pErrorStr, 0, c_aszAllDefines[i], c_uiNoOfDefines[i]) != PVR_SUCCESS)
+		if (PVRTShaderLoadFromFile(0, pDefVertShaderSrcFile[i], GL_VERTEX_SHADER, 0, &m_auiVertShaderIds[eSHADER_SIZE + i], pErrorStr, 0,
+		                           c_aszAllDefines[i], c_uiNoOfDefines[i]) != PVR_SUCCESS)
 		{
 			return false;
 		}
 
-		if(PVRTShaderLoadFromFile(0, pDefFragShaderSrcFile[i],GL_FRAGMENT_SHADER, 0, &m_auiFragShaderIds[eSHADER_SIZE + i], pErrorStr, 0, c_aszAllDefines[i], c_uiNoOfDefines[i]) != PVR_SUCCESS)
+		if (PVRTShaderLoadFromFile(0, pDefFragShaderSrcFile[i], GL_FRAGMENT_SHADER, 0, &m_auiFragShaderIds[eSHADER_SIZE + i], pErrorStr,
+		                           0, c_aszAllDefines[i], c_uiNoOfDefines[i]) != PVR_SUCCESS)
 		{
 			return false;
 		}
@@ -781,19 +790,19 @@ bool OGLES3Water::LoadShaders(CPVRTString* pErrorStr)
 		Set up and link to water shader programs
 	*/
 
-	if(!LoadWaterShader(m_ReflectionOnlyShader, eREFLECTION_ONLY_SHADER, pErrorStr))
+	if (!LoadWaterShader(m_ReflectionOnlyShader, eREFLECTION_ONLY_SHADER, pErrorStr))
 	{
 		return false;
 	}
-	if(!LoadWaterShader(m_FullWaterShader, eSHADER_SIZE + eFULL_WATER_SHADER, pErrorStr))
+	if (!LoadWaterShader(m_FullWaterShader, eSHADER_SIZE + eFULL_WATER_SHADER, pErrorStr))
 	{
 		return false;
 	}
-	if(!LoadWaterShader(m_NoFresnelWaterShader, eSHADER_SIZE + eNO_FRESNEL_SHADER, pErrorStr))
+	if (!LoadWaterShader(m_NoFresnelWaterShader, eSHADER_SIZE + eNO_FRESNEL_SHADER, pErrorStr))
 	{
 		return false;
 	}
-	if(!LoadWaterShader(m_BumpReflectionWaterShader, eSHADER_SIZE + eBUMP_REFLECT_WATER_SHADER, pErrorStr))
+	if (!LoadWaterShader(m_BumpReflectionWaterShader, eSHADER_SIZE + eBUMP_REFLECT_WATER_SHADER, pErrorStr))
 	{
 		return false;
 	}
@@ -802,13 +811,14 @@ bool OGLES3Water::LoadShaders(CPVRTString* pErrorStr)
 		Set up and link the sky box shader program
 	*/
 	const char* aszSkyboxAttribs[] = { "inVertex"};
-	if (PVRTCreateProgram(&m_SkyboxShader.uiId, m_auiVertShaderIds[eSKYBOX_SHADER], m_auiFragShaderIds[eSKYBOX_SHADER], aszSkyboxAttribs, 1, pErrorStr))
+	if (PVRTCreateProgram(&m_SkyboxShader.uiId, m_auiVertShaderIds[eSKYBOX_SHADER], m_auiFragShaderIds[eSKYBOX_SHADER],
+	                      aszSkyboxAttribs, 1, pErrorStr))
 	{
 		PVRShellSet(prefExitMessage, pErrorStr->c_str());
 		return false;
 	}
 
-	glUniform1i(glGetUniformLocation(m_SkyboxShader.uiId, "CubeMap"),0);
+	glUniform1i(glGetUniformLocation(m_SkyboxShader.uiId, "CubeMap"), 0);
 
 	m_SkyboxShader.uiMVPMatrixLoc				= glGetUniformLocation(m_SkyboxShader.uiId, "MVPMatrix");
 	m_SkyboxShader.uiModelMatrixLoc				= glGetUniformLocation(m_SkyboxShader.uiId, "ModelMatrix");
@@ -820,23 +830,23 @@ bool OGLES3Water::LoadShaders(CPVRTString* pErrorStr)
 	/*
 		Set up and link to the model shader programs
 	*/
-	if(!LoadModelShader(m_ModelShader, eMODEL_SHADER, pErrorStr))
+	if (!LoadModelShader(m_ModelShader, eMODEL_SHADER, pErrorStr))
 	{
 		return false;
 	}
-	if(!LoadModelShader(m_FogModelShader, eSHADER_SIZE + eFOG_MODEL_SHADER, pErrorStr))
+	if (!LoadModelShader(m_FogModelShader, eSHADER_SIZE + eFOG_MODEL_SHADER, pErrorStr))
 	{
 		return false;
 	}
-	if(!LoadModelShader(m_LightModelShader, eSHADER_SIZE + eLIGHT_MODEL_SHADER, pErrorStr))
+	if (!LoadModelShader(m_LightModelShader, eSHADER_SIZE + eLIGHT_MODEL_SHADER, pErrorStr))
 	{
 		return false;
 	}
-	if(!LoadModelShader(m_SpecularModelShader, eSHADER_SIZE + eSPECULAR_MODEL_SHADER, pErrorStr))
+	if (!LoadModelShader(m_SpecularModelShader, eSHADER_SIZE + eSPECULAR_MODEL_SHADER, pErrorStr))
 	{
 		return false;
 	}
-	if(!LoadModelShader(m_PerturbedModelShader, eSHADER_SIZE + ePERTURB_MODEL_SHADER, pErrorStr))
+	if (!LoadModelShader(m_PerturbedModelShader, eSHADER_SIZE + ePERTURB_MODEL_SHADER, pErrorStr))
 	{
 		return false;
 	}
@@ -845,13 +855,14 @@ bool OGLES3Water::LoadShaders(CPVRTString* pErrorStr)
 		Set up and link to the Tex2D shader program
 	*/
 	const char* aszTex2DAttribs[] = { "inVertex", "inNormal", "inTexCoord"};
-	if (PVRTCreateProgram(&m_Tex2DShader.uiId, m_auiVertShaderIds[eTEX2D_SHADER], m_auiFragShaderIds[eTEX2D_SHADER], aszTex2DAttribs, 3, pErrorStr))
+	if (PVRTCreateProgram(&m_Tex2DShader.uiId, m_auiVertShaderIds[eTEX2D_SHADER], m_auiFragShaderIds[eTEX2D_SHADER], aszTex2DAttribs,
+	                      3, pErrorStr))
 	{
 		PVRShellSet(prefExitMessage, pErrorStr->c_str());
 		return false;
 	}
 
-	glUniform1i(glGetUniformLocation(m_Tex2DShader.uiId, "Texture"),0);
+	glUniform1i(glGetUniformLocation(m_Tex2DShader.uiId, "Texture"), 0);
 
 	m_Tex2DShader.uiMVPMatrixLoc					= glGetUniformLocation(m_Tex2DShader.uiId, "MVPMatrix");
 
@@ -859,13 +870,14 @@ bool OGLES3Water::LoadShaders(CPVRTString* pErrorStr)
 		Set up and link to plane texturing shader program
 	*/
 	const char* aszPlaneTexAttribs[] = { "inVertex"};
-	if (PVRTCreateProgram(&m_PlaneTexShader.uiId, m_auiVertShaderIds[ePLANE_TEX_SHADER], m_auiFragShaderIds[ePLANE_TEX_SHADER], aszPlaneTexAttribs, 1, pErrorStr))
+	if (PVRTCreateProgram(&m_PlaneTexShader.uiId, m_auiVertShaderIds[ePLANE_TEX_SHADER], m_auiFragShaderIds[ePLANE_TEX_SHADER],
+	                      aszPlaneTexAttribs, 1, pErrorStr))
 	{
 		PVRShellSet(prefExitMessage, pErrorStr->c_str());
 		return false;
 	}
 
-	glUniform1i(glGetUniformLocation(m_PlaneTexShader.uiId, "Texture"),0);
+	glUniform1i(glGetUniformLocation(m_PlaneTexShader.uiId, "Texture"), 0);
 
 	m_PlaneTexShader.uiMVPMatrixLoc					= glGetUniformLocation(m_PlaneTexShader.uiId, "MVPMatrix");
 	m_PlaneTexShader.uiRcpWindowSizeLoc				= glGetUniformLocation(m_PlaneTexShader.uiId, "RcpWindowSize");
@@ -881,14 +893,14 @@ bool OGLES3Water::LoadShaders(CPVRTString* pErrorStr)
 bool OGLES3Water::LoadVbos(CPVRTString* pErrorStr)
 {
 	// Load models into VBOs
-	if(!m_Mesh.pMesh[0].pInterleaved)
+	if (!m_Mesh.pMesh[0].pInterleaved)
 	{
 		*pErrorStr = "ERROR: The demo requires the pod data to be interleaved. Please re-export with the interleaved option enabled.";
 		return false;
 	}
 
-	if(!m_apuiModelVbo)		m_apuiModelVbo = new GLuint[m_Mesh.nNumMesh];
-	if(!m_apuiModelIndexVbo) m_apuiModelIndexVbo = new GLuint[m_Mesh.nNumMesh];
+	if (!m_apuiModelVbo)		{ m_apuiModelVbo = new GLuint[m_Mesh.nNumMesh]; }
+	if (!m_apuiModelIndexVbo) { m_apuiModelIndexVbo = new GLuint[m_Mesh.nNumMesh]; }
 
 	/*
 		Load vertex data of all meshes in the scene into VBOs
@@ -921,10 +933,10 @@ bool OGLES3Water::LoadVbos(CPVRTString* pErrorStr)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	// Skybox
-	glGenBuffers(1,&m_auiVBOIds[eSKYBOX_VBO]);
-	glBindBuffer(GL_ARRAY_BUFFER,m_auiVBOIds[eSKYBOX_VBO]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*3*24, m_SkyboxVertices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER,0);
+	glGenBuffers(1, &m_auiVBOIds[eSKYBOX_VBO]);
+	glBindBuffer(GL_ARRAY_BUFFER, m_auiVBOIds[eSKYBOX_VBO]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 3 * 24, m_SkyboxVertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return true;
 }
@@ -942,7 +954,7 @@ bool OGLES3Water::LoadVbos(CPVRTString* pErrorStr)
 bool OGLES3Water::InitApplication()
 {
 #ifdef DEBUG_MODE
-	PVRShellSet(prefSwapInterval,0);	// Disable v-sync for testing
+	PVRShellSet(prefSwapInterval, 0);	// Disable v-sync for testing
 	m_bPause = true;					// Pause initially as a benchmark reference point
 #else
 	m_bPause = false;					// NOTE: Should be set to false!
@@ -968,19 +980,19 @@ bool OGLES3Water::InitApplication()
 	m_uiFPS = 0;
 
 	// Load model
-	if(m_Mesh.ReadFromFile(c_aszModelFile) != PVR_SUCCESS)
+	if (m_Mesh.ReadFromFile(c_aszModelFile) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, "ERROR: Couldn't load the .pod file\n");
 		return false;
 	}
 
 	// Retrieve node indexes
-	for(int i = 0; i < eNODE_SIZE; ++i)
+	for (int i = 0; i < eNODE_SIZE; ++i)
 	{
-		for(int j = 0; j < m_Mesh.nNumNode; ++j)
+		for (int j = 0; j < m_Mesh.nNumNode; ++j)
 		{
 			SPODNode& node = m_Mesh.pNode[j];
-			if(strcmp(node.pszName, c_aszNodeNames[i]) == 0)
+			if (strcmp(node.pszName, c_aszNodeNames[i]) == 0)
 			{
 				m_NodeIndexName[j] = (ENodeNames)i;
 				m_NodeNameIndex[(ENodeNames)i] = j;
@@ -993,7 +1005,7 @@ bool OGLES3Water::InitApplication()
 	ResetVariables();
 
 	// Set animation variables
-	m_fFOV = 60.0f * (PVRT_PI/180.0f);
+	m_fFOV = 60.0f * (PVRT_PI / 180.0f);
 	m_fFrame = 0;
 
 	return true;
@@ -1018,7 +1030,7 @@ void OGLES3Water::ResetVariables()
 
 	// Set variables
 	m_vPlaneWater        = PVRTVec4(0.0f, 1.0f, 0.0f, 0.0f);
-	m_vWaterColour       = PVRTVec4(0.05f,0.15f,0.10f,1.0f);
+	m_vWaterColour       = PVRTVec4(0.05f, 0.15f, 0.10f, 1.0f);
 	m_vFogColour         = PVRTVec4(0.85f, 0.95f, 1.0f, 1.0f);
 	m_fWaterHeight       = 0.0f;
 	m_fMaxFogDepth       = 80.0f;
@@ -1030,12 +1042,12 @@ void OGLES3Water::ResetVariables()
 	m_fBoatSpeed         = 0.05f;
 
 	// Normal map values
-	m_vBumpVelocity0    = PVRTVec2(0.016f,-0.014f);
-	m_vBumpTranslation0 = PVRTVec3(0.0f,0.0f,0.0f);	// No translation should be applied
-	m_vBumpScale0       = PVRTVec2(0.0012f,0.0012f);
-	m_vBumpVelocity1    = PVRTVec2(0.025f,-0.03f);
-	m_vBumpTranslation1 = PVRTVec3(0.0f,0.0f,0.0f);	// No translation should be applied
-	m_vBumpScale1       = PVRTVec2(0.0005f,0.0005f);
+	m_vBumpVelocity0    = PVRTVec2(0.016f, -0.014f);
+	m_vBumpTranslation0 = PVRTVec3(0.0f, 0.0f, 0.0f);	// No translation should be applied
+	m_vBumpScale0       = PVRTVec2(0.0012f, 0.0012f);
+	m_vBumpVelocity1    = PVRTVec2(0.025f, -0.03f);
+	m_vBumpTranslation1 = PVRTVec3(0.0f, 0.0f, 0.0f);	// No translation should be applied
+	m_vBumpScale1       = PVRTVec2(0.0005f, 0.0005f);
 
 	m_bShaderRefraction    = true;
 	m_bShaderFogging       = true;
@@ -1058,7 +1070,7 @@ bool OGLES3Water::QuitApplication()
 	// Free the memory allocated for the scene
 	delete[] m_apuiModelVbo;
 	delete[] m_apuiModelIndexVbo;
-    return true;
+	return true;
 }
 
 /*!****************************************************************************
@@ -1074,10 +1086,10 @@ bool OGLES3Water::InitView()
 	CPVRTString ErrorStr;
 
 	// Calculate our FBO sizes based on the window dimensions
-	m_uiWaterTexSize = m_uiTexSize = PVRTGetPOTLower(PVRT_MIN(PVRShellGet(prefWidth),PVRShellGet(prefHeight)), 1);
+	m_uiWaterTexSize = m_uiTexSize = PVRTGetPOTLower(PVRT_MIN(PVRShellGet(prefWidth), PVRShellGet(prefHeight)), 1);
 
 	// Create the skybox
-	PVRTCreateSkybox( 1500.0f, true, 512, &m_SkyboxVertices, &m_SkyboxTexCoords);
+	PVRTCreateSkybox(1500.0f, true, 512, &m_SkyboxVertices, &m_SkyboxTexCoords);
 
 	/*
 		Load textures
@@ -1091,7 +1103,7 @@ bool OGLES3Water::InitView()
 	/*
 		Load in the vertex buffered objects
 	*/
-	if(!LoadVbos(&ErrorStr))
+	if (!LoadVbos(&ErrorStr))
 	{
 		PVRShellSet(prefExitMessage, ErrorStr.c_str());
 		return false;
@@ -1112,7 +1124,7 @@ bool OGLES3Water::InitView()
 	/*
 		Initialize Print3D
 	*/
-	if(m_Print3D.SetTextures(0,PVRShellGet(prefWidth),PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
+	if (m_Print3D.SetTextures(0, PVRShellGet(prefWidth), PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, "ERROR: Cannot initialise Print3D\n");
 		return false;
@@ -1138,12 +1150,12 @@ bool OGLES3Water::InitView()
 	glGenRenderbuffers(eFBO_SIZE, m_auiDepthBuffer);
 
 	// Reflection and refraction FBO
-	for(GLuint i = 0; i < eFBO_SIZE - 1; ++i)
+	for (GLuint i = 0; i < eFBO_SIZE - 1; ++i)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_auiFBOIds[i]);
 
 		// Attach the texture that the frame buffer will render to
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_auiRendToTexture[i],0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_auiRendToTexture[i], 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Create anda attach a depth buffer
@@ -1151,9 +1163,9 @@ bool OGLES3Water::InitView()
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, m_uiTexSize, m_uiTexSize);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_auiDepthBuffer[i]);
 
-		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		{
-			PVRShellSet(prefExitMessage,"ERROR: Frame buffer did not set up correctly\n");
+			PVRShellSet(prefExitMessage, "ERROR: Frame buffer did not set up correctly\n");
 			return false;
 		}
 	}
@@ -1162,7 +1174,7 @@ bool OGLES3Water::InitView()
 	glBindFramebuffer(GL_FRAMEBUFFER, m_auiFBOIds[eWATER_FBO]);
 
 	// Attach the texture that the frame buffer will render to
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_auiRendToTexture[eWATER_FBO],0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_auiRendToTexture[eWATER_FBO], 0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Create anda attach a depth buffer
@@ -1170,9 +1182,9 @@ bool OGLES3Water::InitView()
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, m_uiWaterTexSize, m_uiWaterTexSize);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_auiDepthBuffer[eWATER_FBO]);
 
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		PVRShellSet(prefExitMessage,"ERROR: Frame buffer did not set up correctly\n");
+		PVRShellSet(prefExitMessage, "ERROR: Frame buffer did not set up correctly\n");
 		return false;
 	}
 
@@ -1191,16 +1203,16 @@ bool OGLES3Water::InitView()
 bool OGLES3Water::ReleaseView()
 {
 	// Delete textures
-	glDeleteTextures(eTEX_NAME_SIZE,m_auiTextureIds);
+	glDeleteTextures(eTEX_NAME_SIZE, m_auiTextureIds);
 	glDeleteTextures(eFBO_SIZE, m_auiRendToTexture);
 
-	for(GLuint i = 0 ; i < m_Mesh.nNumMaterial ; ++i)
+	for (GLuint i = 0 ; i < m_Mesh.nNumMaterial ; ++i)
 	{
-		if(m_apuiModelTextureIds[i].uiDiffuse)
-			glDeleteTextures(1, &m_apuiModelTextureIds[i].uiDiffuse);
+		if (m_apuiModelTextureIds[i].uiDiffuse)
+		{ glDeleteTextures(1, &m_apuiModelTextureIds[i].uiDiffuse); }
 
-		if(m_apuiModelTextureIds[i].uiSpecular)
-			glDeleteTextures(1, &m_apuiModelTextureIds[i].uiSpecular);
+		if (m_apuiModelTextureIds[i].uiSpecular)
+		{ glDeleteTextures(1, &m_apuiModelTextureIds[i].uiSpecular); }
 	}
 
 	delete[] m_apuiModelTextureIds;
@@ -1219,7 +1231,7 @@ bool OGLES3Water::ReleaseView()
 	glDeleteProgram(m_LightModelShader.uiId);
 	glDeleteProgram(m_SpecularModelShader.uiId);
 	glDeleteProgram(m_PerturbedModelShader.uiId);
-	for(GLuint i = 0 ; i < eSHADER_SIZE + eDEFINE_SHADER_SIZE; ++i)
+	for (GLuint i = 0 ; i < eSHADER_SIZE + eDEFINE_SHADER_SIZE; ++i)
 	{
 		glDeleteShader(m_auiVertShaderIds[i]);
 		glDeleteShader(m_auiFragShaderIds[i]);
@@ -1236,7 +1248,7 @@ bool OGLES3Water::ReleaseView()
 	m_Print3D.ReleaseTextures();
 
 	// Destroy the Skybox
-	PVRTDestroySkybox( m_SkyboxVertices, m_SkyboxTexCoords);
+	PVRTDestroySkybox(m_SkyboxVertices, m_SkyboxTexCoords);
 
 	return true;
 }
@@ -1256,10 +1268,11 @@ bool OGLES3Water::RenderScene()
 	UpdateTimer();			// Update timer variables
 
 	// Set the scene animation
-	if(!m_bPause)
+	if (!m_bPause)
 	{
-		m_fFrame += ((GLfloat)((m_ulCurrentTime - m_ulPreviousTime) * c_fDemoFrameRate)) * m_fBoatSpeed;	// value is scaled by animation speed
-		if(m_fFrame > m_Mesh.nNumFrame - 1)
+		m_fFrame += ((GLfloat)((m_ulCurrentTime - m_ulPreviousTime) * c_fDemoFrameRate)) *
+		            m_fBoatSpeed;	// value is scaled by animation speed
+		if (m_fFrame > m_Mesh.nNumFrame - 1)
 		{
 			m_fFrame = 0;
 		}
@@ -1273,19 +1286,19 @@ bool OGLES3Water::RenderScene()
 
 	glCullFace(GL_BACK);
 
-	if(m_bShaderRefraction)
+	if (m_bShaderRefraction)
 	{
 		RenderRefractionTexture();	// Only perform the refraction render pass if it is needed
 	}
 
-	if(!m_bWaterAtScreenRes)
+	if (!m_bWaterAtScreenRes)
 	{
 		// Render water texture
-		if(m_bShaderRefraction && m_bShaderFresnel)
+		if (m_bShaderRefraction && m_bShaderFresnel)
 		{
 			RenderWaterTexture(m_FullWaterShader);
 		}
-		else if(m_bShaderRefraction)
+		else if (m_bShaderRefraction)
 		{
 			RenderWaterTexture(m_NoFresnelWaterShader);
 		}
@@ -1297,7 +1310,7 @@ bool OGLES3Water::RenderScene()
 
 	// Bind the main frame bufffer
 	glBindFramebuffer(GL_FRAMEBUFFER, m_iOriginalFBO);
-	glViewport(0,0, PVRShellGet(prefWidth), PVRShellGet(prefHeight));
+	glViewport(0, 0, PVRShellGet(prefWidth), PVRShellGet(prefHeight));
 	// Clear the color and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1313,13 +1326,13 @@ bool OGLES3Water::RenderScene()
 		The water can be rendered at the screen resolution,
 		or at a lower res to reduce the fragment processing workload
 	*/
-	if(m_bWaterAtScreenRes)
+	if (m_bWaterAtScreenRes)
 	{
-		if(m_bShaderRefraction && m_bShaderFresnel)
+		if (m_bShaderRefraction && m_bShaderFresnel)
 		{
 			DrawWater(m_FullWaterShader, PVRShellGet(prefWidth), PVRShellGet(prefHeight), m_vPlaneWater);
 		}
-		else if(m_bShaderRefraction)
+		else if (m_bShaderRefraction)
 		{
 			DrawWater(m_NoFresnelWaterShader, PVRShellGet(prefWidth), PVRShellGet(prefHeight), m_vPlaneWater);
 		}
@@ -1334,303 +1347,306 @@ bool OGLES3Water::RenderScene()
 	}
 
 #ifdef DEBUG_MODE
-	if(m_bDisplayDebugWindows)
+	if (m_bDisplayDebugWindows)
 	{
 		// Display reflection, refraction and water textures to debug windows
-		DrawTestQuad(m_auiRendToTexture[eREFLECTION_FBO],PVRTVec2(-1.0f,-0.8f));
-		DrawTestQuad(m_auiRendToTexture[eREFRACTION_FBO],PVRTVec2(-1.0f,-0.25f));
+		DrawTestQuad(m_auiRendToTexture[eREFLECTION_FBO], PVRTVec2(-1.0f, -0.8f));
+		DrawTestQuad(m_auiRendToTexture[eREFRACTION_FBO], PVRTVec2(-1.0f, -0.25f));
 		DrawTestQuad(m_auiRendToTexture[eWATER_FBO],	 PVRTVec2(-1.0f, 0.325f));
 	}
 #endif
 
 #ifdef ENABLE_UI
 	// UI keyboard input
-	if(PVRShellIsKeyPressed(PVRShellKeyNameRIGHT))
+	if (PVRShellIsKeyPressed(PVRShellKeyNameRIGHT))
 	{
-		if(++m_iCurrentUIOption >= (int)eUI_SIZE)
+		if (++m_iCurrentUIOption >= (int)eUI_SIZE)
 		{
 			m_iCurrentUIOption = 0;
 		}
 	}
-	if(PVRShellIsKeyPressed(PVRShellKeyNameLEFT))
+	if (PVRShellIsKeyPressed(PVRShellKeyNameLEFT))
 	{
-		if(--m_iCurrentUIOption < 0)
+		if (--m_iCurrentUIOption < 0)
 		{
 			m_iCurrentUIOption = eUI_SIZE - 1;
 		}
 	}
-	if(PVRShellIsKeyPressed(PVRShellKeyNameSELECT) || PVRShellIsKeyPressed(PVRShellKeyNameACTION1))
+	if (PVRShellIsKeyPressed(PVRShellKeyNameSELECT) || PVRShellIsKeyPressed(PVRShellKeyNameACTION1))
 	{
 		m_bPause = !m_bPause;
 	}
 
 	// UI options
-	switch(m_iCurrentUIOption)
+	switch (m_iCurrentUIOption)
 	{
-		case eUI_NULL: break;
-		case eTOGGLE_REFRACTION:
-			{
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP) || PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-				{
-					m_bShaderRefraction = !m_bShaderRefraction;
-				}
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Toggle refraction : %1i", m_bShaderRefraction);
-				break;
-			}
-		case eTOGGLE_FRESNEL:
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP) || PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-				{
-					m_bShaderFresnel = !m_bShaderFresnel;
-				}
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Toggle Fresnel : %1i", m_bShaderFresnel);
-				break;
-		case eTOGGLE_FOG:
-			{
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP) || PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-				{
-					m_bShaderFogging = !m_bShaderFogging;
-				}
+	case eUI_NULL: break;
+	case eTOGGLE_REFRACTION:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP) || PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_bShaderRefraction = !m_bShaderRefraction;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Toggle refraction : %1i", m_bShaderRefraction);
+		break;
+	}
+	case eTOGGLE_FRESNEL:
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP) || PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_bShaderFresnel = !m_bShaderFresnel;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Toggle Fresnel : %1i", m_bShaderFresnel);
+		break;
+	case eTOGGLE_FOG:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP) || PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_bShaderFogging = !m_bShaderFogging;
+		}
 
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Toggle depth fogging : %1i", m_bShaderFogging);
-				break;
-			}
-		case eFOG_DEPTH:
-			{
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-				{
-					m_fMaxFogDepth += 1.0f;
-				}
-				else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN) && (m_fMaxFogDepth > 0))
-				{
-					m_fMaxFogDepth -= 1.0f;
-				}
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Fog depth : %4.2f", m_fMaxFogDepth);
-				break;
-			}
-		case eWAVE_DISTORTION:
-			{
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-				{
-					m_fWaveDistortion += 1.0f;
-				}
-				else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN)&& (m_fWaveDistortion - 0.01f >= 0.0f))
-				{
-					m_fWaveDistortion -= 1.0f;
-				}
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Wave distortion : %4.2f", m_fWaveDistortion);
-				break;
-			}
-		case eARTEFACT_FIX:
-			{
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-				{
-					m_fWaterArtefactFix += 0.1f;
-				}
-				else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN)&& (m_fWaterArtefactFix - 0.1f >= 0.0f))
-				{
-					m_fWaterArtefactFix -= 0.1f;
-				}
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Water's edge artifact fix : %4.2f", m_fWaterArtefactFix);
-				break;
-			}
-		case eRENDER_WATER_SCREEN_RES:
-			{
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP) || PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-				{
-					m_bWaterAtScreenRes = !m_bWaterAtScreenRes;
-				}
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Water rendered at screen resolution : %1i", m_bWaterAtScreenRes);
-				break;
-			}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Toggle depth fogging : %1i", m_bShaderFogging);
+		break;
+	}
+	case eFOG_DEPTH:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_fMaxFogDepth += 1.0f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN) && (m_fMaxFogDepth > 0))
+		{
+			m_fMaxFogDepth -= 1.0f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Fog depth : %4.2f", m_fMaxFogDepth);
+		break;
+	}
+	case eWAVE_DISTORTION:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_fWaveDistortion += 1.0f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN) && (m_fWaveDistortion - 0.01f >= 0.0f))
+		{
+			m_fWaveDistortion -= 1.0f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Wave distortion : %4.2f", m_fWaveDistortion);
+		break;
+	}
+	case eARTEFACT_FIX:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_fWaterArtefactFix += 0.1f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN) && (m_fWaterArtefactFix - 0.1f >= 0.0f))
+		{
+			m_fWaterArtefactFix -= 0.1f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Water's edge artifact fix : %4.2f", m_fWaterArtefactFix);
+		break;
+	}
+	case eRENDER_WATER_SCREEN_RES:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP) || PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_bWaterAtScreenRes = !m_bWaterAtScreenRes;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Water rendered at screen resolution : %1i", m_bWaterAtScreenRes);
+		break;
+	}
 
-	#ifdef DEBUG_MODE
-		#ifdef FREE_CAMERA_MODE
-			case eMOVE_X:
-				{
-					if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-					{
-						m_vEyePos.x += 1.0f;
-						m_vLookAt.x += 1.0f;
-					}
-					else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-					{
-						m_vEyePos.x -= 1.0f;
-						m_vLookAt.x -= 1.0f;
-					}
-					m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "MOVE: Camera x-axis : %4.2f \nLook at x-axis : %4.2f", m_vEyePos.x, m_vLookAt.x);
-					break;
-				}
-			case eMOVE_Y:
-				{
-					if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-					{
-						m_vEyePos.y += 1.0f;
-						m_vLookAt.y += 1.0f;
-					}
-					else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-					{
-						m_vEyePos.y -= 1.0f;
-						m_vLookAt.y -= 1.0f;
-					}
-					m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "MOVE: Camera y-axis : %4.2f \nLook at y-axis : %4.2f", m_vEyePos.y, m_vLookAt.y);
-					break;
-				}
-			case eMOVE_Z:
-				{
-					if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-					{
-						m_vEyePos.z += 1.0f;
-						m_vLookAt.z += 1.0f;
-					}
-					else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-					{
-						m_vEyePos.z -= 1.0f;
-						m_vLookAt.z -= 1.0f;
-					}
-					m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "MOVE: Camera z-axis : %4.2f \nLook at z-axis : %4.2f", m_vEyePos.z, m_vLookAt.z);
-					break;
-				}
-			case eCAMERA_X:
-				{
-					if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-					{
-						m_vEyePos.x += 1.0f;
-					}
-					else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-					{
-						m_vEyePos.x -= 1.0f;
-					}
-					m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Camera x-axis : %4.2f", m_vEyePos.x);
-					break;
-				}
-			case eCAMERA_Y:
-				{
-					if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-					{
-						m_vEyePos.y += 1.0f;
-					}
-					else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-					{
-						m_vEyePos.y -= 1.0f;
-					}
-					m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Camera y-axis : %4.2f", m_vEyePos.y);
-					break;
-				}
-			case eCAMERA_Z:
-				{
-					if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-					{
-						m_vEyePos.z += 1.0f;
-					}
-					else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-					{
-						m_vEyePos.z -= 1.0f;
-					}
-					m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Camera z-axis : %4.2f", m_vEyePos.z);
-					break;
-				}
-			case eLOOK_AT_X:
-				{
-					if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-					{
-						m_vLookAt.x += 1.0f;
-					}
-					else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-					{
-						m_vLookAt.x -= 1.0f;
-					}
-					m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Look at x-axis : %4.2f", m_vLookAt.x);
-					break;
-				}
-			case eLOOK_AT_Y:
-				{
-					if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-					{
-						m_vLookAt.y += 1.0f;
-					}
-					else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-					{
-						m_vLookAt.y -= 1.0f;
-					}
-					m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Look at y-axis : %4.2f", m_vLookAt.y);
-					break;
-				}
-			case eLOOK_AT_Z:
-				{
-					if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-					{
-						m_vLookAt.z += 1.0f;
-					}
-					else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-					{
-						m_vLookAt.z -= 1.0f;
-					}
-					m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Look at z-axis : %4.2f", m_vLookAt.z);
-					break;
-				}
-		#endif
-		case eWATER_HEIGHT:
-			{
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
-				{
-					m_vPlaneWater.w -= 0.2f;
-				}
-				else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-				{
-					m_vPlaneWater.w += 0.2f;
-				}
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Water height : %4.2f", -m_vPlaneWater.w); // Negate to represent in world space
-				break;
-			}
-		case eWATER_COLOUR_R:
-			{
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP) && (m_vWaterColour.x + 0.05f <= 1.0f))
-				{
-					m_vWaterColour.x += 0.05f;
-				}
-				else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN)&& (m_vWaterColour.x - 0.05f > 0.0f))
-				{
-					m_vWaterColour.x -= 0.05f;
-				}
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Water colour red : %4.2f", m_vWaterColour.x);
-				break;
-			}
-		case eWATER_COLOUR_G:
-			{
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP) && (m_vWaterColour.x + 0.05f <= 1.0f))
-				{
-					m_vWaterColour.y += 0.05f;
-				}
-				else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN)&& (m_vWaterColour.x - 0.05f > 0.0f))
-				{
-					m_vWaterColour.y -= 0.05f;
-				}
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Water colour green : %4.2f", m_vWaterColour.y);
-				break;
-			}
-		case eWATER_COLOUR_B:
-			{
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP) && (m_vWaterColour.x + 0.05f <= 1.0f))
-				{
-					m_vWaterColour.z += 0.05f;
-				}
-				else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN)&& (m_vWaterColour.x - 0.05f > 0.0f))
-				{
-					m_vWaterColour.z -= 0.05f;
-				}
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Water colour blue : %4.2f", m_vWaterColour.z);
-				break;
-			}
-		case eTOGGLE_DEBUG_WINDOWS:
-			{
-				if (PVRShellIsKeyPressed(PVRShellKeyNameUP) || PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-				{
-					m_bDisplayDebugWindows = !m_bDisplayDebugWindows;
-				}
-				m_Print3D.Print3D(2.0f,90.0f,0.75f, 0xffffffff, "Toggle debug windows : %1i", m_bDisplayDebugWindows);
-				break;
-			}
-	#endif
+#ifdef DEBUG_MODE
+#ifdef FREE_CAMERA_MODE
+	case eMOVE_X:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_vEyePos.x += 1.0f;
+			m_vLookAt.x += 1.0f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_vEyePos.x -= 1.0f;
+			m_vLookAt.x -= 1.0f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "MOVE: Camera x-axis : %4.2f \nLook at x-axis : %4.2f", m_vEyePos.x,
+		                  m_vLookAt.x);
+		break;
+	}
+	case eMOVE_Y:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_vEyePos.y += 1.0f;
+			m_vLookAt.y += 1.0f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_vEyePos.y -= 1.0f;
+			m_vLookAt.y -= 1.0f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "MOVE: Camera y-axis : %4.2f \nLook at y-axis : %4.2f", m_vEyePos.y,
+		                  m_vLookAt.y);
+		break;
+	}
+	case eMOVE_Z:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_vEyePos.z += 1.0f;
+			m_vLookAt.z += 1.0f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_vEyePos.z -= 1.0f;
+			m_vLookAt.z -= 1.0f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "MOVE: Camera z-axis : %4.2f \nLook at z-axis : %4.2f", m_vEyePos.z,
+		                  m_vLookAt.z);
+		break;
+	}
+	case eCAMERA_X:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_vEyePos.x += 1.0f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_vEyePos.x -= 1.0f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Camera x-axis : %4.2f", m_vEyePos.x);
+		break;
+	}
+	case eCAMERA_Y:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_vEyePos.y += 1.0f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_vEyePos.y -= 1.0f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Camera y-axis : %4.2f", m_vEyePos.y);
+		break;
+	}
+	case eCAMERA_Z:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_vEyePos.z += 1.0f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_vEyePos.z -= 1.0f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Camera z-axis : %4.2f", m_vEyePos.z);
+		break;
+	}
+	case eLOOK_AT_X:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_vLookAt.x += 1.0f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_vLookAt.x -= 1.0f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Look at x-axis : %4.2f", m_vLookAt.x);
+		break;
+	}
+	case eLOOK_AT_Y:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_vLookAt.y += 1.0f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_vLookAt.y -= 1.0f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Look at y-axis : %4.2f", m_vLookAt.y);
+		break;
+	}
+	case eLOOK_AT_Z:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_vLookAt.z += 1.0f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_vLookAt.z -= 1.0f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Look at z-axis : %4.2f", m_vLookAt.z);
+		break;
+	}
+#endif
+	case eWATER_HEIGHT:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
+		{
+			m_vPlaneWater.w -= 0.2f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_vPlaneWater.w += 0.2f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Water height : %4.2f", -m_vPlaneWater.w); // Negate to represent in world space
+		break;
+	}
+	case eWATER_COLOUR_R:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP) && (m_vWaterColour.x + 0.05f <= 1.0f))
+		{
+			m_vWaterColour.x += 0.05f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN) && (m_vWaterColour.x - 0.05f > 0.0f))
+		{
+			m_vWaterColour.x -= 0.05f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Water colour red : %4.2f", m_vWaterColour.x);
+		break;
+	}
+	case eWATER_COLOUR_G:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP) && (m_vWaterColour.x + 0.05f <= 1.0f))
+		{
+			m_vWaterColour.y += 0.05f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN) && (m_vWaterColour.x - 0.05f > 0.0f))
+		{
+			m_vWaterColour.y -= 0.05f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Water colour green : %4.2f", m_vWaterColour.y);
+		break;
+	}
+	case eWATER_COLOUR_B:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP) && (m_vWaterColour.x + 0.05f <= 1.0f))
+		{
+			m_vWaterColour.z += 0.05f;
+		}
+		else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN) && (m_vWaterColour.x - 0.05f > 0.0f))
+		{
+			m_vWaterColour.z -= 0.05f;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Water colour blue : %4.2f", m_vWaterColour.z);
+		break;
+	}
+	case eTOGGLE_DEBUG_WINDOWS:
+	{
+		if (PVRShellIsKeyPressed(PVRShellKeyNameUP) || PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+		{
+			m_bDisplayDebugWindows = !m_bDisplayDebugWindows;
+		}
+		m_Print3D.Print3D(2.0f, 90.0f, 0.75f, 0xffffffff, "Toggle debug windows : %1i", m_bDisplayDebugWindows);
+		break;
+	}
+#endif
 	}
 #endif
 
@@ -1656,9 +1672,10 @@ bool OGLES3Water::RenderScene()
 ******************************************************************************/
 void OGLES3Water::RenderReflectionTexture()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, m_auiFBOIds[eREFLECTION_FBO]);	// Bind a frame buffer that has a texture attached (stores the render in a texture)
-	glViewport(0,0, m_uiTexSize, m_uiTexSize);							// Set the viewport to the texture size
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glBindFramebuffer(GL_FRAMEBUFFER,
+	                  m_auiFBOIds[eREFLECTION_FBO]);	// Bind a frame buffer that has a texture attached (stores the render in a texture)
+	glViewport(0, 0, m_uiTexSize, m_uiTexSize);							// Set the viewport to the texture size
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	SetView();
 	SetProjection(m_fFOV);
 
@@ -1671,7 +1688,7 @@ void OGLES3Water::RenderReflectionTexture()
 
 	m_mView = m_mView * mMirrorCam;
 
-	ModifyProjectionForClipping(m_vPlaneWater + PVRTVec4(0.0f,0.0f,0.0f,m_fWaterArtefactFix));
+	ModifyProjectionForClipping(m_vPlaneWater + PVRTVec4(0.0f, 0.0f, 0.0f, m_fWaterArtefactFix));
 
 	DrawScene();
 
@@ -1689,19 +1706,20 @@ void OGLES3Water::RenderReflectionTexture()
 ******************************************************************************/
 void OGLES3Water::RenderRefractionTexture()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, m_auiFBOIds[eREFRACTION_FBO]);	// Bind a frame buffer that has a texture and depth texture attached (stores the render in a texture)
-	glViewport(0,0, m_uiTexSize, m_uiTexSize);
+	glBindFramebuffer(GL_FRAMEBUFFER,
+	                  m_auiFBOIds[eREFRACTION_FBO]);	// Bind a frame buffer that has a texture and depth texture attached (stores the render in a texture)
+	glViewport(0, 0, m_uiTexSize, m_uiTexSize);
 	// Use the water colour for clearing
 	glClearColor(m_vWaterColour.x, m_vWaterColour.y, m_vWaterColour.z, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	SetView();
 	SetProjection(m_fFOV);
 
-	PVRTVec4 vPlaneView = PVRTVec4( -m_vPlaneWater.x, -m_vPlaneWater.y, -m_vPlaneWater.z, -m_vPlaneWater.w + m_fWaterArtefactFix);
+	PVRTVec4 vPlaneView = PVRTVec4(-m_vPlaneWater.x, -m_vPlaneWater.y, -m_vPlaneWater.z, -m_vPlaneWater.w + m_fWaterArtefactFix);
 	ModifyProjectionForClipping(vPlaneView);
 
 	// Allow fogging to be toggled by the user
-	if(m_bShaderFogging)
+	if (m_bShaderFogging)
 	{
 		DrawRefractionScene();
 	}
@@ -1725,8 +1743,8 @@ void OGLES3Water::RenderRefractionTexture()
 void OGLES3Water::RenderWaterTexture(const WaterShader& shaderProgram)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_auiFBOIds[eWATER_FBO]);
-	glViewport(0,0, m_uiWaterTexSize, m_uiWaterTexSize);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, m_uiWaterTexSize, m_uiWaterTexSize);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	SetView();
 	SetProjection(m_fFOV);
 
@@ -1750,15 +1768,15 @@ void OGLES3Water::DrawScene()
 		const ModelShader* pShaderProgram = NULL;
 		switch (m_NodeIndexName[i])
 		{
-			case eNODE_COINS:
-				pShaderProgram = &m_SpecularModelShader;
-				break;
-			case eNODE_SHIPFLAG:
-				pShaderProgram = &m_PerturbedModelShader;
-				break;
-			default:
-				pShaderProgram = &m_LightModelShader;
-				break;
+		case eNODE_COINS:
+			pShaderProgram = &m_SpecularModelShader;
+			break;
+		case eNODE_SHIPFLAG:
+			pShaderProgram = &m_PerturbedModelShader;
+			break;
+		default:
+			pShaderProgram = &m_LightModelShader;
+			break;
 		}
 
 		DrawMesh(i, *pShaderProgram);
@@ -1782,12 +1800,12 @@ void OGLES3Water::DrawRefractionScene()
 		const ModelShader* pShaderProgram = NULL;
 		switch (m_NodeIndexName[i])
 		{
-			case eNODE_COINS:
-			    pShaderProgram = &m_SpecularModelShader;  // Override the incoming shader.
-			    break;
-			default:
-			    pShaderProgram = &m_FogModelShader;
-			    break;
+		case eNODE_COINS:
+			pShaderProgram = &m_SpecularModelShader;  // Override the incoming shader.
+			break;
+		default:
+			pShaderProgram = &m_FogModelShader;
+			break;
 		}
 		DrawMesh(i, *pShaderProgram);
 	}
@@ -1809,7 +1827,7 @@ void OGLES3Water::DrawMesh(int i32NodeIndex, const ModelShader& shaderProgram)
 
 	// Load the correct texture using the texture lookup table
 	GLuint uiDiffuseTex = 0, uiSpecularTex = 0;
-	if(node.nIdxMaterial != -1)
+	if (node.nIdxMaterial != -1)
 	{
 		uiDiffuseTex  = m_apuiModelTextureIds[node.nIdxMaterial].uiDiffuse;
 		uiSpecularTex = m_apuiModelTextureIds[node.nIdxMaterial].uiSpecular;
@@ -1818,7 +1836,7 @@ void OGLES3Water::DrawMesh(int i32NodeIndex, const ModelShader& shaderProgram)
 	glBindTexture(GL_TEXTURE_2D, uiDiffuseTex);
 
 	// Activate the specular map unit
-	if(uiSpecularTex)
+	if (uiSpecularTex)
 	{
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, uiSpecularTex);
@@ -1836,19 +1854,20 @@ void OGLES3Water::DrawMesh(int i32NodeIndex, const ModelShader& shaderProgram)
 	PVRTMat4 mModel(m_Mesh.GetWorldMatrix(node));
 
 	PVRTMat4 mModelView(m_mView * mModel);
-	glUniformMatrix4fv(shaderProgram.uiModelMatrixLoc,1, GL_FALSE, mModel.ptr());
+	glUniformMatrix4fv(shaderProgram.uiModelMatrixLoc, 1, GL_FALSE, mModel.ptr());
 
 	// Set eye position in world space
 	glUniform3fv(shaderProgram.uiEyePosLoc, 1, &m_vEyePos.x);
 
 	PVRTMat4 mMVP(m_mProjection * mModelView);
-	glUniformMatrix4fv(shaderProgram.uiMVPMatrixLoc,1, GL_FALSE, mMVP.ptr());
+	glUniformMatrix4fv(shaderProgram.uiMVPMatrixLoc, 1, GL_FALSE, mMVP.ptr());
 
 	glUniform3fv(shaderProgram.uiLightDirectionLoc, 1, &m_vLightDirection.x);
 
-	glUniform1f(shaderProgram.uiWaterHeightLoc, -m_vPlaneWater.w);		// Negate the scale to represent the water's distance along the y-axis in world coordinates
-	glUniform3fv(shaderProgram.uiFogColourLoc,1, &m_vWaterColour.x);	// Only requires the rgb values of colour
-	glUniform1f(shaderProgram.uiMaxFogDepthLoc, 1.0f/m_fMaxFogDepth);	// Invert fog depth to avoid division in fragment shader
+	glUniform1f(shaderProgram.uiWaterHeightLoc,
+	            -m_vPlaneWater.w);		// Negate the scale to represent the water's distance along the y-axis in world coordinates
+	glUniform3fv(shaderProgram.uiFogColourLoc, 1, &m_vWaterColour.x);	// Only requires the rgb values of colour
+	glUniform1f(shaderProgram.uiMaxFogDepthLoc, 1.0f / m_fMaxFogDepth);	// Invert fog depth to avoid division in fragment shader
 	glUniform1f(shaderProgram.uiTimeLoc, m_fElapsedTimeInSecs * m_fWindSpeed);
 
 	// Colours
@@ -1879,35 +1898,35 @@ void OGLES3Water::DrawMesh(int i32NodeIndex, const ModelShader& shaderProgram)
 		- Indexed Triangle strips
 		- Non-Indexed Triangle strips
 	*/
-	if(pMesh->nNumStrips == 0)
+	if (pMesh->nNumStrips == 0)
 	{
-		if(m_apuiModelIndexVbo[i32MeshIndex])
+		if (m_apuiModelIndexVbo[i32MeshIndex])
 		{
 			// Indexed Triangle list
-			glDrawElements(GL_TRIANGLES, pMesh->nNumFaces*3, GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, pMesh->nNumFaces * 3, GL_UNSIGNED_SHORT, 0);
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			glDrawArrays(GL_TRIANGLES, 0, pMesh->nNumFaces*3);
+			glDrawArrays(GL_TRIANGLES, 0, pMesh->nNumFaces * 3);
 		}
 	}
 	else
 	{
-		for(int i = 0; i < (int)pMesh->nNumStrips; ++i)
+		for (int i = 0; i < (int)pMesh->nNumStrips; ++i)
 		{
 			int offset = 0;
-			if(m_apuiModelIndexVbo[i32MeshIndex])
+			if (m_apuiModelIndexVbo[i32MeshIndex])
 			{
 				// Indexed Triangle strips
-				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i]+2, GL_UNSIGNED_SHORT, (GLshort*)(offset*2));
+				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i] + 2, GL_UNSIGNED_SHORT, (GLshort*)(size_t)(offset * 2));
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				glDrawArrays(GL_TRIANGLE_STRIP, offset, pMesh->pnStripLength[i]+2);
+				glDrawArrays(GL_TRIANGLE_STRIP, offset, pMesh->pnStripLength[i] + 2);
 			}
-			offset += pMesh->pnStripLength[i]+2;
+			offset += pMesh->pnStripLength[i] + 2;
 		}
 	}
 
@@ -1933,7 +1952,8 @@ void OGLES3Water::DrawInfinitePlane(const PVRTVec4& vPlane, float fFarDistance)
 	mTmp = mTmp.inverseEx();
 
 	// Calculate the water plane
-	m_i32WaterPlaneNo = PVRTMiscCalculateInfinitePlane(&m_pvPlaneWater->x, sizeof(*m_pvPlaneWater), &vPlane, &mTmp, &m_vEyePos, fFarDistance);
+	m_i32WaterPlaneNo = PVRTMiscCalculateInfinitePlane(&m_pvPlaneWater->x, sizeof(*m_pvPlaneWater), &vPlane, &mTmp, &m_vEyePos,
+	                    fFarDistance);
 
 	glDisable(GL_CULL_FACE);
 
@@ -1941,7 +1961,7 @@ void OGLES3Water::DrawInfinitePlane(const PVRTVec4& vPlane, float fFarDistance)
 	glEnableVertexAttribArray(VERTEX_ARRAY);
 
 	// Draw water
-	if(m_i32WaterPlaneNo)
+	if (m_i32WaterPlaneNo)
 	{
 		// Set the vertex attribute offsets
 		glVertexAttribPointer(VERTEX_ARRAY, 3, GL_FLOAT, GL_FALSE, 0, &m_pvPlaneWater->x);
@@ -1965,7 +1985,8 @@ void OGLES3Water::DrawInfinitePlane(const PVRTVec4& vPlane, float fFarDistance)
  @Input			fFarDistance		The far clip plane distance
  @Description	Draws the water
 ******************************************************************************/
-void OGLES3Water::DrawWater(const WaterShader& shaderProgram, GLuint uiViewPortWidth, GLuint uiViewPortHeight, const PVRTVec4& vPlane, float fFarDistance)
+void OGLES3Water::DrawWater(const WaterShader& shaderProgram, GLuint uiViewPortWidth, GLuint uiViewPortHeight,
+                            const PVRTVec4& vPlane, float fFarDistance)
 {
 	// Use shader program
 	glUseProgram(shaderProgram.uiId);
@@ -1996,30 +2017,30 @@ void OGLES3Water::DrawWater(const WaterShader& shaderProgram, GLuint uiViewPortW
 	/*
 		Set the remaining shader parameters
 	*/
-	glUniform4fv(shaderProgram.uiWaterColourLoc,1, &m_vWaterColour.x);
+	glUniform4fv(shaderProgram.uiWaterColourLoc, 1, &m_vWaterColour.x);
 
-	if(!m_bPause)
+	if (!m_bPause)
 	{
 		m_vBumpTranslation0 += m_vBumpVelocity0 * m_fDeltaTime;
-		m_vBumpTranslation0 = PVRTVec2(	fmod(m_vBumpTranslation0.x, 1.0f),
-										fmod(m_vBumpTranslation0.y, 1.0f));
+		m_vBumpTranslation0 = PVRTVec2(fmod(m_vBumpTranslation0.x, 1.0f),
+		                               fmod(m_vBumpTranslation0.y, 1.0f));
 		m_vBumpTranslation1 += m_vBumpVelocity1 * m_fDeltaTime;
-		m_vBumpTranslation1 = PVRTVec2(	fmod(m_vBumpTranslation1.x, 1.0f),
-										fmod(m_vBumpTranslation1.y, 1.0f));
+		m_vBumpTranslation1 = PVRTVec2(fmod(m_vBumpTranslation1.x, 1.0f),
+		                               fmod(m_vBumpTranslation1.y, 1.0f));
 	}
 
-	glUniform2fv(shaderProgram.uiBumpTranslation0Loc,1, &m_vBumpTranslation0.x);
-	glUniform2fv(shaderProgram.uiBumpScale0Loc,1, &m_vBumpScale0.x);
-	glUniform2fv(shaderProgram.uiBumpTranslation0Loc,1, &m_vBumpTranslation1.x);
-	glUniform2fv(shaderProgram.uiBumpScale1Loc,1, &m_vBumpScale1.x);
+	glUniform2fv(shaderProgram.uiBumpTranslation0Loc, 1, &m_vBumpTranslation0.x);
+	glUniform2fv(shaderProgram.uiBumpScale0Loc, 1, &m_vBumpScale0.x);
+	glUniform2fv(shaderProgram.uiBumpTranslation0Loc, 1, &m_vBumpTranslation1.x);
+	glUniform2fv(shaderProgram.uiBumpScale1Loc, 1, &m_vBumpScale1.x);
 	glUniform1f(shaderProgram.uiWaveDistortionLoc, m_fWaveDistortion);
-	glUniform1f(shaderProgram.uiRcpMaxFogDepthLoc, 1.0f/m_fMaxFogHeight);
+	glUniform1f(shaderProgram.uiRcpMaxFogDepthLoc, 1.0f / m_fMaxFogHeight);
 	glUniform4fv(shaderProgram.uiFogColourLoc, 1, &m_vFogColour.x);
 
-	m_vRcpWindowSize.x = 1.0f/uiViewPortWidth;
-	m_vRcpWindowSize.y = 1.0f/uiViewPortHeight;
+	m_vRcpWindowSize.x = 1.0f / uiViewPortWidth;
+	m_vRcpWindowSize.y = 1.0f / uiViewPortHeight;
 
-	glUniform2fv(shaderProgram.uiRcpWindowSizeLoc,1, &m_vRcpWindowSize.x);
+	glUniform2fv(shaderProgram.uiRcpWindowSizeLoc, 1, &m_vRcpWindowSize.x);
 
 	DrawInfinitePlane(vPlane, fFarDistance);
 }
@@ -2043,10 +2064,10 @@ void OGLES3Water::DrawWaterFromTexture(float fFarDistance)
 	PVRTMat4 mMVP(m_mProjection * mModelView);
 	glUniformMatrix4fv(m_PlaneTexShader.uiMVPMatrixLoc, 1, GL_FALSE, mMVP.ptr());
 
-	m_vRcpWindowSize.x = 1.0f/PVRShellGet(prefWidth);
-	m_vRcpWindowSize.y = 1.0f/PVRShellGet(prefHeight);
+	m_vRcpWindowSize.x = 1.0f / PVRShellGet(prefWidth);
+	m_vRcpWindowSize.y = 1.0f / PVRShellGet(prefHeight);
 
-	glUniform2fv(m_PlaneTexShader.uiRcpWindowSizeLoc,1, &m_vRcpWindowSize.x);
+	glUniform2fv(m_PlaneTexShader.uiRcpWindowSizeLoc, 1, &m_vRcpWindowSize.x);
 
 	DrawInfinitePlane(m_vPlaneWater, fFarDistance);
 }
@@ -2060,7 +2081,7 @@ void OGLES3Water::DrawWaterFromTexture(float fFarDistance)
  @Description	Draws the skybox
 ******************************************************************************/
 void OGLES3Water::DrawSkybox(GLuint uiCubeMapHandle, const SkyboxShader& shaderProgram, GLuint uiVboId,
-							 const PVRTVec3& vTranslation)
+                             const PVRTVec3& vTranslation)
 {
 	// Use shader program
 	glUseProgram(shaderProgram.uiId);
@@ -2071,7 +2092,7 @@ void OGLES3Water::DrawSkybox(GLuint uiCubeMapHandle, const SkyboxShader& shaderP
 
 	// Rotate and Translate the model matrix (if required)
 	PVRTMat4 mModel(PVRTMat4::Identity());
-	mModel *= mModel.Translation(vTranslation.x,vTranslation.y,vTranslation.z);
+	mModel *= mModel.Translation(vTranslation.x, vTranslation.y, vTranslation.z);
 	glUniformMatrix4fv(shaderProgram.uiModelMatrixLoc, 1, GL_FALSE, mModel.ptr());
 
 	// Set model view projection matrix
@@ -2085,21 +2106,22 @@ void OGLES3Water::DrawSkybox(GLuint uiCubeMapHandle, const SkyboxShader& shaderP
 
 	glUniform1f(shaderProgram.uiWaterHeightLoc, -m_vPlaneWater.w);		// Negate the scale to represent it in world sapce
 	glUniform4fv(shaderProgram.uiFogColourLoc, 1, &m_vFogColour.x);	// Only requires the rgb values of colour
-	glUniform1f(shaderProgram.uiMaxFogDepthLoc, 1.0f/(m_fMaxFogHeight/5.0f));	// Invert fog depth to save division in fragment shader. Compress the height.
+	glUniform1f(shaderProgram.uiMaxFogDepthLoc,
+	            1.0f / (m_fMaxFogHeight / 5.0f));	// Invert fog depth to save division in fragment shader. Compress the height.
 
 	glDisable(GL_CULL_FACE);
 
 	// bind the VBO for the mesh
 	glBindBuffer(GL_ARRAY_BUFFER, m_auiVBOIds[uiVboId]);
-	glVertexAttribPointer(VERTEX_ARRAY, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*3, NULL);
+	glVertexAttribPointer(VERTEX_ARRAY, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, NULL);
 
 	// Enable the vertex attribute arrays
 	glEnableVertexAttribArray(VERTEX_ARRAY);
 
-	for(int i = 0; i < 6; ++i)
+	for (int i = 0; i < 6; ++i)
 	{
 		// Draw primitive
-		glDrawArrays(GL_TRIANGLE_STRIP, i*4, 4);
+		glDrawArrays(GL_TRIANGLE_STRIP, i * 4, 4);
 	}
 
 	// Safely disable the vertex attribute arrays
@@ -2118,11 +2140,11 @@ void OGLES3Water::DrawSkybox(GLuint uiCubeMapHandle, const SkyboxShader& shaderP
  @Description	Draws a small quad to the screen where textures like reflection etc
 				can be drawn for debugging purposes
 ******************************************************************************/
-void OGLES3Water::DrawTestQuad(GLuint uiTextureHandle, const PVRTVec2 &vBottomLeftPosition)
+void OGLES3Water::DrawTestQuad(GLuint uiTextureHandle, const PVRTVec2& vBottomLeftPosition)
 {
 	// Check the ortho values!
 	bool bRotate = PVRShellGet(prefIsRotated) && PVRShellGet(prefFullScreen);
-	m_mProjection = PVRTMat4::Ortho(-1,1,1,-1,0,1,PVRTMat4::OGL, bRotate);
+	m_mProjection = PVRTMat4::Ortho(-1, 1, 1, -1, 0, 1, PVRTMat4::OGL, bRotate);
 
 	PVRTVec4 vVertices[4];
 	PVRTVec2 vTexCoords[4];
@@ -2134,10 +2156,10 @@ void OGLES3Water::DrawTestQuad(GLuint uiTextureHandle, const PVRTVec2 &vBottomLe
 	vVertices[2] = PVRTVec4(vBottomLeftPosition.x + fQuadSize,	vBottomLeftPosition.y,				0, 1);
 	vVertices[3] = PVRTVec4(vBottomLeftPosition.x + fQuadSize,	vBottomLeftPosition.y + fQuadSize,	0, 1);
 
-	vTexCoords[0] = PVRTVec2(0,1);
-	vTexCoords[1] = PVRTVec2(0,0);
-	vTexCoords[2] = PVRTVec2(1,0);
-	vTexCoords[3] = PVRTVec2(1,1);
+	vTexCoords[0] = PVRTVec2(0, 1);
+	vTexCoords[1] = PVRTVec2(0, 0);
+	vTexCoords[2] = PVRTVec2(1, 0);
+	vTexCoords[3] = PVRTVec2(1, 1);
 
 	// Use shader program
 	glUseProgram(m_Tex2DShader.uiId);
@@ -2178,7 +2200,7 @@ void OGLES3Water::SetProjection(const float fFOV, const float fFarClip)
 {
 	bool bRotate = PVRShellGet(prefIsRotated) && PVRShellGet(prefFullScreen);
 
-	const float fAspect = (float)PVRShellGet(prefWidth)/(float)PVRShellGet(prefHeight);
+	const float fAspect = (float)PVRShellGet(prefWidth) / (float)PVRShellGet(prefHeight);
 
 	m_mProjection = PVRTMat4::PerspectiveFovRH(fFOV, fAspect, CAM_NEAR, fFarClip, PVRTMat4::OGL, bRotate);
 }
@@ -2195,7 +2217,7 @@ void OGLES3Water::SetView()
 	int i32CamID = m_Mesh.pNode[m_Mesh.nNumMeshNode + m_Mesh.nNumLight + c_uiCamera].nIdx;
 
 	// Get the camera position, target and field of view
-	if(m_Mesh.pCamera[i32CamID].nIdxTarget != -1)
+	if (m_Mesh.pCamera[i32CamID].nIdxTarget != -1)
 	{
 		m_fFOV = m_Mesh.GetCameraPos(m_vEyePos, m_vLookAt, c_uiCamera);			// vLookAt is taken from the target node
 	}
@@ -2216,7 +2238,7 @@ void OGLES3Water::SetView()
 				the projection matrix to be used to perform clipping -
 				See section 3.1 of the corresponding white paper for more information
 ******************************************************************************/
-void OGLES3Water::ModifyProjectionForClipping(const PVRTVec4 &vClipPlane)
+void OGLES3Water::ModifyProjectionForClipping(const PVRTVec4& vClipPlane)
 {
 	PVRTVec4 vClipPlaneView(vClipPlane * m_mView.inverseEx());	// put clip plane into view coords
 	/*
@@ -2224,7 +2246,7 @@ void OGLES3Water::ModifyProjectionForClipping(const PVRTVec4 &vClipPlane)
 		and transform it into camera space by multiplying it by the inverse
 		projection matrix.
 	*/
-	PVRTVec4 vClipSpaceCorner(sgn(vClipPlaneView.x),sgn(vClipPlaneView.y),1.0f,1.0f);
+	PVRTVec4 vClipSpaceCorner(sgn(vClipPlaneView.x), sgn(vClipPlaneView.y), 1.0f, 1.0f);
 	vClipSpaceCorner *= m_mProjection.inverseEx();
 
 	// Calculate the scaled plane vector
@@ -2255,29 +2277,29 @@ bool OGLES3Water::GenerateNormalisationCubeMap(int uiTextureSize)
 {
 	// variables
 	float fOffset = 0.5f;
-	float fHalfSize = uiTextureSize *0.5f;
+	float fHalfSize = uiTextureSize * 0.5f;
 	PVRTVec3 vTemp;
 	unsigned char* pByte;
-	unsigned char* pData = new unsigned char[uiTextureSize*uiTextureSize*3];
-    if(!pData)
-    {
-        PVRShellOutputDebug("Unable to allocate memory for texture data for cube map\n");
-        return false;
-    }
+	unsigned char* pData = new unsigned char[uiTextureSize * uiTextureSize * 3];
+	if (!pData)
+	{
+		PVRShellOutputDebug("Unable to allocate memory for texture data for cube map\n");
+		return false;
+	}
 
 	// Positive X
 	pByte = pData;
 
-	for(int j = 0; j < uiTextureSize; ++j)
+	for (int j = 0; j < uiTextureSize; ++j)
 	{
-		for(int i = 0; i < uiTextureSize; ++i)
+		for (int i = 0; i < uiTextureSize; ++i)
 		{
 			vTemp.x = fHalfSize;
 			vTemp.y = -(j + fOffset - fHalfSize);
 			vTemp.z = -(i + fOffset - fHalfSize);
 
 			// normalize, pack 0 to 1 here, and normalize again
-			vTemp = vTemp.normalize() *0.5 + 0.5;
+			vTemp = vTemp.normalize() * 0.5 + 0.5;
 
 			pByte[0] = (unsigned char)(vTemp.x * 255);
 			pByte[1] = (unsigned char)(vTemp.y * 255);
@@ -2286,14 +2308,15 @@ bool OGLES3Water::GenerateNormalisationCubeMap(int uiTextureSize)
 			pByte += 3;
 		}
 	}
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE,
+	             pData);
 
 	// Negative X
 	pByte = pData;
 
-	for(int j = 0; j < uiTextureSize; ++j)
+	for (int j = 0; j < uiTextureSize; ++j)
 	{
-		for(int i = 0; i < uiTextureSize; ++i)
+		for (int i = 0; i < uiTextureSize; ++i)
 		{
 			vTemp.x = -fHalfSize;
 			vTemp.y = -(j + fOffset - fHalfSize);
@@ -2301,7 +2324,7 @@ bool OGLES3Water::GenerateNormalisationCubeMap(int uiTextureSize)
 
 
 			// normalize, pack 0 to 1 here, and normalize again
-			vTemp = vTemp.normalize() *0.5 + 0.5;
+			vTemp = vTemp.normalize() * 0.5 + 0.5;
 
 			pByte[0] = (unsigned char)(vTemp.x * 255);
 			pByte[1] = (unsigned char)(vTemp.y * 255);
@@ -2310,21 +2333,22 @@ bool OGLES3Water::GenerateNormalisationCubeMap(int uiTextureSize)
 			pByte += 3;
 		}
 	}
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE,
+	             pData);
 
 	// Positive Y
 	pByte = pData;
 
-	for(int j = 0; j < uiTextureSize; ++j)
+	for (int j = 0; j < uiTextureSize; ++j)
 	{
-		for(int i = 0; i < uiTextureSize; ++i)
+		for (int i = 0; i < uiTextureSize; ++i)
 		{
 			vTemp.x = i + fOffset - fHalfSize;
 			vTemp.y = fHalfSize;
 			vTemp.z = j + fOffset - fHalfSize;
 
 			// normalize, pack 0 to 1 here, and normalize again
-			vTemp = vTemp.normalize() *0.5 + 0.5;
+			vTemp = vTemp.normalize() * 0.5 + 0.5;
 
 			pByte[0] = (unsigned char)(vTemp.x * 255);
 			pByte[1] = (unsigned char)(vTemp.y * 255);
@@ -2333,21 +2357,22 @@ bool OGLES3Water::GenerateNormalisationCubeMap(int uiTextureSize)
 			pByte += 3;
 		}
 	}
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE,
+	             pData);
 
 	// Negative Y
 	pByte = pData;
 
-	for(int j = 0; j < uiTextureSize; ++j)
+	for (int j = 0; j < uiTextureSize; ++j)
 	{
-		for(int i = 0; i < uiTextureSize; ++i)
+		for (int i = 0; i < uiTextureSize; ++i)
 		{
 			vTemp.x = i + fOffset - fHalfSize;
 			vTemp.y = -fHalfSize;
 			vTemp.z = -(j + fOffset - fHalfSize);
 
 			// normalize, pack 0 to 1 here, and normalize again
-			vTemp = vTemp.normalize() *0.5 + 0.5;
+			vTemp = vTemp.normalize() * 0.5 + 0.5;
 
 			pByte[0] = (unsigned char)(vTemp.x * 255);
 			pByte[1] = (unsigned char)(vTemp.y * 255);
@@ -2356,21 +2381,22 @@ bool OGLES3Water::GenerateNormalisationCubeMap(int uiTextureSize)
 			pByte += 3;
 		}
 	}
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE,
+	             pData);
 
 	// Positive Z
 	pByte = pData;
 
-	for(int j = 0; j < uiTextureSize; ++j)
+	for (int j = 0; j < uiTextureSize; ++j)
 	{
-		for(int i = 0; i < uiTextureSize; ++i)
+		for (int i = 0; i < uiTextureSize; ++i)
 		{
 			vTemp.x = i + fOffset - fHalfSize;
 			vTemp.y = -(j + fOffset - fHalfSize);
 			vTemp.z = fHalfSize;
 
 			// normalize, pack 0 to 1 here, and normalize again
-			vTemp = vTemp.normalize() *0.5 + 0.5;
+			vTemp = vTemp.normalize() * 0.5 + 0.5;
 
 			pByte[0] = (unsigned char)(vTemp.x * 255);
 			pByte[1] = (unsigned char)(vTemp.y * 255);
@@ -2379,21 +2405,22 @@ bool OGLES3Water::GenerateNormalisationCubeMap(int uiTextureSize)
 			pByte += 3;
 		}
 	}
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE,
+	             pData);
 
 	// Negative Z
 	pByte = pData;
 
-	for(int j = 0; j < uiTextureSize; ++j)
+	for (int j = 0; j < uiTextureSize; ++j)
 	{
-		for(int i = 0; i < uiTextureSize; ++i)
+		for (int i = 0; i < uiTextureSize; ++i)
 		{
 			vTemp.x = -(i + fOffset - fHalfSize);
 			vTemp.y = -(j + fOffset - fHalfSize);
 			vTemp.z = -fHalfSize;
 
 			// normalize, pack 0 to 1 here, and normalize again
-			vTemp = vTemp.normalize() *0.5 + 0.5;
+			vTemp = vTemp.normalize() * 0.5 + 0.5;
 
 			pByte[0] = (unsigned char)(vTemp.x * 255);
 			pByte[1] = (unsigned char)(vTemp.y * 255);
@@ -2402,7 +2429,8 @@ bool OGLES3Water::GenerateNormalisationCubeMap(int uiTextureSize)
 			pByte += 3;
 		}
 	}
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE, pData);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB /*GL_RGBA8*/, uiTextureSize, uiTextureSize, 0, GL_RGB, GL_UNSIGNED_BYTE,
+	             pData);
 
 
 	delete[] pData;
@@ -2424,11 +2452,11 @@ void OGLES3Water::UpdateTimer()
 	m_ulCurrentTime = PVRShellGetTime();
 
 	m_fElapsedTimeInSecs = m_ulCurrentTime * 0.001f;
-	m_fDeltaTime = ((float)(m_ulCurrentTime - m_ulPreviousTime))*0.001f;
+	m_fDeltaTime = ((float)(m_ulCurrentTime - m_ulPreviousTime)) * 0.001f;
 
 	m_fCount += m_fDeltaTime;
 
-	if(m_fCount >= 1.0f)			// Update FPS once a second
+	if (m_fCount >= 1.0f)			// Update FPS once a second
 	{
 		m_uiFPS = m_uiFrameCount;
 		m_uiFrameCount = 0;

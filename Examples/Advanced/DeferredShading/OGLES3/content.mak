@@ -43,22 +43,22 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/effect.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/effect.cpp: $(CONTENTDIR) ./effect.pfx
 	$(FILEWRAP)  -s  -o $@ ./effect.pfx
 
-$(CONTENTDIR)/scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/scene.cpp: $(CONTENTDIR) ./scene.pod
 	$(FILEWRAP)  -o $@ ./scene.pod
 
-$(CONTENTDIR)/pointlight.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/pointlight.cpp: $(CONTENTDIR) ./pointlight.pod
 	$(FILEWRAP)  -o $@ ./pointlight.pod
 
-$(CONTENTDIR)/light_cubemap.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/light_cubemap.cpp: $(CONTENTDIR) ./light_cubemap.pvr
 	$(FILEWRAP)  -o $@ ./light_cubemap.pvr
 
-$(CONTENTDIR)/mask_texture.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/mask_texture.cpp: $(CONTENTDIR) ./mask_texture.pvr
 	$(FILEWRAP)  -o $@ ./mask_texture.pvr
 
-$(CONTENTDIR)/mask_bump.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/mask_bump.cpp: $(CONTENTDIR) ./mask_bump.pvr
 	$(FILEWRAP)  -o $@ ./mask_bump.pvr
 
 ############################################################################

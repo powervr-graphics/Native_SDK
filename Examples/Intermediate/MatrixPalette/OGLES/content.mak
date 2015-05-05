@@ -39,10 +39,10 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/model.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/model.cpp: $(CONTENTDIR) ./model.pod
 	$(FILEWRAP)  -o $@ ./model.pod
 
-$(CONTENTDIR)/Mallet.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Mallet.cpp: $(CONTENTDIR) ./Mallet.pvr
 	$(FILEWRAP)  -o $@ ./Mallet.pvr
 
 ############################################################################

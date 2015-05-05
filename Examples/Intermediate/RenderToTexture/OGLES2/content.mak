@@ -41,18 +41,18 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./FragShader.fsc
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./VertShader.vsc
 
-$(CONTENTDIR)/RenderToTexture.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/RenderToTexture.cpp: $(CONTENTDIR) ./RenderToTexture.pod
 	$(FILEWRAP)  -o $@ ./RenderToTexture.pod
 
-$(CONTENTDIR)/YellowWood.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/YellowWood.cpp: $(CONTENTDIR) ./YellowWood.pvr
 	$(FILEWRAP)  -o $@ ./YellowWood.pvr
 
 ############################################################################

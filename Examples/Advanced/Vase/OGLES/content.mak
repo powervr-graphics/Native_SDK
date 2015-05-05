@@ -41,16 +41,16 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Flora.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Flora.cpp: $(CONTENTDIR) ./Flora.pvr
 	$(FILEWRAP)  -o $@ ./Flora.pvr
 
-$(CONTENTDIR)/Backgrnd.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Backgrnd.cpp: $(CONTENTDIR) ./Backgrnd.pvr
 	$(FILEWRAP)  -o $@ ./Backgrnd.pvr
 
-$(CONTENTDIR)/Reflection.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Reflection.cpp: $(CONTENTDIR) ./Reflection.pvr
 	$(FILEWRAP)  -o $@ ./Reflection.pvr
 
-$(CONTENTDIR)/Vase.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Vase.cpp: $(CONTENTDIR) ./Vase.pod
 	$(FILEWRAP)  -o $@ ./Vase.pod
 
 ############################################################################

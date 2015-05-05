@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/EvilSkull/OGLES/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module oglestools
+include $(CLEAR_VARS)
+LOCAL_MODULE := oglestools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES/Build/Android/obj/local/$(TARGET_ARCH_ABI)/liboglestools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLESEvilSkull
 include $(CLEAR_VARS)
@@ -41,34 +44,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/EvilSkull.pod \
-	$(ASSETDIR)/Iris.pvr \
-	$(ASSETDIR)/Metal.pvr \
-	$(ASSETDIR)/Fire02.pvr \
-	$(ASSETDIR)/Fire03.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/Iris.pvr: $(PVRSDKDIR)/Examples/Advanced/EvilSkull/OGLES/Iris.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Metal.pvr: $(PVRSDKDIR)/Examples/Advanced/EvilSkull/OGLES/Metal.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Fire02.pvr: $(PVRSDKDIR)/Examples/Advanced/EvilSkull/OGLES/Fire02.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Fire03.pvr: $(PVRSDKDIR)/Examples/Advanced/EvilSkull/OGLES/Fire03.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/EvilSkull.pod: $(PVRSDKDIR)/Examples/Advanced/EvilSkull/OGLES/EvilSkull.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-

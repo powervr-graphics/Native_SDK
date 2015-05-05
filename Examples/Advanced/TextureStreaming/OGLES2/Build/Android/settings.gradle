@@ -1,0 +1,3 @@
+rootProject.name='OGLES2TextureStreaming'
+include('CameraInterface')
+project(':CameraInterface').projectDir=file('../../../../../../Tools/CameraInterface/Android/Build')

@@ -64,7 +64,7 @@ var searchData=
   ['spvrttargetpair',['SPVRTTargetPair',['../struct_s_p_v_r_t_target_pair.html',1,'']]],
   ['stangents',['sTangents',['../struct_s_p_o_d_mesh.html#a411c2e02de81e618150d8004a77750c6',1,'SPODMesh']]],
   ['stride',['stride',['../class_c_p_v_r_tgles_ext.html#a240521e8ac5a91c4a91eb90c876d1259',1,'CPVRTglesExt::stride()'],['../class_c_p_v_r_tgles_ext.html#a240521e8ac5a91c4a91eb90c876d1259',1,'CPVRTglesExt::stride()'],['../class_c_p_v_r_tgles_ext.html#af1d0894683af5fa10e460a1ba28d6939',1,'CPVRTglesExt::stride()']]],
-  ['string',['string',['../class_c_p_v_r_tgles_ext.html#ab3e1ee5831f5e8bdc658635adb1872b1',1,'CPVRTglesExt::string()'],['../class_c_p_v_r_t_string_hash.html#ab3b3b774c1cd426c81f0fe26d44a5246',1,'CPVRTStringHash::String()']]],
+  ['string',['String',['../class_c_p_v_r_t_string_hash.html#ab3b3b774c1cd426c81f0fe26d44a5246',1,'CPVRTStringHash::String()'],['../class_c_p_v_r_tgles_ext.html#ab3e1ee5831f5e8bdc658635adb1872b1',1,'CPVRTglesExt::string()']]],
   ['substitute',['substitute',['../class_c_p_v_r_t_string.html#afaca43fa31548dcae05b2cba65406379',1,'CPVRTString::substitute(char _src, char _subDes, bool _all=true)'],['../class_c_p_v_r_t_string.html#ab6b191f6e48bb43af236460389fb3375',1,'CPVRTString::substitute(const char *_src, const char *_subDes, bool _all=true)']]],
   ['substr',['substr',['../class_c_p_v_r_t_string.html#a626210697c8a0b65b9245693c5f21d15',1,'CPVRTString']]],
   ['svaluename',['sValueName',['../struct_s_p_v_r_t_p_f_x_uniform.html#a9a06b0bca0b8a4ccf07aee21bbbc8d5c',1,'SPVRTPFXUniform']]],

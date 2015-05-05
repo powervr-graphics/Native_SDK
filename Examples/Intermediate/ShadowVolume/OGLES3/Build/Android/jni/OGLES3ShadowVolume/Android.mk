@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Intermediate/ShadowVolume/OGLES3/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles3tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles3tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES3/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles3tools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLES3ShadowVolume
 include $(CLEAR_VARS)
@@ -42,47 +45,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/scene.pod \
-	$(ASSETDIR)/Background.pvr \
-	$(ASSETDIR)/Rust.pvr \
-	$(ASSETDIR)/BaseFragShader.fsh \
-	$(ASSETDIR)/BaseVertShader.vsh \
-	$(ASSETDIR)/ConstFragShader.fsh \
-	$(ASSETDIR)/ShadowVolVertShader.vsh \
-	$(ASSETDIR)/FullscreenVertShader.vsh
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/Background.pvr: $(PVRSDKDIR)/Examples/Intermediate/ShadowVolume/OGLES3/Background.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Rust.pvr: $(PVRSDKDIR)/Examples/Intermediate/ShadowVolume/OGLES3/Rust.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/BaseFragShader.fsh: $(PVRSDKDIR)/Examples/Intermediate/ShadowVolume/OGLES3/BaseFragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/BaseVertShader.vsh: $(PVRSDKDIR)/Examples/Intermediate/ShadowVolume/OGLES3/BaseVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/ConstFragShader.fsh: $(PVRSDKDIR)/Examples/Intermediate/ShadowVolume/OGLES3/ConstFragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/ShadowVolVertShader.vsh: $(PVRSDKDIR)/Examples/Intermediate/ShadowVolume/OGLES3/ShadowVolVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/FullscreenVertShader.vsh: $(PVRSDKDIR)/Examples/Intermediate/ShadowVolume/OGLES3/FullscreenVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/scene.pod: $(PVRSDKDIR)/Examples/Intermediate/ShadowVolume/OGLES3/scene.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-
-

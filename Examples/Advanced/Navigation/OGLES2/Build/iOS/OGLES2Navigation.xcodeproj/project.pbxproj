@@ -25,38 +25,38 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F820EB7D351BF9B2DCB03064 /* OGLES2Navigation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8662024551649F9F3C7E67A /* OGLES2Navigation.cpp */; };
+		F820EB7D351BF9B2DCB03064 /* OGLES2Navigation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F846099BB6557110DF07F3B8 /* OGLES2Navigation.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F86C60508704F3D1C5C0A4DA /* cameratrack.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8A57BEFB1BBCA5594F387A5 /* cameratrack.pod */; };
-		F882BF40B39769FA9062B9D0 /* Landmark_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8870E8EE9F928D657BFBB2D /* Landmark_meshes.nav */; };
-		F8EE4E5B0727C6CAD41E5EA4 /* LandUseA_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F811E70089EDA0B24124FB05 /* LandUseA_meshes.nav */; };
-		F853CA70D6A75D7950A22211 /* LandUseB_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F800825DB063F513CA19E88B /* LandUseB_meshes.nav */; };
-		F820535678154BBDC9E7AF96 /* MajHwys_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8562084F73D3D86261F6EF2 /* MajHwys_meshes.nav */; };
-		F864FA71D68C9A2692AABAB8 /* MajHwyShield_text.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8B5DA5AF1E56273190947B1 /* MajHwyShield_text.nav */; };
-		F864EB27CFECB932775A0553 /* RailRds_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8952FB57C4060E5F7B4831D /* RailRds_meshes.nav */; };
-		F8325D62E75A29FCAEC541F3 /* SecHwys_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8A8C2691EF4F503782D9756 /* SecHwys_meshes.nav */; };
-		F8C728A340C16A994E69C520 /* SecHwyShield_text.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8FF7CA610F33BF02580DF73 /* SecHwyShield_text.nav */; };
-		F83BBDE7BCE43500BD3060A7 /* Signs_billboards.nav in Resources */ = {isa = PBXBuildFile; fileRef = F80F8E463EB64ABEDB5C8E55 /* Signs_billboards.nav */; };
-		F87B5D7C69318E2FFE0B8734 /* Streets_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F855D3AB11F6EC7140F694D3 /* Streets_meshes.nav */; };
-		F8D228360D2D68D109DB2199 /* Streets_text.nav in Resources */ = {isa = PBXBuildFile; fileRef = F84441226519F2CFBE7CB949 /* Streets_text.nav */; };
-		F845768680986648D6E0C932 /* WaterPoly_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8323C5616B7372A158B5E41 /* WaterPoly_meshes.nav */; };
-		F8368E4B2AAD715FA94839A3 /* WaterSeg_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8DEF0C915D398119CF0FFD8 /* WaterSeg_meshes.nav */; };
-		F820BB95C591AB1FF9424531 /* StreetSigns.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F899642BB0A9A83458571210 /* StreetSigns.pvr */; };
-		F810D3282DDF6468FD4EE4A5 /* Alphabet.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8890D0EFEA4816C9C0D79E7 /* Alphabet.pvr */; };
-		F8F0856D2FC13B3AECDE6952 /* Road.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8305CF069BBE353673B2570 /* Road.pvr */; };
-		F8BEE47D0C3E443D7399CEB1 /* AlphaMaskFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8EE564F1D32BE973577D897 /* AlphaMaskFragShader.fsh */; };
-		F885103BFE48D35F1E80A214 /* AntiAliasedLinesFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8CD7DC7C413517D359E4CE9 /* AntiAliasedLinesFragShader.fsh */; };
-		F892E400C821A7ACEC1070F6 /* AntiAliasedLinesVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F89135D39173B55693699CD0 /* AntiAliasedLinesVertShader.vsh */; };
-		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F895137C16F9AE9B63DD3558 /* FragShader.fsh */; };
-		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */; };
-		F86B71E37E086B108BB5E4C6 /* PivotQuadFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F86653811C4758611D8AC9A6 /* PivotQuadFragShader.fsh */; };
-		F839674DFA4751DCDF646E46 /* PivotQuadMaskedFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F86AE205BE73AD23C2A3397A /* PivotQuadMaskedFragShader.fsh */; };
-		F89A834C1A4A1596BE2014D6 /* PivotQuadVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F84C00C7460B48E699B312EF /* PivotQuadVertShader.vsh */; };
+		F86C60508704F3D1C5C0A4DA /* cameratrack.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8DEE3668124FCB791B91358 /* cameratrack.pod */; };
+		F882BF40B39769FA9062B9D0 /* Landmark_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8B15CEDF6130B9CB3D7F6FC /* Landmark_meshes.nav */; };
+		F8EE4E5B0727C6CAD41E5EA4 /* LandUseA_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8F9B959915ED8780067D3E1 /* LandUseA_meshes.nav */; };
+		F853CA70D6A75D7950A22211 /* LandUseB_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8E2651F91782D1541DF06B9 /* LandUseB_meshes.nav */; };
+		F820535678154BBDC9E7AF96 /* MajHwys_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F862EEC552043AA1DDBBEBE2 /* MajHwys_meshes.nav */; };
+		F864FA71D68C9A2692AABAB8 /* MajHwyShield_text.nav in Resources */ = {isa = PBXBuildFile; fileRef = F88585AD92FD976E79130DB8 /* MajHwyShield_text.nav */; };
+		F864EB27CFECB932775A0553 /* RailRds_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8AAC130D2A0C3D55604A4E1 /* RailRds_meshes.nav */; };
+		F8325D62E75A29FCAEC541F3 /* SecHwys_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F878B58D65E5DF3F5CE17501 /* SecHwys_meshes.nav */; };
+		F8C728A340C16A994E69C520 /* SecHwyShield_text.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8F9A8DEB9B51BBA306FD4E0 /* SecHwyShield_text.nav */; };
+		F83BBDE7BCE43500BD3060A7 /* Signs_billboards.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8C722F451A0179FB37696F3 /* Signs_billboards.nav */; };
+		F87B5D7C69318E2FFE0B8734 /* Streets_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8FE474EA5E4A3E9B13D7F8F /* Streets_meshes.nav */; };
+		F8D228360D2D68D109DB2199 /* Streets_text.nav in Resources */ = {isa = PBXBuildFile; fileRef = F81C9256757DC7B298945A27 /* Streets_text.nav */; };
+		F845768680986648D6E0C932 /* WaterPoly_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F828FFB11F07490D2196B852 /* WaterPoly_meshes.nav */; };
+		F8368E4B2AAD715FA94839A3 /* WaterSeg_meshes.nav in Resources */ = {isa = PBXBuildFile; fileRef = F8EECB2B69296F7B6C2762F6 /* WaterSeg_meshes.nav */; };
+		F820BB95C591AB1FF9424531 /* StreetSigns.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F88D48AFA35401497B02559B /* StreetSigns.pvr */; };
+		F810D3282DDF6468FD4EE4A5 /* Alphabet.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8178C89954EA58AF78F59AE /* Alphabet.pvr */; };
+		F8F0856D2FC13B3AECDE6952 /* Road.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81A110A2FDE0878B7B1D559 /* Road.pvr */; };
+		F8BEE47D0C3E443D7399CEB1 /* AlphaMaskFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F898EF43560556BB36139593 /* AlphaMaskFragShader.fsh */; };
+		F885103BFE48D35F1E80A214 /* AntiAliasedLinesFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8C225170F0FCFCE8D867C6A /* AntiAliasedLinesFragShader.fsh */; };
+		F892E400C821A7ACEC1070F6 /* AntiAliasedLinesVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F851EDD75F7EDD7AB449FDAC /* AntiAliasedLinesVertShader.vsh */; };
+		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */; };
+		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81AE783867359F7612A30AC /* VertShader.vsh */; };
+		F86B71E37E086B108BB5E4C6 /* PivotQuadFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F89B9A37971F516C9A88C4D2 /* PivotQuadFragShader.fsh */; };
+		F839674DFA4751DCDF646E46 /* PivotQuadMaskedFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F87822277E9CA852B430F997 /* PivotQuadMaskedFragShader.fsh */; };
+		F89A834C1A4A1596BE2014D6 /* PivotQuadVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BB0BC887C12EEFB24B20EB /* PivotQuadVertShader.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -131,7 +131,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F8662024551649F9F3C7E67A /* OGLES2Navigation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES2Navigation.cpp; path = ../../OGLES2Navigation.cpp; sourceTree = SOURCE_ROOT; };
+		F846099BB6557110DF07F3B8 /* OGLES2Navigation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES2Navigation.cpp; path = ../../OGLES2Navigation.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -144,31 +144,31 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F8A57BEFB1BBCA5594F387A5 /* cameratrack.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = cameratrack.pod; path = ../../../Data/cameratrack.pod; sourceTree = SOURCE_ROOT; };
-		F8870E8EE9F928D657BFBB2D /* Landmark_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Landmark_meshes.nav; path = ../../../Data/Landmark_meshes.nav; sourceTree = SOURCE_ROOT; };
-		F811E70089EDA0B24124FB05 /* LandUseA_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = LandUseA_meshes.nav; path = ../../../Data/LandUseA_meshes.nav; sourceTree = SOURCE_ROOT; };
-		F800825DB063F513CA19E88B /* LandUseB_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = LandUseB_meshes.nav; path = ../../../Data/LandUseB_meshes.nav; sourceTree = SOURCE_ROOT; };
-		F8562084F73D3D86261F6EF2 /* MajHwys_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = MajHwys_meshes.nav; path = ../../../Data/MajHwys_meshes.nav; sourceTree = SOURCE_ROOT; };
-		F8B5DA5AF1E56273190947B1 /* MajHwyShield_text.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = MajHwyShield_text.nav; path = ../../../Data/MajHwyShield_text.nav; sourceTree = SOURCE_ROOT; };
-		F8952FB57C4060E5F7B4831D /* RailRds_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = RailRds_meshes.nav; path = ../../../Data/RailRds_meshes.nav; sourceTree = SOURCE_ROOT; };
-		F8A8C2691EF4F503782D9756 /* SecHwys_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = SecHwys_meshes.nav; path = ../../../Data/SecHwys_meshes.nav; sourceTree = SOURCE_ROOT; };
-		F8FF7CA610F33BF02580DF73 /* SecHwyShield_text.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = SecHwyShield_text.nav; path = ../../../Data/SecHwyShield_text.nav; sourceTree = SOURCE_ROOT; };
-		F80F8E463EB64ABEDB5C8E55 /* Signs_billboards.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Signs_billboards.nav; path = ../../../Data/Signs_billboards.nav; sourceTree = SOURCE_ROOT; };
-		F855D3AB11F6EC7140F694D3 /* Streets_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Streets_meshes.nav; path = ../../../Data/Streets_meshes.nav; sourceTree = SOURCE_ROOT; };
-		F84441226519F2CFBE7CB949 /* Streets_text.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Streets_text.nav; path = ../../../Data/Streets_text.nav; sourceTree = SOURCE_ROOT; };
-		F8323C5616B7372A158B5E41 /* WaterPoly_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = WaterPoly_meshes.nav; path = ../../../Data/WaterPoly_meshes.nav; sourceTree = SOURCE_ROOT; };
-		F8DEF0C915D398119CF0FFD8 /* WaterSeg_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = WaterSeg_meshes.nav; path = ../../../Data/WaterSeg_meshes.nav; sourceTree = SOURCE_ROOT; };
-		F899642BB0A9A83458571210 /* StreetSigns.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = StreetSigns.pvr; path = ../../StreetSigns.pvr; sourceTree = SOURCE_ROOT; };
-		F8890D0EFEA4816C9C0D79E7 /* Alphabet.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Alphabet.pvr; path = ../../../Data/Alphabet.pvr; sourceTree = SOURCE_ROOT; };
-		F8305CF069BBE353673B2570 /* Road.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Road.pvr; path = ../../../Data/Road.pvr; sourceTree = SOURCE_ROOT; };
-		F8EE564F1D32BE973577D897 /* AlphaMaskFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = AlphaMaskFragShader.fsh; path = ../../AlphaMaskFragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F8CD7DC7C413517D359E4CE9 /* AntiAliasedLinesFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = AntiAliasedLinesFragShader.fsh; path = ../../AntiAliasedLinesFragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F89135D39173B55693699CD0 /* AntiAliasedLinesVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = AntiAliasedLinesVertShader.vsh; path = ../../AntiAliasedLinesVertShader.vsh; sourceTree = SOURCE_ROOT; };
-		F895137C16F9AE9B63DD3558 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
-		F86653811C4758611D8AC9A6 /* PivotQuadFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PivotQuadFragShader.fsh; path = ../../PivotQuadFragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F86AE205BE73AD23C2A3397A /* PivotQuadMaskedFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PivotQuadMaskedFragShader.fsh; path = ../../PivotQuadMaskedFragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F84C00C7460B48E699B312EF /* PivotQuadVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PivotQuadVertShader.vsh; path = ../../PivotQuadVertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F8DEE3668124FCB791B91358 /* cameratrack.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = cameratrack.pod; path = ../../../Data/cameratrack.pod; sourceTree = SOURCE_ROOT; };
+		F8B15CEDF6130B9CB3D7F6FC /* Landmark_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Landmark_meshes.nav; path = ../../../Data/Landmark_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F8F9B959915ED8780067D3E1 /* LandUseA_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = LandUseA_meshes.nav; path = ../../../Data/LandUseA_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F8E2651F91782D1541DF06B9 /* LandUseB_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = LandUseB_meshes.nav; path = ../../../Data/LandUseB_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F862EEC552043AA1DDBBEBE2 /* MajHwys_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = MajHwys_meshes.nav; path = ../../../Data/MajHwys_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F88585AD92FD976E79130DB8 /* MajHwyShield_text.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = MajHwyShield_text.nav; path = ../../../Data/MajHwyShield_text.nav; sourceTree = SOURCE_ROOT; };
+		F8AAC130D2A0C3D55604A4E1 /* RailRds_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = RailRds_meshes.nav; path = ../../../Data/RailRds_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F878B58D65E5DF3F5CE17501 /* SecHwys_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = SecHwys_meshes.nav; path = ../../../Data/SecHwys_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F8F9A8DEB9B51BBA306FD4E0 /* SecHwyShield_text.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = SecHwyShield_text.nav; path = ../../../Data/SecHwyShield_text.nav; sourceTree = SOURCE_ROOT; };
+		F8C722F451A0179FB37696F3 /* Signs_billboards.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Signs_billboards.nav; path = ../../../Data/Signs_billboards.nav; sourceTree = SOURCE_ROOT; };
+		F8FE474EA5E4A3E9B13D7F8F /* Streets_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Streets_meshes.nav; path = ../../../Data/Streets_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F81C9256757DC7B298945A27 /* Streets_text.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = Streets_text.nav; path = ../../../Data/Streets_text.nav; sourceTree = SOURCE_ROOT; };
+		F828FFB11F07490D2196B852 /* WaterPoly_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = WaterPoly_meshes.nav; path = ../../../Data/WaterPoly_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F8EECB2B69296F7B6C2762F6 /* WaterSeg_meshes.nav */ = {isa = PBXFileReference; lastKnownFileType = file; name = WaterSeg_meshes.nav; path = ../../../Data/WaterSeg_meshes.nav; sourceTree = SOURCE_ROOT; };
+		F88D48AFA35401497B02559B /* StreetSigns.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = StreetSigns.pvr; path = ../../StreetSigns.pvr; sourceTree = SOURCE_ROOT; };
+		F8178C89954EA58AF78F59AE /* Alphabet.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Alphabet.pvr; path = ../../../Data/Alphabet.pvr; sourceTree = SOURCE_ROOT; };
+		F81A110A2FDE0878B7B1D559 /* Road.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Road.pvr; path = ../../../Data/Road.pvr; sourceTree = SOURCE_ROOT; };
+		F898EF43560556BB36139593 /* AlphaMaskFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = AlphaMaskFragShader.fsh; path = ../../AlphaMaskFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F8C225170F0FCFCE8D867C6A /* AntiAliasedLinesFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = AntiAliasedLinesFragShader.fsh; path = ../../AntiAliasedLinesFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F851EDD75F7EDD7AB449FDAC /* AntiAliasedLinesVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = AntiAliasedLinesVertShader.vsh; path = ../../AntiAliasedLinesVertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F81AE783867359F7612A30AC /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F89B9A37971F516C9A88C4D2 /* PivotQuadFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PivotQuadFragShader.fsh; path = ../../PivotQuadFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F87822277E9CA852B430F997 /* PivotQuadMaskedFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PivotQuadMaskedFragShader.fsh; path = ../../PivotQuadMaskedFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F8BB0BC887C12EEFB24B20EB /* PivotQuadVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PivotQuadVertShader.vsh; path = ../../PivotQuadVertShader.vsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -273,7 +273,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F8662024551649F9F3C7E67A /* OGLES2Navigation.cpp */,
+				F846099BB6557110DF07F3B8 /* OGLES2Navigation.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -300,20 +300,20 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F8A57BEFB1BBCA5594F387A5 /* cameratrack.pod */,
-				F8870E8EE9F928D657BFBB2D /* Landmark_meshes.nav */,
-				F811E70089EDA0B24124FB05 /* LandUseA_meshes.nav */,
-				F800825DB063F513CA19E88B /* LandUseB_meshes.nav */,
-				F8562084F73D3D86261F6EF2 /* MajHwys_meshes.nav */,
-				F8B5DA5AF1E56273190947B1 /* MajHwyShield_text.nav */,
-				F8952FB57C4060E5F7B4831D /* RailRds_meshes.nav */,
-				F8A8C2691EF4F503782D9756 /* SecHwys_meshes.nav */,
-				F8FF7CA610F33BF02580DF73 /* SecHwyShield_text.nav */,
-				F80F8E463EB64ABEDB5C8E55 /* Signs_billboards.nav */,
-				F855D3AB11F6EC7140F694D3 /* Streets_meshes.nav */,
-				F84441226519F2CFBE7CB949 /* Streets_text.nav */,
-				F8323C5616B7372A158B5E41 /* WaterPoly_meshes.nav */,
-				F8DEF0C915D398119CF0FFD8 /* WaterSeg_meshes.nav */,
+				F8DEE3668124FCB791B91358 /* cameratrack.pod */,
+				F8B15CEDF6130B9CB3D7F6FC /* Landmark_meshes.nav */,
+				F8F9B959915ED8780067D3E1 /* LandUseA_meshes.nav */,
+				F8E2651F91782D1541DF06B9 /* LandUseB_meshes.nav */,
+				F862EEC552043AA1DDBBEBE2 /* MajHwys_meshes.nav */,
+				F88585AD92FD976E79130DB8 /* MajHwyShield_text.nav */,
+				F8AAC130D2A0C3D55604A4E1 /* RailRds_meshes.nav */,
+				F878B58D65E5DF3F5CE17501 /* SecHwys_meshes.nav */,
+				F8F9A8DEB9B51BBA306FD4E0 /* SecHwyShield_text.nav */,
+				F8C722F451A0179FB37696F3 /* Signs_billboards.nav */,
+				F8FE474EA5E4A3E9B13D7F8F /* Streets_meshes.nav */,
+				F81C9256757DC7B298945A27 /* Streets_text.nav */,
+				F828FFB11F07490D2196B852 /* WaterPoly_meshes.nav */,
+				F8EECB2B69296F7B6C2762F6 /* WaterSeg_meshes.nav */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -328,9 +328,9 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F899642BB0A9A83458571210 /* StreetSigns.pvr */,
-				F8890D0EFEA4816C9C0D79E7 /* Alphabet.pvr */,
-				F8305CF069BBE353673B2570 /* Road.pvr */,
+				F88D48AFA35401497B02559B /* StreetSigns.pvr */,
+				F8178C89954EA58AF78F59AE /* Alphabet.pvr */,
+				F81A110A2FDE0878B7B1D559 /* Road.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -338,14 +338,14 @@
 		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F8EE564F1D32BE973577D897 /* AlphaMaskFragShader.fsh */,
-				F8CD7DC7C413517D359E4CE9 /* AntiAliasedLinesFragShader.fsh */,
-				F89135D39173B55693699CD0 /* AntiAliasedLinesVertShader.vsh */,
-				F895137C16F9AE9B63DD3558 /* FragShader.fsh */,
-				F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */,
-				F86653811C4758611D8AC9A6 /* PivotQuadFragShader.fsh */,
-				F86AE205BE73AD23C2A3397A /* PivotQuadMaskedFragShader.fsh */,
-				F84C00C7460B48E699B312EF /* PivotQuadVertShader.vsh */,
+				F898EF43560556BB36139593 /* AlphaMaskFragShader.fsh */,
+				F8C225170F0FCFCE8D867C6A /* AntiAliasedLinesFragShader.fsh */,
+				F851EDD75F7EDD7AB449FDAC /* AntiAliasedLinesVertShader.vsh */,
+				F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */,
+				F81AE783867359F7612A30AC /* VertShader.vsh */,
+				F89B9A37971F516C9A88C4D2 /* PivotQuadFragShader.fsh */,
+				F87822277E9CA852B430F997 /* PivotQuadMaskedFragShader.fsh */,
+				F8BB0BC887C12EEFB24B20EB /* PivotQuadVertShader.vsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -395,6 +395,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLES2Tools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

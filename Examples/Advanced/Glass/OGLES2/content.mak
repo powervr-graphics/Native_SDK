@@ -31,6 +31,7 @@ RESOURCES = \
 	$(CONTENTDIR)/Balloon.cpp \
 	$(CONTENTDIR)/Ball.cpp \
 	$(CONTENTDIR)/BalloonTex.cpp \
+	$(CONTENTDIR)/BalloonTex2.cpp \
 	$(CONTENTDIR)/SkyboxTex.cpp
 
 all: resources
@@ -48,44 +49,47 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/DefaultVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/DefaultVertShader.cpp: $(CONTENTDIR) ./DefaultVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./DefaultVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./DefaultVertShader.vsc
 
-$(CONTENTDIR)/DefaultFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/DefaultFragShader.cpp: $(CONTENTDIR) ./DefaultFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./DefaultFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./DefaultFragShader.fsc
 
-$(CONTENTDIR)/ParaboloidVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ParaboloidVertShader.cpp: $(CONTENTDIR) ./ParaboloidVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./ParaboloidVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./ParaboloidVertShader.vsc
 
-$(CONTENTDIR)/SkyboxVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SkyboxVertShader.cpp: $(CONTENTDIR) ./SkyboxVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./SkyboxVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./SkyboxVertShader.vsc
 
-$(CONTENTDIR)/SkyboxFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SkyboxFragShader.cpp: $(CONTENTDIR) ./SkyboxFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./SkyboxFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./SkyboxFragShader.fsc
 
-$(CONTENTDIR)/EffectVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/EffectVertShader.cpp: $(CONTENTDIR) ./EffectVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./EffectVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./EffectVertShader.vsc
 
-$(CONTENTDIR)/EffectFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/EffectFragShader.cpp: $(CONTENTDIR) ./EffectFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./EffectFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./EffectFragShader.fsc
 
-$(CONTENTDIR)/Balloon.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Balloon.cpp: $(CONTENTDIR) ./Balloon.pod
 	$(FILEWRAP)  -o $@ ./Balloon.pod
 
-$(CONTENTDIR)/Ball.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Ball.cpp: $(CONTENTDIR) ./Ball.pod
 	$(FILEWRAP)  -o $@ ./Ball.pod
 
-$(CONTENTDIR)/BalloonTex.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/BalloonTex.cpp: $(CONTENTDIR) ./BalloonTex.pvr
 	$(FILEWRAP)  -o $@ ./BalloonTex.pvr
 
-$(CONTENTDIR)/SkyboxTex.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/BalloonTex2.cpp: $(CONTENTDIR) ./BalloonTex2.pvr
+	$(FILEWRAP)  -o $@ ./BalloonTex2.pvr
+
+$(CONTENTDIR)/SkyboxTex.cpp: $(CONTENTDIR) ./SkyboxTex.pvr
 	$(FILEWRAP)  -o $@ ./SkyboxTex.pvr
 
 ############################################################################

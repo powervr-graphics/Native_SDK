@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles3tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles3tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES3/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles3tools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLES3Bloom
 include $(CLEAR_VARS)
@@ -42,59 +45,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/Mask.pod \
-	$(ASSETDIR)/BaseTex.pvr \
-	$(ASSETDIR)/bloom_mapping.pvr \
-	$(ASSETDIR)/PostBloomFragShader.fsh \
-	$(ASSETDIR)/PostBloomVertShader.vsh \
-	$(ASSETDIR)/PreBloomFragShader.fsh \
-	$(ASSETDIR)/PreBloomVertShader.vsh \
-	$(ASSETDIR)/BlurFragShader.fsh \
-	$(ASSETDIR)/BlurVertShader.vsh \
-	$(ASSETDIR)/FragShader.fsh \
-	$(ASSETDIR)/VertShader.vsh
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/BaseTex.pvr: $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/BaseTex.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/bloom_mapping.pvr: $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/bloom_mapping.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/PostBloomFragShader.fsh: $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/PostBloomFragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/PostBloomVertShader.vsh: $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/PostBloomVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/PreBloomFragShader.fsh: $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/PreBloomFragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/PreBloomVertShader.vsh: $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/PreBloomVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/BlurFragShader.fsh: $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/BlurFragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/BlurVertShader.vsh: $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/BlurVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/FragShader.fsh: $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/FragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/VertShader.vsh: $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/VertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Mask.pod: $(PVRSDKDIR)/Examples/Intermediate/Bloom/OGLES3/Mask.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-
-

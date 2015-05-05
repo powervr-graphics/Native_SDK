@@ -26,6 +26,7 @@
 		F868C265AC9CB255630A4C04 /* Balloon.pod in Resources */ = {isa = PBXBuildFile; fileRef = F87944E0B13D56E4F99848EF /* Balloon.pod */; };
 		F8856650AB9F8EB78E3F41CA /* Ball.pod in Resources */ = {isa = PBXBuildFile; fileRef = F824901670408EF64BD8C0A5 /* Ball.pod */; };
 		F89AF3A62365ACB581909F04 /* BalloonTex.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B652D75E28921793D442A2 /* BalloonTex.pvr */; };
+		F804039729EBEA776AF7CBB3 /* BalloonTex2.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86DFE5AE08C502F69498342 /* BalloonTex2.pvr */; };
 		F8883D10E12A93CA0F65D776 /* SkyboxTex.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B8BDC694B7CEB21CAFBD7C /* SkyboxTex.pvr */; };
 		F854C6435FE0018E7EB9F441 /* DefaultVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F851DD276BD645BC09E924F7 /* DefaultVertShader.vsh */; };
 		F88C8976CA443920BC04E398 /* DefaultFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F889E162FABBCC6642F7D6EF /* DefaultFragShader.fsh */; };
@@ -89,6 +90,7 @@
 		F87944E0B13D56E4F99848EF /* Balloon.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Balloon.pod; path = ../../Balloon.pod; sourceTree = SOURCE_ROOT; };
 		F824901670408EF64BD8C0A5 /* Ball.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Ball.pod; path = ../../Ball.pod; sourceTree = SOURCE_ROOT; };
 		F8B652D75E28921793D442A2 /* BalloonTex.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = BalloonTex.pvr; path = ../../BalloonTex.pvr; sourceTree = SOURCE_ROOT; };
+		F86DFE5AE08C502F69498342 /* BalloonTex2.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = BalloonTex2.pvr; path = ../../BalloonTex2.pvr; sourceTree = SOURCE_ROOT; };
 		F8B8BDC694B7CEB21CAFBD7C /* SkyboxTex.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = SkyboxTex.pvr; path = ../../SkyboxTex.pvr; sourceTree = SOURCE_ROOT; };
 		F851DD276BD645BC09E924F7 /* DefaultVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultVertShader.vsh; path = ../../DefaultVertShader.vsh; sourceTree = SOURCE_ROOT; };
 		F889E162FABBCC6642F7D6EF /* DefaultFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultFragShader.fsh; path = ../../DefaultFragShader.fsh; sourceTree = SOURCE_ROOT; };
@@ -242,6 +244,7 @@
 			isa = PBXGroup;
 			children = (
 				F8B652D75E28921793D442A2 /* BalloonTex.pvr */,
+				F86DFE5AE08C502F69498342 /* BalloonTex2.pvr */,
 				F8B8BDC694B7CEB21CAFBD7C /* SkyboxTex.pvr */,
 			);
 			name = Textures;
@@ -335,6 +338,7 @@
 				F868C265AC9CB255630A4C04 /* Balloon.pod in Resources */,
 				F8856650AB9F8EB78E3F41CA /* Ball.pod in Resources */,
 				F89AF3A62365ACB581909F04 /* BalloonTex.pvr in Resources */,
+				F804039729EBEA776AF7CBB3 /* BalloonTex2.pvr in Resources */,
 				F8883D10E12A93CA0F65D776 /* SkyboxTex.pvr in Resources */,
 				F854C6435FE0018E7EB9F441 /* DefaultVertShader.vsh in Resources */,
 				F88C8976CA443920BC04E398 /* DefaultFragShader.fsh in Resources */,

@@ -43,25 +43,25 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/MaskMain.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/MaskMain.cpp: $(CONTENTDIR) ./MaskMain.pvr
 	$(FILEWRAP)  -o $@ ./MaskMain.pvr
 
-$(CONTENTDIR)/RoomStill.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/RoomStill.cpp: $(CONTENTDIR) ./RoomStill.pvr
 	$(FILEWRAP)  -o $@ ./RoomStill.pvr
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./FragShader.fsc
 
-$(CONTENTDIR)/SHVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SHVertShader.cpp: $(CONTENTDIR) ./SHVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./SHVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./SHVertShader.vsc
 
-$(CONTENTDIR)/DiffuseVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/DiffuseVertShader.cpp: $(CONTENTDIR) ./DiffuseVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./DiffuseVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./DiffuseVertShader.vsc
 
-$(CONTENTDIR)/PhantomMask.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/PhantomMask.cpp: $(CONTENTDIR) ./PhantomMask.pod
 	$(FILEWRAP)  -o $@ ./PhantomMask.pod
 
 ############################################################################

@@ -25,17 +25,17 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F827053B431E9F4D2A7A3B29 /* OGLESPolyBump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E4090642871F9BCC48FD05 /* OGLESPolyBump.cpp */; };
+		F827053B431E9F4D2A7A3B29 /* OGLESPolyBump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F88185BA72AC3284800A0AF1 /* OGLESPolyBump.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F8C7ACA2BF148F1DC4DFDCD0 /* Head.pod in Resources */ = {isa = PBXBuildFile; fileRef = F886FFAD6E770554C138F09C /* Head.pod */; };
-		F8A32E792A5F3CAE9895ACC3 /* Head_clonespacePVRTC.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8654BD097DB9D43B8809A35 /* Head_clonespacePVRTC.pvr */; };
-		F8B05C82AB6405A1267F5AA6 /* Head_clonespaceBGRA.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F820CD6A2114D26B94E3877E /* Head_clonespaceBGRA.pvr */; };
-		F81879FE350B024EF338C720 /* Head_diffuse.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F820D93C2AB0EDD52A40102A /* Head_diffuse.pvr */; };
+		F8C7ACA2BF148F1DC4DFDCD0 /* Head.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8C87A45D96A6F0333B901F6 /* Head.pod */; };
+		F8A32E792A5F3CAE9895ACC3 /* Head_clonespacePVRTC.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B5B07985ECB5CFB6C2DD38 /* Head_clonespacePVRTC.pvr */; };
+		F8B05C82AB6405A1267F5AA6 /* Head_clonespaceBGRA.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83A89D3D303D262D42D16F3 /* Head_clonespaceBGRA.pvr */; };
+		F81879FE350B024EF338C720 /* Head_diffuse.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F856FB7EDDDB4751167D3FB2 /* Head_diffuse.pvr */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,7 +100,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F8E4090642871F9BCC48FD05 /* OGLESPolyBump.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESPolyBump.cpp; path = ../../OGLESPolyBump.cpp; sourceTree = SOURCE_ROOT; };
+		F88185BA72AC3284800A0AF1 /* OGLESPolyBump.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESPolyBump.cpp; path = ../../OGLESPolyBump.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -113,10 +113,10 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F886FFAD6E770554C138F09C /* Head.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Head.pod; path = ../../Head.pod; sourceTree = SOURCE_ROOT; };
-		F8654BD097DB9D43B8809A35 /* Head_clonespacePVRTC.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Head_clonespacePVRTC.pvr; path = ../../Head_clonespacePVRTC.pvr; sourceTree = SOURCE_ROOT; };
-		F820CD6A2114D26B94E3877E /* Head_clonespaceBGRA.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Head_clonespaceBGRA.pvr; path = ../../Head_clonespaceBGRA.pvr; sourceTree = SOURCE_ROOT; };
-		F820D93C2AB0EDD52A40102A /* Head_diffuse.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Head_diffuse.pvr; path = ../../Head_diffuse.pvr; sourceTree = SOURCE_ROOT; };
+		F8C87A45D96A6F0333B901F6 /* Head.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Head.pod; path = ../../Head.pod; sourceTree = SOURCE_ROOT; };
+		F8B5B07985ECB5CFB6C2DD38 /* Head_clonespacePVRTC.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Head_clonespacePVRTC.pvr; path = ../../Head_clonespacePVRTC.pvr; sourceTree = SOURCE_ROOT; };
+		F83A89D3D303D262D42D16F3 /* Head_clonespaceBGRA.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Head_clonespaceBGRA.pvr; path = ../../Head_clonespaceBGRA.pvr; sourceTree = SOURCE_ROOT; };
+		F856FB7EDDDB4751167D3FB2 /* Head_diffuse.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Head_diffuse.pvr; path = ../../Head_diffuse.pvr; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,7 +212,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F8E4090642871F9BCC48FD05 /* OGLESPolyBump.cpp */,
+				F88185BA72AC3284800A0AF1 /* OGLESPolyBump.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -239,7 +239,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F886FFAD6E770554C138F09C /* Head.pod */,
+				F8C87A45D96A6F0333B901F6 /* Head.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -254,9 +254,9 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F8654BD097DB9D43B8809A35 /* Head_clonespacePVRTC.pvr */,
-				F820CD6A2114D26B94E3877E /* Head_clonespaceBGRA.pvr */,
-				F820D93C2AB0EDD52A40102A /* Head_diffuse.pvr */,
+				F8B5B07985ECB5CFB6C2DD38 /* Head_clonespacePVRTC.pvr */,
+				F83A89D3D303D262D42D16F3 /* Head_clonespaceBGRA.pvr */,
+				F856FB7EDDDB4751167D3FB2 /* Head_diffuse.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -305,6 +305,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLESTools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

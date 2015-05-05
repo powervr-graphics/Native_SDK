@@ -38,7 +38,7 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/LineRound.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/LineRound.cpp: $(CONTENTDIR) ./LineRound.pvr
 	$(FILEWRAP)  -o $@ ./LineRound.pvr
 
 ############################################################################

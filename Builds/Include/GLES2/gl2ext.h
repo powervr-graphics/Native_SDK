@@ -33,14 +33,14 @@ extern "C" {
 ** used to make the header, and the header can be found at
 **   http://www.opengl.org/registry/
 **
-** Khronos $Revision: 26645 $ on $Date: 2014-05-14 10:00:42 -0700 (Wed, 14 May 2014) $
+** Khronos $Revision: 29588 $ on $Date: 2015-01-26 16:42:32 -0800 (Mon, 26 Jan 2015) $
 */
 
 #ifndef GL_APIENTRYP
 #define GL_APIENTRYP GL_APIENTRY*
 #endif
 
-/* Generated on date 20140514 */
+/* Generated on date 20150126 */
 
 /* Generated C header for:
  * API: gles2
@@ -52,10 +52,8 @@ extern "C" {
  * Extensions removed: _nomatch_^
  */
 
-
 #ifndef GL_KHR_blend_equation_advanced
 #define GL_KHR_blend_equation_advanced 1
-#define GL_BLEND_ADVANCED_COHERENT_KHR    0x9285
 #define GL_MULTIPLY_KHR                   0x9294
 #define GL_SCREEN_KHR                     0x9295
 #define GL_OVERLAY_KHR                    0x9296
@@ -76,6 +74,17 @@ typedef void (GL_APIENTRYP PFNGLBLENDBARRIERKHRPROC) (void);
 GL_APICALL void GL_APIENTRY glBlendBarrierKHR (void);
 #endif
 #endif /* GL_KHR_blend_equation_advanced */
+
+#ifndef GL_KHR_blend_equation_advanced_coherent
+#define GL_KHR_blend_equation_advanced_coherent 1
+#define GL_BLEND_ADVANCED_COHERENT_KHR    0x9285
+#endif /* GL_KHR_blend_equation_advanced_coherent */
+
+#ifndef GL_KHR_context_flush_control
+#define GL_KHR_context_flush_control 1
+#define GL_CONTEXT_RELEASE_BEHAVIOR_KHR   0x82FB
+#define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x82FC
+#endif /* GL_KHR_context_flush_control */
 
 #ifndef GL_KHR_debug
 #define GL_KHR_debug 1
@@ -146,6 +155,34 @@ GL_APICALL void GL_APIENTRY glGetPointervKHR (GLenum pname, void **params);
 #endif
 #endif /* GL_KHR_debug */
 
+#ifndef GL_KHR_robust_buffer_access_behavior
+#define GL_KHR_robust_buffer_access_behavior 1
+#endif /* GL_KHR_robust_buffer_access_behavior */
+
+#ifndef GL_KHR_robustness
+#define GL_KHR_robustness 1
+#define GL_CONTEXT_ROBUST_ACCESS_KHR      0x90F3
+#define GL_LOSE_CONTEXT_ON_RESET_KHR      0x8252
+#define GL_GUILTY_CONTEXT_RESET_KHR       0x8253
+#define GL_INNOCENT_CONTEXT_RESET_KHR     0x8254
+#define GL_UNKNOWN_CONTEXT_RESET_KHR      0x8255
+#define GL_RESET_NOTIFICATION_STRATEGY_KHR 0x8256
+#define GL_NO_RESET_NOTIFICATION_KHR      0x8261
+#define GL_CONTEXT_LOST_KHR               0x0507
+typedef GLenum (GL_APIENTRYP PFNGLGETGRAPHICSRESETSTATUSKHRPROC) (void);
+typedef void (GL_APIENTRYP PFNGLREADNPIXELSKHRPROC) (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLsizei bufSize, void *data);
+typedef void (GL_APIENTRYP PFNGLGETNUNIFORMFVKHRPROC) (GLuint program, GLint location, GLsizei bufSize, GLfloat *params);
+typedef void (GL_APIENTRYP PFNGLGETNUNIFORMIVKHRPROC) (GLuint program, GLint location, GLsizei bufSize, GLint *params);
+typedef void (GL_APIENTRYP PFNGLGETNUNIFORMUIVKHRPROC) (GLuint program, GLint location, GLsizei bufSize, GLuint *params);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL GLenum GL_APIENTRY glGetGraphicsResetStatusKHR (void);
+GL_APICALL void GL_APIENTRY glReadnPixelsKHR (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLsizei bufSize, void *data);
+GL_APICALL void GL_APIENTRY glGetnUniformfvKHR (GLuint program, GLint location, GLsizei bufSize, GLfloat *params);
+GL_APICALL void GL_APIENTRY glGetnUniformivKHR (GLuint program, GLint location, GLsizei bufSize, GLint *params);
+GL_APICALL void GL_APIENTRY glGetnUniformuivKHR (GLuint program, GLint location, GLsizei bufSize, GLuint *params);
+#endif
+#endif /* GL_KHR_robustness */
+
 #ifndef GL_KHR_texture_compression_astc_hdr
 #define GL_KHR_texture_compression_astc_hdr 1
 #define GL_COMPRESSED_RGBA_ASTC_4x4_KHR   0x93B0
@@ -201,6 +238,14 @@ GL_APICALL void GL_APIENTRY glEGLImageTargetRenderbufferStorageOES (GLenum targe
 #define GL_SAMPLER_EXTERNAL_OES           0x8D66
 #endif /* GL_OES_EGL_image_external */
 
+#ifndef GL_OES_EGL_image_external_essl3
+#define GL_OES_EGL_image_external_essl3 1
+#endif /* GL_OES_EGL_image_external_essl3 */
+
+#ifndef GL_OES_compressed_ETC1_RGB8_sub_texture
+#define GL_OES_compressed_ETC1_RGB8_sub_texture 1
+#endif /* GL_OES_compressed_ETC1_RGB8_sub_texture */
+
 #ifndef GL_OES_compressed_ETC1_RGB8_texture
 #define GL_OES_compressed_ETC1_RGB8_texture 1
 #define GL_ETC1_RGB8_OES                  0x8D64
@@ -220,6 +265,14 @@ GL_APICALL void GL_APIENTRY glEGLImageTargetRenderbufferStorageOES (GLenum targe
 #define GL_PALETTE8_RGB5_A1_OES           0x8B99
 #endif /* GL_OES_compressed_paletted_texture */
 
+#ifndef GL_OES_copy_image
+#define GL_OES_copy_image 1
+typedef void (GL_APIENTRYP PFNGLCOPYIMAGESUBDATAOESPROC) (GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glCopyImageSubDataOES (GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth);
+#endif
+#endif /* GL_OES_copy_image */
+
 #ifndef GL_OES_depth24
 #define GL_OES_depth24 1
 #define GL_DEPTH_COMPONENT24_OES          0x81A6
@@ -234,6 +287,44 @@ GL_APICALL void GL_APIENTRY glEGLImageTargetRenderbufferStorageOES (GLenum targe
 #define GL_OES_depth_texture 1
 #endif /* GL_OES_depth_texture */
 
+#ifndef GL_OES_draw_buffers_indexed
+#define GL_OES_draw_buffers_indexed 1
+#define GL_MIN                            0x8007
+#define GL_MAX                            0x8008
+typedef void (GL_APIENTRYP PFNGLENABLEIOESPROC) (GLenum target, GLuint index);
+typedef void (GL_APIENTRYP PFNGLDISABLEIOESPROC) (GLenum target, GLuint index);
+typedef void (GL_APIENTRYP PFNGLBLENDEQUATIONIOESPROC) (GLuint buf, GLenum mode);
+typedef void (GL_APIENTRYP PFNGLBLENDEQUATIONSEPARATEIOESPROC) (GLuint buf, GLenum modeRGB, GLenum modeAlpha);
+typedef void (GL_APIENTRYP PFNGLBLENDFUNCIOESPROC) (GLuint buf, GLenum src, GLenum dst);
+typedef void (GL_APIENTRYP PFNGLBLENDFUNCSEPARATEIOESPROC) (GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+typedef void (GL_APIENTRYP PFNGLCOLORMASKIOESPROC) (GLuint index, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
+typedef GLboolean (GL_APIENTRYP PFNGLISENABLEDIOESPROC) (GLenum target, GLuint index);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glEnableiOES (GLenum target, GLuint index);
+GL_APICALL void GL_APIENTRY glDisableiOES (GLenum target, GLuint index);
+GL_APICALL void GL_APIENTRY glBlendEquationiOES (GLuint buf, GLenum mode);
+GL_APICALL void GL_APIENTRY glBlendEquationSeparateiOES (GLuint buf, GLenum modeRGB, GLenum modeAlpha);
+GL_APICALL void GL_APIENTRY glBlendFunciOES (GLuint buf, GLenum src, GLenum dst);
+GL_APICALL void GL_APIENTRY glBlendFuncSeparateiOES (GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+GL_APICALL void GL_APIENTRY glColorMaskiOES (GLuint index, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
+GL_APICALL GLboolean GL_APIENTRY glIsEnablediOES (GLenum target, GLuint index);
+#endif
+#endif /* GL_OES_draw_buffers_indexed */
+
+#ifndef GL_OES_draw_elements_base_vertex
+#define GL_OES_draw_elements_base_vertex 1
+typedef void (GL_APIENTRYP PFNGLDRAWELEMENTSBASEVERTEXOESPROC) (GLenum mode, GLsizei count, GLenum type, const void *indices, GLint basevertex);
+typedef void (GL_APIENTRYP PFNGLDRAWRANGEELEMENTSBASEVERTEXOESPROC) (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const void *indices, GLint basevertex);
+typedef void (GL_APIENTRYP PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXOESPROC) (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLint basevertex);
+typedef void (GL_APIENTRYP PFNGLMULTIDRAWELEMENTSBASEVERTEXOESPROC) (GLenum mode, const GLsizei *count, GLenum type, const void *const*indices, GLsizei primcount, const GLint *basevertex);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glDrawElementsBaseVertexOES (GLenum mode, GLsizei count, GLenum type, const void *indices, GLint basevertex);
+GL_APICALL void GL_APIENTRY glDrawRangeElementsBaseVertexOES (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const void *indices, GLint basevertex);
+GL_APICALL void GL_APIENTRY glDrawElementsInstancedBaseVertexOES (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLint basevertex);
+GL_APICALL void GL_APIENTRY glMultiDrawElementsBaseVertexOES (GLenum mode, const GLsizei *count, GLenum type, const void *const*indices, GLsizei primcount, const GLint *basevertex);
+#endif
+#endif /* GL_OES_draw_elements_base_vertex */
+
 #ifndef GL_OES_element_index_uint
 #define GL_OES_element_index_uint 1
 #endif /* GL_OES_element_index_uint */
@@ -245,6 +336,51 @@ GL_APICALL void GL_APIENTRY glEGLImageTargetRenderbufferStorageOES (GLenum targe
 #ifndef GL_OES_fragment_precision_high
 #define GL_OES_fragment_precision_high 1
 #endif /* GL_OES_fragment_precision_high */
+
+#ifndef GL_OES_geometry_point_size
+#define GL_OES_geometry_point_size 1
+#endif /* GL_OES_geometry_point_size */
+
+#ifndef GL_OES_geometry_shader
+#define GL_OES_geometry_shader 1
+#define GL_GEOMETRY_SHADER_OES            0x8DD9
+#define GL_GEOMETRY_SHADER_BIT_OES        0x00000004
+#define GL_GEOMETRY_LINKED_VERTICES_OUT_OES 0x8916
+#define GL_GEOMETRY_LINKED_INPUT_TYPE_OES 0x8917
+#define GL_GEOMETRY_LINKED_OUTPUT_TYPE_OES 0x8918
+#define GL_GEOMETRY_SHADER_INVOCATIONS_OES 0x887F
+#define GL_LAYER_PROVOKING_VERTEX_OES     0x825E
+#define GL_LINES_ADJACENCY_OES            0x000A
+#define GL_LINE_STRIP_ADJACENCY_OES       0x000B
+#define GL_TRIANGLES_ADJACENCY_OES        0x000C
+#define GL_TRIANGLE_STRIP_ADJACENCY_OES   0x000D
+#define GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_OES 0x8DDF
+#define GL_MAX_GEOMETRY_UNIFORM_BLOCKS_OES 0x8A2C
+#define GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS_OES 0x8A32
+#define GL_MAX_GEOMETRY_INPUT_COMPONENTS_OES 0x9123
+#define GL_MAX_GEOMETRY_OUTPUT_COMPONENTS_OES 0x9124
+#define GL_MAX_GEOMETRY_OUTPUT_VERTICES_OES 0x8DE0
+#define GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_OES 0x8DE1
+#define GL_MAX_GEOMETRY_SHADER_INVOCATIONS_OES 0x8E5A
+#define GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_OES 0x8C29
+#define GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS_OES 0x92CF
+#define GL_MAX_GEOMETRY_ATOMIC_COUNTERS_OES 0x92D5
+#define GL_MAX_GEOMETRY_IMAGE_UNIFORMS_OES 0x90CD
+#define GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS_OES 0x90D7
+#define GL_FIRST_VERTEX_CONVENTION_OES    0x8E4D
+#define GL_LAST_VERTEX_CONVENTION_OES     0x8E4E
+#define GL_UNDEFINED_VERTEX_OES           0x8260
+#define GL_PRIMITIVES_GENERATED_OES       0x8C87
+#define GL_FRAMEBUFFER_DEFAULT_LAYERS_OES 0x9312
+#define GL_MAX_FRAMEBUFFER_LAYERS_OES     0x9317
+#define GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_OES 0x8DA8
+#define GL_FRAMEBUFFER_ATTACHMENT_LAYERED_OES 0x8DA7
+#define GL_REFERENCED_BY_GEOMETRY_SHADER_OES 0x9309
+typedef void (GL_APIENTRYP PFNGLFRAMEBUFFERTEXTUREOESPROC) (GLenum target, GLenum attachment, GLuint texture, GLint level);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glFramebufferTextureOES (GLenum target, GLenum attachment, GLuint texture, GLint level);
+#endif
+#endif /* GL_OES_geometry_shader */
 
 #ifndef GL_OES_get_program_binary
 #define GL_OES_get_program_binary 1
@@ -258,6 +394,10 @@ GL_APICALL void GL_APIENTRY glGetProgramBinaryOES (GLuint program, GLsizei bufSi
 GL_APICALL void GL_APIENTRY glProgramBinaryOES (GLuint program, GLenum binaryFormat, const void *binary, GLint length);
 #endif
 #endif /* GL_OES_get_program_binary */
+
+#ifndef GL_OES_gpu_shader5
+#define GL_OES_gpu_shader5 1
+#endif /* GL_OES_gpu_shader5 */
 
 #ifndef GL_OES_mapbuffer
 #define GL_OES_mapbuffer 1
@@ -281,6 +421,15 @@ GL_APICALL void GL_APIENTRY glGetBufferPointervOES (GLenum target, GLenum pname,
 #define GL_UNSIGNED_INT_24_8_OES          0x84FA
 #define GL_DEPTH24_STENCIL8_OES           0x88F0
 #endif /* GL_OES_packed_depth_stencil */
+
+#ifndef GL_OES_primitive_bounding_box
+#define GL_OES_primitive_bounding_box 1
+#define GL_PRIMITIVE_BOUNDING_BOX_OES     0x92BE
+typedef void (GL_APIENTRYP PFNGLPRIMITIVEBOUNDINGBOXOESPROC) (GLfloat minX, GLfloat minY, GLfloat minZ, GLfloat minW, GLfloat maxX, GLfloat maxY, GLfloat maxZ, GLfloat maxW);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glPrimitiveBoundingBoxOES (GLfloat minX, GLfloat minY, GLfloat minZ, GLfloat minW, GLfloat maxX, GLfloat maxY, GLfloat maxZ, GLfloat maxW);
+#endif
+#endif /* GL_OES_primitive_bounding_box */
 
 #ifndef GL_OES_required_internalformat
 #define GL_OES_required_internalformat 1
@@ -320,6 +469,10 @@ GL_APICALL void GL_APIENTRY glMinSampleShadingOES (GLfloat value);
 #define GL_OES_shader_image_atomic 1
 #endif /* GL_OES_shader_image_atomic */
 
+#ifndef GL_OES_shader_io_blocks
+#define GL_OES_shader_io_blocks 1
+#endif /* GL_OES_shader_io_blocks */
+
 #ifndef GL_OES_shader_multisample_interpolation
 #define GL_OES_shader_multisample_interpolation 1
 #define GL_MIN_FRAGMENT_INTERPOLATION_OFFSET_OES 0x8E5B
@@ -347,6 +500,61 @@ GL_APICALL void GL_APIENTRY glMinSampleShadingOES (GLfloat value);
 #define GL_FRAMEBUFFER_UNDEFINED_OES      0x8219
 #endif /* GL_OES_surfaceless_context */
 
+#ifndef GL_OES_tessellation_point_size
+#define GL_OES_tessellation_point_size 1
+#endif /* GL_OES_tessellation_point_size */
+
+#ifndef GL_OES_tessellation_shader
+#define GL_OES_tessellation_shader 1
+#define GL_PATCHES_OES                    0x000E
+#define GL_PATCH_VERTICES_OES             0x8E72
+#define GL_TESS_CONTROL_OUTPUT_VERTICES_OES 0x8E75
+#define GL_TESS_GEN_MODE_OES              0x8E76
+#define GL_TESS_GEN_SPACING_OES           0x8E77
+#define GL_TESS_GEN_VERTEX_ORDER_OES      0x8E78
+#define GL_TESS_GEN_POINT_MODE_OES        0x8E79
+#define GL_ISOLINES_OES                   0x8E7A
+#define GL_QUADS_OES                      0x0007
+#define GL_FRACTIONAL_ODD_OES             0x8E7B
+#define GL_FRACTIONAL_EVEN_OES            0x8E7C
+#define GL_MAX_PATCH_VERTICES_OES         0x8E7D
+#define GL_MAX_TESS_GEN_LEVEL_OES         0x8E7E
+#define GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS_OES 0x8E7F
+#define GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS_OES 0x8E80
+#define GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS_OES 0x8E81
+#define GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS_OES 0x8E82
+#define GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS_OES 0x8E83
+#define GL_MAX_TESS_PATCH_COMPONENTS_OES  0x8E84
+#define GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS_OES 0x8E85
+#define GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS_OES 0x8E86
+#define GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS_OES 0x8E89
+#define GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS_OES 0x8E8A
+#define GL_MAX_TESS_CONTROL_INPUT_COMPONENTS_OES 0x886C
+#define GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS_OES 0x886D
+#define GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS_OES 0x8E1E
+#define GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS_OES 0x8E1F
+#define GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS_OES 0x92CD
+#define GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS_OES 0x92CE
+#define GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS_OES 0x92D3
+#define GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS_OES 0x92D4
+#define GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS_OES 0x90CB
+#define GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS_OES 0x90CC
+#define GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS_OES 0x90D8
+#define GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS_OES 0x90D9
+#define GL_PRIMITIVE_RESTART_FOR_PATCHES_SUPPORTED_OES 0x8221
+#define GL_IS_PER_PATCH_OES               0x92E7
+#define GL_REFERENCED_BY_TESS_CONTROL_SHADER_OES 0x9307
+#define GL_REFERENCED_BY_TESS_EVALUATION_SHADER_OES 0x9308
+#define GL_TESS_CONTROL_SHADER_OES        0x8E88
+#define GL_TESS_EVALUATION_SHADER_OES     0x8E87
+#define GL_TESS_CONTROL_SHADER_BIT_OES    0x00000008
+#define GL_TESS_EVALUATION_SHADER_BIT_OES 0x00000010
+typedef void (GL_APIENTRYP PFNGLPATCHPARAMETERIOESPROC) (GLenum pname, GLint value);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glPatchParameteriOES (GLenum pname, GLint value);
+#endif
+#endif /* GL_OES_tessellation_shader */
+
 #ifndef GL_OES_texture_3D
 #define GL_OES_texture_3D 1
 #define GL_TEXTURE_WRAP_R_OES             0x8072
@@ -371,6 +579,54 @@ GL_APICALL void GL_APIENTRY glFramebufferTexture3DOES (GLenum target, GLenum att
 #endif
 #endif /* GL_OES_texture_3D */
 
+#ifndef GL_OES_texture_border_clamp
+#define GL_OES_texture_border_clamp 1
+#define GL_TEXTURE_BORDER_COLOR_OES       0x1004
+#define GL_CLAMP_TO_BORDER_OES            0x812D
+typedef void (GL_APIENTRYP PFNGLTEXPARAMETERIIVOESPROC) (GLenum target, GLenum pname, const GLint *params);
+typedef void (GL_APIENTRYP PFNGLTEXPARAMETERIUIVOESPROC) (GLenum target, GLenum pname, const GLuint *params);
+typedef void (GL_APIENTRYP PFNGLGETTEXPARAMETERIIVOESPROC) (GLenum target, GLenum pname, GLint *params);
+typedef void (GL_APIENTRYP PFNGLGETTEXPARAMETERIUIVOESPROC) (GLenum target, GLenum pname, GLuint *params);
+typedef void (GL_APIENTRYP PFNGLSAMPLERPARAMETERIIVOESPROC) (GLuint sampler, GLenum pname, const GLint *param);
+typedef void (GL_APIENTRYP PFNGLSAMPLERPARAMETERIUIVOESPROC) (GLuint sampler, GLenum pname, const GLuint *param);
+typedef void (GL_APIENTRYP PFNGLGETSAMPLERPARAMETERIIVOESPROC) (GLuint sampler, GLenum pname, GLint *params);
+typedef void (GL_APIENTRYP PFNGLGETSAMPLERPARAMETERIUIVOESPROC) (GLuint sampler, GLenum pname, GLuint *params);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glTexParameterIivOES (GLenum target, GLenum pname, const GLint *params);
+GL_APICALL void GL_APIENTRY glTexParameterIuivOES (GLenum target, GLenum pname, const GLuint *params);
+GL_APICALL void GL_APIENTRY glGetTexParameterIivOES (GLenum target, GLenum pname, GLint *params);
+GL_APICALL void GL_APIENTRY glGetTexParameterIuivOES (GLenum target, GLenum pname, GLuint *params);
+GL_APICALL void GL_APIENTRY glSamplerParameterIivOES (GLuint sampler, GLenum pname, const GLint *param);
+GL_APICALL void GL_APIENTRY glSamplerParameterIuivOES (GLuint sampler, GLenum pname, const GLuint *param);
+GL_APICALL void GL_APIENTRY glGetSamplerParameterIivOES (GLuint sampler, GLenum pname, GLint *params);
+GL_APICALL void GL_APIENTRY glGetSamplerParameterIuivOES (GLuint sampler, GLenum pname, GLuint *params);
+#endif
+#endif /* GL_OES_texture_border_clamp */
+
+#ifndef GL_OES_texture_buffer
+#define GL_OES_texture_buffer 1
+#define GL_TEXTURE_BUFFER_OES             0x8C2A
+#define GL_TEXTURE_BUFFER_BINDING_OES     0x8C2A
+#define GL_MAX_TEXTURE_BUFFER_SIZE_OES    0x8C2B
+#define GL_TEXTURE_BINDING_BUFFER_OES     0x8C2C
+#define GL_TEXTURE_BUFFER_DATA_STORE_BINDING_OES 0x8C2D
+#define GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT_OES 0x919F
+#define GL_SAMPLER_BUFFER_OES             0x8DC2
+#define GL_INT_SAMPLER_BUFFER_OES         0x8DD0
+#define GL_UNSIGNED_INT_SAMPLER_BUFFER_OES 0x8DD8
+#define GL_IMAGE_BUFFER_OES               0x9051
+#define GL_INT_IMAGE_BUFFER_OES           0x905C
+#define GL_UNSIGNED_INT_IMAGE_BUFFER_OES  0x9067
+#define GL_TEXTURE_BUFFER_OFFSET_OES      0x919D
+#define GL_TEXTURE_BUFFER_SIZE_OES        0x919E
+typedef void (GL_APIENTRYP PFNGLTEXBUFFEROESPROC) (GLenum target, GLenum internalformat, GLuint buffer);
+typedef void (GL_APIENTRYP PFNGLTEXBUFFERRANGEOESPROC) (GLenum target, GLenum internalformat, GLuint buffer, GLintptr offset, GLsizeiptr size);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glTexBufferOES (GLenum target, GLenum internalformat, GLuint buffer);
+GL_APICALL void GL_APIENTRY glTexBufferRangeOES (GLenum target, GLenum internalformat, GLuint buffer, GLintptr offset, GLsizeiptr size);
+#endif
+#endif /* GL_OES_texture_buffer */
+
 #ifndef GL_OES_texture_compression_astc
 #define GL_OES_texture_compression_astc 1
 #define GL_COMPRESSED_RGBA_ASTC_3x3x3_OES 0x93C0
@@ -394,6 +650,19 @@ GL_APICALL void GL_APIENTRY glFramebufferTexture3DOES (GLenum target, GLenum att
 #define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x5_OES 0x93E8
 #define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x6_OES 0x93E9
 #endif /* GL_OES_texture_compression_astc */
+
+#ifndef GL_OES_texture_cube_map_array
+#define GL_OES_texture_cube_map_array 1
+#define GL_TEXTURE_CUBE_MAP_ARRAY_OES     0x9009
+#define GL_TEXTURE_BINDING_CUBE_MAP_ARRAY_OES 0x900A
+#define GL_SAMPLER_CUBE_MAP_ARRAY_OES     0x900C
+#define GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW_OES 0x900D
+#define GL_INT_SAMPLER_CUBE_MAP_ARRAY_OES 0x900E
+#define GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY_OES 0x900F
+#define GL_IMAGE_CUBE_MAP_ARRAY_OES       0x9054
+#define GL_INT_IMAGE_CUBE_MAP_ARRAY_OES   0x905F
+#define GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY_OES 0x906A
+#endif /* GL_OES_texture_cube_map_array */
 
 #ifndef GL_OES_texture_float
 #define GL_OES_texture_float 1
@@ -434,6 +703,19 @@ typedef void (GL_APIENTRYP PFNGLTEXSTORAGE3DMULTISAMPLEOESPROC) (GLenum target, 
 GL_APICALL void GL_APIENTRY glTexStorage3DMultisampleOES (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations);
 #endif
 #endif /* GL_OES_texture_storage_multisample_2d_array */
+
+#ifndef GL_OES_texture_view
+#define GL_OES_texture_view 1
+#define GL_TEXTURE_VIEW_MIN_LEVEL_OES     0x82DB
+#define GL_TEXTURE_VIEW_NUM_LEVELS_OES    0x82DC
+#define GL_TEXTURE_VIEW_MIN_LAYER_OES     0x82DD
+#define GL_TEXTURE_VIEW_NUM_LAYERS_OES    0x82DE
+#define GL_TEXTURE_IMMUTABLE_LEVELS       0x82DF
+typedef void (GL_APIENTRYP PFNGLTEXTUREVIEWOESPROC) (GLuint texture, GLenum target, GLuint origtexture, GLenum internalformat, GLuint minlevel, GLuint numlevels, GLuint minlayer, GLuint numlayers);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glTextureViewOES (GLuint texture, GLenum target, GLuint origtexture, GLenum internalformat, GLuint minlevel, GLuint numlevels, GLuint minlayer, GLuint numlayers);
+#endif
+#endif /* GL_OES_texture_view */
 
 #ifndef GL_OES_vertex_array_object
 #define GL_OES_vertex_array_object 1
@@ -513,6 +795,10 @@ GL_APICALL void GL_APIENTRY glGetPerfMonitorCounterDataAMD (GLuint monitor, GLen
 #define GL_Z400_BINARY_AMD                0x8740
 #endif /* GL_AMD_program_binary_Z400 */
 
+#ifndef GL_ANDROID_extension_pack_es31a
+#define GL_ANDROID_extension_pack_es31a 1
+#endif /* GL_ANDROID_extension_pack_es31a */
+
 #ifndef GL_ANGLE_depth_texture
 #define GL_ANGLE_depth_texture 1
 #endif /* GL_ANGLE_depth_texture */
@@ -587,6 +873,23 @@ typedef void (GL_APIENTRYP PFNGLGETTRANSLATEDSHADERSOURCEANGLEPROC) (GLuint shad
 GL_APICALL void GL_APIENTRY glGetTranslatedShaderSourceANGLE (GLuint shader, GLsizei bufsize, GLsizei *length, GLchar *source);
 #endif
 #endif /* GL_ANGLE_translated_shader_source */
+
+#ifndef GL_APPLE_clip_distance
+#define GL_APPLE_clip_distance 1
+#define GL_MAX_CLIP_DISTANCES_APPLE       0x0D32
+#define GL_CLIP_DISTANCE0_APPLE           0x3000
+#define GL_CLIP_DISTANCE1_APPLE           0x3001
+#define GL_CLIP_DISTANCE2_APPLE           0x3002
+#define GL_CLIP_DISTANCE3_APPLE           0x3003
+#define GL_CLIP_DISTANCE4_APPLE           0x3004
+#define GL_CLIP_DISTANCE5_APPLE           0x3005
+#define GL_CLIP_DISTANCE6_APPLE           0x3006
+#define GL_CLIP_DISTANCE7_APPLE           0x3007
+#endif /* GL_APPLE_clip_distance */
+
+#ifndef GL_APPLE_color_buffer_packed_float
+#define GL_APPLE_color_buffer_packed_float 1
+#endif /* GL_APPLE_color_buffer_packed_float */
 
 #ifndef GL_APPLE_copy_texture_levels
 #define GL_APPLE_copy_texture_levels 1
@@ -668,6 +971,14 @@ GL_APICALL void GL_APIENTRY glGetSyncivAPPLE (GLsync sync, GLenum pname, GLsizei
 #define GL_TEXTURE_MAX_LEVEL_APPLE        0x813D
 #endif /* GL_APPLE_texture_max_level */
 
+#ifndef GL_APPLE_texture_packed_float
+#define GL_APPLE_texture_packed_float 1
+#define GL_UNSIGNED_INT_10F_11F_11F_REV_APPLE 0x8C3B
+#define GL_UNSIGNED_INT_5_9_9_9_REV_APPLE 0x8C3E
+#define GL_R11F_G11F_B10F_APPLE           0x8C3A
+#define GL_RGB9_E5_APPLE                  0x8C3D
+#endif /* GL_APPLE_texture_packed_float */
+
 #ifndef GL_ARM_mali_program_binary
 #define GL_ARM_mali_program_binary 1
 #define GL_MALI_PROGRAM_BINARY_ARM        0x8F61
@@ -692,10 +1003,29 @@ GL_APICALL void GL_APIENTRY glGetSyncivAPPLE (GLsync sync, GLenum pname, GLsizei
 #define GL_ARM_shader_framebuffer_fetch_depth_stencil 1
 #endif /* GL_ARM_shader_framebuffer_fetch_depth_stencil */
 
+#ifndef GL_DMP_program_binary
+#define GL_DMP_program_binary 1
+#define GL_SMAPHS30_PROGRAM_BINARY_DMP    0x9251
+#define GL_SMAPHS_PROGRAM_BINARY_DMP      0x9252
+#define GL_DMP_PROGRAM_BINARY_DMP         0x9253
+#endif /* GL_DMP_program_binary */
+
 #ifndef GL_DMP_shader_binary
 #define GL_DMP_shader_binary 1
 #define GL_SHADER_BINARY_DMP              0x9250
 #endif /* GL_DMP_shader_binary */
+
+#ifndef GL_EXT_base_instance
+#define GL_EXT_base_instance 1
+typedef void (GL_APIENTRYP PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEEXTPROC) (GLenum mode, GLint first, GLsizei count, GLsizei instancecount, GLuint baseinstance);
+typedef void (GL_APIENTRYP PFNGLDRAWELEMENTSINSTANCEDBASEINSTANCEEXTPROC) (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLuint baseinstance);
+typedef void (GL_APIENTRYP PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEEXTPROC) (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLint basevertex, GLuint baseinstance);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glDrawArraysInstancedBaseInstanceEXT (GLenum mode, GLint first, GLsizei count, GLsizei instancecount, GLuint baseinstance);
+GL_APICALL void GL_APIENTRY glDrawElementsInstancedBaseInstanceEXT (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLuint baseinstance);
+GL_APICALL void GL_APIENTRY glDrawElementsInstancedBaseVertexBaseInstanceEXT (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLint basevertex, GLuint baseinstance);
+#endif
+#endif /* GL_EXT_base_instance */
 
 #ifndef GL_EXT_blend_minmax
 #define GL_EXT_blend_minmax 1
@@ -712,6 +1042,14 @@ GL_APICALL void GL_APIENTRY glGetSyncivAPPLE (GLsync sync, GLenum pname, GLsizei
 #define GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE_EXT 0x8211
 #define GL_UNSIGNED_NORMALIZED_EXT        0x8C17
 #endif /* GL_EXT_color_buffer_half_float */
+
+#ifndef GL_EXT_copy_image
+#define GL_EXT_copy_image 1
+typedef void (GL_APIENTRYP PFNGLCOPYIMAGESUBDATAEXTPROC) (GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glCopyImageSubDataEXT (GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth);
+#endif
+#endif /* GL_EXT_copy_image */
 
 #ifndef GL_EXT_debug_label
 #define GL_EXT_debug_label 1
@@ -830,6 +1168,42 @@ GL_APICALL void GL_APIENTRY glDrawBuffersEXT (GLsizei n, const GLenum *bufs);
 #endif
 #endif /* GL_EXT_draw_buffers */
 
+#ifndef GL_EXT_draw_buffers_indexed
+#define GL_EXT_draw_buffers_indexed 1
+typedef void (GL_APIENTRYP PFNGLENABLEIEXTPROC) (GLenum target, GLuint index);
+typedef void (GL_APIENTRYP PFNGLDISABLEIEXTPROC) (GLenum target, GLuint index);
+typedef void (GL_APIENTRYP PFNGLBLENDEQUATIONIEXTPROC) (GLuint buf, GLenum mode);
+typedef void (GL_APIENTRYP PFNGLBLENDEQUATIONSEPARATEIEXTPROC) (GLuint buf, GLenum modeRGB, GLenum modeAlpha);
+typedef void (GL_APIENTRYP PFNGLBLENDFUNCIEXTPROC) (GLuint buf, GLenum src, GLenum dst);
+typedef void (GL_APIENTRYP PFNGLBLENDFUNCSEPARATEIEXTPROC) (GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+typedef void (GL_APIENTRYP PFNGLCOLORMASKIEXTPROC) (GLuint index, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
+typedef GLboolean (GL_APIENTRYP PFNGLISENABLEDIEXTPROC) (GLenum target, GLuint index);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glEnableiEXT (GLenum target, GLuint index);
+GL_APICALL void GL_APIENTRY glDisableiEXT (GLenum target, GLuint index);
+GL_APICALL void GL_APIENTRY glBlendEquationiEXT (GLuint buf, GLenum mode);
+GL_APICALL void GL_APIENTRY glBlendEquationSeparateiEXT (GLuint buf, GLenum modeRGB, GLenum modeAlpha);
+GL_APICALL void GL_APIENTRY glBlendFunciEXT (GLuint buf, GLenum src, GLenum dst);
+GL_APICALL void GL_APIENTRY glBlendFuncSeparateiEXT (GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
+GL_APICALL void GL_APIENTRY glColorMaskiEXT (GLuint index, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
+GL_APICALL GLboolean GL_APIENTRY glIsEnablediEXT (GLenum target, GLuint index);
+#endif
+#endif /* GL_EXT_draw_buffers_indexed */
+
+#ifndef GL_EXT_draw_elements_base_vertex
+#define GL_EXT_draw_elements_base_vertex 1
+typedef void (GL_APIENTRYP PFNGLDRAWELEMENTSBASEVERTEXEXTPROC) (GLenum mode, GLsizei count, GLenum type, const void *indices, GLint basevertex);
+typedef void (GL_APIENTRYP PFNGLDRAWRANGEELEMENTSBASEVERTEXEXTPROC) (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const void *indices, GLint basevertex);
+typedef void (GL_APIENTRYP PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXEXTPROC) (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLint basevertex);
+typedef void (GL_APIENTRYP PFNGLMULTIDRAWELEMENTSBASEVERTEXEXTPROC) (GLenum mode, const GLsizei *count, GLenum type, const void *const*indices, GLsizei primcount, const GLint *basevertex);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glDrawElementsBaseVertexEXT (GLenum mode, GLsizei count, GLenum type, const void *indices, GLint basevertex);
+GL_APICALL void GL_APIENTRY glDrawRangeElementsBaseVertexEXT (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const void *indices, GLint basevertex);
+GL_APICALL void GL_APIENTRY glDrawElementsInstancedBaseVertexEXT (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLint basevertex);
+GL_APICALL void GL_APIENTRY glMultiDrawElementsBaseVertexEXT (GLenum mode, const GLsizei *count, GLenum type, const void *const*indices, GLsizei primcount, const GLint *basevertex);
+#endif
+#endif /* GL_EXT_draw_elements_base_vertex */
+
 #ifndef GL_EXT_draw_instanced
 #define GL_EXT_draw_instanced 1
 typedef void (GL_APIENTRYP PFNGLDRAWARRAYSINSTANCEDEXTPROC) (GLenum mode, GLint start, GLsizei count, GLsizei primcount);
@@ -839,6 +1213,55 @@ GL_APICALL void GL_APIENTRY glDrawArraysInstancedEXT (GLenum mode, GLint start, 
 GL_APICALL void GL_APIENTRY glDrawElementsInstancedEXT (GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei primcount);
 #endif
 #endif /* GL_EXT_draw_instanced */
+
+#ifndef GL_EXT_geometry_point_size
+#define GL_EXT_geometry_point_size 1
+#endif /* GL_EXT_geometry_point_size */
+
+#ifndef GL_EXT_geometry_shader
+#define GL_EXT_geometry_shader 1
+#define GL_GEOMETRY_SHADER_EXT            0x8DD9
+#define GL_GEOMETRY_SHADER_BIT_EXT        0x00000004
+#define GL_GEOMETRY_LINKED_VERTICES_OUT_EXT 0x8916
+#define GL_GEOMETRY_LINKED_INPUT_TYPE_EXT 0x8917
+#define GL_GEOMETRY_LINKED_OUTPUT_TYPE_EXT 0x8918
+#define GL_GEOMETRY_SHADER_INVOCATIONS_EXT 0x887F
+#define GL_LAYER_PROVOKING_VERTEX_EXT     0x825E
+#define GL_LINES_ADJACENCY_EXT            0x000A
+#define GL_LINE_STRIP_ADJACENCY_EXT       0x000B
+#define GL_TRIANGLES_ADJACENCY_EXT        0x000C
+#define GL_TRIANGLE_STRIP_ADJACENCY_EXT   0x000D
+#define GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_EXT 0x8DDF
+#define GL_MAX_GEOMETRY_UNIFORM_BLOCKS_EXT 0x8A2C
+#define GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS_EXT 0x8A32
+#define GL_MAX_GEOMETRY_INPUT_COMPONENTS_EXT 0x9123
+#define GL_MAX_GEOMETRY_OUTPUT_COMPONENTS_EXT 0x9124
+#define GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT 0x8DE0
+#define GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_EXT 0x8DE1
+#define GL_MAX_GEOMETRY_SHADER_INVOCATIONS_EXT 0x8E5A
+#define GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_EXT 0x8C29
+#define GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS_EXT 0x92CF
+#define GL_MAX_GEOMETRY_ATOMIC_COUNTERS_EXT 0x92D5
+#define GL_MAX_GEOMETRY_IMAGE_UNIFORMS_EXT 0x90CD
+#define GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS_EXT 0x90D7
+#define GL_FIRST_VERTEX_CONVENTION_EXT    0x8E4D
+#define GL_LAST_VERTEX_CONVENTION_EXT     0x8E4E
+#define GL_UNDEFINED_VERTEX_EXT           0x8260
+#define GL_PRIMITIVES_GENERATED_EXT       0x8C87
+#define GL_FRAMEBUFFER_DEFAULT_LAYERS_EXT 0x9312
+#define GL_MAX_FRAMEBUFFER_LAYERS_EXT     0x9317
+#define GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_EXT 0x8DA8
+#define GL_FRAMEBUFFER_ATTACHMENT_LAYERED_EXT 0x8DA7
+#define GL_REFERENCED_BY_GEOMETRY_SHADER_EXT 0x9309
+typedef void (GL_APIENTRYP PFNGLFRAMEBUFFERTEXTUREEXTPROC) (GLenum target, GLenum attachment, GLuint texture, GLint level);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glFramebufferTextureEXT (GLenum target, GLenum attachment, GLuint texture, GLint level);
+#endif
+#endif /* GL_EXT_geometry_shader */
+
+#ifndef GL_EXT_gpu_shader5
+#define GL_EXT_gpu_shader5 1
+#endif /* GL_EXT_gpu_shader5 */
 
 #ifndef GL_EXT_instanced_arrays
 #define GL_EXT_instanced_arrays 1
@@ -874,6 +1297,16 @@ GL_APICALL void GL_APIENTRY glMultiDrawArraysEXT (GLenum mode, const GLint *firs
 GL_APICALL void GL_APIENTRY glMultiDrawElementsEXT (GLenum mode, const GLsizei *count, GLenum type, const void *const*indices, GLsizei primcount);
 #endif
 #endif /* GL_EXT_multi_draw_arrays */
+
+#ifndef GL_EXT_multi_draw_indirect
+#define GL_EXT_multi_draw_indirect 1
+typedef void (GL_APIENTRYP PFNGLMULTIDRAWARRAYSINDIRECTEXTPROC) (GLenum mode, const void *indirect, GLsizei drawcount, GLsizei stride);
+typedef void (GL_APIENTRYP PFNGLMULTIDRAWELEMENTSINDIRECTEXTPROC) (GLenum mode, GLenum type, const void *indirect, GLsizei drawcount, GLsizei stride);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glMultiDrawArraysIndirectEXT (GLenum mode, const void *indirect, GLsizei drawcount, GLsizei stride);
+GL_APICALL void GL_APIENTRY glMultiDrawElementsIndirectEXT (GLenum mode, GLenum type, const void *indirect, GLsizei drawcount, GLsizei stride);
+#endif
+#endif /* GL_EXT_multi_draw_indirect */
 
 #ifndef GL_EXT_multisampled_render_to_texture
 #define GL_EXT_multisampled_render_to_texture 1
@@ -912,6 +1345,15 @@ GL_APICALL void GL_APIENTRY glGetIntegeri_vEXT (GLenum target, GLuint index, GLi
 #define GL_ANY_SAMPLES_PASSED_CONSERVATIVE_EXT 0x8D6A
 #endif /* GL_EXT_occlusion_query_boolean */
 
+#ifndef GL_EXT_primitive_bounding_box
+#define GL_EXT_primitive_bounding_box 1
+#define GL_PRIMITIVE_BOUNDING_BOX_EXT     0x92BE
+typedef void (GL_APIENTRYP PFNGLPRIMITIVEBOUNDINGBOXEXTPROC) (GLfloat minX, GLfloat minY, GLfloat minZ, GLfloat minW, GLfloat maxX, GLfloat maxY, GLfloat maxZ, GLfloat maxW);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glPrimitiveBoundingBoxEXT (GLfloat minX, GLfloat minY, GLfloat minZ, GLfloat minW, GLfloat maxX, GLfloat maxY, GLfloat maxZ, GLfloat maxW);
+#endif
+#endif /* GL_EXT_primitive_bounding_box */
+
 #ifndef GL_EXT_pvrtc_sRGB
 #define GL_EXT_pvrtc_sRGB 1
 #define GL_COMPRESSED_SRGB_PVRTC_2BPPV1_EXT 0x8A54
@@ -927,6 +1369,16 @@ GL_APICALL void GL_APIENTRY glGetIntegeri_vEXT (GLenum target, GLuint index, GLi
 #define GL_UNSIGNED_SHORT_4_4_4_4_REV_EXT 0x8365
 #define GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT 0x8366
 #endif /* GL_EXT_read_format_bgra */
+
+#ifndef GL_EXT_render_snorm
+#define GL_EXT_render_snorm 1
+#define GL_R8_SNORM                       0x8F94
+#define GL_RG8_SNORM                      0x8F95
+#define GL_RGBA8_SNORM                    0x8F97
+#define GL_R16_SNORM_EXT                  0x8F98
+#define GL_RG16_SNORM_EXT                 0x8F99
+#define GL_RGBA16_SNORM_EXT               0x8F9B
+#endif /* GL_EXT_render_snorm */
 
 #ifndef GL_EXT_robustness
 #define GL_EXT_robustness 1
@@ -1067,9 +1519,17 @@ GL_APICALL void GL_APIENTRY glProgramUniformMatrix4x3fvEXT (GLuint program, GLin
 #define GL_FRAGMENT_SHADER_DISCARDS_SAMPLES_EXT 0x8A52
 #endif /* GL_EXT_shader_framebuffer_fetch */
 
+#ifndef GL_EXT_shader_implicit_conversions
+#define GL_EXT_shader_implicit_conversions 1
+#endif /* GL_EXT_shader_implicit_conversions */
+
 #ifndef GL_EXT_shader_integer_mix
 #define GL_EXT_shader_integer_mix 1
 #endif /* GL_EXT_shader_integer_mix */
+
+#ifndef GL_EXT_shader_io_blocks
+#define GL_EXT_shader_io_blocks 1
+#endif /* GL_EXT_shader_io_blocks */
 
 #ifndef GL_EXT_shader_pixel_local_storage
 #define GL_EXT_shader_pixel_local_storage 1
@@ -1090,6 +1550,109 @@ GL_APICALL void GL_APIENTRY glProgramUniformMatrix4x3fvEXT (GLuint program, GLin
 #define GL_SAMPLER_2D_SHADOW_EXT          0x8B62
 #endif /* GL_EXT_shadow_samplers */
 
+#ifndef GL_EXT_tessellation_point_size
+#define GL_EXT_tessellation_point_size 1
+#endif /* GL_EXT_tessellation_point_size */
+
+#ifndef GL_EXT_tessellation_shader
+#define GL_EXT_tessellation_shader 1
+#define GL_PATCHES_EXT                    0x000E
+#define GL_PATCH_VERTICES_EXT             0x8E72
+#define GL_TESS_CONTROL_OUTPUT_VERTICES_EXT 0x8E75
+#define GL_TESS_GEN_MODE_EXT              0x8E76
+#define GL_TESS_GEN_SPACING_EXT           0x8E77
+#define GL_TESS_GEN_VERTEX_ORDER_EXT      0x8E78
+#define GL_TESS_GEN_POINT_MODE_EXT        0x8E79
+#define GL_ISOLINES_EXT                   0x8E7A
+#define GL_QUADS_EXT                      0x0007
+#define GL_FRACTIONAL_ODD_EXT             0x8E7B
+#define GL_FRACTIONAL_EVEN_EXT            0x8E7C
+#define GL_MAX_PATCH_VERTICES_EXT         0x8E7D
+#define GL_MAX_TESS_GEN_LEVEL_EXT         0x8E7E
+#define GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS_EXT 0x8E7F
+#define GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS_EXT 0x8E80
+#define GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS_EXT 0x8E81
+#define GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS_EXT 0x8E82
+#define GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS_EXT 0x8E83
+#define GL_MAX_TESS_PATCH_COMPONENTS_EXT  0x8E84
+#define GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS_EXT 0x8E85
+#define GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS_EXT 0x8E86
+#define GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS_EXT 0x8E89
+#define GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS_EXT 0x8E8A
+#define GL_MAX_TESS_CONTROL_INPUT_COMPONENTS_EXT 0x886C
+#define GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS_EXT 0x886D
+#define GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS_EXT 0x8E1E
+#define GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS_EXT 0x8E1F
+#define GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS_EXT 0x92CD
+#define GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS_EXT 0x92CE
+#define GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS_EXT 0x92D3
+#define GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS_EXT 0x92D4
+#define GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS_EXT 0x90CB
+#define GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS_EXT 0x90CC
+#define GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS_EXT 0x90D8
+#define GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS_EXT 0x90D9
+#define GL_PRIMITIVE_RESTART_FOR_PATCHES_SUPPORTED 0x8221
+#define GL_IS_PER_PATCH_EXT               0x92E7
+#define GL_REFERENCED_BY_TESS_CONTROL_SHADER_EXT 0x9307
+#define GL_REFERENCED_BY_TESS_EVALUATION_SHADER_EXT 0x9308
+#define GL_TESS_CONTROL_SHADER_EXT        0x8E88
+#define GL_TESS_EVALUATION_SHADER_EXT     0x8E87
+#define GL_TESS_CONTROL_SHADER_BIT_EXT    0x00000008
+#define GL_TESS_EVALUATION_SHADER_BIT_EXT 0x00000010
+typedef void (GL_APIENTRYP PFNGLPATCHPARAMETERIEXTPROC) (GLenum pname, GLint value);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glPatchParameteriEXT (GLenum pname, GLint value);
+#endif
+#endif /* GL_EXT_tessellation_shader */
+
+#ifndef GL_EXT_texture_border_clamp
+#define GL_EXT_texture_border_clamp 1
+#define GL_TEXTURE_BORDER_COLOR_EXT       0x1004
+#define GL_CLAMP_TO_BORDER_EXT            0x812D
+typedef void (GL_APIENTRYP PFNGLTEXPARAMETERIIVEXTPROC) (GLenum target, GLenum pname, const GLint *params);
+typedef void (GL_APIENTRYP PFNGLTEXPARAMETERIUIVEXTPROC) (GLenum target, GLenum pname, const GLuint *params);
+typedef void (GL_APIENTRYP PFNGLGETTEXPARAMETERIIVEXTPROC) (GLenum target, GLenum pname, GLint *params);
+typedef void (GL_APIENTRYP PFNGLGETTEXPARAMETERIUIVEXTPROC) (GLenum target, GLenum pname, GLuint *params);
+typedef void (GL_APIENTRYP PFNGLSAMPLERPARAMETERIIVEXTPROC) (GLuint sampler, GLenum pname, const GLint *param);
+typedef void (GL_APIENTRYP PFNGLSAMPLERPARAMETERIUIVEXTPROC) (GLuint sampler, GLenum pname, const GLuint *param);
+typedef void (GL_APIENTRYP PFNGLGETSAMPLERPARAMETERIIVEXTPROC) (GLuint sampler, GLenum pname, GLint *params);
+typedef void (GL_APIENTRYP PFNGLGETSAMPLERPARAMETERIUIVEXTPROC) (GLuint sampler, GLenum pname, GLuint *params);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glTexParameterIivEXT (GLenum target, GLenum pname, const GLint *params);
+GL_APICALL void GL_APIENTRY glTexParameterIuivEXT (GLenum target, GLenum pname, const GLuint *params);
+GL_APICALL void GL_APIENTRY glGetTexParameterIivEXT (GLenum target, GLenum pname, GLint *params);
+GL_APICALL void GL_APIENTRY glGetTexParameterIuivEXT (GLenum target, GLenum pname, GLuint *params);
+GL_APICALL void GL_APIENTRY glSamplerParameterIivEXT (GLuint sampler, GLenum pname, const GLint *param);
+GL_APICALL void GL_APIENTRY glSamplerParameterIuivEXT (GLuint sampler, GLenum pname, const GLuint *param);
+GL_APICALL void GL_APIENTRY glGetSamplerParameterIivEXT (GLuint sampler, GLenum pname, GLint *params);
+GL_APICALL void GL_APIENTRY glGetSamplerParameterIuivEXT (GLuint sampler, GLenum pname, GLuint *params);
+#endif
+#endif /* GL_EXT_texture_border_clamp */
+
+#ifndef GL_EXT_texture_buffer
+#define GL_EXT_texture_buffer 1
+#define GL_TEXTURE_BUFFER_EXT             0x8C2A
+#define GL_TEXTURE_BUFFER_BINDING_EXT     0x8C2A
+#define GL_MAX_TEXTURE_BUFFER_SIZE_EXT    0x8C2B
+#define GL_TEXTURE_BINDING_BUFFER_EXT     0x8C2C
+#define GL_TEXTURE_BUFFER_DATA_STORE_BINDING_EXT 0x8C2D
+#define GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT_EXT 0x919F
+#define GL_SAMPLER_BUFFER_EXT             0x8DC2
+#define GL_INT_SAMPLER_BUFFER_EXT         0x8DD0
+#define GL_UNSIGNED_INT_SAMPLER_BUFFER_EXT 0x8DD8
+#define GL_IMAGE_BUFFER_EXT               0x9051
+#define GL_INT_IMAGE_BUFFER_EXT           0x905C
+#define GL_UNSIGNED_INT_IMAGE_BUFFER_EXT  0x9067
+#define GL_TEXTURE_BUFFER_OFFSET_EXT      0x919D
+#define GL_TEXTURE_BUFFER_SIZE_EXT        0x919E
+typedef void (GL_APIENTRYP PFNGLTEXBUFFEREXTPROC) (GLenum target, GLenum internalformat, GLuint buffer);
+typedef void (GL_APIENTRYP PFNGLTEXBUFFERRANGEEXTPROC) (GLenum target, GLenum internalformat, GLuint buffer, GLintptr offset, GLsizeiptr size);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glTexBufferEXT (GLenum target, GLenum internalformat, GLuint buffer);
+GL_APICALL void GL_APIENTRY glTexBufferRangeEXT (GLenum target, GLenum internalformat, GLuint buffer, GLintptr offset, GLsizeiptr size);
+#endif
+#endif /* GL_EXT_texture_buffer */
+
 #ifndef GL_EXT_texture_compression_dxt1
 #define GL_EXT_texture_compression_dxt1 1
 #define GL_COMPRESSED_RGB_S3TC_DXT1_EXT   0x83F0
@@ -1102,6 +1665,19 @@ GL_APICALL void GL_APIENTRY glProgramUniformMatrix4x3fvEXT (GLuint program, GLin
 #define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
 #endif /* GL_EXT_texture_compression_s3tc */
 
+#ifndef GL_EXT_texture_cube_map_array
+#define GL_EXT_texture_cube_map_array 1
+#define GL_TEXTURE_CUBE_MAP_ARRAY_EXT     0x9009
+#define GL_TEXTURE_BINDING_CUBE_MAP_ARRAY_EXT 0x900A
+#define GL_SAMPLER_CUBE_MAP_ARRAY_EXT     0x900C
+#define GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW_EXT 0x900D
+#define GL_INT_SAMPLER_CUBE_MAP_ARRAY_EXT 0x900E
+#define GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY_EXT 0x900F
+#define GL_IMAGE_CUBE_MAP_ARRAY_EXT       0x9054
+#define GL_INT_IMAGE_CUBE_MAP_ARRAY_EXT   0x905F
+#define GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY_EXT 0x906A
+#endif /* GL_EXT_texture_cube_map_array */
+
 #ifndef GL_EXT_texture_filter_anisotropic
 #define GL_EXT_texture_filter_anisotropic 1
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT     0x84FE
@@ -1111,6 +1687,15 @@ GL_APICALL void GL_APIENTRY glProgramUniformMatrix4x3fvEXT (GLuint program, GLin
 #ifndef GL_EXT_texture_format_BGRA8888
 #define GL_EXT_texture_format_BGRA8888 1
 #endif /* GL_EXT_texture_format_BGRA8888 */
+
+#ifndef GL_EXT_texture_norm16
+#define GL_EXT_texture_norm16 1
+#define GL_R16_EXT                        0x822A
+#define GL_RG16_EXT                       0x822C
+#define GL_RGBA16_EXT                     0x805B
+#define GL_RGB16_EXT                      0x8054
+#define GL_RGB16_SNORM_EXT                0x8F9A
+#endif /* GL_EXT_texture_norm16 */
 
 #ifndef GL_EXT_texture_rg
 #define GL_EXT_texture_rg 1
@@ -1164,6 +1749,18 @@ GL_APICALL void GL_APIENTRY glTextureStorage3DEXT (GLuint texture, GLenum target
 #define GL_UNSIGNED_INT_2_10_10_10_REV_EXT 0x8368
 #endif /* GL_EXT_texture_type_2_10_10_10_REV */
 
+#ifndef GL_EXT_texture_view
+#define GL_EXT_texture_view 1
+#define GL_TEXTURE_VIEW_MIN_LEVEL_EXT     0x82DB
+#define GL_TEXTURE_VIEW_NUM_LEVELS_EXT    0x82DC
+#define GL_TEXTURE_VIEW_MIN_LAYER_EXT     0x82DD
+#define GL_TEXTURE_VIEW_NUM_LAYERS_EXT    0x82DE
+typedef void (GL_APIENTRYP PFNGLTEXTUREVIEWEXTPROC) (GLuint texture, GLenum target, GLuint origtexture, GLenum internalformat, GLuint minlevel, GLuint numlevels, GLuint minlayer, GLuint numlayers);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glTextureViewEXT (GLuint texture, GLenum target, GLuint origtexture, GLenum internalformat, GLuint minlevel, GLuint numlevels, GLuint minlayer, GLuint numlayers);
+#endif
+#endif /* GL_EXT_texture_view */
+
 #ifndef GL_EXT_unpack_subimage
 #define GL_EXT_unpack_subimage 1
 #define GL_UNPACK_ROW_LENGTH_EXT          0x0CF2
@@ -1189,13 +1786,6 @@ GL_APICALL void GL_APIENTRY glRenderbufferStorageMultisampleIMG (GLenum target, 
 GL_APICALL void GL_APIENTRY glFramebufferTexture2DMultisampleIMG (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLsizei samples);
 #endif
 #endif /* GL_IMG_multisampled_render_to_texture */
-
-
-#ifndef GL_IMG_texture_format_BGRA8888
-#define GL_IMG_texture_format_BGRA8888 1
-#define GL_BGRA							0x80E1
-#endif /* GL_IMG_texture_format_BGRA8888 */
-
 
 #ifndef GL_IMG_program_binary
 #define GL_IMG_program_binary 1
@@ -1273,6 +1863,38 @@ GL_APICALL void GL_APIENTRY glGetPerfQueryInfoINTEL (GLuint queryId, GLuint quer
 #endif
 #endif /* GL_INTEL_performance_query */
 
+#ifndef GL_NV_bindless_texture
+#define GL_NV_bindless_texture 1
+typedef GLuint64 (GL_APIENTRYP PFNGLGETTEXTUREHANDLENVPROC) (GLuint texture);
+typedef GLuint64 (GL_APIENTRYP PFNGLGETTEXTURESAMPLERHANDLENVPROC) (GLuint texture, GLuint sampler);
+typedef void (GL_APIENTRYP PFNGLMAKETEXTUREHANDLERESIDENTNVPROC) (GLuint64 handle);
+typedef void (GL_APIENTRYP PFNGLMAKETEXTUREHANDLENONRESIDENTNVPROC) (GLuint64 handle);
+typedef GLuint64 (GL_APIENTRYP PFNGLGETIMAGEHANDLENVPROC) (GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum format);
+typedef void (GL_APIENTRYP PFNGLMAKEIMAGEHANDLERESIDENTNVPROC) (GLuint64 handle, GLenum access);
+typedef void (GL_APIENTRYP PFNGLMAKEIMAGEHANDLENONRESIDENTNVPROC) (GLuint64 handle);
+typedef void (GL_APIENTRYP PFNGLUNIFORMHANDLEUI64NVPROC) (GLint location, GLuint64 value);
+typedef void (GL_APIENTRYP PFNGLUNIFORMHANDLEUI64VNVPROC) (GLint location, GLsizei count, const GLuint64 *value);
+typedef void (GL_APIENTRYP PFNGLPROGRAMUNIFORMHANDLEUI64NVPROC) (GLuint program, GLint location, GLuint64 value);
+typedef void (GL_APIENTRYP PFNGLPROGRAMUNIFORMHANDLEUI64VNVPROC) (GLuint program, GLint location, GLsizei count, const GLuint64 *values);
+typedef GLboolean (GL_APIENTRYP PFNGLISTEXTUREHANDLERESIDENTNVPROC) (GLuint64 handle);
+typedef GLboolean (GL_APIENTRYP PFNGLISIMAGEHANDLERESIDENTNVPROC) (GLuint64 handle);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL GLuint64 GL_APIENTRY glGetTextureHandleNV (GLuint texture);
+GL_APICALL GLuint64 GL_APIENTRY glGetTextureSamplerHandleNV (GLuint texture, GLuint sampler);
+GL_APICALL void GL_APIENTRY glMakeTextureHandleResidentNV (GLuint64 handle);
+GL_APICALL void GL_APIENTRY glMakeTextureHandleNonResidentNV (GLuint64 handle);
+GL_APICALL GLuint64 GL_APIENTRY glGetImageHandleNV (GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum format);
+GL_APICALL void GL_APIENTRY glMakeImageHandleResidentNV (GLuint64 handle, GLenum access);
+GL_APICALL void GL_APIENTRY glMakeImageHandleNonResidentNV (GLuint64 handle);
+GL_APICALL void GL_APIENTRY glUniformHandleui64NV (GLint location, GLuint64 value);
+GL_APICALL void GL_APIENTRY glUniformHandleui64vNV (GLint location, GLsizei count, const GLuint64 *value);
+GL_APICALL void GL_APIENTRY glProgramUniformHandleui64NV (GLuint program, GLint location, GLuint64 value);
+GL_APICALL void GL_APIENTRY glProgramUniformHandleui64vNV (GLuint program, GLint location, GLsizei count, const GLuint64 *values);
+GL_APICALL GLboolean GL_APIENTRY glIsTextureHandleResidentNV (GLuint64 handle);
+GL_APICALL GLboolean GL_APIENTRY glIsImageHandleResidentNV (GLuint64 handle);
+#endif
+#endif /* GL_NV_bindless_texture */
+
 #ifndef GL_NV_blend_equation_advanced
 #define GL_NV_blend_equation_advanced 1
 #define GL_BLEND_OVERLAP_NV               0x9281
@@ -1336,6 +1958,20 @@ GL_APICALL void GL_APIENTRY glBlendBarrierNV (void);
 #define GL_NV_blend_equation_advanced_coherent 1
 #define GL_BLEND_ADVANCED_COHERENT_NV     0x9285
 #endif /* GL_NV_blend_equation_advanced_coherent */
+
+#ifndef GL_NV_conditional_render
+#define GL_NV_conditional_render 1
+#define GL_QUERY_WAIT_NV                  0x8E13
+#define GL_QUERY_NO_WAIT_NV               0x8E14
+#define GL_QUERY_BY_REGION_WAIT_NV        0x8E15
+#define GL_QUERY_BY_REGION_NO_WAIT_NV     0x8E16
+typedef void (GL_APIENTRYP PFNGLBEGINCONDITIONALRENDERNVPROC) (GLuint id, GLenum mode);
+typedef void (GL_APIENTRYP PFNGLENDCONDITIONALRENDERNVPROC) (void);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glBeginConditionalRenderNV (GLuint id, GLenum mode);
+GL_APICALL void GL_APIENTRY glEndConditionalRenderNV (void);
+#endif
+#endif /* GL_NV_conditional_render */
 
 #ifndef GL_NV_copy_buffer
 #define GL_NV_copy_buffer 1
@@ -1481,6 +2117,10 @@ GL_APICALL void GL_APIENTRY glRenderbufferStorageMultisampleNV (GLenum target, G
 #define GL_NV_generate_mipmap_sRGB 1
 #endif /* GL_NV_generate_mipmap_sRGB */
 
+#ifndef GL_NV_image_formats
+#define GL_NV_image_formats 1
+#endif /* GL_NV_image_formats */
+
 #ifndef GL_NV_instanced_arrays
 #define GL_NV_instanced_arrays 1
 #define GL_VERTEX_ATTRIB_ARRAY_DIVISOR_NV 0x88FE
@@ -1489,6 +2129,20 @@ typedef void (GL_APIENTRYP PFNGLVERTEXATTRIBDIVISORNVPROC) (GLuint index, GLuint
 GL_APICALL void GL_APIENTRY glVertexAttribDivisorNV (GLuint index, GLuint divisor);
 #endif
 #endif /* GL_NV_instanced_arrays */
+
+#ifndef GL_NV_internalformat_sample_query
+#define GL_NV_internalformat_sample_query 1
+#define GL_TEXTURE_2D_MULTISAMPLE         0x9100
+#define GL_TEXTURE_2D_MULTISAMPLE_ARRAY   0x9102
+#define GL_MULTISAMPLES_NV                0x9371
+#define GL_SUPERSAMPLE_SCALE_X_NV         0x9372
+#define GL_SUPERSAMPLE_SCALE_Y_NV         0x9373
+#define GL_CONFORMANT_NV                  0x9374
+typedef void (GL_APIENTRYP PFNGLGETINTERNALFORMATSAMPLEIVNVPROC) (GLenum target, GLenum internalformat, GLsizei samples, GLenum pname, GLsizei bufSize, GLint *params);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glGetInternalformatSampleivNV (GLenum target, GLenum internalformat, GLsizei samples, GLenum pname, GLsizei bufSize, GLint *params);
+#endif
+#endif /* GL_NV_internalformat_sample_query */
 
 #ifndef GL_NV_non_square_matrices
 #define GL_NV_non_square_matrices 1
@@ -1513,6 +2167,279 @@ GL_APICALL void GL_APIENTRY glUniformMatrix3x4fvNV (GLint location, GLsizei coun
 GL_APICALL void GL_APIENTRY glUniformMatrix4x3fvNV (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
 #endif
 #endif /* GL_NV_non_square_matrices */
+
+#ifndef GL_NV_path_rendering
+#define GL_NV_path_rendering 1
+#define GL_PATH_FORMAT_SVG_NV             0x9070
+#define GL_PATH_FORMAT_PS_NV              0x9071
+#define GL_STANDARD_FONT_NAME_NV          0x9072
+#define GL_SYSTEM_FONT_NAME_NV            0x9073
+#define GL_FILE_NAME_NV                   0x9074
+#define GL_PATH_STROKE_WIDTH_NV           0x9075
+#define GL_PATH_END_CAPS_NV               0x9076
+#define GL_PATH_INITIAL_END_CAP_NV        0x9077
+#define GL_PATH_TERMINAL_END_CAP_NV       0x9078
+#define GL_PATH_JOIN_STYLE_NV             0x9079
+#define GL_PATH_MITER_LIMIT_NV            0x907A
+#define GL_PATH_DASH_CAPS_NV              0x907B
+#define GL_PATH_INITIAL_DASH_CAP_NV       0x907C
+#define GL_PATH_TERMINAL_DASH_CAP_NV      0x907D
+#define GL_PATH_DASH_OFFSET_NV            0x907E
+#define GL_PATH_CLIENT_LENGTH_NV          0x907F
+#define GL_PATH_FILL_MODE_NV              0x9080
+#define GL_PATH_FILL_MASK_NV              0x9081
+#define GL_PATH_FILL_COVER_MODE_NV        0x9082
+#define GL_PATH_STROKE_COVER_MODE_NV      0x9083
+#define GL_PATH_STROKE_MASK_NV            0x9084
+#define GL_COUNT_UP_NV                    0x9088
+#define GL_COUNT_DOWN_NV                  0x9089
+#define GL_PATH_OBJECT_BOUNDING_BOX_NV    0x908A
+#define GL_CONVEX_HULL_NV                 0x908B
+#define GL_BOUNDING_BOX_NV                0x908D
+#define GL_TRANSLATE_X_NV                 0x908E
+#define GL_TRANSLATE_Y_NV                 0x908F
+#define GL_TRANSLATE_2D_NV                0x9090
+#define GL_TRANSLATE_3D_NV                0x9091
+#define GL_AFFINE_2D_NV                   0x9092
+#define GL_AFFINE_3D_NV                   0x9094
+#define GL_TRANSPOSE_AFFINE_2D_NV         0x9096
+#define GL_TRANSPOSE_AFFINE_3D_NV         0x9098
+#define GL_UTF8_NV                        0x909A
+#define GL_UTF16_NV                       0x909B
+#define GL_BOUNDING_BOX_OF_BOUNDING_BOXES_NV 0x909C
+#define GL_PATH_COMMAND_COUNT_NV          0x909D
+#define GL_PATH_COORD_COUNT_NV            0x909E
+#define GL_PATH_DASH_ARRAY_COUNT_NV       0x909F
+#define GL_PATH_COMPUTED_LENGTH_NV        0x90A0
+#define GL_PATH_FILL_BOUNDING_BOX_NV      0x90A1
+#define GL_PATH_STROKE_BOUNDING_BOX_NV    0x90A2
+#define GL_SQUARE_NV                      0x90A3
+#define GL_ROUND_NV                       0x90A4
+#define GL_TRIANGULAR_NV                  0x90A5
+#define GL_BEVEL_NV                       0x90A6
+#define GL_MITER_REVERT_NV                0x90A7
+#define GL_MITER_TRUNCATE_NV              0x90A8
+#define GL_SKIP_MISSING_GLYPH_NV          0x90A9
+#define GL_USE_MISSING_GLYPH_NV           0x90AA
+#define GL_PATH_ERROR_POSITION_NV         0x90AB
+#define GL_ACCUM_ADJACENT_PAIRS_NV        0x90AD
+#define GL_ADJACENT_PAIRS_NV              0x90AE
+#define GL_FIRST_TO_REST_NV               0x90AF
+#define GL_PATH_GEN_MODE_NV               0x90B0
+#define GL_PATH_GEN_COEFF_NV              0x90B1
+#define GL_PATH_GEN_COMPONENTS_NV         0x90B3
+#define GL_PATH_STENCIL_FUNC_NV           0x90B7
+#define GL_PATH_STENCIL_REF_NV            0x90B8
+#define GL_PATH_STENCIL_VALUE_MASK_NV     0x90B9
+#define GL_PATH_STENCIL_DEPTH_OFFSET_FACTOR_NV 0x90BD
+#define GL_PATH_STENCIL_DEPTH_OFFSET_UNITS_NV 0x90BE
+#define GL_PATH_COVER_DEPTH_FUNC_NV       0x90BF
+#define GL_PATH_DASH_OFFSET_RESET_NV      0x90B4
+#define GL_MOVE_TO_RESETS_NV              0x90B5
+#define GL_MOVE_TO_CONTINUES_NV           0x90B6
+#define GL_CLOSE_PATH_NV                  0x00
+#define GL_MOVE_TO_NV                     0x02
+#define GL_RELATIVE_MOVE_TO_NV            0x03
+#define GL_LINE_TO_NV                     0x04
+#define GL_RELATIVE_LINE_TO_NV            0x05
+#define GL_HORIZONTAL_LINE_TO_NV          0x06
+#define GL_RELATIVE_HORIZONTAL_LINE_TO_NV 0x07
+#define GL_VERTICAL_LINE_TO_NV            0x08
+#define GL_RELATIVE_VERTICAL_LINE_TO_NV   0x09
+#define GL_QUADRATIC_CURVE_TO_NV          0x0A
+#define GL_RELATIVE_QUADRATIC_CURVE_TO_NV 0x0B
+#define GL_CUBIC_CURVE_TO_NV              0x0C
+#define GL_RELATIVE_CUBIC_CURVE_TO_NV     0x0D
+#define GL_SMOOTH_QUADRATIC_CURVE_TO_NV   0x0E
+#define GL_RELATIVE_SMOOTH_QUADRATIC_CURVE_TO_NV 0x0F
+#define GL_SMOOTH_CUBIC_CURVE_TO_NV       0x10
+#define GL_RELATIVE_SMOOTH_CUBIC_CURVE_TO_NV 0x11
+#define GL_SMALL_CCW_ARC_TO_NV            0x12
+#define GL_RELATIVE_SMALL_CCW_ARC_TO_NV   0x13
+#define GL_SMALL_CW_ARC_TO_NV             0x14
+#define GL_RELATIVE_SMALL_CW_ARC_TO_NV    0x15
+#define GL_LARGE_CCW_ARC_TO_NV            0x16
+#define GL_RELATIVE_LARGE_CCW_ARC_TO_NV   0x17
+#define GL_LARGE_CW_ARC_TO_NV             0x18
+#define GL_RELATIVE_LARGE_CW_ARC_TO_NV    0x19
+#define GL_RESTART_PATH_NV                0xF0
+#define GL_DUP_FIRST_CUBIC_CURVE_TO_NV    0xF2
+#define GL_DUP_LAST_CUBIC_CURVE_TO_NV     0xF4
+#define GL_RECT_NV                        0xF6
+#define GL_CIRCULAR_CCW_ARC_TO_NV         0xF8
+#define GL_CIRCULAR_CW_ARC_TO_NV          0xFA
+#define GL_CIRCULAR_TANGENT_ARC_TO_NV     0xFC
+#define GL_ARC_TO_NV                      0xFE
+#define GL_RELATIVE_ARC_TO_NV             0xFF
+#define GL_BOLD_BIT_NV                    0x01
+#define GL_ITALIC_BIT_NV                  0x02
+#define GL_GLYPH_WIDTH_BIT_NV             0x01
+#define GL_GLYPH_HEIGHT_BIT_NV            0x02
+#define GL_GLYPH_HORIZONTAL_BEARING_X_BIT_NV 0x04
+#define GL_GLYPH_HORIZONTAL_BEARING_Y_BIT_NV 0x08
+#define GL_GLYPH_HORIZONTAL_BEARING_ADVANCE_BIT_NV 0x10
+#define GL_GLYPH_VERTICAL_BEARING_X_BIT_NV 0x20
+#define GL_GLYPH_VERTICAL_BEARING_Y_BIT_NV 0x40
+#define GL_GLYPH_VERTICAL_BEARING_ADVANCE_BIT_NV 0x80
+#define GL_GLYPH_HAS_KERNING_BIT_NV       0x100
+#define GL_FONT_X_MIN_BOUNDS_BIT_NV       0x00010000
+#define GL_FONT_Y_MIN_BOUNDS_BIT_NV       0x00020000
+#define GL_FONT_X_MAX_BOUNDS_BIT_NV       0x00040000
+#define GL_FONT_Y_MAX_BOUNDS_BIT_NV       0x00080000
+#define GL_FONT_UNITS_PER_EM_BIT_NV       0x00100000
+#define GL_FONT_ASCENDER_BIT_NV           0x00200000
+#define GL_FONT_DESCENDER_BIT_NV          0x00400000
+#define GL_FONT_HEIGHT_BIT_NV             0x00800000
+#define GL_FONT_MAX_ADVANCE_WIDTH_BIT_NV  0x01000000
+#define GL_FONT_MAX_ADVANCE_HEIGHT_BIT_NV 0x02000000
+#define GL_FONT_UNDERLINE_POSITION_BIT_NV 0x04000000
+#define GL_FONT_UNDERLINE_THICKNESS_BIT_NV 0x08000000
+#define GL_FONT_HAS_KERNING_BIT_NV        0x10000000
+#define GL_ROUNDED_RECT_NV                0xE8
+#define GL_RELATIVE_ROUNDED_RECT_NV       0xE9
+#define GL_ROUNDED_RECT2_NV               0xEA
+#define GL_RELATIVE_ROUNDED_RECT2_NV      0xEB
+#define GL_ROUNDED_RECT4_NV               0xEC
+#define GL_RELATIVE_ROUNDED_RECT4_NV      0xED
+#define GL_ROUNDED_RECT8_NV               0xEE
+#define GL_RELATIVE_ROUNDED_RECT8_NV      0xEF
+#define GL_RELATIVE_RECT_NV               0xF7
+#define GL_FONT_GLYPHS_AVAILABLE_NV       0x9368
+#define GL_FONT_TARGET_UNAVAILABLE_NV     0x9369
+#define GL_FONT_UNAVAILABLE_NV            0x936A
+#define GL_FONT_UNINTELLIGIBLE_NV         0x936B
+#define GL_CONIC_CURVE_TO_NV              0x1A
+#define GL_RELATIVE_CONIC_CURVE_TO_NV     0x1B
+#define GL_FONT_NUM_GLYPH_INDICES_BIT_NV  0x20000000
+#define GL_STANDARD_FONT_FORMAT_NV        0x936C
+#define GL_PATH_PROJECTION_NV             0x1701
+#define GL_PATH_MODELVIEW_NV              0x1700
+#define GL_PATH_MODELVIEW_STACK_DEPTH_NV  0x0BA3
+#define GL_PATH_MODELVIEW_MATRIX_NV       0x0BA6
+#define GL_PATH_MAX_MODELVIEW_STACK_DEPTH_NV 0x0D36
+#define GL_PATH_TRANSPOSE_MODELVIEW_MATRIX_NV 0x84E3
+#define GL_PATH_PROJECTION_STACK_DEPTH_NV 0x0BA4
+#define GL_PATH_PROJECTION_MATRIX_NV      0x0BA7
+#define GL_PATH_MAX_PROJECTION_STACK_DEPTH_NV 0x0D38
+#define GL_PATH_TRANSPOSE_PROJECTION_MATRIX_NV 0x84E4
+#define GL_FRAGMENT_INPUT_NV              0x936D
+typedef GLuint (GL_APIENTRYP PFNGLGENPATHSNVPROC) (GLsizei range);
+typedef void (GL_APIENTRYP PFNGLDELETEPATHSNVPROC) (GLuint path, GLsizei range);
+typedef GLboolean (GL_APIENTRYP PFNGLISPATHNVPROC) (GLuint path);
+typedef void (GL_APIENTRYP PFNGLPATHCOMMANDSNVPROC) (GLuint path, GLsizei numCommands, const GLubyte *commands, GLsizei numCoords, GLenum coordType, const void *coords);
+typedef void (GL_APIENTRYP PFNGLPATHCOORDSNVPROC) (GLuint path, GLsizei numCoords, GLenum coordType, const void *coords);
+typedef void (GL_APIENTRYP PFNGLPATHSUBCOMMANDSNVPROC) (GLuint path, GLsizei commandStart, GLsizei commandsToDelete, GLsizei numCommands, const GLubyte *commands, GLsizei numCoords, GLenum coordType, const void *coords);
+typedef void (GL_APIENTRYP PFNGLPATHSUBCOORDSNVPROC) (GLuint path, GLsizei coordStart, GLsizei numCoords, GLenum coordType, const void *coords);
+typedef void (GL_APIENTRYP PFNGLPATHSTRINGNVPROC) (GLuint path, GLenum format, GLsizei length, const void *pathString);
+typedef void (GL_APIENTRYP PFNGLPATHGLYPHSNVPROC) (GLuint firstPathName, GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLsizei numGlyphs, GLenum type, const void *charcodes, GLenum handleMissingGlyphs, GLuint pathParameterTemplate, GLfloat emScale);
+typedef void (GL_APIENTRYP PFNGLPATHGLYPHRANGENVPROC) (GLuint firstPathName, GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLuint firstGlyph, GLsizei numGlyphs, GLenum handleMissingGlyphs, GLuint pathParameterTemplate, GLfloat emScale);
+typedef void (GL_APIENTRYP PFNGLWEIGHTPATHSNVPROC) (GLuint resultPath, GLsizei numPaths, const GLuint *paths, const GLfloat *weights);
+typedef void (GL_APIENTRYP PFNGLCOPYPATHNVPROC) (GLuint resultPath, GLuint srcPath);
+typedef void (GL_APIENTRYP PFNGLINTERPOLATEPATHSNVPROC) (GLuint resultPath, GLuint pathA, GLuint pathB, GLfloat weight);
+typedef void (GL_APIENTRYP PFNGLTRANSFORMPATHNVPROC) (GLuint resultPath, GLuint srcPath, GLenum transformType, const GLfloat *transformValues);
+typedef void (GL_APIENTRYP PFNGLPATHPARAMETERIVNVPROC) (GLuint path, GLenum pname, const GLint *value);
+typedef void (GL_APIENTRYP PFNGLPATHPARAMETERINVPROC) (GLuint path, GLenum pname, GLint value);
+typedef void (GL_APIENTRYP PFNGLPATHPARAMETERFVNVPROC) (GLuint path, GLenum pname, const GLfloat *value);
+typedef void (GL_APIENTRYP PFNGLPATHPARAMETERFNVPROC) (GLuint path, GLenum pname, GLfloat value);
+typedef void (GL_APIENTRYP PFNGLPATHDASHARRAYNVPROC) (GLuint path, GLsizei dashCount, const GLfloat *dashArray);
+typedef void (GL_APIENTRYP PFNGLPATHSTENCILFUNCNVPROC) (GLenum func, GLint ref, GLuint mask);
+typedef void (GL_APIENTRYP PFNGLPATHSTENCILDEPTHOFFSETNVPROC) (GLfloat factor, GLfloat units);
+typedef void (GL_APIENTRYP PFNGLSTENCILFILLPATHNVPROC) (GLuint path, GLenum fillMode, GLuint mask);
+typedef void (GL_APIENTRYP PFNGLSTENCILSTROKEPATHNVPROC) (GLuint path, GLint reference, GLuint mask);
+typedef void (GL_APIENTRYP PFNGLSTENCILFILLPATHINSTANCEDNVPROC) (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum fillMode, GLuint mask, GLenum transformType, const GLfloat *transformValues);
+typedef void (GL_APIENTRYP PFNGLSTENCILSTROKEPATHINSTANCEDNVPROC) (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLint reference, GLuint mask, GLenum transformType, const GLfloat *transformValues);
+typedef void (GL_APIENTRYP PFNGLPATHCOVERDEPTHFUNCNVPROC) (GLenum func);
+typedef void (GL_APIENTRYP PFNGLCOVERFILLPATHNVPROC) (GLuint path, GLenum coverMode);
+typedef void (GL_APIENTRYP PFNGLCOVERSTROKEPATHNVPROC) (GLuint path, GLenum coverMode);
+typedef void (GL_APIENTRYP PFNGLCOVERFILLPATHINSTANCEDNVPROC) (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum coverMode, GLenum transformType, const GLfloat *transformValues);
+typedef void (GL_APIENTRYP PFNGLCOVERSTROKEPATHINSTANCEDNVPROC) (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum coverMode, GLenum transformType, const GLfloat *transformValues);
+typedef void (GL_APIENTRYP PFNGLGETPATHPARAMETERIVNVPROC) (GLuint path, GLenum pname, GLint *value);
+typedef void (GL_APIENTRYP PFNGLGETPATHPARAMETERFVNVPROC) (GLuint path, GLenum pname, GLfloat *value);
+typedef void (GL_APIENTRYP PFNGLGETPATHCOMMANDSNVPROC) (GLuint path, GLubyte *commands);
+typedef void (GL_APIENTRYP PFNGLGETPATHCOORDSNVPROC) (GLuint path, GLfloat *coords);
+typedef void (GL_APIENTRYP PFNGLGETPATHDASHARRAYNVPROC) (GLuint path, GLfloat *dashArray);
+typedef void (GL_APIENTRYP PFNGLGETPATHMETRICSNVPROC) (GLbitfield metricQueryMask, GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLsizei stride, GLfloat *metrics);
+typedef void (GL_APIENTRYP PFNGLGETPATHMETRICRANGENVPROC) (GLbitfield metricQueryMask, GLuint firstPathName, GLsizei numPaths, GLsizei stride, GLfloat *metrics);
+typedef void (GL_APIENTRYP PFNGLGETPATHSPACINGNVPROC) (GLenum pathListMode, GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLfloat advanceScale, GLfloat kerningScale, GLenum transformType, GLfloat *returnedSpacing);
+typedef GLboolean (GL_APIENTRYP PFNGLISPOINTINFILLPATHNVPROC) (GLuint path, GLuint mask, GLfloat x, GLfloat y);
+typedef GLboolean (GL_APIENTRYP PFNGLISPOINTINSTROKEPATHNVPROC) (GLuint path, GLfloat x, GLfloat y);
+typedef GLfloat (GL_APIENTRYP PFNGLGETPATHLENGTHNVPROC) (GLuint path, GLsizei startSegment, GLsizei numSegments);
+typedef GLboolean (GL_APIENTRYP PFNGLPOINTALONGPATHNVPROC) (GLuint path, GLsizei startSegment, GLsizei numSegments, GLfloat distance, GLfloat *x, GLfloat *y, GLfloat *tangentX, GLfloat *tangentY);
+typedef void (GL_APIENTRYP PFNGLMATRIXLOAD3X2FNVPROC) (GLenum matrixMode, const GLfloat *m);
+typedef void (GL_APIENTRYP PFNGLMATRIXLOAD3X3FNVPROC) (GLenum matrixMode, const GLfloat *m);
+typedef void (GL_APIENTRYP PFNGLMATRIXLOADTRANSPOSE3X3FNVPROC) (GLenum matrixMode, const GLfloat *m);
+typedef void (GL_APIENTRYP PFNGLMATRIXMULT3X2FNVPROC) (GLenum matrixMode, const GLfloat *m);
+typedef void (GL_APIENTRYP PFNGLMATRIXMULT3X3FNVPROC) (GLenum matrixMode, const GLfloat *m);
+typedef void (GL_APIENTRYP PFNGLMATRIXMULTTRANSPOSE3X3FNVPROC) (GLenum matrixMode, const GLfloat *m);
+typedef void (GL_APIENTRYP PFNGLSTENCILTHENCOVERFILLPATHNVPROC) (GLuint path, GLenum fillMode, GLuint mask, GLenum coverMode);
+typedef void (GL_APIENTRYP PFNGLSTENCILTHENCOVERSTROKEPATHNVPROC) (GLuint path, GLint reference, GLuint mask, GLenum coverMode);
+typedef void (GL_APIENTRYP PFNGLSTENCILTHENCOVERFILLPATHINSTANCEDNVPROC) (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum fillMode, GLuint mask, GLenum coverMode, GLenum transformType, const GLfloat *transformValues);
+typedef void (GL_APIENTRYP PFNGLSTENCILTHENCOVERSTROKEPATHINSTANCEDNVPROC) (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLint reference, GLuint mask, GLenum coverMode, GLenum transformType, const GLfloat *transformValues);
+typedef GLenum (GL_APIENTRYP PFNGLPATHGLYPHINDEXRANGENVPROC) (GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLuint pathParameterTemplate, GLfloat emScale, GLuint baseAndCount[2]);
+typedef GLenum (GL_APIENTRYP PFNGLPATHGLYPHINDEXARRAYNVPROC) (GLuint firstPathName, GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLuint firstGlyphIndex, GLsizei numGlyphs, GLuint pathParameterTemplate, GLfloat emScale);
+typedef GLenum (GL_APIENTRYP PFNGLPATHMEMORYGLYPHINDEXARRAYNVPROC) (GLuint firstPathName, GLenum fontTarget, GLsizeiptr fontSize, const void *fontData, GLsizei faceIndex, GLuint firstGlyphIndex, GLsizei numGlyphs, GLuint pathParameterTemplate, GLfloat emScale);
+typedef void (GL_APIENTRYP PFNGLPROGRAMPATHFRAGMENTINPUTGENNVPROC) (GLuint program, GLint location, GLenum genMode, GLint components, const GLfloat *coeffs);
+typedef void (GL_APIENTRYP PFNGLGETPROGRAMRESOURCEFVNVPROC) (GLuint program, GLenum programInterface, GLuint index, GLsizei propCount, const GLenum *props, GLsizei bufSize, GLsizei *length, GLfloat *params);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL GLuint GL_APIENTRY glGenPathsNV (GLsizei range);
+GL_APICALL void GL_APIENTRY glDeletePathsNV (GLuint path, GLsizei range);
+GL_APICALL GLboolean GL_APIENTRY glIsPathNV (GLuint path);
+GL_APICALL void GL_APIENTRY glPathCommandsNV (GLuint path, GLsizei numCommands, const GLubyte *commands, GLsizei numCoords, GLenum coordType, const void *coords);
+GL_APICALL void GL_APIENTRY glPathCoordsNV (GLuint path, GLsizei numCoords, GLenum coordType, const void *coords);
+GL_APICALL void GL_APIENTRY glPathSubCommandsNV (GLuint path, GLsizei commandStart, GLsizei commandsToDelete, GLsizei numCommands, const GLubyte *commands, GLsizei numCoords, GLenum coordType, const void *coords);
+GL_APICALL void GL_APIENTRY glPathSubCoordsNV (GLuint path, GLsizei coordStart, GLsizei numCoords, GLenum coordType, const void *coords);
+GL_APICALL void GL_APIENTRY glPathStringNV (GLuint path, GLenum format, GLsizei length, const void *pathString);
+GL_APICALL void GL_APIENTRY glPathGlyphsNV (GLuint firstPathName, GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLsizei numGlyphs, GLenum type, const void *charcodes, GLenum handleMissingGlyphs, GLuint pathParameterTemplate, GLfloat emScale);
+GL_APICALL void GL_APIENTRY glPathGlyphRangeNV (GLuint firstPathName, GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLuint firstGlyph, GLsizei numGlyphs, GLenum handleMissingGlyphs, GLuint pathParameterTemplate, GLfloat emScale);
+GL_APICALL void GL_APIENTRY glWeightPathsNV (GLuint resultPath, GLsizei numPaths, const GLuint *paths, const GLfloat *weights);
+GL_APICALL void GL_APIENTRY glCopyPathNV (GLuint resultPath, GLuint srcPath);
+GL_APICALL void GL_APIENTRY glInterpolatePathsNV (GLuint resultPath, GLuint pathA, GLuint pathB, GLfloat weight);
+GL_APICALL void GL_APIENTRY glTransformPathNV (GLuint resultPath, GLuint srcPath, GLenum transformType, const GLfloat *transformValues);
+GL_APICALL void GL_APIENTRY glPathParameterivNV (GLuint path, GLenum pname, const GLint *value);
+GL_APICALL void GL_APIENTRY glPathParameteriNV (GLuint path, GLenum pname, GLint value);
+GL_APICALL void GL_APIENTRY glPathParameterfvNV (GLuint path, GLenum pname, const GLfloat *value);
+GL_APICALL void GL_APIENTRY glPathParameterfNV (GLuint path, GLenum pname, GLfloat value);
+GL_APICALL void GL_APIENTRY glPathDashArrayNV (GLuint path, GLsizei dashCount, const GLfloat *dashArray);
+GL_APICALL void GL_APIENTRY glPathStencilFuncNV (GLenum func, GLint ref, GLuint mask);
+GL_APICALL void GL_APIENTRY glPathStencilDepthOffsetNV (GLfloat factor, GLfloat units);
+GL_APICALL void GL_APIENTRY glStencilFillPathNV (GLuint path, GLenum fillMode, GLuint mask);
+GL_APICALL void GL_APIENTRY glStencilStrokePathNV (GLuint path, GLint reference, GLuint mask);
+GL_APICALL void GL_APIENTRY glStencilFillPathInstancedNV (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum fillMode, GLuint mask, GLenum transformType, const GLfloat *transformValues);
+GL_APICALL void GL_APIENTRY glStencilStrokePathInstancedNV (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLint reference, GLuint mask, GLenum transformType, const GLfloat *transformValues);
+GL_APICALL void GL_APIENTRY glPathCoverDepthFuncNV (GLenum func);
+GL_APICALL void GL_APIENTRY glCoverFillPathNV (GLuint path, GLenum coverMode);
+GL_APICALL void GL_APIENTRY glCoverStrokePathNV (GLuint path, GLenum coverMode);
+GL_APICALL void GL_APIENTRY glCoverFillPathInstancedNV (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum coverMode, GLenum transformType, const GLfloat *transformValues);
+GL_APICALL void GL_APIENTRY glCoverStrokePathInstancedNV (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum coverMode, GLenum transformType, const GLfloat *transformValues);
+GL_APICALL void GL_APIENTRY glGetPathParameterivNV (GLuint path, GLenum pname, GLint *value);
+GL_APICALL void GL_APIENTRY glGetPathParameterfvNV (GLuint path, GLenum pname, GLfloat *value);
+GL_APICALL void GL_APIENTRY glGetPathCommandsNV (GLuint path, GLubyte *commands);
+GL_APICALL void GL_APIENTRY glGetPathCoordsNV (GLuint path, GLfloat *coords);
+GL_APICALL void GL_APIENTRY glGetPathDashArrayNV (GLuint path, GLfloat *dashArray);
+GL_APICALL void GL_APIENTRY glGetPathMetricsNV (GLbitfield metricQueryMask, GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLsizei stride, GLfloat *metrics);
+GL_APICALL void GL_APIENTRY glGetPathMetricRangeNV (GLbitfield metricQueryMask, GLuint firstPathName, GLsizei numPaths, GLsizei stride, GLfloat *metrics);
+GL_APICALL void GL_APIENTRY glGetPathSpacingNV (GLenum pathListMode, GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLfloat advanceScale, GLfloat kerningScale, GLenum transformType, GLfloat *returnedSpacing);
+GL_APICALL GLboolean GL_APIENTRY glIsPointInFillPathNV (GLuint path, GLuint mask, GLfloat x, GLfloat y);
+GL_APICALL GLboolean GL_APIENTRY glIsPointInStrokePathNV (GLuint path, GLfloat x, GLfloat y);
+GL_APICALL GLfloat GL_APIENTRY glGetPathLengthNV (GLuint path, GLsizei startSegment, GLsizei numSegments);
+GL_APICALL GLboolean GL_APIENTRY glPointAlongPathNV (GLuint path, GLsizei startSegment, GLsizei numSegments, GLfloat distance, GLfloat *x, GLfloat *y, GLfloat *tangentX, GLfloat *tangentY);
+GL_APICALL void GL_APIENTRY glMatrixLoad3x2fNV (GLenum matrixMode, const GLfloat *m);
+GL_APICALL void GL_APIENTRY glMatrixLoad3x3fNV (GLenum matrixMode, const GLfloat *m);
+GL_APICALL void GL_APIENTRY glMatrixLoadTranspose3x3fNV (GLenum matrixMode, const GLfloat *m);
+GL_APICALL void GL_APIENTRY glMatrixMult3x2fNV (GLenum matrixMode, const GLfloat *m);
+GL_APICALL void GL_APIENTRY glMatrixMult3x3fNV (GLenum matrixMode, const GLfloat *m);
+GL_APICALL void GL_APIENTRY glMatrixMultTranspose3x3fNV (GLenum matrixMode, const GLfloat *m);
+GL_APICALL void GL_APIENTRY glStencilThenCoverFillPathNV (GLuint path, GLenum fillMode, GLuint mask, GLenum coverMode);
+GL_APICALL void GL_APIENTRY glStencilThenCoverStrokePathNV (GLuint path, GLint reference, GLuint mask, GLenum coverMode);
+GL_APICALL void GL_APIENTRY glStencilThenCoverFillPathInstancedNV (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLenum fillMode, GLuint mask, GLenum coverMode, GLenum transformType, const GLfloat *transformValues);
+GL_APICALL void GL_APIENTRY glStencilThenCoverStrokePathInstancedNV (GLsizei numPaths, GLenum pathNameType, const void *paths, GLuint pathBase, GLint reference, GLuint mask, GLenum coverMode, GLenum transformType, const GLfloat *transformValues);
+GL_APICALL GLenum GL_APIENTRY glPathGlyphIndexRangeNV (GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLuint pathParameterTemplate, GLfloat emScale, GLuint baseAndCount[2]);
+GL_APICALL GLenum GL_APIENTRY glPathGlyphIndexArrayNV (GLuint firstPathName, GLenum fontTarget, const void *fontName, GLbitfield fontStyle, GLuint firstGlyphIndex, GLsizei numGlyphs, GLuint pathParameterTemplate, GLfloat emScale);
+GL_APICALL GLenum GL_APIENTRY glPathMemoryGlyphIndexArrayNV (GLuint firstPathName, GLenum fontTarget, GLsizeiptr fontSize, const void *fontData, GLsizei faceIndex, GLuint firstGlyphIndex, GLsizei numGlyphs, GLuint pathParameterTemplate, GLfloat emScale);
+GL_APICALL void GL_APIENTRY glProgramPathFragmentInputGenNV (GLuint program, GLint location, GLenum genMode, GLint components, const GLfloat *coeffs);
+GL_APICALL void GL_APIENTRY glGetProgramResourcefvNV (GLuint program, GLenum programInterface, GLuint index, GLsizei propCount, const GLenum *props, GLsizei bufSize, GLsizei *length, GLfloat *params);
+#endif
+#endif /* GL_NV_path_rendering */
 
 #ifndef GL_NV_read_buffer
 #define GL_NV_read_buffer 1
@@ -1553,6 +2480,10 @@ GL_APICALL void GL_APIENTRY glReadBufferNV (GLenum mode);
 #define GL_ETC1_SRGB8_NV                  0x88EE
 #endif /* GL_NV_sRGB_formats */
 
+#ifndef GL_NV_shader_noperspective_interpolation
+#define GL_NV_shader_noperspective_interpolation 1
+#endif /* GL_NV_shader_noperspective_interpolation */
+
 #ifndef GL_NV_shadow_samplers_array
 #define GL_NV_shadow_samplers_array 1
 #define GL_SAMPLER_2D_ARRAY_SHADOW_NV     0x8DC4
@@ -1576,6 +2507,40 @@ GL_APICALL void GL_APIENTRY glReadBufferNV (GLenum mode);
 #ifndef GL_NV_texture_npot_2D_mipmap
 #define GL_NV_texture_npot_2D_mipmap 1
 #endif /* GL_NV_texture_npot_2D_mipmap */
+
+#ifndef GL_NV_viewport_array
+#define GL_NV_viewport_array 1
+#define GL_MAX_VIEWPORTS_NV               0x825B
+#define GL_VIEWPORT_SUBPIXEL_BITS_NV      0x825C
+#define GL_VIEWPORT_BOUNDS_RANGE_NV       0x825D
+#define GL_VIEWPORT_INDEX_PROVOKING_VERTEX_NV 0x825F
+typedef void (GL_APIENTRYP PFNGLVIEWPORTARRAYVNVPROC) (GLuint first, GLsizei count, const GLfloat *v);
+typedef void (GL_APIENTRYP PFNGLVIEWPORTINDEXEDFNVPROC) (GLuint index, GLfloat x, GLfloat y, GLfloat w, GLfloat h);
+typedef void (GL_APIENTRYP PFNGLVIEWPORTINDEXEDFVNVPROC) (GLuint index, const GLfloat *v);
+typedef void (GL_APIENTRYP PFNGLSCISSORARRAYVNVPROC) (GLuint first, GLsizei count, const GLint *v);
+typedef void (GL_APIENTRYP PFNGLSCISSORINDEXEDNVPROC) (GLuint index, GLint left, GLint bottom, GLsizei width, GLsizei height);
+typedef void (GL_APIENTRYP PFNGLSCISSORINDEXEDVNVPROC) (GLuint index, const GLint *v);
+typedef void (GL_APIENTRYP PFNGLDEPTHRANGEARRAYFVNVPROC) (GLuint first, GLsizei count, const GLfloat *v);
+typedef void (GL_APIENTRYP PFNGLDEPTHRANGEINDEXEDFNVPROC) (GLuint index, GLfloat n, GLfloat f);
+typedef void (GL_APIENTRYP PFNGLGETFLOATI_VNVPROC) (GLenum target, GLuint index, GLfloat *data);
+typedef void (GL_APIENTRYP PFNGLENABLEINVPROC) (GLenum target, GLuint index);
+typedef void (GL_APIENTRYP PFNGLDISABLEINVPROC) (GLenum target, GLuint index);
+typedef GLboolean (GL_APIENTRYP PFNGLISENABLEDINVPROC) (GLenum target, GLuint index);
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glViewportArrayvNV (GLuint first, GLsizei count, const GLfloat *v);
+GL_APICALL void GL_APIENTRY glViewportIndexedfNV (GLuint index, GLfloat x, GLfloat y, GLfloat w, GLfloat h);
+GL_APICALL void GL_APIENTRY glViewportIndexedfvNV (GLuint index, const GLfloat *v);
+GL_APICALL void GL_APIENTRY glScissorArrayvNV (GLuint first, GLsizei count, const GLint *v);
+GL_APICALL void GL_APIENTRY glScissorIndexedNV (GLuint index, GLint left, GLint bottom, GLsizei width, GLsizei height);
+GL_APICALL void GL_APIENTRY glScissorIndexedvNV (GLuint index, const GLint *v);
+GL_APICALL void GL_APIENTRY glDepthRangeArrayfvNV (GLuint first, GLsizei count, const GLfloat *v);
+GL_APICALL void GL_APIENTRY glDepthRangeIndexedfNV (GLuint index, GLfloat n, GLfloat f);
+GL_APICALL void GL_APIENTRY glGetFloati_vNV (GLenum target, GLuint index, GLfloat *data);
+GL_APICALL void GL_APIENTRY glEnableiNV (GLenum target, GLuint index);
+GL_APICALL void GL_APIENTRY glDisableiNV (GLenum target, GLuint index);
+GL_APICALL GLboolean GL_APIENTRY glIsEnablediNV (GLenum target, GLuint index);
+#endif
+#endif /* GL_NV_viewport_array */
 
 #ifndef GL_QCOM_alpha_test
 #define GL_QCOM_alpha_test 1

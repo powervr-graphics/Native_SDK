@@ -42,19 +42,19 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FloorToon.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FloorToon.cpp: $(CONTENTDIR) ./FloorToon.pvr
 	$(FILEWRAP)  -o $@ ./FloorToon.pvr
 
-$(CONTENTDIR)/MouseToon.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/MouseToon.cpp: $(CONTENTDIR) ./MouseToon.pvr
 	$(FILEWRAP)  -o $@ ./MouseToon.pvr
 
-$(CONTENTDIR)/Toon.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Toon.cpp: $(CONTENTDIR) ./Toon.pvr
 	$(FILEWRAP)  -o $@ ./Toon.pvr
 
-$(CONTENTDIR)/WallToon.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/WallToon.cpp: $(CONTENTDIR) ./WallToon.pvr
 	$(FILEWRAP)  -o $@ ./WallToon.pvr
 
-$(CONTENTDIR)/Mouse.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Mouse.cpp: $(CONTENTDIR) ./Mouse.pod
 	$(FILEWRAP)  -o $@ ./Mouse.pod
 
 ############################################################################

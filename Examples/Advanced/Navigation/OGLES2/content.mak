@@ -63,87 +63,87 @@ resources: $(RESOURCES)
 $(CONTENTDIR) $(DATACONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/StreetSigns.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/StreetSigns.cpp: $(CONTENTDIR) ./StreetSigns.pvr
 	$(FILEWRAP)  -o $@ ./StreetSigns.pvr
 
-$(CONTENTDIR)/AlphaMaskFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/AlphaMaskFragShader.cpp: $(CONTENTDIR) ./AlphaMaskFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./AlphaMaskFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./AlphaMaskFragShader.fsc
 
-$(CONTENTDIR)/AntiAliasedLinesFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/AntiAliasedLinesFragShader.cpp: $(CONTENTDIR) ./AntiAliasedLinesFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./AntiAliasedLinesFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./AntiAliasedLinesFragShader.fsc
 
-$(CONTENTDIR)/AntiAliasedLinesVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/AntiAliasedLinesVertShader.cpp: $(CONTENTDIR) ./AntiAliasedLinesVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./AntiAliasedLinesVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./AntiAliasedLinesVertShader.vsc
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./FragShader.fsc
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./VertShader.vsc
 
-$(CONTENTDIR)/PivotQuadFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/PivotQuadFragShader.cpp: $(CONTENTDIR) ./PivotQuadFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./PivotQuadFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./PivotQuadFragShader.fsc
 
-$(CONTENTDIR)/PivotQuadMaskedFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/PivotQuadMaskedFragShader.cpp: $(CONTENTDIR) ./PivotQuadMaskedFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./PivotQuadMaskedFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./PivotQuadMaskedFragShader.fsc
 
-$(CONTENTDIR)/PivotQuadVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/PivotQuadVertShader.cpp: $(CONTENTDIR) ./PivotQuadVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./PivotQuadVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./PivotQuadVertShader.vsc
 
-$(DATACONTENTDIR)/Alphabet.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Alphabet.cpp: $(DATACONTENTDIR) ../Data/Alphabet.pvr
 	$(FILEWRAP)  -o $@ ../Data/Alphabet.pvr
 
-$(DATACONTENTDIR)/Road.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Road.cpp: $(DATACONTENTDIR) ../Data/Road.pvr
 	$(FILEWRAP)  -o $@ ../Data/Road.pvr
 
-$(DATACONTENTDIR)/cameratrack.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/cameratrack.cpp: $(DATACONTENTDIR) ../Data/cameratrack.pod
 	$(FILEWRAP)  -o $@ ../Data/cameratrack.pod
 
-$(DATACONTENTDIR)/Landmark_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Landmark_meshes.cpp: $(DATACONTENTDIR) ../Data/Landmark_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/Landmark_meshes.nav
 
-$(DATACONTENTDIR)/LandUseA_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/LandUseA_meshes.cpp: $(DATACONTENTDIR) ../Data/LandUseA_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/LandUseA_meshes.nav
 
-$(DATACONTENTDIR)/LandUseB_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/LandUseB_meshes.cpp: $(DATACONTENTDIR) ../Data/LandUseB_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/LandUseB_meshes.nav
 
-$(DATACONTENTDIR)/MajHwys_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/MajHwys_meshes.cpp: $(DATACONTENTDIR) ../Data/MajHwys_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/MajHwys_meshes.nav
 
-$(DATACONTENTDIR)/MajHwyShield_text.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/MajHwyShield_text.cpp: $(DATACONTENTDIR) ../Data/MajHwyShield_text.nav
 	$(FILEWRAP)  -o $@ ../Data/MajHwyShield_text.nav
 
-$(DATACONTENTDIR)/RailRds_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/RailRds_meshes.cpp: $(DATACONTENTDIR) ../Data/RailRds_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/RailRds_meshes.nav
 
-$(DATACONTENTDIR)/SecHwys_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/SecHwys_meshes.cpp: $(DATACONTENTDIR) ../Data/SecHwys_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/SecHwys_meshes.nav
 
-$(DATACONTENTDIR)/SecHwyShield_text.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/SecHwyShield_text.cpp: $(DATACONTENTDIR) ../Data/SecHwyShield_text.nav
 	$(FILEWRAP)  -o $@ ../Data/SecHwyShield_text.nav
 
-$(DATACONTENTDIR)/Signs_billboards.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Signs_billboards.cpp: $(DATACONTENTDIR) ../Data/Signs_billboards.nav
 	$(FILEWRAP)  -o $@ ../Data/Signs_billboards.nav
 
-$(DATACONTENTDIR)/Streets_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Streets_meshes.cpp: $(DATACONTENTDIR) ../Data/Streets_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/Streets_meshes.nav
 
-$(DATACONTENTDIR)/Streets_text.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Streets_text.cpp: $(DATACONTENTDIR) ../Data/Streets_text.nav
 	$(FILEWRAP)  -o $@ ../Data/Streets_text.nav
 
-$(DATACONTENTDIR)/WaterPoly_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/WaterPoly_meshes.cpp: $(DATACONTENTDIR) ../Data/WaterPoly_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/WaterPoly_meshes.nav
 
-$(DATACONTENTDIR)/WaterSeg_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/WaterSeg_meshes.cpp: $(DATACONTENTDIR) ../Data/WaterSeg_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/WaterSeg_meshes.nav
 
 ############################################################################

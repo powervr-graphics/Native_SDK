@@ -3,18 +3,23 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/PVRScopeExample/OGLES3/BuildDeveloper/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
-endif
 
-# Module PVRScopeDeveloper
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module PVRScopeDeveloper
 include $(CLEAR_VARS)
 LOCAL_MODULE := PVRScopeDeveloper
 LOCAL_SRC_FILES := $(PVRSDKDIR)/Builds/Android/$(TARGET_ARCH_ABI)/Lib/libPVRScopeDeveloper.a
 include $(PREBUILT_STATIC_LIBRARY)
+endif
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles3tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles3tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES3/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles3tools.a
+include $(PREBUILT_STATIC_LIBRARY)
+endif
+
 
 # Module OGLES3PVRScopeExample
 include $(CLEAR_VARS)
@@ -53,35 +58,3 @@ LOCAL_STATIC_LIBRARIES := PVRScopeDeveloper \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/Mask.pod \
-	$(ASSETDIR)/Reflection.pvr \
-	$(ASSETDIR)/Thickness.pvr \
-	$(ASSETDIR)/FragShader.fsh \
-	$(ASSETDIR)/VertShader.vsh
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/Reflection.pvr: $(PVRSDKDIR)/Examples/Advanced/PVRScopeExample/OGLES3/Reflection.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Thickness.pvr: $(PVRSDKDIR)/Examples/Advanced/PVRScopeExample/OGLES3/Thickness.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/FragShader.fsh: $(PVRSDKDIR)/Examples/Advanced/PVRScopeExample/OGLES3/FragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/VertShader.vsh: $(PVRSDKDIR)/Examples/Advanced/PVRScopeExample/OGLES3/VertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Mask.pod: $(PVRSDKDIR)/Examples/Advanced/PVRScopeExample/OGLES3/Mask.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-
-

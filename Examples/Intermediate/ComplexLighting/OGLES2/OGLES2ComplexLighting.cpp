@@ -4,7 +4,7 @@
 
  @Title        Complex Lighting
 
- @Version      
+ @Version
 
  @Copyright    Copyright (c) Imagination Technologies Limited.
 
@@ -44,7 +44,8 @@ enum ELightType
 	eSpotDiffuseSpecular,
 	eNumLightTypes
 };
-const char* const c_aszLightTypeList[] = {
+const char* const c_aszLightTypeList[] =
+{
 	"Directional Light (Diffuse)",
 	"Directional Light (Diffuse+Specular)",
 	"Point Light (Diffuse)",
@@ -132,7 +133,7 @@ public:
 ******************************************************************************/
 bool OGLES2ComplexLighting::LoadTextures(CPVRTString* const pErrorStr)
 {
-	if(PVRTTextureLoadFromPVR(c_szTextureFile, &m_uiTexture) != PVR_SUCCESS)
+	if (PVRTTextureLoadFromPVR(c_szTextureFile, &m_uiTexture) != PVR_SUCCESS)
 	{
 		*pErrorStr = "ERROR: Failed to load texture.";
 		return false;
@@ -159,13 +160,13 @@ bool OGLES2ComplexLighting::LoadShaders(CPVRTString* pErrorStr)
 		are used as fallback.
 	*/
 	if (PVRTShaderLoadFromFile(
-			c_szVertShaderBinFile, c_szVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiVertShader, pErrorStr) != PVR_SUCCESS)
+	      c_szVertShaderBinFile, c_szVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiVertShader, pErrorStr) != PVR_SUCCESS)
 	{
 		return false;
 	}
 
 	if (PVRTShaderLoadFromFile(
-			c_szFragShaderBinFile, c_szFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_uiFragShader, pErrorStr) != PVR_SUCCESS)
+	      c_szFragShaderBinFile, c_szFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_uiFragShader, pErrorStr) != PVR_SUCCESS)
 	{
 		return false;
 	}
@@ -201,8 +202,8 @@ bool OGLES2ComplexLighting::LoadShaders(CPVRTString* pErrorStr)
 ******************************************************************************/
 void OGLES2ComplexLighting::LoadVbos()
 {
-	if (!m_puiVbo)      m_puiVbo = new GLuint[m_Scene.nNumMesh];
-	if (!m_puiIndexVbo) m_puiIndexVbo = new GLuint[m_Scene.nNumMesh];
+	if (!m_puiVbo)      { m_puiVbo = new GLuint[m_Scene.nNumMesh]; }
+	if (!m_puiIndexVbo) { m_puiIndexVbo = new GLuint[m_Scene.nNumMesh]; }
 
 	/*
 		Load vertex data of all meshes in the scene into VBOs
@@ -288,7 +289,7 @@ bool OGLES2ComplexLighting::QuitApplication()
 	delete [] m_puiVbo;
 	delete [] m_puiIndexVbo;
 
-    return true;
+	return true;
 }
 
 /*!****************************************************************************
@@ -339,7 +340,7 @@ bool OGLES2ComplexLighting::InitView()
 	/*
 		Initialize Print3D
 	*/
-	if(m_Print3D.SetTextures(0,PVRShellGet(prefWidth),PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
+	if (m_Print3D.SetTextures(0, PVRShellGet(prefWidth), PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, "ERROR: Cannot initialise Print3D\n");
 		return false;
@@ -491,35 +492,35 @@ void OGLES2ComplexLighting::DrawMesh(int i32NodeIndex)
 		- Indexed Triangle strips
 		- Non-Indexed Triangle strips
 	*/
-	if(pMesh->nNumStrips == 0)
+	if (pMesh->nNumStrips == 0)
 	{
-		if(m_puiIndexVbo[i32MeshIndex])
+		if (m_puiIndexVbo[i32MeshIndex])
 		{
 			// Indexed Triangle list
-			glDrawElements(GL_TRIANGLES, pMesh->nNumFaces*3, GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, pMesh->nNumFaces * 3, GL_UNSIGNED_SHORT, 0);
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			glDrawArrays(GL_TRIANGLES, 0, pMesh->nNumFaces*3);
+			glDrawArrays(GL_TRIANGLES, 0, pMesh->nNumFaces * 3);
 		}
 	}
 	else
 	{
-		for(int i = 0; i < (int)pMesh->nNumStrips; ++i)
+		for (int i = 0; i < (int)pMesh->nNumStrips; ++i)
 		{
 			int offset = 0;
-			if(m_puiIndexVbo[i32MeshIndex])
+			if (m_puiIndexVbo[i32MeshIndex])
 			{
 				// Indexed Triangle strips
-				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i]+2, GL_UNSIGNED_SHORT, (GLshort*)(offset*2));
+				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i] + 2, GL_UNSIGNED_SHORT, (GLshort*)(size_t)(offset * 2));
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				glDrawArrays(GL_TRIANGLE_STRIP, offset, pMesh->pnStripLength[i]+2);
+				glDrawArrays(GL_TRIANGLE_STRIP, offset, pMesh->pnStripLength[i] + 2);
 			}
-			offset += pMesh->pnStripLength[i]+2;
+			offset += pMesh->pnStripLength[i] + 2;
 		}
 	}
 

@@ -313,7 +313,8 @@ enum prefNameIntEnum
     prefConfig,             /*!< EGL: Get the chosen EGL config. */
     prefRequestedConfig,    /*!< EGL: Force the shell to use a particular EGL config. */
     prefNativeDisplay,      /*!< EGL: Allows you to specify the native display to use if the device has more that one. */
-    prefFrameTimeValue      /*!< An integer value to say how long you wish one frame to last for (in ms) when force frame time is enabled. */
+    prefFrameTimeValue,     /*!< An integer value to say how long you wish one frame to last for (in ms) when force frame time is enabled. */
+    prefDisplayConnector    /*!< DRM: Display connector to use. Default: first connector. */
 };
 
 /*!***********************************************************************

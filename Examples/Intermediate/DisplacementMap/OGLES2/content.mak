@@ -42,21 +42,21 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./FragShader.fsc
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./VertShader.vsc
 
-$(CONTENTDIR)/DisMapScene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/DisMapScene.cpp: $(CONTENTDIR) ./DisMapScene.pod
 	$(FILEWRAP)  -o $@ ./DisMapScene.pod
 
-$(CONTENTDIR)/Cow.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Cow.cpp: $(CONTENTDIR) ./Cow.pvr
 	$(FILEWRAP)  -o $@ ./Cow.pvr
 
-$(CONTENTDIR)/DisMap.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/DisMap.cpp: $(CONTENTDIR) ./DisMap.pvr
 	$(FILEWRAP)  -o $@ ./DisMap.pvr
 
 ############################################################################

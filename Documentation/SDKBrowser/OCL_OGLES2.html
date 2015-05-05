@@ -40,6 +40,9 @@
 				<a href="ReleaseNotes.html">Release Notes</a>
 			</div>
 			<div class="navlink">
+				<a href="Licence.html">EULA</a>
+			</div>
+			<div class="navlink">
 				<a href="Contact.html">Contact Us</a>
 			</div>
 		</nav>
@@ -83,12 +86,12 @@ OpenCL is a cross-platform API for parallel computing on modern processors, incl
 						<a href="../../Examples/Intermediate/ImageConvolution/ImageConvolution.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/ImageConvolution/ImageConvolution.png" alt="ImageConvolution" /></a>
 						<input type="checkbox" id="ImageConvolutionFull2">
 							<label for="ImageConvolutionFull2" title="Click for more information"><h3>ImageConvolution</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p><p>Introduction to image processing using OpenCL API.
+							<div class="ShortDescription" id="TexturingShort"><p><p>Introduction to image processing using GPGPU (GPU Compute)
 </p></p></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p><p>This demonstration deals with image processing. It illustrates the usage of OpenCL to write linear and non-linear filter kernels.
+								<p><p>This demonstration deals with image processing. It illustrates the usage of GPU Compute to write linear and non-linear filter kernels.
 </p></p>
 								<p><strong>Controls:</strong></p>
 								<p></p>
@@ -123,12 +126,12 @@ OpenCL is a cross-platform API for parallel computing on modern processors, incl
 						<a href="../../Examples/Advanced/GameOfLife/GameOfLife.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/GameOfLife/GameOfLife.png" alt="GameOfLife" /></a>
 						<input type="checkbox" id="GameOfLifeFull2">
 							<label for="GameOfLifeFull2" title="Click for more information"><h3>GameOfLife</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p><p>Implementation of John Conway's Game of Life using OpenCL.
+							<div class="ShortDescription" id="TexturingShort"><p><p>Implementation of John Conway's Game of Life using GPGPU (GPU Compute).
 </p></p></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p><p>This demo utilises OpenCL to take advantage of the GPU computation available in PowerVR Series6 to implement John Conway's Game of Life simulation, updating every aspect of the grid where all the particles are stored. OpenGL then retrieves the result of that computation and presents it on the screen.
+								<p><p>This demo utilises GPGPU (GPU Compute) to take advantage of the GPU computation available in PowerVR Series6 to implement John Conway's Game of Life simulation, updating every aspect of the grid where all the particles are stored. OpenGL then retrieves the result of that computation and presents it on the screen.
 </p></p>
 								<p><strong>Controls:</strong></p>
 								<p><p> Left and right arrows : Switch between evolution functions.</p><p> Up    : Pause simulation.</p><p> Down  : Generate new population.</p></p>
@@ -143,14 +146,14 @@ OpenCL is a cross-platform API for parallel computing on modern processors, incl
 						<a href="../../Examples/Advanced/ParticleSystem/ParticleSystem.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/ParticleSystem/ParticleSystem.png" alt="ParticleSystem" /></a>
 						<input type="checkbox" id="ParticleSystemFull2">
 							<label for="ParticleSystemFull2" title="Click for more information"><h3>ParticleSystem</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p><p>Shows how to implement a simple particle system using OpenCL and the GPU.
+							<div class="ShortDescription" id="TexturingShort"><p><p>Shows how to implement a simple particle system using GPGPU.
 </p></p></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p><p>The demo utilises OpenCL to implement a particle system. Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques. Furthermore, it also highlights the interaction between OpenCL and OpenGL (plus OpenGL ES 2).
+								<p><p>The demo utilises GPGPU (GPU Compute) to implement a particle system. Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques. Furthermore, it also highlights the interaction between the Compute and the Rendering part of a simulation.
 </p><p>- left and right arrows - Decrease and increase number of particles
-</p><p>- up and down arrows - Switch between OpenCL and CPU Particle System implementation.
+</p><p>- up and down arrows - Switch between GPU Compute and CPU Particle System implementation.
 </p></p>
 								<p><strong>Controls:</strong></p>
 								<p></p>
@@ -165,12 +168,12 @@ OpenCL is a cross-platform API for parallel computing on modern processors, incl
 						<a href="../../Examples/Advanced/ProceduralTextures/ProceduralTextures.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/ProceduralTextures/ProceduralTextures.png" alt="ProceduralTextures" /></a>
 						<input type="checkbox" id="ProceduralTexturesFull2">
 							<label for="ProceduralTexturesFull2" title="Click for more information"><h3>ProceduralTextures</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p><p>Shows how to generate procedural textures using OpenCL.
+							<div class="ShortDescription" id="TexturingShort"><p><p>Shows how to generate procedural textures using GPGPU(GPU Compute).
 </p></p></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p><p>Utilises OpenCL to generate procedural textures using Steven Worley's cellular texture basis functions. Procedural textures are computer-generated images created using an algorithm intended to create a realistic representation of natural elements such as wood or marble.
+								<p><p>Utilises GPGPU to generate procedural textures using Steven Worley's cellular texture basis functions. Procedural textures are computer-generated images created using an algorithm intended to create a realistic representation of natural elements such as wood or marble.
 </p><p>- left and right arrows - Switch between distance metrics
 </p><p>- up and down arrows - Switch between linear combination of weights
 </p></p>

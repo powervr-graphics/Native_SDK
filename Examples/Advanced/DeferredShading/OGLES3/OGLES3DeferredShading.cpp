@@ -689,10 +689,6 @@ bool OGLES3DeferredShading::InitView()
 	m_iFboWidth = m_iWindowWidth;
 	m_iFboHeight = m_iWindowHeight;	
 
-#ifdef __APPLE__
-	m_iFboWidth = m_iFboHeight = PVRTGetPOTLower(PVRT_MIN(m_iWindowWidth, m_iWindowHeight), 0);
-#endif
-
 	int numCmdLineOpts = PVRShellGet(prefCommandLineOptNum);
 	const SCmdLineOpt *pCmdLineOpts = (const SCmdLineOpt *)PVRShellGet(prefCommandLineOpts);
 	for (int i=0; i < numCmdLineOpts; i++)

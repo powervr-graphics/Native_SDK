@@ -1,14 +1,14 @@
- /******************************************************************************
+/******************************************************************************
 
- @File         OGLES2ParallaxBumpmap.cpp
+@File         OGLES2ParallaxBumpmap.cpp
 
- @Title        Parallax Bumpmapping Training Course
+@Title        Parallax Bumpmapping Training Course
 
- @Copyright    Copyright (C) by Imagination Technologies Limited.
- 
- @Platform     Independent
+@Copyright    Copyright (C) by Imagination Technologies Limited.
 
- @Description  Shows how to perform tangent space parallax bump mapping
+@Platform     Independent
+
+@Description  Shows how to perform tangent space parallax bump mapping
 
 ******************************************************************************/
 #include "PVRShell.h"
@@ -24,7 +24,7 @@
 const float CAM_FOV  = PVRT_PI / 6;
 const float CAM_NEAR = 75.0f;
 
-const float g_SomeRotation = 45.0f/(2*PVRT_PI);
+const float g_SomeRotation = 45.0f / (2 * PVRT_PI);
 const PVRTVec3 g_CubeTranslation = PVRTVec3(0.0f, -20.0f, 0.f);
 const PVRTVec3 g_CubeScale = PVRTVec3(1.4f, 1.4f, 1.4f);
 const PVRTVec4 g_LightPos = PVRTVec4(0.f, 30.f, 10.f, 1);
@@ -34,16 +34,24 @@ const PVRTVec4 g_LightPos = PVRTVec4(0.f, 30.f, 10.f, 1);
  shader attributes
 ******************************************************************************/
 // vertex attributes
-enum EVertexAttrib {
-	VERTEX_ARRAY, NORMAL_ARRAY, TEXCOORD_ARRAY, TANGENT_ARRAY, eNumAttribs };
-const char* g_aszAttribNames[] = {
-	"vertPos", "vertNormal", "vertUV", "vertTangent" };
+enum EVertexAttrib
+{
+	VERTEX_ARRAY, NORMAL_ARRAY, TEXCOORD_ARRAY, TANGENT_ARRAY, eNumAttribs
+};
+const char* g_aszAttribNames[] =
+{
+	"vertPos", "vertNormal", "vertUV", "vertTangent"
+};
 
 // shader uniforms
-enum EUniform {
-	eModelViewMatrix, eModelViewProj, eNormal, eLightEyeSpacePos, eNumUniforms };
-const char* g_aszUniformNames[] = {
-	"mModelView", "mModelViewProj", "mNormal",  "vLightEyeSpacePos"};
+enum EUniform
+{
+	eModelViewMatrix, eModelViewProj, eNormal, eLightEyeSpacePos, eNumUniforms
+};
+const char* g_aszUniformNames[] =
+{
+	"mModelView", "mModelViewProj", "mNormal",  "vLightEyeSpacePos"
+};
 
 /******************************************************************************
  Content file names
@@ -120,7 +128,7 @@ public:
 ******************************************************************************/
 bool OGLES2ParallaxBumpMap::LoadTextures(CPVRTString* const pErrorStr)
 {
-	if(PVRTTextureLoadFromPVR(c_szBaseTexFile, &m_uiBaseTex) != PVR_SUCCESS)
+	if (PVRTTextureLoadFromPVR(c_szBaseTexFile, &m_uiBaseTex) != PVR_SUCCESS)
 	{
 		*pErrorStr = "ERROR: Failed to load texture.";
 		return false;
@@ -128,7 +136,7 @@ bool OGLES2ParallaxBumpMap::LoadTextures(CPVRTString* const pErrorStr)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	if(PVRTTextureLoadFromPVR(c_szNormalMapFile, &m_uiNormalMap) != PVR_SUCCESS)
+	if (PVRTTextureLoadFromPVR(c_szNormalMapFile, &m_uiNormalMap) != PVR_SUCCESS)
 	{
 		*pErrorStr = "ERROR: Failed to load normals.";
 		return false;
@@ -136,7 +144,7 @@ bool OGLES2ParallaxBumpMap::LoadTextures(CPVRTString* const pErrorStr)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	if(PVRTTextureLoadFromPVR(c_szHeightMapFile, &m_uiHeightMap) != PVR_SUCCESS)
+	if (PVRTTextureLoadFromPVR(c_szHeightMapFile, &m_uiHeightMap) != PVR_SUCCESS)
 	{
 		*pErrorStr = "ERROR: Failed to load heightmap.";
 		return false;
@@ -162,13 +170,13 @@ bool OGLES2ParallaxBumpMap::LoadShaders(CPVRTString* pErrorStr)
 		are used as fallback.
 	*/
 	if (PVRTShaderLoadFromFile(
-			c_szVertShaderBinFile, c_szVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiVertShader, pErrorStr) != PVR_SUCCESS)
+	      c_szVertShaderBinFile, c_szVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiVertShader, pErrorStr) != PVR_SUCCESS)
 	{
 		return false;
 	}
 
 	if (PVRTShaderLoadFromFile(
-			c_szFragShaderBinFile, c_szFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_uiFragShader, pErrorStr) != PVR_SUCCESS)
+	      c_szFragShaderBinFile, c_szFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_uiFragShader, pErrorStr) != PVR_SUCCESS)
 	{
 		return false;
 	}
@@ -176,7 +184,8 @@ bool OGLES2ParallaxBumpMap::LoadShaders(CPVRTString* pErrorStr)
 	/*
 		Set up and link the shader program
 	*/
-	if (PVRTCreateProgram(&m_ShaderProgram.uiId, m_uiVertShader, m_uiFragShader, g_aszAttribNames, eNumAttribs, pErrorStr) != PVR_SUCCESS)
+	if (PVRTCreateProgram(&m_ShaderProgram.uiId, m_uiVertShader, m_uiFragShader, g_aszAttribNames, eNumAttribs,
+	                      pErrorStr) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, pErrorStr->c_str());
 		return false;
@@ -198,8 +207,8 @@ bool OGLES2ParallaxBumpMap::LoadShaders(CPVRTString* pErrorStr)
 ******************************************************************************/
 void OGLES2ParallaxBumpMap::LoadVbos()
 {
-	if (!m_puiVbo)      m_puiVbo = new GLuint[m_Scene.nNumMesh];
-	if (!m_puiIndexVbo) m_puiIndexVbo = new GLuint[m_Scene.nNumMesh];
+	if (!m_puiVbo)      { m_puiVbo = new GLuint[m_Scene.nNumMesh]; }
+	if (!m_puiIndexVbo) { m_puiIndexVbo = new GLuint[m_Scene.nNumMesh]; }
 
 	/*
 		Load vertex data of all meshes in the scene into VBOs
@@ -284,7 +293,7 @@ bool OGLES2ParallaxBumpMap::QuitApplication()
 	delete [] m_puiVbo;
 	delete [] m_puiIndexVbo;
 
-    return true;
+	return true;
 }
 
 /*!****************************************************************************
@@ -333,7 +342,7 @@ bool OGLES2ParallaxBumpMap::InitView()
 	/*
 		Initialize Print3D
 	*/
-	if(m_Print3D.SetTextures(0,PVRShellGet(prefWidth),PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
+	if (m_Print3D.SetTextures(0, PVRShellGet(prefWidth), PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, "ERROR: Cannot initialise Print3D\n");
 		return false;
@@ -473,7 +482,7 @@ void OGLES2ParallaxBumpMap::DrawMesh(int i32NodeIndex)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_puiIndexVbo[i32MeshIndex]);
 
 	// Enable the vertex attribute arrays
-	for (int i = 0; i < eNumAttribs; ++i) glEnableVertexAttribArray(i);
+	for (int i = 0; i < eNumAttribs; ++i) { glEnableVertexAttribArray(i); }
 
 	// Set the vertex attribute offsets
 	glVertexAttribPointer(VERTEX_ARRAY, 3, GL_FLOAT, GL_FALSE, pMesh->sVertex.nStride, pMesh->sVertex.pData);
@@ -488,40 +497,40 @@ void OGLES2ParallaxBumpMap::DrawMesh(int i32NodeIndex)
 		- Indexed Triangle strips
 		- Non-Indexed Triangle strips
 	*/
-	if(pMesh->nNumStrips == 0)
+	if (pMesh->nNumStrips == 0)
 	{
-		if(m_puiIndexVbo[i32MeshIndex])
+		if (m_puiIndexVbo[i32MeshIndex])
 		{
 			// Indexed Triangle list
-			glDrawElements(GL_TRIANGLES, pMesh->nNumFaces*3, GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, pMesh->nNumFaces * 3, GL_UNSIGNED_SHORT, 0);
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			glDrawArrays(GL_TRIANGLES, 0, pMesh->nNumFaces*3);
+			glDrawArrays(GL_TRIANGLES, 0, pMesh->nNumFaces * 3);
 		}
 	}
 	else
 	{
-		for(int i = 0; i < (int)pMesh->nNumStrips; ++i)
+		for (int i = 0; i < (int)pMesh->nNumStrips; ++i)
 		{
 			int offset = 0;
-			if(m_puiIndexVbo[i32MeshIndex])
+			if (m_puiIndexVbo[i32MeshIndex])
 			{
 				// Indexed Triangle strips
-				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i]+2, GL_UNSIGNED_SHORT, (GLshort*)(offset*2));
+				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i] + 2, GL_UNSIGNED_SHORT, (GLshort*)(size_t)(offset * 2));
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				glDrawArrays(GL_TRIANGLE_STRIP, offset, pMesh->pnStripLength[i]+2);
+				glDrawArrays(GL_TRIANGLE_STRIP, offset, pMesh->pnStripLength[i] + 2);
 			}
-			offset += pMesh->pnStripLength[i]+2;
+			offset += pMesh->pnStripLength[i] + 2;
 		}
 	}
 
 	// Safely disable the vertex attribute arrays
-	for (int i = 0; i < eNumAttribs; ++i) glDisableVertexAttribArray(i);
+	for (int i = 0; i < eNumAttribs; ++i) { glDisableVertexAttribArray(i); }
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

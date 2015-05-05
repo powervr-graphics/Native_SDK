@@ -1,7 +1,6 @@
 #version 300 es
-
 #ifdef ANDROID
-#extension GL_OES_EGL_image_external : enable
+#extension GL_OES_EGL_image_external_essl3 : enable
 uniform samplerExternalOES	Sampler;
 #endif
 uniform sampler2D        	SamplerY;

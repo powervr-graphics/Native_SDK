@@ -4,7 +4,7 @@
 
  @Title        ExampleUI
 
- @Version      
+ @Version
 
  @Copyright    Copyright (c) Imagination Technologies Limited.
 
@@ -59,9 +59,9 @@
 #define ELEMENTS_IN_ARRAY(x)		(sizeof(x) / sizeof(x[0]))
 
 #ifdef _DEBUG
-	// Use a macro to redefine glDrawElements and glDrawArrays so we can count how many draw calls there were this frame.
-	#define glDrawElements(w,x,y,z)		{ m_iDrawCallsPerFrame++; glDrawElements(w,x,y,z); }
-	#define glDrawArrays(x,y,z)			{ m_iDrawCallsPerFrame++; glDrawArrays(x,y,z); }
+// Use a macro to redefine glDrawElements and glDrawArrays so we can count how many draw calls there were this frame.
+#define glDrawElements(w,x,y,z)		{ m_iDrawCallsPerFrame++; glDrawElements(w,x,y,z); }
+#define glDrawArrays(x,y,z)			{ m_iDrawCallsPerFrame++; glDrawArrays(x,y,z); }
 #endif
 
 /****************************************************************************
@@ -201,10 +201,10 @@ enum eDisplayState
 // Render states
 enum eRenderStates
 {
-	eRS_ALPHA_DISABLED		=(1<<0),
-	eRS_ALPHA_ENABLED		=(1<<1),
-	eRS_FILTER_BILINEAR		=(1<<12),
-	eRS_FILTER_NEAREST		=(1<<13),
+	eRS_ALPHA_DISABLED		= (1 << 0),
+	eRS_ALPHA_ENABLED		= (1 << 1),
+	eRS_FILTER_BILINEAR		= (1 << 12),
+	eRS_FILTER_NEAREST		= (1 << 13),
 
 	eRS_ALPHA_MASK	= eRS_ALPHA_DISABLED | eRS_ALPHA_ENABLED,
 	eRS_FILTER_MASK = eRS_FILTER_BILINEAR | eRS_FILTER_NEAREST
@@ -320,13 +320,13 @@ struct PassData
 /******************************************************************************
 ** Content file names
 ******************************************************************************/
-const char* const c_apszAncillaryTex[eANCILLARY_SIZE] = 
+const char* const c_apszAncillaryTex[eANCILLARY_SIZE] =
 {
 	"background.pvr",		// eANCILLARY_BACKGROUND
 	"topbar.pvr",			// eANCILLARY_TOPBAR
 };
 
-const char* const c_apszSprites[eSPRITE_SIZE] = 
+const char* const c_apszSprites[eSPRITE_SIZE] =
 {
 	"clock-face.pvr",			// eSPRITE_CLOCKFACE
 	"hand.pvr",					// eSPRITE_HAND
@@ -363,7 +363,7 @@ const char* const c_apszSprites[eSPRITE_SIZE] =
 	"window-topleft.pvr",		// eSPRITE_WINDOW_TOPLEFT
 	"window-topright.pvr",		// eSPRITE_WINDOW_TOPRIGHT
 };
-PVRTSIZEASSERT(c_apszSprites, eSPRITE_SIZE*sizeof(char*));
+PVRTSIZEASSERT(c_apszSprites, eSPRITE_SIZE* sizeof(char*));
 
 const char* const c_apszFragShaderSrcFile[eSHADER_SIZE] =
 {
@@ -397,11 +397,13 @@ const char* const c_apszVertShaderBinFile[eSHADER_SIZE] =
 ** Auxillary functions prototypes and function pointer table
 ******************************************************************************/
 class OGLES3ExampleUI;
-int BuildCircleGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* pIndexArray, GLushort u16IndexStart, OGLES3ExampleUI* pApp);
-int BuildQuadGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* pIndexArray, GLushort u16IndexStart, OGLES3ExampleUI* pApp);
+int BuildCircleGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* pIndexArray, GLushort u16IndexStart,
+                        OGLES3ExampleUI* pApp);
+int BuildQuadGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* pIndexArray, GLushort u16IndexStart,
+                      OGLES3ExampleUI* pApp);
 
 typedef int (*GeomBuildFunc)(const LayoutDesc&, PVRTVertex*, GLushort*, GLushort, OGLES3ExampleUI*);
-GeomBuildFunc GeomBuilderFunctions[eSPRITE_SIZE] = 
+GeomBuildFunc GeomBuilderFunctions[eSPRITE_SIZE] =
 {
 	BuildCircleGeometry,		// eSPRITE_CLOCKFACE,
 	BuildQuadGeometry,			// eSPRITE_HAND,
@@ -434,49 +436,49 @@ GeomBuildFunc GeomBuilderFunctions[eSPRITE_SIZE] =
 	BuildQuadGeometry,			// eSPRITE_WINDOW_TOPRIGHT,
 };
 
-PVRTSIZEASSERT(GeomBuilderFunctions, eSPRITE_SIZE*sizeof(GeomBuildFunc));
+PVRTSIZEASSERT(GeomBuilderFunctions, eSPRITE_SIZE* sizeof(GeomBuildFunc));
 
 /******************************************************************************
 ** Constants
 ******************************************************************************/
 /*
-   Sprite borders allow us to specify an internal border for each sprite that can be used to 
+   Sprite borders allow us to specify an internal border for each sprite that can be used to
    nullify bleeding while using linear filtering in conjunction with a texture atlas.
 */
 const SpriteBorder c_SpriteBorders[eSPRITE_SIZE] =
 {
 //	 L,R,T,B
-	{0,0,0,0},			// eSPRITE_CLOCKFACE,
-	{0,0,0,0},			// eSPRITE_HAND,
-	{0,0,0,0},			// eSPRITE_BATTERY,
-	{0,0,0,0},			// eSPRITE_WEB,
-	{0,0,0,0},			// eSPRITE_NEWMAIL,
-	{0,0,0,0},			// eSPRITE_NETWORK,
-	{0,0,0,0},			// eSPRITE_CALENDAR,
-	{0,0,0,0},			// eSPRITE_WEATHER_SUNCLOUD_BIG,
-	{0,0,0,0},			// eSPRITE_WEATHER_SUNCLOUD,
-	{0,0,0,0},			// eSPRITE_WEATHER_RAIN,
-	{0,0,0,0},			// eSPRITE_WEATHER_STORM,
-	{0,0,0,0},			// eSPRITE_CONTAINER_CORNER,
-	{0,0,0,0},			// eSPRITE_CONTAINER_VERT,
-	{0,0,0,0},			// eSPRITE_CONTAINER_HORI,
-	{0,0,0,0},			// eSPRITE_TEXT1,
-	{0,0,0,0},			// eSPRITE_TEXT2,
-	{0,0,0,0},			// eSPRITE_TEXT_WEATHER,
-	{0,0,0,0},			// eSPRITE_TEXT_FRI,
-	{0,0,0,0},			// eSPRITE_TEXT_SAT,
-	{0,0,0,0},			// eSPRITE_TEXT_SUN,
-	{0,0,0,0},			// eSPRITE_TEXT_MON,
-	{0,0,0,0},			// eSPRITE_CLOCKFACE_SMALL,
-	{0,0,0,0},			// eSPRITE_HAND_SMALL,
-	{2,2,4,0},			// eSPRITE_WINDOW_BOTTOM,
-	{8,0,8,0},			// eSPRITE_WINDOW_BOTTOMCORNER,
-	{4,0,2,2},			// eSPRITE_WINDOW_SIDE,
-	{3,3,0,32},			// eSPRITE_WINDOW_TOP,
-	{0,32,0,32},		// eSPRITE_WINDOW_TOPLEFT,
-	{32,0,0,32},		// eSPRITE_WINDOW_TOPRIGHT,
+	{0, 0, 0, 0},			// eSPRITE_CLOCKFACE,
+	{0, 0, 0, 0},			// eSPRITE_HAND,
+	{0, 0, 0, 0},			// eSPRITE_BATTERY,
+	{0, 0, 0, 0},			// eSPRITE_WEB,
+	{0, 0, 0, 0},			// eSPRITE_NEWMAIL,
+	{0, 0, 0, 0},			// eSPRITE_NETWORK,
+	{0, 0, 0, 0},			// eSPRITE_CALENDAR,
+	{0, 0, 0, 0},			// eSPRITE_WEATHER_SUNCLOUD_BIG,
+	{0, 0, 0, 0},			// eSPRITE_WEATHER_SUNCLOUD,
+	{0, 0, 0, 0},			// eSPRITE_WEATHER_RAIN,
+	{0, 0, 0, 0},			// eSPRITE_WEATHER_STORM,
+	{0, 0, 0, 0},			// eSPRITE_CONTAINER_CORNER,
+	{0, 0, 0, 0},			// eSPRITE_CONTAINER_VERT,
+	{0, 0, 0, 0},			// eSPRITE_CONTAINER_HORI,
+	{0, 0, 0, 0},			// eSPRITE_TEXT1,
+	{0, 0, 0, 0},			// eSPRITE_TEXT2,
+	{0, 0, 0, 0},			// eSPRITE_TEXT_WEATHER,
+	{0, 0, 0, 0},			// eSPRITE_TEXT_FRI,
+	{0, 0, 0, 0},			// eSPRITE_TEXT_SAT,
+	{0, 0, 0, 0},			// eSPRITE_TEXT_SUN,
+	{0, 0, 0, 0},			// eSPRITE_TEXT_MON,
+	{0, 0, 0, 0},			// eSPRITE_CLOCKFACE_SMALL,
+	{0, 0, 0, 0},			// eSPRITE_HAND_SMALL,
+	{2, 2, 4, 0},			// eSPRITE_WINDOW_BOTTOM,
+	{8, 0, 8, 0},			// eSPRITE_WINDOW_BOTTOMCORNER,
+	{4, 0, 2, 2},			// eSPRITE_WINDOW_SIDE,
+	{3, 3, 0, 32},			// eSPRITE_WINDOW_TOP,
+	{0, 32, 0, 32},		// eSPRITE_WINDOW_TOPLEFT,
+	{32, 0, 0, 32},		// eSPRITE_WINDOW_TOPRIGHT,
 };
-PVRTSIZEASSERT(c_SpriteBorders, eSPRITE_SIZE*sizeof(SpriteBorder));
+PVRTSIZEASSERT(c_SpriteBorders, eSPRITE_SIZE* sizeof(SpriteBorder));
 
 const char* const c_apszDisplayOpts[eDISPOPT_SIZE] =
 {
@@ -485,7 +487,7 @@ const char* const c_apszDisplayOpts[eDISPOPT_SIZE] =
 };
 
 #ifdef DISPLAY_SPRITE_ALPHA
-const char* const c_pszSpriteShaderDefines[] = 
+const char* const c_pszSpriteShaderDefines[] =
 {
 	"DISPLAY_SPRITE_ALPHA",
 };
@@ -493,7 +495,7 @@ const char* const c_pszSpriteShaderDefines[] =
 const char** const c_pszSpriteShaderDefines = NULL;
 #endif
 
-const char* const *c_appszShaderDefines[eSHADER_SIZE] =
+const char* const* c_appszShaderDefines[eSHADER_SIZE] =
 {
 	c_pszSpriteShaderDefines,			// eSPRITE_SHADER
 	NULL,								// eTEXCOL_SHADER
@@ -504,9 +506,10 @@ static const unsigned int DIM_DEFAULT	= 0xABCD;
 static const unsigned int DIM_CENTRE	= 0xABCE;
 static const GLfloat c_fByteToFloat		= 1.0f / 255.0f;
 
-static const char* const c_pszLoremIpsum = "Stencil Clipping\n\nLorem ipsum dolor sit amet, consectetuer adipiscing elit.\nDonec molestie. Sed aliquam sem ut arcu.\nPhasellus sollicitudin. Vestibulum condimentum facilisis nulla.\nIn hac habitasse platea dictumst. Nulla nonummy. Cras quis libero.\nCras venenatis. Aliquam posuere lobortis pede. Nullam fringilla urna id leo.\nPraesent aliquet pretium erat. Praesent non odio. Pellentesque a magna a\nmauris vulputate lacinia. Aenean viverra. Class aptent taciti sociosqu ad litora\ntorquent per conubia nostra, per inceptos hymenaeos. Aliquam\nlacus. Mauris magna eros, semper a, tempor et, rutrum et, tortor.";
+static const char* const c_pszLoremIpsum =
+  "Stencil Clipping\n\nLorem ipsum dolor sit amet, consectetuer adipiscing elit.\nDonec molestie. Sed aliquam sem ut arcu.\nPhasellus sollicitudin. Vestibulum condimentum facilisis nulla.\nIn hac habitasse platea dictumst. Nulla nonummy. Cras quis libero.\nCras venenatis. Aliquam posuere lobortis pede. Nullam fringilla urna id leo.\nPraesent aliquet pretium erat. Praesent non odio. Pellentesque a magna a\nmauris vulputate lacinia. Aenean viverra. Class aptent taciti sociosqu ad litora\ntorquent per conubia nostra, per inceptos hymenaeos. Aliquam\nlacus. Mauris magna eros, semper a, tempor et, rutrum et, tortor.";
 
-const unsigned char MARKER[4] = {0xAC,0x1D,0xCA,0xFE};
+const unsigned char MARKER[4] = {0xAC, 0x1D, 0xCA, 0xFE};
 
 #define MARKER_ID				{ MARKER[0],MARKER[1],MARKER[2],MARKER[3] }
 #define MARKER_LINEAR_FILTER	{ eSPRITE_NONE, eGROUP_NONE, 0,0,0,0, MARKER_ID, 0.0f,0.0f,0,0, eRS_FILTER_BILINEAR, 0,0, },
@@ -517,7 +520,7 @@ const unsigned char MARKER[4] = {0xAC,0x1D,0xCA,0xFE};
 ** UI Layout
 ******************************************************************************/
 LayoutDesc c_UILayout[] =
-{	
+{
 	// Base Sprites
 	//	Sprite Type					Group			X		Y		Width			Height			RGBA (in bytes)			Origin X/Y		X/Y Flip	Trans. type		i	Normalise
 	{	eSPRITE_BATTERY,			eGROUP_BASE,	600,	2,		DIM_DEFAULT,	DIM_DEFAULT, 	{255, 255, 255, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	true,	},
@@ -531,23 +534,23 @@ LayoutDesc c_UILayout[] =
 	{	eSPRITE_CONTAINER_CORNER,	eGROUP_CONTAINER,	CON_W,	0,		DIM_DEFAULT,	DIM_DEFAULT,	{255, 255, 255, 255},		1.0f, 0.0f,		1, 0,		eTRANS_NONE,	0,	false,	},
 	{	eSPRITE_CONTAINER_CORNER,	eGROUP_CONTAINER,	0,		CON_H,	DIM_DEFAULT,	DIM_DEFAULT,	{255, 255, 255, 255},		0.0f, 1.0f,		0, 1,		eTRANS_NONE,	0,	false,	},
 	{	eSPRITE_CONTAINER_CORNER,	eGROUP_CONTAINER,	CON_W,	CON_H,	DIM_DEFAULT,	DIM_DEFAULT,	{255, 255, 255, 255},		1.0f, 1.0f,		1, 1,		eTRANS_NONE,	0,	false,	},
-	{	eSPRITE_CONTAINER_VERT,		eGROUP_CONTAINER,	32,		0,		CON_W-64,		DIM_DEFAULT,	{255, 255, 255, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
-	{	eSPRITE_CONTAINER_VERT,		eGROUP_CONTAINER,	32,		CON_H,	CON_W-64,		DIM_DEFAULT,	{255, 255, 255, 255},		0.0f, 1.0f,		0, 1,		eTRANS_NONE,	0,	false,	},
-	{	eSPRITE_CONTAINER_HORI,		eGROUP_CONTAINER,	0,		32,		DIM_DEFAULT,	CON_H-64,		{255, 255, 255, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
-	{	eSPRITE_CONTAINER_HORI,		eGROUP_CONTAINER,	CON_W,	32,		DIM_DEFAULT,	CON_H-64,		{255, 255, 255, 255},		1.0f, 0.0f,		1, 0,		eTRANS_NONE,	0,	false,	},
-	{	eSPRITE_NONE,				eGROUP_CONTAINER,	32,		32,		CON_W-64,		CON_H-64,		{0,	 0,   0,   187},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
+	{	eSPRITE_CONTAINER_VERT,		eGROUP_CONTAINER,	32,		0,		CON_W - 64,		DIM_DEFAULT,	{255, 255, 255, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
+	{	eSPRITE_CONTAINER_VERT,		eGROUP_CONTAINER,	32,		CON_H,	CON_W - 64,		DIM_DEFAULT,	{255, 255, 255, 255},		0.0f, 1.0f,		0, 1,		eTRANS_NONE,	0,	false,	},
+	{	eSPRITE_CONTAINER_HORI,		eGROUP_CONTAINER,	0,		32,		DIM_DEFAULT,	CON_H - 64,		{255, 255, 255, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
+	{	eSPRITE_CONTAINER_HORI,		eGROUP_CONTAINER,	CON_W,	32,		DIM_DEFAULT,	CON_H - 64,		{255, 255, 255, 255},		1.0f, 0.0f,		1, 0,		eTRANS_NONE,	0,	false,	},
+	{	eSPRITE_NONE,				eGROUP_CONTAINER,	32,		32,		CON_W - 64,		CON_H - 64,		{0,	 0,   0,   187},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
 
 	// Window Sprites
 	//	Sprite Type						Group			X		Y		Width			Height			RGBA (in bytes)			Origin X/Y		X/Y Flip	Trans. type		i	Normalise
-	{	eSPRITE_WINDOW_TOP,				eGROUP_WINDOW,	16,		0,		WIN_W-32,		32,				{255, 255, 255, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
+	{	eSPRITE_WINDOW_TOP,				eGROUP_WINDOW,	16,		0,		WIN_W - 32,		32,				{255, 255, 255, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
 	{	eSPRITE_WINDOW_TOPLEFT,			eGROUP_WINDOW,	0,		0,		32,				32,				{255, 255, 255, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
 	{	eSPRITE_WINDOW_TOPRIGHT,		eGROUP_WINDOW,	WIN_W,	0,		32,				32,				{255, 255, 255, 255},		1.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
 	{	eSPRITE_WINDOW_BOTTOMCORNER,	eGROUP_WINDOW,	0,		WIN_H,	8,				8,				{255, 255, 255, 255},		0.0f, 1.0f,		1, 0,		eTRANS_NONE,	0,	false,	},
 	{	eSPRITE_WINDOW_BOTTOMCORNER,	eGROUP_WINDOW,	WIN_W,	WIN_H,	8,				8,				{255, 255, 255, 255},		1.0f, 1.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
-	{	eSPRITE_WINDOW_BOTTOM,			eGROUP_WINDOW,	8,		WIN_H,	WIN_W-16,		4,				{255, 255, 255, 255},		0.0f, 1.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
-	{	eSPRITE_WINDOW_SIDE,			eGROUP_WINDOW,	0,		32,		4,				WIN_H-40,		{255, 255, 255, 255},		0.0f, 0.0f,		1, 0,		eTRANS_NONE,	0,	false,	},
-	{	eSPRITE_WINDOW_SIDE,			eGROUP_WINDOW,	WIN_W,	32,		4,				WIN_H-40,		{255, 255, 255, 255},		1.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
-	{	eSPRITE_NONE,					eGROUP_WINDOW,	4,		4,		WIN_W-8,		WIN_H-8,		{244, 244, 244, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
+	{	eSPRITE_WINDOW_BOTTOM,			eGROUP_WINDOW,	8,		WIN_H,	WIN_W - 16,		4,				{255, 255, 255, 255},		0.0f, 1.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
+	{	eSPRITE_WINDOW_SIDE,			eGROUP_WINDOW,	0,		32,		4,				WIN_H - 40,		{255, 255, 255, 255},		0.0f, 0.0f,		1, 0,		eTRANS_NONE,	0,	false,	},
+	{	eSPRITE_WINDOW_SIDE,			eGROUP_WINDOW,	WIN_W,	32,		4,				WIN_H - 40,		{255, 255, 255, 255},		1.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
+	{	eSPRITE_NONE,					eGROUP_WINDOW,	4,		4,		WIN_W - 8,		WIN_H - 8,		{244, 244, 244, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	},
 
 	// Page 1 Sprites - Parent is eGROUP_CONTAINER, so coordinated are local to this.
 	//	Sprite Type					Group			X			Y		Width			Height			RGBA (in bytes)			Origin X/Y		X/Y Flip	Trans. type				i	Normalise
@@ -604,7 +607,7 @@ LayoutDesc c_UILayout[] =
 	{	eSPRITE_HAND_SMALL,			eGROUP_PAGE1,	416,		288,	DIM_DEFAULT,	DIM_DEFAULT,	{255, 255, 255, 255},		0.5f, 0.875f,	0, 0,		eTRANS_HAND_ROTATION,	0,	false,	},
 	{	eSPRITE_HAND_SMALL,			eGROUP_PAGE1,	480,		288,	DIM_DEFAULT,	DIM_DEFAULT,	{255, 255, 255, 255},		0.5f, 0.875f,	0, 0,		eTRANS_HAND_ROTATION,	0,	false,	},
 	{	eSPRITE_TEXT1,				eGROUP_PAGE1,	20,			322,	DIM_DEFAULT,	DIM_DEFAULT,	{255, 255, 255, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,			0,	false,	},
-	{	eSPRITE_TEXT2,				eGROUP_PAGE1,	CON_W-32,	322,	DIM_DEFAULT,	DIM_DEFAULT,	{255, 255, 255, 255},		1.0f, 0.0f,		0, 0,		eTRANS_NONE,			0,	false,	},
+	{	eSPRITE_TEXT2,				eGROUP_PAGE1,	CON_W - 32,	322,	DIM_DEFAULT,	DIM_DEFAULT,	{255, 255, 255, 255},		1.0f, 0.0f,		0, 0,		eTRANS_NONE,			0,	false,	},
 	{	eSPRITE_NONE,				eGROUP_PAGE1,	256,		320,	512,			1,				{191, 191, 191, 255},		0.5f, 0.0f,		0, 0,		eTRANS_NONE,			0,	false,	},
 	{	eSPRITE_NONE,				eGROUP_PAGE1,	256,		320,	1,				80,				{191, 191, 191, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,			0,	false,	},
 
@@ -626,7 +629,7 @@ LayoutDesc c_UILayout[] =
 	{	eSPRITE_NONE,					eGROUP_PAGE2,	384,	312,	1,				88,				{191, 191, 191, 255},		0.0f, 0.0f,		0, 0,		eTRANS_NONE,	0,	false,	}
 };
 
-const GroupTree c_GroupTree[eGROUP_SIZE] = 
+const GroupTree c_GroupTree[eGROUP_SIZE] =
 {
 	// Group				Parent				X			Y			Width			Height
 	{ eGROUP_BASE,			eGROUP_NONE,		0,			0,			DIM_DEFAULT,	DIM_DEFAULT,	},
@@ -645,7 +648,7 @@ const bool c_bIsTransformUnique[eTRANS_SIZE] =
 
 const PageDesc c_PageDescription[eDISPPAGE_MAX] =
 {
-	// Container			Clip Shape			
+	// Container			Clip Shape
 	{ eGROUP_CONTAINER,		eCLIPSHAPE_NONE },		// eDISPPAGE_CLOCKS
 	{ eGROUP_CONTAINER,		eCLIPSHAPE_NONE },		// eDISPPAGE_WEATHER
 	{ eGROUP_WINDOW,		eCLIPSHAPE_WINDOW },	// eDISPPAGE_WINDOW
@@ -666,25 +669,26 @@ inline int MakePowerOfTwo(int iVal)
 	int iTmp = 1;
 	do
 	{
-		iTmp<<=1;
-	} while(iTmp < iVal);
+		iTmp <<= 1;
+	}
+	while (iTmp < iVal);
 	return iTmp;
 }
 
 inline float QuadraticEaseOut(float fStart, float fEnd, float fT)
 {
 	float fTInv = 1.0f - fT;
-	return ((fStart - fEnd)*fTInv*fTInv) + fEnd;
+	return ((fStart - fEnd) * fTInv * fTInv) + fEnd;
 }
 
 inline float QuadraticEaseIn(float fStart, float fEnd, float fT)
 {
-	return ((fEnd - fStart)*fT*fT) + fStart;
+	return ((fEnd - fStart) * fT * fT) + fStart;
 }
 
 inline eSpriteGroup GroupFromDisplayPage(eDisplayPage Page)
 {
-	switch(Page)
+	switch (Page)
 	{
 	case eDISPPAGE_CLOCKS:
 		return eGROUP_PAGE1;
@@ -710,10 +714,10 @@ inline void HandRotateFunc(const LayoutDesc& Layout, PVRTMat4& mOut, float fRota
 
 inline bool CheckState(unsigned int uiMask, eRenderStates eTest, eRenderStates eTestMask, unsigned int& uiClientState)
 {
-	if(uiMask & eTest)		// State requested
+	if (uiMask & eTest)		// State requested
 	{
 		bool bNeedsUpdate = !(eTest & uiClientState);		// Check if this is already set in the mask
-		if(bNeedsUpdate)
+		if (bNeedsUpdate)
 		{
 			uiClientState &= ~eTestMask;
 			uiClientState |= eTest;
@@ -729,28 +733,28 @@ inline bool CheckState(unsigned int uiMask, eRenderStates eTest, eRenderStates e
 ******************************************************************************/
 class Area
 {
-	private:
-		int		m_iX; 
-		int		m_iY;
-		int		m_iW;
-		int		m_iH;
-		int		m_iSize;
-		bool	m_bFilled;
+private:
+	int		m_iX;
+	int		m_iY;
+	int		m_iW;
+	int		m_iH;
+	int		m_iSize;
+	bool	m_bFilled;
 
-		Area*	m_pRight;
-		Area*	m_pLeft;
+	Area*	m_pRight;
+	Area*	m_pLeft;
 
-	private:
-		void SetSize(int iWidth, int iHeight);
-	public:
-		Area(int iWidth, int iHeight);
-		Area();
+private:
+	void SetSize(int iWidth, int iHeight);
+public:
+	Area(int iWidth, int iHeight);
+	Area();
 
-		Area* Insert(int iWidth, int iHeight);
-		bool DeleteArea();
+	Area* Insert(int iWidth, int iHeight);
+	bool DeleteArea();
 
-		int GetX();
-		int GetY();
+	int GetX();
+	int GetY();
 };
 
 class CPassSort
@@ -777,151 +781,156 @@ public:
 
 class OGLES3ExampleUI : public PVRShell
 {
-	private:
-		// Classes
-		CPVRTPrint3D		m_Print3D;
-        CPVRTPrint3D        m_PrintUI;
-		SpriteDesc			m_aSprites[eSPRITE_SIZE];
-		PVRTRectf			m_SpriteBox[eSPRITE_SIZE];			
+private:
+	// Classes
+	CPVRTPrint3D		m_Print3D;
+	CPVRTPrint3D        m_PrintUI;
+	SpriteDesc			m_aSprites[eSPRITE_SIZE];
+	PVRTRectf			m_SpriteBox[eSPRITE_SIZE];
 
-		// Texture info and handles
-		GLuint				m_uiAncillaryTex[eANCILLARY_SIZE];
-		GLuint				m_uiTextureAtlas;
-		GLuint				m_uiTextureBase;
-		GLuint				m_uiBaseW;
-		GLuint				m_uiBaseH;
-		GLuint				m_uiAtlasW;
-		GLuint				m_uiAtlasH;
-		GLuint				m_uiFBOAtlas;
-		GLuint				m_uiFBOBase;
-		PVRTVec2			m_vNullTexCoords;
-		bool				m_bAtlasGenerated;
+	// Texture info and handles
+	GLuint				m_uiAncillaryTex[eANCILLARY_SIZE];
+	GLuint				m_uiTextureAtlas;
+	GLuint				m_uiTextureBase;
+	GLuint				m_uiBaseW;
+	GLuint				m_uiBaseH;
+	GLuint				m_uiAtlasW;
+	GLuint				m_uiAtlasH;
+	GLuint				m_uiFBOAtlas;
+	GLuint				m_uiFBOBase;
+	PVRTVec2			m_vNullTexCoords;
+	bool				m_bAtlasGenerated;
 
-		// Shader handles
-		GLuint				m_auiVertShaderIds[eSHADER_SIZE];
-		GLuint				m_auiFragShaderIds[eSHADER_SIZE];
+	// Shader handles
+	GLuint				m_auiVertShaderIds[eSHADER_SIZE];
+	GLuint				m_auiFragShaderIds[eSHADER_SIZE];
 
-		// Transforms
-		PVRTMat4			m_mUIProj;
-		PVRTMat4*			m_mTransforms;
-		GLuint				m_uiNumTransforms;
-		PVRTMat4			m_mDerivedGroup[eGROUP_SIZE];
-		GLfloat				m_fHandRotate;
-		GLfloat				m_fWinRotate;
-		GLuint				m_uiTransformsInGroup[eGROUP_SIZE];
+	// Transforms
+	PVRTMat4			m_mUIProj;
+	PVRTMat4*			m_mTransforms;
+	GLuint				m_uiNumTransforms;
+	PVRTMat4			m_mDerivedGroup[eGROUP_SIZE];
+	GLfloat				m_fHandRotate;
+	GLfloat				m_fWinRotate;
+	GLuint				m_uiTransformsInGroup[eGROUP_SIZE];
 
-		GLint				m_i32OriginalFBO;
+	GLint				m_i32OriginalFBO;
 
-		// Programs
-		SpriteShader		m_SpriteShader;
-		TexColShader		m_TexColShader;
-		ColShader			m_ColShader;
+	// Programs
+	SpriteShader		m_SpriteShader;
+	TexColShader		m_TexColShader;
+	ColShader			m_ColShader;
 
-		CPVRTArray<PassData>	m_PassesPerGroup[eGROUP_SIZE];
-		CPVRTArray<GLuint>		m_uiIndexOffsets[eGROUP_SIZE];		// The offset in to the index buffer for groups of quads.
-		CPVRTArray<GLuint>		m_uiIndexCount[eGROUP_SIZE];		// The number of indices to render per pass, per group.
-		unsigned int			m_uiCurrentRS;
+	CPVRTArray<PassData>	m_PassesPerGroup[eGROUP_SIZE];
+	CPVRTArray<GLuint>		m_uiIndexOffsets[eGROUP_SIZE];		// The offset in to the index buffer for groups of quads.
+	CPVRTArray<GLuint>		m_uiIndexCount[eGROUP_SIZE];		// The number of indices to render per pass, per group.
+	unsigned int			m_uiCurrentRS;
 
-		// VBO handles
-		GLuint				m_ui32QuadVBO;
-		GLuint				m_ui32QuadIndexVBO;
+	// VBO handles
+	GLuint				m_ui32QuadVBO;
+	GLuint				m_ui32QuadIndexVBO;
 
-		// Data offset
-		GLint				m_i32VOffset;
-		GLint				m_i32UVOffset;
-		GLint				m_i32RGBAOffset;
-		GLint				m_i32TransIdxOffset;
+	// Data offset
+	GLint				m_i32VOffset;
+	GLint				m_i32UVOffset;
+	GLint				m_i32RGBAOffset;
+	GLint				m_i32TransIdxOffset;
 
-		// Display options
-		GLuint				m_uiDisplayOpt;
-		GLuint				m_uiDisplayPage;			// The page to display. Could be several pages OR'd together in instances such as transitions.
-		bool				m_bBaseDirty;
-		eDisplayState		m_eState;
-		float				m_fTransitionPerc;
-		eDisplayPage		m_CurrentPage;
-		eDisplayPage		m_LastPage;
-		int					m_i32CycleDirection;
+	// Display options
+	GLuint				m_uiDisplayOpt;
+	GLuint				m_uiDisplayPage;			// The page to display. Could be several pages OR'd together in instances such as transitions.
+	bool				m_bBaseDirty;
+	eDisplayState		m_eState;
+	float				m_fTransitionPerc;
+	eDisplayPage		m_CurrentPage;
+	eDisplayPage		m_LastPage;
+	int					m_i32CycleDirection;
 
-		// Data
-		int					m_iDrawCallsPerFrame;
+	// Data
+	int					m_iDrawCallsPerFrame;
 
-		// Time
-		float				m_fWinRotPerc;
-		unsigned long		m_ulPreviousTransTime;
-		unsigned long		m_ulPreviousTime;
+	// Time
+	float				m_fWinRotPerc;
+	unsigned long		m_ulPreviousTransTime;
+	unsigned long		m_ulPreviousTime;
 
-		// Builder functions
-		friend int BuildCircleGeometry(const LayoutDesc&, PVRTVertex*, GLushort*, GLushort, OGLES3ExampleUI*);
-		friend int BuildQuadGeometry(const LayoutDesc&, PVRTVertex*, GLushort*, GLushort, OGLES3ExampleUI*);
+	// Builder functions
+	friend int BuildCircleGeometry(const LayoutDesc&, PVRTVertex*, GLushort*, GLushort, OGLES3ExampleUI*);
+	friend int BuildQuadGeometry(const LayoutDesc&, PVRTVertex*, GLushort*, GLushort, OGLES3ExampleUI*);
 
-	private:
-		void InitUI();
-		void ScreenAlignedQuad(const ColShader& Shader, const PVRTRectf& DstRect, const PVRTRectf& SrcRect = PVRTRectf(0,0,1,1), const GLuint uiRGBA = 0xFFFFFFFF);
+private:
+	void InitUI();
+	void ScreenAlignedQuad(const ColShader& Shader, const PVRTRectf& DstRect, const PVRTRectf& SrcRect = PVRTRectf(0, 0, 1, 1),
+	                       const GLuint uiRGBA = 0xFFFFFFFF);
 
-		void RenderUIGroup(eSpriteGroup Group, const PVRTMat4& mProj);
-		void RenderBaseUI();
-		void RenderUI();
-		void RenderPage(eDisplayPage Page, const PVRTMat4& mTransform);
-		void RenderAtlas();
+	void RenderUIGroup(eSpriteGroup Group, const PVRTMat4& mProj);
+	void RenderBaseUI();
+	void RenderUI();
+	void RenderPage(eDisplayPage Page, const PVRTMat4& mTransform);
+	void RenderAtlas();
 
-		bool LoadSprites(CPVRTString* const pErrorStr);
-		bool LoadShaders(CPVRTString* const pErrorStr);
-		bool GenerateAtlas();
-		bool FreeSprites();
+	bool LoadSprites(CPVRTString* const pErrorStr);
+	bool LoadShaders(CPVRTString* const pErrorStr);
+	bool GenerateAtlas();
+	bool FreeSprites();
 
-		void LockBuffers();
-		void ReleaseBuffers();
+	void LockBuffers();
+	void ReleaseBuffers();
 
-		int CountRequiredVertices();
-		int CountRequiredIndices();
+	int CountRequiredVertices();
+	int CountRequiredIndices();
 
-		void ApplyClipping(eClipShape Clip, const PVRTMat4& mMVP);
-		void StopClipping();
+	void ApplyClipping(eClipShape Clip, const PVRTMat4& mMVP);
+	void StopClipping();
 
-		void UpdateRenderState(unsigned int uiMask);
-    
-        inline float GetVirtualWidth()
-        {
-            return (float)(IsRotated() ? PVRShellGet(prefHeight) : PVRShellGet(prefWidth));
-        }
-    
-        inline float GetVirtualHeight()
-        {
-            return (float)(IsRotated() ? PVRShellGet(prefWidth) : PVRShellGet(prefHeight));
-        }
+	void UpdateRenderState(unsigned int uiMask);
 
-		inline float ToDeviceX(float fVal)
-		{
-			return ((fVal / VIRTUAL_WIDTH) * GetVirtualWidth());
-		}
+	inline float GetVirtualWidth()
+	{
+		return (float)(IsRotated() ? PVRShellGet(prefHeight) : PVRShellGet(prefWidth));
+	}
 
-		inline float ToDeviceY(float fVal)
-		{
-			return ((fVal / VIRTUAL_HEIGHT) * GetVirtualHeight());
-		}
-    
-        inline bool IsRotated()
-        {
-            return PVRShellGet(prefIsRotated) && PVRShellGet(prefFullScreen);
-        }
+	inline float GetVirtualHeight()
+	{
+		return (float)(IsRotated() ? PVRShellGet(prefWidth) : PVRShellGet(prefHeight));
+	}
 
-	public:
-		OGLES3ExampleUI();
-		virtual bool InitApplication();
-		virtual bool InitView();
-		virtual bool ReleaseView();
-		virtual bool QuitApplication();
-		virtual bool RenderScene();
+	inline float ToDeviceX(float fVal)
+	{
+		return ((fVal / VIRTUAL_WIDTH) * GetVirtualWidth());
+	}
+
+	inline float ToDeviceY(float fVal)
+	{
+		return ((fVal / VIRTUAL_HEIGHT) * GetVirtualHeight());
+	}
+
+	inline bool IsRotated()
+	{
+		return PVRShellGet(prefIsRotated) && PVRShellGet(prefFullScreen);
+	}
+
+public:
+	OGLES3ExampleUI();
+	virtual bool InitApplication();
+	virtual bool InitView();
+	virtual bool ReleaseView();
+	virtual bool QuitApplication();
+	virtual bool RenderScene();
 };
 
 /*!***********************************************************************
 @Function			OGLES3ExampleUI
 @Description		Constructor
 *************************************************************************/
-OGLES3ExampleUI::OGLES3ExampleUI() : m_uiTextureAtlas(0), m_uiTextureBase(0), m_uiBaseW(0), m_uiBaseH(0), m_uiAtlasW(0), m_uiAtlasH(0), m_uiFBOAtlas(0), m_uiFBOBase(0), m_bAtlasGenerated(false),
-									 m_mTransforms(NULL), m_uiNumTransforms(0), m_fHandRotate(0.0f), m_fWinRotate(0.0f), m_i32OriginalFBO(0), m_uiCurrentRS(0), m_ui32QuadVBO(0), m_ui32QuadIndexVBO(0), 
-									 m_uiDisplayOpt(eDISPOPT_DEFAULT), m_uiDisplayPage(eDISPPAGE_DEFAULT), m_bBaseDirty(true), m_eState(eDISPSTATE_DEFAULT), m_fTransitionPerc(0.0f),  
-									 m_CurrentPage(eDISPPAGE_DEFAULT), m_LastPage(eDISPPAGE_DEFAULT), m_i32CycleDirection(1), m_iDrawCallsPerFrame(0), m_fWinRotPerc(0.0f), m_ulPreviousTransTime(0), m_ulPreviousTime(0)
+OGLES3ExampleUI::OGLES3ExampleUI() : m_uiTextureAtlas(0), m_uiTextureBase(0), m_uiBaseW(0), m_uiBaseH(0), m_uiAtlasW(0),
+	m_uiAtlasH(0), m_uiFBOAtlas(0), m_uiFBOBase(0), m_bAtlasGenerated(false),
+	m_mTransforms(NULL), m_uiNumTransforms(0), m_fHandRotate(0.0f), m_fWinRotate(0.0f), m_i32OriginalFBO(0), m_uiCurrentRS(0),
+	m_ui32QuadVBO(0), m_ui32QuadIndexVBO(0),
+	m_uiDisplayOpt(eDISPOPT_DEFAULT), m_uiDisplayPage(eDISPPAGE_DEFAULT), m_bBaseDirty(true), m_eState(eDISPSTATE_DEFAULT),
+	m_fTransitionPerc(0.0f),
+	m_CurrentPage(eDISPPAGE_DEFAULT), m_LastPage(eDISPPAGE_DEFAULT), m_i32CycleDirection(1), m_iDrawCallsPerFrame(0),
+	m_fWinRotPerc(0.0f), m_ulPreviousTransTime(0), m_ulPreviousTime(0)
 {
 	// Calculate some offsets
 	PVRTVertex dummy;
@@ -932,10 +941,10 @@ OGLES3ExampleUI::OGLES3ExampleUI() : m_uiTextureAtlas(0), m_uiTextureBase(0), m_
 
 	// Calculate unique transforms
 	m_uiNumTransforms = 1;		// We know there's a minimum of 1 transform (identity transform)
-	for(GLuint i = 0; i < c_uiNumSprites; ++i)
+	for (GLuint i = 0; i < c_uiNumSprites; ++i)
 	{
-		if(c_bIsTransformUnique[c_UILayout[i].uiTransform])
-			c_UILayout[i].uiTransformIndex = m_uiNumTransforms++;
+		if (c_bIsTransformUnique[c_UILayout[i].uiTransform])
+		{ c_UILayout[i].uiTransformIndex = m_uiNumTransforms++; }
 	}
 
 	// Now we the size of the transform matrix
@@ -963,7 +972,7 @@ bool OGLES3ExampleUI::InitApplication()
 	// nothing special is required to load external files.
 	CPVRTResourceFile::SetLoadReleaseFunctions(PVRShellGet(prefLoadFileFunc), PVRShellGet(prefReleaseFileFunc));
 
-    PVRShellSet(prefStencilBufferContext, true);
+	PVRShellSet(prefStencilBufferContext, true);
 	return true;
 }
 
@@ -981,64 +990,64 @@ bool OGLES3ExampleUI::InitView()
 	GLfloat fOrigW = (float)PVRShellGet(prefWidth);
 	GLfloat fOrigH = (float)PVRShellGet(prefHeight);
 	m_mUIProj  = PVRTMat4::Ortho(0.0f, 0.0f, fOrigW, fOrigH, -1, 1, PVRTMat4::OGL, false);
-    if(bRotate)
-    {
-        m_mUIProj = m_mUIProj * PVRTMat4::RotationZ(PVRT_PI_OVER_TWO);
-        m_mUIProj.f[13] *= -1.0f;
-    }
-    
+	if (bRotate)
+	{
+		m_mUIProj = m_mUIProj * PVRTMat4::RotationZ(PVRT_PI_OVER_TWO);
+		m_mUIProj.f[13] *= -1.0f;
+	}
+
 	m_ulPreviousTransTime = PVRShellGetTime();
-    
-    GLfloat fW = GetVirtualWidth();
-    GLfloat fH = GetVirtualHeight();
+
+	GLfloat fW = GetVirtualWidth();
+	GLfloat fH = GetVirtualHeight();
 
 	// Calculate derived matrices for each group, taking in to account the tree hierarchy
 	// Transforms need to be calculated here as InitView is the first point in the program in which the device coordinates are known.
 	PVRTMat4 mLocal, mIdentity;
 	PVRTMatrixIdentity(mIdentity);
 	float fX, fY;
-	for(GLuint i = 0; i < eGROUP_SIZE; ++i)
+	for (GLuint i = 0; i < eGROUP_SIZE; ++i)
 	{
 		// Figure out X,Y locations
-		if(c_GroupTree[i].i32X == (int) DIM_CENTRE && c_GroupTree[i].uiW != DIM_DEFAULT)	
-			fX = (fW-c_GroupTree[i].uiW)*0.5f;
-		else																		
-			fX = (float)c_GroupTree[i].i32X;
+		if (c_GroupTree[i].i32X == (int) DIM_CENTRE && c_GroupTree[i].uiW != DIM_DEFAULT)
+		{ fX = (fW - c_GroupTree[i].uiW) * 0.5f; }
+		else
+		{ fX = (float)c_GroupTree[i].i32X; }
 
-		if(c_GroupTree[i].i32Y == (int) DIM_CENTRE && c_GroupTree[i].uiH != DIM_DEFAULT)	
-			fY = (fH-c_GroupTree[i].uiH)*0.5f;
-		else																		
-			fY = (float)c_GroupTree[i].i32Y;
+		if (c_GroupTree[i].i32Y == (int) DIM_CENTRE && c_GroupTree[i].uiH != DIM_DEFAULT)
+		{ fY = (fH - c_GroupTree[i].uiH) * 0.5f; }
+		else
+		{ fY = (float)c_GroupTree[i].i32Y; }
 
 		PVRTMatrixTranslation(mLocal, fX, fY, 0.0f);
 		m_mDerivedGroup[i] = (c_GroupTree[i].Parent == eGROUP_NONE ? mIdentity : m_mDerivedGroup[c_GroupTree[i].Parent]) * mLocal;
 	}
 
 	CPVRTString ErrorStr;
-	
+
 	// Load the sprites
-	if(!LoadSprites(&ErrorStr))
-	{	
+	if (!LoadSprites(&ErrorStr))
+	{
 		PVRShellSet(prefExitMessage, ErrorStr.c_str());
 		return false;
 	}
 
 	// Load the shaders
-	if(!LoadShaders(&ErrorStr))
-	{	
+	if (!LoadShaders(&ErrorStr))
+	{
 		PVRShellSet(prefExitMessage, ErrorStr.c_str());
 		return false;
 	}
 
 	// Initialize Print3D
-	if(m_Print3D.SetTextures(0, PVRShellGet(prefWidth), PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
+	if (m_Print3D.SetTextures(0, PVRShellGet(prefWidth), PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, "ERROR: Cannot initialise Print3D\n");
 		return false;
 	}
-    
-    if(m_PrintUI.SetTextures(0, PVRShellGet(prefWidth), PVRShellGet(prefHeight), false) != PVR_SUCCESS)
-    {
+
+	if (m_PrintUI.SetTextures(0, PVRShellGet(prefWidth), PVRShellGet(prefHeight), false) != PVR_SUCCESS)
+	{
 		PVRShellSet(prefExitMessage, "ERROR: Cannot initialise Print3D\n");
 		return false;
 	}
@@ -1049,15 +1058,15 @@ bool OGLES3ExampleUI::InitView()
 	glEnable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
 	glClearStencil(0);
-    
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Get the currently bound frame buffer object. On most platforms this just gives 0.
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &m_i32OriginalFBO);
 
 	// Generate the atlas texture.
-	if(!m_bAtlasGenerated)
-		GenerateAtlas();
+	if (!m_bAtlasGenerated)
+	{ GenerateAtlas(); }
 
 	// Generate FBO for the base screen texture
 	m_uiBaseW = MakePowerOfTwo(GetVirtualWidth());
@@ -1076,15 +1085,15 @@ bool OGLES3ExampleUI::InitView()
 	// Create texture atlas FBO and bind the previously created texture to it.
 	glGenFramebuffers(1, &m_uiFBOBase);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_uiFBOBase);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_uiTextureBase, 0);	
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_uiTextureBase, 0);
 
 	// Check to make sure the FBO is OK.
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		PVRShellSet(prefExitMessage,"ERROR: Frame buffer did not set up correctly\n");
+		PVRShellSet(prefExitMessage, "ERROR: Frame buffer did not set up correctly\n");
 		return false;
 	}
-	
+
 	// Clear the framebuffer
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -1111,9 +1120,9 @@ bool OGLES3ExampleUI::LoadSprites(CPVRTString* const pErrorStr)
 	PVRTextureHeaderV3 header;
 
 	// Load sprites and add to sprite array so that we can generate a texture atlas from them.
-	for(; i < eSPRITE_SIZE; ++i)
+	for (; i < eSPRITE_SIZE; ++i)
 	{
-		if(PVRTTextureLoadFromPVR(c_apszSprites[i], &m_aSprites[i].uiId, &header) != PVR_SUCCESS)
+		if (PVRTTextureLoadFromPVR(c_apszSprites[i], &m_aSprites[i].uiId, &header) != PVR_SUCCESS)
 		{
 			*pErrorStr = CPVRTString("ERROR: Could not open texture file ") + c_apszSprites[i];
 			return false;
@@ -1125,11 +1134,11 @@ bool OGLES3ExampleUI::LoadSprites(CPVRTString* const pErrorStr)
 
 		const char* pixelString = ((char*)&header.u64PixelFormat);
 
-		if (header.u64PixelFormat == ePVRTPF_PVRTCI_2bpp_RGBA || header.u64PixelFormat == ePVRTPF_PVRTCI_4bpp_RGBA 
-					|| pixelString[0] == 'a' || pixelString[1] == 'a' || pixelString[2] == 'a' || pixelString[3] == 'a')
-			m_aSprites[i].bHasAlpha = true;
-		else 
-			m_aSprites[i].bHasAlpha = false;
+		if (header.u64PixelFormat == ePVRTPF_PVRTCI_2bpp_RGBA || header.u64PixelFormat == ePVRTPF_PVRTCI_4bpp_RGBA
+		    || pixelString[0] == 'a' || pixelString[1] == 'a' || pixelString[2] == 'a' || pixelString[3] == 'a')
+		{ m_aSprites[i].bHasAlpha = true; }
+		else
+		{ m_aSprites[i].bHasAlpha = false; }
 
 		m_aSprites[i].Border    = c_SpriteBorders[i];
 
@@ -1139,9 +1148,9 @@ bool OGLES3ExampleUI::LoadSprites(CPVRTString* const pErrorStr)
 	}
 
 	// Load ancillary textures
-	for(i = 0; i < eANCILLARY_SIZE; ++i)
+	for (i = 0; i < eANCILLARY_SIZE; ++i)
 	{
-		if(PVRTTextureLoadFromPVR(c_apszAncillaryTex[i], &m_uiAncillaryTex[i]) != PVR_SUCCESS)
+		if (PVRTTextureLoadFromPVR(c_apszAncillaryTex[i], &m_uiAncillaryTex[i]) != PVR_SUCCESS)
 		{
 			*pErrorStr = CPVRTString("ERROR: Could not open texture file ") + c_apszAncillaryTex[i];
 			return false;
@@ -1169,16 +1178,18 @@ bool OGLES3ExampleUI::LoadShaders(CPVRTString* const pErrorStr)
 		are used as fallback.
 	*/
 
-	for(GLuint i = 0; i < eSHADER_SIZE; ++i)
+	for (GLuint i = 0; i < eSHADER_SIZE; ++i)
 	{
-		if(PVRTShaderLoadFromFile(c_apszVertShaderBinFile[i], c_apszVertShaderSrcFile[i], GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, 
-								  &m_auiVertShaderIds[i], pErrorStr, 0, c_appszShaderDefines[i], (c_appszShaderDefines[i] ? ELEMENTS_IN_ARRAY(c_appszShaderDefines[i]) : 0)) != PVR_SUCCESS)
+		if (PVRTShaderLoadFromFile(c_apszVertShaderBinFile[i], c_apszVertShaderSrcFile[i], GL_VERTEX_SHADER, GL_SGX_BINARY_IMG,
+		                           &m_auiVertShaderIds[i], pErrorStr, 0, c_appszShaderDefines[i],
+		                           (c_appszShaderDefines[i] ? ELEMENTS_IN_ARRAY(c_appszShaderDefines[i]) : 0)) != PVR_SUCCESS)
 		{
 			return false;
 		}
 
-		if(PVRTShaderLoadFromFile(c_apszFragShaderBinFile[i], c_apszFragShaderSrcFile[i], GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, 
-								  &m_auiFragShaderIds[i], pErrorStr, 0, c_appszShaderDefines[i], (c_appszShaderDefines[i] ? ELEMENTS_IN_ARRAY(c_appszShaderDefines[i]) : 0)) != PVR_SUCCESS)
+		if (PVRTShaderLoadFromFile(c_apszFragShaderBinFile[i], c_apszFragShaderSrcFile[i], GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG,
+		                           &m_auiFragShaderIds[i], pErrorStr, 0, c_appszShaderDefines[i],
+		                           (c_appszShaderDefines[i] ? ELEMENTS_IN_ARRAY(c_appszShaderDefines[i]) : 0)) != PVR_SUCCESS)
 		{
 			return false;
 		}
@@ -1187,7 +1198,8 @@ bool OGLES3ExampleUI::LoadShaders(CPVRTString* const pErrorStr)
 	// --- SpriteShader
 	// Link
 	const char* aszSpriteShaderAttribs[] = { "inVertex", "inUVs", "inTransIdx", "inRGBA" };
-	if (PVRTCreateProgram(&m_SpriteShader.uiId, m_auiVertShaderIds[eSPRITE_SHADER], m_auiFragShaderIds[eSPRITE_SHADER], aszSpriteShaderAttribs, 4, pErrorStr))
+	if (PVRTCreateProgram(&m_SpriteShader.uiId, m_auiVertShaderIds[eSPRITE_SHADER], m_auiFragShaderIds[eSPRITE_SHADER],
+	                      aszSpriteShaderAttribs, 4, pErrorStr))
 	{
 		return false;
 	}
@@ -1200,7 +1212,8 @@ bool OGLES3ExampleUI::LoadShaders(CPVRTString* const pErrorStr)
 	// --- TexColShader
 	// Link
 	const char* aszTexColAttribs[] = { "inVertex", "inUVs"};
-	if (PVRTCreateProgram(&m_TexColShader.uiId, m_auiVertShaderIds[eTEXCOL_SHADER], m_auiFragShaderIds[eTEXCOL_SHADER], aszTexColAttribs, 2, pErrorStr))
+	if (PVRTCreateProgram(&m_TexColShader.uiId, m_auiVertShaderIds[eTEXCOL_SHADER], m_auiFragShaderIds[eTEXCOL_SHADER],
+	                      aszTexColAttribs, 2, pErrorStr))
 	{
 		return false;
 	}
@@ -1213,7 +1226,8 @@ bool OGLES3ExampleUI::LoadShaders(CPVRTString* const pErrorStr)
 	// --- ColShader
 	// Link
 	const char* aszColAttribs[] = { "inVertex"};
-	if (PVRTCreateProgram(&m_ColShader.uiId, m_auiVertShaderIds[eCOL_SHADER], m_auiFragShaderIds[eCOL_SHADER], aszColAttribs, 1, pErrorStr))
+	if (PVRTCreateProgram(&m_ColShader.uiId, m_auiVertShaderIds[eCOL_SHADER], m_auiFragShaderIds[eCOL_SHADER], aszColAttribs, 1,
+	                      pErrorStr))
 	{
 		return false;
 	}
@@ -1251,20 +1265,20 @@ bool OGLES3ExampleUI::GenerateAtlas()
 	// Create texture atlas FBO and bind the previously created texture to it.
 	glGenFramebuffers(1, &m_uiFBOAtlas);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_uiFBOAtlas);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_uiTextureAtlas, 0);	
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_uiTextureAtlas, 0);
 
 	// Check to make sure the FBO is OK.
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		PVRShellSet(prefExitMessage,"ERROR: Frame buffer did not set up correctly\n");
+		PVRShellSet(prefExitMessage, "ERROR: Frame buffer did not set up correctly\n");
 		return false;
 	}
-	
+
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glViewport(0, 0, m_uiAtlasW, m_uiAtlasH);
-	
+
 	PVRTMat4 mMVP = PVRTMat4::Ortho(0.0f, (PVRTfloat32)m_uiAtlasH, (PVRTfloat32)m_uiAtlasW, 0.0f, -1.0f, 1.0f, PVRTMat4::OGL, false);
 	glUseProgram(m_TexColShader.uiId);
 	glUniformMatrix4fv(m_TexColShader.uiMVPMatrixLoc,  1, GL_FALSE, mMVP.ptr());
@@ -1274,8 +1288,8 @@ bool OGLES3ExampleUI::GenerateAtlas()
 	// Sort sprites such that largest is first
 	// Create an array of pointers to sprites so we can sort the pointers instead of the sprites themselves.
 	CPVRTArray<SpriteDesc*> aSortedSprites;
-	for(GLuint i = 0; i < eSPRITE_SIZE; ++i)
-		aSortedSprites.Append(&m_aSprites[i]);
+	for (GLuint i = 0; i < eSPRITE_SIZE; ++i)
+	{ aSortedSprites.Append(&m_aSprites[i]); }
 
 	CSpriteCompare pred;
 	aSortedSprites.Sort(pred);
@@ -1290,12 +1304,12 @@ bool OGLES3ExampleUI::GenerateAtlas()
 	GLfloat fX;
 	GLfloat fY;
 
-	for(GLuint i = 0; i < eSPRITE_SIZE; ++i)
+	for (GLuint i = 0; i < eSPRITE_SIZE; ++i)
 	{
 		pRtrn = pHead->Insert((int)aSortedSprites[i]->uiWidth + uiTotalBorder, (int)aSortedSprites[i]->uiHeight + uiTotalBorder);
-		if(!pRtrn)
+		if (!pRtrn)
 		{
-			PVRShellSet(prefExitMessage,"ERROR: Not enough room in texture atlas!\n");
+			PVRShellSet(prefExitMessage, "ERROR: Not enough room in texture atlas!\n");
 			pHead->DeleteArea();
 			delete pHead;
 			return false;
@@ -1308,7 +1322,7 @@ bool OGLES3ExampleUI::GenerateAtlas()
 		glBindTexture(GL_TEXTURE_2D, aSortedSprites[i]->uiId);
 		PVRTRectf RectSrc(fX, fY, (GLfloat)aSortedSprites[i]->uiWidth, (GLfloat)aSortedSprites[i]->uiHeight);
 		ScreenAlignedQuad(m_TexColShader, RectSrc);
-	
+
 		aSortedSprites[i]->uiSrcX = (GLuint)fX;
 		aSortedSprites[i]->uiSrcY = (GLuint)fY;
 	}
@@ -1319,20 +1333,20 @@ bool OGLES3ExampleUI::GenerateAtlas()
 	glUniformMatrix4fv(m_ColShader.uiMVPMatrixLoc, 1, GL_FALSE, mMVP.ptr());
 	{
 		pRtrn = pHead->Insert(4, 4);
-		if(!pRtrn)
-			{
-				PVRShellSet(prefExitMessage,"ERROR: Not enough room in texture atlas!\n");
-				pHead->DeleteArea();
-				delete pHead;
-				return false;
-			}
+		if (!pRtrn)
+		{
+			PVRShellSet(prefExitMessage, "ERROR: Not enough room in texture atlas!\n");
+			pHead->DeleteArea();
+			delete pHead;
+			return false;
+		}
 		fX = (GLfloat)pRtrn->GetX();
 		fY = (GLfloat)pRtrn->GetY();
 
 		// Shift in one pixel so that the sample will be taken from the centre of the 4x4 quad (see above regarding linear filtering)
-		m_vNullTexCoords.x = fX + 1.0f;		
+		m_vNullTexCoords.x = fX + 1.0f;
 		m_vNullTexCoords.y = fY + 1.0f;
-		
+
 		ScreenAlignedQuad(m_ColShader, PVRTRectf(fX, fY, NULL_QUAD_PIX, NULL_QUAD_PIX));
 	}
 	// Done. Rebind original FBO.
@@ -1366,44 +1380,44 @@ void OGLES3ExampleUI::InitUI()
 
 	// --- Count passes per group
 	unsigned int uiCurrentMask = eRS_FILTER_NEAREST;
-	for(unsigned int i = 0; i < c_uiNumSprites; ++i)
+	for (unsigned int i = 0; i < c_uiNumSprites; ++i)
 	{
 		const unsigned int uiGroup = c_UILayout[i].Group;
 		const unsigned int uiSpriteType = c_UILayout[i].SpriteType;
-		
+
 		// Check for marker
-		if(uiGroup == eGROUP_NONE)
+		if (uiGroup == eGROUP_NONE)
 		{
-			if(uiSpriteType == eSPRITE_NONE && *((unsigned int*)c_UILayout[i].u8RGBA) == *((unsigned int*)MARKER))
+			if (uiSpriteType == eSPRITE_NONE && *((unsigned int*)c_UILayout[i].u8RGBA) == *((unsigned int*)MARKER))
 			{
 				// It's a marker. Update render state
 				eRenderStates eNewState = (eRenderStates)c_UILayout[i].uiTransform;
 
 				// Turn off associated states
-				if(eNewState & eRS_FILTER_MASK)				uiCurrentMask &= ~eRS_FILTER_MASK;				// eRS_FILTER_MASK
+				if (eNewState & eRS_FILTER_MASK)				{ uiCurrentMask &= ~eRS_FILTER_MASK; }				// eRS_FILTER_MASK
 
-				uiCurrentMask |= eNewState;				
+				uiCurrentMask |= eNewState;
 			}
-			
+
 			continue;
 		}
-			
+
 		// What's the render state mask for this sprite?
 		bool bAlpha = (c_UILayout[i].u8RGBA[3] != 255) || (uiSpriteType != eSPRITE_NONE && m_aSprites[uiSpriteType].bHasAlpha);
 		unsigned int uiMask = uiCurrentMask | (bAlpha ? eRS_ALPHA_ENABLED : eRS_ALPHA_DISABLED);
 
 		// Does this mask already exist?
 		int passidx = -1;
-		for(unsigned int pass=0; pass < m_PassesPerGroup[uiGroup].GetSize();++pass)
+		for (unsigned int pass = 0; pass < m_PassesPerGroup[uiGroup].GetSize(); ++pass)
 		{
-			if(m_PassesPerGroup[uiGroup][pass].uiMask == uiMask)
+			if (m_PassesPerGroup[uiGroup][pass].uiMask == uiMask)
 			{
 				passidx = pass;
 				break;
 			}
 		}
 
-		if(passidx == -1)		// Mask not found. Add another pass.
+		if (passidx == -1)		// Mask not found. Add another pass.
 		{
 			passidx = m_PassesPerGroup[uiGroup].Append();
 			m_PassesPerGroup[uiGroup][passidx].uiMask = uiMask;
@@ -1419,7 +1433,7 @@ void OGLES3ExampleUI::InitUI()
 	GLuint uiVertexIdx	= 0;
 	GLuint uiIndexIdx	= 0;
 
-	for(eSpriteGroup group = eGROUP_BASE; group < eGROUP_SIZE; group = (eSpriteGroup)(group + 1))
+	for (eSpriteGroup group = eGROUP_BASE; group < eGROUP_SIZE; group = (eSpriteGroup)(group + 1))
 	{
 		const unsigned int uiNumPasses = m_PassesPerGroup[group].GetSize();
 		m_uiIndexOffsets[group].SetCapacity(uiNumPasses);
@@ -1429,25 +1443,25 @@ void OGLES3ExampleUI::InitUI()
 		CPassSort pred;
 		m_PassesPerGroup[group].Sort(pred);
 
-		for(unsigned int uiPass = 0; uiPass < uiNumPasses; ++uiPass)
+		for (unsigned int uiPass = 0; uiPass < uiNumPasses; ++uiPass)
 		{
 			// Mark the index of this polygon.
 			m_uiIndexOffsets[group][uiPass] = uiIndexIdx;
 			GLuint uiNumIndices = 0;
 			const PassData& PassData = m_PassesPerGroup[group][uiPass];
 
-			for(unsigned int iLayout = 0; iLayout < PassData.apLayout.GetSize(); ++iLayout)
+			for (unsigned int iLayout = 0; iLayout < PassData.apLayout.GetSize(); ++iLayout)
 			{
 				LayoutDesc* pLayout = PassData.apLayout[iLayout];
 
 				// Get the function pointer
 				int iTrisBuilt      = 0;
 				GeomBuildFunc pFunc = NULL;
-				if(pLayout->SpriteType == eSPRITE_NONE)
-					pFunc = BuildQuadGeometry;
+				if (pLayout->SpriteType == eSPRITE_NONE)
+				{ pFunc = BuildQuadGeometry; }
 				else
-					pFunc = GeomBuilderFunctions[pLayout->SpriteType];
-				
+				{ pFunc = GeomBuilderFunctions[pLayout->SpriteType]; }
+
 				// Build geometry
 				iTrisBuilt = pFunc(*pLayout, Polys + uiVertexIdx, u16Indices + uiIndexIdx, (GLushort)uiVertexIdx, this);
 				uiNumIndices += iTrisBuilt * 3;
@@ -1460,7 +1474,7 @@ void OGLES3ExampleUI::InitUI()
 			m_uiIndexCount[group][uiPass] = uiNumIndices;
 		}
 	}
-	
+
 	// Upload the quads to a VBO
 	glGenBuffers(1, &m_ui32QuadVBO);
 	glGenBuffers(1, &m_ui32QuadIndexVBO);
@@ -1494,9 +1508,10 @@ void OGLES3ExampleUI::InitUI()
 				NOTE: This is not an optimised function and should not be called
 				repeatedly to draw quads to the screen at render time.
 ******************************************************************************/
-void OGLES3ExampleUI::ScreenAlignedQuad(const ColShader& Shader, const PVRTRectf& DstRect, const PVRTRectf& SrcRect, const GLuint uiRGBA)
+void OGLES3ExampleUI::ScreenAlignedQuad(const ColShader& Shader, const PVRTRectf& DstRect, const PVRTRectf& SrcRect,
+                                        const GLuint uiRGBA)
 {
-	PVRTVec4 vVerts[4] = 
+	PVRTVec4 vVerts[4] =
 	{
 		PVRTVec4(DstRect.fX,				DstRect.fY,				 0, 1),
 		PVRTVec4(DstRect.fX,				DstRect.fY + DstRect.fH, 0, 1),
@@ -1513,7 +1528,8 @@ void OGLES3ExampleUI::ScreenAlignedQuad(const ColShader& Shader, const PVRTRectf
 	};
 
 	// Upload colour data for all verts
-	PVRTVec4 vRGBA(((uiRGBA>>24)&0xFF)*c_fByteToFloat, ((uiRGBA>>16)&0xFF)*c_fByteToFloat, ((uiRGBA>>8)&0xFF)*c_fByteToFloat, (uiRGBA&0xFF)*c_fByteToFloat);
+	PVRTVec4 vRGBA(((uiRGBA >> 24) & 0xFF)*c_fByteToFloat, ((uiRGBA >> 16) & 0xFF)*c_fByteToFloat,
+	               ((uiRGBA >> 8) & 0xFF)*c_fByteToFloat, (uiRGBA & 0xFF)*c_fByteToFloat);
 	glUniform4fv(Shader.uiRGBALoc, 1, (const float*)&vRGBA);
 
 	// Enable the vertex attribute arrays
@@ -1528,7 +1544,7 @@ void OGLES3ExampleUI::ScreenAlignedQuad(const ColShader& Shader, const PVRTRectf
 
 	// Safely disable the vertex attribute arrays
 	glDisableVertexAttribArray(VERTEX_ARRAY);
-	glDisableVertexAttribArray(TEXCOORD_ARRAY);	
+	glDisableVertexAttribArray(TEXCOORD_ARRAY);
 }
 
 /*!****************************************************************************
@@ -1538,8 +1554,8 @@ void OGLES3ExampleUI::ScreenAlignedQuad(const ColShader& Shader, const PVRTRectf
 ******************************************************************************/
 bool OGLES3ExampleUI::FreeSprites()
 {
-	for(GLuint i = 0; i < eSPRITE_SIZE; ++i)
-		glDeleteTextures(1, &m_aSprites[i].uiId);
+	for (GLuint i = 0; i < eSPRITE_SIZE; ++i)
+	{ glDeleteTextures(1, &m_aSprites[i].uiId); }
 
 	return true;
 }
@@ -1558,7 +1574,7 @@ bool OGLES3ExampleUI::ReleaseView()
 	glDeleteProgram(m_ColShader.uiId);
 
 	// Frees OpenGL handles for shaders.
-	for(GLuint i = 0; i < eSHADER_SIZE; ++i)
+	for (GLuint i = 0; i < eSHADER_SIZE; ++i)
 	{
 		glDeleteShader(m_auiVertShaderIds[i]);
 		glDeleteShader(m_auiFragShaderIds[i]);
@@ -1576,11 +1592,11 @@ bool OGLES3ExampleUI::ReleaseView()
 	// Free VBO
 	glDeleteBuffers(1, &m_ui32QuadVBO);
 	glDeleteBuffers(1, &m_ui32QuadIndexVBO);
-			
+
 	// Release Print3D Textures
 	m_Print3D.ReleaseTextures();
-    m_PrintUI.ReleaseTextures();
-	
+	m_PrintUI.ReleaseTextures();
+
 	return true;
 }
 
@@ -1607,11 +1623,11 @@ bool OGLES3ExampleUI::QuitApplication()
 ******************************************************************************/
 void OGLES3ExampleUI::RenderBaseUI()
 {
-	if(!m_bBaseDirty)
-		return;
+	if (!m_bBaseDirty)
+	{ return; }
 
 	float fDeviceWidth   = GetVirtualWidth();
-    float fDeviceHeight  = GetVirtualHeight();
+	float fDeviceHeight  = GetVirtualHeight();
 	// Bind the base UI framebuffer
 	glBindFramebuffer(GL_FRAMEBUFFER, m_uiFBOBase);
 
@@ -1632,12 +1648,14 @@ void OGLES3ExampleUI::RenderBaseUI()
 	// Render the background texture
 	glBindTexture(GL_TEXTURE_2D, m_uiAncillaryTex[eANCILLARY_BACKGROUND]);
 	RectDst = PVRTRectf(0.0f, 0.0f, fDeviceWidth, fDeviceHeight);
-	RectSrc = PVRTRectf(0.0f, 0.0f, 640.0f / 1024.0f, 480.0f / 1024.0f);		// Background texture is 1024x1024, but pixel data is only contained in the top 640x480 section.
+	RectSrc = PVRTRectf(0.0f, 0.0f, 640.0f / 1024.0f,
+	                    480.0f / 1024.0f);		// Background texture is 1024x1024, but pixel data is only contained in the top 640x480 section.
 	ScreenAlignedQuad(m_TexColShader, RectDst, RectSrc);
 
 	// Render the top bar
 	glBindTexture(GL_TEXTURE_2D, m_uiAncillaryTex[eANCILLARY_TOPBAR]);
-	ScreenAlignedQuad(m_TexColShader, PVRTRectf(0.0f, 0.0f, fDeviceWidth, 36.0f), PVRTRectf(0.0f, 0.0f, 1.0f, 36.0f / 64.0f));		// Bar height is 36, but the texture is 64 (POT)
+	ScreenAlignedQuad(m_TexColShader, PVRTRectf(0.0f, 0.0f, fDeviceWidth, 36.0f), PVRTRectf(0.0f, 0.0f, 1.0f,
+	                  36.0f / 64.0f));		// Bar height is 36, but the texture is 64 (POT)
 
 	// Render the entire group
 	LockBuffers();
@@ -1664,7 +1682,8 @@ void OGLES3ExampleUI::LockBuffers()
 
 	// Upload transform array
 	GLuint uiTransArraySize = (m_uiNumTransforms > 30 ? 30 : m_uiNumTransforms);
-	glUniformMatrix4fv(m_SpriteShader.uiTransMatrixLoc, uiTransArraySize, GL_FALSE, m_mTransforms[0].ptr());		// Transform array > 16 will need to be batched.
+	glUniformMatrix4fv(m_SpriteShader.uiTransMatrixLoc, uiTransArraySize, GL_FALSE,
+	                   m_mTransforms[0].ptr());		// Transform array > 16 will need to be batched.
 
 	glBindTexture(GL_TEXTURE_2D, m_uiTextureAtlas);
 
@@ -1679,10 +1698,10 @@ void OGLES3ExampleUI::LockBuffers()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ui32QuadIndexVBO);
 
 	// Set attribute pointers to offset in to VBO (precalculated).
-	glVertexAttribPointer(VERTEX_ARRAY, 3, GL_FLOAT, GL_FALSE, sizeof(PVRTVertex),   (const void*)m_i32VOffset);
-	glVertexAttribPointer(TEXCOORD_ARRAY, 2, GL_FLOAT, GL_FALSE, sizeof(PVRTVertex), (const void*)m_i32UVOffset);
-	glVertexAttribPointer(TRANSFORM_ARRAY, 1, GL_FLOAT, GL_FALSE, sizeof(PVRTVertex), (const void*)m_i32TransIdxOffset);
-	glVertexAttribPointer(RGBA_ARRAY, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(PVRTVertex), (const void*)m_i32RGBAOffset);
+	glVertexAttribPointer(VERTEX_ARRAY, 3, GL_FLOAT, GL_FALSE, sizeof(PVRTVertex), (const void*)(size_t)m_i32VOffset);
+	glVertexAttribPointer(TEXCOORD_ARRAY, 2, GL_FLOAT, GL_FALSE, sizeof(PVRTVertex), (const void*)(size_t)m_i32UVOffset);
+	glVertexAttribPointer(TRANSFORM_ARRAY, 1, GL_FLOAT, GL_FALSE, sizeof(PVRTVertex), (const void*)(size_t)m_i32TransIdxOffset);
+	glVertexAttribPointer(RGBA_ARRAY, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(PVRTVertex), (const void*)(size_t)m_i32RGBAOffset);
 }
 
 /*!****************************************************************************
@@ -1715,21 +1734,21 @@ void OGLES3ExampleUI::ReleaseBuffers()
 void OGLES3ExampleUI::UpdateRenderState(unsigned int uiMask)
 {
 	// Check to see if a change is required
-	if(uiMask == m_uiCurrentRS)
-		return;			// Nothing to do!
+	if (uiMask == m_uiCurrentRS)
+	{ return; }			// Nothing to do!
 
 
-	if(CheckState(uiMask, eRS_ALPHA_ENABLED, eRS_ALPHA_MASK, m_uiCurrentRS))
-		glEnable(GL_BLEND);
-	else if(CheckState(uiMask, eRS_ALPHA_DISABLED, eRS_ALPHA_MASK, m_uiCurrentRS))
-		glDisable(GL_BLEND);
+	if (CheckState(uiMask, eRS_ALPHA_ENABLED, eRS_ALPHA_MASK, m_uiCurrentRS))
+	{ glEnable(GL_BLEND); }
+	else if (CheckState(uiMask, eRS_ALPHA_DISABLED, eRS_ALPHA_MASK, m_uiCurrentRS))
+	{ glDisable(GL_BLEND); }
 
-	if(CheckState(uiMask, eRS_FILTER_BILINEAR, eRS_FILTER_MASK, m_uiCurrentRS))
+	if (CheckState(uiMask, eRS_FILTER_BILINEAR, eRS_FILTER_MASK, m_uiCurrentRS))
 	{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
-	else if(CheckState(uiMask, eRS_FILTER_NEAREST, eRS_FILTER_MASK, m_uiCurrentRS))
+	else if (CheckState(uiMask, eRS_FILTER_NEAREST, eRS_FILTER_MASK, m_uiCurrentRS))
 	{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -1756,21 +1775,21 @@ void OGLES3ExampleUI::RenderUIGroup(eSpriteGroup Group, const PVRTMat4& mProj)
 	unsigned int uiIndicesToDraw = 0;
 
 	// Loop the passes in this group
-	for(unsigned int iPass = 0; iPass < m_PassesPerGroup[Group].GetSize(); ++iPass)
+	for (unsigned int iPass = 0; iPass < m_PassesPerGroup[Group].GetSize(); ++iPass)
 	{
 		// Check render state
 		UpdateRenderState(m_PassesPerGroup[Group][iPass].uiMask);
 
 		// Overide the render state in a few instances
-		if(Group == eGROUP_WINDOW && m_fWinRotPerc > 0.0f && m_fWinRotPerc < 1.0f)
+		if (Group == eGROUP_WINDOW && m_fWinRotPerc > 0.0f && m_fWinRotPerc < 1.0f)
 		{
 			UpdateRenderState(eRS_FILTER_BILINEAR);					// Turn on linear filtering for the Window.
 		}
 
 		// Draw the quads
 		uiIndicesToDraw = m_uiIndexCount[Group][iPass];			// The number of quads to draw for this opaque pass.
-		if(uiIndicesToDraw > 0)
-			glDrawElements(GL_TRIANGLES, uiIndicesToDraw, GL_UNSIGNED_SHORT, (char*)(m_uiIndexOffsets[Group][iPass] * sizeof(GLushort)));
+		if (uiIndicesToDraw > 0)
+		{ glDrawElements(GL_TRIANGLES, uiIndicesToDraw, GL_UNSIGNED_SHORT, (char*)(m_uiIndexOffsets[Group][iPass] * sizeof(GLushort))); }
 	}
 }
 
@@ -1789,7 +1808,7 @@ void OGLES3ExampleUI::RenderPage(eDisplayPage Page, const PVRTMat4& mTransform)
 
 	// Should we draw the container?
 	eSpriteGroup Container = c_PageDescription[Page].GroupContainer;
-	if(Container != eGROUP_NONE)
+	if (Container != eGROUP_NONE)
 	{
 		// Calculate MVP with UI projection matrix, and container view translation
 		mMVP = m_mUIProj * m_mDerivedGroup[Container] * mTransform;
@@ -1804,7 +1823,7 @@ void OGLES3ExampleUI::RenderPage(eDisplayPage Page, const PVRTMat4& mTransform)
 	}
 
 	eClipShape Clip = c_PageDescription[Page].ClipShape;
-	if(Clip != eCLIPSHAPE_NONE)
+	if (Clip != eCLIPSHAPE_NONE)
 	{
 		ReleaseBuffers();			// Need to release the currently bound buffer before we draw the clip.
 		ApplyClipping(Clip, mMVP);
@@ -1815,7 +1834,7 @@ void OGLES3ExampleUI::RenderPage(eDisplayPage Page, const PVRTMat4& mTransform)
 	RenderUIGroup(GroupFromDisplayPage(Page), mMVP);
 
 	// Render text if this is the 'Window'. Normally this would be included in a layout but for the purposes of this demo the values below are hardcoded and set to give the best visual appearance.
-	if(Page == eDISPPAGE_WINDOW)
+	if (Page == eDISPPAGE_WINDOW)
 	{
 		ReleaseBuffers();
 
@@ -1828,8 +1847,8 @@ void OGLES3ExampleUI::RenderPage(eDisplayPage Page, const PVRTMat4& mTransform)
 		LockBuffers();
 	}
 
-	if(Clip != eCLIPSHAPE_NONE)
-		StopClipping();
+	if (Clip != eCLIPSHAPE_NONE)
+	{ StopClipping(); }
 }
 
 
@@ -1845,27 +1864,28 @@ void OGLES3ExampleUI::RenderUI()
 	// Render Base UI to FBO
 	RenderBaseUI();
 
-	// Render Base UI to screen    
+	// Render Base UI to screen
 	GLfloat fScreenW = GetVirtualWidth();
 	GLfloat fScreenH = GetVirtualHeight();
 	glUseProgram(m_TexColShader.uiId);
 	glUniformMatrix4fv(m_TexColShader.uiMVPMatrixLoc,  1, GL_FALSE, m_mUIProj.ptr());
 	glBindTexture(GL_TEXTURE_2D, m_uiTextureBase);
-	ScreenAlignedQuad(m_TexColShader, PVRTRectf(0.0f, 0.0f, fScreenW, fScreenH), PVRTRectf(0.0f, 0.0f, fScreenW/m_uiBaseW, fScreenH/m_uiBaseH));
+	ScreenAlignedQuad(m_TexColShader, PVRTRectf(0.0f, 0.0f, fScreenW, fScreenH), PVRTRectf(0.0f, 0.0f, fScreenW / m_uiBaseW,
+	                  fScreenH / m_uiBaseH));
 
 	// --- Draw the container/dynamic elements
 	// Render the single page if there's not currently an active transition
-	if(m_eState == eDISPSTATE_ELEMENT)
+	if (m_eState == eDISPSTATE_ELEMENT)
 	{
 		LockBuffers();
 
 		// A transformation matrix
 		PVRTMat4 mTrans = PVRTMat4::Identity();
-		if(m_CurrentPage == eDISPPAGE_WINDOW)
+		if (m_CurrentPage == eDISPPAGE_WINDOW)
 		{
 			PVRTMat4 vRot, vCentre, vInv;
 			PVRTMatrixRotationZ(vRot, m_fWinRotate);
-			PVRTMatrixTranslation(vCentre, -(WIN_W*0.5f), -(WIN_H*0.5f), 0.0f);
+			PVRTMatrixTranslation(vCentre, -(WIN_W * 0.5f), -(WIN_H * 0.5f), 0.0f);
 			vInv = vCentre.inverse();
 
 			mTrans = vInv * vRot * vCentre;
@@ -1876,7 +1896,7 @@ void OGLES3ExampleUI::RenderUI()
 
 		ReleaseBuffers();
 	}
-	else if(m_eState == eDISPSTATE_TRANSITION)
+	else if (m_eState == eDISPSTATE_TRANSITION)
 	{
 		LockBuffers();
 
@@ -1884,14 +1904,14 @@ void OGLES3ExampleUI::RenderUI()
 		PVRTMat4 mxContainerTrans;
 
 		// --- Render outward group
-		fX = QuadraticEaseIn(0.0f, -fScreenW*m_i32CycleDirection, m_fTransitionPerc);
+		fX = QuadraticEaseIn(0.0f, -fScreenW * m_i32CycleDirection, m_fTransitionPerc);
 		PVRTMatrixTranslation(mxContainerTrans, (float)((int)fX), 0.0f, 0.0f);
-		
+
 		// Render page
 		RenderPage(m_LastPage, mxContainerTrans);
 
 		// --- Render inward group
-		fX = QuadraticEaseIn(fScreenW*m_i32CycleDirection, 0.0f, m_fTransitionPerc);
+		fX = QuadraticEaseIn(fScreenW * m_i32CycleDirection, 0.0f, m_fTransitionPerc);
 		PVRTMatrixTranslation(mxContainerTrans, (float)((int)fX), 0.0f, 0.0f);
 
 		// Render page
@@ -1915,7 +1935,8 @@ void OGLES3ExampleUI::RenderUI()
 void OGLES3ExampleUI::RenderAtlas()
 {
 	bool bRotate = IsRotated();
-	PVRTMat4 mMVP = PVRTMat4::Ortho(0.0f, (float)PVRShellGet(prefHeight), (float)PVRShellGet(prefWidth), 0.0f, -1, 1, PVRTMat4::OGL, bRotate);
+	PVRTMat4 mMVP = PVRTMat4::Ortho(0.0f, (float)PVRShellGet(prefHeight), (float)PVRShellGet(prefWidth), 0.0f, -1, 1, PVRTMat4::OGL,
+	                                bRotate);
 
 	glDisable(GL_CULL_FACE);
 
@@ -1926,15 +1947,15 @@ void OGLES3ExampleUI::RenderAtlas()
 	glBindTexture(GL_TEXTURE_2D, m_uiTextureAtlas);
 
 	float fScale[2];
-    fScale[0] = GetVirtualWidth()  / m_uiAtlasW;
-    fScale[1] = GetVirtualHeight() / m_uiAtlasH;
-    
-    float fMinScale = fScale[0] < fScale[1] ? fScale[0] : fScale[1];        // Get minimum scale
+	fScale[0] = GetVirtualWidth()  / m_uiAtlasW;
+	fScale[1] = GetVirtualHeight() / m_uiAtlasH;
+
+	float fMinScale = fScale[0] < fScale[1] ? fScale[0] : fScale[1];        // Get minimum scale
 
 	// Enable some states
 	UpdateRenderState(eRS_ALPHA_ENABLED | eRS_FILTER_BILINEAR);
 
-	ScreenAlignedQuad(m_TexColShader, PVRTRectf(0.0f, 0.0f, m_uiAtlasW*fMinScale, m_uiAtlasH*fMinScale));
+	ScreenAlignedQuad(m_TexColShader, PVRTRectf(0.0f, 0.0f, m_uiAtlasW * fMinScale, m_uiAtlasH * fMinScale));
 
 	// Disable states
 	UpdateRenderState(eRS_ALPHA_DISABLED | eRS_FILTER_NEAREST);
@@ -1951,21 +1972,21 @@ void OGLES3ExampleUI::RenderAtlas()
 				call this function every frame.
 				eglSwapBuffers() will be performed by PVRShell automatically.
 				PVRShell will also manage important OS events.
-				The user has access to these events through an abstraction 
+				The user has access to these events through an abstraction
 				layer provided by PVRShell.
 ******************************************************************************/
 bool OGLES3ExampleUI::RenderScene()
 {
 	// Process inputs first
-	if(PVRShellIsKeyPressed(PVRShellKeyNameUP))
+	if (PVRShellIsKeyPressed(PVRShellKeyNameUP))
 	{
 		m_uiDisplayOpt--;
-		if((GLint)m_uiDisplayOpt < 0)	m_uiDisplayOpt = eDISPOPT_SIZE-1;
+		if ((GLint)m_uiDisplayOpt < 0)	{ m_uiDisplayOpt = eDISPOPT_SIZE - 1; }
 	}
-	else if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
+	else if (PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
 	{
 		m_uiDisplayOpt++;
-		if(m_uiDisplayOpt >= eDISPOPT_SIZE)	m_uiDisplayOpt = 0;
+		if (m_uiDisplayOpt >= eDISPOPT_SIZE)	{ m_uiDisplayOpt = 0; }
 	}
 
 	// --- Update UI components
@@ -1984,7 +2005,7 @@ bool OGLES3ExampleUI::RenderScene()
 	}
 
 	// Check to see if we should transition to a new page (if we're not already)
-	if(ulCurrentTime - m_ulPreviousTransTime > UI_DISPLAY_TIME*1000 && m_eState != eDISPSTATE_TRANSITION)
+	if (ulCurrentTime - m_ulPreviousTransTime > UI_DISPLAY_TIME * 1000 && m_eState != eDISPSTATE_TRANSITION)
 	{
 		// Switch to next page
 		m_eState				= eDISPSTATE_TRANSITION;
@@ -1993,7 +2014,7 @@ bool OGLES3ExampleUI::RenderScene()
 
 		// Cycle pages
 		GLint i32NextPage = m_CurrentPage + m_i32CycleDirection;
-		if(i32NextPage >= eDISPPAGE_MAX || i32NextPage < 0)
+		if (i32NextPage >= eDISPPAGE_MAX || i32NextPage < 0)
 		{
 			m_i32CycleDirection *= -1;							// Reverse direction
 			i32NextPage = m_CurrentPage + m_i32CycleDirection;	// Recalculate
@@ -2003,10 +2024,10 @@ bool OGLES3ExampleUI::RenderScene()
 	}
 
 	// Calculate next transition amount
-	if(m_eState == eDISPSTATE_TRANSITION)
+	if (m_eState == eDISPSTATE_TRANSITION)
 	{
 		m_fTransitionPerc += 0.016f;		// 60 FPS
-		if(m_fTransitionPerc > 1.0f)
+		if (m_fTransitionPerc > 1.0f)
 		{
 			m_eState = eDISPSTATE_ELEMENT;
 			m_fTransitionPerc	= 1.0f;
@@ -2018,21 +2039,21 @@ bool OGLES3ExampleUI::RenderScene()
 
 	// Update transform array
 	unsigned int uiIdx = 1;
-	for(unsigned int i = 0; i < c_uiNumSprites; ++i)
+	for (unsigned int i = 0; i < c_uiNumSprites; ++i)
 	{
-		if(c_UILayout[i].uiTransform == eTRANS_NONE)
-			continue;
-		
-		switch(c_UILayout[i].uiTransform)
+		if (c_UILayout[i].uiTransform == eTRANS_NONE)
+		{ continue; }
+
+		switch (c_UILayout[i].uiTransform)
 		{
-			case eTRANS_HAND_ROTATION:			
-				HandRotateFunc(c_UILayout[i], m_mTransforms[c_UILayout[i].uiTransformIndex], m_fHandRotate*uiIdx);
-				break;
+		case eTRANS_HAND_ROTATION:
+			HandRotateFunc(c_UILayout[i], m_mTransforms[c_UILayout[i].uiTransformIndex], m_fHandRotate * uiIdx);
+			break;
 		}
 
 		++uiIdx;
 	}
-	
+
 
 	// Clear buffers and render the scene
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -2040,19 +2061,19 @@ bool OGLES3ExampleUI::RenderScene()
 
 	m_iDrawCallsPerFrame = 0;
 
-	switch(m_uiDisplayOpt)
+	switch (m_uiDisplayOpt)
 	{
-		case eDISPOPT_UI:			
-			RenderUI();	
-			break;
-		case eDISPOPT_TEXATLAS:		
-			RenderAtlas();	
-			break;
+	case eDISPOPT_UI:
+		RenderUI();
+		break;
+	case eDISPOPT_TEXATLAS:
+		RenderAtlas();
+		break;
 	}
 
-    m_Print3D.DisplayDefaultTitle("Example UI", c_apszDisplayOpts[m_uiDisplayOpt], ePVRTPrint3DSDKLogo);
+	m_Print3D.DisplayDefaultTitle("Example UI", c_apszDisplayOpts[m_uiDisplayOpt], ePVRTPrint3DSDKLogo);
 	m_Print3D.Flush();
-    
+
 	return true;
 }
 
@@ -2066,13 +2087,13 @@ int OGLES3ExampleUI::CountRequiredVertices()
 {
 	int i32Verts = 0;
 	GLushort idx = 0;
-	for(GLuint i = 0; i < c_uiNumSprites; ++i)
+	for (GLuint i = 0; i < c_uiNumSprites; ++i)
 	{
 		GeomBuildFunc pFunc = NULL;
-		if(c_UILayout[i].SpriteType == eSPRITE_NONE)
-			pFunc = BuildQuadGeometry;
+		if (c_UILayout[i].SpriteType == eSPRITE_NONE)
+		{ pFunc = BuildQuadGeometry; }
 		else
-			pFunc = GeomBuilderFunctions[c_UILayout[i].SpriteType];
+		{ pFunc = GeomBuilderFunctions[c_UILayout[i].SpriteType]; }
 
 		i32Verts += pFunc(c_UILayout[i], NULL, NULL, idx, this) + 2;
 	}
@@ -2090,13 +2111,13 @@ int OGLES3ExampleUI::CountRequiredIndices()
 {
 	int i32Indices = 0;
 	GLushort idx = 0;
-	for(GLuint i = 0; i < c_uiNumSprites; ++i)
+	for (GLuint i = 0; i < c_uiNumSprites; ++i)
 	{
 		GeomBuildFunc pFunc = NULL;
-		if(c_UILayout[i].SpriteType == eSPRITE_NONE)
-			pFunc = BuildQuadGeometry;
+		if (c_UILayout[i].SpriteType == eSPRITE_NONE)
+		{ pFunc = BuildQuadGeometry; }
 		else
-			pFunc = GeomBuilderFunctions[c_UILayout[i].SpriteType];
+		{ pFunc = GeomBuilderFunctions[c_UILayout[i].SpriteType]; }
 
 		i32Indices += pFunc(c_UILayout[i], NULL, NULL, idx, this) * 3;
 	}
@@ -2130,7 +2151,8 @@ void OGLES3ExampleUI::ApplyClipping(eClipShape Clip, const PVRTMat4& mMVP)
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
 #if defined(__PALMPDK__)
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE); // The alpha part is false as we don't want to blend with the video layer on the Palm Pre
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE,
+	            GL_FALSE); // The alpha part is false as we don't want to blend with the video layer on the Palm Pre
 #else
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 #endif
@@ -2163,14 +2185,15 @@ PVRShell* NewDemo()
  @Input			LayoutDesc& Reference to the layout table for this sprite.
  @Input			PVRTVertex*	Pointer to vertex array.
  @Input			GLushort*	Pointer to index array.
- @Description	
+ @Description
 ******************************************************************************/
-int BuildCircleGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* pIndexArray, GLushort u16IndexStart, OGLES3ExampleUI* pApp)
+int BuildCircleGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* pIndexArray, GLushort u16IndexStart,
+                        OGLES3ExampleUI* pApp)
 {
 	const int iNumTris = 12;
 
-	if(pVertArray == NULL || pIndexArray == NULL)
-		return iNumTris;
+	if (pVertArray == NULL || pIndexArray == NULL)
+	{ return iNumTris; }
 
 	SpriteDesc* aSprites = pApp->m_aSprites;
 	eSprites Sprite		 = Desc.SpriteType;
@@ -2179,12 +2202,12 @@ int BuildCircleGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort
 	memset(&vTrans, 0, sizeof(vTrans));
 
 	// OK to translate the verts if this sprite has no transformation matrix associated.
-	if(Desc.uiTransform == eTRANS_NONE)
+	if (Desc.uiTransform == eTRANS_NONE)
 	{
-		if(Desc.bDeviceNorm)
-			vTrans = PVRTVec3(pApp->ToDeviceX((PVRTfloat32)Desc.i32X), pApp->ToDeviceY((PVRTfloat32)Desc.i32Y), 0.0f);		// Normalise to device coordinates
+		if (Desc.bDeviceNorm)
+		{ vTrans = PVRTVec3(pApp->ToDeviceX((PVRTfloat32)Desc.i32X), pApp->ToDeviceY((PVRTfloat32)Desc.i32Y), 0.0f); }		// Normalise to device coordinates
 		else
-			vTrans = PVRTVec3((PVRTfloat32)Desc.i32X, (PVRTfloat32)Desc.i32Y, 0.0f);
+		{ vTrans = PVRTVec3((PVRTfloat32)Desc.i32X, (PVRTfloat32)Desc.i32Y, 0.0f); }
 	}
 
 	// The origin of the polygon
@@ -2192,15 +2215,15 @@ int BuildCircleGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort
 
 	// Choose either the original sprite dimensions, or the provided dimensions if set
 	GLfloat fSprW, fSprH;
-	if(Desc.uiW == DIM_DEFAULT && Sprite != eSPRITE_NONE)	
-		fSprW = (GLfloat)aSprites[Sprite].uiWidth;
-	else													
-		fSprW = (GLfloat)Desc.uiW;
+	if (Desc.uiW == DIM_DEFAULT && Sprite != eSPRITE_NONE)
+	{ fSprW = (GLfloat)aSprites[Sprite].uiWidth; }
+	else
+	{ fSprW = (GLfloat)Desc.uiW; }
 
-	if(Desc.uiH == DIM_DEFAULT && Sprite != eSPRITE_NONE)	
-		fSprH = (GLfloat)aSprites[Sprite].uiHeight;
-	else													
-		fSprH = (GLfloat)Desc.uiH;
+	if (Desc.uiH == DIM_DEFAULT && Sprite != eSPRITE_NONE)
+	{ fSprH = (GLfloat)aSprites[Sprite].uiHeight; }
+	else
+	{ fSprH = (GLfloat)Desc.uiH; }
 
 	// Convert to radius
 	fSprW *= 0.5f;
@@ -2211,34 +2234,34 @@ int BuildCircleGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort
 
 	// Calculate texture coordinates based on atlas position and sprite dimensions
 	PVRTVec2 vTC((aSprites[Sprite].uiSrcX + (aSprites[Sprite].uiWidth / 2)) / fAtlasW,
-				 (aSprites[Sprite].uiSrcY + (aSprites[Sprite].uiHeight / 2)) / fAtlasH);
-	
+	             (aSprites[Sprite].uiSrcY + (aSprites[Sprite].uiHeight / 2)) / fAtlasH);
+
 	// Build geometry
-	const float fStepDT	= PVRT_TWO_PI / (iNumTris+2);
+	const float fStepDT	= PVRT_TWO_PI / (iNumTris + 2);
 	const int iNumSteps = (int)(PVRT_TWO_PI / fStepDT);
 	float fX, fY;
 	float fStep = 0.0f;
-	for(int iIdx = 0; iIdx < iNumSteps; fStep += fStepDT, ++iIdx)
+	for (int iIdx = 0; iIdx < iNumSteps; fStep += fStepDT, ++iIdx)
 	{
 		fX = PVRTCOS(fStep);
 		fY = PVRTSIN(fStep);
-		pVertArray[iIdx].vPos.x = (((vOrigin.x-0.5f)*-2.0f) + fX) * fSprW;
-		pVertArray[iIdx].vPos.y = (((vOrigin.y-0.5f)*-2.0f) + fY) * fSprH;
+		pVertArray[iIdx].vPos.x = (((vOrigin.x - 0.5f) * -2.0f) + fX) * fSprW;
+		pVertArray[iIdx].vPos.y = (((vOrigin.y - 0.5f) * -2.0f) + fY) * fSprH;
 		pVertArray[iIdx].vPos.z = 0.0f;
 		pVertArray[iIdx].vPos += vTrans;
-		pVertArray[iIdx].vUV.x = vTC.x + ((fX*aSprites[Sprite].uiWidth*0.5f)  / fAtlasW);
-		pVertArray[iIdx].vUV.y = vTC.y + ((fY*aSprites[Sprite].uiHeight*0.5f) / fAtlasH);
+		pVertArray[iIdx].vUV.x = vTC.x + ((fX * aSprites[Sprite].uiWidth * 0.5f)  / fAtlasW);
+		pVertArray[iIdx].vUV.y = vTC.y + ((fY * aSprites[Sprite].uiHeight * 0.5f) / fAtlasH);
 		pVertArray[iIdx].fTransIndex = (GLfloat)Desc.uiTransformIndex;
 		memcpy(pVertArray[iIdx].u8RGBA, Desc.u8RGBA, 4);
 	}
 
 	// Index
-	GLushort u16Idx = iNumTris+1;
-	for(int i = 0; i < iNumTris; ++i, --u16Idx)
+	GLushort u16Idx = iNumTris + 1;
+	for (int i = 0; i < iNumTris; ++i, --u16Idx)
 	{
-		pIndexArray[i*INDICES_PER_TRI+0] = u16IndexStart+0;
-		pIndexArray[i*INDICES_PER_TRI+1] = u16IndexStart+u16Idx;
-		pIndexArray[i*INDICES_PER_TRI+2] = u16IndexStart+u16Idx-1;
+		pIndexArray[i * INDICES_PER_TRI + 0] = u16IndexStart + 0;
+		pIndexArray[i * INDICES_PER_TRI + 1] = u16IndexStart + u16Idx;
+		pIndexArray[i * INDICES_PER_TRI + 2] = u16IndexStart + u16Idx - 1;
 	}
 
 	return iNumTris;
@@ -2250,14 +2273,15 @@ int BuildCircleGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort
  @Input			LayoutDesc& Reference to the layout table for this sprite.
  @Input			PVRTVertex*	Pointer to vertex array.
  @Input			GLushort*	Pointer to index array.
- @Description	
+ @Description
 ******************************************************************************/
-int BuildQuadGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* pIndexArray, GLushort u16IndexStart, OGLES3ExampleUI* pApp)
+int BuildQuadGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* pIndexArray, GLushort u16IndexStart,
+                      OGLES3ExampleUI* pApp)
 {
 	const int iNumTris = 2;
 
-	if(pVertArray == NULL || pIndexArray == NULL)
-		return iNumTris;
+	if (pVertArray == NULL || pIndexArray == NULL)
+	{ return iNumTris; }
 
 	SpriteDesc* aSprites = pApp->m_aSprites;
 	eSprites Sprite		 = Desc.SpriteType;
@@ -2266,12 +2290,12 @@ int BuildQuadGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* 
 	memset(&vTrans, 0, sizeof(vTrans));
 
 	// OK to translate the verts if this sprite has no transformation matrix associated.
-	if(Desc.uiTransform == eTRANS_NONE)
+	if (Desc.uiTransform == eTRANS_NONE)
 	{
-		if(Desc.bDeviceNorm)
-			vTrans = PVRTVec3(pApp->ToDeviceX((PVRTfloat32)Desc.i32X), pApp->ToDeviceY((PVRTfloat32)Desc.i32Y), 0.0f);		// Normalise to device coordinates
+		if (Desc.bDeviceNorm)
+		{ vTrans = PVRTVec3(pApp->ToDeviceX((PVRTfloat32)Desc.i32X), pApp->ToDeviceY((PVRTfloat32)Desc.i32Y), 0.0f); }		// Normalise to device coordinates
 		else
-			vTrans = PVRTVec3((PVRTfloat32)Desc.i32X, (PVRTfloat32)Desc.i32Y, 0.0f);
+		{ vTrans = PVRTVec3((PVRTfloat32)Desc.i32X, (PVRTfloat32)Desc.i32Y, 0.0f); }
 	}
 
 	// The origin within the texture atlas.
@@ -2279,30 +2303,30 @@ int BuildQuadGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* 
 
 	// Choose either the original sprite dimensions, or the provided dimensions if set
 	GLfloat fSprW, fSprH;
-	if(Desc.uiW == DIM_DEFAULT && Sprite != eSPRITE_NONE)	
-		fSprW = (GLfloat)aSprites[Sprite].uiWidth;
-	else													
-		fSprW = (GLfloat)Desc.uiW;
+	if (Desc.uiW == DIM_DEFAULT && Sprite != eSPRITE_NONE)
+	{ fSprW = (GLfloat)aSprites[Sprite].uiWidth; }
+	else
+	{ fSprW = (GLfloat)Desc.uiW; }
 
-	if(Desc.uiH == DIM_DEFAULT && Sprite != eSPRITE_NONE)	
-		fSprH = (GLfloat)aSprites[Sprite].uiHeight;
-	else													
-		fSprH = (GLfloat)Desc.uiH;
+	if (Desc.uiH == DIM_DEFAULT && Sprite != eSPRITE_NONE)
+	{ fSprH = (GLfloat)aSprites[Sprite].uiHeight; }
+	else
+	{ fSprH = (GLfloat)Desc.uiH; }
 
 	GLfloat fAtlasW = (GLfloat)pApp->m_uiAtlasW;
 	GLfloat fAtlasH = (GLfloat)pApp->m_uiAtlasH;
 
 	// Calculate texture coordinates based on atlas position, sprite dimensions and sprite border
-	PVRTVec2 vTTL(0,0), vTBR(1,1);
-	if(Sprite != eSPRITE_NONE)
+	PVRTVec2 vTTL(0, 0), vTBR(1, 1);
+	if (Sprite != eSPRITE_NONE)
 	{
 		const SpriteBorder& Border = aSprites[Sprite].Border;
 		// TL
-		vTTL = PVRTVec2((aSprites[Sprite].uiSrcX + Border.uiBorderL)/ fAtlasW, (aSprites[Sprite].uiSrcY + Border.uiBorderT) / fAtlasH);
+		vTTL = PVRTVec2((aSprites[Sprite].uiSrcX + Border.uiBorderL) / fAtlasW, (aSprites[Sprite].uiSrcY + Border.uiBorderT) / fAtlasH);
 
 		// BR
-		vTBR = PVRTVec2(vTTL.x + ((GLfloat)(aSprites[Sprite].uiWidth  - Border.uiBorderR - Border.uiBorderL)/ fAtlasW), 
-						vTTL.y + ((GLfloat)(aSprites[Sprite].uiHeight - Border.uiBorderB - Border.uiBorderT)/ fAtlasH));
+		vTBR = PVRTVec2(vTTL.x + ((GLfloat)(aSprites[Sprite].uiWidth  - Border.uiBorderR - Border.uiBorderL) / fAtlasW),
+		                vTTL.y + ((GLfloat)(aSprites[Sprite].uiHeight - Border.uiBorderB - Border.uiBorderT) / fAtlasH));
 	}
 	else		// eSPRITE_NONE is a special case. We generated a white 4x4 quad on the atlas to allow us to render non-textured quads without another glDraw call or switching shaders programs.
 	{
@@ -2312,19 +2336,19 @@ int BuildQuadGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* 
 
 	// Determine whether to flip the texture coordinates
 	float fTmp;
-	if(Desc.u8XFlip)
+	if (Desc.u8XFlip)
 	{
 		fTmp = vTTL.x;
 		vTTL.x = vTBR.x;
 		vTBR.x = fTmp;
 	}
-	if(Desc.u8YFlip)
+	if (Desc.u8YFlip)
 	{
 		fTmp = vTTL.y;
 		vTTL.y = vTBR.y;
 		vTBR.y = fTmp;
 	}
-	
+
 	// --- Build the geometry
 	// Top Left
 	pVertArray[0].vPos.x = -(vOrigin.x * fSprW);
@@ -2367,12 +2391,12 @@ int BuildQuadGeometry(const LayoutDesc& Desc, PVRTVertex* pVertArray, GLushort* 
 	memcpy(pVertArray[3].u8RGBA, Desc.u8RGBA, 4);
 
 	// Index the quad
-	pIndexArray[0] = u16IndexStart+0;
-	pIndexArray[1] = u16IndexStart+1;
-	pIndexArray[2] = u16IndexStart+3;
-	pIndexArray[3] = u16IndexStart+1;
-	pIndexArray[4] = u16IndexStart+2;
-	pIndexArray[5] = u16IndexStart+3;
+	pIndexArray[0] = u16IndexStart + 0;
+	pIndexArray[1] = u16IndexStart + 1;
+	pIndexArray[2] = u16IndexStart + 3;
+	pIndexArray[3] = u16IndexStart + 1;
+	pIndexArray[4] = u16IndexStart + 2;
+	pIndexArray[5] = u16IndexStart + 3;
 
 	return iNumTris;
 }
@@ -2391,7 +2415,7 @@ Area::Area(int iWidth, int iHeight) : m_iX(0), m_iY(0), m_bFilled(false), m_pRig
 
 /*!****************************************************************************
  @Function		Area
- @Return		
+ @Return
  @Description	Constructor
 ******************************************************************************/
 Area::Area() : m_iX(0), m_iY(0), m_bFilled(false), m_pRight(NULL), m_pLeft(NULL)
@@ -2411,42 +2435,42 @@ Area* Area::Insert(int iWidth, int iHeight)
 {
 	// If this area has branches below it (i.e. is not a leaf) then traverse those.
 	// Check the left branch first.
-	if(m_pLeft)
+	if (m_pLeft)
 	{
-		Area *tempPtr = NULL;
+		Area* tempPtr = NULL;
 		tempPtr = m_pLeft->Insert(iWidth, iHeight);
-		if (tempPtr != NULL) return tempPtr;
+		if (tempPtr != NULL) { return tempPtr; }
 	}
 	// Now check right
-	if(m_pRight) 
-		return m_pRight->Insert(iWidth, iHeight);
+	if (m_pRight)
+	{ return m_pRight->Insert(iWidth, iHeight); }
 
 	if (m_bFilled)			// Already filled!
-		return NULL;
+	{ return NULL; }
 
 	// Too small
-	if (m_iSize < iWidth*iHeight || m_iW < iWidth || m_iH < iHeight) 
-		return NULL;
+	if (m_iSize < iWidth * iHeight || m_iW < iWidth || m_iH < iHeight)
+	{ return NULL; }
 
 	// Just right!
-	if (m_iSize == iWidth*iHeight && m_iW == iWidth && m_iH == iHeight)
+	if (m_iSize == iWidth * iHeight && m_iW == iWidth && m_iH == iHeight)
 	{
 		m_bFilled = true;
 		return this;
 	}
 	// Too big. Split up.
-	if (m_iSize > iWidth*iHeight && m_iW >= iWidth && m_iH >= iHeight)
+	if (m_iSize > iWidth * iHeight && m_iW >= iWidth && m_iH >= iHeight)
 	{
 		// Initialises the children, and sets the left child's coordinates as these don't change.
 		m_pLeft  = new Area;
 		m_pRight = new Area;
 		m_pLeft->m_iX = m_iX;
-		m_pLeft->m_iY = m_iY;	
-		
+		m_pLeft->m_iY = m_iY;
+
 		// --- Splits the current area depending on the size and position of the placed texture.
 		// Splits vertically if larger free distance across the texture.
 		if ((m_iW - iWidth) > (m_iH - iHeight))
-		{	
+		{
 			m_pLeft->m_iW = iWidth;
 			m_pLeft->m_iH = m_iH;
 
@@ -2457,7 +2481,7 @@ Area* Area::Insert(int iWidth, int iHeight)
 		}
 		// Splits horizontally if larger or equal free distance downwards.
 		else
-		{	
+		{
 			m_pLeft->m_iW = m_iW;
 			m_pLeft->m_iH = iHeight;
 
@@ -2490,22 +2514,22 @@ bool Area::DeleteArea()
 	{
 		if (m_pLeft->m_pLeft != NULL)
 		{
-			if (!m_pLeft->DeleteArea())  return false;
-			if (!m_pRight->DeleteArea()) return false;
+			if (!m_pLeft->DeleteArea())  { return false; }
+			if (!m_pRight->DeleteArea()) { return false; }
 		}
 	}
 	if (m_pRight != NULL)
 	{
 		if (m_pRight->m_pLeft != NULL)
 		{
-			if (!m_pLeft->DeleteArea())  return false;
-			if (!m_pRight->DeleteArea()) return false;
+			if (!m_pLeft->DeleteArea())  { return false; }
+			if (!m_pRight->DeleteArea()) { return false; }
 		}
 	}
 	delete m_pRight;
-	m_pRight=NULL;
+	m_pRight = NULL;
 	delete m_pLeft;
-	m_pLeft=NULL;
+	m_pLeft = NULL;
 
 	return true;
 }
@@ -2529,9 +2553,9 @@ void Area::SetSize(int iWidth, int iHeight)
  @Return		int
  @Description	Returns the X position of the area.
 ******************************************************************************/
-int Area::GetX() 
+int Area::GetX()
 {
-	return m_iX; 
+	return m_iX;
 }
 
 /*!****************************************************************************
@@ -2539,9 +2563,9 @@ int Area::GetX()
  @Return		int
  @Description	Returns the Y position of the area.
 ******************************************************************************/
-int Area::GetY() 
-{ 
-	return m_iY; 
+int Area::GetY()
+{
+	return m_iY;
 }
 
 /******************************************************************************

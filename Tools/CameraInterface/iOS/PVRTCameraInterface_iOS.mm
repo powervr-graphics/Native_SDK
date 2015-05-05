@@ -20,7 +20,7 @@
 #import <AVFoundation/AVFoundation.h>
 #include "PVRTCameraInterface_iOS.h"
 #import <OpenGLES/EAGL.h>
-
+#import <OpenGLES/ES1/gl.h>
 
 /*!****************************************************************************
  Class        CPVRTCameraInterfaceiOSImpl

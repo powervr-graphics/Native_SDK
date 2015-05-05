@@ -39,10 +39,10 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Granite.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Granite.cpp: $(CONTENTDIR) ./Granite.pvr
 	$(FILEWRAP)  -o $@ ./Granite.pvr
 
-$(CONTENTDIR)/Mesh.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Mesh.cpp: $(CONTENTDIR) ./Mesh.pod
 	$(FILEWRAP)  -o $@ ./Mesh.pod
 
 ############################################################################

@@ -39,10 +39,10 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Satyr.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Satyr.cpp: $(CONTENTDIR) ./Satyr.pod
 	$(FILEWRAP)  -o $@ ./Satyr.pod
 
-$(CONTENTDIR)/SatyrOpt.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SatyrOpt.cpp: $(CONTENTDIR) ./SatyrOpt.pod
 	$(FILEWRAP)  -o $@ ./SatyrOpt.pod
 
 ############################################################################

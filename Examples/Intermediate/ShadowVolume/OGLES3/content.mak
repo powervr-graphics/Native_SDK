@@ -45,28 +45,28 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/BaseFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/BaseFragShader.cpp: $(CONTENTDIR) ./BaseFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./BaseFragShader.fsh
 
-$(CONTENTDIR)/BaseVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/BaseVertShader.cpp: $(CONTENTDIR) ./BaseVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./BaseVertShader.vsh
 
-$(CONTENTDIR)/ConstFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ConstFragShader.cpp: $(CONTENTDIR) ./ConstFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./ConstFragShader.fsh
 
-$(CONTENTDIR)/ShadowVolVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ShadowVolVertShader.cpp: $(CONTENTDIR) ./ShadowVolVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./ShadowVolVertShader.vsh
 
-$(CONTENTDIR)/FullscreenVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FullscreenVertShader.cpp: $(CONTENTDIR) ./FullscreenVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./FullscreenVertShader.vsh
 
-$(CONTENTDIR)/scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/scene.cpp: $(CONTENTDIR) ./scene.pod
 	$(FILEWRAP)  -o $@ ./scene.pod
 
-$(CONTENTDIR)/Background.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Background.cpp: $(CONTENTDIR) ./Background.pvr
 	$(FILEWRAP)  -o $@ ./Background.pvr
 
-$(CONTENTDIR)/Rust.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Rust.cpp: $(CONTENTDIR) ./Rust.pvr
 	$(FILEWRAP)  -o $@ ./Rust.pvr
 
 ############################################################################

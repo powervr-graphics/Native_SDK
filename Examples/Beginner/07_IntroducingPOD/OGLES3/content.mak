@@ -42,19 +42,19 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 
-$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR) ./Scene.pod
 	$(FILEWRAP)  -o $@ ./Scene.pod
 
-$(CONTENTDIR)/tex_base.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/tex_base.cpp: $(CONTENTDIR) ./tex_base.pvr
 	$(FILEWRAP)  -o $@ ./tex_base.pvr
 
-$(CONTENTDIR)/tex_arm.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/tex_arm.cpp: $(CONTENTDIR) ./tex_arm.pvr
 	$(FILEWRAP)  -o $@ ./tex_arm.pvr
 
 ############################################################################

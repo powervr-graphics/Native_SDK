@@ -75,118 +75,118 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/SpriteShaderF.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SpriteShaderF.cpp: $(CONTENTDIR) ./SpriteShaderF.fsh
 	$(FILEWRAP)  -s  -o $@ ./SpriteShaderF.fsh
 
-$(CONTENTDIR)/SpriteShaderV.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SpriteShaderV.cpp: $(CONTENTDIR) ./SpriteShaderV.vsh
 	$(FILEWRAP)  -s  -o $@ ./SpriteShaderV.vsh
 
-$(CONTENTDIR)/TexColShaderF.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/TexColShaderF.cpp: $(CONTENTDIR) ./TexColShaderF.fsh
 	$(FILEWRAP)  -s  -o $@ ./TexColShaderF.fsh
 
-$(CONTENTDIR)/TexColShaderV.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/TexColShaderV.cpp: $(CONTENTDIR) ./TexColShaderV.vsh
 	$(FILEWRAP)  -s  -o $@ ./TexColShaderV.vsh
 
-$(CONTENTDIR)/ColShaderF.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ColShaderF.cpp: $(CONTENTDIR) ./ColShaderF.fsh
 	$(FILEWRAP)  -s  -o $@ ./ColShaderF.fsh
 
-$(CONTENTDIR)/ColShaderV.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ColShaderV.cpp: $(CONTENTDIR) ./ColShaderV.vsh
 	$(FILEWRAP)  -s  -o $@ ./ColShaderV.vsh
 
-$(CONTENTDIR)/container-corner.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/container-corner.cpp: $(CONTENTDIR) ./container-corner.pvr
 	$(FILEWRAP)  -o $@ ./container-corner.pvr
 
-$(CONTENTDIR)/container-vertical.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/container-vertical.cpp: $(CONTENTDIR) ./container-vertical.pvr
 	$(FILEWRAP)  -o $@ ./container-vertical.pvr
 
-$(CONTENTDIR)/container-horizontal.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/container-horizontal.cpp: $(CONTENTDIR) ./container-horizontal.pvr
 	$(FILEWRAP)  -o $@ ./container-horizontal.pvr
 
-$(CONTENTDIR)/topbar.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/topbar.cpp: $(CONTENTDIR) ./topbar.pvr
 	$(FILEWRAP)  -o $@ ./topbar.pvr
 
-$(CONTENTDIR)/background.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/background.cpp: $(CONTENTDIR) ./background.pvr
 	$(FILEWRAP)  -o $@ ./background.pvr
 
-$(CONTENTDIR)/clock-face.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/clock-face.cpp: $(CONTENTDIR) ./clock-face.pvr
 	$(FILEWRAP)  -o $@ ./clock-face.pvr
 
-$(CONTENTDIR)/clock-face-small.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/clock-face-small.cpp: $(CONTENTDIR) ./clock-face-small.pvr
 	$(FILEWRAP)  -o $@ ./clock-face-small.pvr
 
-$(CONTENTDIR)/hand.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/hand.cpp: $(CONTENTDIR) ./hand.pvr
 	$(FILEWRAP)  -o $@ ./hand.pvr
 
-$(CONTENTDIR)/hand-small.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/hand-small.cpp: $(CONTENTDIR) ./hand-small.pvr
 	$(FILEWRAP)  -o $@ ./hand-small.pvr
 
-$(CONTENTDIR)/battery.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/battery.cpp: $(CONTENTDIR) ./battery.pvr
 	$(FILEWRAP)  -o $@ ./battery.pvr
 
-$(CONTENTDIR)/internet-web-browser.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/internet-web-browser.cpp: $(CONTENTDIR) ./internet-web-browser.pvr
 	$(FILEWRAP)  -o $@ ./internet-web-browser.pvr
 
-$(CONTENTDIR)/mail-message-new.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/mail-message-new.cpp: $(CONTENTDIR) ./mail-message-new.pvr
 	$(FILEWRAP)  -o $@ ./mail-message-new.pvr
 
-$(CONTENTDIR)/network-wireless.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/network-wireless.cpp: $(CONTENTDIR) ./network-wireless.pvr
 	$(FILEWRAP)  -o $@ ./network-wireless.pvr
 
-$(CONTENTDIR)/office-calendar.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/office-calendar.cpp: $(CONTENTDIR) ./office-calendar.pvr
 	$(FILEWRAP)  -o $@ ./office-calendar.pvr
 
-$(CONTENTDIR)/weather-sun-cloud.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/weather-sun-cloud.cpp: $(CONTENTDIR) ./weather-sun-cloud.pvr
 	$(FILEWRAP)  -o $@ ./weather-sun-cloud.pvr
 
-$(CONTENTDIR)/weather-storm.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/weather-storm.cpp: $(CONTENTDIR) ./weather-storm.pvr
 	$(FILEWRAP)  -o $@ ./weather-storm.pvr
 
-$(CONTENTDIR)/weather-rain.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/weather-rain.cpp: $(CONTENTDIR) ./weather-rain.pvr
 	$(FILEWRAP)  -o $@ ./weather-rain.pvr
 
-$(CONTENTDIR)/text1.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/text1.cpp: $(CONTENTDIR) ./text1.pvr
 	$(FILEWRAP)  -o $@ ./text1.pvr
 
-$(CONTENTDIR)/text2.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/text2.cpp: $(CONTENTDIR) ./text2.pvr
 	$(FILEWRAP)  -o $@ ./text2.pvr
 
-$(CONTENTDIR)/text-weather.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/text-weather.cpp: $(CONTENTDIR) ./text-weather.pvr
 	$(FILEWRAP)  -o $@ ./text-weather.pvr
 
-$(CONTENTDIR)/text-fri.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/text-fri.cpp: $(CONTENTDIR) ./text-fri.pvr
 	$(FILEWRAP)  -o $@ ./text-fri.pvr
 
-$(CONTENTDIR)/text-sat.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/text-sat.cpp: $(CONTENTDIR) ./text-sat.pvr
 	$(FILEWRAP)  -o $@ ./text-sat.pvr
 
-$(CONTENTDIR)/text-sun.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/text-sun.cpp: $(CONTENTDIR) ./text-sun.pvr
 	$(FILEWRAP)  -o $@ ./text-sun.pvr
 
-$(CONTENTDIR)/text-mon.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/text-mon.cpp: $(CONTENTDIR) ./text-mon.pvr
 	$(FILEWRAP)  -o $@ ./text-mon.pvr
 
-$(CONTENTDIR)/weather-sun-cloud-big.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/weather-sun-cloud-big.cpp: $(CONTENTDIR) ./weather-sun-cloud-big.pvr
 	$(FILEWRAP)  -o $@ ./weather-sun-cloud-big.pvr
 
-$(CONTENTDIR)/window-bottom.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/window-bottom.cpp: $(CONTENTDIR) ./window-bottom.pvr
 	$(FILEWRAP)  -o $@ ./window-bottom.pvr
 
-$(CONTENTDIR)/window-bottomcorner.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/window-bottomcorner.cpp: $(CONTENTDIR) ./window-bottomcorner.pvr
 	$(FILEWRAP)  -o $@ ./window-bottomcorner.pvr
 
-$(CONTENTDIR)/window-side.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/window-side.cpp: $(CONTENTDIR) ./window-side.pvr
 	$(FILEWRAP)  -o $@ ./window-side.pvr
 
-$(CONTENTDIR)/window-top.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/window-top.cpp: $(CONTENTDIR) ./window-top.pvr
 	$(FILEWRAP)  -o $@ ./window-top.pvr
 
-$(CONTENTDIR)/window-topleft.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/window-topleft.cpp: $(CONTENTDIR) ./window-topleft.pvr
 	$(FILEWRAP)  -o $@ ./window-topleft.pvr
 
-$(CONTENTDIR)/window-topright.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/window-topright.cpp: $(CONTENTDIR) ./window-topright.pvr
 	$(FILEWRAP)  -o $@ ./window-topright.pvr
 
-$(CONTENTDIR)/loremipsum.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/loremipsum.cpp: $(CONTENTDIR) ./loremipsum.pvr
 	$(FILEWRAP)  -o $@ ./loremipsum.pvr
 
 ############################################################################

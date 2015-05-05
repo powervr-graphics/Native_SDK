@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles2tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles2tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES2/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles2tools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLES2Glass
 include $(CLEAR_VARS)
@@ -41,58 +44,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/Balloon.pod \
-	$(ASSETDIR)/Ball.pod \
-	$(ASSETDIR)/BalloonTex.pvr \
-	$(ASSETDIR)/SkyboxTex.pvr \
-	$(ASSETDIR)/DefaultVertShader.vsh \
-	$(ASSETDIR)/DefaultFragShader.fsh \
-	$(ASSETDIR)/ParaboloidVertShader.vsh \
-	$(ASSETDIR)/SkyboxVertShader.vsh \
-	$(ASSETDIR)/SkyboxFragShader.fsh \
-	$(ASSETDIR)/EffectVertShader.vsh \
-	$(ASSETDIR)/EffectFragShader.fsh
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/BalloonTex.pvr: $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/BalloonTex.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/SkyboxTex.pvr: $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/SkyboxTex.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/DefaultVertShader.vsh: $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/DefaultVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/DefaultFragShader.fsh: $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/DefaultFragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/ParaboloidVertShader.vsh: $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/ParaboloidVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/SkyboxVertShader.vsh: $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/SkyboxVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/SkyboxFragShader.fsh: $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/SkyboxFragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/EffectVertShader.vsh: $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/EffectVertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/EffectFragShader.fsh: $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/EffectFragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Balloon.pod: $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/Balloon.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Ball.pod: $(PVRSDKDIR)/Examples/Advanced/Glass/OGLES2/Ball.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-

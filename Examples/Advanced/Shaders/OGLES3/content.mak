@@ -54,55 +54,55 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Basetex.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Basetex.cpp: $(CONTENTDIR) ./Basetex.pvr
 	$(FILEWRAP)  -o $@ ./Basetex.pvr
 
-$(CONTENTDIR)/Reflection.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Reflection.cpp: $(CONTENTDIR) ./Reflection.pvr
 	$(FILEWRAP)  -o $@ ./Reflection.pvr
 
-$(CONTENTDIR)/Cubemap.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Cubemap.cpp: $(CONTENTDIR) ./Cubemap.pvr
 	$(FILEWRAP)  -o $@ ./Cubemap.pvr
 
-$(CONTENTDIR)/AnisoMap.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/AnisoMap.cpp: $(CONTENTDIR) ./AnisoMap.pvr
 	$(FILEWRAP)  -o $@ ./AnisoMap.pvr
 
-$(CONTENTDIR)/anisotropic_lighting.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/anisotropic_lighting.cpp: $(CONTENTDIR) ./anisotropic_lighting.pfx
 	$(FILEWRAP)  -s  -o $@ ./anisotropic_lighting.pfx
 
-$(CONTENTDIR)/directional_lighting.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/directional_lighting.cpp: $(CONTENTDIR) ./directional_lighting.pfx
 	$(FILEWRAP)  -s  -o $@ ./directional_lighting.pfx
 
-$(CONTENTDIR)/envmap.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/envmap.cpp: $(CONTENTDIR) ./envmap.pfx
 	$(FILEWRAP)  -s  -o $@ ./envmap.pfx
 
-$(CONTENTDIR)/fasttnl.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/fasttnl.cpp: $(CONTENTDIR) ./fasttnl.pfx
 	$(FILEWRAP)  -s  -o $@ ./fasttnl.pfx
 
-$(CONTENTDIR)/lattice.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/lattice.cpp: $(CONTENTDIR) ./lattice.pfx
 	$(FILEWRAP)  -s  -o $@ ./lattice.pfx
 
-$(CONTENTDIR)/phong_lighting.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/phong_lighting.cpp: $(CONTENTDIR) ./phong_lighting.pfx
 	$(FILEWRAP)  -s  -o $@ ./phong_lighting.pfx
 
-$(CONTENTDIR)/point_lighting.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/point_lighting.cpp: $(CONTENTDIR) ./point_lighting.pfx
 	$(FILEWRAP)  -s  -o $@ ./point_lighting.pfx
 
-$(CONTENTDIR)/reflections.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/reflections.cpp: $(CONTENTDIR) ./reflections.pfx
 	$(FILEWRAP)  -s  -o $@ ./reflections.pfx
 
-$(CONTENTDIR)/simple.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/simple.cpp: $(CONTENTDIR) ./simple.pfx
 	$(FILEWRAP)  -s  -o $@ ./simple.pfx
 
-$(CONTENTDIR)/spot_lighting.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/spot_lighting.cpp: $(CONTENTDIR) ./spot_lighting.pfx
 	$(FILEWRAP)  -s  -o $@ ./spot_lighting.pfx
 
-$(CONTENTDIR)/toon.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/toon.cpp: $(CONTENTDIR) ./toon.pfx
 	$(FILEWRAP)  -s  -o $@ ./toon.pfx
 
-$(CONTENTDIR)/vertex_sine.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/vertex_sine.cpp: $(CONTENTDIR) ./vertex_sine.pfx
 	$(FILEWRAP)  -s  -o $@ ./vertex_sine.pfx
 
-$(CONTENTDIR)/wood.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/wood.cpp: $(CONTENTDIR) ./wood.pfx
 	$(FILEWRAP)  -s  -o $@ ./wood.pfx
 
 ############################################################################

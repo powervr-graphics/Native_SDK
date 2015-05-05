@@ -46,6 +46,8 @@
 		F8D5F25280341AC91906CE22 /* tv.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C925A03F2F344503898E70 /* tv.pvr */; };
 		F8FA40952D449DF7BE75BFE0 /* TVVertexShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F858361357C4BF92900DC168 /* TVVertexShader.vsh */; };
 		F8225DB379793D2B85DFF541 /* TVFragmentShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F878783E55E7E3F488B4AC82 /* TVFragmentShader.fsh */; };
+		F8505923A674D6B7018FCCE9 /* TVVertexShaderES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F86EEEFA27360F3F76677079 /* TVVertexShaderES2.vsh */; };
+		F8A3D139041D0037E0B3E811 /* TVFragmentShaderES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8D5F004DFCCCE9868CDA164 /* TVFragmentShaderES2.fsh */; };
 		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */; };
 		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81AE783867359F7612A30AC /* VertShader.vsh */; };
 /* End PBXBuildFile section */
@@ -159,6 +161,8 @@
 		F8C925A03F2F344503898E70 /* tv.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = tv.pvr; path = ../../tv.pvr; sourceTree = SOURCE_ROOT; };
 		F858361357C4BF92900DC168 /* TVVertexShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TVVertexShader.vsh; path = ../../TVVertexShader.vsh; sourceTree = SOURCE_ROOT; };
 		F878783E55E7E3F488B4AC82 /* TVFragmentShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TVFragmentShader.fsh; path = ../../TVFragmentShader.fsh; sourceTree = SOURCE_ROOT; };
+		F86EEEFA27360F3F76677079 /* TVVertexShaderES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TVVertexShaderES2.vsh; path = ../../TVVertexShaderES2.vsh; sourceTree = SOURCE_ROOT; };
+		F8D5F004DFCCCE9868CDA164 /* TVFragmentShaderES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TVFragmentShaderES2.fsh; path = ../../TVFragmentShaderES2.fsh; sourceTree = SOURCE_ROOT; };
 		F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
 		F81AE783867359F7612A30AC /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -332,6 +336,8 @@
 			children = (
 				F858361357C4BF92900DC168 /* TVVertexShader.vsh */,
 				F878783E55E7E3F488B4AC82 /* TVFragmentShader.fsh */,
+				F86EEEFA27360F3F76677079 /* TVVertexShaderES2.vsh */,
+				F8D5F004DFCCCE9868CDA164 /* TVFragmentShaderES2.fsh */,
 				F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */,
 				F81AE783867359F7612A30AC /* VertShader.vsh */,
 			);
@@ -441,6 +447,8 @@
 				F8D5F25280341AC91906CE22 /* tv.pvr in Resources */,
 				F8FA40952D449DF7BE75BFE0 /* TVVertexShader.vsh in Resources */,
 				F8225DB379793D2B85DFF541 /* TVFragmentShader.fsh in Resources */,
+				F8505923A674D6B7018FCCE9 /* TVVertexShaderES2.vsh in Resources */,
+				F8A3D139041D0037E0B3E811 /* TVFragmentShaderES2.fsh in Resources */,
 				F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */,
 				F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */,
 			);

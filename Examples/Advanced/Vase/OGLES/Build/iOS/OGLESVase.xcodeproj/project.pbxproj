@@ -25,17 +25,17 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F861BC11CAB401947FE83E24 /* OGLESVase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F87111904ECED946011EC64C /* OGLESVase.cpp */; };
+		F861BC11CAB401947FE83E24 /* OGLESVase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8B32F461F75D5EFD9D9FCBD /* OGLESVase.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F81FC95D44E5B162975798BE /* Vase.pod in Resources */ = {isa = PBXBuildFile; fileRef = F866AD8038EC0D80A0269B30 /* Vase.pod */; };
-		F8C832B89D5E27E2A996ECB5 /* Flora.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F0AE978DB8DFB521B32944 /* Flora.pvr */; };
-		F83F941F965F7FA69463D1B5 /* Backgrnd.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87CFE6F02F3DE24C7ACDB47 /* Backgrnd.pvr */; };
-		F8F98063F3D592ABBC808357 /* Reflection.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86B2425314C4A9779D6FB2A /* Reflection.pvr */; };
+		F81FC95D44E5B162975798BE /* Vase.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8CFD3F77E1F6E9CE7883163 /* Vase.pod */; };
+		F8C832B89D5E27E2A996ECB5 /* Flora.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87BE4B7C1733615D23C3DCA /* Flora.pvr */; };
+		F83F941F965F7FA69463D1B5 /* Backgrnd.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8967B8188ED22C7B37E1743 /* Backgrnd.pvr */; };
+		F8F98063F3D592ABBC808357 /* Reflection.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81899581F4FE443D94B1594 /* Reflection.pvr */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,7 +100,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F87111904ECED946011EC64C /* OGLESVase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESVase.cpp; path = ../../OGLESVase.cpp; sourceTree = SOURCE_ROOT; };
+		F8B32F461F75D5EFD9D9FCBD /* OGLESVase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESVase.cpp; path = ../../OGLESVase.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -113,10 +113,10 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F866AD8038EC0D80A0269B30 /* Vase.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Vase.pod; path = ../../Vase.pod; sourceTree = SOURCE_ROOT; };
-		F8F0AE978DB8DFB521B32944 /* Flora.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Flora.pvr; path = ../../Flora.pvr; sourceTree = SOURCE_ROOT; };
-		F87CFE6F02F3DE24C7ACDB47 /* Backgrnd.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Backgrnd.pvr; path = ../../Backgrnd.pvr; sourceTree = SOURCE_ROOT; };
-		F86B2425314C4A9779D6FB2A /* Reflection.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Reflection.pvr; path = ../../Reflection.pvr; sourceTree = SOURCE_ROOT; };
+		F8CFD3F77E1F6E9CE7883163 /* Vase.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Vase.pod; path = ../../Vase.pod; sourceTree = SOURCE_ROOT; };
+		F87BE4B7C1733615D23C3DCA /* Flora.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Flora.pvr; path = ../../Flora.pvr; sourceTree = SOURCE_ROOT; };
+		F8967B8188ED22C7B37E1743 /* Backgrnd.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Backgrnd.pvr; path = ../../Backgrnd.pvr; sourceTree = SOURCE_ROOT; };
+		F81899581F4FE443D94B1594 /* Reflection.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Reflection.pvr; path = ../../Reflection.pvr; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,7 +212,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F87111904ECED946011EC64C /* OGLESVase.cpp */,
+				F8B32F461F75D5EFD9D9FCBD /* OGLESVase.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -239,7 +239,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F866AD8038EC0D80A0269B30 /* Vase.pod */,
+				F8CFD3F77E1F6E9CE7883163 /* Vase.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -254,9 +254,9 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F8F0AE978DB8DFB521B32944 /* Flora.pvr */,
-				F87CFE6F02F3DE24C7ACDB47 /* Backgrnd.pvr */,
-				F86B2425314C4A9779D6FB2A /* Reflection.pvr */,
+				F87BE4B7C1733615D23C3DCA /* Flora.pvr */,
+				F8967B8188ED22C7B37E1743 /* Backgrnd.pvr */,
+				F81899581F4FE443D94B1594 /* Reflection.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -305,6 +305,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLESTools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

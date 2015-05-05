@@ -42,19 +42,19 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Back.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Back.cpp: $(CONTENTDIR) ./Back.pvr
 	$(FILEWRAP)  -o $@ ./Back.pvr
 
-$(CONTENTDIR)/Tape.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Tape.cpp: $(CONTENTDIR) ./Tape.pvr
 	$(FILEWRAP)  -o $@ ./Tape.pvr
 
-$(CONTENTDIR)/Ball.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Ball.cpp: $(CONTENTDIR) ./Ball.pvr
 	$(FILEWRAP)  -o $@ ./Ball.pvr
 
-$(CONTENTDIR)/Info.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Info.cpp: $(CONTENTDIR) ./Info.pvr
 	$(FILEWRAP)  -o $@ ./Info.pvr
 
-$(CONTENTDIR)/o_model.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/o_model.cpp: $(CONTENTDIR) ./o_model.pod
 	$(FILEWRAP)  -o $@ ./o_model.pod
 
 ############################################################################

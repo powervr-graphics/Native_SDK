@@ -41,10 +41,18 @@ WS_LIBS = -lews
 WS_INC =
 WS=EWS
 else
+ifeq "$(DRMBUILD)" "1"
+ifndef DRMROOT
+$(error When building a DRM BUILD you must set DRMROOT to point at the location where your DRM headers and libs can be found.)
+endif
+WS_LIBS = -L$(DRMROOT)/lib -ldrm -lgbm -ludev -ldl -Wl,--rpath-link,$(DRMROOT)/lib
+WS_INC = $(DRMROOT)/include $(DRMROOT)/include/libdrm $(DRMROOT)/include/gbm
+WS=DRM
+else
 WS_LIBS =
-WS_RPATH = 
-WS_INC  = 
+WS_INC  =
 WS = NullWS
+endif
 endif
 endif
 
@@ -77,7 +85,11 @@ else
 ifeq "$(WS)" "EWS"
 SRCNAME = OGLESHelloAPI_EWS
 else
+ifeq "$(WS)" "DRM"
+SRCNAME = OGLESHelloAPI_LinuxDRM
+else
 SRCNAME = OGLESHelloAPI_NullWS
+endif
 endif
 endif
 
