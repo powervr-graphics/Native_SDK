@@ -40,13 +40,13 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Crate.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Crate.cpp: $(CONTENTDIR) ./Crate.pvr
 	$(FILEWRAP)  -o $@ ./Crate.pvr
 
-$(CONTENTDIR)/stamp.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/stamp.cpp: $(CONTENTDIR) ./stamp.pvr
 	$(FILEWRAP)  -o $@ ./stamp.pvr
 
-$(CONTENTDIR)/stampnm.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/stampnm.cpp: $(CONTENTDIR) ./stampnm.pvr
 	$(FILEWRAP)  -o $@ ./stampnm.pvr
 
 ############################################################################

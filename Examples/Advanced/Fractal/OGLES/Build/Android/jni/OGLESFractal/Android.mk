@@ -1,6 +1,15 @@
 LOCAL_PATH := $(call my-dir)/../../../../../../../..
 PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module oglestools
+include $(CLEAR_VARS)
+LOCAL_MODULE := oglestools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES/Build/Android/obj/local/$(TARGET_ARCH_ABI)/liboglestools.a
+include $(PREBUILT_STATIC_LIBRARY)
+endif
+
+
 # Module OGLESFractal
 include $(CLEAR_VARS)
 
@@ -32,4 +41,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-

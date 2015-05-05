@@ -25,27 +25,27 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F839C620F6C7F9A37DD96D3C /* OGLES3ChameleonMan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F842EA9FD8DBC7860B57241C /* OGLES3ChameleonMan.cpp */; };
+		F839C620F6C7F9A37DD96D3C /* OGLES3ChameleonMan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8C48B93E069B965A7899AE8 /* OGLES3ChameleonMan.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F849FB3E4E1C1FE967A5F6D3 /* ChameleonScene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F81543E74BD1A681ECB4AEFC /* ChameleonScene.pod */; };
-		F87FDB8B438ABE622CBCB0F4 /* skyline.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F85B2C9F03C87B6F2762E74F /* skyline.pvr */; };
-		F8C754E7ECCC342A8B231C36 /* Wall_diffuse_baked.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81A7A43FC201B50AC8F02DC /* Wall_diffuse_baked.pvr */; };
-		F850270627D54F13AF912654 /* Tang_space_BodyMap.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8CEBA201F2D2822739F1127 /* Tang_space_BodyMap.pvr */; };
-		F8C5CFEFBC0A35D099EB186B /* Tang_space_LegsMap.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81D37B158547B85DB32A468 /* Tang_space_LegsMap.pvr */; };
-		F8D394908EDBFD4488123FCB /* Tang_space_BeltMap.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E8E1DBF4F5F07150E39444 /* Tang_space_BeltMap.pvr */; };
-		F8E2888962B6F47C15B963EB /* FinalChameleonManLegs.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8779045418E6B60DD5D733D /* FinalChameleonManLegs.pvr */; };
-		F84F0E7630AB96F572EEF315 /* FinalChameleonManHeadBody.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86B57E215392B5DF86F4AB7 /* FinalChameleonManHeadBody.pvr */; };
-		F8AB39623DBDA15667E60607 /* lamp.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83471ED944751C2357A4F1A /* lamp.pvr */; };
-		F811A8379F1FCF7364F1BC14 /* ChameleonBelt.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B090175D90631D677B063A /* ChameleonBelt.pvr */; };
-		F8BAB7E851DA89F41A2FCBEB /* SkinnedVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8F6D5F473AB653D8FF69777 /* SkinnedVertShader.vsh */; };
-		F8DB18CBE65044EA0B052281 /* SkinnedFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8C62DCAE962243CF90C975F /* SkinnedFragShader.fsh */; };
-		F854C6435FE0018E7EB9F441 /* DefaultVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8ABD1A33B0A3DC5478B4098 /* DefaultVertShader.vsh */; };
-		F88C8976CA443920BC04E398 /* DefaultFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B4AB555A0D29188F4CAF79 /* DefaultFragShader.fsh */; };
+		F849FB3E4E1C1FE967A5F6D3 /* ChameleonScene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8C7AEA109D12C5A0C6357C2 /* ChameleonScene.pod */; };
+		F87FDB8B438ABE622CBCB0F4 /* skyline.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F814DC95A123238981015326 /* skyline.pvr */; };
+		F8C754E7ECCC342A8B231C36 /* Wall_diffuse_baked.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F85F932060EE4C6CD2FEB0B0 /* Wall_diffuse_baked.pvr */; };
+		F850270627D54F13AF912654 /* Tang_space_BodyMap.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8DFDAB830FF0DACE9C49ED7 /* Tang_space_BodyMap.pvr */; };
+		F8C5CFEFBC0A35D099EB186B /* Tang_space_LegsMap.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82DF83A2DA773680976289F /* Tang_space_LegsMap.pvr */; };
+		F8D394908EDBFD4488123FCB /* Tang_space_BeltMap.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B67A08D1BE815926C3A592 /* Tang_space_BeltMap.pvr */; };
+		F8E2888962B6F47C15B963EB /* FinalChameleonManLegs.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F853BD3E10227D4A287CB34D /* FinalChameleonManLegs.pvr */; };
+		F84F0E7630AB96F572EEF315 /* FinalChameleonManHeadBody.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F881A7A01DFD8BEEAB9E0464 /* FinalChameleonManHeadBody.pvr */; };
+		F8AB39623DBDA15667E60607 /* lamp.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84FE5C0C8A4AAFD86B9BFEC /* lamp.pvr */; };
+		F811A8379F1FCF7364F1BC14 /* ChameleonBelt.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8816E0A1250E94AEB62D1C6 /* ChameleonBelt.pvr */; };
+		F8BAB7E851DA89F41A2FCBEB /* SkinnedVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F87E65EA1B8FE6B567E64180 /* SkinnedVertShader.vsh */; };
+		F8DB18CBE65044EA0B052281 /* SkinnedFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8426DC509E87AA6911DB3E2 /* SkinnedFragShader.fsh */; };
+		F854C6435FE0018E7EB9F441 /* DefaultVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F851DD276BD645BC09E924F7 /* DefaultVertShader.vsh */; };
+		F88C8976CA443920BC04E398 /* DefaultFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F889E162FABBCC6642F7D6EF /* DefaultFragShader.fsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -120,7 +120,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F842EA9FD8DBC7860B57241C /* OGLES3ChameleonMan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES3ChameleonMan.cpp; path = ../../OGLES3ChameleonMan.cpp; sourceTree = SOURCE_ROOT; };
+		F8C48B93E069B965A7899AE8 /* OGLES3ChameleonMan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES3ChameleonMan.cpp; path = ../../OGLES3ChameleonMan.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -133,20 +133,20 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F81543E74BD1A681ECB4AEFC /* ChameleonScene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = ChameleonScene.pod; path = ../../ChameleonScene.pod; sourceTree = SOURCE_ROOT; };
-		F85B2C9F03C87B6F2762E74F /* skyline.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = skyline.pvr; path = ../../skyline.pvr; sourceTree = SOURCE_ROOT; };
-		F81A7A43FC201B50AC8F02DC /* Wall_diffuse_baked.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Wall_diffuse_baked.pvr; path = ../../Wall_diffuse_baked.pvr; sourceTree = SOURCE_ROOT; };
-		F8CEBA201F2D2822739F1127 /* Tang_space_BodyMap.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Tang_space_BodyMap.pvr; path = ../../Tang_space_BodyMap.pvr; sourceTree = SOURCE_ROOT; };
-		F81D37B158547B85DB32A468 /* Tang_space_LegsMap.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Tang_space_LegsMap.pvr; path = ../../Tang_space_LegsMap.pvr; sourceTree = SOURCE_ROOT; };
-		F8E8E1DBF4F5F07150E39444 /* Tang_space_BeltMap.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Tang_space_BeltMap.pvr; path = ../../Tang_space_BeltMap.pvr; sourceTree = SOURCE_ROOT; };
-		F8779045418E6B60DD5D733D /* FinalChameleonManLegs.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = FinalChameleonManLegs.pvr; path = ../../FinalChameleonManLegs.pvr; sourceTree = SOURCE_ROOT; };
-		F86B57E215392B5DF86F4AB7 /* FinalChameleonManHeadBody.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = FinalChameleonManHeadBody.pvr; path = ../../FinalChameleonManHeadBody.pvr; sourceTree = SOURCE_ROOT; };
-		F83471ED944751C2357A4F1A /* lamp.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = lamp.pvr; path = ../../lamp.pvr; sourceTree = SOURCE_ROOT; };
-		F8B090175D90631D677B063A /* ChameleonBelt.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = ChameleonBelt.pvr; path = ../../ChameleonBelt.pvr; sourceTree = SOURCE_ROOT; };
-		F8F6D5F473AB653D8FF69777 /* SkinnedVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedVertShader.vsh; path = ../../SkinnedVertShader.vsh; sourceTree = SOURCE_ROOT; };
-		F8C62DCAE962243CF90C975F /* SkinnedFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedFragShader.fsh; path = ../../SkinnedFragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F8ABD1A33B0A3DC5478B4098 /* DefaultVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultVertShader.vsh; path = ../../DefaultVertShader.vsh; sourceTree = SOURCE_ROOT; };
-		F8B4AB555A0D29188F4CAF79 /* DefaultFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultFragShader.fsh; path = ../../DefaultFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F8C7AEA109D12C5A0C6357C2 /* ChameleonScene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = ChameleonScene.pod; path = ../../ChameleonScene.pod; sourceTree = SOURCE_ROOT; };
+		F814DC95A123238981015326 /* skyline.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = skyline.pvr; path = ../../skyline.pvr; sourceTree = SOURCE_ROOT; };
+		F85F932060EE4C6CD2FEB0B0 /* Wall_diffuse_baked.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Wall_diffuse_baked.pvr; path = ../../Wall_diffuse_baked.pvr; sourceTree = SOURCE_ROOT; };
+		F8DFDAB830FF0DACE9C49ED7 /* Tang_space_BodyMap.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Tang_space_BodyMap.pvr; path = ../../Tang_space_BodyMap.pvr; sourceTree = SOURCE_ROOT; };
+		F82DF83A2DA773680976289F /* Tang_space_LegsMap.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Tang_space_LegsMap.pvr; path = ../../Tang_space_LegsMap.pvr; sourceTree = SOURCE_ROOT; };
+		F8B67A08D1BE815926C3A592 /* Tang_space_BeltMap.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Tang_space_BeltMap.pvr; path = ../../Tang_space_BeltMap.pvr; sourceTree = SOURCE_ROOT; };
+		F853BD3E10227D4A287CB34D /* FinalChameleonManLegs.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = FinalChameleonManLegs.pvr; path = ../../FinalChameleonManLegs.pvr; sourceTree = SOURCE_ROOT; };
+		F881A7A01DFD8BEEAB9E0464 /* FinalChameleonManHeadBody.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = FinalChameleonManHeadBody.pvr; path = ../../FinalChameleonManHeadBody.pvr; sourceTree = SOURCE_ROOT; };
+		F84FE5C0C8A4AAFD86B9BFEC /* lamp.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = lamp.pvr; path = ../../lamp.pvr; sourceTree = SOURCE_ROOT; };
+		F8816E0A1250E94AEB62D1C6 /* ChameleonBelt.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = ChameleonBelt.pvr; path = ../../ChameleonBelt.pvr; sourceTree = SOURCE_ROOT; };
+		F87E65EA1B8FE6B567E64180 /* SkinnedVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedVertShader.vsh; path = ../../SkinnedVertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F8426DC509E87AA6911DB3E2 /* SkinnedFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedFragShader.fsh; path = ../../SkinnedFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F851DD276BD645BC09E924F7 /* DefaultVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultVertShader.vsh; path = ../../DefaultVertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F889E162FABBCC6642F7D6EF /* DefaultFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultFragShader.fsh; path = ../../DefaultFragShader.fsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -251,7 +251,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F842EA9FD8DBC7860B57241C /* OGLES3ChameleonMan.cpp */,
+				F8C48B93E069B965A7899AE8 /* OGLES3ChameleonMan.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -278,7 +278,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F81543E74BD1A681ECB4AEFC /* ChameleonScene.pod */,
+				F8C7AEA109D12C5A0C6357C2 /* ChameleonScene.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -293,15 +293,15 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F85B2C9F03C87B6F2762E74F /* skyline.pvr */,
-				F81A7A43FC201B50AC8F02DC /* Wall_diffuse_baked.pvr */,
-				F8CEBA201F2D2822739F1127 /* Tang_space_BodyMap.pvr */,
-				F81D37B158547B85DB32A468 /* Tang_space_LegsMap.pvr */,
-				F8E8E1DBF4F5F07150E39444 /* Tang_space_BeltMap.pvr */,
-				F8779045418E6B60DD5D733D /* FinalChameleonManLegs.pvr */,
-				F86B57E215392B5DF86F4AB7 /* FinalChameleonManHeadBody.pvr */,
-				F83471ED944751C2357A4F1A /* lamp.pvr */,
-				F8B090175D90631D677B063A /* ChameleonBelt.pvr */,
+				F814DC95A123238981015326 /* skyline.pvr */,
+				F85F932060EE4C6CD2FEB0B0 /* Wall_diffuse_baked.pvr */,
+				F8DFDAB830FF0DACE9C49ED7 /* Tang_space_BodyMap.pvr */,
+				F82DF83A2DA773680976289F /* Tang_space_LegsMap.pvr */,
+				F8B67A08D1BE815926C3A592 /* Tang_space_BeltMap.pvr */,
+				F853BD3E10227D4A287CB34D /* FinalChameleonManLegs.pvr */,
+				F881A7A01DFD8BEEAB9E0464 /* FinalChameleonManHeadBody.pvr */,
+				F84FE5C0C8A4AAFD86B9BFEC /* lamp.pvr */,
+				F8816E0A1250E94AEB62D1C6 /* ChameleonBelt.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -309,10 +309,10 @@
 		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F8F6D5F473AB653D8FF69777 /* SkinnedVertShader.vsh */,
-				F8C62DCAE962243CF90C975F /* SkinnedFragShader.fsh */,
-				F8ABD1A33B0A3DC5478B4098 /* DefaultVertShader.vsh */,
-				F8B4AB555A0D29188F4CAF79 /* DefaultFragShader.fsh */,
+				F87E65EA1B8FE6B567E64180 /* SkinnedVertShader.vsh */,
+				F8426DC509E87AA6911DB3E2 /* SkinnedFragShader.fsh */,
+				F851DD276BD645BC09E924F7 /* DefaultVertShader.vsh */,
+				F889E162FABBCC6642F7D6EF /* DefaultFragShader.fsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -362,6 +362,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLES3Tools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

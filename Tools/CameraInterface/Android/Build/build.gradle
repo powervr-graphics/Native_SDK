@@ -1,0 +1,84 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+	
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.0'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+File pvrSdkDir = file("${project.buildDir}/../../../../../../../")
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 19
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            jniDebuggable true
+        }
+    }
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+            jni.srcDirs= ['libs']
+            jniLibs.srcDir 'libs'
+
+        }
+    }
+
+    FileTree tree = fileTree(dir : '../..', includes:['*.pod', '*.pvr', '*.vsh', '*.fsh', '*.csh'])
+
+    String ndkBuildCommand = 'ndk-build';
+
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        ndkBuildCommand = 'ndk-build.cmd'
+    }
+    task ndkBuild(type: Exec) {
+        commandLine ndkBuildCommand, '-j'
+    }
+
+    task ndkBuildClean(type: Exec) {
+        commandLine ndkBuildCommand, '-j', 'clean'
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkBuild
+    }
+
+    clean.dependsOn ndkBuildClean
+    clean {
+        doLast() {
+            delete "obj"
+            delete "bin"
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}

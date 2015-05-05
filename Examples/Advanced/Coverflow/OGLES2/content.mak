@@ -55,59 +55,59 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Album1.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album1.cpp: $(CONTENTDIR) ./Album1.pvr
 	$(FILEWRAP)  -o $@ ./Album1.pvr
 
-$(CONTENTDIR)/Album2.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album2.cpp: $(CONTENTDIR) ./Album2.pvr
 	$(FILEWRAP)  -o $@ ./Album2.pvr
 
-$(CONTENTDIR)/Album3.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album3.cpp: $(CONTENTDIR) ./Album3.pvr
 	$(FILEWRAP)  -o $@ ./Album3.pvr
 
-$(CONTENTDIR)/Album4.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album4.cpp: $(CONTENTDIR) ./Album4.pvr
 	$(FILEWRAP)  -o $@ ./Album4.pvr
 
-$(CONTENTDIR)/Album5.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album5.cpp: $(CONTENTDIR) ./Album5.pvr
 	$(FILEWRAP)  -o $@ ./Album5.pvr
 
-$(CONTENTDIR)/Album6.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album6.cpp: $(CONTENTDIR) ./Album6.pvr
 	$(FILEWRAP)  -o $@ ./Album6.pvr
 
-$(CONTENTDIR)/Album7.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album7.cpp: $(CONTENTDIR) ./Album7.pvr
 	$(FILEWRAP)  -o $@ ./Album7.pvr
 
-$(CONTENTDIR)/Album8.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album8.cpp: $(CONTENTDIR) ./Album8.pvr
 	$(FILEWRAP)  -o $@ ./Album8.pvr
 
-$(CONTENTDIR)/Album9.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album9.cpp: $(CONTENTDIR) ./Album9.pvr
 	$(FILEWRAP)  -o $@ ./Album9.pvr
 
-$(CONTENTDIR)/Album10.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album10.cpp: $(CONTENTDIR) ./Album10.pvr
 	$(FILEWRAP)  -o $@ ./Album10.pvr
 
-$(CONTENTDIR)/Album11.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album11.cpp: $(CONTENTDIR) ./Album11.pvr
 	$(FILEWRAP)  -o $@ ./Album11.pvr
 
-$(CONTENTDIR)/Album12.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album12.cpp: $(CONTENTDIR) ./Album12.pvr
 	$(FILEWRAP)  -o $@ ./Album12.pvr
 
-$(CONTENTDIR)/Album13.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album13.cpp: $(CONTENTDIR) ./Album13.pvr
 	$(FILEWRAP)  -o $@ ./Album13.pvr
 
-$(CONTENTDIR)/Album14.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album14.cpp: $(CONTENTDIR) ./Album14.pvr
 	$(FILEWRAP)  -o $@ ./Album14.pvr
 
-$(CONTENTDIR)/Album15.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album15.cpp: $(CONTENTDIR) ./Album15.pvr
 	$(FILEWRAP)  -o $@ ./Album15.pvr
 
-$(CONTENTDIR)/Album16.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Album16.cpp: $(CONTENTDIR) ./Album16.pvr
 	$(FILEWRAP)  -o $@ ./Album16.pvr
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./FragShader.fsc
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./VertShader.vsc
 

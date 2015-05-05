@@ -122,7 +122,7 @@ const int kFPS = 60.0;
 		int iMSAA = pPVRShell->PVRShellGet(prefAASamples);
 		
 		
-#if defined(BUILD_OGLES2) || defined(BUILD_OGLES3)
+#if defined(BUILD_OGLES2)
 		//Create the OpenGL ES view and add it to the window
 		if(pPVRShell->PVRShellGet(prefStencilBufferContext))
 		{
@@ -140,6 +140,26 @@ const int kFPS = 60.0;
 		{
 			// just depth
 			iDepthFormat = GL_DEPTH_COMPONENT24_OES;
+			iStencilFormat = 0;
+		}
+#elif defined(BUILD_OGLES3)
+		//Create the OpenGL ES view and add it to the window
+		if(pPVRShell->PVRShellGet(prefStencilBufferContext))
+		{
+			if(pPVRShell->PVRShellGet(prefZbufferContext))
+			{	// need stencil & depth
+				iDepthFormat = iStencilFormat = GL_DEPTH24_STENCIL8;
+			}
+			else
+			{	// just stencil
+				iDepthFormat = 0;
+				iStencilFormat = GL_STENCIL_INDEX8;
+			}
+		}
+		else
+		{
+			// just depth
+			iDepthFormat = GL_DEPTH_COMPONENT24;
 			iStencilFormat = 0;
 		}
 #else

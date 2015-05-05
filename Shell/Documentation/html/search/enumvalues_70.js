@@ -21,6 +21,7 @@ var searchData=
   ['prefdiscardcolor',['prefDiscardColor',['../_p_v_r_shell_8h.html#a3fa86f089e589b4785ebb9a217b9f8c5a6ed746f0e8aea567be2ff9e30c7f3a80',1,'PVRShell.h']]],
   ['prefdiscarddepth',['prefDiscardDepth',['../_p_v_r_shell_8h.html#a3fa86f089e589b4785ebb9a217b9f8c5a161dfa64508b74604cf5944106bf20e0',1,'PVRShell.h']]],
   ['prefdiscardstencil',['prefDiscardStencil',['../_p_v_r_shell_8h.html#a3fa86f089e589b4785ebb9a217b9f8c5a6b34515242b3e4e05b5995156e62103e',1,'PVRShell.h']]],
+  ['prefdisplayconnector',['prefDisplayConnector',['../_p_v_r_shell_8h.html#a78ec4653192043575302f1448ae7054ea31072054b402ba3845835ca69450e166',1,'PVRShell.h']]],
   ['prefegldisplay',['prefEGLDisplay',['../_p_v_r_shell_8h.html#a946b110b552f1d833e359e6517647330a223c788a628141d9ca07a0c24a0e7060',1,'PVRShell.h']]],
   ['prefeglmajorversion',['prefEGLMajorVersion',['../_p_v_r_shell_8h.html#a78ec4653192043575302f1448ae7054eac36f263fe27802739740b20870dc0a2d',1,'PVRShell.h']]],
   ['prefeglminorversion',['prefEGLMinorVersion',['../_p_v_r_shell_8h.html#a78ec4653192043575302f1448ae7054ea37330319baef8da2c6ddf8a9fbe58d0e',1,'PVRShell.h']]],

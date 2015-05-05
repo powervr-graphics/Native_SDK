@@ -59,80 +59,80 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/normalmap.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/normalmap.cpp: $(CONTENTDIR) ./normalmap.pvr
 	$(FILEWRAP)  -o $@ ./normalmap.pvr
 
-$(CONTENTDIR)/skybox.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/skybox.cpp: $(CONTENTDIR) ./skybox.pvr
 	$(FILEWRAP)  -o $@ ./skybox.pvr
 
-$(CONTENTDIR)/galleon.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/galleon.cpp: $(CONTENTDIR) ./galleon.pvr
 	$(FILEWRAP)  -o $@ ./galleon.pvr
 
-$(CONTENTDIR)/wood.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/wood.cpp: $(CONTENTDIR) ./wood.pvr
 	$(FILEWRAP)  -o $@ ./wood.pvr
 
-$(CONTENTDIR)/coins.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/coins.cpp: $(CONTENTDIR) ./coins.pvr
 	$(FILEWRAP)  -o $@ ./coins.pvr
 
-$(CONTENTDIR)/coins-specular.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/coins-specular.cpp: $(CONTENTDIR) ./coins-specular.pvr
 	$(FILEWRAP)  -o $@ ./coins-specular.pvr
 
-$(CONTENTDIR)/flag.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/flag.cpp: $(CONTENTDIR) ./flag.pvr
 	$(FILEWRAP)  -o $@ ./flag.pvr
 
-$(CONTENTDIR)/crate.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/crate.cpp: $(CONTENTDIR) ./crate.pvr
 	$(FILEWRAP)  -o $@ ./crate.pvr
 
-$(CONTENTDIR)/galleon-sails.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/galleon-sails.cpp: $(CONTENTDIR) ./galleon-sails.pvr
 	$(FILEWRAP)  -o $@ ./galleon-sails.pvr
 
-$(CONTENTDIR)/sand.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/sand.cpp: $(CONTENTDIR) ./sand.pvr
 	$(FILEWRAP)  -o $@ ./sand.pvr
 
-$(CONTENTDIR)/palmleaf.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/palmleaf.cpp: $(CONTENTDIR) ./palmleaf.pvr
 	$(FILEWRAP)  -o $@ ./palmleaf.pvr
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./FragShader.fsc
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./VertShader.vsc
 
-$(CONTENTDIR)/SkyboxFShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SkyboxFShader.cpp: $(CONTENTDIR) ./SkyboxFShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./SkyboxFShader.fsh
 	-$(FILEWRAP)  -oa $@ ./SkyboxFShader.fsc
 
-$(CONTENTDIR)/SkyboxVShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SkyboxVShader.cpp: $(CONTENTDIR) ./SkyboxVShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./SkyboxVShader.vsh
 	-$(FILEWRAP)  -oa $@ ./SkyboxVShader.vsc
 
-$(CONTENTDIR)/ModelFShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ModelFShader.cpp: $(CONTENTDIR) ./ModelFShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./ModelFShader.fsh
 	-$(FILEWRAP)  -oa $@ ./ModelFShader.fsc
 
-$(CONTENTDIR)/ModelVShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ModelVShader.cpp: $(CONTENTDIR) ./ModelVShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./ModelVShader.vsh
 	-$(FILEWRAP)  -oa $@ ./ModelVShader.vsc
 
-$(CONTENTDIR)/Tex2DFShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Tex2DFShader.cpp: $(CONTENTDIR) ./Tex2DFShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./Tex2DFShader.fsh
 	-$(FILEWRAP)  -oa $@ ./Tex2DFShader.fsc
 
-$(CONTENTDIR)/Tex2DVShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Tex2DVShader.cpp: $(CONTENTDIR) ./Tex2DVShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./Tex2DVShader.vsh
 	-$(FILEWRAP)  -oa $@ ./Tex2DVShader.vsc
 
-$(CONTENTDIR)/PlaneTexFShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/PlaneTexFShader.cpp: $(CONTENTDIR) ./PlaneTexFShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./PlaneTexFShader.fsh
 	-$(FILEWRAP)  -oa $@ ./PlaneTexFShader.fsc
 
-$(CONTENTDIR)/PlaneTexVShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/PlaneTexVShader.cpp: $(CONTENTDIR) ./PlaneTexVShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./PlaneTexVShader.vsh
 	-$(FILEWRAP)  -oa $@ ./PlaneTexVShader.vsc
 
-$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR) ./Scene.pod
 	$(FILEWRAP)  -o $@ ./Scene.pod
 
 ############################################################################

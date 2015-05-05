@@ -687,7 +687,8 @@ bool OGLES2DeferredShading::InitView()
 	m_iWindowWidth = PVRShellGet(prefWidth);
 	m_iWindowHeight = PVRShellGet(prefHeight);
 
-	m_iFboWidth = m_iFboHeight = PVRTGetPOTLower(PVRT_MIN(m_iWindowWidth, m_iWindowHeight), 0);
+	m_iFboWidth = m_iWindowWidth;
+	m_iFboHeight = m_iWindowHeight;	
 
 	int numCmdLineOpts = PVRShellGet(prefCommandLineOptNum);
 	const SCmdLineOpt *pCmdLineOpts = (const SCmdLineOpt *)PVRShellGet(prefCommandLineOpts);

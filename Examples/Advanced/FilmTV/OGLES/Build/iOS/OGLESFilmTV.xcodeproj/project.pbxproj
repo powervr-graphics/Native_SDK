@@ -25,23 +25,23 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F811CE03A131C323F5294DA5 /* OGLESFilmTV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F89E456149F57654BD6EEF7E /* OGLESFilmTV.cpp */; };
+		F811CE03A131C323F5294DA5 /* OGLESFilmTV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F830230CE7CC50D5CB3D8A48 /* OGLESFilmTV.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F81ABC6ADDA27DBCCEA8B1FB /* FilmTVScene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F89D8212EB8FC088C60631E7 /* FilmTVScene.pod */; };
-		F8CD4C090724A60C5F5FAD52 /* Table.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F88F2D486FBCDE944821EF23 /* Table.pvr */; };
-		F81E9070D2AAE69779D4FA1A /* Floor.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86A5CBB0A4CB0327FDAC64C /* Floor.pvr */; };
-		F83D808FC75F61D28D23AD31 /* Wall.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BAA7B2DDA539E7242B3CCF /* Wall.pvr */; };
-		F85B6690DA840AD5D285D74C /* TV.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8540967104BB4143AF6B168 /* TV.pvr */; };
-		F80D3DB833E7CC14A4C5FBE5 /* TVCase.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82274EC61B336C1D3535D42 /* TVCase.pvr */; };
-		F8B1FD5C91BD853FC916CD1C /* TVSpeaker.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F7835B1FD45105119D49F2 /* TVSpeaker.pvr */; };
-		F86BBE3B5EF9A18DD1082207 /* Alum.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87A401B2CD67609D99B2C77 /* Alum.pvr */; };
-		F8827ECF818D2BC0E7AF8A88 /* Skirting.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80B794334D6569068FDC89E /* Skirting.pvr */; };
-		F8D25D893E2BDF44A4650D79 /* Camera.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F818F170F6F115E5C0F1A2B4 /* Camera.pvr */; };
+		F81ABC6ADDA27DBCCEA8B1FB /* FilmTVScene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8591E0F442F12135164ED6C /* FilmTVScene.pod */; };
+		F8CD4C090724A60C5F5FAD52 /* Table.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F897F013B3A6828D6484712F /* Table.pvr */; };
+		F81E9070D2AAE69779D4FA1A /* Floor.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F85A816268BCA760EC265C05 /* Floor.pvr */; };
+		F83D808FC75F61D28D23AD31 /* Wall.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84C0A2663B8FBA521C7DFBF /* Wall.pvr */; };
+		F85B6690DA840AD5D285D74C /* TV.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F89864BC5742CA51B43D7ED3 /* TV.pvr */; };
+		F80D3DB833E7CC14A4C5FBE5 /* TVCase.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8139DB6C99E7032C2472C3A /* TVCase.pvr */; };
+		F8B1FD5C91BD853FC916CD1C /* TVSpeaker.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83C570D4793570D94A3CCD2 /* TVSpeaker.pvr */; };
+		F86BBE3B5EF9A18DD1082207 /* Alum.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8586C0823EC8F8215E217EA /* Alum.pvr */; };
+		F8827ECF818D2BC0E7AF8A88 /* Skirting.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8200D63D127CC8E6F451C91 /* Skirting.pvr */; };
+		F8D25D893E2BDF44A4650D79 /* Camera.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F88DC6BEB0A1ABA92ADD3100 /* Camera.pvr */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,7 +106,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F89E456149F57654BD6EEF7E /* OGLESFilmTV.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESFilmTV.cpp; path = ../../OGLESFilmTV.cpp; sourceTree = SOURCE_ROOT; };
+		F830230CE7CC50D5CB3D8A48 /* OGLESFilmTV.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESFilmTV.cpp; path = ../../OGLESFilmTV.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -119,16 +119,16 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F89D8212EB8FC088C60631E7 /* FilmTVScene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = FilmTVScene.pod; path = ../../FilmTVScene.pod; sourceTree = SOURCE_ROOT; };
-		F88F2D486FBCDE944821EF23 /* Table.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Table.pvr; path = ../../Table.pvr; sourceTree = SOURCE_ROOT; };
-		F86A5CBB0A4CB0327FDAC64C /* Floor.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Floor.pvr; path = ../../Floor.pvr; sourceTree = SOURCE_ROOT; };
-		F8BAA7B2DDA539E7242B3CCF /* Wall.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Wall.pvr; path = ../../Wall.pvr; sourceTree = SOURCE_ROOT; };
-		F8540967104BB4143AF6B168 /* TV.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = TV.pvr; path = ../../TV.pvr; sourceTree = SOURCE_ROOT; };
-		F82274EC61B336C1D3535D42 /* TVCase.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = TVCase.pvr; path = ../../TVCase.pvr; sourceTree = SOURCE_ROOT; };
-		F8F7835B1FD45105119D49F2 /* TVSpeaker.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = TVSpeaker.pvr; path = ../../TVSpeaker.pvr; sourceTree = SOURCE_ROOT; };
-		F87A401B2CD67609D99B2C77 /* Alum.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Alum.pvr; path = ../../Alum.pvr; sourceTree = SOURCE_ROOT; };
-		F80B794334D6569068FDC89E /* Skirting.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Skirting.pvr; path = ../../Skirting.pvr; sourceTree = SOURCE_ROOT; };
-		F818F170F6F115E5C0F1A2B4 /* Camera.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Camera.pvr; path = ../../Camera.pvr; sourceTree = SOURCE_ROOT; };
+		F8591E0F442F12135164ED6C /* FilmTVScene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = FilmTVScene.pod; path = ../../FilmTVScene.pod; sourceTree = SOURCE_ROOT; };
+		F897F013B3A6828D6484712F /* Table.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Table.pvr; path = ../../Table.pvr; sourceTree = SOURCE_ROOT; };
+		F85A816268BCA760EC265C05 /* Floor.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Floor.pvr; path = ../../Floor.pvr; sourceTree = SOURCE_ROOT; };
+		F84C0A2663B8FBA521C7DFBF /* Wall.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Wall.pvr; path = ../../Wall.pvr; sourceTree = SOURCE_ROOT; };
+		F89864BC5742CA51B43D7ED3 /* TV.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = TV.pvr; path = ../../TV.pvr; sourceTree = SOURCE_ROOT; };
+		F8139DB6C99E7032C2472C3A /* TVCase.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = TVCase.pvr; path = ../../TVCase.pvr; sourceTree = SOURCE_ROOT; };
+		F83C570D4793570D94A3CCD2 /* TVSpeaker.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = TVSpeaker.pvr; path = ../../TVSpeaker.pvr; sourceTree = SOURCE_ROOT; };
+		F8586C0823EC8F8215E217EA /* Alum.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Alum.pvr; path = ../../Alum.pvr; sourceTree = SOURCE_ROOT; };
+		F8200D63D127CC8E6F451C91 /* Skirting.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Skirting.pvr; path = ../../Skirting.pvr; sourceTree = SOURCE_ROOT; };
+		F88DC6BEB0A1ABA92ADD3100 /* Camera.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Camera.pvr; path = ../../Camera.pvr; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -224,7 +224,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F89E456149F57654BD6EEF7E /* OGLESFilmTV.cpp */,
+				F830230CE7CC50D5CB3D8A48 /* OGLESFilmTV.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -251,7 +251,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F89D8212EB8FC088C60631E7 /* FilmTVScene.pod */,
+				F8591E0F442F12135164ED6C /* FilmTVScene.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -266,15 +266,15 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F88F2D486FBCDE944821EF23 /* Table.pvr */,
-				F86A5CBB0A4CB0327FDAC64C /* Floor.pvr */,
-				F8BAA7B2DDA539E7242B3CCF /* Wall.pvr */,
-				F8540967104BB4143AF6B168 /* TV.pvr */,
-				F82274EC61B336C1D3535D42 /* TVCase.pvr */,
-				F8F7835B1FD45105119D49F2 /* TVSpeaker.pvr */,
-				F87A401B2CD67609D99B2C77 /* Alum.pvr */,
-				F80B794334D6569068FDC89E /* Skirting.pvr */,
-				F818F170F6F115E5C0F1A2B4 /* Camera.pvr */,
+				F897F013B3A6828D6484712F /* Table.pvr */,
+				F85A816268BCA760EC265C05 /* Floor.pvr */,
+				F84C0A2663B8FBA521C7DFBF /* Wall.pvr */,
+				F89864BC5742CA51B43D7ED3 /* TV.pvr */,
+				F8139DB6C99E7032C2472C3A /* TVCase.pvr */,
+				F83C570D4793570D94A3CCD2 /* TVSpeaker.pvr */,
+				F8586C0823EC8F8215E217EA /* Alum.pvr */,
+				F8200D63D127CC8E6F451C91 /* Skirting.pvr */,
+				F88DC6BEB0A1ABA92ADD3100 /* Camera.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -323,6 +323,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLESTools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

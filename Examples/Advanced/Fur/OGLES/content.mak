@@ -44,25 +44,25 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/tBridge.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/tBridge.cpp: $(CONTENTDIR) ./tBridge.pvr
 	$(FILEWRAP)  -o $@ ./tBridge.pvr
 
-$(CONTENTDIR)/tGrass.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/tGrass.cpp: $(CONTENTDIR) ./tGrass.pvr
 	$(FILEWRAP)  -o $@ ./tGrass.pvr
 
-$(CONTENTDIR)/tSkin.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/tSkin.cpp: $(CONTENTDIR) ./tSkin.pvr
 	$(FILEWRAP)  -o $@ ./tSkin.pvr
 
-$(CONTENTDIR)/tWater.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/tWater.cpp: $(CONTENTDIR) ./tWater.pvr
 	$(FILEWRAP)  -o $@ ./tWater.pvr
 
-$(CONTENTDIR)/tCloud.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/tCloud.cpp: $(CONTENTDIR) ./tCloud.pvr
 	$(FILEWRAP)  -o $@ ./tCloud.pvr
 
-$(CONTENTDIR)/tFur.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/tFur.cpp: $(CONTENTDIR) ./tFur.pvr
 	$(FILEWRAP)  -o $@ ./tFur.pvr
 
-$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR) ./Scene.pod
 	$(FILEWRAP)  -o $@ ./Scene.pod
 
 ############################################################################

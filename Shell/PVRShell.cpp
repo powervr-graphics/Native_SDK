@@ -1151,6 +1151,10 @@ void PVRShellCommandLine::Apply(PVRShell &shell)
 			{
 				shell.PVRShellSet(prefDiscardStencil, (atoi(val) != 0));
 			}
+			else if(_stricmp(arg, "-connector") == 0)
+			{
+				shell.PVRShellSet(prefDisplayConnector, atoi(val));
+			}
 		}
 		else
 		{

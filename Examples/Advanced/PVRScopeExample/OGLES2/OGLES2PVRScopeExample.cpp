@@ -235,8 +235,8 @@ bool OGLES2PVRScopeExample::InitApplication()
 	m_puiVbo = 0;
 	m_puiIndexVbo = 0;
 
-	// At the time of writing, this counter is the USSE load for vertex + pixel processing
-	m_i32Counter	= 46;
+	// At the time of writing, this counter is the Renderer Load
+	m_i32Counter	= 10;
 	m_i32Group		= 0;
 	m_i32Interval	= 0;
 
@@ -532,14 +532,31 @@ bool OGLES2PVRScopeExample::RenderScene()
 
 	if(m_pScopeGraph->GetCounterNum())
 	{
-		sprintf(Description, "Active Grp %i\n\nCounter %i (Grp %i) \nName: %s\nShown: %s\nuser y-axis: %.2f  max: %.2f%s",
-			m_pScopeGraph->GetActiveGroup(), m_i32Counter,
+		sprintf(Description,
+			"Active Grp %i\n\n"
+			"Counter %i (Grp %i) \n"
+			"Name: %s\n"
+			"Shown: %s\n"
+			"user y-axis: %.2f  max: %.2f%s\n"
+			"FPS:%.1f\n"
+			"Core load: 2D %.1f%%, 3D %.1f%%, TA %.1f%%, Compute %.1f%%\n"
+			"Shader load: pixel %.1f%%, vertex %.1f%%, compute %.1f%%",
+			m_pScopeGraph->GetActiveGroup(),
+			m_i32Counter,
 			m_pScopeGraph->GetCounterGroup(m_i32Counter),
 			m_pScopeGraph->GetCounterName(m_i32Counter),
 			m_pScopeGraph->IsCounterShown(m_i32Counter) ? "Yes" : "No",
 			m_pScopeGraph->GetMaximum(m_i32Counter),
 			m_pScopeGraph->GetMaximumOfData(m_i32Counter),
-			m_pScopeGraph->IsCounterPercentage(m_i32Counter) ? "%%" : "");
+			m_pScopeGraph->IsCounterPercentage(m_i32Counter) ? "%%" : "",
+			m_pScopeGraph->GetStandardFPS(),
+			m_pScopeGraph->GetStandard2D(),
+			m_pScopeGraph->GetStandard3D(),
+			m_pScopeGraph->GetStandardTA(),
+			m_pScopeGraph->GetStandardCompute(),
+			m_pScopeGraph->GetStandardShaderPixel(),
+			m_pScopeGraph->GetStandardShaderVertex(),
+			m_pScopeGraph->GetStandardShaderCompute());
 	}
 	else
 	{
@@ -610,7 +627,7 @@ void OGLES2PVRScopeExample::DrawMesh(int i32NodeIndex)
 			if(m_puiIndexVbo[i32MeshIndex])
 			{
 				// Indexed Triangle strips
-				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i]+2, GL_UNSIGNED_SHORT, (GLshort*)(offset*2));
+				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i]+2, GL_UNSIGNED_SHORT, (GLshort*)(size_t)(offset*2));
 			}
 			else
 			{

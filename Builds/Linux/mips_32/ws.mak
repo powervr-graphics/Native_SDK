@@ -16,9 +16,19 @@ LIBDIR ?= "$(SDKDIR)/Builds/Linux/mips_32/Lib"
 
 else
 
+ifeq "$(DRMBUILD)" "1"
+
+WS_LIBS = -L$(DRMROOT)/lib -ldrm -lgbm -ludev -ldl -Wl,--rpath-link,$(DRMROOT)/lib
+WS_INC = $(DRMROOT)/include $(DRMROOT)/include/libdrm $(DRMROOT)/include/gbm
+WS=DRM
+
+else
+
 WS_LIBS =
 WS_INC  =
 WS = NullWS
+
+endif
 
 endif
 

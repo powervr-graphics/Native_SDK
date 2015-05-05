@@ -4,7 +4,7 @@
 
  @Title        Glass
 
- @Version      
+ @Version
 
  @Copyright    Copyright (c) Imagination Technologies Limited.
 
@@ -31,20 +31,24 @@ const float g_fCamFar	= 500.0f;
 const float g_fCamFOV	= PVRT_PI * 0.5f;
 
 // Vertex attributes
-enum EVertexAttrib {
+enum EVertexAttrib
+{
 	VERTEX_ARRAY, NORMAL_ARRAY, TEXCOORD_ARRAY, eNumAttribs
 };
 
-const char* g_aszAttribNames[] = {
+const char* g_aszAttribNames[] =
+{
 	"inVertex", "inNormal", "inTexCoords"
 };
 
 // Shader uniforms
-enum EUniform {
+enum EUniform
+{
 	eMVPMatrix, eMVMatrix, eMMatrix, eInvVPMatrix, eLightDir, eEyePos, eNumUniforms
 };
 
-const char* g_aszUniformNames[] = {
+const char* g_aszUniformNames[] =
+{
 	"MVPMatrix", "MVMatrix", "MMatrix", "InvVPMatrix", "LightDir", "EyePos"
 };
 
@@ -52,16 +56,19 @@ const char* g_aszUniformNames[] = {
 const int g_iNumShaderDefines = 3;
 const int g_iNumEffects = 5;
 
-const char* g_aaszEffectDefines[g_iNumEffects][g_iNumShaderDefines] = {
+const char* g_aaszEffectDefines[g_iNumEffects][g_iNumShaderDefines] =
+{
 	{"REFLECT", "REFRACT", "CHROMATIC"}, {"REFLECT", "REFRACT"}, {"REFLECT"}, {"REFRACT", "CHROMATIC"}, {"REFRACT"}
 };
 
-const int g_aiNumEffectDefines[g_iNumEffects] = {
+const int g_aiNumEffectDefines[g_iNumEffects] =
+{
 	3, 2, 1, 2, 1
 };
 
-const char* g_aszEffectNames[g_iNumEffects] = {
-	 "Reflection + Chromatic Dispersion", "Reflection + Refraction", "Reflection", "Chromatic Dispersion", "Refraction"
+const char* g_aszEffectNames[g_iNumEffects] =
+{
+	"Reflection + Chromatic Dispersion", "Reflection + Refraction", "Reflection", "Chromatic Dispersion", "Refraction"
 };
 
 /******************************************************************************
@@ -88,8 +95,9 @@ const char c_szParaboloidVertShaderSrcFile[]	= "ParaboloidVertShader.vsh";
 const char c_szParaboloidVertShaderBinFile[]	= "ParaboloidVertShader.vsc";
 
 // PVR texture files
-const char c_szBalloonTexFile[]	= "BalloonTex.pvr";
-const char c_szCubeTexFile[]	= "SkyboxTex.pvr";
+const char c_szBalloonTexFile[] = "BalloonTex.pvr";
+const char c_szBalloonTexFile2[] = "BalloonTex2.pvr";
+const char c_szCubeTexFile[] = "SkyboxTex.pvr";
 
 // POD scene files
 const char c_szBallFile[]		= "Ball.pod";
@@ -121,6 +129,7 @@ class OGLES2Glass : public PVRShell
 
 	GLuint m_uiCubeTex;
 	GLuint m_uiBalloonTex;
+	GLuint m_uiBalloonTex2;
 
 	GLuint*	m_puiVbo;
 	GLuint*	m_puiIndexVbo;
@@ -181,7 +190,7 @@ private:
 ******************************************************************************/
 bool OGLES2Glass::LoadTextures(CPVRTString* const pErrorStr)
 {
-	if(PVRTTextureLoadFromPVR(c_szCubeTexFile, &m_uiCubeTex) != PVR_SUCCESS)
+	if (PVRTTextureLoadFromPVR(c_szCubeTexFile, &m_uiCubeTex) != PVR_SUCCESS)
 	{
 		*pErrorStr = "ERROR: Failed to load texture.";
 		return false;
@@ -190,7 +199,12 @@ bool OGLES2Glass::LoadTextures(CPVRTString* const pErrorStr)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	if(PVRTTextureLoadFromPVR(c_szBalloonTexFile, &m_uiBalloonTex) != PVR_SUCCESS)
+	if (PVRTTextureLoadFromPVR(c_szBalloonTexFile, &m_uiBalloonTex) != PVR_SUCCESS)
+	{
+		*pErrorStr = "ERROR: Failed to load texture.";
+		return false;
+	}
+	if (PVRTTextureLoadFromPVR(c_szBalloonTexFile2, &m_uiBalloonTex2) != PVR_SUCCESS)
 	{
 		*pErrorStr = "ERROR: Failed to load texture.";
 		return false;
@@ -217,13 +231,15 @@ bool OGLES2Glass::LoadShaders(CPVRTString* pErrorStr)
 		are used as fallback.
 	*/
 	if (PVRTShaderLoadFromFile(
-			c_szVertShaderBinFile, c_szVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiDefaultVertShader, pErrorStr) != PVR_SUCCESS)
+	      c_szVertShaderBinFile, c_szVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiDefaultVertShader,
+	      pErrorStr) != PVR_SUCCESS)
 	{
 		return false;
 	}
 
 	if (PVRTShaderLoadFromFile(
-			c_szFragShaderBinFile, c_szFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_uiDefaultFragShader, pErrorStr) != PVR_SUCCESS)
+	      c_szFragShaderBinFile, c_szFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_uiDefaultFragShader,
+	      pErrorStr) != PVR_SUCCESS)
 	{
 		return false;
 	}
@@ -231,7 +247,8 @@ bool OGLES2Glass::LoadShaders(CPVRTString* pErrorStr)
 	/*
 		Set up and link the shader program
 	*/
-	if (PVRTCreateProgram(&m_DefaultProgram.uiId, m_uiDefaultVertShader, m_uiDefaultFragShader, g_aszAttribNames, 3, pErrorStr) != PVR_SUCCESS)
+	if (PVRTCreateProgram(&m_DefaultProgram.uiId, m_uiDefaultVertShader, m_uiDefaultFragShader, g_aszAttribNames, 3,
+	                      pErrorStr) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, pErrorStr->c_str());
 		return false;
@@ -251,13 +268,15 @@ bool OGLES2Glass::LoadShaders(CPVRTString* pErrorStr)
 		are used as fallback.
 	*/
 	if (PVRTShaderLoadFromFile(
-			c_szSkyboxVertShaderBinFile, c_szSkyboxVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiSkyboxVertShader, pErrorStr) != PVR_SUCCESS)
+	      c_szSkyboxVertShaderBinFile, c_szSkyboxVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiSkyboxVertShader,
+	      pErrorStr) != PVR_SUCCESS)
 	{
 		return false;
 	}
 
 	if (PVRTShaderLoadFromFile(
-			c_szSkyboxFragShaderBinFile, c_szSkyboxFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_uiSkyboxFragShader, pErrorStr) != PVR_SUCCESS)
+	      c_szSkyboxFragShaderBinFile, c_szSkyboxFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_uiSkyboxFragShader,
+	      pErrorStr) != PVR_SUCCESS)
 	{
 		return false;
 	}
@@ -265,7 +284,8 @@ bool OGLES2Glass::LoadShaders(CPVRTString* pErrorStr)
 	/*
 		Set up and link the shader program
 	*/
-	if (PVRTCreateProgram(&m_SkyboxProgram.uiId, m_uiSkyboxVertShader, m_uiSkyboxFragShader, g_aszAttribNames, 1, pErrorStr) != PVR_SUCCESS)
+	if (PVRTCreateProgram(&m_SkyboxProgram.uiId, m_uiSkyboxVertShader, m_uiSkyboxFragShader, g_aszAttribNames, 1,
+	                      pErrorStr) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, pErrorStr->c_str());
 		return false;
@@ -285,7 +305,8 @@ bool OGLES2Glass::LoadShaders(CPVRTString* pErrorStr)
 		are used as fallback.
 	*/
 	if (PVRTShaderLoadFromFile(
-			c_szParaboloidVertShaderBinFile, c_szParaboloidVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiParaboloidVertShader, pErrorStr) != PVR_SUCCESS)
+	      c_szParaboloidVertShaderBinFile, c_szParaboloidVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_uiParaboloidVertShader,
+	      pErrorStr) != PVR_SUCCESS)
 	{
 		return false;
 	}
@@ -293,7 +314,8 @@ bool OGLES2Glass::LoadShaders(CPVRTString* pErrorStr)
 	/*
 		Set up and link the shader program
 	*/
-	if (PVRTCreateProgram(&m_ParaboloidProgram.uiId, m_uiParaboloidVertShader, m_uiDefaultFragShader, g_aszAttribNames, 3, pErrorStr) != PVR_SUCCESS)
+	if (PVRTCreateProgram(&m_ParaboloidProgram.uiId, m_uiParaboloidVertShader, m_uiDefaultFragShader, g_aszAttribNames, 3,
+	                      pErrorStr) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, pErrorStr->c_str());
 		return false;
@@ -307,20 +329,23 @@ bool OGLES2Glass::LoadShaders(CPVRTString* pErrorStr)
 
 
 
-	for (int i = 0; i < g_iNumEffects; ++i) {
+	for (int i = 0; i < g_iNumEffects; ++i)
+	{
 		/*
 			Load and compile the shaders from files.
 			Binary shaders are tried first, source shaders
 			are used as fallback.
 		*/
 		if (PVRTShaderLoadFromFile(
-				c_szReflectionVertShaderBinFile, c_szReflectionVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_auiEffectVertShaders[i], pErrorStr, 0, g_aaszEffectDefines[i], g_aiNumEffectDefines[i]) != PVR_SUCCESS)
+		      c_szReflectionVertShaderBinFile, c_szReflectionVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_auiEffectVertShaders[i],
+		      pErrorStr, 0, g_aaszEffectDefines[i], g_aiNumEffectDefines[i]) != PVR_SUCCESS)
 		{
 			return false;
 		}
 
 		if (PVRTShaderLoadFromFile(
-				c_szReflectionFragShaderBinFile, c_szReflectionFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_auiEffectFragShaders[i], pErrorStr, 0, g_aaszEffectDefines[i], g_aiNumEffectDefines[i]) != PVR_SUCCESS)
+		      c_szReflectionFragShaderBinFile, c_szReflectionFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG,
+		      &m_auiEffectFragShaders[i], pErrorStr, 0, g_aaszEffectDefines[i], g_aiNumEffectDefines[i]) != PVR_SUCCESS)
 		{
 			return false;
 		}
@@ -328,7 +353,8 @@ bool OGLES2Glass::LoadShaders(CPVRTString* pErrorStr)
 		/*
 			Set up and link the shader program
 		*/
-		if (PVRTCreateProgram(&m_aEffectPrograms[i].uiId, m_auiEffectVertShaders[i], m_auiEffectFragShaders[i], g_aszAttribNames, 2, pErrorStr) != PVR_SUCCESS)
+		if (PVRTCreateProgram(&m_aEffectPrograms[i].uiId, m_auiEffectVertShaders[i], m_auiEffectFragShaders[i], g_aszAttribNames, 2,
+		                      pErrorStr) != PVR_SUCCESS)
 		{
 			PVRShellSet(prefExitMessage, pErrorStr->c_str());
 			return false;
@@ -351,8 +377,8 @@ bool OGLES2Glass::LoadShaders(CPVRTString* pErrorStr)
 ******************************************************************************/
 void OGLES2Glass::LoadVbos()
 {
-	if (!m_puiVbo)      m_puiVbo = new GLuint[m_Ball.nNumMesh];
-	if (!m_puiIndexVbo) m_puiIndexVbo = new GLuint[m_Ball.nNumMesh];
+	if (!m_puiVbo)      { m_puiVbo = new GLuint[m_Ball.nNumMesh]; }
+	if (!m_puiIndexVbo) { m_puiIndexVbo = new GLuint[m_Ball.nNumMesh]; }
 
 	/*
 		Load vertex data of all meshes in the scene into VBOs
@@ -382,8 +408,8 @@ void OGLES2Glass::LoadVbos()
 		}
 	}
 
-	if (!m_puiBalloonVbo)      m_puiBalloonVbo = new GLuint[m_Balloon.nNumMesh];
-	if (!m_puiBalloonIndexVbo) m_puiBalloonIndexVbo = new GLuint[m_Balloon.nNumMesh];
+	if (!m_puiBalloonVbo)      { m_puiBalloonVbo = new GLuint[m_Balloon.nNumMesh]; }
+	if (!m_puiBalloonIndexVbo) { m_puiBalloonIndexVbo = new GLuint[m_Balloon.nNumMesh]; }
 
 	/*
 		Load vertex data of all meshes in the scene into VBOs
@@ -443,7 +469,7 @@ bool OGLES2Glass::LoadParaboloids(CPVRTString* pErrorStr)
 	glGenFramebuffers(1, &m_uiParaboloidFramebuffer);
 	glGenTextures(1, &m_uiParaboloidTexture);
 	glGenRenderbuffers(1, &m_uiParaboloidDepthBuffer);
-	
+
 	// Bind and set up the 2D texture
 	glBindTexture(GL_TEXTURE_2D, m_uiParaboloidTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, g_ParaboloidTexSize * 2, g_ParaboloidTexSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
@@ -530,7 +556,7 @@ bool OGLES2Glass::InitApplication()
  @Description	Code in QuitApplication() will be called by PVRShell once per
 				run, just before exiting the program.
 				If the rendering context is lost, QuitApplication() will
-				not be called.     
+				not be called.
 ******************************************************************************/
 bool OGLES2Glass::QuitApplication()
 {
@@ -543,7 +569,7 @@ bool OGLES2Glass::QuitApplication()
 	delete [] m_puiBalloonVbo;
 	delete [] m_puiBalloonIndexVbo;
 
-    return true;
+	return true;
 }
 
 /*!****************************************************************************
@@ -593,7 +619,7 @@ bool OGLES2Glass::InitView()
 	/*
 		Initialize Print3D
 	*/
-	if(m_Print3D.SetTextures(0,PVRShellGet(prefWidth),PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
+	if (m_Print3D.SetTextures(0, PVRShellGet(prefWidth), PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
 	{
 		PVRShellSet(prefExitMessage, "ERROR: Cannot initialise Print3D\n");
 		return false;
@@ -602,7 +628,7 @@ bool OGLES2Glass::InitView()
 	// Set the sampler2D uniforms to corresponding texture units
 	glUseProgram(m_DefaultProgram.uiId);
 	glUniform1i(glGetUniformLocation(m_DefaultProgram.uiId, "s2DMap"), 0);
-	
+
 	glUseProgram(m_SkyboxProgram.uiId);
 	glUniform1i(glGetUniformLocation(m_SkyboxProgram.uiId, "sSkybox"), 0);
 
@@ -611,18 +637,20 @@ bool OGLES2Glass::InitView()
 	glUniform1f(glGetUniformLocation(m_ParaboloidProgram.uiId, "Near"), g_fCamNear);
 	glUniform1f(glGetUniformLocation(m_ParaboloidProgram.uiId, "Far"), g_fCamFar);
 
-	for (int i = 0; i < g_iNumEffects; ++i) {
+	for (int i = 0; i < g_iNumEffects; ++i)
+	{
 		glUseProgram(m_aEffectPrograms[i].uiId);
 		glUniform1i(glGetUniformLocation(m_aEffectPrograms[i].uiId, "sParaboloids"), 0);
 		glUniform1i(glGetUniformLocation(m_aEffectPrograms[i].uiId, "sSkybox"), 1);
 	}
 
-	
+
 
 	/*
 		Calculate the projection and view matrices
 	*/
-	m_mProjection = PVRTMat4::PerspectiveFovRH(g_fCamFOV, (float)PVRShellGet(prefWidth)/(float)PVRShellGet(prefHeight), g_fCamNear, g_fCamFar, PVRTMat4::OGL, bRotate);
+	m_mProjection = PVRTMat4::PerspectiveFovRH(g_fCamFOV, (float)PVRShellGet(prefWidth) / (float)PVRShellGet(prefHeight), g_fCamNear,
+	                g_fCamFar, PVRTMat4::OGL, bRotate);
 
 	/*
 		Set OpenGL ES render states needed for this training course
@@ -650,6 +678,7 @@ bool OGLES2Glass::ReleaseView()
 	// Delete textures
 	glDeleteTextures(1, &m_uiCubeTex);
 	glDeleteTextures(1, &m_uiBalloonTex);
+	glDeleteTextures(1, &m_uiBalloonTex2);
 	glDeleteTextures(1, &m_uiParaboloidTexture);
 
 	// Delete program objects
@@ -704,8 +733,8 @@ bool OGLES2Glass::ReleaseView()
 ******************************************************************************/
 bool OGLES2Glass::RenderScene()
 {
-	if (PVRShellIsKeyPressed(PVRShellKeyNameLEFT))	m_iEffect -= 1;
-	if (PVRShellIsKeyPressed(PVRShellKeyNameRIGHT))	m_iEffect += 1;
+	if (PVRShellIsKeyPressed(PVRShellKeyNameLEFT))	{ m_iEffect -= 1; }
+	if (PVRShellIsKeyPressed(PVRShellKeyNameRIGHT))	{ m_iEffect += 1; }
 	m_iEffect = (m_iEffect + g_iNumEffects) % g_iNumEffects;
 
 	UpdateScene();
@@ -735,10 +764,11 @@ bool OGLES2Glass::RenderScene()
  @Function		UpdateScene
  @Description	Moves the scene.
 ******************************************************************************/
-void OGLES2Glass::UpdateScene() {
+void OGLES2Glass::UpdateScene()
+{
 	// Fetch current time and make sure the previous time isn't greater
 	unsigned long ulCurrentTime = PVRShellGetTime();
-	if (ulCurrentTime < m_ulTime) m_ulTime = ulCurrentTime;
+	if (ulCurrentTime < m_ulTime) { m_ulTime = ulCurrentTime; }
 
 	// Calculate the time difference
 	unsigned long ulTimeDifference = ulCurrentTime - m_ulTime;
@@ -752,11 +782,14 @@ void OGLES2Glass::UpdateScene() {
 	float fRise = sin(m_afAngles[0] * 3.0f);
 
 	// Rotate the camera
-	m_mView = PVRTMat4::LookAtRH(PVRTVec3(0, 0, -10), PVRTVec3(0, 0, 0), PVRTVec3(0, 1, 0)) * PVRTMat4::RotationY(m_afAngles[0] * 0.2f);
+	m_mView = PVRTMat4::LookAtRH(PVRTVec3(0, 0, -10), PVRTVec3(0, 0, 0), PVRTVec3(0, 1,
+	                             0)) * PVRTMat4::RotationY(m_afAngles[0] * 0.2f);
 
 	// Rotate the balloon model matrices
-	m_mModels[0] = PVRTMat4::RotationY(m_afAngles[0]) * PVRTMat4::Translation(120.0f, fRise * 20.0f, 0.0f) * PVRTMat4::Scale(3.0f, 3.0f, 3.0f);
-	m_mModels[1] = PVRTMat4::RotationY(m_afAngles[1]) * PVRTMat4::Translation(-180.0f, -fRise * 20.0f, 0.0f) * PVRTMat4::Scale(3.0f, 3.0f, 3.0f);
+	m_mModels[0] = PVRTMat4::RotationY(m_afAngles[0]) * PVRTMat4::Translation(120.0f, fRise * 20.0f, 0.0f) * PVRTMat4::Scale(3.0f,
+	               3.0f, 3.0f);
+	m_mModels[1] = PVRTMat4::RotationY(m_afAngles[1]) * PVRTMat4::Translation(-180.0f, -fRise * 20.0f, 0.0f) * PVRTMat4::Scale(3.0f,
+	               3.0f, 3.0f);
 }
 
 /*!****************************************************************************
@@ -780,12 +813,12 @@ void OGLES2Glass::DrawMesh(int i32NodeIndex, CPVRTModelPOD* pod, GLuint** ppuiVb
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (*ppuiIbos)[i32MeshIndex]);
 
 	// Enable the vertex attribute arrays
-	for (int i = 0; i < i32NumAttributes; ++i) glEnableVertexAttribArray(i);
+	for (int i = 0; i < i32NumAttributes; ++i) { glEnableVertexAttribArray(i); }
 
 	// Set the vertex attribute offsets
 	glVertexAttribPointer(VERTEX_ARRAY, 3, GL_FLOAT, GL_FALSE, pMesh->sVertex.nStride, pMesh->sVertex.pData);
 	glVertexAttribPointer(NORMAL_ARRAY, 3, GL_FLOAT, GL_FALSE, pMesh->sNormals.nStride, pMesh->sNormals.pData);
-	if (pMesh->psUVW) glVertexAttribPointer(TEXCOORD_ARRAY, 2, GL_FLOAT, GL_FALSE, pMesh->psUVW[0].nStride, pMesh->psUVW[0].pData);
+	if (pMesh->psUVW) { glVertexAttribPointer(TEXCOORD_ARRAY, 2, GL_FLOAT, GL_FALSE, pMesh->psUVW[0].nStride, pMesh->psUVW[0].pData); }
 
 	/*
 		The geometry can be exported in 4 ways:
@@ -794,40 +827,40 @@ void OGLES2Glass::DrawMesh(int i32NodeIndex, CPVRTModelPOD* pod, GLuint** ppuiVb
 		- Indexed Triangle strips
 		- Non-Indexed Triangle strips
 	*/
-	if(pMesh->nNumStrips == 0)
+	if (pMesh->nNumStrips == 0)
 	{
-		if((*ppuiIbos)[i32MeshIndex])
+		if ((*ppuiIbos)[i32MeshIndex])
 		{
 			// Indexed Triangle list
-			glDrawElements(GL_TRIANGLES, pMesh->nNumFaces*3, GL_UNSIGNED_SHORT, 0);
+			glDrawElements(GL_TRIANGLES, pMesh->nNumFaces * 3, GL_UNSIGNED_SHORT, 0);
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			glDrawArrays(GL_TRIANGLES, 0, pMesh->nNumFaces*3);
+			glDrawArrays(GL_TRIANGLES, 0, pMesh->nNumFaces * 3);
 		}
 	}
 	else
 	{
-		for(int i = 0; i < (int)pMesh->nNumStrips; ++i)
+		for (int i = 0; i < (int)pMesh->nNumStrips; ++i)
 		{
 			int offset = 0;
-			if((*ppuiIbos)[i32MeshIndex])
+			if ((*ppuiIbos)[i32MeshIndex])
 			{
 				// Indexed Triangle strips
-				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i]+2, GL_UNSIGNED_SHORT, (void*)(offset * sizeof(GLushort)));
+				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i] + 2, GL_UNSIGNED_SHORT, (void*)(offset * sizeof(GLushort)));
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				glDrawArrays(GL_TRIANGLE_STRIP, offset, pMesh->pnStripLength[i]+2);
+				glDrawArrays(GL_TRIANGLE_STRIP, offset, pMesh->pnStripLength[i] + 2);
 			}
-			offset += pMesh->pnStripLength[i]+2;
+			offset += pMesh->pnStripLength[i] + 2;
 		}
 	}
 
 	// Safely disable the vertex attribute arrays
-	for (int i = 0; i < i32NumAttributes; ++i) glDisableVertexAttribArray(i);
+	for (int i = 0; i < i32NumAttributes; ++i) { glDisableVertexAttribArray(i); }
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -842,21 +875,22 @@ void OGLES2Glass::DrawMesh(int i32NodeIndex, CPVRTModelPOD* pod, GLuint** ppuiVb
 				iNum				Number of balloons to draw
  @Description	Draws balloons.
 ******************************************************************************/
-void OGLES2Glass::DrawBalloons(Program* psProgram, PVRTMat4 mProjection, PVRTMat4 mView, PVRTMat4* pmModels, int iNum) {
+void OGLES2Glass::DrawBalloons(Program* psProgram, PVRTMat4 mProjection, PVRTMat4 mView, PVRTMat4* pmModels, int iNum)
+{
 	// Use shader program
 	glUseProgram(psProgram->uiId);
 
 	// Bind texture
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_uiBalloonTex);
 
 	PVRTMat4 mModelView, mMVP;
 
 	for (int i = 0; i < iNum; ++i)
 	{
+		glBindTexture(GL_TEXTURE_2D, i == 0 ? m_uiBalloonTex : m_uiBalloonTex2);
 		mModelView = mView * pmModels[i];
 		mMVP =  mProjection * mModelView;
-	
+
 		glUniformMatrix4fv(psProgram->auiLoc[eMVMatrix], 1, GL_FALSE, mModelView.ptr());
 		glUniformMatrix4fv(psProgram->auiLoc[eMVPMatrix], 1, GL_FALSE, mMVP.ptr());
 
@@ -910,7 +944,8 @@ void OGLES2Glass::DrawSkybox()
  @Function		DrawBall
  @Description	Draws the reflective and refractive ball onto the screen.
 ******************************************************************************/
-void OGLES2Glass::DrawBall() {
+void OGLES2Glass::DrawBall()
+{
 	// Set model view projection matrix
 	PVRTMat4 mModel, mModelView, mMVP;
 

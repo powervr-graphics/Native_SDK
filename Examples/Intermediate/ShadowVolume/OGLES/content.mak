@@ -40,13 +40,13 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/scene.cpp: $(CONTENTDIR) ./scene.pod
 	$(FILEWRAP)  -o $@ ./scene.pod
 
-$(CONTENTDIR)/Background.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Background.cpp: $(CONTENTDIR) ./Background.pvr
 	$(FILEWRAP)  -o $@ ./Background.pvr
 
-$(CONTENTDIR)/Rust.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Rust.cpp: $(CONTENTDIR) ./Rust.pvr
 	$(FILEWRAP)  -o $@ ./Rust.pvr
 
 ############################################################################

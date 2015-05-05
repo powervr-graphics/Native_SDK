@@ -51,46 +51,46 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/skyline.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/skyline.cpp: $(CONTENTDIR) ./skyline.pvr
 	$(FILEWRAP)  -o $@ ./skyline.pvr
 
-$(CONTENTDIR)/Wall_diffuse_baked.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Wall_diffuse_baked.cpp: $(CONTENTDIR) ./Wall_diffuse_baked.pvr
 	$(FILEWRAP)  -o $@ ./Wall_diffuse_baked.pvr
 
-$(CONTENTDIR)/Tang_space_BodyMap.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Tang_space_BodyMap.cpp: $(CONTENTDIR) ./Tang_space_BodyMap.pvr
 	$(FILEWRAP)  -o $@ ./Tang_space_BodyMap.pvr
 
-$(CONTENTDIR)/Tang_space_LegsMap.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Tang_space_LegsMap.cpp: $(CONTENTDIR) ./Tang_space_LegsMap.pvr
 	$(FILEWRAP)  -o $@ ./Tang_space_LegsMap.pvr
 
-$(CONTENTDIR)/Tang_space_BeltMap.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Tang_space_BeltMap.cpp: $(CONTENTDIR) ./Tang_space_BeltMap.pvr
 	$(FILEWRAP)  -o $@ ./Tang_space_BeltMap.pvr
 
-$(CONTENTDIR)/FinalChameleonManLegs.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FinalChameleonManLegs.cpp: $(CONTENTDIR) ./FinalChameleonManLegs.pvr
 	$(FILEWRAP)  -o $@ ./FinalChameleonManLegs.pvr
 
-$(CONTENTDIR)/FinalChameleonManHeadBody.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FinalChameleonManHeadBody.cpp: $(CONTENTDIR) ./FinalChameleonManHeadBody.pvr
 	$(FILEWRAP)  -o $@ ./FinalChameleonManHeadBody.pvr
 
-$(CONTENTDIR)/lamp.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/lamp.cpp: $(CONTENTDIR) ./lamp.pvr
 	$(FILEWRAP)  -o $@ ./lamp.pvr
 
-$(CONTENTDIR)/ChameleonBelt.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ChameleonBelt.cpp: $(CONTENTDIR) ./ChameleonBelt.pvr
 	$(FILEWRAP)  -o $@ ./ChameleonBelt.pvr
 
-$(CONTENTDIR)/SkinnedVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SkinnedVertShader.cpp: $(CONTENTDIR) ./SkinnedVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./SkinnedVertShader.vsh
 
-$(CONTENTDIR)/SkinnedFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SkinnedFragShader.cpp: $(CONTENTDIR) ./SkinnedFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./SkinnedFragShader.fsh
 
-$(CONTENTDIR)/DefaultVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/DefaultVertShader.cpp: $(CONTENTDIR) ./DefaultVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./DefaultVertShader.vsh
 
-$(CONTENTDIR)/DefaultFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/DefaultFragShader.cpp: $(CONTENTDIR) ./DefaultFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./DefaultFragShader.fsh
 
-$(CONTENTDIR)/ChameleonScene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ChameleonScene.cpp: $(CONTENTDIR) ./ChameleonScene.pod
 	$(FILEWRAP)  -o $@ ./ChameleonScene.pod
 
 ############################################################################

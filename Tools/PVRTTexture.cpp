@@ -312,6 +312,126 @@ void PVRTGetFormatMinDims(PVRTuint64 u64PixelFormat, PVRTuint32 &minX, PVRTuint3
 		minY = 1;
 		minZ = 1;
 		break;
+	case ePVRTPF_ASTC_4x4:
+		minX = 4;
+		minY = 4;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_5x4:
+		minX = 5;
+		minY = 4;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_5x5:
+		minX = 5;
+		minY = 5;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_6x5:
+		minX = 6;
+		minY = 5;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_6x6:
+		minX = 6;
+		minY = 6;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_8x5:
+		minX = 8;
+		minY = 5;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_8x6:
+		minX = 8;
+		minY = 6;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_8x8:
+		minX = 8;
+		minY = 8;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_10x5:
+		minX = 10;
+		minY = 5;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_10x6:
+		minX = 10;
+		minY = 6;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_10x8:
+		minX = 10;
+		minY = 8;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_10x10:
+		minX = 10;
+		minY = 10;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_12x10:
+		minX = 12;
+		minY = 10;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_12x12:
+		minX = 12;
+		minY = 12;
+		minZ = 1;
+		break;
+	case ePVRTPF_ASTC_3x3x3:
+		minX = 3;
+		minY = 3;
+		minZ = 3;
+		break;
+	case ePVRTPF_ASTC_4x3x3:
+		minX = 4;
+		minY = 3;
+		minZ = 3;
+		break;
+	case ePVRTPF_ASTC_4x4x3:
+		minX = 4;
+		minY = 4;
+		minZ = 3;
+		break;
+	case ePVRTPF_ASTC_4x4x4:
+		minX = 4;
+		minY = 4;
+		minZ = 4;
+		break;
+	case ePVRTPF_ASTC_5x4x4:
+		minX = 5;
+		minY = 4;
+		minZ = 4;
+		break;
+	case ePVRTPF_ASTC_5x5x4:
+		minX = 5;
+		minY = 5;
+		minZ = 4;
+		break;
+	case ePVRTPF_ASTC_5x5x5:
+		minX = 5;
+		minY = 5;
+		minZ = 5;
+		break;
+	case ePVRTPF_ASTC_6x5x5:
+		minX = 6;
+		minY = 5;
+		minZ = 5;
+		break;
+	case ePVRTPF_ASTC_6x6x5:
+		minX = 6;
+		minY = 6;
+		minZ = 5;
+		break;
+	case ePVRTPF_ASTC_6x6x6:
+		minX = 6;
+		minY = 6;
+		minZ = 6;
+		break;
 	default: //Non-compressed formats all return 1.
 		minX = 1;
 		minY = 1;
@@ -363,13 +483,20 @@ PVRTuint32 PVRTGetTextureDataSize(PVRTextureHeaderV3 sTextureHeader, PVRTint32 i
 			//If pixel format is compressed, the dimensions need to be padded.
 			if (PixelFormatPartHigh==0)
 			{
-				uiWidth=uiWidth+( (-1*uiWidth)%uiSmallestWidth);
-				uiHeight=uiHeight+( (-1*uiHeight)%uiSmallestHeight);
-				uiDepth=uiDepth+( (-1*uiDepth)%uiSmallestDepth);
+				uiWidth = ((uiWidth + uiSmallestWidth - 1) / uiSmallestWidth) * uiSmallestWidth;
+				uiHeight = ((uiHeight + uiSmallestHeight - 1) / uiSmallestHeight) * uiSmallestHeight;
+				uiDepth = ((uiDepth + uiSmallestDepth - 1) / uiSmallestDepth) * uiSmallestDepth;
 			}
 
 			//Add the current MIP Map's data size to the total.
-			uiDataSize+=(PVRTuint64)PVRTGetBitsPerPixel(sTextureHeader.u64PixelFormat)*(PVRTuint64)uiWidth*(PVRTuint64)uiHeight*(PVRTuint64)uiDepth;
+			if (sTextureHeader.u64PixelFormat >= ePVRTPF_ASTC_4x4 && sTextureHeader.u64PixelFormat <= ePVRTPF_ASTC_6x6x6)
+			{
+				uiDataSize += (uiWidth / uiSmallestWidth) * (uiHeight / uiSmallestHeight) * (uiDepth / uiSmallestDepth) * 128;
+			}
+			else
+			{
+				uiDataSize += (PVRTuint64)PVRTGetBitsPerPixel(sTextureHeader.u64PixelFormat)*(PVRTuint64)uiWidth*(PVRTuint64)uiHeight*(PVRTuint64)uiDepth;
+			}
 		}
 	}
 	else
@@ -382,13 +509,20 @@ PVRTuint32 PVRTGetTextureDataSize(PVRTextureHeaderV3 sTextureHeader, PVRTint32 i
 		//If pixel format is compressed, the dimensions need to be padded.
 		if (PixelFormatPartHigh==0)
 		{
-			uiWidth=uiWidth+( (-1*uiWidth)%uiSmallestWidth);
-			uiHeight=uiHeight+( (-1*uiHeight)%uiSmallestHeight);
-			uiDepth=uiDepth+( (-1*uiDepth)%uiSmallestDepth);
+			uiWidth = ((uiWidth + uiSmallestWidth - 1) / uiSmallestWidth) * uiSmallestWidth;
+			uiHeight = ((uiHeight + uiSmallestHeight - 1) / uiSmallestHeight) * uiSmallestHeight;
+			uiDepth = ((uiDepth + uiSmallestDepth - 1) / uiSmallestDepth) * uiSmallestDepth;
 		}
 
 		//Work out the specified MIP Map's data size
-		uiDataSize=PVRTGetBitsPerPixel(sTextureHeader.u64PixelFormat)*uiWidth*uiHeight*uiDepth;
+		if (sTextureHeader.u64PixelFormat >= ePVRTPF_ASTC_4x4 && sTextureHeader.u64PixelFormat <= ePVRTPF_ASTC_6x6x6)
+		{
+			uiDataSize += (uiWidth / uiSmallestWidth) * (uiHeight / uiSmallestHeight) * (uiDepth / uiSmallestDepth) * 128;
+		}
+		else
+		{
+			uiDataSize = (PVRTuint64)PVRTGetBitsPerPixel(sTextureHeader.u64PixelFormat) * (PVRTuint64)uiWidth * (PVRTuint64)uiHeight * (PVRTuint64)uiDepth;
+		}
 	}
 	
 	//The number of faces/surfaces to register the size of.

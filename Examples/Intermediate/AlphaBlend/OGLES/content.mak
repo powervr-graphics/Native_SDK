@@ -39,10 +39,10 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Background.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Background.cpp: $(CONTENTDIR) ./Background.pvr
 	$(FILEWRAP)  -o $@ ./Background.pvr
 
-$(CONTENTDIR)/Foreground.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Foreground.cpp: $(CONTENTDIR) ./Foreground.pvr
 	$(FILEWRAP)  -o $@ ./Foreground.pvr
 
 ############################################################################

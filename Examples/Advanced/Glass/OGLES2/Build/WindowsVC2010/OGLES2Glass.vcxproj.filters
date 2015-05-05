@@ -94,6 +94,9 @@
     <ClCompile Include="..\..\Content\BalloonTex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Content\BalloonTex2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Content\SkyboxTex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -109,6 +112,9 @@
       <Filter>Content Files\Textures</Filter>
   </CustomBuild>
   <CustomBuild Include="..\..\BalloonTex.pvr">
+      <Filter>Content Files\Textures</Filter>
+  </CustomBuild>
+  <CustomBuild Include="..\..\BalloonTex2.pvr">
       <Filter>Content Files\Textures</Filter>
   </CustomBuild>
   <CustomBuild Include="..\..\DefaultVertShader.vsh">

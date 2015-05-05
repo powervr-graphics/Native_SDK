@@ -61,6 +61,16 @@ protected:
 	float				m_fX, m_fY, m_fPixelW, m_fGraphH;
 
 	unsigned int		m_nUpdateInterval, m_nUpdateIntervalCounter;
+
+	unsigned int		m_nIdxFPS;
+	unsigned int		m_nIdx2D;
+	unsigned int		m_nIdx3D;
+	unsigned int		m_nIdxTA;
+	unsigned int		m_nIdxCompute;
+	unsigned int		m_nIdxShaderPixel;
+	unsigned int		m_nIdxShaderVertex;
+	unsigned int		m_nIdxShaderCompute;
+
 public:
 	CPVRScopeGraph();
 	~CPVRScopeGraph();
@@ -80,6 +90,15 @@ public:
 	float GetMaximumOfData(unsigned int nCounter);
 	float GetMaximum(unsigned int nCounter);
 	void  SetMaximum(unsigned int nCounter, float fMaximum);
+
+	float GetStandardFPS() const;
+	float GetStandard2D() const;
+	float GetStandard3D() const;
+	float GetStandardTA() const;
+	float GetStandardCompute() const;
+	float GetStandardShaderPixel() const;
+	float GetStandardShaderVertex() const;
+	float GetStandardShaderCompute() const;
 
 	unsigned int GetCounterNum() const { return m_nCounterNum; }
 

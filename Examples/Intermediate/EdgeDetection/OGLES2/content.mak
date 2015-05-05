@@ -42,23 +42,23 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/PreFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/PreFragShader.cpp: $(CONTENTDIR) ./PreFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./PreFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./PreFragShader.fsc
 
-$(CONTENTDIR)/PreVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/PreVertShader.cpp: $(CONTENTDIR) ./PreVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./PreVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./PreVertShader.vsc
 
-$(CONTENTDIR)/PostFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/PostFragShader.cpp: $(CONTENTDIR) ./PostFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./PostFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./PostFragShader.fsc
 
-$(CONTENTDIR)/PostVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/PostVertShader.cpp: $(CONTENTDIR) ./PostVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./PostVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./PostVertShader.vsc
 
-$(CONTENTDIR)/SketchObject.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SketchObject.cpp: $(CONTENTDIR) ./SketchObject.pod
 	$(FILEWRAP)  -o $@ ./SketchObject.pod
 
 ############################################################################

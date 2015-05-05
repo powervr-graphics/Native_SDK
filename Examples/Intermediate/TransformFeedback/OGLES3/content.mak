@@ -41,16 +41,16 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 
-$(CONTENTDIR)/FeedbackVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FeedbackVertShader.cpp: $(CONTENTDIR) ./FeedbackVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./FeedbackVertShader.vsh
 
-$(CONTENTDIR)/FeedbackFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FeedbackFragShader.cpp: $(CONTENTDIR) ./FeedbackFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FeedbackFragShader.fsh
 
 ############################################################################

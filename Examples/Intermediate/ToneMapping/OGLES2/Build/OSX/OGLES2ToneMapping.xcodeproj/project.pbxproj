@@ -17,14 +17,14 @@
 		495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0013E2EE09000FD6B4 /* MainMenu.xib */; };
 		495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */; };
 		DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */ = {isa = PBXBuildFile; fileRef = DB3A55D015C938EC004CE8F1 /* IMG.icns */; };
-		F8187C676630506E7425CB00 /* OGLES2ToneMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8D600BBDBE713D3888DED4E /* OGLES2ToneMapping.cpp */; };
+		F8187C676630506E7425CB00 /* OGLES2ToneMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F89F76F68E6236FD3E4A8D89 /* OGLES2ToneMapping.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F891AC7DBA4A33CDD5897EA8 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F83056A1463D3149D54E9E82 /* AppController.mm */; };
-		F847F7293CEEE72B6693BCFA /* effects.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F821C4C2E99DDC5864F6F729 /* effects.pfx */; };
-		F85A0BE0F56AFF6BDF083DEA /* hdrscene.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C4D504C3219B98FE9E11DB /* hdrscene.pvr */; };
+		F847F7293CEEE72B6693BCFA /* effects.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F82AAD5B42513FAF89E84D75 /* effects.pfx */; };
+		F85A0BE0F56AFF6BDF083DEA /* hdrscene.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8401296A271793B10E8626A /* hdrscene.pvr */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,7 +66,7 @@
 		DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OGLES2Tools.xcodeproj; path = "../../../../../../Tools/OGLES2/Build/OSX/OGLES2Tools.xcodeproj"; sourceTree = "<group>"; };
 		495B9D0113E2EE09000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
 		495B9D0513E2EE16000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
-		F8D600BBDBE713D3888DED4E /* OGLES2ToneMapping.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES2ToneMapping.cpp; path = ../../OGLES2ToneMapping.cpp; sourceTree = SOURCE_ROOT; };
+		F89F76F68E6236FD3E4A8D89 /* OGLES2ToneMapping.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES2ToneMapping.cpp; path = ../../OGLES2ToneMapping.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F856F9842EC39FE5B5078F7B /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/KEGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8BF78B988A3D350D0B36ECE /* PVRShellOS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellOS.cpp; path = ../../../../../../Shell/OS/OSX/PVRShellOS.cpp; sourceTree = SOURCE_ROOT; };
@@ -77,8 +77,8 @@
 		F84F75300A266FB04DD95145 /* PVRShellAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellAPI.h; path = ../../../../../../Shell/API/KEGL/PVRShellAPI.h; sourceTree = SOURCE_ROOT; };
 		F8D43C90E6E9634EF07F3500 /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/OSX/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F8D9FEE5B9D56BCDCB605B86 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/OSX/AppController.h; sourceTree = SOURCE_ROOT; };
-		F821C4C2E99DDC5864F6F729 /* effects.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = effects.pfx; path = ../../effects.pfx; sourceTree = SOURCE_ROOT; };
-		F8C4D504C3219B98FE9E11DB /* hdrscene.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = hdrscene.pvr; path = ../../hdrscene.pvr; sourceTree = SOURCE_ROOT; };
+		F82AAD5B42513FAF89E84D75 /* effects.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = effects.pfx; path = ../../effects.pfx; sourceTree = SOURCE_ROOT; };
+		F8401296A271793B10E8626A /* hdrscene.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = hdrscene.pvr; path = ../../hdrscene.pvr; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,7 +145,7 @@
 			isa = PBXGroup;
 			children = (
 		49068F7C13DDA57800C8DC21 /* Shell */,
-				F8D600BBDBE713D3888DED4E /* OGLES2ToneMapping.cpp */,
+				F89F76F68E6236FD3E4A8D89 /* OGLES2ToneMapping.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -209,7 +209,7 @@
 		DBE6ED4A15C2AB7000275129 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F821C4C2E99DDC5864F6F729 /* effects.pfx */,
+				F82AAD5B42513FAF89E84D75 /* effects.pfx */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -231,7 +231,7 @@
 		DBE6ED4E15C2AB9C00275129 /* Generic */ = {
 			isa = PBXGroup;
 			children = (
-				F8C4D504C3219B98FE9E11DB /* hdrscene.pvr */,
+				F8401296A271793B10E8626A /* hdrscene.pvr */,
 			);
 			name = Generic;
 			sourceTree = "<group>";

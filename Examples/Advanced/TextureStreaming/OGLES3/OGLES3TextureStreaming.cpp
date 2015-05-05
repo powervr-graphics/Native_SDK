@@ -201,6 +201,7 @@ const char* c_pszFragmentShaderSrc[eNumEffects] =
 	"TVFragmentShader.fsh"       // eTVNoise
 };
 
+
 const char* c_pszVertexShaderSrc[eNumEffects] =
 {
 	"VertShader.vsh",    // eLit
@@ -209,6 +210,29 @@ const char* c_pszVertexShaderSrc[eNumEffects] =
 	"TVVertexShader.vsh",      // eTVGreyscal
 	"TVVertexShader.vsh"       // eTVNoise
 };
+
+//If the extension GL_OES_Image_External_essl3 is not present, we will have to fall
+//back to using ES2 shaders
+#ifdef __ANDROID__
+// Source shaders
+const char* c_pszFragmentShaderSrcFallback[eNumEffects] =
+{
+	"FragShader.fsh",    // eLit
+	"FragShader.fsh",    // eAmbient
+	"TVFragmentShaderES2.fsh",      // eTVColour
+	"TVFragmentShaderES2.fsh",      // eTVGreyscal
+	"TVFragmentShaderES2.fsh"       // eTVNoise
+};
+
+const char* c_pszVertexShaderSrcFallback[eNumEffects] =
+{
+	"VertShader.vsh",    // eLit
+	"VertShader.vsh",    // eAmbient
+	"TVVertexShaderES2.vsh",      // eTVColour
+	"TVVertexShaderES2.vsh",      // eTVGreyscal
+	"TVVertexShaderES2.vsh"       // eTVNoise
+};
+#endif
 
 // Texture files
 const char* c_pszNoiseTexFile   = "rand.pvr";
@@ -251,8 +275,13 @@ class OGLES3TextureStreaming : public PVRShell
 	STVGreyscaleShader          m_TVGreyscaleShaderProgram;
 	STVNoiseShader              m_TVNoiseShaderProgram;
 
+	// IMPORTANT. In the Android platform, the extension we normally use for accessing the Camera texture (GL_OES_Image_external) is
+	// different for OpenGL ES 3. While GL_OES_Image_external is mandatory and will always be present on android platforms, it is only
+	// defined for OpenGL ES 2. Another extension exists to make the textures accessible from OpenGL ES 3, which is GL_OES_Image_external_essl.
+	// If this extension is not present, we have to fall back to using OpenGL ES 2.0 shaders. The rest of the tokens will be available as of ES 2.
 #if defined(__ANDROID__)
 	PVRTMat4                    m_TexCoordsProjection;
+	bool						m_bOESTextureExternalEsslSupported;
 #endif
 
 	// App variables
@@ -372,7 +401,11 @@ bool OGLES3TextureStreaming::LoadShaders(CPVRTString* pErrorStr)
 	for(int idx = 0; idx < eNumEffects; ++idx)
 	{
 		if(PVRTShaderLoadFromFile(NULL,                         // Binary shader source file
-								  c_pszVertexShaderSrc[idx],    // Text source file
+#ifdef __ANDROID__
+			                      m_bOESTextureExternalEsslSupported ? c_pszVertexShaderSrc[idx] : c_pszVertexShaderSrcFallback[idx],    // Text source file
+#else
+								  c_pszVertexShaderSrc[idx],
+#endif
 								  GL_VERTEX_SHADER,             // Shader type
 								  0,                            // Binary shader GL format
 								  &m_uiVertexShaders[idx],      // Output GL handle
@@ -386,7 +419,11 @@ bool OGLES3TextureStreaming::LoadShaders(CPVRTString* pErrorStr)
 		}
 
 		if(PVRTShaderLoadFromFile(NULL,                         // Binary shader source file
-								  c_pszFragmentShaderSrc[idx],  // Text source file
+#ifdef __ANDROID__
+			                      m_bOESTextureExternalEsslSupported ? c_pszFragmentShaderSrc[idx] : c_pszFragmentShaderSrcFallback[idx],    // Text source file
+#else
+								  c_pszFragmentShaderSrc[idx],
+#endif
 								  GL_FRAGMENT_SHADER,           // Shader type
 								  0,                            // Binary shader GL format
 								  &m_uiFragmentShaders[idx],    // Output GL handle
@@ -673,6 +710,10 @@ bool OGLES3TextureStreaming::QuitApplication()
 bool OGLES3TextureStreaming::InitView()
 {
 	CPVRTString ErrorStr;
+
+#ifdef __ANDROID__
+	m_bOESTextureExternalEsslSupported = CPVRTgles3Ext::IsGLExtensionSupported("GL_OES_EGL_image_external_essl3");
+#endif
 
 	//	Initialize VBO data
 	if(!LoadVbos(&ErrorStr))

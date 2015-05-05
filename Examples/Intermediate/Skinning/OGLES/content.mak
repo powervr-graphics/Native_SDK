@@ -41,16 +41,16 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/man.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/man.cpp: $(CONTENTDIR) ./man.pod
 	$(FILEWRAP)  -o $@ ./man.pod
 
-$(CONTENTDIR)/Legs.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Legs.cpp: $(CONTENTDIR) ./Legs.pvr
 	$(FILEWRAP)  -o $@ ./Legs.pvr
 
-$(CONTENTDIR)/Body.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Body.cpp: $(CONTENTDIR) ./Body.pvr
 	$(FILEWRAP)  -o $@ ./Body.pvr
 
-$(CONTENTDIR)/Belt.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Belt.cpp: $(CONTENTDIR) ./Belt.pvr
 	$(FILEWRAP)  -o $@ ./Belt.pvr
 
 ############################################################################

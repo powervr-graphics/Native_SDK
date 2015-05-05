@@ -1,5 +1,6 @@
 package com.powervr.OGLES3Fog;
 
+
 import android.app.NativeActivity;
 import android.os.Bundle;
 import android.widget.Toast;

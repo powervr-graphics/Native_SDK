@@ -46,7 +46,7 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/sphere.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/sphere.cpp: $(CONTENTDIR) ./sphere.pod
 	$(FILEWRAP)  -o $@ ./sphere.pod
 
 $(CONTENTDIR)/ParticleGradient.cpp: $(CONTENTDIR) ./ParticleGradient.pvr

@@ -42,19 +42,19 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/effect.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/effect.cpp: $(CONTENTDIR) ./effect.pfx
 	$(FILEWRAP)  -s  -o $@ ./effect.pfx
 
-$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR) ./Scene.pod
 	$(FILEWRAP)  -o $@ ./Scene.pod
 
-$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR) ./Mask.pvr
 	$(FILEWRAP)  -o $@ ./Mask.pvr
 
-$(CONTENTDIR)/TableCover.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/TableCover.cpp: $(CONTENTDIR) ./TableCover.pvr
 	$(FILEWRAP)  -o $@ ./TableCover.pvr
 
-$(CONTENTDIR)/Torus.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Torus.cpp: $(CONTENTDIR) ./Torus.pvr
 	$(FILEWRAP)  -o $@ ./Torus.pvr
 
 ############################################################################

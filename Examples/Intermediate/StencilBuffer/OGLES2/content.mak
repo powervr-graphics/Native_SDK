@@ -44,27 +44,27 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./FragShader.fsc
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./VertShader.vsc
 
-$(CONTENTDIR)/Cylinder.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Cylinder.cpp: $(CONTENTDIR) ./Cylinder.pod
 	$(FILEWRAP)  -o $@ ./Cylinder.pod
 
-$(CONTENTDIR)/Sphere.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Sphere.cpp: $(CONTENTDIR) ./Sphere.pod
 	$(FILEWRAP)  -o $@ ./Sphere.pod
 
-$(CONTENTDIR)/Lattice.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Lattice.cpp: $(CONTENTDIR) ./Lattice.pvr
 	$(FILEWRAP)  -o $@ ./Lattice.pvr
 
-$(CONTENTDIR)/Stone.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Stone.cpp: $(CONTENTDIR) ./Stone.pvr
 	$(FILEWRAP)  -o $@ ./Stone.pvr
 
-$(CONTENTDIR)/Tile.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Tile.cpp: $(CONTENTDIR) ./Tile.pvr
 	$(FILEWRAP)  -o $@ ./Tile.pvr
 
 ############################################################################

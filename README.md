@@ -4,6 +4,8 @@ This repository contains the PowerVR Graphics cross-platform native (C++) SDK so
 
 The SDK supports iOS, Android and Linux PowerVR devices. It also supports Windows, OS X and Linux PC emulation. Imagination's OpenGL ES emulation library, PVRVFrame, can be downloaded from our website [here](http://community.imgtec.com/developers/powervr/tools/pvrvframe/).
 
+To keep up to date with changes to the SDK read the [what's new](http://community.imgtec.com/developers/powervr/whats-new/) page.
+
 ## About the SDK ##
 ### Framework ###
 The PowerVR Graphics SDK provides a framework which is made up of PVRShell and PVRTools. PVRShell is a simple, light-weight architecture for the barebones of application setup, shutdown and event handling. It is designed to streamline the process of writing cross-platform graphics applications. PVRTools, on the other hand, is a cross-platform tools library containing the most commonly used functionality in a 3D graphics application.

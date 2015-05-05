@@ -24,6 +24,7 @@ OBJECTS +=	\
            Balloon.o	\
            Ball.o	\
            BalloonTex.o	\
+           BalloonTex2.o	\
            SkyboxTex.o
 
 VPATH +=	\
@@ -31,7 +32,7 @@ VPATH +=	\
 
 include $(SDKDIR)/Builds/Linux/make_example.mak
 
-../../Content/DefaultVertShader.cpp ../../Content/DefaultFragShader.cpp ../../Content/ParaboloidVertShader.cpp ../../Content/SkyboxVertShader.cpp ../../Content/SkyboxFragShader.cpp ../../Content/EffectVertShader.cpp ../../Content/EffectFragShader.cpp ../../Content/Balloon.cpp ../../Content/Ball.cpp ../../Content/BalloonTex.cpp ../../Content/SkyboxTex.cpp: wrap_content_files 
+../../Content/DefaultVertShader.cpp ../../Content/DefaultFragShader.cpp ../../Content/ParaboloidVertShader.cpp ../../Content/SkyboxVertShader.cpp ../../Content/SkyboxFragShader.cpp ../../Content/EffectVertShader.cpp ../../Content/EffectFragShader.cpp ../../Content/Balloon.cpp ../../Content/Ball.cpp ../../Content/BalloonTex.cpp ../../Content/BalloonTex2.cpp ../../Content/SkyboxTex.cpp: wrap_content_files 
 
 $(PLAT_OBJPATH)/%.o: ../../Content/%.cpp
 	mkdir -p $(PLAT_OBJPATH)

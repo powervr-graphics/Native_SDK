@@ -45,33 +45,33 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/BaseFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/BaseFragShader.cpp: $(CONTENTDIR) ./BaseFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./BaseFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./BaseFragShader.fsc
 
-$(CONTENTDIR)/BaseVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/BaseVertShader.cpp: $(CONTENTDIR) ./BaseVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./BaseVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./BaseVertShader.vsc
 
-$(CONTENTDIR)/ConstFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ConstFragShader.cpp: $(CONTENTDIR) ./ConstFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./ConstFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./ConstFragShader.fsc
 
-$(CONTENTDIR)/ShadowVolVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ShadowVolVertShader.cpp: $(CONTENTDIR) ./ShadowVolVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./ShadowVolVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./ShadowVolVertShader.vsc
 
-$(CONTENTDIR)/FullscreenVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FullscreenVertShader.cpp: $(CONTENTDIR) ./FullscreenVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./FullscreenVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./FullscreenVertShader.vsc
 
-$(CONTENTDIR)/scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/scene.cpp: $(CONTENTDIR) ./scene.pod
 	$(FILEWRAP)  -o $@ ./scene.pod
 
-$(CONTENTDIR)/Background.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Background.cpp: $(CONTENTDIR) ./Background.pvr
 	$(FILEWRAP)  -o $@ ./Background.pvr
 
-$(CONTENTDIR)/Rust.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Rust.cpp: $(CONTENTDIR) ./Rust.pvr
 	$(FILEWRAP)  -o $@ ./Rust.pvr
 
 ############################################################################

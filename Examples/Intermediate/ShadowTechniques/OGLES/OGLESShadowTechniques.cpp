@@ -490,7 +490,6 @@ bool OGLESShadowTechniques::ReleaseView()
 
 	glDeleteTextures(1, &m_uiShadow);
 
-	m_Scene.Destroy();
 	return true;
 }
 

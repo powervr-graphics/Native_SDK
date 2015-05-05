@@ -45,28 +45,28 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/balloon.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/balloon.cpp: $(CONTENTDIR) ./balloon.pvr
 	$(FILEWRAP)  -o $@ ./balloon.pvr
 
-$(CONTENTDIR)/skybox1.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/skybox1.cpp: $(CONTENTDIR) ./skybox1.pvr
 	$(FILEWRAP)  -o $@ ./skybox1.pvr
 
-$(CONTENTDIR)/skybox2.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/skybox2.cpp: $(CONTENTDIR) ./skybox2.pvr
 	$(FILEWRAP)  -o $@ ./skybox2.pvr
 
-$(CONTENTDIR)/skybox3.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/skybox3.cpp: $(CONTENTDIR) ./skybox3.pvr
 	$(FILEWRAP)  -o $@ ./skybox3.pvr
 
-$(CONTENTDIR)/skybox4.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/skybox4.cpp: $(CONTENTDIR) ./skybox4.pvr
 	$(FILEWRAP)  -o $@ ./skybox4.pvr
 
-$(CONTENTDIR)/skybox5.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/skybox5.cpp: $(CONTENTDIR) ./skybox5.pvr
 	$(FILEWRAP)  -o $@ ./skybox5.pvr
 
-$(CONTENTDIR)/skybox6.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/skybox6.cpp: $(CONTENTDIR) ./skybox6.pvr
 	$(FILEWRAP)  -o $@ ./skybox6.pvr
 
-$(CONTENTDIR)/HotAirBalloon.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/HotAirBalloon.cpp: $(CONTENTDIR) ./HotAirBalloon.pod
 	$(FILEWRAP)  -o $@ ./HotAirBalloon.pod
 
 ############################################################################

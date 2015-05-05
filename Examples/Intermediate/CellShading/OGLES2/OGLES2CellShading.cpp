@@ -456,7 +456,7 @@ void OGLES2CellShading::DrawMesh(int i32NodeIndex)
 			if(m_puiIndexVbo[i32MeshIndex])
 			{
 				// Indexed Triangle strips
-				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i]+2, GL_UNSIGNED_SHORT, (GLshort*)(offset*2));
+				glDrawElements(GL_TRIANGLE_STRIP, pMesh->pnStripLength[i]+2, GL_UNSIGNED_SHORT, (GLshort*)(size_t)(offset*2));
 			}
 			else
 			{

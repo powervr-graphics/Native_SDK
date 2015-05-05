@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/FilmTV/OGLES/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module oglestools
+include $(CLEAR_VARS)
+LOCAL_MODULE := oglestools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES/Build/Android/obj/local/$(TARGET_ARCH_ABI)/liboglestools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLESFilmTV
 include $(CLEAR_VARS)
@@ -41,54 +44,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/FilmTVScene.pod \
-	$(ASSETDIR)/Table.pvr \
-	$(ASSETDIR)/Floor.pvr \
-	$(ASSETDIR)/Wall.pvr \
-	$(ASSETDIR)/TV.pvr \
-	$(ASSETDIR)/TVCase.pvr \
-	$(ASSETDIR)/TVSpeaker.pvr \
-	$(ASSETDIR)/Alum.pvr \
-	$(ASSETDIR)/Skirting.pvr \
-	$(ASSETDIR)/Camera.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/Table.pvr: $(PVRSDKDIR)/Examples/Advanced/FilmTV/OGLES/Table.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Floor.pvr: $(PVRSDKDIR)/Examples/Advanced/FilmTV/OGLES/Floor.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Wall.pvr: $(PVRSDKDIR)/Examples/Advanced/FilmTV/OGLES/Wall.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/TV.pvr: $(PVRSDKDIR)/Examples/Advanced/FilmTV/OGLES/TV.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/TVCase.pvr: $(PVRSDKDIR)/Examples/Advanced/FilmTV/OGLES/TVCase.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/TVSpeaker.pvr: $(PVRSDKDIR)/Examples/Advanced/FilmTV/OGLES/TVSpeaker.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Alum.pvr: $(PVRSDKDIR)/Examples/Advanced/FilmTV/OGLES/Alum.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Skirting.pvr: $(PVRSDKDIR)/Examples/Advanced/FilmTV/OGLES/Skirting.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Camera.pvr: $(PVRSDKDIR)/Examples/Advanced/FilmTV/OGLES/Camera.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/FilmTVScene.pod: $(PVRSDKDIR)/Examples/Advanced/FilmTV/OGLES/FilmTVScene.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-

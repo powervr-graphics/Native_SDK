@@ -47,34 +47,34 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Table.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Table.cpp: $(CONTENTDIR) ./Table.pvr
 	$(FILEWRAP)  -o $@ ./Table.pvr
 
-$(CONTENTDIR)/Floor.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Floor.cpp: $(CONTENTDIR) ./Floor.pvr
 	$(FILEWRAP)  -o $@ ./Floor.pvr
 
-$(CONTENTDIR)/Wall.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Wall.cpp: $(CONTENTDIR) ./Wall.pvr
 	$(FILEWRAP)  -o $@ ./Wall.pvr
 
-$(CONTENTDIR)/TV.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/TV.cpp: $(CONTENTDIR) ./TV.pvr
 	$(FILEWRAP)  -o $@ ./TV.pvr
 
-$(CONTENTDIR)/TVCase.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/TVCase.cpp: $(CONTENTDIR) ./TVCase.pvr
 	$(FILEWRAP)  -o $@ ./TVCase.pvr
 
-$(CONTENTDIR)/TVSpeaker.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/TVSpeaker.cpp: $(CONTENTDIR) ./TVSpeaker.pvr
 	$(FILEWRAP)  -o $@ ./TVSpeaker.pvr
 
-$(CONTENTDIR)/Alum.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Alum.cpp: $(CONTENTDIR) ./Alum.pvr
 	$(FILEWRAP)  -o $@ ./Alum.pvr
 
-$(CONTENTDIR)/Skirting.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Skirting.cpp: $(CONTENTDIR) ./Skirting.pvr
 	$(FILEWRAP)  -o $@ ./Skirting.pvr
 
-$(CONTENTDIR)/Camera.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Camera.cpp: $(CONTENTDIR) ./Camera.pvr
 	$(FILEWRAP)  -o $@ ./Camera.pvr
 
-$(CONTENTDIR)/FilmTVScene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FilmTVScene.cpp: $(CONTENTDIR) ./FilmTVScene.pod
 	$(FILEWRAP)  -o $@ ./FilmTVScene.pod
 
 ############################################################################

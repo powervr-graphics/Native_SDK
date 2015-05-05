@@ -32,19 +32,34 @@
 *****************************************************************************/
 void CPVRTgles3Ext::LoadExtensions()
 {
-	// Supported extensions provide new entry points for OpenGL ES 3.0.
 
-	/* How to add new extensions: Query the extension string and check whether the required extension is included.
-	   Retrieve the function entry address to the local function pointers.
-
-	// Retrieve GL extension string
-	const GLubyte *pszGLExtensions = glGetString(GL_EXTENSIONS);
-
-	if (strstr((char *)pszGLExtensions, "GL_demo_extension_for_illustration_purposes"))
-	{
-        glMyFunctionPointer = (PFNGLMYFUNCTIONPOINTER) PVRGetProcAddress(glRequiredFunctionName);
-	}
-	*/
+    glRenderbufferStorageMultisampleIMG = 0;
+    glFramebufferTexture2DMultisampleIMG = 0;
+    glRenderbufferStorageMultisampleEXT = 0;
+    glFramebufferTexture2DMultisampleEXT = 0;
+    
+    // Supported extensions provide new entry points for OpenGL ES 3.0.
+    
+    const GLubyte *pszGLExtensions;
+    
+    /* Retrieve GL extension string */
+    pszGLExtensions = glGetString(GL_EXTENSIONS);
+    
+#if !defined(TARGET_OS_IPHONE)
+ /* GL_IMG_multisampled_render_to_texture */
+    if (strstr((char *)pszGLExtensions, "GL_IMG_multisampled_render_to_texture"))
+    {
+        glRenderbufferStorageMultisampleIMG = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG) PVRGetProcAddress(glRenderbufferStorageMultisampleIMG);
+        glFramebufferTexture2DMultisampleIMG = (PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG) PVRGetProcAddress(glFramebufferTexture2DMultisampleIMG);
+    }
+    
+    /* GL_EXT_multisampled_render_to_texture */
+    if (strstr((char *)pszGLExtensions, "GL_EXT_multisampled_render_to_texture"))
+    {
+        glRenderbufferStorageMultisampleEXT = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXT) PVRGetProcAddress(glRenderbufferStorageMultisampleEXT);
+        glFramebufferTexture2DMultisampleEXT = (PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEEXT) PVRGetProcAddress(glFramebufferTexture2DMultisampleEXT);
+    }
+#endif
 }
 
 /*!***********************************************************************

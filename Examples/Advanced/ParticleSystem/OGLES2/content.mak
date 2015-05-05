@@ -43,25 +43,25 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/sphere.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/sphere.cpp: $(CONTENTDIR) ./sphere.pod
 	$(FILEWRAP)  -o $@ ./sphere.pod
 
-$(CONTENTDIR)/ParticleGradient.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ParticleGradient.cpp: $(CONTENTDIR) ./ParticleGradient.pvr
 	$(FILEWRAP)  -o $@ ./ParticleGradient.pvr
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./FragShader.fsc
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./VertShader.vsc
 
-$(CONTENTDIR)/ParticleFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ParticleFragShader.cpp: $(CONTENTDIR) ./ParticleFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./ParticleFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./ParticleFragShader.fsc
 
-$(CONTENTDIR)/ParticleVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/ParticleVertShader.cpp: $(CONTENTDIR) ./ParticleVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./ParticleVertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./ParticleVertShader.vsc
 

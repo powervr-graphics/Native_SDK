@@ -310,7 +310,7 @@ public:
 	*****************************************************************************/
 	T& operator[](const unsigned int uiIndex)
 	{
-		_ASSERT(uiIndex < m_uiCapacity);
+		_ASSERT(uiIndex < m_uiSize);
 		return m_pArray[uiIndex];
 	}
 
@@ -321,7 +321,7 @@ public:
 	*****************************************************************************/
 	const T& operator[](const unsigned int uiIndex) const
 	{
-		_ASSERT(uiIndex < m_uiCapacity);
+		_ASSERT(uiIndex < m_uiSize);
 		return m_pArray[uiIndex];
 	}
 

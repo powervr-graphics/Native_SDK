@@ -41,16 +41,16 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Head_clonespacePVRTC.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Head_clonespacePVRTC.cpp: $(CONTENTDIR) ./Head_clonespacePVRTC.pvr
 	$(FILEWRAP)  -o $@ ./Head_clonespacePVRTC.pvr
 
-$(CONTENTDIR)/Head_clonespaceBGRA.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Head_clonespaceBGRA.cpp: $(CONTENTDIR) ./Head_clonespaceBGRA.pvr
 	$(FILEWRAP)  -o $@ ./Head_clonespaceBGRA.pvr
 
-$(CONTENTDIR)/Head_diffuse.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Head_diffuse.cpp: $(CONTENTDIR) ./Head_diffuse.pvr
 	$(FILEWRAP)  -o $@ ./Head_diffuse.pvr
 
-$(CONTENTDIR)/Head.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Head.cpp: $(CONTENTDIR) ./Head.pod
 	$(FILEWRAP)  -o $@ ./Head.pod
 
 ############################################################################

@@ -1,5 +1,6 @@
 package com.powervr.OGLES2LevelOfDetail;
 
+
 import android.app.NativeActivity;
 import android.os.Bundle;
 import android.widget.Toast;

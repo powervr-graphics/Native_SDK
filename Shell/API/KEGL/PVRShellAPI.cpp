@@ -251,7 +251,7 @@ bool PVRShellInit::ApiInitAPI()
 		}
 		while (m_EGLContext == EGL_NO_CONTEXT);
 
-#if defined(__QNXNTO__)
+#if defined(SCREEN)
 		int format = SCREEN_FORMAT_RGBX8888;
 		if (screen_set_window_property_iv((_screen_window*) m_NWT, SCREEN_PROPERTY_FORMAT, &format))
 		{
@@ -607,11 +607,21 @@ EGLConfig PVRShellInitAPI::SelectEGLConfiguration(const PVRShellData* const pDat
 	++i;
 
 #if defined(BUILD_OGL)
+
 	conflist[i++] = EGL_RENDERABLE_TYPE;
 	conflist[i++] = EGL_OPENGL_BIT;
+
 #elif defined(EGL_VERSION_1_3) && defined(GL_ES_VERSION_2_0)
+
 	conflist[i++] = EGL_RENDERABLE_TYPE;
-	conflist[i++] = EGL_OPENGL_ES2_BIT;
+	conflist[i]   = EGL_OPENGL_ES2_BIT;
+
+#	if defined(GL_ES_VERSION_3_0)
+		conflist[i] |= EGL_OPENGL_ES3_BIT_KHR;
+#	endif
+
+	++i;
+
 #endif
 
 	// Append number of number of samples depending on AA samples value set
@@ -628,7 +638,7 @@ EGLConfig PVRShellInitAPI::SelectEGLConfiguration(const PVRShellData* const pDat
 		conflist[i++] = 0;
 	}
 
-#if defined(EWS) || defined(__QNXNTO__)
+#if defined(EWS) || defined(SCREEN)
 	if (m_NWT != NULL)
 	{
 		EGLint r, g, b, a, value;
@@ -679,7 +689,7 @@ EGLConfig PVRShellInitAPI::SelectEGLConfiguration(const PVRShellData* const pDat
 		// Go through the returned configs and try and find a suitable match
 		for (j = 0; j < num_config; ++j)
 		{
-#if defined(__QNXNTO__)
+#if defined(SCREEN)
 			if ((eglGetConfigAttrib(m_EGLDisplay, pConfigs[j], EGL_RED_SIZE,   &value) && value == r)
 			    && (eglGetConfigAttrib(m_EGLDisplay, pConfigs[j], EGL_GREEN_SIZE, &value) && value == g)
 			    && (eglGetConfigAttrib(m_EGLDisplay, pConfigs[j], EGL_BLUE_SIZE,  &value) && value == b)

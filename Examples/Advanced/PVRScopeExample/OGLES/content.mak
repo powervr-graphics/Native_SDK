@@ -39,10 +39,10 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/MaskTex.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/MaskTex.cpp: $(CONTENTDIR) ./MaskTex.pvr
 	$(FILEWRAP)  -o $@ ./MaskTex.pvr
 
-$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR) ./Mask.pod
 	$(FILEWRAP)  -o $@ ./Mask.pod
 
 ############################################################################

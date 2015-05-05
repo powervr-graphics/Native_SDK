@@ -72,7 +72,7 @@ public class CameraInterface implements SurfaceTexture.OnFrameAvailableListener 
  		}
  		
 		try {
-			mUpdateImage = false;
+			mUpdateImage = true;
 			mSurface.setOnFrameAvailableListener(this);
         }
         catch (RuntimeException ioe) {

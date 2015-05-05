@@ -43,22 +43,22 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FastFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FastFragShader.cpp: $(CONTENTDIR) ./FastFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FastFragShader.fsh
 
-$(CONTENTDIR)/FastVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FastVertShader.cpp: $(CONTENTDIR) ./FastVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./FastVertShader.vsh
 
-$(CONTENTDIR)/SlowFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SlowFragShader.cpp: $(CONTENTDIR) ./SlowFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./SlowFragShader.fsh
 
-$(CONTENTDIR)/SlowVertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SlowVertShader.cpp: $(CONTENTDIR) ./SlowVertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./SlowVertShader.vsh
 
-$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR) ./Mask.pod
 	$(FILEWRAP)  -o $@ ./Mask.pod
 
-$(CONTENTDIR)/Basetex.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Basetex.cpp: $(CONTENTDIR) ./Basetex.pvr
 	$(FILEWRAP)  -o $@ ./Basetex.pvr
 
 ############################################################################

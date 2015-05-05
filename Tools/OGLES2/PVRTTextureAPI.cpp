@@ -262,7 +262,7 @@ static const void PVRTGetOGLES2TextureFormat(const PVRTextureHeaderV3& sTextureH
 					}
 				case PVRTGENPIXELID4('b','g','r','a',8,8,8,8):
 					{
-						format = internalformat = GL_BGRA;
+						format = internalformat = GL_BGRA_EXT;
 						return;
 					}
 				}
@@ -728,7 +728,7 @@ EPVRTError PVRTTextureLoadFromPointer(	const void* pointer,
 	}
 
 	//Check for BGRA support.	
-	if(eTextureFormat==GL_BGRA)
+	if(eTextureFormat==GL_BGRA_EXT)
 	{
 #ifdef TARGET_OS_IPHONE
 		eTextureInternalFormat = GL_RGBA;
@@ -1168,7 +1168,7 @@ unsigned int PVRTTextureFormatGetBPP(const GLuint nFormat, const GLuint nType)
 		switch(nType)
 		{
 		case GL_RGBA:
-		case GL_BGRA:
+		case GL_BGRA_EXT:
 			return 32;
 		}
 	case GL_UNSIGNED_SHORT_5_5_5_1:

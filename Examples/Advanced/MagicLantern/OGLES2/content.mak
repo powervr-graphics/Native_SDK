@@ -42,19 +42,19 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Marble.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Marble.cpp: $(CONTENTDIR) ./Marble.pvr
 	$(FILEWRAP)  -o $@ ./Marble.pvr
 
-$(CONTENTDIR)/Floor.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Floor.cpp: $(CONTENTDIR) ./Floor.pvr
 	$(FILEWRAP)  -o $@ ./Floor.pvr
 
-$(CONTENTDIR)/LanternCubemap.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/LanternCubemap.cpp: $(CONTENTDIR) ./LanternCubemap.pvr
 	$(FILEWRAP)  -o $@ ./LanternCubemap.pvr
 
-$(CONTENTDIR)/MagicLanternShaders.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/MagicLanternShaders.cpp: $(CONTENTDIR) ./MagicLanternShaders.pfx
 	$(FILEWRAP)  -s  -o $@ ./MagicLanternShaders.pfx
 
-$(CONTENTDIR)/MagicLantern.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/MagicLantern.cpp: $(CONTENTDIR) ./MagicLantern.pod
 	$(FILEWRAP)  -o $@ ./MagicLantern.pod
 
 ############################################################################

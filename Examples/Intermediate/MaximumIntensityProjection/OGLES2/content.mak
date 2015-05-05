@@ -40,13 +40,13 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/effect.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/effect.cpp: $(CONTENTDIR) ./effect.pfx
 	$(FILEWRAP)  -s  -o $@ ./effect.pfx
 
-$(CONTENTDIR)/blend_minmax_scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/blend_minmax_scene.cpp: $(CONTENTDIR) ./blend_minmax_scene.POD
 	$(FILEWRAP)  -o $@ ./blend_minmax_scene.POD
 
-$(CONTENTDIR)/skinTex.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/skinTex.cpp: $(CONTENTDIR) ./skinTex.pvr
 	$(FILEWRAP)  -o $@ ./skinTex.pvr
 
 ############################################################################

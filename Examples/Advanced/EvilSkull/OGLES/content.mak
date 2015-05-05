@@ -42,19 +42,19 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Iris.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Iris.cpp: $(CONTENTDIR) ./Iris.pvr
 	$(FILEWRAP)  -o $@ ./Iris.pvr
 
-$(CONTENTDIR)/Metal.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Metal.cpp: $(CONTENTDIR) ./Metal.pvr
 	$(FILEWRAP)  -o $@ ./Metal.pvr
 
-$(CONTENTDIR)/Fire02.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Fire02.cpp: $(CONTENTDIR) ./Fire02.pvr
 	$(FILEWRAP)  -o $@ ./Fire02.pvr
 
-$(CONTENTDIR)/Fire03.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Fire03.cpp: $(CONTENTDIR) ./Fire03.pvr
 	$(FILEWRAP)  -o $@ ./Fire03.pvr
 
-$(CONTENTDIR)/EvilSkull.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/EvilSkull.cpp: $(CONTENTDIR) ./EvilSkull.pod
 	$(FILEWRAP)  -o $@ ./EvilSkull.pod
 
 ############################################################################

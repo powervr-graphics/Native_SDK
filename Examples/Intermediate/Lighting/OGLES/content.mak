@@ -40,13 +40,13 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/LightTex.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/LightTex.cpp: $(CONTENTDIR) ./LightTex.pvr
 	$(FILEWRAP)  -o $@ ./LightTex.pvr
 
-$(CONTENTDIR)/Stone.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Stone.cpp: $(CONTENTDIR) ./Stone.pvr
 	$(FILEWRAP)  -o $@ ./Stone.pvr
 
-$(CONTENTDIR)/LightingScene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/LightingScene.cpp: $(CONTENTDIR) ./LightingScene.pod
 	$(FILEWRAP)  -o $@ ./LightingScene.pod
 
 ############################################################################

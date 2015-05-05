@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/Fur/OGLES/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module oglestools
+include $(CLEAR_VARS)
+LOCAL_MODULE := oglestools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES/Build/Android/obj/local/$(TARGET_ARCH_ABI)/liboglestools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLESFur
 include $(CLEAR_VARS)
@@ -41,42 +44,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/Scene.pod \
-	$(ASSETDIR)/tBridge.pvr \
-	$(ASSETDIR)/tGrass.pvr \
-	$(ASSETDIR)/tSkin.pvr \
-	$(ASSETDIR)/tWater.pvr \
-	$(ASSETDIR)/tCloud.pvr \
-	$(ASSETDIR)/tFur.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/tBridge.pvr: $(PVRSDKDIR)/Examples/Advanced/Fur/OGLES/tBridge.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/tGrass.pvr: $(PVRSDKDIR)/Examples/Advanced/Fur/OGLES/tGrass.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/tSkin.pvr: $(PVRSDKDIR)/Examples/Advanced/Fur/OGLES/tSkin.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/tWater.pvr: $(PVRSDKDIR)/Examples/Advanced/Fur/OGLES/tWater.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/tCloud.pvr: $(PVRSDKDIR)/Examples/Advanced/Fur/OGLES/tCloud.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/tFur.pvr: $(PVRSDKDIR)/Examples/Advanced/Fur/OGLES/tFur.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Scene.pod: $(PVRSDKDIR)/Examples/Advanced/Fur/OGLES/Scene.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-

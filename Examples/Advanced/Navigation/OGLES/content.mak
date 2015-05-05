@@ -53,52 +53,52 @@ resources: $(RESOURCES)
 $(DATACONTENTDIR):
 	-mkdir "$@"
 
-$(DATACONTENTDIR)/Alphabet.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Alphabet.cpp: $(DATACONTENTDIR) ../Data/Alphabet.pvr
 	$(FILEWRAP)  -o $@ ../Data/Alphabet.pvr
 
-$(DATACONTENTDIR)/Road.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Road.cpp: $(DATACONTENTDIR) ../Data/Road.pvr
 	$(FILEWRAP)  -o $@ ../Data/Road.pvr
 
-$(DATACONTENTDIR)/cameratrack.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/cameratrack.cpp: $(DATACONTENTDIR) ../Data/cameratrack.pod
 	$(FILEWRAP)  -o $@ ../Data/cameratrack.pod
 
-$(DATACONTENTDIR)/Landmark_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Landmark_meshes.cpp: $(DATACONTENTDIR) ../Data/Landmark_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/Landmark_meshes.nav
 
-$(DATACONTENTDIR)/LandUseA_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/LandUseA_meshes.cpp: $(DATACONTENTDIR) ../Data/LandUseA_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/LandUseA_meshes.nav
 
-$(DATACONTENTDIR)/LandUseB_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/LandUseB_meshes.cpp: $(DATACONTENTDIR) ../Data/LandUseB_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/LandUseB_meshes.nav
 
-$(DATACONTENTDIR)/MajHwys_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/MajHwys_meshes.cpp: $(DATACONTENTDIR) ../Data/MajHwys_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/MajHwys_meshes.nav
 
-$(DATACONTENTDIR)/MajHwyShield_text.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/MajHwyShield_text.cpp: $(DATACONTENTDIR) ../Data/MajHwyShield_text.nav
 	$(FILEWRAP)  -o $@ ../Data/MajHwyShield_text.nav
 
-$(DATACONTENTDIR)/RailRds_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/RailRds_meshes.cpp: $(DATACONTENTDIR) ../Data/RailRds_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/RailRds_meshes.nav
 
-$(DATACONTENTDIR)/SecHwys_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/SecHwys_meshes.cpp: $(DATACONTENTDIR) ../Data/SecHwys_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/SecHwys_meshes.nav
 
-$(DATACONTENTDIR)/SecHwyShield_text.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/SecHwyShield_text.cpp: $(DATACONTENTDIR) ../Data/SecHwyShield_text.nav
 	$(FILEWRAP)  -o $@ ../Data/SecHwyShield_text.nav
 
-$(DATACONTENTDIR)/Signs_billboards.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Signs_billboards.cpp: $(DATACONTENTDIR) ../Data/Signs_billboards.nav
 	$(FILEWRAP)  -o $@ ../Data/Signs_billboards.nav
 
-$(DATACONTENTDIR)/Streets_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Streets_meshes.cpp: $(DATACONTENTDIR) ../Data/Streets_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/Streets_meshes.nav
 
-$(DATACONTENTDIR)/Streets_text.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/Streets_text.cpp: $(DATACONTENTDIR) ../Data/Streets_text.nav
 	$(FILEWRAP)  -o $@ ../Data/Streets_text.nav
 
-$(DATACONTENTDIR)/WaterPoly_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/WaterPoly_meshes.cpp: $(DATACONTENTDIR) ../Data/WaterPoly_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/WaterPoly_meshes.nav
 
-$(DATACONTENTDIR)/WaterSeg_meshes.cpp: $(DATACONTENTDIR)
+$(DATACONTENTDIR)/WaterSeg_meshes.cpp: $(DATACONTENTDIR) ../Data/WaterSeg_meshes.nav
 	$(FILEWRAP)  -o $@ ../Data/WaterSeg_meshes.nav
 
 ############################################################################

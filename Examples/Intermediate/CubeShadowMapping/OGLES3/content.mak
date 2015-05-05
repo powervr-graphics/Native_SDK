@@ -45,28 +45,28 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/scene.cpp: $(CONTENTDIR) ./scene.pod
 	$(FILEWRAP)  -o $@ ./scene.pod
 
-$(CONTENTDIR)/effect.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/effect.cpp: $(CONTENTDIR) ./effect.pfx
 	$(FILEWRAP)  -s  -o $@ ./effect.pfx
 
-$(CONTENTDIR)/wall_left.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/wall_left.cpp: $(CONTENTDIR) ./wall_left.pvr
 	$(FILEWRAP)  -o $@ ./wall_left.pvr
 
-$(CONTENTDIR)/wall_right.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/wall_right.cpp: $(CONTENTDIR) ./wall_right.pvr
 	$(FILEWRAP)  -o $@ ./wall_right.pvr
 
-$(CONTENTDIR)/wall_top.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/wall_top.cpp: $(CONTENTDIR) ./wall_top.pvr
 	$(FILEWRAP)  -o $@ ./wall_top.pvr
 
-$(CONTENTDIR)/wall_bottom.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/wall_bottom.cpp: $(CONTENTDIR) ./wall_bottom.pvr
 	$(FILEWRAP)  -o $@ ./wall_bottom.pvr
 
-$(CONTENTDIR)/wall_back.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/wall_back.cpp: $(CONTENTDIR) ./wall_back.pvr
 	$(FILEWRAP)  -o $@ ./wall_back.pvr
 
-$(CONTENTDIR)/mask.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/mask.cpp: $(CONTENTDIR) ./mask.pvr
 	$(FILEWRAP)  -o $@ ./mask.pvr
 
 ############################################################################

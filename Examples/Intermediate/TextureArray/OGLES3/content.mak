@@ -39,10 +39,10 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/textureArray.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/textureArray.cpp: $(CONTENTDIR) ./textureArray.pvr
 	$(FILEWRAP)  -o $@ ./textureArray.pvr
 
-$(CONTENTDIR)/effect.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/effect.cpp: $(CONTENTDIR) ./effect.pfx
 	$(FILEWRAP)  -s  -o $@ ./effect.pfx
 
 ############################################################################

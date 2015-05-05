@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Intermediate/StencilBuffer/OGLES3/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles3tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles3tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES3/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles3tools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLES3StencilBuffer
 include $(CLEAR_VARS)
@@ -42,43 +45,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/Cylinder.pod \
-	$(ASSETDIR)/Sphere.pod \
-	$(ASSETDIR)/Lattice.pvr \
-	$(ASSETDIR)/Stone.pvr \
-	$(ASSETDIR)/Tile.pvr \
-	$(ASSETDIR)/FragShader.fsh \
-	$(ASSETDIR)/VertShader.vsh
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/Lattice.pvr: $(PVRSDKDIR)/Examples/Intermediate/StencilBuffer/OGLES3/Lattice.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Stone.pvr: $(PVRSDKDIR)/Examples/Intermediate/StencilBuffer/OGLES3/Stone.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Tile.pvr: $(PVRSDKDIR)/Examples/Intermediate/StencilBuffer/OGLES3/Tile.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/FragShader.fsh: $(PVRSDKDIR)/Examples/Intermediate/StencilBuffer/OGLES3/FragShader.fsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/VertShader.vsh: $(PVRSDKDIR)/Examples/Intermediate/StencilBuffer/OGLES3/VertShader.vsh $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Cylinder.pod: $(PVRSDKDIR)/Examples/Intermediate/StencilBuffer/OGLES3/Cylinder.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/Sphere.pod: $(PVRSDKDIR)/Examples/Intermediate/StencilBuffer/OGLES3/Sphere.pod $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-
-

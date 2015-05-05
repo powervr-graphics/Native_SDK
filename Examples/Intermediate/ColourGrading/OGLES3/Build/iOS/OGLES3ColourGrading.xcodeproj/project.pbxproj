@@ -25,29 +25,29 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F81020F5BBDDDBBCBC5530F1 /* OGLES3ColourGrading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F817CAF4F34574A75590E028 /* OGLES3ColourGrading.cpp */; };
+		F81020F5BBDDDBBCBC5530F1 /* OGLES3ColourGrading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8CB10F42297713CC919EFEB /* OGLES3ColourGrading.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F8A4642FE52E6F4311AE3E78 /* Mask.pod in Resources */ = {isa = PBXBuildFile; fileRef = F86047DCC61064DF7714ABDF /* Mask.pod */; };
-		F8D0DE99622D1ABC3EE112C9 /* MaskTexture.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F894AAF612CF2BA4C2D7F083 /* MaskTexture.pvr */; };
-		F8EEB62856A211C79A39BD2F /* Background.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8DBE2085BE4600C809506E7 /* Background.pvr */; };
-		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F895137C16F9AE9B63DD3558 /* FragShader.fsh */; };
-		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */; };
-		F8197CE5EC7FFABC2535FE0E /* SceneFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F89E4476208E7C41C7F72145 /* SceneFragShader.fsh */; };
-		F8CF1712B69CC46B0E0CEE4C /* SceneVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F835C883445196E0C12F676E /* SceneVertShader.vsh */; };
-		F893A731BED4F7AD45FC420F /* BackgroundFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8D30B9EF908FA2A76CD874F /* BackgroundFragShader.fsh */; };
-		F8F6AA5CC8B7DED9A47C42EC /* identity.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C9F01D62DF67ED9D73AFDE /* identity.pvr */; };
-		F88FC44A7A7EFFC5602F3704 /* cooler.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F85846F1801D51E1324EEC6E /* cooler.pvr */; };
-		F8B074F9D6415FCA4648CB22 /* warmer.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A1880E93190BE56AFDEE02 /* warmer.pvr */; };
-		F85D30278542CFB2379F005D /* bw.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8DD09AC67B023D6897319F1 /* bw.pvr */; };
-		F87ECEFFA24A952E9160EEE7 /* sepia.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F88373638142A9ACC2665085 /* sepia.pvr */; };
-		F877CB58D0E7ADD7BEF9A32B /* inverted.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F874B343036E2FCEA7843728 /* inverted.pvr */; };
-		F8DA466720CCF1498E0998D4 /* highcontrast.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F869A96235F23DAA4C98834C /* highcontrast.pvr */; };
-		F82B2009A7920ED0AD740D6D /* bluewhitegradient.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8335AF69F5F63231A2C72A5 /* bluewhitegradient.pvr */; };
+		F8A4642FE52E6F4311AE3E78 /* Mask.pod in Resources */ = {isa = PBXBuildFile; fileRef = F82D4335198133BEEEEAB4A8 /* Mask.pod */; };
+		F8D0DE99622D1ABC3EE112C9 /* MaskTexture.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D19C1A0BBBCBE4C429FC37 /* MaskTexture.pvr */; };
+		F8EEB62856A211C79A39BD2F /* Background.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E47651BCDFDE826370C478 /* Background.pvr */; };
+		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */; };
+		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81AE783867359F7612A30AC /* VertShader.vsh */; };
+		F8197CE5EC7FFABC2535FE0E /* SceneFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8DDC2F451B0FB2BEC6EE200 /* SceneFragShader.fsh */; };
+		F8CF1712B69CC46B0E0CEE4C /* SceneVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F899732BA113EAA5A4ADCC28 /* SceneVertShader.vsh */; };
+		F893A731BED4F7AD45FC420F /* BackgroundFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8254E5751F6EAEF41B88007 /* BackgroundFragShader.fsh */; };
+		F8F6AA5CC8B7DED9A47C42EC /* identity.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F859E76B2A247A7CD49F0457 /* identity.pvr */; };
+		F88FC44A7A7EFFC5602F3704 /* cooler.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8275174DD13859A973A2513 /* cooler.pvr */; };
+		F8B074F9D6415FCA4648CB22 /* warmer.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F845AFDE9BB8315E9793BB0D /* warmer.pvr */; };
+		F85D30278542CFB2379F005D /* bw.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F884F2968D2E76C3CD3C86FB /* bw.pvr */; };
+		F87ECEFFA24A952E9160EEE7 /* sepia.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E8ABECCC96CF2B2194FA31 /* sepia.pvr */; };
+		F877CB58D0E7ADD7BEF9A32B /* inverted.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F883E74476A82236AD949406 /* inverted.pvr */; };
+		F8DA466720CCF1498E0998D4 /* highcontrast.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86D870C69757EEAF120BD79 /* highcontrast.pvr */; };
+		F82B2009A7920ED0AD740D6D /* bluewhitegradient.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F888978F4536AC68A2C87E3F /* bluewhitegradient.pvr */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,7 +122,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F817CAF4F34574A75590E028 /* OGLES3ColourGrading.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES3ColourGrading.cpp; path = ../../OGLES3ColourGrading.cpp; sourceTree = SOURCE_ROOT; };
+		F8CB10F42297713CC919EFEB /* OGLES3ColourGrading.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES3ColourGrading.cpp; path = ../../OGLES3ColourGrading.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -135,22 +135,22 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F86047DCC61064DF7714ABDF /* Mask.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mask.pod; path = ../../Mask.pod; sourceTree = SOURCE_ROOT; };
-		F894AAF612CF2BA4C2D7F083 /* MaskTexture.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaskTexture.pvr; path = ../../MaskTexture.pvr; sourceTree = SOURCE_ROOT; };
-		F8DBE2085BE4600C809506E7 /* Background.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Background.pvr; path = ../../Background.pvr; sourceTree = SOURCE_ROOT; };
-		F895137C16F9AE9B63DD3558 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
-		F89E4476208E7C41C7F72145 /* SceneFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SceneFragShader.fsh; path = ../../SceneFragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F835C883445196E0C12F676E /* SceneVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SceneVertShader.vsh; path = ../../SceneVertShader.vsh; sourceTree = SOURCE_ROOT; };
-		F8D30B9EF908FA2A76CD874F /* BackgroundFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BackgroundFragShader.fsh; path = ../../BackgroundFragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F8C9F01D62DF67ED9D73AFDE /* identity.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = identity.pvr; path = ../../identity.pvr; sourceTree = SOURCE_ROOT; };
-		F85846F1801D51E1324EEC6E /* cooler.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = cooler.pvr; path = ../../cooler.pvr; sourceTree = SOURCE_ROOT; };
-		F8A1880E93190BE56AFDEE02 /* warmer.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = warmer.pvr; path = ../../warmer.pvr; sourceTree = SOURCE_ROOT; };
-		F8DD09AC67B023D6897319F1 /* bw.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = bw.pvr; path = ../../bw.pvr; sourceTree = SOURCE_ROOT; };
-		F88373638142A9ACC2665085 /* sepia.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = sepia.pvr; path = ../../sepia.pvr; sourceTree = SOURCE_ROOT; };
-		F874B343036E2FCEA7843728 /* inverted.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = inverted.pvr; path = ../../inverted.pvr; sourceTree = SOURCE_ROOT; };
-		F869A96235F23DAA4C98834C /* highcontrast.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = highcontrast.pvr; path = ../../highcontrast.pvr; sourceTree = SOURCE_ROOT; };
-		F8335AF69F5F63231A2C72A5 /* bluewhitegradient.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = bluewhitegradient.pvr; path = ../../bluewhitegradient.pvr; sourceTree = SOURCE_ROOT; };
+		F82D4335198133BEEEEAB4A8 /* Mask.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mask.pod; path = ../../Mask.pod; sourceTree = SOURCE_ROOT; };
+		F8D19C1A0BBBCBE4C429FC37 /* MaskTexture.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaskTexture.pvr; path = ../../MaskTexture.pvr; sourceTree = SOURCE_ROOT; };
+		F8E47651BCDFDE826370C478 /* Background.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Background.pvr; path = ../../Background.pvr; sourceTree = SOURCE_ROOT; };
+		F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F81AE783867359F7612A30AC /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F8DDC2F451B0FB2BEC6EE200 /* SceneFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SceneFragShader.fsh; path = ../../SceneFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F899732BA113EAA5A4ADCC28 /* SceneVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SceneVertShader.vsh; path = ../../SceneVertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F8254E5751F6EAEF41B88007 /* BackgroundFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BackgroundFragShader.fsh; path = ../../BackgroundFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F859E76B2A247A7CD49F0457 /* identity.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = identity.pvr; path = ../../identity.pvr; sourceTree = SOURCE_ROOT; };
+		F8275174DD13859A973A2513 /* cooler.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = cooler.pvr; path = ../../cooler.pvr; sourceTree = SOURCE_ROOT; };
+		F845AFDE9BB8315E9793BB0D /* warmer.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = warmer.pvr; path = ../../warmer.pvr; sourceTree = SOURCE_ROOT; };
+		F884F2968D2E76C3CD3C86FB /* bw.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = bw.pvr; path = ../../bw.pvr; sourceTree = SOURCE_ROOT; };
+		F8E8ABECCC96CF2B2194FA31 /* sepia.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = sepia.pvr; path = ../../sepia.pvr; sourceTree = SOURCE_ROOT; };
+		F883E74476A82236AD949406 /* inverted.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = inverted.pvr; path = ../../inverted.pvr; sourceTree = SOURCE_ROOT; };
+		F86D870C69757EEAF120BD79 /* highcontrast.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = highcontrast.pvr; path = ../../highcontrast.pvr; sourceTree = SOURCE_ROOT; };
+		F888978F4536AC68A2C87E3F /* bluewhitegradient.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = bluewhitegradient.pvr; path = ../../bluewhitegradient.pvr; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,7 +255,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F817CAF4F34574A75590E028 /* OGLES3ColourGrading.cpp */,
+				F8CB10F42297713CC919EFEB /* OGLES3ColourGrading.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -282,7 +282,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F86047DCC61064DF7714ABDF /* Mask.pod */,
+				F82D4335198133BEEEEAB4A8 /* Mask.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -290,14 +290,14 @@
 		F8E27FF51004EDB1ABC6BBB4 /* Generic */ = {
 			isa = PBXGroup;
 			children = (
-				F8C9F01D62DF67ED9D73AFDE /* identity.pvr */,
-				F85846F1801D51E1324EEC6E /* cooler.pvr */,
-				F8A1880E93190BE56AFDEE02 /* warmer.pvr */,
-				F8DD09AC67B023D6897319F1 /* bw.pvr */,
-				F88373638142A9ACC2665085 /* sepia.pvr */,
-				F874B343036E2FCEA7843728 /* inverted.pvr */,
-				F869A96235F23DAA4C98834C /* highcontrast.pvr */,
-				F8335AF69F5F63231A2C72A5 /* bluewhitegradient.pvr */,
+				F859E76B2A247A7CD49F0457 /* identity.pvr */,
+				F8275174DD13859A973A2513 /* cooler.pvr */,
+				F845AFDE9BB8315E9793BB0D /* warmer.pvr */,
+				F884F2968D2E76C3CD3C86FB /* bw.pvr */,
+				F8E8ABECCC96CF2B2194FA31 /* sepia.pvr */,
+				F883E74476A82236AD949406 /* inverted.pvr */,
+				F86D870C69757EEAF120BD79 /* highcontrast.pvr */,
+				F888978F4536AC68A2C87E3F /* bluewhitegradient.pvr */,
 			);
 			name = Generic;
 			sourceTree = "<group>";
@@ -305,8 +305,8 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F894AAF612CF2BA4C2D7F083 /* MaskTexture.pvr */,
-				F8DBE2085BE4600C809506E7 /* Background.pvr */,
+				F8D19C1A0BBBCBE4C429FC37 /* MaskTexture.pvr */,
+				F8E47651BCDFDE826370C478 /* Background.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -314,11 +314,11 @@
 		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F895137C16F9AE9B63DD3558 /* FragShader.fsh */,
-				F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */,
-				F89E4476208E7C41C7F72145 /* SceneFragShader.fsh */,
-				F835C883445196E0C12F676E /* SceneVertShader.vsh */,
-				F8D30B9EF908FA2A76CD874F /* BackgroundFragShader.fsh */,
+				F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */,
+				F81AE783867359F7612A30AC /* VertShader.vsh */,
+				F8DDC2F451B0FB2BEC6EE200 /* SceneFragShader.fsh */,
+				F899732BA113EAA5A4ADCC28 /* SceneVertShader.vsh */,
+				F8254E5751F6EAEF41B88007 /* BackgroundFragShader.fsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -368,6 +368,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLES3Tools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

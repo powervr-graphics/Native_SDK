@@ -44,25 +44,25 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Balloon.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Balloon.cpp: $(CONTENTDIR) ./Balloon.pvr
 	$(FILEWRAP)  -o $@ ./Balloon.pvr
 
-$(CONTENTDIR)/Balloon_pvr.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Balloon_pvr.cpp: $(CONTENTDIR) ./Balloon_pvr.pvr
 	$(FILEWRAP)  -o $@ ./Balloon_pvr.pvr
 
-$(CONTENTDIR)/Noise.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Noise.cpp: $(CONTENTDIR) ./Noise.pvr
 	$(FILEWRAP)  -o $@ ./Noise.pvr
 
-$(CONTENTDIR)/Skybox.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Skybox.cpp: $(CONTENTDIR) ./Skybox.pvr
 	$(FILEWRAP)  -o $@ ./Skybox.pvr
 
-$(CONTENTDIR)/SkyboxMidnight.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/SkyboxMidnight.cpp: $(CONTENTDIR) ./SkyboxMidnight.pvr
 	$(FILEWRAP)  -o $@ ./SkyboxMidnight.pvr
 
-$(CONTENTDIR)/effects.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/effects.cpp: $(CONTENTDIR) ./effects.pfx
 	$(FILEWRAP)  -s  -o $@ ./effects.pfx
 
-$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Scene.cpp: $(CONTENTDIR) ./Scene.pod
 	$(FILEWRAP)  -o $@ ./Scene.pod
 
 ############################################################################

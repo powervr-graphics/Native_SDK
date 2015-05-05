@@ -25,18 +25,18 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F8C5CFC049502B681172B922 /* OGLESTrilinear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F82C0067C599820F0F8030C8 /* OGLESTrilinear.cpp */; };
+		F8C5CFC049502B681172B922 /* OGLESTrilinear.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F83E5C4F7CD08832A29B82D6 /* OGLESTrilinear.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F8079E54EFAFDFCE223A2FCD /* o_model.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8595167405DB80E6A0E438A /* o_model.pod */; };
-		F8B7307860FB9C2D79A260BC /* Back.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F85C82EDFE04CF2CD09405D2 /* Back.pvr */; };
-		F844212C35687FC7748121F5 /* Tape.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C192F259643717FD728340 /* Tape.pvr */; };
-		F89C45EEAAB3FA4E4909830D /* Ball.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D241B4C740ED302F9A20C3 /* Ball.pvr */; };
-		F87033CE61174DFA317A3B3B /* Info.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86BB0E2DDEA6B2A03231EC4 /* Info.pvr */; };
+		F8079E54EFAFDFCE223A2FCD /* o_model.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8959E398C3FA0CA15CD539F /* o_model.pod */; };
+		F8B7307860FB9C2D79A260BC /* Back.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8950F68F71A416CCB32F561 /* Back.pvr */; };
+		F844212C35687FC7748121F5 /* Tape.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F85CD587EC4AB9CFD0515149 /* Tape.pvr */; };
+		F89C45EEAAB3FA4E4909830D /* Ball.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F0ED5199EE028C148B2DB5 /* Ball.pvr */; };
+		F87033CE61174DFA317A3B3B /* Info.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EB5129D28D8EBDDAEB2511 /* Info.pvr */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,7 +101,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F82C0067C599820F0F8030C8 /* OGLESTrilinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESTrilinear.cpp; path = ../../OGLESTrilinear.cpp; sourceTree = SOURCE_ROOT; };
+		F83E5C4F7CD08832A29B82D6 /* OGLESTrilinear.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESTrilinear.cpp; path = ../../OGLESTrilinear.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -114,11 +114,11 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F8595167405DB80E6A0E438A /* o_model.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = o_model.pod; path = ../../o_model.pod; sourceTree = SOURCE_ROOT; };
-		F85C82EDFE04CF2CD09405D2 /* Back.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Back.pvr; path = ../../Back.pvr; sourceTree = SOURCE_ROOT; };
-		F8C192F259643717FD728340 /* Tape.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Tape.pvr; path = ../../Tape.pvr; sourceTree = SOURCE_ROOT; };
-		F8D241B4C740ED302F9A20C3 /* Ball.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Ball.pvr; path = ../../Ball.pvr; sourceTree = SOURCE_ROOT; };
-		F86BB0E2DDEA6B2A03231EC4 /* Info.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Info.pvr; path = ../../Info.pvr; sourceTree = SOURCE_ROOT; };
+		F8959E398C3FA0CA15CD539F /* o_model.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = o_model.pod; path = ../../o_model.pod; sourceTree = SOURCE_ROOT; };
+		F8950F68F71A416CCB32F561 /* Back.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Back.pvr; path = ../../Back.pvr; sourceTree = SOURCE_ROOT; };
+		F85CD587EC4AB9CFD0515149 /* Tape.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Tape.pvr; path = ../../Tape.pvr; sourceTree = SOURCE_ROOT; };
+		F8F0ED5199EE028C148B2DB5 /* Ball.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Ball.pvr; path = ../../Ball.pvr; sourceTree = SOURCE_ROOT; };
+		F8EB5129D28D8EBDDAEB2511 /* Info.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Info.pvr; path = ../../Info.pvr; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -214,7 +214,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F82C0067C599820F0F8030C8 /* OGLESTrilinear.cpp */,
+				F83E5C4F7CD08832A29B82D6 /* OGLESTrilinear.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -241,7 +241,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F8595167405DB80E6A0E438A /* o_model.pod */,
+				F8959E398C3FA0CA15CD539F /* o_model.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -256,10 +256,10 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F85C82EDFE04CF2CD09405D2 /* Back.pvr */,
-				F8C192F259643717FD728340 /* Tape.pvr */,
-				F8D241B4C740ED302F9A20C3 /* Ball.pvr */,
-				F86BB0E2DDEA6B2A03231EC4 /* Info.pvr */,
+				F8950F68F71A416CCB32F561 /* Back.pvr */,
+				F85CD587EC4AB9CFD0515149 /* Tape.pvr */,
+				F8F0ED5199EE028C148B2DB5 /* Ball.pvr */,
+				F8EB5129D28D8EBDDAEB2511 /* Info.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -308,6 +308,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLESTools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

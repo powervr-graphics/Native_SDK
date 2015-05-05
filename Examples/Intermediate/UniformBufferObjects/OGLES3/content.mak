@@ -41,16 +41,16 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/effect.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/effect.cpp: $(CONTENTDIR) ./effect.pfx
 	$(FILEWRAP)  -s  -o $@ ./effect.pfx
 
-$(CONTENTDIR)/scene.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/scene.cpp: $(CONTENTDIR) ./scene.pod
 	$(FILEWRAP)  -o $@ ./scene.pod
 
-$(CONTENTDIR)/corrodedmetal.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/corrodedmetal.cpp: $(CONTENTDIR) ./corrodedmetal.pvr
 	$(FILEWRAP)  -o $@ ./corrodedmetal.pvr
 
-$(CONTENTDIR)/marble.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/marble.cpp: $(CONTENTDIR) ./marble.pvr
 	$(FILEWRAP)  -o $@ ./marble.pvr
 
 ############################################################################

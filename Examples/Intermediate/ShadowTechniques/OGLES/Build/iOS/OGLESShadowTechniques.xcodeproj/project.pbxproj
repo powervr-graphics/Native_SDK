@@ -25,17 +25,17 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F8FDD963C941AD15391CB95A /* OGLESShadowTechniques.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F87FDF7A4D170FCA053B05D7 /* OGLESShadowTechniques.cpp */; };
+		F8FDD963C941AD15391CB95A /* OGLESShadowTechniques.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F7B0379834F24BADF3FABD /* OGLESShadowTechniques.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F8292E7CCE52973FB5D90098 /* Scene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F810699597C4BF5DA29688F9 /* Scene.pod */; };
-		F81DAEF30636A0B7B9A48B76 /* Blob.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F855874796E216BE9288E8E5 /* Blob.pvr */; };
-		F84679BFA23522C5A59157C1 /* TableCover.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8FF6746E67B6421165FCA35 /* TableCover.pvr */; };
-		F86B96248C42BAEBF52A26BF /* Kettle.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C53FA23A5C57F5D3BB9B21 /* Kettle.pvr */; };
+		F8292E7CCE52973FB5D90098 /* Scene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8E7E8B106BE0F6B2A029BD5 /* Scene.pod */; };
+		F81DAEF30636A0B7B9A48B76 /* Blob.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82DBFEE8F98566EC4EB18F0 /* Blob.pvr */; };
+		F84679BFA23522C5A59157C1 /* TableCover.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D2C3A6B60BC824591ABCC6 /* TableCover.pvr */; };
+		F86B96248C42BAEBF52A26BF /* Kettle.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E42B4E5983FD9F0C6AC869 /* Kettle.pvr */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,7 +100,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F87FDF7A4D170FCA053B05D7 /* OGLESShadowTechniques.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESShadowTechniques.cpp; path = ../../OGLESShadowTechniques.cpp; sourceTree = SOURCE_ROOT; };
+		F8F7B0379834F24BADF3FABD /* OGLESShadowTechniques.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESShadowTechniques.cpp; path = ../../OGLESShadowTechniques.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -113,10 +113,10 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F810699597C4BF5DA29688F9 /* Scene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Scene.pod; path = ../../Scene.pod; sourceTree = SOURCE_ROOT; };
-		F855874796E216BE9288E8E5 /* Blob.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Blob.pvr; path = ../../Blob.pvr; sourceTree = SOURCE_ROOT; };
-		F8FF6746E67B6421165FCA35 /* TableCover.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = TableCover.pvr; path = ../../TableCover.pvr; sourceTree = SOURCE_ROOT; };
-		F8C53FA23A5C57F5D3BB9B21 /* Kettle.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Kettle.pvr; path = ../../Kettle.pvr; sourceTree = SOURCE_ROOT; };
+		F8E7E8B106BE0F6B2A029BD5 /* Scene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Scene.pod; path = ../../Scene.pod; sourceTree = SOURCE_ROOT; };
+		F82DBFEE8F98566EC4EB18F0 /* Blob.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Blob.pvr; path = ../../Blob.pvr; sourceTree = SOURCE_ROOT; };
+		F8D2C3A6B60BC824591ABCC6 /* TableCover.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = TableCover.pvr; path = ../../TableCover.pvr; sourceTree = SOURCE_ROOT; };
+		F8E42B4E5983FD9F0C6AC869 /* Kettle.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Kettle.pvr; path = ../../Kettle.pvr; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,7 +212,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F87FDF7A4D170FCA053B05D7 /* OGLESShadowTechniques.cpp */,
+				F8F7B0379834F24BADF3FABD /* OGLESShadowTechniques.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -239,7 +239,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F810699597C4BF5DA29688F9 /* Scene.pod */,
+				F8E7E8B106BE0F6B2A029BD5 /* Scene.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -254,9 +254,9 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F855874796E216BE9288E8E5 /* Blob.pvr */,
-				F8FF6746E67B6421165FCA35 /* TableCover.pvr */,
-				F8C53FA23A5C57F5D3BB9B21 /* Kettle.pvr */,
+				F82DBFEE8F98566EC4EB18F0 /* Blob.pvr */,
+				F8D2C3A6B60BC824591ABCC6 /* TableCover.pvr */,
+				F8E42B4E5983FD9F0C6AC869 /* Kettle.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -305,6 +305,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLESTools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

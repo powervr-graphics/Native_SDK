@@ -196,18 +196,18 @@ const char* c_pszFragmentShaderSrc[eNumEffects] =
 {
 	"FragShader.fsh",    // eLit
 	"FragShader.fsh",    // eAmbient
-	"TVShader.fsh",      // eTVColour
-	"TVShader.fsh",      // eTVGreyscal
-	"TVShader.fsh"       // eTVNoise
+	"TVFragmentShader.fsh",      // eTVColour
+	"TVFragmentShader.fsh",      // eTVGreyscal
+	"TVFragmentShader.fsh"       // eTVNoise
 };
 
 const char* c_pszVertexShaderSrc[eNumEffects] =
 {
 	"VertShader.vsh",    // eLit
 	"VertShader.vsh",    // eAmbient
-	"TVShader.vsh",      // eTVColour
-	"TVShader.vsh",      // eTVGreyscal
-	"TVShader.vsh"       // eTVNoise
+	"TVVertexShader.vsh",      // eTVColour
+	"TVVertexShader.vsh",      // eTVGreyscal
+	"TVVertexShader.vsh"       // eTVNoise
 };
 
 // Texture files

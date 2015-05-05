@@ -44,25 +44,25 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/FragShader.cpp: $(CONTENTDIR) ./FragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./FragShader.fsh
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 
-$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Mask.cpp: $(CONTENTDIR) ./Mask.pod
 	$(FILEWRAP)  -o $@ ./Mask.pod
 
-$(CONTENTDIR)/Plane.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Plane.cpp: $(CONTENTDIR) ./Plane.pod
 	$(FILEWRAP)  -o $@ ./Plane.pod
 
-$(CONTENTDIR)/Basetex.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Basetex.cpp: $(CONTENTDIR) ./Basetex.pvr
 	$(FILEWRAP)  -o $@ ./Basetex.pvr
 
-$(CONTENTDIR)/Reflection.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Reflection.cpp: $(CONTENTDIR) ./Reflection.pvr
 	$(FILEWRAP)  -o $@ ./Reflection.pvr
 
-$(CONTENTDIR)/Shadow.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Shadow.cpp: $(CONTENTDIR) ./Shadow.pvr
 	$(FILEWRAP)  -o $@ ./Shadow.pvr
 
 ############################################################################

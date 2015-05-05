@@ -25,19 +25,19 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F887800CF50374414965F7CC /* OGLES3AnisotropicLighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F829B44FBBAFC4EBBD05A9C4 /* OGLES3AnisotropicLighting.cpp */; };
+		F887800CF50374414965F7CC /* OGLES3AnisotropicLighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F82F53C8378CA57903733A02 /* OGLES3AnisotropicLighting.cpp */; };
 		F8630E83E2409C83D56FBEC7 /* PVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8264787AE86D57C8A7666DE /* PVRShell.cpp */; };
 		F8BC0A26D1DFE7D24AF67727 /* PVRShellAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */; };
 		F8411F7FA35ADD4338A91C4F /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8E2442C29799D8375335C25 /* EAGLView.mm */; };
 		F8DD445EC802A113BADECABE /* PVRShellOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8E0DE03D93AD0E0F8F82682 /* PVRShellOS.cpp */; };
 		F8511E325A14C7B1512D37CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F858F98E5C5964AD113388E7 /* main.m */; };
 		F869BEBD44384AC2147622A7 /* AppController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8F684111208CE800E2EDF2B /* AppController.mm */; };
-		F8A4642FE52E6F4311AE3E78 /* Mask.pod in Resources */ = {isa = PBXBuildFile; fileRef = F86047DCC61064DF7714ABDF /* Mask.pod */; };
-		F821B47AD1C0AE2BBFB268F9 /* Basetex.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F80DBBC89408C2090F5D3B76 /* Basetex.pvr */; };
-		F84CF4180163CED33791B7A1 /* FastFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F839039ABD1E902B250997BB /* FastFragShader.fsh */; };
-		F8C2040D89499AA67912DBD2 /* FastVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F84139C03859CB898838912A /* FastVertShader.vsh */; };
-		F806563AE17055B644BDA962 /* SlowFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8391B2026CB192F232C6115 /* SlowFragShader.fsh */; };
-		F8B7E9544AEF8B0AAD7766FE /* SlowVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8321852F61A47B156EAD8FB /* SlowVertShader.vsh */; };
+		F8A4642FE52E6F4311AE3E78 /* Mask.pod in Resources */ = {isa = PBXBuildFile; fileRef = F82D4335198133BEEEEAB4A8 /* Mask.pod */; };
+		F821B47AD1C0AE2BBFB268F9 /* Basetex.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F866DA95B6275F8A4EEB2AC3 /* Basetex.pvr */; };
+		F84CF4180163CED33791B7A1 /* FastFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8954FB85072BEB21BDB361A /* FastFragShader.fsh */; };
+		F8C2040D89499AA67912DBD2 /* FastVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8552C0DF311F9D55812E1CC /* FastVertShader.vsh */; };
+		F806563AE17055B644BDA962 /* SlowFragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F83CD46E0BFA5724282672D8 /* SlowFragShader.fsh */; };
+		F8B7E9544AEF8B0AAD7766FE /* SlowVertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F878140D080DA79CE0B8A949 /* SlowVertShader.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,7 +112,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F829B44FBBAFC4EBBD05A9C4 /* OGLES3AnisotropicLighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES3AnisotropicLighting.cpp; path = ../../OGLES3AnisotropicLighting.cpp; sourceTree = SOURCE_ROOT; };
+		F82F53C8378CA57903733A02 /* OGLES3AnisotropicLighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLES3AnisotropicLighting.cpp; path = ../../OGLES3AnisotropicLighting.cpp; sourceTree = SOURCE_ROOT; };
 		F8264787AE86D57C8A7666DE /* PVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShell.cpp; path = ../../../../../../Shell/PVRShell.cpp; sourceTree = SOURCE_ROOT; };
 		F8F83C7EA7CDB6880DABB802 /* PVRShellAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PVRShellAPI.cpp; path = ../../../../../../Shell/API/EAGL/PVRShellAPI.cpp; sourceTree = SOURCE_ROOT; };
 		F8E2442C29799D8375335C25 /* EAGLView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EAGLView.mm; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.mm; sourceTree = SOURCE_ROOT; };
@@ -125,12 +125,12 @@
 		F8E701477C9CA479DB00B3A2 /* EAGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EAGLView.h; path = ../../../../../../Shell/API/EAGL/OpenGLSupport/EAGLView.h; sourceTree = SOURCE_ROOT; };
 		F8586FC562C506B48E3F5B9B /* PVRShellOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellOS.h; path = ../../../../../../Shell/OS/iOS/PVRShellOS.h; sourceTree = SOURCE_ROOT; };
 		F84E4FBFA761F9B01C0DF817 /* AppController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ../../../../../../Shell/OS/iOS/AppController.h; sourceTree = SOURCE_ROOT; };
-		F86047DCC61064DF7714ABDF /* Mask.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mask.pod; path = ../../Mask.pod; sourceTree = SOURCE_ROOT; };
-		F80DBBC89408C2090F5D3B76 /* Basetex.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Basetex.pvr; path = ../../Basetex.pvr; sourceTree = SOURCE_ROOT; };
-		F839039ABD1E902B250997BB /* FastFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FastFragShader.fsh; path = ../../FastFragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F84139C03859CB898838912A /* FastVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FastVertShader.vsh; path = ../../FastVertShader.vsh; sourceTree = SOURCE_ROOT; };
-		F8391B2026CB192F232C6115 /* SlowFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SlowFragShader.fsh; path = ../../SlowFragShader.fsh; sourceTree = SOURCE_ROOT; };
-		F8321852F61A47B156EAD8FB /* SlowVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SlowVertShader.vsh; path = ../../SlowVertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F82D4335198133BEEEEAB4A8 /* Mask.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Mask.pod; path = ../../Mask.pod; sourceTree = SOURCE_ROOT; };
+		F866DA95B6275F8A4EEB2AC3 /* Basetex.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Basetex.pvr; path = ../../Basetex.pvr; sourceTree = SOURCE_ROOT; };
+		F8954FB85072BEB21BDB361A /* FastFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FastFragShader.fsh; path = ../../FastFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F8552C0DF311F9D55812E1CC /* FastVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FastVertShader.vsh; path = ../../FastVertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F83CD46E0BFA5724282672D8 /* SlowFragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SlowFragShader.fsh; path = ../../SlowFragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F878140D080DA79CE0B8A949 /* SlowVertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SlowVertShader.vsh; path = ../../SlowVertShader.vsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -235,7 +235,7 @@
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F829B44FBBAFC4EBBD05A9C4 /* OGLES3AnisotropicLighting.cpp */,
+				F82F53C8378CA57903733A02 /* OGLES3AnisotropicLighting.cpp */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -262,7 +262,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F86047DCC61064DF7714ABDF /* Mask.pod */,
+				F82D4335198133BEEEEAB4A8 /* Mask.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -277,7 +277,7 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F80DBBC89408C2090F5D3B76 /* Basetex.pvr */,
+				F866DA95B6275F8A4EEB2AC3 /* Basetex.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -285,10 +285,10 @@
 		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F839039ABD1E902B250997BB /* FastFragShader.fsh */,
-				F84139C03859CB898838912A /* FastVertShader.vsh */,
-				F8391B2026CB192F232C6115 /* SlowFragShader.fsh */,
-				F8321852F61A47B156EAD8FB /* SlowVertShader.vsh */,
+				F8954FB85072BEB21BDB361A /* FastFragShader.fsh */,
+				F8552C0DF311F9D55812E1CC /* FastVertShader.vsh */,
+				F83CD46E0BFA5724282672D8 /* SlowFragShader.fsh */,
+				F878140D080DA79CE0B8A949 /* SlowVertShader.vsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -338,6 +338,9 @@
 				{
 					ProductGroup = F80B21C11015CA1600A93BE2 /* Products */;
 					ProjectRef = F80B21C01015CA1600A93BE2 /* OGLES3Tools.xcodeproj */;
+				},
+				{
+
 				},
 			);
 			projectRoot = "";

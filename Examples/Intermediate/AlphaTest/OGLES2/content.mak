@@ -41,19 +41,19 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/TexFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/TexFragShader.cpp: $(CONTENTDIR) ./TexFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./TexFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./TexFragShader.fsc
 
-$(CONTENTDIR)/DiscardFragShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/DiscardFragShader.cpp: $(CONTENTDIR) ./DiscardFragShader.fsh
 	$(FILEWRAP)  -s  -o $@ ./DiscardFragShader.fsh
 	-$(FILEWRAP)  -oa $@ ./DiscardFragShader.fsc
 
-$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/VertShader.cpp: $(CONTENTDIR) ./VertShader.vsh
 	$(FILEWRAP)  -s  -o $@ ./VertShader.vsh
 	-$(FILEWRAP)  -oa $@ ./VertShader.vsc
 
-$(CONTENTDIR)/Wallwire.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Wallwire.cpp: $(CONTENTDIR) ./Wallwire.pvr
 	$(FILEWRAP)  -o $@ ./Wallwire.pvr
 
 ############################################################################

@@ -38,7 +38,7 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Grass.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Grass.cpp: $(CONTENTDIR) ./Grass.pvr
 	$(FILEWRAP)  -o $@ ./Grass.pvr
 
 ############################################################################

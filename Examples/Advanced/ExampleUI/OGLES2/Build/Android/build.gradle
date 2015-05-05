@@ -1,0 +1,149 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+	
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.0'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.application'
+
+File pvrSdkDir = file("${project.buildDir}/../../../../../../../")
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "com.powervr.OGLES2ExampleUI"
+        minSdkVersion 15
+        targetSdkVersion 19
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            jniDebuggable true
+        }
+    }
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+            jni.srcDirs= []
+            jniLibs.srcDir 'libs'
+
+        }
+    }
+
+    FileCollection tree = files(
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/container-corner.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/container-vertical.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/container-horizontal.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/topbar.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/background.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/clock-face.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/clock-face-small.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/hand.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/hand-small.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/battery.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/internet-web-browser.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/mail-message-new.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/network-wireless.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/office-calendar.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/weather-sun-cloud.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/weather-storm.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/weather-rain.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/text1.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/text2.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/text-weather.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/text-fri.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/text-sat.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/text-sun.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/text-mon.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/weather-sun-cloud-big.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/window-bottom.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/window-bottomcorner.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/window-side.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/window-top.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/window-topleft.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/window-topright.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/loremipsum.pvr",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/SpriteShaderF.fsh",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/SpriteShaderV.vsh",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/TexColShaderF.fsh",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/TexColShaderV.vsh",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/ColShaderF.fsh",
+"${pvrSdkDir}/Examples/Advanced/ExampleUI/OGLES2/ColShaderV.vsh",
+
+)
+
+    task copyAssets(type: Copy){
+        from tree
+        into 'assets'
+    }
+
+    String ndkBuildCommand = 'ndk-build';
+
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        ndkBuildCommand = 'ndk-build.cmd'
+    }
+    task ndkBuildTools(type:Exec) {
+        workingDir "${pvrSdkDir}/Tools/OGLES2/Build/Android"
+        commandLine ndkBuildCommand,  '-j'
+    }
+
+    task ndkBuild(type: Exec, dependsOn:[copyAssets ,ndkBuildTools]) {
+        commandLine ndkBuildCommand, '-j'
+    }
+
+    task ndkBuildClean(type: Exec) {
+        commandLine ndkBuildCommand, '-j', 'clean'
+    }
+
+    task copyToBin(type: Copy) {
+        from 'build/outputs/apk/'
+        into 'bin/'
+        include('*.apk')
+   }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkBuild
+    }
+
+    assembleRelease {
+        doLast() {
+            copyToBin.execute()
+        }
+    }
+
+    clean.dependsOn ndkBuildClean
+    clean {
+        doLast() {
+            delete "assets"
+            delete "obj"
+            delete "bin"
+        }
+    }
+
+    preBuild.dependsOn copyAssets
+}
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}

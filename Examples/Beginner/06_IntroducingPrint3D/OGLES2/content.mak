@@ -43,22 +43,22 @@ resources: $(RESOURCES)
 $(CONTENTDIR):
 	-mkdir "$@"
 
-$(CONTENTDIR)/Text.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/Text.cpp: $(CONTENTDIR) ./Text.txt
 	$(FILEWRAP)  -o $@ ./Text.txt
 
-$(CONTENTDIR)/arial_36.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/arial_36.cpp: $(CONTENTDIR) ./arial_36.pvr
 	$(FILEWRAP)  -o $@ ./arial_36.pvr
 
-$(CONTENTDIR)/starjout_60.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/starjout_60.cpp: $(CONTENTDIR) ./starjout_60.pvr
 	$(FILEWRAP)  -o $@ ./starjout_60.pvr
 
-$(CONTENTDIR)/title_36.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/title_36.cpp: $(CONTENTDIR) ./title_36.pvr
 	$(FILEWRAP)  -o $@ ./title_36.pvr
 
-$(CONTENTDIR)/title_46.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/title_46.cpp: $(CONTENTDIR) ./title_46.pvr
 	$(FILEWRAP)  -o $@ ./title_46.pvr
 
-$(CONTENTDIR)/title_56.cpp: $(CONTENTDIR)
+$(CONTENTDIR)/title_56.cpp: $(CONTENTDIR) ./title_56.pvr
 	$(FILEWRAP)  -o $@ ./title_56.pvr
 
 ############################################################################

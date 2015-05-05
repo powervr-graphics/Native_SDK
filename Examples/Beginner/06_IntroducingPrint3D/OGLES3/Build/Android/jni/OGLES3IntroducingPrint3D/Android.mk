@@ -3,12 +3,15 @@ PVRSDKDIR := $(realpath $(LOCAL_PATH))
 
 ASSETDIR := $(PVRSDKDIR)/Examples/Beginner/06_IntroducingPrint3D/OGLES3/Build/Android/assets
 
-CPY := cp
-SEPARATOR := /
-ifeq ($(HOST_OS),windows)
-CPY := copy
-SEPARATOR := \\
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module ogles3tools
+include $(CLEAR_VARS)
+LOCAL_MODULE := ogles3tools
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Tools/OGLES3/Build/Android/obj/local/$(TARGET_ARCH_ABI)/libogles3tools.a
+include $(PREBUILT_STATIC_LIBRARY)
 endif
+
 
 # Module OGLES3IntroducingPrint3D
 include $(CLEAR_VARS)
@@ -42,39 +45,3 @@ LOCAL_STATIC_LIBRARIES := android_native_app_glue \
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,android/native_app_glue)
-
-### Copy our external files to the assets folder, but only do it for the first abi
-ifeq ($(TARGET_ARCH_ABI),$(firstword $(NDK_APP_ABI)))
-
-all:  \
-	$(ASSETDIR)/Text.txt \
-	$(ASSETDIR)/arial_36.pvr \
-	$(ASSETDIR)/starjout_60.pvr \
-	$(ASSETDIR)/title_36.pvr \
-	$(ASSETDIR)/title_46.pvr \
-	$(ASSETDIR)/title_56.pvr
-
-$(ASSETDIR):
-	-mkdir "$(ASSETDIR)"
-
-$(ASSETDIR)/Text.txt: $(PVRSDKDIR)/Examples/Beginner/06_IntroducingPrint3D/OGLES3/Text.txt $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/arial_36.pvr: $(PVRSDKDIR)/Examples/Beginner/06_IntroducingPrint3D/OGLES3/arial_36.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/starjout_60.pvr: $(PVRSDKDIR)/Examples/Beginner/06_IntroducingPrint3D/OGLES3/starjout_60.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/title_36.pvr: $(PVRSDKDIR)/Examples/Beginner/06_IntroducingPrint3D/OGLES3/title_36.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/title_46.pvr: $(PVRSDKDIR)/Examples/Beginner/06_IntroducingPrint3D/OGLES3/title_46.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-$(ASSETDIR)/title_56.pvr: $(PVRSDKDIR)/Examples/Beginner/06_IntroducingPrint3D/OGLES3/title_56.pvr $(ASSETDIR)
-	$(CPY) $(subst /,$(SEPARATOR),"$<" "$(ASSETDIR)")
-
-endif
-
-
