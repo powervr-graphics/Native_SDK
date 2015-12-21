@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['sampler',['sampler',['../_api_gles3_8h.html#a4f7acaf0f814147f227f72b9065e8ed0',1,'ApiGles3.h']]],
+  ['samplers',['samplers',['../_api_gles3_8h.html#a296172595179a7da3789f85b182f184a',1,'ApiGles3.h']]],
+  ['samples',['samples',['../_api_gles3_8h.html#aba70cd077c2c52c15358c231c6d293aa',1,'samples():&#160;ApiGles3.h'],['../_api_gles31_8h.html#aba70cd077c2c52c15358c231c6d293aa',1,'samples():&#160;ApiGles31.h'],['../_api_gles_ext_8h.html#aba70cd077c2c52c15358c231c6d293aa',1,'samples():&#160;ApiGlesExt.h']]],
+  ['severity',['severity',['../_api_gles_ext_8h.html#acc39d4387d4f2d172de77ed0c5208990',1,'ApiGlesExt.h']]],
+  ['sfactoralpha',['sfactorAlpha',['../_api_gles2_8h.html#a147716336d55f4ee3ec628f7bec7a6b1',1,'ApiGles2.h']]],
+  ['sfail',['sfail',['../_api_gles2_8h.html#a6114b7cdfde5ff0225f7f47480d099c6',1,'ApiGles2.h']]],
+  ['shader',['Shader',['../namespacepvr_1_1api.html#acc461c8a49bf816fba2c9e9c127cc914',1,'pvr::api::Shader()'],['../_api_gles2_8h.html#a57b2a96adb1d51204909a82d861e395e',1,'shader():&#160;ApiGles2.h']]],
+  ['shadergles',['ShaderGles',['../namespacepvr_1_1api.html#a9ddbbabd52684a2d9d4aeabdf126d9d8',1,'pvr::api']]],
+  ['shaders',['shaders',['../_api_gles2_8h.html#a9ef40b8b66ee2f657225b989845b9a19',1,'ApiGles2.h']]],
+  ['size',['size',['../_api_gles2_8h.html#a3d1e3edfcf61ca2d831883e1afbad89e',1,'size():&#160;ApiGles2.h'],['../_api_gles3_8h.html#a79ef9eb3e59c4bb34c4b9fbeb8d28ff7',1,'size():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a3d1e3edfcf61ca2d831883e1afbad89e',1,'size():&#160;ApiGles31.h']]],
+  ['source',['source',['../_api_gles2_8h.html#a6ffd2192cbc75d017665e95207ee36a7',1,'ApiGles2.h']]],
+  ['srcx1',['srcX1',['../_api_gles3_8h.html#ab31358d0f5e2a6f39f8a2dcfdb5e0820',1,'ApiGles3.h']]],
+  ['srcy0',['srcY0',['../_api_gles3_8h.html#a274444303b2daeb586bf930200812d14',1,'ApiGles3.h']]],
+  ['srcy1',['srcY1',['../_api_gles3_8h.html#a8821e9a95bf0c186ac57d2c3f35b4448',1,'ApiGles3.h']]],
+  ['stages',['stages',['../_api_gles31_8h.html#a107131207bf8a6602055c9b1fd2bf618',1,'ApiGles31.h']]],
+  ['start',['start',['../_api_gles3_8h.html#ac55adc720a3098c1b454d2a4647f4361',1,'ApiGles3.h']]],
+  ['statecontainer',['StateContainer',['../structpvr_1_1api_1_1impl_1_1_graphics_state_container.html#a077ee057ef852330d14100d19d0b3a04',1,'pvr::api::impl::GraphicsStateContainer']]],
+  ['stencil',['stencil',['../_api_gles3_8h.html#aecd18db993a66d833647945966799ca5',1,'ApiGles3.h']]],
+  ['stride',['stride',['../_api_gles2_8h.html#adec60f1216ca1b900f8d776c5b6190e0',1,'stride():&#160;ApiGles2.h'],['../_api_gles3_8h.html#a9d21c1b0530d07b637b5b71b969d7921',1,'stride():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a6495eaf773c0d49a502b6afacfd4c08f',1,'stride():&#160;ApiGles31.h']]],
+  ['string',['string',['../_api_gles2_8h.html#ac83513893df92266f79a515488701770',1,'ApiGles2.h']]],
+  ['strings',['strings',['../_api_gles31_8h.html#a358800951ab289d05276c793070136b7',1,'ApiGles31.h']]],
+  ['sync',['Sync',['../namespacepvr_1_1api.html#aed7be4927619057cc4c9f136198da2f5',1,'pvr::api']]]
+];

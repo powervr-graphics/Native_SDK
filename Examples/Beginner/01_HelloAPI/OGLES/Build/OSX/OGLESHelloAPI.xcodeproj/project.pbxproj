@@ -11,12 +11,12 @@
 		49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */; };
 		DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
 		DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
-		DB3A55CC15C937F1004CE8F1 /* libGLESv1_CM.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv1_CM.dylib */; };
-		DB3A55CD15C9380E004CE8F1 /* libGLESv1_CM.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv1_CM.dylib */; };
+		DB3A55CC15C937F1004CE8F1 /* libGLESv2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */; };
+		DB3A55CD15C9380E004CE8F1 /* libGLESv2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */; };
 		495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0013E2EE09000FD6B4 /* MainMenu.xib */; };
 		495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */; };
 		DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */ = {isa = PBXBuildFile; fileRef = DB3A55D015C938EC004CE8F1 /* IMG.icns */; };
-		F8525839EB3000BE080F8F03 /* OGLESHelloAPI_OSX.mm in Sources */ = {isa = PBXBuildFile; fileRef = F80F03AF57AC2C966FA0D9EB /* OGLESHelloAPI_OSX.mm */; };
+		F838719A6D9E34D9252E93DF /* OGLESHelloAPI_OSX.mm in Sources */ = {isa = PBXBuildFile; fileRef = F84A2FF8B83459EF3CD3A6EB /* OGLESHelloAPI_OSX.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,7 +26,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				DB3A55CD15C9380E004CE8F1 /* libGLESv1_CM.dylib in CopyFiles */,
+				DB3A55CD15C9380E004CE8F1 /* libGLESv2.dylib in CopyFiles */,
 				DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -41,13 +41,13 @@
 		49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		49068F5813DDA30C00C8DC21 /* OGLESHelloAPI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLESHelloAPI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49FE311813E2CEE900B32DAC /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
-		DB3A55C715C92647004CE8F1 /* libEGL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libEGL.dylib; path = "../../../../../../Builds//OSX/x86/Lib/libEGL.dylib"; sourceTree = "<group>"; };
-		DB3A55CB15C937F1004CE8F1 /* libGLESv1_CM.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLESv1_CM.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libGLESv1_CM.dylib"; sourceTree = "<group>"; };
+		DB3A55C715C92647004CE8F1 /* libEGL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libEGL.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libEGL.dylib"; sourceTree = "<group>"; };
+		DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLESv2.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libGLESv2.dylib"; sourceTree = "<group>"; };
 		DB3A55CE15C938D4004CE8F1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		DB3A55D015C938EC004CE8F1 /* IMG.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = IMG.icns; path = "../../../../../../Builds/OSX/Resources/IMG.icns"; sourceTree = "<group>"; };
 		495B9D0113E2EE09000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
 		495B9D0513E2EE16000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
-		F80F03AF57AC2C966FA0D9EB /* OGLESHelloAPI_OSX.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OGLESHelloAPI_OSX.mm; path = ../../OGLESHelloAPI_OSX.mm; sourceTree = SOURCE_ROOT; };
+		F84A2FF8B83459EF3CD3A6EB /* OGLESHelloAPI_OSX.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OGLESHelloAPI_OSX.mm; path = ../../OGLESHelloAPI_OSX.mm; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +58,7 @@
 				49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */,
 				49068F5D13DDA30C00C8DC21 /* Cocoa.framework in Frameworks */,
 				DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */,
-				DB3A55CC15C937F1004CE8F1 /* libGLESv1_CM.dylib in Frameworks */,
+				DB3A55CC15C937F1004CE8F1 /* libGLESv2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,7 +112,7 @@
 		49068F7913DDA51C00C8DC21 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				F80F03AF57AC2C966FA0D9EB /* OGLESHelloAPI_OSX.mm */,
+				F84A2FF8B83459EF3CD3A6EB /* OGLESHelloAPI_OSX.mm */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -138,7 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				DB3A55C715C92647004CE8F1 /* libEGL.dylib */,
-				DB3A55CB15C937F1004CE8F1 /* libGLESv1_CM.dylib */,
+				DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -149,8 +149,16 @@
 				DBE6ED4E15C2AB9C00275129 /* Generic */,
 				DBE6ED4D15C2AB8E00275129 /* Models */,
 				DBE6ED4C15C2AB7E00275129 /* Textures */,
+				DBE6ED4A15C2AB7000275129 /* Shaders */,
 			);
 			name = Content;
+			sourceTree = "<group>";
+		};
+		DBE6ED4A15C2AB7000275129 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Shaders;
 			sourceTree = "<group>";
 		};
 		DBE6ED4C15C2AB7E00275129 /* Textures */ = {
@@ -216,7 +224,7 @@
 			projectReferences = (
 				{
 					ProductGroup = DB5C329915C7F19D00B1A208 /* Products */;
-					ProjectRef = DBE6ED1B15C2A1D300275129 /* OGLESTools.xcodeproj */;
+					ProjectRef = DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -227,10 +235,10 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		DB5C32AC15C7F32B00B1A208 /* libOGLESTools.a */ = {
+		DB5C32AC15C7F32B00B1A208 /* libOGLES2Tools.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libOGLESTools.a;
+			path = libOGLES2Tools.a;
 			remoteRef = DB5C32AB15C7F32B00B1A208 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -255,7 +263,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8525839EB3000BE080F8F03 /* OGLESHelloAPI_OSX.mm in Sources */,
+				F838719A6D9E34D9252E93DF /* OGLESHelloAPI_OSX.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,7 +344,7 @@
 				GCC_PREFIX_HEADER = Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
-					BUILD_OGLES,
+					BUILD_OGLES2,
 				);
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Info.plist;
@@ -354,7 +362,7 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES;
+				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES2;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = ("$(inherited)","../../../../../../Builds/OSX/x86/Lib");

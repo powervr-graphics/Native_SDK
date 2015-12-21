@@ -68,6 +68,9 @@
 					<td>[API]</td><td>Shorthand for the targeted Application Programming Interface, e.g., OGLES2 for OpenGL ES 2.0. This placeholder is regularly used for directory and project/makefile names in the SDK.</td>
 				</tr>
 				<tr>
+					<td>[GlueAPI]</td><td>Shorthand for the targeted Application Programming Interface's platform connection API, e.g., EGL for any OpenGL ES API. This placeholder is regularly used for directory and project/makefile names in the SDK.</td>
+				</tr>
+				<tr>
 					<td>[ExampleName]</td><td>The name of the example application that you are building.</td>
 				</tr>
 				<tr>
@@ -77,7 +80,7 @@
 					<td>[Platform]</td><td>The targeted Application Binary Interface, e.g., x86.</td>
 				</tr>
 				<tr>
-					<td>[ReleaseDir]</td><td>This refers to the release directory, which is either ReleaseRaw or ReleaseX11 in the case of Linux.</td>
+					<td>[ReleaseDir]</td><td>This refers to the release directory, which is either ReleaseNullWS or ReleaseX11 in the case of Linux.</td>
 				</tr>
 				<tr>
 					<td>[sdk-installation-directory]</td><td>This is the root directory where the SDK is installed.</td>
@@ -198,6 +201,7 @@
 					<ul>
 						<li>armv7</li>
 						<li>armv7hf</li>
+						<li>armv8</li>
 						<li>mips_32</li>
 						<li>mips_64</li>
 						<li>x86_32</li>
@@ -205,7 +209,7 @@
 					</ul>
 				</li>
 			</ol>
-				<p>The executables for the examples will be under:	<span class="code">Examples/<abbr title="The name of the folder the examples are sorted into according to their complexity.">[ExampleLevel]</abbr>/<abbr title="The name of the example application that you are building.">[ExampleName]</abbr>/<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>/Build/<abbr title="The targeted Application Binary Interface.">[Platform]</abbr>/<abbr title="This refers to the release directory.">[ReleaseDir]</abbr></span> where <span class="code"><abbr title="This refers to the release directory.">[ReleaseDir]</abbr></span> is one of <span class="code">ReleaseRaw</span> or <span class="code">ReleaseX11</span></p>
+				<p>The executables for the examples will be under:	<span class="code">Examples/<abbr title="The name of the folder the examples are sorted into according to their complexity.">[ExampleLevel]</abbr>/<abbr title="The name of the example application that you are building.">[ExampleName]</abbr>/<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>/Build/<abbr title="The targeted Application Binary Interface.">[Platform]</abbr>/<abbr title="This refers to the release directory.">[ReleaseDir]</abbr></span> where <span class="code"><abbr title="This refers to the release directory.">[ReleaseDir]</abbr></span> is one of <span class="code">ReleaseNullWS</span> or <span class="code">ReleaseX11</span></p>
 			<p>To run an executable, follow the steps below:</p>
 			<ol>
 				<li>
@@ -219,7 +223,7 @@
 				<p>Ensure the drivers are running (e.g., type <span class="code">/etc/init.d/rc/pvr</span> start, then run an X session if required).</p>
 				<p>Under X11, window sizes can be specified for the executables using the command-line arguments <span class="code">-posx=n</span> and <span class="code">-posy=n</span> to define the top right hand corner, and <span class="code">-width=n</span> and <span class="code">-height=n</span> to define width and height, respectively.</p>
 				<p>For example:</p>
-				<p class="code">./<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>IntroducingPOD  -posx=10 -posy=10 -width=100 -height=100</p>
+				<p class="code">./<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>IntroducingPOD -posx=10 -posy=10 -width=100 -height=100</p>
 				</li>
 				<li>
 				<p>If you attempt to run an SDK example and it fails with the message: <span class="code">"Can't open display"</span> produced by the X client, then make sure that the <span class="code">DISPLAY</span> variable is set with the shell command: <span class='code'>"set | grep -e DISPLAY"</span>. If this command does not yield any output then type (in shell): <span class='code'>"DISPLAY=:0.0; export DISPLAY"</span></p>
@@ -256,7 +260,7 @@
 				<li>
 				<p>To organise the project, right-click on it from the <span class="code">Project Navigator</span> and select <span class="code">New Group</span>. Following this, create the following groups (which will contain the mentioned application contents):</p>
 				<ul>
-					<li>Source/Shell (Shell source files)</li>
+					<li>Sources (Application source files)</li>
 					<li>Content/Models (.pod files)</li>
 					<li>Content/Textures (.pvr textures)</li>
 					<li>Content/Shaders (shaders)</li>
@@ -264,33 +268,21 @@
 				</ul>
 				</li>
 				<li>
-				<p>Right click the <span class="code">Shell</span> group and select <span class="code">Add Files</span> to <span class="code">"project name"</span> and add these following files:</p>
+				<p>Add the following frameworks to the project:</p>
 				<ul>
-					<li><span class="code">PVRShell.h</span>,  <span class="code">PVRShell.cpp</span>, <span class="code">PVRShellImpl.h</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/Shell</span>)</li>
-					<li><span class="code">PVRShellAPI.h</span>, <span class="code">PVRShellAPI.cpp,</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/Shell/API/KEGL</span>)</li>
-					<li><span class="code">main.m</span>, <span class="code">PVRShellOS.h</span>, <span class="code">PVRShellOS.cpp</span>, <span class="code">AppController.mm</span>, <span class="code">AppController.h</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/  /Shell/OS/OSX</span>)</li>
+					<li><span class="code">PVRCore</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRCore/Builds/OSX/PVRCore.xcodeproj</span>)</li>
+					<li><span class="code">PVRShell</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRShell/Builds/OSX/PVRShell.xcodeproj</span>)</li>
+					<li><span class="code">PVR[GlueAPI]</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRPlatformGlue/<abbr title=" Shorthand for the targeted Platform Conntection Application Programming Interface.">[GlueAPI]</abbr>/Builds/OSX/PVR<abbr title=" Shorthand for the targeted Application Programming Interface.">[GlueAPI]</abbr>.xcodeproj</span>)</li>
+					<li><span class="code">PVR[API]</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRApi/<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>/Builds/OSX/PVR<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>.xcodeproj</span>)</li>
+					<li>(Optional)<span class="code">PVRUIRenderer</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRUIRenderer/Builds/OSX/PVRUIRenderer.xcodeproj</span>)</li>
+					<li>(Optional)<span class="code">PVRCamera</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRCamera/Builds/OSX/PVRUIRenderer.xcodeproj</span>)</li>
 				</ul>
 				</li>
 				<li>
-				<p>Under the <span class="code">Source</span> group create a new .cpp file for your application code and include the following header files:</p>
-				<ul>
-					<li><span class="code">PVRShell.h</span></li>
-					<li><span class="code">OGLES3Tools.h</span></li>
-				</ul>	
+				<p>Under the <span class="code">Sources</span> group create a new .cpp file for your application code.</p>
 				</li>
 				<li>
-				<p>Right-click the <span class="code">Libraries</span> group and then select <span class="code">Add Files</span> to <span class="code">"project name"</span> and navigate to the <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr> /Tools/<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>/Build/OSX/<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>Tools.xcodeproj</span> and add this project.</p>
-				</li>
-				<li>
-				<p>Go to your project’s <span class="code">Targets Build Phases</span> settings and add the following source files under the <span class="code">Compile Sources</span> section:</p>
-				<ul>
-					<li>Your application source file</li>
-					<li>PVRShell.cpp</li>
-					<li>PVRShellAPI.cpp</li>
-					<li>PVRShellOS.cpp</li>
-					<li>main.m</li>
-					<li>AppController.mm</li>
-				</ul>
+				<p>Go to your project’s <span class="code">Targets Build Phases</span> settings and add Your application source file under the <span class="code">Compile Sources</span> section:</p>
 				<p>Add the library files under <span class="code">LinkBinary With Libraries</span> section:</p>
 				<ul>
 					<li><span class="code">Lib<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>Tools.a</span></li>
@@ -306,15 +298,11 @@
 				</ul>
 				</li>
 				<li>
-				<p>Go to your project’s <span class="code">Targets Build Phases</span> settings, and under the <span class="code">Preprocessing</span> section add <span class="code">BUILD <abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr> preprocessor for Debug and release configuration</span>. Then under the <span class="code">Search</span> paths section select <span class="code">Yes for Always Search User Paths</span> and add these header search paths to <span class="code">User Header Search Paths</span>:</p>
+				<p>Go to your project’s  <span class="code">Search</span> paths section select <span class="code">Yes for Always Search User Paths</span> and add these header search paths to <span class="code">User Header Search Paths</span>:</p>
 				<ul>
 					<li><span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/Builds/Include</span></li>
-					<li><span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/Tools/<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr></span></li>
+					<li><span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/Framework</span></li>
 					<li><span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/Tools</span></li>
-				</ul>
-				<p>If your targeted API is OGLES3 then you also have to add:</p>
-				<ul>
-					<li><span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/Builds/Tools/OGLES2</span></li>
 				</ul>
 				<p>Add these following paths to the Library Search Paths:</p>
 				<ul>

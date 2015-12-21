@@ -11,7 +11,7 @@
 SDKDIR  = $(shell cd ../../../../../.. && pwd)
 VPATH = ../..
 
-CROSS_COMPILE ?= mips-linux-gnu-
+CROSS_COMPILE ?= mips-img-linux-gnu-
 
 ifdef TOOLCHAIN
 PLAT_CC  = $(TOOLCHAIN)/bin/$(CROSS_COMPILE)gcc
@@ -57,17 +57,11 @@ DEBUG_RELEASE = Release
 PLAT_CFLAGS   += -O2
 endif
 
-PLAT_CFLAGS += -Wall -march=mips32r2 -mabi=32 -EL
+PLAT_CFLAGS += -Wall -march=mips32r6 -mabi=32 -EL
 PLAT_INC  = $(SDKDIR)/Builds/Include $(WS_INC)
 
 PLAT_OBJPATH = $(DEBUG_RELEASE)$(WS)
-PLAT_LINK = $(LIBDIR_FLAGS) $(WS_LIBS) -L$(TOOLCHAIN)/lib -march=mips32r2 -mabi=32 -EL
-
-ifndef V1BUILD
-PLAT_LINK 	+= -lGLES_CM
-else
-PLAT_LINK	+= -lGLESv1_CM -lEGL
-endif
+PLAT_LINK = $(LIBDIR_FLAGS) -lEGL -lGLESv2 -march=mips32r6 -mabi=32 -EL $(WS_LIBS) -L$(TOOLCHAIN)/lib
 
 ifeq "$(WS)" "X11"
 SRCNAME = OGLESHelloAPI_LinuxX11

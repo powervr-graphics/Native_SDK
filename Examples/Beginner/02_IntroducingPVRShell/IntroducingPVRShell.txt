@@ -5,8 +5,10 @@ IntroducingPVRShell
 This training course introduces the PVRShell library.
 
 :FullDescription:
-This demo deals with the PVRShell library.  The PowerVR shell handles all OS specific initialisation code, and has several built in command line features which allow for the specifying of attributes. The library is constructed around a 'PVRShell' base class, and object of which is constructed and returned from a 'NewDemo' function.
+This demo deals with the PVRShell library.  The PowerVR shell handles all OS specific initialisation code, and has several built in command line features which allow for the specifying of attributes. When using the PVR Shell, the application uses the class 'pvr::Shell' as its base class, and is constructed and returned from a 'pvr::newDemo' function.
 
-Controls:
-	-	Esc	-	Close the application
+:APIS:
+OpenGL ES 2.0
 
+:Controls:
+	-	Quit	-	Close the application

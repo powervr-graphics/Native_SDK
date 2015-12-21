@@ -1,0 +1,15 @@
+How to use in your own project:
+
+1) Add sdk.dir and ndk.dir paths to the local.properties file
+2) Build the PVR Camera Interface with "gradlew assembleRelease"
+3) Copy the bin/aar/build.aar inside the libs/ directory of your project.
+3) Add the following lines in your project's Android.mk:
+	# This variable points to the PVRCamera directory
+	PVR_CAMERA_DIR := /[path to SDK]/Framework/PVRCamera/Android/jni
+	# Include the PVRCamera headers
+	LOCAL_C_INCLUDES += $(PVR_CAMERA_DIR)
+	# Link with the libPVRCamera.so
+	LOCAL_SHARED_LIBRARIES := PVRCamera
+	# Build libPVRCamera.so (place this line after "include $(BUILD_SHARED_LIBRARY)
+	include $(PVR_CAMERA_DIR)/Android.mk
+4) That's it! :-) 

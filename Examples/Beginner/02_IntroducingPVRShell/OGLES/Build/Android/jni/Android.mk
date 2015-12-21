@@ -1,5 +1,32 @@
-LOCAL_PATH := $(call my-dir)/../../../../../../..
-PVRSDKDIR := $(realpath $(LOCAL_PATH))
+LOCAL_PATH := $(call my-dir)/../../..
+PVRSDKDIR := $(realpath $(call my-dir)/../../../../../../..)
+
+ASSETDIR := $(PVRSDKDIR)/Examples/Beginner/02_IntroducingPVRShell/OGLES/Build/Android/assets
+
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module PVRShell
+include $(CLEAR_VARS)
+LOCAL_MODULE := PVRShell
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRShell.a
+include $(PREBUILT_STATIC_LIBRARY)
+endif
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module PVREgl
+include $(CLEAR_VARS)
+LOCAL_MODULE := PVREgl
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVREgl.a
+include $(PREBUILT_STATIC_LIBRARY)
+endif
+
+ifneq "$(MAKECMDGOALS)" "clean"
+# Prebuilt module PVRCore
+include $(CLEAR_VARS)
+LOCAL_MODULE := PVRCore
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRCore.a
+include $(PREBUILT_STATIC_LIBRARY)
+endif
 
 
 # Module OGLESIntroducingPVRShell
@@ -8,24 +35,23 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := OGLESIntroducingPVRShell
 
 ### Add all source file names to be included in lib separated by a whitespace
-LOCAL_SRC_FILES  := Examples/Beginner/02_IntroducingPVRShell/OGLES/OGLESIntroducingPVRShell.cpp \
-                    Shell/PVRShell.cpp \
-                    Shell/API/KEGL/PVRShellAPI.cpp \
-                    Shell/OS/Android/PVRShellOS.cpp
+LOCAL_SRC_FILES  := OGLESIntroducingPVRShell.cpp
 
-LOCAL_C_INCLUDES := $(PVRSDKDIR)/Shell \
-                    $(PVRSDKDIR)/Shell/API/KEGL \
-                    $(PVRSDKDIR)/Shell/OS/Android \
+LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework \
                     $(PVRSDKDIR)/Builds/Include
 
-LOCAL_CFLAGS := -DBUILD_OGLES
 
-LOCAL_LDLIBS := -llog \
-                -landroid \
-                -lEGL \
-                -lGLESv1_CM
 
-LOCAL_STATIC_LIBRARIES := android_native_app_glue
+LOCAL_LDLIBS := -lGLESv2 \
+                -llog \
+                -landroid
+
+LOCAL_STATIC_LIBRARIES := PVREgl PVRCore android_native_app_glue
+
+
+LOCAL_CFLAGS += $(SDK_BUILD_FLAGS)
+
+LOCAL_WHOLE_STATIC_LIBRARIES := PVRShell
 
 include $(BUILD_SHARED_LIBRARY)
 

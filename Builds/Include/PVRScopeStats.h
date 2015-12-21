@@ -83,7 +83,7 @@ enum EPVRScopeStandardCounter
 	ePVRScopeStandardCounter_Load_2D,				///< 2D core load
 	ePVRScopeStandardCounter_Load_Renderer,			///< Renderer core load
 	ePVRScopeStandardCounter_Load_Tiler,			///< Tiler core load
-	ePVRScopeStandardCounter_Load_Compute,			///< Tiler core load
+	ePVRScopeStandardCounter_Load_Compute,			///< Compute core load
 	ePVRScopeStandardCounter_Load_Shader_Pixel,		///< Shader core load due to pixels
 	ePVRScopeStandardCounter_Load_Shader_Vertex,	///< Shader core load due to vertices
 	ePVRScopeStandardCounter_Load_Shader_Compute,	///< Shader core load due to compute

@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classpvr_1_1assets_1_1_asset_reader.html" title="pvr::assets::AssetReader\l\&lt; Model \&gt;" alt="" coords="5,5,173,46"/>
+<area shape="rect" id="node2" href="$classpvr_1_1assets_1_1_p_o_d_reader.html" title="This class creates pvr::assets::Model object from Streams of POD Model data. Use the readAsset method..." alt="" coords="221,12,384,39"/>
+</map>

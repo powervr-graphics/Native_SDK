@@ -11,6 +11,7 @@ PLAT_CFLAGS += -DEWS
 WS_LIBS = -lews
 WS_INC =
 WS=EWS
+PLAT_LINK += -L"$(SDKDIR)/Builds/Linux/armv7/Lib"
 
 else
 

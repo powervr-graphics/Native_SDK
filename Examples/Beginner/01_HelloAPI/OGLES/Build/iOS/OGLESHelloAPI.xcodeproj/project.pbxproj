@@ -24,7 +24,7 @@
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
 		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
-		F88C9505F7AC49BFB944A1D1 /* OGLESHelloAPI_iOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F821D92851144A0FC791379B /* OGLESHelloAPI_iOS.mm */; };
+		F8325771AF1BC5D3C8313294 /* OGLESHelloAPI_iOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F86D4EFF6D7FD79502268199 /* OGLESHelloAPI_iOS.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,6 +48,16 @@
 			name = textures;
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BA909F1C0FF0EB3200A4C97C /* shaders */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = data/shaders;
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			name = shaders;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -60,7 +70,7 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		BA240AC10FEFE77A00DE852D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		F8205A82130408E100253AE7 /* Default-Portrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-Portrait.png"; path = "../../../../../../Builds/iOS/Resources/Default-Portrait.png"; sourceTree = SOURCE_ROOT; };
-		F8205A83130408E100253AE7 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = ../../../../../../Builds/iOS/Resources/Default.png; sourceTree = SOURCE_ROOT; };
+		F8205A83130408E100253AE7 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = "../../../../../../Builds/iOS/Resources/Default.png"; sourceTree = SOURCE_ROOT; };
 		F8205A84130408E100253AE7 /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon-72.png"; path = "../../../../../../Builds/iOS/Resources/OGLES/Icon-72.png"; sourceTree = SOURCE_ROOT; };
 		F8205A85130408E100253AE7 /* Icon-Small-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon-Small-50.png"; path = "../../../../../../Builds/iOS/Resources/OGLES/Icon-Small-50.png"; sourceTree = SOURCE_ROOT; };
 		F8205A86130408E100253AE7 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon-Small.png"; path = "../../../../../../Builds/iOS/Resources/OGLES/Icon-Small.png"; sourceTree = SOURCE_ROOT; };
@@ -71,7 +81,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F821D92851144A0FC791379B /* OGLESHelloAPI_iOS.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OGLESHelloAPI_iOS.mm; path = ../../OGLESHelloAPI_iOS.mm; sourceTree = SOURCE_ROOT; };
+		F86D4EFF6D7FD79502268199 /* OGLESHelloAPI_iOS.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OGLESHelloAPI_iOS.mm; path = ../../OGLESHelloAPI_iOS.mm; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +113,8 @@
 			children = (
 				F85E2B260DD21E3F00CA9BEB /* PVRDemo */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				F8E27FF71004EDC30006BBB4 /* Shaders */,
+				F82C4A6F10298C9800FF3CC6 /* Effects */,
 				F8E27FF61004EDBD0006BBB4 /* Textures */,
 				F8E27FF51004EDB10006BBB4 /* Models */,
 				F8E27FF51004EDB1ABC6BBB4 /* Generic */,
@@ -160,10 +172,17 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F82C4A6F10298C9800FF3CC6 /* Effects */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Effects;
+			sourceTree = "<group>";
+		};
 		F85E2B260DD21E3F00CA9BEB /* PVRDemo */ = {
 			isa = PBXGroup;
 			children = (
-				F821D92851144A0FC791379B /* OGLESHelloAPI_iOS.mm */,
+				F86D4EFF6D7FD79502268199 /* OGLESHelloAPI_iOS.mm */,
 			);
 			name = PVRDemo;
 			sourceTree = "<group>";
@@ -189,6 +208,13 @@
 			name = Textures;
 			sourceTree = "<group>";
 		};
+		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -201,6 +227,7 @@
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
 				BA909F0A0FF0EADD00A4C97C /* data */,
 				BA909F0B0FF0EADD00A4C97C /* textures */,
+				BA909F1C0FF0EB3200A4C97C /* shaders */,
 			);
 			buildRules = (
 			);
@@ -272,7 +299,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F88C9505F7AC49BFB944A1D1 /* OGLESHelloAPI_iOS.mm in Sources */,
+				F8325771AF1BC5D3C8313294 /* OGLESHelloAPI_iOS.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,11 +318,11 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = ( _DEBUG, "DEBUG=1", BUILD_OGLES );
+				GCC_PREPROCESSOR_DEFINITIONS = ( _DEBUG, "DEBUG=1", BUILD_OGLES2 );
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = OGLESHelloAPI;
 				SDKROOT = iphoneos;
@@ -314,11 +341,11 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES;
+				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = OGLESHelloAPI;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -337,11 +364,11 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES;
+				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = OGLESHelloAPI;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

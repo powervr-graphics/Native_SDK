@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['ubo',['Ubo',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a5e5f8d3c0ac014a6c2d9a64ff3d5746a',1,'pvr::ApiCapabilities::Ubo()'],['../namespacepvr_1_1_api_object_type.html#a89f6c1ca294ef49cca7bac50f2c1d735a51985dbc1cc84f73ba23e5cbb0b86a9b',1,'pvr::ApiObjectType::UBO()']]],
+  ['ubyte4',['UBYTE4',['../namespacepvr_1_1_data_type.html#acba81b78d07f8f53fb811f8771c05e91a81b59b8d92d814e8bac083d4c7260b4f',1,'pvr::DataType']]],
+  ['uint16',['UInt16',['../namespacepvr_1_1_data_type.html#acba81b78d07f8f53fb811f8771c05e91abb0a10033996d496035e9fdd487645a4',1,'pvr::DataType']]],
+  ['uint16norm',['UInt16Norm',['../namespacepvr_1_1_data_type.html#acba81b78d07f8f53fb811f8771c05e91a12c5d5121b5491ab9b448f3a11deebe7',1,'pvr::DataType']]],
+  ['uint32',['UInt32',['../namespacepvr_1_1_data_type.html#acba81b78d07f8f53fb811f8771c05e91a67d0ffc12ef873b287edfdab68d63f25',1,'pvr::DataType']]],
+  ['uint8',['UInt8',['../namespacepvr_1_1_data_type.html#acba81b78d07f8f53fb811f8771c05e91ab781aace01ddd67250d15ed9022b3c73',1,'pvr::DataType']]],
+  ['uint8norm',['UInt8Norm',['../namespacepvr_1_1_data_type.html#acba81b78d07f8f53fb811f8771c05e91a330f3820dfa84b2d07bb31ae6c271bc5',1,'pvr::DataType']]],
+  ['uintuniforms',['UintUniforms',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2aafa4c8ee15df3ab7b9b274bf793ecb0d',1,'pvr::ApiCapabilities']]],
+  ['unabletoopen',['UnableToOpen',['../namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba839c84b4c0df23021d7529d954f5364a',1,'pvr::Result']]],
+  ['unallocated',['Unallocated',['../namespacepvr_1_1_texture_dimension.html#ac065f7143eeb3257c0ef87e19e2f618fa96b7bd009272e8fb78b00acd8465defa',1,'pvr::TextureDimension']]],
+  ['uniformbuffer',['UniformBuffer',['../namespacepvr_1_1api_1_1_buffer_binding_use.html#abc004a99268a071c9fdc4f9b4582d877a997e6b7aca41feaee5944fedc48e757a',1,'pvr::api::BufferBindingUse']]],
+  ['uniforms',['Uniforms',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2aef7de77b3ead4b298b75e7597274387e',1,'pvr::ApiCapabilities']]],
+  ['uniformtexelbuffer',['UniformTexelBuffer',['../namespacepvr_1_1api_1_1_buffer_binding_use.html#abc004a99268a071c9fdc4f9b4582d877aad8e9e52a165a4d9f77e02b7f3db72fd',1,'pvr::api::BufferBindingUse']]],
+  ['unknown',['Unknown',['../namespacepvr_1_1assets_1_1_shader_binary_format.html#afa41873f5e1b780924018ad9ca7bdd7ca09f43b190b0198de6c0aaa0ba39df7b9',1,'pvr::assets::ShaderBinaryFormat']]],
+  ['unknownerror',['UnknownError',['../namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba4df905309d5e14f9ad1191747490570e',1,'pvr::Result']]],
+  ['unknownshader',['UnknownShader',['../namespacepvr_1_1_shader_type.html#a6f899a0ef761563c001ac9402b7ad390ac7e9cb2900a8986cef981354f0c3071a',1,'pvr::ShaderType']]],
+  ['unspecified',['Unspecified',['../namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05ca7496eb86a74d2add7c13530f25118bdb',1,'pvr::Api']]],
+  ['unsupported',['Unsupported',['../namespacepvr_1_1_capability.html#ae99fdfd3d289433d271a4aa2972959d5a4018ca126795e15081900e87f2694fd8',1,'pvr::Capability']]],
+  ['unsupportedrequest',['UnsupportedRequest',['../namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bbac6915d3cb90e6ffc3e23a579ecbb3db1',1,'pvr::Result']]]
+];

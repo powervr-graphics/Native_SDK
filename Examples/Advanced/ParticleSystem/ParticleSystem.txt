@@ -1,11 +1,17 @@
 :Title:
 ParticleSystem
+
 :ShortDescription:
 Shows how to implement a simple particle system using GPGPU.
 
 :FullDescription:
-The demo utilises GPGPU (GPU Compute) to implement a particle system. Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques. Furthermore, it also highlights the interaction between the Compute and the Rendering part of a simulation.
+The demo utilises GPGPU (GPU Compute) to implement a particle system, which advanced and then rendered every frame, without any CPU editing of the data. Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques. Furthermore, it also highlights the interaction between the Compute and the Rendering part of a simulation.
+Requires OpenGL ES 3.1 capable platform.
 
-- left and right arrows - Decrease and increase number of particles
-- up and down arrows - Switch between GPU Compute and CPU Particle System implementation.
+:APIS:
+OpenGL ES 3.1
 
+:Controls:
+	-	Quit	-	Close demo
+	- 	Left/Right	-	Decrease/increase number of particles
+	-	Up/Down	-	Switch between GPU Compute and CPU Particle System implementation.

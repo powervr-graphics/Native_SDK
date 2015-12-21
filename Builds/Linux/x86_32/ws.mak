@@ -15,6 +15,7 @@ ifneq (,$(filter OGL,$(APIS)))
 WS_LIBS += -lXxf86vm -lXext
 WS_INC += /usr/include
 endif
+
 else
 
 ifeq "$(EWSBUILD)" "1"
@@ -23,7 +24,7 @@ PLAT_CFLAGS += -DEWS
 WS_LIBS = -lews
 WS_INC =
 WS=EWS
-LIBDIR ?= "$(SDKDIR)/Builds/Linux/x86_32/Lib"
+PLAT_LINK += -L"$(SDKDIR)/Builds/Linux/x86_32/Lib"
 
 else
 

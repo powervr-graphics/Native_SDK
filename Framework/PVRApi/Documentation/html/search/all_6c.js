@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['labelobjectext',['LabelObjectEXT',['../classglext.html#a287ee01a5f1d88374abeb8c40d78b287',1,'glext']]],
+  ['last',['Last',['../namespacepvr_1_1api_1_1_provoking_vertex.html#a565438f983a5532a23dca5f039c51b8da327acfb1c242f80acba8c60708caa890',1,'pvr::api::ProvokingVertex']]],
+  ['lastboundpipe',['LastBoundPipe',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker.html#a7a6d84b866cdeb17c585db911300f4b7',1,'pvr::platform::ContextGles::RenderStatesTracker']]],
+  ['lastboundsampler',['lastBoundSampler',['../structpvr_1_1platform_1_1_context_gles_1_1_texture_binding.html#a672bb91537dd7fec7d5ccaa4dcc6b128',1,'pvr::platform::ContextGles::TextureBinding']]],
+  ['lastboundtex',['lastBoundTex',['../structpvr_1_1platform_1_1_context_gles_1_1_texture_binding.html#ae2df7f14ed35f409f07dbad531943c3f',1,'pvr::platform::ContextGles::TextureBinding']]],
+  ['lastboundtexbindindex',['lastBoundTexBindIndex',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker.html#a61d9af9d25308e58ea7a8ffb3188928f',1,'pvr::platform::ContextGles::RenderStatesTracker']]],
+  ['lastboundvbo',['lastBoundVbo',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker.html#a63b51abea5cd6cf1f9b94490bcabf629',1,'pvr::platform::ContextGles::RenderStatesTracker']]],
+  ['layer',['layer',['../_api_gles3_8h.html#ae7bc0cdc2d90da1b600d6cc916c2772e',1,'layer():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a12db3f33e73c358454f3b8d021cededd',1,'layer():&#160;ApiGles31.h']]],
+  ['layered',['layered',['../_api_gles31_8h.html#a7255592b61ba9bf975905e71ed4c84c0',1,'ApiGles31.h']]],
+  ['length',['length',['../_api_gles2_8h.html#a4b0c8e796f240df86333df9dd6ff4361',1,'length():&#160;ApiGles2.h'],['../_api_gles3_8h.html#ab51b092ae24737745dabf1baa61e70b5',1,'length():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a03d3ea86b075d592c720b208f5b398a3',1,'length():&#160;ApiGles31.h'],['../_api_gles_ext_8h.html#a8711630a7a4ba23490bf1b11d5f54fb8',1,'length():&#160;ApiGlesExt.h']]],
+  ['level',['level',['../_api_gles2_8h.html#a2b536fca24f51d6a849aed325793e661',1,'level():&#160;ApiGles2.h'],['../_api_gles3_8h.html#abc60a79088789bd61297bf5f9ff500d1',1,'level():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a2b536fca24f51d6a849aed325793e661',1,'level():&#160;ApiGles31.h']]],
+  ['levels',['levels',['../_api_gles3_8h.html#a6c8c6cd482cd2a24af4ef13dbe47f536',1,'ApiGles3.h']]],
+  ['linear',['Linear',['../namespacepvr_1_1api_1_1_interpolation_mode.html#ad9514cd2f8fc6b9f00202933ac252016adc9d7f5bc430c9b45f1deab1409b1307',1,'pvr::api::InterpolationMode']]],
+  ['linewidth',['LineWidth',['../classgl.html#ad24b559b8b06daf6ea26036ba5971b92',1,'gl']]],
+  ['linkprogram',['LinkProgram',['../classgl.html#a2d86675334f5a660fa325de88765c801',1,'gl']]],
+  ['loadmodel',['loadModel',['../classpvr_1_1api_1_1_asset_store.html#aedf1a093517d53c4cfa0f1731e3735ec',1,'pvr::api::AssetStore']]],
+  ['loadopcolor',['loadOpColor',['../structpvr_1_1api_1_1_render_pass_color_info.html#afd51fa9aa41465be9460b3a2d280d2de',1,'pvr::api::RenderPassColorInfo']]],
+  ['loadopdepth',['loadOpDepth',['../structpvr_1_1api_1_1_render_pass_depth_stencil_info.html#af064ecfcbdf105e3ed529875ce819787',1,'pvr::api::RenderPassDepthStencilInfo']]],
+  ['loadopstencil',['loadOpStencil',['../structpvr_1_1api_1_1_render_pass_depth_stencil_info.html#a3fe621f9da95727011d915abdad43458',1,'pvr::api::RenderPassDepthStencilInfo']]],
+  ['loadpfx',['loadPfx',['../classpvr_1_1api_1_1_asset_store.html#a4bd10b35cf12ae0e49184d0d1cabadcc',1,'pvr::api::AssetStore']]],
+  ['loadshader',['loadShader',['../namespacepvr_1_1utils.html#af628b2473e88e87cc9be9eef1d331f2b',1,'pvr::utils::loadShader(Stream &amp;shaderData, ShaderType::Enum shaderType, assets::ShaderBinaryFormat::Enum binaryFormat, native::HShader &amp;outShader, const ApiCapabilities *contextCapabilities=0)'],['../namespacepvr_1_1utils.html#af54168960a1b1eb2e6bce93748254fa2',1,'pvr::utils::loadShader(const Stream &amp;shaderSource, ShaderType::Enum shaderType, const char *const *defines, uint32 numDefines, native::HShader &amp;outShader, const ApiCapabilities *contextCapabilities=0)']]],
+  ['location',['location',['../structpvr_1_1api_1_1_effect_api_semantic.html#a4b02179562ba8d759ceb4cbb559892df',1,'pvr::api::EffectApiSemantic::location()'],['../_api_gles2_8h.html#a6f0165ed903f22b8bb600c3e0b628e73',1,'location():&#160;ApiGles2.h'],['../_api_gles3_8h.html#a6f0165ed903f22b8bb600c3e0b628e73',1,'location():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a6f0165ed903f22b8bb600c3e0b628e73',1,'location():&#160;ApiGles31.h']]],
+  ['logapierror',['logApiError',['../namespacepvr_1_1api.html#a4eefd3048f55640cf576bd6b5c3afee8',1,'pvr::api']]],
+  ['lowerleft',['LowerLeft',['../namespacepvr_1_1api_1_1_coordinate_origin.html#a48eb3623a86143867a65f403437c1976a8c6928fbf133e277769e51183a918c4f',1,'pvr::api::CoordinateOrigin']]]
+];

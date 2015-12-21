@@ -9,11 +9,14 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESIntroducingPVRShell
-APIS    = OGLES
-DEPENDS = PVRSHELL
+DEPENDS =  PVRCore PVREgl PVRShell
+LIBRARIES =  GLESv2 PVRShell PVREgl PVRCore
+LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS) ../../../../../../Builds/Linux/$(PLAT_SUFFIX)/Lib
 
 OBJECTS +=	\
-           OGLESIntroducingPVRShell.o
+           OGLES/OGLESIntroducingPVRShell.o
+
+
+
 
 include $(SDKDIR)/Builds/Linux/make_example.mak
-

@@ -1,0 +1,16 @@
+var searchData=
+[
+  ['rasterstatecreateparam',['RasterStateCreateParam',['../structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a8a4c117d928c175ea55b18c2110ba85e',1,'pvr::api::pipelineCreation::RasterStateCreateParam']]],
+  ['release',['release',['../classpvr_1_1platform_1_1_context_gles.html#a236f55f2322890dc10c5977ccf8841af',1,'pvr::platform::ContextGles']]],
+  ['releaseall',['releaseAll',['../classpvr_1_1api_1_1_asset_store.html#a7b275deaa888db9db12b286618d056dd',1,'pvr::api::AssetStore']]],
+  ['releasegl',['releaseGl',['../classgl.html#ae92624db194926f3ea9c56469f33bf53',1,'gl']]],
+  ['releasemodel',['releaseModel',['../classpvr_1_1api_1_1_asset_store.html#abed9c1ea7f0dd1ae79a28f0bde424564',1,'pvr::api::AssetStore']]],
+  ['releasetexture',['releaseTexture',['../classpvr_1_1api_1_1_asset_store.html#a0a8698aa8b22852f4b910c4e9bdb5ed8',1,'pvr::api::AssetStore']]],
+  ['removeuniformsemantic',['removeUniformSemantic',['../classpvr_1_1api_1_1impl_1_1_effect_api_impl.html#a365e1b440fac51dc962ded7e3767b7d6',1,'pvr::api::impl::EffectApiImpl']]],
+  ['renderpasscolorinfo',['RenderPassColorInfo',['../structpvr_1_1api_1_1_render_pass_color_info.html#a65323d83af04e4c62998691753ee844e',1,'pvr::api::RenderPassColorInfo::RenderPassColorInfo()'],['../structpvr_1_1api_1_1_render_pass_color_info.html#a248da678a4d8b5dfebf865984f0ff808',1,'pvr::api::RenderPassColorInfo::RenderPassColorInfo(const api::ImageDataFormat &amp;format, LoadOp::Enum loadOpColor=LoadOp::Load, StoreOp::Enum storeOpColor=StoreOp::Store, pvr::uint32 numSamples=0)']]],
+  ['renderpassdepthstencilinfo',['RenderPassDepthStencilInfo',['../structpvr_1_1api_1_1_render_pass_depth_stencil_info.html#abe958adead4375d1c2dd7f7cfd2faf55',1,'pvr::api::RenderPassDepthStencilInfo::RenderPassDepthStencilInfo()'],['../structpvr_1_1api_1_1_render_pass_depth_stencil_info.html#a44edb2893c8096f974895c41637c4983',1,'pvr::api::RenderPassDepthStencilInfo::RenderPassDepthStencilInfo(const api::ImageDataFormat &amp;format, LoadOp::Enum loadOpDepth=LoadOp::Load, StoreOp::Enum storeOpDepth=StoreOp::Store, LoadOp::Enum loadOpStencil=LoadOp::Load, StoreOp::Enum storeOpStencil=StoreOp::Store, pvr::uint32 numSamples=1)']]],
+  ['renderpassimpl',['RenderPassImpl',['../classpvr_1_1api_1_1impl_1_1_render_pass_impl.html#aede8544a332af48d7889eb23d2830d64',1,'pvr::api::impl::RenderPassImpl']]],
+  ['renderstatestracker',['RenderStatesTracker',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker.html#a18dbfd8de1fdfeb5caaebece5892a6bf',1,'pvr::platform::ContextGles::RenderStatesTracker']]],
+  ['reset',['reset',['../classpvr_1_1api_1_1impl_1_1_pipeline_state.html#a67d30097aa4035ae2580a89d3b7952a5',1,'pvr::api::impl::PipelineState::reset()'],['../classpvr_1_1api_1_1impl_1_1_graphics_shader_program_state.html#aa1144536f9e6ccf7463345e3f98e8523',1,'pvr::api::impl::GraphicsShaderProgramState::reset()'],['../classpvr_1_1api_1_1impl_1_1_compute_shader_program_state.html#aacfc6c16323ac45076ffe6c51ea7324a',1,'pvr::api::impl::ComputeShaderProgramState::reset()']]],
+  ['resetpipeline',['resetPipeline',['../classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a2cdc6182abdd5752c75a556a06c4d3a0',1,'pvr::api::impl::CommandBufferBaseImpl']]]
+];
