@@ -12,7 +12,7 @@ PLAT_CFLAGS += -DEWS
 WS_LIBS = -lews
 WS_INC =
 WS=EWS
-LIBDIR ?= "$(SDKDIR)/Builds/Linux/mips_32/Lib"
+PLAT_LINK += -L"$(SDKDIR)/Builds/Linux/mips_32/Lib"
 
 else
 

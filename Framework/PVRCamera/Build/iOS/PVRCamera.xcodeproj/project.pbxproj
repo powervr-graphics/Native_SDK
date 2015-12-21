@@ -1,0 +1,272 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E669E4A1B9F1A9500845F65 /* CameraInterface_iOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0E669E471B9F1A9500845F65 /* CameraInterface_iOS.mm */; };
+		0E669E591B9F2E5E00845F65 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E669E581B9F2E5E00845F65 /* AVFoundation.framework */; };
+		3E6C070A19C6F72F00D712E5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E6C070919C6F72F00D712E5 /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3E6C070419C6F72F00D712E5 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0E35043F1BF652FD00EC0B4E /* PVRCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRCamera.h; path = ../../PVRCamera.h; sourceTree = "<group>"; };
+		0E669E471B9F1A9500845F65 /* CameraInterface_iOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CameraInterface_iOS.mm; path = ../../CameraInterface_iOS.mm; sourceTree = "<group>"; };
+		0E669E481B9F1A9500845F65 /* CameraInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraInterface.h; path = ../../CameraInterface.h; sourceTree = "<group>"; };
+		0E669E491B9F1A9500845F65 /* CameraInterfacePVRApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraInterfacePVRApi.h; path = ../../CameraInterfacePVRApi.h; sourceTree = "<group>"; };
+		0E669E581B9F2E5E00845F65 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		3E6C070619C6F72F00D712E5 /* libPVRCamera.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVRCamera.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E6C070919C6F72F00D712E5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3E6C070319C6F72F00D712E5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E669E591B9F2E5E00845F65 /* AVFoundation.framework in Frameworks */,
+				3E6C070A19C6F72F00D712E5 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3E6C06FD19C6F72F00D712E5 = {
+			isa = PBXGroup;
+			children = (
+				3E6C075319C6F79D00D712E5 /* Sources */,
+				3E6C070819C6F72F00D712E5 /* Frameworks */,
+				3E6C070719C6F72F00D712E5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3E6C070719C6F72F00D712E5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3E6C070619C6F72F00D712E5 /* libPVRCamera.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3E6C070819C6F72F00D712E5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0E669E581B9F2E5E00845F65 /* AVFoundation.framework */,
+				3E6C070919C6F72F00D712E5 /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3E6C075319C6F79D00D712E5 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				0E35043F1BF652FD00EC0B4E /* PVRCamera.h */,
+				0E669E471B9F1A9500845F65 /* CameraInterface_iOS.mm */,
+				0E669E481B9F1A9500845F65 /* CameraInterface.h */,
+				0E669E491B9F1A9500845F65 /* CameraInterfacePVRApi.h */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3E6C070519C6F72F00D712E5 /* PVRCamera */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E6C072919C6F72F00D712E5 /* Build configuration list for PBXNativeTarget "PVRCamera" */;
+			buildPhases = (
+				3E6C070219C6F72F00D712E5 /* Sources */,
+				3E6C070319C6F72F00D712E5 /* Frameworks */,
+				3E6C070419C6F72F00D712E5 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PVRCamera;
+			productName = PVRCamera;
+			productReference = 3E6C070619C6F72F00D712E5 /* libPVRCamera.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3E6C06FE19C6F72F00D712E5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "___ImaginationTechnology___";
+			};
+			buildConfigurationList = 3E6C070119C6F72F00D712E5 /* Build configuration list for PBXProject "PVRCamera" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 3E6C06FD19C6F72F00D712E5;
+			productRefGroup = 3E6C070719C6F72F00D712E5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3E6C070519C6F72F00D712E5 /* PVRCamera */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3E6C070219C6F72F00D712E5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E669E4A1B9F1A9500845F65 /* CameraInterface_iOS.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3E6C072719C6F72F00D712E5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../Bin/iOS/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_IPHONE=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				USER_HEADER_SEARCH_PATHS = "../../../../Builds/Include ../../../";
+			};
+			name = Debug;
+		};
+		3E6C072819C6F72F00D712E5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../Bin/iOS/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_IPHONE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+				USER_HEADER_SEARCH_PATHS = "../../../../Builds/Include ../../../";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		3E6C072A19C6F72F00D712E5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				DSTROOT = /tmp/PVRCamera.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		3E6C072B19C6F72F00D712E5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				DSTROOT = /tmp/PVRCamera.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3E6C070119C6F72F00D712E5 /* Build configuration list for PBXProject "PVRCamera" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E6C072719C6F72F00D712E5 /* Debug */,
+				3E6C072819C6F72F00D712E5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3E6C072919C6F72F00D712E5 /* Build configuration list for PBXNativeTarget "PVRCamera" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E6C072A19C6F72F00D712E5 /* Debug */,
+				3E6C072B19C6F72F00D712E5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3E6C06FE19C6F72F00D712E5 /* Project object */;
+}

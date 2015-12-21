@@ -9,36 +9,27 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESPVRScopeExample
-APIS    = OGLES
-DEPENDS = PVRSHELL PVRTOOLS
+DEPENDS =  PVRCore PVRAssets PVREgl PVRGles PVRShell PVRUIRenderer
+LIBRARIES =  PVRScopeDeveloper dl PVRUIRenderer PVRShell PVRGles PVREgl PVRAssets PVRCore
+LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS) ../../../../../../Builds/Linux/$(PLAT_SUFFIX)/Lib
 
 OBJECTS +=	\
-           OGLESPVRScopeExample.o	\
-           PVRScopeGraphAPI.o	\
-           PVRScopeGraph.o	\
-           MaskTex.o	\
-           Mask.o
+           OGLES/OGLESPVRScopeExample.o	\
+           PVRScopeGraph.o
 
-VPATH +=	\
-         ../../.. : 	\
-         ../../Content
+RESOURCES += \
+           FragShader_ES2.fsh\
+           FragShader_ES3.fsh\
+           VertShader_ES2.vsh\
+           VertShader_ES3.vsh\
+           GraphFragShader_ES2.fsh\
+           GraphFragShader_ES3.fsh\
+           GraphVertShader_ES2.vsh\
+           GraphVertShader_ES3.vsh\
 
-INCLUDES += 	\
-         -I../../..	\
-         -I$(SDKDIR)/Builds/Include
+COMMON_RESOURCES += \
+           Marble.pvr\
+           scene.pod\
 
-LINK +=	\
-       -L$(SDKDIR)/Builds/Linux/$(PLAT_SUFFIX)/Lib	\
-       -lPVRScopeDeveloper	\
-       -ldl	\
-       -lrt
 
 include $(SDKDIR)/Builds/Linux/make_example.mak
-
-../../Content/MaskTex.cpp ../../Content/Mask.cpp: wrap_content_files 
-
-$(PLAT_OBJPATH)/%.o: ../../Content/%.cpp
-	mkdir -p $(PLAT_OBJPATH)
-	$(PLAT_CPP) $(PLAT_CFLAGS) $(INCLUDES) -MF"$(@:.o=.d)" -MG -MM -MP -MT"$(@:.o=.d)" -MT"$@" "$<"
-	$(PLAT_CPP) -c $(PLAT_CFLAGS) $(INCLUDES) $< -o$@
-

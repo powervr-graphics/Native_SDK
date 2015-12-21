@@ -1,0 +1,4 @@
+<map id="pvr::assets::TextureHeader" name="pvr::assets::TextureHeader">
+<area shape="rect" id="node2" href="$classpvr_1_1assets_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac..." alt="" coords="5,88,141,115"/>
+<area shape="rect" id="node3" href="$classpvr_1_1assets_1_1_texture_header_with_meta_data.html" title="This class contains all information a texture has (size, format etc.) and any metadata it may carry..." alt="" coords="166,81,343,122"/>
+</map>

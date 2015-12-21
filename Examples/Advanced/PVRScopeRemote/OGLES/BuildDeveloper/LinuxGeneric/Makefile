@@ -9,33 +9,22 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESPVRScopeRemote
-APIS    = OGLES
-DEPENDS = PVRSHELL PVRTOOLS
+DEPENDS =  PVRCore PVRAssets PVREgl PVRGles PVRShell PVRUIRenderer
+LIBRARIES =  PVRScopeDeveloper pthread rt dl PVRUIRenderer PVRShell PVRGles PVREgl PVRAssets PVRCore
+LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS) ../../../../../../Builds/Linux/$(PLAT_SUFFIX)/Lib
 
 OBJECTS +=	\
-           OGLESPVRScopeRemote.o	\
-           MaskTex.o	\
-           Mask.o
+           OGLES/OGLESPVRScopeRemote.o
 
-VPATH +=	\
-         ../../Content
+RESOURCES += \
+           FragShader_ES2.fsh\
+           FragShader_ES3.fsh\
+           VertShader_ES2.vsh\
+           VertShader_ES3.vsh\
 
-INCLUDES += 	\
-         -I$(SDKDIR)/Builds/Include
+COMMON_RESOURCES += \
+           Marble.pvr\
+           scene.pod\
 
-LINK +=	\
-       -L$(SDKDIR)/Builds/Linux/$(PLAT_SUFFIX)/Lib	\
-       -lPVRScopeDeveloper	\
-       -ldl	\
-       -lrt	\
-       -lpthread
 
 include $(SDKDIR)/Builds/Linux/make_example.mak
-
-../../Content/MaskTex.cpp ../../Content/Mask.cpp: wrap_content_files 
-
-$(PLAT_OBJPATH)/%.o: ../../Content/%.cpp
-	mkdir -p $(PLAT_OBJPATH)
-	$(PLAT_CPP) $(PLAT_CFLAGS) $(INCLUDES) -MF"$(@:.o=.d)" -MG -MM -MP -MT"$(@:.o=.d)" -MT"$@" "$<"
-	$(PLAT_CPP) -c $(PLAT_CFLAGS) $(INCLUDES) $< -o$@
-

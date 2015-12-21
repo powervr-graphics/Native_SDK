@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['sampler',['Sampler',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a2f1c8d79e1e6faeae11d0da1f3c75b96',1,'pvr::ApiCapabilities::Sampler()'],['../namespacepvr_1_1_api_object_type.html#a89f6c1ca294ef49cca7bac50f2c1d735ab69cfa564902c6d7e924513f6995bd94',1,'pvr::ApiObjectType::Sampler()']]],
+  ['seekoriginfromcurrent',['SeekOriginFromCurrent',['../classpvr_1_1_stream.html#ac81d6985897cb5ae044d94979b1fa188a24bd17c755c2ccfe433b38beb327c5c3',1,'pvr::Stream']]],
+  ['seekoriginfromend',['SeekOriginFromEnd',['../classpvr_1_1_stream.html#ac81d6985897cb5ae044d94979b1fa188a79decb2fff459e2f92924d8b146a9afd',1,'pvr::Stream']]],
+  ['seekoriginfromstart',['SeekOriginFromStart',['../classpvr_1_1_stream.html#ac81d6985897cb5ae044d94979b1fa188a0f70b84ad1cb663db01bf3c27782a2a3',1,'pvr::Stream']]],
+  ['shaderattributeexplicitbind',['ShaderAttributeExplicitBind',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2ace956b9b23417098b53fe6813eed802f',1,'pvr::ApiCapabilities']]],
+  ['shaderattributereflection',['ShaderAttributeReflection',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2aa665f3a93d2c92c0c6b8e0ca537493e7',1,'pvr::ApiCapabilities']]],
+  ['shaderpixellocalstorage',['ShaderPixelLocalStorage',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a232925785ba75d1efee0c475eece6c2f',1,'pvr::ApiCapabilities']]],
+  ['shadowsamplers',['ShadowSamplers',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2acae01e2a13776597a05538b751561ed9',1,'pvr::ApiCapabilities']]],
+  ['size',['Size',['../namespacepvr_1_1_sampler_filter.html#a7a7a0133d7e12cbf43834abafe696a91af3ee7bb626cbb8adb73410c8fe856e6e',1,'pvr::SamplerFilter::Size()'],['../namespacepvr_1_1_sampler_wrap.html#aa53ce8a4e5c47e5b4cf9f8783f420b04a5fcbf3179489fee036a9ee943a9b7345',1,'pvr::SamplerWrap::Size()']]],
+  ['srgb',['sRGB',['../namespacepvr_1_1_color_space.html#aa265b82c66281623ae911aeeaf61ab9ea47de27697ed6f18a5947b5c8d8c0b194',1,'pvr::ColorSpace']]],
+  ['ssbo',['Ssbo',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a9dbf6f988713ddee86ed5032bf6ffae9',1,'pvr::ApiCapabilities::Ssbo()'],['../namespacepvr_1_1_api_object_type.html#a89f6c1ca294ef49cca7bac50f2c1d735a3b6789239e9f760b38a3ab17b674c859',1,'pvr::ApiObjectType::SSBO()']]],
+  ['staging',['STAGING',['../namespacepvr_1_1api_1_1_buffer_use.html#a85e1a5b44723c91bbe65eaf357379c06adabcfbd1f313b1035ff36ca8132a2a43',1,'pvr::api::BufferUse']]],
+  ['static',['Static',['../namespacepvr_1_1api_1_1_descriptor_set_usage.html#ad9614b2864bf40ed5c6b9799ae248732a42d4f3aa4214d2ba8dfa0cae72534024',1,'pvr::api::DescriptorSetUsage']]],
+  ['storagebuffer',['StorageBuffer',['../namespacepvr_1_1api_1_1_buffer_binding_use.html#abc004a99268a071c9fdc4f9b4582d877ad848ce6ec89de5e7bf17203f68e72ea5',1,'pvr::api::BufferBindingUse']]],
+  ['storagetexelbuffer',['StorageTexelBuffer',['../namespacepvr_1_1api_1_1_buffer_binding_use.html#abc004a99268a071c9fdc4f9b4582d877a84842b7625284c165ae1c4b58becbcd2',1,'pvr::api::BufferBindingUse']]],
+  ['store',['Store',['../namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127a371f1b1d583321a34db5e8d93246e2a2',1,'pvr::StoreOp']]],
+  ['success',['Success',['../namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba844ad1ac1d6c105b75bb41329180627f',1,'pvr::Result']]]
+];

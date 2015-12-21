@@ -55,6 +55,7 @@ android {
     FileCollection tree = files(
 
 )
+
     task copyAssets(type: Copy){
         from tree
         into 'assets'

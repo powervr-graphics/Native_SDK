@@ -1,0 +1,434 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E3504301BF6514400EC0B4E /* PVRCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E35042F1BF6514400EC0B4E /* PVRCore.h */; settings = {ASSET_TAGS = (); }; };
+		0EB941631B17091300E2967A /* Assert_.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941341B17091300E2967A /* Assert_.h */; };
+		0EB941651B17091300E2967A /* AxisAlignedBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941361B17091300E2967A /* AxisAlignedBox.h */; };
+		0EB941661B17091300E2967A /* BufferStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB941371B17091300E2967A /* BufferStream.cpp */; };
+		0EB941671B17091300E2967A /* BufferStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941381B17091300E2967A /* BufferStream.h */; };
+		0EB941681B17091300E2967A /* ConsoleMessenger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB941391B17091300E2967A /* ConsoleMessenger.cpp */; };
+		0EB941691B17091300E2967A /* ConsoleMessenger.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9413A1B17091300E2967A /* ConsoleMessenger.h */; };
+		0EB9416A1B17091300E2967A /* Defines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9413B1B17091300E2967A /* Defines.h */; };
+		0EB9416B1B17091300E2967A /* FilePath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9413C1B17091300E2967A /* FilePath.cpp */; };
+		0EB9416C1B17091300E2967A /* FilePath.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9413D1B17091300E2967A /* FilePath.h */; };
+		0EB9416D1B17091300E2967A /* FileStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9413E1B17091300E2967A /* FileStream.cpp */; };
+		0EB9416E1B17091300E2967A /* FileStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9413F1B17091300E2967A /* FileStream.h */; };
+		0EB9416F1B17091300E2967A /* FileWrapStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB941401B17091300E2967A /* FileWrapStream.cpp */; };
+		0EB941701B17091300E2967A /* FileWrapStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941411B17091300E2967A /* FileWrapStream.h */; };
+		0EB941711B17091300E2967A /* Fixed.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941421B17091300E2967A /* Fixed.h */; };
+		0EB941731B17091300E2967A /* HalfFloat.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941441B17091300E2967A /* HalfFloat.h */; };
+		0EB941741B17091300E2967A /* Hash_.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941451B17091300E2967A /* Hash_.h */; };
+		0EB941761B17091300E2967A /* IndexedArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941471B17091300E2967A /* IndexedArray.h */; };
+		0EB941771B17091300E2967A /* ListOfInterfaces.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941481B17091300E2967A /* ListOfInterfaces.h */; };
+		0EB941781B17091300E2967A /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB941491B17091300E2967A /* Log.cpp */; };
+		0EB941791B17091300E2967A /* Log.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9414A1B17091300E2967A /* Log.h */; };
+		0EB9417A1B17091300E2967A /* Maths.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9414B1B17091300E2967A /* Maths.h */; };
+		0EB9417B1B17091300E2967A /* Messenger.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9414C1B17091300E2967A /* Messenger.h */; };
+		0EB9417C1B17091300E2967A /* NativeLibrary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9414D1B17091300E2967A /* NativeLibrary.cpp */; };
+		0EB9417D1B17091300E2967A /* NativeLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9414E1B17091300E2967A /* NativeLibrary.h */; };
+		0EB9417E1B17091300E2967A /* NativeLibrary.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9414F1B17091300E2967A /* NativeLibrary.mm */; };
+		0EB9417F1B17091300E2967A /* NormalisedInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941501B17091300E2967A /* NormalisedInteger.h */; };
+		0EB941801B17091300E2967A /* Plane.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941511B17091300E2967A /* Plane.h */; };
+		0EB941831B17091300E2967A /* CoreIncludes.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941541B17091300E2967A /* CoreIncludes.h */; };
+		0EB941841B17091300E2967A /* Rectangle.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941551B17091300E2967A /* Rectangle.h */; };
+		0EB941851B17091300E2967A /* RefCounted.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941561B17091300E2967A /* RefCounted.h */; };
+		0EB941861B17091300E2967A /* ReinterpretBits.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941571B17091300E2967A /* ReinterpretBits.h */; };
+		0EB941871B17091300E2967A /* RingBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941581B17091300E2967A /* RingBuffer.h */; };
+		0EB941881B17091300E2967A /* SizedPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941591B17091300E2967A /* SizedPointer.h */; };
+		0EB941891B17091300E2967A /* Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9415A1B17091300E2967A /* Stream.h */; };
+		0EB9418A1B17091300E2967A /* StringFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9415B1B17091300E2967A /* StringFunctions.cpp */; };
+		0EB9418B1B17091300E2967A /* StringFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9415C1B17091300E2967A /* StringFunctions.h */; };
+		0EB9418C1B17091300E2967A /* StringHash.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9415D1B17091300E2967A /* StringHash.h */; };
+		0EB9418D1B17091300E2967A /* Time_.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB9415E1B17091300E2967A /* Time_.h */; };
+		0EB9418E1B17091300E2967A /* Time.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9415F1B17091300E2967A /* Time.cpp */; };
+		0EB9418F1B17091300E2967A /* Types.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941601B17091300E2967A /* Types.h */; };
+		0EB941901B17091300E2967A /* UnicodeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB941611B17091300E2967A /* UnicodeConverter.cpp */; };
+		0EB941911B17091300E2967A /* UnicodeConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941621B17091300E2967A /* UnicodeConverter.h */; };
+		0EE12A771B8F52D3006ACAEB /* IAssetProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EE12A721B8F52D3006ACAEB /* IAssetProvider.h */; };
+		0EE12A781B8F52D3006ACAEB /* IGraphicsContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EE12A731B8F52D3006ACAEB /* IGraphicsContext.h */; };
+		0EE12A791B8F52D3006ACAEB /* IInputHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EE12A741B8F52D3006ACAEB /* IInputHandler.h */; };
+		0EE12A7A1B8F52D3006ACAEB /* OSManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EE12A751B8F52D3006ACAEB /* OSManager.h */; };
+		0EE12A7B1B8F52D3006ACAEB /* IPlatformContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EE12A761B8F52D3006ACAEB /* IPlatformContext.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0E35042F1BF6514400EC0B4E /* PVRCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRCore.h; path = ../../PVRCore.h; sourceTree = "<group>"; };
+		0EB941341B17091300E2967A /* Assert_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Assert_.h; path = ../../Assert_.h; sourceTree = "<group>"; };
+		0EB941361B17091300E2967A /* AxisAlignedBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AxisAlignedBox.h; path = ../../AxisAlignedBox.h; sourceTree = "<group>"; };
+		0EB941371B17091300E2967A /* BufferStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BufferStream.cpp; path = ../../BufferStream.cpp; sourceTree = "<group>"; };
+		0EB941381B17091300E2967A /* BufferStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BufferStream.h; path = ../../BufferStream.h; sourceTree = "<group>"; };
+		0EB941391B17091300E2967A /* ConsoleMessenger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ConsoleMessenger.cpp; path = ../../ConsoleMessenger.cpp; sourceTree = "<group>"; };
+		0EB9413A1B17091300E2967A /* ConsoleMessenger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConsoleMessenger.h; path = ../../ConsoleMessenger.h; sourceTree = "<group>"; };
+		0EB9413B1B17091300E2967A /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Defines.h; path = ../../Defines.h; sourceTree = "<group>"; };
+		0EB9413C1B17091300E2967A /* FilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FilePath.cpp; path = ../../FilePath.cpp; sourceTree = "<group>"; };
+		0EB9413D1B17091300E2967A /* FilePath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FilePath.h; path = ../../FilePath.h; sourceTree = "<group>"; };
+		0EB9413E1B17091300E2967A /* FileStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileStream.cpp; path = ../../FileStream.cpp; sourceTree = "<group>"; };
+		0EB9413F1B17091300E2967A /* FileStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileStream.h; path = ../../FileStream.h; sourceTree = "<group>"; };
+		0EB941401B17091300E2967A /* FileWrapStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileWrapStream.cpp; path = ../../FileWrapStream.cpp; sourceTree = "<group>"; };
+		0EB941411B17091300E2967A /* FileWrapStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileWrapStream.h; path = ../../FileWrapStream.h; sourceTree = "<group>"; };
+		0EB941421B17091300E2967A /* Fixed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Fixed.h; path = ../../Fixed.h; sourceTree = "<group>"; };
+		0EB941441B17091300E2967A /* HalfFloat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HalfFloat.h; path = ../../HalfFloat.h; sourceTree = "<group>"; };
+		0EB941451B17091300E2967A /* Hash_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Hash_.h; path = ../../Hash_.h; sourceTree = "<group>"; };
+		0EB941471B17091300E2967A /* IndexedArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IndexedArray.h; path = ../../IndexedArray.h; sourceTree = "<group>"; };
+		0EB941481B17091300E2967A /* ListOfInterfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ListOfInterfaces.h; path = ../../ListOfInterfaces.h; sourceTree = "<group>"; };
+		0EB941491B17091300E2967A /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Log.cpp; path = ../../Log.cpp; sourceTree = "<group>"; };
+		0EB9414A1B17091300E2967A /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Log.h; path = ../../Log.h; sourceTree = "<group>"; };
+		0EB9414B1B17091300E2967A /* Maths.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Maths.h; path = ../../Maths.h; sourceTree = "<group>"; };
+		0EB9414C1B17091300E2967A /* Messenger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Messenger.h; path = ../../Messenger.h; sourceTree = "<group>"; };
+		0EB9414D1B17091300E2967A /* NativeLibrary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeLibrary.cpp; path = ../../NativeLibrary.cpp; sourceTree = "<group>"; };
+		0EB9414E1B17091300E2967A /* NativeLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeLibrary.h; path = ../../NativeLibrary.h; sourceTree = "<group>"; };
+		0EB9414F1B17091300E2967A /* NativeLibrary.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NativeLibrary.mm; path = ../../NativeLibrary.mm; sourceTree = "<group>"; };
+		0EB941501B17091300E2967A /* NormalisedInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NormalisedInteger.h; path = ../../NormalisedInteger.h; sourceTree = "<group>"; };
+		0EB941511B17091300E2967A /* Plane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Plane.h; path = ../../Plane.h; sourceTree = "<group>"; };
+		0EB941541B17091300E2967A /* CoreIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoreIncludes.h; path = ../../CoreIncludes.h; sourceTree = "<group>"; };
+		0EB941551B17091300E2967A /* Rectangle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rectangle.h; path = ../../Rectangle.h; sourceTree = "<group>"; };
+		0EB941561B17091300E2967A /* RefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RefCounted.h; path = ../../RefCounted.h; sourceTree = "<group>"; };
+		0EB941571B17091300E2967A /* ReinterpretBits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReinterpretBits.h; path = ../../ReinterpretBits.h; sourceTree = "<group>"; };
+		0EB941581B17091300E2967A /* RingBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RingBuffer.h; path = ../../RingBuffer.h; sourceTree = "<group>"; };
+		0EB941591B17091300E2967A /* SizedPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SizedPointer.h; path = ../../SizedPointer.h; sourceTree = "<group>"; };
+		0EB9415A1B17091300E2967A /* Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Stream.h; path = ../../Stream.h; sourceTree = "<group>"; };
+		0EB9415B1B17091300E2967A /* StringFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringFunctions.cpp; path = ../../StringFunctions.cpp; sourceTree = "<group>"; };
+		0EB9415C1B17091300E2967A /* StringFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringFunctions.h; path = ../../StringFunctions.h; sourceTree = "<group>"; };
+		0EB9415D1B17091300E2967A /* StringHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringHash.h; path = ../../StringHash.h; sourceTree = "<group>"; };
+		0EB9415E1B17091300E2967A /* Time_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Time_.h; path = ../../Time_.h; sourceTree = "<group>"; };
+		0EB9415F1B17091300E2967A /* Time.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Time.cpp; path = ../../Time.cpp; sourceTree = "<group>"; };
+		0EB941601B17091300E2967A /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Types.h; path = ../../Types.h; sourceTree = "<group>"; };
+		0EB941611B17091300E2967A /* UnicodeConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UnicodeConverter.cpp; path = ../../UnicodeConverter.cpp; sourceTree = "<group>"; };
+		0EB941621B17091300E2967A /* UnicodeConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnicodeConverter.h; path = ../../UnicodeConverter.h; sourceTree = "<group>"; };
+		0EDC72B41C0DEE9100C480EE /* ForwardDecApiObjects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ForwardDecApiObjects.h; path = ../../ForwardDecApiObjects.h; sourceTree = "<group>"; };
+		0EE12A721B8F52D3006ACAEB /* IAssetProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IAssetProvider.h; path = ../../IAssetProvider.h; sourceTree = "<group>"; };
+		0EE12A731B8F52D3006ACAEB /* IGraphicsContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IGraphicsContext.h; path = ../../IGraphicsContext.h; sourceTree = "<group>"; };
+		0EE12A741B8F52D3006ACAEB /* IInputHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IInputHandler.h; path = ../../IInputHandler.h; sourceTree = "<group>"; };
+		0EE12A751B8F52D3006ACAEB /* OSManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OSManager.h; path = ../../OSManager.h; sourceTree = "<group>"; };
+		0EE12A761B8F52D3006ACAEB /* IPlatformContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IPlatformContext.h; path = ../../IPlatformContext.h; sourceTree = "<group>"; };
+		3E4671EB19AF6F5600A81031 /* libPVRCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVRCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3E4671E819AF6F5600A81031 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3E46718C19AF697D00A81031 = {
+			isa = PBXGroup;
+			children = (
+				3E46719C19AF699A00A81031 /* Sources */,
+				3E46719619AF697D00A81031 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3E46719619AF697D00A81031 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3E4671EB19AF6F5600A81031 /* libPVRCore.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3E46719C19AF699A00A81031 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				0EB941371B17091300E2967A /* BufferStream.cpp */,
+				0EB941391B17091300E2967A /* ConsoleMessenger.cpp */,
+				0EB9413C1B17091300E2967A /* FilePath.cpp */,
+				0EB9413E1B17091300E2967A /* FileStream.cpp */,
+				0EB941401B17091300E2967A /* FileWrapStream.cpp */,
+				0EB941491B17091300E2967A /* Log.cpp */,
+				0EB9414D1B17091300E2967A /* NativeLibrary.cpp */,
+				0EB9415B1B17091300E2967A /* StringFunctions.cpp */,
+				0EB9415F1B17091300E2967A /* Time.cpp */,
+				0EB941611B17091300E2967A /* UnicodeConverter.cpp */,
+				0EB941341B17091300E2967A /* Assert_.h */,
+				0EB941361B17091300E2967A /* AxisAlignedBox.h */,
+				0EB941381B17091300E2967A /* BufferStream.h */,
+				0EB9413A1B17091300E2967A /* ConsoleMessenger.h */,
+				0EB941541B17091300E2967A /* CoreIncludes.h */,
+				0EB9413B1B17091300E2967A /* Defines.h */,
+				0EB9413D1B17091300E2967A /* FilePath.h */,
+				0EB9413F1B17091300E2967A /* FileStream.h */,
+				0EB941411B17091300E2967A /* FileWrapStream.h */,
+				0EB941421B17091300E2967A /* Fixed.h */,
+				0EDC72B41C0DEE9100C480EE /* ForwardDecApiObjects.h */,
+				0EB941441B17091300E2967A /* HalfFloat.h */,
+				0EB941451B17091300E2967A /* Hash_.h */,
+				0EE12A721B8F52D3006ACAEB /* IAssetProvider.h */,
+				0EE12A731B8F52D3006ACAEB /* IGraphicsContext.h */,
+				0EE12A741B8F52D3006ACAEB /* IInputHandler.h */,
+				0EB941471B17091300E2967A /* IndexedArray.h */,
+				0EE12A761B8F52D3006ACAEB /* IPlatformContext.h */,
+				0EB941481B17091300E2967A /* ListOfInterfaces.h */,
+				0EB9414A1B17091300E2967A /* Log.h */,
+				0EB9414B1B17091300E2967A /* Maths.h */,
+				0EB9414C1B17091300E2967A /* Messenger.h */,
+				0EB9414E1B17091300E2967A /* NativeLibrary.h */,
+				0EB941501B17091300E2967A /* NormalisedInteger.h */,
+				0EE12A751B8F52D3006ACAEB /* OSManager.h */,
+				0EB941511B17091300E2967A /* Plane.h */,
+				0E35042F1BF6514400EC0B4E /* PVRCore.h */,
+				0EB941551B17091300E2967A /* Rectangle.h */,
+				0EB941561B17091300E2967A /* RefCounted.h */,
+				0EB941571B17091300E2967A /* ReinterpretBits.h */,
+				0EB941581B17091300E2967A /* RingBuffer.h */,
+				0EB941591B17091300E2967A /* SizedPointer.h */,
+				0EB9415A1B17091300E2967A /* Stream.h */,
+				0EB9415C1B17091300E2967A /* StringFunctions.h */,
+				0EB9415D1B17091300E2967A /* StringHash.h */,
+				0EB9415E1B17091300E2967A /* Time_.h */,
+				0EB941601B17091300E2967A /* Types.h */,
+				0EB941621B17091300E2967A /* UnicodeConverter.h */,
+				0EB9414F1B17091300E2967A /* NativeLibrary.mm */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		3E4671E919AF6F5600A81031 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0EB941741B17091300E2967A /* Hash_.h in Headers */,
+				0EB941861B17091300E2967A /* ReinterpretBits.h in Headers */,
+				0EB941771B17091300E2967A /* ListOfInterfaces.h in Headers */,
+				0EB9416C1B17091300E2967A /* FilePath.h in Headers */,
+				0EB941871B17091300E2967A /* RingBuffer.h in Headers */,
+				0EB941881B17091300E2967A /* SizedPointer.h in Headers */,
+				0EB941711B17091300E2967A /* Fixed.h in Headers */,
+				0EB9418C1B17091300E2967A /* StringHash.h in Headers */,
+				0EB941761B17091300E2967A /* IndexedArray.h in Headers */,
+				0EB9417B1B17091300E2967A /* Messenger.h in Headers */,
+				0EB941731B17091300E2967A /* HalfFloat.h in Headers */,
+				0EB941891B17091300E2967A /* Stream.h in Headers */,
+				0EB941791B17091300E2967A /* Log.h in Headers */,
+				0EB941631B17091300E2967A /* Assert_.h in Headers */,
+				0EB941651B17091300E2967A /* AxisAlignedBox.h in Headers */,
+				0EB941671B17091300E2967A /* BufferStream.h in Headers */,
+				0EB9417A1B17091300E2967A /* Maths.h in Headers */,
+				0EB941701B17091300E2967A /* FileWrapStream.h in Headers */,
+				0EE12A791B8F52D3006ACAEB /* IInputHandler.h in Headers */,
+				0EB9418F1B17091300E2967A /* Types.h in Headers */,
+				0EE12A7A1B8F52D3006ACAEB /* OSManager.h in Headers */,
+				0EB941911B17091300E2967A /* UnicodeConverter.h in Headers */,
+				0EE12A781B8F52D3006ACAEB /* IGraphicsContext.h in Headers */,
+				0EB9417D1B17091300E2967A /* NativeLibrary.h in Headers */,
+				0EB941841B17091300E2967A /* Rectangle.h in Headers */,
+				0E3504301BF6514400EC0B4E /* PVRCore.h in Headers */,
+				0EB9417F1B17091300E2967A /* NormalisedInteger.h in Headers */,
+				0EB941851B17091300E2967A /* RefCounted.h in Headers */,
+				0EB9418D1B17091300E2967A /* Time_.h in Headers */,
+				0EB9418B1B17091300E2967A /* StringFunctions.h in Headers */,
+				0EE12A771B8F52D3006ACAEB /* IAssetProvider.h in Headers */,
+				0EB941691B17091300E2967A /* ConsoleMessenger.h in Headers */,
+				0EB941801B17091300E2967A /* Plane.h in Headers */,
+				0EB9416E1B17091300E2967A /* FileStream.h in Headers */,
+				0EB9416A1B17091300E2967A /* Defines.h in Headers */,
+				0EB941831B17091300E2967A /* CoreIncludes.h in Headers */,
+				0EE12A7B1B8F52D3006ACAEB /* IPlatformContext.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		3E4671EA19AF6F5600A81031 /* PVRCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E4671EC19AF6F5600A81031 /* Build configuration list for PBXNativeTarget "PVRCore" */;
+			buildPhases = (
+				3E4671E719AF6F5600A81031 /* Sources */,
+				3E4671E819AF6F5600A81031 /* Frameworks */,
+				3E4671E919AF6F5600A81031 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PVRCore;
+			productName = PVRCore;
+			productReference = 3E4671EB19AF6F5600A81031 /* libPVRCore.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3E46718D19AF697D00A81031 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "___ImaginationTechnology___";
+			};
+			buildConfigurationList = 3E46719019AF697D00A81031 /* Build configuration list for PBXProject "PVRCore" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 3E46718C19AF697D00A81031;
+			productRefGroup = 3E46719619AF697D00A81031 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3E4671EA19AF6F5600A81031 /* PVRCore */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3E4671E719AF6F5600A81031 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0EB941661B17091300E2967A /* BufferStream.cpp in Sources */,
+				0EB9417E1B17091300E2967A /* NativeLibrary.mm in Sources */,
+				0EB9418E1B17091300E2967A /* Time.cpp in Sources */,
+				0EB941901B17091300E2967A /* UnicodeConverter.cpp in Sources */,
+				0EB941781B17091300E2967A /* Log.cpp in Sources */,
+				0EB9418A1B17091300E2967A /* StringFunctions.cpp in Sources */,
+				0EB941681B17091300E2967A /* ConsoleMessenger.cpp in Sources */,
+				0EB9416B1B17091300E2967A /* FilePath.cpp in Sources */,
+				0EB9417C1B17091300E2967A /* NativeLibrary.cpp in Sources */,
+				0EB9416D1B17091300E2967A /* FileStream.cpp in Sources */,
+				0EB9416F1B17091300E2967A /* FileWrapStream.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3E46719719AF697D00A81031 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../Bin/OSX/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_MAC=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "../../../ ../../../../Builds/Include";
+			};
+			name = Debug;
+		};
+		3E46719819AF697D00A81031 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../Bin/OSX/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_MAC=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "../../../ ../../../../Builds/Include";
+			};
+			name = Release;
+		};
+		3E4671ED19AF6F5600A81031 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		3E4671EE19AF6F5600A81031 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3E46719019AF697D00A81031 /* Build configuration list for PBXProject "PVRCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E46719719AF697D00A81031 /* Debug */,
+				3E46719819AF697D00A81031 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3E4671EC19AF6F5600A81031 /* Build configuration list for PBXNativeTarget "PVRCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E4671ED19AF6F5600A81031 /* Debug */,
+				3E4671EE19AF6F5600A81031 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3E46718D19AF697D00A81031 /* Project object */;
+}

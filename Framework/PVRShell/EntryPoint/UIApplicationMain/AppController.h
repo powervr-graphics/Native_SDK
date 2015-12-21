@@ -1,0 +1,22 @@
+/*!*********************************************************************************************************************
+\file         PVRShell\EntryPoint\UIApplicationMain\AppController.h
+\author       PowerVR by Imagination, Developer Technology Team
+\copyright    Copyright (c) Imagination Technologies Limited.
+\brief        UIApplication delegate functioning as the application controller for UIKit implementation of Shell(iOS)
+***********************************************************************************************************************/
+#pragma once
+
+#include "PVRShell/StateMachine.h"
+#include "PVRShell/CommandLine.h"
+
+#import <UIKit/UIApplication.h>
+#import <Foundation/NSTimer.h>
+
+@interface AppController : NSObject <UIApplicationDelegate>
+{
+	NSTimer*            mainLoopTimer;	//!< timer for the main loop
+    pvr::system::StateMachine*  stateMachine; //!< The StateMachine powering the pvr::Shell
+	pvr::system::CommandLineParser    commandLine; //!< The command line options passed on app launch
+}
+
+@end

@@ -9,12 +9,9 @@ ifneq (,$(filter OGL,$(APIS)))
 ifeq "$(EGLBUILD)" "1"
 LIBDIR ?= "$(SDKDIR)/Builds/Linux/x86_64/Lib"
 else
-SHELLAPI ?= GLX
 X11BUILD = 1
 endif
 
 endif
-
-SHELLAPI ?= KEGL
 
 endif

@@ -1,698 +1,786 @@
-/******************************************************************************
-
- @File         OGLESPVRScopeRemote.cpp
-
- @Title        Demonstrates how to use the example PVRScope graphing code
-
- @Version      
-
- @Copyright    Copyright (c) Imagination Technologies Limited.
-
- @Platform     Independant
-
- @Description  Demonstrates how to use the example PVRScope graphing code
-
-******************************************************************************/
-#include <string.h>
-
-#include "PVRShell.h"
-#include "OGLESTools.h"
+/*!*********************************************************************************************************************
+\File         OGLESPVRScopeRemote.cpp
+\Title        PVRScopeRemote
+\Author       PowerVR by Imagination, Developer Technology Team
+\Copyright    Copyright (c) Imagination Technologies Limited.
+\brief		  Shows how to use our example PVRScope graph code.
+***********************************************************************************************************************/
+#include "PVRShell/PVRShell.h"
+#include "PVRApi/PVRApi.h"
+#include "PVRUIRenderer/PVRUIRenderer.h"
 #include "PVRScopeComms.h"
 
-/******************************************************************************
- Content file names
-******************************************************************************/
-
-// Scene
-const char c_szSceneFile[] = "Mask.pod";
+// Source and binary shaders
+const char FragShaderSrcFile[] = "FragShader.fsh";
+const char VertShaderSrcFile[] = "VertShader.vsh";
 
 // PVR texture files
-const char c_szTextureFile[] = "MaskTex.pvr";
+const char TextureFile[] = "Marble.pvr";
 
-enum ECounterDefs						{ eCounter,	eCounter10,	eCounterNum };
-const char *c_apszDefs[eCounterNum] =	{ "Frames",	"Frames10"	};
-
-/******************************************************************************
- Defines
-******************************************************************************/
-// Camera constants. Used for making the projection matrix
-#define CAM_NEAR	(1.0f)
-#define CAM_FAR		(500.0f)
-
-/*!****************************************************************************
- Class implementing the PVRShell functions.
-******************************************************************************/
-class OGLESPVRScopeRemote : public PVRShell
+// POD scene files
+const char SceneFile[] = "scene.pod";
+namespace CounterDefs {
+enum Enum
 {
-	// Print3D class used to display text
-	CPVRTPrint3D	m_Print3D;
+	Counter, Counter10, NumCounter
+};
+}
+const char* FrameDefs[CounterDefs::NumCounter] = { "Frames", "Frames10" };
 
-	// Vertex Buffer Object (VBO) handles
-	GLuint*	m_puiVbo;
-	GLuint*	m_puiIndexVbo;
+/*!*********************************************************************************************************************
+\brief Class implementing the PVRShell functions.
+***********************************************************************************************************************/
+class OGLESPVRScopeRemote : public pvr::Shell
+{
+	struct DeviceResources
+	{
+		pvr::api::GraphicsPipeline pipeline;
+		pvr::api::TextureView texture;
+		std::vector<pvr::api::Buffer> vbos;
+		std::vector<pvr::api::Buffer > ibos;
+		pvr::api::DescriptorSet  descriptorSet;
+		pvr::api::DescriptorSetLayout descriptorSetLayout;
+		pvr::api::CommandBuffer commandBuffer;
+		pvr::api::Fbo onScreenFbo;
+	};
+	std::auto_ptr<DeviceResources> m_deviceResource;
+	// Print3D class used to display text
+	pvr::ui::UIRenderer uiRenderer;
+
+	// OpenGL handles for shaders, textures and VBOs
+	pvr::GraphicsContext m_context;
 
 	// 3D Model
-	CPVRTModelPOD	m_Scene;
+	pvr::assets::ModelHandle scene;
+	pvr::api::AssetStore assetStore;
+	// Projection and view matrices
 
-	// Projection and Model View matrices
-	PVRTMat4		m_mProjection, m_mView;
 
-	// Array to lookup the textures for each material in the scene
-	GLuint m_uiTexture;
+	// Group shader programs and their uniform locations together
+	struct
+	{
+		pvr::int32 mvpMtx;
+		//pvr::int32 mvMtx; //We will not need modelview as we don't use point lights in this demo.
+		pvr::int32 mvITMtx;
+		pvr::int32 lightDirView;
+		pvr::int32 albedo;
+		pvr::int32 specularExponent;
+		pvr::int32 metallicity;
+		pvr::int32 reflectivity;
+	} uniformLocations;
 
-	// Variables to handle the animation in a time-based manner
-	int			m_iTimePrev;
-	float		m_fFrame;
+	struct Uniforms
+	{
+		glm::mat4 projectionMtx;
+		glm::mat4 viewMtx;
+		glm::mat4 mvpMatrix;
+		glm::mat4 mvMatrix;
+		glm::mat3 mvITMatrix;
+		glm::vec3 lightDirView;
+		pvr::float32 specularExponent;
+		pvr::float32 metallicity;
+		pvr::float32 reflectivity;
+		glm::vec3    albedo;
+	} progUniforms;
 
-	// The rotate parameter of Model
-	float m_fAngleY;
-
-	float m_fMinThickness;
-	float m_fMaxVariation;
+	// The translation and Rotate parameter of Model
+	pvr::float32 angleY;
 
 	// Data connection to PVRPerfServer
-	bool						m_bCommsError;
-	SSPSCommsData				*m_psSPSCommsData;
-	SSPSCommsLibraryTypeFloat	m_sCommsLibMinThickness;
-	SSPSCommsLibraryTypeFloat	m_sCommsLibMaxVariation;
+	bool hasCommunicationError;
+	SSPSCommsData*	spsCommsData;
+	SSPSCommsLibraryTypeFloat commsLibSpecularExponent;
+	SSPSCommsLibraryTypeFloat commsLibMetallicity;
+	SSPSCommsLibraryTypeFloat commsLibReflectivity;
+	SSPSCommsLibraryTypeFloat commsLibAlbedoR;
+	SSPSCommsLibraryTypeFloat commsLibAlbedoG;
+	SSPSCommsLibraryTypeFloat commsLibAlbedoB;
 
-	unsigned int	m_i32FrameCounter;
-	unsigned int	m_i32Frame10Counter;
-	unsigned int	m_anCounterReadings[eCounterNum];
 
-
+	std::vector<char>	vertShaderSrc;
+	std::vector<char>	fragShaderSrc;
+	pvr::uint32 frameCounter;
+	pvr::uint32 frame10Counter;
+	pvr::uint32 counterReadings[CounterDefs::NumCounter];
 public:
-	OGLESPVRScopeRemote() : m_puiVbo(0),
-							m_puiIndexVbo(0),
-							m_fAngleY(0)
-	{
-	}
-
-	// PVRShell functions
-	virtual bool InitApplication();
-	virtual bool InitView();
-	virtual bool ReleaseView();
-	virtual bool QuitApplication();
-	virtual bool RenderScene();
-
-	bool LoadVbos(CPVRTString* pErrorStr);
-	void DrawMesh(unsigned int ui32MeshID);
-	bool LoadTextures(CPVRTString* pErrorStr);
+	virtual pvr::Result::Enum initApplication();
+	virtual pvr::Result::Enum initView();
+	virtual pvr::Result::Enum releaseView();
+	virtual pvr::Result::Enum quitApplication();
+	virtual pvr::Result::Enum renderFrame();
+	void recordCommandBuffer();
+	bool createTexSamplerDescriptorSet();
+	bool createPipeline(const char* const pszFrag, const char* const pszVert);
+	void loadVbos();
+	void drawMesh(int i32NodeIndex);
 };
 
-
-/*!****************************************************************************
- @Function		InitApplication
- @Return		bool		true if no error occurred
- @Description	Code in InitApplication() will be called by PVRShell once per
-				run, before the rendering context is created.
-				Used to initialize variables that are not dependent on it
-				(e.g. external modules, loading meshes, etc.)
-				If the rendering context is lost, InitApplication() will
-				not be called again.
-******************************************************************************/
-bool OGLESPVRScopeRemote::InitApplication()
+/*!*********************************************************************************************************************
+\return	Return true if no error occurred
+\brief	Loads the textures required for this training course
+***********************************************************************************************************************/
+bool OGLESPVRScopeRemote::createTexSamplerDescriptorSet()
 {
+	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
+
+	if (!assetStore.getTextureWithCaching(getGraphicsContext(), TextureFile, &m_deviceResource->texture, NULL))
+	{
+		pvr::Log("ERROR: Failed to load texture.");
+		return false;
+	}
+
+	pvr::assets::SamplerCreateParam samplerDesc;
+	samplerDesc.minificationFilter = pvr::SamplerFilter::Linear;
+	samplerDesc.mipMappingFilter = pvr::SamplerFilter::Nearest;
+	samplerDesc.magnificationFilter = pvr::SamplerFilter::Linear;
+	pvr::api::Sampler bilinearSampler = m_context->createSampler(samplerDesc);
+
+	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
+	descSetLayoutInfo.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, pvr::api::ShaderStageFlags::Fragment);
+	m_deviceResource->descriptorSetLayout = m_context->createDescriptorSetLayout(descSetLayoutInfo);
+
+	pvr::api::DescriptorSetUpdateParam descriptorSetUpdate;
+	descriptorSetUpdate.addCombinedImageSampler(0, 0, m_deviceResource->texture, bilinearSampler);
+	m_deviceResource->descriptorSet = m_context->allocateDescriptorSet(m_deviceResource->descriptorSetLayout);
+	m_deviceResource->descriptorSet->update(descriptorSetUpdate);
+	return true;
+}
+
+/*!*********************************************************************************************************************
+\return	Return true if no error occurred
+\brief	Loads and compiles the shaders and links the shader programs required for this training course
+***********************************************************************************************************************/
+bool OGLESPVRScopeRemote::createPipeline(const char* const fragShaderSource, const char* const vertShaderSource)
+{
+	//Mapping of mesh semantic names to shader variables
+	pvr::utils::VertexBindings_Name vertexBindings[] =
+	{
+		{ "POSITION", "inVertex" },
+		{ "NORMAL", "inNormal" },
+		{ "UV0", "inTexCoord" }
+	};
+
+	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
+
+	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
+	pipeLayoutInfo.addDescSetLayout(m_deviceResource->descriptorSetLayout);
+
+	// set the pipeline configurations
+	pvr::api::GraphicsPipelineCreateParam pipeDesc;
+	/* Load and compile the shaders from files. */
+	pvr::BufferStream vertexShaderStream("", vertShaderSource, strlen(vertShaderSource));
+	pvr::BufferStream fragShaderStream("", fragShaderSource, strlen(fragShaderSource));
+
+	pipeDesc.vertexShader.setShader(m_context->createShader(vertexShaderStream, pvr::ShaderType::VertexShader));
+	pipeDesc.fragmentShader.setShader(m_context->createShader(fragShaderStream, pvr::ShaderType::FragmentShader));
+	pipeDesc.pipelineLayout = m_context->createPipelineLayout(pipeLayoutInfo);
+
+	pvr::utils::createInputAssemblyFromMesh(scene->getMesh(0), vertexBindings, 3, pipeDesc);
+
+	pvr::api::GraphicsPipeline tmpPipeline = m_context->createGraphicsPipeline(pipeDesc);
+	pvr::Log(pvr::Log.Debug, "Created pipeline...");
+	if (!tmpPipeline.isValid()) { pvr::Log(pvr::Log.Debug, "Pipeline Failure."); return false; }
+	m_deviceResource->pipeline = tmpPipeline;
+	pvr::Log(pvr::Log.Debug, "Pipeline Success.");
+
+	// Set the sampler2D variable to the first texture unit
+	m_deviceResource->commandBuffer->beginRecording();
+	m_deviceResource->commandBuffer->bindPipeline(m_deviceResource->pipeline);
+
+	m_deviceResource->commandBuffer->setUniform<pvr::int32>(m_deviceResource->pipeline-> getUniformLocation("sTexture"), 0);
+
+	m_deviceResource->commandBuffer->endRecording();
+	m_deviceResource->commandBuffer->submit();
+	// Store the location of uniforms for later use
+	uniformLocations.mvpMtx = m_deviceResource->pipeline->getUniformLocation("MVPMatrix");
+	//uniformLocations.mvMtx = m_deviceResource->pipeline->getUniformLocation("MVMatrix");
+	uniformLocations.mvITMtx = m_deviceResource->pipeline->getUniformLocation("MVITMatrix");
+	uniformLocations.lightDirView = m_deviceResource->pipeline->getUniformLocation("ViewLightDirection");
+
+	uniformLocations.specularExponent = m_deviceResource->pipeline->getUniformLocation("SpecularExponent");
+	uniformLocations.metallicity = m_deviceResource->pipeline->getUniformLocation("Metallicity");
+	uniformLocations.reflectivity = m_deviceResource->pipeline->getUniformLocation("Reflectivity");
+	uniformLocations.albedo = m_deviceResource->pipeline->getUniformLocation("AlbedoModulation");
+	return true;
+}
+
+/*!*********************************************************************************************************************
+\brief	Loads the mesh data required for this training course into vertex buffer objects
+***********************************************************************************************************************/
+void OGLESPVRScopeRemote::loadVbos()
+{
+	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__,
+	        static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
+
+	//	Load vertex data of all meshes in the scene into VBOs
+	//	The meshes have been exported with the "Interleave Vectors" option,
+	//	so all data is interleaved in the buffer at pMesh->pInterleaved.
+	//	Interleaving data improves the memory access pattern and cache efficiency,
+	//	thus it can be read faster by the hardware.
+	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *scene, m_deviceResource->vbos, m_deviceResource->ibos);
+}
+
+/*!*********************************************************************************************************************
+\return	Return pvr::Result::Success if no error occurred
+\brief	Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+		Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
+		If the rendering context is lost, initApplication() will not be called again.
+***********************************************************************************************************************/
+pvr::Result::Enum OGLESPVRScopeRemote::initApplication()
+{
+	assetStore.init(*this);
+	// Load the scene
+	if (!assetStore.loadModel(SceneFile, scene))
+	{
+		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
+		return pvr::Result::NotInitialised;
+	}
 	// We want a data connection to PVRPerfServer
 	{
-		m_psSPSCommsData = pplInitialise("PVRScopeRemote", 14);
-		m_bCommsError = false;
+		spsCommsData = pplInitialise("PVRScopeRemote", 14);
+		hasCommunicationError = false;
 
 		// Demonstrate that there is a good chance of the initial data being
 		// lost - the connection is normally completed asynchronously.
-		pplSendMark(m_psSPSCommsData, "lost", static_cast<unsigned int>(strlen("lost")));
+		pplSendMark(spsCommsData, "lost", static_cast<pvr::uint32>(strlen("lost")));
 
 		// This is entirely optional. Wait for the connection to succeed, it will
 		// timeout if e.g. PVRPerfServer is not running.
-		int nBoolConnected;
-		pplWaitForConnection(m_psSPSCommsData, &nBoolConnected, 1, 200);
+		int isConnected;
+		pplWaitForConnection(spsCommsData, &isConnected, 1, 200);
 	}
+	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
 
-	CPPLProcessingScoped PPLProcessingScoped(m_psSPSCommsData,
-		__FUNCTION__, static_cast<unsigned int>(strlen(__FUNCTION__)), m_i32FrameCounter);
-
-	// set thickness variation of the film
-	m_fMaxVariation		= 100.0f;
-	// set the minimum thickness of the film
-	m_fMinThickness		= 100.0f;
-
-	m_i32FrameCounter = 0;
-	m_i32Frame10Counter = 0;
+	progUniforms.specularExponent = 5.f;            // Width of the specular highlights (using low exponent for a brushed metal look)
+	progUniforms.albedo = glm::vec3(1.f, .77f, .33f); // Overall color
+	progUniforms.metallicity = 1.f;                 // Is the color of the specular white (nonmetallic), or coloured by the object(metallic)
+	progUniforms.reflectivity = .8f;                // Percentage of contribution of diffuse / specular
+	frameCounter = 0;
+	frame10Counter = 0;
 
 	// Get and set the read path for content files
-	CPVRTResourceFile::SetReadPath((char*)PVRShellGet(prefReadPath));
-
 	// Get and set the load/release functions for loading external files.
 	// In the majority of cases the PVRShell will return NULL function pointers implying that
 	// nothing special is required to load external files.
-	CPVRTResourceFile::SetLoadReleaseFunctions(PVRShellGet(prefLoadFileFunc), PVRShellGet(prefReleaseFileFunc));
-
-	/*
-		Loads the scene from the .pod file into a CPVRTModelPOD object.
-		We could also export the scene as a header file and
-		load it with ReadFromMemory().
-	*/
-
-	if(m_Scene.ReadFromFile(c_szSceneFile) != PVR_SUCCESS)
+	// Load the scene
+	if (!assetStore.loadModel(SceneFile, scene))
 	{
-		CPVRTString ErrorStr = "ERROR: Couldn't load '" + CPVRTString(c_szSceneFile) + "'.";
-		PVRShellSet(prefExitMessage, ErrorStr.c_str());
-		return false;
+		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
+		return pvr::Result::NotInitialised;
 	}
 
-	/*
-		Remotely editable library items
-	*/
-	if(m_psSPSCommsData)
+	// set angle of rotation
+	angleY = 0.0f;
+
+	//	Remotely editable library items
+	if (spsCommsData)
 	{
-		SSPSCommsLibraryItem	asItems[8];
-		unsigned int			nItemCount = 0;
+		std::vector<SSPSCommsLibraryItem> communicableItems;
+		size_t dataRead;
+		//	Editable shaders
+		pvr::assets::ShaderFile fileVersioning;
+		fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
+		pvr::Stream::ptr_type FragShaderFile = fileVersioning.getBestStreamForApi(getMaxApiLevel());
 
-		// Want editable: min thickness
-		m_sCommsLibMinThickness.fCurrent	= m_fMinThickness;
-		m_sCommsLibMinThickness.fMin		= 0.0f;
-		m_sCommsLibMinThickness.fMax		= 500.0f;
-		asItems[nItemCount].pszName		= "min thickness";
-		asItems[nItemCount].nNameLength	= (unsigned int)strlen(asItems[nItemCount].pszName);
-
-		asItems[nItemCount].eType		= eSPSCommsLibTypeFloat;
-
-		asItems[nItemCount].pData		= (const char*)&m_sCommsLibMinThickness;
-		asItems[nItemCount].nDataLength	= sizeof(m_sCommsLibMinThickness);
-		++nItemCount;
-
-		// Want editable: max variation
-		m_sCommsLibMaxVariation.fCurrent	= m_fMaxVariation;
-		m_sCommsLibMaxVariation.fMin		= 50.0f;
-		m_sCommsLibMaxVariation.fMax		= 150.0f;
-		asItems[nItemCount].pszName		= "max variation";
-		asItems[nItemCount].nNameLength	= (unsigned int)strlen(asItems[nItemCount].pszName);
-
-		asItems[nItemCount].eType		= eSPSCommsLibTypeFloat;
-
-		asItems[nItemCount].pData		= (const char*)&m_sCommsLibMaxVariation;
-		asItems[nItemCount].nDataLength	= sizeof(m_sCommsLibMaxVariation);
-		++nItemCount;
-
-		_ASSERT(nItemCount < sizeof(asItems) / sizeof(*asItems));
-
-		/*
-			Ok, submit our library
-		*/
-		if(!pplLibraryCreate(m_psSPSCommsData, asItems, nItemCount))
+		fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
+		pvr::Stream::ptr_type VertShaderFile = fileVersioning.getBestStreamForApi(getMaxApiLevel());
+		struct SLibList
 		{
-			PVRShellOutputDebug("PVRScopeRemote: pplLibraryCreate() failed\n");
+			const char* const pszName;
+			const pvr::Stream::ptr_type file;
+		}
+		aShaders[2] =
+		{
+			{ FragShaderSrcFile, FragShaderFile },
+			{ VertShaderSrcFile, VertShaderFile }
+		};
+
+		std::vector<char> data[sizeof(aShaders) / sizeof(*aShaders)];
+		for (pvr::uint32 i = 0; i < sizeof(aShaders) / sizeof(*aShaders); ++i)
+		{
+			if (aShaders[i].file->open())
+			{
+				communicableItems.push_back(SSPSCommsLibraryItem());
+				communicableItems.back().pszName = aShaders[i].pszName;
+				communicableItems.back().nNameLength = (pvr::uint32)strlen(aShaders[i].pszName);
+				communicableItems.back().eType = eSPSCommsLibTypeString;
+				data[i].resize(aShaders[i].file->getSize());
+				aShaders[i].file->read(aShaders[i].file->getSize(), 1, &data[i][0], dataRead);
+				communicableItems.back().pData = &data[i][0];
+				communicableItems.back().nDataLength = (pvr::uint32)aShaders[i].file->getSize();
+			}
+		}
+
+		// Editable: Specular Exponent
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		commsLibSpecularExponent.fCurrent = progUniforms.specularExponent;
+		commsLibSpecularExponent.fMin = 1.1f;
+		commsLibSpecularExponent.fMax = 300.0f;
+		communicableItems.back().pszName = "Specular Exponent";
+		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&commsLibSpecularExponent;
+		communicableItems.back().nDataLength = sizeof(commsLibSpecularExponent);
+
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		// Editable: Metallicity
+		commsLibMetallicity.fCurrent = progUniforms.metallicity;
+		commsLibMetallicity.fMin = 0.0f;
+		commsLibMetallicity.fMax = 1.0f;
+		communicableItems.back().pszName = "Metallicity";
+		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&commsLibMetallicity;
+		communicableItems.back().nDataLength = sizeof(commsLibMetallicity);
+
+		// Editable: Reflectivity
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		commsLibReflectivity.fCurrent = progUniforms.reflectivity;
+		commsLibReflectivity.fMin = 0.;
+		commsLibReflectivity.fMax = 1.;
+		communicableItems.back().pszName = "Reflectivity";
+		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&commsLibReflectivity;
+		communicableItems.back().nDataLength = sizeof(commsLibReflectivity);
+
+
+		// Editable: Albedo R channel
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		commsLibAlbedoR.fCurrent = progUniforms.albedo.r;
+		commsLibAlbedoR.fMin = 0.0f;
+		commsLibAlbedoR.fMax = 1.0f;
+		communicableItems.back().pszName = "Albedo R";
+		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&commsLibAlbedoR;
+		communicableItems.back().nDataLength = sizeof(commsLibAlbedoR);
+
+		// Editable: Albedo R channel
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		commsLibAlbedoG.fCurrent = progUniforms.albedo.g;
+		commsLibAlbedoG.fMin = 0.0f;
+		commsLibAlbedoG.fMax = 1.0f;
+		communicableItems.back().pszName = "Albedo G";
+		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&commsLibAlbedoG;
+		communicableItems.back().nDataLength = sizeof(commsLibAlbedoG);
+
+		// Editable: Albedo R channel
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		commsLibAlbedoB.fCurrent = progUniforms.albedo.b;
+		commsLibAlbedoB.fMin = 0.0f;
+		commsLibAlbedoB.fMax = 1.0f;
+		communicableItems.back().pszName = "Albedo B";
+		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&commsLibAlbedoB;
+		communicableItems.back().nDataLength = sizeof(commsLibAlbedoB);
+
+		// Ok, submit our library
+		if (!pplLibraryCreate(spsCommsData, communicableItems.data(), communicableItems.size()))
+		{
+			pvr::Log(pvr::Log.Debug, "PVRScopeRemote: pplLibraryCreate() failed\n");
 		}
 	}
 
-	/*
-		User defined counters
-	*/
-	if(m_psSPSCommsData)
+	// User defined counters
+	if (spsCommsData)
 	{
-		SSPSCommsCounterDef	asDefs[eCounterNum];
-		for(unsigned int i = 0; i < eCounterNum; ++i)
+		SSPSCommsCounterDef counterDefines[CounterDefs::NumCounter];
+		for (pvr::uint32 i = 0; i < CounterDefs::NumCounter; ++i)
 		{
-			asDefs[i].pszName		= c_apszDefs[i];
-			asDefs[i].nNameLength	= (unsigned int)strlen(c_apszDefs[i]);
+			counterDefines[i].pszName = FrameDefs[i];
+			counterDefines[i].nNameLength = (pvr::uint32)strlen(FrameDefs[i]);
 		}
 
-		if(!pplCountersCreate(m_psSPSCommsData, asDefs, eCounterNum))
+		if (!pplCountersCreate(spsCommsData, counterDefines, CounterDefs::NumCounter))
 		{
-			PVRShellOutputDebug("PVRScopeRemote: pplCountersCreate() failed\n");
+			pvr::Log(pvr::Log.Debug, "PVRScopeRemote: pplCountersCreate() failed\n");
 		}
 	}
-
-	return true;
+	return pvr::Result::Success;
 }
 
-/*!****************************************************************************
- @Function		QuitApplication
- @Return		bool		true if no error occurred
- @Description	Code in QuitApplication() will be called by PVRShell once per
-				run, just before exiting the program.
-				If the rendering context is lost, QuitApplication() will
-				not be called.
-******************************************************************************/
-bool OGLESPVRScopeRemote::QuitApplication()
+/*!*********************************************************************************************************************
+\return	Return pvr::Result::Success if no error occurred
+\brief	Code in quitApplication() will be called by Shell once per run, just before exiting the program.
+		If the rendering context is lost, QuitApplication() will not be called.
+***********************************************************************************************************************/
+pvr::Result::Enum OGLESPVRScopeRemote::quitApplication()
 {
-	if (m_psSPSCommsData)
+	if (spsCommsData)
 	{
-		m_bCommsError |= !pplSendProcessingBegin(m_psSPSCommsData, __FUNCTION__, static_cast<unsigned int>(strlen(__FUNCTION__)), m_i32FrameCounter);
-	}
+		hasCommunicationError |= !pplSendProcessingBegin(spsCommsData, __FUNCTION__,  static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
 
-	// Free the memory allocated for the scene
-	m_Scene.Destroy();
-
-	delete [] m_puiVbo;
-	delete [] m_puiIndexVbo;
-
-	// Close the data connection to PVRPerfServer
-	if(m_psSPSCommsData)
-	{
-		for(unsigned int i = 0; i < 40; ++i)
+		// Close the data connection to PVRPerfServer
+		for (pvr::uint32 i = 0; i < 40; ++i)
 		{
 			char buf[128];
 			const int nLen = sprintf(buf, "test %u", i);
-			m_bCommsError |= !pplSendMark(m_psSPSCommsData, buf, nLen);
+			hasCommunicationError |= !pplSendMark(spsCommsData, buf, nLen);
 		}
-		m_bCommsError |= !pplSendProcessingEnd(m_psSPSCommsData);
-		pplShutdown(m_psSPSCommsData);
+		hasCommunicationError |= !pplSendProcessingEnd(spsCommsData);
+		pplShutdown(spsCommsData);
 	}
-
-    return true;
+	return pvr::Result::Success;
 }
 
-/*!****************************************************************************
- @Function		InitView
- @Return		bool		true if no error occurred
- @Description	Code in InitView() will be called by PVRShell upon
-				initialization or after a change in the rendering context.
-				Used to initialize variables that are dependent on the rendering
-				context (e.g. textures, vertex buffers, etc.)
-******************************************************************************/
-bool OGLESPVRScopeRemote::InitView()
+/*!*********************************************************************************************************************
+\return	Return pvr::Result::Success if no error occurred
+\brief	Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
+***********************************************************************************************************************/
+pvr::Result::Enum OGLESPVRScopeRemote::initView()
 {
-	CPPLProcessingScoped PPLProcessingScoped(m_psSPSCommsData,
-		__FUNCTION__, static_cast<unsigned int>(strlen(__FUNCTION__)), m_i32FrameCounter);
+	m_context = getGraphicsContext();
+	m_deviceResource.reset(new DeviceResources());
+	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
 
-	CPVRTString ErrorStr;
-	/*
-		Initialize Print3D
-	*/
-    bool bRotate = PVRShellGet(prefIsRotated) && PVRShellGet(prefFullScreen);
-
-	if(m_Print3D.SetTextures(0,PVRShellGet(prefWidth),PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
-	{
-		PVRShellSet(prefExitMessage, "ERROR: Cannot initialise Print3D\n");
-		return false;
-	}
-
-	// Sets the clear color
-	glClearColor(0.6f, 0.8f, 1.0f, 1.0f);
-
-	// Enables texturing
-	glEnable(GL_TEXTURE_2D);
-
+	m_deviceResource->commandBuffer = m_context->createCommandBuffer();
 	//	Initialize VBO data
-	if(!LoadVbos(&ErrorStr))
+	loadVbos();
+
+	//	Load textures
+	if (!createTexSamplerDescriptorSet())
 	{
-		PVRShellSet(prefExitMessage, ErrorStr.c_str());
-		return false;
+		setExitMessage("ERROR:Failed to create DescriptorSets.");
+		return pvr::Result::NotInitialised;
 	}
 
-	/*
-		Load textures
-	*/
-	if(!LoadTextures(&ErrorStr))
+	size_t dataRead;
+	pvr::assets::ShaderFile shaderVersioning;
+	// Take our initial vertex shader source
 	{
-		PVRShellSet(prefExitMessage, ErrorStr.c_str());
-		return false;
+		shaderVersioning.populateValidVersions(VertShaderSrcFile, *this);
+		pvr::Stream::ptr_type vertShader = shaderVersioning.getBestStreamForApi(m_context->getApiType());
+		vertShaderSrc.resize(vertShader->getSize() + 1, 0);
+		vertShader->read(vertShader->getSize(), 1, &vertShaderSrc[0], dataRead);
+	}
+	// Take our initial fragment shader source
+	{
+		shaderVersioning.populateValidVersions(FragShaderSrcFile, *this);
+		pvr::Stream::ptr_type fragShader = shaderVersioning.getBestStreamForApi(m_context->getApiType());
+		fragShaderSrc.resize(fragShader->getSize() + 1, 0);
+		fragShader->read(fragShader->getSize(), 1, &fragShaderSrc[0], dataRead);
 	}
 
-	/*
-		Calculate the projection and view matrices
-	*/
+	// create the pipeline
+	if (!createPipeline(&fragShaderSrc[0], &vertShaderSrc[0]))
+	{
+		setExitMessage("ERROR:Failed to create pipelines.");
+		return pvr::Result::NotInitialised;
+	}
 
-	m_mProjection = PVRTMat4::PerspectiveFovRH(PVRT_PIf/6, (float)PVRShellGet(prefWidth)/(float)PVRShellGet(prefHeight), CAM_NEAR, CAM_FAR, PVRTMat4::OGL, bRotate);
+	//	Initialize the UI Renderer
+	if (uiRenderer.init(getGraphicsContext()) != pvr::Result::Success)
+	{
+		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
+		return pvr::Result::NotInitialised;
+	}
 
-	m_mView = PVRTMat4::LookAtRH(PVRTVec3(0, 0, 75.0f), PVRTVec3(0, 0, 0), PVRTVec3(0, 1, 0));
+	m_deviceResource->onScreenFbo = m_context->createOnScreenFboWithParams();
 
-	// Enable the depth test
-	glEnable(GL_DEPTH_TEST);
+	// create the pvrscope connection pass and fail text
+	uiRenderer.getDefaultTitle()->setText("PVRScopeRemote");
+	uiRenderer.getDefaultTitle()->commitUpdates();
 
-	// Enable culling
-	glEnable(GL_CULL_FACE);
+	uiRenderer.getDefaultDescription()->setScale(glm::vec2(.5, .5));
+	uiRenderer.getDefaultDescription()->setText("Use PVRTune to remotely control the parameters of this application.");
+	uiRenderer.getDefaultDescription()->commitUpdates();
 
-	// Initialise variables used for the animation
-	m_fFrame = 0;
-	m_iTimePrev = PVRShellGetTime();
-
-	return true;
+	// Calculate the projection and view matrices
+	// Is the screen rotated?
+	bool isRotated = this->isScreenRotated() && this->isFullScreen();
+	if (isRotated)
+	{
+		progUniforms.projectionMtx = pvr::math::perspectiveFov(glm::pi<pvr::float32>() / 6, (pvr::float32)getHeight(),
+		                             (pvr::float32)getWidth(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar(), glm::pi<pvr::float32>() * .5f);
+	}
+	else
+	{
+		progUniforms.projectionMtx = glm::perspectiveFov(glm::pi<pvr::float32>() / 6, (pvr::float32)getWidth(),
+		                             (pvr::float32)getHeight(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar());
+	}
+	recordCommandBuffer();
+	return pvr::Result::Success;
 }
 
-/*!****************************************************************************
- @Function		LoadTextures
- @Return		bool			true if no error occurred
- @Description	Loads the textures required for this training course
-******************************************************************************/
-bool OGLESPVRScopeRemote::LoadTextures(CPVRTString* pErrorStr)
+/*!*********************************************************************************************************************
+\return	Return pvr::Result::Success if no error occurred
+\brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
+***********************************************************************************************************************/
+pvr::Result::Enum OGLESPVRScopeRemote::releaseView()
 {
-	CPPLProcessingScoped PPLProcessingScoped(m_psSPSCommsData,
-		__FUNCTION__, static_cast<unsigned int>(strlen(__FUNCTION__)), m_i32FrameCounter);
-
-	if(PVRTTextureLoadFromPVR(c_szTextureFile, &m_uiTexture) != PVR_SUCCESS)
-	{
-		*pErrorStr = "ERROR: Failed to load texture.";
-		return false;
-	}
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	return true;
+	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
+	// Release UIRenderer
+	uiRenderer.release();
+	assetStore.releaseAll();
+	m_deviceResource.release();
+	return pvr::Result::Success;
 }
 
-/*!****************************************************************************
- @Function		LoadVbos
- @Description	Loads the mesh data required for this training course into
-				vertex buffer objects
-******************************************************************************/
-bool OGLESPVRScopeRemote::LoadVbos(CPVRTString* pErrorStr)
+/*!*********************************************************************************************************************
+\return	Return Result::Success if no error occurred
+\brief Main rendering loop function of the program. The shell will call this function every frame.
+***********************************************************************************************************************/
+pvr::Result::Enum OGLESPVRScopeRemote::renderFrame()
 {
-	CPPLProcessingScoped PPLProcessingScoped(m_psSPSCommsData,
-		__FUNCTION__, static_cast<unsigned int>(strlen(__FUNCTION__)), m_i32FrameCounter);
-
-	if(m_Scene.nNumMesh == 0) // If there are no VBO to create return
-		return true;
-
-	if(!m_Scene.pMesh[0].pInterleaved)
-	{
-		*pErrorStr = "ERROR: IntroducingPOD requires the pod data to be interleaved. Please re-export with the interleaved option enabled.";
-		return false;
-	}
-
-	if(!m_puiVbo)
-		m_puiVbo = new GLuint[m_Scene.nNumMesh];
-
-	if(!m_puiIndexVbo)
-		m_puiIndexVbo = new GLuint[m_Scene.nNumMesh];
-
-	/*
-		Load vertex data of all meshes in the scene into VBOs
-
-		The meshes have been exported with the "Interleave Vectors" option,
-		so all data is interleaved in the buffer at pMesh->pInterleaved.
-		Interleaving data improves the memory access pattern and cache efficiency,
-		thus it can be read faster by the hardware.
-	*/
-
-	glGenBuffers(m_Scene.nNumMesh, m_puiVbo);
-
-	for(unsigned int i = 0; i < m_Scene.nNumMesh; ++i)
-	{
-		// Load vertex data into buffer object
-		SPODMesh& Mesh = m_Scene.pMesh[i];
-		unsigned int uiSize = Mesh.nNumVertex * Mesh.sVertex.nStride;
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_puiVbo[i]);
-		glBufferData(GL_ARRAY_BUFFER, uiSize, Mesh.pInterleaved, GL_STATIC_DRAW);
-
-		// Load index data into buffer object if available
-		m_puiIndexVbo[i] = 0;
-
-		if(Mesh.sFaces.pData)
-		{
-			glGenBuffers(1, &m_puiIndexVbo[i]);
-			uiSize = PVRTModelPODCountIndices(Mesh) * sizeof(GLshort);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_puiIndexVbo[i]);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, uiSize, Mesh.sFaces.pData, GL_STATIC_DRAW);
-		}
-	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	return true;
-}
-
-/*!****************************************************************************
- @Function		ReleaseView
- @Return		bool		true if no error occurred
- @Description	Code in ReleaseView() will be called by PVRShell when the
-				application quits or before a change in the rendering context.
-******************************************************************************/
-bool OGLESPVRScopeRemote::ReleaseView()
-{
-	CPPLProcessingScoped PPLProcessingScoped(m_psSPSCommsData,
-		__FUNCTION__, static_cast<unsigned int>(strlen(__FUNCTION__)), m_i32FrameCounter);
-
-	// Deletes the texture
-	glDeleteTextures(1, &m_uiTexture);
-
-	// Release Print3D Textures
-	m_Print3D.ReleaseTextures();
-
-	return true;
-}
-
-/*!****************************************************************************
- @Function		RenderScene
- @Return		bool		true if no error occurred
- @Description	Main rendering loop function of the program. The shell will
-				call this function every frame.
-				eglSwapBuffers() will be performed by PVRShell automatically.
-				PVRShell will also manage important OS events.
-				Will also manage relevant OS events. The user has access to
-				these events through an abstraction layer provided by PVRShell.
-******************************************************************************/
-bool OGLESPVRScopeRemote::RenderScene()
-{
-	CPPLProcessingScoped PPLProcessingScoped(m_psSPSCommsData,
-		__FUNCTION__, static_cast<unsigned int>(strlen(__FUNCTION__)), m_i32FrameCounter);
-
-	if(m_psSPSCommsData)
+	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
+	bool currCommunicationErr = hasCommunicationError;
+	if (spsCommsData)
 	{
 		// mark every N frames
-		if(!(m_i32FrameCounter % 100))
+		if (!(frameCounter % 100))
 		{
 			char buf[128];
-			const int nLen = sprintf(buf, "frame %u", m_i32FrameCounter);
-			m_bCommsError |= !pplSendMark(m_psSPSCommsData, buf, nLen);
+			const int nLen = sprintf(buf, "frame %u", frameCounter);
+			hasCommunicationError |= !pplSendMark(spsCommsData, buf, nLen);
 		}
 
 		// Check for dirty items
-		m_bCommsError |= !pplSendProcessingBegin(m_psSPSCommsData, "dirty", static_cast<unsigned int>(strlen("dirty")), m_i32FrameCounter);
+		hasCommunicationError |= !pplSendProcessingBegin(spsCommsData, "dirty", static_cast<pvr::uint32>(strlen("dirty")), frameCounter);
 		{
-			unsigned int nItem, nNewDataLen;
-			const char *pData;
-			while(pplLibraryDirtyGetFirst(m_psSPSCommsData, &nItem, &nNewDataLen, &pData))
+			pvr::uint32 nItem, nNewDataLen;
+			const char* pData;
+			bool recompile = false;
+			while (pplLibraryDirtyGetFirst(spsCommsData, &nItem, &nNewDataLen, &pData))
 			{
-				PVRShellOutputDebug("dirty item %u %u 0x%08x\n", nItem, nNewDataLen, pData);
-				switch(nItem)
+				pvr::Log(pvr::Log.Debug, "dirty item %u %u 0x%08x\n", nItem, nNewDataLen, pData);
+				switch (nItem)
 				{
 				case 0:
-					if(nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+					fragShaderSrc.assign(pData, pData + nNewDataLen);
+					fragShaderSrc.push_back(0);
+					recompile = true;
+					break;
+
+				case 1:
+					vertShaderSrc.assign(pData, pData + nNewDataLen);
+					vertShaderSrc.push_back(0);
+					recompile = true;
+					break;
+
+				case 2:
+					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
 					{
-						const SSPSCommsLibraryTypeFloat * const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						m_fMinThickness = psData->fCurrent;
+						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+						progUniforms.specularExponent = psData->fCurrent;
+						pvr::Log(pvr::Log.Information, "Setting Specular Exponent to value [%6.2f]", progUniforms.specularExponent);
 					}
 					break;
-				case 1:
-					if(nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+				case 3:
+					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
 					{
-						const SSPSCommsLibraryTypeFloat * const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						m_fMaxVariation = psData->fCurrent;
+						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+						progUniforms.metallicity = psData->fCurrent;
+						pvr::Log(pvr::Log.Information, "Setting Metallicity to value [%3.2f]", progUniforms.metallicity);
+					}
+					break;
+				case 4:
+					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+					{
+						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+						progUniforms.reflectivity = psData->fCurrent;
+						pvr::Log(pvr::Log.Information, "Setting Reflectivity to value [%3.2f]", progUniforms.reflectivity);
+					}
+					break;
+				case 5:
+					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+					{
+						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+						progUniforms.albedo.r = psData->fCurrent;
+						pvr::Log(pvr::Log.Information, "Setting Albedo Red channel to value [%3.2f]", progUniforms.albedo.r);
+					}
+					break;
+				case 6:
+					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+					{
+						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+						progUniforms.albedo.g = psData->fCurrent;
+						pvr::Log(pvr::Log.Information, "Setting Albedo Green channel to value [%3.2f]", progUniforms.albedo.g);
+					}
+					break;
+				case 7:
+					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
+					{
+						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
+						progUniforms.albedo.b = psData->fCurrent;
+						pvr::Log(pvr::Log.Information, "Setting Albedo Blue channel to value [%3.2f]", progUniforms.albedo.b);
 					}
 					break;
 				}
 			}
+
+			if (recompile)
+			{
+				if (!createPipeline(&fragShaderSrc[0], &vertShaderSrc[0]))
+				{
+					pvr::Log(pvr::Log.Error, "*** Could not recompile the shaders passed from PVRScopeCommunication ****");
+				}
+			}
 		}
-		m_bCommsError |= !pplSendProcessingEnd(m_psSPSCommsData);
+		hasCommunicationError |= !pplSendProcessingEnd(spsCommsData);
 	}
 
-	if (m_psSPSCommsData)
+	if (spsCommsData)
 	{
-		m_bCommsError |= !pplSendProcessingBegin(m_psSPSCommsData, "draw", static_cast<unsigned int>(strlen("draw")), m_i32FrameCounter);
+		hasCommunicationError |= !pplSendProcessingBegin(spsCommsData, "draw", static_cast<pvr::uint32>(strlen("draw")), frameCounter);
 	}
 
-	// Clear the color and depth buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+// Rotate and Translation the model matrix
+	glm::mat4 modelMtx = glm::rotate(angleY, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(0.6f)) * scene->getWorldMatrix(0);
+	angleY += (2 * glm::pi<glm::float32>() * getFrameTime() / 1000) / 10;
 
-	// Loads the projection matrix
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(m_mProjection.f);
+	progUniforms.viewMtx = glm::lookAt(glm::vec3(0.f, 0.f, 75.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
-	// Specify the modelview matrix
-	PVRTMat4 mModel;
-	SPODNode& Node = m_Scene.pNode[0];
+// Set model view projection matrix
+	progUniforms.mvMatrix = progUniforms.viewMtx * modelMtx;
+	progUniforms.mvpMatrix = progUniforms.projectionMtx * progUniforms.mvMatrix;
 
-	m_Scene.GetWorldMatrix(mModel, Node);
+	progUniforms.mvITMatrix = glm::inverseTranspose(glm::mat3(progUniforms.mvMatrix));
 
-	// Rotate and Translate the model matrix
-	m_fAngleY += (2*PVRT_PIf/60)/7;
+	// Set light direction in model space
+	progUniforms.lightDirView = glm::normalize(glm::vec3(1., 1., -1.));
 
-	// Set model view projection matrix
-	PVRTMat4 mModelView;
-	mModelView = m_mView * PVRTMat4::RotationY(m_fAngleY) * mModel;
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(mModelView.f);
-
-	/*
-		Load the light direction from the scene if we have one
-	*/
-
-	// Enables lighting. See BasicTnL for a detailed explanation
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-
-	// Set light direction
-	PVRTVec4 vLightDirModel;
-	vLightDirModel = mModel.inverse() * PVRTVec4(1, 1, 1, 0);
-	glLightfv(GL_LIGHT0, GL_POSITION, (float*)&vLightDirModel.x);
-
-	// Enable the vertex position attribute array
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-	// bind the texture
-	glBindTexture(GL_TEXTURE_2D, m_uiTexture);
-
-	/*
-		Now that the model-view matrix is set and the materials are ready,
-		call another function to actually draw the mesh.
-	*/
-	DrawMesh(Node.nIdx);
-
-	// Disable the vertex positions
-	glDisableClientState(GL_VERTEX_ARRAY);
-
-	if (m_psSPSCommsData)
+	// Set eye position in model space
+	// Now that the uniforms are set, call another function to actually draw the mesh.
+	if (spsCommsData)
 	{
-		m_bCommsError |= !pplSendProcessingEnd(m_psSPSCommsData);
-		m_bCommsError |= !pplSendProcessingBegin(m_psSPSCommsData, "Print3D", static_cast<unsigned int>(strlen("Print3D")), m_i32FrameCounter);
+		hasCommunicationError |= !pplSendProcessingEnd(spsCommsData);
+
+		hasCommunicationError |= !pplSendProcessingBegin(spsCommsData, "Print3D", static_cast<pvr::uint32>(strlen("Print3D")), frameCounter);
 	}
 
-	// Displays the demo name using the tools. For a detailed explanation, see the example IntroducingPVRTools
-	if(m_bCommsError)
+	if (hasCommunicationError)
 	{
-		m_Print3D.DisplayDefaultTitle("PVRScopeRemote", "Remote APIs\n\nError:\n  PVRScopeComms failed\n  Is PVRPerfServer connected?", ePVRTPrint3DSDKLogo);
-		m_bCommsError = false;
+		uiRenderer.getDefaultControls()->setText("Communication Error:\nPVRScopeComms failed\n"
+		        "Is PVRPerfServer connected?");
+		uiRenderer.getDefaultControls()->setColor(glm::vec4(.8f, .3f, .3f, 1.0f));
+		uiRenderer.getDefaultControls()->commitUpdates();
+		recordCommandBuffer();
+		hasCommunicationError = false;
 	}
 	else
-		m_Print3D.DisplayDefaultTitle("PVRScopeRemote", "Remote APIs", ePVRTPrint3DSDKLogo);
-
-	m_Print3D.Flush();
-
-	if (m_psSPSCommsData)
 	{
-		m_bCommsError |= !pplSendProcessingEnd(m_psSPSCommsData);
+		uiRenderer.getDefaultControls()->setText("PVRScope Communication established.");
+		uiRenderer.getDefaultControls()->setColor(glm::vec4(1.f));
+		uiRenderer.getDefaultControls()->commitUpdates();
+		recordCommandBuffer();
 	}
+
+	if (spsCommsData) { hasCommunicationError |= !pplSendProcessingEnd(spsCommsData); }
 
 	// send counters
-	m_anCounterReadings[eCounter]	= m_i32FrameCounter;
-	m_anCounterReadings[eCounter10]	= m_i32Frame10Counter;
-	if(m_psSPSCommsData)
-	{
-		m_bCommsError |= !pplCountersUpdate(m_psSPSCommsData, m_anCounterReadings);
-	}
+	counterReadings[CounterDefs::Counter] = frameCounter;
+	counterReadings[CounterDefs::Counter10] = frame10Counter;
+	if (spsCommsData) { hasCommunicationError |= !pplCountersUpdate(spsCommsData, counterReadings); }
 
 	// update some counters
-	++m_i32FrameCounter;
-	if(0 == (m_i32FrameCounter / 10) % 10)
-	{
-		m_i32Frame10Counter += 10;
-	}
-
-	return true;
+	++frameCounter;
+	if (0 == (frameCounter / 10) % 10) { frame10Counter += 10; }
+	m_deviceResource->commandBuffer->submit();
+	return pvr::Result::Success;
 }
 
-/*!****************************************************************************
- @Function		DrawMesh
- @Input			mesh		The mesh to draw
- @Description	Draws a SPODMesh after the model view matrix has been set and
-				the meterial prepared.
-******************************************************************************/
-void OGLESPVRScopeRemote::DrawMesh(unsigned int ui32MeshID)
+/*!*********************************************************************************************************************
+\brief	Draws a pvr::assets::Mesh after the model view matrix has been set and the material prepared.
+\param	nodeIndex Node index of the mesh to draw
+***********************************************************************************************************************/
+void OGLESPVRScopeRemote::drawMesh(int nodeIndex)
 {
-	CPPLProcessingScoped PPLProcessingScoped(m_psSPSCommsData,
-		__FUNCTION__, static_cast<unsigned int>(strlen(__FUNCTION__)), m_i32FrameCounter);
+	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
 
-	SPODMesh& Mesh = m_Scene.pMesh[ui32MeshID];
-
+	pvr::int32 meshIndex = scene->getNode(nodeIndex).getObjectId();
+	const pvr::assets::Mesh& mesh = scene->getMesh(meshIndex);
 	// bind the VBO for the mesh
-	glBindBuffer(GL_ARRAY_BUFFER, m_puiVbo[ui32MeshID]);
-	// bind the index buffer, won't hurt if the handle is 0
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_puiIndexVbo[ui32MeshID]);
+	m_deviceResource->commandBuffer->bindVertexBuffer(m_deviceResource->vbos[meshIndex], 0, 0);
 
-	// Setup pointers
-	glVertexPointer(Mesh.sVertex.n, GL_FLOAT, Mesh.sVertex.nStride, Mesh.sVertex.pData);
 
-	if(Mesh.nNumUVW) // Do we have texture co-ordinates?
+	//	The geometry can be exported in 4 ways:
+	//	- Indexed Triangle list
+	//	- Non-Indexed Triangle list
+	//	- Indexed Triangle strips
+	//	- Non-Indexed Triangle strips
+	if (mesh.getNumStrips() == 0)
 	{
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(Mesh.psUVW[0].n, GL_FLOAT, Mesh.psUVW[0].nStride, Mesh.psUVW[0].pData);
-	}
-
-	if(Mesh.sNormals.n) // Do we have normals?
-	{
-		glEnableClientState(GL_NORMAL_ARRAY);
-		glNormalPointer(GL_FLOAT, Mesh.sNormals.nStride, Mesh.sNormals.pData);
-	}
-
-	if(Mesh.sVtxColours.n) // Do we have vertex colours?
-	{
-		glEnableClientState(GL_COLOR_ARRAY);
-		glColorPointer(Mesh.sVtxColours.n * PVRTModelPODDataTypeComponentCount(Mesh.sVtxColours.eType), GL_UNSIGNED_BYTE, Mesh.sVtxColours.nStride, Mesh.sVtxColours.pData);
-	}
-	/*
-		The geometry can be exported in 4 ways:
-		- Indexed Triangle list
-		- Non-Indexed Triangle list
-		- Indexed Triangle strips
-		- Non-Indexed Triangle strips
-	*/
-	if(Mesh.nNumStrips == 0)
-	{
-		if(m_puiIndexVbo[ui32MeshID])
+		if (m_deviceResource->ibos[meshIndex].isValid())
 		{
 			// Indexed Triangle list
-			glDrawElements(GL_TRIANGLES, Mesh.nNumFaces * 3, GL_UNSIGNED_SHORT, 0);
+			m_deviceResource->commandBuffer->bindIndexBuffer(m_deviceResource->ibos[meshIndex], 0, pvr::IndexType::IndexType16Bit);
+			m_deviceResource->commandBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			glDrawArrays(GL_TRIANGLES, 0, Mesh.nNumFaces * 3);
+			m_deviceResource->commandBuffer->drawArrays(0, mesh.getNumFaces(), 0, 1);
 		}
 	}
 	else
 	{
-		int offset = 0;
-
-		for(int i = 0; i < (int) Mesh.nNumStrips; ++i)
+		for (pvr::int32 i = 0; i < (pvr::int32)mesh.getNumStrips(); ++i)
 		{
-			if(m_puiIndexVbo[ui32MeshID])
+			int offset = 0;
+			if (m_deviceResource->ibos[meshIndex].isValid())
 			{
+				m_deviceResource->commandBuffer->bindIndexBuffer(m_deviceResource->ibos[meshIndex], 0, pvr::IndexType::IndexType16Bit);
+
 				// Indexed Triangle strips
-				glDrawElements(GL_TRIANGLE_STRIP, Mesh.pnStripLength[i]+2, GL_UNSIGNED_SHORT, (void*) (offset * sizeof(GLushort)));
+				m_deviceResource->commandBuffer->drawIndexed(0, mesh.getStripLength(i) + 2, offset * 2, 0, 1);
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				glDrawArrays(GL_TRIANGLE_STRIP, offset, Mesh.pnStripLength[i]+2);
+				m_deviceResource->commandBuffer->drawArrays(0, mesh.getStripLength(i) + 2, 0, 1);
 			}
-			offset += Mesh.pnStripLength[i]+2;
+			offset += mesh.getStripLength(i) + 2;
 		}
 	}
-
-	// unbind the vertex buffers as we don't need them bound anymore
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	// Disable the vertex attribute arrays
-	if(Mesh.nNumUVW) // Do we have texture co-ordinates?
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	if(Mesh.sNormals.n) // Do we have normals?
-		glDisableClientState(GL_NORMAL_ARRAY);
-
-	if(Mesh.sVtxColours.n) // Do we have vertex colours?
-		glDisableClientState(GL_COLOR_ARRAY);
 }
 
-/*!****************************************************************************
- @Function		NewDemo
- @Return		PVRShell*		The demo supplied by the user
- @Description	This function must be implemented by the user of the shell.
-				The user should return its PVRShell object defining the
-				behaviour of the application.
-******************************************************************************/
-PVRShell* NewDemo()
+/*!*********************************************************************************************************************
+\brief	pre-record the rendering the commands
+***********************************************************************************************************************/
+void OGLESPVRScopeRemote::recordCommandBuffer()
 {
-	return new OGLESPVRScopeRemote();
+	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
+	m_deviceResource->commandBuffer->beginRecording();
+
+	m_deviceResource->commandBuffer->beginRenderPass(m_deviceResource->onScreenFbo, pvr::Rectanglei(0, 0, getWidth(), getHeight()), glm::vec4(0.00, 0.70, 0.67, 1.0f));
+
+	// Use shader program
+	m_deviceResource->commandBuffer->bindPipeline(m_deviceResource->pipeline);
+	// Bind texture
+	m_deviceResource->commandBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics, m_deviceResource->pipeline->getPipelineLayout(), m_deviceResource->descriptorSet, 0);
+
+	m_deviceResource->commandBuffer->setUniformPtr<glm::vec3>(uniformLocations.lightDirView, 1, &progUniforms.lightDirView);
+	m_deviceResource->commandBuffer->setUniformPtr<glm::mat4>(uniformLocations.mvpMtx, 1, &progUniforms.mvpMatrix);
+	//m_deviceResource->commandBuffer->setUniformPtr<glm::mat4>(uniformLocations.mvMtx, 1, &progUniforms.mvMatrix);
+	m_deviceResource->commandBuffer->setUniformPtr<glm::mat3>(uniformLocations.mvITMtx, 1, &progUniforms.mvITMatrix);
+	m_deviceResource->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.specularExponent, 1, &progUniforms.specularExponent);
+	m_deviceResource->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.metallicity, 1, &progUniforms.metallicity);
+	m_deviceResource->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.reflectivity, 1, &progUniforms.reflectivity);
+	m_deviceResource->commandBuffer->setUniformPtr<glm::vec3>(uniformLocations.albedo, 1, &progUniforms.albedo);
+
+	drawMesh(0);
+
+	pvr::api::SecondaryCommandBuffer uicmd = m_context->createSecondaryCommandBuffer();
+	uiRenderer.beginRendering(uicmd);
+	// Displays the demo name using the tools. For a detailed explanation, see the example
+	// IntroducingPVRUIRenderer
+	uiRenderer.getDefaultTitle()->render();
+	uiRenderer.getDefaultDescription()->render();
+	uiRenderer.getSdkLogo()->render();
+	uiRenderer.getDefaultControls()->render();
+	uiRenderer.endRendering();
+	m_deviceResource->commandBuffer->enqueueSecondaryCmds(uicmd);
+	m_deviceResource->commandBuffer->endRenderPass();
+	m_deviceResource->commandBuffer->endRecording();
 }
 
-/******************************************************************************
- End of file (OGLESPVRScopeRemote.cpp)
-******************************************************************************/
-
+/*!*********************************************************************************************************************
+\return	Return auto ptr to the demo supplied by the user
+\brief	This function must be implemented by the user of the shell. The user should return its Shell object defining the behavior of the application.
+***********************************************************************************************************************/
+std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new OGLESPVRScopeRemote()); }

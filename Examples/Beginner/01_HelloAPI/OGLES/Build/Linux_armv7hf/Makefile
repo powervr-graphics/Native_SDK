@@ -71,13 +71,7 @@ PLAT_CFLAGS += -Wall -march=armv7 -mfloat-abi=hard
 PLAT_INC  = $(SDKDIR)/Builds/Include $(WS_INC)
 
 PLAT_OBJPATH = $(DEBUG_RELEASE)$(WS)
-PLAT_LINK = $(LIBDIR_FLAGS) $(WS_LIBS) -L$(TOOLCHAIN)/lib -march=armv7 -mfloat-abi=hard
-
-ifndef V1BUILD
-PLAT_LINK 	+= -lGLES_CM
-else
-PLAT_LINK	+= -lGLESv1_CM -lEGL
-endif
+PLAT_LINK = $(LIBDIR_FLAGS) -lEGL -lGLESv2 $(WS_LIBS) -L$(TOOLCHAIN)/lib -march=armv7 -mfloat-abi=hard
 
 ifeq "$(WS)" "X11"
 SRCNAME = OGLESHelloAPI_LinuxX11

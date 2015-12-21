@@ -1,6 +1,0 @@
-:Title:
-ImageConvolution
-:ShortDescription:
-Introduction to image processing using GPGPU (GPU Compute)
-:FullDescription:
-This demonstration deals with image processing. It illustrates the usage of GPU Compute to write linear and non-linear filter kernels.

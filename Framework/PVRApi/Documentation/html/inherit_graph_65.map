@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classpvr_1_1api_1_1impl_1_1_descriptor_set_impl.html" title="A descriptor set object. Carries all memory&#45;related API object state like Textures (Images)..." alt="" coords="16,5,179,46"/>
+<area shape="rect" id="node2" href="$classpvr_1_1api_1_1impl_1_1_descriptor_set_gles_impl.html" title="OpenGL ES implementation of a DescriptorSet. " alt="" coords="237,34,400,75"/>
+<area shape="rect" id="node3" href="$structpvr_1_1native_1_1_h_descriptor_set__.html" title="Dummy OpenGL ES implementation of a Descriptor Set. " alt="" coords="6,71,189,97"/>
+</map>

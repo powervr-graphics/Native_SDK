@@ -1,0 +1,299 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E4EB04D1B668EDD00635FED /* ExtensionLoaderEgl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E4EB04B1B668EDD00635FED /* ExtensionLoaderEgl.cpp */; };
+		0E4EB04E1B668EDD00635FED /* ExtensionLoaderEgl.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E4EB04C1B668EDD00635FED /* ExtensionLoaderEgl.h */; };
+		0E53CC3D1AC2BE420032B504 /* PlatformContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E53CC3A1AC2BE420032B504 /* PlatformContext.h */; };
+		0E53CC401AC2BE5E0032B504 /* EglPlatformContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E53CC3E1AC2BE5E0032B504 /* EglPlatformContext.cpp */; };
+		0E65D48D1B4C1A28004D80D5 /* ApiEgl.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E65D48A1B4C1A28004D80D5 /* ApiEgl.h */; };
+		0E65D48E1B4C1A28004D80D5 /* NativeLibraryEgl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E65D48B1B4C1A28004D80D5 /* NativeLibraryEgl.cpp */; };
+		0E65D48F1B4C1A28004D80D5 /* NativeLibraryEgl.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E65D48C1B4C1A28004D80D5 /* NativeLibraryEgl.h */; };
+		0EB941EB1B2706F000E2967A /* PlatformTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941EA1B2706F000E2967A /* PlatformTypes.h */; };
+		0EB941ED1B2706FE00E2967A /* EglPlatformHandles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941EC1B2706FE00E2967A /* EglPlatformHandles.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0E4EB04B1B668EDD00635FED /* ExtensionLoaderEgl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExtensionLoaderEgl.cpp; path = ../../ExtensionLoaderEgl.cpp; sourceTree = "<group>"; };
+		0E4EB04C1B668EDD00635FED /* ExtensionLoaderEgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtensionLoaderEgl.h; path = ../../ExtensionLoaderEgl.h; sourceTree = "<group>"; };
+		0E53CC181AC2BDC60032B504 /* libPVREgl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVREgl.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E53CC3A1AC2BE420032B504 /* PlatformContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlatformContext.h; path = ../../../PlatformContext.h; sourceTree = "<group>"; };
+		0E53CC3E1AC2BE5E0032B504 /* EglPlatformContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EglPlatformContext.cpp; path = ../../EglPlatformContext.cpp; sourceTree = "<group>"; };
+		0E65D48A1B4C1A28004D80D5 /* ApiEgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiEgl.h; path = ../../ApiEgl.h; sourceTree = "<group>"; };
+		0E65D48B1B4C1A28004D80D5 /* NativeLibraryEgl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeLibraryEgl.cpp; path = ../../NativeLibraryEgl.cpp; sourceTree = "<group>"; };
+		0E65D48C1B4C1A28004D80D5 /* NativeLibraryEgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeLibraryEgl.h; path = ../../NativeLibraryEgl.h; sourceTree = "<group>"; };
+		0EB941EA1B2706F000E2967A /* PlatformTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlatformTypes.h; path = ../../../PlatformTypes.h; sourceTree = "<group>"; };
+		0EB941EC1B2706FE00E2967A /* EglPlatformHandles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EglPlatformHandles.h; path = ../../EglPlatformHandles.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0E53CC151AC2BDC60032B504 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0E45AA681AC95BCB00EDDE96 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				0E4EB04B1B668EDD00635FED /* ExtensionLoaderEgl.cpp */,
+				0E4EB04C1B668EDD00635FED /* ExtensionLoaderEgl.h */,
+				0E65D48A1B4C1A28004D80D5 /* ApiEgl.h */,
+				0E65D48B1B4C1A28004D80D5 /* NativeLibraryEgl.cpp */,
+				0E65D48C1B4C1A28004D80D5 /* NativeLibraryEgl.h */,
+				0EB941EC1B2706FE00E2967A /* EglPlatformHandles.h */,
+				0EB941EA1B2706F000E2967A /* PlatformTypes.h */,
+				0E53CC3E1AC2BE5E0032B504 /* EglPlatformContext.cpp */,
+				0E53CC3A1AC2BE420032B504 /* PlatformContext.h */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		0E53CC0F1AC2BDC60032B504 = {
+			isa = PBXGroup;
+			children = (
+				0E45AA681AC95BCB00EDDE96 /* Sources */,
+				0E53CC191AC2BDC60032B504 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0E53CC191AC2BDC60032B504 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0E53CC181AC2BDC60032B504 /* libPVREgl.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		0E53CC161AC2BDC60032B504 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E65D48D1B4C1A28004D80D5 /* ApiEgl.h in Headers */,
+				0E53CC3D1AC2BE420032B504 /* PlatformContext.h in Headers */,
+				0E65D48F1B4C1A28004D80D5 /* NativeLibraryEgl.h in Headers */,
+				0EB941EB1B2706F000E2967A /* PlatformTypes.h in Headers */,
+				0E4EB04E1B668EDD00635FED /* ExtensionLoaderEgl.h in Headers */,
+				0EB941ED1B2706FE00E2967A /* EglPlatformHandles.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		0E53CC171AC2BDC60032B504 /* PVREgl */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0E53CC2C1AC2BDC60032B504 /* Build configuration list for PBXNativeTarget "PVREgl" */;
+			buildPhases = (
+				0E53CC141AC2BDC60032B504 /* Sources */,
+				0E53CC151AC2BDC60032B504 /* Frameworks */,
+				0E53CC161AC2BDC60032B504 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PVREgl;
+			productName = PVREgl;
+			productReference = 0E53CC181AC2BDC60032B504 /* libPVREgl.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0E53CC101AC2BDC60032B504 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = ImaginationTechnology;
+				TargetAttributes = {
+					0E53CC171AC2BDC60032B504 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 0E53CC131AC2BDC60032B504 /* Build configuration list for PBXProject "PVREgl" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 0E53CC0F1AC2BDC60032B504;
+			productRefGroup = 0E53CC191AC2BDC60032B504 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0E53CC171AC2BDC60032B504 /* PVREgl */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0E53CC141AC2BDC60032B504 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E53CC401AC2BE5E0032B504 /* EglPlatformContext.cpp in Sources */,
+				0E65D48E1B4C1A28004D80D5 /* NativeLibraryEgl.cpp in Sources */,
+				0E4EB04D1B668EDD00635FED /* ExtensionLoaderEgl.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0E53CC2A1AC2BDC60032B504 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../../Bin/OSX/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_MAC=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../,
+					../../,
+					../../../,
+					../../../../,
+					../../../../../Builds/Include,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		0E53CC2B1AC2BDC60032B504 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../../Bin/OSX/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_MAC=1",
+					"$(inherited)",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../,
+					../../,
+					../../../,
+					../../../../,
+					../../../../../Builds/Include,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		0E53CC2D1AC2BDC60032B504 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		0E53CC2E1AC2BDC60032B504 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0E53CC131AC2BDC60032B504 /* Build configuration list for PBXProject "PVREgl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E53CC2A1AC2BDC60032B504 /* Debug */,
+				0E53CC2B1AC2BDC60032B504 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0E53CC2C1AC2BDC60032B504 /* Build configuration list for PBXNativeTarget "PVREgl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E53CC2D1AC2BDC60032B504 /* Debug */,
+				0E53CC2E1AC2BDC60032B504 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0E53CC101AC2BDC60032B504 /* Project object */;
+}

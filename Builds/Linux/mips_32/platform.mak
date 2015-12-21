@@ -5,7 +5,7 @@
 #
 # Copyright		Copyright (C) by Imagination Technologies Limited.
 #
-CROSS_COMPILE ?= mips-linux-gnu-
+CROSS_COMPILE ?= mips-img-linux-gnu-
 
 ifdef TOOLCHAIN
 PLAT_CC  = $(TOOLCHAIN)/bin/$(CROSS_COMPILE)gcc
@@ -17,5 +17,5 @@ PLAT_CPP = $(CROSS_COMPILE)g++
 PLAT_AR  = $(CROSS_COMPILE)ar
 endif
 
-PLAT_CFLAGS += -march=mips32r2 -mabi=32 -EL
-PLAT_LINK += -march=mips32r2 -mabi=32 -EL
+PLAT_CFLAGS += -march=mips32r6 -mabi=32 -EL
+PLAT_LINK += -march=mips32r6 -mabi=32 -EL

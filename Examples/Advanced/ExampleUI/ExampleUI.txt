@@ -2,10 +2,14 @@
 ExampleUI
 
 :ShortDescription:
-Shows how to efficiently render sprites and interface elements.
+Use the PVRUIRenderer to efficiently render sprites to form a comples User Interface.
 
 :FullDescription:
-Rendering graphical user interfaces may seem like a trivial exercise, however without careful consideration a simple interface may be unresponsive and sluggish due to poor graphics performance. The purpose of this demo is to highlight and demonstrate techniques that can be used to improve user interface performance for software running on PowerVR platforms. Indeed, any generic 2D sprite-based applications can benefit from the recommendations given in this demo including games, applications and interfaces.
+Rendering graphical user interfaces can quickly become overly complex. The PVRUIRenderer can assist in rendering a lot of sprites with different complicated transformations, while remaining crisp and responsive. Usability and performance optimizations can both be foun in this example, such as UIRenderer transformation groups and texture atlases. Shaders available for OpenGL ES 2.x and 3.x.
+	
+:APIS:
+OpenGL ES 2.0, OpenGL ES 3.0
 
-Controls:
-	-	Esc	-	Close the application
+:Controls:
+	-	Left/Right	-	Change UI Page
+	-	Quit	-	Close the application

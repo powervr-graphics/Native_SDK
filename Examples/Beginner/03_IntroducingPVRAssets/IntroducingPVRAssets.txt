@@ -1,0 +1,14 @@
+:Title:
+IntroducingPVRAssets
+
+:ShortDescription:
+Load a scene in POD format using the PVRAssets library, and render it using OpenGL ES 2.0
+
+:FullDescription:
+This training course introduces the PowerVR Framework PVRAssets library, and shows how to use it to read a PowerVR Object Data (.pod) file and textures.  It goes into detail on how to open .pod files, .pvr files that have been referenced by it, and set up the cameras and lights from the .pod file. This demo also demonstrates the use of the PVR OpenGL ES bindings (a part of PVRGles), which is the OpenGL binding used in the native parts of this this SDK.
+
+:APIS:
+OpenGL ES 2.0
+
+:Controls:
+	-	Quit	-	Close the application

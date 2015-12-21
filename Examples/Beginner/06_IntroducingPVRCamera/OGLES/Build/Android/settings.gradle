@@ -1,0 +1,3 @@
+rootProject.name='OGLESIntroducingPVRCamera'
+include('PVRCamera')
+project(':PVRCamera').projectDir=file('../../../../../../Framework/PVRCamera/Build/Android')

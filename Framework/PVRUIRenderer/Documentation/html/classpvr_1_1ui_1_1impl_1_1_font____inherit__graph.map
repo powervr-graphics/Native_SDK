@@ -1,0 +1,5 @@
+<map id="pvr::ui::impl::Font_" name="pvr::ui::impl::Font_">
+<area shape="rect" id="node2" href="$classpvr_1_1ui_1_1impl_1_1_image__.html" title="Use this class through the Refcounted Framework Object pvr::ui::Image. Represents a 2D Image (aka Tex..." alt="" coords="95,80,233,107"/>
+<area shape="rect" id="node3" href="$classpvr_1_1ui_1_1impl_1_1_sprite__.html" title="Base sprite class. Use through the Sprite framework object. Represents something that can be rendered..." alt="" coords="5,5,141,32"/>
+<area shape="rect" id="node4" href="$classpvr_1_1ui_1_1impl_1_1_i2d_component.html" title="A component that can be positioned in 2D using 2d position, scale, rotation and anchored using its ce..." alt="" coords="167,5,345,32"/>
+</map>

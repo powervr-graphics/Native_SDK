@@ -1,0 +1,4 @@
+<map id="pvr::api::impl::DescriptorSetGlesImpl" name="pvr::api::impl::DescriptorSetGlesImpl">
+<area shape="rect" id="node2" href="$classpvr_1_1api_1_1impl_1_1_descriptor_set_impl.html" title="A descriptor set object. Carries all memory&#45;related API object state like Textures (Images)..." alt="" coords="5,6,168,47"/>
+<area shape="rect" id="node3" href="$structpvr_1_1native_1_1_h_descriptor_set__.html" title="Dummy OpenGL ES implementation of a Descriptor Set. " alt="" coords="193,13,375,40"/>
+</map>

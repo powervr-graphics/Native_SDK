@@ -1,622 +1,596 @@
-/******************************************************************************
-
- @File         OGLESPVRScopeExample.cpp
-
- @Title        Demonstrates how to use the example PVRScope graphing code
-
- @Version      
-
- @Copyright    Copyright (c) Imagination Technologies Limited.
-
- @Platform     Independant
-
- @Description  Demonstrates how to use the example PVRScope graphing code
-
-******************************************************************************/
-#include <string.h>
-
-#include "PVRShell.h"
-#include "OGLESTools.h"
+/*!*********************************************************************************************************************
+\File         OGLESPVRScopeExample.cpp
+\Title        PVRScopeExample
+\Author       PowerVR by Imagination, Developer Technology Team
+\Copyright    Copyright (c) Imagination Technologies Limited.
+\brief  Shows how to use our example PVRScope graph code.
+***********************************************************************************************************************/
+#include "PVRShell/PVRShell.h"
+#include "PVRApi/PVRApi.h"
+#include "PVRUIRenderer/PVRUIRenderer.h"
 #include "PVRScopeGraph.h"
 
 #if !defined(_WIN32) || defined(__WINSCW__)
 #define _stricmp strcasecmp
 #endif
 
-/******************************************************************************
- Content file names
-******************************************************************************/
-
-// Scene
-const char c_szSceneFile[] = "Mask.pod";
+// Shader Source
+const char FragShaderSrcFile[] = "FragShader.fsh";
+const char VertShaderSrcFile[] = "VertShader.vsh";
 
 // PVR texture files
-const char c_szTextureFile[] = "MaskTex.pvr";
+const char TextureFile[] = "Marble.pvr";
 
-/******************************************************************************
- Defines
-******************************************************************************/
-// Camera constants. Used for making the projection matrix
-#define CAM_NEAR	(1.0f)
-#define CAM_FAR		(500.0f)
+// POD scene files
+const char SceneFile[] = "scene.pod";
 
-/*!****************************************************************************
- Class implementing the PVRShell functions.
-******************************************************************************/
-class OGLESPVRScopeExample : public PVRShell
+/*!*********************************************************************************************************************
+\brief Class implementing the pvr::Shell functions.
+***********************************************************************************************************************/
+class OGLESPVRScopeExample : public pvr::Shell
 {
 	// Print3D class used to display text
-	CPVRTPrint3D	m_Print3D;
+	pvr::ui::UIRenderer uiRenderer;
 
-	// Vertex Buffer Object (VBO) handles
-	GLuint*	m_puiVbo;
-	GLuint*	m_puiIndexVbo;
+	struct DeviceResources
+	{
+		pvr::api::CommandBuffer commandBuffer;
+		pvr::api::GraphicsPipeline pipeline;
+		pvr::api::TextureView texture;
+		std::vector<pvr::api::Buffer> ibos;
+		std::vector<pvr::api::Buffer> vbos;
+		pvr::api::DescriptorSet descriptorSet;
+		pvr::api::DescriptorSetLayout descriptorSetLayout;
+		pvr::api::Fbo backBufferFbo;
+		pvr::GraphicsContext context;
+	};
+	std::auto_ptr<DeviceResources> deviceResources;
 
 	// 3D Model
-	CPVRTModelPOD	m_Scene;
+	pvr::assets::ModelHandle scene;
+	pvr::api::AssetStore assetStore;
+	// Projection and view matrices
 
-	// Projection and Model View matrices
-	PVRTMat4		m_mProjection, m_mView;
+	// Group shader programs and their uniform locations together
+	struct
+	{
+		pvr::int32 mvpMtx;
+		//pvr::int32 mvMtx;
+		pvr::int32 mvITMtx;
+		pvr::int32 lightDirView;
+		pvr::int32 albedo;
+		pvr::int32 specularExponent;
+		pvr::int32 metallicity;
+		pvr::int32 reflectivity;
+	} uniformLocations;
 
-	// Array to lookup the textures for each material in the scene
-	GLuint m_uiTexture;
+	struct Uniforms
+	{
+		glm::mat4 projectionMtx;
+		glm::mat4 viewMtx;
+		glm::mat4 mvpMatrix1;
+		glm::mat4 mvpMatrix2;
+		glm::mat4 mvMatrix1;
+		glm::mat4 mvMatrix2;
+		glm::mat3 mvITMatrix1;
+		glm::mat3 mvITMatrix2;
+		glm::vec3 lightDirView;
+		pvr::float32 specularExponent;
+		pvr::float32 metallicity;
+		pvr::float32 reflectivity;
+		glm::vec3    albedo;
+	} progUniforms;
 
-	// Variables to handle the animation in a time-based manner
-	int			m_iTimePrev;
-	float		m_fFrame;
-
-	// The rotate parameter of Model
-	float m_fAngleY;
+	// The translation and Rotate parameter of Model
+	pvr::float32 angleY;
 
 	// The PVRScopeGraph variable
-	CPVRScopeGraph *m_pScopeGraph;
+	std::auto_ptr<PVRScopeGraph> scopeGraph;
 
 	// Variables for the graphing code
-	int m_i32Counter;
-	int m_i32Group;
-	int m_i32Interval;
-
+	pvr::int32 selectedCounter;
+	pvr::int32 interval;
 public:
-	OGLESPVRScopeExample() : m_puiVbo(0),
-							m_puiIndexVbo(0),
-							m_fAngleY(0),
-							m_i32Counter(0)
-	{
-	}
+	virtual pvr::Result::Enum initApplication();
+	virtual pvr::Result::Enum initView();
+	virtual pvr::Result::Enum releaseView();
+	virtual pvr::Result::Enum quitApplication();
+	virtual pvr::Result::Enum renderFrame();
 
-	// PVRShell functions
-	virtual bool InitApplication();
-	virtual bool InitView();
-	virtual bool ReleaseView();
-	virtual bool QuitApplication();
-	virtual bool RenderScene();
+	void eventMappedInput(pvr::SimplifiedInput::Enum key);
 
-	bool LoadVbos(CPVRTString* pErrorStr);
-	void DrawMesh(unsigned int ui32MeshID);
-	bool LoadTextures(CPVRTString* pErrorStr);
+	void updateDescription();
+	void recordCommandBuffer();
+	bool createTexSamplerDescriptorSet();
+	bool createPipeline();
+	void loadVbos();
+
+	void drawMesh(int nodeIndex);
 };
 
-
-/*!****************************************************************************
- @Function		InitApplication
- @Return		bool		true if no error occured
- @Description	Code in InitApplication() will be called by PVRShell once per
-				run, before the rendering context is created.
-				Used to initialize variables that are not dependant on it
-				(e.g. external modules, loading meshes, etc.)
-				If the rendering context is lost, InitApplication() will
-				not be called again.
-******************************************************************************/
-bool OGLESPVRScopeExample::InitApplication()
+/*!*********************************************************************************************************************
+\brief Handle input key events
+\param key key event to handle
+************************************************************************************************************************/
+void OGLESPVRScopeExample::eventMappedInput(pvr::SimplifiedInput::Enum key)
 {
-	// At the time of writing, this counter is the Renderer Load
-	m_i32Counter	= 10;
-	m_i32Group		= 0;
-	m_i32Interval	= 0;
-
-	// Get and set the read path for content files
-	CPVRTResourceFile::SetReadPath((char*)PVRShellGet(prefReadPath));
-
-	// Get and set the load/release functions for loading external files.
-	// In the majority of cases the PVRShell will return NULL function pointers implying that
-	// nothing special is required to load external files.
-	CPVRTResourceFile::SetLoadReleaseFunctions(PVRShellGet(prefLoadFileFunc), PVRShellGet(prefReleaseFileFunc));
-
-	/*
-		Loads the scene from the .pod file into a CPVRTModelPOD object.
-		We could also export the scene as a header file and
-		load it with ReadFromMemory().
-	*/
-
-	if(m_Scene.ReadFromFile(c_szSceneFile) != PVR_SUCCESS)
+	// Keyboard input (cursor up/down to cycle through counters)
+	switch (key)
 	{
-		CPVRTString ErrorStr = "ERROR: Couldn't load '" + CPVRTString(c_szSceneFile) + "'.";
-		PVRShellSet(prefExitMessage, ErrorStr.c_str());
+	case pvr::SimplifiedInput::Up:
+	case pvr::SimplifiedInput::Right:
+	{
+		selectedCounter++;
+		if (selectedCounter > (int)scopeGraph->getCounterNum()) { selectedCounter = scopeGraph->getCounterNum(); }
+	} break;
+	case pvr::SimplifiedInput::Down:
+	case pvr::SimplifiedInput::Left:
+	{
+		selectedCounter--;
+		if (selectedCounter < 0) { selectedCounter = 0; }
+	} break;
+	case pvr::SimplifiedInput::Action1:
+	{
+		scopeGraph->showCounter(selectedCounter, !scopeGraph->isCounterShown(selectedCounter));
+	} break;
+	// Keyboard input (cursor left/right to change active group)
+	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
+	default: break;
+	}
+}
+
+/*!*********************************************************************************************************************
+\brief Loads the textures required for this training course
+\return Return true if no error occurred
+***********************************************************************************************************************/
+bool OGLESPVRScopeExample::createTexSamplerDescriptorSet()
+{
+	if (!assetStore.getTextureWithCaching(getGraphicsContext(), TextureFile, &deviceResources->texture, NULL))
+	{
+		pvr::Log("ERROR: Failed to load texture.");
 		return false;
+	}
+	// create the bilinear sampler
+	pvr::assets::SamplerCreateParam samplerDesc;
+	samplerDesc.minificationFilter = pvr::SamplerFilter::Linear;
+	samplerDesc.mipMappingFilter = pvr::SamplerFilter::Nearest;
+	samplerDesc.magnificationFilter = pvr::SamplerFilter::Linear;
+	pvr::api::Sampler bilinearSampler = deviceResources->context->createSampler(samplerDesc);
+
+	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
+
+	descSetLayoutInfo.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1,
+	                             pvr::api::ShaderStageFlags::Fragment);
+
+	deviceResources->descriptorSetLayout = deviceResources->context->createDescriptorSetLayout(descSetLayoutInfo);
+
+	pvr::api::DescriptorSetUpdateParam descriptorSetUpdate;
+	descriptorSetUpdate.addCombinedImageSampler(0, 0, deviceResources->texture, bilinearSampler);
+	deviceResources->descriptorSet = deviceResources->context->allocateDescriptorSet(deviceResources->descriptorSetLayout);
+	deviceResources->descriptorSet->update(descriptorSetUpdate);
+	return true;
+}
+
+/*!*********************************************************************************************************************
+\brief	Create a graphics pipeline required for this training course
+\return	Return true if no error occurred
+***********************************************************************************************************************/
+bool OGLESPVRScopeExample::createPipeline()
+{
+	pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoord" } };
+
+	//--- create the pipeline layout
+	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
+	pipeLayoutInfo.addDescSetLayout(deviceResources->descriptorSetLayout);
+
+	pvr::api::GraphicsPipelineCreateParam pipeDesc;
+	pvr::assets::ShaderFile fileVersioning;
+	fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
+	pipeDesc.vertexShader.setShader(deviceResources->context->createShader(*fileVersioning.getBestStreamForApi(getGraphicsContext()->getApiType()), pvr::ShaderType::VertexShader));
+
+	fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
+	pipeDesc.fragmentShader.setShader(deviceResources->context->createShader(*fileVersioning.getBestStreamForApi(getGraphicsContext()->getApiType()), pvr::ShaderType::FragmentShader));
+
+	pipeDesc.pipelineLayout = deviceResources->context->createPipelineLayout(pipeLayoutInfo);
+
+	pvr::utils::createInputAssemblyFromMesh(scene->getMesh(0), vertexBindings, 3, pipeDesc);
+
+	deviceResources->pipeline = deviceResources->context->createGraphicsPipeline(pipeDesc);
+	if (!deviceResources->pipeline.isValid())
+	{
+		pvr::Log("ERROR: Failed to create Graphics pipeline.");
+		return false;
+	}
+
+	// Set the sampler2D variable to the first texture unit
+	// Store the location of uniforms for later use
+	deviceResources->commandBuffer->beginRecording();
+	deviceResources->commandBuffer->bindPipeline(deviceResources->pipeline);
+	deviceResources->commandBuffer->setUniform<pvr::int32>(deviceResources->pipeline-> getUniformLocation("sDiffuseMap"), 0);
+	deviceResources->commandBuffer->endRecording();
+	deviceResources->commandBuffer->submit();
+
+	uniformLocations.mvpMtx = deviceResources->pipeline->getUniformLocation("MVPMatrix");
+	//uniformLocations.mvMtx = deviceResources->pipeline->getUniformLocation("MVMatrix");
+	uniformLocations.mvITMtx = deviceResources->pipeline->getUniformLocation("MVITMatrix");
+	uniformLocations.lightDirView = deviceResources->pipeline->getUniformLocation("ViewLightDirection");
+
+	uniformLocations.specularExponent = deviceResources->pipeline->getUniformLocation("SpecularExponent");
+	uniformLocations.metallicity = deviceResources->pipeline->getUniformLocation("Metallicity");
+	uniformLocations.reflectivity = deviceResources->pipeline->getUniformLocation("Reflectivity");
+	uniformLocations.albedo = deviceResources->pipeline->getUniformLocation("AlbedoModulation");
+	return true;
+}
+
+/*!*********************************************************************************************************************
+\brief Loads the mesh data required for this training course into vertex buffer objects
+***********************************************************************************************************************/
+void OGLESPVRScopeExample::loadVbos()
+{
+	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *scene,  deviceResources->vbos, deviceResources->ibos);
+}
+
+/*!*********************************************************************************************************************
+\return pvr::Result::Success if no error occurred
+\brief  Code in initApplication() will be called by pvr::Shell once per run, before the rendering context is created.
+	    Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes,etc.)
+	    If the rendering context is lost, initApplication() will not be called again.
+***********************************************************************************************************************/
+pvr::Result::Enum OGLESPVRScopeExample::initApplication()
+{
+	//Blue-ish marble
+	progUniforms.specularExponent = 100.f;            // Width of the specular highlights (High exponent for small shiny highlights)
+	progUniforms.albedo = glm::vec3(.78f, .82f, 1.f); // Overall color
+	progUniforms.metallicity = 1.f;                 // Doesn't make much of a difference in this material.
+	progUniforms.reflectivity = .2f;                // Low reflectivity - color mostly diffuse.
+
+	// At the time of writing, this counter is the USSE load for vertex + pixel processing
+	selectedCounter = 0;
+	interval = 0;
+	angleY = 0.0f;
+	assetStore.init(*this);
+	// Load the scene
+	if (!assetStore.loadModel(SceneFile, scene))
+	{
+		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
+		return pvr::Result::NotInitialised;
 	}
 
 	// Process the command line
 	{
-		const unsigned int	nOptNum			= PVRShellGet(prefCommandLineOptNum);
-		const SCmdLineOpt	* const psOpt	= (const SCmdLineOpt*)PVRShellGet(prefCommandLineOpts);
-		for(unsigned int i = 0; i < nOptNum; ++i)
-		{
-			if(_stricmp(psOpt[i].pArg, "-counter") == 0 && psOpt[i].pVal)
-			{
-				m_i32Counter = atoi(psOpt[i].pVal);
-			}
-			else if(_stricmp(psOpt[i].pArg, "-group") == 0 && psOpt[i].pVal)
-			{
-				m_i32Group = atoi(psOpt[i].pVal);
-			}
-			else if(_stricmp(psOpt[i].pArg, "-interval") == 0 && psOpt[i].pVal)
-			{
-				m_i32Interval = atoi(psOpt[i].pVal);
-			}
-		}
+		const pvr::system::CommandLine cmdline = getCommandLine();
+		cmdline.getIntOption("-counter", selectedCounter);
+		cmdline.getIntOption("-interval", interval);
 	}
-
-	return true;
+	return pvr::Result::Success;
 }
 
-/*!****************************************************************************
- @Function		QuitApplication
- @Return		bool		true if no error occured
- @Description	Code in QuitApplication() will be called by PVRShell once per
-				run, just before exiting the program.
-				If the rendering context is lost, QuitApplication() will
-				not be called.
-******************************************************************************/
-bool OGLESPVRScopeExample::QuitApplication()
+/*!*********************************************************************************************************************
+\return Return Result::Success if no error occurred
+\brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting
+	    the program. If the rendering context is lost, quitApplication() will not be called.x
+***********************************************************************************************************************/
+pvr::Result::Enum OGLESPVRScopeExample::quitApplication()
 {
-	// Frees the memory allocated for the scene
-	m_Scene.Destroy();
-
-	delete[] m_puiVbo;
-	delete[] m_puiIndexVbo;
-
-    return true;
+	//Instructs the Asset Store to free all resources
+	scene.release();
+	assetStore.releaseAll();
+	return pvr::Result::Success;
 }
 
-/*!****************************************************************************
- @Function		InitView
- @Return		bool		true if no error occured
- @Description	Code in InitView() will be called by PVRShell upon
-				initialization or after a change in the rendering context.
-				Used to initialize variables that are dependant on the rendering
-				context (e.g. textures, vertex buffers, etc.)
-******************************************************************************/
-bool OGLESPVRScopeExample::InitView()
+/*!*********************************************************************************************************************
+\return Return Result::Success if no error occurred
+\brief Code in initView() will be called by pvr::Shell upon initialization or after a change in the rendering context.
+	   Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
+***********************************************************************************************************************/
+pvr::Result::Enum OGLESPVRScopeExample::initView()
 {
-	CPVRTString ErrorStr;
-	/*
-		Initialize Print3D
-	*/
-    bool bRotate = PVRShellGet(prefIsRotated) && PVRShellGet(prefFullScreen);
+	deviceResources.reset(new DeviceResources());
+	deviceResources->context = getGraphicsContext();
+	deviceResources->commandBuffer = deviceResources->context->createCommandBuffer();
+	std::string errorStr;
 
-	if(m_Print3D.SetTextures(0,PVRShellGet(prefWidth),PVRShellGet(prefHeight), bRotate) != PVR_SUCCESS)
+	// Initialize VBO data
+	loadVbos();
+
+	// Load textures
+	if (!createTexSamplerDescriptorSet())
 	{
-		PVRShellSet(prefExitMessage, "ERROR: Cannot initialise Print3D\n");
-		return false;
+		this->setExitMessage(errorStr.c_str());
+		return pvr::Result::NotInitialised;
 	}
 
-	// Sets the clear color
-	glClearColor(0.6f, 0.8f, 1.0f, 1.0f);
-
-	// Enables texturing
-	glEnable(GL_TEXTURE_2D);
-
-	//	Initialize VBO data
-	if(!LoadVbos(&ErrorStr))
+	// Load and compile the shaders & link programs
+	if (!createPipeline())
 	{
-		PVRShellSet(prefExitMessage, ErrorStr.c_str());
-		return false;
+		this->setExitMessage(errorStr.c_str());
+		return pvr::Result::NotInitialised;
 	}
 
-	/*
-		Load textures
-	*/
-	if(!LoadTextures(&ErrorStr))
+	// Initialize UIRenderer
+	if (uiRenderer.init(getGraphicsContext()) != pvr::Result::Success)
 	{
-		PVRShellSet(prefExitMessage, ErrorStr.c_str());
-		return false;
+		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
+		return pvr::Result::NotInitialised;
 	}
 
-	/*
-		Calculate the projection and view matrices
-	*/
-
-	m_mProjection = PVRTMat4::PerspectiveFovRH(PVRT_PIf/6, (float)PVRShellGet(prefWidth)/(float)PVRShellGet(prefHeight), CAM_NEAR, CAM_FAR, PVRTMat4::OGL, bRotate);
-
-	m_mView = PVRTMat4::LookAtRH(PVRTVec3(0, 0, 75.0f), PVRTVec3(0, 0, 0), PVRTVec3(0, 1, 0));
-
-	// Enable the depth test
-	glEnable(GL_DEPTH_TEST);
-
-	// Enable culling
-	glEnable(GL_CULL_FACE);
-
-	// Initialise variables used for the animation
-	m_fFrame = 0;
-	m_iTimePrev = PVRShellGetTime();
-
-	// Initialise the graphing code
-	m_pScopeGraph = new CPVRScopeGraph();
-
-	if(m_pScopeGraph)
+	// Calculate the projection and view matrices
+	// Is the screen rotated?
+	bool isRotate = this->isScreenRotated() && this->isFullScreen();
+	if (isRotate)
 	{
-		// Position the graph
-		m_pScopeGraph->position(PVRShellGet(prefWidth), PVRShellGet(prefHeight), (int) (PVRShellGet(prefWidth) * 0.02f), (int) (PVRShellGet(prefHeight) * 0.02f), (int) (PVRShellGet(prefWidth) * 0.96f), (int) (PVRShellGet(prefHeight) * 0.96f) / 3);
-
-		// Output the current active group and a list of all the counters
-		PVRShellOutputDebug("Active Group %i\nCounter Number %i\n", m_pScopeGraph->GetActiveGroup(), m_pScopeGraph->GetCounterNum());
-		PVRShellOutputDebug("Counters\n");
-
-		for(unsigned int i = 0; i < m_pScopeGraph->GetCounterNum(); ++i)
-		{
-			PVRShellOutputDebug("(%i) Name %s Group %i %s\n", i,
-				m_pScopeGraph->GetCounterName(i), m_pScopeGraph->GetCounterGroup(i),
-				m_pScopeGraph->IsCounterPercentage(i) ? "percentage" : "absolute");
-			m_pScopeGraph->ShowCounter(i, false);
-		}
-
-		// Set the active group to 0
-		m_pScopeGraph->SetActiveGroup(m_i32Group);
-
-		// Tell the graph to show an initial counter
-		m_pScopeGraph->ShowCounter(m_i32Counter, true);
-
-		// Set the update interval: number of updates [frames] before updating the graph
-		m_pScopeGraph->SetUpdateInterval(m_i32Interval);
-	}
-
-	return true;
-}
-
-/*!****************************************************************************
- @Function		LoadTextures
- @Return		bool			true if no error occured
- @Description	Loads the textures required for this training course
-******************************************************************************/
-bool OGLESPVRScopeExample::LoadTextures(CPVRTString* pErrorStr)
-{
-	if(PVRTTextureLoadFromPVR(c_szTextureFile, &m_uiTexture) != PVR_SUCCESS)
-	{
-		*pErrorStr = "ERROR: Failed to load texture.";
-		return false;
-	}
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	return true;
-}
-
-/*!****************************************************************************
- @Function		LoadVbos
- @Description	Loads the mesh data required for this training course into
-				vertex buffer objects
-******************************************************************************/
-bool OGLESPVRScopeExample::LoadVbos(CPVRTString* pErrorStr)
-{
-	if(m_Scene.nNumMesh == 0) // If there are no VBO to create return
-		return true;
-
-	if(!m_Scene.pMesh[0].pInterleaved)
-	{
-		*pErrorStr = "ERROR: IntroducingPOD requires the pod data to be interleaved. Please re-export with the interleaved option enabled.";
-		return false;
-	}
-
-	if(!m_puiVbo)
-		m_puiVbo = new GLuint[m_Scene.nNumMesh];
-
-	if(!m_puiIndexVbo)
-		m_puiIndexVbo = new GLuint[m_Scene.nNumMesh];
-
-	/*
-		Load vertex data of all meshes in the scene into VBOs
-
-		The meshes have been exported with the "Interleave Vectors" option,
-		so all data is interleaved in the buffer at pMesh->pInterleaved.
-		Interleaving data improves the memory access pattern and cache efficiency,
-		thus it can be read faster by the hardware.
-	*/
-
-	glGenBuffers(m_Scene.nNumMesh, m_puiVbo);
-
-	for(unsigned int i = 0; i < m_Scene.nNumMesh; ++i)
-	{
-		// Load vertex data into buffer object
-		SPODMesh& Mesh = m_Scene.pMesh[i];
-		unsigned int uiSize = Mesh.nNumVertex * Mesh.sVertex.nStride;
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_puiVbo[i]);
-		glBufferData(GL_ARRAY_BUFFER, uiSize, Mesh.pInterleaved, GL_STATIC_DRAW);
-
-		// Load index data into buffer object if available
-		m_puiIndexVbo[i] = 0;
-
-		if(Mesh.sFaces.pData)
-		{
-			glGenBuffers(1, &m_puiIndexVbo[i]);
-			uiSize = PVRTModelPODCountIndices(Mesh) * sizeof(GLshort);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_puiIndexVbo[i]);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, uiSize, Mesh.sFaces.pData, GL_STATIC_DRAW);
-		}
-	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	return true;
-}
-
-/*!****************************************************************************
- @Function		ReleaseView
- @Return		bool		true if no error occured
- @Description	Code in ReleaseView() will be called by PVRShell when the
-				application quits or before a change in the rendering context.
-******************************************************************************/
-bool OGLESPVRScopeExample::ReleaseView()
-{
-	// Deletes the texture
-	glDeleteTextures(1, &m_uiTexture);
-
-	// Release Print3D Textures
-	m_Print3D.ReleaseTextures();
-
-	if(m_pScopeGraph)
-	{
-		delete m_pScopeGraph;
-		m_pScopeGraph = 0;
-	}
-
-	return true;
-}
-
-/*!****************************************************************************
- @Function		RenderScene
- @Return		bool		true if no error occured
- @Description	Main rendering loop function of the program. The shell will
-				call this function every frame.
-				eglSwapBuffers() will be performed by PVRShell automatically.
-				PVRShell will also manage important OS events.
-				Will also manage relevent OS events. The user has access to
-				these events through an abstraction layer provided by PVRShell.
-******************************************************************************/
-bool OGLESPVRScopeExample::RenderScene()
-{
-	// Keyboard input (cursor up/down to cycle through counters)
-	if(PVRShellIsKeyPressed(PVRShellKeyNameUP))
-	{
-		m_i32Counter++;
-
-		if(m_i32Counter > (int) m_pScopeGraph->GetCounterNum())
-			m_i32Counter = m_pScopeGraph->GetCounterNum();
-	}
-
-	if(PVRShellIsKeyPressed(PVRShellKeyNameDOWN))
-	{
-		m_i32Counter--;
-
-		if(m_i32Counter < 0)
-			m_i32Counter = 0;
-	}
-
-	if(PVRShellIsKeyPressed(PVRShellKeyNameACTION2))
-		m_pScopeGraph->ShowCounter(m_i32Counter, !m_pScopeGraph->IsCounterShown(m_i32Counter));
-
-	// Keyboard input (cursor left/right to change active group)
-	if(PVRShellIsKeyPressed(PVRShellKeyNameRIGHT))
-	{
-		m_pScopeGraph->SetActiveGroup(m_pScopeGraph->GetActiveGroup()+1);
-	}
-
-	if(PVRShellIsKeyPressed(PVRShellKeyNameLEFT))
-	{
-		m_pScopeGraph->SetActiveGroup(m_pScopeGraph->GetActiveGroup()-1);
-	}
-
-	// Clears the color and depth buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// Loads the projection matrix
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(m_mProjection.f);
-
-	// Specify the modelview matrix
-	PVRTMat4 mModel;
-	SPODNode& Node = m_Scene.pNode[0];
-
-	m_Scene.GetWorldMatrix(mModel, Node);
-
-	// Rotate and Translate the model matrix
-	m_fAngleY += (2*PVRT_PIf/60)/7;
-
-	// Set model view projection matrix
-	PVRTMat4 mModelView;
-	mModelView = m_mView * PVRTMat4::RotationY(m_fAngleY) * mModel;
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(mModelView.f);
-
-	/*
-		Load the light direction from the scene if we have one
-	*/
-
-	// Enables lighting. See BasicTnL for a detailed explanation
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-
-	// Set light direction
-	PVRTVec4 vLightDirModel;
-	vLightDirModel = mModel.inverse() * PVRTVec4(1, 1, 1, 0);
-	glLightfv(GL_LIGHT0, GL_POSITION, (float*)&vLightDirModel.x);
-
-	// Enable the vertex position attribute array
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-	// bind the texture
-	glBindTexture(GL_TEXTURE_2D, m_uiTexture);
-
-	/*
-		Now that the model-view matrix is set and the materials are ready,
-		call another function to actually draw the mesh.
-	*/
-	DrawMesh(Node.nIdx);
-
-	// Disable the vertex positions
-	glDisableClientState(GL_VERTEX_ARRAY);
-
-	char Description[256];
-
-	if(m_pScopeGraph->GetCounterNum())
-	{
-		sprintf(Description,
-			"Active Grp %i\n\n"
-			"Counter %i (Grp %i) \n"
-			"Name: %s\n"
-			"Shown: %s\n"
-			"user y-axis: %.2f  max: %.2f%s\n"
-			"FPS:%.1f\n"
-			"Core load: 2D %.1f%%, 3D %.1f%%, TA %.1f%%, Compute %.1f%%\n"
-			"Shader load: pixel %.1f%%, vertex %.1f%%, compute %.1f%%",
-			m_pScopeGraph->GetActiveGroup(),
-			m_i32Counter,
-			m_pScopeGraph->GetCounterGroup(m_i32Counter),
-			m_pScopeGraph->GetCounterName(m_i32Counter),
-			m_pScopeGraph->IsCounterShown(m_i32Counter) ? "Yes" : "No",
-			m_pScopeGraph->GetMaximum(m_i32Counter),
-			m_pScopeGraph->GetMaximumOfData(m_i32Counter),
-			m_pScopeGraph->IsCounterPercentage(m_i32Counter) ? "%%" : "",
-			m_pScopeGraph->GetStandardFPS(),
-			m_pScopeGraph->GetStandard2D(),
-			m_pScopeGraph->GetStandard3D(),
-			m_pScopeGraph->GetStandardTA(),
-			m_pScopeGraph->GetStandardCompute(),
-			m_pScopeGraph->GetStandardShaderPixel(),
-			m_pScopeGraph->GetStandardShaderVertex(),
-			m_pScopeGraph->GetStandardShaderCompute());
+		progUniforms.projectionMtx = pvr::math::perspectiveFov(glm::pi<pvr::float32>() / 6, (float)this->getWidth(),
+		                             (float)this->getHeight(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar(), glm::pi<pvr::float32>() * .5f);
 	}
 	else
 	{
-		sprintf(Description, "No counters present");
+		progUniforms.projectionMtx = glm::perspectiveFov(glm::pi<pvr::float32>() / 6, (float)this->getWidth(),
+		                             (float)this->getHeight(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar());
 	}
 
-	// Displays the demo name using the tools. For a detailed explanation, see the training course IntroducingPVRTools
-	m_Print3D.DisplayDefaultTitle("PVRScopeExample", Description, ePVRTPrint3DSDKLogo);
-	m_Print3D.Flush();
+	// Initialize the graphing code
+	scopeGraph.reset(new PVRScopeGraph(deviceResources->context, *this, uiRenderer));
 
-	// Update counters and draw the graph
-	m_pScopeGraph->Ping();
+	if (scopeGraph.get())
+	{
+		// Position the graph
+		scopeGraph->position(getWidth(), getHeight(), pvr::Rectanglei((getWidth() * 0.02f), (getHeight() * 0.02f), (getWidth() * 0.96f), (getHeight() * 0.96f) / 3));
 
-	return true;
+		// Output the current active group and a list of all the counters
+		pvr::Log(pvr::Log.Information, "PVRScope Number of Hardware Counters: %i\n", scopeGraph->getCounterNum());
+		pvr::Log(pvr::Log.Information, "Counters\n-ID---Name-------------------------------------------\n");
+
+		for (pvr::uint32 i = 0; i < scopeGraph->getCounterNum(); ++i)
+		{
+			pvr::Log(pvr::Log.Information, "[%2i] %s %s\n", i, scopeGraph->getCounterName(i), scopeGraph->isCounterPercentage(i) ? "percentage" : "absolute");
+			scopeGraph->showCounter(i, false);
+		}
+
+		scopeGraph->ping(1);
+		// Tell the graph to show initial counters
+		scopeGraph->showCounter(scopeGraph->getStandard3DIndex(), true);
+		scopeGraph->showCounter(scopeGraph->getStandardTAIndex(), true);
+		scopeGraph->showCounter(scopeGraph->getStandardShaderPixelIndex(), true);
+		scopeGraph->showCounter(scopeGraph->getStandardShaderVertexIndex(), true);
+		for (pvr::uint32 i = 0; i < scopeGraph->getCounterNum(); ++i)
+		{
+			std::string s(std::string(scopeGraph->getCounterName(i))); //Better safe than sorry - get a copy...
+			pvr::strings::toLower(s);
+			if (pvr::strings::startsWith(s, "hsr efficiency"))
+			{
+				scopeGraph->showCounter(i, true);
+			}
+			if (pvr::strings::startsWith(s, "shaded pixels per second"))
+			{
+				scopeGraph->showCounter(i, true);
+			}
+		}
+
+		// Set the update interval: number of updates [frames] before updating the graph
+		scopeGraph->setUpdateInterval(interval);
+	}
+
+	// create the default fbo using default params
+	deviceResources->backBufferFbo = deviceResources->context->createOnScreenFboWithParams();
+	uiRenderer.getDefaultTitle()->setText("PVRScopeExample");
+	uiRenderer.getDefaultTitle()->commitUpdates();
+	recordCommandBuffer();
+	return pvr::Result::Success;
 }
 
-/*!****************************************************************************
- @Function		DrawMesh
- @Input			mesh		The mesh to draw
- @Description	Draws a SPODMesh after the model view matrix has been set and
-				the material prepared.
-******************************************************************************/
-void OGLESPVRScopeExample::DrawMesh(unsigned int ui32MeshID)
+/*!*********************************************************************************************************************
+\return Return Result::Success if no error occurred
+\brief Code in releaseView() will be called by pvr::Shell when the application quits or before a change in the rendering context.
+***********************************************************************************************************************/
+pvr::Result::Enum OGLESPVRScopeExample::releaseView()
 {
-	SPODMesh& Mesh = m_Scene.pMesh[ui32MeshID];
+	uiRenderer.release();
+	deviceResources.reset();
+	scene.reset();
+	scopeGraph.reset();
+	return pvr::Result::Success;
+}
+
+/*!*********************************************************************************************************************
+\return Return Result::Success if no error occurred
+\brief Main rendering loop function of the program. The shell will call this function every frame.
+***********************************************************************************************************************/
+pvr::Result::Enum OGLESPVRScopeExample::renderFrame()
+{
+	// Rotate and Translation the model matrix
+	glm::mat4x4 mModel1, mModel2;
+	mModel1 = glm::translate(glm::vec3(0.0f, -1.0f, 0.0f)) * glm::rotate((angleY), glm::vec3(0.f, 1.f, 0.f)) *
+	          glm::translate(glm::vec3(.5f, 0.f, -1.0f)) * glm::scale(glm::vec3(0.5f, 0.5f, 0.5f)) * scene->getWorldMatrix(0);
+	//Create two instances of the mesh, offset to the sides.
+	mModel2 = mModel1 * glm::translate(glm::vec3(0, 0, -2000));
+	mModel1 = mModel1 * glm::translate(glm::vec3(0, 0, 2000));
+
+	angleY += (2 * glm::pi<glm::float32>() * getFrameTime() / 1000) / 10;
+
+	progUniforms.viewMtx = glm::lookAt(glm::vec3(0, 0, 75), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+
+	glm::mat4 vp = progUniforms.projectionMtx * progUniforms.viewMtx;
+
+	progUniforms.mvMatrix1 = progUniforms.viewMtx * mModel1;
+	progUniforms.mvMatrix2 = progUniforms.viewMtx * mModel2;
+	progUniforms.mvITMatrix1 = glm::inverseTranspose(glm::mat3(progUniforms.mvMatrix1));
+	progUniforms.mvITMatrix2 = glm::inverseTranspose(glm::mat3(progUniforms.mvMatrix2));
+	progUniforms.mvpMatrix1 = vp * mModel1;
+	progUniforms.mvpMatrix2 = vp * mModel2;
+
+	// Set light direction in model space
+	progUniforms.lightDirView = glm::normalize(glm::vec3(1., 1., -1.));
+
+	scopeGraph->ping(getFrameTime());
+	updateDescription();
+	recordCommandBuffer();
+	deviceResources->commandBuffer->submit();
+	return pvr::Result::Success;
+}
+
+/*!*********************************************************************************************************************
+\param nodeIndex Node index of the mesh to draw
+\brief Draws a pvr::Model::Mesh after the model view matrix has been set and the material prepared.
+***********************************************************************************************************************/
+void OGLESPVRScopeExample::drawMesh(int nodeIndex)
+{
+	const pvr::assets::Model::Node& node = scene->getNode(nodeIndex);
+	const pvr::assets::Mesh& mesh = scene->getMesh(node.getObjectId());
 
 	// bind the VBO for the mesh
-	glBindBuffer(GL_ARRAY_BUFFER, m_puiVbo[ui32MeshID]);
-	// bind the index buffer, won't hurt if the handle is 0
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_puiIndexVbo[ui32MeshID]);
+	deviceResources->commandBuffer->bindVertexBuffer(deviceResources->vbos[node.getObjectId()], 0, 0);
 
-	// Setup pointers
-	glVertexPointer(Mesh.sVertex.n, GL_FLOAT, Mesh.sVertex.nStride, Mesh.sVertex.pData);
-
-	if(Mesh.nNumUVW) // Do we have texture co-ordinates?
+	// The geometry can be exported in 4 ways:
+	// - Indexed Triangle list
+	// - Non-Indexed Triangle list
+	// - Indexed Triangle strips
+	// - Non-Indexed Triangle strips
+	if (mesh.getNumStrips() == 0)
 	{
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(Mesh.psUVW[0].n, GL_FLOAT, Mesh.psUVW[0].nStride, Mesh.psUVW[0].pData);
-	}
-
-	if(Mesh.sNormals.n) // Do we have normals?
-	{
-		glEnableClientState(GL_NORMAL_ARRAY);
-		glNormalPointer(GL_FLOAT, Mesh.sNormals.nStride, Mesh.sNormals.pData);
-	}
-
-	if(Mesh.sVtxColours.n) // Do we have vertex colours?
-	{
-		glEnableClientState(GL_COLOR_ARRAY);
-		glColorPointer(Mesh.sVtxColours.n * PVRTModelPODDataTypeComponentCount(Mesh.sVtxColours.eType), GL_UNSIGNED_BYTE, Mesh.sVtxColours.nStride, Mesh.sVtxColours.pData);
-	}
-	/*
-		The geometry can be exported in 4 ways:
-		- Indexed Triangle list
-		- Non-Indexed Triangle list
-		- Indexed Triangle strips
-		- Non-Indexed Triangle strips
-	*/
-	if(Mesh.nNumStrips == 0)
-	{
-		if(m_puiIndexVbo[ui32MeshID])
+		if (deviceResources->ibos[node.getObjectId()].isValid())
 		{
 			// Indexed Triangle list
-			glDrawElements(GL_TRIANGLES, Mesh.nNumFaces * 3, GL_UNSIGNED_SHORT, 0);
+			deviceResources->commandBuffer->bindIndexBuffer(deviceResources->ibos[node.getObjectId()],
+			        0, mesh.getFaces().getDataType());
+			deviceResources->commandBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			glDrawArrays(GL_TRIANGLES, 0, Mesh.nNumFaces * 3);
+			deviceResources->commandBuffer->drawArrays(0, mesh.getNumFaces(), 0, 1);
 		}
 	}
 	else
 	{
-		int offset = 0;
-
-		for(int i = 0; i < (int) Mesh.nNumStrips; ++i)
+		for (pvr::int32 i = 0; i < (pvr::int32)mesh.getNumStrips(); ++i)
 		{
-			if(m_puiIndexVbo[ui32MeshID])
+			int offset = 0;
+			if (deviceResources->ibos[node.getObjectId()].isValid())
 			{
 				// Indexed Triangle strips
-				glDrawElements(GL_TRIANGLE_STRIP, Mesh.pnStripLength[i]+2, GL_UNSIGNED_SHORT, (void*) (offset * sizeof(GLushort)));
+				deviceResources->commandBuffer->bindIndexBuffer(deviceResources->ibos[node.getObjectId()],
+				        0, mesh.getFaces().getDataType());
+				deviceResources->commandBuffer->drawIndexed(0, mesh.getStripLength(i) + 2, 0, 0, 1);
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				glDrawArrays(GL_TRIANGLE_STRIP, offset, Mesh.pnStripLength[i]+2);
+				deviceResources->commandBuffer->drawArrays(0, mesh.getStripLength(i) + 2, 0, 1);
 			}
-			offset += Mesh.pnStripLength[i]+2;
+			offset += mesh.getStripLength(i) + 2;
 		}
 	}
-
-	// unbind the vertex buffers as we don't need them bound anymore
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	// Disable the vertex attribute arrays
-	if(Mesh.nNumUVW) // Do we have texture co-ordinates?
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	if(Mesh.sNormals.n) // Do we have normals?
-		glDisableClientState(GL_NORMAL_ARRAY);
-
-	if(Mesh.sVtxColours.n) // Do we have vertex colours?
-		glDisableClientState(GL_COLOR_ARRAY);
 }
 
-/*!****************************************************************************
- @Function		NewDemo
- @Return		PVRShell*		The demo supplied by the user
- @Description	This function must be implemented by the user of the shell.
-				The user should return its PVRShell object defining the
-				behaviour of the application.
-******************************************************************************/
-PVRShell* NewDemo()
+/*!*********************************************************************************************************************
+\brief	Pre-record the rendering commands
+***********************************************************************************************************************/
+void OGLESPVRScopeExample::recordCommandBuffer()
 {
-	return new OGLESPVRScopeExample();
+	deviceResources->commandBuffer->beginRecording();
+	deviceResources->commandBuffer->beginRenderPass(deviceResources->backBufferFbo,
+	        pvr::Rectanglei(0, 0, getWidth(), getHeight()), glm::vec4(0.00, 0.70, 0.67, 1.0f));
+	// Use shader program
+	deviceResources->commandBuffer->bindPipeline(deviceResources->pipeline);
+
+	// Bind texture
+	deviceResources->commandBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics,
+	        deviceResources->pipeline->getPipelineLayout(), deviceResources->descriptorSet, 0);
+
+	deviceResources->commandBuffer->setUniformPtr<glm::vec3>(uniformLocations.lightDirView, 1, &progUniforms.lightDirView);
+	deviceResources->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.specularExponent, 1, &progUniforms.specularExponent);
+	deviceResources->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.metallicity, 1, &progUniforms.metallicity);
+	deviceResources->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.reflectivity, 1, &progUniforms.reflectivity);
+	deviceResources->commandBuffer->setUniformPtr<glm::vec3>(uniformLocations.albedo, 1, &progUniforms.albedo);
+
+
+	// Now that the uniforms are set, call another function to actually draw the mesh.
+	deviceResources->commandBuffer->setUniformPtr<glm::mat4>(uniformLocations.mvpMtx, 1, &progUniforms.mvpMatrix1);
+	//deviceResources->commandBuffer->setUniformPtr<glm::mat4>(uniformLocations.mvMtx, 1, &progUniforms.mvMatrix1);
+	deviceResources->commandBuffer->setUniformPtr<glm::mat3>(uniformLocations.mvITMtx, 1, &progUniforms.mvITMatrix1);
+	drawMesh(0);
+	// Now that the uniforms are set, call another function to actually draw the mesh.
+	deviceResources->commandBuffer->setUniformPtr<glm::mat4>(uniformLocations.mvpMtx, 1, &progUniforms.mvpMatrix2);
+	//deviceResources->commandBuffer->setUniformPtr<glm::mat4>(uniformLocations.mvMtx, 1, &progUniforms.mvMatrix2);
+	deviceResources->commandBuffer->setUniformPtr<glm::mat3>(uniformLocations.mvITMtx, 1, &progUniforms.mvITMatrix2);
+	drawMesh(0);
+
+	scopeGraph->recordCommandBuffer(deviceResources->commandBuffer);
+	updateDescription();
+
+	pvr::api::SecondaryCommandBuffer uicmd = deviceResources->context->createSecondaryCommandBuffer();
+	uiRenderer.beginRendering(uicmd);
+	uiRenderer.getDefaultTitle()->render();
+	uiRenderer.getDefaultDescription()->render();
+	uiRenderer.getSdkLogo()->render();
+	scopeGraph->recordUIElements();
+	uiRenderer.endRendering();
+	deviceResources->commandBuffer->enqueueSecondaryCmds(uicmd);
+	deviceResources->commandBuffer->endRenderPass();
+	deviceResources->commandBuffer->endRecording();
 }
 
-/******************************************************************************
- End of file (OGLESPVRScopeExample.cpp)
-******************************************************************************/
+/*!*********************************************************************************************************************
+\brief	Update the description
+***********************************************************************************************************************/
+void OGLESPVRScopeExample::updateDescription()
+{
+	static char description[256];
 
+	if (scopeGraph->getCounterNum())
+	{
+		float maximum = scopeGraph->getMaximumOfData(selectedCounter);
+		float userY = scopeGraph->getMaximum(selectedCounter);
+		bool isKilos = false;
+		if (maximum > 10000)
+		{
+			maximum /= 1000;
+			userY /= 1000;
+			isKilos = true;
+		}
+		bool isPercentage = scopeGraph->isCounterPercentage(selectedCounter);
+
+		const char* standard =
+		    "Use up-down to select a counter, click to enable/disable it\n"
+		    "Counter [%i]\n"
+		    "Name: %s\n"
+		    "Shown: %s\n"
+		    "user y-axis: %.2f  max: %.2f\n";
+		const char* percentage =
+		    "Use up-down to select a counter, click to enable/disable it\n"
+		    "Counter [%i]\n"
+		    "Name: %s\n"
+		    "Shown: %s\n"
+		    "user y-axis: %.2f%%  max: %.2f%%\n";
+		const char* kilo =
+		    "Use up-down to select a counter, click to enable/disable it\n"
+		    "Counter [%i]\n"
+		    "Name: %s\n"
+		    "Shown: %s\n"
+		    "user y-axis: %.0fK  max: %.0fK\n";
+
+		sprintf(description,
+		        isKilos ? kilo : isPercentage ? percentage : standard,
+		        selectedCounter,
+		        scopeGraph->getCounterName(selectedCounter),
+		        scopeGraph->isCounterShown(selectedCounter) ? "Yes" : "No",
+		        userY,
+		        maximum);
+		uiRenderer.getDefaultDescription()->setColor(glm::vec4(1.f));
+	}
+	else
+	{
+		sprintf(description, "No counters present");
+		uiRenderer.getDefaultDescription()->setColor(glm::vec4(.8f, 0.0f, 0.0f, 1.0f));
+	}
+	// Displays the demo name using the tools. For a detailed explanation, see the training course IntroducingPVRUIRenderer
+	uiRenderer.getDefaultDescription()->setText(description);
+	uiRenderer.getDefaultDescription()->commitUpdates();
+}
+
+/*!*********************************************************************************************************************
+\return auto ptr to the demo supplied by the user
+\brief	This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the
+		behavior of the application.
+***********************************************************************************************************************/
+std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new OGLESPVRScopeExample()); }

@@ -1,0 +1,277 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E45AABA1ACAB01E00EDDE96 /* EaglPlatformContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0E45AAB81ACAB01E00EDDE96 /* EaglPlatformContext.mm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0E8555FF1AB9D9CB00ECC670 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0E45AAB81ACAB01E00EDDE96 /* EaglPlatformContext.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = EaglPlatformContext.mm; path = ../../EaglPlatformContext.mm; sourceTree = "<group>"; };
+		0E45AABD1ACAB02900EDDE96 /* PlatformContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlatformContext.h; path = ../../../PlatformContext.h; sourceTree = "<group>"; };
+		0E65D4671B4C0AA2004D80D5 /* ExtensionLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtensionLoader.h; path = ../../../ExtensionLoader.h; sourceTree = "<group>"; };
+		0E8556011AB9D9CB00ECC670 /* libPVREagl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVREagl.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		0EB941981B26F6F000E2967A /* EaglPlatformHandles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EaglPlatformHandles.h; path = ../../EaglPlatformHandles.h; sourceTree = "<group>"; };
+		0EB941991B26F71900E2967A /* PlatformTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlatformTypes.h; path = ../../../PlatformTypes.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0E8555FE1AB9D9CB00ECC670 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0E45AA661AC9561300EDDE96 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				0E65D4671B4C0AA2004D80D5 /* ExtensionLoader.h */,
+				0EB941991B26F71900E2967A /* PlatformTypes.h */,
+				0EB941981B26F6F000E2967A /* EaglPlatformHandles.h */,
+				0E45AABD1ACAB02900EDDE96 /* PlatformContext.h */,
+				0E45AAB81ACAB01E00EDDE96 /* EaglPlatformContext.mm */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		0E8555F81AB9D9CB00ECC670 = {
+			isa = PBXGroup;
+			children = (
+				0E45AA661AC9561300EDDE96 /* Sources */,
+				0E8556021AB9D9CB00ECC670 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0E8556021AB9D9CB00ECC670 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0E8556011AB9D9CB00ECC670 /* libPVREagl.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0E8556001AB9D9CB00ECC670 /* PVREagl */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0E8556151AB9D9CB00ECC670 /* Build configuration list for PBXNativeTarget "PVREagl" */;
+			buildPhases = (
+				0E8555FD1AB9D9CB00ECC670 /* Sources */,
+				0E8555FE1AB9D9CB00ECC670 /* Frameworks */,
+				0E8555FF1AB9D9CB00ECC670 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PVREagl;
+			productName = PVREagl;
+			productReference = 0E8556011AB9D9CB00ECC670 /* libPVREagl.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0E8555F91AB9D9CB00ECC670 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = ImaginationTechnology;
+				TargetAttributes = {
+					0E8556001AB9D9CB00ECC670 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 0E8555FC1AB9D9CB00ECC670 /* Build configuration list for PBXProject "PVREagl" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 0E8555F81AB9D9CB00ECC670;
+			productRefGroup = 0E8556021AB9D9CB00ECC670 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0E8556001AB9D9CB00ECC670 /* PVREagl */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0E8555FD1AB9D9CB00ECC670 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E45AABA1ACAB01E00EDDE96 /* EaglPlatformContext.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0E8556131AB9D9CB00ECC670 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../../Bin/iOS/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_IPHONE=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		0E8556141AB9D9CB00ECC670 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../../Bin/iOS/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_IPHONE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		0E8556161AB9D9CB00ECC670 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../,
+					../../,
+					../../../,
+					../../../../,
+					../../../../../Builds/Include/,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		0E8556171AB9D9CB00ECC670 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../,
+					../../,
+					../../../,
+					../../../../,
+					../../../../../Builds/Include/,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0E8555FC1AB9D9CB00ECC670 /* Build configuration list for PBXProject "PVREagl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E8556131AB9D9CB00ECC670 /* Debug */,
+				0E8556141AB9D9CB00ECC670 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0E8556151AB9D9CB00ECC670 /* Build configuration list for PBXNativeTarget "PVREagl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E8556161AB9D9CB00ECC670 /* Debug */,
+				0E8556171AB9D9CB00ECC670 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0E8555F91AB9D9CB00ECC670 /* Project object */;
+}
