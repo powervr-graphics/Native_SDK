@@ -8,7 +8,14 @@ To keep up to date with changes to the SDK read the [what's new](http://communit
 
 ## About the SDK ##
 ### Framework ###
-The PowerVR Graphics SDK provides a framework which is made up of PVRShell and PVRTools. PVRShell is a simple, light-weight architecture for the barebones of application setup, shutdown and event handling. It is designed to streamline the process of writing cross-platform graphics applications. PVRTools, on the other hand, is a cross-platform tools library containing the most commonly used functionality in a 3D graphics application.
+* The framework consists of separate libraries providing groups of functionality as modules. These modules are PVRCore, PVRAssets, PVRShell, PVRPlatformGlue, PVRApi, PVRUIRenderer and PVRCamera
+	* PVRCore provides support for the other modules
+	* PVRShell provides platform abstraction/entry point (replaces the old PVRShell)
+	* PVRPlatformGlue provides platform/API joining functionality to PVRShell
+	* PVRApi provides an API abstraction on top of which to build the example (replacing PVRTools)
+	* PVRUIRenderer provides 2D element drawing/layout functions (replaces the old tools Print3D)
+	* PVRCamera provides HW Camera abstractions (replaces the CameraModule)
+	* Uses C++ (namespacing, smart pointers, OOP), the C++ standard library, GLM for maths
 
 ### Example Applications ###
 The examples provided in the SDK are fully commented, highly optimized C++ applications that cover a variety of rendering techniques. They are designed in a step-by-step tutorial style to gradually guide the most inexperienced graphics developers from a simple render of a single triangle to complex scenes that incorporate many objects, animations and shader effects.
@@ -17,7 +24,7 @@ The examples provided in the SDK are fully commented, highly optimized C++ appli
 The Getting Started guide of our SDK Browser provides step-by-step instructions to build and deploy the SDK example applications for the various support operating systems. You can find the SDK Browser [here](http://powervr-graphics.github.io/Native_SDK/SDKBrowser.html).
 
 ## Documentation ##
-Our documentation (architecture guides, performance recommendations & white papers) can be found on the Imagination website [here](http://community.imgtec.com/developers/powervr/documentation/).
+Our documentation (architecture guides, performance recommendations & white papers) can be found on the Imagination website [here](http://community.imgtec.com/developers/powervr/documentation/). They are also included in the SDK's Documentation/ directory.
 
 ## Release notes ##
 The latest PowerVR Graphics Tools and SDK release notes can be found on the Imagination website [here](http://community.imgtec.com/developers/powervr/whats-new/).
@@ -27,4 +34,4 @@ If you have any questions about the SDK, PowerVR device optimization/debugging o
 If you would prefer to contact us confidentially, you can file a support ticket [here](https://pvrsupport.imgtec.com/new-ticket).
 
 ## License ##
-The SDK is distributed under a permissive license so it can easily be integrated into commercial and non-commercial applications. You can find the license [here](https://github.com/powervr-graphics/Native_SDK/blob/master/LICENSE.txt). To further clarify the terms, we also have an SDK license FAQ (available [here](http://community.imgtec.com/developers/powervr/faq-about-the-sdk-eula/)).
+The SDK is distributed under the MIT license.
