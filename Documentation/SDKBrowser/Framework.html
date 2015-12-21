@@ -50,116 +50,95 @@
 
     <div class="content">
         <h1>Framework</h1>
-		<p>The PowerVR Graphics SDK provides a framework which is made up of PVRShell and PVRTools. 
-		PVRShell is a simple, light-weight architecture for the barebones of application setup, shutdown and event handling. 
-		It is designed to streamline the process of writing cross-platform graphics applications. 
-		PVRTools, on the other hand, is a cross-platform tools library containing the most commonly used functionality in a 3D graphics application.</p>
-		<hr/>
-		<p><a href="#PVRShell" class="link">PVRShell</a>  |  <a href="#PVRTools" class="link">PVRTools</a></p>
-		<div id="PVRShell">
-			<h2>PVRShell</h2>
-			<p>PVRShell is used in all our <a href="Examples.html">Examples</a> (except for HelloAPI) to provide a common framework for developing OpenGL ES applications on any PowerVR platform. The shell takes a set of command-line arguments which allow items like the position and size of the example to be controlled. The table below identifies these options.</p>
-			<table>
-				<thead>
-					<th>Option</th><th>Description</th>
-				</thead>
-				<tr>
-					<td>-aasamples=N</td><td>Sets the number of samples to use for full screen anti-aliasing, e.g., 0, 2, 4, 8.</td>
-				</tr>
-				<tr>
-					<td>-c=N</td><td>Save a single screenshot or a range, for a given frame or frame range, e.g., -c=14, -c=1-10.</td>
-				</tr>
-				<tr>
-					<td>-colourbpp=N or -cbpp=N</td><td>Frame buffer colour bits per pixel. When choosing an EGL config, N will be used as the value for EGL_BUFFER_SIZE.</td>
-				</tr>
-				<tr>
-					<td>-config=N</td><td>Force the shell to use the EGL config with ID N.</td>
-				</tr>
-				<tr>
-					<td>-depthbpp=N or -dbpp=N</td><td>Depth buffer bits per pixel. When choosing an EGL config, N will be used as the value for EGL_DEPTH_SIZE.</td>
-				</tr>
-				<tr>
-					<td>-discardframeall</td><td>Selects whether to explicitly request a discard of all contents of the relevant framebuffer at the end of every frame to save bandwidth.</td>
-				</tr>
-				<tr>
-					<td>-discardframecolour</td><td>Selects whether to explicitly request a discard of the frame colour of the relevant framebuffer at the end of every frame to save bandwidth. Default: false.</td>
-				</tr>
-				<tr>
-					<td>-discardframedepth</td><td>Selects whether to explicitly request a discard of the frame depth of the relevant framebuffer at the end of every frame to save bandwidth. Default: true.</td>
-				</tr>
-				<tr>
-					<td>-discardframestencil</td><td>Selects whether to explicitly request a discard of the frame stencil of the relevant framebuffer at the end of every frame to save bandwidth. Default: true.</td>
-				</tr>
-				<tr>
-					<td>-display</td><td>EGL only. Allows specifying the native display to use if the device has more than one.</td>
-				</tr>
-				<tr>
-					<td>-forceframetime=N or -fft=N</td><td>Force PVRShellGetTime to report fixed frame time.</td>
-				</tr>
-				<tr>
-					<td>-fps</td><td>Output frames per second.</td>
-				</tr>
-				<tr>
-					<td>-fullscreen=[1,0]</td><td>Runs in full-screen mode (1) or windowed (0).</td>
-				</tr>
-				<tr>
-					<td>-height=N</td><td>Sets the viewport height to N.</td>
-				</tr>
-				<tr>
-					<td>-info</td><td>Output setup information to the debug output.</td>
-				</tr>
-				<tr>
-					<td>-posx=N</td><td>Sets the x coordinate of the viewport.</td>
-				</tr>
-				<tr>
-					<td>-posy=N</td><td>Sets the y coordinate of the viewport.</td>
-				</tr>
-				<tr>
-					<td>-powersaving=[1,0] or -ps=[1,0]</td><td>Where available enable/disable power saving.</td>
-				</tr>
-				<tr>
-					<td>-priority=N</td><td>Sets the priority of the EGL context.</td>
-				</tr>
-				<tr>
-					<td>-quitafterframe=N or -qaf=N</td><td>Specify the frame after which to quit.</td>
-				</tr>
-				<tr>
-					<td>-quitaftertime=N or -qat=N</td><td>Specify the time after which to quit.</td>
-				</tr>
-				<tr>
-					<td>-rotatekeys=N</td><td>Sets the orientation of the keyboard input. N can be 0-3, where 0 is no rotation.</td>
-				</tr>
-				<tr>
-					<td>-screenshotscale=N</td><td>Allows to scale up screenshots to a bigger size (pixel replication).</td>
-				</tr>
-				<tr>
-					<td>-sw</td><td>Software render.</td>
-				</tr>
-				<tr>
-					<td>-version</td><td>Output the SDK version to the debug output.</td>
-				</tr>
-				<tr>
-					<td>-vsync=N</td><td>Where available modify the app's vsync parameters.</td>
-				</tr>
-				<tr>
-					<td>-width=N</td><td>Sets the viewport width to N.</td>
-				</tr>
-			</table>
-			<p>PVRShell also provides limited keyboard input which may vary depending on your actual platform. If your platform has full keyboard support, the <span class="code">Q</span> key will quit the application and the cursor keys will allow looping through the application options.</p>
-			<p>The PVRShell source can be found in the <a href="../../Shell/">Shell</a> folder in the SDK package. Further documentation is available at <a href="../../Shell/Documentation/Index.html">Shell/Documentation</a>.</p>
+		<p><strong>Contents: </strong><a href="#Overview" class="link">Overview</a>  |  <a href="#Building" class="link">Building</a>  |  <a href="#CreatingAnApplication" class="link">Creating an Application</a>  |  <a href="#Guidelines" class="link">Guidelines and Recommendations</a></p>
+		&nbsp;
+		<div id="Overview">
+			<h2>Overview</h2>
+			<p>The PowerVR Framework is a complete framework source code, re-written from scratch and targeted for all major platforms, such as Windows, Linux, and OS X, as well as Android and iOS mobile platforms. The key strength of the PowerVR Framework is that it is platform-agnostic, meaning that with the same code, it is possible to compile for different platforms without changing source code.</p>
+			<p>The majority of the code is written in C++ and tested across different compilers (namely Visual Studio 2010, GNU Compiler Collection and Clang) using modern styling and in general provides a complete framework for application development. There is also the supporting per-platform code (Objective-C code for iOS and OS X, some Java code for Android, etc.), and project files.</p>
+			<p>The Framework consists of separate libraries that are divided by functionality, as shown in the figure below. These modules are provided to be compiled as static libraries, but you can choose to use them differently, if needed.</p>
+			<img src="./images/PowerVRFrameworkComponents.png"/ style="display:block; margin-left:auto; margin-right:auto">	
+			<h3>PVRCore</h3>
+			<h4><strong><a href="../../Framework/PVRCore/Documentation/Index.html" target="_blank">View source code documentation</a></strong></h4>
+			<p>This is the supporting code of the library to leverage for your own use. PVRCore is also used by the rest of the Framework and because of that, all examples using any other part of the Framework should link with PVRCore.</p>
+			<h3>PVRAssets</h3>
+			<h4><strong><a href="../../Framework/PVRAssets/Documentation/Index.html" target="_blank">View source code documentation</a></strong></h4>
+			<p>This is the Framework’s asset code. It includes classes and helpers for scene representation, asset loading code, etc. PVRAssets supports the loading of POD files, PVR and PFX materials format, as well as limited support for a number of texture formats.</p>
+			<h3>PVRShell</h3>
+			<h4><strong><a href="../../Framework/PVRShell/Documentation/Index.html" target="_blank">View source code documentation</a></strong></h4>
+			<p>This is the native system abstraction (event loops, surfaces, windows, etc.) which greatly simplifies cross-platform compatibility. Essentially, PVRShell provides you with useful scaffolding for cross-platform development.</p>
+			<h3>PVRApi</h3>
+			<h4><strong><a href="../../Framework/PVRApi/Documentation/Index.html" target="_blank">View source code documentation</a></strong></h4>
+			<p>This is the actual Graphics API abstraction. PVRApi is a very powerful framework that allows cross-API development. In combination with PVRShell, this provides remarkable support to write code intended to run across different platforms, utilizing different APIs.</p>
+			<h3>PVRPlatformGlue</h3>
+			<h4><strong><a href="../../Framework/PVRPlatformGlue/Documentation/Index.html" target="_blank">View source code documentation</a></strong></h4>
+			<p>This helper project provides necessary abstraction between the underlying system (PVRShell) and graphics API (PVRApi).</p>
+			<h3>PVRUIRenderer</h3>
+			<h4><strong><a href="../../Framework/PVRUIRenderer/Documentation/Index.html" target="_blank">View source code documentation</a></strong></h4>
+			<p>This text and image 3D printing code can also be used as a text or sprite renderer code. It is built on top of PVRApi, making it inherently API-agnostic and contains code for using different parts of fonts to display text.</p>
+			<h3>PVRCamera</h3>
+			<h4><strong><a href="../../Framework/PVRCamera/Documentation/Index.html" target="_blank">View source code documentation</a></strong></h4>
+			<p>This is the code for interfacing with the camera of mobile platforms.</p>
 		</div>
-		<div id="PVRTools">
-			<h2>PVRTools</h2>
-			<p>The PVRTools library consists of various modules designed to facilitate common tasks associated with hardware accelerated graphics rendering. This includes:</p>
+		
+		<div id="Building">
+			<h2>Building</h2>
+			<p>All PowerVR examples for all platforms will build the PowerVR Framework libraries they require. If you use them, or base your own code on them, you should not need to have to build the Framework separately. The PowerVR SDK usually also contains pre-built versions of the libraries in the folder <span class="code">[SDK]/Framework/Bin/[Platform]</span>, where <span class="code">[SDK]</span> is the SDK root and <span class="code">[Platform]</span> is the name of your platform of interest - this is where you would normally link.</p>
+			<p>All modules can be built separately, by navigating to <span class="code">[SDK]/Framework/[ModuleName]/Build/[Platform]</span>, where <span class="code">[ModuleName]</span> is the name of the specific module of the PowerVR Framework. You can then run a build command as normal for that platform, although this is not required, as building the examples automatically builds the Framework.</span>
+		</div>
+		
+		<div id="CreatingAnApplication">
+		<h2>Creating an Application</h2>
+		<p>To create a typical application, please follow these steps:</p>
+		<ol>
+			<li>Firstly, either build the Framework components previously mentioned (by moving to the corresponding <span class="code">/Builds/[Platform]</span> or add their build scripts and projects to your own</li>
+			<li>Create a project or build script (Visual Studio, Makefile, etc.) for your platform. We suggest taking one of the scripts from the following location as base:</li>
+				<p><span class="code">Examples/[Intermediate/Advanced]/[API]/Builds/[Platform]</span>, where <span class="code">[Intermediate/Advanced]</span> is the folder for either the intermediate or advanced example applications supplied with the SDK. In more detail:</p>
+				<ul>
+					<li>Add include directories:</li>
+					<ul>
+						<li><span class="code">/Framework</span></li>
+						<li><span class="code">/Builds/Include</span></li>
+					</ul>
+					<li>Add library directories:</li>
+					<ul>
+						<li><span class="code">Framework/Bin/[Platform]</span></li>
+						<li>(Optional) <span class="code">/Builds/[Platform]/Lib</span></li>
+					</ul>
+					<li>Link against static libraries:</li>
+					<ul>
+						<li>(Optional) <span class="code">PVRUIRenderer</span></li>
+						<li><span class="code">PVR[API]</span></li>
+						<li><span class="code">PVRPlatformGlue</span></li>
+						<li><span class="code">PVRShell</span></li>
+						<li><span class="code">PVRAssets</span></li>
+						<li><span class="code">PVRCore</span></li>
+					</ul>
+				</ul>
+			<li>Create your application files. For a single CPP file, your includes will usually be:</li>
 			<ul>
-				<li><p><strong>Vector, matrix and quaternion mathematics:</strong> Helpers to calculate and operate transformation matrices and other associated mathematical operations.</p></li>
-				<li><p><strong>OpenGL ES extension handling:</strong> This helps to load and use OpenGL ES extension functions and capabilities.</p></li>
-				<li><p><strong>3D font drawing:</strong> A very flexible engine to handle font maps.</p></li>
-				<li><p><strong>POD loader:</strong> Helpers to load and access the model data included in PowerVR Object Data (POD) files.</p></li>
-				<li><p><strong>PVR loader:</strong> Helpers to upload and manage textures exported to the PVR texture container format.</p></li>
-				<li><p><strong>PFX loader:</strong> Helpers to load and access PowerVR Effects (PFX) files, which contain vertex and fragment shaders.</p></li>
+				<li><span class="code">PVRShell/PVRShell.h</span></li>
+				<li><span class="code">PVRApi/PVRApi.h</span></li>
+				<li><span class="code">PVRApi/AssetManager.h</span> (if you plan to use the AssetManager for loading)</li>
+				<li><span class="code">PVRUIRenderer/PVRUIRenderer.h</span> (if you plan to use the UIRenderer)</li>
 			</ul>
-			<p>The Tools library is used extensively throughout the PowerVR SDK. The PVRTools source can be found in the <a href="../../Tools/">Tools</a> folder in the SDK package. Further documentation is available at <a href="../../Tools/Documentation/Index.html">Tools/Documentation</a>.</p>
+			<li>Write the skeleton of your application (see description of <a href="#PVRShell" class="link">PVRShell</a>)</li>
+		</ol>
+		</div>
+		
+		<div id="Guidelines">
+		<h2>Guidelines and Recommendations</h2>
+		<p>Below are a set of guidelines and recommendations you might want to consider when using PowerVR Framework:</p>
+		<ul>
+			<li>If you need to use the native API (for example OpenGL ES), we recommend using the header <span class="code">PVRApi/[API]/[API]Bindings.h</span>. This is a specially crafted binding for your specific API. For example, for OpenGL ES, <span class="code">OpenGLESBindings.h</span> it will provide you with a set of function pointers conveniently placed in the <span class="code">gl::namespace</span>. These functions follow the OpenGL ES specification, and can be called normally e.g. <span class="code">gl::MapBuffer(…)</span>. These function pointers get populated at runtime, allowing a unified entry point to the native API. Similarly, a set of function pointers for extensions are present in the <span class="code">glext</span> namespace. The function pointers get populated at initialisation time, but their use can be queried per-context, at runtime.</li>
+			<li>Add an AssetManager member to your class and use it for loading Models, Textures, Shaders and other files that may be duplicated. The AssetManager will cache files and make sure you do not double-load files. Initialize the AssetManager with your application class <span class="code">((initialise(*this))</span>, and use it to one-step load Textures, Models, Shaders and other objects that will have to be read from disc.</li>
+			<li>The <span class="code">pvr::assets::Model</span> class contains all the information you need for drawing, including cameras, lights, and potentially effects. Follow one of the PowerVR SDK examples (e.g. IntroducingPOD and IntroducingPFX) to understand its basic use, including getting out of a Model the information about the data layouts of its Meshes, etc.</li>
+			<li>Many utility functions and methods are built-in, so that you can easily cover most common use cases. For example:</li>
+			<ul>
+				<li><span class="code">getLayoutIntoPipeline</span> function allows you to quickly match a Mesh to a specific custom shader by providing what your shader's "required semantics" are and at which binding points (attributes) to assign these. This function will add the entire vertex definition to the pipeline descriptor.</li>
+				<li>This same functionality allows you to simply copy the whole data of the Mesh into a VBO, bind it and draw.</li>
+			</ul>
+		</ul>
 		</div>
 	</div>
 	<br>
