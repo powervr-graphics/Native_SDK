@@ -44,7 +44,19 @@
 <h3>
 <a name="framework" class="anchor" href="#framework"><span class="octicon octicon-link"></span></a>Framework</h3>
 
-<p>The PowerVR Graphics SDK provides a framework which is made up of PVRShell and PVRTools. PVRShell is a simple, light-weight architecture for the barebones of application setup, shutdown and event handling. It is designed to streamline the process of writing cross-platform graphics applications. PVRTools, on the other hand, is a cross-platform tools library containing the most commonly used functionality in a 3D graphics application.</p>
+<p>
+The framework consists of separate libraries providing groups of functionality as modules. These modules are PVRCore, PVRAssets, PVRShell, PVRPlatformGlue, PVRApi, PVRUIRenderer and PVRCamera.
+
+    <ul>
+	<li>PVRCore provides support for the other modules</li>
+	<li>PVRShell provides platform abstraction/entry point (replaces the old PVRShell)</li>
+	<li>PVRPlatformGlue provides platform/API joining functionality to PVRShell</li>
+	<li>PVRApi provides an API abstraction on top of which to build the example (replacing PVRTools)</li>
+	<li>PVRUIRenderer provides 2D element drawing/layout functions (replaces the old tools Print3D)</li>
+	<li>PVRCamera provides HW Camera abstractions (replaces the CameraModule)</li>
+	<li>Uses C++ (namespacing, smart pointers, OOP), the C++ standard library, GLM for maths.</li>
+    </ul>
+</p>
 
 <h3>
 <a name="example-applications" class="anchor" href="#example-applications"><span class="octicon octicon-link"></span></a>Example Applications</h3>
@@ -59,7 +71,7 @@
 <h2>
 <a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h2>
 
-<p>Our documentation (architecture guides, performance recommendations &amp; white papers) can be found on the Imagination website <a href="http://community.imgtec.com/developers/powervr/documentation/">here</a>.</p>
+<p>Our documentation (architecture guides, performance recommendations &amp; white papers) can be found on the Imagination website <a href="http://community.imgtec.com/developers/powervr/documentation/">here</a>. They are also included in the SDK's Documentation/ directory.</p>
 
 <h2>
 <a name="support" class="anchor" href="#support"><span class="octicon octicon-link"></span></a>Support</h2>
@@ -70,7 +82,7 @@ If you would prefer to contact us confidentially, you can file a support ticket 
 <h2>
 <a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
 
-<p>The SDK is distributed under a permissive license so it can easily be integrated into commercial and non-commercial applications. You can find the license <a href="https://github.com/powervr-graphics/Native_SDK/blob/3.5/LegalNotice.txt">here</a>. To further clarify the terms, we also have an SDK license FAQ (available <a href="http://community.imgtec.com/developers/powervr/faq-about-the-sdk-eula/">here</a>).</p>
+<p>The SDK is distributed under the MIT license.</p>
       </section>
     </div>
 
