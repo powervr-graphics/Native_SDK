@@ -102,11 +102,10 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initApplication()
 {
 	// Load the scene
 	assetManager.init(*this);
-	pvr::Result::Enum rslt = pvr::Result::Success;
 	if ((scene = pvr::assets::Model::createWithReader(pvr::assets::PODReader(getAssetStream(SceneFileName)))).isNull())
 	{
 		this->setExitMessage("ERROR: Couldn't load the %s file\n", SceneFileName);
-		return rslt;
+		return pvr::Result::UnableToOpen;
 	}
 
 	// The cameras are stored in the file. We check it contains at least one.
