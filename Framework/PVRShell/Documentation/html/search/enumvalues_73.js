@@ -13,7 +13,7 @@ var searchData=
   ['stateinitapplication',['StateInitApplication',['../classpvr_1_1system_1_1_state_machine.html#adeda70608e9f5f0351ad7298389becefaf3eb6fe56fb7ffa4310eecfc3738f5cf',1,'pvr::system::StateMachine']]],
   ['stateinitview',['StateInitView',['../classpvr_1_1system_1_1_state_machine.html#adeda70608e9f5f0351ad7298389becefaa3af4f3b987034038e70541ea76bf58e',1,'pvr::system::StateMachine']]],
   ['stateinitwindow',['StateInitWindow',['../classpvr_1_1system_1_1_state_machine.html#adeda70608e9f5f0351ad7298389becefacecc6ba66051f31567a5b5533cf9faee',1,'pvr::system::StateMachine']]],
-  ['statenotinitialised',['StateNotInitialised',['../classpvr_1_1system_1_1_state_machine.html#adeda70608e9f5f0351ad7298389becefa54c5aee56520419f043671cc0d665ab8',1,'pvr::system::StateMachine']]],
+  ['statenotinitialized',['StateNotInitialized',['../classpvr_1_1system_1_1_state_machine.html#adeda70608e9f5f0351ad7298389becefa5edf20fbd0101efd4f5a064b2e0cebd5',1,'pvr::system::StateMachine']]],
   ['statepreexit',['StatePreExit',['../classpvr_1_1system_1_1_state_machine.html#adeda70608e9f5f0351ad7298389becefa8a4841d541d9a6c21ce0fe369578e9dc',1,'pvr::system::StateMachine']]],
   ['statequitapplication',['StateQuitApplication',['../classpvr_1_1system_1_1_state_machine.html#adeda70608e9f5f0351ad7298389becefa4414f8265c3c9173960731802a470b36',1,'pvr::system::StateMachine']]],
   ['statereleaseapi',['StateReleaseAPI',['../classpvr_1_1system_1_1_state_machine.html#adeda70608e9f5f0351ad7298389becefa52c2f904af93e65af7cfecc199b6303d',1,'pvr::system::StateMachine']]],

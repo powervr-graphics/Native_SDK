@@ -9,6 +9,7 @@
 #include "PVRCore/Log.h"
 using std::vector;
 namespace pvr {
+using namespace types;
 namespace assets {
 namespace assetReaders {
 TextureReaderPVR::TextureReaderPVR() : m_texturesToLoad(true)
@@ -74,7 +75,7 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 		textureFileHeader.metaDataSize = 0;
 		TextureHeader textureHeader(textureFileHeader, 0, NULL);
 
-		asset.initialiseWithHeader(textureHeader);
+		asset.initializeWithHeader(textureHeader);
 		// Read the meta data
 		uint32 metaDataRead = 0;
 		while (metaDataRead < tempMetaDataSize)
@@ -94,7 +95,7 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 		// Make sure the provided data size wasn't wrong. If it was, there are no guarantees about the contents of the texture data.
 		if (metaDataRead > tempMetaDataSize)
 		{
-			PVR_ASSERT(0 && "[TextureReaderPVR::readNextAsset] Metadata seems to be corrupted while reading.");
+			assertion(0 ,  "[TextureReaderPVR::readNextAsset] Metadata seems to be corrupted while reading.");
 			Log("[TextureReaderPVR::readNextAsset] Metadata seems to be corrupted while reading.");
 			return false;
 		}
@@ -159,12 +160,12 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 		TextureHeader textureHeader;
 		if (!convertTextureHeader2To3(legacyHeader, textureHeader))
 		{
-			PVR_ASSERT(0 && "CANNOT CONVERT TEXTURE HEADER V2 TO V3");
+			assertion(0 ,  "CANNOT CONVERT TEXTURE HEADER V2 TO V3");
 			return false;
 		}
 
 		// Copy the texture header to the asset.
-		asset.initialiseWithHeader(textureHeader);
+		asset.initializeWithHeader(textureHeader);
 
 		// Write the texture data
 		for (uint32 surface = 0; surface < asset.getNumberOfArrayMembers(); ++surface)
@@ -187,7 +188,7 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 	}
 	else
 	{
-		PVR_ASSERT(0 && "UNSUPPORTED_REQUEST");
+		assertion(0 ,  "UNSUPPORTED_REQUEST");
 		return false;
 	}
 
@@ -261,7 +262,7 @@ bool TextureReaderPVR::convertTextureHeader2To3(const texture_legacy::HeaderV2& 
 	// Pixel type variables to obtain from the old header's information
 	bool isPremultiplied;
 	PixelFormat pixelType;
-	ColorSpace::Enum colorSpace;
+    types::ColorSpace::Enum colorSpace;
 	VariableType::Enum channelType;
 
 	// Map the old enum to the new format.
@@ -312,7 +313,7 @@ bool TextureReaderPVR::convertTextureHeader2To3(const texture_legacy::HeaderV2& 
 	// Legacy headers have a MIP Map count of 0 if there is only the top level. New Headers have a count of 1, so add 1.
 	pvrTextureHeaderV3.mipMapCount = (legacyHeader.mipMapCount + 1);
 
-	// Initialise the header with no meta data
+	// Initialize the header with no meta data
 	pvrTextureHeaderV3.metaDataSize = 0;
 
 	// Create the new texture header.
@@ -344,7 +345,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 	case texture_legacy::MGL_ARGB_4444:
 	{
 		pixelType = GeneratePixelType4<'a', 'r', 'g', 'b', 4, 4, 4, 4>::ID;
-		colorSpace = ColorSpace::lRGB;
+        colorSpace = types::ColorSpace::lRGB;
 		channelType = VariableType::UnsignedShortNorm;
 		break;
 	}
@@ -352,7 +353,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 	case texture_legacy::MGL_ARGB_1555:
 	{
 		pixelType = GeneratePixelType4<'a', 'r', 'g', 'b', 1, 5, 5, 5>::ID;
-		colorSpace = ColorSpace::lRGB;
+        colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedShortNorm;
 		break;
 	}
@@ -360,7 +361,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 	case texture_legacy::MGL_RGB_565:
 	{
 		pixelType = GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID;
-		colorSpace = ColorSpace::lRGB;
+        colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedShortNorm;
 		break;
 	}
@@ -368,7 +369,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 	case texture_legacy::MGL_RGB_555:
 	{
 		pixelType = GeneratePixelType4<'x', 'r', 'g', 'b', 1, 5, 5, 5>::ID;
-		colorSpace = ColorSpace::lRGB;
+        colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedShortNorm;
 		break;
 	}

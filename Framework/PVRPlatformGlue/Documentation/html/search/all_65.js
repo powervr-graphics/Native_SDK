@@ -13,5 +13,7 @@ var searchData=
   ['ext_5fproc',['EXT_PROC',['../_api_egl_8h.html#a3f49349078b6012e052055b006312486',1,'ApiEgl.h']]],
   ['extensionloader_2eh',['ExtensionLoader.h',['../_extension_loader_8h.html',1,'']]],
   ['extensionloaderegl_2ecpp',['ExtensionLoaderEgl.cpp',['../_extension_loader_egl_8cpp.html',1,'']]],
-  ['extensionloaderegl_2eh',['ExtensionLoaderEgl.h',['../_extension_loader_egl_8h.html',1,'']]]
+  ['extensionloaderegl_2eh',['ExtensionLoaderEgl.h',['../_extension_loader_egl_8h.html',1,'']]],
+  ['extensionloadervulkanglue_2ecpp',['ExtensionLoaderVulkanGlue.cpp',['../_extension_loader_vulkan_glue_8cpp.html',1,'']]],
+  ['extensionloadervulkanglue_2eh',['ExtensionLoaderVulkanGlue.h',['../_extension_loader_vulkan_glue_8h.html',1,'']]]
 ];

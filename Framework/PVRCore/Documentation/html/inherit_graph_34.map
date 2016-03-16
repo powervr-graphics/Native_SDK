@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvr_1_1_time.html" title="This class provides functions for measuring time: current time, elapsed time etc. High performance ti..." alt="" coords="5,5,80,32"/>
+<area shape="rect" id="node1" href="$classpvr_1_1system_1_1_messenger.html" title="Abstract class defining a messaging interface. This class implements the printing/messaging capabilit..." alt="" coords="6,5,167,32"/>
+<area shape="rect" id="node2" href="$classpvr_1_1system_1_1_console_messenger.html" title="The ConsoleMessenger is an implementation of Messenger that outputs to the Console window..." alt="" coords="216,5,424,32"/>
 </map>

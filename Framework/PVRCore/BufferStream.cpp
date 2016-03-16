@@ -34,7 +34,7 @@ bool BufferStream::open()const
 	m_currentPointer = const_cast<void*>(m_originalData);
 	m_bufferPosition = 0;
 
-	return !!m_currentPointer;
+	return m_currentPointer != 0;
 }
 
 void BufferStream::close()
@@ -48,7 +48,7 @@ bool BufferStream::read(size_t size, size_t count, void* const data, size_t& dat
 	dataRead = 0;
 	if (!m_isReadable)
 	{
-		PVR_ASSERT(0 && "Stream not readable");
+		assertion(0 ,  "Stream not readable");
 		Log(Log.Error, "Attempted to read non readable stream");
 		return false;
 	}
@@ -81,7 +81,7 @@ bool BufferStream::read(size_t size, size_t count, void* const data, size_t& dat
 		else
 		{
 			Log("Unknown error while reading stream.");
-			PVR_ASSERT(0);
+			assertion(0);
 			return false;
 		}
 	}
@@ -115,13 +115,13 @@ bool BufferStream::write(size_t size, size_t count, const void* data, size_t& da
 			{
 				if (m_bufferPosition == m_bufferSize)
 				{
-					PVR_ASSERT("END OF STREAM?!");
+					assertion(0, "END OF STREAM?!");
 					Log("BufferStream::write: Unknown error trying to write");
 					return false;
 				}
 				else
 				{
-					PVR_ASSERT("UNKNOWN ERROR");
+					assertion(0, "UNKNOWN ERROR");
 					Log("BufferStream::write: Unknown error trying to write");
 					return false;
 				}
@@ -129,14 +129,14 @@ bool BufferStream::write(size_t size, size_t count, const void* data, size_t& da
 		}
 		else
 		{
-			PVR_ASSERT("UNKNOWN ERROR");
+			assertion(false, "UNKNOWN ERROR");
 			return false;
 		}
 	}
 	else
 	{
 		Log("BufferStream::write: Attempt to write to non-writable stream");
-		PVR_ASSERT("ATTEMPT TO WRITE TO NON-WRITABLE STREAM");
+		assertion(false, "ATTEMPT TO WRITE TO NON-WRITABLE STREAM");
 		return false;
 	}
 

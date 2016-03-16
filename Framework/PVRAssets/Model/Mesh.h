@@ -12,7 +12,7 @@ namespace pvr {
 namespace assets {
 /*!*********************************************************************************************************************
 \brief Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with
-		their per-vertex information. A mesh's is a grouping where all vertices/primitives will have the same basic 
+		their per-vertex information. A mesh's is a grouping where all vertices/primitives will have the same basic
 		transformation (but can then be skinned) and material applied.
 ***********************************************************************************************************************/
 class Mesh
@@ -31,7 +31,7 @@ public:
 		/*!*********************************************************************************************************************
 		\brief	Constructor.
 		***********************************************************************************************************************/
-		VertexAttributeData() : m_layout(DataType::None, (uint8)0, (uint16)0), m_dataIndex((uint16) - 1) { }
+		VertexAttributeData() : m_layout(types::DataType::None, (uint8)0, (uint16)0), m_dataIndex((uint16) - 1) { }
 
 		/*!*********************************************************************************************************************
 		\brief	Constructor.
@@ -41,7 +41,7 @@ public:
 		\param	offset The offset from the begining of its Buffer that this attribute begins
 		\param	dataIndex The index of this attribute
 		***********************************************************************************************************************/
-		VertexAttributeData(const StringHash& semantic, DataType::Enum type, uint8 n, uint16 offset, uint16 dataIndex)
+		VertexAttributeData(const StringHash& semantic, types::DataType::Enum type, uint8 n, uint16 offset, uint16 dataIndex)
 			: m_semantic(semantic), m_layout(type, n, offset), m_dataIndex(dataIndex) { }
 
 		/*!*********************************************************************************************************************
@@ -79,7 +79,7 @@ public:
 		/*!*********************************************************************************************************************
 		\brief	Set the DataType of this vertex attribute.
 		***********************************************************************************************************************/
-		void setDataType(DataType::Enum type);
+		void setDataType(types::DataType::Enum type);
 
 		/*!*********************************************************************************************************************
 		\brief	Set the Offset of this vertex attribute.
@@ -106,7 +106,7 @@ public:
 	class FaceData
 	{
 	protected:
-		IndexType::Enum m_indexType;
+		types::IndexType::Enum m_indexType;
 		UCharBuffer m_data;
 
 	public:
@@ -115,7 +115,7 @@ public:
 		/*!*********************************************************************************************************************
 		\brief	Get the data type of the face data (16-bit or 32 bit integer).
 		***********************************************************************************************************************/
-		IndexType::Enum getDataType() const { return m_indexType; }
+		types::IndexType::Enum getDataType() const { return m_indexType; }
 
 		/*!*********************************************************************************************************************
 		\brief	Get a pointer to the actual face data.
@@ -128,14 +128,14 @@ public:
 		uint32 getDataSize() const { return (uint32)m_data.size(); }
 
 		/*!*********************************************************************************************************************
-		\brief	Get the size of this face data type.
+		\brief	Get the size of this face data type in Bits.
 		***********************************************************************************************************************/
-		uint32 getDataTypeSize() const { return m_indexType == IndexType::IndexType16Bit ? 16 : 32; }
+		uint32 getDataTypeSize() const { return m_indexType == types::IndexType::IndexType16Bit ? 16 : 32; }
 
 		/*!*********************************************************************************************************************
 		\brief	Set the data type of this instance.
 		***********************************************************************************************************************/
-		void setData(const byte* data, uint32 size, const IndexType::Enum indexType = IndexType::IndexType16Bit);
+		void setData(const byte* data, uint32 size, const types::IndexType::Enum indexType = types::IndexType::IndexType16Bit);
 	};
 
 	/*!*********************************************************************************************************************
@@ -176,12 +176,12 @@ public:
 		uint32 numControlPointsPerPatch;  //!< Number of Control points per patch
 
 		float32 units;                    //!< Scaling of the units
-		PrimitiveTopology::Enum primitiveType; //!< Type of primitive in this Mesh
+		types::PrimitiveTopology::Enum primitiveType; //!< Type of primitive in this Mesh
 		bool isIndexed;                   //!< Contains indexes (as opposed to being a flat list of vertices)
 		bool isSkinned;                   //!< Contains indexes (as opposed to being a flat list of vertices)
 
 		MeshInfo() : numVertices(0), numFaces(0), numPatchSubdivisions(0), numPatches(0), numControlPointsPerPatch(0), units(1.0f),
-			primitiveType(PrimitiveTopology::TriangleList), isIndexed(true), isSkinned(0) { }
+			primitiveType(types::PrimitiveTopology::TriangleList), isIndexed(true), isSkinned(0) { }
 	};
 
 	//This container should always be kept sorted so that binary search can be done.
@@ -228,7 +228,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief				Implicitly append a block of vertex data to the mesh and (optionally) populate it with data.
-	\param  data  		A pointer to data that will be copied to the new block. If \p data is NULL, the block remains uninitialised.
+	\param  data  		A pointer to data that will be copied to the new block. If \p data is NULL, the block remains uninitialized.
 	\param  size  		The ordinal of the data block. If no block exists, it will be created along with all the ones before it, as
 	\param  stride 		The stride that the block index will be set to.
 	\return 			The index of the block that was just created.
@@ -241,7 +241,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief				Add a block of vertex data to the mesh at the specified index and (optionally) populate it with data.
-	\param  data  		A pointer to data that will be copied to the new block. If \p data is NULL, the block remains uninitialised.
+	\param  data  		A pointer to data that will be copied to the new block. If \p data is NULL, the block remains uninitialized.
 	\param  size  		The ordinal of the data block. If no block exists, it will be created along with all the ones before it, as
 	\param  stride 		The stride that the block index will be set to.
 	\param  index 		The index where this block will be created on.
@@ -303,7 +303,7 @@ public:
 	\param size The size, in bytes, of the face data
 	\param indexType The actual datatype contained in (data). (16 or 32 bit)
 	***********************************************************************************************************************/
-	void addFaces(const byte* data, uint32 size, const IndexType::Enum indexType);
+	void addFaces(const byte* data, uint32 size, const types::IndexType::Enum indexType);
 
 	/*!*********************************************************************************************************************
 	\brief	Add a vertex attribute to the mesh.
@@ -323,8 +323,8 @@ public:
 	\param forceReplace force replace the attribute
 	\return The index where the element was added (or where the already existing item was)
 	***********************************************************************************************************************/
-	int32 addVertexAttribute(const StringHash& semanticName, const DataType::Enum& type, uint32 width,
-	                                uint32 offset, uint32 dataIndex, bool forceReplace = false);
+	int32 addVertexAttribute(const StringHash& semanticName, const types::DataType::Enum& type, uint32 width,
+	                         uint32 offset, uint32 dataIndex, bool forceReplace = false);
 
 	/*!*********************************************************************************************************************
 	\brief	Remove a vertex attribute to the mesh.
@@ -427,7 +427,7 @@ public:
 	\brief	Get the primitive topology that the data in this Mesh represent.
 	\return The primitive topology that the data in this Mesh represent (Triangles, TriangleStrips, TriangleFans, Patch etc.)
 	***********************************************************************************************************************/
-	PrimitiveTopology::Enum getPrimitiveType() const
+	types::PrimitiveTopology::Enum getPrimitiveType() const
 	{
 		return m_data.primitiveData.primitiveType;
 	}
@@ -436,7 +436,7 @@ public:
 	\brief	Set the primitive topology that the data in this Mesh represent.
 	\param type The primitive topology that the data in this Mesh will represent (Triangles, TriangleStrips, TriangleFans, Patch etc.)
 	***********************************************************************************************************************/
-	void setPrimitiveType(const PrimitiveTopology::Enum& type)
+	void setPrimitiveType(const types::PrimitiveTopology::Enum& type)
 	{
 		m_data.primitiveData.primitiveType = type;
 	}

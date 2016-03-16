@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -91,11 +91,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">\brief         Commonly included files from other PVRCore files. To include PVRCore functionality, use PVRCore.h instead.</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_types_8h.html" title="Basic file used in the PowerVR Framework. Defines several types used throughout the Framework (sized ...">PVRCore/Types.h</a>&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_defines_8h.html" title="Contains several definitions used throughout the PowerVR Framework. ">PVRCore/Defines.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_maths_8h.html" title="Includes required GLM library components and defines the rest of the information necessary for PowerV...">PVRCore/Maths.h</a>&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_log_8h.html" title="This file contains Logging functionality. Look here if plan to use custom logging. Default logging accessed through the global Log functor (Log(&quot;a message&quot;)). ">PVRCore/Log.h</a>&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_defines_8h.html" title="Contains several definitions used throughout the PowerVR Framework. ">PVRCore/Defines.h</a>&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_maths_8h.html" title="Includes required GLM library components and defines the rest of the information necessary for PowerV...">PVRCore/Maths.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_log_8h.html" title="This file contains Logging functionality. Look here if plan to use custom logging. Default logging accessed through the global Log functor (Log(&quot;a message&quot;)). ">PVRCore/Log.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_multi_object_8h.html">PVRCore/MultiObject.h</a>&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;../Builds/Include/sdkver.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>pvr {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="code" href="namespacepvr.html#a71a671de6d1864f79f68fbfc422cb0a8">   16</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="namespacepvr.html#a71a671de6d1864f79f68fbfc422cb0a8">assertRefcountValid</a>(<span class="keyword">const</span> T&amp; t)</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="namespacepvr.html#aa69b189dd10155f70a1d26e3cbd74bf1">pvr::assertion</a>(t.isValid(), <span class="stringliteral">&quot;RefcountedResource asserted not valid.&quot;</span>);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

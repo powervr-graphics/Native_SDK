@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -84,7 +84,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#namespaces">Constant Groups</a> &#124;
-<a href="#define-members">Macros</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">CommandBuffer.h File Reference</div>  </div>
 </div><!--header-->
@@ -97,14 +98,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html">pvr::api::impl::CommandBufferBaseImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains all the commands and states that need to be submitted to the gpu, including pipeline, texture, and samplers. Virtually everything that needs to happen on the GPU is submitted to the CommandBuffer. In debug builds (define DEBUG or define PVR_STORE_STACK_TRACE_WITH_API_COMMANDS), a limited stack trace is stored with each command so that if an error occurs, the site where the command was actually added to the command buffer can be determined.  <a href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer__.html">pvr::api::impl::CommandBuffer_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains all the commands and states that need to be submitted to the gpu, including pipeline, texture, and samplers. Virtually everything that needs to happen on the GPU is submitted to the CommandBuffer.  <a href="classpvr_1_1api_1_1impl_1_1_command_buffer__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_impl.html">pvr::api::impl::CommandBufferImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains all the commands and states that need to be submitted to the gpu, including pipeline, texture, and samplers. Virtually everything that needs to happen on the GPU is submitted to the CommandBuffer.  <a href="classpvr_1_1api_1_1impl_1_1_command_buffer_impl.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html">pvr::api::impl::CommandBufferBase_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains all the commands and states that need to be submitted to the gpu, including pipeline, texture, and samplers. Virtually everything that needs to happen on the GPU is submitted to the CommandBuffer. In debug builds (define DEBUG or define PVR_STORE_STACK_TRACE_WITH_API_COMMANDS), a limited stack trace is stored with each command so that if an error occurs, the site where the command was actually added to the command buffer can be determined.  <a href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_secondary_command_buffer_impl.html">pvr::api::impl::SecondaryCommandBufferImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains all the commands and states that need to be submitted to the gpu, including pipeline, texture, and samplers. Virtually everything that needs to happen on the GPU is submitted to the CommandBuffer.  <a href="classpvr_1_1api_1_1impl_1_1_secondary_command_buffer_impl.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_secondary_command_buffer__.html">pvr::api::impl::SecondaryCommandBuffer_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains all the commands and states that need to be submitted to the gpu, including pipeline, texture, and samplers. Virtually everything that needs to happen on the GPU is submitted to the CommandBuffer.  <a href="classpvr_1_1api_1_1impl_1_1_secondary_command_buffer__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -113,10 +114,9 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html">pvr::api</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PVRApi Namespace. <br/></td></tr>
+<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> mapping flags. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api_1_1impl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html">pvr::api::impl</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1impl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains internal objects and wrapped versions of the PVRApi module. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -125,16 +125,52 @@ Constant Groups</h2></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html">pvr::api</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PVRApi Namespace. <br/></td></tr>
+<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> mapping flags. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api_1_1impl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html">pvr::api::impl</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1impl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains internal objects and wrapped versions of the PVRApi module. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a613ba9ec9eae7ce8dadf2ca3d74741b3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_command_buffer_8h.html#a613ba9ec9eae7ce8dadf2ca3d74741b3">USE_NONHOMOGENEOUS_LIST</a></td></tr>
-<tr class="separator:a613ba9ec9eae7ce8dadf2ca3d74741b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae25ce4c5091206aedc46375a22998c32"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_command_buffer_8h.html#ae25ce4c5091206aedc46375a22998c32">SET_UNIFORM_DECLARATION</a>(_type_)</td></tr>
+<tr class="separator:ae25ce4c5091206aedc46375a22998c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:afa3cc0d3bd00105d04bcee1c776771b1"><td class="memItemLeft" align="right" valign="top">native::HCommandBuffer_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#afa3cc0d3bd00105d04bcee1c776771b1">pvr::api::native_cast</a> (<a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer__.html">pvr::api::impl::CommandBuffer_</a> &amp;object)</td></tr>
+<tr class="separator:afa3cc0d3bd00105d04bcee1c776771b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a921a792b31906a83b1e1c52be8a8fc68"><td class="memItemLeft" align="right" valign="top">const native::HCommandBuffer_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a921a792b31906a83b1e1c52be8a8fc68">pvr::api::native_cast</a> (const <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer__.html">pvr::api::impl::CommandBuffer_</a> &amp;object)</td></tr>
+<tr class="separator:a921a792b31906a83b1e1c52be8a8fc68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af86608a05b1b6fb6fee3c0beea5a80f7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#af86608a05b1b6fb6fee3c0beea5a80f7">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (uint32)</td></tr>
+<tr class="separator:af86608a05b1b6fb6fee3c0beea5a80f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a631795c0c2744d65e04f9b8c78b68dbb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#a631795c0c2744d65e04f9b8c78b68dbb">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (int32)</td></tr>
+<tr class="separator:a631795c0c2744d65e04f9b8c78b68dbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac49ab8953169e2acbc1da9bd6b6a599f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#ac49ab8953169e2acbc1da9bd6b6a599f">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (float32)</td></tr>
+<tr class="separator:ac49ab8953169e2acbc1da9bd6b6a599f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a029763a980717ae5dad97a4f55e61f83"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#a029763a980717ae5dad97a4f55e61f83">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::vec2)</td></tr>
+<tr class="separator:a029763a980717ae5dad97a4f55e61f83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba17f128a8bfc6fd72e3dc6ab5a0c95e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#aba17f128a8bfc6fd72e3dc6ab5a0c95e">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::ivec2)</td></tr>
+<tr class="separator:aba17f128a8bfc6fd72e3dc6ab5a0c95e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79edf98c93a7ec688c899873d9376bbc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#a79edf98c93a7ec688c899873d9376bbc">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::uvec2)</td></tr>
+<tr class="separator:a79edf98c93a7ec688c899873d9376bbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a349c58a17f4ceb0447743f7e647bfa80"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#a349c58a17f4ceb0447743f7e647bfa80">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::vec3)</td></tr>
+<tr class="separator:a349c58a17f4ceb0447743f7e647bfa80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9b4b46b437a6cd22a2ef1b2d1341470"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#af9b4b46b437a6cd22a2ef1b2d1341470">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::ivec3)</td></tr>
+<tr class="separator:af9b4b46b437a6cd22a2ef1b2d1341470"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a777534c3e75e7eddb6324e051077a77c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#a777534c3e75e7eddb6324e051077a77c">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::uvec3)</td></tr>
+<tr class="separator:a777534c3e75e7eddb6324e051077a77c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c6325c867fe8414c3736166e84617d1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#a4c6325c867fe8414c3736166e84617d1">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::vec4)</td></tr>
+<tr class="separator:a4c6325c867fe8414c3736166e84617d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab004f7a8ba8fcbc88ae3e287e612ab0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#aab004f7a8ba8fcbc88ae3e287e612ab0">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::ivec4)</td></tr>
+<tr class="separator:aab004f7a8ba8fcbc88ae3e287e612ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae9a421bd988b0e2652a14a89e2a6467"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#aae9a421bd988b0e2652a14a89e2a6467">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::uvec4)</td></tr>
+<tr class="separator:aae9a421bd988b0e2652a14a89e2a6467"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c057408f9750551e730fa2108ed703e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#a4c057408f9750551e730fa2108ed703e">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::mat2)</td></tr>
+<tr class="separator:a4c057408f9750551e730fa2108ed703e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf2ab98f6040d2aa02f9045b88ee255e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#abf2ab98f6040d2aa02f9045b88ee255e">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::mat3)</td></tr>
+<tr class="separator:abf2ab98f6040d2aa02f9045b88ee255e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49a35661b3765b417c114b390364dac8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html#a49a35661b3765b417c114b390364dac8">pvr::api::impl::SET_UNIFORM_DECLARATION</a> (glm::mat4)</td></tr>
+<tr class="separator:a49a35661b3765b417c114b390364dac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the CommandBuffer implementation. </p>
@@ -142,16 +178,22 @@ Macros</h2></td></tr>
 <dl class="section author"><dt>Author</dt><dd>PowerVR by Imagination, Developer Technology Team </dd></dl>
 <dl class="section user"><dt>Copyright:</dt><dd>Copyright (c) Imagination Technologies Limited. </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
-<a class="anchor" id="a613ba9ec9eae7ce8dadf2ca3d74741b3"></a>
+<a class="anchor" id="ae25ce4c5091206aedc46375a22998c32"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define USE_NONHOMOGENEOUS_LIST</td>
+          <td class="memname">#define SET_UNIFORM_DECLARATION</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_type_)</td><td></td>
+          <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-
+<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">template</span> &lt;&gt;<span class="keywordtype">void</span> CommandBufferBase_::setUniform&lt;_type_&gt;(int32 location, <span class="keyword">const</span> _type_&amp; val); \</div>
+<div class="line">    template &lt;&gt;<span class="keywordtype">void</span> CommandBufferBase_::setUniformPtr&lt;_type_&gt;(int32 location, pvr::uint32 count, <span class="keyword">const</span> _type_* ptr);</div>
+</div><!-- fragment -->
 </div>
 </div>
 </div><!-- contents -->

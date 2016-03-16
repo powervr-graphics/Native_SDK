@@ -47,12 +47,12 @@ glm::mat4x4 Model::getBoneWorldMatrix(uint32 skinNodeID, uint32 boneID) const
 {
 #ifdef DEBUG
 	glm::mat4 tst = m_cache.worldMatrixFrameZero[boneID] * m_cache.worldMatrixFrameZero[skinNodeID];
-	PVR_ASSERT(tst[0][3] * tst[0][3] < 1e-15f && tst[1][3] * tst[1][3] < 1e-15f && tst[2][3] * tst[2][3] < 1e-15f);
+	assertion(tst[0][3] * tst[0][3] < 1e-15f && tst[1][3] * tst[1][3] < 1e-15f && tst[2][3] * tst[2][3] < 1e-15f, "getBoneWorldMatrix has unsupported skew parameters");
 #endif
 
 	// Back transform bone from frame 0 position using the skin's transformation
-    // WORKAROUND: Inverse is needlessly slow here, but glm's "affineInverse"  is actually an ORTHOGONAL inverse, 
-	// which only works for rotation, and not at all all with scales. So, an actually affineInverse is needed.
+	// TODO: Inverse is needlessly slow here, but glm's "affineInverse" is actually an ORTHOGONAL inverse, doesn't work at all with scales.
+	// Must write an ACTUAL affineInverse.
 	//PVR_ALIGNED glm::mat4x4 matrixTest = glm::affineInverse(m_cache.worldMatrixFrameZero[boneID]) * m_cache.worldMatrixFrameZero[skinNodeID];
 	PVR_ALIGNED glm::mat4x4 matrix = glm::inverse(m_cache.worldMatrixFrameZero[boneID]) * m_cache.worldMatrixFrameZero[skinNodeID];
 	return getWorldMatrix(boneID) * matrix;
@@ -91,8 +91,8 @@ glm::mat4x4 Model::getWorldMatrix(uint32 id) const
 	}
 	else
 	{
-		internal::optimisedMat4 m1 = internal::optimisedMat4(getWorldMatrix(parentID));
-		internal::optimisedMat4 m2 = internal::optimisedMat4(node.getAnimation().getTransformationMatrix(m_cache.frame,
+		internal::optimizedMat4 m1 = internal::optimizedMat4(getWorldMatrix(parentID));
+		internal::optimizedMat4 m2 = internal::optimizedMat4(node.getAnimation().getTransformationMatrix(m_cache.frame,
 		                             m_cache.frameFraction));
 
 		m_cache.worldMatrixFrameN[id] = internal::toMat4(m1 * m2);
@@ -110,7 +110,7 @@ glm::mat4x4 Model::getWorldMatrixNoCache(uint32 id) const
 	{
 		return matrix;
 	}
-	//return internal::toMat4(internal::optimisedMat4(getWorldMatrixNoCache(parentID)) * internal::optimisedMat4(matrix));
+	//return internal::toMat4(internal::optimizedMat4(getWorldMatrixNoCache(parentID)) * internal::optimizedMat4(matrix));
 	return getWorldMatrixNoCache(parentID) * matrix;
 }
 
@@ -161,7 +161,7 @@ bool Model::setCurrentFrame(float32 frame)
 		if (frame > static_cast<float32>(m_data.numFrames - 1))
 		{
 			Log(Log.Error, "Model::setCurrentFrame out of bounds, set to frame %f out of %d", frame, m_data.numFrames);
-			PVR_ASSERT(0);
+			assertion(0);
 			return false;
 		}
 		m_cache.frame = static_cast<uint32>(frame);
@@ -169,11 +169,11 @@ bool Model::setCurrentFrame(float32 frame)
 	}
 	else
 	{
-		PVR_ASSERT(frame == 0);
+		assertion(frame == 0);
 		if (static_cast<uint32>(frame) != 0)
 		{
 			Log(Log.Error, "Model::setCurrentFrame out of bounds, set to frame %f out of %d", frame, m_data.numFrames);
-			PVR_ASSERT(0);
+			assertion(0);
 			return false;
 		}
 		m_cache.frame = 0;
@@ -195,7 +195,7 @@ void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm:
 	if (static_cast<uint32>(index) >= m_data.cameras.size())
 	{
 		Log(Log.Error, "Model::getCameraProperties out of bounds [%d]", index);
-		PVR_ASSERT(0);
+		assertion(0);
 		return;
 	}
 	nearClip = m_data.cameras[index].getNear();
@@ -205,11 +205,10 @@ void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm:
 
 void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm::vec3& to, glm::vec3& up) const
 {
-	PVR_ASSERT(index >= 0 && index < static_cast<int32>(m_data.cameras.size()));
 	if (static_cast<uint32>(index) >= m_data.cameras.size())
 	{
+		assertion(0, "Model::getCameraProperties index out of range");
 		Log(Log.Error, "Model::getCameraProperties out of bounds [%d]", index);
-		PVR_ASSERT(0);
 		return;
 	}
 	glm::mat4x4 matrix = getWorldMatrix(static_cast<uint32>(m_data.numMeshNodes + m_data.lights.size() + index));
@@ -223,8 +222,8 @@ void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm:
 	up.z = -matrix[2][2];
 	glm::normalize(up);
 	const Camera& camera = getCamera(index);
-    
-	// Experimental code: Check the below code as it is experimental but should allow us to calculate the up vector if this camera follows a target
+
+	// TODO: Check the below code as it is experimental but should allow us to calculate the up vector if this camera follows a target
 	if (camera.getTargetNodeIndex() != -1)
 	{
 		glm::vec3 atCurrent, atTarget;
@@ -255,11 +254,11 @@ void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm:
 
 void Model::getLightDirection(int32 index, glm::vec3& direction)
 {
-	PVR_ASSERT(index >= 0 && index < static_cast<int32>(m_data.lights.size()));
 	if (static_cast<uint32>(index) >= m_data.lights.size())
 	{
+		assertion(0, "Model::getLightDirection out of bounds");
 		Log(Log.Error, "Model::getLightDirection out of bounds [%d]", index);
-		PVR_ASSERT(0);
+		assertion(0);
 		return;
 	}
 	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + index);
@@ -283,11 +282,10 @@ void Model::getLightDirection(int32 index, glm::vec3& direction)
 
 void Model::getLightPosition(int32 index, glm::vec3& position)
 {
-	PVR_ASSERT(index >= 0 && index < static_cast<int32>(m_data.lights.size()));
 	if (static_cast<uint32>(index) >= m_data.lights.size())
 	{
+		assertion(0, "Model::getLightPosition out of bounds");
 		Log(Log.Error, "Model::getLightPosition out of bounds [%d]", index);
-		PVR_ASSERT(0);
 		return;
 	}
 	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + index);
@@ -298,11 +296,11 @@ void Model::getLightPosition(int32 index, glm::vec3& position)
 
 void Model::getLightPosition(int32 index, glm::vec4& position)
 {
-	PVR_ASSERT(index >= 0 && index < static_cast<int32>(m_data.lights.size()));
 	if (static_cast<uint32>(index) >= m_data.lights.size())
 	{
+		assertion(0, "Model::getLightPosition out of bounds");
 		Log(Log.Error, "Model::getLightPosition out of bounds [%d]", index);
-		PVR_ASSERT(0);
+		assertion(0);
 		return;
 	}
 	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + index);

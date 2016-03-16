@@ -107,9 +107,8 @@ protected:
 	std::vector<Particle> particleArrayData;
 
 	//OPENGL BUFFER OBJECTS
-	pvr::api::SsboView particleBufferViewSsbos[NumBuffers];
-
-	pvr::api::UboView  particleConfigUbo, collisonSpheresUbo;
+	pvr::api::BufferView particleBufferViewSsbos[NumBuffers];
+	pvr::api::BufferView  particleConfigUbo, collisonSpheresUbo;
 	pvr::IAssetProvider& assetProvider;
 	pvr::api::DescriptorSet  descSets[NumBuffers];
 

@@ -20,13 +20,19 @@
     <ClInclude Include="..\..\UIRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\UIRendererShaders.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\PVRUIRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UIRendererFragShader_VK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UIRendererVertShader_VK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UIRendererShaders_ES.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

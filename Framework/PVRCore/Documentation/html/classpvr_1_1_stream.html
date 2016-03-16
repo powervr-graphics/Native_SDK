@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -148,16 +148,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9290b6c6fc81f6a094bb4947ba5dc388"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#a9290b6c6fc81f6a094bb4947ba5dc388">readChars</a> () const </td></tr>
 <tr class="memdesc:a9290b6c6fc81f6a094bb4947ba5dc388"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a raw, contiguous block of memory. Requires random-access stream.  <a href="#a9290b6c6fc81f6a094bb4947ba5dc388">More...</a><br/></td></tr>
 <tr class="separator:a9290b6c6fc81f6a094bb4947ba5dc388"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a610e18193d890f77549934f3cdd556af"><td class="memTemplParams" colspan="2">template&lt;typename T_ &gt; </td></tr>
+<tr class="memitem:a610e18193d890f77549934f3cdd556af"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#a610e18193d890f77549934f3cdd556af">readIntoBuffer</a> (std::vector&lt; T_ &gt; &amp;outString) const </td></tr>
+<tr class="memdesc:a610e18193d890f77549934f3cdd556af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a raw, contiguous block of memory. Requires random-access stream.  <a href="#a610e18193d890f77549934f3cdd556af">More...</a><br/></td></tr>
+<tr class="separator:a610e18193d890f77549934f3cdd556af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3364094c04b3f164e361587317caf94"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#af3364094c04b3f164e361587317caf94">readIntoCharBuffer</a> (std::vector&lt; char &gt; &amp;outString) const </td></tr>
 <tr class="memdesc:af3364094c04b3f164e361587317caf94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a raw, contiguous block of memory. Requires random-access stream.  <a href="#af3364094c04b3f164e361587317caf94">More...</a><br/></td></tr>
 <tr class="separator:af3364094c04b3f164e361587317caf94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3af42a7b1bc20d9df7fd59bccee6143"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#ad3af42a7b1bc20d9df7fd59bccee6143">readIntoString</a> (std::string &amp;outString) const </td></tr>
 <tr class="memdesc:ad3af42a7b1bc20d9df7fd59bccee6143"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a std::string.  <a href="#ad3af42a7b1bc20d9df7fd59bccee6143">More...</a><br/></td></tr>
 <tr class="separator:ad3af42a7b1bc20d9df7fd59bccee6143"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50ec37f36fc198a87a844ca150afcdb1"><td class="memTemplParams" colspan="2">template&lt;typename Type_ &gt; </td></tr>
-<tr class="memitem:a50ec37f36fc198a87a844ca150afcdb1"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Type_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#a50ec37f36fc198a87a844ca150afcdb1">readToEnd</a> ()</td></tr>
-<tr class="memdesc:a50ec37f36fc198a87a844ca150afcdb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience functions that reads all data in the stream into a contiguous block of memory of a specified element type. Requires random-access stream.  <a href="#a50ec37f36fc198a87a844ca150afcdb1">More...</a><br/></td></tr>
-<tr class="separator:a50ec37f36fc198a87a844ca150afcdb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa67b74d82cdf80fa57ebfb15cbf1e70d"><td class="memTemplParams" colspan="2">template&lt;typename Type_ &gt; </td></tr>
+<tr class="memitem:aa67b74d82cdf80fa57ebfb15cbf1e70d"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Type_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#aa67b74d82cdf80fa57ebfb15cbf1e70d">readToEnd</a> () const </td></tr>
+<tr class="memdesc:aa67b74d82cdf80fa57ebfb15cbf1e70d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience functions that reads all data in the stream into a contiguous block of memory of a specified element type. Requires random-access stream.  <a href="#aa67b74d82cdf80fa57ebfb15cbf1e70d">More...</a><br/></td></tr>
+<tr class="separator:aa67b74d82cdf80fa57ebfb15cbf1e70d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ca30c922a7ee22989744a004e767017"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#a3ca30c922a7ee22989744a004e767017">seek</a> (long offset, <a class="el" href="classpvr_1_1_stream.html#ac81d6985897cb5ae044d94979b1fa188">SeekOrigin</a> origin) const =0</td></tr>
 <tr class="memdesc:a3ca30c922a7ee22989744a004e767017"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seek a specific point for random access streams. After successful call, subsequent operation will happen in the specified point.  <a href="#a3ca30c922a7ee22989744a004e767017">More...</a><br/></td></tr>
 <tr class="separator:a3ca30c922a7ee22989744a004e767017"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -582,6 +586,42 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a610e18193d890f77549934f3cdd556af"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T_ &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::Stream::readIntoBuffer </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; T_ &gt; &amp;&#160;</td>
+          <td class="paramname"><em>outString</em>)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convenience function that reads all data in the stream into a raw, contiguous block of memory. Requires random-access stream. </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">outString</td><td>A std::vector&lt;char&gt; that will contain all data in the stream. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="af3364094c04b3f164e361587317caf94"></a>
 <div class="memitem">
 <div class="memproto">
@@ -612,7 +652,7 @@ Protected Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba844ad1ac1d6c105b75bb41329180627f">pvr::Result::Success</a> if successful, error code if otherwise. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. </dd></dl>
 
 </div>
 </div>
@@ -644,7 +684,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a50ec37f36fc198a87a844ca150afcdb1"></a>
+<a class="anchor" id="aa67b74d82cdf80fa57ebfb15cbf1e70d"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -657,7 +697,7 @@ template&lt;typename Type_ &gt; </div>
           <td class="memname">std::vector&lt;Type_&gt; pvr::Stream::readToEnd </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>

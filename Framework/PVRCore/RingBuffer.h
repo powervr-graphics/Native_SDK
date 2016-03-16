@@ -35,36 +35,26 @@ public:
 	/*!*********************************************************************************************************************
 	\return The item at the head of the ringbuffer.
 	***********************************************************************************************************************/
-	ItemType& front()
-	{
-		return m_store[m_first];
-	}
+	ItemType& front(){	return m_store[m_first];	}
 
 	/*!*********************************************************************************************************************
 	\return The item at the head of the ringbuffer. const
 	***********************************************************************************************************************/
-	const ItemType& front() const
-	{
-		return m_store[m_first];
-	}
+	const ItemType& front() const{	return m_store[m_first];	}
 	
 	/*!*********************************************************************************************************************
 	\return The item at the tail of the ringbuffer.
 	***********************************************************************************************************************/
-	ItemType& back()
-	{
-		return m_store[getIndex(m_size - 1)];
-	}
+	ItemType& back(){	return m_store[getIndex(m_size - 1)];	}
+	
 	/*!*********************************************************************************************************************
 	\return The item at the tail of the ringbuffer. const
 	***********************************************************************************************************************/
-	const ItemType& back() const
-	{
-		return m_store[getIndex(m_size - 1)];
-	}
+	const ItemType& back() const{	return m_store[getIndex(m_size - 1)];	}
 
 	/*!*********************************************************************************************************************
 	\brief Indexing. 0 is the head, size()-1 is the tail. Wraps automatically. const.
+	\return const Element
 	***********************************************************************************************************************/
 	const ItemType& operator[](size_t idx)const
 	{
@@ -75,6 +65,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Indexing. 0 is the head, size()-1 is the tail. Wraps automatically.
+	\return Element
 	***********************************************************************************************************************/
 	ItemType& operator[](size_t idx)
 	{
@@ -82,29 +73,46 @@ public:
 		if (tmp >= m_capacity) { tmp -= m_capacity; }
 		return m_store[tmp];
 	}
+	/*!*********************************************************************************************************************
+	\brief ctor.
+	***********************************************************************************************************************/
 	RingBuffer() : m_store(NULL), m_first(0), m_size(0), m_capacity(0) {}
+	
+	/*!*********************************************************************************************************************
+	\brief Copy constructor
+	***********************************************************************************************************************/
 	RingBuffer(const RingBuffer& rhs) : m_store(static_cast<ItemType*>(malloc(rhs.m_capacity* sizeof(ItemType)))), m_first(0), m_size(rhs.m_size),
 		m_capacity(rhs.m_capacity)
 	{
 		copy_items<false>(rhs.m_store, m_store, rhs.m_size, rhs.m_first, rhs.m_capacity);
 	}
 
+	/*!*********************************************************************************************************************
+	\brief Copy constructor
+	\param rhs R-Value reference to the object to copy. Called in move operator
+	***********************************************************************************************************************/
 	RingBuffer(RingBuffer&& rhs) : m_store(NULL), m_first(0), m_size(0), m_capacity(0)
 	{
 		swap(*this, rhs);
 	}
 
-	RingBuffer& operator=(RingBuffer rhs)
-	{
-		swap(*this, rhs); return *this;
-	}
+	/*!*********************************************************************************************************************
+	\brief Assignment operator
+	\return L-Value reference of this object.
+	***********************************************************************************************************************/
+	RingBuffer& operator=(RingBuffer rhs){	swap(*this, rhs); return *this;	}
+	
+	/*!*********************************************************************************************************************
+	\brief Assignment operator
+	\return R-Value reference of this object. Used for move operator
+	***********************************************************************************************************************/
 	RingBuffer&& operator=(RingBuffer && rhs)
 	{
 		clear(); free(m_store);
 		m_store = rhs.m_store; rhs.m_store = NULL;
 		m_first = rhs.m_first; rhs.m_first = 0;
 		m_size = rhs.m_size; rhs.m_size = 0;
-		m_capacity = rhs.m_capacity; rhs.m_capacity = 0;
+		m_capacity = rhs.m_capacity; rhs.m_capacity = 0; return *this;
 	}
 
 	/*!*********************************************************************************************************************
@@ -120,11 +128,10 @@ public:
 		m_first = 0;
 	}
 
-	~RingBuffer()
-	{
-		clear();
-		free(m_store);
-	}
+	/*!*********************************************************************************************************************
+	\brief dtor
+	***********************************************************************************************************************/
+	~RingBuffer(){	clear();	free(m_store);	}
 
 	/*!*********************************************************************************************************************
 	\brief Add an item to the back of the buffer. Auto grows.
@@ -199,10 +206,7 @@ public:
 	/*!*********************************************************************************************************************
 	\return The number of items in the RingBuffer. It is no indication of the actual amount of memory allocated.
 	***********************************************************************************************************************/
-	size_t size() const
-	{
-		return m_size;
-	}
+	size_t size() const	{	return m_size;	}
 private:
 	ItemType* m_store;
 	size_t m_first;
@@ -210,20 +214,14 @@ private:
 	size_t m_capacity;
 
 
-	size_t capacity() const
-	{
-		return m_capacity;
-	}
+	size_t capacity() const	{	return m_capacity;	}
 
 	void construct(const ItemType& item, size_t position)
 	{
 		new(m_store + position) ItemType(item);
 	}
 
-	void destroy(size_t position)
-	{
-		m_store[position].~ItemType();
-	}
+	void destroy(size_t position){	m_store[position].~ItemType();	}
 
 	template<bool move>
 	static void copy_items(ItemType* from, ItemType* to, size_t number, size_t from_start, size_t from_capacity)
@@ -254,6 +252,5 @@ void swap(RingBuffer<Item>& left, RingBuffer<Item>& right)
 	swap(left.m_size, right.m_size);
 	swap(left.m_capacity, right.m_capacity);
 }
-
 }
 #pragma warning(pop)

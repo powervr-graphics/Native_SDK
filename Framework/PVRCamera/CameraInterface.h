@@ -47,12 +47,12 @@ public:
 	~CameraInterface(); 
 
 	/*!****************************************************************************************************************
-	\brief      Initialises the capture session using the given hardware camera, if it is available.
+	\brief      Initializes the capture session using the given hardware camera, if it is available.
 	\param[in]  eCamera       The hardware camera to attempt to stream from
 	\param[in]  preferredResX,preferredResY If supported by the implementation, set a preferred resolution
 	\return     true if successful
 	******************************************************************************************************************/
-	bool initialiseSession(HWCamera::Enum eCamera, int preferredResX = 0, int preferredResY = 0);
+	bool initializeSession(HWCamera::Enum eCamera, int preferredResX = 0, int preferredResY = 0);
 
 	/*!****************************************************************************************************************
 	\brief      		Shutdown the AV capture session and release associated objects.
@@ -89,7 +89,7 @@ public:
 			  is not supported (e.g. iOS), this function will return false, and the getRgbTexture() function will
 			  return an empty (invalid) texture if used. See hasLumaChromaTextures(). In implementations where 
 			  RGB textures are supported (e.g. Android)  this function will return true and the getRgbTexture()
-			  will return a valid texture handle (if called after this interface was successfully initialised).
+			  will return a valid texture handle (if called after this interface was successfully initialized).
 	******************************************************************************************************************/
 	bool hasRgbTexture();
 

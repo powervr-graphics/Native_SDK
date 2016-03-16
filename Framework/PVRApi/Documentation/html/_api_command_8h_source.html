@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="generator" content="Doxygen 1.8.4"/>
-<title>PVRApi: C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/ApiCommand.h Source File</title>
+<title>PVRApi: C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/OGLES/ApiCommand.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_f3778daf1425e8df0e4ba29e94b76937.html">Framework</a></li><li class="navelem"><a class="el" href="dir_575f8b1bed935845734cc153028542ad.html">PVRApi</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_f3778daf1425e8df0e4ba29e94b76937.html">Framework</a></li><li class="navelem"><a class="el" href="dir_575f8b1bed935845734cc153028542ad.html">PVRApi</a></li><li class="navelem"><a class="el" href="dir_a8c874ad9c2b5f8b208eb71269d75b73.html">OGLES</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -92,32 +92,32 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;PVRCore/IGraphicsContext.h&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_api_errors_8h.html" title="Convenience functions for automatically logging API errors. Some functions NOP on release builds...">PVRApi/ApiErrors.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno"><a class="code" href="namespacepvr.html">   10</a></span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00011"></a><span class="lineno"><a class="code" href="namespacepvr_1_1api.html">   11</a></span>&#160;<span class="keyword">namespace </span>api {</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;PVRNativeApi/ApiErrors.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>pvr {</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>api {</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">\brief Interface for Dynamic commands which can be queued into a CommandBuffer. In specific </span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">\brief Interface for Dynamic commands which can be queued into a CommandBuffer. In specific</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">       implementations, contains a stacktrace for the actual submission of the command into the</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">       commandbuffer, which can greatly assist debugging.      </span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">       commandbuffer, which can greatly assist debugging.</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1_api_command.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1api_1_1_api_command.html" title="Interface for Dynamic commands which can be queued into a CommandBuffer. In specific implementations...">ApiCommand</a></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;{</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#ifdef DEBUG</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span>    <a class="code" href="_api_gles2_8h.html#ac83513893df92266f79a515488701770">std::string</a> debug_commandCallSiteStackTrace;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span>    std::string debug_commandCallSiteStackTrace;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1_api_command.html#ad41d2927e62c2ebc9c0ce33fc651d678">   23</a></span>&#160;<span class="preprocessor"></span>    <span class="keyword">typedef</span> <span class="keywordtype">void</span>* <a class="code" href="classpvr_1_1api_1_1_api_command.html#ad41d2927e62c2ebc9c0ce33fc651d678" title="Used in SFINAE dispatch of classes when submitting into the CommandBuffer. ">isCommand</a>;</div>
 <div class="line"><a name="l00024"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1_api_command.html#a9891cf90c1b4fd7ead62b5b994ed7288">   24</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classpvr_1_1api_1_1_api_command.html#a9891cf90c1b4fd7ead62b5b994ed7288">~ApiCommand</a>() {}</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    </div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1_api_command.html#ac01cb400d6db963ee38f1e8c932f73b4">   26</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1api_1_1_api_command.html#ac01cb400d6db963ee38f1e8c932f73b4">execute</a>(<a class="code" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBaseImpl</a>&amp; commandBuffer)</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1_api_command.html#a063415069e7c9a3f53e7f780fad7c1f5">   26</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1api_1_1_api_command.html#a063415069e7c9a3f53e7f780fad7c1f5">execute</a>(<a class="code" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>&amp; commandBuffer)</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    {</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        execute_private(commandBuffer);</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#ifdef DEBUG</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span>        <a class="code" href="namespacepvr_1_1api.html#a6795b5b93ca36a985f4053a42654eb90" title="Checks for API errors if the API supports them. If an error is detected, logs relevant error informat...">debugLogApiError</a>((<span class="stringliteral">&quot;Error logged for API command. Stacktrace:\n&quot;</span> + debug_commandCallSiteStackTrace).c_str());</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span>        debugLogApiError((<span class="stringliteral">&quot;Error logged for API command. Stacktrace:\n&quot;</span> + debug_commandCallSiteStackTrace).c_str());</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor"></span>    }</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> execute_private(<a class="code" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBaseImpl</a>&amp;) = 0;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> execute_private(<a class="code" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>&amp;) = 0;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;};</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}</div>

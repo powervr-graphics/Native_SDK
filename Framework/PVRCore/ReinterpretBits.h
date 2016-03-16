@@ -19,7 +19,7 @@ namespace pvr{
 	template <typename Toutput_, typename Tinput_>
 	Toutput_ reinterpretBits(const Tinput_& value)
 	{
-		PVR_ASSERT(sizeof(Tinput_) <= sizeof(Toutput_));
+		assertion(sizeof(Tinput_) <= sizeof(Toutput_));
 		Toutput_ ret = static_cast<Toutput_>(0);
 		memcpy(&ret, &value, sizeof(Tinput_));
 		return ret;
@@ -34,9 +34,9 @@ namespace pvr{
 	           representation of value.
 	*******************************************************************************************************************/
 	template<typename T1_>
-	StaticArray<T1_, sizeof(T1_)> readBits(const T1_& value)
+	std::array<T1_, sizeof(T1_)> readBits(const T1_& value)
 	{
-		StaticArray<char, sizeof(T1_)> retval;
+		std::array<char, sizeof(T1_)> retval;
 		memcpy(&retval[0], &value, sizeof(T1_));
 		return retval;
 	}

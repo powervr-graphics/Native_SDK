@@ -8,6 +8,7 @@
 #include "PVRAssets/FileIO/TextureWriterLegacyPVR.h"
 using std::vector;
 namespace pvr {
+using namespace types;
 namespace assets {
 namespace assetWriters {
 TextureWriterLegacyPVR::TextureWriterLegacyPVR() : m_targetAPI(texture_legacy::ApiOGL)
@@ -670,6 +671,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 				}
 				return true;
 			}
+			default:break;
 			}
 			break;
 		}

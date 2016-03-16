@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRPlatformGlue</span> Documentation</a>
    <tbody>
@@ -99,7 +99,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>pvr {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>system</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;{</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keyword">typedef</span> <span class="keywordtype">void</span>* <a class="code" href="namespacepvr_1_1system.html#adbf83ab8ef952a6738e1e441940748c5" title="EGL display type. ">NativeDisplay</a>; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keyword">typedef</span> <span class="keywordtype">void</span>* <a class="code" href="namespacepvr_1_1system.html#a4631e3a102a3e6fe6331e7d54552b017" title="EGL display type. ">NativeDisplay</a>; </div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">typedef</span> <span class="keywordtype">void</span>* <a class="code" href="namespacepvr_1_1system.html#a185e48a1618f8fcb0fff229ee63f68d0" title="EGL window type. ">NativeWindow</a>;  </div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    </div>
@@ -134,9 +134,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    </div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">struct </span>NativeDisplayHandle_</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <a class="code" href="namespacepvr_1_1system.html#adbf83ab8ef952a6738e1e441940748c5" title="EGL display type. ">NativeDisplay</a> <a class="code" href="structpvr_1_1system_1_1_native_display_handle__.html#acfde22c9a5830afe0e750b166ef022b1">nativeDisplay</a>;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keyword">operator</span> <a class="code" href="namespacepvr_1_1system.html#adbf83ab8ef952a6738e1e441940748c5" title="EGL display type. ">NativeDisplay</a>&amp; () { <span class="keywordflow">return</span> <a class="code" href="structpvr_1_1system_1_1_native_display_handle__.html#acfde22c9a5830afe0e750b166ef022b1">nativeDisplay</a>; }</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keyword">operator</span> <span class="keyword">const</span> <a class="code" href="namespacepvr_1_1system.html#adbf83ab8ef952a6738e1e441940748c5" title="EGL display type. ">NativeDisplay</a>&amp; () <span class="keyword">const</span> { <span class="keywordflow">return</span> <a class="code" href="structpvr_1_1system_1_1_native_display_handle__.html#acfde22c9a5830afe0e750b166ef022b1">nativeDisplay</a>; }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <a class="code" href="namespacepvr_1_1system.html#a4631e3a102a3e6fe6331e7d54552b017" title="EGL display type. ">NativeDisplay</a> <a class="code" href="structpvr_1_1system_1_1_native_display_handle__.html#acfde22c9a5830afe0e750b166ef022b1">nativeDisplay</a>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keyword">operator</span> <a class="code" href="namespacepvr_1_1system.html#a4631e3a102a3e6fe6331e7d54552b017" title="EGL display type. ">NativeDisplay</a>&amp; () { <span class="keywordflow">return</span> <a class="code" href="structpvr_1_1system_1_1_native_display_handle__.html#acfde22c9a5830afe0e750b166ef022b1">nativeDisplay</a>; }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keyword">operator</span> <span class="keyword">const</span> <a class="code" href="namespacepvr_1_1system.html#a4631e3a102a3e6fe6331e7d54552b017" title="EGL display type. ">NativeDisplay</a>&amp; () <span class="keyword">const</span> { <span class="keywordflow">return</span> <a class="code" href="structpvr_1_1system_1_1_native_display_handle__.html#acfde22c9a5830afe0e750b166ef022b1">nativeDisplay</a>; }</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    };</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keyword">struct </span>NativeWindowHandle_</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    {</div>

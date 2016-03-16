@@ -2,7 +2,7 @@
 \file         PVRCore\Assert_.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Defines PVR_ASSERT macros.
+\brief         Defines PVR_ASSERTION macros.
 ***********************************************************************************************************************/
 #pragma once
 #include <cassert>
@@ -10,12 +10,12 @@
 #ifdef DEBUG
 #ifdef _WIN32
 #include <crtdbg.h>
-#define PVR_ASSERT(expr) _ASSERT((expr));
+#define PVR_ASSERTION(expr) _ASSERT((expr));
 #else
-#define PVR_ASSERT(expr) assert(expr);
+#define PVR_ASSERTION(expr) assert(expr);
 #endif
 #else
-#define PVR_ASSERT(expr)
+#define PVR_ASSERTION(expr)
 #endif
 
 #ifndef __ANDROID__

@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -91,35 +92,50 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Contains parameters needed to set depth stencil states to a pipeline create params. This object can be added to a PipelineCreateParam to set a depth-stencil state to values other than their defaults.  
  <a href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a48b04e2f4dab54037983fae62bcbecb5"><td class="memItemLeft" align="right" valign="top">typedef ::<a class="el" href="structpvr_1_1api_1_1_stencil_state.html">pvr::api::StencilState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a></td></tr>
+<tr class="separator:a48b04e2f4dab54037983fae62bcbecb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5955230299fec19b719feaac8d07f53d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a5955230299fec19b719feaac8d07f53d">DepthStencilStateCreateParam</a> (bool depthWrite=true, bool depthTest=true, ComparisonMode::Enum depthCompareFunc=ComparisonMode::Less, bool stencilTest=false, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> opFrontStencilFail=<a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a>, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> opFrontDepthFail=<a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a>, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> opFrontDepthPass=<a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a>, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> opBackStencilFail=<a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a>, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> opBackDepthFail=<a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a>, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> opBackDepthPass=<a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a>)</td></tr>
-<tr class="memdesc:a5955230299fec19b719feaac8d07f53d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set all Depth and Stencil parameters.  <a href="#a5955230299fec19b719feaac8d07f53d">More...</a><br/></td></tr>
-<tr class="separator:a5955230299fec19b719feaac8d07f53d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c151cdeb29fd65f96e5b8df3a80eb5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a1c151cdeb29fd65f96e5b8df3a80eb5a">setDepthCompareFunc</a> (ComparisonMode::Enum compareFunc)</td></tr>
-<tr class="memdesc:a1c151cdeb29fd65f96e5b8df3a80eb5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the depth compare function (initial state: LessEqual)  <a href="#a1c151cdeb29fd65f96e5b8df3a80eb5a">More...</a><br/></td></tr>
-<tr class="separator:a1c151cdeb29fd65f96e5b8df3a80eb5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebf71505da12302bdbfeabedadc396e0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#aebf71505da12302bdbfeabedadc396e0">DepthStencilStateCreateParam</a> (bool depthWrite=true, bool depthTest=true, types::ComparisonMode::Enum depthCompareFunc=types::ComparisonMode::Less, bool stencilTest=false, bool depthBoundTest=false, const <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;stencilFront=<a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a>(), const <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;stencilBack=<a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a>(), float32 minDepth=0.0f, float32 maxDepth=1.0f)</td></tr>
+<tr class="memdesc:aebf71505da12302bdbfeabedadc396e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set all Depth and Stencil parameters.  <a href="#aebf71505da12302bdbfeabedadc396e0">More...</a><br/></td></tr>
+<tr class="separator:aebf71505da12302bdbfeabedadc396e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ddecf595ba17beb8df64f631f1c875d"><td class="memItemLeft" align="right" valign="top">types::ComparisonMode::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a6ddecf595ba17beb8df64f631f1c875d">getDepthComapreOp</a> () const </td></tr>
+<tr class="separator:a6ddecf595ba17beb8df64f631f1c875d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac216eeab54f34af8afdd50cb9df7ef67"><td class="memItemLeft" align="right" valign="top">float32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#ac216eeab54f34af8afdd50cb9df7ef67">getMaxDepth</a> () const </td></tr>
+<tr class="separator:ac216eeab54f34af8afdd50cb9df7ef67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28338578d4b147a3b628f3c10a81eb6b"><td class="memItemLeft" align="right" valign="top">float32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a28338578d4b147a3b628f3c10a81eb6b">getMinDepth</a> () const </td></tr>
+<tr class="separator:a28338578d4b147a3b628f3c10a81eb6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93a16051d846dac902df564ccf476995"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a93a16051d846dac902df564ccf476995">getStencilBack</a> () const </td></tr>
+<tr class="separator:a93a16051d846dac902df564ccf476995"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebfac92510cada883276fb891ed27c22"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#aebfac92510cada883276fb891ed27c22">getStencilFront</a> () const </td></tr>
+<tr class="separator:aebfac92510cada883276fb891ed27c22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cb1b9132b25dc62acb3b2abb5e9a282"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a2cb1b9132b25dc62acb3b2abb5e9a282">isDepthBoundTestEnable</a> () const </td></tr>
+<tr class="separator:a2cb1b9132b25dc62acb3b2abb5e9a282"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d93aec50092aea4f48fe0917ed80507"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a0d93aec50092aea4f48fe0917ed80507">isDepthTestEnable</a> () const </td></tr>
+<tr class="separator:a0d93aec50092aea4f48fe0917ed80507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a592292353d8b4c92bb226fb47baad865"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a592292353d8b4c92bb226fb47baad865">isDepthWriteEnable</a> () const </td></tr>
+<tr class="separator:a592292353d8b4c92bb226fb47baad865"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac578de092144779d6745e257cdbb327b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#ac578de092144779d6745e257cdbb327b">isStencilTestEnable</a> () const </td></tr>
+<tr class="separator:ac578de092144779d6745e257cdbb327b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbbd52e5e0beea551365e022f4035f2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#afbbd52e5e0beea551365e022f4035f2d">setDepthCompareFunc</a> (types::ComparisonMode::Enum compareFunc)</td></tr>
+<tr class="memdesc:afbbd52e5e0beea551365e022f4035f2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the depth compare function (initial state: LessEqual)  <a href="#afbbd52e5e0beea551365e022f4035f2d">More...</a><br/></td></tr>
+<tr class="separator:afbbd52e5e0beea551365e022f4035f2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abcb4c0e579bb1325a0f19b9c0e537c87"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#abcb4c0e579bb1325a0f19b9c0e537c87">setDepthTestEnable</a> (bool depthTest)</td></tr>
 <tr class="memdesc:abcb4c0e579bb1325a0f19b9c0e537c87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/disable depth test (initial state: enabled)  <a href="#abcb4c0e579bb1325a0f19b9c0e537c87">More...</a><br/></td></tr>
 <tr class="separator:abcb4c0e579bb1325a0f19b9c0e537c87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ec9ce90b1221444eae5607a4fef2a01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a4ec9ce90b1221444eae5607a4fef2a01">setDepthWrite</a> (bool depthWrite)</td></tr>
 <tr class="memdesc:a4ec9ce90b1221444eae5607a4fef2a01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/disable writing into the Depth <a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a>.  <a href="#a4ec9ce90b1221444eae5607a4fef2a01">More...</a><br/></td></tr>
 <tr class="separator:a4ec9ce90b1221444eae5607a4fef2a01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c637c2b1de7bf3dd0f768cac28302df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a7c637c2b1de7bf3dd0f768cac28302df">setStencilCompareFunc</a> (<a class="el" href="namespacepvr_1_1api_1_1_face.html#a7a2a061af66557bf899a1893efad6ed5">pvr::api::Face::Enum</a> face, ComparisonMode::Enum cmpMode)</td></tr>
-<tr class="memdesc:a7c637c2b1de7bf3dd0f768cac28302df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the stencil compare function.  <a href="#a7c637c2b1de7bf3dd0f768cac28302df">More...</a><br/></td></tr>
-<tr class="separator:a7c637c2b1de7bf3dd0f768cac28302df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91edf1fead53af36d592d6a28f967b48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a91edf1fead53af36d592d6a28f967b48">setStencilOp</a> (<a class="el" href="namespacepvr_1_1api_1_1_face.html#a7a2a061af66557bf899a1893efad6ed5">pvr::api::Face::Enum</a> face, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> stencilFail, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> depthFail, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> depthPass)</td></tr>
-<tr class="memdesc:a91edf1fead53af36d592d6a28f967b48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set all stencil ops at the same time.  <a href="#a91edf1fead53af36d592d6a28f967b48">More...</a><br/></td></tr>
-<tr class="separator:a91edf1fead53af36d592d6a28f967b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acfe4592c99848a79e61c558a1c446f42"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#acfe4592c99848a79e61c558a1c446f42">setStencilOpDepthFail</a> (<a class="el" href="namespacepvr_1_1api_1_1_face.html#a7a2a061af66557bf899a1893efad6ed5">pvr::api::Face::Enum</a> face, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> stencilOp)</td></tr>
-<tr class="memdesc:acfe4592c99848a79e61c558a1c446f42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the operation to perform on the Stencil buffer when the Stencil test passes but the Depth test fails.  <a href="#acfe4592c99848a79e61c558a1c446f42">More...</a><br/></td></tr>
-<tr class="separator:acfe4592c99848a79e61c558a1c446f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5d66069209e04bcfadfa5dbe150db34"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#ab5d66069209e04bcfadfa5dbe150db34">setStencilOpDepthPass</a> (<a class="el" href="namespacepvr_1_1api_1_1_face.html#a7a2a061af66557bf899a1893efad6ed5">pvr::api::Face::Enum</a> face, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> stencilOp)</td></tr>
-<tr class="memdesc:ab5d66069209e04bcfadfa5dbe150db34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the operation to perform on the Stencil buffer when both the Stencil and Depth tests pass.  <a href="#ab5d66069209e04bcfadfa5dbe150db34">More...</a><br/></td></tr>
-<tr class="separator:ab5d66069209e04bcfadfa5dbe150db34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad60486d51c7cf13796909ccfbe41516d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#ad60486d51c7cf13796909ccfbe41516d">setStencilOpStencilFail</a> (<a class="el" href="namespacepvr_1_1api_1_1_face.html#a7a2a061af66557bf899a1893efad6ed5">pvr::api::Face::Enum</a> face, <a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a> stencilOp)</td></tr>
-<tr class="memdesc:ad60486d51c7cf13796909ccfbe41516d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the operation to perform on the Stencil buffer when the stencil test fails.  <a href="#ad60486d51c7cf13796909ccfbe41516d">More...</a><br/></td></tr>
-<tr class="separator:ad60486d51c7cf13796909ccfbe41516d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5978060d40704a3eeeae88e96ead844"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#ad5978060d40704a3eeeae88e96ead844">setStencilBack</a> (<a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;stencil)</td></tr>
+<tr class="separator:ad5978060d40704a3eeeae88e96ead844"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a793d957c06743572232d7d44ab941637"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a793d957c06743572232d7d44ab941637">setStencilFront</a> (<a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;stencil)</td></tr>
+<tr class="memdesc:a793d957c06743572232d7d44ab941637"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the operation to perform on the Stencil buffer when the stencil test fails.  <a href="#a793d957c06743572232d7d44ab941637">More...</a><br/></td></tr>
+<tr class="separator:a793d957c06743572232d7d44ab941637"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99fc75824b12581f54667c72768987cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a99fc75824b12581f54667c72768987cc">setStencilFrontBack</a> (<a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;stencil)</td></tr>
+<tr class="separator:a99fc75824b12581f54667c72768987cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae780bc0b6fa7d453f935fd976c038e5e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#ae780bc0b6fa7d453f935fd976c038e5e">setStencilTest</a> (bool stencilTest)</td></tr>
 <tr class="memdesc:ae780bc0b6fa7d453f935fd976c038e5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/disable stencil test.  <a href="#ae780bc0b6fa7d453f935fd976c038e5e">More...</a><br/></td></tr>
 <tr class="separator:ae780bc0b6fa7d453f935fd976c038e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,8 +144,21 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><p>Contains parameters needed to set depth stencil states to a pipeline create params. This object can be added to a PipelineCreateParam to set a depth-stencil state to values other than their defaults. </p>
 <hr/>
  <dl class="section user"><dt>Description:</dt><dd>&mdash; Defaults: &mdash; depthWrite:enabled, depthTest:enabled, DepthComparison:Less, Stencil Text: disabled, All stencil ops:Keep, </dd></dl>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a5955230299fec19b719feaac8d07f53d"></a>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="a48b04e2f4dab54037983fae62bcbecb5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef ::<a class="el" href="structpvr_1_1api_1_1_stencil_state.html">pvr::api::StencilState</a> <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="aebf71505da12302bdbfeabedadc396e0"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -151,8 +180,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ComparisonMode::Enum&#160;</td>
-          <td class="paramname"><em>depthCompareFunc</em> = <code>ComparisonMode::Less</code>, </td>
+          <td class="paramtype">types::ComparisonMode::Enum&#160;</td>
+          <td class="paramname"><em>depthCompareFunc</em> = <code>types::ComparisonMode::Less</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -163,38 +192,32 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>opFrontStencilFail</em> = <code><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a></code>, </td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>depthBoundTest</em> = <code>false</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>opFrontDepthFail</em> = <code><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a></code>, </td>
+          <td class="paramtype">const <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;&#160;</td>
+          <td class="paramname"><em>stencilFront</em> = <code><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a>()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>opFrontDepthPass</em> = <code><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a></code>, </td>
+          <td class="paramtype">const <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;&#160;</td>
+          <td class="paramname"><em>stencilBack</em> = <code><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a>()</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>opBackStencilFail</em> = <code><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a></code>, </td>
+          <td class="paramtype">float32&#160;</td>
+          <td class="paramname"><em>minDepth</em> = <code>0.0f</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>opBackDepthFail</em> = <code><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a></code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>opBackDepthPass</em> = <code><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24aa1b053e022794088ba28db8a5a2699d8">StencilOp::Keep</a></code>&#160;</td>
+          <td class="paramtype">float32&#160;</td>
+          <td class="paramname"><em>maxDepth</em> = <code>1.0f</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -215,7 +238,214 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a1c151cdeb29fd65f96e5b8df3a80eb5a"></a>
+<a class="anchor" id="a6ddecf595ba17beb8df64f631f1c875d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">types::ComparisonMode::Enum pvr::api::pipelineCreation::DepthStencilStateCreateParam::getDepthComapreOp </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ac216eeab54f34af8afdd50cb9df7ef67"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float32 pvr::api::pipelineCreation::DepthStencilStateCreateParam::getMaxDepth </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a28338578d4b147a3b628f3c10a81eb6b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float32 pvr::api::pipelineCreation::DepthStencilStateCreateParam::getMinDepth </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a93a16051d846dac902df564ccf476995"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a>&amp; pvr::api::pipelineCreation::DepthStencilStateCreateParam::getStencilBack </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aebfac92510cada883276fb891ed27c22"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a>&amp; pvr::api::pipelineCreation::DepthStencilStateCreateParam::getStencilFront </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a2cb1b9132b25dc62acb3b2abb5e9a282"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::api::pipelineCreation::DepthStencilStateCreateParam::isDepthBoundTestEnable </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a0d93aec50092aea4f48fe0917ed80507"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::api::pipelineCreation::DepthStencilStateCreateParam::isDepthTestEnable </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a592292353d8b4c92bb226fb47baad865"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::api::pipelineCreation::DepthStencilStateCreateParam::isDepthWriteEnable </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ac578de092144779d6745e257cdbb327b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::api::pipelineCreation::DepthStencilStateCreateParam::isStencilTestEnable </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="afbbd52e5e0beea551365e022f4035f2d"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -225,7 +455,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a>&amp; pvr::api::pipelineCreation::DepthStencilStateCreateParam::setDepthCompareFunc </td>
           <td>(</td>
-          <td class="paramtype">ComparisonMode::Enum&#160;</td>
+          <td class="paramtype">types::ComparisonMode::Enum&#160;</td>
           <td class="paramname"><em>compareFunc</em>)</td><td></td>
           <td></td>
         </tr>
@@ -317,7 +547,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a7c637c2b1de7bf3dd0f768cac28302df"></a>
+<a class="anchor" id="ad5978060d40704a3eeeae88e96ead844"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -325,21 +555,11 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a>&amp; pvr::api::pipelineCreation::DepthStencilStateCreateParam::setStencilCompareFunc </td>
+          <td class="memname"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a>&amp; pvr::api::pipelineCreation::DepthStencilStateCreateParam::setStencilBack </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_face.html#a7a2a061af66557bf899a1893efad6ed5">pvr::api::Face::Enum</a>&#160;</td>
-          <td class="paramname"><em>face</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;&#160;</td>
+          <td class="paramname"><em>stencil</em>)</td><td></td>
           <td></td>
-          <td class="paramtype">ComparisonMode::Enum&#160;</td>
-          <td class="paramname"><em>cmpMode</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -349,20 +569,9 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Set the stencil compare function. </p>
-<hr/>
- <dl class="section return"><dt>Returns</dt><dd>this object (allows chained calls) </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">face</td><td>The face for which the compare function will be updated. </td></tr>
-    <tr><td class="paramname">cmpMode</td><td>The compare mode to set the face to. </td></tr>
-  </table>
-  </dd>
-</dl>
-
 </div>
 </div>
-<a class="anchor" id="a91edf1fead53af36d592d6a28f967b48"></a>
+<a class="anchor" id="a793d957c06743572232d7d44ab941637"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -370,171 +579,11 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a>&amp; pvr::api::pipelineCreation::DepthStencilStateCreateParam::setStencilOp </td>
+          <td class="memname"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a>&amp; pvr::api::pipelineCreation::DepthStencilStateCreateParam::setStencilFront </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_face.html#a7a2a061af66557bf899a1893efad6ed5">pvr::api::Face::Enum</a>&#160;</td>
-          <td class="paramname"><em>face</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;&#160;</td>
+          <td class="paramname"><em>stencil</em>)</td><td></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>stencilFail</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>depthFail</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>depthPass</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Set all stencil ops at the same time. </p>
-<hr/>
- <dl class="section return"><dt>Returns</dt><dd>this object (allows chained calls) </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">face</td><td>The face for which the operations will be updated. </td></tr>
-    <tr><td class="paramname">stencilFail</td><td>Specifies the stencil action to perform when the stencil test fails. </td></tr>
-    <tr><td class="paramname">depthFail</td><td>Specifies the stencil action to perform when the stencil test passes, but the depth test fails. </td></tr>
-    <tr><td class="paramname">depthPass</td><td>Specifies the stencil action to perform when both the stencil test and the depth test pass, or when the stencil test passes and either there is no depth buffer or depth testing is not enabled. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="acfe4592c99848a79e61c558a1c446f42"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a>&amp; pvr::api::pipelineCreation::DepthStencilStateCreateParam::setStencilOpDepthFail </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_face.html#a7a2a061af66557bf899a1893efad6ed5">pvr::api::Face::Enum</a>&#160;</td>
-          <td class="paramname"><em>face</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>stencilOp</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Set the operation to perform on the Stencil buffer when the Stencil test passes but the Depth test fails. </p>
-<hr/>
- <dl class="section return"><dt>Returns</dt><dd>this object (allows chained calls) </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">face</td><td>The face for which the operation will be updated. </td></tr>
-    <tr><td class="paramname">stencilOp</td><td>The operation to perform on (face) on stencil pass &amp; depth fail. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="ab5d66069209e04bcfadfa5dbe150db34"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a>&amp; pvr::api::pipelineCreation::DepthStencilStateCreateParam::setStencilOpDepthPass </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_face.html#a7a2a061af66557bf899a1893efad6ed5">pvr::api::Face::Enum</a>&#160;</td>
-          <td class="paramname"><em>face</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>stencilOp</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Set the operation to perform on the Stencil buffer when both the Stencil and Depth tests pass. </p>
-<hr/>
- <dl class="section return"><dt>Returns</dt><dd>this object (allows chained calls) </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">face</td><td>The face for which the operation will be updated. </td></tr>
-    <tr><td class="paramname">stencilOp</td><td>The operation to perform on (face) on stencil pass &amp; depth fail. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section user"><dt>Description:</dt><dd>For purposes of this function, the depth test is also considered passed if the Depth testing is disabled or there is no depth buffer. </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="ad60486d51c7cf13796909ccfbe41516d"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a>&amp; pvr::api::pipelineCreation::DepthStencilStateCreateParam::setStencilOpStencilFail </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_face.html#a7a2a061af66557bf899a1893efad6ed5">pvr::api::Face::Enum</a>&#160;</td>
-          <td class="paramname"><em>face</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24">StencilOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>stencilOp</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -554,6 +603,30 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a99fc75824b12581f54667c72768987cc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html">DepthStencilStateCreateParam</a>&amp; pvr::api::pipelineCreation::DepthStencilStateCreateParam::setStencilFrontBack </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a48b04e2f4dab54037983fae62bcbecb5">StencilState</a> &amp;&#160;</td>
+          <td class="paramname"><em>stencil</em>)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -592,7 +665,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/ApiObjects/<a class="el" href="_pipeline_config_state_create_param_8h_source.html">PipelineConfigStateCreateParam.h</a></li>
+<li>C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/ApiObjects/<a class="el" href="_pipeline_config_8h_source.html">PipelineConfig.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

@@ -25,9 +25,9 @@ namespace utils {
 inline math::AxisAlignedBox getBoundingBox(const byte* data, size_t stride_bytes, size_t offset_bytes, size_t size_bytes)
 {
 	math::AxisAlignedBox aabb;
-	PVR_ASSERT(data);
-	PVR_ASSERT(stride_bytes >= 12 || !stride_bytes);
-	PVR_ASSERT(size_bytes >= stride_bytes);
+	assertion(data);
+	assertion(stride_bytes >= 12 || !stride_bytes);
+	assertion(size_bytes >= stride_bytes);
 	if (size_bytes && data)
 	{
 		data = data + offset_bytes;

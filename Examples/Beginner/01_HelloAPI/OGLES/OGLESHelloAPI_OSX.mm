@@ -93,7 +93,7 @@ unsigned int Height (600);
 /*!*********************************************************************************************************************
 \param[out]		eglDisplay				    EGLDisplay created
 \return		Whether the function succeeded or not.
-\brief	Creates an EGLDisplay and initialises it.
+\brief	Creates an EGLDisplay and initializes it.
  ***********************************************************************************************************************/
 - (BOOL) createEGLDisplay:(EGLDisplay &)eglDisplay
 {
@@ -111,13 +111,13 @@ unsigned int Height (600);
 
 	// Initialize EGL.
 	// EGL has to be initialized with the display obtained in the previous step. All EGL functions other than eglGetDisplay
-	// and eglGetError need an initialised EGLDisplay.
+	// and eglGetError need an initialized EGLDisplay.
 	// If an application is not interested in the EGL version number it can just pass NULL for the second and third parameters, but they
 	// are queried here for illustration purposes.
 	EGLint eglMajorVersion, eglMinorVersion;
 	if (!eglInitialize(eglDisplay, &eglMajorVersion, &eglMinorVersion))
 	{
-		printf("Failed to initialise the EGLDisplay");
+		printf("Failed to initialize the EGLDisplay");
 		return FALSE;
 	}
 	return TRUE;
@@ -231,9 +231,9 @@ unsigned int Height (600);
 /*!*********************************************************************************************************************
 \param[out]		vertexBuffer                Handle to a vertex buffer object
 \return		Whether the function succeeds or not.
-\brief	Initialises shaders, buffers and other state required to begin rendering with OpenGL ES
+\brief	Initializes shaders, buffers and other state required to begin rendering with OpenGL ES
 ***********************************************************************************************************************/
-- (BOOL) initialiseBuffer:(GLuint &)vertexBuffer
+- (BOOL) initializeBuffer:(GLuint &)vertexBuffer
 {
 	// Concept: Vertices
 	// When rendering a polygon or model to screen, OpenGL ES has to be told where to draw the object, and more fundamentally what shape
@@ -274,9 +274,9 @@ unsigned int Height (600);
 \param[out]		vertexShader                Handle to a vertex shader
 \param[out]		shaderProgram               Handle to a shader program containing the fragment and vertex shader
 \return		Whether the function succeeds or not.
-\brief	Initialises shaders, buffers and other state required to begin rendering with OpenGL ES
+\brief	Initializes shaders, buffers and other state required to begin rendering with OpenGL ES
 ***********************************************************************************************************************/
--(BOOL) initialiseFragmentShader:(GLuint &)fragmentShader andVertexShader:(GLuint &)vertexShader withProgram:(GLuint &)shaderProgram
+-(BOOL) initializeFragmentShader:(GLuint &)fragmentShader andVertexShader:(GLuint &)vertexShader withProgram:(GLuint &)shaderProgram
 {
 	// Concept: Shaders
 	// OpenGL ES 2.0 uses what are known as shaders to determine how to draw objects on the screen. Instead of the fixed function
@@ -445,7 +445,7 @@ unsigned int Height (600);
     
     EGLConfig config;
 
-    // Create and Initialise an EGLDisplay
+    // Create and Initialize an EGLDisplay
     if(![self createEGLDisplay:m_Display]){	[self terminateApp]; }
 
 	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
@@ -457,11 +457,11 @@ unsigned int Height (600);
 	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
 	if(![self setupEGLContext:m_Context fromDisplay:m_Display withConfig:config withSurface:m_Surface]){ [self terminateApp]; }
 
-	// Initialise the vertex data in the application
-	if(![self initialiseBuffer:m_vertexBuffer])	{	[self terminateApp];  }
+	// Initialize the vertex data in the application
+	if(![self initializeBuffer:m_vertexBuffer])	{	[self terminateApp];  }
 
-	// Initialise the fragment and vertex shaders used in the application
-	if(![self initialiseFragmentShader:m_fragShader andVertexShader:m_vertexBuffer withProgram:m_program]){		[self terminateApp];	}
+	// Initialize the fragment and vertex shaders used in the application
+	if(![self initializeFragmentShader:m_fragShader andVertexShader:m_vertexBuffer withProgram:m_program]){		[self terminateApp];	}
 
     // Setup a timer to redraw the view at a regular interval
     m_timer = [NSTimer scheduledTimerWithTimeInterval:(1.0 / Kfps) target:self selector:@selector(renderScene) userInfo:nil repeats:YES];
@@ -540,7 +540,7 @@ unsigned int Height (600);
 /*!*********************************************************************************************************************
 \brief	Releases the resources
 ***********************************************************************************************************************/
-- (void) deInitialiseGLState
+- (void) deInitializeGLState
 {
 	// Frees the OpenGL handles for the program and the 2 shaders
 	glDeleteShader(m_fragShader);
@@ -572,7 +572,7 @@ unsigned int Height (600);
     // Release our timer
     [m_timer invalidate];
 
-	[self deInitialiseGLState];
+	[self deInitializeGLState];
 	[self releaseEGLState:m_Display];
 
     // Release our view and window

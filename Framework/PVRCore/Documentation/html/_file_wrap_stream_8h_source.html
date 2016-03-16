@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -125,7 +125,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00039"></a><span class="lineno"><a class="code" href="classpvr_1_1_file_wrap_stream_1_1_register.html">   39</a></span>&#160;        <span class="keyword">class </span><a class="code" href="classpvr_1_1_file_wrap_stream_1_1_register.html" title="Automatically used by Filewrap files. They use this class in order to register themselves to the File...">Register</a></div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        {</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;            <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="code" href="classpvr_1_1_file_wrap_stream_1_1_register.html#a5f4ae06dc0d63e14bb2eee9e963c06c0">   42</a></span>&#160;                <a class="code" href="classpvr_1_1_file_wrap_stream_1_1_register.html#a5f4ae06dc0d63e14bb2eee9e963c06c0">Register</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* filename, <span class="keyword">const</span> <span class="keywordtype">void</span> * buffer, <span class="keywordtype">size_t</span> <a class="code" href="namespacepvr_1_1_data_type.html#adea250ed65a5ffa8174722187d55593c" title="Return the Size of a DataType. ">size</a>)</div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="code" href="classpvr_1_1_file_wrap_stream_1_1_register.html#a5f4ae06dc0d63e14bb2eee9e963c06c0">   42</a></span>&#160;                <a class="code" href="classpvr_1_1_file_wrap_stream_1_1_register.html#a5f4ae06dc0d63e14bb2eee9e963c06c0">Register</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* filename, <span class="keyword">const</span> <span class="keywordtype">void</span> * buffer, <span class="keywordtype">size_t</span> <a class="code" href="namespacepvr_1_1types_1_1_data_type.html#a1dd5a6af816a34c725a272fda0995670" title="Return the Size of a DataType. ">size</a>)</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                {</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                    <a class="code" href="classpvr_1_1_sized_pointer.html" title="A pointer with an additional size field. ">SizedPointer&lt;void&gt;</a> ptr(const_cast&lt;void*&gt;(buffer), size);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                    <a class="code" href="classpvr_1_1_file_wrap_stream.html#a9e5d29e754a97ab5f9629440dfd8787a" title="Get the registry of all known (registered) filewrapped entries. ">FileWrapStream::getFileRegistry</a>().insert(std::pair&lt;<a class="code" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d" title="String of basic characters. ">std::string</a>,<a class="code" href="classpvr_1_1_sized_pointer.html" title="A pointer with an additional size field. ">SizedPointer&lt;void&gt;</a> &gt;(filename, ptr));</div>

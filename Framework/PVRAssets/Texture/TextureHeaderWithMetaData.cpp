@@ -308,7 +308,7 @@ void TextureHeaderWithMetaData::setBumpMap(float bumpScale, string bumpOrder)
     if(bumpOrder.find_first_not_of("xyzh") != std::string::npos)
     {
         pvr::Log("Invalid bumpmap order string");
-        PVR_ASSERT(false && "Invalid bumpmap order string");
+        assertion(false ,  "Invalid bumpmap order string");
         return;
     }
 
@@ -322,7 +322,7 @@ void TextureHeaderWithMetaData::setBumpMap(float bumpScale, string bumpOrder)
 	}
 
 
-	// Initialise and clear the bump map data
+	// Initialize and clear the bump map data
 	byte bumpData[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 	//Copy the floating point scale and character order into the bumpmap data

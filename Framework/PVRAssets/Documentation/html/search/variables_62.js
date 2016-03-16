@@ -12,6 +12,5 @@ var searchData=
   ['bonebatches',['boneBatches',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#ae31de6f178fbde0330b092818ce48dda',1,'pvr::assets::Mesh::InternalData']]],
   ['bonebatchstride',['boneBatchStride',['../structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html#ab6f869a48b0e9feed05e22836c8e45f4',1,'pvr::assets::Mesh::BoneBatches']]],
   ['bonecounts',['boneCounts',['../structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html#aae0da45297ab7d77e0f35932d5e8ecf4',1,'pvr::assets::Mesh::BoneBatches']]],
-  ['bordercolor',['borderColor',['../structpvr_1_1assets_1_1_sampler_create_param.html#ab3bf4fa1ba9f776b3ae48903e91103d8',1,'pvr::assets::SamplerCreateParam']]],
   ['bumpmaptextureindex',['bumpMapTextureIndex',['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a46d857dcd5f6c254f72af7c07516a55e',1,'pvr::assets::Model::Material::InternalData']]]
 ];

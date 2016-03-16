@@ -51,7 +51,6 @@
 /* Begin PBXFileReference section */
 		0E35043E1BF652E500EC0B4E /* PVRAssets.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRAssets.h; path = ../../PVRAssets.h; sourceTree = "<group>"; };
 		0E787AA61ABAD92400BF9C85 /* AssetIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetIncludes.h; path = ../../AssetIncludes.h; sourceTree = "<group>"; };
-		0E787AA71ABAD92400BF9C85 /* SamplerDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SamplerDescription.h; path = ../../SamplerDescription.h; sourceTree = "<group>"; };
 		0E787AA81ABAD92400BF9C85 /* ShaderDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderDescription.h; path = ../../ShaderDescription.h; sourceTree = "<group>"; };
 		0E787AAA1ABAD93400BF9C85 /* Effect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Effect.h; path = ../../Effect.h; sourceTree = "<group>"; };
 		0E787AAD1ABAD95000BF9C85 /* PFXReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PFXReader.cpp; path = ../../FileIO/PFXReader.cpp; sourceTree = "<group>"; };
@@ -109,7 +108,6 @@
 		ACFC1D4019F6669B00B860D2 /* TextureWriterLegacyPVR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureWriterLegacyPVR.h; path = ../../FileIO/TextureWriterLegacyPVR.h; sourceTree = "<group>"; };
 		ACFC1D4119F6669B00B860D2 /* TextureWriterPVR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureWriterPVR.cpp; path = ../../FileIO/TextureWriterPVR.cpp; sourceTree = "<group>"; };
 		ACFC1D4219F6669B00B860D2 /* TextureWriterPVR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureWriterPVR.h; path = ../../FileIO/TextureWriterPVR.h; sourceTree = "<group>"; };
-		ACFC1D5019F666C200B860D2 /* Semantic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Semantic.h; path = ../../Model/Semantic.h; sourceTree = "<group>"; };
 		ACFC1D5119F666D200B860D2 /* Animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Animation.cpp; path = ../../Model/Animation.cpp; sourceTree = "<group>"; };
 		ACFC1D5219F666D200B860D2 /* Animation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Animation.h; path = ../../Model/Animation.h; sourceTree = "<group>"; };
 		ACFC1D5319F666D200B860D2 /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Camera.cpp; path = ../../Model/Camera.cpp; sourceTree = "<group>"; };
@@ -142,42 +140,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3E20FA6519CADC8D00B0749D /* FileIO */ = {
-			isa = PBXGroup;
-			children = (
-				ACFC1D2419F6669B00B860D2 /* FileDefinesBMP.h */,
-				ACFC1D2519F6669B00B860D2 /* FileDefinesDDS.h */,
-				ACFC1D2619F6669B00B860D2 /* FileDefinesKTX.h */,
-				ACFC1D2719F6669B00B860D2 /* FileDefinesPVR.h */,
-				ACFC1D2819F6669B00B860D2 /* FileDefinesTGA.h */,
-				ACFC1D2919F6669B00B860D2 /* FileDefinesXNB.h */,
-				ACFC1D2A19F6669B00B860D2 /* PaletteExpander.cpp */,
-				ACFC1D2B19F6669B00B860D2 /* PaletteExpander.h */,
-				ACFC1D2C19F6669B00B860D2 /* PODDefines.h */,
-				ACFC1D2F19F6669B00B860D2 /* TextureReaderBMP.cpp */,
-				ACFC1D3019F6669B00B860D2 /* TextureReaderBMP.h */,
-				ACFC1D3119F6669B00B860D2 /* TextureReaderDDS.cpp */,
-				ACFC1D3219F6669B00B860D2 /* TextureReaderDDS.h */,
-				ACFC1D3319F6669B00B860D2 /* TextureReaderKTX.cpp */,
-				ACFC1D3419F6669B00B860D2 /* TextureReaderKTX.h */,
-				ACFC1D3519F6669B00B860D2 /* TextureReaderPVR.cpp */,
-				ACFC1D3619F6669B00B860D2 /* TextureReaderPVR.h */,
-				ACFC1D3719F6669B00B860D2 /* TextureReaderTGA.cpp */,
-				ACFC1D3819F6669B00B860D2 /* TextureReaderTGA.h */,
-				ACFC1D3919F6669B00B860D2 /* TextureReaderXNB.cpp */,
-				ACFC1D3A19F6669B00B860D2 /* TextureReaderXNB.h */,
-				ACFC1D3B19F6669B00B860D2 /* TextureWriterDDS.cpp */,
-				ACFC1D3C19F6669B00B860D2 /* TextureWriterDDS.h */,
-				ACFC1D3D19F6669B00B860D2 /* TextureWriterKTX.cpp */,
-				ACFC1D3E19F6669B00B860D2 /* TextureWriterKTX.h */,
-				ACFC1D3F19F6669B00B860D2 /* TextureWriterLegacyPVR.cpp */,
-				ACFC1D4019F6669B00B860D2 /* TextureWriterLegacyPVR.h */,
-				ACFC1D4119F6669B00B860D2 /* TextureWriterPVR.cpp */,
-				ACFC1D4219F6669B00B860D2 /* TextureWriterPVR.h */,
-			);
-			name = FileIO;
-			sourceTree = "<group>";
-		};
 		3E6C06FD19C6F72F00D712E5 = {
 			isa = PBXGroup;
 			children = (
@@ -208,39 +170,6 @@
 		3E6C075319C6F79D00D712E5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				0EE12A891B8F538A006ACAEB /* Asset.h */,
-				0EE12A8A1B8F538A006ACAEB /* BoundingBox.h */,
-				0EE12A8B1B8F538A006ACAEB /* PVRShamanSemantics.h */,
-				0EE12A8C1B8F538A006ACAEB /* Shader.h */,
-				0E787AB31ABAD95E00BF9C85 /* PixelFormat.cpp */,
-				0E787AAD1ABAD95000BF9C85 /* PFXReader.cpp */,
-				0E787AAE1ABAD95000BF9C85 /* PFXReader.h */,
-				0E787AAF1ABAD95000BF9C85 /* PODReader.cpp */,
-				0E787AB01ABAD95000BF9C85 /* PODReader.h */,
-				0E787AAA1ABAD93400BF9C85 /* Effect.h */,
-				0E787AA61ABAD92400BF9C85 /* AssetIncludes.h */,
-				0E787AA71ABAD92400BF9C85 /* SamplerDescription.h */,
-				0E787AA81ABAD92400BF9C85 /* ShaderDescription.h */,
-				ACFC1D5F19F666EC00B860D2 /* AssetReader.h */,
-				ACFC1D6019F666EC00B860D2 /* AssetWriter.h */,
-				ACFC1D6119F666EC00B860D2 /* Geometry.cpp */,
-				ACFC1D6219F666EC00B860D2 /* Geometry.h */,
-				ACFC1D6319F666EC00B860D2 /* Helper.h */,
-				ACFC1D6419F666EC00B860D2 /* Model.h */,
-				0E35043E1BF652E500EC0B4E /* PVRAssets.h */,
-				ACFC1D6B19F666EC00B860D2 /* ShadowVolume.cpp */,
-				ACFC1D6C19F666EC00B860D2 /* ShadowVolume.h */,
-				ACFC1D6D19F666EC00B860D2 /* SkipGraph.h */,
-				ACFC1D4F19F666B200B860D2 /* Model */,
-				3E20FA6519CADC8D00B0749D /* FileIO */,
-				3E6C075419C6F7B000D712E5 /* Texture */,
-			);
-			name = Sources;
-			sourceTree = "<group>";
-		};
-		3E6C075419C6F7B000D712E5 /* Texture */ = {
-			isa = PBXGroup;
-			children = (
 				3E6C075519C6F7C600D712E5 /* MetaData.cpp */,
 				3E6C075619C6F7C600D712E5 /* MetaData.h */,
 				3E6C075819C6F7C600D712E5 /* PixelFormat.h */,
@@ -254,13 +183,35 @@
 				3E6C076019C6F7C600D712E5 /* TextureHeader.h */,
 				3E6C076119C6F7C600D712E5 /* TextureHeaderWithMetaData.cpp */,
 				3E6C076219C6F7C600D712E5 /* TextureHeaderWithMetaData.h */,
-			);
-			name = Texture;
-			sourceTree = "<group>";
-		};
-		ACFC1D4F19F666B200B860D2 /* Model */ = {
-			isa = PBXGroup;
-			children = (
+				ACFC1D2419F6669B00B860D2 /* FileDefinesBMP.h */,
+				ACFC1D2519F6669B00B860D2 /* FileDefinesDDS.h */,
+				ACFC1D2619F6669B00B860D2 /* FileDefinesKTX.h */,
+				ACFC1D2719F6669B00B860D2 /* FileDefinesPVR.h */,
+				ACFC1D2819F6669B00B860D2 /* FileDefinesTGA.h */,
+				ACFC1D2919F6669B00B860D2 /* FileDefinesXNB.h */,
+				ACFC1D2A19F6669B00B860D2 /* PaletteExpander.cpp */,
+				ACFC1D2B19F6669B00B860D2 /* PaletteExpander.h */,
+				ACFC1D2C19F6669B00B860D2 /* PODDefines.h */,
+				ACFC1D2F19F6669B00B860D2 /* TextureReaderBMP.cpp */,
+				ACFC1D3019F6669B00B860D2 /* TextureReaderBMP.h */,
+				ACFC1D3119F6669B00B860D2 /* TextureReaderDDS.cpp */,
+				ACFC1D3219F6669B00B860D2 /* TextureReaderDDS.h */,
+				ACFC1D3319F6669B00B860D2 /* TextureReaderKTX.cpp */,
+				ACFC1D3419F6669B00B860D2 /* TextureReaderKTX.h */,
+				ACFC1D3519F6669B00B860D2 /* TextureReaderPVR.cpp */,
+				ACFC1D3619F6669B00B860D2 /* TextureReaderPVR.h */,
+				ACFC1D3719F6669B00B860D2 /* TextureReaderTGA.cpp */,
+				ACFC1D3819F6669B00B860D2 /* TextureReaderTGA.h */,
+				ACFC1D3919F6669B00B860D2 /* TextureReaderXNB.cpp */,
+				ACFC1D3A19F6669B00B860D2 /* TextureReaderXNB.h */,
+				ACFC1D3B19F6669B00B860D2 /* TextureWriterDDS.cpp */,
+				ACFC1D3C19F6669B00B860D2 /* TextureWriterDDS.h */,
+				ACFC1D3D19F6669B00B860D2 /* TextureWriterKTX.cpp */,
+				ACFC1D3E19F6669B00B860D2 /* TextureWriterKTX.h */,
+				ACFC1D3F19F6669B00B860D2 /* TextureWriterLegacyPVR.cpp */,
+				ACFC1D4019F6669B00B860D2 /* TextureWriterLegacyPVR.h */,
+				ACFC1D4119F6669B00B860D2 /* TextureWriterPVR.cpp */,
+				ACFC1D4219F6669B00B860D2 /* TextureWriterPVR.h */,
 				ACFC1D5119F666D200B860D2 /* Animation.cpp */,
 				ACFC1D5219F666D200B860D2 /* Animation.h */,
 				ACFC1D5319F666D200B860D2 /* Camera.cpp */,
@@ -270,9 +221,30 @@
 				ACFC1D5719F666D200B860D2 /* Mesh.cpp */,
 				ACFC1D5819F666D200B860D2 /* Mesh.h */,
 				ACFC1D5919F666D200B860D2 /* Model.cpp */,
-				ACFC1D5019F666C200B860D2 /* Semantic.h */,
+				0EE12A891B8F538A006ACAEB /* Asset.h */,
+				0EE12A8A1B8F538A006ACAEB /* BoundingBox.h */,
+				0EE12A8B1B8F538A006ACAEB /* PVRShamanSemantics.h */,
+				0EE12A8C1B8F538A006ACAEB /* Shader.h */,
+				0E787AB31ABAD95E00BF9C85 /* PixelFormat.cpp */,
+				0E787AAD1ABAD95000BF9C85 /* PFXReader.cpp */,
+				0E787AAE1ABAD95000BF9C85 /* PFXReader.h */,
+				0E787AAF1ABAD95000BF9C85 /* PODReader.cpp */,
+				0E787AB01ABAD95000BF9C85 /* PODReader.h */,
+				0E787AAA1ABAD93400BF9C85 /* Effect.h */,
+				0E787AA61ABAD92400BF9C85 /* AssetIncludes.h */,
+				0E787AA81ABAD92400BF9C85 /* ShaderDescription.h */,
+				ACFC1D5F19F666EC00B860D2 /* AssetReader.h */,
+				ACFC1D6019F666EC00B860D2 /* AssetWriter.h */,
+				ACFC1D6119F666EC00B860D2 /* Geometry.cpp */,
+				ACFC1D6219F666EC00B860D2 /* Geometry.h */,
+				ACFC1D6319F666EC00B860D2 /* Helper.h */,
+				ACFC1D6419F666EC00B860D2 /* Model.h */,
+				0E35043E1BF652E500EC0B4E /* PVRAssets.h */,
+				ACFC1D6B19F666EC00B860D2 /* ShadowVolume.cpp */,
+				ACFC1D6C19F666EC00B860D2 /* ShadowVolume.h */,
+				ACFC1D6D19F666EC00B860D2 /* SkipGraph.h */,
 			);
-			name = Model;
+			name = Sources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

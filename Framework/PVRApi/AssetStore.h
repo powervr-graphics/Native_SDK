@@ -8,7 +8,7 @@
 #pragma once
 #include "PVRApi/ApiIncludes.h"
 #include "PVRApi/EffectApi.h"
-#include "PVRApi/ApiErrors.h"
+#include "PVRNativeApi/ApiErrors.h"
 #include "PVRAssets/Model.h"
 #include "PVRAssets/FileIO/PODReader.h"
 #include "PVRCore/Stream.h"
@@ -39,7 +39,7 @@ private:
 	std::set<AssetId> unusedEffects;
 
 	ErrorLogger logger;
-	bool initialised;
+	bool initialized;
 
 	template<typename T_, typename iterable>
 	static void compact(std::vector<T_> items, iterable container)
@@ -54,7 +54,7 @@ class FunctorTextureDataToHandle { public: api::TextureView operator()(TextureDa
 
 public:
 	/*!****************************************************************************************************************
-	\brief Implementation of the AssetLoadingDelegate. Allows this class to be passed to the EffectApi constructor 
+	\brief Implementation of the AssetLoadingDelegate. Allows this class to be passed to the EffectApi constructor
 	       as the effectDelegate to automate loading and uploading of textures.
 	\param	textureName A texture filename to load from a file.
 	\param outTex2d A handle where the loaded and uploaded texture will be saved.
@@ -67,7 +67,7 @@ public:
 	during any operation.
 	*******************************************************************************************************************/
 	AssetStore(ErrorLogger logger = &Logger::static_output) : assetProvider(NULL), logger(logger),
-		initialised(false)
+		initialized(false)
 	{ }
 
 	/*!****************************************************************************************************************
@@ -78,7 +78,7 @@ public:
 	void init(IAssetProvider& theShell)
 	{
 		assetProvider = &theShell;
-		initialised = true;
+		initialized = true;
 	}
 
 	/*!****************************************************************************************************************
@@ -96,7 +96,7 @@ public:
 	be loaded from the platform specific asset store. Errors are logged in the AssetManager logger.
 	*******************************************************************************************************************/
 	bool getTextureWithCaching(GraphicsContext& context, const StringHash& filename,
-	                                   api::TextureView* outTexture, assets::TextureHeader* outDescriptor)
+	                           api::TextureView* outTexture, assets::TextureHeader* outDescriptor)
 	{
 		return getTextureWithCaching(context, filename, assets::getTextureFormatFromFilename(filename.c_str()),
 		                             (api::TextureView*)outTexture, outDescriptor);
@@ -119,7 +119,7 @@ public:
 	AssetManager logger.
 	*******************************************************************************************************************/
 	bool getTextureWithCaching(GraphicsContext& context, const StringHash& filename, assets::TextureFileFormat::Enum format,
-	                                   api::TextureView* outTexture, assets::TextureHeader* outDescriptor)
+	                           api::TextureView* outTexture, assets::TextureHeader* outDescriptor)
 	{
 		std::map<StringHash, TextureData>::iterator found = textureMap.find(filename);
 		if (found != textureMap.end())
@@ -154,7 +154,7 @@ public:
 	AssetManager logger.
 	*******************************************************************************************************************/
 	bool forceLoadTexture(GraphicsContext& context, const StringHash& filename,
-	                              assets::TextureFileFormat::Enum format)
+	                      assets::TextureFileFormat::Enum format)
 	{
 		return loadTexture(context, filename, format, true, NULL, NULL);
 	}
@@ -177,9 +177,9 @@ public:
 	}
 private:
 	bool loadTexture(GraphicsContext& context, const StringHash& filename,
-	                         assets::TextureFileFormat::Enum format,
-	                        bool forceLoad = false,
-	                         api::TextureView* outTexture = NULL, assets::TextureHeader* outDescriptor = NULL);
+	                 assets::TextureFileFormat::Enum format,
+	                 bool forceLoad = false,
+	                 api::TextureView* outTexture = NULL, assets::TextureHeader* outDescriptor = NULL);
 
 public:
 
@@ -199,15 +199,15 @@ public:
 	\param[out] outPfx The PFX effect will be loaded into this Effect object.
 	\param[in] force (Default false) If true, will force loading the asset from the file, even if it is already
 	           cached by the AssetStore.
-	\return return Result::Success if load success, else error
+	\return return true if load success, else error
 	*******************************************************************************************************************/
 	bool loadPfx(const char* filename, EffectApi& outPfx, bool force = false);
 
 	/*!****************************************************************************************************************
-	\brief  Release all assets held by this AssetManager. Best practice is to always call this function in ReleaseView, 
+	\brief  Release all assets held by this AssetManager. Best practice is to always call this function in ReleaseView,
 			as any resources held by the AssetManager will be invalid anyway.
 			Calling this function or similar (usually releaseAll) is necessary so that the resources may be released.
-			Otherwise, since the AssetStore is holding references to its objects, these objects are kept from being 
+			Otherwise, since the AssetStore is holding references to its objects, these objects are kept from being
 			destroyed even after the user stops using them.
 	*******************************************************************************************************************/
 	void releaseAll()
@@ -224,7 +224,7 @@ public:
 	\brief Release any references to a specified Texture object that this AssetStore may be holding.
 	\param[in] textureName The filename of a texture
 	\description Calling this function or similar (usually releaseAll) is necessary so that the resources may be released.
-	         Otherwise, since the AssetStore is holding references to its objects, these objects are kept from being 
+	         Otherwise, since the AssetStore is holding references to its objects, these objects are kept from being
 			 destroyed even after the user stops using them.
 	*******************************************************************************************************************/
 	void releaseTexture(const StringHash& textureName)
@@ -236,7 +236,7 @@ public:
 	\brief Release any references to a specified Texture object that this AssetStore may be holding.
 	\param[in] texture A texture
 	\description Calling this function or similar (usually releaseAll) is necessary so that the resources may be released.
-	         Otherwise, since the AssetStore is holding references to its objects, these objects are kept from being 
+	         Otherwise, since the AssetStore is holding references to its objects, these objects are kept from being
 			 destroyed even after the user stops using them.
 	*******************************************************************************************************************/
 	void findAndReleaseTexture(api::TextureView texture)
@@ -255,7 +255,7 @@ public:
 	\brief Release any references to a specified Model object that this AssetStore may be holding.
 	\param[in] model A handle to the model.
 	\description Calling this function or similar (usually releaseAll) is necessary so that the resources may be released.
-	         Otherwise, since the AssetStore is holding references to its objects, these objects are kept from being 
+	         Otherwise, since the AssetStore is holding references to its objects, these objects are kept from being
 			 destroyed even after the user stops using them.
 	*******************************************************************************************************************/
 	void findAndReleaseModel(assets::ModelHandle model)
@@ -275,7 +275,7 @@ public:
 	\brief Release any references to a specified Model object that this AssetStore may be holding.
 	\param[in] modelName The filename of the model to release.
 	\description Calling this function or similar (usually releaseAll) is necessary so that the resources may be released.
-	         Otherwise, since the AssetStore is holding references to its objects, these objects are kept from being 
+	         Otherwise, since the AssetStore is holding references to its objects, these objects are kept from being
 			 destroyed even after the user stops using them.
 	*******************************************************************************************************************/
 	void releaseModel(const StringHash& modelName)
@@ -286,9 +286,9 @@ public:
 
 
 inline bool AssetStore::loadPfx(const char* fileName, EffectApi& outPfx,
-                                        bool forceLoad)
+                                bool forceLoad)
 {
-	PVR_ASSERT(0 && "UNSUPPORTED REQUEST");
+	assertion(0 ,  "UNSUPPORTED REQUEST");
 	return false;
 }
 

@@ -6,8 +6,8 @@
 ******************************************************************************/
 #include "PVRCamera/CameraInterface.h"
 #include "PVRApi/Api.h"
-#include "PVRApi/OGLES/NativeObjectsGles.h"
-#include "PVRApi/OGLES/OpenGLESBindings.h"
+#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
+#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
 namespace pvr {
 class CameraInterfaceImpl
 {
@@ -88,7 +88,7 @@ CameraInterface::~CameraInterface()
 	delete static_cast<CameraInterfaceImpl*>(pImpl);
 }
 
-bool CameraInterface::initialiseSession(HWCamera::Enum eCamera, int preferredResX, int preferredResY)
+bool CameraInterface::initializeSession(HWCamera::Enum eCamera, int preferredResX, int preferredResY)
 {
 	Log(Log.Verbose, "PVRCamera: Initialising session.");
 	static_cast<CameraInterfaceImpl*>(pImpl)->width = preferredResX ? preferredResX : 512;
@@ -142,7 +142,10 @@ bool CameraInterface::hasLumaChromaTextures()
 api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& context, const native::HTexture_& cameraTexture)
 {
 	Log(Log.Verbose, "Camera interface util: Handle %d, Target 0x%08X", cameraTexture.handle, cameraTexture.target);
-	api::TextureView tex; tex.construct(context, cameraTexture); return tex;
+
+	api::TextureStore texStore = context->createTexture();
+	texStore->getNativeObject() = cameraTexture;
+	api::TextureView tex; tex.construct(texStore); return tex;
 }
 
 }

@@ -24,7 +24,13 @@ class Stream;
 namespace assets {
 
 class Model;
+class Mesh;
+class Camera;
+class Light;
 typedef RefCountedResource<Model> ModelHandle;
+typedef RefCountedResource<Mesh> MeshHandle;
+typedef RefCountedResource<Camera> CameraHandle;
+typedef RefCountedResource<Light> LightHandle;
 
 /*!*********************************************************************************************************************
 \brief 			The Model class represents an entire Scene, or Model. It is mainly a Node structure, allowing various different
@@ -41,7 +47,7 @@ public:
 	typedef assets::Mesh Mesh;
 	/*!*********************************************************************************************************************
 	\brief 			The Node represents a Mesh, Camera or Light.
-                    A Node has its own parenting, material, animation and custom user data. The tree-structure assumes
+	                  A Node has its own parenting, material, animation and custom user data. The tree-structure assumes
 	                transformational hierarchy (as usual), so parent transformations should be applied to children.
 					Transformations are expressed through Animation objects (a static transform is an animation with a single
 					frame).
@@ -56,14 +62,14 @@ public:
 		***************************************************************************************************************/
 		struct InternalData
 		{
+			StringHash name;		//!< Name of object
 			int32 objectIndex;	//!< Index into mesh, light or camera array, depending on which object list contains this Node
-			std::string name;		//!< Name of object
 			int32 materialIndex;	//!< Index of material used on this mesh
 			int32 parentIndex;		//!< Index into Node array; recursively apply ancestor's transforms after this instance's.
 			Animation animation;
-            UCharBuffer	userData;
+			UCharBuffer	userData;
 
-			InternalData() : objectIndex(-1), materialIndex(-1), parentIndex(-1){}
+			InternalData() : objectIndex(-1), materialIndex(-1), parentIndex(-1) {}
 		};
 
 	public:
@@ -71,13 +77,13 @@ public:
 		\brief Get which Mesh, Camera or Light this object refers to.
 		\return The index of the Mesh, Camera or Light array of this node (depending on its type)
 		****************************************************************************************************************/
-		int32 getObjectId() const{	return m_data.objectIndex; 	}
+		int32 getObjectId() const {	return m_data.objectIndex; 	}
 
 		/*!***************************************************************************************************************
 		\brief Get this Node's name.
 		\return The name of this object
 		*****************************************************************************************************************/
-		const std::string& getName() const { return m_data.name; }
+		const StringHash& getName() const { return m_data.name; }
 
 		/*!***************************************************************************************************************
 		\brief Get this Node's parent id.
@@ -119,7 +125,7 @@ public:
 		\brief Set the name of this node.
 		\param name The string to set this node's name to.
 		*****************************************************************************************************************/
-		void setName(const std::string& name) { m_data.name = name; }
+		void setName(const StringHash& name) { m_data.name = name; }
 
 		/*!***************************************************************************************************************
 		\brief Set the parent of this node.
@@ -167,21 +173,21 @@ public:
 	public:
 		/*!***************************************************************************************************************
 		\brief Get the name of the texture.
-        \return Return the texture name
+		    \return Return the texture name
 		*****************************************************************************************************************/
 		const pvr::StringHash& getName() const { return name; }
 
 		/*!***************************************************************************************************************
 		\brief Get a reference to the name of the texture.
-        \return Return reference to the texture name
+		    \return Return reference to the texture name
 		*****************************************************************************************************************/
 		pvr::StringHash& getName() { return name; }
 
 		/*!***************************************************************************************************************
 		\brief Set the name of the texture.
-        \param name The string to set this texture name to.
+		\param name The string to set this texture name to.
 		*****************************************************************************************************************/
-		void setName(const std::string& name) { this->name = name; }
+		void setName(const StringHash& name) { this->name = name; }
 
 	private:
 		pvr::StringHash name;
@@ -230,7 +236,7 @@ public:
 		***************************************************************************************************************/
 		struct InternalData
 		{
-			std::string name;					//!<Name of the material
+			StringHash name;					//!<Name of the material
 			int32 diffuseTextureIndex;			//!<Texture index (in the Model) of a texture to use for Diffuse
 			int32 ambientTextureIndex;			//!<Texture index (in the Model) of a texture to use for Ambient
 			int32 specularColorTextureIndex;	//!<Texture index (in the Model) of a texture to use for Specular
@@ -246,8 +252,8 @@ public:
 			glm::vec3 diffuse;					//!<Diffuse color
 			glm::vec3 specular;					//!<Specular color
 			float32 shininess;					//!<Shininess color
-			std::string effectFile;				//!<Effect filename if using an effect
-			std::string effectName;				//!<Effect name (in the filename) if using an effect
+			StringHash effectFile;				//!<Effect filename if using an effect
+			StringHash effectName;				//!<Effect name (in the filename) if using an effect
 
 			BlendFunction	blendSrcRGB;		//!<Blend function for Source Color
 			BlendFunction	blendSrcA;			//!<Blend function for Source Alpha
@@ -283,43 +289,43 @@ public:
 
 		/*!***************************************************************************************************************
 		\brief Get material ambient.
-        \return Material ambient
+		    \return Material ambient
 		*****************************************************************************************************************/
 		const glm::vec3& getAmbient() const { return m_data.ambient; }
 
 		/*!***************************************************************************************************************
 		\brief Get material diffuse.
-        \return Material diffuse
+		    \return Material diffuse
 		*****************************************************************************************************************/
 		const glm::vec3& getDiffuse() const { return m_data.diffuse; }
 
 		/*!***************************************************************************************************************
 		\brief Get material specular.
-        \return Material specular
+		    \return Material specular
 		*****************************************************************************************************************/
 		const glm::vec3& getSpecular() const { return m_data.specular; }
 
 		/*!***************************************************************************************************************
 		\brief Get material shininess.
-        \return  Material shininess
+		    \return  Material shininess
 		*****************************************************************************************************************/
 		float32 getShininess() const { return m_data.shininess; }
 
 		/*!***************************************************************************************************************
 		\brief Set material effect name.
-        \param[in] name Material effect name 
+		    \param[in] name Material effect name
 		*****************************************************************************************************************/
-		void setEffectName(const std::string& name) { m_data.effectName = name; }
+		void setEffectName(const StringHash& name) { m_data.effectName = name; }
 
 		/*!***************************************************************************************************************
 		\brief Set material effect file name.
-        \param[in] name Effect file name
+		    \param[in] name Effect file name
 		*****************************************************************************************************************/
-		void setEffectFile(const std::string& name) { m_data.effectFile = name; }
+		void setEffectFile(const StringHash& name) { m_data.effectFile = name; }
 
 		/*!***************************************************************************************************************
 		\brief Get the diffuse color texture's index in the scene.
-        \return Return the diffuse texture index
+		    \return Return the diffuse texture index
 		*****************************************************************************************************************/
 		int32 getDiffuseTextureIndex() const { return m_data.diffuseTextureIndex; }
 
@@ -330,127 +336,127 @@ public:
 
 		/*!***************************************************************************************************************
 		\brief Get the specular color texture's index in the scene.
-        \return Return the specular color texture index
+		    \return Return the specular color texture index
 		*****************************************************************************************************************/
 		int32 getSpecularColorTextureIndex() const { return m_data.specularColorTextureIndex; }
 
 		/*!***************************************************************************************************************
 		\brief Get the specular level texture's index in the scene.
-        \return Return the specular level texture index
+		    \return Return the specular level texture index
 		*****************************************************************************************************************/
 		int32 getSpecularLevelTextureIndex() const { return m_data.specularLevelTextureIndex; }
 
 		/*!***************************************************************************************************************
 		\brief Get bumpmap texture index.
-        \return Return the bumpmap texture index
+		    \return Return the bumpmap texture index
 		*****************************************************************************************************************/
 		int32 getBumpMapTextureIndex() const { return m_data.bumpMapTextureIndex; }
 
 		/*!***************************************************************************************************************
 		\brief Get emissive texture's index in the scene
-        \return Return the emissive texture index
+		    \return Return the emissive texture index
 		*****************************************************************************************************************/
 		int32 getEmissiveTextureIndex() const { return m_data.emissiveTextureIndex; }
 
 		/*!***************************************************************************************************************
 		\brief Get glossiness texture's index in the scene.
-        \return Return the glossiness texture index
+		    \return Return the glossiness texture index
 		*****************************************************************************************************************/
 		int32 getGlossinessTextureIndex() const { return m_data.glossinessTextureIndex; }
 
 		/*!***************************************************************************************************************
 		\brief Get opacity texture's index in the scene.
-        \return Return the opacity texture index
+		    \return Return the opacity texture index
 		*****************************************************************************************************************/
 		int32 getOpacityTextureIndex() const { return m_data.opacityTextureIndex; }
 
 		/*!***************************************************************************************************************
 		\brief Get reflection texture's index in the scene.
-        \return Return the reflection texture index
+		    \return Return the reflection texture index
 		*****************************************************************************************************************/
 		int32 getReflectionTextureIndex() const { return m_data.reflectionTextureIndex; }
 
 		/*!***************************************************************************************************************
 		\brief Return refraction texture's index in the scene.
-        \return Return the refraction texture index
+		    \return Return the refraction texture index
 		*****************************************************************************************************************/
 		int32 getRefractionTextureIndex() const { return m_data.refractionTextureIndex; }
 
 		/*!***************************************************************************************************************
 		\brief Get this material name.
-        \return return the material name
+		\return return the material name
 		*****************************************************************************************************************/
-		const std::string& getName() const { return m_data.name; }
+		const StringHash& getName() const { return m_data.name; }
 
 		/*!***************************************************************************************************************
 		\brief Get this material opacity.
-        \return Return the material opacity
+		    \return Return the material opacity
 		*****************************************************************************************************************/
 		float32 getOpacity() const { return m_data.opacity; }
 
 		/*!***************************************************************************************************************
 		\brief Get this material effect file name.
-        \return Retuurn Material effect file name
+		    \return Retuurn Material effect file name
 		*****************************************************************************************************************/
-		const std::string& getEffectFile() const { return m_data.effectFile; }
+		const StringHash& getEffectFile() const { return m_data.effectFile; }
 
 		/*!***************************************************************************************************************
 		\brief Get this material effect name.
-        \return Return material effect name
+		    \return Return material effect name
 		*****************************************************************************************************************/
-		const std::string& getEffectName() const { return m_data.effectName; }
+		const StringHash& getEffectName() const { return m_data.effectName; }
 
 		/*!***************************************************************************************************************
 		\brief Get the blend function for Source Color.
-        \return Return source color blend function
+		    \return Return source color blend function
 		*****************************************************************************************************************/
 		BlendFunction getBlendSrcRGB() const { return m_data.blendSrcRGB; }
 
 		/*!***************************************************************************************************************
 		\brief Get the blend function for Source Alpha.
-        \return Return source alpha blend function
+		    \return Return source alpha blend function
 		*****************************************************************************************************************/
 		BlendFunction getBlendSrcA() const { return m_data.blendSrcA; }
 
 		/*!***************************************************************************************************************
 		\brief Get the blend function for Destination Color.
-        \return Return destination color blend function
+		    \return Return destination color blend function
 		*****************************************************************************************************************/
 		BlendFunction getBlendDstRGB() const { return m_data.blendDstRGB; }
 
 		/*!***************************************************************************************************************
 		\brief Get the blend function for Destination Alpha.
-        \return Return destination alpha blend function
+		    \return Return destination alpha blend function
 		*****************************************************************************************************************/
 		BlendFunction getBlendDstA() const { return m_data.blendDstA; }
 
 		/*!***************************************************************************************************************
 		\brief Get the blend operation for Color.
-        \return Return the color's blend operator
+		    \return Return the color's blend operator
 		*****************************************************************************************************************/
 		BlendOperation getBlendOpRGB() const { return m_data.blendOpRGB; }
 
 		/*!***************************************************************************************************************
 		\brief Return the blend operation for Alpha.
-        \return Return the alpha's blend operator
+		    \return Return the alpha's blend operator
 		*****************************************************************************************************************/
 		BlendOperation getBlendOpA() const { return m_data.blendOpA; }
 
 		/*!***************************************************************************************************************
 		\brief Get the blend color.
-        \return Return blend color
+		    \return Return blend color
 		*****************************************************************************************************************/
 		const float32* getBlendColor() const { return m_data.blendColor; }
 
 		/*!***************************************************************************************************************
 		\brief Return the blend factor.
-        \return Return blend factor
+		    \return Return blend factor
 		*****************************************************************************************************************/
 		const float32* getBlendFactor() const { return m_data.blendFactor; }
 
 		/*!***************************************************************************************************************
 		\brief Return a reference to the material's internal data structure. Handle with care.
-        \return Return reference to the internal data
+		    \return Return reference to the internal data
 		*****************************************************************************************************************/
 		InternalData& getInternalData() { return m_data; }
 
@@ -505,7 +511,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Return the model-to-world matrix of a node. Corresponds to the Model's current frame of animation.
-           This version will store a copy of the matrix in an internal cache so that repeated calls for it will use the cached
+	         This version will store a copy of the matrix in an internal cache so that repeated calls for it will use the cached
 	       copy of it. Will also store the cached versions of all parents of this node, or use cached versions of them if they
 		   exist. Use this if you have long hierarchies and/or repeated calls per frame.
 	\param nodeId The node for which to return the world matrix.
@@ -515,7 +521,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Return the model-to-world matrix of a node. Corresponds to the Model's current frame of animation.
-           This version will not use caching and will recalculate the matrix. Faster if the matrix is only used a few times.
+	         This version will not use caching and will recalculate the matrix. Faster if the matrix is only used a few times.
 	\param nodeId The node for which to return the world matrix
 	\return return The world matrix of (nodeId)
 	***********************************************************************************************************************/
@@ -523,7 +529,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Return the model-to-world matrix of a specified bone. Corresponds to the Model's current frame of animation.
-           This version will use caching.
+	         This version will use caching.
 	\param skinNodeID The node for which to return the world matrix
 	\param boneId The bone for which to return the world matrix
 	\return Return The world matrix of (nodeId, boneID)
@@ -553,7 +559,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Get the number of distinct camera objects.
-           May be different than  the actual number of Camera Instances (Nodes).
+	         May be different than  the actual number of Camera Instances (Nodes).
 	\return Return The number of distinct camera objects.
 	***********************************************************************************************************************/
 	uint32 getNumCameras() const { return (uint32)m_data.cameras.size(); }
@@ -567,9 +573,23 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Get a Camera from this model
 	\param cameraIndex The index of the camera. Valid values (0 to getNumCameras()-1)
-	\return Return the camera 
+	\return Return the camera
 	***********************************************************************************************************************/
-	const Camera& getCamera(uint32 cameraIndex) const	{	PVR_ASSERT(cameraIndex < getNumCameras() && "Invalid camera index"); return m_data.cameras[cameraIndex]; }
+	const Camera& getCamera(uint32 cameraIndex) const
+	{
+		assertion(cameraIndex < getNumCameras() ,  "Invalid camera index");
+		return m_data.cameras[cameraIndex];
+	}
+	/*!*********************************************************************************************************************
+	\brief Get a Camera from this model
+	\param cameraIndex The index of the camera. Valid values (0 to getNumCameras()-1)
+	\return Return the camera
+	***********************************************************************************************************************/
+	Camera& getCamera(uint32 cameraIndex)
+	{
+		assertion(cameraIndex < getNumCameras() ,  "Invalid camera index");
+		return m_data.cameras[cameraIndex];
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Get a specific CameraNode.
@@ -578,7 +598,7 @@ public:
 	***********************************************************************************************************************/
 	const Node& getCameraNode(uint32 cameraNodeIndex) const
 	{
-        PVR_ASSERT(cameraNodeIndex < getNumCameraNodes() && "Invalid camera node index");
+		assertion(cameraNodeIndex < getNumCameraNodes() ,  "Invalid camera node index");
 		// Camera nodes are after the mesh and light nodes in the array
 		return getNode(getNodeIdFromCameraId(cameraNodeIndex));
 	}
@@ -591,7 +611,7 @@ public:
 	uint32 getNodeIdFromCameraId(uint32 cameraNodeIndex) const
 	{
 		// Camera nodes are after the mesh and light nodes in the array
-        PVR_ASSERT(cameraNodeIndex < getNumCameraNodes() && "Invalid camera node index");
+		assertion(cameraNodeIndex < getNumCameraNodes() ,  "Invalid camera node index");
 		return getNumMeshes() + getNumLights() + cameraNodeIndex;
 	}
 
@@ -613,10 +633,20 @@ public:
 	\return Return the light
 	***********************************************************************************************************************/
 	const Light& getLight(uint32 lightIndex) const
-    { 
-        PVR_ASSERT(lightIndex < getNumLights() && "Invalid light index");
-        return m_data.lights[lightIndex]; 
-    }
+	{
+		assertion(lightIndex < getNumLights() ,  "Invalid light index");
+		return m_data.lights[lightIndex];
+	}
+	/*!*********************************************************************************************************************
+	\brief Get the light object with the specific Light Index.
+	\param lightIndex The index of the light. Valid values (0..getNumLights()-1)
+	\return Return the light
+	***********************************************************************************************************************/
+	Light& getLight(uint32 lightIndex)
+	{
+		assertion(lightIndex < getNumLights(),  "Invalid light index");
+		return m_data.lights[lightIndex];
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Get a specific Light Node.
@@ -625,7 +655,7 @@ public:
 	***********************************************************************************************************************/
 	const Node& getLightNode(uint32 lightNodeIndex) const
 	{
-        PVR_ASSERT(lightNodeIndex < getNumLights() && "Invalid light node index");
+		assertion(lightNodeIndex < getNumLights(),  "Invalid light node index");
 		// Light nodes are after the mesh nodes in the array
 		return getNode(getNodeIdFromLightNodeId(lightNodeIndex));
 	}
@@ -637,14 +667,14 @@ public:
 	***********************************************************************************************************************/
 	uint32 getNodeIdFromLightNodeId(uint32 lightNodeIndex) const
 	{
-        PVR_ASSERT(lightNodeIndex < getNumLightNodes() && "Invalid light node index");
+		assertion(lightNodeIndex < getNumLightNodes(),  "Invalid light node index");
 		// Light nodes are after the mesh nodes in the array
 		return getNumMeshNodes() + lightNodeIndex;
 	}
 
 	/*!*********************************************************************************************************************
-	\brief Get the number of distinct Mesh objects. Unless each Mesh appears at exactly one Node, 
-           may be different than the actual number of Mesh instances.
+	\brief Get the number of distinct Mesh objects. Unless each Mesh appears at exactly one Node,
+	         may be different than the actual number of Mesh instances.
 	\return Return The number of different Mesh objects in this Model.
 	***********************************************************************************************************************/
 	uint32 getNumMeshes() const { return (uint32)m_data.meshes.size(); }
@@ -667,11 +697,11 @@ public:
 	\param index The index of the Mesh. Valid values (0..getNumMeshes()-1)
 	\return Return the mesh from this model
 	***********************************************************************************************************************/
-	Mesh& getMesh(uint32 index) 
-    { 
-        PVR_ASSERT(index < getNumMeshes() && "Invalid mesh index");
-        return m_data.meshes[index]; 
-    }
+	Mesh& getMesh(uint32 index)
+	{
+		assertion(index < getNumMeshes() ,  "Invalid mesh index");
+		return m_data.meshes[index];
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Get a specific Mesh Node.
@@ -680,7 +710,7 @@ public:
 	***********************************************************************************************************************/
 	const Node& getMeshNode(uint32 meshIndex) const
 	{
-        PVR_ASSERT(meshIndex < getNumMeshNodes() && "Invalid mesh index");
+		assertion(meshIndex < getNumMeshNodes() ,  "Invalid mesh index");
 		// Mesh nodes are at the start of the array
 		return getNode(meshIndex);
 	}
@@ -698,13 +728,13 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Get an iterator to the beginning of the meshes.
-    \return Return an iterator
+	  \return Return an iterator
 	***********************************************************************************************************************/
 	std::vector<Mesh>::iterator beginMeshes() { return m_data.meshes.begin(); }
 
 	/*!*********************************************************************************************************************
 	\brief Get an iterator past the end of the meshes.
-    \return Return an iterator
+	  \return Return an iterator
 	***********************************************************************************************************************/
 	std::vector<Mesh>::iterator endMeshes() { return m_data.meshes.end(); }
 
@@ -720,7 +750,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Get the total number of nodes (Meshes, Cameras, Lights, others (helpers etc)).
-    \return Return number of nodes in this model
+	  \return Return number of nodes in this model
 	***********************************************************************************************************************/
 	uint32 getNumNodes() const { return (uint32)m_data.nodes.size(); }
 
@@ -732,34 +762,41 @@ public:
 	const Node& getNode(uint32 index) const { return m_data.nodes[index]; }
 
 	/*!*********************************************************************************************************************
+	\brief Get the node with the specified index.
+	\param index The index of the node to get
+	\return Return The Node from this scene
+	***********************************************************************************************************************/
+	Node& getNode(uint32 index) { return m_data.nodes[index]; }
+
+	/*!*********************************************************************************************************************
 	\brief Get the number of distinct Textures in the scene.
-    \return Return number of distinct textures
+	  \return Return number of distinct textures
 	***********************************************************************************************************************/
 	uint32 getNumTextures() const { return (uint32)m_data.textures.size(); }
 
 	/*!*********************************************************************************************************************
 	\brief Get the texture with the specified index.
-    \param[in] index The index of the texture to get
-    \return Return a texture from this scene
+	  \param[in] index The index of the texture to get
+	  \return Return a texture from this scene
 	***********************************************************************************************************************/
 	const Texture& getTexture(uint32 index) const { return m_data.textures[index]; }
 
 	/*!*********************************************************************************************************************
 	\brief Get the number of distinct Materials in the scene.
-    \return Return number of materials in this scene
+	  \return Return number of materials in this scene
 	***********************************************************************************************************************/
 	uint32 getNumMaterials() const { return (uint32)m_data.materials.size(); }
 
 	/*!*********************************************************************************************************************
 	\brief Get the material with the specified index.
-    \param[in] index The index of material to get
-    \return Return a material from this scene
+	  \param[in] index The index of material to get
+	  \return Return a material from this scene
 	***********************************************************************************************************************/
 	const Material& getMaterial(uint32 index) const { return m_data.materials[index]; }
 
 	/*!*********************************************************************************************************************
 	\brief Get the total number of frames in the scene.
-    \return Return the number of frames in this model
+	  \return Return the number of frames in this model
 	***********************************************************************************************************************/
 	uint32 getNumFrames() const { return m_data.numFrames ? m_data.numFrames : 1; }
 
@@ -772,13 +809,13 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Get the current frame of the scene.
-    \return Return the current frame
+	  \return Return the current frame
 	***********************************************************************************************************************/
 	float32 getCurrentFrame();
 
 	/*!*********************************************************************************************************************
 	\brief Set the expected FPS of the animation.
-    \param fps FPS of the animation
+	  \param fps FPS of the animation
 	***********************************************************************************************************************/
 	void setFPS(uint32 fps) { m_data.FPS = fps; }
 
@@ -796,31 +833,31 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Only used for custom model creation. Allocate an number of cameras.
-    \param[in] count Number of camera to allocate in this scene
+	  \param[in] count Number of camera to allocate in this scene
 	***********************************************************************************************************************/
 	void allocCameras(uint32 count);
 
 	/*!*********************************************************************************************************************
 	\brief Only used for custom model creation. Allocate a number of lights.
-    \param[in] count number of lights to allocate in this scene
-    ***********************************************************************************************************************/
+	  \param[in] count number of lights to allocate in this scene
+	  ***********************************************************************************************************************/
 	void allocLights(uint32 count);
 
 	/*!*********************************************************************************************************************
 	\brief Only used for custom model creation. Allocate a number of meshes.
-    \param[in] count number of meshes to allocate in this scene
-    ***********************************************************************************************************************/
+	  \param[in] count number of meshes to allocate in this scene
+	  ***********************************************************************************************************************/
 	void allocMeshes(uint32 count);
 
 	/*!*********************************************************************************************************************
 	\brief Only used for custom model creation. Allocate a number of nodes.
-    \param[in] count number of nodes to allocate in this scene
+	  \param[in] count number of nodes to allocate in this scene
 	***********************************************************************************************************************/
 	void allocNodes(uint32 count);
 
 	/*!*********************************************************************************************************************
 	\brief Get a reference to the internal data of this Model. Handle with care.
-    \return Return internal data
+	  \return Return internal data
 	***********************************************************************************************************************/
 	InternalData& getInternalData() { return m_data; }
 
@@ -913,5 +950,33 @@ private:
 typedef Model::Material Material;
 typedef Model::Node Node;
 typedef Model::Mesh::VertexAttributeData VertexAttributeData;
+
+typedef RefCountedResource<Node> NodeHandle;
+typedef RefCountedResource<Material> MaterialHandle;
+
+inline MeshHandle getMeshHandle(ModelHandle& model, int meshId)
+{
+	MeshHandle handle;
+	handle.shareRefCountFrom(model, &model->getMesh(meshId));
+	return handle;
+}
+inline LightHandle getLightHandle(ModelHandle& model, int lightId)
+{
+	LightHandle handle;
+	handle.shareRefCountFrom(model, &model->getLight(lightId));
+	return handle;
+}
+inline CameraHandle getCameraHandle(ModelHandle& model, int cameraId)
+{
+	CameraHandle handle;
+	handle.shareRefCountFrom(model, &model->getCamera(cameraId));
+	return handle;
+}
+inline NodeHandle getNodeHandle(ModelHandle& model, int nodeId)
+{
+	NodeHandle handle;
+	handle.shareRefCountFrom(model, &model->getNode(nodeId));
+	return handle;
+}
 }
 }

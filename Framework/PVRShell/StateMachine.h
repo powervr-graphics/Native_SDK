@@ -19,7 +19,7 @@ class StateMachine : public ShellOS
 public:
 	enum State
 	{
-		StateNotInitialised,
+		StateNotInitialized,
 		StateInitApplication,
 		StateInitWindow,
 		StateInitAPI,

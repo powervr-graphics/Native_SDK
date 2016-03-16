@@ -1,0 +1,5 @@
+<map id="pvr::types::ImageSubresourceRange" name="pvr::types::ImageSubresourceRange">
+<area shape="rect" id="node2" href="$structpvr_1_1types_1_1_image_layers_size.html" title="pvr::types::ImageLayersSize" alt="" coords="12,5,199,32"/>
+<area shape="rect" id="node3" href="$structpvr_1_1types_1_1_image_subresource.html" title="Describes an area of an image, out of which a Subresource can be defined. This area is a subarea of t..." alt="" coords="8,56,203,83"/>
+<area shape="rect" id="node4" href="$structpvr_1_1types_1_1_image_aspect_range.html" title="pvr::types::ImageAspectRange" alt="" coords="6,107,205,133"/>
+</map>

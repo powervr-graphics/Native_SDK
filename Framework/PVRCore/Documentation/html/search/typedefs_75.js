@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['uboview',['UboView',['../namespacepvr_1_1api.html#a5b1b7b9923bfeb63300fdd676c264971',1,'pvr::api']]],
   ['ucharbuffer',['UCharBuffer',['../namespacepvr.html#ae0add7b2f029a9c711355a8f5a2f3700',1,'pvr']]],
   ['uint16',['uint16',['../namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055',1,'pvr']]],
   ['uint32',['uint32',['../namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556',1,'pvr']]],

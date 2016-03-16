@@ -50,7 +50,7 @@ public:
 	/*!****************************************************************************************************************
 	\brief Get texture type.
 	*******************************************************************************************************************/
-	virtual TextureDimension::Enum getTextureType() const
+    types::TextureDimension::Enum getTextureType() const
 	{
 		return texture->getTextureType();
 	}
@@ -59,7 +59,7 @@ public:
 	\brief Initialize this.
 	\param[in] effectDelegate effect's asset provider
 	*******************************************************************************************************************/
-	virtual Result::Enum init(api::AssetLoadingDelegate& effectDelegate)
+	Result::Enum init(api::AssetLoadingDelegate& effectDelegate)
 	{
 		return  effectDelegate.effectOnLoadTexture(fileName, texture) ? Result::Success: Result::NotFound;
 	}
@@ -71,7 +71,7 @@ public:
 *******************************************************************************************************************/
 struct EffectApiProgram
 {
-	native::HShaderProgram program;
+	native::HPipeline program;
 	void* userData;
 
 	EffectApiProgram() : userData(NULL) {}
@@ -83,31 +83,29 @@ struct EffectApiProgram
 struct EffectApiShader
 {
 	BufferStream::ptr_type data; //< data stream
-	ShaderType::Enum	type; //< shader type, e.g VertexShader, FragmentShader
+    types::ShaderType::Enum	type; //< shader type, e.g VertexShader, FragmentShader
 	bool isBinary;//< is shader binary format
-	assets::ShaderBinaryFormat::Enum	binaryFormat; //< shader binary format
+    types::ShaderBinaryFormat::Enum	binaryFormat; //< shader binary format
 
 	/*!****************************************************************************************************************
 	\brief ctor.
 	*******************************************************************************************************************/
-	EffectApiShader() : isBinary(false), binaryFormat(assets::ShaderBinaryFormat::Unknown) {}
+    EffectApiShader() : isBinary(false), binaryFormat(types::ShaderBinaryFormat::Unknown) {}
 };
 
 namespace impl {
 /*!*****************************************************************************************************************
 \brief Common API interface.
 *******************************************************************************************************************/
-class EffectApiImpl
+class EffectApi_
 {
 public:
-	typedef RefCountedResource<impl::EffectApiImpl> EffectApi_;
-
 	/*!****************************************************************************************************************
 	\brief ctor.
 	\param[in] context The context that API objects by this effect will be created on
 	\param[in] effectDelegate A class that will be used to load assets required by this effect
 	*******************************************************************************************************************/
-	EffectApiImpl(GraphicsContext& context, AssetLoadingDelegate& effectDelegate);
+	EffectApi_(GraphicsContext& context, AssetLoadingDelegate& effectDelegate);
 
 	/*!****************************************************************************************************************
 	\brief Initialize effect Api with effect and PipelineCreateParam.
@@ -120,7 +118,7 @@ public:
 	/*!*****************************************************************************************************************
 	\brief Destructor.
 	*******************************************************************************************************************/
-	~EffectApiImpl() { if (m_isLoaded) { destroy(); } }
+	~EffectApi_() { if (m_isLoaded) { destroy(); } }
 
 	/*!*****************************************************************************************************************
 	\brief Deletes the managed resources.
@@ -235,7 +233,7 @@ public:
 
 	/*!****************************************************************************************************************
 	\brief Get the DescriptorSet used by the effect
-	\return Τhe DescriptorSet used by the effect
+	\return The DescriptorSet used by the effect
 	*******************************************************************************************************************/
 	const DescriptorSet& getDescriptorSet() const { return m_descriptorSet; }
 
@@ -267,7 +265,7 @@ private:
 
 	uint32 loadSemantics(const IGraphicsContext* context, bool isAttribute);
 };
-}
-typedef impl::EffectApiImpl::EffectApi_ EffectApi;
-}
-}
+}// impl
+typedef RefCountedResource< impl::EffectApi_> EffectApi;
+}// api
+}// pvr

@@ -51,7 +51,7 @@ public:
 	\description	Creates a new texture based on a texture header,
 		pre-allocating the correct amount of memory.
 	*************************************************************************/
-	void initialiseWithHeader(const TextureHeader& sHeader);
+	void initializeWithHeader(const TextureHeader& sHeader);
 
 	/*!***********************************************************************
 	\param[in]			mipMapLevel
@@ -84,6 +84,31 @@ public:
 	}
 
 	uint8 getPixelSize() const;
+
+	types::TextureDimension::Enum getDimension() const
+	{
+		return getDepth() > 1 ? types::TextureDimension::Texture3D : getHeight() > 1 ? types::TextureDimension::Texture2D : types::TextureDimension::Texture1D;
+	}
+
+	types::ImageAreaSize getTotalDimensions() const
+	{
+		return types::ImageAreaSize(getLayersSize(), getDimensions());
+	}
+
+	types::ImageExtents getDimensions() const
+	{
+		return types::ImageExtents((uint16)getHeight(), (uint16)getWidth(), (uint16)getDepth());
+	}
+
+	types::ImageLayersSize getLayersSize() const
+	{
+		return types::ImageLayersSize((uint16)(getNumberOfArrayMembers() * getNumberOfFaces()), (uint8)getNumberOfMIPLevels());
+	}
+
+	types::ImageExtents getDimensions(uint32 miplevel) const
+	{
+		return types::ImageExtents((uint16)getWidth(miplevel), (uint16)getHeight(miplevel), (uint16)getDepth(miplevel));
+	}
 
 	/*!***********************************************************************
 	\return			const TextureHeader& Returns the header only for this texture.

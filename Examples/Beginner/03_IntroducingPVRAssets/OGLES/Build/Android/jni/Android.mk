@@ -5,14 +5,6 @@ ASSETDIR := $(PVRSDKDIR)/Examples/Beginner/03_IntroducingPVRAssets/OGLES/Build/A
 
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRUIRenderer
-include $(CLEAR_VARS)
-LOCAL_MODULE := PVRUIRenderer
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRUIRenderer.a
-include $(PREBUILT_STATIC_LIBRARY)
-endif
-
-ifneq "$(MAKECMDGOALS)" "clean"
 # Prebuilt module PVRShell
 include $(CLEAR_VARS)
 LOCAL_MODULE := PVRShell
@@ -21,10 +13,10 @@ include $(PREBUILT_STATIC_LIBRARY)
 endif
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRGles
+# Prebuilt module PVRNativeGles
 include $(CLEAR_VARS)
-LOCAL_MODULE := PVRGles
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRGles.a
+LOCAL_MODULE := PVRNativeGles
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRNativeGles.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
@@ -66,10 +58,10 @@ LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework \
 
 
 
-LOCAL_LDLIBS := -llog \
-                -landroid
+LOCAL_LDLIBS := -landroid \
+                -llog
 
-LOCAL_STATIC_LIBRARIES := PVRUIRenderer PVRGles PVREgl PVRAssets PVRCore android_native_app_glue
+LOCAL_STATIC_LIBRARIES := PVRNativeGles PVREgl PVRAssets PVRCore android_native_app_glue
 
 
 LOCAL_CFLAGS += $(SDK_BUILD_FLAGS)

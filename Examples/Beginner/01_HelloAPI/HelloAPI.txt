@@ -5,10 +5,10 @@ HelloAPI
 Draw a triangle to the screen using hardware acceleration.
 
 :FullDescription:
-A basic tutorial that guides the user, step-by-step, through the process of initializing a window using OpenGL ES 2, drawing a triangle with a simple shader, and then terminating the window.
+A basic tutorial that guides the user, step-by-step, through the process of initializing a window using the "raw" API, (Vulkan or OpenGL ES 2), drawing a triangle with a simple shader, and then terminating the window.
 
 :APIS:
-OpenGL ES 2.0
+Vulkan 1.0, OpenGL ES 2.0
 
 :Controls:
 	-	Quit	-	Close the application

@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -82,6 +82,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structpvr_1_1api_1_1_fbo_create_param-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::api::FboCreateParam Struct Reference</div>  </div>
@@ -95,20 +96,51 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a94979cd07a540be44c50580500f57ee3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a94979cd07a540be44c50580500f57ee3">FboCreateParam</a> ()</td></tr>
 <tr class="separator:a94979cd07a540be44c50580500f57ee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f2e31c22ba96467f9a837d89d3a3c4a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a2f2e31c22ba96467f9a837d89d3a3c4a">addColor</a> (pvr::uint32 <a class="el" href="_api_gles2_8h.html#a57f14e05b1900f16a2da82ade47d0c6d">index</a>, const <a class="el" href="namespacepvr_1_1api.html#a8d935dcf60fe99740c37b6c56d7d7fbd">ColorAttachmentView</a> &amp;colorView)</td></tr>
-<tr class="memdesc:a2f2e31c22ba96467f9a837d89d3a3c4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a color attachment to a specified attachment point.  <a href="#a2f2e31c22ba96467f9a837d89d3a3c4a">More...</a><br/></td></tr>
-<tr class="separator:a2f2e31c22ba96467f9a837d89d3a3c4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ba1239744354d909f48490545876500"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a0ba1239744354d909f48490545876500">setDepthStencil</a> (const <a class="el" href="namespacepvr_1_1api.html#a0099c6787d2b822573fa8f95c9fc3237">DepthStencilView</a> &amp;depthStencilView)</td></tr>
-<tr class="memdesc:a0ba1239744354d909f48490545876500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the depthstencil attachment.  <a href="#a0ba1239744354d909f48490545876500">More...</a><br/></td></tr>
-<tr class="separator:a0ba1239744354d909f48490545876500"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a679cfb5661f746d3f2bfa01e464a6566"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a679cfb5661f746d3f2bfa01e464a6566">setDimension</a> (pvr::uint32 <a class="el" href="_api_gles2_8h.html#a09012ea95ebbbe1c032db7c68b54291e">width</a>, pvr::uint32 <a class="el" href="_api_gles2_8h.html#a456943498a720df0f4b62bafa5dad93c">height</a>)</td></tr>
+<tr class="memitem:a870d0610a376d908ea48e46c9afdd072"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a870d0610a376d908ea48e46c9afdd072">addColor</a> (pvr::uint32 index, const TextureView colorView)</td></tr>
+<tr class="memdesc:a870d0610a376d908ea48e46c9afdd072"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a color attachment to a specified attachment point.  <a href="#a870d0610a376d908ea48e46c9afdd072">More...</a><br/></td></tr>
+<tr class="separator:a870d0610a376d908ea48e46c9afdd072"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e4b7e4e740e4b8d4d5b10babc964e76"><td class="memItemLeft" align="right" valign="top">const TextureView &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a0e4b7e4e740e4b8d4d5b10babc964e76">getColorAttachment</a> (pvr::uint32 index) const </td></tr>
+<tr class="separator:a0e4b7e4e740e4b8d4d5b10babc964e76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16b5a93c0897d0baaa4d57a5faf5f252"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; TextureView &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a16b5a93c0897d0baaa4d57a5faf5f252">getColorAttachments</a> () const </td></tr>
+<tr class="separator:a16b5a93c0897d0baaa4d57a5faf5f252"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0fc1f40f473db7e3d77db333e5ace48"><td class="memItemLeft" align="right" valign="top">TextureView &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#aa0fc1f40f473db7e3d77db333e5ace48">getDepthStencilAttachment</a> ()</td></tr>
+<tr class="separator:aa0fc1f40f473db7e3d77db333e5ace48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa297a5469faed36a5c1b867d550343e4"><td class="memItemLeft" align="right" valign="top">const TextureView &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#aa297a5469faed36a5c1b867d550343e4">getDepthStencilAttachment</a> () const </td></tr>
+<tr class="separator:aa297a5469faed36a5c1b867d550343e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7daefeb3c735a604d671d24fb44c1a9d"><td class="memItemLeft" align="right" valign="top">glm::ivec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a7daefeb3c735a604d671d24fb44c1a9d">getDimension</a> () const </td></tr>
+<tr class="separator:a7daefeb3c735a604d671d24fb44c1a9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af193c6593c32036c7c47da85d314a3f1"><td class="memItemLeft" align="right" valign="top">pvr::uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#af193c6593c32036c7c47da85d314a3f1">getNumColorAttachements</a> () const </td></tr>
+<tr class="separator:af193c6593c32036c7c47da85d314a3f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6158758b07e2909c35a4c14ab76c61f9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">RenderPass</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a6158758b07e2909c35a4c14ab76c61f9">getRenderPass</a> () const </td></tr>
+<tr class="separator:a6158758b07e2909c35a4c14ab76c61f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e9b7cb12c0dbc4a9759207a4b7d2702"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">RenderPass</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a2e9b7cb12c0dbc4a9759207a4b7d2702">getRenderPass</a> ()</td></tr>
+<tr class="separator:a2e9b7cb12c0dbc4a9759207a4b7d2702"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a954ce1aeda8c049b5966410fed0e375a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a954ce1aeda8c049b5966410fed0e375a">setDepthStencil</a> (const TextureView <a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#aef82f0e51b0e0507e54d97d1686afad9">depthStencilView</a>)</td></tr>
+<tr class="memdesc:a954ce1aeda8c049b5966410fed0e375a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the depthstencil attachment.  <a href="#a954ce1aeda8c049b5966410fed0e375a">More...</a><br/></td></tr>
+<tr class="separator:a954ce1aeda8c049b5966410fed0e375a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a679cfb5661f746d3f2bfa01e464a6566"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a679cfb5661f746d3f2bfa01e464a6566">setDimension</a> (pvr::uint32 <a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a3ecd969abf36a47643b81b349476575f">width</a>, pvr::uint32 <a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#aea86361bc9e08d855a1175c787b2aaa6">height</a>)</td></tr>
 <tr class="separator:a679cfb5661f746d3f2bfa01e464a6566"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40eeaff96790846fc9d25e908b33246d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a40eeaff96790846fc9d25e908b33246d">setNumLayers</a> (pvr::uint32 <a class="el" href="_api_gles2_8h.html#a5b40aca7a9682963dd00a8f5aef0a901">count</a>)</td></tr>
+<tr class="memitem:a40eeaff96790846fc9d25e908b33246d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a40eeaff96790846fc9d25e908b33246d">setNumLayers</a> (pvr::uint32 count)</td></tr>
 <tr class="memdesc:a40eeaff96790846fc9d25e908b33246d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the number of layers.  <a href="#a40eeaff96790846fc9d25e908b33246d">More...</a><br/></td></tr>
 <tr class="separator:a40eeaff96790846fc9d25e908b33246d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65bf0044679a92bcea815d7e8c58cf23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a65bf0044679a92bcea815d7e8c58cf23">setRenderPass</a> (const <a class="el" href="namespacepvr_1_1api.html#a67c63964ff1d3b4179e038bb9a19f8f8">RenderPass</a> &amp;renderPass)</td></tr>
+<tr class="memitem:a65bf0044679a92bcea815d7e8c58cf23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a65bf0044679a92bcea815d7e8c58cf23">setRenderPass</a> (const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">RenderPass</a> &amp;<a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a6f6c9551319936320dbddf6e4a60e81d">renderPass</a>)</td></tr>
 <tr class="memdesc:a65bf0044679a92bcea815d7e8c58cf23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Renderpass which this FBO will be invoking when bound.  <a href="#a65bf0044679a92bcea815d7e8c58cf23">More...</a><br/></td></tr>
 <tr class="separator:a65bf0044679a92bcea815d7e8c58cf23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a3c0b7795b10ae6913763720a45e6c8f3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; TextureView &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a3c0b7795b10ae6913763720a45e6c8f3">colorViews</a></td></tr>
+<tr class="separator:a3c0b7795b10ae6913763720a45e6c8f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef82f0e51b0e0507e54d97d1686afad9"><td class="memItemLeft" align="right" valign="top">TextureView&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#aef82f0e51b0e0507e54d97d1686afad9">depthStencilView</a></td></tr>
+<tr class="separator:aef82f0e51b0e0507e54d97d1686afad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea86361bc9e08d855a1175c787b2aaa6"><td class="memItemLeft" align="right" valign="top">pvr::uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#aea86361bc9e08d855a1175c787b2aaa6">height</a></td></tr>
+<tr class="separator:aea86361bc9e08d855a1175c787b2aaa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a738956fc9b28996c2975e90d5bd5005e"><td class="memItemLeft" align="right" valign="top">pvr::uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a738956fc9b28996c2975e90d5bd5005e">layers</a></td></tr>
+<tr class="separator:a738956fc9b28996c2975e90d5bd5005e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f6c9551319936320dbddf6e4a60e81d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">RenderPass</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a6f6c9551319936320dbddf6e4a60e81d">renderPass</a></td></tr>
+<tr class="separator:a6f6c9551319936320dbddf6e4a60e81d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ecd969abf36a47643b81b349476575f"><td class="memItemLeft" align="right" valign="top">pvr::uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a3ecd969abf36a47643b81b349476575f">width</a></td></tr>
+<tr class="separator:a3ecd969abf36a47643b81b349476575f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Fbo creation descriptor. </p>
@@ -138,7 +170,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a2f2e31c22ba96467f9a837d89d3a3c4a"></a>
+<a class="anchor" id="a870d0610a376d908ea48e46c9afdd072"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -154,7 +186,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a8d935dcf60fe99740c37b6c56d7d7fbd">ColorAttachmentView</a> &amp;&#160;</td>
+          <td class="paramtype">const TextureView&#160;</td>
           <td class="paramname"><em>colorView</em>&#160;</td>
         </tr>
         <tr>
@@ -183,7 +215,192 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a0ba1239744354d909f48490545876500"></a>
+<a class="anchor" id="a0e4b7e4e740e4b8d4d5b10babc964e76"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const TextureView&amp; pvr::api::FboCreateParam::getColorAttachment </td>
+          <td>(</td>
+          <td class="paramtype">pvr::uint32&#160;</td>
+          <td class="paramname"><em>index</em>)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a16b5a93c0897d0baaa4d57a5faf5f252"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;TextureView&gt;&amp; pvr::api::FboCreateParam::getColorAttachments </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa0fc1f40f473db7e3d77db333e5ace48"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">TextureView&amp; pvr::api::FboCreateParam::getDepthStencilAttachment </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa297a5469faed36a5c1b867d550343e4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const TextureView&amp; pvr::api::FboCreateParam::getDepthStencilAttachment </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a7daefeb3c735a604d671d24fb44c1a9d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::ivec2 pvr::api::FboCreateParam::getDimension </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="af193c6593c32036c7c47da85d314a3f1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::uint32 pvr::api::FboCreateParam::getNumColorAttachements </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a6158758b07e2909c35a4c14ab76c61f9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">RenderPass</a>&amp; pvr::api::FboCreateParam::getRenderPass </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a2e9b7cb12c0dbc4a9759207a4b7d2702"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">RenderPass</a>&amp; pvr::api::FboCreateParam::getRenderPass </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a954ce1aeda8c049b5966410fed0e375a"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -193,7 +410,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a>&amp; pvr::api::FboCreateParam::setDepthStencil </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a0099c6787d2b822573fa8f95c9fc3237">DepthStencilView</a> &amp;&#160;</td>
+          <td class="paramtype">const TextureView&#160;</td>
           <td class="paramname"><em>depthStencilView</em>)</td><td></td>
           <td></td>
         </tr>
@@ -289,7 +506,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">FboCreateParam</a>&amp; pvr::api::FboCreateParam::setRenderPass </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a67c63964ff1d3b4179e038bb9a19f8f8">RenderPass</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">RenderPass</a> &amp;&#160;</td>
           <td class="paramname"><em>renderPass</em>)</td><td></td>
           <td></td>
         </tr>
@@ -313,8 +530,81 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a3c0b7795b10ae6913763720a45e6c8f3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;TextureView&gt; pvr::api::FboCreateParam::colorViews</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aef82f0e51b0e0507e54d97d1686afad9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TextureView pvr::api::FboCreateParam::depthStencilView</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aea86361bc9e08d855a1175c787b2aaa6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::uint32 pvr::api::FboCreateParam::height</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a738956fc9b28996c2975e90d5bd5005e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::uint32 pvr::api::FboCreateParam::layers</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a6f6c9551319936320dbddf6e4a60e81d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">RenderPass</a> pvr::api::FboCreateParam::renderPass</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a3ecd969abf36a47643b81b349476575f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::uint32 pvr::api::FboCreateParam::width</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/ApiObjects/<a class="el" href="_fbo_create_param_8h_source.html">FboCreateParam.h</a></li>
+<li>C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/ApiObjects/<a class="el" href="_fbo_8h_source.html">Fbo.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

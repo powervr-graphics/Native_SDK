@@ -145,7 +145,7 @@ void EglExtensions::init(const char* const extensions)
 
 	// EGL_EXT_buffer_age
 	supports_EGL_EXT_buffer_age = isExtensionSupported(extensions, "EGL_EXT_buffer_age");
-	isInitialised = true;
+	isInitialized = true;
 }
 }
 }

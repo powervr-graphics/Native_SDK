@@ -32,7 +32,7 @@ public:
 	
 	/*!*********************************************************************************************************************
 	\brief    Return the main GraphicsContext of this AssetProvider
-	\return   Τhe main GraphicsContext of this AssetProvider
+	\return   The main GraphicsContext of this AssetProvider
 	***********************************************************************************************************************/
 	virtual GraphicsContext& getGraphicsContext() = 0;
 };

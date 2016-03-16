@@ -73,7 +73,7 @@ public:
 	\brief    Convert a legacy PixelFormat into a new PixelFormat
 	********************************************************************************************************************/
 	static bool mapLegacyEnumToNewFormat(const texture_legacy::PixelFormat legacyPixelType, PixelFormat& newPixelType,
-	                                     ColorSpace::Enum& newColorSpace, VariableType::Enum& newChannelType,
+                                         types::ColorSpace::Enum& newColorSpace, VariableType::Enum& newChannelType,
 	                                     bool& isPremultiplied);
 private:
 	virtual bool readNextAsset(Texture& asset);

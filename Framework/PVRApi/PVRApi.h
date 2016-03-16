@@ -10,6 +10,7 @@
 #include "PVRAssets/PVRAssets.h"
 #include "PVRApi/AssetStore.h"
 #include "PVRApi/AssetUtils.h"
+#include "PVRApi/ApiObjects.h"
 
 /*****************************************************************************/
 /*! \mainpage PVRApi

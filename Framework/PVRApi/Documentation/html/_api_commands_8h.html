@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="generator" content="Doxygen 1.8.4"/>
-<title>PVRApi: C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/ApiCommands.h File Reference</title>
+<title>PVRApi: C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/OGLES/ApiCommands.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_f3778daf1425e8df0e4ba29e94b76937.html">Framework</a></li><li class="navelem"><a class="el" href="dir_575f8b1bed935845734cc153028542ad.html">PVRApi</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_f3778daf1425e8df0e4ba29e94b76937.html">Framework</a></li><li class="navelem"><a class="el" href="dir_575f8b1bed935845734cc153028542ad.html">PVRApi</a></li><li class="navelem"><a class="el" href="dir_a8c874ad9c2b5f8b208eb71269d75b73.html">OGLES</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -90,20 +90,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>Internal classes that are used by the CommandBuffer to represent user commands. Each class corresponds to a CommandBuffer command of the same name.  
-<a href="#details">More...</a></p>
-
 <p><a href="_api_commands_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_sync_impl.html">pvr::api::impl::SyncImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Sync object can be used both as an API command, or to be directly queried by the application. Each time the CommandBuffer is submitted, an underlying sync object is added to the list. If the MaxSize is reached, the first sync object to be submitted is discarder. The user normally queries/uses the syncs last-to-first with an index. This technique makes it trivial to use frame-lag techniques, like double/triple buffering. Each Sync starts in a non-signaled state, and becomes Signaled as soon as the GPU actually executes it previous command. All of the functions work on a last-to-first indexing - passing 0 refers to the last command buffer submission, and from there backwards in time, until <a class="el" href="classpvr_1_1api_1_1impl_1_1_sync_impl.html#a5f5bc6e83f3a4a4aeade450c7e32d117" title="Get the maximum number of syncs that will be created. Each time the command buffer that created this ...">getMaxSize()</a> - 1, which is the earliest sync point used. Use: Get a sync object with insertFenceSync(). 2) Use <a class="el" href="classpvr_1_1api_1_1impl_1_1_sync_impl.html#ac0305a5a59f8e99fbbad25d64f672331" title="Call this function to wait on the sync object (i.e. wait for it to become Signalled, meaning that any commands preceding it are complete) ">clientWait()</a> to CPU-block until the Sync becomes Signaled. 3) Use <a class="el" href="classpvr_1_1api_1_1impl_1_1_sync_impl.html#a7687ac2841e2bd745e17235ecdb6597b" title="Call this function to test if a Sync is signalled, without blocking for it. Each call to &quot;submit&quot; on ...">isSignaled()</a> to query if the Sync is Signaled, without blocking. 4) Use commandBuffer.serverSync() to force the implementation to wait for the specified sync object before proceeding.  <a href="classpvr_1_1api_1_1impl_1_1_sync_impl.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_sync__.html">pvr::api::impl::Sync_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Sync object can be used both as an API command, or to be directly queried by the application. Each time the CommandBuffer is submitted, an underlying sync object is added to the list. If the MaxSize is reached, the first sync object to be submitted is discarder. The user normally queries/uses the syncs last-to-first with an index. This technique makes it trivial to use frame-lag techniques, like double/triple buffering. Each Sync starts in a non-signaled state, and becomes Signaled as soon as the GPU actually executes it previous command. All of the functions work on a last-to-first indexing - passing 0 refers to the last command buffer submission, and from there backwards in time, until <a class="el" href="classpvr_1_1api_1_1impl_1_1_sync__.html#a206716e012856b684503835a11c0e1a4" title="Get the maximum number of syncs that will be created. Each time the command buffer that created this ...">getMaxSize()</a> - 1, which is the earliest sync point used. Use: Get a sync object with insertFenceSync(). 2) Use <a class="el" href="classpvr_1_1api_1_1impl_1_1_sync__.html#a69e28ab0b8918653080572bf0693e93d" title="Call this function to wait on the sync object (i.e. wait for it to become Signalled, meaning that any commands preceding it are complete) ">clientWait()</a> to CPU-block until the Sync becomes Signaled. 3) Use <a class="el" href="classpvr_1_1api_1_1impl_1_1_sync__.html#a04b040ea4f06d5751707c33ecb99809a" title="Call this function to test if a Sync is signalled, without blocking for it. Each call to &quot;submit&quot; on ...">isSignaled()</a> to query if the Sync is Signaled, without blocking. 4) Use commandBuffer.serverSync() to force the implementation to wait for the specified sync object before proceeding.  <a href="classpvr_1_1api_1_1impl_1_1_sync__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1impl_1_1_sync_wait_result.html">pvr::api::impl::SyncWaitResult</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_pipeline_barrier.html">pvr::api::PipelineBarrier</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A memory barrier into the command stream. Used to signify that some types of pending operations from before the barrier must have finished before the commands after the barrier start executing.  <a href="classpvr_1_1api_1_1_pipeline_barrier.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -112,10 +106,9 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html">pvr::api</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PVRApi Namespace. <br/></td></tr>
+<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> mapping flags. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api_1_1impl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html">pvr::api::impl</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1impl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains internal objects and wrapped versions of the PVRApi module. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -124,25 +117,19 @@ Constant Groups</h2></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html">pvr::api</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PVRApi Namespace. <br/></td></tr>
+<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> mapping flags. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api_1_1impl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html">pvr::api::impl</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1impl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains internal objects and wrapped versions of the PVRApi module. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:aed7be4927619057cc4c9f136198da2f5"><td class="memItemLeft" align="right" valign="top">typedef RefCountedResource<br class="typebreak"/>
-&lt; impl::SyncImpl &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#aed7be4927619057cc4c9f136198da2f5">pvr::api::Sync</a></td></tr>
-<tr class="memdesc:aed7be4927619057cc4c9f136198da2f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference-counted handle to a Sync object. Default constructor returns an empty handle that wraps a NULL object. Use the CommandBuffer's insertFenceSync to construct a Sync. As with all reference-counted handles, access with the arrow operator.  <a href="#aed7be4927619057cc4c9f136198da2f5">More...</a><br/></td></tr>
-<tr class="separator:aed7be4927619057cc4c9f136198da2f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5acce9c3c74c5e9d8de94a25b9b3ddf8"><td class="memItemLeft" align="right" valign="top">typedef RefCountedResource<br class="typebreak"/>
+&lt; impl::Sync_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a5acce9c3c74c5e9d8de94a25b9b3ddf8">pvr::api::Sync</a></td></tr>
+<tr class="memdesc:a5acce9c3c74c5e9d8de94a25b9b3ddf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference-counted handle to a Sync object. Default constructor returns an empty handle that wraps a NULL object. Use the CommandBuffer's insertFenceSync to construct a Sync. As with all reference-counted handles, access with the arrow operator.  <a href="#a5acce9c3c74c5e9d8de94a25b9b3ddf8">More...</a><br/></td></tr>
+<tr class="separator:a5acce9c3c74c5e9d8de94a25b9b3ddf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Internal classes that are used by the CommandBuffer to represent user commands. Each class corresponds to a CommandBuffer command of the same name. </p>
-<hr/>
-<dl class="section author"><dt>Author</dt><dd>PowerVR by Imagination, Developer Technology Team </dd></dl>
-<dl class="section user"><dt>Copyright:</dt><dd>Copyright (c) Imagination Technologies Limited. </dd></dl>
-</div></div><!-- contents -->
+</div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->
 <!--BEGIN GENERATE_TREEVIEW-->

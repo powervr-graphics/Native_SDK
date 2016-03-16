@@ -38,7 +38,7 @@ namespace pvr
 namespace system
 {
 // Setup the capabilities
-const ShellOS::Capabilities ShellOS::m_capabilities = { Capability::Immutable, Capability::Immutable };
+const ShellOS::Capabilities ShellOS::m_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
 
 ShellOS::ShellOS(/*NSObject<NSApplicationDelegate>*/void* hInstance, OSDATA osdata) : m_instance(hInstance)
 {
@@ -75,7 +75,7 @@ Result::Enum ShellOS::init(DisplayAttributes &data)
 	return Result::Success;
 }
 
-Result::Enum ShellOS::initialiseWindow(DisplayAttributes &data)
+Result::Enum ShellOS::initializeWindow(DisplayAttributes &data)
 {
 	CGFloat scale = 1.0;
 	
@@ -140,7 +140,7 @@ Result::Enum ShellOS::handleOSEvents()
 	return Result::Success;
 }
 
-bool ShellOS::isInitialised()
+bool ShellOS::isInitialized()
 {
 	return m_OSImplementation && m_OSImplementation->window;
 }
@@ -181,7 +181,7 @@ Result::Enum ShellOS::popUpMessage(const tchar * const title, const tchar * cons
 
 - (void)sendEvent:(UIEvent *)event 
 {
-    PVR_ASSERT(eventQueue != NULL && "Event Queue Is NULL");
+    pvr::assertion(eventQueue != NULL, "Event Queue Is NULL");
     if(event.type == UIEventTypeTouches) 
 	{
         for(UITouch * t in [event allTouches]) 

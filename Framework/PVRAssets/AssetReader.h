@@ -27,7 +27,7 @@ public:
 	AssetReader(): m_hasNewAssetStream(true) {}
 
 	/*!******************************************************************************************************************
-	\brief Asset reader which will take ownership of the provided Stream object and read Αssets from it.
+	\brief Asset reader which will take ownership of the provided Stream object and read Assets from it.
     \param assetStream stream to read
 	********************************************************************************************************************/
 	AssetReader(Stream::ptr_type assetStream) : m_assetStream(assetStream), m_hasNewAssetStream(true) {}
@@ -76,7 +76,7 @@ public:
 		if (!hasAssetStream())
 		{
 			Log(Log.Warning, "AssetReader::readAsset Attempted to read without an assetStream");
-			PVR_ASSERT(0);
+			assertion(0);
 			return false;
 		}
 		if (!m_assetStream->isopen())
@@ -86,7 +86,7 @@ public:
 		if (!m_assetStream->isReadable())
 		{
 			Log(Log.Error, "AssetReader::readAsset Attempted to read a non-readable assetStream");
-			PVR_ASSERT(0);
+			assertion(0);
 			return false;
 		}
 		return readNextAsset(asset);

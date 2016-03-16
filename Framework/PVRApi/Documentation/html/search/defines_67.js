@@ -81,7 +81,6 @@ var searchData=
   ['gl_5fluminance_5falpha32f_5farb',['GL_LUMINANCE_ALPHA32F_ARB',['../_texture_formats_8h.html#a1fb1f84c9be7b4cf74fb292f8c6ab6d9',1,'TextureFormats.h']]],
   ['gl_5fluminance_5falpha_5fsnorm',['GL_LUMINANCE_ALPHA_SNORM',['../_texture_formats_8h.html#a498a29baeb817e5af8b60426ccc3d91a',1,'TextureFormats.h']]],
   ['gl_5fluminance_5fsnorm',['GL_LUMINANCE_SNORM',['../_texture_formats_8h.html#aeec63800ef3648046aa948cd2d8fa304',1,'TextureFormats.h']]],
-  ['gl_5fno_5fprototypes',['GL_NO_PROTOTYPES',['../_open_g_l_e_s_headers_8h.html#aaf1544e524c1c535150fc0e7be038f5a',1,'OpenGLESHeaders.h']]],
   ['gl_5fpalette4_5fr5_5fg6_5fb5_5foes',['GL_PALETTE4_R5_G6_B5_OES',['../_texture_formats_8h.html#a1cffbd65f55c57d0fed78f9d2e655429',1,'TextureFormats.h']]],
   ['gl_5fpalette4_5frgb5_5fa1_5foes',['GL_PALETTE4_RGB5_A1_OES',['../_texture_formats_8h.html#aa65fce5597e2f8b8815517d98c216f1a',1,'TextureFormats.h']]],
   ['gl_5fpalette4_5frgb8_5foes',['GL_PALETTE4_RGB8_OES',['../_texture_formats_8h.html#a1be95f1f4245ec7831c9bccd1c68786d',1,'TextureFormats.h']]],

@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -97,8 +97,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_render_pass_impl.html">pvr::api::impl::RenderPassImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The implementation of the RenderPass. Use through the Reference counted framework object <a class="el" href="namespacepvr_1_1api.html#a67c63964ff1d3b4179e038bb9a19f8f8">pvr::api::RenderPass</a>.  <a href="classpvr_1_1api_1_1impl_1_1_render_pass_impl.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_render_pass__.html">pvr::api::impl::RenderPass_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The implementation of the RenderPass. Use through the Reference counted framework object <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">pvr::api::RenderPass</a>.  <a href="classpvr_1_1api_1_1impl_1_1_render_pass__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_render_pass_color_info.html">pvr::api::RenderPassColorInfo</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains information on the Color configuration of a renderpass (format, loadop, storeop, samples).  <a href="structpvr_1_1api_1_1_render_pass_color_info.html#details">More...</a><br/></td></tr>
@@ -112,6 +112,8 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_sub_pass.html">pvr::api::SubPass</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render pass subpass. Subpasses allow intermediate draws to be chained and communicating with techniques like Pixel Local Storage without outputting to the FrameBuffer until the end of the RenderPass.  <a href="structpvr_1_1api_1_1_sub_pass.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_sub_pass_dependency.html">pvr::api::SubPassDependency</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -119,10 +121,9 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html">pvr::api</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PVRApi Namespace. <br/></td></tr>
+<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> mapping flags. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api_1_1impl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html">pvr::api::impl</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1impl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains internal objects and wrapped versions of the PVRApi module. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -131,17 +132,16 @@ Constant Groups</h2></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html">pvr::api</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PVRApi Namespace. <br/></td></tr>
+<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> mapping flags. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api_1_1impl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html">pvr::api::impl</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1impl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains internal objects and wrapped versions of the PVRApi module. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a67c63964ff1d3b4179e038bb9a19f8f8"><td class="memItemLeft" align="right" valign="top">typedef RefCountedResource<br class="typebreak"/>
-&lt; impl::RenderPassImpl &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a67c63964ff1d3b4179e038bb9a19f8f8">pvr::api::RenderPass</a></td></tr>
-<tr class="separator:a67c63964ff1d3b4179e038bb9a19f8f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee83fa35189bd63f8782d17405b68916"><td class="memItemLeft" align="right" valign="top">typedef RefCountedResource<br class="typebreak"/>
+&lt; impl::RenderPass_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">pvr::api::RenderPass</a></td></tr>
+<tr class="separator:aee83fa35189bd63f8782d17405b68916"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the RenderPass API Object class. </p>

@@ -46,8 +46,8 @@ public:
 				fontFaces[i * 6 + 5] = 2 + i * 4;
 			}
 
-			m_fontIbo = getContext().createBuffer(sizeof(fontFaces[0]) * impl::Font_::FontElement, api::BufferBindingUse::IndexBuffer,
-			                                      api::BufferUse::DEFAULT);
+			m_fontIbo = getContext().createBuffer(sizeof(fontFaces[0]) * impl::Font_::FontElement, types::BufferBindingUse::IndexBuffer,
+			                                      types::BufferUse::DEFAULT);
 			m_fontIbo->update(&fontFaces[0], 0, (uint32)(sizeof(fontFaces[0]) * fontFaces.size()));
 		}
 		return m_fontIbo;
@@ -68,7 +68,7 @@ public:
 				1.f, -1.f, 0.f, 1.f, 1.0f, 0.0f,
 				1.f, 1.f, 0.f, 1.f, 1.0f, 1.0f,
 			};
-			m_imageVbo = getContext().createBuffer(sizeof(verts), api::BufferBindingUse::VertexBuffer, api::BufferUse::DEFAULT);
+			m_imageVbo = getContext().createBuffer(sizeof(verts), types::BufferBindingUse::VertexBuffer, types::BufferUse::DEFAULT);
 			m_imageVbo->update((void*)verts, 0, sizeof(verts));
 		}
 		return m_imageVbo;
@@ -78,14 +78,16 @@ public:
 	***************************************************************************************************************/
 	UIRenderer() : screenRotation(.0f) {}
 
+	~UIRenderer() { release(); }
+
 	/*!************************************************************************************************************
-	\brief Return the graphics context the UIRenderer was initialised with. If the UIrenderer was not initialised,
+	\brief Return the graphics context the UIRenderer was initialized with. If the UIrenderer was not initialized,
 	       behaviour is undefined.
 	***************************************************************************************************************/
 
 	IGraphicsContext& getContext() { return *m_context; }
 	/*!************************************************************************************************************
-	\brief Return the graphics context the UIRenderer was initialised with. If the UIrenderer was not initialised,
+	\brief Return the graphics context the UIRenderer was initialized with. If the UIrenderer was not initialized,
 	       behaviour is undefined.
 	***************************************************************************************************************/
 	const IGraphicsContext& getContext()const { return *m_context; }
@@ -109,13 +111,15 @@ public:
 	\brief Initialize the UIRenderer with a graphics context. MUST BE called exactly once before use, after a valid
 	       graphics context is available (usually, during initView).
 	***************************************************************************************************************/
-	Result::Enum init(GraphicsContext& context)
+	Result::Enum init(GraphicsContext& context, const api::RenderPass& renderpass,
+	                  uint32 subpass)
 	{
 		release();
 		m_mustEndCommandBuffer = false;
 		m_context = context;
 		m_screenDimensions = glm::vec2(context->getDisplayAttributes().width, context->getDisplayAttributes().height);
-
+		m_renderpass = renderpass;
+		m_subpass = subpass;
 		// screen rotated?
 		if (m_screenDimensions.y > m_screenDimensions.x && context->getDisplayAttributes().fullscreen)
 		{
@@ -124,8 +128,8 @@ public:
 
 
 		Result::Enum res;
-		if (((res = init_CreatePipelineAndRenderPass()) == Result::Success) &&
-		    ((res = init_CreateDescriptors()) == Result::Success))
+		if (((res = init_CreateDescriptorSetLayout()) == Result::Success) &&
+		    ((res = init_CreatePipelineAndRenderPass()) == Result::Success))
 		{
 			if (!init_CreateDefaultSampler()) { res = Result::UnknownError; }
 			if (!init_CreateDefaultSdkLogo()) { res = Result::UnknownError; }
@@ -141,25 +145,27 @@ public:
 	***************************************************************************************************************/
 	void release()
 	{
-		this->m_defaultFont.release();
-		this->m_defaultTitle.release();
-		this->m_defaultDescription.release();
-		this->m_defaultControls.release();
-		this->m_sdkLogo.release();
+		this->m_defaultFont.reset();
+		this->m_defaultTitle.reset();
+		this->m_defaultDescription.reset();
+		this->m_defaultControls.reset();
+		this->m_sdkLogo.reset();
+		this->m_renderpass.reset();
 
-		this->m_pipelineLayout.release();
-		this->m_pipeline.release();
-		this->m_defaultLayout.release();
-		this->m_samplerBilinear.release();
-		this->m_activeCommandBuffer.release();
-		this->m_fontIbo.release();
-		this->m_imageVbo.release();
-		this->m_context.release();
+		this->m_pipelineLayout.reset();
+		this->m_pipeline.reset();
+		this->m_texDescLayout.reset();
+		this->m_uboDescLayout.reset();
+		this->m_samplerBilinear.reset();
+		this->m_activeCommandBuffer.reset();
+		this->m_fontIbo.reset();
+		this->m_imageVbo.reset();
+		this->m_context.reset();
 	}
 
 	/*!****************************************************************************************************************
-	\brief Create a Text sprite. Initialise with string. Uses default font.
-	\param text std::string object that this Text object will be initialised with
+	\brief Create a Text sprite. Initialize with string. Uses default font.
+	\param text std::string object that this Text object will be initialized with
 	\return Text framework object, Null framework object if failed.
 	*******************************************************************************************************************/
 	Text createText(const std::string& text)
@@ -185,7 +191,7 @@ public:
 
 	/*!****************************************************************************************************************
 	\brief Create Text sprite from string.
-	\param text String object that this Text object will be initialised with
+	\param text String object that this Text object will be initialized with
 	\param font The font that the text will be using. The font must belong to the same UIrenderer object.
 	\return Text framework object, Null framework object if failed.
 	*******************************************************************************************************************/
@@ -193,7 +199,7 @@ public:
 
 	/*!****************************************************************************************************************
 	\brief Create Text sprite from wide string. Uses the Default Font.
-	\param text Wide string that this Text object will be initialised with. Will use the Default Font.
+	\param text Wide string that this Text object will be initialized with. Will use the Default Font.
 	\return Text framework object, Null framework object if failed.
 	*******************************************************************************************************************/
 	Text createText(const std::wstring& text)
@@ -299,7 +305,7 @@ public:
 	{
 		if (!cb->isRecording())
 		{
-			cb->beginRecording();
+			cb->beginRecording(m_renderpass, m_subpass);
 			m_mustEndCommandBuffer = true;
 		}
 		else { m_mustEndCommandBuffer = false; }
@@ -321,7 +327,7 @@ public:
 	{
 		if (!cb->isRecording())
 		{
-			cb->beginRecording();
+			cb->beginRecording(m_renderpass, m_subpass);
 			m_mustEndCommandBuffer = true;
 		}
 		else { m_mustEndCommandBuffer = false; }
@@ -363,28 +369,28 @@ public:
 
 	/*!****************************************************************************************************************
 	\brief The UIRenderer has a built-in default pvr::ui::Font that can always be used when the UIRenderer is
-	       initialised. Used throughout the PowerVR SDK Examples.
+	       initialized. Used throughout the PowerVR SDK Examples.
 	\return The default font. Constant overload.
 	*******************************************************************************************************************/
 	const Font& getDefaultFont() const { return m_defaultFont; }
 
 	/*!****************************************************************************************************************
 	\brief The UIRenderer has a built-in default pvr::ui::Font that can always be used when the UIRenderer is
-	initialised. Used throughout the PowerVR SDK Examples.
+	initialized. Used throughout the PowerVR SDK Examples.
 	\return A pvr::ui::Font object of the default font.
 	*******************************************************************************************************************/
 	Font& getDefaultFont() { return m_defaultFont; }
 
 	/*!****************************************************************************************************************
 	\brief The UIRenderer has a built-in pvr::ui::Image of the PowerVR SDK logo that can always be used when the
-	       UIRenderer is initialised. Used throughout the PowerVR SDK Examples.
+	       UIRenderer is initialized. Used throughout the PowerVR SDK Examples.
 	\return The PowerVR SDK pvr::ui::Image. Constant overload.
 	*******************************************************************************************************************/
 	const Image& getSdkLogo() const { return m_sdkLogo; }
 
 	/*!****************************************************************************************************************
 	\brief The UIRenderer has a built-in pvr::ui::Image of the PowerVR SDK logo that can always be used when the
-	UIRenderer is initialised. Used throughout the PowerVR SDK Examples.
+	UIRenderer is initialized. Used throughout the PowerVR SDK Examples.
 	\return The PowerVR SDK pvr::ui::Image.
 	*******************************************************************************************************************/
 	Image& getSdkLogo() { return m_sdkLogo; }
@@ -445,8 +451,8 @@ public:
 
 	glm::mat4 getProjection()
 	{
-		return glm::ortho<pvr::float32>(0.f, (pvr::float32)getRenderingDimX(), 0.0f,
-		                                (pvr::float32)getRenderingDimY());
+		return pvr::math::ortho(m_context->getApiType(), 0.0, (pvr::float32)getRenderingDimX(),
+		                        0.0f, (pvr::float32)getRenderingDimY());
 	}
 
 	void rotateScreen90degreeCCW()
@@ -470,11 +476,18 @@ public:
 	\brief	return the default DescriptorSetLayout. ONLY to be used by the Sprites
 	\return	const api::DescriptorSetLayout&
 	***********************************************************************************************/
-	const api::DescriptorSetLayout& getDescriptorSetLayout()const
+	const api::DescriptorSetLayout& getTexDescriptorSetLayout()const
 	{
-		return m_defaultLayout;
+		return m_texDescLayout;
 	}
 
+	const api::DescriptorSetLayout& getUboDescSetLayout()const
+	{
+		return m_uboDescLayout;
+	}
+
+	api::RenderPass m_renderpass;
+	uint32 m_subpass;
 private:
 
 	bool init_CreateDefaultFont();
@@ -482,7 +495,7 @@ private:
 	bool init_CreateDefaultSdkLogo();
 	bool init_CreateDefaultTitle();
 	Result::Enum init_CreatePipelineAndRenderPass();
-	Result::Enum init_CreateDescriptors();
+	Result::Enum init_CreateDescriptorSetLayout();
 	pvr::uint64 generateGroupId();
 
 	ProgramData m_programData;
@@ -496,8 +509,9 @@ private:
 
 	pvr::api::PipelineLayout m_pipelineLayout;
 	api::ParentableGraphicsPipeline m_pipeline;
-	api::DescriptorSetLayout m_defaultLayout;
-	api::Sampler m_samplerBilinear;
+	api::DescriptorSetLayout m_texDescLayout;
+	api::DescriptorSetLayout m_uboDescLayout;
+	api::Sampler m_samplerBilinear, m_samplerTrilinear;
 	api::SecondaryCommandBuffer m_activeCommandBuffer;
 	bool m_mustEndCommandBuffer;
 	api::Buffer m_fontIbo;

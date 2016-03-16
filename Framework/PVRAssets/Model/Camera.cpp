@@ -16,7 +16,7 @@ float32 Camera::getFOV(uint32 frame, float32 interp)  const
 	{
 		if (getNumFrames() > 1)
 		{
-			PVR_ASSERT(frame < getNumFrames() - 1);
+			assertion(frame < getNumFrames() - 1);
 			const float32* fov = &m_data.FOVs[frame];
 			return fov[0] + interp * (fov[1] - fov[0]);
 		}

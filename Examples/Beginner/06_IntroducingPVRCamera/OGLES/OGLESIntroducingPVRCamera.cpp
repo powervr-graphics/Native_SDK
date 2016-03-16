@@ -74,8 +74,8 @@ void OGLES3IntroducingPVRCamera::createBuffers()
 		0, 2, 3
 	};
 
-	vbo = getGraphicsContext()->createBuffer(sizeof(VBOmem), pvr::api::BufferBindingUse::VertexBuffer, pvr::api::BufferUse::GPU_READ);
-	ibo = getGraphicsContext()->createBuffer(sizeof(IBOmem), pvr::api::BufferBindingUse::IndexBuffer, pvr::api::BufferUse::GPU_READ);
+	vbo = getGraphicsContext()->createBuffer(sizeof(VBOmem), pvr::types::BufferBindingUse::VertexBuffer, pvr::types::BufferUse::GPU_READ);
+	ibo = getGraphicsContext()->createBuffer(sizeof(IBOmem), pvr::types::BufferBindingUse::IndexBuffer, pvr::types::BufferUse::GPU_READ);
 
 	vbo->update(VBOmem, 0, sizeof(VBOmem));
 	ibo->update(IBOmem, 0, sizeof(IBOmem));
@@ -87,37 +87,37 @@ void OGLES3IntroducingPVRCamera::createBuffers()
 ***********************************************************************************************************************/
 bool OGLES3IntroducingPVRCamera::createPipelineAndDescriptors()
 {
-	if (!m_Camera.initialiseSession(HWCamera::Front, 800, 600)) { return false; }
+	if (!m_Camera.initializeSession(HWCamera::Front, 800, 600)) { return false; }
 	pvr::api::DescriptorSetLayoutCreateParam descriptorLayoutDesc;
 
 	pvr::assets::SamplerCreateParam desc;
-	desc.magnificationFilter = pvr::SamplerFilter::Nearest;
-	desc.minificationFilter = pvr::SamplerFilter::Nearest;
-	desc.mipMappingFilter = pvr::SamplerFilter::None;
+	desc.magnificationFilter = pvr::types::SamplerFilter::Nearest;
+	desc.minificationFilter = pvr::types::SamplerFilter::Nearest;
+	desc.mipMappingFilter = pvr::types::SamplerFilter::None;
 	sampler = getGraphicsContext()->createSampler(desc);
 	if (m_Camera.hasRgbTexture())
 	{
-		descriptorLayoutDesc.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
+		descriptorLayoutDesc.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
 		descriptorLayout = getGraphicsContext()->createDescriptorSetLayout(descriptorLayoutDesc);
-		pvr::api::DescriptorSetUpdateParam descSetCreateParam;
-		descSetCreateParam.addCombinedImageSampler(0, 0, getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getRgbTexture()),
+		pvr::api::DescriptorSetUpdate descSetCreateParam;
+		descSetCreateParam.setCombinedImageSampler(0, getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getRgbTexture()),
 		        sampler);
-		descriptorSet = getGraphicsContext()->allocateDescriptorSet(descriptorLayout);
+		descriptorSet = getGraphicsContext()->createDescriptorSetOnDefaultPool(descriptorLayout);
 		descriptorSet->update(descSetCreateParam);
 	}
 	else if (m_Camera.hasLumaChromaTextures()) // use the chrominance and luminance
 	{
-		descriptorLayoutDesc.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment)
-		.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
+		descriptorLayoutDesc.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment)
+		.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
 		descriptorLayout = getGraphicsContext()->createDescriptorSetLayout(descriptorLayoutDesc);
-		pvr::api::DescriptorSetUpdateParam descSetCreateParam;
+		pvr::api::DescriptorSetUpdate descSetCreateParam;
 
-		descSetCreateParam.addCombinedImageSampler(0, 0, getTextureFromPVRCameraHandle(getGraphicsContext(),
+		descSetCreateParam.setCombinedImageSampler(0, getTextureFromPVRCameraHandle(getGraphicsContext(),
 		        m_Camera.getChrominanceTexture()), sampler);
-		descSetCreateParam.addCombinedImageSampler(1, 0, getTextureFromPVRCameraHandle(getGraphicsContext(),
+		descSetCreateParam.setCombinedImageSampler(1, getTextureFromPVRCameraHandle(getGraphicsContext(),
 		        m_Camera.getLuminanceTexture()),  sampler);
 
-		descriptorSet = getGraphicsContext()->allocateDescriptorSet(descriptorLayout);
+		descriptorSet = getGraphicsContext()->createDescriptorSetOnDefaultPool(descriptorLayout);
 		descriptorSet->update(descSetCreateParam);
 	}
 
@@ -135,8 +135,8 @@ bool OGLES3IntroducingPVRCamera::createPipelineAndDescriptors()
 		return false;
 	}
 
-	vertexShader = getGraphicsContext()->createShader(*vertexShaderStream, ShaderType::VertexShader, ShaderDefines, NumShaderDefines);
-	fragmentShader = getGraphicsContext()->createShader(*fragmentShaderStream, ShaderType::FragmentShader, ShaderDefines,
+	vertexShader = getGraphicsContext()->createShader(*vertexShaderStream, types::ShaderType::VertexShader, ShaderDefines, NumShaderDefines);
+	fragmentShader = getGraphicsContext()->createShader(*fragmentShaderStream, types::ShaderType::FragmentShader, ShaderDefines,
 	                 NumShaderDefines);
 
 	api::GraphicsPipelineCreateParam pipeParams;
@@ -145,17 +145,19 @@ bool OGLES3IntroducingPVRCamera::createPipelineAndDescriptors()
 	pipeParams.depthStencil.setDepthWrite(false).setDepthTestEnable(false);
 
 	//Positions are 2D for a full-screen quad
-	pipeParams.vertexInput.addVertexAttribute(0, api::VertexAttributeInfo(0, DataType::Float32, 2, 0, "inVertex"));
+	pipeParams.vertexInput.addVertexAttribute(0, api::VertexAttributeInfo(0, types::DataType::Float32, 2, 0, "inVertex"));
 	pipeParams.vertexInput.setInputBinding(0, 0);
 
 	pipeParams.pipelineLayout = getGraphicsContext()->createPipelineLayout(api::PipelineLayoutCreateParam().addDescSetLayout(
 	                                descriptorLayout));
+
+	pipeParams.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
 	renderingPipeline = getGraphicsContext()->createGraphicsPipeline(pipeParams);
 	uvTransformLocation = renderingPipeline->getUniformLocation("uvTransform");
 
-	//Create a temporary commandbuffer to do one-shot initialisation
+	//Create a temporary command buffer to do one-shot initialization
 	{
-		pvr::api::CommandBuffer oneShotCommandBuffer = getGraphicsContext()->createCommandBuffer();
+		pvr::api::CommandBuffer oneShotCommandBuffer = getGraphicsContext()->createCommandBufferOnDefaultPool();
 		oneShotCommandBuffer->beginRecording();
 
 		oneShotCommandBuffer->bindPipeline(renderingPipeline);
@@ -172,7 +174,7 @@ bool OGLES3IntroducingPVRCamera::createPipelineAndDescriptors()
 		oneShotCommandBuffer->endRecording();
 		oneShotCommandBuffer->submit();
 	}
-	onScreenFbo = getGraphicsContext()->createOnScreenFboWithParams();
+	onScreenFbo = getGraphicsContext()->createOnScreenFbo(0);
 	return true;
 }
 
@@ -181,18 +183,18 @@ bool OGLES3IntroducingPVRCamera::createPipelineAndDescriptors()
 ***********************************************************************************************************************/
 void OGLES3IntroducingPVRCamera::recordCommandBuffers()
 {
-	commandBuffer = getGraphicsContext()->createCommandBuffer();
+	commandBuffer = getGraphicsContext()->createCommandBufferOnDefaultPool();
 	commandBuffer->beginRecording();
 	commandBuffer->bindVertexBuffer(vbo, 0, 0);
-	commandBuffer->bindIndexBuffer(ibo, 0, IndexType::IndexType16Bit);
-    
-	commandBuffer->bindDescriptorSets(api::PipelineBindingPoint::Graphics, renderingPipeline->getPipelineLayout(), descriptorSet, 0);
+	commandBuffer->bindIndexBuffer(ibo, 0, types::IndexType::IndexType16Bit);
+
+	commandBuffer->bindDescriptorSet(renderingPipeline->getPipelineLayout(), 0, descriptorSet, 0);
 	commandBuffer->bindPipeline(renderingPipeline);
 	commandBuffer->setUniformPtr<glm::mat4>(uvTransformLocation, 1, &m_Camera.getProjectionMatrix());
-	commandBuffer->beginRenderPass(onScreenFbo, Rectanglei(0, 0, getWidth(), getHeight()), glm::vec4(.2, .2, .2, 1.));
+	commandBuffer->beginRenderPass(onScreenFbo, Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(.2, .2, .2, 1.));
 	commandBuffer->drawIndexed(0, 6);
 
-	pvr::api::SecondaryCommandBuffer uicmd = getGraphicsContext()->createSecondaryCommandBuffer();
+	pvr::api::SecondaryCommandBuffer uicmd = getGraphicsContext()->createSecondaryCommandBufferOnDefaultPool();
 	uiRenderer.beginRendering(uicmd);
 	uiRenderer.getDefaultTitle()->render();
 	uiRenderer.getDefaultDescription()->render();
@@ -230,7 +232,7 @@ Result::Enum OGLES3IntroducingPVRCamera::initView()
 	createBuffers();
 	//	Load and compile the shaders & link programs
 	if (!createPipelineAndDescriptors()) {	return Result::UnknownError;  }
-	if (uiRenderer.init(getGraphicsContext()) != Result::Success) { return Result::UnknownError; }
+	if (uiRenderer.init(getGraphicsContext(), onScreenFbo->getRenderPass(), 0) != Result::Success) { return Result::UnknownError; }
 	uiRenderer.getDefaultDescription()->setText("Streaming of hardware Camera video preview");
 	uiRenderer.getDefaultDescription()->commitUpdates();
 	uiRenderer.getDefaultTitle()->setText("IntroducingPVRCamera");
@@ -275,9 +277,9 @@ Result::Enum OGLES3IntroducingPVRCamera::renderFrame()
 	static pvr::api::TextureView tex1 = getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getChrominanceTexture());
 	if (firstFrame)
 	{
-		pvr::api::DescriptorSetUpdateParam descSetInfo;
-		descSetInfo.addCombinedImageSampler(0, 0, tex0, sampler)
-		.addCombinedImageSampler(1, 0, tex1, sampler);
+		pvr::api::DescriptorSetUpdate descSetInfo;
+		descSetInfo.setCombinedImageSampler(0, tex0, sampler)
+		.setCombinedImageSampler(1, tex1, sampler);
 		descriptorSet->update(descSetInfo);
 		firstFrame = false;
 	}

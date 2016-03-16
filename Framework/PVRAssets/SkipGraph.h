@@ -51,7 +51,7 @@ public:
 	*****************************************************************************/
 	SkipGraphNode& getDependency(uint32 id) const
 	{
-		PVR_ASSERT(id >= 0 && id < (uint32)m_apDependencies.size());
+		assertion(id >= 0 && id < (uint32)m_apDependencies.size(), "SkipGraph::getDependency id out of range");
 		return *m_apDependencies[id];
 	}
 
@@ -247,7 +247,7 @@ public:
 	void RetreiveSortedDependencyList(std::vector<T>& aOutputArray,
 	                                  const uint32 nodeID)
 	{
-		PVR_ASSERT(nodeID >= 0 && nodeID < (uint32)m_aHashTable.size());
+		assertion(nodeID >= 0 && nodeID < (uint32)m_aHashTable.size(), "SkipGraph::RetreiveSortedDependencyList nodeId out of range");
 		recursiveSortedListAdd(aOutputArray, m_aHashTable[nodeID].getNode());
 	}
 
@@ -293,7 +293,7 @@ private:
 	*****************************************************************************/
 	T* getNodeData(uint32 nodeID)
 	{
-		PVR_ASSERT(nodeID >= 0 && nodeID < (uint32)m_aHashTable.size());
+		assertion(nodeID >= 0 && nodeID < (uint32)m_aHashTable.size(), "SkipGraph::getNodeData nodeId out of range");
 		return &m_aHashTable[nodeID].getNode().getData();
 	}
 
@@ -309,7 +309,7 @@ private:
 		int i(0);
 		int i32HashTableSize((int32)m_aHashTable.size());
 
-		//	A NULL hash means the node has not initialised
+		//	A NULL hash means the node has not initialized
 		//	correctly.
 		if (hash == 0) { return NULL; }
 

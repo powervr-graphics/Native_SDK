@@ -21,6 +21,7 @@ using std::vector;
 namespace { // LOCAL FUNCTIONS
 using namespace pvr;
 using namespace assets;
+using namespace pvr::types;
 template <typename T>
 bool readBytes(Stream& stream, T& data)
 {
@@ -95,25 +96,33 @@ bool read2ByteArray(Stream& stream, T* data, uint32 count)
 template <typename T, typename vector_T>
 bool readByteArrayIntoVector(Stream& stream, std::vector<vector_T>& data, uint32 count)
 {
-	PVR_ASSERT(sizeof(vector_T) <= sizeof(T));
+	assertion(sizeof(vector_T) <= sizeof(T));
 	data.resize(count * sizeof(T) / sizeof(vector_T));
 	return readByteArray<T>(stream, reinterpret_cast<T*>(data.data()), count);
 }
 template <typename T, typename vector_T>
 bool read2ByteArrayIntoVector(Stream& stream, std::vector<vector_T>& data, uint32 count)
 {
-	PVR_ASSERT(sizeof(vector_T) <= sizeof(T));
+	assertion(sizeof(vector_T) <= sizeof(T));
 	data.resize(count * sizeof(T) / sizeof(vector_T));
 	return read2ByteArray<T>(stream, reinterpret_cast<T*>(data.data()), count);
 }
 template <typename T, typename vector_T>
 bool read4ByteArrayIntoVector(Stream& stream, std::vector<vector_T>& data, uint32 count)
 {
-	PVR_ASSERT(sizeof(vector_T) <= sizeof(T));
+	assertion(sizeof(vector_T) <= sizeof(T));
 	data.resize(count * sizeof(T) / sizeof(vector_T));
 	return read4ByteArray<T>(stream, reinterpret_cast<T*>(data.data()), count);
 }
-bool readByteArrayIntoString(Stream& stream, std::string& data, uint32 count)
+bool readByteArrayIntoString1(Stream& stream, std::string& data, uint32 count)
+{
+	std::vector<char8> data1; data1.resize(count);
+	bool res = readByteArray(stream, reinterpret_cast<char8*>(data1.data()), count);
+	data.assign(data1.data());
+	return res;
+}
+
+bool readByteArrayIntoStringHash(Stream& stream, StringHash& data, uint32 count)
 {
 	std::vector<char8> data1; data1.resize(count);
 	bool res = readByteArray(stream, reinterpret_cast<char8*>(data1.data()), count);
@@ -158,7 +167,7 @@ bool readVertexIndexData(Stream& stream, assets::Mesh& mesh)
 				break;
 			default:
 			{
-				PVR_ASSERT(false); // Unrecognised data type
+				assertion(false); // Unrecognised data type
 			}
 			}
 			continue;
@@ -250,7 +259,7 @@ bool readVertexData(Stream& stream, assets::Mesh& mesh, const char8* const seman
 				}
 				default:
 				{
-					PVR_ASSERT(false);
+					assertion(false);
 					Log(Log.Error, "Unknown error reading POD file - data type width >4");
 					return false;
 				}
@@ -286,7 +295,7 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 			return true;
 		case pod::e_materialName | pod::c_startTagMask:
 		{
-			if (!readByteArrayIntoString(stream, materialInternalData.name, dataLength)) { return false; }
+			if (!readByteArrayIntoStringHash(stream, materialInternalData.name, dataLength)) { return false; }
 			break;
 		}
 		break;
@@ -313,13 +322,13 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 			break;
 		case pod::e_materialEffectFile | pod::c_startTagMask:
 		{
-			if (!readByteArrayIntoString(stream, materialInternalData.effectFile, dataLength)) { return false; }
+			if (!readByteArrayIntoStringHash(stream, materialInternalData.effectFile, dataLength)) { return false; }
 			break;
 		}
 		break;
 		case pod::e_materialEffectName | pod::c_startTagMask:
 		{
-			if (!readByteArrayIntoString(stream, materialInternalData.effectName, dataLength)) { return false; }
+			if (!readByteArrayIntoStringHash(stream, materialInternalData.effectName, dataLength)) { return false; }
 			break;
 		}
 		break;
@@ -436,8 +445,8 @@ bool readTextureBlock(Stream& stream, assets::Model::Texture& texture)
 			return true;
 		case pod::e_textureFilename | pod::c_startTagMask:
 		{
-			std::string s;
-			result = readByteArrayIntoString(stream, s, dataLength);
+			StringHash s;
+			result = readByteArrayIntoStringHash(stream, s, dataLength);
 			texture.setName(s);
 			if (!result) { return result; }
 			break;
@@ -627,7 +636,7 @@ bool readNodeBlock(Stream& stream, assets::Model::Node& node)
 			break;
 		case pod::e_nodeName | pod::c_startTagMask:
 		{
-			result = readByteArrayIntoString(stream, nodeInternData.name, dataLength);
+			result = readByteArrayIntoStringHash(stream, nodeInternData.name, dataLength);
 			if (!result) { return result; }
 			break;
 		}
@@ -750,7 +759,7 @@ static void fixInterleavedEndiannessUsingVertexData(StridedBuffer& interleaved, 
 	break;
 	default:
 	{
-		PVR_ASSERT(false);
+		assertion(false);
 	}
 	};
 }
@@ -821,7 +830,7 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 		{
 			int32 numstr(0);
 			result = read4Bytes(stream, numstr);
-			PVR_ASSERT((size_t)numstr == meshInternalData.primitiveData.stripLengths.size());
+			assertion((size_t)numstr == meshInternalData.primitiveData.stripLengths.size());
 			break;
 		}
 		case pod::e_meshInterleavedDataList | pod::c_startTagMask:
@@ -900,7 +909,7 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 		}
 		if (!result) { return result; }
 	}
-	PVR_ASSERT(0 && "NOT IMPLEMENTED YET");
+	assertion(0 ,  "NOT IMPLEMENTED YET");
 	if (meshInternalData.boneBatches.boneCounts.size() != boneBatchesCount)
 	{
 		result = false;
@@ -922,32 +931,32 @@ bool readSceneBlock(Stream& stream, assets::Model& model)
 		{
 			if (numCameras != modelInternalData.cameras.size())
 			{
-				PVR_ASSERT(0 && "Unknown Error");
+				assertion(0 ,  "Unknown Error");
 				return false;
 			}
 			if (numLights != modelInternalData.lights.size())
 			{
-				PVR_ASSERT(0 && "Unknown Error");
+				assertion(0 ,  "Unknown Error");
 				return false;
 			}
 			if (numMaterials != modelInternalData.materials.size())
 			{
-				PVR_ASSERT(0 && "Unknown Error");
+				assertion(0 ,  "Unknown Error");
 				return false;
 			}
 			if (numMeshes != modelInternalData.meshes.size())
 			{
-				PVR_ASSERT(0 && "Unknown Error");
+				assertion(0 ,  "Unknown Error");
 				return false;
 			}
 			if (numTextures != modelInternalData.textures.size())
 			{
-				PVR_ASSERT(0 && "Unknown Error");
+				assertion(0 ,  "Unknown Error");
 				return false;
 			}
 			if (numNodes != modelInternalData.nodes.size())
 			{
-				PVR_ASSERT(0 && "Unknown Error");
+				assertion(0 ,  "Unknown Error");
 				return false;
 			}
 			return true;
@@ -1065,7 +1074,7 @@ bool readSceneBlock(Stream& stream, assets::Model& model)
 //			// Is the version string in the file the same length as ours?
 //			if (dataLength != pod::c_PODFormatVersionLength)
 //			{
-//				PVR_ASSERT(0&&"POD FILE VERSION MISMATCH");
+//				assertion(0, "POD FILE VERSION MISMATCH");
 //				return false;
 //			}
 //			// ... it is. Check to see if the string matches
@@ -1074,7 +1083,7 @@ bool readSceneBlock(Stream& stream, assets::Model& model)
 //			if (!result) { return result; }
 //			if (strcmp(filesVersion, pod::c_PODFormatVersion) != 0)
 //			{
-//				PVR_ASSERT(0&&"POD FILE VERSION MISMATCH");
+//				assertion(0, "POD FILE VERSION MISMATCH");
 //				return false;
 //			}
 //		}
@@ -1140,7 +1149,7 @@ bool PODReader::readNextAsset(assets::Model& asset)
 			// Is the version string in the file the same length as ours?
 			if (dataLength != pod::c_PODFormatVersionLength)
 			{
-				PVR_ASSERT(0 && "FileVersionMismatch");
+				assertion(0 ,  "FileVersionMismatch");
 				return false;
 			}
 			// ... it is. Check to see if the string matches
@@ -1149,7 +1158,7 @@ bool PODReader::readNextAsset(assets::Model& asset)
 			if (!result) { return result; }
 			if (strcmp(filesVersion, pod::c_PODFormatVersion) != 0)
 			{
-				PVR_ASSERT(0 && "FileVersionMismatch");
+				assertion(0 ,  "FileVersionMismatch");
 				return false;
 			}
 		}

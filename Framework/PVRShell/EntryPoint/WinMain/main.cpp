@@ -7,9 +7,6 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#ifdef DEBUG
-#define _CRTDBG_MAP_ALLOC
-#endif
 
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRShell/StateMachine.h"
@@ -17,6 +14,7 @@
 #include "PVRCore/IPlatformContext.h"
 #include "PVRShell/OS/Windows/WindowsOSData.h"
 #include <windows.h>
+#include <io.h>
 
 #if !defined(UNDER_CE)
 int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_ HINSTANCE, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
@@ -30,7 +28,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE , LPWSTR lpCmdLine, int nCmdSh
 		// Enable memory-leak reports
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_EVERY_16_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
 #endif
-
 		pvr::system::WindowsOSData data;
 		data.cmdShow = nCmdShow;
 

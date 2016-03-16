@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -126,12 +126,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a53eff095fd53269c754c4f3b02499ace"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a53eff095fd53269c754c4f3b02499ace">PVRTDecompressPVRTC</a> (const void *compressedData, int do2bitMode, int xDim, int yDim, unsigned char *outResultImage)</td></tr>
 <tr class="memdesc:a53eff095fd53269c754c4f3b02499ace"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decompresses PVRTC to RGBA 8888.  <a href="#a53eff095fd53269c754c4f3b02499ace">More...</a><br/></td></tr>
 <tr class="separator:a53eff095fd53269c754c4f3b02499ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fbc7b5e7c2e0d9de50f87fb20d3e8f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a2fbc7b5e7c2e0d9de50f87fb20d3e8f3">VertexIndexRead</a> (const byte *const data, const IndexType::Enum type, uint32 *const out)</td></tr>
-<tr class="memdesc:a2fbc7b5e7c2e0d9de50f87fb20d3e8f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read vertex index data into uin32 buffer.  <a href="#a2fbc7b5e7c2e0d9de50f87fb20d3e8f3">More...</a><br/></td></tr>
-<tr class="separator:a2fbc7b5e7c2e0d9de50f87fb20d3e8f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae64c4b2ee03bfd92fe49cd6d1752759f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ae64c4b2ee03bfd92fe49cd6d1752759f">VertexRead</a> (const byte *const data, const DataType::Enum type, uint32 count, float32 *out)</td></tr>
-<tr class="memdesc:ae64c4b2ee03bfd92fe49cd6d1752759f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read vertex data into float32 buffer.  <a href="#ae64c4b2ee03bfd92fe49cd6d1752759f">More...</a><br/></td></tr>
-<tr class="separator:ae64c4b2ee03bfd92fe49cd6d1752759f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64d360bf7125db4ae1469b0c33b65997"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a64d360bf7125db4ae1469b0c33b65997">VertexIndexRead</a> (const byte *const data, const types::IndexType::Enum type, uint32 *const out)</td></tr>
+<tr class="memdesc:a64d360bf7125db4ae1469b0c33b65997"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read vertex index data into uin32 buffer.  <a href="#a64d360bf7125db4ae1469b0c33b65997">More...</a><br/></td></tr>
+<tr class="separator:a64d360bf7125db4ae1469b0c33b65997"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a856b2ca6b614bbd0efa417ce14f9b63b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a856b2ca6b614bbd0efa417ce14f9b63b">VertexRead</a> (const byte *const data, const types::DataType::Enum type, uint32 count, float32 *out)</td></tr>
+<tr class="memdesc:a856b2ca6b614bbd0efa417ce14f9b63b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read vertex data into float32 buffer.  <a href="#a856b2ca6b614bbd0efa417ce14f9b63b">More...</a><br/></td></tr>
+<tr class="separator:a856b2ca6b614bbd0efa417ce14f9b63b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Main namespace of the PowerVR Framework. </p>
@@ -253,7 +253,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a2fbc7b5e7c2e0d9de50f87fb20d3e8f3"></a>
+<a class="anchor" id="a64d360bf7125db4ae1469b0c33b65997"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -269,7 +269,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const IndexType::Enum&#160;</td>
+          <td class="paramtype">const types::IndexType::Enum&#160;</td>
           <td class="paramname"><em>type</em>, </td>
         </tr>
         <tr>
@@ -304,7 +304,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ae64c4b2ee03bfd92fe49cd6d1752759f"></a>
+<a class="anchor" id="a856b2ca6b614bbd0efa417ce14f9b63b"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -320,7 +320,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const DataType::Enum&#160;</td>
+          <td class="paramtype">const types::DataType::Enum&#160;</td>
           <td class="paramname"><em>type</em>, </td>
         </tr>
         <tr>

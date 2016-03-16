@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRPlatformGlue</span> Documentation</a>
    <tbody>
@@ -94,11 +94,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">//CAUTION: [MY_API]/[MY_API]PlatformContext.h must be included BEFORE this file so that it defines NativeDisplay, NativeWindow symbols.</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;PVRCore/CoreIncludes.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_platform_types_8h.html" title="Defines the wrappers to the native object types. Forward declared only. If you need to actually use t...">PVRPlatformGlue/PlatformTypes.h</a>&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;PVRCore/Stream.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;PVRCore/IPlatformContext.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;PVRCore/CoreIncludes.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_platform_types_8h.html" title="Defines the wrappers to the native object types. Forward declared only. If you need to actually use t...">PVRPlatformGlue/PlatformTypes.h</a>&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;PVRCore/Stream.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;PVRCore/IPlatformContext.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;PVRCore/IGraphicsContext.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;PVRCore/OSManager.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;PVRCore/Rectangle.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;PVRCore/RefCounted.h&quot;</span></div>
@@ -121,9 +121,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00035"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html">   35</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1system_1_1_platform_context.html" title="The platform context is the class wrapping all platform-specific objects required to power the PVRApi...">PlatformContext</a> : <span class="keyword">public</span> IPlatformContext</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;{</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#a166ba4462b1049e3d19e722836fe5e7f">   38</a></span>&#160;    <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a166ba4462b1049e3d19e722836fe5e7f">PlatformContext</a>(OSManager&amp; mgr) : m_OSManager(mgr), m_platformContextHandles(), m_swapInterval(-2), m_initialised(false),</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        m_preInitialised(false), m_ContextImplementationID(static_cast&lt;size_t&gt;(-1)), m_maxApiVersion(Api::Unspecified) { }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#a166ba4462b1049e3d19e722836fe5e7f">   38</a></span>&#160;    <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a166ba4462b1049e3d19e722836fe5e7f">PlatformContext</a>(OSManager&amp; mgr) : m_OSManager(mgr), m_platformContextHandles(), m_swapInterval(-2), m_initialized(false),</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        m_preInitialized(false), m_ContextImplementationID(static_cast&lt;size_t&gt;(-1)), m_maxApiVersion(Api::Unspecified),</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        m_enableDebugValidation(false) { }</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    Result::Enum <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a9c5719ab1b1580f500fcac329f730ed9">init</a>();</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
@@ -133,46 +133,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a211ba96018c5a58ecd56b047b4aaf902">isApiSupported</a>(Api::Enum api);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    Result::Enum <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a98ce6665219ab6af111db85fbff7b21b">presentBackbuffer</a>();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a35cc83871d4e395127b2c48f37613518">presentBackbuffer</a>();</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    Result::Enum <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a6d8740f4cb93bc3a70835677a7500902">makeCurrent</a>();</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a2306f11f56fde6a448067c5d1ca58b76">makeCurrent</a>();</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">const</span> <a class="code" href="namespacepvr_1_1system.html#a80dfe0068e505b4bc85750705c8d5782" title="Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ str...">NativePlatformHandles</a>&amp; <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a54931f8283cc646bb525ac38b02673b8">getNativePlatformHandles</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    uint32 <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a32595dfe3bd6520f17c451f3b62a76eb">getSwapChainLength</a>();</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    std::string <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a9ec1ecb9e319f6e7f2c1824d2601e066">getInfo</a>();</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#ab216852f1c10b148b2318e517a8515ac">   58</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html#ab216852f1c10b148b2318e517a8515ac">isInitialised</a>() { <span class="keywordflow">return</span> m_platformContextHandles.get() &amp;&amp; m_initialised; }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#a273d8a6597871aa0eb5a9a50f9411f3b">   60</a></span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a273d8a6597871aa0eb5a9a50f9411f3b">getID</a>()</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keywordflow">return</span>  m_ContextImplementationID;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#acc377fd9750475f821c7cc53553775c0">   65</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html#acc377fd9750475f821c7cc53553775c0">operator==</a>(<span class="keyword">const</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html" title="The platform context is the class wrapping all platform-specific objects required to power the PVRApi...">PlatformContext</a>&amp; rhs) { <span class="keywordflow">return</span> m_ContextImplementationID == rhs.m_ContextImplementationID; }</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keyword">static</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html" title="The platform context is the class wrapping all platform-specific objects required to power the PVRApi...">PlatformContext</a>* <a class="code" href="classpvr_1_1system_1_1_platform_context.html#ad0825357379c1748084b774c87bab0a1">getLastBoundContext</a>();</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a166ba4462b1049e3d19e722836fe5e7f">PlatformContext</a>(<span class="keyword">const</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html" title="The platform context is the class wrapping all platform-specific objects required to power the PVRApi...">PlatformContext</a>&amp; rhs);<span class="comment">//deleted</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    OSManager&amp; m_OSManager;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <a class="code" href="namespacepvr_1_1system.html#a80dfe0068e505b4bc85750705c8d5782" title="Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ str...">NativePlatformHandles</a> m_platformContextHandles;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordtype">int</span> m_swapInterval;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">bool</span> m_initialised;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">bool</span> m_preInitialised;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordtype">size_t</span> m_ContextImplementationID;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    Api::Enum m_maxApiVersion;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">//Must be called after the context has been active inorder to query the driver for resource limitations.</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordtype">void</span> populateMaxApiVersion();</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    Result::Enum <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a9c5719ab1b1580f500fcac329f730ed9">init</a>(<span class="keyword">const</span> <a class="code" href="namespacepvr_1_1system.html#adbf83ab8ef952a6738e1e441940748c5" title="EGL display type. ">NativeDisplay</a>&amp; nativeDisplay, <span class="keyword">const</span> <a class="code" href="namespacepvr_1_1system.html#a185e48a1618f8fcb0fff229ee63f68d0" title="EGL window type. ">NativeWindow</a>&amp; nativeWindow, DisplayAttributes&amp; attributes,</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                      <span class="keyword">const</span> Api::Enum&amp; api);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> hasImplementation() { <span class="keywordflow">return</span> m_ContextImplementationID != <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(-1); }</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;};</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#a534b55a3176b93a5ed8d0dbdc065beb7">   56</a></span>&#160;    <span class="keyword">const</span> <a class="code" href="structpvr_1_1system_1_1_native_platform_handles__.html" title="Forward-declare and smart pointer friendly handle to all the objects that EGL needs to identify a ren...">NativePlatformHandles_</a>&amp; <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a534b55a3176b93a5ed8d0dbdc065beb7">getNativePlatformHandles</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> *m_platformContextHandles; }</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#a86398edb0fb21a765d1ada577a4574e5">   57</a></span>&#160;    <a class="code" href="structpvr_1_1system_1_1_native_platform_handles__.html" title="Forward-declare and smart pointer friendly handle to all the objects that EGL needs to identify a ren...">NativePlatformHandles_</a>&amp; <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a86398edb0fb21a765d1ada577a4574e5">getNativePlatformHandles</a>() { <span class="keywordflow">return</span> *m_platformContextHandles; }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#a7e93344922e07c35bd8f5033cd970e3c">   59</a></span>&#160;    <span class="keyword">const</span> <a class="code" href="structpvr_1_1system_1_1_native_display_handle__.html" title="Forward-declare and smart pointer friendly handle to an EGL display. ">NativeDisplayHandle_</a>&amp; <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a7e93344922e07c35bd8f5033cd970e3c">getNativeDisplayHandle</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> *m_displayHandle; }</div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#a61c297308a3f433081552d0f6c2d0975">   60</a></span>&#160;    <a class="code" href="structpvr_1_1system_1_1_native_display_handle__.html" title="Forward-declare and smart pointer friendly handle to an EGL display. ">NativeDisplayHandle_</a>&amp; <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a61c297308a3f433081552d0f6c2d0975">getNativeDisplayHandle</a>() { <span class="keywordflow">return</span> *m_displayHandle; }</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    std::string <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a9ec1ecb9e319f6e7f2c1824d2601e066">getInfo</a>();</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#ac32558fe84bfac0e688d6bf017bb5e94">   64</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html#ac32558fe84bfac0e688d6bf017bb5e94">isInitialized</a>()<span class="keyword">  const </span>{ <span class="keywordflow">return</span> (m_platformContextHandles.get() != 0) &amp;&amp; m_initialized; }</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#ac5898572af626b204ebdfcd4c360ee8e">   66</a></span>&#160;    <span class="keywordtype">size_t</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html#ac5898572af626b204ebdfcd4c360ee8e">getID</a>()<span class="keyword"> const </span>{  <span class="keywordflow">return</span>  m_ContextImplementationID;  }</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#acc377fd9750475f821c7cc53553775c0">   68</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html#acc377fd9750475f821c7cc53553775c0">operator==</a>(<span class="keyword">const</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html" title="The platform context is the class wrapping all platform-specific objects required to power the PVRApi...">PlatformContext</a>&amp; rhs) { <span class="keywordflow">return</span> m_ContextImplementationID == rhs.m_ContextImplementationID; }</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#ac0becfcf2ddaf45de512e4e46f8b54cd">   70</a></span>&#160;    OSManager&amp; <a class="code" href="classpvr_1_1system_1_1_platform_context.html#ac0becfcf2ddaf45de512e4e46f8b54cd">getOsManager</a>(){ <span class="keywordflow">return</span> m_OSManager; }</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    </div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="code" href="classpvr_1_1system_1_1_platform_context.html#a05c127e375d22e1cc5e7c6f9c34d24a0">   72</a></span>&#160;    <span class="keyword">const</span> OSManager&amp; <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a05c127e375d22e1cc5e7c6f9c34d24a0">getOsManager</a>()<span class="keyword">const</span>{ <span class="keywordflow">return</span> m_OSManager; }</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">static</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html" title="The platform context is the class wrapping all platform-specific objects required to power the PVRApi...">PlatformContext</a>* <a class="code" href="classpvr_1_1system_1_1_platform_context.html#ad0825357379c1748084b774c87bab0a1">getLastBoundContext</a>();</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <a class="code" href="classpvr_1_1system_1_1_platform_context.html#a166ba4462b1049e3d19e722836fe5e7f">PlatformContext</a>(<span class="keyword">const</span> <a class="code" href="classpvr_1_1system_1_1_platform_context.html" title="The platform context is the class wrapping all platform-specific objects required to power the PVRApi...">PlatformContext</a>&amp; rhs);<span class="comment">//deleted</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    OSManager&amp; m_OSManager;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <a class="code" href="namespacepvr_1_1system.html#a80dfe0068e505b4bc85750705c8d5782" title="Pointer to a struct of platform handles. Used to pass around the undefined NativePlatformHandles_ str...">NativePlatformHandles</a> m_platformContextHandles;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <a class="code" href="namespacepvr_1_1system.html#ac9dbde2511080371e576289a42003e56" title="Pointer to the display handle wrapper. Used to pass around the undefined NativeDisplayHandle_ struct...">NativeDisplayHandle</a> m_displayHandle;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    int8 m_swapInterval;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">bool</span> m_initialized;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">bool</span> m_preInitialized;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordtype">bool</span> m_enableDebugValidation;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">size_t</span> m_ContextImplementationID;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    Api::Enum m_maxApiVersion;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="comment">//Must be called after the context has been active inorder to query the driver for resource limitations.</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">void</span> populateMaxApiVersion();</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">//  Result::Enum init(const NativeDisplay&amp; nativeDisplay, const NativeWindow&amp; nativeWindow, DisplayAttributes&amp; attributes, const Api::Enum&amp; api);</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">bool</span> hasImplementation() { <span class="keywordflow">return</span> m_ContextImplementationID != <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(-1); }</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;};</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

@@ -38,7 +38,7 @@
 	not require API calls, for example object positions, or arrays containing
 	vertex data, before they are uploaded.
 
-	initView:	This is called after the API has initialised, and can be
+	initView:	This is called after the API has initialized, and can be
 	used to do any remaining initialisation which requires API functionality.
 	In this app, it is used to upload the vertex data.
 

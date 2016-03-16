@@ -1,0 +1,4 @@
+<map id="pvr::api::impl::DescriptorSetLayout_" name="pvr::api::impl::DescriptorSetLayout_">
+<area shape="rect" id="node2" href="$classpvr_1_1api_1_1gles_1_1_descriptor_set_layout_gles__.html" title="ctor. OpenGL ES implementation of a DescriptorSet. " alt="" coords="5,97,168,138"/>
+<area shape="rect" id="node3" href="$classpvr_1_1api_1_1vulkan_1_1_descriptor_set_layout_vk__.html" title="ctor. Vulkan implementation of a DescriptorSet. " alt="" coords="193,97,367,138"/>
+</map>

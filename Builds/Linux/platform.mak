@@ -17,7 +17,7 @@ DEBUG_RELEASE = Debug
 PLAT_CFLAGS   += -DDEBUG -g
 else
 DEBUG_RELEASE = Release
-PLAT_CFLAGS   += -DRELEASE -O2
+PLAT_CFLAGS   += -DRELEASE -O3
 endif
 PLAT_CFLAGS   += -Wno-psabi
 
@@ -26,7 +26,6 @@ include $(SDKDIR)/Builds/Linux/$(PLAT_SUFFIX)/platform.mak
 include $(SDKDIR)/Builds/Linux/$(PLAT_SUFFIX)/api.mak
 
 API_INC ?= $(APIS)
-API_LINK ?= $(APIS) 
 
 #enable C++11 if available
 GCC_CPP11 = $(shell OUTPUT=`$(PLAT_CPP) -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/'`;if [ $$OUTPUT -gt 40600 ];then echo 1;else echo 0;fi;)
@@ -98,6 +97,13 @@ endif
 PLAT_CFLAGS += -DBUILD_OCL
 endif
 
+ifneq (,$(filter VULKAN,$(APIS)))
+ifneq (,$(filter VULKAN,$(API_LINK)))
+PLAT_LINK 	+= -lvulkan
+endif
+PLAT_CFLAGS += -DBUILD_VULKAN
+endif
+
 #BUILDING AND LINKING PROJECT DEPENDENCIES: PVRCore, PVRAssets, PVRShell, PVR[API], PVRUIRenderer
 
 .PHONY: clean cleanexample $(CLEAN_FRAMEWORK)
@@ -105,7 +111,7 @@ endif
 #Link in Assets and, finally Core
 LINK += $(addprefix -L,$(LIBPATHS))
 LINK += $(addprefix -l,$(LIBRARIES))
-PLAT_LINK += $(WS_LIBS) -lrt -ldl
+PLAT_LINK += $(WS_LIBS) -lpthread -lrt -ldl
 
 PLAT_FRAMEWORKLIBPATH ?= $(SDKDIR)/Framework/Bin/$(PLATFORM)/$(DEBUG_RELEASE)$(WS)
 PVRCore:
@@ -116,6 +122,16 @@ PVRShell:
 	$(MAKE) -C $(SDKDIR)/Framework/PVRShell/Build/LinuxGeneric/
 PVRGles:
 	$(MAKE) -C $(SDKDIR)/Framework/PVRApi/OGLES/Build/LinuxGeneric/
+PVRVulkan:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRApi/Vulkan/Build/LinuxGeneric/
+PVRNativeVulkan:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRNativeApi/Vulkan/Build/LinuxGeneric/
+PVRVulkanGlue:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRPlatformGlue/Vulkan/Build/LinuxGeneric/
+PVRNativeGlesRayTracing:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRNativeApi/OGLESRayTracing/Build/LinuxGeneric/
+PVRNativeGles:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRNativeApi/OGLES/Build/LinuxGeneric/
 PVREgl:
 	$(MAKE) -C $(SDKDIR)/Framework/PVRPlatformGlue/EGL/Build/LinuxGeneric/
 PVRUIRenderer:
@@ -131,6 +147,16 @@ CLEAN_PVRShell:
 	$(MAKE) clean -C $(SDKDIR)/Framework/PVRShell/Build/LinuxGeneric/
 CLEAN_PVRGles:
 	$(MAKE) clean -C $(SDKDIR)/Framework/PVRApi/OGLES/Build/LinuxGeneric/
+CLEAN_PVRVulkan:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRApi/Vulkan/Build/LinuxGeneric/
+CLEAN_PVRNativeVulkan:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRNativeApi/Vulkan/Build/LinuxGeneric/
+CLEAN_PVRVulkanGlue:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRPlatformGlue/Vulkan/Build/LinuxGeneric/
+CLEAN_PVRNativeGlesRayTracing:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRNativeApi/OGLESRayTracing/Build/LinuxGeneric/
+CLEAN_PVRNativeGles:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRNativeApi/OGLES/Build/LinuxGeneric/
 CLEAN_PVREgl:
 	$(MAKE) clean -C $(SDKDIR)/Framework/PVRPlatformGlue/EGL/Build/LinuxGeneric/
 CLEAN_PVRUIRenderer:

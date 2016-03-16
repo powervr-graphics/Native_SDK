@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -91,68 +91,61 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">\brief         Utilities to facilitate loading native libraries in a platform-agnostic way.</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#if defined( _WIN32 )</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;windows.h&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">typedef</span> HINSTANCE <a class="code" href="_native_library_8h.html#a73a599a70680e312d5c961f72ea2f4a3">LIBTYPE</a>;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="code" href="_native_library_8h.html#a73a599a70680e312d5c961f72ea2f4a3">   12</a></span>&#160;<span class="preprocessor"></span><span class="keyword">typedef</span> <span class="keywordtype">void</span>* <a class="code" href="_native_library_8h.html#a73a599a70680e312d5c961f72ea2f4a3">LIBTYPE</a>;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">\brief    Contains functionality used to interface with the underlying native platform</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="code" href="namespacepvr_1_1native.html">   21</a></span>&#160;<span class="keyword">namespace </span>native {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">\brief    A struct representing a native library. Has utilities to facilitate platform-agnostic loading/unloading.</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="code" href="structpvr_1_1native_1_1_native_library.html">   25</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structpvr_1_1native_1_1_native_library.html" title="A struct representing a native library. Has utilities to facilitate platform-agnostic loading/unloadi...">NativeLibrary</a></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;{</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>pvr {</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">\brief    Contains functionality used to interface with the underlying native platform</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="code" href="namespacepvr_1_1native.html">   14</a></span>&#160;<span class="keyword">namespace </span>native {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">\brief    A struct representing a native library. Has utilities to facilitate platform-agnostic loading/unloading.</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="code" href="structpvr_1_1native_1_1_native_library.html">   18</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structpvr_1_1native_1_1_native_library.html" title="A struct representing a native library. Has utilities to facilitate platform-agnostic loading/unloadi...">NativeLibrary</a></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;{</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="comment">/*!*********************************************************************************************************************</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">    \brief   Check if the library was loaded properly.</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">    \return   True if the library did NOT load properly.</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">    ***********************************************************************************************************************/</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="structpvr_1_1native_1_1_native_library.html#a39f1aa5d08cdcf9689c1738b8f5e89b9" title="Check if the library was loaded properly. ">LoadFailed</a>();</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="code" href="structpvr_1_1native_1_1_native_library.html#a75731526fd6eebb10585db01aa565d2a">   26</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="structpvr_1_1native_1_1_native_library.html#a75731526fd6eebb10585db01aa565d2a" title="Set to true to avoid printing errors. ">m_disableErrorPrint</a>; </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">    \brief   Check if the library was loaded properly.</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">    \return   True if the library did NOT load properly.</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">    \brief   Load a library with the specified filename.</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">    \param   libraryPath The path to find the library (name or Path+name).</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">    ***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="structpvr_1_1native_1_1_native_library.html#a39f1aa5d08cdcf9689c1738b8f5e89b9" title="Check if the library was loaded properly. ">LoadFailed</a>();</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="code" href="structpvr_1_1native_1_1_native_library.html#a75731526fd6eebb10585db01aa565d2a">   33</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="structpvr_1_1native_1_1_native_library.html#a75731526fd6eebb10585db01aa565d2a" title="Set to true to avoid printing errors. ">m_disableErrorPrint</a>; </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="structpvr_1_1native_1_1_native_library.html#a8500c912f1177a6f8ace9490d9cdcbb1" title="Load a library with the specified filename. ">NativeLibrary</a>(<span class="keyword">const</span> <a class="code" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d" title="String of basic characters. ">std::string</a>&amp; libraryPath);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="structpvr_1_1native_1_1_native_library.html#a210b40eff02182abef9a95d1a9bc32af">~NativeLibrary</a>();</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">    \brief   Load a library with the specified filename.</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">    \param   libraryPath The path to find the library (name or Path+name).</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">    ***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="structpvr_1_1native_1_1_native_library.html#a8500c912f1177a6f8ace9490d9cdcbb1" title="Load a library with the specified filename. ">NativeLibrary</a>(<span class="keyword">const</span> <a class="code" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d" title="String of basic characters. ">std::string</a>&amp; libraryPath);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="structpvr_1_1native_1_1_native_library.html#a210b40eff02182abef9a95d1a9bc32af">~NativeLibrary</a>();</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">    \brief   Get a function pointer from the library.</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">    \param   functionName  The name of the function to retrieve the pointer to.</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">    \return  The function pointer as a void pointer. Null if failed. Cast to the proper type.</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">    ***********************************************************************************************************************/</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">void</span>* <a class="code" href="structpvr_1_1native_1_1_native_library.html#a32e873364cc233a59514c2c5129b2e1d" title="Get a function pointer from the library. ">getFunction</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* functionName);</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="comment">/*!*********************************************************************************************************************</span></div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">    \brief   Get a function pointer from the library.</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">    \param   functionName  The name of the function to retrieve the pointer to.</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">    \return  The function pointer as a void pointer. Null if failed. Cast to the proper type.</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">    ***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">void</span>* <a class="code" href="structpvr_1_1native_1_1_native_library.html#a32e873364cc233a59514c2c5129b2e1d" title="Get a function pointer from the library. ">getFunction</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* functionName);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">    \brief   Get a function pointer from the library.</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">    \tparam  PtrType_ The type of the function pointer</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">    \param   functionName  The name of the function to retrieve the pointer to</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">    \return  The function pointer. Null if failed.</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">    ***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno"><a class="code" href="structpvr_1_1native_1_1_native_library.html#aef3aa1f70e85b4b97e044d81c7b8aeeb">   55</a></span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> PtrType_&gt; PtrType_ <a class="code" href="structpvr_1_1native_1_1_native_library.html#aef3aa1f70e85b4b97e044d81c7b8aeeb" title="Get a function pointer from the library. ">getFunction</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* functionName)</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>PtrType_<span class="keyword">&gt;</span>(<a class="code" href="structpvr_1_1native_1_1_native_library.html#a32e873364cc233a59514c2c5129b2e1d" title="Get a function pointer from the library. ">getFunction</a>(functionName));</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">    \brief   Release this library.</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">    ***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structpvr_1_1native_1_1_native_library.html#afa06ec7028206206603d00c58efc7fae" title="Release this library. ">CloseLib</a>();</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="code" href="structpvr_1_1native_1_1_native_library.html#af3f963b1f5765a67a4b53a039bdc3b27">   65</a></span>&#160;    <a class="code" href="_native_library_8h.html#a73a599a70680e312d5c961f72ea2f4a3">LIBTYPE</a>     <a class="code" href="structpvr_1_1native_1_1_native_library.html#af3f963b1f5765a67a4b53a039bdc3b27">m_hHostLib</a>;</div>
-<div class="line"><a name="l00066"></a><span class="lineno"><a class="code" href="structpvr_1_1native_1_1_native_library.html#abfb810ce7fb64cdc04822e41db173049">   66</a></span>&#160;    <span class="keywordtype">bool</span>        <a class="code" href="structpvr_1_1native_1_1_native_library.html#abfb810ce7fb64cdc04822e41db173049">m_bError</a>;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;};</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">    \tparam  PtrType_ The type of the function pointer</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">    \param   functionName  The name of the function to retrieve the pointer to</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">    \return  The function pointer. Null if failed.</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">    ***********************************************************************************************************************/</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="code" href="structpvr_1_1native_1_1_native_library.html#aef3aa1f70e85b4b97e044d81c7b8aeeb">   48</a></span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> PtrType_&gt; PtrType_ <a class="code" href="structpvr_1_1native_1_1_native_library.html#aef3aa1f70e85b4b97e044d81c7b8aeeb" title="Get a function pointer from the library. ">getFunction</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* functionName)</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>PtrType_<span class="keyword">&gt;</span>(<a class="code" href="structpvr_1_1native_1_1_native_library.html#a32e873364cc233a59514c2c5129b2e1d" title="Get a function pointer from the library. ">getFunction</a>(functionName));</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    }</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="comment">/*!*********************************************************************************************************************</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">    \brief   Release this library.</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">    ***********************************************************************************************************************/</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="structpvr_1_1native_1_1_native_library.html#afa06ec7028206206603d00c58efc7fae" title="Release this library. ">CloseLib</a>();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00058"></a><span class="lineno"><a class="code" href="structpvr_1_1native_1_1_native_library.html#a6ff0e6ce24f75ed9eebb7ea6dd8eefae">   58</a></span>&#160;    <span class="keywordtype">void</span>*       <a class="code" href="structpvr_1_1native_1_1_native_library.html#a6ff0e6ce24f75ed9eebb7ea6dd8eefae">m_hHostLib</a>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="code" href="structpvr_1_1native_1_1_native_library.html#abfb810ce7fb64cdc04822e41db173049">   59</a></span>&#160;    <span class="keywordtype">bool</span>        <a class="code" href="structpvr_1_1native_1_1_native_library.html#abfb810ce7fb64cdc04822e41db173049">m_bError</a>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;};</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

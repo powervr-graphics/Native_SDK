@@ -6,47 +6,56 @@
               "baked" ahead of time - Shaders, blending, depth/stencil tests, vertex assembly etc.
 ***********************************************************************************************************************/
 #pragma once
-#include "PVRCore/IGraphicsContext.h"
-#include "PVRApi/ApiObjects/PipelineState.h"
-#include "PVRApi/ApiObjects/PipelineStateCreateParam.h"
-#include "PVRApi/ApiObjects/ShaderProgramState.h"
-#include "PVRApi/ApiErrors.h"
+#include "PVRApi/ApiObjects/PipelineLayout.h"
+#include "PVRApi/ApiObjects/PipelineConfig.h"
 #include <vector>
 
 namespace pvr {
 namespace api {
+/*!****************************************************************************************************************
+\brief This represents al the information needed to create a GraphicsPipeline. All items must have proper values
+	   for a pipeline to be successfully created, but all those for which it is possible  (except, for example,
+	   Shaders and Vertex Formats) will have defaults same as their default values OpenGL ES graphics API.
+*******************************************************************************************************************/
+struct GraphicsPipelineCreateParam
+{
+public:
+	pipelineCreation::DepthStencilStateCreateParam		depthStencil;	//!< Depth and stencil buffer creation info
+	pipelineCreation::ColorBlendStateCreateParam		colorBlend;	//!< Color blending and attachments info
+	pipelineCreation::ViewportStateCreateParam			viewport;		//!< Viewport creation info
+	pipelineCreation::RasterStateCreateParam			rasterizer;	//!< Rasterizer configuration creation info
+	pipelineCreation::VertexInputCreateParam			vertexInput;	//!< Vertex Input creation info
+	pipelineCreation::InputAssemblerStateCreateParam	inputAssembler;//!< Input Assembler creation info
+	pipelineCreation::VertexShaderStageCreateParam		vertexShader;	//!< Vertex shader information
+	pipelineCreation::FragmentShaderStageCreateParam	fragmentShader;//!< Fragment shader information
+	pipelineCreation::GeometryShaderStageCreateParam	geometryShader;
+	pipelineCreation::TessControlShaderStageCreateParam tessControlShader; //<! Tesselation Control Shader information
+	pipelineCreation::TessEvalShaderStageCreateParam	tessEvalShader; //<! Tesselation Evaluation Shader information
+	pipelineCreation::MultiSampleStateCreateParam		multiSample;	//!< Multisampling information
+	pipelineCreation::DynamicStatesCreateParam			dynamicStates;
+	pvr::api::PipelineLayout							pipelineLayout;//!< The pipeline layout
+	pvr::api::RenderPass								renderPass;	//!< The Renderpass
+	uint32												subPass;		//!< The subpass index
+
+	GraphicsPipelineCreateParam(): subPass(0) {}
+};
 
 namespace impl {
-//!\cond NO_DOXYGEN
-class PushPipeline;
-class PopPipeline;
-class ResetPipeline;
-template<typename> class PackagedBindable;
-template<typename, typename> class PackagedBindableWithParam;
-class ParentableGraphicsPipelineImpl;
-//!\endcond
-
+class GraphicsPipelineImplementationDetails;
 /*!****************************************************************************************************************
 \brief API graphics pipeline wrapper. A GraphicsPipeline represents the configuration of almost the entire RenderState,
 including vertex description, primitive assembly, Shader configuration, rasterization, blending etc. Access through
 the Framework managed object GraphicsPipeline.
 ******************************************************************************************************************/
-class GraphicsPipelineImpl
+class GraphicsPipeline_
 {
-	template<typename any> friend class ::pvr::api::impl::PackagedBindable;
+	friend class PopPipeline;
+	friend class CommandBufferBase_;
+	friend class GraphicsPipelineImplementationDetails;
+	template<typename> friend class PackagedBindable;
+	template<typename> friend struct ::pvr::RefCountEntryIntrusive;
 	friend class ::pvr::IGraphicsContext;
-	friend class ::pvr::api::impl::PushPipeline;
-	friend class ::pvr::api::impl::PopPipeline;
-	friend class ::pvr::api::impl::ResetPipeline;
 public:
-	typedef int isBindable; //!< SFINAE type trait: Required for CommandBuffer submission
-
-	/*!****************************************************************************************************************
-	\brief Return pipeline shaderprogram.
-	\return GraphicsShaderProgramState
-	******************************************************************************************************************/
-	GraphicsShaderProgramState getShaderProgram();
-
 	/*!****************************************************************************************************************
 	\brief Return pipeline vertex input binding info.
 	\return VertexInputBindingInfo
@@ -57,13 +66,12 @@ public:
 	\brief Return all the information on VertexAttributes of this pipeline.
 	\return The information on VertexAttributes of this pipeline as a const pointer to VertexAttributeInfo.
 	******************************************************************************************************************/
-	VertexAttributeInfo const* getAttributesInfo(pvr::uint16 bindId)const;
-
+	VertexAttributeInfoWithBinding const* getAttributesInfo(pvr::uint16 bindId)const;
 
 	/*!****************************************************************************************************************
 	\brief Destructor. Destroys all resources held by this pipeline.
 	******************************************************************************************************************/
-	virtual ~GraphicsPipelineImpl() { destroy(); }
+	virtual ~GraphicsPipeline_();
 
 	/*!****************************************************************************************************************
 	\brief Destroy this pipeline. Releases all resources held by the pipeline.
@@ -71,7 +79,7 @@ public:
 	void destroy();
 
 	/*!****************************************************************************************************************
-	\brief Get If uniforms are supported by the underlying API, get the shader locations of several uniform variables 
+	\brief Get If uniforms are supported by the underlying API, get the shader locations of several uniform variables
 			at once. If a uniform does not exist or is inactive, returns -1
 	\param[in] uniforms An array of uniform variable names
 	\param[in] numUniforms The number of uniforms in the array
@@ -91,7 +99,7 @@ public:
 	int32 getUniformLocation(const char8* uniform);
 
 	/*!****************************************************************************************************************
-	\brief Get Get the shader locations of several uniform variables at once. If an attribute does not exist or is 
+	\brief Get Get the shader locations of several uniform variables at once. If an attribute does not exist or is
 			inactive, returns -1
 	\brief attribute attributes name
 	\return The shader attribute index of an attribute, -1 if nonexistent.
@@ -99,7 +107,7 @@ public:
 	int32 getAttributeLocation(const char8* attribute);
 
 	/*!****************************************************************************************************************
-	\brief Get multiple attribute locations at once. If an attribute is inactive or does not exist, the location is 
+	\brief Get multiple attribute locations at once. If an attribute is inactive or does not exist, the location is
 			set to -1
 	\param[in] attributes The array of attributes names to get locations
 	\param[in] numAttributes of attributes in the array
@@ -123,67 +131,15 @@ public:
 	******************************************************************************************************************/
 	const PipelineLayout& getPipelineLayout()const;
 
+	const native::HPipeline_& getNativeObject() const;
+	native::HPipeline_& getNativeObject();
 protected:
-	GraphicsStateContainer* m_states;
-	ParentableGraphicsPipelineImpl* m_parent;
-	GraphicsContext m_context;
-	Result::Enum init(GraphicsPipelineCreateParam& desc,
-	ParentableGraphicsPipelineImpl* parent = NULL);
+	Result::Enum init(const GraphicsPipelineCreateParam& desc, ParentableGraphicsPipeline_* parent = NULL);
 
 	Result::Enum createProgram();
-	GraphicsPipelineImpl(GraphicsContext& device);
-private:
-	struct PipelineRelation
-	{
-		enum Enum
-		{
-			Unrelated,
-			Identity,
-			Null_Null,
-			Null_NotNull,
-			NotNull_Null,
-			Father_Child,
-			Child_Father,
-			Siblings
-		};
-	};
-
-	static PipelineRelation::Enum getRelation(GraphicsPipelineImpl* first, GraphicsPipelineImpl* second);
-
-	struct PipelineStatePointerLess
-	{
-		inline bool operator()(const PipelineState* lhs, const PipelineState* rhs) const
-		{
-			return static_cast<int32>(lhs->getStateType()) < static_cast<int32>(rhs->getStateType());
-		}
-	};
-
-	struct PipelineStatePointerGreater
-	{
-		inline bool operator()(const PipelineState* lhs, const PipelineState* rhs) const
-		{
-			return static_cast<int32>(lhs->getStateType()) > static_cast<int32>(rhs->getStateType());
-		}
-	};
-
-	bool m_initialised;
-	bool createPipeline();
-	void setAll();
-
-	/*!*********************************************************************************************************************
-	\brief	Bind this pipeline for rendering. Switching to/from from a pipeline in the same hierarchy (parent, sibling) is
-	very efficient, while switching to/from a null pipeline will in general require a large number of state changes.
-	\param	context		The GraphicsContext to bind the pipeline to. A pipeline itself is effectively stateless and can be
-	bound to any number of contexts
-	***********************************************************************************************************************/
+	GraphicsPipeline_(GraphicsContext& device);
+	std::auto_ptr<GraphicsPipelineImplementationDetails> pimpl;
 	void bind(IGraphicsContext& context);
-
-	//Set all states that are different than the parent's
-	void setFromParent();
-
-	//Unset all states that are different than the parent's
-	void unsetToParent();
-
 };
 
 /*!****************************************************************************************************************
@@ -196,9 +152,9 @@ to create efficient Pipeline Hierarchies.
 efficient. In effect, a ParentableGraphicsPipeline allows the user to create another (non-parentable pipeline) as
 a "diff" of the state between the Parentable pipeline and itself, making the transition between them very efficient.
 ******************************************************************************************************************/
-class ParentableGraphicsPipelineImpl : public GraphicsPipelineImpl
+class ParentableGraphicsPipeline_ : public GraphicsPipeline_
 {
-	friend class GraphicsPipelineImpl;
+	friend class GraphicsPipeline_;
 	friend class ::pvr::IGraphicsContext;
 	std::auto_ptr<GraphicsPipelineCreateParam> m_createParams;
 public:
@@ -206,8 +162,8 @@ public:
 	\brief  Construct this on device.
 	\param device
 	******************************************************************************************************************/
-	ParentableGraphicsPipelineImpl(GraphicsContext& device) :
-		GraphicsPipelineImpl(device) {}
+	ParentableGraphicsPipeline_(GraphicsContext& device) :
+		GraphicsPipeline_(device) {}
 
 	/*!****************************************************************************************************************
 	\brief Initialize this with create param.
@@ -223,49 +179,14 @@ public:
 
 	/*!****************************************************************************************************************
 	\brief	return pipeline create param used to create the child pipeline
-	\return	pvr::api::GraphicsPipelineCreateParam
+	\return	The createParam used to create this pipeline
 	*******************************************************************************************************************/
 	GraphicsPipelineCreateParam getCreateParam() { return *m_createParams.get(); }
 
-	/*!****************************************************************************************************************
-	\brief Get pipeline create info.
-	\return GraphicsPipelineCreateParam*
-	******************************************************************************************************************/
-	GraphicsPipelineCreateParam* getDescriptors()
-	{
-		return m_createParams.get();
-	}
 };
 
-inline GraphicsPipelineImpl::PipelineRelation::Enum GraphicsPipelineImpl::getRelation(
-    GraphicsPipelineImpl* first, GraphicsPipelineImpl* second)
-{
-	if (first)
-	{
-		if (second)
-		{
-			return first == second ? PipelineRelation::Identity :
-			       first->m_parent == second ? PipelineRelation::Child_Father :
-			       first->m_parent == second->m_parent ? first->m_parent == NULL ? PipelineRelation::Unrelated : PipelineRelation::Siblings :
-			       first == second->m_parent ? PipelineRelation::Father_Child :
-			       PipelineRelation::Unrelated;
-		}
-		else { return PipelineRelation::NotNull_Null; }
-	}
-	else { return second ? PipelineRelation::Null_NotNull : PipelineRelation::Null_Null; }
 }
-
-inline void GraphicsPipelineImpl::setAll()
-{
-	debugLogApiError("GraphicsPipeline::setAll entry");
-	if (m_parent)
-	{
-		m_parent->setAll();
-	}
-	setFromParent();
-	debugLogApiError("GraphicsPipeline::setAll exit");
-}
-
-}
+inline native::HPipeline_& native_cast(pvr::api::impl::GraphicsPipeline_& object) { return object.getNativeObject(); }
+inline const native::HPipeline_& native_cast(const pvr::api::impl::GraphicsPipeline_& object) { return object.getNativeObject(); }
 }
 }

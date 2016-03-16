@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRPlatformGlue</span> Documentation</a>
    <tbody>
@@ -108,9 +108,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:adbf83ab8ef952a6738e1e441940748c5"><td class="memItemLeft" align="right" valign="top">typedef EGLNativeDisplayType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1system.html#adbf83ab8ef952a6738e1e441940748c5">NativeDisplay</a></td></tr>
-<tr class="memdesc:adbf83ab8ef952a6738e1e441940748c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">EGL display type.  <a href="#adbf83ab8ef952a6738e1e441940748c5">More...</a><br/></td></tr>
-<tr class="separator:adbf83ab8ef952a6738e1e441940748c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4631e3a102a3e6fe6331e7d54552b017"><td class="memItemLeft" align="right" valign="top">typedef EGLNativeDisplayType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1system.html#a4631e3a102a3e6fe6331e7d54552b017">NativeDisplay</a></td></tr>
+<tr class="memdesc:a4631e3a102a3e6fe6331e7d54552b017"><td class="mdescLeft">&#160;</td><td class="mdescRight">EGL display type.  <a href="#a4631e3a102a3e6fe6331e7d54552b017">More...</a><br/></td></tr>
+<tr class="separator:a4631e3a102a3e6fe6331e7d54552b017"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9dbde2511080371e576289a42003e56"><td class="memItemLeft" align="right" valign="top">typedef std::auto_ptr<br class="typebreak"/>
 &lt; <a class="el" href="structpvr_1_1system_1_1_native_display_handle__.html">NativeDisplayHandle_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1system.html#ac9dbde2511080371e576289a42003e56">NativeDisplayHandle</a></td></tr>
 <tr class="memdesc:ac9dbde2511080371e576289a42003e56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the display handle wrapper. Used to pass around the undefined <a class="el" href="structpvr_1_1system_1_1_native_display_handle__.html" title="Forward-declare and smart pointer friendly handle to an EGL display. ">NativeDisplayHandle_</a> struct.  <a href="#ac9dbde2511080371e576289a42003e56">More...</a><br/></td></tr>
@@ -119,6 +119,8 @@ Typedefs</h2></td></tr>
 &lt; <a class="el" href="structpvr_1_1system_1_1_native_platform_handles__.html">NativePlatformHandles_</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1system.html#a80dfe0068e505b4bc85750705c8d5782">NativePlatformHandles</a></td></tr>
 <tr class="memdesc:a80dfe0068e505b4bc85750705c8d5782"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to a struct of platform handles. Used to pass around the undefined <a class="el" href="structpvr_1_1system_1_1_native_platform_handles__.html" title="Forward-declare and smart pointer friendly handle to all the objects that EGL needs to identify a ren...">NativePlatformHandles_</a> struct.  <a href="#a80dfe0068e505b4bc85750705c8d5782">More...</a><br/></td></tr>
 <tr class="separator:a80dfe0068e505b4bc85750705c8d5782"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a018f0a136144a61d49061735fe0c1d1a"><td class="memItemLeft" align="right" valign="top">typedef VkSurfaceKHR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1system.html#a018f0a136144a61d49061735fe0c1d1a">NativeSurface</a></td></tr>
+<tr class="separator:a018f0a136144a61d49061735fe0c1d1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a185e48a1618f8fcb0fff229ee63f68d0"><td class="memItemLeft" align="right" valign="top">typedef EGLNativeWindowType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1system.html#a185e48a1618f8fcb0fff229ee63f68d0">NativeWindow</a></td></tr>
 <tr class="memdesc:a185e48a1618f8fcb0fff229ee63f68d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">EGL window type.  <a href="#a185e48a1618f8fcb0fff229ee63f68d0">More...</a><br/></td></tr>
 <tr class="separator:a185e48a1618f8fcb0fff229ee63f68d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -131,17 +133,18 @@ Typedefs</h2></td></tr>
 <div class="textblock"><p>The <a class="el" href="namespacepvr_1_1system.html" title="The pvr::system namespace contains low-level, system-communication classes and functions. ">pvr::system</a> namespace contains low-level, system-communication classes and functions. </p>
 <hr/>
  </div><h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="adbf83ab8ef952a6738e1e441940748c5"></a>
+<a class="anchor" id="a4631e3a102a3e6fe6331e7d54552b017"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef EGLNativeDisplayType <a class="el" href="namespacepvr_1_1system.html#adbf83ab8ef952a6738e1e441940748c5">pvr::system::NativeDisplay</a></td>
+          <td class="memname">typedef VkDisplayKHR <a class="el" href="namespacepvr_1_1system.html#a4631e3a102a3e6fe6331e7d54552b017">pvr::system::NativeDisplay</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>EGL display type. </p>
+<p>Vulkan display type.</p>
 <hr/>
  
 </div>
@@ -174,6 +177,18 @@ Typedefs</h2></td></tr>
 <p>Pointer to a struct of platform handles. Used to pass around the undefined <a class="el" href="structpvr_1_1system_1_1_native_platform_handles__.html" title="Forward-declare and smart pointer friendly handle to all the objects that EGL needs to identify a ren...">NativePlatformHandles_</a> struct. </p>
 <hr/>
  
+</div>
+</div>
+<a class="anchor" id="a018f0a136144a61d49061735fe0c1d1a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef VkSurfaceKHR <a class="el" href="namespacepvr_1_1system.html#a018f0a136144a61d49061735fe0c1d1a">pvr::system::NativeSurface</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 </div>
 </div>
 <a class="anchor" id="a185e48a1618f8fcb0fff229ee63f68d0"></a>

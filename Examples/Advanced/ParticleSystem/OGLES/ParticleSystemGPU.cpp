@@ -8,14 +8,14 @@
 #include "ParticleSystemGPU.h"
 #include "PVRApi/ApiObjects/ComputePipeline.h"
 #include "PVRAssets/Shader.h"
-
+using namespace pvr::types;
 /*!*********************************************************************************************************************
 \brief ctor
 ***********************************************************************************************************************/
 ParticleSystemGPU::ParticleSystemGPU(pvr::IAssetProvider& assetLoader)	:
 	context(assetLoader.getGraphicsContext()), assetProvider(assetLoader),
 	computeShaderSrcFile("ParticleSolver.csh"), workgroupSize(32),
-/*SIMULATION DATA*/
+	/*SIMULATION DATA*/
 	numParticles(0), particleArrayData(0), numSpheres(0)
 {
 	memset(&particleConfigData, 0, sizeof(ParticleConfig));
@@ -47,12 +47,12 @@ ParticleSystemGPU::~ParticleSystemGPU()
 bool ParticleSystemGPU::init(pvr::string& errorStr)
 {
 	if (!createComputePipeline(errorStr)) { return false; }
-	pvr::api::Buffer buffer = context->createBuffer(sizeof(ParticleConfig), pvr::api::BufferBindingUse::UniformBuffer);
-	particleConfigUbo = context->createUbo(buffer, 0, sizeof(ParticleConfig));
+	pvr::api::Buffer buffer = context->createBuffer(sizeof(ParticleConfig), BufferBindingUse::UniformBuffer);
+	particleConfigUbo = context->createBufferView(buffer, 0, sizeof(ParticleConfig));
 	particleConfigUbo->update(&particleConfigData, 0, sizeof(ParticleConfig));
 	for (pvr::uint8 i = 0; i < NumBuffers; ++i)
 	{
-		descSets[i] = context->allocateDescriptorSet(pipe->getPipelineLayout()->getDescriptorSetLayout()[0]);
+		descSets[i] = context->createDescriptorSetOnDefaultPool(pipe->getPipelineLayout()->getDescriptorSetLayout()[0]);
 	}
 	return true;
 }
@@ -67,10 +67,10 @@ bool ParticleSystemGPU::createComputePipeline(pvr::string& errorStr)
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
 	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
 	descSetLayoutInfo
-	.addBinding(1, pvr::api::DescriptorType::UniformBuffer, 1, pvr::api::ShaderStageFlags::Compute)
-	.addBinding(2, pvr::api::DescriptorType::UniformBuffer, 1, pvr::api::ShaderStageFlags::Compute)
-	.addBinding(3, pvr::api::DescriptorType::StorageBuffer, 1, pvr::api::ShaderStageFlags::Compute);
-	pipeLayoutInfo.addDescSetLayout(0, context->createDescriptorSetLayout(descSetLayoutInfo));
+	.setBinding(1, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Compute)
+	.setBinding(2, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Compute)
+	.setBinding(3, DescriptorType::StorageBuffer, 1, ShaderStageFlags::Compute);
+	pipeLayoutInfo.setDescSetLayout(0, context->createDescriptorSetLayout(descSetLayoutInfo));
 
 	pvr::api::debugLogApiError("ComputeShaderProgramState::generate enter");
 	pvr::api::ComputePipelineCreateParam pipeCreateInfo;
@@ -81,7 +81,7 @@ bool ParticleSystemGPU::createComputePipeline(pvr::string& errorStr)
 	pvr::assets::ShaderFile fileVersioning;
 	fileVersioning.populateValidVersions(computeShaderSrcFile, assetProvider);
 	pvr::api::Shader shader = context->createShader(*fileVersioning.getBestStreamForApi(context->getApiType()),
-	                          pvr::ShaderType::ComputeShader, defines_buffer, 1);
+	                          ShaderType::ComputeShader, defines_buffer, 1);
 	if (shader.isNull()) {	return false;	}
 	pipeCreateInfo.computeShader.setShader(shader);
 	pipeCreateInfo.pipelineLayout = context->createPipelineLayout(pipeLayoutInfo);
@@ -147,7 +147,7 @@ bool ParticleSystemGPU::setCollisionSpheres(const Sphere* spheres, pvr::uint32 n
 {
 	if (numSpheres)
 	{
-		collisonSpheresUbo = context->createUbo(context->createBuffer(sizeof(Sphere) * numSpheres, pvr::api::BufferBindingUse::UniformBuffer), 0, sizeof(Sphere) * numSpheres);
+		collisonSpheresUbo = context->createBufferView(context->createBuffer(sizeof(Sphere) * numSpheres, BufferBindingUse::UniformBuffer), 0, sizeof(Sphere) * numSpheres);
 		collisonSpheresUbo->update(spheres, 0, sizeof(Sphere)* numSpheres);
 	}
 	return true;
@@ -162,7 +162,7 @@ bool ParticleSystemGPU::setCollisionSpheres(const Sphere* spheres, pvr::uint32 n
 void ParticleSystemGPU::recordCommandBuffer(pvr::api::CommandBufferBase cmdBuffer, pvr::uint8 idx)
 {
 	cmdBuffer->bindPipeline(pipe);
-	cmdBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Compute, pipe->getPipelineLayout(), descSets[idx], 0);
+	cmdBuffer->bindDescriptorSets(PipelineBindPoint::Compute, pipe->getPipelineLayout(), 0, &descSets[idx], 1);
 	cmdBuffer->dispatchCompute(particleArrayData.size() / workgroupSize, 1, 1);
 }
 
@@ -174,18 +174,18 @@ void ParticleSystemGPU::setParticleVboBuffers(const pvr::api::Buffer* particleVb
 {
 	for (pvr::uint8 i = 0; i < NumBuffers; ++i)
 	{
-		particleBufferViewSsbos[i] = context->createSsbo(particleVbos[i], 0, particleVbos[i]->getSize());
+		particleBufferViewSsbos[i] = context->createBufferView(particleVbos[i], 0, particleVbos[i]->getSize());
 	}
 	for (pvr::uint8 i = 0; i < NumBuffers; ++i)
 	{
 		int id_in = (i ? i : NumBuffers);
 		id_in = (id_in - 1) % NumBuffers;
 		int id_out = (id_in + 1) % NumBuffers;
-		pvr::api::DescriptorSetUpdateParam descSetInfo;
-		descSetInfo.addUbo(PARTICLE_CONFIG_UBO_BINDING_INDEX, 0, particleConfigUbo)
-		.addUbo(SPHERES_UBO_BINDING_INDEX, 0, collisonSpheresUbo)
-		.addSsbo(PARTICLES_SSBO_BINDING_INDEX_IN, 0, particleBufferViewSsbos[id_in])
-		.addSsbo(PARTICLES_SSBO_BINDING_INDEX_OUT, 0, particleBufferViewSsbos[id_out]);
+		pvr::api::DescriptorSetUpdate descSetInfo;
+		descSetInfo.setUbo(PARTICLE_CONFIG_UBO_BINDING_INDEX, particleConfigUbo)
+		.setUbo(SPHERES_UBO_BINDING_INDEX, collisonSpheresUbo)
+		.setSsbo(PARTICLES_SSBO_BINDING_INDEX_IN, particleBufferViewSsbos[id_in])
+		.setSsbo(PARTICLES_SSBO_BINDING_INDEX_OUT, particleBufferViewSsbos[id_out]);
 		descSets[i]->update(descSetInfo);
 	}
 }

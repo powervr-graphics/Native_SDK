@@ -1,25 +1,13 @@
 var searchData=
 [
-  ['range',['range',['../classpvr_1_1api_1_1impl_1_1_buffer_view_impl.html#a8a3c53220f00a084d2d32ab380f91fba',1,'pvr::api::impl::BufferViewImpl::range()'],['../structpvr_1_1platform_1_1_context_gles_1_1_buffer_range.html#a1577059da3b319733ab16fd447a8a9a0',1,'pvr::platform::ContextGles::BufferRange::range()']]],
+  ['range',['range',['../classpvr_1_1api_1_1impl_1_1_buffer_view__.html#af8bd3802fdeeb11849a2aab9a3e946c7',1,'pvr::api::impl::BufferView_::range()'],['../structpvr_1_1api_1_1_buffer_range_barrier.html#a2d74e11a5adecf51a8bc243cbcd414ed',1,'pvr::api::BufferRangeBarrier::range()'],['../structpvr_1_1platform_1_1_context_gles_1_1_buffer_range.html#a1577059da3b319733ab16fd447a8a9a0',1,'pvr::platform::ContextGles::BufferRange::range()'],['../structpvr_1_1platform_1_1_context_vk_1_1_buffer_range.html#ae3d4ae6111d84cc1323a204da63286bf',1,'pvr::platform::ContextVk::BufferRange::range()']]],
   ['rasterizer',['rasterizer',['../structpvr_1_1api_1_1_graphics_pipeline_create_param.html#ad3f13e8eb3e0d935a2188588941be768',1,'pvr::api::GraphicsPipelineCreateParam']]],
-  ['readbuffer',['ReadBuffer',['../classgl.html#a4478e340b1e3e3693a20ff5763c180ec',1,'gl']]],
-  ['readbufferindexedext',['ReadBufferIndexedEXT',['../classglext.html#adb8e805f99da7d4e014fb996354b22cb',1,'glext']]],
-  ['readbuffernv',['ReadBufferNV',['../classglext.html#a7336f1c9a87b846b04310864e051fb04',1,'glext']]],
   ['readmaskback',['readMaskBack',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_depth_stencil_state.html#a1a0b8488186b2ebac6745fca79f5a98d',1,'pvr::platform::ContextGles::RenderStatesTracker::DepthStencilState']]],
   ['readmaskfront',['readMaskFront',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_depth_stencil_state.html#a904e4bfa319ec6e62c72248cbcfc776e',1,'pvr::platform::ContextGles::RenderStatesTracker::DepthStencilState']]],
-  ['readnpixelsext',['ReadnPixelsEXT',['../classglext.html#a1241d6901721c1b93245dc7d5cfdde24',1,'glext']]],
-  ['readpixels',['ReadPixels',['../classgl.html#a763528f0f08e868ca43ccc72fd51c327',1,'gl']]],
   ['refback',['refBack',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_depth_stencil_state.html#a0865c0e6e21f8368bab5108a5e5d948d',1,'pvr::platform::ContextGles::RenderStatesTracker::DepthStencilState']]],
+  ['reference',['reference',['../structpvr_1_1api_1_1_stencil_state.html#ad2de0367b8a69457152c551fce8efec0',1,'pvr::api::StencilState']]],
   ['reffront',['refFront',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_depth_stencil_state.html#a684e9800b3e38bab459a2a0f74e4d5c3',1,'pvr::platform::ContextGles::RenderStatesTracker::DepthStencilState']]],
-  ['releaseshadercompiler',['ReleaseShaderCompiler',['../classgl.html#a50f24e5bd6e020d14a2dcfde9c1024d8',1,'gl']]],
-  ['renderbufferstorage',['RenderbufferStorage',['../classgl.html#a6f45941b8db59104870153d70a9c8e6a',1,'gl']]],
-  ['renderbufferstoragemultisample',['RenderbufferStorageMultisample',['../classgl.html#a9779f34c422166b4d6cab5523b9f456c',1,'gl']]],
-  ['renderbufferstoragemultisampleangle',['RenderbufferStorageMultisampleANGLE',['../classglext.html#a1d64821d9562872966d851335b2b501c',1,'glext']]],
-  ['renderbufferstoragemultisampleapple',['RenderbufferStorageMultisampleAPPLE',['../classglext.html#acf6f5cf97365543004a6febcb091bad6',1,'glext']]],
-  ['renderbufferstoragemultisampleext',['RenderbufferStorageMultisampleEXT',['../classglext.html#ad78f66e3b2e620fe611573b2b1253332',1,'glext']]],
-  ['renderbufferstoragemultisampleimg',['RenderbufferStorageMultisampleIMG',['../classglext.html#aa47df1af1942d9c7c0b73f9a9f319e50',1,'glext']]],
-  ['resolvemultisampleframebufferapple',['ResolveMultisampleFramebufferAPPLE',['../classglext.html#a7e628ccadeba14b4d5de0d404cb5faeb',1,'glext']]],
-  ['resource',['resource',['../classpvr_1_1api_1_1impl_1_1_texture_view_impl.html#a9ce41d05665a258ab050ced8008a3d69',1,'pvr::api::impl::TextureViewImpl']]],
-  ['resumetransformfeedback',['ResumeTransformFeedback',['../classgl.html#a5ddb81c0e1d0e73a5cce533aa28a52da',1,'gl']]],
-  ['rgbblendop',['rgbBlendOp',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker.html#a94d86de914dedca59cd71796882a6cdb',1,'pvr::platform::ContextGles::RenderStatesTracker']]]
+  ['renderpass',['renderPass',['../structpvr_1_1api_1_1_fbo_create_param.html#a6f6c9551319936320dbddf6e4a60e81d',1,'pvr::api::FboCreateParam::renderPass()'],['../structpvr_1_1api_1_1_graphics_pipeline_create_param.html#a4cb89b51f8ed131d6ed9d11271798995',1,'pvr::api::GraphicsPipelineCreateParam::renderPass()']]],
+  ['resource',['resource',['../classpvr_1_1api_1_1impl_1_1_texture_view__.html#a411285828d9cbd2e7363629a8e4e8ac4',1,'pvr::api::impl::TextureView_']]],
+  ['rgbblendop',['rgbBlendOp',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker.html#af1c7905301a3e5811975a4c24f226c65',1,'pvr::platform::ContextGles::RenderStatesTracker']]]
 ];

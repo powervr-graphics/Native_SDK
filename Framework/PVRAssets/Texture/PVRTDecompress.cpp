@@ -450,7 +450,6 @@ static unsigned int wrapWordIndex(unsigned int numWords, int word)
 	return ((word + numWords) % numWords);
 }
 
-#ifdef DEBUG
 /*!***********************************************************************
  \param[in]		input	Value to be checked
  \returns		true if the number is an integer power of two, else false.
@@ -467,7 +466,6 @@ static bool isPowerOf2(unsigned int input)
 	minus1 = input - 1;
 	return ((input | minus1) == (input ^ minus1));
 }
-#endif
 
 static uint32 TwiddleUV(uint32 XSize, uint32 YSize, uint32 XPos, uint32 YPos)
 {
@@ -480,10 +478,10 @@ static uint32 TwiddleUV(uint32 XSize, uint32 YSize, uint32 XPos, uint32 YPos)
 	int ShiftCount = 0;
 
 	//Check the sizes are valid.
-	PVR_ASSERT(YPos < YSize);
-	PVR_ASSERT(XPos < XSize);
-	PVR_ASSERT(isPowerOf2(YSize));
-	PVR_ASSERT(isPowerOf2(XSize));
+	assertion(YPos < YSize);
+	assertion(XPos < XSize);
+	assertion(isPowerOf2(YSize));
+	assertion(isPowerOf2(XSize));
 
 	//If Y is the larger dimension - switch the min/max values.
 	if (YSize < XSize)

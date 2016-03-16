@@ -6,8 +6,8 @@
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
 #include "PVRApi/GpuCapabilities.h"
-#include "PVRApi/OGLES/ConvertToApiTypes.h"
-#include "PVRApi/OGLES/OpenGLESBindings.h"
+#include "PVRNativeApi/OGLES/ConvertToApiTypes.h"
+#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
 
 namespace pvr {
 namespace api {
