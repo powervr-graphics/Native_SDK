@@ -27,7 +27,7 @@ bool TextureReaderTGA::readNextAsset(Texture& asset)
 	bool result = true;
 	if (m_hasNewAssetStream)
 	{
-		result = initialiseFile();
+		result = initializeFile();
 
 		if (result)
 		{
@@ -93,7 +93,7 @@ string TextureReaderTGA::getReaderVersion()
 	return "1.0.0";
 }
 
-bool TextureReaderTGA::initialiseFile()
+bool TextureReaderTGA::initializeFile()
 {
 	// Read the file header
 	bool result = readFileHeader(m_fileHeader);
@@ -173,7 +173,7 @@ bool TextureReaderTGA::loadImageFromFile(Texture& asset)
 	// Make sure the file is ready to load
 	if (!m_fileHeaderLoaded || !m_texturesToLoad)
 	{
-		PVR_ASSERT(0 && "[TextureReaderTGA::loadImageFromFile] Attempted to read empty TGA.");
+		assertion(0 ,  "[TextureReaderTGA::loadImageFromFile] Attempted to read empty TGA.");
 		return false;
 	}
 

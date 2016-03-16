@@ -228,7 +228,7 @@ void ShellOS::updatePointingDeviceLocation()
 }
 
 // Setup the capabilities
-const ShellOS::Capabilities ShellOS::m_capabilities = { Capability::Immutable, Capability::Immutable };
+const ShellOS::Capabilities ShellOS::m_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
 
 ShellOS::ShellOS(void* hInstance, OSDATA osdata) : m_instance(hInstance)
 {
@@ -293,7 +293,7 @@ static Bool waitForMapNotify(Display* d, XEvent* e, char* arg)
 	return (e->type == MapNotify) && (e->xmap.window == (Window)arg);
 }
 
-Result::Enum ShellOS::initialiseWindow(DisplayAttributes& data)
+Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	Display* display = XOpenDisplay(NULL);
 
@@ -642,7 +642,7 @@ else {Log(Log.Debug, "???");}
 }
 
 
-bool ShellOS::isInitialised()
+bool ShellOS::isInitialized()
 {
 	return m_OSImplementation && m_OSImplementation->window;
 }

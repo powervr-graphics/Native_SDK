@@ -37,7 +37,7 @@ struct InternalOS
 pvr::int16 g_cursorX, g_cursorY;
 
 // Setup the capabilities
-const pvr::system::ShellOS::Capabilities pvr::system::ShellOS::m_capabilities = { pvr::Capability::Immutable, pvr::Capability::Immutable };
+const pvr::system::ShellOS::Capabilities pvr::system::ShellOS::m_capabilities = { pvr::types::Capability::Immutable, pvr::types::Capability::Immutable };
 
 ShellOS::ShellOS(/*NSObject<NSApplicationDelegate>*/void* hInstance, OSDATA osdata) : m_instance(hInstance)
 {
@@ -72,7 +72,7 @@ void ShellOS::updatePointingDeviceLocation()
     m_shell->updatePointerPosition(PointerLocation(g_cursorX, g_cursorY));
 }
 
-pvr::Result::Enum ShellOS::initialiseWindow(pvr::system::DisplayAttributes &data)
+pvr::Result::Enum ShellOS::initializeWindow(pvr::system::DisplayAttributes &data)
 {
 	 // Now create our window
     NSRect frame;
@@ -168,7 +168,7 @@ pvr::Result::Enum ShellOS::handleOSEvents()
 	return pvr::Result::Success;
 }
 
-bool ShellOS::isInitialised()
+bool ShellOS::isInitialized()
 {
 	return m_OSImplementation && m_OSImplementation->window;
 }

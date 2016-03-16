@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -94,62 +94,66 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_shader_8h.html" title="Shader.h. Contains a base implementation for a Shader object. ">PVRApi/ApiObjects/Shader.h</a>&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_native_objects_gles_8h.html" title="This file contains the OpenGL ES definitions of the (normally only forward-declared in app code) nati...">PVRApi/OGLES/NativeObjectsGles.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;PVRNativeApi/OGLES/NativeObjectsGles.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>pvr {</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>api {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>impl {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>gles {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">\param  gles shader wrapper</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1impl_1_1_shader_gles_impl.html">   19</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1api_1_1impl_1_1_shader_gles_impl.html">ShaderGlesImpl</a> : <span class="keyword">public</span> <a class="code" href="structpvr_1_1native_1_1_h_shader__.html" title="Handle to an OpenGL ES shader. ">native::HShader_</a>, <span class="keyword">public</span> <a class="code" href="classpvr_1_1api_1_1impl_1_1_shader_impl.html" title="A shader API object. ">ShaderImpl</a></div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1gles_1_1_shader_gles__.html">   19</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1api_1_1gles_1_1_shader_gles__.html">ShaderGles_</a> : <span class="keyword">public</span> native::HShader_, <span class="keyword">public</span> <a class="code" href="classpvr_1_1api_1_1impl_1_1_shader__.html" title="A shader API object. ">impl::Shader_</a></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;{</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="comment">/*!*********************************************************************************************************************</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">    \brief ctor. Construct with namtoe shader handle.</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">    ***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1impl_1_1_shader_gles_impl.html#a4c50af166b203abcb637f8839f687752">   26</a></span>&#160;    <a class="code" href="classpvr_1_1api_1_1impl_1_1_shader_gles_impl.html#a4c50af166b203abcb637f8839f687752" title="ctor. Construct with namtoe shader handle. ">ShaderGlesImpl</a>(<span class="keyword">const</span> <a class="code" href="structpvr_1_1native_1_1_h_shader__.html" title="Handle to an OpenGL ES shader. ">native::HShader_</a>&amp; <a class="code" href="_api_gles2_8h.html#a57b2a96adb1d51204909a82d861e395e">shader</a>)</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1gles_1_1_shader_gles__.html#a3ae8e4d40079083e1a2b9cf14b2dfb49">   26</a></span>&#160;    <a class="code" href="classpvr_1_1api_1_1gles_1_1_shader_gles__.html#a3ae8e4d40079083e1a2b9cf14b2dfb49" title="ctor. Construct with namtoe shader handle. ">ShaderGles_</a>(GraphicsContext&amp; context, <span class="keyword">const</span> native::HShader_&amp; shader) : impl::<a class="code" href="classpvr_1_1api_1_1impl_1_1_shader__.html#ad02bb3689fc97e12efe4104548a75d0b">Shader_</a>(context)</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        this-&gt;<a class="code" href="structpvr_1_1native_1_1_h_shader__.html#ad54ef38101014a91306a3efb29317020">handle</a> = shader.<a class="code" href="structpvr_1_1native_1_1_h_shader__.html#ad54ef38101014a91306a3efb29317020">handle</a>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        this-&gt;handle = shader.handle;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    }</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="comment">/*!*********************************************************************************************************************</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">    \brief dtor.</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">    ***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1impl_1_1_shader_gles_impl.html#ad23c11f62b50fe8663a67863b04d7b6f">   34</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classpvr_1_1api_1_1impl_1_1_shader_gles_impl.html#ad23c11f62b50fe8663a67863b04d7b6f" title="dtor. ">~ShaderGlesImpl</a>() {}</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classpvr_1_1api_1_1gles_1_1_shader_gles__.html#a0ef4d3e001d0b8485f3be475d6d069cc" title="dtor. ">~ShaderGles_</a>();</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;};</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="code" href="namespacepvr_1_1api.html#a9ddbbabd52684a2d9d4aeabdf126d9d8">   38</a></span>&#160;<span class="keyword">typedef</span> RefCountedResource&lt;impl::ShaderGlesImpl&gt; <a class="code" href="namespacepvr_1_1api.html#a9ddbbabd52684a2d9d4aeabdf126d9d8">ShaderGles</a>;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">namespace </span>native {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">\brief Get the OpenGL ES Shader object underlying a PVRApi Shader object.</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">\return A smart pointer wrapper containing the OpenGL ES Shader.</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">\description The smart pointer returned by this function works normally with the reference counting, and shares it with the</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">             rest of the references to this object, keeping the underlying OpenGL ES object alive even if all other</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">             references to it (including the one that was passed to this function) are released. Release when done using it to</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">             avoid leaking the object.</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="code" href="namespacepvr_1_1native.html#aa5b9f210f449b97292cec63162700185">   49</a></span>&#160;<span class="keyword">inline</span> RefCountedResource&lt;HShader_&gt; <a class="code" href="namespacepvr_1_1native.html#a48f95361fafdb5cc4a7f4e7e92c6aedf" title="Get the OpenGL ES object underlying a PVRApi Buffer object. ">getNativeHandle</a>(<span class="keyword">const</span> RefCountedResource&lt;api::impl::ShaderImpl&gt;&amp; <a class="code" href="namespacepvr_1_1api.html#acc461c8a49bf816fba2c9e9c127cc914">Shader</a>)</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>RefCountedResource&lt;native::HShader_&gt;<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>RefCountedResource&lt;api::impl::ShaderGlesImpl&gt;<span class="keyword">&gt;</span>(<a class="code" href="namespacepvr_1_1api.html#acc461c8a49bf816fba2c9e9c127cc914">Shader</a>));</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">\brief Get the OpenGL ES Shader object underlying a PVRApi Buffer object.</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">\return A OpenGL ES Shader. For immediate use only.</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">\description The object returned by this function will only be kept alive as long as there are other references to it. If all</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">        other references to it are released or out of scope, the Shader returned by this function will be deleted and invalid.</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="code" href="namespacepvr_1_1native.html#a94fe0d177c29f53f05340eda1ee1bf4c">   60</a></span>&#160;<span class="keyword">inline</span> <a class="code" href="structpvr_1_1native_1_1_h_shader__.html#aa888e16a5355ddb57d9fd17c627f33e6">HShader_::NativeType</a> <a class="code" href="namespacepvr_1_1native.html#a1f6f787da3f7bb5ebdea9cdcfe3b5666" title="Get the OpenGL ES object underlying a PVRApi Buffer object. ">useNativeHandle</a>(<span class="keyword">const</span> RefCountedResource&lt;api::impl::ShaderImpl&gt;&amp; <a class="code" href="namespacepvr_1_1api.html#acc461c8a49bf816fba2c9e9c127cc914">Shader</a>)</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;{</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span><a class="code" href="classpvr_1_1api_1_1impl_1_1_shader_gles_impl.html">api::impl::ShaderGlesImpl</a>&amp;<span class="keyword">&gt;</span>(*Shader).<a class="code" href="structpvr_1_1native_1_1_h_shader__.html#ad54ef38101014a91306a3efb29317020">handle</a>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;}</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="code" href="namespacepvr_1_1api_1_1gles.html#a403aa92c571454b2d4c9f408d6d4ee8e">   36</a></span>&#160;<span class="keyword">typedef</span> RefCountedResource&lt;ShaderGles_&gt; <a class="code" href="namespacepvr_1_1api_1_1gles.html#a403aa92c571454b2d4c9f408d6d4ee8e">ShaderGles</a>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">namespace </span>native {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">\brief Get the OpenGL ES Shader object underlying a PVRApi Shader object.</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">\return A smart pointer wrapper containing the OpenGL ES Shader.</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">\description The smart pointer returned by this function works normally with the reference counting, and shares it with the</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">             rest of the references to this object, keeping the underlying OpenGL ES object alive even if all other</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">             references to it (including the one that was passed to this function) are released. Release when done using it to</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">             avoid leaking the object.</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="code" href="namespacepvr_1_1native.html#aad3cb27b7eff0289d18a2e4284936733">   48</a></span>&#160;<span class="keyword">inline</span> HShader <a class="code" href="namespacepvr_1_1native.html#a13cffd53097ed77cd206b28500eee20d" title="Get the OpenGL ES object underlying a PVRApi Buffer object. ">createNativeHandle</a>(<span class="keyword">const</span> RefCountedResource&lt;api::impl::Shader_&gt;&amp; <a class="code" href="namespacepvr_1_1api.html#ac733c31aec277813c9aea6cdcf3d77e4">Shader</a>)</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;{</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>RefCountedResource&lt;native::HShader_&gt;<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>RefCountedResource&lt;api::gles::ShaderGles_&gt;<span class="keyword">&gt;</span>(<a class="code" href="namespacepvr_1_1api.html#ac733c31aec277813c9aea6cdcf3d77e4">Shader</a>));</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keyword">namespace </span>utils {</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">\brief Create a native shader program from an array of native shader handles.</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">\param pShaders array of shaders</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">\param count number shaders in the array</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">\param attribs array of attributes</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">\param attribIndex array of attributeIndices</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">\param attribCount Number of attributes in the attributes array</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">\param outShaderProg Output, the shader program</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">\param infolog OPTIONAL Output, the infolog of the shader</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">\param contextCapabilities OPTIONAL can be used to pass specific context capabilities</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">\return true on success</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="namespacepvr_1_1utils.html#af919d1d6036c4799a503fa4e86a68ebd" title="Create a native shader program from an array of native shader handles. ">createShaderProgram</a>(native::HShader_ pShaders[], uint32 count, <span class="keyword">const</span> <span class="keywordtype">char</span>** <span class="keyword">const</span> attribs, pvr::uint16* attribIndex, uint32 attribCount, native::HPipeline_&amp; outShaderProg,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                         <span class="keywordtype">string</span>* infolog, <span class="keyword">const</span> ApiCapabilities* contextCapabilities = 0);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -131,7 +131,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a65e0f8ba44ebe4dd1b94bb6f58d0f1b1 inherit pub_methods_classpvr_1_1assets_1_1_asset_reader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empty asset reader.  <a href="#a65e0f8ba44ebe4dd1b94bb6f58d0f1b1">More...</a><br/></td></tr>
 <tr class="separator:a65e0f8ba44ebe4dd1b94bb6f58d0f1b1 inherit pub_methods_classpvr_1_1assets_1_1_asset_reader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab05977dd3485b29616046a416dbc3c71 inherit pub_methods_classpvr_1_1assets_1_1_asset_reader"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_asset_reader.html#ab05977dd3485b29616046a416dbc3c71">AssetReader</a> (Stream::ptr_type assetStream)</td></tr>
-<tr class="memdesc:ab05977dd3485b29616046a416dbc3c71 inherit pub_methods_classpvr_1_1assets_1_1_asset_reader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asset reader which will take ownership of the provided Stream object and read Αssets from it.  <a href="#ab05977dd3485b29616046a416dbc3c71">More...</a><br/></td></tr>
+<tr class="memdesc:ab05977dd3485b29616046a416dbc3c71 inherit pub_methods_classpvr_1_1assets_1_1_asset_reader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asset reader which will take ownership of the provided Stream object and read Assets from it.  <a href="#ab05977dd3485b29616046a416dbc3c71">More...</a><br/></td></tr>
 <tr class="separator:ab05977dd3485b29616046a416dbc3c71 inherit pub_methods_classpvr_1_1assets_1_1_asset_reader"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e8aea7a036c31061dd1ef5530e4b187 inherit pub_methods_classpvr_1_1assets_1_1_asset_reader"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_asset_reader.html#a9e8aea7a036c31061dd1ef5530e4b187">closeAssetStream</a> ()</td></tr>
 <tr class="memdesc:a9e8aea7a036c31061dd1ef5530e4b187 inherit pub_methods_classpvr_1_1assets_1_1_asset_reader"><td class="mdescLeft">&#160;</td><td class="mdescRight">Close the asset stream.  <a href="#a9e8aea7a036c31061dd1ef5530e4b187">More...</a><br/></td></tr>
@@ -151,9 +151,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ab5116571f5fd3ec9be40fba97b808a1e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1asset_readers_1_1_texture_reader_p_v_r.html#ab5116571f5fd3ec9be40fba97b808a1e">convertTextureHeader2To3</a> (const texture_legacy::HeaderV2 &amp;legacyHeader, <a class="el" href="classpvr_1_1assets_1_1_texture_header.html">TextureHeader</a> &amp;newHeader)</td></tr>
 <tr class="memdesc:ab5116571f5fd3ec9be40fba97b808a1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a PVR Version 2 header to a PVR Version 3 header.  <a href="#ab5116571f5fd3ec9be40fba97b808a1e">More...</a><br/></td></tr>
 <tr class="separator:ab5116571f5fd3ec9be40fba97b808a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa21e7ebaa5af4d8c3592be466a50684e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1asset_readers_1_1_texture_reader_p_v_r.html#aa21e7ebaa5af4d8c3592be466a50684e">mapLegacyEnumToNewFormat</a> (const texture_legacy::PixelFormat legacyPixelType, <a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a> &amp;newPixelType, ColorSpace::Enum &amp;newColorSpace, <a class="el" href="namespacepvr_1_1_variable_type.html#a82d3ceaf1b4b315cd1ab51824a78b632">VariableType::Enum</a> &amp;newChannelType, bool &amp;isPremultiplied)</td></tr>
-<tr class="memdesc:aa21e7ebaa5af4d8c3592be466a50684e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a legacy <a class="el" href="classpvr_1_1_pixel_format.html" title="The PixelFormat class fully defines a Pixel Format (channels, format, compression, bit width etc.). ">PixelFormat</a> into a new <a class="el" href="classpvr_1_1_pixel_format.html" title="The PixelFormat class fully defines a Pixel Format (channels, format, compression, bit width etc.). ">PixelFormat</a>.  <a href="#aa21e7ebaa5af4d8c3592be466a50684e">More...</a><br/></td></tr>
-<tr class="separator:aa21e7ebaa5af4d8c3592be466a50684e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af79b9152fd394a758f701246985af325"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1asset_readers_1_1_texture_reader_p_v_r.html#af79b9152fd394a758f701246985af325">mapLegacyEnumToNewFormat</a> (const texture_legacy::PixelFormat legacyPixelType, <a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a> &amp;newPixelType, types::ColorSpace::Enum &amp;newColorSpace, <a class="el" href="namespacepvr_1_1_variable_type.html#a82d3ceaf1b4b315cd1ab51824a78b632">VariableType::Enum</a> &amp;newChannelType, bool &amp;isPremultiplied)</td></tr>
+<tr class="memdesc:af79b9152fd394a758f701246985af325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a legacy <a class="el" href="classpvr_1_1_pixel_format.html" title="The PixelFormat class fully defines a Pixel Format (channels, format, compression, bit width etc.). ">PixelFormat</a> into a new <a class="el" href="classpvr_1_1_pixel_format.html" title="The PixelFormat class fully defines a Pixel Format (channels, format, compression, bit width etc.). ">PixelFormat</a>.  <a href="#af79b9152fd394a758f701246985af325">More...</a><br/></td></tr>
+<tr class="separator:af79b9152fd394a758f701246985af325"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -413,7 +413,7 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aa21e7ebaa5af4d8c3592be466a50684e"></a>
+<a class="anchor" id="af79b9152fd394a758f701246985af325"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -435,7 +435,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ColorSpace::Enum &amp;&#160;</td>
+          <td class="paramtype">types::ColorSpace::Enum &amp;&#160;</td>
           <td class="paramname"><em>newColorSpace</em>, </td>
         </tr>
         <tr>

@@ -132,9 +132,9 @@ std::string getStackTraceInfo(int skipFrames)
 			SymSetOptions(symOptions);
 		}
 		DWORD cbNeeded = 0;
-		EnumProcessModules(process, &module_handles[0], module_handles.size() * sizeof(HMODULE), &cbNeeded);
+		EnumProcessModules(process, &module_handles[0], (DWORD)module_handles.size() * sizeof(HMODULE), &cbNeeded);
 		module_handles.resize(cbNeeded / sizeof(HMODULE));
-		EnumProcessModules(process, &module_handles[0], module_handles.size() * sizeof(HMODULE), &cbNeeded);
+		EnumProcessModules(process, &module_handles[0], (DWORD)module_handles.size() * sizeof(HMODULE), &cbNeeded);
 		std::transform(module_handles.begin(), module_handles.end(), std::back_inserter(modules), impl::get_mod_info(process));
 		base = modules[0].base_address;
 		IMAGE_NT_HEADERS* h = ImageNtHeader(base);
@@ -206,7 +206,7 @@ std::string getStackTraceInfo(int skipFrames)
 	}
 	while (frame.AddrReturn.Offset != 0);
 	//return EXCEPTION_EXECUTE_HANDLER;
-	//SymCleanup(process); NO CLEANUP, SORRIES!!!
+	//SymCleanup(process); NO CLEANUP, SORRIES!
 
 	// Display the string:
 	return builder.str();

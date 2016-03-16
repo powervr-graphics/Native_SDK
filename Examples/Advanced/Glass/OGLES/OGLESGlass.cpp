@@ -8,7 +8,6 @@
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
 #include "PVRUIRenderer/PVRUIRenderer.h"
-#include "PVRApi/OGLES/OpenGLESBindings.h"
 #include "PVRAssets/Shader.h"
 #include <limits.h>
 
@@ -160,7 +159,7 @@ class OGLESGlass : public pvr::Shell
 	float tilt, currentTilt;
 
 public:
-	OGLESGlass() : numBalloons(2), tilt(0), currentTilt(0){}
+	OGLESGlass() : numBalloons(2), tilt(0), currentTilt(0) {}
 	virtual pvr::Result::Enum initApplication();
 	virtual pvr::Result::Enum initView();
 	virtual pvr::Result::Enum releaseView();
@@ -192,30 +191,30 @@ private:
 
 void OGLESGlass::eventMappedInput(pvr::SimplifiedInput::Enum action)
 {
-        switch (action)
-        {
-            case pvr::SimplifiedInput::Left:
-                currentEffect -= 1;
-                currentEffect = (currentEffect + NumEffects) % NumEffects;
-                apiObj->uiRenderer.getDefaultDescription()->setText(EffectNames[currentEffect]);
-                apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
-                recordSecondaryCommands();
-                break;
-            case pvr::SimplifiedInput::Up:
-                tilt += 5.f;
-                break;
-            case pvr::SimplifiedInput::Down:
-                tilt -= 5.f;
-                break;
-            case pvr::SimplifiedInput::Right:
-                currentEffect += 1;
-                currentEffect = (currentEffect + NumEffects) % NumEffects;
-                apiObj->uiRenderer.getDefaultDescription()->setText(EffectNames[currentEffect]);
-                apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
-                recordSecondaryCommands();
-                break;
-            case pvr::SimplifiedInput::ActionClose: exitShell(); break;
-        }
+	switch (action)
+	{
+	case pvr::SimplifiedInput::Left:
+		currentEffect -= 1;
+		currentEffect = (currentEffect + NumEffects) % NumEffects;
+		apiObj->uiRenderer.getDefaultDescription()->setText(EffectNames[currentEffect]);
+		apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
+		recordSecondaryCommands();
+		break;
+	case pvr::SimplifiedInput::Up:
+		tilt += 5.f;
+		break;
+	case pvr::SimplifiedInput::Down:
+		tilt -= 5.f;
+		break;
+	case pvr::SimplifiedInput::Right:
+		currentEffect += 1;
+		currentEffect = (currentEffect + NumEffects) % NumEffects;
+		apiObj->uiRenderer.getDefaultDescription()->setText(EffectNames[currentEffect]);
+		apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
+		recordSecondaryCommands();
+		break;
+	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
+	}
 }
 
 /*!*********************************************************************************************************************
@@ -225,22 +224,22 @@ void OGLESGlass::eventMappedInput(pvr::SimplifiedInput::Enum action)
 bool OGLESGlass::createImageSampler()
 {
 	if (!assetManager.getTextureWithCaching(apiObj->device, CubeTexFile, &apiObj->texCube, NULL) ||
-	    !assetManager.getTextureWithCaching(apiObj->device, BalloonTexFile[0], &apiObj->texBalloon[0], NULL) ||
-	    !assetManager.getTextureWithCaching(apiObj->device, BalloonTexFile[1], &apiObj->texBalloon[1], NULL))
+	        !assetManager.getTextureWithCaching(apiObj->device, BalloonTexFile[0], &apiObj->texBalloon[0], NULL) ||
+	        !assetManager.getTextureWithCaching(apiObj->device, BalloonTexFile[1], &apiObj->texBalloon[1], NULL))
 	{
 		setExitMessage("Failed to load the textures");
 		return pvr::Result::Success;
 	}
 	pvr::assets::SamplerCreateParam samplerInfo;
 
-	samplerInfo.wrapModeU = pvr::SamplerWrap::Clamp;
-	samplerInfo.wrapModeV = pvr::SamplerWrap::Clamp;
+	samplerInfo.wrapModeU = pvr::types::SamplerWrap::Clamp;
+	samplerInfo.wrapModeV = pvr::types::SamplerWrap::Clamp;
 
 	// create sampler cube
-	samplerInfo.minificationFilter = pvr::SamplerFilter::Linear;
-	samplerInfo.magnificationFilter = pvr::SamplerFilter::Linear;
+	samplerInfo.minificationFilter = pvr::types::SamplerFilter::Linear;
+	samplerInfo.magnificationFilter = pvr::types::SamplerFilter::Linear;
 
-	samplerInfo.mipMappingFilter = pvr::SamplerFilter::Linear;
+	samplerInfo.mipMappingFilter = pvr::types::SamplerFilter::Linear;
 
 	// create sampler trilinear
 	pvr::api::Sampler samplerTrilinear = apiObj->device->createSampler(samplerInfo);
@@ -248,15 +247,15 @@ bool OGLESGlass::createImageSampler()
 
 	// DrawBalloon Pass
 	{
-		pvr::api::DescriptorSetUpdateParam descSetInfo;
-		descSetInfo.addCombinedImageSampler(0, 0, apiObj->texBalloon[0], samplerTrilinear);
+		pvr::api::DescriptorSetUpdate descSetInfo;
+		descSetInfo.setCombinedImageSampler(0, apiObj->texBalloon[0], samplerTrilinear);
 
-		pvr::api::DescriptorSet descSet1 = apiObj->device->allocateDescriptorSet(apiObj->pipeDefault.descSetLayout);
+		pvr::api::DescriptorSet descSet1 = apiObj->device->createDescriptorSetOnDefaultPool(apiObj->pipeDefault.descSetLayout);
 		descSet1->update(descSetInfo);
 		apiObj->passBalloon.imageSamplerDescSets.push_back(descSet1);
 
-		descSetInfo.addCombinedImageSampler(0, 0, apiObj->texBalloon[1], samplerTrilinear);
-		pvr::api::DescriptorSet descSet2 = apiObj->device->allocateDescriptorSet(apiObj->pipeDefault.descSetLayout);
+		descSetInfo.setCombinedImageSampler(0, apiObj->texBalloon[1], samplerTrilinear);
+		pvr::api::DescriptorSet descSet2 = apiObj->device->createDescriptorSetOnDefaultPool(apiObj->pipeDefault.descSetLayout);
 		descSet2->update(descSetInfo);
 
 		apiObj->passBalloon.imageSamplerDescSets.push_back(descSet2);
@@ -269,9 +268,9 @@ bool OGLESGlass::createImageSampler()
 
 	// DrawSkybox Pass
 	{
-		pvr::api::DescriptorSetUpdateParam descSetInfo;
-		descSetInfo.addCombinedImageSampler(0, 0, apiObj->texCube, samplerTrilinear);
-		pvr::api::DescriptorSet descSet = apiObj->device->allocateDescriptorSet(apiObj->pipeSkyBox.descSetLayout);
+		pvr::api::DescriptorSetUpdate descSetInfo;
+		descSetInfo.setCombinedImageSampler(0, apiObj->texCube, samplerTrilinear);
+		pvr::api::DescriptorSet descSet = apiObj->device->createDescriptorSetOnDefaultPool(apiObj->pipeSkyBox.descSetLayout);
 		descSet->update(descSetInfo);
 		apiObj->passSkyBox.imageSamplerDescSets.push_back(descSet);
 		apiObj->passSkyBox.uniformData.resize(1);
@@ -279,10 +278,10 @@ bool OGLESGlass::createImageSampler()
 
 	// Drawball Pass
 	{
-		pvr::api::DescriptorSetUpdateParam descSetInfo;
-		descSetInfo.addCombinedImageSampler(0, 0, apiObj->fboParaboloid.rtColorImage, samplerTrilinear).
-		addCombinedImageSampler(1, 0, apiObj->texCube, samplerTrilinear);
-		pvr::api::DescriptorSet descSet = apiObj->device->allocateDescriptorSet(apiObj->pipeEffects[0].descSetLayout);
+		pvr::api::DescriptorSetUpdate descSetInfo;
+		descSetInfo.setCombinedImageSampler(0, apiObj->fboParaboloid.rtColorImage, samplerTrilinear).
+		setCombinedImageSampler(1, apiObj->texCube, samplerTrilinear);
+		pvr::api::DescriptorSet descSet = apiObj->device->createDescriptorSetOnDefaultPool(apiObj->pipeEffects[0].descSetLayout);
 		descSet->update(descSetInfo);
 		apiObj->passDrawBall.imageSamplerDescSets.push_back(descSet);
 		apiObj->passDrawBall.uniformData.resize(apiObj->statue.handle->getNumMeshNodes());
@@ -309,32 +308,32 @@ bool OGLESGlass::createPipelines()
 	pvr::assets::ShaderFile fileVersioning;
 	fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
 
-	pvr::api::Shader fragShaderDefault = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::ShaderType::FragmentShader);
+	pvr::api::Shader fragShaderDefault = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::types::ShaderType::FragmentShader);
 	pvr::api::pipelineCreation::ColorBlendAttachmentState colorBlend;
 
 	// create the single image sampler pipeline layout pipelines
 	{
 		pvr::api::DescriptorSetLayoutCreateParam descsetLayoutInfo;
 		pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
-		descsetLayoutInfo.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
+		descsetLayoutInfo.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
 
 		apiObj->pipeDefault.descSetLayout = apiObj->pipeSkyBox.descSetLayout =
-		                                      apiObj->pipeparaboloid[0].descSetLayout = apiObj->pipeparaboloid[1].descSetLayout =
-		                                          apiObj->device->createDescriptorSetLayout(descsetLayoutInfo);
+		                                        apiObj->pipeparaboloid[0].descSetLayout = apiObj->pipeparaboloid[1].descSetLayout =
+		                                                apiObj->device->createDescriptorSetLayout(descsetLayoutInfo);
 
-		pipeLayoutInfo.addDescSetLayout(0, apiObj->pipeDefault.descSetLayout);
+		pipeLayoutInfo.setDescSetLayout(0, apiObj->pipeDefault.descSetLayout);
 		//---------------------------------
 		//load the default pipeline
 		pvr::api::GraphicsPipelineCreateParam pipeInfo;
 		fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
-		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::ShaderType::VertexShader);
+		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::types::ShaderType::VertexShader);
 		pipeInfo.fragmentShader = fragShaderDefault;
 		pipeInfo.pipelineLayout = apiObj->device->createPipelineLayout(pipeLayoutInfo);
 		pipeInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
 
 		pvr::assets::Mesh& mesh = apiObj->balloon.handle->getMesh(0);
 		pipeInfo.colorBlend.addAttachmentState(colorBlend);
-		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::TriangleList);
+		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::TriangleList);
 		pvr::utils::createInputAssemblyFromMesh(apiObj->balloon.handle->getMesh(0),
 		                                        VertexBindings, sizeof(VertexBindings) / sizeof(VertexBindings[0]), pipeInfo);
 
@@ -351,10 +350,10 @@ bool OGLESGlass::createPipelines()
 		// load the paraboloid pipeline
 		// pipeline1 parent pipeline
 		fileVersioning.populateValidVersions(ParaboloidVertShaderSrcFile, *this);
-		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::ShaderType::VertexShader);
+		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::types::ShaderType::VertexShader);
 		pipeInfo.fragmentShader = fragShaderDefault;
 
-		pipeInfo.rasterizer.setCullFace(pvr::api::Face::Front);
+		pipeInfo.rasterizer.setCullFace(pvr::types::Face::Front);
 		apiObj->pipeparaboloid[0].pipe = apiObj->device->createParentableGraphicsPipeline(pipeInfo);
 		apiObj->pipeparaboloid[0].pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms, apiObj->pipeparaboloid[0].uniformLoc);
 		apiObj->primaryCommandBuffer->bindPipeline(apiObj->pipeparaboloid[0].pipe);
@@ -362,7 +361,7 @@ bool OGLESGlass::createPipelines()
 		apiObj->primaryCommandBuffer->setUniform<pvr::int32>(apiObj->pipeparaboloid[0].pipe->getUniformLocation("s2DMap"), 0);
 
 		// create the child pipeline which has cullface as front
-		pipeInfo.rasterizer.setCullFace(pvr::api::Face::Back);
+		pipeInfo.rasterizer.setCullFace(pvr::types::Face::Back);
 
 		// null out shader because we are going to use the parent pipeline.
 		pipeInfo.vertexShader.setShader(pvr::api::Shader());
@@ -375,16 +374,16 @@ bool OGLESGlass::createPipelines()
 		//--------------------------------
 		//load the skybox pipeline
 		fileVersioning.populateValidVersions(SkyboxVertShaderSrcFile, *this);
-		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::ShaderType::VertexShader);
+		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::types::ShaderType::VertexShader);
 		fileVersioning.populateValidVersions(SkyboxFragShaderSrcFile, *this);
 		pipeInfo.fragmentShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()),
-		                          pvr::ShaderType::FragmentShader);
+		                          pvr::types::ShaderType::FragmentShader);
 
 		//pipeInfo.depthStencil.setDepthTestEnable(false).setDepthWrite(false);
-		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::TriangleList);
+		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::TriangleList);
 		pipeInfo.vertexInput.clear();
-		pipeInfo.vertexInput.setInputBinding(0, sizeof(float) * 3, pvr::api::StepRate::Vertex);
-		pipeInfo.vertexInput.addVertexAttribute(0, 0, pvr::assets::VertexAttributeLayout(pvr::DataType::Float32, 3, 0),
+		pipeInfo.vertexInput.setInputBinding(0, sizeof(float) * 3, pvr::types::StepRate::Vertex);
+		pipeInfo.vertexInput.addVertexAttribute(0, 0, pvr::assets::VertexAttributeLayout(pvr::types::DataType::Float32, 3, 0),
 		                                        VertexBindings[0].variableName.c_str());
 		apiObj->pipeSkyBox.pipe = apiObj->device->createGraphicsPipeline(pipeInfo);
 		apiObj->pipeSkyBox.pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms, apiObj->pipeSkyBox.uniformLoc);
@@ -397,11 +396,12 @@ bool OGLESGlass::createPipelines()
 	{
 		pvr::api::PipelineLayoutCreateParam effectPipeLayout;
 		pvr::api::DescriptorSetLayout descLayout;
-		descSetLayoutInfo.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment)
-		.addBinding(1, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
+		descSetLayoutInfo.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment)
+		.setBinding(1, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
 		descLayout = apiObj->device->createDescriptorSetLayout(descSetLayoutInfo);
 		effectPipeLayout.addDescSetLayout(descLayout);
 		pvr::api::GraphicsPipelineCreateParam pipeInfo;
+		pipeInfo.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
 		pipeInfo.pipelineLayout = apiObj->device->createPipelineLayout(effectPipeLayout);
 		pvr::utils::createInputAssemblyFromMesh(apiObj->statue.handle->getMesh(0), VertexBindings, 2, pipeInfo);
 
@@ -413,9 +413,9 @@ bool OGLESGlass::createPipelines()
 
 		for (pvr::uint32 i = 0; i < NumEffects; ++i)
 		{
-			pipeInfo.vertexShader.setShader(apiObj->device->createShader(*effectVertShader, pvr::ShaderType::VertexShader,
+			pipeInfo.vertexShader.setShader(apiObj->device->createShader(*effectVertShader, pvr::types::ShaderType::VertexShader,
 			                                EffectShaderDefines[i], NumEffectShaderDefines[i]));
-			pipeInfo.fragmentShader.setShader(apiObj->device->createShader(*effectFragShader, pvr::ShaderType::FragmentShader,
+			pipeInfo.fragmentShader.setShader(apiObj->device->createShader(*effectFragShader, pvr::types::ShaderType::FragmentShader,
 			                                  EffectShaderDefines[i], NumEffectShaderDefines[i]));
 			// Store the location of uniforms for later use
 			apiObj->pipeEffects[i].pipe = apiObj->device->createGraphicsPipeline(pipeInfo);
@@ -456,7 +456,7 @@ void OGLESGlass::loadVbos()
 		-1, -1, 0.9999f,
 		1, -1, 0.9999f
 	};
-	apiObj->vboSquare = apiObj->device->createBuffer(sizeof(quadVertices), pvr::api::BufferBindingUse::VertexBuffer);
+	apiObj->vboSquare = apiObj->device->createBuffer(sizeof(quadVertices), pvr::types::BufferBindingUse::VertexBuffer);
 	apiObj->vboSquare->update(quadVertices, 0, sizeof(quadVertices));
 }
 
@@ -466,43 +466,44 @@ void OGLESGlass::loadVbos()
 ***********************************************************************************************************************/
 bool OGLESGlass::createFbo()
 {
-	apiObj->fboOnScreen = apiObj->device->createOnScreenFboWithParams();
-	pvr::api::SubPass subPass(pvr::api::PipelineBindingPoint::Graphics);
+	apiObj->fboOnScreen = apiObj->device->createOnScreenFbo(0);
+	pvr::api::SubPass subPass(pvr::types::PipelineBindPoint::Graphics);
 	subPass.setColorAttachment(0); // use the first color attachment
 
 	// create paraboloid fbo
 	{
-		pvr::api::ImageStorageFormat rtColorFmt(pvr::PixelFormat::RGBA_8888, 1, pvr::ColorSpace::lRGB,
-		                                        pvr::VariableType::UnsignedByteNorm);
-		pvr::api::ImageStorageFormat rtDsFmt(pvr::PixelFormat::Depth16, 1, pvr::ColorSpace::lRGB, pvr::VariableType::UnsignedShort);
+		pvr::api::ImageStorageFormat rtDsFmt(pvr::PixelFormat::Depth16, 1, pvr::types::ColorSpace::lRGB, pvr::VariableType::UnsignedShort);
+		apiObj->fboParaboloid.rtColorFmt = pvr::api::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, pvr::types::ColorSpace::lRGB,
+		                                   pvr::VariableType::UnsignedByteNorm);
+
+		apiObj->fboParaboloid.rtDsFmt = pvr::api::ImageStorageFormat(pvr::PixelFormat::Depth16, 1,
+		                                pvr::types::ColorSpace::lRGB, pvr::VariableType::UnsignedShort);
+
 		const pvr::uint32 fboWidth = ParaboloidTexSize * 2;
 		const pvr::uint32 fboHeight = ParaboloidTexSize;
 
 		//create the renderpass
 		pvr::api::RenderPassCreateParam renderPassInfo;
 		renderPassInfo
-		.addColorInfo(0, pvr::api::RenderPassColorInfo(rtColorFmt, pvr::LoadOp::Clear))
-		.setDepthStencilInfo(pvr::api::RenderPassDepthStencilInfo(rtDsFmt, pvr::LoadOp::Clear))
+		.addColorInfo(0, pvr::api::RenderPassColorInfo(apiObj->fboParaboloid.rtColorFmt, pvr::types::LoadOp::Clear))
+		.setDepthStencilInfo(pvr::api::RenderPassDepthStencilInfo(rtDsFmt, pvr::types::LoadOp::Clear))
 		.addSubPass(0, subPass);
 
 		// create the render-target color texture
-		apiObj->fboParaboloid.rtColorImage = apiObj->device->createTexture();
-		apiObj->fboParaboloid.rtColorFmt = rtColorFmt;
-		apiObj->fboParaboloid.rtColorImage->allocate2D(apiObj->fboParaboloid.rtColorFmt, fboWidth, fboHeight);
+		pvr::api::TextureStore rtColorTex = apiObj->device->createTexture();
+		rtColorTex->allocate2D(apiObj->fboParaboloid.rtColorFmt, fboWidth, fboHeight);
+		apiObj->fboParaboloid.rtColorImage = apiObj->device->createTextureView(rtColorTex);
 
 		// create the render-target depth-stencil texture
-		apiObj->fboParaboloid.rtDsImage = apiObj->device->createTexture();
-		apiObj->fboParaboloid.rtDsFmt = pvr::api::ImageStorageFormat(pvr::PixelFormat::Depth16, 1,
-		                                pvr::ColorSpace::lRGB, pvr::VariableType::UnsignedShort);
-		apiObj->fboParaboloid.rtDsImage->allocate2D(apiObj->fboParaboloid.rtDsFmt, fboWidth, fboHeight);
+		pvr::api::TextureStore rtDsTex = apiObj->device->createTexture();
+		rtDsTex->allocate2D(apiObj->fboParaboloid.rtDsFmt, fboWidth, fboHeight);
+		apiObj->fboParaboloid.rtDsImage = apiObj->device->createTextureView(rtDsTex);
 
 		// create the fbo
-		pvr::api::ColorAttachmentViewCreateParam colorViewInfo(apiObj->fboParaboloid.rtColorImage, 0);
-		pvr::api::DepthStencilViewCreateParam dsViewInfo(apiObj->fboParaboloid.rtDsImage, 0);
 		pvr::api::FboCreateParam fboInfo;
 		fboInfo.setRenderPass(apiObj->device->createRenderPass(renderPassInfo))
-		.addColor(0, apiObj->device->createColorAttachmentView(colorViewInfo))
-		.setDepthStencil(apiObj->device->createDepthView(dsViewInfo));
+		.addColor(0, apiObj->fboParaboloid.rtColorImage)
+		.setDepthStencil(apiObj->fboParaboloid.rtDsImage);
 		apiObj->fboParaboloid.fbo = apiObj->device->createFbo(fboInfo);
 		if (!apiObj->fboParaboloid.fbo.isValid())
 		{
@@ -550,19 +551,19 @@ pvr::Result::Enum OGLESGlass::initView()
 	if (!assetManager.loadModel(StatueFile, apiObj->statue.handle))
 	{
 		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 
 	// Load the balloon
 	if (!assetManager.loadModel(BalloonFile, apiObj->balloon.handle))
 	{
 		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 
 	// Store the original FBO
 	apiObj->device = getGraphicsContext();
-	apiObj->primaryCommandBuffer = apiObj->device->createCommandBuffer();
+	apiObj->primaryCommandBuffer = apiObj->device->createCommandBufferOnDefaultPool();
 
 	//Initialize VBO data
 	loadVbos();
@@ -571,7 +572,7 @@ pvr::Result::Enum OGLESGlass::initView()
 	if (!createImageSampler())	{ return pvr::Result::UnknownError;	}
 
 	//Initialize UIRenderer
-	if (apiObj->uiRenderer.init(apiObj->device) != pvr::Result::Success)
+	if (apiObj->uiRenderer.init(apiObj->device, apiObj->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
 		return pvr::Result::UnknownError;
@@ -648,8 +649,8 @@ void OGLESGlass::recordCmdDrawBalloons(pvr::api::SecondaryCommandBuffer& cmdBuff
 	glm::mat4 mModelView, mMVP;
 	for (pvr::uint32 i = 0; i < numBalloon; ++i)
 	{
-		cmdBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics, pipeline.pipe->getPipelineLayout(),
-		                              i == 0 ? passBallon.imageSamplerDescSets[0] : passBallon.imageSamplerDescSets[1], 0);
+		cmdBuffer->bindDescriptorSet(pipeline.pipe->getPipelineLayout(), 0,
+		                             i == 0 ? passBallon.imageSamplerDescSets[0] : passBallon.imageSamplerDescSets[1], 0);
 
 		cmdBuffer->setUniformPtr<glm::mat4>(pipeline.uniformLoc[ShaderUniforms::MVMatrix], 1, &passBallon.uniformData[i].modelView);
 		cmdBuffer->setUniformPtr<glm::mat4>(pipeline.uniformLoc[ShaderUniforms::MVPMatrix], 1, &passBallon.uniformData[i].modelViewProj);
@@ -670,8 +671,8 @@ void OGLESGlass::recordCmdDrawGlassObject(pvr::api::SecondaryCommandBuffer& cmdB
 	cmdBuffer->bindPipeline(apiObj->pipeEffects[currentEffect].pipe);
 
 	// bind the texture and samplers
-	cmdBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics, apiObj->pipeEffects[currentEffect].pipe->getPipelineLayout(),
-	                              apiObj->passDrawBall.imageSamplerDescSets[0], 0);
+	cmdBuffer->bindDescriptorSet(apiObj->pipeEffects[currentEffect].pipe->getPipelineLayout(),
+	                             0, apiObj->passDrawBall.imageSamplerDescSets[0], 0);
 
 	cmdBuffer->setUniformPtr<glm::vec3>(apiObj->pipeEffects[currentEffect].uniformLoc[ShaderUniforms::EyePos], 1, &apiObj->passDrawBall.uniformData[0].eyePos);
 	cmdBuffer->setUniformPtr<glm::mat4>(apiObj->pipeEffects[currentEffect].uniformLoc[ShaderUniforms::MVPMatrix], 1, &apiObj->passDrawBall.uniformData[0].modelViewProj);
@@ -692,7 +693,7 @@ void OGLESGlass::recordCmdDrawSkyBox(pvr::api::SecondaryCommandBuffer& cmdBuffer
 	cmdBuffer->setUniformPtr<glm::vec3>(apiObj->pipeSkyBox.uniformLoc[ShaderUniforms::EyePos], 1, &apiObj->passSkyBox.uniformData[0].eyePos);
 	cmdBuffer->bindVertexBuffer(apiObj->vboSquare, 0, 0);
 
-	cmdBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics, apiObj->pipeSkyBox.pipe->getPipelineLayout(), apiObj->passSkyBox.imageSamplerDescSets[0], 0);
+	cmdBuffer->bindDescriptorSet(apiObj->pipeSkyBox.pipe->getPipelineLayout(), 0, apiObj->passSkyBox.imageSamplerDescSets[0], 0);
 	cmdBuffer->drawArrays(0, 6, 0, 1);
 }
 
@@ -830,8 +831,8 @@ void OGLESGlass::updateParaboloids(const glm::vec3& position)
 ***********************************************************************************************************************/
 void OGLESGlass::recordSecondaryCommands()
 {
-	apiObj->paraboloidCmdBuffer = apiObj->device->createSecondaryCommandBuffer();
-	apiObj->paraboloidCmdBuffer->beginRecording();
+	apiObj->paraboloidCmdBuffer = apiObj->device->createSecondaryCommandBufferOnDefaultPool();
+	apiObj->paraboloidCmdBuffer->beginRecording(apiObj->fboParaboloid.fbo, 0);
 	// Switch to front face culling pipeline due to flipped winding order
 	apiObj->paraboloidCmdBuffer->bindPipeline(apiObj->pipeparaboloid[0].pipe);
 	apiObj->paraboloidCmdBuffer->setViewport(pvr::Rectanglei(0, 0, ParaboloidTexSize, ParaboloidTexSize));
@@ -850,15 +851,15 @@ void OGLESGlass::recordSecondaryCommands()
 	apiObj->paraboloidCmdBuffer->endRecording();
 
 
-	apiObj->sceneCmdBuffer = apiObj->device->createSecondaryCommandBuffer();
-	apiObj->sceneCmdBuffer->beginRecording();
+	apiObj->sceneCmdBuffer = apiObj->device->createSecondaryCommandBufferOnDefaultPool();
+	apiObj->sceneCmdBuffer->beginRecording(apiObj->fboOnScreen, 0);
 	recordCmdDrawGlassObject(apiObj->sceneCmdBuffer);
 	recordCmdDrawBalloons(apiObj->sceneCmdBuffer, apiObj->pipeDefault, 2, apiObj->passBalloon);
 	recordCmdDrawSkyBox(apiObj->sceneCmdBuffer);
 	apiObj->sceneCmdBuffer->endRecording();
 
 	// render the title, sdk logo and description
-	apiObj->uiRendererCmdBuffer = apiObj->device->createSecondaryCommandBuffer();
+	apiObj->uiRendererCmdBuffer = apiObj->device->createSecondaryCommandBufferOnDefaultPool();
 	apiObj->uiRenderer.beginRendering(apiObj->uiRendererCmdBuffer);
 	apiObj->uiRenderer.getSdkLogo()->render();
 	apiObj->uiRenderer.getDefaultTitle()->render();
@@ -878,13 +879,13 @@ void OGLESGlass::recordPerFrameCommandBuffer()
 	{
 		// Bind and clear the paraboloid framebuffer , Use a nice bright blue as clear color
 		// Set the renderArea to the left
-        apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboParaboloid.fbo, pvr::Rectanglei(0.0, 0.0f, 2 * ParaboloidTexSize, ParaboloidTexSize), ClearSkyColor);
+		apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboParaboloid.fbo, pvr::Rectanglei(0.0, 0.0f, 2 * ParaboloidTexSize, ParaboloidTexSize), false, ClearSkyColor);
 		apiObj->primaryCommandBuffer->enqueueSecondaryCmds(apiObj->paraboloidCmdBuffer);
 		apiObj->primaryCommandBuffer->endRenderPass();
 	}
 
 	// Bind back the original frame buffer and reset the viewport
-	apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboOnScreen, pvr::Rectanglei(0.0, 0.0f, getWidth(), getHeight()), ClearSkyColor);
+	apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboOnScreen, pvr::Rectanglei(0.0, 0.0f, getWidth(), getHeight()), false, ClearSkyColor);
 	apiObj->primaryCommandBuffer->enqueueSecondaryCmds(apiObj->sceneCmdBuffer);
 	apiObj->primaryCommandBuffer->enqueueSecondaryCmds(apiObj->uiRendererCmdBuffer);
 	apiObj->primaryCommandBuffer->endRenderPass();

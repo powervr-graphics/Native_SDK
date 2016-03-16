@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['vec2',['Vec2',['../namespacepvr_1_1assets_1_1_semantic_data_type.html#abdca3054ed51b45293edc3c641e0538ea43312e5d0c48ea566222106841a634d8',1,'pvr::assets::SemanticDataType']]],
-  ['vec3',['Vec3',['../namespacepvr_1_1assets_1_1_semantic_data_type.html#abdca3054ed51b45293edc3c641e0538ea4f0c8b4ced177dc91259686908bcc18b',1,'pvr::assets::SemanticDataType']]],
-  ['vec4',['Vec4',['../namespacepvr_1_1assets_1_1_semantic_data_type.html#abdca3054ed51b45293edc3c641e0538eab5f05191c7b20a780e86ed53e8a2e646',1,'pvr::assets::SemanticDataType']]],
   ['vertexcolor',['VertexColor',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a3a79754a16fbb21da443d99f1fbb150b',1,'pvr::assets::PVRShamanSemantics']]],
   ['view',['View',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926ae52a8e23e1d269f4add46d7cb30ab5ad',1,'pvr::assets::PVRShamanSemantics']]],
   ['viewi',['ViewI',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a876f2738c58a169d7f92ec3c1519c058',1,'pvr::assets::PVRShamanSemantics']]],

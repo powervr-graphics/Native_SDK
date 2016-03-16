@@ -7,7 +7,7 @@
 #include "PVRApi/PVRApi.h"
 #include "PVRShell/PVRShell.h"
 #include "PVRUIRenderer/UIRenderer.h"
-
+using namespace pvr::types;
 // shader uniforms
 namespace SkinnedUniforms {
 enum Enum
@@ -96,7 +96,6 @@ class OGLESSkinning : public pvr::Shell
 		pvr::api::Fbo fboOnScreen;
 	};
 	std::auto_ptr<ApiObjects> apiObj;
-
 	// 3D Model
 	pvr::assets::ModelHandle scene;
 
@@ -187,30 +186,30 @@ bool OGLESSkinning::createDescriptors(pvr::api::DescriptorSetLayout& outDefaultL
 
 	// create descriptor set layout
 	pvr::api::DescriptorSetLayoutCreateParam defaultLayoutDesc;
-	defaultLayoutDesc.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, pvr::api::ShaderStageFlags::Fragment);
+	defaultLayoutDesc.setBinding(0, DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment);
 	outDefaultLayout = apiObj->context->createDescriptorSetLayout(defaultLayoutDesc);
 
-    //-- create descriptor set layout
+	//-- create descriptor set layout
 	pvr::api::DescriptorSetLayoutCreateParam skinnedLayoutDesc;
-    skinnedLayoutDesc.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, pvr::api::ShaderStageFlags::Fragment)
-            .addBinding(1, pvr::api::DescriptorType::CombinedImageSampler, pvr::api::ShaderStageFlags::Fragment);
+	skinnedLayoutDesc.setBinding(0, DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment)
+	.setBinding(1, DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment);
 
-    outSkinnedLayout = apiObj->context->createDescriptorSetLayout(skinnedLayoutDesc);
+	outSkinnedLayout = apiObj->context->createDescriptorSetLayout(skinnedLayoutDesc);
 
 	pvr::assets::SamplerCreateParam desc;
-	desc.magnificationFilter = pvr::SamplerFilter::Linear;
-	desc.minificationFilter = pvr::SamplerFilter::Linear;
-	desc.mipMappingFilter = pvr::SamplerFilter::Linear;
+	desc.magnificationFilter = SamplerFilter::Linear;
+	desc.minificationFilter = SamplerFilter::Linear;
+	desc.mipMappingFilter = SamplerFilter::Linear;
 	apiObj->samplerTrilinear = apiObj->context->createSampler(desc);
 
-	desc.mipMappingFilter = pvr::SamplerFilter::None;
+	desc.mipMappingFilter = SamplerFilter::None;
 	apiObj->samplerBilinear = apiObj->context->createSampler(desc);
 	apiObj->descriptorSets.resize(scene->getNumMaterials());
 
 	for (pvr::uint32 i = 0; i < scene->getNumMaterials(); ++i)
 	{
 		//We are using one texture atlas for this model, regardless of the amount of meshes.
-		pvr::api::DescriptorSetUpdateParam descSetWrite; const pvr::assets::Material& mat = scene->getMaterial(i);
+		pvr::api::DescriptorSetUpdate descSetWrite; const pvr::assets::Material& mat = scene->getMaterial(i);
 		if (mat.getDiffuseTextureIndex() == -1)
 		{
 			setExitMessage("This demo does not support non-textured materials.");
@@ -219,17 +218,17 @@ bool OGLESSkinning::createDescriptors(pvr::api::DescriptorSetLayout& outDefaultL
 		const pvr::StringHash& textureName = scene->getTexture(mat.getDiffuseTextureIndex()).getName();
 		pvr::api::TextureView tex;
 		apiObj->assetManager.getTextureWithCaching(getGraphicsContext(), textureName, &tex, NULL);
-		descSetWrite.addCombinedImageSampler(0, 0, tex, apiObj->samplerTrilinear);
+		descSetWrite.setCombinedImageSampler(0, tex, apiObj->samplerTrilinear);
 		if (mat.getBumpMapTextureIndex() != -1)
 		{
 			const pvr::StringHash& bumpTextureName = scene->getTexture(mat.getBumpMapTextureIndex()).getName();
 			apiObj->assetManager.getTextureWithCaching(getGraphicsContext(), bumpTextureName, &tex, NULL);
-			descSetWrite.addCombinedImageSampler(1, 0, tex, apiObj->samplerBilinear);
-			apiObj->descriptorSets[i] = apiObj->context->allocateDescriptorSet(outSkinnedLayout);
+			descSetWrite.setCombinedImageSampler(1, tex, apiObj->samplerBilinear);
+			apiObj->descriptorSets[i] = apiObj->context->createDescriptorSetOnDefaultPool(outSkinnedLayout);
 		}
 		else
 		{
-			apiObj->descriptorSets[i] = apiObj->context->allocateDescriptorSet(outDefaultLayout);
+			apiObj->descriptorSets[i] = apiObj->context->createDescriptorSetOnDefaultPool(outDefaultLayout);
 		}
 		apiObj->descriptorSets[i]->update(descSetWrite);
 	}
@@ -266,15 +265,15 @@ bool OGLESSkinning::createPipelines(const pvr::api::DescriptorSetLayout& default
 		skinnedPipeLayoutCreateParam.addDescSetLayout(skinnedLayout);
 		skinnedDesc.pipelineLayout = apiObj->context->createPipelineLayout(skinnedPipeLayoutCreateParam);
 		skinnedDesc.depthStencil.setDepthTestEnable(true);
-
+		skinnedDesc.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
 		//Depth test TRUE is default, depth func LESS is default
 		pvr::assets::ShaderFile vertShaderFile(Configuration::SkinnedVertexFilename, *this);
 		pvr::assets::ShaderFile fragShaderFile(Configuration::SkinnedFragmentFilename, *this);
 
 		pvr::Stream::ptr_type skinVertShader = vertShaderFile.getBestStreamForApi(getApiType());
 		pvr::Stream::ptr_type skinFragShader = fragShaderFile.getBestStreamForApi(getApiType());
-		skinnedDesc.vertexShader.setShader(apiObj->context->createShader(*skinVertShader, pvr::ShaderType::VertexShader));
-		skinnedDesc.fragmentShader.setShader(apiObj->context->createShader(*skinFragShader, pvr::ShaderType::FragmentShader));
+		skinnedDesc.vertexShader.setShader(apiObj->context->createShader(*skinVertShader, ShaderType::VertexShader));
+		skinnedDesc.fragmentShader.setShader(apiObj->context->createShader(*skinFragShader, ShaderType::FragmentShader));
 
 		pvr::utils::createInputAssemblyFromMesh(scene->getMesh(skinnedMeshId), SkinnedAttributes::AttributesBindings, SkinnedAttributes::Count, skinnedDesc);
 		//create the skin pipeline, it is mutable after creation
@@ -290,14 +289,15 @@ bool OGLESSkinning::createPipelines(const pvr::api::DescriptorSetLayout& default
 		pvr::api::PipelineLayoutCreateParam defaultPipeLayoutCreateParam;
 		defaultPipeLayoutCreateParam.addDescSetLayout(defaultLayout);
 		defaultDesc.pipelineLayout = apiObj->context->createPipelineLayout(defaultPipeLayoutCreateParam);
+		defaultDesc.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
 		defaultDesc.depthStencil.setDepthTestEnable(true);
 		pvr::assets::ShaderFile vertShaderFile(Configuration::DefaultVertexFilename, *this);
 		pvr::assets::ShaderFile fragShaderFile(Configuration::DefaultFragmentFilename, *this);
 
 		pvr::Stream::ptr_type defaultVertShader = vertShaderFile.getBestStreamForApi(getApiType());
 		pvr::Stream::ptr_type defaultFragShader = fragShaderFile.getBestStreamForApi(getApiType());
-		defaultDesc.vertexShader.setShader(apiObj->context->createShader(*defaultVertShader, pvr::ShaderType::VertexShader));
-		defaultDesc.fragmentShader.setShader(apiObj->context->createShader(*defaultFragShader, pvr::ShaderType::FragmentShader));
+		defaultDesc.vertexShader.setShader(apiObj->context->createShader(*defaultVertShader, ShaderType::VertexShader));
+		defaultDesc.fragmentShader.setShader(apiObj->context->createShader(*defaultFragShader, ShaderType::FragmentShader));
 
 		pvr::utils::createInputAssemblyFromMesh(scene->getMesh(nonSkinnedMeshId), DefaultAttributes::Bindings, DefaultAttributes::Count, defaultDesc);
 		//create the skin pipeline, it is mutable after creation
@@ -391,7 +391,7 @@ pvr::Result::Enum OGLESSkinning::initView()
 
 	currentFrame = 0.;
 	apiObj->context = getGraphicsContext();
-	apiObj->commandBuffer = apiObj->context->createCommandBuffer();
+	apiObj->commandBuffer = apiObj->context->createCommandBufferOnDefaultPool();
 
 	// automatically populate the VBOs and IBOs from the Model.
 	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *scene, apiObj->vbos, apiObj->ibos);
@@ -410,10 +410,10 @@ pvr::Result::Enum OGLESSkinning::initView()
 		return pvr::Result::NotFound;
 	}
 
-	apiObj->fboOnScreen = apiObj->context->createOnScreenFboWithParams();
+	apiObj->fboOnScreen = apiObj->context->createOnScreenFbo(0);
 
 	pvr::Result::Enum result = pvr::Result::Success;
-	result = apiObj->uiRenderer.init(getGraphicsContext());
+	result = apiObj->uiRenderer.init(getGraphicsContext(), apiObj->fboOnScreen->getRenderPass(), 0);
 	if (result != pvr::Result::Success) { return result; }
 
 	apiObj->uiRenderer.getDefaultTitle()->setText("Skinning");
@@ -428,11 +428,11 @@ pvr::Result::Enum OGLESSkinning::initView()
 
 	if (isScreenRotated() && isFullScreen())
 	{
-		proj = pvr::math::perspectiveFov(camera.getFOV(), getHeight(), getWidth(), camera.getNear(), camera.getFar(), glm::pi<pvr::float32>() * .5f);
+		proj = pvr::math::perspectiveFov(apiObj->context->getApiType(), camera.getFOV(), getHeight(), getWidth(), camera.getNear(), camera.getFar(), glm::pi<pvr::float32>() * .5f);
 	}
 	else
 	{
-		proj = glm::perspectiveFov<pvr::float32>(camera.getFOV(), getWidth(), getHeight(), camera.getNear(), camera.getFar());
+		proj = pvr::math::perspectiveFov(apiObj->context->getApiType(), camera.getFOV(), getWidth(), getHeight(), camera.getNear(), camera.getFar());
 	}
 	return result;
 }
@@ -566,15 +566,15 @@ void OGLESSkinning::recordCommandBuffer()
 	apiObj->commandBuffer->submit();
 	apiObj->commandBuffer->clear();
 
-	//In order to minimise state changes, we will group together all skinned with all non-skinned nodes.
+	//In order to minimize state changes, we will group together all skinned with all non-skinned nodes.
 	//In fact, secondary command buffers are ideal to help us separate them - we will put all drawing commands
 	//for non-skinned meshes in a secondary command buffer, and all skinned meshes in another secondary command buffer.
 	//In a multi-thread environment, this could be done, for example, in different threads.
-	pvr::api::SecondaryCommandBuffer cbuffSkinned = getGraphicsContext()->createSecondaryCommandBuffer();
-	pvr::api::SecondaryCommandBuffer cbuffDefault = getGraphicsContext()->createSecondaryCommandBuffer();
+	pvr::api::SecondaryCommandBuffer	cbuffSkinned = getGraphicsContext()->createSecondaryCommandBufferOnDefaultPool();
+	pvr::api::SecondaryCommandBuffer cbuffDefault = getGraphicsContext()->createSecondaryCommandBufferOnDefaultPool();
 
-	cbuffSkinned->beginRecording();
-	cbuffDefault->beginRecording();
+	cbuffSkinned->beginRecording(apiObj->fboOnScreen, 0);
+	cbuffDefault->beginRecording(apiObj->fboOnScreen, 0);
 	//// Since we group them, the pipelines need only be bound in the beginning.
 	cbuffSkinned->bindPipeline(apiObj->skinnedPipeline);
 	cbuffDefault->bindPipeline(apiObj->defaultPipeline);
@@ -598,7 +598,7 @@ void OGLESSkinning::recordCommandBuffer()
 		pvr::api::SecondaryCommandBuffer& secBuff = (isSkinned ? cbuffSkinned : cbuffDefault);
 		pvr::api::GraphicsPipeline pipe = (isSkinned ? apiObj->skinnedPipeline : apiObj->defaultPipeline);
 
-		secBuff->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics, pipe->getPipelineLayout(), apiObj->descriptorSets[node.getMaterialIndex()], 0);
+		secBuff->bindDescriptorSet(pipe->getPipelineLayout(), 0, apiObj->descriptorSets[node.getMaterialIndex()], 0);
 
 		//Construct the per-Mesh part
 		secBuff->bindVertexBuffer(apiObj->vbos[node.getObjectId()], 0, 0);
@@ -636,7 +636,7 @@ void OGLESSkinning::recordCommandBuffer()
 	cbuffSkinned->endRecording(); cbuffDefault->endRecording();
 
 	///// PART 3 :  UIRenderer
-	pvr::api::SecondaryCommandBuffer uicmd = getGraphicsContext()->createSecondaryCommandBuffer();
+	pvr::api::SecondaryCommandBuffer uicmd = getGraphicsContext()->createSecondaryCommandBufferOnDefaultPool();
 	apiObj->uiRenderer.beginRendering(uicmd);
 	apiObj->uiRenderer.getDefaultDescription()->render();
 	apiObj->uiRenderer.getDefaultTitle()->render();
@@ -647,7 +647,7 @@ void OGLESSkinning::recordCommandBuffer()
 	///// PART 4 :  Put it all together
 	apiObj->commandBuffer->beginRecording();
 	// Clear the color and depth buffer automatically.
-	apiObj->commandBuffer->beginRenderPass(apiObj->fboOnScreen, pvr::Rectanglei(0, 0, getWidth(), getHeight()), glm::vec4(.2f, .3f, .4f, 1.f));
+	apiObj->commandBuffer->beginRenderPass(apiObj->fboOnScreen, pvr::Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(.2f, .3f, .4f, 1.f));
 
 	apiObj->commandBuffer->enqueueSecondaryCmds(cbuffSkinned);
 	apiObj->commandBuffer->enqueueSecondaryCmds(cbuffDefault);

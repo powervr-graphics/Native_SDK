@@ -40,8 +40,8 @@ struct PFXParserTexture
 {
 	StringHash name;
 	StringHash fileName;
-	SamplerFilter::Enum minFilter, magFilter, mipFilter;
-	SamplerWrap::Enum wrapS, wrapT, wrapR;	// either GL_CLAMP or GL_REPEAT
+    types::SamplerFilter::Enum minFilter, magFilter, mipFilter;
+    types::SamplerWrap::Enum wrapS, wrapT, wrapR;	// either GL_CLAMP or GL_REPEAT
 	uint32 width, height;
 	uint64 flags;
 	bool renderToTexture;
@@ -80,11 +80,11 @@ struct PfxParserEffect
 *******************************************************************************************************************/
 struct PfxRenderPass
 {
-	EffectPassType::Enum				renderPassType;			//< Type of pass.
-	EffectPassView::Enum				viewType;				//< View type.
+    types::EffectPassType::Enum	renderPassType;			//< Type of pass.
+    types::EffectPassView::Enum	viewType;				//< View type.
 	uint64				formatFlags;			//< Surface Type.
-	PfxParserEffect*		effect;					//< Matched pass. Needed but determined from effect block.
-	PFXParserTexture*		texture;				//< The RTT target for this pass.
+    PfxParserEffect*	effect;					//< Matched pass. Needed but determined from effect block.
+    PFXParserTexture*	texture;				//< The RTT target for this pass.
 	string				nodeName;				//< POD Camera name.
 	string				semanticName;			//< Name of this pass.
 
@@ -232,7 +232,7 @@ public:
 	*******************************************************************************************************************/
 	const PfxRenderPass& getRenderPass(uint32 uiIndex) const
 	{
-		PVR_ASSERT(uiIndex >= 0 && uiIndex < getNumberRenderPasses());
+		assertion(uiIndex < getNumberRenderPasses(), "PfxReader::getRenderpass index out of range");
 		return m_renderPasses[uiIndex];
 	}
 
@@ -249,7 +249,7 @@ public:
 	*******************************************************************************************************************/
 	const PFXParserShader& getFragmentShader(uint32 uiIndex) const
 	{
-		PVR_ASSERT(uiIndex < getNumberFragmentShaders());
+		assertion(uiIndex < getNumberFragmentShaders());
 		return m_fragmentShaders[uiIndex];
 	}
 
@@ -266,7 +266,7 @@ public:
 	*******************************************************************************************************************/
 	const PFXParserShader& getVertexShader(uint32 uiIndex) const
 	{
-		PVR_ASSERT(uiIndex < getNumberVertexShaders());
+		assertion(uiIndex < getNumberVertexShaders());
 		return m_vertexShaders[uiIndex];
 	}
 
@@ -405,7 +405,7 @@ private:
 	*******************************************************************************************************************/
 	const PfxParserEffect& getParserEffect(uint32 uiIndex) const
 	{
-		PVR_ASSERT(uiIndex < getNumberEffects());
+		assertion(uiIndex < getNumberEffects());
 		return m_effects[uiIndex];
 	}
 

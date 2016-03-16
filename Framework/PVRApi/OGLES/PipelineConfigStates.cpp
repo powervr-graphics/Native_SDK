@@ -5,17 +5,17 @@
 \brief         Definitions of the OpenGL ES implementation of several Pipeline State objects (see GraphicsPipeline).
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
-#include "PVRApi/ApiObjects/PipelineConfigStates.h"
+#include "PVRApi/OGLES/PipelineConfigStatesGles.h"
 #include "PVRApi/ApiIncludes.h"
-#include "PVRApi/ApiObjects/PipelineStateCreateParam.h"
-#include "PVRApi/ApiErrors.h"
+#include "PVRNativeApi/ApiErrors.h"
 #include "PVRApi/OGLES/ContextGles.h"
-#include "PVRApi/OGLES/ConvertToApiTypes.h"
-#include "PVRApi/OGLES/OpenGLESBindings.h"
+#include "PVRNativeApi/OGLES/ConvertToApiTypes.h"
+#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
 
 namespace pvr {
+using namespace types;
 namespace api {
-namespace impl {
+namespace gles {
 void DepthTestState::commitState(pvr::IGraphicsContext& device, bool depthTest)
 {
 	debugLogApiError("DepthTestState::setDepthTest enter");
@@ -43,13 +43,13 @@ void DepthWriteState::commitState(pvr::IGraphicsContext& device, bool depthWrite
 
 void DepthWriteState::setDefault(pvr::IGraphicsContext& device) { commitState(device, true);}
 
-void PolygonFrontFaceState::commitState(pvr::IGraphicsContext& device, Face::Enum cullFace)
+void PolygonFrontFaceState::commitState(pvr::IGraphicsContext& device, types::Face::Enum cullFace)
 {
 	debugLogApiError("PolygonFrontFaceState::commitState enter");
 	platform::ContextGles& deviceEs = static_cast<platform::ContextGles&>(device);
 	if (deviceEs.getCurrentRenderStates().cullFace == cullFace) { return; }
 	deviceEs.getCurrentRenderStates().cullFace = cullFace;
-	if (cullFace == api::Face::None)
+    if (cullFace == types::Face::None)
 	{
 		gl::Disable(GL_CULL_FACE);
 	}
@@ -62,9 +62,9 @@ void PolygonFrontFaceState::commitState(pvr::IGraphicsContext& device, Face::Enu
 	debugLogApiError("PolygonFrontFaceState::commitState exit");
 }
 
-void PolygonFrontFaceState::setDefault(pvr::IGraphicsContext& device) {commitState(device, Face::Back);}
+void PolygonFrontFaceState::setDefault(pvr::IGraphicsContext& device) {commitState(device, types::Face::Back);}
 
-void PolygonWindingOrderState::commitState(pvr::IGraphicsContext& device, PolygonWindingOrder::Enum windingOrder)
+void PolygonWindingOrderState::commitState(pvr::IGraphicsContext& device, types::PolygonWindingOrder::Enum windingOrder)
 {
 	debugLogApiError("PolygonWindingOrderState::commitState enter");
 	platform::ContextGles& deviceEs = static_cast<platform::ContextGles&>(device);
@@ -76,7 +76,7 @@ void PolygonWindingOrderState::commitState(pvr::IGraphicsContext& device, Polygo
 
 void PolygonWindingOrderState::setDefault(pvr::IGraphicsContext& device)
 {
-	commitState(device, PolygonWindingOrder::FrontFaceCCW);
+    commitState(device, types::PolygonWindingOrder::FrontFaceCCW);
 }
 
 void BlendOpState::commitState(pvr::IGraphicsContext& device, BlendOp::Enum rgbBlendOp, BlendOp::Enum alphaBlendOp)
@@ -105,10 +105,10 @@ void BlendFactorState::commitState(pvr::IGraphicsContext& device, uint8 srcRgbFa
 	{
 		return;
 	}
-	currentStates.srcRgbFactor = (pvr::api::BlendFactor::Enum)srcRgbFactor;
-	currentStates.srcAlphaFactor = (pvr::api::BlendFactor::Enum)srcAlphaFactor;
-	currentStates.destRgbFactor = (pvr::api::BlendFactor::Enum)dstRgbFactor;
-	currentStates.destAlphaFactor = (pvr::api::BlendFactor::Enum)dstAlphaFactor;
+    currentStates.srcRgbFactor = (BlendFactor::Enum)srcRgbFactor;
+    currentStates.srcAlphaFactor = (BlendFactor::Enum)srcAlphaFactor;
+    currentStates.destRgbFactor = (BlendFactor::Enum)dstRgbFactor;
+    currentStates.destAlphaFactor = (BlendFactor::Enum)dstAlphaFactor;
 	gl::BlendFuncSeparate(ConvertToGles::blendFactor((BlendFactor::Enum)srcRgbFactor),
 	                      ConvertToGles::blendFactor((BlendFactor::Enum)dstRgbFactor),
 	                      ConvertToGles::blendFactor((BlendFactor::Enum)srcAlphaFactor),
@@ -310,6 +310,101 @@ void StencilCompareOpBack::commitState(pvr::IGraphicsContext& device, pvr::Compa
 		recordedStates.depthStencil.stencilOpBack = cmp;
 	}
 	debugLogApiError("StencilCompareOpBack::commitState exit");
+}
+
+GraphicsShaderProgramState::GraphicsShaderProgramState()
+{
+	m_isValid = false;
+	m_shaderProgram.construct();
+}
+GraphicsShaderProgramState::GraphicsShaderProgramState(const GraphicsShaderProgramState& shaderState)
+{
+	m_isValid = true;
+	m_shaderProgram = shaderState.m_shaderProgram;
+}
+void GraphicsShaderProgramState::bind() const
+{
+	gl::UseProgram(m_shaderProgram->handle);
+	debugLogApiError("GraphicsShaderProgramState::bind exit");
+}
+void GraphicsShaderProgramState::reset(pvr::IGraphicsContext& device)
+{
+	gl::UseProgram(0);
+	debugLogApiError("GraphicsShaderProgramState::reset exit");
+}
+void GraphicsShaderProgramState::destroy()
+{
+	gl::DeleteProgram(m_shaderProgram->handle); m_shaderProgram.release(); m_isValid = false;
+	debugLogApiError("GraphicsShaderProgramState::destoy exit");
+}
+void GraphicsShaderProgramState::generate()
+{
+	if (!m_shaderProgram.isValid()) { m_shaderProgram.construct(0); }
+	m_shaderProgram->handle = gl::CreateProgram(); m_isValid = true;
+	debugLogApiError("GraphicsShaderProgramState::generate exit");
+}
+
+bool GraphicsShaderProgramState::saveProgramBinary(Stream& outFile)
+{
+#if (!defined(BUILD_API_MAX)||(BUILD_API_MAX>=30))
+	// validate the program
+	GLint linked;
+	gl::GetProgramiv(m_shaderProgram->handle, GL_LINK_STATUS, &linked);
+	if (!linked) { return false; }
+
+	// get the length of the shader binary program in memory.
+	GLsizei length = 0;
+	gl::GetProgramiv(m_shaderProgram->handle, GL_PROGRAM_BINARY_LENGTH, &length);
+
+	// No binary?
+	if (length == 0) { return false; }
+
+	std::vector<byte> shaderBinary;
+	shaderBinary.resize(length);
+
+	GLenum binaryFmt = 0;
+	GLsizei lengthWritten = 0;
+	gl::GetProgramBinary(m_shaderProgram->handle, length, &lengthWritten, &binaryFmt, &shaderBinary[0]);
+
+	// save failed?
+	if (!lengthWritten) { return false; }
+
+	// save the binary format
+	size_t fileWrittenLen = 0;
+	bool rslt = outFile.write(sizeof(GLenum), 1, (void*)&binaryFmt, fileWrittenLen);
+
+	// File failed
+	if (!rslt)  { return false; }
+
+	// save the program
+	rslt = outFile.write(length, 1, &shaderBinary[0], fileWrittenLen);
+
+	return rslt;
+#else
+	assertion(0, "ShaderUtils::saveProgramBinary Underlying API OpenGL ES 2 does not support Program Binaries");
+	Log(Log.Error,
+	    "ShaderUtils::saveProgramBinary Underlying API OpenGL ES 2 does not support Program Binaries");
+	return Result::UnsupportedRequest;
+#endif
+}
+
+
+/////////////////////////////// COMPUTE SHADER ///////////////////////////////
+void ComputeShaderProgramState::generate()
+{
+	if (!m_shaderProgram.isValid()) { m_shaderProgram.construct(0); }
+	m_shaderProgram->handle = gl::CreateProgram(); m_isValid = true;
+	debugLogApiError("ComputeShaderProgramState::generate exit");
+}
+void ComputeShaderProgramState::bind()
+{
+	gl::UseProgram(m_shaderProgram->handle);
+	debugLogApiError("ComputeShaderProgramState::bind exit");
+}
+void ComputeShaderProgramState::reset(pvr::IGraphicsContext& device)
+{
+	gl::UseProgram(0);
+	debugLogApiError("ComputeShaderProgramState::reset exit");
 }
 }// namespace impl
 }// namespace api

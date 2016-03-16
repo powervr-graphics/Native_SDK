@@ -6,31 +6,31 @@
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
 #include "PVRApi/AssetStore.h"
-#include "PVRApi/OGLES/NativeObjectsGles.h"
-#include "PVRApi/OGLES/TextureUtils.h"
-#include "PVRApi/OGLES/ConvertToApiTypes.h"
-
+#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
+#include "PVRApi/OGLES/TextureGles.h"
+#include "PVRNativeApi/OGLES/ConvertToApiTypes.h"
+#include "PVRApi/TextureUtils.h"
 
 namespace pvr {
 namespace api {
 namespace {
 inline bool getPvrFilename(const StringHash& filename, StringHash& outNewName)
 {
-	size_t period = filename.getString().rfind(".");
+	size_t period = filename.str().rfind(".");
 
 	if (period == string::npos) //No extension. Add the pvr extension
 	{
-		outNewName = filename.getString() + "." + "pvr";
+		outNewName = filename.str() + "." + "pvr";
 		return true;
 	}
 
-	if (filename.getString().substr(period + 1) == "pvr") //Extension is already pvr. Do nothing.
+	if (filename.str().substr(period + 1) == "pvr") //Extension is already pvr. Do nothing.
 	{
 		outNewName = filename;
 		return false;
 	}
 	// Extension exists and is different to pvr. Replace with pvr extension.
-	outNewName = filename.getString().substr(0, period) + ".pvr";
+	outNewName = filename.str().substr(0, period) + ".pvr";
 	return true;
 }
 }
@@ -41,12 +41,12 @@ bool AssetStore::effectOnLoadTexture(const string& textureName, api::TextureView
 }
 
 bool AssetStore::loadTexture(GraphicsContext& context, const StringHash& filename, assets::TextureFileFormat::Enum format,
-                                     bool forceLoad, api::TextureView* outTexture, assets::TextureHeader* outDescriptor)
+                             bool forceLoad, api::TextureView* outTexture, assets::TextureHeader* outDescriptor)
 {
 	assets::Texture tempTexture;
-	if (!initialised)
+	if (!initialized)
 	{
-		if (logger) { logger(Log.Error, "AssetStore.loadTexture error for filename %s: Uninitialised AssetStore", filename.c_str()); }
+		if (logger) { logger(Log.Error, "AssetStore.loadTexture error for filename %s: Uninitialized AssetStore", filename.c_str()); }
 		return false;
 	}
 	if (format == assets::TextureFileFormat::UNKNOWN)
@@ -67,8 +67,8 @@ bool AssetStore::loadTexture(GraphicsContext& context, const StringHash& filenam
 		return true;
 	}
 
-	
-	native::HTexture_ textureHandle;
+
+	api::TextureView tex;
 	Stream::ptr_type assetStream = assetProvider->getAssetStream(filename);
 
 	if (!assetStream.get())
@@ -90,7 +90,7 @@ bool AssetStore::loadTexture(GraphicsContext& context, const StringHash& filenam
 	pvr::Result::Enum result = assets::textureLoad(assetStream, format, tempTexture);
 	if (result == Result::Success)
 	{
-		result = pvr::utils::textureUpload(assetProvider->getGraphicsContext(), tempTexture, textureHandle);
+		result = pvr::utils::textureUpload(assetProvider->getGraphicsContext(), tempTexture, tex);
 	}
 	if (result != Result::Success)
 	{
@@ -104,10 +104,7 @@ bool AssetStore::loadTexture(GraphicsContext& context, const StringHash& filenam
 	else
 	{
 		TextureData tdata;
-		api::TextureView tex;
-		tex.construct(context, textureHandle);
 		tdata.texture = tex;
-
 
 		//tdata.texture.construct(textureHandle);
 		tdata.textureHeader = tempTexture; //Object slicing. This is NOT a reference - we literally only keep the textureheader.
@@ -121,9 +118,9 @@ bool AssetStore::loadTexture(GraphicsContext& context, const StringHash& filenam
 
 bool AssetStore::loadModel(const char* filename, assets::ModelHandle& outModel, bool forceLoad)
 {
-	if (!initialised)
+	if (!initialized)
 	{
-		if (logger) { logger(Log.Error, "AssetStore.loadModel error for filename %s : Uninitialised AssetStore", filename); }
+		if (logger) { logger(Log.Error, "AssetStore.loadModel error for filename %s : Uninitialized AssetStore", filename); }
 		return false;
 	}
 

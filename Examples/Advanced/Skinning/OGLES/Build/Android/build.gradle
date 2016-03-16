@@ -121,6 +121,7 @@ FileCollection assetFiles = files(
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
     ["PVRAssets", "${pvrSdkDir}/Framework/PVRAssets/Build/Android"],
     ["PVRPlatformGlue", "${pvrSdkDir}/Framework/PVRPlatformGlue/EGL/Build/Android"],
+    ["PVRNativeGles", "${pvrSdkDir}/Framework/PVRNativeApi/OGLES/Build/Android"],
     ["PVRGles", "${pvrSdkDir}/Framework/PVRApi/OGLES/Build/Android"],
     ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
     ["PVRUIRenderer", "${pvrSdkDir}/Framework/PVRUIRenderer/Build/Android"]

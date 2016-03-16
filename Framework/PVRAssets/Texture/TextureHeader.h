@@ -44,7 +44,7 @@ public:
 
 		uint32 flags;            //!< Various format flags.
 		PixelFormat pixelFormat;      //!< The pixel format, 8cc value storing the 4 channel identifiers and their respective sizes.
-		ColorSpace::Enum colorSpace;      //!< The Color Space of the texture, currently either linear RGB or sRGB.
+		types::ColorSpace::Enum colorSpace;      //!< The Color Space of the texture, currently either linear RGB or sRGB.
 		VariableType::Enum channelType;      //!< Variable type that the channel is stored in. Supports signed/unsigned int/short/byte/float.
 		uint32 height;           //!< Height of the texture.
 		uint32 width;            //!< Width of the texture.
@@ -54,8 +54,8 @@ public:
 		uint32 mipMapCount;      //!< Number of MIP Maps in the texture - NB: Includes top level.
 		uint32 metaDataSize;     //!< Size of the accompanying meta data.
 		Header() {}
-		Header(bool dummy_initialise)
-			: flags(0), pixelFormat(0), colorSpace(ColorSpace::lRGB), channelType(VariableType::UnsignedByteNorm),
+		Header(bool dummy_initialize)
+			: flags(0), pixelFormat(0), colorSpace(types::ColorSpace::lRGB), channelType(VariableType::UnsignedByteNorm),
 			  height(1), width(1), depth(1), numberOfSurfaces(1), numberOfFaces(1), mipMapCount(1), metaDataSize(0)
 		{}
 	};
@@ -106,7 +106,7 @@ public:
 	\param	metaDataSize Texture meta data size
 	**********************************************************************************************************************************/
 	TextureHeader(PixelFormat pixelFormat, uint32 width, uint32 height, uint32 depth = 1, uint32 mipMapCount = 1,
-	              ColorSpace::Enum colorSpace = ColorSpace::lRGB, VariableType::Enum channelType = VariableType::UnsignedByteNorm,
+	              types::ColorSpace::Enum colorSpace = types::ColorSpace::lRGB, VariableType::Enum channelType = VariableType::UnsignedByteNorm,
 	              uint32 numberOfSurfaces = 1, uint32 numberOfFaces = 1, uint32 flags = 0, TextureMetaData* metaData = NULL, uint32 metaDataSize = 0);
 
 	/*!***********************************************************************
@@ -152,7 +152,7 @@ public:
 	\return	Return the ColorSpace::Enum enum representing color space.
 	\brief	Get the color space of the texture.
 	*************************************************************************/
-	ColorSpace::Enum getColorSpace() const;
+	types::ColorSpace::Enum getColorSpace() const;
 
 	/*!***********************************************************************
 	\return	Return the  enum representing the type of the texture.
@@ -301,7 +301,7 @@ public:
 	\param[in]	colorSpace	A color space of the texture.
 	\brief	Sets the color space for this texture. Default is lRGB.
 	*************************************************************************/
-	void setColorSpace(ColorSpace::Enum colorSpace);
+	void setColorSpace(types::ColorSpace::Enum colorSpace);
 
 	/*!***********************************************************************
 	\param[in]	channelType	Texture's channel type

@@ -19,83 +19,64 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Context.cpp" />
-    <ClCompile Include="..\..\ApiCommands.cpp" />
-    <ClCompile Include="..\..\ApiErrors.cpp" />
-    <ClCompile Include="..\..\CommandBuffer.cpp" />
-    <ClCompile Include="..\..\ConvertToApiTypes.cpp" />
+    <ClCompile Include="..\..\ApiCommandsGles.cpp" />
+    <ClCompile Include="..\..\CommandBufferGles.cpp" />
     <ClCompile Include="..\..\AssetStore.cpp" />
-    <ClCompile Include="..\..\Buffer.cpp" />
-    <ClCompile Include="..\..\ComputePipeline.cpp" />
+    <ClCompile Include="..\..\BufferGles.cpp" />
+    <ClCompile Include="..\..\CommandPoolGles.cpp" />
+    <ClCompile Include="..\..\ComputePipelineGles.cpp" />
     <ClCompile Include="..\..\ContextGles.cpp" />
-    <ClCompile Include="..\..\DescriptorTable.cpp" />
+    <ClCompile Include="..\..\DescriptorSetGles.cpp" />
     <ClCompile Include="..\..\EffectApi.cpp" />
-    <ClCompile Include="..\..\ExtensionLoaderGles.cpp" />
-    <ClCompile Include="..\..\Fbo.cpp" />
+    <ClCompile Include="..\..\FboGles.cpp" />
     <ClCompile Include="..\..\GpuCapabilities.cpp" />
-    <ClCompile Include="..\..\GraphicsPipeline.cpp" />
-    <ClCompile Include="..\..\NativeLibraryGlesNamespace.cpp" />
+    <ClCompile Include="..\..\GraphicsPipelineGles.cpp" />
     <ClCompile Include="..\..\PipelineConfigStateCreateParam.cpp" />
     <ClCompile Include="..\..\PipelineConfigStates.cpp" />
-    <ClCompile Include="..\..\RenderPass.cpp" />
-    <ClCompile Include="..\..\Sampler.cpp" />
-    <ClCompile Include="..\..\Shader.cpp" />
-    <ClCompile Include="..\..\ShaderProgramState.cpp" />
-    <ClCompile Include="..\..\ShaderUtils.cpp" />
-    <ClCompile Include="..\..\Texture.cpp" />
-    <ClCompile Include="..\..\TextureUtils.cpp" />
+    <ClCompile Include="..\..\PipelineLayoutGles.cpp" />
+    <ClCompile Include="..\..\RenderPassGles.cpp" />
+    <ClCompile Include="..\..\SamplerGles.cpp" />
+    <ClCompile Include="..\..\ShaderGles.cpp" />
+    <ClCompile Include="..\..\Sync.cpp" />
+    <ClCompile Include="..\..\TextureGles.cpp" />
+    <ClCompile Include="..\..\TextureUtilsGles.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Api.h" />
-    <ClInclude Include="..\..\..\ApiCommand.h" />
-    <ClInclude Include="..\..\..\ApiCommands.h" />
-    <ClInclude Include="..\..\..\ApiErrors.h" />
     <ClInclude Include="..\..\..\ApiObjects.h" />
     <ClInclude Include="..\..\..\ApiObjects\Buffer.h" />
     <ClInclude Include="..\..\..\ApiObjects\CommandBuffer.h" />
+    <ClInclude Include="..\..\..\ApiObjects\CommandPool.h" />
     <ClInclude Include="..\..\..\ApiObjects\ComputePipeline.h" />
-    <ClInclude Include="..\..\..\ApiObjects\ComputeStateCreateParam.h" />
-    <ClInclude Include="..\..\..\ApiObjects\DescriptorTable.h" />
+    <ClInclude Include="..\..\..\ApiObjects\DescriptorSet.h" />
     <ClInclude Include="..\..\..\ApiObjects\Fbo.h" />
-    <ClInclude Include="..\..\..\ApiObjects\FboCreateParam.h" />
     <ClInclude Include="..\..\..\ApiObjects\GraphicsPipeline.h" />
-    <ClInclude Include="..\..\..\ApiObjects\GraphicsStateCreateParam.h" />
-    <ClInclude Include="..\..\..\ApiObjects\PipelineConfigStateCreateParam.h" />
-    <ClInclude Include="..\..\..\ApiObjects\PipelineConfigStates.h" />
-    <ClInclude Include="..\..\..\ApiObjects\PipelineState.h" />
-    <ClInclude Include="..\..\..\ApiObjects\PipelineStateCreateParam.h" />
+    <ClInclude Include="..\..\..\ApiObjects\PipelineConfig.h" />
+    <ClInclude Include="..\..\..\ApiObjects\PipelineLayout.h" />
     <ClInclude Include="..\..\..\ApiObjects\RenderPass.h" />
     <ClInclude Include="..\..\..\ApiObjects\Sampler.h" />
     <ClInclude Include="..\..\..\ApiObjects\Shader.h" />
-    <ClInclude Include="..\..\..\ApiObjects\ShaderProgramState.h" />
+    <ClInclude Include="..\..\..\ApiObjects\Sync.h" />
     <ClInclude Include="..\..\..\ApiObjects\Texture.h" />
-    <ClInclude Include="..\..\..\ApiObjectTypes.h" />
     <ClInclude Include="..\..\..\AssetStore.h" />
     <ClInclude Include="..\..\..\AssetUtils.h" />
-    <ClInclude Include="..\..\..\Bindables.h" />
     <ClInclude Include="..\..\..\EffectApi.h" />
     <ClInclude Include="..\..\..\GpuCapabilities.h" />
     <ClInclude Include="..\..\..\PVRApi.h" />
-    <ClInclude Include="..\..\..\ShaderUtils.h" />
-    <ClInclude Include="..\..\ApiGles2.h" />
-    <ClInclude Include="..\..\ApiGles3.h" />
-    <ClInclude Include="..\..\ApiGles31.h" />
-    <ClInclude Include="..\..\ApiGlesExt.h" />
+    <ClInclude Include="..\..\ApiCommand.h" />
+    <ClInclude Include="..\..\ApiCommands.h" />
     <ClInclude Include="..\..\BufferGles.h" />
+    <ClInclude Include="..\..\CommandPoolGles.h" />
     <ClInclude Include="..\..\ContextGles.h" />
-    <ClInclude Include="..\..\ConvertToApiTypes.h" />
-    <ClInclude Include="..\..\DescriptorTableGles.h" />
-    <ClInclude Include="..\..\ExtensionLoaderGles.h" />
+    <ClInclude Include="..\..\DescriptorSetGles.h" />
     <ClInclude Include="..\..\FboGles.h" />
-    <ClInclude Include="..\..\GraphicsStateContainerGles.h" />
-    <ClInclude Include="..\..\OpenGLESBindings.h" />
-    <ClInclude Include="..\..\OpenGLESHeaders.h" />
-    <ClInclude Include="..\..\NativeObjectsGles.h" />
-    <ClInclude Include="..\..\NativeLibraryGlesNamespace.h" />
+    <ClInclude Include="..\..\StateContainerGles.h" />
+    <ClInclude Include="..\..\PipelineConfigStatesGles.h" />
+    <ClInclude Include="..\..\PipelineLayoutGles.h" />
+    <ClInclude Include="..\..\RenderPassGles.h" />
+    <ClInclude Include="..\..\SamplerGles.h" />
     <ClInclude Include="..\..\ShaderGles.h" />
-    <ClInclude Include="..\..\TextureFormats.h" />
     <ClInclude Include="..\..\TextureGles.h" />
-    <ClInclude Include="..\..\TextureUtils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5CAFF01D-B160-BAD0-C0DE-0000FEA51B1E}</ProjectGuid>
@@ -163,9 +144,17 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <FloatingPointModel>Fast</FloatingPointModel>
       <PreprocessorDefinitions>DEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <CompileAsManaged>false</CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <StringPooling>true</StringPooling>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -177,14 +166,21 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>DEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <SDLCheck>true</SDLCheck>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAsManaged>false</CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>..\..\..\..;..\..\..\..\..\Builds\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -192,16 +188,23 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsManaged>false</CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <OmitFramePointers>true</OmitFramePointers>
+      <StringPooling>true</StringPooling>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>..\..\..\..;..\..\..\..\..\Builds\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -212,6 +215,15 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsManaged>false</CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <OmitFramePointers>true</OmitFramePointers>
+      <StringPooling>true</StringPooling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

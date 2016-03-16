@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -82,6 +82,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classpvr_1_1_i_platform_context-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::IPlatformContext Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -93,40 +94,99 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a6c2e8776c3f6e769257eb2ddd61d2fce"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a6c2e8776c3f6e769257eb2ddd61d2fce">IPlatformContext</a> ()</td></tr>
+<tr class="separator:a6c2e8776c3f6e769257eb2ddd61d2fce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c687293cafd55192e6a12339ded76db"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a3c687293cafd55192e6a12339ded76db">~IPlatformContext</a> ()</td></tr>
 <tr class="separator:a3c687293cafd55192e6a12339ded76db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f10588c6f7ab8b7679f218417621c31"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a0f10588c6f7ab8b7679f218417621c31">getID</a> ()=0</td></tr>
-<tr class="memdesc:a0f10588c6f7ab8b7679f218417621c31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an integer number uniquely identifying this context.  <a href="#a0f10588c6f7ab8b7679f218417621c31">More...</a><br/></td></tr>
-<tr class="separator:a0f10588c6f7ab8b7679f218417621c31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4626234ba5c762c95903256db66b40c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Api::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a4626234ba5c762c95903256db66b40c7">getApiType</a> ()</td></tr>
+<tr class="memdesc:a4626234ba5c762c95903256db66b40c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the maximum API version supported by this context.  <a href="#a4626234ba5c762c95903256db66b40c7">More...</a><br/></td></tr>
+<tr class="separator:a4626234ba5c762c95903256db66b40c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32b8fb36e82a9f71ffb48a93e73fe160"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a32b8fb36e82a9f71ffb48a93e73fe160">getID</a> () const =0</td></tr>
+<tr class="memdesc:a32b8fb36e82a9f71ffb48a93e73fe160"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an integer number uniquely identifying this context.  <a href="#a32b8fb36e82a9f71ffb48a93e73fe160">More...</a><br/></td></tr>
+<tr class="separator:a32b8fb36e82a9f71ffb48a93e73fe160"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4550bf51c61006a329366ff3c589965"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#ac4550bf51c61006a329366ff3c589965">getInfo</a> ()=0</td></tr>
 <tr class="memdesc:ac4550bf51c61006a329366ff3c589965"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print information about this context.  <a href="#ac4550bf51c61006a329366ff3c589965">More...</a><br/></td></tr>
 <tr class="separator:ac4550bf51c61006a329366ff3c589965"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59a96ddb92b5093c17714bc9a4c48c01"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Api::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a59a96ddb92b5093c17714bc9a4c48c01">getMaxApiVersion</a> ()=0</td></tr>
 <tr class="memdesc:a59a96ddb92b5093c17714bc9a4c48c01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the maximum API version supported by this context.  <a href="#a59a96ddb92b5093c17714bc9a4c48c01">More...</a><br/></td></tr>
 <tr class="separator:a59a96ddb92b5093c17714bc9a4c48c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31c8d452c870de46af705491b810a378"><td class="memItemLeft" align="right" valign="top">virtual const <br class="typebreak"/>
+system::NativeDisplayHandle_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a31c8d452c870de46af705491b810a378">getNativeDisplayHandle</a> () const =0</td></tr>
+<tr class="memdesc:a31c8d452c870de46af705491b810a378"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the NativePlatformHandles wrapped by this context.  <a href="#a31c8d452c870de46af705491b810a378">More...</a><br/></td></tr>
+<tr class="separator:a31c8d452c870de46af705491b810a378"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d6e1a3d8e244c3f4484aa46034ebd97"><td class="memItemLeft" align="right" valign="top">virtual <br class="typebreak"/>
+system::NativeDisplayHandle_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a0d6e1a3d8e244c3f4484aa46034ebd97">getNativeDisplayHandle</a> ()=0</td></tr>
+<tr class="memdesc:a0d6e1a3d8e244c3f4484aa46034ebd97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the NativePlatformHandles wrapped by this context.  <a href="#a0d6e1a3d8e244c3f4484aa46034ebd97">More...</a><br/></td></tr>
+<tr class="separator:a0d6e1a3d8e244c3f4484aa46034ebd97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b1b08e208f279a0e14f260bc064d244"><td class="memItemLeft" align="right" valign="top">virtual const <br class="typebreak"/>
+system::NativePlatformHandles_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a1b1b08e208f279a0e14f260bc064d244">getNativePlatformHandles</a> () const =0</td></tr>
+<tr class="memdesc:a1b1b08e208f279a0e14f260bc064d244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the NativePlatformHandles wrapped by this context.  <a href="#a1b1b08e208f279a0e14f260bc064d244">More...</a><br/></td></tr>
+<tr class="separator:a1b1b08e208f279a0e14f260bc064d244"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f554b8784d5df84ae9bc6c825346368"><td class="memItemLeft" align="right" valign="top">virtual <br class="typebreak"/>
+system::NativePlatformHandles_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a2f554b8784d5df84ae9bc6c825346368">getNativePlatformHandles</a> ()=0</td></tr>
+<tr class="memdesc:a2f554b8784d5df84ae9bc6c825346368"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the NativePlatformHandles wrapped by this context.  <a href="#a2f554b8784d5df84ae9bc6c825346368">More...</a><br/></td></tr>
+<tr class="separator:a2f554b8784d5df84ae9bc6c825346368"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e7d5c21a9ccf9599f9ee276aed69a2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a9e7d5c21a9ccf9599f9ee276aed69a2c">getSwapChainIndex</a> ()</td></tr>
+<tr class="memdesc:a9e7d5c21a9ccf9599f9ee276aed69a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the NativePlatformHandles wrapped by this context.  <a href="#a9e7d5c21a9ccf9599f9ee276aed69a2c">More...</a><br/></td></tr>
+<tr class="separator:a9e7d5c21a9ccf9599f9ee276aed69a2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad705dfe1a95e7991712f0b51cf57da8b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#ad705dfe1a95e7991712f0b51cf57da8b">getSwapChainLength</a> ()=0</td></tr>
+<tr class="memdesc:ad705dfe1a95e7991712f0b51cf57da8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the NativePlatformHandles wrapped by this context.  <a href="#ad705dfe1a95e7991712f0b51cf57da8b">More...</a><br/></td></tr>
+<tr class="separator:ad705dfe1a95e7991712f0b51cf57da8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a197614ebd70becccb52e19b36ada05b8"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bb">Result::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a197614ebd70becccb52e19b36ada05b8">init</a> ()=0</td></tr>
-<tr class="memdesc:a197614ebd70becccb52e19b36ada05b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise this platform context using the functions provided by an <a class="el" href="classpvr_1_1_o_s_manager.html" title="This interface abstracts the part of the Shell that will provide the Display and the Window so that t...">OSManager</a> object (e.g. the Shell). Must be called before any other operations are done. Must be called AFTER the IOS manager object that this context belongs to is initialised. Called by the State Machine.  <a href="#a197614ebd70becccb52e19b36ada05b8">More...</a><br/></td></tr>
+<tr class="memdesc:a197614ebd70becccb52e19b36ada05b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap the front and back buffers (called at the end of each frame to show the rendering).  <a href="#a197614ebd70becccb52e19b36ada05b8">More...</a><br/></td></tr>
 <tr class="separator:a197614ebd70becccb52e19b36ada05b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a016c9728b4ed7dddcf713e588380e324"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a016c9728b4ed7dddcf713e588380e324">isApiSupported</a> (<a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Api::Enum</a> api)=0</td></tr>
 <tr class="memdesc:a016c9728b4ed7dddcf713e588380e324"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if the specified <a class="el" href="namespacepvr_1_1_api.html" title="Enumeration of all API types supported by this implementation. ">Api</a> is supported by this context.  <a href="#a016c9728b4ed7dddcf713e588380e324">More...</a><br/></td></tr>
 <tr class="separator:a016c9728b4ed7dddcf713e588380e324"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5108b8b73290088256749e5d4c7d76f6"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a5108b8b73290088256749e5d4c7d76f6">isInitialised</a> ()=0</td></tr>
-<tr class="memdesc:a5108b8b73290088256749e5d4c7d76f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if this context is initialised.  <a href="#a5108b8b73290088256749e5d4c7d76f6">More...</a><br/></td></tr>
-<tr class="separator:a5108b8b73290088256749e5d4c7d76f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b91b2102069be6112d3c9c6cd947b1b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bb">Result::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a7b91b2102069be6112d3c9c6cd947b1b">makeCurrent</a> ()=0</td></tr>
-<tr class="memdesc:a7b91b2102069be6112d3c9c6cd947b1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind this context for using.  <a href="#a7b91b2102069be6112d3c9c6cd947b1b">More...</a><br/></td></tr>
-<tr class="separator:a7b91b2102069be6112d3c9c6cd947b1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19e408635e296a1a20f041c426bb4f73"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bb">Result::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a19e408635e296a1a20f041c426bb4f73">presentBackbuffer</a> ()=0</td></tr>
-<tr class="memdesc:a19e408635e296a1a20f041c426bb4f73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap the front and back buffers (called at the end of each frame to show the rendering).  <a href="#a19e408635e296a1a20f041c426bb4f73">More...</a><br/></td></tr>
-<tr class="separator:a19e408635e296a1a20f041c426bb4f73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2f9343b14d094068e934cb3d2ce9b2c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#ad2f9343b14d094068e934cb3d2ce9b2c">isInitialized</a> () const =0</td></tr>
+<tr class="memdesc:ad2f9343b14d094068e934cb3d2ce9b2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if this context is initialized.  <a href="#ad2f9343b14d094068e934cb3d2ce9b2c">More...</a><br/></td></tr>
+<tr class="separator:ad2f9343b14d094068e934cb3d2ce9b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaf173466b977326642f3c1cc640d955"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#abaf173466b977326642f3c1cc640d955">makeCurrent</a> ()=0</td></tr>
+<tr class="memdesc:abaf173466b977326642f3c1cc640d955"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind this context for using.  <a href="#abaf173466b977326642f3c1cc640d955">More...</a><br/></td></tr>
+<tr class="separator:abaf173466b977326642f3c1cc640d955"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06a6d71a0c445dbb2c42dc7d9c35cbc8"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a06a6d71a0c445dbb2c42dc7d9c35cbc8">presentBackbuffer</a> ()=0</td></tr>
+<tr class="memdesc:a06a6d71a0c445dbb2c42dc7d9c35cbc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap the front and back buffers (called at the end of each frame to show the rendering).  <a href="#a06a6d71a0c445dbb2c42dc7d9c35cbc8">More...</a><br/></td></tr>
+<tr class="separator:a06a6d71a0c445dbb2c42dc7d9c35cbc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb774a0b10dc5ee3343b0365af055af4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#adb774a0b10dc5ee3343b0365af055af4">release</a> ()=0</td></tr>
-<tr class="memdesc:adb774a0b10dc5ee3343b0365af055af4"><td class="mdescLeft">&#160;</td><td class="mdescRight">release the resources used by this context.  <a href="#adb774a0b10dc5ee3343b0365af055af4">More...</a><br/></td></tr>
+<tr class="memdesc:adb774a0b10dc5ee3343b0365af055af4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Swap the front and back buffers (called at the end of each frame to show the rendering).  <a href="#adb774a0b10dc5ee3343b0365af055af4">More...</a><br/></td></tr>
 <tr class="separator:adb774a0b10dc5ee3343b0365af055af4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a5e89ce9cb3d0a6349ac2d77b71db946b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Api::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a5e89ce9cb3d0a6349ac2d77b71db946b">apiType</a></td></tr>
+<tr class="separator:a5e89ce9cb3d0a6349ac2d77b71db946b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6accb6d85ba0c7fcfe70462918fb66a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#aa6accb6d85ba0c7fcfe70462918fb66a">lastPresentedSwapIndex</a></td></tr>
+<tr class="separator:aa6accb6d85ba0c7fcfe70462918fb66a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d2953104622a4c9544dab48e645f3d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_platform_context.html#a7d2953104622a4c9544dab48e645f3d4">swapIndex</a></td></tr>
+<tr class="separator:a7d2953104622a4c9544dab48e645f3d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the Platform context. Contains the necessary operations needed to get the context required to create a window, swap the buffers, and make current. Has an ID used to identify it. Specific platform contexts (EglPlatformContext, VulkanPlatformContext) implement this interface. </p>
 <hr/>
  </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a6c2e8776c3f6e769257eb2ddd61d2fce"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::IPlatformContext::IPlatformContext </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a3c687293cafd55192e6a12339ded76db"></a>
 <div class="memitem">
 <div class="memproto">
@@ -151,7 +211,33 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a0f10588c6f7ab8b7679f218417621c31"></a>
+<a class="anchor" id="a4626234ba5c762c95903256db66b40c7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Api::Enum</a> pvr::IPlatformContext::getApiType </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the maximum API version supported by this context. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="a32b8fb36e82a9f71ffb48a93e73fe160"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -162,7 +248,7 @@ Public Member Functions</h2></td></tr>
           <td class="memname">virtual size_t pvr::IPlatformContext::getID </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -229,6 +315,162 @@ Public Member Functions</h2></td></tr>
  
 </div>
 </div>
+<a class="anchor" id="a31c8d452c870de46af705491b810a378"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const system::NativeDisplayHandle_&amp; pvr::IPlatformContext::getNativeDisplayHandle </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the NativePlatformHandles wrapped by this context. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="a0d6e1a3d8e244c3f4484aa46034ebd97"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual system::NativeDisplayHandle_&amp; pvr::IPlatformContext::getNativeDisplayHandle </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the NativePlatformHandles wrapped by this context. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="a1b1b08e208f279a0e14f260bc064d244"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const system::NativePlatformHandles_&amp; pvr::IPlatformContext::getNativePlatformHandles </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the NativePlatformHandles wrapped by this context. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="a2f554b8784d5df84ae9bc6c825346368"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual system::NativePlatformHandles_&amp; pvr::IPlatformContext::getNativePlatformHandles </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the NativePlatformHandles wrapped by this context. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="a9e7d5c21a9ccf9599f9ee276aed69a2c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pvr::IPlatformContext::getSwapChainIndex </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the NativePlatformHandles wrapped by this context. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="ad705dfe1a95e7991712f0b51cf57da8b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pvr::IPlatformContext::getSwapChainLength </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the NativePlatformHandles wrapped by this context. </p>
+<hr/>
+ 
+</div>
+</div>
 <a class="anchor" id="a197614ebd70becccb52e19b36ada05b8"></a>
 <div class="memitem">
 <div class="memproto">
@@ -250,7 +492,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Initialise this platform context using the functions provided by an <a class="el" href="classpvr_1_1_o_s_manager.html" title="This interface abstracts the part of the Shell that will provide the Display and the Window so that t...">OSManager</a> object (e.g. the Shell). Must be called before any other operations are done. Must be called AFTER the IOS manager object that this context belongs to is initialised. Called by the State Machine. </p>
+<p>Swap the front and back buffers (called at the end of each frame to show the rendering). </p>
 <hr/>
  
 </div>
@@ -282,7 +524,7 @@ Public Member Functions</h2></td></tr>
  
 </div>
 </div>
-<a class="anchor" id="a5108b8b73290088256749e5d4c7d76f6"></a>
+<a class="anchor" id="ad2f9343b14d094068e934cb3d2ce9b2c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -290,10 +532,10 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool pvr::IPlatformContext::isInitialised </td>
+          <td class="memname">virtual bool pvr::IPlatformContext::isInitialized </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -303,12 +545,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Check if this context is initialised. </p>
+<p>Check if this context is initialized. </p>
 <hr/>
  
 </div>
 </div>
-<a class="anchor" id="a7b91b2102069be6112d3c9c6cd947b1b"></a>
+<a class="anchor" id="abaf173466b977326642f3c1cc640d955"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -316,7 +558,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bb">Result::Enum</a> pvr::IPlatformContext::makeCurrent </td>
+          <td class="memname">virtual bool pvr::IPlatformContext::makeCurrent </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>
@@ -334,7 +576,7 @@ Public Member Functions</h2></td></tr>
  
 </div>
 </div>
-<a class="anchor" id="a19e408635e296a1a20f041c426bb4f73"></a>
+<a class="anchor" id="a06a6d71a0c445dbb2c42dc7d9c35cbc8"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -342,7 +584,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bb">Result::Enum</a> pvr::IPlatformContext::presentBackbuffer </td>
+          <td class="memname">virtual bool pvr::IPlatformContext::presentBackbuffer </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>
@@ -381,9 +623,46 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>release the resources used by this context. </p>
+<p>Swap the front and back buffers (called at the end of each frame to show the rendering). </p>
 <hr/>
  
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a5e89ce9cb3d0a6349ac2d77b71db946b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Api::Enum</a> pvr::IPlatformContext::apiType</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa6accb6d85ba0c7fcfe70462918fb66a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pvr::IPlatformContext::lastPresentedSwapIndex</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a7d2953104622a4c9544dab48e645f3d4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pvr::IPlatformContext::swapIndex</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>

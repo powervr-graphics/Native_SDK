@@ -17,13 +17,14 @@
 using std::string;
 using std::map;
 namespace pvr {
+using namespace types;
 namespace assets {
 
 TextureHeader::TextureHeader()
 {
 	m_header.flags            = 0;
 	m_header.pixelFormat      = CompressedPixelFormat::NumCompressedPFs;
-	m_header.colorSpace      = ColorSpace::lRGB;
+    m_header.colorSpace       = ColorSpace::lRGB;
 	m_header.channelType      = VariableType::UnsignedByteNorm;
 	m_header.height           = 1;
 	m_header.width            = 1;
@@ -41,11 +42,8 @@ TextureHeader::TextureHeader(const TextureHeader& rhs)
 	m_metaDataMap = rhs.m_metaDataMap;
 }
 
-TextureHeader::TextureHeader(TextureHeader::Header& header) :
-	m_header(header)
-{
-	//
-}
+TextureHeader::TextureHeader(TextureHeader::Header& header) : m_header(header){}
+
 TextureHeader::TextureHeader(Header fileHeader, uint32 metaDataCount, TextureMetaData* metaData)
 	: m_header(fileHeader)
 {
@@ -57,6 +55,30 @@ TextureHeader::TextureHeader(Header fileHeader, uint32 metaDataCount, TextureMet
 		}
 	}
 }
+
+TextureHeader::TextureHeader(PixelFormat pixelFormat, uint32 width, uint32 height, uint32 depth, uint32 mipMapCount,
+	types::ColorSpace::Enum colorSpace, VariableType::Enum channelType,uint32 numberOfSurfaces, uint32 numberOfFaces,
+	uint32 flags, TextureMetaData* metaData, uint32 metaDataSize)
+{
+	m_header.pixelFormat = pixelFormat;
+	m_header.width = width, m_header.height = height, m_header.depth = depth;
+	m_header.mipMapCount = mipMapCount;
+	m_header.colorSpace = colorSpace;
+	m_header.channelType = channelType;
+	m_header.numberOfSurfaces = numberOfSurfaces;
+	m_header.numberOfFaces = numberOfFaces;
+	m_header.flags = flags;
+	if (metaData)
+	{
+		for (uint32 i = 0; i < metaDataSize; ++i)
+		{
+			addMetaData(metaData[i]);
+		}
+	}
+}
+
+
+
 TextureHeader& TextureHeader::operator=(const TextureHeader& rhs)
 {
 	//If it equals itself, return early.
@@ -260,7 +282,7 @@ void TextureHeader::setBumpMap(float bumpScale, string bumpOrder)
 {
     if(bumpOrder.find_first_not_of("xyzh") != std::string::npos)
     {
-        PVR_ASSERT(false && "Invalid Bumpmap order string");
+        assertion(false ,  "Invalid Bumpmap order string");
         pvr::Log("Invalid Bumpmap order string");
         return;
     }
@@ -273,7 +295,7 @@ void TextureHeader::setBumpMap(float bumpScale, string bumpOrder)
 		m_header.metaDataSize -= bumpMetaData.getTotalSizeInMemory();
 	}
 
-	// Initialise and clear the bump map data
+	// Initialize and clear the bump map data
 	byte bumpData[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	//Copy the floating point scale and character order into the bumpmap data
@@ -1035,7 +1057,7 @@ uint32 TextureHeader::getDataSize(int32 iMipLevel, bool bAllSurfaces, bool bAllF
 ptrdiff_t TextureHeader::getDataOffset(uint32 mipMapLevel/*= 0*/, uint32 arrayMember/*= 0*/,
                                        uint32 face/*= 0*/) const
 {
-	//Initialise the offSet value.
+	//Initialize the offSet value.
 	uint32 uiOffSet = 0;
 
 	//Error checking
@@ -3136,7 +3158,7 @@ void TextureHeader::setCubeMapOrder(string cubeMapOrder)
 {
     if(cubeMapOrder.find_first_not_of("xXyYzZ") != std::string::npos)
     {
-        PVR_ASSERT(false &&"Invalid cubemap order string");
+        assertion(false , "Invalid cubemap order string");
         pvr::Log("Invalid cubemap order string");
         return;
     }

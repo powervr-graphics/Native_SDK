@@ -2,8 +2,6 @@ var searchData=
 [
   ['eac_5fr11',['EAC_R11',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849ea82d59f62e5997bbf92b4769a9554400d',1,'pvr::CompressedPixelFormat']]],
   ['eac_5frg11',['EAC_RG11',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849ea53b1a8e940bdb2d70c859576c563e6de',1,'pvr::CompressedPixelFormat']]],
-  ['envmapcube',['EnvMapCube',['../namespacepvr_1_1assets_1_1_effect_pass_type.html#aebb1b7bae82399d869effc200550a247aeb1fcb6ebc3038450bbcddb3fc9e5306',1,'pvr::assets::EffectPassType']]],
-  ['envmapsph',['EnvMapSph',['../namespacepvr_1_1assets_1_1_effect_pass_type.html#aebb1b7bae82399d869effc200550a247a360bed9143772cc11f7cd38d70bbdd2d',1,'pvr::assets::EffectPassType']]],
   ['etc1',['ETC1',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849ea04263417d7231e6d803d58acc2ea2cd2',1,'pvr::CompressedPixelFormat']]],
   ['etc2_5frgb',['ETC2_RGB',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849ea3cc291f462eae646d53374ea2256a39d',1,'pvr::CompressedPixelFormat']]],
   ['etc2_5frgb_5fa1',['ETC2_RGB_A1',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849ea40e65c5a6e2d4f4c962e57b8b82d6462',1,'pvr::CompressedPixelFormat']]],

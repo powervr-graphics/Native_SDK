@@ -152,21 +152,21 @@ bool OGLESPVRScopeExample::createTexSamplerDescriptorSet()
 	}
 	// create the bilinear sampler
 	pvr::assets::SamplerCreateParam samplerDesc;
-	samplerDesc.minificationFilter = pvr::SamplerFilter::Linear;
-	samplerDesc.mipMappingFilter = pvr::SamplerFilter::Nearest;
-	samplerDesc.magnificationFilter = pvr::SamplerFilter::Linear;
+	samplerDesc.minificationFilter = pvr::types::SamplerFilter::Linear;
+	samplerDesc.mipMappingFilter = pvr::types::SamplerFilter::Nearest;
+	samplerDesc.magnificationFilter = pvr::types::SamplerFilter::Linear;
 	pvr::api::Sampler bilinearSampler = deviceResources->context->createSampler(samplerDesc);
 
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
 
-	descSetLayoutInfo.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1,
-	                             pvr::api::ShaderStageFlags::Fragment);
+	descSetLayoutInfo.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1,
+	                             pvr::types::ShaderStageFlags::Fragment);
 
 	deviceResources->descriptorSetLayout = deviceResources->context->createDescriptorSetLayout(descSetLayoutInfo);
 
-	pvr::api::DescriptorSetUpdateParam descriptorSetUpdate;
-	descriptorSetUpdate.addCombinedImageSampler(0, 0, deviceResources->texture, bilinearSampler);
-	deviceResources->descriptorSet = deviceResources->context->allocateDescriptorSet(deviceResources->descriptorSetLayout);
+	pvr::api::DescriptorSetUpdate descriptorSetUpdate;
+	descriptorSetUpdate.setCombinedImageSampler(0, deviceResources->texture, bilinearSampler);
+	deviceResources->descriptorSet = deviceResources->context->createDescriptorSetOnDefaultPool(deviceResources->descriptorSetLayout);
 	deviceResources->descriptorSet->update(descriptorSetUpdate);
 	return true;
 }
@@ -186,13 +186,13 @@ bool OGLESPVRScopeExample::createPipeline()
 	pvr::api::GraphicsPipelineCreateParam pipeDesc;
 	pvr::assets::ShaderFile fileVersioning;
 	fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
-	pipeDesc.vertexShader.setShader(deviceResources->context->createShader(*fileVersioning.getBestStreamForApi(getGraphicsContext()->getApiType()), pvr::ShaderType::VertexShader));
+	pipeDesc.vertexShader.setShader(deviceResources->context->createShader(*fileVersioning.getBestStreamForApi(getGraphicsContext()->getApiType()), pvr::types::ShaderType::VertexShader));
 
 	fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
-	pipeDesc.fragmentShader.setShader(deviceResources->context->createShader(*fileVersioning.getBestStreamForApi(getGraphicsContext()->getApiType()), pvr::ShaderType::FragmentShader));
+	pipeDesc.fragmentShader.setShader(deviceResources->context->createShader(*fileVersioning.getBestStreamForApi(getGraphicsContext()->getApiType()), pvr::types::ShaderType::FragmentShader));
 
 	pipeDesc.pipelineLayout = deviceResources->context->createPipelineLayout(pipeLayoutInfo);
-
+	pipeDesc.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
 	pvr::utils::createInputAssemblyFromMesh(scene->getMesh(0), vertexBindings, 3, pipeDesc);
 
 	deviceResources->pipeline = deviceResources->context->createGraphicsPipeline(pipeDesc);
@@ -253,7 +253,7 @@ pvr::Result::Enum OGLESPVRScopeExample::initApplication()
 	if (!assetStore.loadModel(SceneFile, scene))
 	{
 		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 
 	// Process the command line
@@ -287,7 +287,9 @@ pvr::Result::Enum OGLESPVRScopeExample::initView()
 {
 	deviceResources.reset(new DeviceResources());
 	deviceResources->context = getGraphicsContext();
-	deviceResources->commandBuffer = deviceResources->context->createCommandBuffer();
+	// create the default fbo using default params
+	deviceResources->backBufferFbo = deviceResources->context->createOnScreenFbo(0);
+	deviceResources->commandBuffer = deviceResources->context->createCommandBufferOnDefaultPool();
 	std::string errorStr;
 
 	// Initialize VBO data
@@ -297,21 +299,21 @@ pvr::Result::Enum OGLESPVRScopeExample::initView()
 	if (!createTexSamplerDescriptorSet())
 	{
 		this->setExitMessage(errorStr.c_str());
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 
 	// Load and compile the shaders & link programs
 	if (!createPipeline())
 	{
 		this->setExitMessage(errorStr.c_str());
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 
 	// Initialize UIRenderer
-	if (uiRenderer.init(getGraphicsContext()) != pvr::Result::Success)
+	if (uiRenderer.init(getGraphicsContext(), deviceResources->backBufferFbo->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 
 	// Calculate the projection and view matrices
@@ -319,7 +321,7 @@ pvr::Result::Enum OGLESPVRScopeExample::initView()
 	bool isRotate = this->isScreenRotated() && this->isFullScreen();
 	if (isRotate)
 	{
-		progUniforms.projectionMtx = pvr::math::perspectiveFov(glm::pi<pvr::float32>() / 6, (float)this->getWidth(),
+		progUniforms.projectionMtx = pvr::math::perspectiveFov(getApiType(), glm::pi<pvr::float32>() / 6, (float)this->getWidth(),
 		                             (float)this->getHeight(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar(), glm::pi<pvr::float32>() * .5f);
 	}
 	else
@@ -370,8 +372,6 @@ pvr::Result::Enum OGLESPVRScopeExample::initView()
 		scopeGraph->setUpdateInterval(interval);
 	}
 
-	// create the default fbo using default params
-	deviceResources->backBufferFbo = deviceResources->context->createOnScreenFboWithParams();
 	uiRenderer.getDefaultTitle()->setText("PVRScopeExample");
 	uiRenderer.getDefaultTitle()->commitUpdates();
 	recordCommandBuffer();
@@ -451,7 +451,7 @@ void OGLESPVRScopeExample::drawMesh(int nodeIndex)
 		{
 			// Indexed Triangle list
 			deviceResources->commandBuffer->bindIndexBuffer(deviceResources->ibos[node.getObjectId()],
-			        0, mesh.getFaces().getDataType());
+			    0, mesh.getFaces().getDataType());
 			deviceResources->commandBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 		}
 		else
@@ -469,7 +469,7 @@ void OGLESPVRScopeExample::drawMesh(int nodeIndex)
 			{
 				// Indexed Triangle strips
 				deviceResources->commandBuffer->bindIndexBuffer(deviceResources->ibos[node.getObjectId()],
-				        0, mesh.getFaces().getDataType());
+				    0, mesh.getFaces().getDataType());
 				deviceResources->commandBuffer->drawIndexed(0, mesh.getStripLength(i) + 2, 0, 0, 1);
 			}
 			else
@@ -489,13 +489,13 @@ void OGLESPVRScopeExample::recordCommandBuffer()
 {
 	deviceResources->commandBuffer->beginRecording();
 	deviceResources->commandBuffer->beginRenderPass(deviceResources->backBufferFbo,
-	        pvr::Rectanglei(0, 0, getWidth(), getHeight()), glm::vec4(0.00, 0.70, 0.67, 1.0f));
+	    pvr::Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(0.00, 0.70, 0.67, 1.0f));
 	// Use shader program
 	deviceResources->commandBuffer->bindPipeline(deviceResources->pipeline);
 
 	// Bind texture
-	deviceResources->commandBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics,
-	        deviceResources->pipeline->getPipelineLayout(), deviceResources->descriptorSet, 0);
+	deviceResources->commandBuffer->bindDescriptorSet(
+	  deviceResources->pipeline->getPipelineLayout(), 0, deviceResources->descriptorSet, 0);
 
 	deviceResources->commandBuffer->setUniformPtr<glm::vec3>(uniformLocations.lightDirView, 1, &progUniforms.lightDirView);
 	deviceResources->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.specularExponent, 1, &progUniforms.specularExponent);
@@ -518,7 +518,7 @@ void OGLESPVRScopeExample::recordCommandBuffer()
 	scopeGraph->recordCommandBuffer(deviceResources->commandBuffer);
 	updateDescription();
 
-	pvr::api::SecondaryCommandBuffer uicmd = deviceResources->context->createSecondaryCommandBuffer();
+	pvr::api::SecondaryCommandBuffer uicmd = deviceResources->context->createSecondaryCommandBufferOnDefaultPool();
 	uiRenderer.beginRendering(uicmd);
 	uiRenderer.getDefaultTitle()->render();
 	uiRenderer.getDefaultDescription()->render();
@@ -551,23 +551,23 @@ void OGLESPVRScopeExample::updateDescription()
 		bool isPercentage = scopeGraph->isCounterPercentage(selectedCounter);
 
 		const char* standard =
-		    "Use up-down to select a counter, click to enable/disable it\n"
-		    "Counter [%i]\n"
-		    "Name: %s\n"
-		    "Shown: %s\n"
-		    "user y-axis: %.2f  max: %.2f\n";
+		  "Use up-down to select a counter, click to enable/disable it\n"
+		  "Counter [%i]\n"
+		  "Name: %s\n"
+		  "Shown: %s\n"
+		  "user y-axis: %.2f  max: %.2f\n";
 		const char* percentage =
-		    "Use up-down to select a counter, click to enable/disable it\n"
-		    "Counter [%i]\n"
-		    "Name: %s\n"
-		    "Shown: %s\n"
-		    "user y-axis: %.2f%%  max: %.2f%%\n";
+		  "Use up-down to select a counter, click to enable/disable it\n"
+		  "Counter [%i]\n"
+		  "Name: %s\n"
+		  "Shown: %s\n"
+		  "user y-axis: %.2f%%  max: %.2f%%\n";
 		const char* kilo =
-		    "Use up-down to select a counter, click to enable/disable it\n"
-		    "Counter [%i]\n"
-		    "Name: %s\n"
-		    "Shown: %s\n"
-		    "user y-axis: %.0fK  max: %.0fK\n";
+		  "Use up-down to select a counter, click to enable/disable it\n"
+		  "Counter [%i]\n"
+		  "Name: %s\n"
+		  "Shown: %s\n"
+		  "user y-axis: %.0fK  max: %.0fK\n";
 
 		sprintf(description,
 		        isKilos ? kilo : isPercentage ? percentage : standard,
@@ -583,7 +583,7 @@ void OGLESPVRScopeExample::updateDescription()
 		sprintf(description, "No counters present");
 		uiRenderer.getDefaultDescription()->setColor(glm::vec4(.8f, 0.0f, 0.0f, 1.0f));
 	}
-	// Displays the demo name using the tools. For a detailed explanation, see the training course IntroducingPVRUIRenderer
+	// Displays the demo name using the tools. For a detailed explanation, see the training course IntroUIRenderer
 	uiRenderer.getDefaultDescription()->setText(description);
 	uiRenderer.getDefaultDescription()->commitUpdates();
 }

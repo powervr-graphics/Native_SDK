@@ -7,7 +7,7 @@
 #include "PVRScopeStats.h"
 #include "PVRScopeGraph.h"
 #include "PVRCore/BufferStream.h"
-#include "PVRApi/ShaderUtils.h"
+#include "PVRNativeApi/ShaderUtils.h"
 #include <math.h>
 #include <string.h>
 
@@ -61,7 +61,7 @@ PVRScopeGraph::PVRScopeGraph(pvr::GraphicsContext& device, pvr::IAssetProvider& 
 	, m_idxShaderPixel((pvr::uint32)0 - 1)
 	, m_idxShaderVertex((pvr::uint32)0 - 1)
 	, m_idxShaderCompute((pvr::uint32)0 - 1),
-	m_device(device), m_assetProvider(assetProvider), m_uiRenderer(uiRenderer)
+	  m_device(device), m_assetProvider(assetProvider), m_uiRenderer(uiRenderer)
 {
 	m_reading.pfValueBuf	= NULL;
 	m_reading.nValueCnt		= 0;
@@ -97,10 +97,10 @@ bool PVRScopeGraph::init()
 {
 	pvr::assets::ShaderFile shaderFile;
 	shaderFile.populateValidVersions(Configuration::VertShaderFile, m_assetProvider);
-	pvr::api::Shader vertexShader = m_device->createShader(*shaderFile.getBestStreamForApi(m_device->getApiType()), pvr::ShaderType::VertexShader);
+	pvr::api::Shader vertexShader = m_device->createShader(*shaderFile.getBestStreamForApi(m_device->getApiType()), pvr::types::ShaderType::VertexShader);
 
 	shaderFile.populateValidVersions(Configuration::FragShaderFile, m_assetProvider);
-	pvr::api::Shader fragmentShader = m_device->createShader(*shaderFile.getBestStreamForApi(m_device->getApiType()), pvr::ShaderType::FragmentShader);
+	pvr::api::Shader fragmentShader = m_device->createShader(*shaderFile.getBestStreamForApi(m_device->getApiType()), pvr::types::ShaderType::FragmentShader);
 
 	if (!vertexShader.isValid() || !fragmentShader.isValid()) { return false; }
 
@@ -108,26 +108,26 @@ bool PVRScopeGraph::init()
 	pipeInfo.vertexShader.setShader(vertexShader);
 	pipeInfo.fragmentShader.setShader(fragmentShader);
 	pipeInfo.depthStencil.setDepthTestEnable(false);
-	pipeInfo.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::Lines);
+	pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::Lines);
 
 	pipeInfo.vertexInput.setInputBinding(0, 0);
-	pipeInfo.vertexInput.addVertexAttribute(Configuration::VertexArrayBinding, 0, pvr::assets::VertexAttributeLayout(pvr::DataType::Float32, 2, 0) , "myVertex");
+	pipeInfo.vertexInput.addVertexAttribute(Configuration::VertexArrayBinding, 0, pvr::assets::VertexAttributeLayout(pvr::types::DataType::Float32, 2, 0) , "myVertex");
 
-	// create emptty pipeline layout
+	// create empty pipeline layout
 	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
 	pipeInfo.pipelineLayout = m_device->createPipelineLayout(pipeLayoutInfo);
+	pipeInfo.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
 	m_pipeDrawLine = m_device->createParentableGraphicsPipeline(pipeInfo);
 	colorId = m_pipeDrawLine->getUniformLocation("fColor");
-
-	pipeInfo.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::LineStrip);
+	pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::LineStrip);
 	m_pipeDrawLineStrip = m_device->createGraphicsPipeline(pipeInfo, m_pipeDrawLine);
 
 
 	// create the indexbuffer
 	const pvr::uint16 indexData[10] = {0, 1, 2, 3, 4, 5, 0, 4, 1, 5};
-	m_indexBuffer = m_device->createBuffer(sizeof(indexData), pvr::api::BufferBindingUse::IndexBuffer);
+	m_indexBuffer = m_device->createBuffer(sizeof(indexData), pvr::types::BufferBindingUse::IndexBuffer);
 	m_indexBuffer->update(indexData, 0, sizeof(indexData));
-	m_vertexBufferGraphBorder = m_device->createBuffer(sizeof(glm::vec2) * Configuration::NumVerticesGraphBorder, pvr::api::BufferBindingUse::VertexBuffer);
+	m_vertexBufferGraphBorder = m_device->createBuffer(sizeof(glm::vec2) * Configuration::NumVerticesGraphBorder, pvr::types::BufferBindingUse::VertexBuffer);
 	return true;
 }
 
@@ -136,6 +136,7 @@ bool PVRScopeGraph::init()
 ***********************************************************************************************************************/
 PVRScopeGraph::~PVRScopeGraph()
 {
+
 	if (m_scopeData) {	PVRScopeDeInitialise(&m_scopeData, &m_counters, &m_reading); }
 }
 
@@ -223,7 +224,7 @@ void PVRScopeGraph::recordCommandBuffer(pvr::api::CommandBufferBase cmdBuffer)
 {
 	glm::vec4 color(0.5, 0.5, 0.5, 1);
 	cmdBuffer->bindVertexBuffer(m_vertexBufferGraphBorder, 0, 0);
-	cmdBuffer->bindIndexBuffer(m_indexBuffer, 0, pvr::IndexType::IndexType16Bit);
+	cmdBuffer->bindIndexBuffer(m_indexBuffer, 0, pvr::types::IndexType::IndexType16Bit);
 	cmdBuffer->bindPipeline(m_pipeDrawLine);
 	cmdBuffer->setUniformPtr<glm::vec4>(colorId, 1, &color);
 	cmdBuffer->drawIndexed(0, 10);
@@ -412,7 +413,7 @@ void PVRScopeGraph::update(pvr::float32 dt)
 		//Need reallocation?
 		if (m_activeCounters[ii].vbo.isNull() || m_activeCounters[ii].vbo->getSize() != sizeof(verticesGraphContent[0]) * m_sizeCB)
 		{
-			m_activeCounters[ii].vbo = m_device->createBuffer(sizeof(verticesGraphContent[0]) * m_sizeCB, pvr::api::BufferBindingUse::VertexBuffer);
+			m_activeCounters[ii].vbo = m_device->createBuffer(sizeof(verticesGraphContent[0]) * m_sizeCB, pvr::types::BufferBindingUse::VertexBuffer);
 		}
 		//Need updating anyway...
 		m_activeCounters[ii].vbo->update(verticesGraphContent.data(), 0, sizeof(verticesGraphContent[0]) * m_sizeCB);

@@ -7,7 +7,6 @@
 //!\cond NO_DOXYGEN
 #include "PVRAssets/FileIO/PFXReader.h"
 #include "PVRCore/StringFunctions.h"
-#include "PVRAssets/SamplerDescription.h"
 #include "PVRAssets/Texture/PixelFormat.h"
 #include "PVRCore/FileStream.h"
 #include "PVRCore/Assert_.h"
@@ -17,7 +16,7 @@
 
 namespace {
 using namespace pvr;
-
+using namespace pvr::types;
 const char8* g_LinearStr       = "LINEAR";
 const char8* g_NearestStr = "NEAREST";
 const char8* g_NoneStr = "NONE";
@@ -54,7 +53,7 @@ const uint32 g_DfltViewPortHeight = 480;
 #define DELIM_TOKENS " \t"
 
 bool getSemanticDataFromString(assets::EffectSemanticData& pDataItem, const char8* const pszArgumentString,
-                               assets::SemanticDataType::Enum eType, std::string& errorOut)
+                               types::SemanticDataType::Enum eType, std::string& errorOut)
 {
 	char8* pszString = (char8*)pszArgumentString;
 	char8* pszTmp;
@@ -80,13 +79,13 @@ bool getSemanticDataFromString(assets::EffectSemanticData& pDataItem, const char
 	pszTmp = pszString;
 	switch (sDfltType.internalType)
 	{
-	case assets::EffectDefaultDataInternalType::Float:
+	case types::EffectDefaultDataInternalType::Float:
 		pDataItem.dataF32[0] = (float)strtod(pszString, &pszTmp);
 		break;
-	case assets::EffectDefaultDataInternalType::Integer:
+	case types::EffectDefaultDataInternalType::Integer:
 		pDataItem.dataI32[0] = (int32)strtol(pszString, &pszTmp, 10);
 		break;
-	case assets::EffectDefaultDataInternalType::Boolean:
+	case types::EffectDefaultDataInternalType::Boolean:
 		if (strncmp(pszString, "true", 4) == 0)
 		{
 			pDataItem.dataBool[0] = true;
@@ -143,13 +142,13 @@ bool getSemanticDataFromString(assets::EffectSemanticData& pDataItem, const char
 		pszTmp = pszString;
 		switch (sDfltType.internalType)
 		{
-		case assets::EffectDefaultDataInternalType::Float:
+		case types::EffectDefaultDataInternalType::Float:
 			pDataItem.dataF32[i] = (float)strtod(pszString, &pszTmp);
 			break;
-		case assets::EffectDefaultDataInternalType::Integer:
+		case types::EffectDefaultDataInternalType::Integer:
 			pDataItem.dataI32[i] = (int32)strtol(pszString, &pszTmp, 10);
 			break;
-		case assets::EffectDefaultDataInternalType::Boolean:
+		case types::EffectDefaultDataInternalType::Boolean:
 			if (strncmp(pszString, "true", 4) == 0)
 			{
 				pDataItem.dataBool[i] = true;
@@ -477,7 +476,7 @@ bool PfxReader::parse(string& pReturnError)
 			// Texture mismatch. Report error.
 			if (!uiTexSize || k == uiTexSize)
 			{
-				pReturnError = "Error: TEXTURE '" + m_effects[i].textures[j].name.getString() + "' is not defined in [TEXTURES].\n";
+				pReturnError = "Error: TEXTURE '" + m_effects[i].textures[j].name.str() + "' is not defined in [TEXTURES].\n";
 				return false;
 			}
 		}
@@ -552,8 +551,8 @@ bool PfxReader::parseFromMemory(const char8* const pszScript, string& pReturnErr
 		pszLine[nLen - nReduce] = 0;
 		pszCurr += nLen + 1;
 
-		PVR_ASSERT(strchr(pszLine, '\r') == 0);
-		PVR_ASSERT(strchr(pszLine, '\n') == 0);
+		assertion(strchr(pszLine, '\r') == 0);
+		assertion(strchr(pszLine, '\n') == 0);
 
 		// Ignore comments
 		char8* tmp = strstr(pszLine, "//");
@@ -627,7 +626,7 @@ bool PfxReader::retrieveRenderPassDependencies(std::vector<PfxRenderPass*>& aReq
 
 	for (ui = 0; ui < (uint32)aszActiveEffecstrings.size(); ++ui)
 	{
-		if (aszActiveEffecstrings[ui].getString().length())
+		if (aszActiveEffecstrings[ui].length())
 		{
 			// Empty strings are not valid
 			return false;
@@ -2203,10 +2202,10 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 		{
 
 			const EffectSemantic& sem = effect.uniforms[uiUniform];
-			if (strings::startsWith(sem.semantic.getString(), "TEXTURE"))
+			if (strings::startsWith(sem.semantic.str(), "TEXTURE"))
 			{
 				sprintf(buff, "%d", uiTexUnit);
-				if (strings::endsWith(sem.semantic.getString(), buff))
+				if (strings::endsWith(sem.semantic.str(), buff))
 				{
 					bFound = true;
 					break;
@@ -2343,7 +2342,7 @@ uint32 PfxReader::findTextureIndex(const StringHash& TextureName, uint32 uiEffec
 
 const PFXParserTexture* PfxReader::getTexture(uint32 uiIndex) const
 {
-	PVR_ASSERT(uiIndex < getNumberTextures());
+	assertion(uiIndex < getNumberTextures());
 	return m_textures[uiIndex];
 }
 
@@ -2502,7 +2501,7 @@ void pfxCreateStringCopy(char8** ppDst, const char8* pSrc)
 const EffectSemanticDefaultDataTypeInfo& EffectSemanticDefaultDataTypeInfo::getSemanticDefaultTypeInfo(
   SemanticDataType::Enum semanticDfltType)
 {
-	PVR_ASSERT(semanticDfltType < SemanticDataType::Count && "Invalid Semantic Data Type");
+	assertion(semanticDfltType < SemanticDataType::Count, "Invalid Semantic Data Type");
 	const static EffectSemanticDefaultDataTypeInfo g_semanticDefaultDataTypeInfo[] =
 	{
 		{ SemanticDataType::Mat2, "mat2", 4, EffectDefaultDataInternalType::Float },

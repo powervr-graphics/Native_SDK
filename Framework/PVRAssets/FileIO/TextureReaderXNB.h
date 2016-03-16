@@ -30,7 +30,7 @@ public:
 private:
 	virtual bool readNextAsset(Texture& asset);
 
-	bool initialiseFile();
+	bool initializeFile();
 	uint64 getPVRFormatFromXNBFormat(uint32              xnbFormat);
 	VariableType::Enum getPVRTypeFromXNBFormat(uint32                   xnbFormat);
 	bool read7BitEncodedInt(int32&                     decodedInteger);

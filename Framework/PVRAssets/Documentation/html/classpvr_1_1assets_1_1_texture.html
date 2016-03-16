@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -113,15 +113,25 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5f366457162552095947f184f0f47075"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acef325a1dc88f0dfc82402a61f275d49"><td class="memItemLeft" align="right" valign="top">byte *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture.html#acef325a1dc88f0dfc82402a61f275d49">getDataPointer</a> (uint32 mipMapLevel=0, uint32 arrayMember=0, uint32 faceNumber=0)</td></tr>
 <tr class="separator:acef325a1dc88f0dfc82402a61f275d49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad71b1114d07f60a1e10816da1bfd103"><td class="memItemLeft" align="right" valign="top">types::TextureDimension::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture.html#aad71b1114d07f60a1e10816da1bfd103">getDimension</a> () const </td></tr>
+<tr class="separator:aad71b1114d07f60a1e10816da1bfd103"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51da7643dd0445cee472e50649448f34"><td class="memItemLeft" align="right" valign="top">types::ImageExtents&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture.html#a51da7643dd0445cee472e50649448f34">getDimensions</a> () const </td></tr>
+<tr class="separator:a51da7643dd0445cee472e50649448f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a403d3a06c945b5012bcfa08f9f9eb450"><td class="memItemLeft" align="right" valign="top">types::ImageExtents&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture.html#a403d3a06c945b5012bcfa08f9f9eb450">getDimensions</a> (uint32 miplevel) const </td></tr>
+<tr class="separator:a403d3a06c945b5012bcfa08f9f9eb450"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae815c07a1e1a0c3e1dc5f93dfcf6196a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1assets_1_1_texture_header.html">TextureHeader</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture.html#ae815c07a1e1a0c3e1dc5f93dfcf6196a">getHeader</a> () const </td></tr>
 <tr class="separator:ae815c07a1e1a0c3e1dc5f93dfcf6196a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee97877291fe11234e972fa7478d4b8a"><td class="memItemLeft" align="right" valign="top">types::ImageLayersSize&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture.html#aee97877291fe11234e972fa7478d4b8a">getLayersSize</a> () const </td></tr>
+<tr class="separator:aee97877291fe11234e972fa7478d4b8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16876d5517c752d79226f15aed3882b2"><td class="memItemLeft" align="right" valign="top">byte *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture.html#a16876d5517c752d79226f15aed3882b2">getPixelPointer</a> (uint32 x, uint32 y, uint32 z=0, uint32 mipMapLevel=0, uint32 arrayMember=0, uint32 faceNumber=0)</td></tr>
 <tr class="separator:a16876d5517c752d79226f15aed3882b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6ca44a1865587b2782cf14c2f37cd1e"><td class="memItemLeft" align="right" valign="top">uint8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture.html#ad6ca44a1865587b2782cf14c2f37cd1e">getPixelSize</a> () const </td></tr>
 <tr class="separator:ad6ca44a1865587b2782cf14c2f37cd1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85ce1b13ee9604a510f191a8b36898e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture.html#a85ce1b13ee9604a510f191a8b36898e7">initialiseWithHeader</a> (const <a class="el" href="classpvr_1_1assets_1_1_texture_header.html">TextureHeader</a> &amp;sHeader)</td></tr>
-<tr class="memdesc:a85ce1b13ee9604a510f191a8b36898e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a texture using the information from a <a class="el" href="classpvr_1_1assets_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> header and preallocate memory for its data.  <a href="#a85ce1b13ee9604a510f191a8b36898e7">More...</a><br/></td></tr>
-<tr class="separator:a85ce1b13ee9604a510f191a8b36898e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7494312282c134e36c5b924fe76996b8"><td class="memItemLeft" align="right" valign="top">types::ImageAreaSize&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture.html#a7494312282c134e36c5b924fe76996b8">getTotalDimensions</a> () const </td></tr>
+<tr class="separator:a7494312282c134e36c5b924fe76996b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bc8f3ad4d65a6ff446aec2e6e1bb7a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture.html#a7bc8f3ad4d65a6ff446aec2e6e1bb7a9">initializeWithHeader</a> (const <a class="el" href="classpvr_1_1assets_1_1_texture_header.html">TextureHeader</a> &amp;sHeader)</td></tr>
+<tr class="memdesc:a7bc8f3ad4d65a6ff446aec2e6e1bb7a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a texture using the information from a <a class="el" href="classpvr_1_1assets_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> header and preallocate memory for its data.  <a href="#a7bc8f3ad4d65a6ff446aec2e6e1bb7a9">More...</a><br/></td></tr>
+<tr class="separator:a7bc8f3ad4d65a6ff446aec2e6e1bb7a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpvr_1_1assets_1_1_texture_header"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpvr_1_1assets_1_1_texture_header')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpvr_1_1assets_1_1_texture_header.html">pvr::assets::TextureHeader</a></td></tr>
 <tr class="memitem:a65c71b3903ebc6d5ef561ed68feca7b3 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#a65c71b3903ebc6d5ef561ed68feca7b3">TextureHeader</a> ()</td></tr>
 <tr class="memdesc:a65c71b3903ebc6d5ef561ed68feca7b3 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor for a <a class="el" href="classpvr_1_1assets_1_1_texture_header.html" title="A class mirroring the PVR Texture container format header, and which can in general represent any Tex...">TextureHeader</a>. Returns an empty header.  <a href="#a65c71b3903ebc6d5ef561ed68feca7b3">More...</a><br/></td></tr>
@@ -135,9 +145,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad798e9be66154840ce572e7a6c11523c inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#ad798e9be66154840ce572e7a6c11523c">TextureHeader</a> (<a class="el" href="structpvr_1_1assets_1_1_texture_header_1_1_header.html">Header</a> fileHeader, uint32 metaDataCount, <a class="el" href="classpvr_1_1assets_1_1_texture_meta_data.html">TextureMetaData</a> *metaData)</td></tr>
 <tr class="memdesc:ad798e9be66154840ce572e7a6c11523c inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct this from file header and meta data.  <a href="#ad798e9be66154840ce572e7a6c11523c">More...</a><br/></td></tr>
 <tr class="separator:ad798e9be66154840ce572e7a6c11523c inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a898f6f25951b3b57a64d20e4828ebb inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#a5a898f6f25951b3b57a64d20e4828ebb">TextureHeader</a> (<a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a> pixelFormat, uint32 width, uint32 height, uint32 depth=1, uint32 mipMapCount=1, ColorSpace::Enum colorSpace=ColorSpace::lRGB, <a class="el" href="namespacepvr_1_1_variable_type.html#a82d3ceaf1b4b315cd1ab51824a78b632">VariableType::Enum</a> channelType=<a class="el" href="namespacepvr_1_1_variable_type.html#a82d3ceaf1b4b315cd1ab51824a78b632a984876a9a95310c1f27dbbc69512cb6b">VariableType::UnsignedByteNorm</a>, uint32 numberOfSurfaces=1, uint32 numberOfFaces=1, uint32 flags=0, <a class="el" href="classpvr_1_1assets_1_1_texture_meta_data.html">TextureMetaData</a> *metaData=NULL, uint32 metaDataSize=0)</td></tr>
-<tr class="memdesc:a5a898f6f25951b3b57a64d20e4828ebb inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="#a5a898f6f25951b3b57a64d20e4828ebb">More...</a><br/></td></tr>
-<tr class="separator:a5a898f6f25951b3b57a64d20e4828ebb inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a822165859624db37802534ff547ab314 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#a822165859624db37802534ff547ab314">TextureHeader</a> (<a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a> pixelFormat, uint32 width, uint32 height, uint32 depth=1, uint32 mipMapCount=1, types::ColorSpace::Enum colorSpace=types::ColorSpace::lRGB, <a class="el" href="namespacepvr_1_1_variable_type.html#a82d3ceaf1b4b315cd1ab51824a78b632">VariableType::Enum</a> channelType=<a class="el" href="namespacepvr_1_1_variable_type.html#a82d3ceaf1b4b315cd1ab51824a78b632a984876a9a95310c1f27dbbc69512cb6b">VariableType::UnsignedByteNorm</a>, uint32 numberOfSurfaces=1, uint32 numberOfFaces=1, uint32 flags=0, <a class="el" href="classpvr_1_1assets_1_1_texture_meta_data.html">TextureMetaData</a> *metaData=NULL, uint32 metaDataSize=0)</td></tr>
+<tr class="memdesc:a822165859624db37802534ff547ab314 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="#a822165859624db37802534ff547ab314">More...</a><br/></td></tr>
+<tr class="separator:a822165859624db37802534ff547ab314 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad967120d23991f749b9b876f3ad36598 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#ad967120d23991f749b9b876f3ad36598">addMetaData</a> (const <a class="el" href="classpvr_1_1assets_1_1_texture_meta_data.html">TextureMetaData</a> &amp;metaData)</td></tr>
 <tr class="memdesc:ad967120d23991f749b9b876f3ad36598 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an arbitrary piece of meta data.  <a href="#ad967120d23991f749b9b876f3ad36598">More...</a><br/></td></tr>
 <tr class="separator:ad967120d23991f749b9b876f3ad36598 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,9 +156,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afe2c0211848d38728a14154d76ca9325 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1_variable_type.html#a82d3ceaf1b4b315cd1ab51824a78b632">VariableType::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#afe2c0211848d38728a14154d76ca9325">getChannelType</a> () const </td></tr>
 <tr class="memdesc:afe2c0211848d38728a14154d76ca9325 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the channel type that the texture's data is stored in.  <a href="#afe2c0211848d38728a14154d76ca9325">More...</a><br/></td></tr>
 <tr class="separator:afe2c0211848d38728a14154d76ca9325 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abce36cfc298d5136b79fcaaeabd38fe3 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">ColorSpace::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#abce36cfc298d5136b79fcaaeabd38fe3">getColorSpace</a> () const </td></tr>
-<tr class="memdesc:abce36cfc298d5136b79fcaaeabd38fe3 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the color space of the texture.  <a href="#abce36cfc298d5136b79fcaaeabd38fe3">More...</a><br/></td></tr>
-<tr class="separator:abce36cfc298d5136b79fcaaeabd38fe3 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37b315f71005a237cf85a55d0f5571fb inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">types::ColorSpace::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#a37b315f71005a237cf85a55d0f5571fb">getColorSpace</a> () const </td></tr>
+<tr class="memdesc:a37b315f71005a237cf85a55d0f5571fb inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the color space of the texture.  <a href="#a37b315f71005a237cf85a55d0f5571fb">More...</a><br/></td></tr>
+<tr class="separator:a37b315f71005a237cf85a55d0f5571fb inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d1a894abf399bb3f3f3703f8a27beaf inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#a5d1a894abf399bb3f3f3703f8a27beaf">getCubeMapOrder</a> () const </td></tr>
 <tr class="memdesc:a5d1a894abf399bb3f3f3703f8a27beaf inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cube map face order.  <a href="#a5d1a894abf399bb3f3f3703f8a27beaf">More...</a><br/></td></tr>
 <tr class="separator:a5d1a894abf399bb3f3f3703f8a27beaf inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -222,9 +232,9 @@ std::map&lt; uint32, <br class="typebreak"/>
 <tr class="separator:a7ba224c54c9ed0096a15c50619c73f30 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6cbe0cda182217c01335b521fd575e71 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#a6cbe0cda182217c01335b521fd575e71">setChannelType</a> (<a class="el" href="namespacepvr_1_1_variable_type.html#a82d3ceaf1b4b315cd1ab51824a78b632">VariableType::Enum</a> channelType)</td></tr>
 <tr class="separator:a6cbe0cda182217c01335b521fd575e71 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac846f411c94e52c7c2dca99a1f984b10 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#ac846f411c94e52c7c2dca99a1f984b10">setColorSpace</a> (ColorSpace::Enum colorSpace)</td></tr>
-<tr class="memdesc:ac846f411c94e52c7c2dca99a1f984b10 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the color space for this texture. Default is lRGB.  <a href="#ac846f411c94e52c7c2dca99a1f984b10">More...</a><br/></td></tr>
-<tr class="separator:ac846f411c94e52c7c2dca99a1f984b10 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a3e96b0e3c52737a7bf2cb6d2c322f6 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#a5a3e96b0e3c52737a7bf2cb6d2c322f6">setColorSpace</a> (types::ColorSpace::Enum colorSpace)</td></tr>
+<tr class="memdesc:a5a3e96b0e3c52737a7bf2cb6d2c322f6 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the color space for this texture. Default is lRGB.  <a href="#a5a3e96b0e3c52737a7bf2cb6d2c322f6">More...</a><br/></td></tr>
+<tr class="separator:a5a3e96b0e3c52737a7bf2cb6d2c322f6 inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc34bc244c2473e322528a32151353db inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_texture_header.html#adc34bc244c2473e322528a32151353db">setCubeMapOrder</a> (std::string cubeMapOrder)</td></tr>
 <tr class="memdesc:adc34bc244c2473e322528a32151353db inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a texture's bump map data.  <a href="#adc34bc244c2473e322528a32151353db">More...</a><br/></td></tr>
 <tr class="separator:adc34bc244c2473e322528a32151353db inherit pub_methods_classpvr_1_1assets_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -447,6 +457,76 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="aad71b1114d07f60a1e10816da1bfd103"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">types::TextureDimension::Enum pvr::assets::Texture::getDimension </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a51da7643dd0445cee472e50649448f34"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">types::ImageExtents pvr::assets::Texture::getDimensions </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a403d3a06c945b5012bcfa08f9f9eb450"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">types::ImageExtents pvr::assets::Texture::getDimensions </td>
+          <td>(</td>
+          <td class="paramtype">uint32&#160;</td>
+          <td class="paramname"><em>miplevel</em>)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="ae815c07a1e1a0c3e1dc5f93dfcf6196a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -462,6 +542,29 @@ Additional Inherited Members</h2></td></tr>
 <hr/>
  <dl class="section return"><dt>Returns</dt><dd>const <a class="el" href="classpvr_1_1assets_1_1_texture_header.html" title="A class mirroring the PVR Texture container format header, and which can in general represent any Tex...">TextureHeader</a>&amp; Returns the header only for this texture. </dd></dl>
 <dl class="section user"><dt>Description:</dt><dd>Gets the header for this texture, allowing you to create a new texture based on this one with some changes. Useful for passing information about a texture without passing all of its data. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aee97877291fe11234e972fa7478d4b8a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">types::ImageLayersSize pvr::assets::Texture::getLayersSize </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -538,12 +641,35 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a85ce1b13ee9604a510f191a8b36898e7"></a>
+<a class="anchor" id="a7494312282c134e36c5b924fe76996b8"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">types::ImageAreaSize pvr::assets::Texture::getTotalDimensions </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a7bc8f3ad4d65a6ff446aec2e6e1bb7a9"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void pvr::assets::Texture::initialiseWithHeader </td>
+          <td class="memname">void pvr::assets::Texture::initializeWithHeader </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpvr_1_1assets_1_1_texture_header.html">TextureHeader</a> &amp;&#160;</td>
           <td class="paramname"><em>sHeader</em>)</td><td></td>

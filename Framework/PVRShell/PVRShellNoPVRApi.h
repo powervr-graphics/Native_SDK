@@ -24,12 +24,3 @@ pvr::GraphicsContextStrongReference createGraphicsContext()
 	return GraphicsContextStrongReference();
 }
 }
-/*!********************************************************************************************
-\brief	This is an empty implementation of an external PVRApi function call that PVRShell will
-normally use. Used when PVRApi will not be linked into the application
-\return	An empty Graphics Context.
-***********************************************************************************************/
-bool isOpenGLES31NotSupported_Workaround()
-{
-	return false;
-}

@@ -8,11 +8,11 @@
 #include "PVRApi/EffectApi.h"
 #include "PVRCore/Maths.h"
 #include "PVRCore/IGraphicsContext.h"
-#include "PVRApi/OGLES/TextureUtils.h"
 #include "PVRCore/StringFunctions.h"
-#include "PVRApi/OGLES/NativeObjectsGles.h"
-#include "PVRApi/OGLES/OpenGLESBindings.h"
-#include "PVRApi/ApiObjects/DescriptorTable.h"
+#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
+#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
+#include "PVRApi/ApiObjects/DescriptorSet.h"
+#include "PVRApi/ApiObjects/PipelineLayout.h"
 #include <functional>
 #include <vector>
 #include <cstdio>
@@ -24,9 +24,9 @@ namespace pvr {
 namespace api {
 namespace impl {
 
-uint32 EffectApiImpl::loadSemantics(
-  const IGraphicsContext*,
-  bool isAttribute)
+uint32 EffectApi_::loadSemantics(
+    const IGraphicsContext*,
+    bool isAttribute)
 {
 	uint32 semanticIdx, nCount, nCountUnused;
 	int32 nLocation;
@@ -37,9 +37,13 @@ uint32 EffectApiImpl::loadSemantics(
 	*/
 	nCount = 0;
 	nCountUnused = 0;
-	m_pipe->getShaderProgram().bind();
 	IndexedArray<EffectApiSemantic, StringHash>& mySemanticList = isAttribute ? m_attributes : m_uniforms;
 	std::vector<assets::EffectSemantic>& myAssetEffectSemantics = isAttribute ? m_assetEffect.attributes : m_assetEffect.uniforms;
+
+	GLint boundProgram;
+	gl::GetIntegerv(GL_CURRENT_PROGRAM, &boundProgram);
+	gl::UseProgram(m_pipe->getNativeObject());
+
 	for (semanticIdx = 0; semanticIdx < myAssetEffectSemantics.size(); ++semanticIdx)
 	{
 		assets::EffectSemantic& assetSemantic = myAssetEffectSemantics[semanticIdx];
@@ -59,10 +63,10 @@ uint32 EffectApiImpl::loadSemantics(
 			semanticToInsert.location = nLocation;
 			semanticToInsert.semanticIndex = semanticIdx;
 			semanticToInsert.variableName = assetSemantic.variableName;
-			if (!isAttribute && strings::startsWith(assetSemantic.semantic.getString(), "TEXTURE"))
+			if (!isAttribute && strings::startsWith(assetSemantic.semantic.str(), "TEXTURE"))
 			{
 				//IF the string is TEXTUREXXXX, the texture ordinal is the texture unit.
-				gl::Uniform1i(nLocation, assetSemantic.semantic.getString().length() >= 8 ? atoi(assetSemantic.semantic.c_str() + 7) : 0);
+				gl::Uniform1i(nLocation, assetSemantic.semantic.str().length() >= 8 ? atoi(assetSemantic.semantic.c_str() + 7) : 0);
 			}
 			mySemanticList.insertAt(semanticIdx, assetSemantic.semantic, std::move(semanticToInsert));
 
@@ -72,15 +76,16 @@ uint32 EffectApiImpl::loadSemantics(
 		{
 			Log(Log.Warning, "[EffectFile: %s Effect: %s] Variable not used by GLSL code: Semantic:%s VariableName:%s",
 			    m_assetEffect.fileName.c_str(), m_assetEffect.getMaterial().getEffectName().c_str(),
-			    assetSemantic.semantic.getString().c_str(), assetSemantic.variableName.c_str());
+			    assetSemantic.semantic.str().c_str(), assetSemantic.variableName.c_str());
 			++nCountUnused;
 		}
 	}
+	gl::UseProgram(boundProgram);
 
 	return nCount;
 }
 
-void EffectApiImpl::setTexture(uint32 nIdx, const api::TextureView& tex)
+void EffectApi_::setTexture(uint32 nIdx, const api::TextureView& tex)
 {
 	using namespace assets;
 	if (nIdx < (uint32)m_effectTexSamplers.size())
@@ -89,84 +94,76 @@ void EffectApiImpl::setTexture(uint32 nIdx, const api::TextureView& tex)
 		// Get the texture details from the PFX Parser. This contains details such as mipmapping and filter modes.
 		//const StringHash& TexName = m_parser->getEffect(m_effect).textures[nIdx].name;
 		//int32 iTexIdx = m_parser->findTextureByName(TexName);
-		if (TextureDimension::Texture2D != m_effectTexSamplers[nIdx].getTextureType()) { return; }
+		if (types::TextureDimension::Texture2D != m_effectTexSamplers[nIdx].getTextureType()) { return; }
 		m_effectTexSamplers[nIdx].texture = tex;
 	}
 }
 
-void EffectApiImpl::setDefaultUniformValue(const char8* const pszName, const assets::EffectSemanticData& psDefaultValue)
+void EffectApi_::setDefaultUniformValue(const char8* const pszName, const assets::EffectSemanticData& psDefaultValue)
 {
 	using namespace assets;
 	GLint nLocation = gl::GetUniformLocation(m_program.program->handle, pszName);
 	switch (psDefaultValue.type)
 	{
-	case SemanticDataType::Mat2:
+	case types::SemanticDataType::Mat2:
 		gl::UniformMatrix2fv(nLocation, 1, GL_FALSE, psDefaultValue.dataF32);
 		break;
-	case SemanticDataType::Mat3:
+	case types::SemanticDataType::Mat3:
 		gl::UniformMatrix3fv(nLocation, 1, GL_FALSE, psDefaultValue.dataF32);
 		break;
-	case SemanticDataType::Mat4:
+	case types::SemanticDataType::Mat4:
 		gl::UniformMatrix4fv(nLocation, 1, GL_FALSE, psDefaultValue.dataF32);
 		break;
-	case SemanticDataType::Vec2:
+	case types::SemanticDataType::Vec2:
 		gl::Uniform2fv(nLocation, 1, psDefaultValue.dataF32);
 		break;
-	case SemanticDataType::RGB:
-	case SemanticDataType::Vec3:
+	case types::SemanticDataType::RGB:
+	case types::SemanticDataType::Vec3:
 		gl::Uniform3fv(nLocation, 1, psDefaultValue.dataF32);
 		break;
-	case SemanticDataType::RGBA:
-	case SemanticDataType::Vec4:
+	case types::SemanticDataType::RGBA:
+	case types::SemanticDataType::Vec4:
 		gl::Uniform4fv(nLocation, 1, psDefaultValue.dataF32);
 		break;
-	case SemanticDataType::IVec2:
+	case types::SemanticDataType::IVec2:
 		gl::Uniform2iv(nLocation, 1, psDefaultValue.dataI32);
 		break;
-	case SemanticDataType::IVec3:
+	case types::SemanticDataType::IVec3:
 		gl::Uniform3iv(nLocation, 1, psDefaultValue.dataI32);
 		break;
-	case SemanticDataType::IVec4:
+	case types::SemanticDataType::IVec4:
 		gl::Uniform4iv(nLocation, 1, psDefaultValue.dataI32);
 		break;
-	case SemanticDataType::BVec2:
+	case types::SemanticDataType::BVec2:
 		gl::Uniform2i(nLocation, psDefaultValue.dataBool[0] ? 1 : 0, psDefaultValue.dataBool[1] ? 1 : 0);
 		break;
-	case SemanticDataType::BVec3:
+	case types::SemanticDataType::BVec3:
 		gl::Uniform3i(nLocation, psDefaultValue.dataBool[0] ? 1 : 0, psDefaultValue.dataBool[1] ? 1 : 0,
 		              psDefaultValue.dataBool[2] ? 1 : 0);
 		break;
-	case SemanticDataType::BVec4:
+	case types::SemanticDataType::BVec4:
 
 		gl::Uniform4i(nLocation, psDefaultValue.dataBool[0] ? 1 : 0, psDefaultValue.dataBool[1] ? 1 : 0,
 		              psDefaultValue.dataBool[2] ? 1 : 0, psDefaultValue.dataBool[3] ? 1 : 0);
 		break;
-	case SemanticDataType::Float:
+	case types::SemanticDataType::Float:
 		gl::Uniform1f(nLocation, psDefaultValue.dataF32[0]);
 		break;
-	case SemanticDataType::Int1:
+	case types::SemanticDataType::Int1:
 		gl::Uniform1i(nLocation, psDefaultValue.dataI32[0]);
 		break;
-	case SemanticDataType::Bool1:
+	case types::SemanticDataType::Bool1:
 		gl::Uniform1i(nLocation, psDefaultValue.dataBool[0] ? 1 : 0);
 		break;
-
-	case SemanticDataType::Count:
-	case SemanticDataType::None:
+	case types::SemanticDataType::Count:
+	case types::SemanticDataType::None:
 	default:
 		break;
 	}
 }
 
-Result::Enum EffectApiImpl::buildSemanticTables(uint32& uiUnknownSemantics)
+Result::Enum EffectApi_::buildSemanticTables(uint32& uiUnknownSemantics)
 {
-	/*if (!m_context)
-	{
-		Log(Log.Debug, "Valid Context not set");
-		return Result::NotInitialised;
-	}*/
-	m_pipe->getShaderProgram().bind();
-
 	loadSemantics(NULL, false);
 	loadSemantics(NULL, true);
 
@@ -174,10 +171,10 @@ Result::Enum EffectApiImpl::buildSemanticTables(uint32& uiUnknownSemantics)
 }
 
 
-EffectApiImpl::EffectApiImpl(GraphicsContext& context, AssetLoadingDelegate& effectDelegate) :
+EffectApi_::EffectApi_(GraphicsContext& context, AssetLoadingDelegate& effectDelegate) :
 	m_isLoaded(false), m_delegate(&effectDelegate), m_context(context) {}
 
-Result::Enum EffectApiImpl::init(const assets::Effect& effect, api::GraphicsPipelineCreateParam& pipeDesc)
+Result::Enum EffectApi_::init(const assets::Effect& effect, api::GraphicsPipelineCreateParam& pipeDesc)
 {
 	uint32	 i;
 	m_assetEffect = effect;
@@ -189,12 +186,13 @@ Result::Enum EffectApiImpl::init(const assets::Effect& effect, api::GraphicsPipe
 		m_effectTexSamplers.insertAt(i, effect.textures[i].name, EffectApiTextureSampler());
 		if (effect.textures[i].flags & assets::PVRTEX_CUBEMAP)
 		{
-			m_effectTexSamplers[i].texture = m_context->createTexture();
+
+			m_effectTexSamplers[i].texture.construct(m_context->createTexture());
 		}
 		else
 		{
-			api::TextureView tex2d = m_context->createTexture();
-			m_effectTexSamplers[i].texture = api::TextureView(tex2d);
+			api::TextureStore tex2d = m_context->createTexture();
+			m_effectTexSamplers[i].texture.construct(tex2d);
 		}
 
 		m_effectTexSamplers[i].name = effect.textures[i].name;
@@ -223,8 +221,8 @@ Result::Enum EffectApiImpl::init(const assets::Effect& effect, api::GraphicsPipe
 		pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
 		for (pvr::uint32 i = 0; i < (pvr::uint32)m_effectTexSamplers.size(); ++i)
 		{
-			descSetLayoutInfo.addBinding(i, pvr::api::DescriptorType::CombinedImageSampler,
-			                             0, pvr::api::ShaderStageFlags::Fragment);
+			descSetLayoutInfo.setBinding(i,  types::DescriptorType::CombinedImageSampler,
+			                             0, types::ShaderStageFlags::Fragment);
 		}
 		m_descriptorSetLayout = m_context->createDescriptorSetLayout(descSetLayoutInfo);
 		PipelineLayoutCreateParam pipeLayoutCreateInfo;
@@ -233,14 +231,15 @@ Result::Enum EffectApiImpl::init(const assets::Effect& effect, api::GraphicsPipe
 	}
 
 	//--- create the descriptor set
-	pvr::api::DescriptorSetUpdateParam descriptorSetInfo;
+	pvr::api::DescriptorSetUpdate descriptorSetInfo;
 	for (pvr::uint16 i = 0; i < m_effectTexSamplers.size(); ++i)
 	{
-		descriptorSetInfo.addCombinedImageSampler(i, m_effectTexSamplers[i].unit, m_effectTexSamplers[i].texture, m_effectTexSamplers[i].sampler);
+		descriptorSetInfo.setCombinedImageSamplerAtIndex(i, m_effectTexSamplers[i].unit, m_effectTexSamplers[i].texture, m_effectTexSamplers[i].sampler);
 	}
-	if (m_effectTexSamplers.size()){
-		m_descriptorSet = m_context->allocateDescriptorSet(m_descriptorSetLayout);
-		if (pvr::Result::Success != m_descriptorSet->update(descriptorSetInfo))
+	if (m_effectTexSamplers.size())
+	{
+		m_descriptorSet = m_context->createDescriptorSetOnDefaultPool(m_descriptorSetLayout);
+		if (m_descriptorSet->update(descriptorSetInfo))
 		{
 			Log("DescriptorSet update failed");
 			return pvr::Result::UnknownError;
@@ -258,7 +257,7 @@ Result::Enum EffectApiImpl::init(const assets::Effect& effect, api::GraphicsPipe
 
 	//--- create and validate pipeline
 	m_pipe = m_context->createParentableGraphicsPipeline(pipeDesc);
-	if (!m_pipe.isValid()) { return Result::NotInitialised; }
+	if (!m_pipe.isValid()) { return Result::NotInitialized; }
 
 //--- Build uniform table
 	pvrRslt = buildSemanticTables(m_numUnknownUniforms);
@@ -268,7 +267,7 @@ Result::Enum EffectApiImpl::init(const assets::Effect& effect, api::GraphicsPipe
 	return pvrRslt;
 }
 
-Result::Enum EffectApiImpl::loadTexturesForEffect()
+Result::Enum EffectApi_::loadTexturesForEffect()
 {
 	Result::Enum pvrRslt = Result::Success;
 
@@ -280,95 +279,95 @@ Result::Enum EffectApiImpl::loadTexturesForEffect()
 	return Result::Success;
 }
 
-void EffectApiImpl::destroy()
+void EffectApi_::destroy()
 {
 	m_effectTexSamplers.clear();
 	m_isLoaded = false;
 }
 
-Result::Enum EffectApiImpl::loadShadersForEffect(api::Shader& vertexShader, api::Shader& fragmentShader)
+Result::Enum EffectApi_::loadShadersForEffect(api::Shader& vertexShader, api::Shader& fragmentShader)
 {
 	using namespace assets;
-	// initialise attributes to default values
+	// initialize attributes to default values
 	string vertShaderSrc;
 	string fragShaderSrc;
 
 	bool isVertShaderBinary = m_assetEffect.vertexShader.glslBinFile.length() != 0;
 	bool isFragShaderBinary = m_assetEffect.fragmentShader.glslBinFile.length() != 0;
 
-	assets::ShaderBinaryFormat::Enum vertShaderBinFmt = assets::ShaderBinaryFormat::None;
-	assets::ShaderBinaryFormat::Enum fragShaderBinFmt = assets::ShaderBinaryFormat::None;
+	types::ShaderBinaryFormat::Enum vertShaderBinFmt =  types::ShaderBinaryFormat::None;
+	types::ShaderBinaryFormat::Enum fragShaderBinFmt =  types::ShaderBinaryFormat::None;
 
 	// create vertex shader stream from source/ binary.
 	BufferStream vertexShaderData(
-	  (isVertShaderBinary ? m_assetEffect.vertexShader.glslBinFile.c_str() :
-	   m_assetEffect.vertexShader.glslFile.c_str()),
-	  (isVertShaderBinary ? m_assetEffect.vertexShader.glslBin.c_str() : m_assetEffect.vertexShader.glslCode.c_str()),
-	  (isVertShaderBinary ? m_assetEffect.vertexShader.glslBin.length() : m_assetEffect.vertexShader.glslCode.length()));
+	    (isVertShaderBinary ? m_assetEffect.vertexShader.glslBinFile.c_str() :
+	     m_assetEffect.vertexShader.glslFile.c_str()),
+	    (isVertShaderBinary ? m_assetEffect.vertexShader.glslBin.c_str() : m_assetEffect.vertexShader.glslCode.c_str()),
+	    (isVertShaderBinary ? m_assetEffect.vertexShader.glslBin.length() : m_assetEffect.vertexShader.glslCode.length()));
 
 	// create fragment shader stream from source/ binary.
 	BufferStream fragmentShaderData(
-	  (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBinFile : m_assetEffect.fragmentShader.glslFile.c_str()),
-	  (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBin.c_str() :
-	   m_assetEffect.fragmentShader.glslCode.c_str()),
-	  (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBin.length() :
-	   m_assetEffect.fragmentShader.glslCode.length()));
+	    (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBinFile : m_assetEffect.fragmentShader.glslFile.c_str()),
+	    (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBin.c_str() :
+	     m_assetEffect.fragmentShader.glslCode.c_str()),
+	    (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBin.length() :
+	     m_assetEffect.fragmentShader.glslCode.length()));
 
 	if (vertexShaderData.getSize() == 0)
 	{
 		Log(Log.Error, "Effect File: [%s] -- Could not find vertex shader [%s] when processing effect [%s]",
-			m_assetEffect.fileName.c_str(), m_assetEffect.vertexShader.name.c_str(), m_assetEffect.material.getEffectName().c_str());
+		    m_assetEffect.fileName.c_str(), m_assetEffect.vertexShader.name.c_str(), m_assetEffect.material.getEffectName().c_str());
 	}
 	if (fragmentShaderData.getSize() == 0)
 	{
 		Log(Log.Error, "Effect File: [%s] -- Could not find fragment shader [%s]  when processing effect [%s]",
-			m_assetEffect.fileName.c_str(), m_assetEffect.fragmentShader.name.c_str(), m_assetEffect.material.getEffectName().c_str());
+		    m_assetEffect.fileName.c_str(), m_assetEffect.fragmentShader.name.c_str(), m_assetEffect.material.getEffectName().c_str());
 	}
 
 #if defined(GL_SGX_BINARY_IMG)
-	if (isVertShaderBinary)	{ vertShaderBinFmt = assets::ShaderBinaryFormat::ImgSgx; }
-	if (isFragShaderBinary)	{ fragShaderBinFmt = assets::ShaderBinaryFormat::ImgSgx; }
+	if (isVertShaderBinary)	{ vertShaderBinFmt =  types::ShaderBinaryFormat::ImgSgx; }
+	if (isFragShaderBinary)	{ fragShaderBinFmt =  types::ShaderBinaryFormat::ImgSgx; }
 #endif
 	// load the vertex and fragment shader
 
-	if (vertShaderBinFmt != pvr::assets::ShaderBinaryFormat::None)
+	if (vertShaderBinFmt !=  types::ShaderBinaryFormat::None)
 	{
-		vertexShader = m_context->createShader(vertexShaderData, pvr::ShaderType::VertexShader, vertShaderBinFmt);
+		vertexShader = m_context->createShader(vertexShaderData,  types::ShaderType::VertexShader, vertShaderBinFmt);
 	}
 	else // not a binary format so load it as normally
 	{
-		vertexShader = m_context->createShader(vertexShaderData, pvr::ShaderType::VertexShader, 0, 0);
+		vertexShader = m_context->createShader(vertexShaderData,  types::ShaderType::VertexShader, 0, 0);
 	}
 
-	if (fragShaderBinFmt != pvr::assets::ShaderBinaryFormat::None)
+	if (fragShaderBinFmt !=  types::ShaderBinaryFormat::None)
 	{
-		fragmentShader = m_context->createShader(fragmentShaderData, pvr::ShaderType::FragmentShader, fragShaderBinFmt);
+		fragmentShader = m_context->createShader(fragmentShaderData,  types::ShaderType::FragmentShader, fragShaderBinFmt);
 	}
 	else // not a binary format so load it as normally
 	{
-		fragmentShader = m_context->createShader(fragmentShaderData, pvr::ShaderType::FragmentShader, 0, 0);
+		fragmentShader = m_context->createShader(fragmentShaderData,  types::ShaderType::FragmentShader, 0, 0);
 	}
 
 	if (vertexShader.isNull())
 	{
 		Log(Log.Error, "Effect File: [%s] -- Vertex Shader [%s] compilation error when processing effect [%s]",
-			m_assetEffect.fileName.c_str(),m_assetEffect.vertexShader.name.c_str(), m_assetEffect.material.getEffectName().c_str());
+		    m_assetEffect.fileName.c_str(), m_assetEffect.vertexShader.name.c_str(), m_assetEffect.material.getEffectName().c_str());
 	}
 	if (fragmentShader.isNull())
 	{
 		Log(Log.Error, "Effect File: [%s] -- Fragment Shader [%s] compilation error when processing effect [%s]",
-			m_assetEffect.fileName.c_str(), m_assetEffect.fragmentShader.name.c_str(), m_assetEffect.material.getEffectName().c_str());
+		    m_assetEffect.fileName.c_str(), m_assetEffect.fragmentShader.name.c_str(), m_assetEffect.material.getEffectName().c_str());
 	}
 	return ((vertexShader.isValid() && fragmentShader.isValid()) ? Result::Success : Result::UnknownError);
 }
 
-void EffectApiImpl::setSampler(uint32 index, api::Sampler sampler)
+void EffectApi_::setSampler(uint32 index, api::Sampler sampler)
 {
 	if (!sampler.isValid()) { return; }
 	m_effectTexSamplers[index].sampler = sampler;
 }
 
-}// namespace impl
+}// namespace gles
 }// namespace api
 }// namespace pvr
- //!\endcond
+//!\endcond

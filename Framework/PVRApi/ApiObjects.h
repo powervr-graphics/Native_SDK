@@ -5,12 +5,12 @@
 \brief         Includes all API object types.
 ***********************************************************************************************************************/
 #pragma once
-#include "PVRCore/ForwardDecApiObjects.h"
+#include "PVRApi/ApiIncludes.h"
 #include "PVRApi/ApiObjects/Texture.h"
 #include "PVRApi/ApiObjects/Buffer.h"
 #include "PVRApi/ApiObjects/Sampler.h"
-#include "PVRApi/ApiObjects/CommandBuffer.h"
 #include "PVRApi/ApiObjects/GraphicsPipeline.h"
+#include "PVRApi/ApiObjects/CommandPool.h"
 
 namespace pvr {
 namespace api {

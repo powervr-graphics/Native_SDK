@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -110,6 +110,9 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacepvr_1_1_device_queue_type"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1_device_queue_type.html">pvr::DeviceQueueType</a></td></tr>
 <tr class="memdesc:namespacepvr_1_1_device_queue_type"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of all types of DeviceQueue. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacepvr_1_1system"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1system.html">pvr::system</a></td></tr>
+<tr class="memdesc:namespacepvr_1_1system"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains functionality for the interaction of the Framework with the system it runs on (Console etc). <br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
 Constant Groups</h2></td></tr>
@@ -118,6 +121,9 @@ Constant Groups</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1_device_queue_type"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1_device_queue_type.html">pvr::DeviceQueueType</a></td></tr>
 <tr class="memdesc:namespacepvr_1_1_device_queue_type"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of all types of DeviceQueue. <br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacepvr_1_1system"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1system.html">pvr::system</a></td></tr>
+<tr class="memdesc:namespacepvr_1_1system"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains functionality for the interaction of the Framework with the system it runs on (Console etc). <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
@@ -139,12 +145,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a113afe98c97651ae7f74ffb3ddf1ebaf"><td class="memItemLeft" align="right" valign="top">std::auto_ptr&lt; IPlatformContext &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a113afe98c97651ae7f74ffb3ddf1ebaf">pvr::createNativePlatformContext</a> (OSManager &amp;osManager)</td></tr>
 <tr class="memdesc:a113afe98c97651ae7f74ffb3ddf1ebaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates and returns a smart pointer to the Platform context depending on the platform. Implemented in the specific PVRPlatformGlue to return the correct type of context required.  <a href="#a113afe98c97651ae7f74ffb3ddf1ebaf">More...</a><br/></td></tr>
 <tr class="separator:a113afe98c97651ae7f74ffb3ddf1ebaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abeb083e06913a056f4b3fd7c41711c6d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#abeb083e06913a056f4b3fd7c41711c6d">pvr::initialiseNativeContext</a> ()</td></tr>
-<tr class="memdesc:abeb083e06913a056f4b3fd7c41711c6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs one-time-only initialisation for the platform context. Implemented in the specific PVRPlatformGlue.  <a href="#abeb083e06913a056f4b3fd7c41711c6d">More...</a><br/></td></tr>
-<tr class="separator:abeb083e06913a056f4b3fd7c41711c6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ab975151c055d02b7b7057d7aeeca29"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a3ab975151c055d02b7b7057d7aeeca29">pvr::releaseNativeContext</a> ()</td></tr>
-<tr class="memdesc:a3ab975151c055d02b7b7057d7aeeca29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs one-time-only resource release for the platform context. Implemented in the specific PVRPlatformGlue.  <a href="#a3ab975151c055d02b7b7057d7aeeca29">More...</a><br/></td></tr>
-<tr class="separator:a3ab975151c055d02b7b7057d7aeeca29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for the class actually performing the low-level operations. </p>

@@ -6,10 +6,10 @@ This training course demonstrates using a normal map to implement bump mapping u
 
 :FullDescription:
 Bump mapping is a technique for simulating bumps and wrinkles on the surface of an object. This is achieved by perturbing the surface normals of the object and using the perturbed normal during the illumination calculations. The result is an apparently bumpy surface rather than a perfectly smooth surface although the surface of the underlying object is not actually changed. This technique is used extensively in graphics applications to add perceived detail to models without adding further geometry.
-This example can be used as the baseline for rendering an object. Uses different shaders for OpenGL ES 2.x and OpenGL ES 3.x
+This example can be used as the baseline for rendering an object. Implemented for Vulkan and OpenGL ES 2.0/3.0.
 
 :APIS:
-OpenGL ES 2.0
+Vulkan 1.0, OpenGL ES 2.0
 
 :Controls:
 	-	Quit	-	Close the application

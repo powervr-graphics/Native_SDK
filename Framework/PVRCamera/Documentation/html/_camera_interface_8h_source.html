@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCamera</span> Documentation</a>
    <tbody>
@@ -132,12 +132,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <a class="code" href="classpvr_1_1_camera_interface.html#aff48c01d6b8b562d9e98956a3fafc228" title="Destructor. ">~CameraInterface</a>(); </div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="comment">/*!****************************************************************************************************************</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">    \brief      Initialises the capture session using the given hardware camera, if it is available.</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">    \brief      Initializes the capture session using the given hardware camera, if it is available.</span></div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">    \param[in]  eCamera       The hardware camera to attempt to stream from</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">    \param[in]  preferredResX,preferredResY If supported by the implementation, set a preferred resolution</span></div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">    \return     true if successful</span></div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">    ******************************************************************************************************************/</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1_camera_interface.html#a896b8ba0083d05b5fe668a4717b14590" title="Initialises the capture session using the given hardware camera, if it is available. ">initialiseSession</a>(<a class="code" href="namespacepvr_1_1_h_w_camera.html#a77929091f777ed468df6cb128dbfdb08">HWCamera::Enum</a> eCamera, <span class="keywordtype">int</span> preferredResX = 0, <span class="keywordtype">int</span> preferredResY = 0);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1_camera_interface.html#a6b87146861e45d21ab1ff4aa41fe2cd8" title="Initializes the capture session using the given hardware camera, if it is available. ">initializeSession</a>(<a class="code" href="namespacepvr_1_1_h_w_camera.html#a77929091f777ed468df6cb128dbfdb08">HWCamera::Enum</a> eCamera, <span class="keywordtype">int</span> preferredResX = 0, <span class="keywordtype">int</span> preferredResY = 0);</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="comment">/*!****************************************************************************************************************</span></div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">    \brief              Shutdown the AV capture session and release associated objects.</span></div>
@@ -174,7 +174,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment">              is not supported (e.g. iOS), this function will return false, and the getRgbTexture() function will</span></div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment">              return an empty (invalid) texture if used. See hasLumaChromaTextures(). In implementations where </span></div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">              RGB textures are supported (e.g. Android)  this function will return true and the getRgbTexture()</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">              will return a valid texture handle (if called after this interface was successfully initialised).</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment">              will return a valid texture handle (if called after this interface was successfully initialized).</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment">    ******************************************************************************************************************/</span></div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1_camera_interface.html#ac00b57938d955f8ae6e0f7220b2f4549" title="Query if this implementation supports a single RGB texture for the camera streaming interface...">hasRgbTexture</a>();</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>

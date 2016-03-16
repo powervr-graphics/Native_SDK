@@ -294,6 +294,5 @@ inline void getFileNameAndExtension(const std::string& fileAndExtension, std::st
 	filename.assign(fileAndExtension.begin(), fileAndExtension.begin() + position - 1);
 	extension.assign(fileAndExtension.begin() + position, fileAndExtension.end());
 }
-
 }
 }

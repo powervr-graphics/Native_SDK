@@ -10,8 +10,8 @@
 
 
 #if defined( _WIN32 )
-
-#include "windows.h"
+#include <windows.h>
+typedef HINSTANCE LIBTYPE;
 
 namespace pvr {
 namespace native {
@@ -63,6 +63,7 @@ void* GetLibFunction(LIBTYPE hLib, const char* pszName)
 
 #include <unistd.h>
 #include <dlfcn.h>
+typedef void* LIBTYPE;
 
 #if defined(__APPLE__)
 void* OpenFramework(const char* pszPath);
@@ -76,6 +77,8 @@ LIBTYPE OpenLibrary(const char* pszPath)
 }
 }
 #else
+typedef void* LIBTYPE;
+
 namespace pvr {
 namespace native {
 LIBTYPE OpenLibrary(const char* pszPath)
@@ -133,7 +136,7 @@ void* GetLibFunction(LIBTYPE hLib, const char* pszName)
 }
 }
 }
-#elif defined (__ANDROID__)
+#elif defined (ANDROID)
 
 #include <dlfcn.h>
 namespace pvr {
@@ -229,7 +232,7 @@ NativeLibrary::~NativeLibrary()
 void* NativeLibrary::getFunction(const char* pszName)
 {
 
-	void* pFn = GetLibFunction(m_hHostLib, pszName);
+	void* pFn = GetLibFunction((LIBTYPE)m_hHostLib, pszName);
 
 	if (pFn == NULL && m_disableErrorPrint == false)
 	{
@@ -244,7 +247,7 @@ void NativeLibrary::CloseLib()
 {
 	if (m_hHostLib)
 	{
-		CloseLibrary(m_hHostLib);
+		CloseLibrary((LIBTYPE)m_hHostLib);
 		m_hHostLib = 0;
 	}
 }

@@ -1,6 +1,0 @@
-<map id="pvr::api::impl::PipelineState" name="pvr::api::impl::PipelineState">
-<area shape="rect" id="node2" href="$classpvr_1_1api_1_1impl_1_1_compute_pipeline_impl_state.html" title="Base class for compute pipeline states. " alt="" coords="203,5,405,46"/>
-<area shape="rect" id="node4" href="$classpvr_1_1api_1_1impl_1_1_graphics_pipeline_impl_state.html" title="Base class for graphics pipeline state. " alt="" coords="227,70,381,111"/>
-<area shape="rect" id="node3" href="$classpvr_1_1api_1_1impl_1_1_compute_shader_program_state.html" title="ComputePipeline shader program state. " alt="" coords="454,5,650,46"/>
-<area shape="rect" id="node5" href="$classpvr_1_1api_1_1impl_1_1_graphics_shader_program_state.html" title="Pipeline graphics shader program state. " alt="" coords="475,70,629,111"/>
-</map>

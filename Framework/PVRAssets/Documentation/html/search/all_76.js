@@ -1,18 +1,16 @@
 var searchData=
 [
   ['variablename',['variableName',['../structpvr_1_1assets_1_1_effect_semantic.html#aa6a22c5fce0bc60e59483fcc8681bd5c',1,'pvr::assets::EffectSemantic']]],
-  ['vec2',['Vec2',['../namespacepvr_1_1assets_1_1_semantic_data_type.html#abdca3054ed51b45293edc3c641e0538ea43312e5d0c48ea566222106841a634d8',1,'pvr::assets::SemanticDataType']]],
-  ['vec3',['Vec3',['../namespacepvr_1_1assets_1_1_semantic_data_type.html#abdca3054ed51b45293edc3c641e0538ea4f0c8b4ced177dc91259686908bcc18b',1,'pvr::assets::SemanticDataType']]],
-  ['vec4',['Vec4',['../namespacepvr_1_1assets_1_1_semantic_data_type.html#abdca3054ed51b45293edc3c641e0538eab5f05191c7b20a780e86ed53e8a2e646',1,'pvr::assets::SemanticDataType']]],
   ['version',['Version',['../structpvr_1_1assets_1_1_p_f_x_parser_header.html#a37a3f2c8bcb737af28ba4ff9730e413a',1,'pvr::assets::PFXParserHeader']]],
   ['vertexattributecontainer',['VertexAttributeContainer',['../classpvr_1_1assets_1_1_mesh.html#a4722749d8d5bfa2c811074f83a109169',1,'pvr::assets::Mesh']]],
   ['vertexattributedata',['VertexAttributeData',['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html',1,'pvr::assets::Mesh']]],
-  ['vertexattributedata',['VertexAttributeData',['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#aa58043e55d7756f12fa87a2cadc21097',1,'pvr::assets::Mesh::VertexAttributeData::VertexAttributeData()'],['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a1c8c69607b6c8060514835e4b6d3b44f',1,'pvr::assets::Mesh::VertexAttributeData::VertexAttributeData(const StringHash &amp;semantic, DataType::Enum type, uint8 n, uint16 offset, uint16 dataIndex)'],['../namespacepvr_1_1assets.html#a0ef1a388bc5ac8fc4fe71b26b1dc9220',1,'pvr::assets::VertexAttributeData()']]],
+  ['vertexattributedata',['VertexAttributeData',['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#aa58043e55d7756f12fa87a2cadc21097',1,'pvr::assets::Mesh::VertexAttributeData::VertexAttributeData()'],['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#ad57c01004660e4fd9f3706830142d445',1,'pvr::assets::Mesh::VertexAttributeData::VertexAttributeData(const StringHash &amp;semantic, types::DataType::Enum type, uint8 n, uint16 offset, uint16 dataIndex)'],['../namespacepvr_1_1assets.html#a0ef1a388bc5ac8fc4fe71b26b1dc9220',1,'pvr::assets::VertexAttributeData()']]],
   ['vertexattributedatablocks',['vertexAttributeDataBlocks',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#a5d2f0580de35b72681aa664cf8e032b1',1,'pvr::assets::Mesh::InternalData']]],
+  ['vertexattributelayout',['VertexAttributeLayout',['../namespacepvr_1_1assets.html#a6a72c5660b793a75473fcb9903855755',1,'pvr::assets']]],
   ['vertexattributes',['vertexAttributes',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#a484f9a8fc8e5e346bd258286e05179ef',1,'pvr::assets::Mesh::InternalData']]],
   ['vertexcolor',['VertexColor',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a3a79754a16fbb21da443d99f1fbb150b',1,'pvr::assets::PVRShamanSemantics']]],
-  ['vertexindexread',['VertexIndexRead',['../namespacepvr.html#a2fbc7b5e7c2e0d9de50f87fb20d3e8f3',1,'pvr']]],
-  ['vertexread',['VertexRead',['../namespacepvr.html#ae64c4b2ee03bfd92fe49cd6d1752759f',1,'pvr']]],
+  ['vertexindexread',['VertexIndexRead',['../namespacepvr.html#a64d360bf7125db4ae1469b0c33b65997',1,'pvr']]],
+  ['vertexread',['VertexRead',['../namespacepvr.html#a856b2ca6b614bbd0efa417ce14f9b63b',1,'pvr']]],
   ['vertexshader',['vertexShader',['../structpvr_1_1assets_1_1_effect.html#ac981d0d7028f5f81e918aa24eb81db16',1,'pvr::assets::Effect']]],
   ['vertexshadername',['vertexShaderName',['../structpvr_1_1assets_1_1_pfx_parser_effect.html#a33fea7ea7a0af78a5969d7c5a444d56e',1,'pvr::assets::PfxParserEffect']]],
   ['view',['View',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926ae52a8e23e1d269f4add46d7cb30ab5ad',1,'pvr::assets::PVRShamanSemantics']]],
@@ -25,6 +23,6 @@ var searchData=
   ['viewprojection',['ViewProjection',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a3c4cd4c2ab46e95f56eb4ee2bd2dddd1',1,'pvr::assets::PVRShamanSemantics']]],
   ['viewprojectioni',['ViewProjectionI',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a251690f305cc95f4a7b57a288d7f500e',1,'pvr::assets::PVRShamanSemantics']]],
   ['viewprojectionit',['ViewProjectionIT',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a939ff3082a69ef3ee587be95dde02b58',1,'pvr::assets::PVRShamanSemantics']]],
-  ['viewtype',['viewType',['../structpvr_1_1assets_1_1_pfx_render_pass.html#af4b53de1ddab7f52c67c53fa3fcaf47d',1,'pvr::assets::PfxRenderPass']]],
+  ['viewtype',['viewType',['../structpvr_1_1assets_1_1_pfx_render_pass.html#af38ada6dc9d3dd1426e77468a2eb154a',1,'pvr::assets::PfxRenderPass']]],
   ['visible',['Visible',['../classpvr_1_1_shadow_volume.html#a26e4418ab016fa8dd0e2d2cea9b5a52eaeac5571bd351f6545e1ec4e9f48b62d6',1,'pvr::ShadowVolume']]]
 ];

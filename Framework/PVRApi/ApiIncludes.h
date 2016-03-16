@@ -13,4 +13,5 @@
 #include "PVRCore/Rectangle.h"
 #include "PVRCore/RefCounted.h"
 #include "PVRCore/StringFunctions.h"
+#include "PVRCore/ForwardDecApiObjects.h"
 #include <set>

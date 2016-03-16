@@ -36,7 +36,7 @@ private:
 
 	texture_tga::FileHeader m_fileHeader;
 
-	bool initialiseFile();
+	bool initializeFile();
 	bool readFileHeader(texture_tga::FileHeader& fileheader);
 	bool loadImageFromFile(Texture& asset);
 	bool loadIndexed(Texture& asset, uint32 bytesPerPaletteEntry, uint32 bytesPerDataEntry);

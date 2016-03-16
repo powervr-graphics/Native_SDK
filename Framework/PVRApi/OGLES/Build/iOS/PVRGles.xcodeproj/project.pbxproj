@@ -7,31 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0E1308681BD5283B0027D06D /* CommandBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E1308671BD5283B0027D06D /* CommandBuffer.cpp */; settings = {ASSET_TAGS = (); }; };
-		0E2879C01B16130000D59F63 /* ApiCommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879971B16130000D59F63 /* ApiCommands.cpp */; };
-		0E2879C11B16130000D59F63 /* ApiErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879991B16130000D59F63 /* ApiErrors.cpp */; };
-		0E2879C31B16130000D59F63 /* ConvertToApiTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879A01B16130000D59F63 /* ConvertToApiTypes.cpp */; };
-		0E2879C41B16130000D59F63 /* AssetStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879A11B16130000D59F63 /* AssetStore.cpp */; };
-		0E2879C51B16130000D59F63 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879A21B16130000D59F63 /* Buffer.cpp */; };
-		0E2879C71B16130000D59F63 /* EffectApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879A61B16130000D59F63 /* EffectApi.cpp */; };
-		0E2879C91B16130000D59F63 /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879A91B16130000D59F63 /* Fbo.cpp */; };
-		0E2879CA1B16130000D59F63 /* GpuCapabilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879AA1B16130000D59F63 /* GpuCapabilities.cpp */; };
-		0E2879CB1B16130000D59F63 /* GraphicsPipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879AB1B16130000D59F63 /* GraphicsPipeline.cpp */; };
-		0E2879CE1B16130000D59F63 /* NativeLibraryGlesNamespace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879B31B16130000D59F63 /* NativeLibraryGlesNamespace.cpp */; };
-		0E2879CF1B16130000D59F63 /* PipelineConfigStateCreateParam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879B51B16130000D59F63 /* PipelineConfigStateCreateParam.cpp */; };
-		0E2879D01B16130000D59F63 /* PipelineConfigStates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879B61B16130000D59F63 /* PipelineConfigStates.cpp */; };
-		0E2879D11B16130000D59F63 /* RenderPass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879B71B16130000D59F63 /* RenderPass.cpp */; };
-		0E2879D21B16130000D59F63 /* Sampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879B81B16130000D59F63 /* Sampler.cpp */; };
-		0E2879D31B16130000D59F63 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879B91B16130000D59F63 /* Shader.cpp */; };
-		0E2879D41B16130000D59F63 /* ShaderProgramState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879BA1B16130000D59F63 /* ShaderProgramState.cpp */; };
-		0E2879D61B16130000D59F63 /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879BC1B16130000D59F63 /* Texture.cpp */; };
-		0E2879D71B16130000D59F63 /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E2879BE1B16130000D59F63 /* TextureUtils.cpp */; };
-		0E65D45C1B395D77004D80D5 /* DescriptorTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E65D4591B395D77004D80D5 /* DescriptorTable.cpp */; };
-		0EB062841B28711A002A57C6 /* Context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0627E1B28711A002A57C6 /* Context.cpp */; };
-		0EB062911B28712C002A57C6 /* ComputePipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB062871B28712C002A57C6 /* ComputePipeline.cpp */; };
-		0EB062921B28712C002A57C6 /* ContextGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB062881B28712C002A57C6 /* ContextGles.cpp */; };
-		0EB062931B28712C002A57C6 /* ExtensionLoaderGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB0628A1B28712C002A57C6 /* ExtensionLoaderGles.cpp */; };
-		0EE12A711B8F500F006ACAEB /* ShaderUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EE12A6E1B8F500F006ACAEB /* ShaderUtils.cpp */; };
+		0E3AE6941C69F03F006FE386 /* ApiCommandsGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6721C69F03F006FE386 /* ApiCommandsGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6951C69F03F006FE386 /* AssetStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6731C69F03F006FE386 /* AssetStore.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6961C69F03F006FE386 /* BufferGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6751C69F03F006FE386 /* BufferGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6971C69F03F006FE386 /* CommandBufferGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6771C69F03F006FE386 /* CommandBufferGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6981C69F03F006FE386 /* CommandPoolGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6781C69F03F006FE386 /* CommandPoolGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6991C69F03F006FE386 /* ComputePipelineGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE67A1C69F03F006FE386 /* ComputePipelineGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE69A1C69F03F006FE386 /* ContextGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE67B1C69F03F006FE386 /* ContextGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE69B1C69F03F006FE386 /* DescriptorSetGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE67D1C69F03F006FE386 /* DescriptorSetGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE69C1C69F03F006FE386 /* EffectApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE67F1C69F03F006FE386 /* EffectApi.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE69D1C69F03F006FE386 /* FboGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6801C69F03F006FE386 /* FboGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE69E1C69F03F006FE386 /* GpuCapabilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6821C69F03F006FE386 /* GpuCapabilities.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE69F1C69F03F006FE386 /* GraphicsPipelineGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6831C69F03F006FE386 /* GraphicsPipelineGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6A01C69F03F006FE386 /* PipelineConfigStateCreateParam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6841C69F03F006FE386 /* PipelineConfigStateCreateParam.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6A11C69F03F006FE386 /* PipelineConfigStates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6851C69F03F006FE386 /* PipelineConfigStates.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6A21C69F03F006FE386 /* PipelineLayoutGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6871C69F03F006FE386 /* PipelineLayoutGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6A31C69F03F006FE386 /* RenderPassGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6891C69F03F006FE386 /* RenderPassGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6A41C69F03F006FE386 /* SamplerGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE68B1C69F03F006FE386 /* SamplerGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6A51C69F03F006FE386 /* ShaderGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE68D1C69F03F006FE386 /* ShaderGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6A61C69F03F006FE386 /* Sync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6901C69F03F006FE386 /* Sync.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6A71C69F03F006FE386 /* TextureGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6911C69F03F006FE386 /* TextureGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6A81C69F03F006FE386 /* TextureUtilsGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6931C69F03F006FE386 /* TextureUtilsGles.cpp */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,82 +43,67 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0E1308671BD5283B0027D06D /* CommandBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandBuffer.cpp; path = ../../CommandBuffer.cpp; sourceTree = "<group>"; };
-		0E2879971B16130000D59F63 /* ApiCommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ApiCommands.cpp; path = ../../ApiCommands.cpp; sourceTree = "<group>"; };
-		0E2879991B16130000D59F63 /* ApiErrors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ApiErrors.cpp; path = ../../ApiErrors.cpp; sourceTree = "<group>"; };
-		0E28799B1B16130000D59F63 /* ApiGles2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiGles2.h; path = ../../ApiGles2.h; sourceTree = "<group>"; };
-		0E28799C1B16130000D59F63 /* ApiGles3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiGles3.h; path = ../../ApiGles3.h; sourceTree = "<group>"; };
-		0E28799D1B16130000D59F63 /* ApiGles31.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiGles31.h; path = ../../ApiGles31.h; sourceTree = "<group>"; };
-		0E28799E1B16130000D59F63 /* ApiGlesExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiGlesExt.h; path = ../../ApiGlesExt.h; sourceTree = "<group>"; };
-		0E2879A01B16130000D59F63 /* ConvertToApiTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ConvertToApiTypes.cpp; path = ../../ConvertToApiTypes.cpp; sourceTree = "<group>"; };
-		0E2879A11B16130000D59F63 /* AssetStore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetStore.cpp; path = ../../AssetStore.cpp; sourceTree = "<group>"; };
-		0E2879A21B16130000D59F63 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Buffer.cpp; path = ../../Buffer.cpp; sourceTree = "<group>"; };
-		0E2879A51B16130000D59F63 /* ConvertToApiTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConvertToApiTypes.h; path = ../../ConvertToApiTypes.h; sourceTree = "<group>"; };
-		0E2879A61B16130000D59F63 /* EffectApi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EffectApi.cpp; path = ../../EffectApi.cpp; sourceTree = "<group>"; };
-		0E2879A91B16130000D59F63 /* Fbo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Fbo.cpp; path = ../../Fbo.cpp; sourceTree = "<group>"; };
-		0E2879AA1B16130000D59F63 /* GpuCapabilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GpuCapabilities.cpp; path = ../../GpuCapabilities.cpp; sourceTree = "<group>"; };
-		0E2879AB1B16130000D59F63 /* GraphicsPipeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GraphicsPipeline.cpp; path = ../../GraphicsPipeline.cpp; sourceTree = "<group>"; };
-		0E2879AC1B16130000D59F63 /* OpenGLESBindings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenGLESBindings.h; path = ../../OpenGLESBindings.h; sourceTree = "<group>"; };
-		0E2879AD1B16130000D59F63 /* OpenGLESHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenGLESHeaders.h; path = ../../OpenGLESHeaders.h; sourceTree = "<group>"; };
-		0E2879B31B16130000D59F63 /* NativeLibraryGlesNamespace.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeLibraryGlesNamespace.cpp; path = ../../NativeLibraryGlesNamespace.cpp; sourceTree = "<group>"; };
-		0E2879B41B16130000D59F63 /* NativeLibraryGlesNamespace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeLibraryGlesNamespace.h; path = ../../NativeLibraryGlesNamespace.h; sourceTree = "<group>"; };
-		0E2879B51B16130000D59F63 /* PipelineConfigStateCreateParam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PipelineConfigStateCreateParam.cpp; path = ../../PipelineConfigStateCreateParam.cpp; sourceTree = "<group>"; };
-		0E2879B61B16130000D59F63 /* PipelineConfigStates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PipelineConfigStates.cpp; path = ../../PipelineConfigStates.cpp; sourceTree = "<group>"; };
-		0E2879B71B16130000D59F63 /* RenderPass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderPass.cpp; path = ../../RenderPass.cpp; sourceTree = "<group>"; };
-		0E2879B81B16130000D59F63 /* Sampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sampler.cpp; path = ../../Sampler.cpp; sourceTree = "<group>"; };
-		0E2879B91B16130000D59F63 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Shader.cpp; path = ../../Shader.cpp; sourceTree = "<group>"; };
-		0E2879BA1B16130000D59F63 /* ShaderProgramState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderProgramState.cpp; path = ../../ShaderProgramState.cpp; sourceTree = "<group>"; };
-		0E2879BC1B16130000D59F63 /* Texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Texture.cpp; path = ../../Texture.cpp; sourceTree = "<group>"; };
-		0E2879BD1B16130000D59F63 /* TextureFormats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureFormats.h; path = ../../TextureFormats.h; sourceTree = "<group>"; };
-		0E2879BE1B16130000D59F63 /* TextureUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureUtils.cpp; path = ../../TextureUtils.cpp; sourceTree = "<group>"; };
+		0E3AE6701C69F03F006FE386 /* ApiCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiCommand.h; path = ../../ApiCommand.h; sourceTree = "<group>"; };
+		0E3AE6711C69F03F006FE386 /* ApiCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiCommands.h; path = ../../ApiCommands.h; sourceTree = "<group>"; };
+		0E3AE6721C69F03F006FE386 /* ApiCommandsGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ApiCommandsGles.cpp; path = ../../ApiCommandsGles.cpp; sourceTree = "<group>"; };
+		0E3AE6731C69F03F006FE386 /* AssetStore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetStore.cpp; path = ../../AssetStore.cpp; sourceTree = "<group>"; };
+		0E3AE6741C69F03F006FE386 /* Bindables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bindables.h; path = ../../Bindables.h; sourceTree = "<group>"; };
+		0E3AE6751C69F03F006FE386 /* BufferGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BufferGles.cpp; path = ../../BufferGles.cpp; sourceTree = "<group>"; };
+		0E3AE6761C69F03F006FE386 /* BufferGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BufferGles.h; path = ../../BufferGles.h; sourceTree = "<group>"; };
+		0E3AE6771C69F03F006FE386 /* CommandBufferGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandBufferGles.cpp; path = ../../CommandBufferGles.cpp; sourceTree = "<group>"; };
+		0E3AE6781C69F03F006FE386 /* CommandPoolGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CommandPoolGles.cpp; path = ../../CommandPoolGles.cpp; sourceTree = "<group>"; };
+		0E3AE6791C69F03F006FE386 /* CommandPoolGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandPoolGles.h; path = ../../CommandPoolGles.h; sourceTree = "<group>"; };
+		0E3AE67A1C69F03F006FE386 /* ComputePipelineGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ComputePipelineGles.cpp; path = ../../ComputePipelineGles.cpp; sourceTree = "<group>"; };
+		0E3AE67B1C69F03F006FE386 /* ContextGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ContextGles.cpp; path = ../../ContextGles.cpp; sourceTree = "<group>"; };
+		0E3AE67C1C69F03F006FE386 /* ContextGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContextGles.h; path = ../../ContextGles.h; sourceTree = "<group>"; };
+		0E3AE67D1C69F03F006FE386 /* DescriptorSetGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DescriptorSetGles.cpp; path = ../../DescriptorSetGles.cpp; sourceTree = "<group>"; };
+		0E3AE67E1C69F03F006FE386 /* DescriptorSetGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DescriptorSetGles.h; path = ../../DescriptorSetGles.h; sourceTree = "<group>"; };
+		0E3AE67F1C69F03F006FE386 /* EffectApi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EffectApi.cpp; path = ../../EffectApi.cpp; sourceTree = "<group>"; };
+		0E3AE6801C69F03F006FE386 /* FboGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FboGles.cpp; path = ../../FboGles.cpp; sourceTree = "<group>"; };
+		0E3AE6811C69F03F006FE386 /* FboGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FboGles.h; path = ../../FboGles.h; sourceTree = "<group>"; };
+		0E3AE6821C69F03F006FE386 /* GpuCapabilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GpuCapabilities.cpp; path = ../../GpuCapabilities.cpp; sourceTree = "<group>"; };
+		0E3AE6831C69F03F006FE386 /* GraphicsPipelineGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GraphicsPipelineGles.cpp; path = ../../GraphicsPipelineGles.cpp; sourceTree = "<group>"; };
+		0E3AE6841C69F03F006FE386 /* PipelineConfigStateCreateParam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PipelineConfigStateCreateParam.cpp; path = ../../PipelineConfigStateCreateParam.cpp; sourceTree = "<group>"; };
+		0E3AE6851C69F03F006FE386 /* PipelineConfigStates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PipelineConfigStates.cpp; path = ../../PipelineConfigStates.cpp; sourceTree = "<group>"; };
+		0E3AE6861C69F03F006FE386 /* PipelineConfigStatesGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PipelineConfigStatesGles.h; path = ../../PipelineConfigStatesGles.h; sourceTree = "<group>"; };
+		0E3AE6871C69F03F006FE386 /* PipelineLayoutGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PipelineLayoutGles.cpp; path = ../../PipelineLayoutGles.cpp; sourceTree = "<group>"; };
+		0E3AE6881C69F03F006FE386 /* PipelineLayoutGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PipelineLayoutGles.h; path = ../../PipelineLayoutGles.h; sourceTree = "<group>"; };
+		0E3AE6891C69F03F006FE386 /* RenderPassGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderPassGles.cpp; path = ../../RenderPassGles.cpp; sourceTree = "<group>"; };
+		0E3AE68A1C69F03F006FE386 /* RenderPassGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderPassGles.h; path = ../../RenderPassGles.h; sourceTree = "<group>"; };
+		0E3AE68B1C69F03F006FE386 /* SamplerGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SamplerGles.cpp; path = ../../SamplerGles.cpp; sourceTree = "<group>"; };
+		0E3AE68C1C69F03F006FE386 /* SamplerGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SamplerGles.h; path = ../../SamplerGles.h; sourceTree = "<group>"; };
+		0E3AE68D1C69F03F006FE386 /* ShaderGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderGles.cpp; path = ../../ShaderGles.cpp; sourceTree = "<group>"; };
+		0E3AE68E1C69F03F006FE386 /* ShaderGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderGles.h; path = ../../ShaderGles.h; sourceTree = "<group>"; };
+		0E3AE68F1C69F03F006FE386 /* StateContainerGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StateContainerGles.h; path = ../../StateContainerGles.h; sourceTree = "<group>"; };
+		0E3AE6901C69F03F006FE386 /* Sync.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sync.cpp; path = ../../Sync.cpp; sourceTree = "<group>"; };
+		0E3AE6911C69F03F006FE386 /* TextureGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureGles.cpp; path = ../../TextureGles.cpp; sourceTree = "<group>"; };
+		0E3AE6921C69F03F006FE386 /* TextureGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureGles.h; path = ../../TextureGles.h; sourceTree = "<group>"; };
+		0E3AE6931C69F03F006FE386 /* TextureUtilsGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureUtilsGles.cpp; path = ../../TextureUtilsGles.cpp; sourceTree = "<group>"; };
+		0E3AE6A91C69F054006FE386 /* Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Api.h; path = ../../../Api.h; sourceTree = "<group>"; };
+		0E3AE6AA1C69F054006FE386 /* ApiIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiIncludes.h; path = ../../../ApiIncludes.h; sourceTree = "<group>"; };
+		0E3AE6AB1C69F054006FE386 /* ApiObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiObjects.h; path = ../../../ApiObjects.h; sourceTree = "<group>"; };
+		0E3AE6AC1C69F054006FE386 /* AssetStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetStore.h; path = ../../../AssetStore.h; sourceTree = "<group>"; };
+		0E3AE6AD1C69F054006FE386 /* AssetUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetUtils.h; path = ../../../AssetUtils.h; sourceTree = "<group>"; };
+		0E3AE6AE1C69F054006FE386 /* EffectApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EffectApi.h; path = ../../../EffectApi.h; sourceTree = "<group>"; };
+		0E3AE6AF1C69F054006FE386 /* GpuCapabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GpuCapabilities.h; path = ../../../GpuCapabilities.h; sourceTree = "<group>"; };
+		0E3AE6B01C69F054006FE386 /* PVRApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRApi.h; path = ../../../PVRApi.h; sourceTree = "<group>"; };
+		0E3AE6B11C69F054006FE386 /* TextureUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureUtils.h; path = ../../../TextureUtils.h; sourceTree = "<group>"; };
+		0E3AE6B21C69F05F006FE386 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Buffer.h; path = ../../../ApiObjects/Buffer.h; sourceTree = "<group>"; };
+		0E3AE6B31C69F05F006FE386 /* CommandBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandBuffer.h; path = ../../../ApiObjects/CommandBuffer.h; sourceTree = "<group>"; };
+		0E3AE6B41C69F05F006FE386 /* CommandPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandPool.h; path = ../../../ApiObjects/CommandPool.h; sourceTree = "<group>"; };
+		0E3AE6B51C69F05F006FE386 /* ComputePipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComputePipeline.h; path = ../../../ApiObjects/ComputePipeline.h; sourceTree = "<group>"; };
+		0E3AE6B61C69F05F006FE386 /* DescriptorSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DescriptorSet.h; path = ../../../ApiObjects/DescriptorSet.h; sourceTree = "<group>"; };
+		0E3AE6B71C69F05F006FE386 /* Fbo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Fbo.h; path = ../../../ApiObjects/Fbo.h; sourceTree = "<group>"; };
+		0E3AE6B81C69F05F006FE386 /* GraphicsPipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GraphicsPipeline.h; path = ../../../ApiObjects/GraphicsPipeline.h; sourceTree = "<group>"; };
+		0E3AE6B91C69F05F006FE386 /* PipelineConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PipelineConfig.h; path = ../../../ApiObjects/PipelineConfig.h; sourceTree = "<group>"; };
+		0E3AE6BA1C69F05F006FE386 /* PipelineLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PipelineLayout.h; path = ../../../ApiObjects/PipelineLayout.h; sourceTree = "<group>"; };
+		0E3AE6BC1C69F05F006FE386 /* RenderPass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderPass.h; path = ../../../ApiObjects/RenderPass.h; sourceTree = "<group>"; };
+		0E3AE6BD1C69F05F006FE386 /* Sampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sampler.h; path = ../../../ApiObjects/Sampler.h; sourceTree = "<group>"; };
+		0E3AE6BE1C69F05F006FE386 /* Shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Shader.h; path = ../../../ApiObjects/Shader.h; sourceTree = "<group>"; };
+		0E3AE6BF1C69F05F006FE386 /* Sync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sync.h; path = ../../../ApiObjects/Sync.h; sourceTree = "<group>"; };
+		0E3AE6C01C69F05F006FE386 /* Texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Texture.h; path = ../../../ApiObjects/Texture.h; sourceTree = "<group>"; };
 		0E47C6FC1AC03C1C0021937F /* libPVRGles.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVRGles.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E65D4591B395D77004D80D5 /* DescriptorTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DescriptorTable.cpp; path = ../../DescriptorTable.cpp; sourceTree = "<group>"; };
-		0E9D42811BB0110C00980320 /* ShaderUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderUtils.h; path = ../../../ShaderUtils.h; sourceTree = "<group>"; };
-		0E9D42821BB0112600980320 /* BufferGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BufferGles.h; path = ../../BufferGles.h; sourceTree = "<group>"; };
-		0E9D42831BB0113900980320 /* DescriptorTableGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DescriptorTableGles.h; path = ../../DescriptorTableGles.h; sourceTree = "<group>"; };
-		0E9D42851BB0113900980320 /* NativeObjectsGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeObjectsGles.h; path = ../../NativeObjectsGles.h; sourceTree = "<group>"; };
-		0E9D42871BB0115100980320 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Buffer.h; path = ../../../ApiObjects/Buffer.h; sourceTree = "<group>"; };
-		0E9D42881BB0115100980320 /* CommandBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandBuffer.h; path = ../../../ApiObjects/CommandBuffer.h; sourceTree = "<group>"; };
-		0E9D42891BB0115100980320 /* ComputePipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComputePipeline.h; path = ../../../ApiObjects/ComputePipeline.h; sourceTree = "<group>"; };
-		0E9D428A1BB0115100980320 /* ComputeStateCreateParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComputeStateCreateParam.h; path = ../../../ApiObjects/ComputeStateCreateParam.h; sourceTree = "<group>"; };
-		0E9D428B1BB0115100980320 /* DescriptorTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DescriptorTable.h; path = ../../../ApiObjects/DescriptorTable.h; sourceTree = "<group>"; };
-		0E9D428E1BB0115100980320 /* Fbo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Fbo.h; path = ../../../ApiObjects/Fbo.h; sourceTree = "<group>"; };
-		0E9D428F1BB0115100980320 /* FboCreateParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FboCreateParam.h; path = ../../../ApiObjects/FboCreateParam.h; sourceTree = "<group>"; };
-		0E9D42911BB0115100980320 /* GraphicsPipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GraphicsPipeline.h; path = ../../../ApiObjects/GraphicsPipeline.h; sourceTree = "<group>"; };
-		0E9D42921BB0115100980320 /* GraphicsStateCreateParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GraphicsStateCreateParam.h; path = ../../../ApiObjects/GraphicsStateCreateParam.h; sourceTree = "<group>"; };
-		0E9D42931BB0115100980320 /* PipelineConfigStateCreateParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PipelineConfigStateCreateParam.h; path = ../../../ApiObjects/PipelineConfigStateCreateParam.h; sourceTree = "<group>"; };
-		0E9D42941BB0115100980320 /* PipelineConfigStates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PipelineConfigStates.h; path = ../../../ApiObjects/PipelineConfigStates.h; sourceTree = "<group>"; };
-		0E9D42951BB0115100980320 /* PipelineState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PipelineState.h; path = ../../../ApiObjects/PipelineState.h; sourceTree = "<group>"; };
-		0E9D42961BB0115100980320 /* PipelineStateCreateParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PipelineStateCreateParam.h; path = ../../../ApiObjects/PipelineStateCreateParam.h; sourceTree = "<group>"; };
-		0E9D42971BB0115100980320 /* RenderPass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderPass.h; path = ../../../ApiObjects/RenderPass.h; sourceTree = "<group>"; };
-		0E9D42981BB0115100980320 /* Sampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sampler.h; path = ../../../ApiObjects/Sampler.h; sourceTree = "<group>"; };
-		0E9D42991BB0115100980320 /* Shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Shader.h; path = ../../../ApiObjects/Shader.h; sourceTree = "<group>"; };
-		0E9D429A1BB0115100980320 /* ShaderProgramState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderProgramState.h; path = ../../../ApiObjects/ShaderProgramState.h; sourceTree = "<group>"; };
-		0E9D429B1BB0115100980320 /* Texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Texture.h; path = ../../../ApiObjects/Texture.h; sourceTree = "<group>"; };
-		0EB062751B28711A002A57C6 /* Api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Api.h; path = ../../../Api.h; sourceTree = "<group>"; };
-		0EB062761B28711A002A57C6 /* ApiCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiCommand.h; path = ../../../ApiCommand.h; sourceTree = "<group>"; };
-		0EB062771B28711A002A57C6 /* ApiCommands.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiCommands.h; path = ../../../ApiCommands.h; sourceTree = "<group>"; };
-		0EB062781B28711A002A57C6 /* ApiErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiErrors.h; path = ../../../ApiErrors.h; sourceTree = "<group>"; };
-		0EB062791B28711A002A57C6 /* ApiObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiObjects.h; path = ../../../ApiObjects.h; sourceTree = "<group>"; };
-		0EB0627A1B28711A002A57C6 /* ApiObjectTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiObjectTypes.h; path = ../../../ApiObjectTypes.h; sourceTree = "<group>"; };
-		0EB0627B1B28711A002A57C6 /* AssetStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetStore.h; path = ../../../AssetStore.h; sourceTree = "<group>"; };
-		0EB0627C1B28711A002A57C6 /* AssetUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetUtils.h; path = ../../../AssetUtils.h; sourceTree = "<group>"; };
-		0EB0627D1B28711A002A57C6 /* Bindables.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bindables.h; path = ../../../Bindables.h; sourceTree = "<group>"; };
-		0EB0627E1B28711A002A57C6 /* Context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Context.cpp; path = ../../../Context.cpp; sourceTree = "<group>"; };
-		0EB062801B28711A002A57C6 /* EffectApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EffectApi.h; path = ../../../EffectApi.h; sourceTree = "<group>"; };
-		0EB062811B28711A002A57C6 /* GpuCapabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GpuCapabilities.h; path = ../../../GpuCapabilities.h; sourceTree = "<group>"; };
-		0EB062831B28711A002A57C6 /* ApiIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiIncludes.h; path = ../../../ApiIncludes.h; sourceTree = "<group>"; };
-		0EB062871B28712C002A57C6 /* ComputePipeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ComputePipeline.cpp; path = ../../ComputePipeline.cpp; sourceTree = "<group>"; };
-		0EB062881B28712C002A57C6 /* ContextGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ContextGles.cpp; path = ../../ContextGles.cpp; sourceTree = "<group>"; };
-		0EB062891B28712C002A57C6 /* ContextGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContextGles.h; path = ../../ContextGles.h; sourceTree = "<group>"; };
-		0EB0628A1B28712C002A57C6 /* ExtensionLoaderGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExtensionLoaderGles.cpp; path = ../../ExtensionLoaderGles.cpp; sourceTree = "<group>"; };
-		0EB0628B1B28712C002A57C6 /* ExtensionLoaderGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtensionLoaderGles.h; path = ../../ExtensionLoaderGles.h; sourceTree = "<group>"; };
-		0EB0628C1B28712C002A57C6 /* FboGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FboGles.h; path = ../../FboGles.h; sourceTree = "<group>"; };
-		0EB0628D1B28712C002A57C6 /* GraphicsStateContainerGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GraphicsStateContainerGles.h; path = ../../GraphicsStateContainerGles.h; sourceTree = "<group>"; };
-		0EB062901B28712C002A57C6 /* TextureUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureUtils.h; path = ../../TextureUtils.h; sourceTree = "<group>"; };
-		0EE12A6D1B8F500F006ACAEB /* ShaderGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderGles.h; path = ../../ShaderGles.h; sourceTree = "<group>"; };
-		0EE12A6E1B8F500F006ACAEB /* ShaderUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderUtils.cpp; path = ../../ShaderUtils.cpp; sourceTree = "<group>"; };
-		0EE12A701B8F500F006ACAEB /* TextureGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureGles.h; path = ../../TextureGles.h; sourceTree = "<group>"; };
+		0E5543551C916986007DFD73 /* StructuredMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StructuredMemory.h; path = ../../../StructuredMemory.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,81 +120,66 @@
 		0E45AA6F1AC95E6900EDDE96 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				0EB062751B28711A002A57C6 /* Api.h */,
-				0EB062761B28711A002A57C6 /* ApiCommand.h */,
-				0E2879971B16130000D59F63 /* ApiCommands.cpp */,
-				0EB062771B28711A002A57C6 /* ApiCommands.h */,
-				0E2879991B16130000D59F63 /* ApiErrors.cpp */,
-				0EB062781B28711A002A57C6 /* ApiErrors.h */,
-				0E28799B1B16130000D59F63 /* ApiGles2.h */,
-				0E28799C1B16130000D59F63 /* ApiGles3.h */,
-				0E28799D1B16130000D59F63 /* ApiGles31.h */,
-				0E28799E1B16130000D59F63 /* ApiGlesExt.h */,
-				0EB062831B28711A002A57C6 /* ApiIncludes.h */,
-				0EB062791B28711A002A57C6 /* ApiObjects.h */,
-				0EB0627A1B28711A002A57C6 /* ApiObjectTypes.h */,
-				0E2879A11B16130000D59F63 /* AssetStore.cpp */,
-				0EB0627B1B28711A002A57C6 /* AssetStore.h */,
-				0EB0627C1B28711A002A57C6 /* AssetUtils.h */,
-				0EB0627D1B28711A002A57C6 /* Bindables.h */,
-				0E2879A21B16130000D59F63 /* Buffer.cpp */,
-				0E9D42871BB0115100980320 /* Buffer.h */,
-				0E9D42821BB0112600980320 /* BufferGles.h */,
-				0E1308671BD5283B0027D06D /* CommandBuffer.cpp */,
-				0E9D42881BB0115100980320 /* CommandBuffer.h */,
-				0EB062871B28712C002A57C6 /* ComputePipeline.cpp */,
-				0E9D42891BB0115100980320 /* ComputePipeline.h */,
-				0E9D428A1BB0115100980320 /* ComputeStateCreateParam.h */,
-				0EB0627E1B28711A002A57C6 /* Context.cpp */,
-				0EB062881B28712C002A57C6 /* ContextGles.cpp */,
-				0EB062891B28712C002A57C6 /* ContextGles.h */,
-				0E2879A01B16130000D59F63 /* ConvertToApiTypes.cpp */,
-				0E2879A51B16130000D59F63 /* ConvertToApiTypes.h */,
-				0E65D4591B395D77004D80D5 /* DescriptorTable.cpp */,
-				0E9D428B1BB0115100980320 /* DescriptorTable.h */,
-				0E9D42831BB0113900980320 /* DescriptorTableGles.h */,
-				0E2879A61B16130000D59F63 /* EffectApi.cpp */,
-				0EB062801B28711A002A57C6 /* EffectApi.h */,
-				0EB0628A1B28712C002A57C6 /* ExtensionLoaderGles.cpp */,
-				0EB0628B1B28712C002A57C6 /* ExtensionLoaderGles.h */,
-				0E2879A91B16130000D59F63 /* Fbo.cpp */,
-				0E9D428E1BB0115100980320 /* Fbo.h */,
-				0E9D428F1BB0115100980320 /* FboCreateParam.h */,
-				0EB0628C1B28712C002A57C6 /* FboGles.h */,
-				0E2879AA1B16130000D59F63 /* GpuCapabilities.cpp */,
-				0EB062811B28711A002A57C6 /* GpuCapabilities.h */,
-				0E2879AB1B16130000D59F63 /* GraphicsPipeline.cpp */,
-				0E9D42911BB0115100980320 /* GraphicsPipeline.h */,
-				0EB0628D1B28712C002A57C6 /* GraphicsStateContainerGles.h */,
-				0E9D42921BB0115100980320 /* GraphicsStateCreateParam.h */,
-				0E2879B31B16130000D59F63 /* NativeLibraryGlesNamespace.cpp */,
-				0E2879B41B16130000D59F63 /* NativeLibraryGlesNamespace.h */,
-				0E9D42851BB0113900980320 /* NativeObjectsGles.h */,
-				0E2879AC1B16130000D59F63 /* OpenGLESBindings.h */,
-				0E2879AD1B16130000D59F63 /* OpenGLESHeaders.h */,
-				0E2879B51B16130000D59F63 /* PipelineConfigStateCreateParam.cpp */,
-				0E9D42931BB0115100980320 /* PipelineConfigStateCreateParam.h */,
-				0E2879B61B16130000D59F63 /* PipelineConfigStates.cpp */,
-				0E9D42941BB0115100980320 /* PipelineConfigStates.h */,
-				0E9D42951BB0115100980320 /* PipelineState.h */,
-				0E9D42961BB0115100980320 /* PipelineStateCreateParam.h */,
-				0E2879B71B16130000D59F63 /* RenderPass.cpp */,
-				0E9D42971BB0115100980320 /* RenderPass.h */,
-				0E2879B81B16130000D59F63 /* Sampler.cpp */,
-				0E9D42981BB0115100980320 /* Sampler.h */,
-				0E2879B91B16130000D59F63 /* Shader.cpp */,
-				0E9D42991BB0115100980320 /* Shader.h */,
-				0EE12A6D1B8F500F006ACAEB /* ShaderGles.h */,
-				0E2879BA1B16130000D59F63 /* ShaderProgramState.cpp */,
-				0E9D429A1BB0115100980320 /* ShaderProgramState.h */,
-				0EE12A6E1B8F500F006ACAEB /* ShaderUtils.cpp */,
-				0E9D42811BB0110C00980320 /* ShaderUtils.h */,
-				0E2879BC1B16130000D59F63 /* Texture.cpp */,
-				0E9D429B1BB0115100980320 /* Texture.h */,
-				0E2879BD1B16130000D59F63 /* TextureFormats.h */,
-				0EE12A701B8F500F006ACAEB /* TextureGles.h */,
-				0E2879BE1B16130000D59F63 /* TextureUtils.cpp */,
-				0EB062901B28712C002A57C6 /* TextureUtils.h */,
+				0E5543551C916986007DFD73 /* StructuredMemory.h */,
+				0E3AE6B21C69F05F006FE386 /* Buffer.h */,
+				0E3AE6B31C69F05F006FE386 /* CommandBuffer.h */,
+				0E3AE6B41C69F05F006FE386 /* CommandPool.h */,
+				0E3AE6B51C69F05F006FE386 /* ComputePipeline.h */,
+				0E3AE6B61C69F05F006FE386 /* DescriptorSet.h */,
+				0E3AE6B71C69F05F006FE386 /* Fbo.h */,
+				0E3AE6B81C69F05F006FE386 /* GraphicsPipeline.h */,
+				0E3AE6B91C69F05F006FE386 /* PipelineConfig.h */,
+				0E3AE6BA1C69F05F006FE386 /* PipelineLayout.h */,
+				0E3AE6BC1C69F05F006FE386 /* RenderPass.h */,
+				0E3AE6BD1C69F05F006FE386 /* Sampler.h */,
+				0E3AE6BE1C69F05F006FE386 /* Shader.h */,
+				0E3AE6BF1C69F05F006FE386 /* Sync.h */,
+				0E3AE6C01C69F05F006FE386 /* Texture.h */,
+				0E3AE6A91C69F054006FE386 /* Api.h */,
+				0E3AE6AA1C69F054006FE386 /* ApiIncludes.h */,
+				0E3AE6AB1C69F054006FE386 /* ApiObjects.h */,
+				0E3AE6AC1C69F054006FE386 /* AssetStore.h */,
+				0E3AE6AD1C69F054006FE386 /* AssetUtils.h */,
+				0E3AE6AE1C69F054006FE386 /* EffectApi.h */,
+				0E3AE6AF1C69F054006FE386 /* GpuCapabilities.h */,
+				0E3AE6B01C69F054006FE386 /* PVRApi.h */,
+				0E3AE6B11C69F054006FE386 /* TextureUtils.h */,
+				0E3AE6701C69F03F006FE386 /* ApiCommand.h */,
+				0E3AE6711C69F03F006FE386 /* ApiCommands.h */,
+				0E3AE6721C69F03F006FE386 /* ApiCommandsGles.cpp */,
+				0E3AE6731C69F03F006FE386 /* AssetStore.cpp */,
+				0E3AE6741C69F03F006FE386 /* Bindables.h */,
+				0E3AE6751C69F03F006FE386 /* BufferGles.cpp */,
+				0E3AE6761C69F03F006FE386 /* BufferGles.h */,
+				0E3AE6771C69F03F006FE386 /* CommandBufferGles.cpp */,
+				0E3AE6781C69F03F006FE386 /* CommandPoolGles.cpp */,
+				0E3AE6791C69F03F006FE386 /* CommandPoolGles.h */,
+				0E3AE67A1C69F03F006FE386 /* ComputePipelineGles.cpp */,
+				0E3AE67B1C69F03F006FE386 /* ContextGles.cpp */,
+				0E3AE67C1C69F03F006FE386 /* ContextGles.h */,
+				0E3AE67D1C69F03F006FE386 /* DescriptorSetGles.cpp */,
+				0E3AE67E1C69F03F006FE386 /* DescriptorSetGles.h */,
+				0E3AE67F1C69F03F006FE386 /* EffectApi.cpp */,
+				0E3AE6801C69F03F006FE386 /* FboGles.cpp */,
+				0E3AE6811C69F03F006FE386 /* FboGles.h */,
+				0E3AE6821C69F03F006FE386 /* GpuCapabilities.cpp */,
+				0E3AE6831C69F03F006FE386 /* GraphicsPipelineGles.cpp */,
+				0E3AE6841C69F03F006FE386 /* PipelineConfigStateCreateParam.cpp */,
+				0E3AE6851C69F03F006FE386 /* PipelineConfigStates.cpp */,
+				0E3AE6861C69F03F006FE386 /* PipelineConfigStatesGles.h */,
+				0E3AE6871C69F03F006FE386 /* PipelineLayoutGles.cpp */,
+				0E3AE6881C69F03F006FE386 /* PipelineLayoutGles.h */,
+				0E3AE6891C69F03F006FE386 /* RenderPassGles.cpp */,
+				0E3AE68A1C69F03F006FE386 /* RenderPassGles.h */,
+				0E3AE68B1C69F03F006FE386 /* SamplerGles.cpp */,
+				0E3AE68C1C69F03F006FE386 /* SamplerGles.h */,
+				0E3AE68D1C69F03F006FE386 /* ShaderGles.cpp */,
+				0E3AE68E1C69F03F006FE386 /* ShaderGles.h */,
+				0E3AE68F1C69F03F006FE386 /* StateContainerGles.h */,
+				0E3AE6901C69F03F006FE386 /* Sync.cpp */,
+				0E3AE6911C69F03F006FE386 /* TextureGles.cpp */,
+				0E3AE6921C69F03F006FE386 /* TextureGles.h */,
+				0E3AE6931C69F03F006FE386 /* TextureUtilsGles.cpp */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -268,7 +234,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 0E47C6F71AC03C1C0021937F /* Build configuration list for PBXProject "PVRGLES" */;
+			buildConfigurationList = 0E47C6F71AC03C1C0021937F /* Build configuration list for PBXProject "PVRGles" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -290,31 +256,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E65D45C1B395D77004D80D5 /* DescriptorTable.cpp in Sources */,
-				0EB062921B28712C002A57C6 /* ContextGles.cpp in Sources */,
-				0E2879C31B16130000D59F63 /* ConvertToApiTypes.cpp in Sources */,
-				0E2879C51B16130000D59F63 /* Buffer.cpp in Sources */,
-				0E2879C91B16130000D59F63 /* Fbo.cpp in Sources */,
-				0E2879D01B16130000D59F63 /* PipelineConfigStates.cpp in Sources */,
-				0E2879CB1B16130000D59F63 /* GraphicsPipeline.cpp in Sources */,
-				0E2879CE1B16130000D59F63 /* NativeLibraryGlesNamespace.cpp in Sources */,
-				0EB062931B28712C002A57C6 /* ExtensionLoaderGles.cpp in Sources */,
-				0E2879D61B16130000D59F63 /* Texture.cpp in Sources */,
-				0E2879C41B16130000D59F63 /* AssetStore.cpp in Sources */,
-				0E2879D71B16130000D59F63 /* TextureUtils.cpp in Sources */,
-				0E2879CF1B16130000D59F63 /* PipelineConfigStateCreateParam.cpp in Sources */,
-				0E2879D21B16130000D59F63 /* Sampler.cpp in Sources */,
-				0E2879C01B16130000D59F63 /* ApiCommands.cpp in Sources */,
-				0EB062841B28711A002A57C6 /* Context.cpp in Sources */,
-				0E2879D11B16130000D59F63 /* RenderPass.cpp in Sources */,
-				0E2879D31B16130000D59F63 /* Shader.cpp in Sources */,
-				0EE12A711B8F500F006ACAEB /* ShaderUtils.cpp in Sources */,
-				0EB062911B28712C002A57C6 /* ComputePipeline.cpp in Sources */,
-				0E1308681BD5283B0027D06D /* CommandBuffer.cpp in Sources */,
-				0E2879C71B16130000D59F63 /* EffectApi.cpp in Sources */,
-				0E2879C11B16130000D59F63 /* ApiErrors.cpp in Sources */,
-				0E2879D41B16130000D59F63 /* ShaderProgramState.cpp in Sources */,
-				0E2879CA1B16130000D59F63 /* GpuCapabilities.cpp in Sources */,
+				0E3AE6991C69F03F006FE386 /* ComputePipelineGles.cpp in Sources */,
+				0E3AE6A51C69F03F006FE386 /* ShaderGles.cpp in Sources */,
+				0E3AE69C1C69F03F006FE386 /* EffectApi.cpp in Sources */,
+				0E3AE6951C69F03F006FE386 /* AssetStore.cpp in Sources */,
+				0E3AE6981C69F03F006FE386 /* CommandPoolGles.cpp in Sources */,
+				0E3AE69A1C69F03F006FE386 /* ContextGles.cpp in Sources */,
+				0E3AE6A31C69F03F006FE386 /* RenderPassGles.cpp in Sources */,
+				0E3AE6A01C69F03F006FE386 /* PipelineConfigStateCreateParam.cpp in Sources */,
+				0E3AE6A21C69F03F006FE386 /* PipelineLayoutGles.cpp in Sources */,
+				0E3AE6A41C69F03F006FE386 /* SamplerGles.cpp in Sources */,
+				0E3AE69B1C69F03F006FE386 /* DescriptorSetGles.cpp in Sources */,
+				0E3AE6A81C69F03F006FE386 /* TextureUtilsGles.cpp in Sources */,
+				0E3AE6A61C69F03F006FE386 /* Sync.cpp in Sources */,
+				0E3AE6A11C69F03F006FE386 /* PipelineConfigStates.cpp in Sources */,
+				0E3AE6961C69F03F006FE386 /* BufferGles.cpp in Sources */,
+				0E3AE6971C69F03F006FE386 /* CommandBufferGles.cpp in Sources */,
+				0E3AE69D1C69F03F006FE386 /* FboGles.cpp in Sources */,
+				0E3AE6A71C69F03F006FE386 /* TextureGles.cpp in Sources */,
+				0E3AE6941C69F03F006FE386 /* ApiCommandsGles.cpp in Sources */,
+				0E3AE69E1C69F03F006FE386 /* GpuCapabilities.cpp in Sources */,
+				0E3AE69F1C69F03F006FE386 /* GraphicsPipelineGles.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -435,7 +397,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0E47C6F71AC03C1C0021937F /* Build configuration list for PBXProject "PVRGLES" */ = {
+		0E47C6F71AC03C1C0021937F /* Build configuration list for PBXProject "PVRGles" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0E47C70E1AC03C1C0021937F /* Debug */,

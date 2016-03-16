@@ -17,6 +17,7 @@
 #include "../External/glm/glm.hpp"
 #include "../External/glm/gtc/type_ptr.hpp"
 #include "../External/glm/gtc/matrix_inverse.hpp"
+#include "../External/glm/gtc/matrix_access.hpp"
 #include "../External/glm/gtx/quaternion.hpp"
 #include "../External/glm/gtx/transform.hpp"
 #include "../External/glm/gtx/transform.hpp"
@@ -28,18 +29,18 @@ namespace pvr {
 //!\cond NO_DOXYGEN
 #if (0)
 namespace internal {
-typedef glm::simdMat4 optimisedMat4;
-typedef glm::simdVec4 optimisedVec4;
-inline glm::mat4x4 toMat4(const optimisedMat4& mat)
+typedef glm::simdMat4 optimizedMat4;
+typedef glm::simdVec4 optimizedVec4;
+inline glm::mat4x4 toMat4(const optimizedMat4& mat)
 {
 	return glm::mat4_cast(mat);
 }
 }
 #else
 namespace internal {
-typedef glm::mat4 optimisedMat4;
-typedef glm::vec4 optimisedVec4;
-inline glm::mat4x4 toMat4(const optimisedMat4& mat)
+typedef glm::mat4 optimizedMat4;
+typedef glm::vec4 optimizedVec4;
+inline glm::mat4x4 toMat4(const optimizedMat4& mat)
 {
 	return mat;
 }
@@ -183,10 +184,15 @@ GLM_FUNC_QUALIFIER glm::detail::tmat3x3<T, P> scale(glm::detail::tvec2<T, P> con
 \param	rotate Angle of tilt (rotation around the z axis), in radians
 \return	A projection matrix for the specified parameters, tilted by rotate
 ***********************************************************************************************/
-inline glm::mat4 perspective(float32 const & fovy, float32 const & aspect, float32 const & near1, 
-	float32 const & far1, pvr::float32 rotate)
+inline glm::mat4 perspective(pvr::Api::Enum api, float32 fovy, float32 aspect, float32 near1,
+                             float32 far1, pvr::float32 rotate = .0f)
 {
-	return glm::rotate(rotate, glm::vec3(0.0f, 0.0f, 1.0f)) * glm::perspective(fovy, aspect, near1, far1);
+	glm::mat4 mat = glm::perspective(fovy, aspect, near1, far1);
+	if (api == Api::Vulkan)
+	{
+		mat[1][1] *= -1.f;// negate the y axis's y component, because vulkan coordinate system is +y down
+	}
+	return (rotate == 0.f ? mat : glm::rotate(rotate, glm::vec3(0.0f, 0.0f, 1.0f)) * mat);
 }
 
 /*!********************************************************************************************
@@ -199,11 +205,25 @@ inline glm::mat4 perspective(float32 const & fovy, float32 const & aspect, float
 \param	rotate Angle of tilt (rotation around the z axis), in radians
 \return	A projection matrix for the specified parameters, tilted by rotate
 ***********************************************************************************************/
-inline glm::mat4 perspectiveFov(float32 const & fovy, float32 const & width, float32 const & height,
-	float32 const & near1, float32 const & far1, pvr::float32 rotate)
+inline glm::mat4 perspectiveFov(pvr::Api::Enum api, float32 fovy, float32 width, float32 height,
+                                float32 near1, float32 far1, pvr::float32 rotate = .0f)
 {
-	return glm::rotate(rotate,glm::vec3(0.0f,0.0f,1.0f)) * glm::perspectiveFov(fovy,width,height,near1, far1);
+	return perspective(api, fovy, width / height, near1, far1, rotate);
 }
+
+inline glm::mat4 ortho(pvr::Api::Enum api, float32 left, float32 right, float32 bottom,
+                       float32 top, float32 rotate = 0.0f)
+{
+	if (api == pvr::Api::Vulkan)
+	{
+		std::swap(bottom, top);// Vulkan origin y is top
+	}
+	glm::mat4 proj = glm::ortho<pvr::float32>(left, right, bottom, top);
+	return (rotate == 0.0f ? proj : glm::rotate(rotate, glm::vec3(0.0f, 0.0f, 1.0f)) * proj);
+}
+
+
+
 
 }
 }

@@ -20,7 +20,7 @@ const pvr::uint32 UiDisplayTimeInMs = UiDisplayTime * 1000;
 const glm::vec2 BaseDim(800, 600);
 const pvr::float32 LowerContainerHight = .3f;
 #define ELEMENTS_IN_ARRAY(x)		(sizeof(x) / sizeof(x[0]))
-
+using namespace pvr::types;
 // Shaders
 namespace ShaderNames {
 enum Enum
@@ -383,13 +383,13 @@ static const pvr::uint32 DimCentre = 0xABCE;
 static const pvr::float32 ByteToFloat = 1.0f / 255.0f;
 
 static const char* const TextLoremIpsum =
-  "Stencil Clipping\n\nLorem ipsum dolor sit amet, consectetuer adipiscing elit.\nDonec molestie. "
-  "Sed aliquam sem ut arcu.\nPhasellus sollicitudin. Vestibulum condimentum facilisis nulla.\nIn "
-  "hac habitasse platea dictumst. Nulla nonummy. Cras quis libero.\nCras venenatis. Aliquam posuere "
-  "lobortis pede. Nullam fringilla urna id leo.\nPraesent aliquet pretium erat. Praesent non odio. "
-  "Pellentesque a magna a\nmauris vulputate lacinia. Aenean viverra. Class aptent taciti sociosqu "
-  "ad litora\ntorquent per conubia nostra, per inceptos hymenaeos. Aliquam\nlacus. Mauris magna eros, "
-  "semper a, tempor et, rutrum et, tortor.";
+    "Stencil Clipping\n\nLorem ipsum dolor sit amet, consectetuer adipiscing elit.\nDonec molestie. "
+    "Sed aliquam sem ut arcu.\nPhasellus sollicitudin. Vestibulum condimentum facilisis nulla.\nIn "
+    "hac habitasse platea dictumst. Nulla nonummy. Cras quis libero.\nCras venenatis. Aliquam posuere "
+    "lobortis pede. Nullam fringilla urna id leo.\nPraesent aliquet pretium erat. Praesent non odio. "
+    "Pellentesque a magna a\nmauris vulputate lacinia. Aenean viverra. Class aptent taciti sociosqu "
+    "ad litora\ntorquent per conubia nostra, per inceptos hymenaeos. Aliquam\nlacus. Mauris magna eros, "
+    "semper a, tempor et, rutrum et, tortor.";
 
 class Area
 {
@@ -515,7 +515,7 @@ private:
 			uiRenderer.getDefaultDescription()->commitUpdates();
 			break;
 		}
-		deviceResource->cmdBufferTitleDesc->beginRecording();
+		deviceResource->cmdBufferTitleDesc->beginRecording(deviceResource->fboOnScreen, 0);
 		uiRenderer.beginRendering(deviceResource->cmdBufferTitleDesc);
 		uiRenderer.getDefaultTitle()->render();
 		uiRenderer.getDefaultDescription()->render();
@@ -525,7 +525,7 @@ private:
 	}
 private:
 	void drawScreenAlignedQuad(const Pipeline& Shader, const pvr::Rectangle<pvr::float32>& DstRect, pvr::api::CommandBufferBase cmdBuffer, const pvr::Rectangle<pvr::float32>& SrcRect =
-	                             pvr::Rectangle<pvr::float32>(0, 0, 1, 1), const pvr::uint32 uiRGBA = 0xFFFFFFFF);
+	                               pvr::Rectangle<pvr::float32>(0, 0, 1, 1), const pvr::uint32 uiRGBA = 0xFFFFFFFF);
 	void renderBaseUI();
 	void renderUI();
 	void renderPage(DisplayPage::Enum Page, const glm::mat4& mTransform);
@@ -602,7 +602,7 @@ void OGLESExampleUI::createPageWindow()
 \param[out] outContainer Returned Sprite container
 ***********************************************************************************************************************/
 void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& rect,
-    pvr::uint32 numSubContainer, pvr::float32 lowerContainerHeight, SpriteContainer& outContainer)
+        pvr::uint32 numSubContainer, pvr::float32 lowerContainerHeight, SpriteContainer& outContainer)
 {
 	outContainer.size = rect;
 	outContainer.group = uiRenderer.createPixelGroup();
@@ -714,7 +714,7 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 		pvr::ui::PixelGroup verticle = uiRenderer.createPixelGroup();
 		verticle->add(sprites[Sprites::ContainerHorizontal]);
 		verticle->setScale(glm::vec2(1, height))->setAnchor(pvr::ui::Anchor::TopLeft, rectVerticleLeft.x,
-		    rectVerticleLeft.height)->setPixelOffset(0, 0);
+		        rectVerticleLeft.height)->setPixelOffset(0, 0);
 		outContainer.group->add(verticle);
 	}
 
@@ -726,7 +726,7 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 		pvr::ui::PixelGroup vertical = uiRenderer.createPixelGroup();
 		vertical->add(sprites[Sprites::ContainerHorizontal]);
 		vertical->setScale(glm::vec2(-1, height))->setAnchor(pvr::ui::Anchor::TopLeft,
-		    rectVerticleRight.width, rectVerticleRight.height);
+		        rectVerticleRight.width, rectVerticleRight.height);
 		outContainer.group->add(vertical);
 	}
 
@@ -750,7 +750,7 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 		pvr::ui::PixelGroup horizontal = uiRenderer.createPixelGroup();
 		horizontal->add(sprites[Sprites::VerticalBar]);
 		horizontal->setScale(glm::vec2(1.f, width))->setAnchor(pvr::ui::Anchor::BottomLeft,
-		    rect.x + (2 / uiRenderer.getRenderingDimX())/*offset it by 2 pixel*/, subRect.height);
+		        rect.x + (2 / uiRenderer.getRenderingDimX())/*offset it by 2 pixel*/, subRect.height);
 		horizontal->setRotation(glm::pi<pvr::float32>() * -.5f);// rotate y 90 degree
 		outContainer.group->add(horizontal);
 	}
@@ -902,7 +902,7 @@ void OGLESExampleUI::createPageClock()
 	containerWidth /= BaseDim.x;
 
 	pvr::Rectangle<pvr::float32> containerRect(-containerWidth, -containerHeight,
-	    containerWidth, containerHeight);
+	        containerWidth, containerHeight);
 	createSpriteContainer(pvr::Rectangle<pvr::float32>(containerRect), 2, LowerContainerHight, container);
 	pageClock.container = container;
 
@@ -997,14 +997,15 @@ pvr::Result::Enum OGLESExampleUI::initView()
 {
 	context = getGraphicsContext();
 	deviceResource.reset(new DeviceResource());
-	deviceResource->cmdBuffer = context->createCommandBuffer();
-	deviceResource->cmdBufferTitleDesc = context->createSecondaryCommandBuffer();
+	deviceResource->fboOnScreen = context->createOnScreenFbo(0);
+	deviceResource->cmdBuffer = context->createCommandBufferOnDefaultPool();
+	deviceResource->cmdBufferTitleDesc = context->createSecondaryCommandBufferOnDefaultPool();
 
 	// Initialize uiRenderer
-	if (uiRenderer.init(context) != pvr::Result::Success)
+	if (uiRenderer.init(context, deviceResource->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize Print3D\n");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 	screenScale = uiRenderer.getRenderingDim() / BaseDim;
 	screenScale = glm::vec2(glm::min(screenScale.x, screenScale.y));
@@ -1012,25 +1013,25 @@ pvr::Result::Enum OGLESExampleUI::initView()
 	if (!createFbo())
 	{
 		setExitMessage("Failed to create Fbo");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 
 	prevTransTime = this->getTime();
 
 	// Load the sprites
-	if (!loadSprites()) {return pvr::Result::NotInitialised;}
+	if (!loadSprites()) {return pvr::Result::NotInitialized;}
 
 	// Load the shaders
 	if (!createPipelines())
 	{
 		this->setExitMessage("Failed to create pipelines");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 
 	if (!createSamplersAndDescriptorSet())
 	{
 		pvr::Log("Failed to create Texture and samplers Descriptor sets");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 	// Generate the atlas texture.
 	if (!isAtlasGenerated) {	generateAtlas();   }
@@ -1068,13 +1069,13 @@ pvr::Result::Enum OGLESExampleUI::initView()
 ***********************************************************************************************************************/
 bool OGLESExampleUI::loadSprites()
 {
-    pvr::assets::SamplerCreateParam samplerInfo;
-    samplerInfo.minificationFilter = pvr::SamplerFilter::Nearest;
-    samplerInfo.magnificationFilter = pvr::SamplerFilter::Nearest;
-    samplerInfo.mipMappingFilter = pvr::SamplerFilter::Nearest;
-    samplerInfo.wrapModeU = pvr::SamplerWrap::Clamp;
-    samplerInfo.wrapModeV = pvr::SamplerWrap::Clamp;
-    pvr::api::Sampler sampler = context->createSampler(samplerInfo);
+	pvr::assets::SamplerCreateParam samplerInfo;
+	samplerInfo.minificationFilter = SamplerFilter::Nearest;
+	samplerInfo.magnificationFilter = SamplerFilter::Nearest;
+	samplerInfo.mipMappingFilter = SamplerFilter::None;
+	samplerInfo.wrapModeU = SamplerWrap::Clamp;
+	samplerInfo.wrapModeV = SamplerWrap::Clamp;
+	pvr::api::Sampler sampler = context->createSampler(samplerInfo);
 
 
 	pvr::assets::TextureHeader header;
@@ -1094,8 +1095,8 @@ bool OGLESExampleUI::loadSprites()
 		const pvr::uint8* pixelString = header.getPixelFormat().getPixelTypeChar();
 
 		if (header.getPixelFormat().getPixelTypeId() == pvr::CompressedPixelFormat::PVRTCI_2bpp_RGBA ||
-		    header.getPixelFormat().getPixelTypeId() == pvr::CompressedPixelFormat::PVRTCI_4bpp_RGBA ||
-		    pixelString[0] == 'a' || pixelString[1] == 'a' || pixelString[2] == 'a' || pixelString[3] == 'a')
+		        header.getPixelFormat().getPixelTypeId() == pvr::CompressedPixelFormat::PVRTCI_4bpp_RGBA ||
+		        pixelString[0] == 'a' || pixelString[1] == 'a' || pixelString[2] == 'a' || pixelString[3] == 'a')
 		{
 			spritesDesc[i].bHasAlpha = true;
 		}
@@ -1105,10 +1106,10 @@ bool OGLESExampleUI::loadSprites()
 		}
 
 		sprites[i] = uiRenderer.createImage(spritesDesc[i].tex, header.getWidth(), header.getHeight());
-        if(i == Sprites::ContainerCorner || i == Sprites::ContainerVertical || i == Sprites::ContainerHorizontal || i == Sprites::ContainerFiller)
-        {
-            sprites[i]->setSampler(sampler);
-        }
+		if (i == Sprites::ContainerCorner || i == Sprites::ContainerVertical || i == Sprites::ContainerHorizontal || i == Sprites::ContainerFiller)
+		{
+			sprites[i]->setSampler(sampler);
+		}
 	}
 	return true;
 }
@@ -1123,26 +1124,26 @@ bool OGLESExampleUI::createSamplersAndDescriptorSet()
 	pvr::assets::SamplerCreateParam samplerInfo;
 
 	// create bilinear sampler
-	samplerInfo.minificationFilter = pvr::SamplerFilter::Linear;
-	samplerInfo.magnificationFilter = pvr::SamplerFilter::Linear;
+	samplerInfo.minificationFilter = SamplerFilter::Linear;
+	samplerInfo.magnificationFilter = SamplerFilter::Linear;
 	deviceResource->samplerBilinear = context->createSampler(samplerInfo);
 
 	// create point sampler
-	samplerInfo.minificationFilter = pvr::SamplerFilter::Nearest;
-	samplerInfo.magnificationFilter = pvr::SamplerFilter::Nearest;
+	samplerInfo.minificationFilter = SamplerFilter::Nearest;
+	samplerInfo.magnificationFilter = SamplerFilter::Nearest;
 	deviceResource->samplerNearest = context->createSampler(samplerInfo);
 
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
-	descSetLayoutInfo.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
+	descSetLayoutInfo.setBinding(0, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
 	// all pipeline are using the same pipelineLayout
 	pvr::api::DescriptorSetLayout descSetLayout = drawPassAtlas.pipe.pipe->getPipelineLayout()->getDescriptorSetLayout()[0];
 
-	pvr::api::DescriptorSetUpdateParam descSetInfo;
+	pvr::api::DescriptorSetUpdate descSetInfo;
 	pvr::api::DescriptorSet descSetTexAtlas;
-	descSetInfo.addCombinedImageSampler(0, 0, deviceResource->textureAtlas, deviceResource->samplerBilinear);
-	descSetTexAtlas = context->allocateDescriptorSet(descSetLayout);
+	descSetInfo.setCombinedImageSampler(0, deviceResource->textureAtlas, deviceResource->samplerBilinear);
+	descSetTexAtlas = context->createDescriptorSetOnDefaultPool(descSetLayout);
 	descSetTexAtlas->update(descSetInfo);
-    
+
 	// setup the draw pass atlas
 	drawPassAtlas.descSet = descSetTexAtlas;
 	return true;
@@ -1158,7 +1159,7 @@ bool OGLESExampleUI::createPipelines()
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
 	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
 
-	descSetLayoutInfo.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
+	descSetLayoutInfo.setBinding(0, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
 	pipeLayoutInfo.addDescSetLayout(context->createDescriptorSetLayout(descSetLayoutInfo));
 	pvr::api::PipelineLayout pipeLayout = context->createPipelineLayout(pipeLayoutInfo);
 	pvr::assets::ShaderFile shaderVersioning;
@@ -1168,11 +1169,11 @@ bool OGLESExampleUI::createPipelines()
 	{
 		shaderVersioning.populateValidVersions(VertShaderFileName[i], *this);
 		deviceResource->vertexShader[i] =
-		  context->createShader(*shaderVersioning.getBestStreamForApi(context->getApiType()), pvr::ShaderType::VertexShader, ShaderDefines[i], (ShaderDefines[i] ? ELEMENTS_IN_ARRAY(ShaderDefines[i]) : 0));
+		    context->createShader(*shaderVersioning.getBestStreamForApi(context->getApiType()), ShaderType::VertexShader, ShaderDefines[i], (ShaderDefines[i] ? ELEMENTS_IN_ARRAY(ShaderDefines[i]) : 0));
 
 		shaderVersioning.populateValidVersions(FragShaderFileName[i], *this);
 		deviceResource->fragmentShader[i] =
-		  context->createShader(*shaderVersioning.getBestStreamForApi(context->getApiType()), pvr::ShaderType::FragmentShader, ShaderDefines[i], (ShaderDefines[i] ? ELEMENTS_IN_ARRAY(ShaderDefines[i]) : 0));
+		    context->createShader(*shaderVersioning.getBestStreamForApi(context->getApiType()), ShaderType::FragmentShader, ShaderDefines[i], (ShaderDefines[i] ? ELEMENTS_IN_ARRAY(ShaderDefines[i]) : 0));
 
 		if (deviceResource->vertexShader[i].isNull() || deviceResource->fragmentShader[i].isNull())	{ return false; }
 	}
@@ -1180,16 +1181,16 @@ bool OGLESExampleUI::createPipelines()
 	// --- texture-atlas pipeline
 	{
 		pvr::api::GraphicsPipelineCreateParam pipeInfo;
-		pipeInfo.rasterizer.setCullFace(pvr::api::Face::None);
+		pipeInfo.rasterizer.setCullFace(Face::None);
 		pipeInfo.pipelineLayout = pipeLayout;
 		pipeInfo.vertexShader = deviceResource->vertexShader[ShaderNames::ColorTexture];
 		pipeInfo.fragmentShader = deviceResource->fragmentShader[ShaderNames::ColorTexture];
-		pipeInfo.vertexInput.addVertexAttribute(0, 0, pvr::assets::VertexAttributeLayout(pvr::DataType::Float32, 4, 0)).
-		addVertexAttribute(1, 0, pvr::assets::VertexAttributeLayout(pvr::DataType::Float32, 2, sizeof(glm::vec4)));
+		pipeInfo.vertexInput.addVertexAttribute(0, 0, pvr::assets::VertexAttributeLayout(DataType::Float32, 4, 0)).
+		addVertexAttribute(1, 0, pvr::assets::VertexAttributeLayout(DataType::Float32, 2, sizeof(glm::vec4)));
 
-		pipeInfo.vertexInput.setInputBinding(0, sizeof(Vertex), pvr::api::StepRate::Draw);
-		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::TriangleStrips);
-
+		pipeInfo.vertexInput.setInputBinding(0, sizeof(Vertex));
+		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrips);
+		pipeInfo.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
 		pipeInfo.depthStencil.setDepthTestEnable(false).setDepthWrite(false);
 		drawPassAtlas.pipe.pipe = context->createParentableGraphicsPipeline(pipeInfo);
 
@@ -1206,17 +1207,17 @@ bool OGLESExampleUI::createPipelines()
 	// --- pre-clip pipeline
 	{
 		pvr::api::GraphicsPipelineCreateParam pipeInfo;
-		pvr::api::pipelineCreation::ColorBlendAttachmentState colorAttachment;
+        pvr::api::pipelineCreation::ColorBlendAttachmentState colorAttachment;
 		pipeInfo.pipelineLayout = pipeLayout;
 		pipeInfo.vertexShader = deviceResource->vertexShader[ShaderNames::ColorShader];
 		pipeInfo.fragmentShader = deviceResource->fragmentShader[ShaderNames::ColorShader];
-		pipeInfo.vertexInput.addVertexAttribute(0, 0, pvr::assets::VertexAttributeLayout(pvr::DataType::Float32, 4, 0)).
-		addVertexAttribute(1, 0, pvr::assets::VertexAttributeLayout(pvr::DataType::Float32, 2, sizeof(glm::vec4)));
-		pipeInfo.vertexInput.setInputBinding(0, sizeof(Vertex), pvr::api::StepRate::Draw);
+		pipeInfo.vertexInput.addVertexAttribute(0, 0, pvr::assets::VertexAttributeLayout(DataType::Float32, 4, 0)).
+		addVertexAttribute(1, 0, pvr::assets::VertexAttributeLayout(DataType::Float32, 2, sizeof(glm::vec4)));
+		pipeInfo.vertexInput.setInputBinding(0, sizeof(Vertex));
 		pipeInfo.colorBlend.addAttachmentState(colorAttachment);
-		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::TriangleStrips);
+		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrips);
 		pipeInfo.depthStencil.setDepthTestEnable(false).setDepthWrite(false);
-		pipeInfo.rasterizer.setCullFace(pvr::api::Face::None);
+		pipeInfo.rasterizer.setCullFace(Face::None);
 
 		deviceResource->pipeColor.pipe = context->createParentableGraphicsPipeline(pipeInfo);
 		// get uniform locations
@@ -1229,11 +1230,12 @@ bool OGLESExampleUI::createPipelines()
 		}
 
 		// Set stencil function to always pass, and write 0x1 in to the stencil buffer.
-		pipeInfo.depthStencil.setStencilTest(true).setStencilOp(pvr::api::Face::FrontBack,
-		    pvr::api::StencilOp::Keep, pvr::api::StencilOp::Keep, pvr::api::StencilOp::Replace);
+		pvr::api::StencilState stencilState;
+		stencilState.opDepthPass = StencilOp::Replace;
+		stencilState.compareOp = ComparisonMode::Always;
+		pipeInfo.depthStencil.setStencilTest(true).setStencilFrontBack(stencilState);
 		// disable writing to the color buffer, write only in the stencil buffer
-		pipeInfo.colorBlend.addAttachmentState(0, colorAttachment);
-		pipeInfo.depthStencil.setStencilCompareFunc(pvr::api::Face::FrontBack, pvr::ComparisonMode::Always);
+		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
 		deviceResource->pipePreClip.pipe = context->createGraphicsPipeline(pipeInfo,
 		                                   pvr::api::ParentableGraphicsPipeline(deviceResource->pipeColor.pipe));
 		deviceResource->pipePreClip.mvpLoc = deviceResource->pipeColor.mvpLoc;
@@ -1243,11 +1245,17 @@ bool OGLESExampleUI::createPipelines()
 
 	// --- post clip pipeline
 	{
+		pvr::api::pipelineCreation::ColorBlendAttachmentState colorAttachment;
+		colorAttachment.blendEnable = true;
 		pvr::api::GraphicsPipelineCreateParam pipeInfo;
 		pipeInfo.depthStencil.setDepthTestEnable(false).setDepthWrite(false).setStencilTest(true);
 		// Set stencil function to always pass, and write 0x1 in to the stencil buffer.
-		pipeInfo.depthStencil.setStencilOp(pvr::api::Face::FrontBack, pvr::api::StencilOp::Keep, pvr::api::StencilOp::Keep, pvr::api::StencilOp::Keep);
-		pipeInfo.depthStencil.setStencilCompareFunc(pvr::api::Face::FrontBack, pvr::ComparisonMode::Equal);
+		pvr::api::StencilState stencilState;
+		stencilState.compareOp = ComparisonMode::Equal;
+		pipeInfo.depthStencil.setStencilFrontBack(stencilState);
+		colorAttachment.srcBlendColor = colorAttachment.srcBlendAlpha = pvr::types::BlendFactor::SrcAlpha;
+		colorAttachment.destBlendColor = colorAttachment.destBlendAlpha = pvr::types::BlendFactor::OneMinusSrcAlpha;
+		pipeInfo.colorBlend.addAttachmentState(colorAttachment);
 		deviceResource->pipePostClip.pipe = context->createGraphicsPipeline(pipeInfo, pvr::api::ParentableGraphicsPipeline(uiRenderer.getPipeline()));
 	}
 
@@ -1274,7 +1282,7 @@ bool OGLESExampleUI::generateAtlas()
 	std::sort(sortedSprites.begin(), sortedSprites.end(), SpriteCompare());// sort the sprites
 
 	const pvr::api::DescriptorSetLayout descSetLayout = drawPassAtlas.pipe.pipe->getPipelineLayout()
-	    ->getDescriptorSetLayout()[0];
+	        ->getDescriptorSetLayout()[0];
 
 	glm::mat4 const& mMVP = glm::ortho(0.0f, (pvr::float32)AtlasWidth, (pvr::float32)AtlasWidth,
 	                                   .0f, -1.0f, 1.0f);
@@ -1292,12 +1300,12 @@ bool OGLESExampleUI::generateAtlas()
 	pvr::float32 fX;
 	pvr::float32 fY;
 	// create empty descriptor set
-	pvr::api::DescriptorSet descSet = context->allocateDescriptorSet(descSetLayout);
+	pvr::api::DescriptorSet descSet = context->createDescriptorSetOnDefaultPool(descSetLayout);
 	for (pvr::uint32 i = 0; i < Sprites::Count; ++i)
 	{
 		deviceResource->cmdBuffer->beginRecording();
 		deviceResource->cmdBuffer->beginRenderPass(deviceResource->fboAtlas,
-		    pvr::Rectanglei(0, 0, AtlasWidth, AtlasHeight));
+		        pvr::Rectanglei(0, 0, AtlasWidth, AtlasHeight), true);
 		// clear the color attachment on the first iteration
 		if (i == 0)
 		{
@@ -1317,11 +1325,11 @@ bool OGLESExampleUI::generateAtlas()
 		fY = (pvr::float32)pRtrn->getY() + AtlasPixelBorder;
 
 		// Render sprite on to atlas.
-		pvr::api::DescriptorSetUpdateParam descSetInfo;
-		descSetInfo.addCombinedImageSampler(0, 0, sortedSprites[i].tex, deviceResource->samplerNearest);
+		pvr::api::DescriptorSetUpdate descSetInfo;
+		descSetInfo.setCombinedImageSampler(0, sortedSprites[i].tex, deviceResource->samplerNearest);
 		descSet->update(descSetInfo);
-		deviceResource->cmdBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics,
-		    drawPassAtlas.pipe.pipe->getPipelineLayout(), descSet, 0);
+		deviceResource->cmdBuffer->bindDescriptorSet(
+		    drawPassAtlas.pipe.pipe->getPipelineLayout(), 0, descSet, 0);
 
 		// draw
 		drawScreenAlignedQuad(drawPassAtlas.pipe, pvr::Rectangle<pvr::float32>(fX, fY,
@@ -1340,7 +1348,7 @@ bool OGLESExampleUI::generateAtlas()
 	// switching the bound texture, or changing shader program.
 	// We use 4x4 such that linear filtering will not produce an incorrect color.
 	deviceResource->cmdBuffer->beginRenderPass(deviceResource->fboAtlas,
-	    pvr::Rectanglei(0, 0, AtlasWidth, AtlasHeight));
+	        pvr::Rectanglei(0, 0, AtlasWidth, AtlasHeight), true);
 	deviceResource->cmdBuffer->bindPipeline(deviceResource->pipeColor.pipe);
 	deviceResource->cmdBuffer->setUniform<glm::mat4>(deviceResource->pipeColor.mvpLoc, mMVP);
 	{
@@ -1372,8 +1380,8 @@ bool OGLESExampleUI::generateAtlas()
 		NOTE: This is not an optimized function and should not be called repeatedly to draw quads to the screen at render time.
 ***********************************************************************************************************************/
 void OGLESExampleUI::drawScreenAlignedQuad(const Pipeline& pipe,
-    const pvr::Rectangle<pvr::float32>& dstRect, pvr::api::CommandBufferBase cmdBuffer,
-    const pvr::Rectangle<pvr::float32>& srcRect, const pvr::uint32 uiRGBA)
+        const pvr::Rectangle<pvr::float32>& dstRect, pvr::api::CommandBufferBase cmdBuffer,
+        const pvr::Rectangle<pvr::float32>& srcRect, const pvr::uint32 uiRGBA)
 {
 	Vertex vVerts[4] =
 	{
@@ -1383,7 +1391,7 @@ void OGLESExampleUI::drawScreenAlignedQuad(const Pipeline& pipe,
 		{ glm::vec4(dstRect.x + dstRect.width, dstRect.y + dstRect.height, 0, 1), glm::vec2(srcRect.width, 1.0f - srcRect.height) }
 	};
 
-	static pvr::api::Buffer vbo = context->createBuffer(sizeof(vVerts), pvr::api::BufferBindingUse::VertexBuffer);
+	static pvr::api::Buffer vbo = context->createBuffer(sizeof(vVerts), BufferBindingUse::VertexBuffer);
 	vbo->update(vVerts, 0, sizeof(vVerts));
 	// Upload color data for all verts
 	glm::vec4 vRGBA(((uiRGBA >> 24) & 0xFF)*ByteToFloat, ((uiRGBA >> 16) & 0xFF)*ByteToFloat,
@@ -1402,12 +1410,12 @@ pvr::Result::Enum OGLESExampleUI::releaseView()
 {
 	// release all the textures and sprites
 	pvr::uint32 i = 0;
-	for (; i < Sprites::Count; ++i) { spritesDesc[i].release(); sprites[i].release(); }
-	for (; i < Sprites::Count + Ancillary::Count; ++i) { sprites[i].release(); }
+	for (; i < Sprites::Count; ++i) { spritesDesc[i].release(); sprites[i].reset(); }
+	for (; i < Sprites::Count + Ancillary::Count; ++i) { sprites[i].reset(); }
 	uiRenderer.release();
-	spriteAtlas.release();
+	spriteAtlas.reset();
 	assetManager.releaseAll();
-	deviceResource.release();
+	deviceResource.reset();
 	return pvr::Result::Success;
 }
 
@@ -1448,7 +1456,7 @@ void OGLESExampleUI::renderPage(DisplayPage::Enum page, const glm::mat4& mTransf
 void OGLESExampleUI::renderUI()
 {
 	deviceResource->cmdBuffer->beginRenderPass(deviceResource->fboOnScreen,
-	    pvr::Rectanglei(0, 0, getWidth(), getHeight()), glm::vec4(0.3f, .3f, 0.3f, 1.f));
+	        pvr::Rectanglei(0, 0, getWidth(), getHeight()), false, glm::vec4(0.3f, .3f, 0.3f, 1.f));
 	// render the baseUI
 	deviceResource->cmdBuffer->enqueueSecondaryCmds(deviceResource->cmdBufferBaseUI);
 	glm::vec2 baseDim(800, 600);
@@ -1500,8 +1508,8 @@ void OGLESExampleUI::renderUI()
 void OGLESExampleUI::renderAtlas()
 {
 	deviceResource->cmdBuffer->beginRenderPass(deviceResource->fboOnScreen,
-	    pvr::Rectanglei(0, 0, (pvr::uint32)uiRenderer.getRenderingDimX(), (pvr::uint32)uiRenderer.getRenderingDimY()),
-	    glm::vec4(.3f, 0.3f, 0.3f, 1.0f));
+	        pvr::Rectanglei(0, 0, (pvr::uint32)uiRenderer.getRenderingDimX(), (pvr::uint32)uiRenderer.getRenderingDimY()), false,
+	        glm::vec4(.3f, 0.3f, 0.3f, 1.0f));
 	// record draw title and description commands
 	deviceResource->cmdBuffer->enqueueSecondaryCmds(deviceResource->cmdBufferTexAtlas);
 	// record draw title and description commands
@@ -1578,7 +1586,7 @@ pvr::Result::Enum OGLESExampleUI::renderFrame()
 	}
 
 	drawCallPerFrame = 0;
-    renderUI();
+	renderUI();
 
 	// record commands to draw the title and description
 	deviceResource->cmdBuffer->endRecording();
@@ -1593,7 +1601,7 @@ pvr::Result::Enum OGLESExampleUI::renderFrame()
 bool OGLESExampleUI::createFbo()
 {
 	// create on-screen fbo
-	deviceResource->fboOnScreen = context->createOnScreenFboWithParams();
+	deviceResource->fboOnScreen = context->createOnScreenFbo(0);
 
 	// create texture atlas fbo
 	{
@@ -1601,21 +1609,21 @@ bool OGLESExampleUI::createFbo()
 		pvr::api::SubPass subPass;
 
 		// create texture-atlas texture
-		deviceResource->textureAtlas = context->createTexture();
-		pvr::api::ImageStorageFormat texAtlasFmt(pvr::PixelFormat::RGBA_8888, 1, pvr::ColorSpace::lRGB,
-		    pvr::VariableType::UnsignedByteNorm);
-		deviceResource->textureAtlas->allocate2D(texAtlasFmt, AtlasWidth, AtlasHeight);
+		pvr::api::ImageStorageFormat texAtlasFmt(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB,
+		        pvr::VariableType::UnsignedByteNorm);
+		pvr::api::TextureStore texAtlas = context->createTexture();
+		texAtlas->allocate2D(texAtlasFmt, AtlasWidth, AtlasHeight);
+		deviceResource->textureAtlas = context->createTextureView(texAtlas);
+
 
 		// Create texture atlas FBO and bind the previously created texture to it.
 		pvr::api::FboCreateParam fboInfo;
-		pvr::api::ColorAttachmentViewCreateParam colorView(deviceResource->textureAtlas);
 		renderPassInfo.addColorInfo(0, pvr::api::RenderPassColorInfo(texAtlasFmt));
 
 		subPass.setColorAttachment(0);
 		renderPassInfo.addSubPass(0, subPass);
 
-		fboInfo.addColor(0, context->createColorAttachmentView(colorView)).setRenderPass(
-		  context->createRenderPass(renderPassInfo));
+		fboInfo.addColor(0, deviceResource->textureAtlas).setRenderPass(context->createRenderPass(renderPassInfo));
 		deviceResource->fboAtlas = context->createFbo(fboInfo);
 	}
 
@@ -1634,15 +1642,15 @@ void OGLESExampleUI::recordSecondaryCommandBuffers()
 {
 	// record render texture atlas commands
 	{
-		deviceResource->cmdBufferTexAtlas = context->createSecondaryCommandBuffer();
-		deviceResource->cmdBufferTexAtlas->beginRecording();
+		deviceResource->cmdBufferTexAtlas = context->createSecondaryCommandBufferOnDefaultPool();
+		deviceResource->cmdBufferTexAtlas->beginRecording(deviceResource->fboOnScreen, 0);
 		uiRenderer.beginRendering(deviceResource->cmdBufferTexAtlas);
 		spriteAtlas->render();
 		uiRenderer.endRendering();
 		deviceResource->cmdBufferTexAtlas->endRecording();
 	}
 	{
-		deviceResource->cmdBufferBaseUI = context->createSecondaryCommandBuffer();
+		deviceResource->cmdBufferBaseUI = context->createSecondaryCommandBufferOnDefaultPool();
 		uiRenderer.beginRendering(deviceResource->cmdBufferBaseUI);
 		groupBaseUI->render();//render the base GUI
 		uiRenderer.endRendering();
@@ -1650,8 +1658,8 @@ void OGLESExampleUI::recordSecondaryCommandBuffers()
 
 	// record DrawClock commands
 	{
-		deviceResource->cmdBufferClockPage = context->createSecondaryCommandBuffer();
-		deviceResource->cmdBufferClockPage->beginRecording();
+		deviceResource->cmdBufferClockPage = context->createSecondaryCommandBufferOnDefaultPool();
+		deviceResource->cmdBufferClockPage->beginRecording(deviceResource->fboOnScreen, 0);
 		uiRenderer.beginRendering(deviceResource->cmdBufferClockPage);
 		pageClock.group->render();
 		uiRenderer.endRendering();
@@ -1660,8 +1668,8 @@ void OGLESExampleUI::recordSecondaryCommandBuffers()
 
 	// record draw weather commands
 	{
-		deviceResource->cmdBufferWeatherpage = context->createSecondaryCommandBuffer();
-		deviceResource->cmdBufferWeatherpage->beginRecording();
+		deviceResource->cmdBufferWeatherpage = context->createSecondaryCommandBufferOnDefaultPool();
+		deviceResource->cmdBufferWeatherpage->beginRecording(deviceResource->fboOnScreen, 0);
 		uiRenderer.beginRendering(deviceResource->cmdBufferWeatherpage);
 		pageWeather.group->render();
 		uiRenderer.endRendering();
@@ -1670,14 +1678,14 @@ void OGLESExampleUI::recordSecondaryCommandBuffers()
 
 	// record draw Window commands
 	{
-		deviceResource->cmdBufferWindow = context->createSecondaryCommandBuffer();
-		deviceResource->cmdBufferWindow->beginRecording();
+		deviceResource->cmdBufferWindow = context->createSecondaryCommandBufferOnDefaultPool();
+		deviceResource->cmdBufferWindow->beginRecording(deviceResource->fboOnScreen, 0);
 		// bind the pre-clipping pipeline
 		deviceResource->cmdBufferWindow->bindPipeline(deviceResource->pipePreClip.pipe);
 		// clear the stencil buffer to 0
 		deviceResource->cmdBufferWindow->clearStencilAttachment(pvr::Rectanglei(0, 0, (pvr::int32)uiRenderer.getRenderingDimX(), (pvr::int32)uiRenderer.getRenderingDimY()), 0);
 		deviceResource->cmdBufferWindow->setUniformPtr<glm::mat4>(deviceResource->pipePreClip.mvpLoc,
-		    1, (const glm::mat4*)&pageWindow.mvp);
+		        1, (const glm::mat4*)&pageWindow.mvp);
 
 		// draw a quad only in to the stencil buffer
 		drawScreenAlignedQuad(deviceResource->pipePreClip, pvr::Rectangle<pvr::float32>((pvr::float32)pageWindow.clipArea.x,
@@ -1686,8 +1694,8 @@ void OGLESExampleUI::recordSecondaryCommandBuffers()
 
 		// bind the post clip pipeline and render the text only where the stencil passes
 		uiRenderer.beginRendering(deviceResource->cmdBufferWindow, deviceResource->pipePostClip.pipe);
-		deviceResource->cmdBufferWindow->setStencilReference(pvr::api::Face::FrontBack, 1);
-		deviceResource->cmdBufferWindow->setStencilCompareMask(pvr::api::Face::FrontBack, 0xFFFFFFFF);
+		deviceResource->cmdBufferWindow->setStencilReference(StencilFace::FrontBack, 1);
+		deviceResource->cmdBufferWindow->setStencilCompareMask(StencilFace::FrontBack, 0xFFFFFFFF);
 		pageWindow.group->render();
 		uiRenderer.endRendering();
 		deviceResource->cmdBufferWindow->endRecording();
@@ -1700,18 +1708,18 @@ void OGLESExampleUI::recordSecondaryCommandBuffers()
 ***********************************************************************************************************************/
 void OGLESExampleUI::eventMappedInput(pvr::SimplifiedInput::Enum action)
 {
-   switch (action)
-    {
-            case pvr::SimplifiedInput::Right:
-                swipeLeft();
-                break;
-            case pvr::SimplifiedInput::Left:
-                swipeRight();
-                break;
-            case pvr::SimplifiedInput::ActionClose:// quit the application
-                this->exitShell();
-                break;
-    }
+	switch (action)
+	{
+	case pvr::SimplifiedInput::Right:
+		swipeLeft();
+		break;
+	case pvr::SimplifiedInput::Left:
+		swipeRight();
+		break;
+	case pvr::SimplifiedInput::ActionClose:// quit the application
+		this->exitShell();
+		break;
+	}
 }
 
 /*!*********************************************************************************************************************
@@ -1759,7 +1767,7 @@ Area* Area::insert(pvr::int32 width, pvr::int32 height)
 	// Too big. Split up.
 	if (size > width * height && w >= width && h >= height)
 	{
-		// Initialises the children, and sets the left child's coordinates as these don't change.
+		// Initializes the children, and sets the left child's coordinates as these don't change.
 		left = new Area;
 		right = new Area;
 		left->x = x;

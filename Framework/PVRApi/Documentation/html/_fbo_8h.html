@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -97,14 +97,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1impl_1_1_color_attachment_view_impl.html">pvr::api::impl::ColorAttachmentViewImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">PVR Api Color attachment View. Use through the Reference Counted API object <a class="el" href="namespacepvr_1_1api.html#a8d935dcf60fe99740c37b6c56d7d7fbd">pvr::api::ColorAttachmentView</a>. Contains a Color Attachment of an image.  <a href="structpvr_1_1api_1_1impl_1_1_color_attachment_view_impl.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html">pvr::api::FboCreateParam</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fbo creation descriptor.  <a href="structpvr_1_1api_1_1_fbo_create_param.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1impl_1_1_depth_stencil_view_impl.html">pvr::api::impl::DepthStencilViewImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Api DepthStencilView wrapper. Use through the Reference Counted API object <a class="el" href="namespacepvr_1_1api.html#a0099c6787d2b822573fa8f95c9fc3237">pvr::api::DepthStencilView</a>. Contains a Color Attachment of an image.  <a href="structpvr_1_1api_1_1impl_1_1_depth_stencil_view_impl.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_fbo__.html">pvr::api::impl::Fbo_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A PVRApi FrameBufferObject implementation. Use through the Reference counted Framework object Fbo. Use a Context to create an FBO (IGraphicsContext::createFbo()).  <a href="classpvr_1_1api_1_1impl_1_1_fbo__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_fbo_impl.html">pvr::api::impl::FboImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A PVRApi FrameBufferObject implementation. Use through the Reference counted Framework object Fbo. Use a Context to create an FBO (IGraphicsContext::createFbo()).  <a href="classpvr_1_1api_1_1impl_1_1_fbo_impl.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_on_screen_fbo_create_param.html">pvr::api::OnScreenFboCreateParam</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">on screen Fbo creation descriptor - provides limited additional functionality when creating an on screen FBO primarily the ability to add additional color attachments.  <a href="structpvr_1_1api_1_1_on_screen_fbo_create_param.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -113,13 +113,9 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html">pvr::api</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PVRApi Namespace. <br/></td></tr>
+<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> mapping flags. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api_1_1impl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html">pvr::api::impl</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1impl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains internal objects and wrapped versions of the PVRApi module. <br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepvr_1_1platform"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1platform.html">pvr::platform</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1platform"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains functions and methods related to the wiring of the PVRApi library to the underlying platform, including extensions and the Context classes. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -128,25 +124,16 @@ Constant Groups</h2></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html">pvr::api</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PVRApi Namespace. <br/></td></tr>
+<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> mapping flags. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api_1_1impl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html">pvr::api::impl</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1impl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains internal objects and wrapped versions of the PVRApi module. <br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepvr_1_1platform"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1platform.html">pvr::platform</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1platform"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains functions and methods related to the wiring of the PVRApi library to the underlying platform, including extensions and the Context classes. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a8d935dcf60fe99740c37b6c56d7d7fbd"><td class="memItemLeft" align="right" valign="top">typedef RefCountedResource<br class="typebreak"/>
-&lt; impl::ColorAttachmentViewImpl &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a8d935dcf60fe99740c37b6c56d7d7fbd">pvr::api::ColorAttachmentView</a></td></tr>
-<tr class="separator:a8d935dcf60fe99740c37b6c56d7d7fbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0099c6787d2b822573fa8f95c9fc3237"><td class="memItemLeft" align="right" valign="top">typedef RefCountedResource<br class="typebreak"/>
-&lt; impl::DepthStencilViewImpl &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a0099c6787d2b822573fa8f95c9fc3237">pvr::api::DepthStencilView</a></td></tr>
-<tr class="separator:a0099c6787d2b822573fa8f95c9fc3237"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa13d37decce93d2f89d8c52ff7c7232d"><td class="memItemLeft" align="right" valign="top">typedef impl::FboImpl::Fbo_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#aa13d37decce93d2f89d8c52ff7c7232d">pvr::api::Fbo</a></td></tr>
-<tr class="separator:aa13d37decce93d2f89d8c52ff7c7232d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27b9833ef0620323502da3c3bbc9137e"><td class="memItemLeft" align="right" valign="top">typedef RefCountedResource<br class="typebreak"/>
+&lt; impl::Fbo_ &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">pvr::api::Fbo</a></td></tr>
+<tr class="separator:a27b9833ef0620323502da3c3bbc9137e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the definition of the FrameBuffer Object class. </p>

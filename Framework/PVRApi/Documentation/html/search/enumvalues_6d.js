@@ -1,6 +1,20 @@
 var searchData=
 [
-  ['max',['Max',['../namespacepvr_1_1api_1_1_blend_op.html#a422062f9b30e2952daf73a2e44431bdea18413e28a9f5e99b0f0e43023bb8fbd4',1,'pvr::api::BlendOp']]],
+  ['maskcols',['MaskCols',['../namespacepvr_1_1_gpu_datatypes_1_1_bits.html#ab31e3326f7cd7155544edcba68b74cd3a5ced2c79659637ec9aec4172b5a7c5bb',1,'pvr::GpuDatatypes::Bits']]],
+  ['masktype',['MaskType',['../namespacepvr_1_1_gpu_datatypes_1_1_bits.html#ab31e3326f7cd7155544edcba68b74cd3a8241d5a973809c143d2236fff2efc729',1,'pvr::GpuDatatypes::Bits']]],
+  ['maskvec',['MaskVec',['../namespacepvr_1_1_gpu_datatypes_1_1_bits.html#ab31e3326f7cd7155544edcba68b74cd3ae27becd41770de34ccfcd8b8d984667e',1,'pvr::GpuDatatypes::Bits']]],
+  ['mat2x',['Mat2x',['../namespacepvr_1_1_gpu_datatypes_1_1_matrix_columns.html#a46a34bd7a3f4040c52a624d7b61b2f70aedf1ba1948e6947948a2af860707f3cd',1,'pvr::GpuDatatypes::MatrixColumns']]],
+  ['mat2x2',['mat2x2',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107cab3604a450f673640efeb6cc79fac3d5a',1,'pvr::GpuDatatypes']]],
+  ['mat2x3',['mat2x3',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107caa038854887dc41ae8c0e8fc589a7ffe6',1,'pvr::GpuDatatypes']]],
+  ['mat2x4',['mat2x4',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107ca5db3b971a7c2635e706b9f1594959223',1,'pvr::GpuDatatypes']]],
+  ['mat3x',['Mat3x',['../namespacepvr_1_1_gpu_datatypes_1_1_matrix_columns.html#a46a34bd7a3f4040c52a624d7b61b2f70a4c18f36fc3a81d4e6658fe281214f3b9',1,'pvr::GpuDatatypes::MatrixColumns']]],
+  ['mat3x2',['mat3x2',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107caf3c350ed6ba0bb70f2f5e56dda599b76',1,'pvr::GpuDatatypes']]],
+  ['mat3x3',['mat3x3',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107cae09c5d1cbfe2850253eebe02d9243f91',1,'pvr::GpuDatatypes']]],
+  ['mat3x4',['mat3x4',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107ca18c35a2688323343f6742721409fc932',1,'pvr::GpuDatatypes']]],
+  ['mat4x',['Mat4x',['../namespacepvr_1_1_gpu_datatypes_1_1_matrix_columns.html#a46a34bd7a3f4040c52a624d7b61b2f70ad13f2d547b0e271755bd5501caa13726',1,'pvr::GpuDatatypes::MatrixColumns']]],
+  ['mat4x2',['mat4x2',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107ca2fd52bf2a55e7ac66693901eef7db51e',1,'pvr::GpuDatatypes']]],
+  ['mat4x3',['mat4x3',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107ca21e1d2f16376c275f9b1a7b5fa0ee3e6',1,'pvr::GpuDatatypes']]],
+  ['mat4x4',['mat4x4',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107ca0db5a350feb7f8649941506cfabcbc35',1,'pvr::GpuDatatypes']]],
   ['max3dtexturesize',['Max3DTextureSize',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_texture_and_samplers.html#a695573d1b935d53701f4a44d2bb69590ad0223134c72ce23f6552230ddc51d362',1,'pvr::api::gpuCapabilities::TextureAndSamplers']]],
   ['maxarraytexturelayer',['MaxArrayTextureLayer',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_texture_and_samplers.html#a695573d1b935d53701f4a44d2bb69590ab7d4aba4b4a84e8f837263c63939df8c',1,'pvr::api::gpuCapabilities::TextureAndSamplers']]],
   ['maxcombineduniformblocks',['MaxCombinedUniformBlocks',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_uniform.html#a6833c9d831d8f6091c010bedb298c8b6a0356856bd18939aa28c25fa9186e649e',1,'pvr::api::gpuCapabilities::Uniform']]],
@@ -22,6 +36,5 @@ var searchData=
   ['maxuniformblocksize',['MaxUniformBlockSize',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_uniform.html#a6833c9d831d8f6091c010bedb298c8b6abf033cf49f3d7b193fadbe725000b405',1,'pvr::api::gpuCapabilities::Uniform']]],
   ['maxuniformbufferbindings',['MaxUniformBufferBindings',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_uniform.html#a6833c9d831d8f6091c010bedb298c8b6a74203fdbe20f9bcc530b6663dce891cd',1,'pvr::api::gpuCapabilities::Uniform']]],
   ['maxvertices',['MaxVertices',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_element.html#a38e1ceb0201ed17c20594b3e60cc2e47acd4071ff341cb7ae9064a7ae0416136b',1,'pvr::api::gpuCapabilities::Element']]],
-  ['min',['Min',['../namespacepvr_1_1api_1_1_blend_op.html#a422062f9b30e2952daf73a2e44431bdea92c4c9ef640a6ae1191a80b607767282',1,'pvr::api::BlendOp']]],
   ['minprogramtexeloffset',['MinProgramTexelOffset',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_shader_and_program.html#a65203cd3a620abd0249525778de82124a232bdf6d85dcbc07ae7ef2118c03a43d',1,'pvr::api::gpuCapabilities::ShaderAndProgram']]]
 ];

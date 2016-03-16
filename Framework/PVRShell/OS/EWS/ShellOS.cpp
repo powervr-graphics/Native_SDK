@@ -18,12 +18,12 @@
 #include <unistd.h>
 #include <cstdarg>
 
-
+using namespace pvr::types;
 namespace pvr {
 namespace system{
 struct InternalOS
 {
-	bool isInitialised;
+	bool isInitialized;
 
 	EWS_DISPLAY display;
 	EWS_WINDOW  window;
@@ -98,16 +98,18 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	return Result::Success;
 }
 
-Result::Enum ShellOS::initialiseWindow(DisplayAttributes& data)
+Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	EWS_COORD windowPosition;
 	EWS_SIZE windowSize;
 	EWS_PIXELFORMAT ePixelFormat;
 
 
-	m_OSImplementation->isInitialised = true;
+	m_OSImplementation->isInitialized = true;
 	data.fullscreen = true;
 	data.x = data.y = 0;
+	//data.width = data.height = 0; //TODO: Hmmm, there doesn't appear to be a way of getting the monitor resolution.
+	//We may have to rethink the returning of the width and height so you can only get the context width and height.
 	data.width = 1280;
 	data.height = 1024;
 
@@ -211,7 +213,7 @@ Result::Enum ShellOS::handleOSEvents()
 	return Result::Success;
 }
 
-bool ShellOS::isInitialised()
+bool ShellOS::isInitialized()
 {
 	return m_OSImplementation && m_OSImplementation->window;
 }

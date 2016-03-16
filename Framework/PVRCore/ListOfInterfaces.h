@@ -349,7 +349,7 @@ public:
 
 		//The first argument gets incremented. That's why we kept it.
 		NodeType* theItem = helpers::aligned_construct<NodeOfConcreteClasses<Interface_, ItemType>, T1>(m_firstEmpty, m_remainingSpace, t1);
-		//!!! We need to adjust the pointer for correct polymorphic behaviour !!!
+		//! We need to adjust the pointer for correct polymorphic behaviour !
 		//So, first reinterpret it to its ORIGINAL constructed type, and then cast it to the interfacePtr type.
 		// :) Complete type erasure :)
 		//Also, tie up loose ends: Now that we know the actual type of the item it points to, adjust the actual value pointed to by m_last->next
@@ -383,7 +383,7 @@ public:
 		NodeType* theItem =
 		  helpers::aligned_construct<NodeOfConcreteClasses<Interface_, ItemType>, T1, T2>(m_firstEmpty, m_remainingSpace, t1, t2);
 
-		//!!! We need to adjust the pointer for correct polymorphic behaviour !!!
+		//! We need to adjust the pointer for correct polymorphic behaviour !
 		//So, first reinterpret it to its ORIGINAL constructed type, and then cast it to the interfacePtr type.
 		// :) Complete type erasure :)
 		//Also, tie up loose ends: Now that we know the actual type of the item it points to, adjust the actual value pointed to by m_last->next
@@ -417,7 +417,7 @@ public:
 		//ErasedNodeType oldLast = m_last;
 		NodeType* theItem =
 		  helpers::aligned_construct<NodeOfConcreteClasses<Interface_, ItemType>, T1, T2, T3>(m_firstEmpty, m_remainingSpace, t1, t2, t3);
-		//!!! We need to adjust the pointer for correct polymorphic behaviour !!!
+		//! We need to adjust the pointer for correct polymorphic behaviour !
 		//So, first reinterpret it to its ORIGINAL constructed type, and then cast it to the interfacePtr type.
 		// :) Complete type erasure :)
 		//Also, tie up loose ends: Now that we know the actual type of the item it points to, adjust the actual value pointed to by m_last->next

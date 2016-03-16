@@ -251,7 +251,7 @@ bool TextureReaderDDS::readNextAsset(Texture& asset)
 		}
 	}
 
-	// Initialise the texture to allocate data
+	// Initialize the texture to allocate data
 	asset = Texture(textureHeader, NULL);
 
 	// Read in the texture data

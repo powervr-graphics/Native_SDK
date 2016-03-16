@@ -39,6 +39,8 @@ GLuint msaaDepthBuffer = 0;
 //TODO: Lots of error checking.
 using namespace pvr::system;
 
+pvr::uint32 PlatformContext::getSwapChainLength()const{ return 1; }
+
 void PlatformContext::release()
 {
     glDeleteFramebuffers(1,&framebuffer);
@@ -49,7 +51,7 @@ void PlatformContext::release()
     glDeleteRenderbuffers(1,&msaaDepthBuffer);
     framebuffer = renderbuffer = depthBuffer = msaaFrameBuffer = msaaColorBuffer = msaaDepthBuffer = 0;
     
-    /*if (m_bInitialised)
+    /*if (m_bInitialized)
      {
      //TODO: Too general? Potential of screwing a lot up if you say, set the display to something random before returning. Probably a non-issue really though as OS does a cleanup anyway.
      // Check the current context/surface/display. If they are equal to the handles in this class, remove them from the current context
@@ -81,12 +83,12 @@ void PlatformContext::release()
      
      eglTerminate(m_apiContextHandles.display);
      }
-     m_bInitialised = false;
+     m_bInitialized = false;
      }*/
 	 m_maxApiVersion = Api::Unspecified;
 }
 
-static inline pvr::Result::Enum preInitialise(OSManager& mgr, NativePlatformHandles& handles)
+static inline pvr::Result::Enum preInitialize(OSManager& mgr, NativePlatformHandles& handles)
 {
     if (!handles.get())
     {
@@ -95,53 +97,12 @@ static inline pvr::Result::Enum preInitialise(OSManager& mgr, NativePlatformHand
     return pvr::Result::Success;
 }
 
-pvr::Result::Enum PlatformContext::init(){
-    preInitialise(m_OSManager,m_platformContextHandles);
-	populateMaxApiVersion();
-    
-    if (m_OSManager.getApiTypeRequired() == Api::Unspecified)
-    {
-        if (m_OSManager.getMinApiTypeRequired() == Api::Unspecified)
-        {
-            Api::Enum version = getMaxApiVersion();
-            m_OSManager.setApiTypeRequired(version);
-            Log(Log.Information, "Unspecified target API -- Setting to max API level : %s", Api::getApiName(version));
-        }
-        else
-        {
-            Api::Enum version = std::max(m_OSManager.getMinApiTypeRequired(), getMaxApiVersion());
-            Log(Log.Information, "Requested minimum API level : %s. Will actually create %s since it is supported.",
-                Api::getApiName(m_OSManager.getMinApiTypeRequired()), Api::getApiName(getMaxApiVersion()));
-            m_OSManager.setApiTypeRequired(version);
-        }
-    }
-    else
-    {
-        Log(Log.Information, "Forcing specific API level: %s", Api::getApiName(m_OSManager.getApiTypeRequired()));
-    }
-    
-    if (m_OSManager.getApiTypeRequired() > getMaxApiVersion())
-    {
-        Log(Log.Error, "================================================================================\n"
-            "API level requested [%s] was not supported. Max supported API level on this device is [%s]\n"
-            "**** APPLICATION WILL EXIT ****\n"
-            "================================================================================",
-            Api::getApiName(m_OSManager.getApiTypeRequired()), Api::getApiName(getMaxApiVersion()));
-        return Result::UnsupportedRequest;
-    }
-    
-    return init(reinterpret_cast<const NativeDisplay>(m_OSManager.getDisplay()),
-                reinterpret_cast<const NativeWindow>(m_OSManager.getWindow()),
-                m_OSManager.getDisplayAttributes(),m_OSManager.getApiTypeRequired());
-    return pvr::Result::Success;
-}
+
 
 void PlatformContext::populateMaxApiVersion()
 {
 	m_maxApiVersion = Api::Unspecified;
 	Api::Enum graphicsapi = Api::OpenGLESMaxVersion;
-	bool supported;
-	Result::Enum result;
 	while (graphicsapi > Api::Unspecified)
 	{
 		const char* esversion = (graphicsapi == Api::OpenGLES31 ? "3.1" : graphicsapi == Api::OpenGLES3 ? "3.0" : graphicsapi == Api::OpenGLES2 ?
@@ -159,7 +120,7 @@ void PlatformContext::populateMaxApiVersion()
             case Api::OpenGLES3:
                 context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
                 break;
-            default:PVR_ASSERT(false && "Unsupported Api");
+            default:assertion(false, "Unsupported Api");
         }
     
         if(context != nil)
@@ -188,27 +149,26 @@ bool PlatformContext::isApiSupported(Api::Enum apiLevel)
 	return apiLevel <= m_maxApiVersion;
 }
 
-pvr::Result::Enum PlatformContext::init(const NativeDisplay& nativeDisplay, const NativeWindow& nativeWindow,
-                                        DisplayAttributes& attributes, const Api::Enum& apiContextType)
+static pvr::Result::Enum init(PlatformContext& platformContext,const NativeDisplay& nativeDisplay, const NativeWindow& nativeWindow, DisplayAttributes& attributes, const pvr::Api::Enum& apiContextType,
+                              UIView** outView, EAGLContext** outContext)
 {
-    
     pvr::Result::Enum result = pvr::Result::Success;
-    Api::Enum apiRequest = apiContextType;
-    if(apiContextType == Api::Unspecified || !isApiSupported(apiContextType))
+    pvr::Api::Enum apiRequest = apiContextType;
+    if(apiContextType == pvr::Api::Unspecified || !platformContext.isApiSupported(apiContextType))
     {
-        apiRequest = getMaxApiVersion();
-        m_OSManager.setApiTypeRequired(apiRequest);
-		Log(Log.Information, "Unspecified target API. Setting to max API level, which is %s", 
-            Api::getApiName(apiRequest));
+        apiRequest = platformContext.getMaxApiVersion();\
+        platformContext.getOsManager().setApiTypeRequired(apiRequest);
+        pvr::Log(pvr::Log.Information, "Unspecified target API. Setting to max API level, which is %s",
+            pvr::Api::getApiName(apiRequest));
     }
     
-    if(!m_initialised)
+    if(!platformContext.isInitialized())
     {
         UIView* view;
         EAGLContext* context;
         UIWindow* nw = (__bridge UIWindow*)nativeWindow;
         // UIWindow* nw = static_cast<UIWindow*>(nativeWindow);
-        // Initialise our UIView surface and add it to our view
+        // Initialize our UIView surface and add it to our view
         view = [[APIView alloc] initWithFrame:[nw bounds]];
         CAEAGLLayer *eaglLayer = (CAEAGLLayer *) [view layer];
         eaglLayer.opaque = YES;
@@ -244,15 +204,15 @@ pvr::Result::Enum PlatformContext::init(const NativeDisplay& nativeDisplay, cons
         // create our context
         switch(apiRequest)
         {
-            case Api::OpenGLES2:
-                Log(Log.Debug, "EGL context creation: Setting EGL_OPENGL_ES2_BIT");
+            case pvr::Api::OpenGLES2:
+                pvr::Log(pvr::Log.Debug, "EGL context creation: Setting EGL_OPENGL_ES2_BIT");
                 api = EAGLRenderingAPI(kEAGLRenderingAPIOpenGLES2);
                 break;
-            case Api::OpenGLES3:
-                Log(Log.Debug, "EGL context creation: EGL_OPENGL_ES3_BIT");
+            case pvr::Api::OpenGLES3:
+                pvr::Log(pvr::Log.Debug, "EGL context creation: EGL_OPENGL_ES3_BIT");
                 api = EAGLRenderingAPI(kEAGLRenderingAPIOpenGLES3);
                 break;
-            default:PVR_ASSERT(false && "Unsupported Api");
+            default:pvr::assertion(0, "Unsupported Api");
         }
         
         context = [[EAGLContext alloc] initWithAPI:api];
@@ -394,18 +354,64 @@ pvr::Result::Enum PlatformContext::init(const NativeDisplay& nativeDisplay, cons
         
         glBindFramebuffer(GL_FRAMEBUFFER, oldFramebuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, oldRenderbuffer);
-        
-        m_platformContextHandles->context = (__bridge VoidEAGLContext*)context;
+        *outContext = context;
 #if !defined(TARGET_OS_IPHONE)
-        m_apiContextHandles.drawSurface = view;
+        *outView = view;
 #endif
-        m_initialised = true;
     }
     
     return result;
 }
 
-pvr::Result::Enum PlatformContext::makeCurrent()
+pvr::Result::Enum PlatformContext::init(){
+    preInitialize(m_OSManager,m_platformContextHandles);
+    populateMaxApiVersion();
+    
+    if (m_OSManager.getApiTypeRequired() == Api::Unspecified)
+    {
+        if (m_OSManager.getMinApiTypeRequired() == Api::Unspecified)
+        {
+            Api::Enum version = getMaxApiVersion();
+            m_OSManager.setApiTypeRequired(version);
+            Log(Log.Information, "Unspecified target API -- Setting to max API level : %s", Api::getApiName(version));
+        }
+        else
+        {
+            Api::Enum version = std::max(m_OSManager.getMinApiTypeRequired(), getMaxApiVersion());
+            Log(Log.Information, "Requested minimum API level : %s. Will actually create %s since it is supported.",
+                Api::getApiName(m_OSManager.getMinApiTypeRequired()), Api::getApiName(getMaxApiVersion()));
+            m_OSManager.setApiTypeRequired(version);
+        }
+    }
+    else
+    {
+        Log(Log.Information, "Forcing specific API level: %s", Api::getApiName(m_OSManager.getApiTypeRequired()));
+    }
+    
+    if (m_OSManager.getApiTypeRequired() > getMaxApiVersion())
+    {
+        Log(Log.Error, "================================================================================\n"
+            "API level requested [%s] was not supported. Max supported API level on this device is [%s]\n"
+            "**** APPLICATION WILL EXIT ****\n"
+            "================================================================================",
+            Api::getApiName(m_OSManager.getApiTypeRequired()), Api::getApiName(getMaxApiVersion()));
+        return Result::UnsupportedRequest;
+    }
+    EAGLContext* context;
+    UIView* view;
+    if(::init(*this, reinterpret_cast<const NativeDisplay>(m_OSManager.getDisplay()),
+                reinterpret_cast<const NativeWindow>(m_OSManager.getWindow()),
+            m_OSManager.getDisplayAttributes(),m_OSManager.getApiTypeRequired(),&view,&context) == Result::Success)
+    {
+        m_platformContextHandles->context = (__bridge VoidEAGLContext*)context;
+        m_platformContextHandles->view = (__bridge VoidUIView*)view;
+        m_initialized = true;
+        return pvr::Result::Success;
+    }
+    return pvr::Result::NotInitialized;
+}
+
+bool PlatformContext::makeCurrent()
 {
     EAGLContext* context = (__bridge EAGLContext*)(m_platformContextHandles->context);
     
@@ -422,12 +428,12 @@ pvr::Result::Enum PlatformContext::makeCurrent()
     if(context != [EAGLContext currentContext])
         [EAGLContext setCurrentContext:context];
     
-    return pvr::Result::Success;
+    return true;
 }
 
-pvr::Result::Enum PlatformContext::presentBackbuffer()
+bool PlatformContext::presentBackbuffer()
 {
-    pvr::Result::Enum result;
+    bool result;
     EAGLContext* context = (__bridge EAGLContext*)(m_platformContextHandles->context);
     EAGLContext* oldContext = [EAGLContext currentContext];
     
@@ -441,13 +447,10 @@ pvr::Result::Enum PlatformContext::presentBackbuffer()
         glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE, msaaFrameBuffer);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE, framebuffer);
         glResolveMultisampleFramebufferAPPLE();
-        
-
     }
     glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
     
-    result = [context presentRenderbuffer:GL_RENDERBUFFER] != NO ? pvr::Result::Success : pvr::Result::UnknownError;
-    
+    result = [context presentRenderbuffer:GL_RENDERBUFFER] != NO ? true : false;
     
     if(oldContext != context)
         [EAGLContext setCurrentContext:oldContext];

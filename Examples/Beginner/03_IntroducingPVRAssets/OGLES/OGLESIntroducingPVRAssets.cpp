@@ -5,20 +5,20 @@
 \Copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Shows how to load POD files and play the animation with basic  lighting
 ***********************************************************************************************************************/
-//Main include file for the PVRShell library.
-#include "PVRShell/PVRShell.h"
+//Main include file for the PVRShell library. Use this file when you will not be linking the PVRApi library.
+#include "PVRShell/PVRShellNoPVRApi.h"
 //Main include file for the PVRAssets library.
 #include "PVRAssets/PVRAssets.h"
 
 //Used to manually decompress PVRTC compressed textures on platforms that do not support them.
 #include "PVRAssets/Texture/PVRTDecompress.h"
 
-//The OpenGL ES bindings used throughout this SDK. Use by calling gl::initGL and then using all the OpenGL ES functions
-//from the gl::namespace.
-#include "PVRApi/OGLES/OpenGLESBindings.h"
+//The OpenGL ES bindings used throughout this SDK. Use by calling gl::initGL and then using all the OpenGL ES functions from the gl::namespace.
+// (So, glTextImage2D becomes gl::TexImage2D)
+#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
 
 using namespace pvr;
-
+using namespace pvr::types;
 // Index to bind the attributes to vertex shaders
 const pvr::uint32 VertexArray = 0;
 const pvr::uint32 NormalArray = 1;
@@ -908,7 +908,7 @@ Result::Enum textureUpload(const assets::Texture& texture, GLuint& outTextureNam
 	* Initial error checks
 	*****************************************************************************/
 	// Check for any glError occurring prior to loading the texture, and warn the user.
-	PVR_ASSERT((&texture != NULL) && "TextureUtils.h:textureUpload:: Invalid Texture")
+	assertion(&texture != NULL, "TextureUtils.h:textureUpload:: Invalid Texture");
 
 	// Check that the texture is valid.
 	if (!texture.getDataSize())
@@ -1236,7 +1236,7 @@ Result::Enum textureUpload(const assets::Texture& texture, GLuint& outTextureNam
 		{
 				for (uint32 uiMIPLevel = 0; uiMIPLevel < textureToUse->getNumberOfMIPLevels(); ++uiMIPLevel)
 				{
-					//Iterate through 6 faces regardless, as these should always be iterated through. We fill in the blanks with uninitialised data for uncompressed textures, or repeat faces for compressed data.
+					//Iterate through 6 faces regardless, as these should always be iterated through. We fill in the blanks with uninitialized data for uncompressed textures, or repeat faces for compressed data.
 					for (uint32 uiFace = 0; uiFace < 6; ++uiFace)
 					{
 						GLenum eTexImageTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
@@ -1297,7 +1297,7 @@ Result::Enum OGLESIntroducingPVRAssets::loadTexturePVR(const StringHash& filenam
 	result = assets::textureLoad(assetStream, assets::TextureFileFormat::PVR, tempTexture);
 	if (result == Result::Success)
 	{
-		textureUpload(tempTexture, textureHandle, getGraphicsContext()->getApiType(), true);
+		textureUpload(tempTexture, textureHandle, pvr::Api::OpenGLES2, true);
 	}
 	if (result != Result::Success)
 	{
@@ -1384,14 +1384,14 @@ bool OGLESIntroducingPVRAssets::loadShaders()
 	fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
 
 	GLuint shaders[2];
-	if (loadShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES2), pvr::ShaderType::VertexShader, 0, 0,
+	if (loadShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES2), ShaderType::VertexShader, 0, 0,
 	               shaders[0]) != pvr::Result::Success)
 	{
 		return false;
 	}
 
 	fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
-	if (loadShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES2), pvr::ShaderType::FragmentShader, 0,
+	if (loadShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES2), ShaderType::FragmentShader, 0,
 	               0, shaders[1]) != pvr::Result::Success)
 	{
 		return false;
@@ -1504,7 +1504,7 @@ pvr::Result::Enum OGLESIntroducingPVRAssets::quitApplication() {	return pvr::Res
 pvr::Result::Enum OGLESIntroducingPVRAssets::initView()
 {
 	pvr::string ErrorStr;
-	//Initialise the PowerVR OpenGL bindings. Must be called before using any of the gl:: commands.
+	//Initialize the PowerVR OpenGL bindings. Must be called before using any of the gl:: commands.
 	gl::initGl();
 	//	Initialize VBO data
 	if (!LoadVbos())
@@ -1539,7 +1539,7 @@ pvr::Result::Enum OGLESIntroducingPVRAssets::initView()
 	bool isRotated = this->isScreenRotated() && this->isFullScreen();
 	if (isRotated)
 	{
-		projection = pvr::math::perspectiveFov(scene->getCamera(0).getFOV(), (float)this->getHeight(),
+        projection = pvr::math::perspectiveFov(pvr::Api::OpenGLES2,scene->getCamera(0).getFOV(), (float)this->getHeight(),
 		                                       (float)this->getWidth(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar(),
 		                                       glm::pi<pvr::float32>() * .5f);// rotate by 90 degree
 	}
@@ -1686,7 +1686,7 @@ void OGLESIntroducingPVRAssets::drawMesh(int nodeIndex)
 		{
 			// Indexed Triangle list
 			// Are our face indices unsigned shorts? If they aren't, then they are unsigned ints
-			GLenum type = (mesh.getFaces().getDataType() == pvr::IndexType::IndexType16Bit) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+			GLenum type = (mesh.getFaces().getDataType() == IndexType::IndexType16Bit) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 			gl::DrawElements(GL_TRIANGLES, mesh.getNumFaces() * 3, type, 0);
 		}
 		else
@@ -1699,7 +1699,7 @@ void OGLESIntroducingPVRAssets::drawMesh(int nodeIndex)
 	{
 		pvr::uint32 offset = 0;
 		// Are our face indices unsigned shorts? If they aren't, then they are unsigned ints
-		GLenum type = (mesh.getFaces().getDataType() == pvr::IndexType::IndexType16Bit) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+		GLenum type = (mesh.getFaces().getDataType() == IndexType::IndexType16Bit) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
 		for (int i = 0; i < (int)mesh.getNumStrips(); ++i)
 		{

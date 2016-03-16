@@ -12,6 +12,7 @@
 #pragma warning(disable:4100)
 
 #include <vector>
+#include <array>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -153,7 +154,7 @@ typedef float                  float32;
 typedef double                 float64;
 
 
-namespace {
+namespace internal {
 // If the size of various types does not equal the expected size, throw a compiler error
 PVR_STATIC_ASSERT(sizeof(byte) == 1, byte_size_invalid);
 PVR_STATIC_ASSERT(sizeof(char8) == 1, char8_size_invalid);
@@ -172,6 +173,94 @@ PVR_STATIC_ASSERT(sizeof(float16) == 2, float16_size_invalid);
 PVR_STATIC_ASSERT(sizeof(float32) == 4, float32_size_invalid);
 PVR_STATIC_ASSERT(sizeof(float64) == 8, float64_size_invalid);
 }
+
+/*!*********************************************************************************************************************
+\brief         Enumeration of all API types supported by this implementation
+***********************************************************************************************************************/
+namespace Api {
+enum Enum
+{
+	Unspecified = 0,
+	//OpenGL,
+	OpenGLES2,
+	OpenGLES3,
+	OpenGLES31,
+	OpenGLESMaxVersion = OpenGLES31,
+	Vulkan,
+	Count,
+};
+
+/*!*******************************************************************************************
+\brief  Get the api code
+\return Api code
+*********************************************************************************************/
+inline const char* getApiCode(Enum api)
+{
+	static const char* ApiCodes[] =
+	{
+		"",
+		"ES2",
+		"ES3",
+		"ES31",
+		"VK",
+	};
+	return ApiCodes[api];
+}
+
+/*!*******************************************************************************************
+\brief  Get the api family min version
+\return Api family min
+*********************************************************************************************/
+inline Enum getApiFamilyMin(Enum api)
+{
+	static Enum ApiCodes[] =
+	{
+		Unspecified,
+		OpenGLES2,
+		OpenGLES2,
+		OpenGLES2,
+		Vulkan,
+	};
+	return ApiCodes[api];
+}
+
+/*!*******************************************************************************************
+\brief  Get the api family max version
+\return Api family Max
+*********************************************************************************************/
+inline Enum getApiFamilyMax(Enum api)
+{
+	static Enum ApiCodes[] =
+	{
+		Unspecified,
+		OpenGLES31,
+		OpenGLES31,
+		OpenGLES31,
+		Vulkan,
+	};
+	return ApiCodes[api];
+}
+
+/*!*******************************************************************************************
+\brief  Get the api name string of the given Enumeration
+\return Api name string
+*********************************************************************************************/
+inline const char* getApiName(Enum api)
+{
+	static const char* ApiCodes[] =
+	{
+		"Unknown",
+		"OpenGL ES 2.0",
+		"OpenGL ES 3.0",
+		"OpenGL ES 3.1",
+		"Vulkan",
+	};
+	return ApiCodes[api];
+}
+}
+
+namespace types {
+
 /*!*******************************************************************************************
 \brief  Enumeration containing all possible API object types (Images, Buffers etc.).
 *********************************************************************************************/
@@ -187,196 +276,7 @@ enum Enum : unsigned char
 	ImageBO,
 	NumTypes
 };
-};
-
-/*!*********************************************************************************************************************
-\brief         Enumeration of all API types supported by this implementation
-***********************************************************************************************************************/
-namespace Api {
-enum Enum
-{
-	Unspecified = 0,
-	//OpenGL,
-	OpenGLES2,
-	OpenGLES3,
-	OpenGLES31,
-	OpenGLESMaxVersion = OpenGLES31,
-	Count,
-};
-
-
-inline const char* getApiCode(Enum api)
-{
-	static const char* ApiCodes[] =
-	{
-		"",
-		"ES2",
-		"ES3",
-		"ES31",
-	};
-	return ApiCodes[api];
 }
-inline const char* getApiName(Enum api)
-{
-	static const char* ApiCodes[] =
-	{
-		"Unknown",
-		"OpenGL ES 2.0",
-		"OpenGL ES 3.0",
-		"OpenGL ES 3.1",
-	};
-	return ApiCodes[api];
-}
-}
-
-
-/*!***************************************************************************
-\brief Enumeration of Colorspaces (Linear, SRGB).
-*****************************************************************************/
-namespace ColorSpace {
-	enum Enum
-	{
-		lRGB,
-		sRGB,
-		NumSpaces
-	};
-};
-
-/*!*********************************************************************************************
-\brief  Enumeration containing all possible Primitive topologies (Point, line trianglelist etc.).
-***********************************************************************************************/
-namespace PrimitiveTopology {
-enum Enum
-{
-	Points,
-	Lines,
-	LineStrip,
-	LineLoop,
-	TriangleList, //< triangle list
-	TriangleStrips,//< triangle strip
-	TriangleFan,//< triangle patch list
-	TriPatchList,//< triangle patch list
-	QuadPatchList,//< quad patch list};
-	None
-};
-};
-
-/*!*********************************************************************************************
-\brief  Enumeration all possible values of operations to be performed on initially Loading a
-        Framebuffer Object.
-***********************************************************************************************/
-namespace LoadOp {
-enum Enum
-{
-	Load, //<
-	Ignore, //< ignore writing to the fbo and keep old data
-	Clear//< clear the fbo
-};
-}
-
-/*!*********************************************************************************************
-\brief  Enumerates all possible values of operations to be performed when Storing to a
-        Framebuffer Object.
-***********************************************************************************************/
-namespace StoreOp {
-enum Enum
-{
-	Store,//< write the source to the destination
-	ResolveMsaa,//<
-	Ignore,//< don't write the source to the destination
-};
-}
-
-/*!*********************************************************************************************
-\brief  Pre-defined Result codes (success and generic errors).
-***********************************************************************************************/
-namespace Result {
-enum Enum
-{
-	Success,
-	UnknownError,
-
-	//Generic Errors
-	OutOfMemory,
-	InvalidArgument,
-	AlreadyInitialised,
-	NotInitialised,
-	UnsupportedRequest,
-	FileVersionMismatch,
-
-	//Stream Errors
-	NotReadable,
-	NotWritable,
-	EndOfStream,
-	UnableToOpen,
-	NoData,
-
-	//Array Errors
-	OutOfBounds,
-	NotFound,
-
-	//Map Errors
-	KeyAlreadyExists,
-
-	//Shell Error
-	ExitRenderFrame, // Used to exit the renderscene loop in the shell
-
-	//Resource Error
-	InvalidData,
-};
-};
-
-/*!*********************************************************************************************
-\brief  Pre-defined Capability presense values.
-***********************************************************************************************/
-namespace Capability {
-enum Enum
-{
-	Unsupported,
-	Immutable,
-	Mutable
-};
-};
-
-/*!*********************************************************************************************
-\brief  Represents a buffer of Unsigned Bytes. Used to store raw data.
-***********************************************************************************************/
-typedef std::vector<byte> UCharBuffer;
-
-/*!*********************************************************************************************
-\brief  Represents a buffer of Signed Bytes. Used to store raw data.
-***********************************************************************************************/
-typedef std::vector<char8> CharBuffer;
-
-/*!*********************************************************************************************
-\brief  Representation of raw data. Used to store raw data that is logically grouped in blocks
-        with a stride.
-***********************************************************************************************/
-class StridedBuffer : public UCharBuffer { public: uint16 stride; };
-
-
-/*!*********************************************************************************************
-\brief  A fixed size array data structure wrapper.
-\param  T1 The type of component in the array.
-\param  Size The size of the array.
-***********************************************************************************************/
-template<typename T1, size_t size>
-struct StaticArray
-{
-private:
-	T1 m_data[size];
-public:
-	/*!*********************************************************************************************
-	\brief  Array indexing.
-	***********************************************************************************************/
-	const T1& operator[](size_t idx) const { return m_data[idx]; }
-	/*!*********************************************************************************************
-	\brief  Array indexing.
-	***********************************************************************************************/
-	T1& operator[](size_t idx) { return m_data[idx]; }
-};
-
-#define BIT(shift)((1) << (shift))
 
 /*!*********************************************************************************************
 \brief  An enumeration that defines data types used throughout the Framework.
@@ -407,6 +307,7 @@ enum Enum
 
 	Custom = 1000
 };
+
 /*!*********************************************************************************************************************
 \brief Return the Size of a DataType.
 \param[in] type The Data type
@@ -417,38 +318,31 @@ inline uint32 size(Enum type)
 	switch (type)
 	{
 	default:
-		PVR_ASSERT(false);
+		PVR_ASSERTION(false);
 		return 0;
 	case DataType::Float32:
-		return static_cast<uint32>(sizeof(float));
 	case DataType::Int32:
 	case DataType::UInt32:
-		return static_cast<uint32>(sizeof(int));
+	case DataType::RGBA:
+	case DataType::ABGR:
+	case DataType::ARGB:
+	case DataType::D3DCOLOR:
+	case DataType::UBYTE4:
+	case DataType::DEC3N:
+	case DataType::Fixed16_16:
+		return 4;
 	case DataType::Int16:
 	case DataType::Int16Norm:
 	case DataType::UInt16:
-		return static_cast<uint32>(sizeof(unsigned short));
-	case DataType::RGBA:
-		return static_cast<uint32>(sizeof(unsigned int));
-	case DataType::ABGR:
-		return static_cast<uint32>(sizeof(unsigned int));
-	case DataType::ARGB:
-		return static_cast<uint32>(sizeof(unsigned int));
-	case DataType::D3DCOLOR:
-		return static_cast<uint32>(sizeof(unsigned int));
-	case DataType::UBYTE4:
-		return static_cast<uint32>(sizeof(unsigned int));
-	case DataType::DEC3N:
-		return static_cast<uint32>(sizeof(unsigned int));
-	case DataType::Fixed16_16:
-		return static_cast<uint32>(sizeof(unsigned int));
+		return 2;
 	case DataType::UInt8:
 	case DataType::UInt8Norm:
 	case DataType::Int8:
 	case DataType::Int8Norm:
-		return static_cast<uint32>(sizeof(unsigned char));
+		return 1;
 	}
 }
+
 /*!*********************************************************************************************************************
 \brief Return the number of components in a datatype.
 \param[in] type The datatype
@@ -459,7 +353,7 @@ inline uint32 componentCount(Enum type)
 	switch (type)
 	{
 	default:
-		PVR_ASSERT(false);
+		PVR_ASSERTION(false);
 		return 0;
 
 	case DataType::Float32:
@@ -490,7 +384,7 @@ inline uint32 componentCount(Enum type)
 
 /*!*********************************************************************************************
 \brief       Return if the format is Normalized (represents a range between 0..1 for unsigned types
-			or between -1..1 for signed types)
+            or between -1..1 for signed types)
 \param       type The format to test.
 \return      True if the format is Normalised.
 \description A Normalised format is a value that is stored as an Integer, but that actually
@@ -501,10 +395,389 @@ of the integer. For example, for a normalised unsigned byte value, the value
 inline bool isNormalised(Enum type)
 {
 	return (type == DataType::Int8Norm || type == DataType::UInt8Norm
-		|| type == DataType::Int16Norm
-		|| type == DataType::UInt16Norm);
+	        || type == DataType::Int16Norm
+	        || type == DataType::UInt16Norm);
+}
+}// DataType
+
+/*!***************************************************************************
+\brief Enumeration of Colorspaces (Linear, SRGB).
+*****************************************************************************/
+namespace ColorSpace {
+enum Enum
+{
+	lRGB,
+	sRGB,
+	NumSpaces
+};
 }
 
+/*!*********************************************************************************************
+\brief  Enumeration containing all possible Primitive topologies (Point, line trianglelist etc.).
+***********************************************************************************************/
+namespace PrimitiveTopology {
+enum Enum
+{
+	//POSITION-SENSITIVE. Do not renumber unless also refactoring ConvertToVkTypes, ConvertToGlesTypes.
+	// TODO: ADD ADJACENCY
+	// TODO: Remove QUAD patches and refactor.
+	Points = 0,
+	Lines,
+	LineStrip,
+	LineLoop,
+	TriangleList, //< triangle list
+	TriangleStrips,//< triangle strip
+	TriangleFan,//< triangle patch list
+	TriPatchList,//< triangle patch list
+	QuadPatchList,//< quad patch list};
+	None
+};
+}
+
+/*!*********************************************************************************************
+\brief  Enumeration all possible values of operations to be performed on initially Loading a
+        Framebuffer Object.
+***********************************************************************************************/
+namespace LoadOp {
+enum Enum
+{
+	Load,  //< Load the contents from the fbo from previous
+	Clear, //< Clear the fbo
+	Ignore, //< Ignore writing to the fbo and keep old data
+};
+}
+
+/*!*********************************************************************************************
+\brief  Enumerates all possible values of operations to be performed when Storing to a
+        Framebuffer Object.
+***********************************************************************************************/
+namespace StoreOp {
+enum Enum
+{
+	Store,//< write the source to the destination
+	Ignore,//< don't write the source to the destination
+};
+}
+
+
+/*!*******************************************************************************************
+\brief Enumeration of the "aspect" (or "semantics") of an image: Color, Depth, Stencil.
+**********************************************************************************************/
+namespace ImageAspect {
+typedef uint32 Bits;
+enum Enum
+{
+	Color = 0x1,
+	Depth = 0x2,
+	Stencil = 0x4,
+	Metadata = 0x8,
+	DepthAndStencil = Depth | Stencil,
+};
+}
+
+/*!*********************************************************************************************************************
+\brief Enumeration of the possible types of a Pipeline Binding point (Graphics, Compute).
+***********************************************************************************************************************/
+namespace PipelineBindPoint {
+enum Enum {	Graphics, Compute };
+}//namespace PipelineBindPoint
+
+
+/*!*********************************************************************************************************************
+\brief Enumeration of the possible way of recording commands for each subpasses of the render pass (Inline, SecondaryCommandBuffer).
+***********************************************************************************************************************/
+namespace RenderPassContents {
+enum Enum
+{
+	Inline,//< commands are recorded within the command buffer for the subpass
+	SecondaryCommandBuffers//< commands are recorded in the secondary commandbuffer for the subpass
+};
+}
+
+/*!*********************************************************************************************************************
+\brief Enumeration of the possible binding points of a Framebuffer Object (Read, Write, ReadWrite).
+***********************************************************************************************************************/
+namespace FboBindingTarget {
+enum Enum
+{
+	Read = 1, //< bind Fbo for read
+	Write = 2, //< bind fbo for write
+	ReadWrite = 3 //< bind fbo for read and write
+};
+}
+
+/*!*********************************************************************************************************************
+\brief Logic operations (toggle, clear, and etc.).
+***********************************************************************************************************************/
+namespace LogicOp {
+enum Enum
+{
+	//DO NOT REARRANGE - Direct mapping with VkLogicOp. See ConvertToVk::logicOp
+	Clear = 0,
+	And = 1,
+	AndReverse = 2,
+	Copy = 3,
+	AndInverted = 4,
+	NoOp = 5,
+	Xor = 6,
+	Or = 7,
+	Nor = 8,
+	Equiv = 9,
+	Invert = 10,
+	OrReverse = 11,
+	CopyInverted = 12,
+	OrInverted = 13,
+	Nand = 14,
+	Set = 15,
+	Count
+};
+}
+
+/*!********************************************************************************************
+\brief ChannelWriteMask enable/ disable writting to channel bits.
+***********************************************************************************************/
+namespace ColorChannel {
+enum Enum
+{
+	//DO NOT REARRANGE - Direct mapping to Vulkan
+	R = 0x01, //< write to red channel
+	G = 0x02, //< write to green channel
+	B = 0x04, //< write to blue channel
+	A = 0x08, //< write to alpha channel
+	None = 0, //< don't write to any channel
+	All = R | G | B | A //< write to all channel
+};
+typedef pvr::uint32 Bits;
+}
+
+/*!********************************************************************************************
+\brief Step rate for a vertex attribute when drawing: Per vertex, per instance, per draw.
+**********************************************************************************************/
+namespace StepRate {
+enum Enum
+{
+	Vertex, //< Step rate Per vertex
+	Instance//< Step rate per instance
+};
+}
+
+/*!*********************************************************************************************
+\brief Enumeration of Provoking Vertex modes.
+***********************************************************************************************/
+namespace ProvokingVertex {
+enum Enum
+{
+	First, Last
+};
+}
+
+/*!*********************************************************************************************************************
+\brief Enumeration of all FrameBufferObject texture targets.
+***********************************************************************************************************************/
+namespace FboTextureTarget {
+enum Enum
+{
+	TextureTarget2d, TextureTargetCubeMapPositiveX, TextureTargetCubeMapNegativeX, TextureTargetCubeMapPositiveY,
+	TextureTargetCubeMapNegativeY, TextureTargetCubeMapPositiveZ, TextureTargetCubeMapNegativeZ, Unknown
+};
+}
+
+/*!*********************************************************************************************************************
+\brief Enumeration of polygon filling modes.
+***********************************************************************************************************************/
+namespace FillMode {
+enum Enum
+{
+	Fill,///<	enum value. fill polygon front, solid
+	WireFrame,///< fill front, wireframe
+	Points,///< fill back wireframe
+	NumFillMode,
+};
+}
+
+/*!*********************************************************************************************************************
+\brief Enumeration of Face facing (front, back...).
+***********************************************************************************************************************/
+namespace Face {
+enum Enum
+{
+	//DO NOT REARRANGE - DIRECT TO VULKAN
+	None = 0,
+	Front = 1,
+	Back = 2,
+	FrontBack = 3,
+};
+}
+
+
+/*!*********************************************************************************************************************
+\brief Enumeration of the six faces of a Cube
+***********************************************************************************************************************/
+namespace CubeFace { enum Enum { PositiveX = 0, NegativeX, PositiveY, NegativeY, PositiveZ, NegativeZ }; };
+
+/*!*********************************************************************************************************************
+\brief Enumeration of Face facing (front, back...).
+***********************************************************************************************************************/
+namespace StencilFace {
+enum Enum
+{
+	//DO NOT REARRANGE - DIRECT TO VULKAN
+	Front = 1,
+	Back = 2,
+	FrontBack = 3,
+};
+}
+
+/*!*********************************************************************************************************************
+\brief Enumeration of the blend operations (determine how a new pixel (source color) is combined with a pixel already in the
+       framebuffer (destination color).
+***********************************************************************************************************************/
+namespace BlendOp {
+enum Enum
+{
+	//DO NOT REARRANGE - Direct mapping to Vulkan. See ConvertToVk::BlendOp
+	Add,
+	Subtract,
+	ReverseSubtract,
+	Min,
+	Max,
+	NumBlendFunc,
+	Default = Add
+};
+}
+
+/*!*********************************************************************************************************************
+\brief Buffer mapping flags.
+***********************************************************************************************************************/
+namespace MapBufferFlags {
+enum Enum { Read = 1, Write = 2, Unsynchronised = 4 };
+}
+
+
+
+
+/*!*********************************************************************************************************************
+\brief Specfies how the rgba blending facors are computed for source and destination fragments.
+***********************************************************************************************************************/
+namespace BlendFactor {
+enum Enum : uint8
+{
+	Zero = 0,
+	One = 1,
+	SrcColor = 2,
+	OneMinusSrcColor = 3,
+	DstColor = 4,
+	OneMinusDstColor = 5,
+	SrcAlpha = 6,
+	OneMinusSrcAlpha = 7,
+	DstAlpha = 8,
+	OneMinusDstAlpha = 9,
+	ConstantColor = 10,
+	OneMinusConstantColor = 11,
+	ConstantAlpha = 12,
+	OneMinusConstantAlpha = 13,
+	Src1Color = 15,
+	OneMinusSrc1Color = 16,
+	Src1Alpha = 17,
+	OneMinusSrc1Alpha = 18,
+	NumBlendFactor,
+	Default = One
+};
+}
+
+namespace DynamicState {
+enum Enum
+{
+	//DO NOT REARRANGE - Direct mapping to Vulkan
+	Viewport = 0,
+	Scissor = 1,
+	LineWidth = 2,
+	DepthBias = 3,
+	BlendConstants = 4,
+	DepthBounds = 5,
+	StencilCompareMask = 6,
+	StencilWriteMask = 7,
+	StencilReference = 8,
+	Count
+};
+}
+
+/*!*********************************************************************************************************************
+\brief Enumeration of Interpolation types for Samplers (nearest, linear).
+***********************************************************************************************************************/
+namespace InterpolationMode {
+enum Enum { Nearest, Linear };
+};
+
+/*!********************************************************************************************
+\brief Enumeration of the different front face to winding order correlations.
+***********************************************************************************************/
+namespace PolygonWindingOrder {
+//DO NOT REARRANGE - VULKAN DIRECT MAPPING
+enum Enum { FrontFaceCCW, FrontFaceCW, Default = FrontFaceCCW };
+};
+
+/*!********************************************************************************************
+\brief Enumeration of the different stencil operations.
+***********************************************************************************************/
+namespace StencilOp {
+enum Enum
+{
+	//DO NOT REARRANGE - VULKAN DIRECT MAPPING
+	Keep,
+	Zero,
+	Replace,
+	Increment,
+	Decrement,
+	Invert,
+	IncrementWrap,
+	DecrementWrap,
+	NumStencilOp,
+
+	// Defaults
+
+	DefaultStencilFailFront = Keep,
+	DefaultStencilFailBack = Keep,
+
+	DefaultDepthFailFront = Keep,
+	DefaultDepthFailBack = Keep,
+
+	DefaultDepthStencilPassFront = Keep,
+	DefaultDepthStencilPassBack = Keep
+};
+}
+
+/*!********************************************************************************************
+\brief Enumeration of all the different descriptor types.
+***********************************************************************************************/
+namespace DescriptorType {
+enum Enum
+{
+	Sampler,
+	CombinedImageSampler,
+	SampledImage,
+	StorageImage,
+	UniformTexelBuffer,
+	StorageTexelBuffer,
+	UniformBuffer, //< uniform buffer
+	StorageBuffer,//< storagebuffer
+	UniformBufferDynamic, //< uniform buffer's range can be offseted when binding descriptor set.
+	StorageBufferDynamic, //< storage buffer's range can be offseted when binding descriptor set.
+	InputAttachment,
+	Count
+};
+}
+
+/*!*********************************************************************************************
+\brief  Pre-defined Capability presense values.
+***********************************************************************************************/
+namespace Capability {
+enum Enum
+{
+	Unsupported,
+	Immutable,
+	Mutable
+};
 };
 
 /*!*********************************************************************************************
@@ -527,13 +800,13 @@ inline uint32 size(const IndexType::Enum type)
 	switch (type)
 	{
 	default:
-		PVR_ASSERT(false);
+		PVR_ASSERTION(false);
 		return false;
 	case IndexType::IndexType16Bit: return 2;
 	case IndexType::IndexType32Bit: return 4;
 	}
 }
-};
+}// namespace IndexType
 
 /*!*********************************************************************************************
 \brief  An enumeration that defines Comparison operations (equal, less or equal etc.).
@@ -542,47 +815,27 @@ inline uint32 size(const IndexType::Enum type)
 namespace ComparisonMode {
 enum Enum
 {
-	None = 0,
-	LessEqual,
-	Less,
-	Equal,
-	NotEqual,
-	Greater,
-	GreaterEqual,
-	Always,
-	Never,
+	//DIRECT MAPPING FOR VULKAN - DO NOT REARRANGE
+	Never = 0,
+	Less = 1,
+	Equal = 2,
+	LessEqual = 3,
+	Greater = 4,
+	NotEqual = 5,
+	GreaterEqual = 6,
+	Always = 7,
+	None = 8,
 	NumComparisonMode,
 	Default = Always,
-
 	DefaultStencilOpFront = Always,
 	DefaultStencilOpBack = Always,
-
-};
-};
-
-namespace assets {
-/*!*********************************************************************************************
-\brief       This class contains all the information of a Vertex Attribute's layout inside a
-             block of memory, typically a Vertex Buffer Object. This informations is normally
-			 the DataType of the attribute, the Offset (from the beginning of the array) and the
-			 width (how many values of type DataType form an attribute).
-***********************************************************************************************/
-struct VertexAttributeLayout
-{
-	// Type of data stored, should this be an enum or should it be an int to allow for users to do their own data types
-	DataType::Enum dataType;
-	uint16 offset; // Should be 16 bit?
-	uint8 width; // Number of values per vertex
-	VertexAttributeLayout() {}
-	VertexAttributeLayout(DataType::Enum dataType, uint8 width, uint16 offset) :
-		dataType(dataType), offset(offset), width(width) {}
 };
 }
 
 /*!*********************************************************************************************************************
 \brief        Enumeration describing a filtering type of a specific dimension. In order to describe the filtering mode
               properly, you would have to define a Minification filter, a Magnification filter and a Mipmapping
-			  minification filter. Possible values: Nearest, Linear, None.
+              minification filter. Possible values: Nearest, Linear, None.
 ***********************************************************************************************************************/
 namespace SamplerFilter {
 enum Enum
@@ -603,9 +856,9 @@ enum Enum
 namespace BorderColor {
 enum Enum
 {
-	OpaqueWhite, //< white border with alpha 1: (1,1,1,1)
 	TransparentBlack, //< Black Border with alpha 0 : (0,0,0,0)
 	OpaqueBlack, //< Black border with alpha 1 : (0,0,0,1)
+	OpaqueWhite, //< white border with alpha 1: (1,1,1,1)
 	Count
 };
 }
@@ -627,29 +880,6 @@ enum Enum
 }
 
 /*!*********************************************************************************************************************
-\brief  Class wrapping an arithmetic type and providing bitwise operation for its bits
-***********************************************************************************************************************/
-template<typename Storage_>
-class Bitfield
-{
-public:
-	inline static bool isSet(Storage_ store, int8 bit)
-	{
-		return (store & (1 << bit)) != 0;
-	}
-	inline static void set(Storage_ store, int8 bit)
-	{
-		store |= (1 << bit);
-	}
-	inline static void clear(Storage_ store, int8 bit)
-	{
-		store &= (!(1 << bit));
-	}
-
-};
-
-
-/*!*********************************************************************************************************************
 \brief Enumeration of Texture dimensionalities (1D/2D/3D).
 ***********************************************************************************************************************/
 namespace TextureDimension {
@@ -663,21 +893,382 @@ enum Enum
 	Texture1DArray,//!< 1 dimesional array texture
 	Texture2DArray,//!< 2 dimesional array texture
 	Texture3DArray,//!< 3 dimesional array texture
+	Texture2DCubeArray,//!< 2 dimesional array texture
 	TextureUnknown,//!< 3 dimesional array texture
 };
 }
 
-/*!*********************************************************************************************************************
-\brief Enumeration of the six faces of a Cube
-***********************************************************************************************************************/
-namespace CubeFace { enum Enum { PositiveX = 0, NegativeX, PositiveY, NegativeY, PositiveZ, NegativeZ }; };
+/*!*****************************************************************************************************************
+\brief  Enum values for defining whether a variable is float, integer or bool.
+*******************************************************************************************************************/
+namespace EffectDefaultDataInternalType {
+enum Enum
+{
+	Float,//!< Float
+	Integer,//!< Integer
+	Boolean//!< Boolean
+};
+}
 
+/*!*****************************************************************************************************************
+\brief  Enumeration of the type of render required for an effect.
+*******************************************************************************************************************/
+namespace EffectPassType {
+enum Enum
+{
+	Null,		//!< Null pass
+	Camera,		//!< Camera
+	PostProcess,	//!< Post-process
+	EnvMapCube,	//!< Environment cube-map
+	EnvMapSph,	//!< Environment sphere map
+	Count		//!< Number of supported pass
+};
+}
+
+/*!*****************************************************************************************************************
+\brief  Enum values for the various variable types supported by Semantics.
+*******************************************************************************************************************/
+namespace SemanticDataType {
+enum Enum
+{
+	Mat2,//!< 2x2 matrix
+	Mat3,//!< 3x3 matrix
+	Mat4,//!< 4x4 matrix
+	Vec2,//!< 2d vector
+	Vec3,//!< 3d vector
+	Vec4,//!< 4d vector
+	IVec2,//!< 2d integer vector
+	IVec3,//!< 3d integer vector
+	IVec4,//!< 4d integer vector
+	BVec2,//!< 2d bool vector
+	BVec3,//!< 3d bool vector
+	BVec4,//!< 4d bool vector
+	Float,//!< float
+	Int1,//!< integer
+	Bool1,//!< bool
+
+	Count,//!< number of supported semantic type
+	None,
+
+	// Conceptual data types
+	RGB,//!< Semantic RGB
+	RGBA//!< Semantic RGBA
+};
+}// namespace SemanticDefaultDataType
+
+/*!*****************************************************************************************************************
+\brief   Enumeration Describes the type of different Effect Passes.
+*******************************************************************************************************************/
+namespace EffectPassView {
+enum Enum
+{
+	Current,			//!< The scene's active camera is used
+	PodCamera,		//!< The specified camera is used
+	None				//!< No specified view
+};
+}// namespace EffectPassView
+
+/*!********************************************************************************************************************
+\brief        Enumeration of the binary shader formats.
+***********************************************************************************************************************/
+namespace ShaderBinaryFormat {
+enum Enum
+{
+	ImgSgx,
+	Spv,
+	Unknown,
+	None
+};
+}// namespace ShaderBinaryFormat
+
+/*!********************************************************************************************************************
+\brief        Enumeration of all supported shader types.
+***********************************************************************************************************************/
+namespace ShaderType {
+enum Enum
+{
+	UnknownShader = 0,//!< unknown shader type
+	VertexShader,//!< vertex shader
+	FragmentShader,//!< fragment shader
+	ComputeShader,//!< compute shader
+	TesselationShader,
+	FrameShader,//!< frame shader
+	RayShader,//!< ray shader
+	Count
+};
+}// ShaderType
+
+
+
+/*!********************************************************************************************************************
+\brief        Enumeration of all supported buffer access type flags.
+***********************************************************************************************************************/
+namespace BufferUse {
+enum Flags
+{
+	CPU_READ = 1,
+	CPU_WRITE = 2,
+	GPU_READ = 4,
+	GPU_WRITE = 8,
+
+	DEFAULT = GPU_READ | GPU_WRITE,
+	DYNAMIC = GPU_READ | CPU_WRITE,
+	STAGING = GPU_WRITE | CPU_READ
+};
+}
+
+/*!********************************************************************************************************************
+\brief        Enumeration of all supported buffer use types.
+***********************************************************************************************************************/
+namespace BufferBindingUse {
+typedef uint32 Bits;
+enum Enum
+{
+	TransferSrc			= 0x00000001,
+	TransferDest		= 0x00000002,
+	UniformTexelBuffer  = 0x00000004,
+	StorageTexelBuffer  = 0x00000008,
+	UniformBuffer       = 0x00000010,
+	StorageBuffer		= 0x00000020,
+	IndexBuffer			= 0x00000040,
+	VertexBuffer		= 0x00000080,
+	IndirectBuffer		= 0x00000100,
+	Count				= 10
+};
+}
+
+/*!********************************************************************************************************************
+\brief        Enumeration of Descriptor Pool use types (once, dynamic).
+***********************************************************************************************************************/
+//TODO MARKED AS DEPRECTAED
+namespace DescriptorPoolUsage {
+enum Enum
+{
+	OneShot,
+	Dynamic
+};
+}
+
+/*!********************************************************************************************************************
+\brief        Enumeration of Descriptor Set use types (once, dynamic).
+***********************************************************************************************************************/
+namespace DescriptorSetUsage {
+enum Enum
+{
+	OneShot,
+	Static
+};
+}
+
+/*!*********************************************************************************************************************
+\brief Enumeration of all shader stages.
+***********************************************************************************************************************/
+namespace ShaderStageFlags {
+typedef pvr::uint32 Bits;
+enum Enum
+{
+	Vertex = 0x00000001, //< Vertex Shader stage
+	TesselationControl = 0x00000002,
+	TesselationEvaluation = 0x00000004,
+	Geometry = 0x00000008,
+	Fragment = 0x00000010,//< Fragment Shader stage
+	Compute = 0x00000020,//< Compute Shader stage
+	AllGraphicsStages = 0x0000001F,//< Vertex + Fragment shader stage
+	AllStages = 0x7FFFFFFF,
+	NUM_SHADER_STAGES = Compute
+};
+/*!*********************************************************************************************************************
+\brief Bitwise OR shader stage flags.
+\return The Bitwise OR of the operands
+***********************************************************************************************************************/
+inline types::ShaderStageFlags::Enum operator|(types::ShaderStageFlags::Enum lhs, types::ShaderStageFlags::Enum rhs)
+{
+	return (types::ShaderStageFlags::Enum)(static_cast<uint32>(lhs) | static_cast<uint32>(rhs));
+}
+
+/*!*********************************************************************************************************************
+\brief Bitwise OR with assignment shader stage flags.
+\return The left hand side of the operation, which has been bitwise ORed with the right hand side
+***********************************************************************************************************************/
+inline types::ShaderStageFlags::Enum& operator|=(types::ShaderStageFlags::Enum& lhs, types::ShaderStageFlags::Enum rhs)
+{
+	return lhs = (types::ShaderStageFlags::Enum)(static_cast<uint32>(lhs) | static_cast<uint32>(rhs));
+}
+}// ShaderStageFlags
+
+
+/*!*********************************************************************************************************************
+\brief Enumeration of all Pipeline stages.
+***********************************************************************************************************************/
+namespace PipelineStageFlags {
+typedef uint32 Bits;
+enum Enum
+{
+	TopOfPipeline = 0x00000001,
+	DrawIndirect = 0x00000002,
+	VertexInput = 0x00000004,
+	VertexShader = 0x00000008,
+	TessellationControl = 0x00000010,
+	TessellationEvaluation = 0x00000020,
+	GeometryShader = 0x00000040,
+	FragmentShader = 0x00000080,
+	EarlyFragmentTests = 0x00000100,
+	LateFragmentTests = 0x00000200,
+	ColorAttachmentOutput = 0x00000400,
+	ComputeShader = 0x00000800,
+	Transfer = 0x00001000,
+	Host = 0x00002000,
+	AllGraphics = 0x00004000,
+	AllCommands = 0x00008000,
+};
+/*!*********************************************************************************************************************
+\brief Bitwise OR shader stage flags.
+\return The Bitwise OR of the operands
+***********************************************************************************************************************/
+inline types::PipelineStageFlags::Bits operator|(types::PipelineStageFlags::Enum lhs, types::PipelineStageFlags::Enum rhs)
+{
+	return (types::PipelineStageFlags::Bits)(static_cast<uint32>(lhs) | static_cast<uint32>(rhs));
+}
+
+/*!*********************************************************************************************************************
+\brief Bitwise OR with assignment shader stage flags.
+\return The left hand side of the operation, which has been bitwise ORed with the right hand side
+***********************************************************************************************************************/
+inline types::ShaderStageFlags::Enum& operator|=(types::ShaderStageFlags::Enum& lhs, types::ShaderStageFlags::Enum rhs)
+{
+	return lhs = (types::ShaderStageFlags::Enum)(static_cast<uint32>(lhs) | static_cast<uint32>(rhs));
+}
+}// ShaderStageFlags
+
+
+/*!*********************************************************************************************************************
+\brief Enumeration of all shader stages.
+***********************************************************************************************************************/
+namespace AccessFlags {
+typedef pvr::uint32 Bits;
+enum Enum
+{
+	IndirectCommandRead = 0x00000001,
+	IndexRead = 0x00000002,
+	VertexAttributeRead = 0x00000004,
+	UniformRead = 0x00000008,
+	InputAttachmentRead = 0x00000010,
+	ShaderRead = 0x00000020,
+	ShaderWrite = 0x00000040,
+	ColorAttachmentRead = 0x00000080,
+	ColorAttachmentWrite = 0x00000100,
+	DepthStencilAttachmentRead = 0x00000200,
+	DepthStencilAttachmentWrite = 0x00000400,
+	TransferRead = 0x00000800,
+	TransferWrite = 0x00001000,
+	HostRead = 0x00002000,
+	HostWrite = 0x00004000,
+	MemoryRead = 0x00008000,
+	MemoryWrite = 0x00010000,
+};
+/*!*********************************************************************************************************************
+\brief Bitwise OR shader stage flags.
+\return The Bitwise OR of the operands
+***********************************************************************************************************************/
+inline types::AccessFlags::Bits operator|(types::AccessFlags::Enum lhs, types::AccessFlags::Enum rhs)
+{
+	return (types::AccessFlags::Enum)(static_cast<uint32>(lhs) | static_cast<uint32>(rhs));
+}
+
+/*!*********************************************************************************************************************
+\brief Bitwise OR with assignment shader stage flags.
+\return The left hand side of the operation, which has been bitwise ORed with the right hand side
+***********************************************************************************************************************/
+inline types::ShaderStageFlags::Enum& operator|=(types::ShaderStageFlags::Enum& lhs, types::ShaderStageFlags::Enum rhs)
+{
+	return lhs = (types::ShaderStageFlags::Enum)(static_cast<uint32>(lhs) | static_cast<uint32>(rhs));
+}
+}// ShaderStageFlags
+
+namespace ImageLayout {
+enum Enum
+{
+	Undefined = 0,
+	General = 1,
+	ColorAttachmentOptimal = 2,
+	DepthStencilAttachmentOptimal = 3,
+	DepthStencilReadOnlyOptimal = 4,
+	ShaderReadOnlyOptimal = 5,
+	TransferSrcOptimal = 6,
+	TransferDstOptimal = 7,
+	Preinitialized = 8,
+	PresentSrc = 1000001002,
+};
+};
+}// namespace types
+
+/*!*********************************************************************************************
+\brief  Pre-defined Result codes (success and generic errors).
+***********************************************************************************************/
+namespace Result {
+enum Enum
+{
+	Success,
+	UnknownError,
+
+	//Generic Errors
+	OutOfMemory,
+	InvalidArgument,
+	AlreadyInitialized,
+	NotInitialized,
+	UnsupportedRequest,
+	FileVersionMismatch,
+
+	//Stream Errors
+	NotReadable,
+	NotWritable,
+	EndOfStream,
+	UnableToOpen,
+	NoData,
+
+	//Array Errors
+	OutOfBounds,
+	NotFound,
+
+	//Map Errors
+	KeyAlreadyExists,
+
+	//Shell Error
+	ExitRenderFrame, // Used to exit the renderscene loop in the shell
+
+	//Resource Error
+	InvalidData,
+};
+};
+/*!*********************************************************************************************
+\brief  Represents a buffer of Unsigned Bytes. Used to store raw data.
+***********************************************************************************************/
+typedef std::vector<byte> UCharBuffer;
+
+/*!*********************************************************************************************
+\brief  Represents a buffer of Signed Bytes. Used to store raw data.
+***********************************************************************************************/
+typedef std::vector<char8> CharBuffer;
+
+/*!*********************************************************************************************
+\brief  Representation of raw data. Used to store raw data that is logically grouped in blocks
+        with a stride.
+***********************************************************************************************/
+class StridedBuffer : public UCharBuffer { public: uint16 stride; };
+
+/*!*********************************************************************************************
+\brief  Return a random Number between min and max
+\return Random number
+***********************************************************************************************/
 inline float32 randomrange(float32 min, float32 max)
 {
 	float32 zero_to_one = float32(float64(rand()) / float64(RAND_MAX));
 	float32 diff = max - min;
 	return zero_to_one * diff + min;
 }
+
+
+#define BIT(shift)((1) << (shift))
 
 #if defined(_MSC_VER)
 #define PVR_ALIGNED __declspec(align(16))
@@ -686,5 +1277,4 @@ inline float32 randomrange(float32 min, float32 max)
 #else
 #define PVR_ALIGNED alignas(16)
 #endif
-
 }

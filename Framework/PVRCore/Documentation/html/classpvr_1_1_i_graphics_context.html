@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -107,96 +107,123 @@ Public Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ac1624ad2b3fe954c04bc9d47a1839d17"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ac1624ad2b3fe954c04bc9d47a1839d17">IGraphicsContext</a> ()</td></tr>
-<tr class="memdesc:ac1624ad2b3fe954c04bc9d47a1839d17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. Object is uninitialised and unusable until init.  <a href="#ac1624ad2b3fe954c04bc9d47a1839d17">More...</a><br/></td></tr>
+<tr class="memdesc:ac1624ad2b3fe954c04bc9d47a1839d17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. Object is uninitialized and unusable until init.  <a href="#ac1624ad2b3fe954c04bc9d47a1839d17">More...</a><br/></td></tr>
 <tr class="separator:ac1624ad2b3fe954c04bc9d47a1839d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2bf06f2a5c8f7bd53c8b872e633e7ebe"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a2bf06f2a5c8f7bd53c8b872e633e7ebe">~IGraphicsContext</a> ()</td></tr>
 <tr class="separator:a2bf06f2a5c8f7bd53c8b872e633e7ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3fb3856a218b1672e5e9d3c7e96d4f1"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1api.html#a825bcec788b3496cc47fa7a3af0431af">api::DescriptorSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ad3fb3856a218b1672e5e9d3c7e96d4f1">allocateDescriptorSet</a> (const <a class="el" href="namespacepvr_1_1api.html#a1b3e68c3dfaa2fb85e59e9481aacbc8c">api::DescriptorSetLayout</a> &amp;layout, const <a class="el" href="namespacepvr_1_1api.html#a411b791a2931d80bc5b907ab82821202">api::DescriptorPool</a> &amp;pool)=0</td></tr>
-<tr class="memdesc:ad3fb3856a218b1672e5e9d3c7e96d4f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a new DescriptorSet on a specific Descriptor Set Allocation Pool.  <a href="#ad3fb3856a218b1672e5e9d3c7e96d4f1">More...</a><br/></td></tr>
-<tr class="separator:ad3fb3856a218b1672e5e9d3c7e96d4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee1c0167d4bd209ce4f886d63ab13fde"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a825bcec788b3496cc47fa7a3af0431af">api::DescriptorSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#aee1c0167d4bd209ce4f886d63ab13fde">allocateDescriptorSet</a> (const <a class="el" href="namespacepvr_1_1api.html#a1b3e68c3dfaa2fb85e59e9481aacbc8c">api::DescriptorSetLayout</a> &amp;layout)</td></tr>
-<tr class="memdesc:aee1c0167d4bd209ce4f886d63ab13fde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new DescriptorSet on the PVRApi default allocation pool.  <a href="#aee1c0167d4bd209ce4f886d63ab13fde">More...</a><br/></td></tr>
-<tr class="separator:aee1c0167d4bd209ce4f886d63ab13fde"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9886f23df20a7b69cecb4b5f59e17c68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a5eb2fc1c534f1c783cc4fbcce6d5da2e">api::Buffer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a9886f23df20a7b69cecb4b5f59e17c68">createBuffer</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> size, <a class="el" href="namespacepvr_1_1api_1_1_buffer_binding_use.html#a9df6fadec55fb75c67c73aa032544128">api::BufferBindingUse::Bits</a> bufferUsage, <a class="el" href="namespacepvr_1_1api_1_1_buffer_use.html#a85e1a5b44723c91bbe65eaf357379c06">api::BufferUse::Flags</a> hint=<a class="el" href="namespacepvr_1_1api_1_1_buffer_use.html#a85e1a5b44723c91bbe65eaf357379c06a339a0ebc6a59ca481269ee75501b323a">api::BufferUse::DEFAULT</a>)</td></tr>
-<tr class="memdesc:a9886f23df20a7b69cecb4b5f59e17c68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new buffer object, which can then be bound as a VBO/IBO and/or shared with BufferView objects (SSBOView, VBOView)  <a href="#a9886f23df20a7b69cecb4b5f59e17c68">More...</a><br/></td></tr>
-<tr class="separator:a9886f23df20a7b69cecb4b5f59e17c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5efd778dcfd868c7d526d6fafa030690"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a8d935dcf60fe99740c37b6c56d7d7fbd">api::ColorAttachmentView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a5efd778dcfd868c7d526d6fafa030690">createColorAttachmentView</a> (const api::ColorAttachmentViewCreateParam &amp;createParam)</td></tr>
-<tr class="memdesc:a5efd778dcfd868c7d526d6fafa030690"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new colorAttachmentView object.  <a href="#a5efd778dcfd868c7d526d6fafa030690">More...</a><br/></td></tr>
-<tr class="separator:a5efd778dcfd868c7d526d6fafa030690"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0c08000531ed6b8cb1d07edca214c94"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#ab1b57793a376eb07ce4990613ed27ebc">api::CommandBuffer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ac0c08000531ed6b8cb1d07edca214c94">createCommandBuffer</a> ()</td></tr>
-<tr class="memdesc:ac0c08000531ed6b8cb1d07edca214c94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new CommandBuffer.  <a href="#ac0c08000531ed6b8cb1d07edca214c94">More...</a><br/></td></tr>
-<tr class="separator:ac0c08000531ed6b8cb1d07edca214c94"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ae0bb6c24b9fa971e93c4c59f277591"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#aa4059cc5aa16d7cc9c444e48c5b129ac">api::ComputePipeline</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a5ae0bb6c24b9fa971e93c4c59f277591">createComputePipeline</a> (const api::ComputePipelineCreateParam &amp;createParam)</td></tr>
+<tr class="memitem:ab8cf52e71c5c8dcd6cecd22ed53167dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a84ba9b7b7a7f3ae2ff0eca7e715ec90c">api::Buffer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ab8cf52e71c5c8dcd6cecd22ed53167dd">createBuffer</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> size, <a class="el" href="namespacepvr_1_1types_1_1_buffer_binding_use.html#a58fc93507a63159539b0d148fb55fcec">types::BufferBindingUse::Bits</a> bufferUsage, <a class="el" href="namespacepvr_1_1types_1_1_buffer_use.html#a6ddaa3ba242c2b2f7ae01a7089cce8fd">types::BufferUse::Flags</a> hint=<a class="el" href="namespacepvr_1_1types_1_1_buffer_use.html#a6ddaa3ba242c2b2f7ae01a7089cce8fdafb39d7694f0979815335a43bb9b812a2">types::BufferUse::DEFAULT</a>)</td></tr>
+<tr class="memdesc:ab8cf52e71c5c8dcd6cecd22ed53167dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new buffer object, which can then be bound as a VBO/IBO and/or shared with BufferView objects (SSBOView, VBOView)  <a href="#ab8cf52e71c5c8dcd6cecd22ed53167dd">More...</a><br/></td></tr>
+<tr class="separator:ab8cf52e71c5c8dcd6cecd22ed53167dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa74d2549eb8a0ab6ff9394f67e17b23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a3e2d4659e33a054677ac12c19da5f47c">api::BufferView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#aaa74d2549eb8a0ab6ff9394f67e17b23">createBufferAndView</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> size, <a class="el" href="namespacepvr_1_1types_1_1_buffer_binding_use.html#a58fc93507a63159539b0d148fb55fcec">types::BufferBindingUse::Bits</a> bufferUsage, <a class="el" href="namespacepvr_1_1types_1_1_buffer_use.html#a6ddaa3ba242c2b2f7ae01a7089cce8fd">types::BufferUse::Flags</a> hint=<a class="el" href="namespacepvr_1_1types_1_1_buffer_use.html#a6ddaa3ba242c2b2f7ae01a7089cce8fdafb39d7694f0979815335a43bb9b812a2">types::BufferUse::DEFAULT</a>)</td></tr>
+<tr class="memdesc:aaa74d2549eb8a0ab6ff9394f67e17b23"><td class="mdescLeft">&#160;</td><td class="mdescRight">One-step create a new Buffer with a corresponding BufferView to the entire range of the buffer.  <a href="#aaa74d2549eb8a0ab6ff9394f67e17b23">More...</a><br/></td></tr>
+<tr class="separator:aaa74d2549eb8a0ab6ff9394f67e17b23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a852a8191bed8f00e82fbbe34268a2905"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a3e2d4659e33a054677ac12c19da5f47c">api::BufferView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a852a8191bed8f00e82fbbe34268a2905">createBufferView</a> (const <a class="el" href="namespacepvr_1_1api.html#a84ba9b7b7a7f3ae2ff0eca7e715ec90c">api::Buffer</a> &amp;buffer, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> offset=0, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> range=0xFFFFFFFFu)</td></tr>
+<tr class="memdesc:a852a8191bed8f00e82fbbe34268a2905"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new Shader-Accessible view to Buffer Object (Can be used as UBO/SSBO etc), with an existing backing buffer. BufferViews allow Buffers to be added to DescriptorSets.  <a href="#a852a8191bed8f00e82fbbe34268a2905">More...</a><br/></td></tr>
+<tr class="separator:a852a8191bed8f00e82fbbe34268a2905"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acefb5b37e6846d3df72a0a487db6348a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#acc8893ac955643c641d731204f06d8fa">api::CommandBuffer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#acefb5b37e6846d3df72a0a487db6348a">createCommandBufferOnDefaultPool</a> ()</td></tr>
+<tr class="memdesc:acefb5b37e6846d3df72a0a487db6348a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new primary CommandBuffer on the default CommandPool.  <a href="#acefb5b37e6846d3df72a0a487db6348a">More...</a><br/></td></tr>
+<tr class="separator:acefb5b37e6846d3df72a0a487db6348a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02d0a8fa0917432c57350ecddf5b58fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a7885487134a0e2a4b8e86d11c820a2c2">api::CommandPool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a02d0a8fa0917432c57350ecddf5b58fc">createCommandPool</a> ()</td></tr>
+<tr class="memdesc:a02d0a8fa0917432c57350ecddf5b58fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new CommandPool.  <a href="#a02d0a8fa0917432c57350ecddf5b58fc">More...</a><br/></td></tr>
+<tr class="separator:a02d0a8fa0917432c57350ecddf5b58fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ae0bb6c24b9fa971e93c4c59f277591"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a608e558cf465b3183dc23fdb27b2ce03">api::ComputePipeline</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a5ae0bb6c24b9fa971e93c4c59f277591">createComputePipeline</a> (const api::ComputePipelineCreateParam &amp;createParam)</td></tr>
 <tr class="memdesc:a5ae0bb6c24b9fa971e93c4c59f277591"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new ComputePipeline object.  <a href="#a5ae0bb6c24b9fa971e93c4c59f277591">More...</a><br/></td></tr>
 <tr class="separator:a5ae0bb6c24b9fa971e93c4c59f277591"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a013ce184e5faffa3dfb300b5b6dd018d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a0099c6787d2b822573fa8f95c9fc3237">api::DepthStencilView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a013ce184e5faffa3dfb300b5b6dd018d">createDepthStencilView</a> (const api::DepthStencilViewCreateParam &amp;createParam)</td></tr>
-<tr class="memdesc:a013ce184e5faffa3dfb300b5b6dd018d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new DepthStencilAttachmentView object out of an existing Texture. Represents a Depth&amp;Stencil.  <a href="#a013ce184e5faffa3dfb300b5b6dd018d">More...</a><br/></td></tr>
-<tr class="separator:a013ce184e5faffa3dfb300b5b6dd018d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3582799eac98badc5d7f25068817d80e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a0099c6787d2b822573fa8f95c9fc3237">api::DepthStencilView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a3582799eac98badc5d7f25068817d80e">createDepthView</a> (const api::DepthStencilViewCreateParam &amp;createParam)</td></tr>
-<tr class="memdesc:a3582799eac98badc5d7f25068817d80e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new DepthStencilAttachmentView object out of an existing Texture.Represents a Depth only (no stencil).  <a href="#a3582799eac98badc5d7f25068817d80e">More...</a><br/></td></tr>
-<tr class="separator:a3582799eac98badc5d7f25068817d80e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c4c0fbc578d142ee9d92c8c6c8341f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a411b791a2931d80bc5b907ab82821202">api::DescriptorPool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a9c4c0fbc578d142ee9d92c8c6c8341f0">createDescriptorPool</a> (const api::DescriptorPoolCreateParam &amp;createParam, <a class="el" href="namespacepvr_1_1api_1_1_descriptor_pool_usage.html#a5c8a44b44ed639f402236730da2b3de9">api::DescriptorPoolUsage::Enum</a> poolUsage)</td></tr>
-<tr class="memdesc:a9c4c0fbc578d142ee9d92c8c6c8341f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new DescriptorPool (descriptor set allocation pool).  <a href="#a9c4c0fbc578d142ee9d92c8c6c8341f0">More...</a><br/></td></tr>
-<tr class="separator:a9c4c0fbc578d142ee9d92c8c6c8341f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6dd1c728578ce4139211383ef44d7eeb"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1api.html#a1b3e68c3dfaa2fb85e59e9481aacbc8c">api::DescriptorSetLayout</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a6dd1c728578ce4139211383ef44d7eeb">createDescriptorSetLayout</a> (const api::DescriptorSetLayoutCreateParam &amp;createParam)=0</td></tr>
-<tr class="memdesc:a6dd1c728578ce4139211383ef44d7eeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new DescriptorSetLayout.  <a href="#a6dd1c728578ce4139211383ef44d7eeb">More...</a><br/></td></tr>
-<tr class="separator:a6dd1c728578ce4139211383ef44d7eeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa94065f8d6a7f9fbb74f67c5362fe3eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a8cf3ab3894af2e6b83c97838c68150ba">api::EffectApi</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#aa94065f8d6a7f9fbb74f67c5362fe3eb">createEffectApi</a> (assets::Effect &amp;effectDesc, api::GraphicsPipelineCreateParam &amp;pipeDesc, api::AssetLoadingDelegate &amp;effectDelegate)</td></tr>
+<tr class="memitem:a08300b007be5b3a89cc4118f0797072d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a637551c1f687221f14122e0beeee2730">api::DescriptorPool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a08300b007be5b3a89cc4118f0797072d">createDescriptorPool</a> (const api::DescriptorPoolCreateParam &amp;createParam)</td></tr>
+<tr class="memdesc:a08300b007be5b3a89cc4118f0797072d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new DescriptorPool (descriptor set allocation pool).  <a href="#a08300b007be5b3a89cc4118f0797072d">More...</a><br/></td></tr>
+<tr class="separator:a08300b007be5b3a89cc4118f0797072d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cbef0e050dec99535bbef4fd4c66f6f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a637551c1f687221f14122e0beeee2730">api::DescriptorPool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a7cbef0e050dec99535bbef4fd4c66f6f">createDescriptorPool</a> ()</td></tr>
+<tr class="memdesc:a7cbef0e050dec99535bbef4fd4c66f6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new DescriptorPool.  <a href="#a7cbef0e050dec99535bbef4fd4c66f6f">More...</a><br/></td></tr>
+<tr class="separator:a7cbef0e050dec99535bbef4fd4c66f6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bcff5edc1743f9fccccfe044be50ccc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a51521c1bf928b30d4cb74cbdafda3710">api::DescriptorSetLayout</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a5bcff5edc1743f9fccccfe044be50ccc">createDescriptorSetLayout</a> (const api::DescriptorSetLayoutCreateParam &amp;createParam)</td></tr>
+<tr class="memdesc:a5bcff5edc1743f9fccccfe044be50ccc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new DescriptorSetLayout.  <a href="#a5bcff5edc1743f9fccccfe044be50ccc">More...</a><br/></td></tr>
+<tr class="separator:a5bcff5edc1743f9fccccfe044be50ccc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a305fb0e7b1ab7ff6ab3b4725bca98347"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#adcc0a391e3ad0455b28b9ac4a1b2ec1a">api::DescriptorSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a305fb0e7b1ab7ff6ab3b4725bca98347">createDescriptorSetOnDefaultPool</a> (const <a class="el" href="namespacepvr_1_1api.html#a51521c1bf928b30d4cb74cbdafda3710">api::DescriptorSetLayout</a> &amp;layout)</td></tr>
+<tr class="memdesc:a305fb0e7b1ab7ff6ab3b4725bca98347"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new DescriptorSet on the PVRApi default allocation pool.  <a href="#a305fb0e7b1ab7ff6ab3b4725bca98347">More...</a><br/></td></tr>
+<tr class="separator:a305fb0e7b1ab7ff6ab3b4725bca98347"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa94065f8d6a7f9fbb74f67c5362fe3eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a24b17b0ebc4dac68845f79900e7ef20e">api::EffectApi</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#aa94065f8d6a7f9fbb74f67c5362fe3eb">createEffectApi</a> (assets::Effect &amp;effectDesc, api::GraphicsPipelineCreateParam &amp;pipeDesc, api::AssetLoadingDelegate &amp;effectDelegate)</td></tr>
 <tr class="memdesc:aa94065f8d6a7f9fbb74f67c5362fe3eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new EffectApi object.  <a href="#aa94065f8d6a7f9fbb74f67c5362fe3eb">More...</a><br/></td></tr>
 <tr class="separator:aa94065f8d6a7f9fbb74f67c5362fe3eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ae7ac290f7eedc8da8d6c1790df3943"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a7107142f9769b39a7e25d663b1d9ec17">api::Fbo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a7ae7ac290f7eedc8da8d6c1790df3943">createFbo</a> (const api::FboCreateParam &amp;createParam)</td></tr>
+<tr class="memitem:a7ae7ac290f7eedc8da8d6c1790df3943"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a7ae7ac290f7eedc8da8d6c1790df3943">createFbo</a> (const api::FboCreateParam &amp;createParam)</td></tr>
 <tr class="memdesc:a7ae7ac290f7eedc8da8d6c1790df3943"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a Framebuffer Object with specified parameters and backing image. Not for on-screen rendering.  <a href="#a7ae7ac290f7eedc8da8d6c1790df3943">More...</a><br/></td></tr>
 <tr class="separator:a7ae7ac290f7eedc8da8d6c1790df3943"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af58105e3ccc71c785a826dd8a51f393f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a64870d56cd0094850683cbdd51ceb05a">api::GraphicsPipeline</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#af58105e3ccc71c785a826dd8a51f393f">createGraphicsPipeline</a> (api::GraphicsPipelineCreateParam &amp;createParam)</td></tr>
+<tr class="memitem:ab9c501ba804717b42efcc65fd494c059"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a026dbaa18337b444ba682d97038bbd19">api::Fence</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ab9c501ba804717b42efcc65fd494c059">createFence</a> (bool createSignaled=true)</td></tr>
+<tr class="separator:ab9c501ba804717b42efcc65fd494c059"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af58105e3ccc71c785a826dd8a51f393f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#ab07c0f5188f9b6484e4b19ad4fd2926c">api::GraphicsPipeline</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#af58105e3ccc71c785a826dd8a51f393f">createGraphicsPipeline</a> (api::GraphicsPipelineCreateParam &amp;createParam)</td></tr>
 <tr class="memdesc:af58105e3ccc71c785a826dd8a51f393f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a GraphicsPipeline object associated with this context.  <a href="#af58105e3ccc71c785a826dd8a51f393f">More...</a><br/></td></tr>
 <tr class="separator:af58105e3ccc71c785a826dd8a51f393f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37e069e5e727871d3b665963efab6d14"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a64870d56cd0094850683cbdd51ceb05a">api::GraphicsPipeline</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a37e069e5e727871d3b665963efab6d14">createGraphicsPipeline</a> (api::GraphicsPipelineCreateParam &amp;createParam, <a class="el" href="namespacepvr_1_1api.html#accf56755c3537630b62c480dce0f0ade">api::ParentableGraphicsPipeline</a> parent)</td></tr>
+<tr class="memitem:a37e069e5e727871d3b665963efab6d14"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#ab07c0f5188f9b6484e4b19ad4fd2926c">api::GraphicsPipeline</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a37e069e5e727871d3b665963efab6d14">createGraphicsPipeline</a> (api::GraphicsPipelineCreateParam &amp;createParam, <a class="el" href="namespacepvr_1_1api.html#a29852cbd107e34395d2b61d8b12d23fd">api::ParentableGraphicsPipeline</a> parent)</td></tr>
 <tr class="memdesc:a37e069e5e727871d3b665963efab6d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create GraphicsPipeline as a child of another provided GraphicsPipeline.  <a href="#a37e069e5e727871d3b665963efab6d14">More...</a><br/></td></tr>
 <tr class="separator:a37e069e5e727871d3b665963efab6d14"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e791dd1777a2307a1d206d7e420e41f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1api.html#a7107142f9769b39a7e25d663b1d9ec17">api::Fbo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a1e791dd1777a2307a1d206d7e420e41f">createOnScreenFboWithParams</a> (<a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794f">LoadOp::Enum</a> colorLoadOp=<a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794faf11ff8d54c90d509e135d6507434da4e">LoadOp::Clear</a>, <a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127">StoreOp::Enum</a> colorStoreOp=<a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127a371f1b1d583321a34db5e8d93246e2a2">StoreOp::Store</a>, <a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794f">LoadOp::Enum</a> depthLoadOp=<a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794faf11ff8d54c90d509e135d6507434da4e">LoadOp::Clear</a>, <a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127">StoreOp::Enum</a> depthStoreOp=<a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127ac11c167283385dd0f83e4c172c6a2f69">StoreOp::Ignore</a>, <a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794f">LoadOp::Enum</a> stencilLoadOp=<a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794faf11ff8d54c90d509e135d6507434da4e">LoadOp::Clear</a>, <a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127">StoreOp::Enum</a> stencilStoreOp=<a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127ac11c167283385dd0f83e4c172c6a2f69">StoreOp::Ignore</a>, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numcolorSamples=1, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numDepthStencilSamples=1)=0</td></tr>
-<tr class="memdesc:a1e791dd1777a2307a1d206d7e420e41f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the most common parameters.  <a href="#a1e791dd1777a2307a1d206d7e420e41f">More...</a><br/></td></tr>
-<tr class="separator:a1e791dd1777a2307a1d206d7e420e41f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4c67643b22cb4a742280987c45aa1c0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1api.html#a7107142f9769b39a7e25d663b1d9ec17">api::Fbo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ab4c67643b22cb4a742280987c45aa1c0">createOnScreenFboWithRenderPass</a> (const <a class="el" href="namespacepvr_1_1api.html#a67c63964ff1d3b4179e038bb9a19f8f8">api::RenderPass</a> &amp;renderPass)=0</td></tr>
-<tr class="memdesc:ab4c67643b22cb4a742280987c45aa1c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the RenderPass to use for it. compatible with the actual BackBuffer format and options - this is the user's responsibility.  <a href="#ab4c67643b22cb4a742280987c45aa1c0">More...</a><br/></td></tr>
-<tr class="separator:ab4c67643b22cb4a742280987c45aa1c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acdef9251adddd9c7c8042d7bab2141ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#accf56755c3537630b62c480dce0f0ade">api::ParentableGraphicsPipeline</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#acdef9251adddd9c7c8042d7bab2141ab">createParentableGraphicsPipeline</a> (const api::GraphicsPipelineCreateParam &amp;createParam)</td></tr>
+<tr class="memitem:a859bfded0a9f1dca1786dfd4ee6bd8de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a859bfded0a9f1dca1786dfd4ee6bd8de">createOnScreenFbo</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> swapIndex, <a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a> colorLoadOp=<a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a>, <a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a> colorStoreOp=<a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1a211522bf686fe8b1238a53d956cc37df">types::StoreOp::Store</a>, <a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a> depthLoadOp=<a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a>, <a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a> depthStoreOp=<a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1ab56f44876780a11c0999a2f10e05567c">types::StoreOp::Ignore</a>, <a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a> stencilLoadOp=<a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a>, <a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a> stencilStoreOp=<a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1ab56f44876780a11c0999a2f10e05567c">types::StoreOp::Ignore</a>, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numcolorSamples=1, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numDepthStencilSamples=1)</td></tr>
+<tr class="memdesc:a859bfded0a9f1dca1786dfd4ee6bd8de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the most common parameters.  <a href="#a859bfded0a9f1dca1786dfd4ee6bd8de">More...</a><br/></td></tr>
+<tr class="separator:a859bfded0a9f1dca1786dfd4ee6bd8de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e5d6b20d60ac66a2aabaf344753fef0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_multi.html">Multi</a>&lt; <a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a4e5d6b20d60ac66a2aabaf344753fef0">createOnScreenFboSet</a> (<a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a> colorLoadOp=<a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a>, <a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a> colorStoreOp=<a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1a211522bf686fe8b1238a53d956cc37df">types::StoreOp::Store</a>, <a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a> depthLoadOp=<a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a>, <a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a> depthStoreOp=<a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1ab56f44876780a11c0999a2f10e05567c">types::StoreOp::Ignore</a>, <a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a> stencilLoadOp=<a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a>, <a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a> stencilStoreOp=<a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1ab56f44876780a11c0999a2f10e05567c">types::StoreOp::Ignore</a>, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numcolorSamples=1, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numDepthStencilSamples=1)</td></tr>
+<tr class="memdesc:a4e5d6b20d60ac66a2aabaf344753fef0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the most common parameters.  <a href="#a4e5d6b20d60ac66a2aabaf344753fef0">More...</a><br/></td></tr>
+<tr class="separator:a4e5d6b20d60ac66a2aabaf344753fef0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdb2ad669fcc6b39e22977b35f605369"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_multi.html">Multi</a>&lt; <a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#afdb2ad669fcc6b39e22977b35f605369">createOnScreenFboSetWithRenderPass</a> (const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a> &amp;renderPass)</td></tr>
+<tr class="memdesc:afdb2ad669fcc6b39e22977b35f605369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the RenderPass to use for it. compatible with the actual BackBuffer format and options - this is the user's responsibility.  <a href="#afdb2ad669fcc6b39e22977b35f605369">More...</a><br/></td></tr>
+<tr class="separator:afdb2ad669fcc6b39e22977b35f605369"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cabfea01fb9be043ced21da10414adc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_multi.html">Multi</a>&lt; <a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a8cabfea01fb9be043ced21da10414adc">createOnScreenFboSetWithRenderPass</a> (const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a> &amp;renderPass, <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; api::OnScreenFboCreateParam &gt; &amp;onScreenFboCreateParams)</td></tr>
+<tr class="memdesc:a8cabfea01fb9be043ced21da10414adc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the RenderPass to use for it. compatible with the actual BackBuffer format and options - this is the user's responsibility.  <a href="#a8cabfea01fb9be043ced21da10414adc">More...</a><br/></td></tr>
+<tr class="separator:a8cabfea01fb9be043ced21da10414adc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a307ebb6fc8cae354bdf2fb873547b75e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a307ebb6fc8cae354bdf2fb873547b75e">createOnScreenFboWithRenderPass</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> swapIndex, const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a> &amp;renderPass, const api::OnScreenFboCreateParam &amp;onScreenFboCreateParam)</td></tr>
+<tr class="memdesc:a307ebb6fc8cae354bdf2fb873547b75e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the RenderPass to use for it. compatible with the actual BackBuffer format and options - this is the user's responsibility. Allows the user to specify additional color view attachments for the FBO to use.  <a href="#a307ebb6fc8cae354bdf2fb873547b75e">More...</a><br/></td></tr>
+<tr class="separator:a307ebb6fc8cae354bdf2fb873547b75e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4de7a491fc07bd7ce50cb98cc007be7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#aa4de7a491fc07bd7ce50cb98cc007be7">createOnScreenFboWithRenderPass</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> swapIndex, const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a> &amp;renderPass)</td></tr>
+<tr class="memdesc:aa4de7a491fc07bd7ce50cb98cc007be7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the RenderPass to use for it. compatible with the actual BackBuffer format and options - this is the user's responsibility.  <a href="#aa4de7a491fc07bd7ce50cb98cc007be7">More...</a><br/></td></tr>
+<tr class="separator:aa4de7a491fc07bd7ce50cb98cc007be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdef9251adddd9c7c8042d7bab2141ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a29852cbd107e34395d2b61d8b12d23fd">api::ParentableGraphicsPipeline</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#acdef9251adddd9c7c8042d7bab2141ab">createParentableGraphicsPipeline</a> (const api::GraphicsPipelineCreateParam &amp;createParam)</td></tr>
 <tr class="memdesc:acdef9251adddd9c7c8042d7bab2141ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new parentable GraphicsPipeline object.  <a href="#acdef9251adddd9c7c8042d7bab2141ab">More...</a><br/></td></tr>
 <tr class="separator:acdef9251adddd9c7c8042d7bab2141ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeceb2fc8fa4ee773ff24a777526d73da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a05ac1292357cf7a002c7aed54decfa21">api::PipelineLayout</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#aeceb2fc8fa4ee773ff24a777526d73da">createPipelineLayout</a> (const api::PipelineLayoutCreateParam &amp;createParam)</td></tr>
+<tr class="memitem:aeceb2fc8fa4ee773ff24a777526d73da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a34c808c2dcb00eb1fb273517d935c500">api::PipelineLayout</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#aeceb2fc8fa4ee773ff24a777526d73da">createPipelineLayout</a> (const api::PipelineLayoutCreateParam &amp;createParam)</td></tr>
 <tr class="memdesc:aeceb2fc8fa4ee773ff24a777526d73da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new PipelineLayout.  <a href="#aeceb2fc8fa4ee773ff24a777526d73da">More...</a><br/></td></tr>
 <tr class="separator:aeceb2fc8fa4ee773ff24a777526d73da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f05771578ebfd5b647b050ab88aea1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a67c63964ff1d3b4179e038bb9a19f8f8">api::RenderPass</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a1f05771578ebfd5b647b050ab88aea1f">createRenderPass</a> (const api::RenderPassCreateParam &amp;renderPassDesc)</td></tr>
+<tr class="memitem:a1f05771578ebfd5b647b050ab88aea1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a1f05771578ebfd5b647b050ab88aea1f">createRenderPass</a> (const api::RenderPassCreateParam &amp;renderPassDesc)</td></tr>
 <tr class="memdesc:a1f05771578ebfd5b647b050ab88aea1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new render pass.  <a href="#a1f05771578ebfd5b647b050ab88aea1f">More...</a><br/></td></tr>
 <tr class="separator:a1f05771578ebfd5b647b050ab88aea1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a937d611fceeab85c3359b17f250b8bc0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#afe501cf37e6e5cccda63d5ac9b428ac7">api::Sampler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a937d611fceeab85c3359b17f250b8bc0">createSampler</a> (const assets::SamplerCreateParam &amp;createParam)</td></tr>
-<tr class="memdesc:a937d611fceeab85c3359b17f250b8bc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new Sampler object.  <a href="#a937d611fceeab85c3359b17f250b8bc0">More...</a><br/></td></tr>
-<tr class="separator:a937d611fceeab85c3359b17f250b8bc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3b8b7895f4da92d8de564693a48804f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#aa9b4de2c1fac3e76a8d91888da1a0258">api::SecondaryCommandBuffer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ab3b8b7895f4da92d8de564693a48804f">createSecondaryCommandBuffer</a> ()</td></tr>
-<tr class="separator:ab3b8b7895f4da92d8de564693a48804f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c53c46408e4ebfcfbdded0b5fe385ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#acc461c8a49bf816fba2c9e9c127cc914">api::Shader</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a7c53c46408e4ebfcfbdded0b5fe385ba">createShader</a> (const <a class="el" href="classpvr_1_1_stream.html">Stream</a> &amp;shaderSrc, <a class="el" href="namespacepvr_1_1_shader_type.html#a6f899a0ef761563c001ac9402b7ad390">ShaderType::Enum</a> shaderType, const char *const *defines=NULL, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numDefines=0)</td></tr>
-<tr class="memdesc:a7c53c46408e4ebfcfbdded0b5fe385ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">*!*********************************************************************************************  <a href="#a7c53c46408e4ebfcfbdded0b5fe385ba">More...</a><br/></td></tr>
-<tr class="separator:a7c53c46408e4ebfcfbdded0b5fe385ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a077ad88a8eda173679b061384011a3de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#acc461c8a49bf816fba2c9e9c127cc914">api::Shader</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a077ad88a8eda173679b061384011a3de">createShader</a> (<a class="el" href="classpvr_1_1_stream.html">Stream</a> &amp;shaderData, <a class="el" href="namespacepvr_1_1_shader_type.html#a6f899a0ef761563c001ac9402b7ad390">ShaderType::Enum</a> shaderType, <a class="el" href="namespacepvr_1_1assets_1_1_shader_binary_format.html#afa41873f5e1b780924018ad9ca7bdd7c">assets::ShaderBinaryFormat::Enum</a> binaryFormat)</td></tr>
-<tr class="memdesc:a077ad88a8eda173679b061384011a3de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create Shader from binary.  <a href="#a077ad88a8eda173679b061384011a3de">More...</a><br/></td></tr>
-<tr class="separator:a077ad88a8eda173679b061384011a3de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a502a5fe4273b1df66bd5c5b1380db8bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a8090eb71d009c9a8f20459966602dfa1">api::SsboView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a502a5fe4273b1df66bd5c5b1380db8bf">createSsbo</a> (const <a class="el" href="namespacepvr_1_1api.html#a5eb2fc1c534f1c783cc4fbcce6d5da2e">api::Buffer</a> &amp;buffer, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> offset, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> range)</td></tr>
-<tr class="memdesc:a502a5fe4273b1df66bd5c5b1380db8bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new Shader Storage Buffer Object, with an existing backing buffer.  <a href="#a502a5fe4273b1df66bd5c5b1380db8bf">More...</a><br/></td></tr>
-<tr class="separator:a502a5fe4273b1df66bd5c5b1380db8bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c2a21a6b8bed41aa767587d99f40b14"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#ad9d65bb69c0ed139c737fcdd45632001">api::TextureView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a3c2a21a6b8bed41aa767587d99f40b14">createTexture</a> ()</td></tr>
-<tr class="memdesc:a3c2a21a6b8bed41aa767587d99f40b14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new Texture object.  <a href="#a3c2a21a6b8bed41aa767587d99f40b14">More...</a><br/></td></tr>
-<tr class="separator:a3c2a21a6b8bed41aa767587d99f40b14"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c9bf1c8b7589a0c4d5b65d7074d5b80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a5b1b7b9923bfeb63300fdd676c264971">api::UboView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a0c9bf1c8b7589a0c4d5b65d7074d5b80">createUbo</a> (const <a class="el" href="namespacepvr_1_1api.html#a5eb2fc1c534f1c783cc4fbcce6d5da2e">api::Buffer</a> &amp;buffer, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> offset, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> range)</td></tr>
-<tr class="memdesc:a0c9bf1c8b7589a0c4d5b65d7074d5b80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new Uniform Buffer Object, with an existing backing buffer.  <a href="#a0c9bf1c8b7589a0c4d5b65d7074d5b80">More...</a><br/></td></tr>
-<tr class="separator:a0c9bf1c8b7589a0c4d5b65d7074d5b80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60946d81cc52d879aff6cf9934337c3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a2cd1fd0d95a3694ae3e9c84b693f2626">api::Sampler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a60946d81cc52d879aff6cf9934337c3f">createSampler</a> (const <a class="el" href="namespacepvr_1_1api.html#a902910f83ba922c5071d1efbb5cb1615">api::SamplerCreateParam</a> &amp;createParam)</td></tr>
+<tr class="memdesc:a60946d81cc52d879aff6cf9934337c3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new Sampler object.  <a href="#a60946d81cc52d879aff6cf9934337c3f">More...</a><br/></td></tr>
+<tr class="separator:a60946d81cc52d879aff6cf9934337c3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aef54bc5156298a23bc6b21a8467e46"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a34f13eee73526c78f836fb36c30ea54b">api::SecondaryCommandBuffer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a2aef54bc5156298a23bc6b21a8467e46">createSecondaryCommandBufferOnDefaultPool</a> ()</td></tr>
+<tr class="memdesc:a2aef54bc5156298a23bc6b21a8467e46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new secondary CommandBuffer on the default CommandPool.  <a href="#a2aef54bc5156298a23bc6b21a8467e46">More...</a><br/></td></tr>
+<tr class="separator:a2aef54bc5156298a23bc6b21a8467e46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fb4c65752ef88cb3b6854f2b7a32d97"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#ac733c31aec277813c9aea6cdcf3d77e4">api::Shader</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a8fb4c65752ef88cb3b6854f2b7a32d97">createShader</a> (const <a class="el" href="classpvr_1_1_stream.html">Stream</a> &amp;shaderSrc, <a class="el" href="namespacepvr_1_1types_1_1_shader_type.html#a54457467baf7029937631daab072bbda">types::ShaderType::Enum</a> shaderType, const char *const *defines=NULL, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numDefines=0)</td></tr>
+<tr class="memdesc:a8fb4c65752ef88cb3b6854f2b7a32d97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create Shader from source. Accepts an array of custom preprocessor definition directives.  <a href="#a8fb4c65752ef88cb3b6854f2b7a32d97">More...</a><br/></td></tr>
+<tr class="separator:a8fb4c65752ef88cb3b6854f2b7a32d97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3589f947ecf8a39b0c67518bb7f732da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#ac733c31aec277813c9aea6cdcf3d77e4">api::Shader</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a3589f947ecf8a39b0c67518bb7f732da">createShader</a> (<a class="el" href="classpvr_1_1_stream.html">Stream</a> &amp;shaderData, <a class="el" href="namespacepvr_1_1types_1_1_shader_type.html#a54457467baf7029937631daab072bbda">types::ShaderType::Enum</a> shaderType, <a class="el" href="namespacepvr_1_1types_1_1_shader_binary_format.html#a081718b4fec389665e147313e5e9b5c6">types::ShaderBinaryFormat::Enum</a> binaryFormat)</td></tr>
+<tr class="memdesc:a3589f947ecf8a39b0c67518bb7f732da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create Shader from binary.  <a href="#a3589f947ecf8a39b0c67518bb7f732da">More...</a><br/></td></tr>
+<tr class="separator:a3589f947ecf8a39b0c67518bb7f732da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9575179ad48d3f68e31366e645b71176"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#aefa9a681992c85b2e2dfad5099c6fe5e">api::TextureStore</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a9575179ad48d3f68e31366e645b71176">createTexture</a> ()</td></tr>
+<tr class="memdesc:a9575179ad48d3f68e31366e645b71176"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new Texture object.  <a href="#a9575179ad48d3f68e31366e645b71176">More...</a><br/></td></tr>
+<tr class="separator:a9575179ad48d3f68e31366e645b71176"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9cdcba772cf0521e16334f2c4e331d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#af939d9e7a622e7eda49f452643496ac7">api::TextureView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ab9cdcba772cf0521e16334f2c4e331d7">createTextureView</a> (const <a class="el" href="namespacepvr_1_1api.html#aefa9a681992c85b2e2dfad5099c6fe5e">api::TextureStore</a> &amp;texture, <a class="el" href="structpvr_1_1types_1_1_image_subresource_range.html">types::ImageSubresourceRange</a> range, <a class="el" href="structpvr_1_1types_1_1_swizzle_channels.html">types::SwizzleChannels</a>=<a class="el" href="structpvr_1_1types_1_1_swizzle_channels.html">types::SwizzleChannels</a>())</td></tr>
+<tr class="memdesc:ab9cdcba772cf0521e16334f2c4e331d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new Texture object.  <a href="#ab9cdcba772cf0521e16334f2c4e331d7">More...</a><br/></td></tr>
+<tr class="separator:ab9cdcba772cf0521e16334f2c4e331d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a497d4e5d350383d48aa52b5699971d26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#af939d9e7a622e7eda49f452643496ac7">api::TextureView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a497d4e5d350383d48aa52b5699971d26">createTextureView</a> (const <a class="el" href="namespacepvr_1_1api.html#aefa9a681992c85b2e2dfad5099c6fe5e">api::TextureStore</a> &amp;texture, <a class="el" href="structpvr_1_1types_1_1_swizzle_channels.html">types::SwizzleChannels</a>=<a class="el" href="structpvr_1_1types_1_1_swizzle_channels.html">types::SwizzleChannels</a>())</td></tr>
+<tr class="memdesc:a497d4e5d350383d48aa52b5699971d26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a new Texture object.  <a href="#a497d4e5d350383d48aa52b5699971d26">More...</a><br/></td></tr>
+<tr class="separator:a497d4e5d350383d48aa52b5699971d26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa35beac0d845f528a9355edebab7c01d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structpvr_1_1_api_capabilities.html">ApiCapabilities</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#aa35beac0d845f528a9355edebab7c01d">getApiCapabilities</a> () const </td></tr>
 <tr class="memdesc:aa35beac0d845f528a9355edebab7c01d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <a class="el" href="structpvr_1_1_api_capabilities.html" title="Struct containing the API capabilities of a specified configuration. ">ApiCapabilities</a> object representing the capabilities of this GraphicsContext.  <a href="#aa35beac0d845f528a9355edebab7c01d">More...</a><br/></td></tr>
 <tr class="separator:aa35beac0d845f528a9355edebab7c01d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab254dd4ac88a0ff741a85af5156a90df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Api::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ab254dd4ac88a0ff741a85af5156a90df">getApiType</a> () const </td></tr>
 <tr class="memdesc:ab254dd4ac88a0ff741a85af5156a90df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <a class="el" href="namespacepvr_1_1_api.html" title="Enumeration of all API types supported by this implementation. ">Api</a> of this GraphicsContext.  <a href="#ab254dd4ac88a0ff741a85af5156a90df">More...</a><br/></td></tr>
 <tr class="separator:ab254dd4ac88a0ff741a85af5156a90df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05790bfbb1fc68c1aa8af24bc34bd220"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="namespacepvr_1_1api.html#a7107142f9769b39a7e25d663b1d9ec17">pvr::api::Fbo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a05790bfbb1fc68c1aa8af24bc34bd220">getBoundFbo</a> () const =0</td></tr>
+<tr class="memitem:a05790bfbb1fc68c1aa8af24bc34bd220"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">pvr::api::Fbo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a05790bfbb1fc68c1aa8af24bc34bd220">getBoundFbo</a> () const =0</td></tr>
 <tr class="separator:a05790bfbb1fc68c1aa8af24bc34bd220"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72f346f595c346dcbd7cb535af016994"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="namespacepvr_1_1api.html#a67c63964ff1d3b4179e038bb9a19f8f8">api::RenderPass</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a72f346f595c346dcbd7cb535af016994">getDefaultRenderPass</a> () const =0</td></tr>
+<tr class="memitem:a6aeab1283c362deb08881e606f3aa00a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1api.html#a7885487134a0e2a4b8e86d11c820a2c2">api::CommandPool</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a6aeab1283c362deb08881e606f3aa00a">getDefaultCommandPool</a> () const </td></tr>
+<tr class="memdesc:a6aeab1283c362deb08881e606f3aa00a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the default, automatically generated CommandPool.  <a href="#a6aeab1283c362deb08881e606f3aa00a">More...</a><br/></td></tr>
+<tr class="separator:a6aeab1283c362deb08881e606f3aa00a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7da8573535066d07c5cd0fbd84fe38e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a7885487134a0e2a4b8e86d11c820a2c2">api::CommandPool</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a7da8573535066d07c5cd0fbd84fe38e5">getDefaultCommandPool</a> ()</td></tr>
+<tr class="memdesc:a7da8573535066d07c5cd0fbd84fe38e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the default, automatically generated CommandPool.  <a href="#a7da8573535066d07c5cd0fbd84fe38e5">More...</a><br/></td></tr>
+<tr class="separator:a7da8573535066d07c5cd0fbd84fe38e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a092d9bd9bc2ada067a7b2bca5b39685e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1api.html#a637551c1f687221f14122e0beeee2730">api::DescriptorPool</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a092d9bd9bc2ada067a7b2bca5b39685e">getDefaultDescriptorPool</a> () const </td></tr>
+<tr class="memdesc:a092d9bd9bc2ada067a7b2bca5b39685e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the default, automatically generated DescriptorPool.  <a href="#a092d9bd9bc2ada067a7b2bca5b39685e">More...</a><br/></td></tr>
+<tr class="separator:a092d9bd9bc2ada067a7b2bca5b39685e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75059a73069601c41dd8ec754af5554f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a637551c1f687221f14122e0beeee2730">api::DescriptorPool</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a75059a73069601c41dd8ec754af5554f">getDefaultDescriptorPool</a> ()</td></tr>
+<tr class="memdesc:a75059a73069601c41dd8ec754af5554f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the default, automatically generated DescriptorPool.  <a href="#a75059a73069601c41dd8ec754af5554f">More...</a><br/></td></tr>
+<tr class="separator:a75059a73069601c41dd8ec754af5554f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72f346f595c346dcbd7cb535af016994"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a72f346f595c346dcbd7cb535af016994">getDefaultRenderPass</a> () const =0</td></tr>
 <tr class="memdesc:a72f346f595c346dcbd7cb535af016994"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the default render pass.  <a href="#a72f346f595c346dcbd7cb535af016994">More...</a><br/></td></tr>
 <tr class="separator:a72f346f595c346dcbd7cb535af016994"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9bca480490f2a7d7ecf10882902d0411"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1system_1_1_display_attributes.html">system::DisplayAttributes</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a9bca480490f2a7d7ecf10882902d0411">getDisplayAttributes</a> () const </td></tr>
@@ -205,8 +232,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a923200f0bc70d51a0079ee65faaef510"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a923200f0bc70d51a0079ee65faaef510">getInfo</a> () const =0</td></tr>
 <tr class="memdesc:a923200f0bc70d51a0079ee65faaef510"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print information about this <a class="el" href="classpvr_1_1_i_graphics_context.html" title="Interface for Graphics context. This interface will be used all over in user code to pass GraphicsCon...">IGraphicsContext</a>.  <a href="#a923200f0bc70d51a0079ee65faaef510">More...</a><br/></td></tr>
 <tr class="separator:a923200f0bc70d51a0079ee65faaef510"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6ba74fc8ec6284074c9a3bc976a585b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classpvr_1_1_i_platform_context.html">IPlatformContext</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ac6ba74fc8ec6284074c9a3bc976a585b">getPlatformContext</a> () const =0</td></tr>
+<tr class="memdesc:ac6ba74fc8ec6284074c9a3bc976a585b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <a class="el" href="classpvr_1_1_i_platform_context.html" title="Interface for the Platform context. Contains the necessary operations needed to get the context requi...">IPlatformContext</a> object powering this GraphicsContext.  <a href="#ac6ba74fc8ec6284074c9a3bc976a585b">More...</a><br/></td></tr>
+<tr class="separator:ac6ba74fc8ec6284074c9a3bc976a585b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab15994854eb809ceb39451fece16d95c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ab15994854eb809ceb39451fece16d95c">hasApiCapability</a> (<a class="el" href="structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2">ApiCapabilities::Enum</a> capability) const </td></tr>
-<tr class="memdesc:ab15994854eb809ceb39451fece16d95c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <a class="el" href="classpvr_1_1_i_platform_context.html" title="Interface for the Platform context. Contains the necessary operations needed to get the context requi...">IPlatformContext</a> object powering this GraphicsContext.  <a href="#ab15994854eb809ceb39451fece16d95c">More...</a><br/></td></tr>
+<tr class="memdesc:ab15994854eb809ceb39451fece16d95c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <a class="el" href="structpvr_1_1_api_capabilities.html" title="Struct containing the API capabilities of a specified configuration. ">ApiCapabilities</a> object representing the capabilities of this GraphicsContext.  <a href="#ab15994854eb809ceb39451fece16d95c">More...</a><br/></td></tr>
 <tr class="separator:ab15994854eb809ceb39451fece16d95c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52e098be5379bb1ba747fdcf7a5ba7a8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a52e098be5379bb1ba747fdcf7a5ba7a8">hasApiCapabilityExtension</a> (<a class="el" href="structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2">ApiCapabilities::Enum</a> capability) const </td></tr>
 <tr class="memdesc:a52e098be5379bb1ba747fdcf7a5ba7a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <a class="el" href="structpvr_1_1_api_capabilities.html" title="Struct containing the API capabilities of a specified configuration. ">ApiCapabilities</a> object representing the capabilities of this GraphicsContext.  <a href="#a52e098be5379bb1ba747fdcf7a5ba7a8">More...</a><br/></td></tr>
@@ -215,7 +245,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa5ffdcce60d4ad8706e84c41b986339c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <a class="el" href="structpvr_1_1_api_capabilities.html" title="Struct containing the API capabilities of a specified configuration. ">ApiCapabilities</a> object representing the capabilities of this GraphicsContext.  <a href="#aa5ffdcce60d4ad8706e84c41b986339c">More...</a><br/></td></tr>
 <tr class="separator:aa5ffdcce60d4ad8706e84c41b986339c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8e284ced370eef4149cff9c301120fa"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bb">Result::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ac8e284ced370eef4149cff9c301120fa">init</a> (<a class="el" href="classpvr_1_1_o_s_manager.html">OSManager</a> &amp;osManager, <a class="el" href="namespacepvr.html#a2ccaf74f96ba78d1629ddd21a2a7d647">GraphicsContext</a> &amp;this_ref)=0</td></tr>
-<tr class="memdesc:ac8e284ced370eef4149cff9c301120fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call this function to initialise the Context using the information of a specific <a class="el" href="classpvr_1_1_o_s_manager.html" title="This interface abstracts the part of the Shell that will provide the Display and the Window so that t...">OSManager</a> (usually, the Shell instance).  <a href="#ac8e284ced370eef4149cff9c301120fa">More...</a><br/></td></tr>
+<tr class="memdesc:ac8e284ced370eef4149cff9c301120fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call this function to initialize the Context using the information of a specific <a class="el" href="classpvr_1_1_o_s_manager.html" title="This interface abstracts the part of the Shell that will provide the Display and the Window so that t...">OSManager</a> (usually, the Shell instance).  <a href="#ac8e284ced370eef4149cff9c301120fa">More...</a><br/></td></tr>
 <tr class="separator:ac8e284ced370eef4149cff9c301120fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbe93a0a76e18d5de06876d1b6c9ecc2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#abbe93a0a76e18d5de06876d1b6c9ecc2">isExtensionSupported</a> (const <a class="el" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a> *extension) const =0</td></tr>
 <tr class="memdesc:abbe93a0a76e18d5de06876d1b6c9ecc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if a specific extension is supported.  <a href="#abbe93a0a76e18d5de06876d1b6c9ecc2">More...</a><br/></td></tr>
@@ -226,9 +256,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0aefda4d41bc635950993e85dee5f984"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a0aefda4d41bc635950993e85dee5f984">release</a> ()=0</td></tr>
 <tr class="memdesc:a0aefda4d41bc635950993e85dee5f984"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release the resources held by this context.  <a href="#a0aefda4d41bc635950993e85dee5f984">More...</a><br/></td></tr>
 <tr class="separator:a0aefda4d41bc635950993e85dee5f984"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea5087f43debfddc3e251140f793eadb"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bb">Result::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#aea5087f43debfddc3e251140f793eadb">screenCaptureRegion</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> x, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> y, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> w, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> h, <a class="el" href="namespacepvr.html#aa90cd73f0aa3430b003b48d119e94f71">byte</a> *buffer, <a class="el" href="classpvr_1_1_i_graphics_context.html#af41db73b461b76b3a0d3e7dbae32f110">ImageFormat</a> imageFormat)=0</td></tr>
-<tr class="memdesc:aea5087f43debfddc3e251140f793eadb"><td class="mdescLeft">&#160;</td><td class="mdescRight">take a screenshot in the specified buffer of the specified screen area.  <a href="#aea5087f43debfddc3e251140f793eadb">More...</a><br/></td></tr>
-<tr class="separator:aea5087f43debfddc3e251140f793eadb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08d032c6f8ca689d6a609cf045363007"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a08d032c6f8ca689d6a609cf045363007">screenCaptureRegion</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> x, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> y, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> w, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> h, <a class="el" href="namespacepvr.html#aa90cd73f0aa3430b003b48d119e94f71">byte</a> *buffer, <a class="el" href="classpvr_1_1_i_graphics_context.html#af41db73b461b76b3a0d3e7dbae32f110">ImageFormat</a> imageFormat)=0</td></tr>
+<tr class="memdesc:a08d032c6f8ca689d6a609cf045363007"><td class="mdescLeft">&#160;</td><td class="mdescRight">take a screenshot in the specified buffer of the specified screen area.  <a href="#a08d032c6f8ca689d6a609cf045363007">More...</a><br/></td></tr>
+<tr class="separator:a08d032c6f8ca689d6a609cf045363007"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90844cc56ec06a167335b3e31140fe69"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a90844cc56ec06a167335b3e31140fe69">waitIdle</a> ()=0</td></tr>
+<tr class="memdesc:a90844cc56ec06a167335b3e31140fe69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait until all pending operations are done.  <a href="#a90844cc56ec06a167335b3e31140fe69">More...</a><br/></td></tr>
+<tr class="separator:a90844cc56ec06a167335b3e31140fe69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -236,8 +269,6 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a2ddc0c15ec67fb95d0debd0fab071544"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7db8b24e9d7f03962dc837736829ac10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Api::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a7db8b24e9d7f03962dc837736829ac10">m_apiType</a></td></tr>
 <tr class="separator:a7db8b24e9d7f03962dc837736829ac10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f492bd29016ef5ab3652583bb93fb5e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a411b791a2931d80bc5b907ab82821202">api::DescriptorPool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a9f492bd29016ef5ab3652583bb93fb5e">m_defaultPool</a></td></tr>
-<tr class="separator:a9f492bd29016ef5ab3652583bb93fb5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a8c1dd0f0ab95ac18dd29263a50338e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_o_s_manager.html">OSManager</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a0a8c1dd0f0ab95ac18dd29263a50338e">m_osManager</a></td></tr>
 <tr class="separator:a0a8c1dd0f0ab95ac18dd29263a50338e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c7fa7ef383465aa8e36cdb8caf93cab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a2ccaf74f96ba78d1629ddd21a2a7d647">GraphicsContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a8c7fa7ef383465aa8e36cdb8caf93cab">m_this_shared</a></td></tr>
@@ -296,7 +327,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Default constructor. Object is uninitialised and unusable until init. </p>
+<p>Default constructor. Object is uninitialized and unusable until init. </p>
 <hr/>
  
 </div>
@@ -325,83 +356,12 @@ Friends</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ad3fb3856a218b1672e5e9d3c7e96d4f1"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="namespacepvr_1_1api.html#a825bcec788b3496cc47fa7a3af0431af">api::DescriptorSet</a> pvr::IGraphicsContext::allocateDescriptorSet </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a1b3e68c3dfaa2fb85e59e9481aacbc8c">api::DescriptorSetLayout</a> &amp;&#160;</td>
-          <td class="paramname"><em>layout</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a411b791a2931d80bc5b907ab82821202">api::DescriptorPool</a> &amp;&#160;</td>
-          <td class="paramname"><em>pool</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Allocate a new DescriptorSet on a specific Descriptor Set Allocation Pool. </p>
-<hr/>
- <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">layout</td><td>The layout of the DescriptorSet object </td></tr>
-    <tr><td class="paramname">pool</td><td>The descriptorPool to use for the allocation </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A new DescriptorSet object </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="aee1c0167d4bd209ce4f886d63ab13fde"></a>
+<a class="anchor" id="ab8cf52e71c5c8dcd6cecd22ed53167dd"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a825bcec788b3496cc47fa7a3af0431af">api::DescriptorSet</a> pvr::IGraphicsContext::allocateDescriptorSet </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a1b3e68c3dfaa2fb85e59e9481aacbc8c">api::DescriptorSetLayout</a> &amp;&#160;</td>
-          <td class="paramname"><em>layout</em>)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Create a new DescriptorSet on the PVRApi default allocation pool. </p>
-<hr/>
- <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">layout</td><td>The layout of the DescriptorSet object </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A new DescriptorSet object </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a9886f23df20a7b69cecb4b5f59e17c68"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a5eb2fc1c534f1c783cc4fbcce6d5da2e">api::Buffer</a> pvr::IGraphicsContext::createBuffer </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a84ba9b7b7a7f3ae2ff0eca7e715ec90c">api::Buffer</a> pvr::IGraphicsContext::createBuffer </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
           <td class="paramname"><em>size</em>, </td>
@@ -409,14 +369,14 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_buffer_binding_use.html#a9df6fadec55fb75c67c73aa032544128">api::BufferBindingUse::Bits</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_buffer_binding_use.html#a58fc93507a63159539b0d148fb55fcec">types::BufferBindingUse::Bits</a>&#160;</td>
           <td class="paramname"><em>bufferUsage</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_buffer_use.html#a85e1a5b44723c91bbe65eaf357379c06">api::BufferUse::Flags</a>&#160;</td>
-          <td class="paramname"><em>hint</em> = <code><a class="el" href="namespacepvr_1_1api_1_1_buffer_use.html#a85e1a5b44723c91bbe65eaf357379c06a339a0ebc6a59ca481269ee75501b323a">api::BufferUse::DEFAULT</a></code>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_buffer_use.html#a6ddaa3ba242c2b2f7ae01a7089cce8fd">types::BufferUse::Flags</a>&#160;</td>
+          <td class="paramname"><em>hint</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_buffer_use.html#a6ddaa3ba242c2b2f7ae01a7089cce8fdafb39d7694f0979815335a43bb9b812a2">types::BufferUse::DEFAULT</a></code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -440,38 +400,102 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a5efd778dcfd868c7d526d6fafa030690"></a>
+<a class="anchor" id="aaa74d2549eb8a0ab6ff9394f67e17b23"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a8d935dcf60fe99740c37b6c56d7d7fbd">api::ColorAttachmentView</a> pvr::IGraphicsContext::createColorAttachmentView </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a3e2d4659e33a054677ac12c19da5f47c">api::BufferView</a> pvr::IGraphicsContext::createBufferAndView </td>
           <td>(</td>
-          <td class="paramtype">const api::ColorAttachmentViewCreateParam &amp;&#160;</td>
-          <td class="paramname"><em>createParam</em>)</td><td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_buffer_binding_use.html#a58fc93507a63159539b0d148fb55fcec">types::BufferBindingUse::Bits</a>&#160;</td>
+          <td class="paramname"><em>bufferUsage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_buffer_use.html#a6ddaa3ba242c2b2f7ae01a7089cce8fd">types::BufferUse::Flags</a>&#160;</td>
+          <td class="paramname"><em>hint</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_buffer_use.html#a6ddaa3ba242c2b2f7ae01a7089cce8fdafb39d7694f0979815335a43bb9b812a2">types::BufferUse::DEFAULT</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Create a new colorAttachmentView object. </p>
+<p>One-step create a new Buffer with a corresponding BufferView to the entire range of the buffer. </p>
 <hr/>
- <dl class="section return"><dt>Returns</dt><dd>A newly created colorAttachmentView. Null if failed. </dd></dl>
+ <dl class="section return"><dt>Returns</dt><dd>A newly created BufferView of an entire a newly created Buffer object. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">createParam</td><td>Object containing the parameters that will be used to create the new object. </td></tr>
+    <tr><td class="paramname">buffer</td><td>The buffer that the UBO will be a view of </td></tr>
+    <tr><td class="paramname">offset</td><td>The starting offset in "buffer" that the UBO will represent </td></tr>
+    <tr><td class="paramname">range</td><td>The size of the new VBO, </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section user"><dt>Description:</dt><dd>The UBO created will be representing, in Buffer, range of (offset, offset+range) </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ac0c08000531ed6b8cb1d07edca214c94"></a>
+<a class="anchor" id="a852a8191bed8f00e82fbbe34268a2905"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#ab1b57793a376eb07ce4990613ed27ebc">api::CommandBuffer</a> pvr::IGraphicsContext::createCommandBuffer </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a3e2d4659e33a054677ac12c19da5f47c">api::BufferView</a> pvr::IGraphicsContext::createBufferView </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a84ba9b7b7a7f3ae2ff0eca7e715ec90c">api::Buffer</a> &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramname"><em>offset</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramname"><em>range</em> = <code>0xFFFFFFFFu</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a new Shader-Accessible view to Buffer Object (Can be used as UBO/SSBO etc), with an existing backing buffer. BufferViews allow Buffers to be added to DescriptorSets. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>A newly created BufferView object, wrapping the specified range of the provided buffer. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>The buffer that the UBO will be a view of. </td></tr>
+    <tr><td class="paramname">offset</td><td>The starting offset in "buffer" that the UBO will represent. Default: 0. </td></tr>
+    <tr><td class="paramname">range</td><td>The size of the original buffer that this view will represent/access. Default: the remaining size of the buffer (minus offset). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Description:</dt><dd>The UBO created will be representing, in Buffer, range of (offset, offset+range) </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="acefb5b37e6846d3df72a0a487db6348a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#acc8893ac955643c641d731204f06d8fa">api::CommandBuffer</a> pvr::IGraphicsContext::createCommandBufferOnDefaultPool </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>
@@ -479,10 +503,28 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Create a new CommandBuffer. </p>
+<p>Create a new primary CommandBuffer on the default CommandPool. </p>
 <hr/>
  <dl class="section return"><dt>Returns</dt><dd>A newly created CommandBuffer. Null if failed. </dd></dl>
 
+</div>
+</div>
+<a class="anchor" id="a02d0a8fa0917432c57350ecddf5b58fc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a7885487134a0e2a4b8e86d11c820a2c2">api::CommandPool</a> pvr::IGraphicsContext::createCommandPool </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a new CommandPool. </p>
+<hr/>
+ 
 </div>
 </div>
 <a class="anchor" id="a5ae0bb6c24b9fa971e93c4c59f277591"></a>
@@ -490,7 +532,7 @@ Friends</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#aa4059cc5aa16d7cc9c444e48c5b129ac">api::ComputePipeline</a> pvr::IGraphicsContext::createComputePipeline </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a608e558cf465b3183dc23fdb27b2ce03">api::ComputePipeline</a> pvr::IGraphicsContext::createComputePipeline </td>
           <td>(</td>
           <td class="paramtype">const api::ComputePipelineCreateParam &amp;&#160;</td>
           <td class="paramname"><em>createParam</em>)</td><td></td>
@@ -511,78 +553,16 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a013ce184e5faffa3dfb300b5b6dd018d"></a>
+<a class="anchor" id="a08300b007be5b3a89cc4118f0797072d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a0099c6787d2b822573fa8f95c9fc3237">api::DepthStencilView</a> pvr::IGraphicsContext::createDepthStencilView </td>
-          <td>(</td>
-          <td class="paramtype">const api::DepthStencilViewCreateParam &amp;&#160;</td>
-          <td class="paramname"><em>createParam</em>)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Create a new DepthStencilAttachmentView object out of an existing Texture. Represents a Depth&amp;Stencil. </p>
-<hr/>
- <dl class="section return"><dt>Returns</dt><dd>A newly created DepthStencilView. Null if failed. </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">createParam</td><td>Object containing the parameters that will be used to create the new object. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a3582799eac98badc5d7f25068817d80e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a0099c6787d2b822573fa8f95c9fc3237">api::DepthStencilView</a> pvr::IGraphicsContext::createDepthView </td>
-          <td>(</td>
-          <td class="paramtype">const api::DepthStencilViewCreateParam &amp;&#160;</td>
-          <td class="paramname"><em>createParam</em>)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Create a new DepthStencilAttachmentView object out of an existing Texture.Represents a Depth only (no stencil). </p>
-<hr/>
- <dl class="section return"><dt>Returns</dt><dd>A newly created DepthStencilView. Null if failed. </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">createParam</td><td>Object containing the parameters that will be used to create the new object. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a9c4c0fbc578d142ee9d92c8c6c8341f0"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a411b791a2931d80bc5b907ab82821202">api::DescriptorPool</a> pvr::IGraphicsContext::createDescriptorPool </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a637551c1f687221f14122e0beeee2730">api::DescriptorPool</a> pvr::IGraphicsContext::createDescriptorPool </td>
           <td>(</td>
           <td class="paramtype">const api::DescriptorPoolCreateParam &amp;&#160;</td>
-          <td class="paramname"><em>createParam</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>createParam</em>)</td><td></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_descriptor_pool_usage.html#a5c8a44b44ed639f402236730da2b3de9">api::DescriptorPoolUsage::Enum</a>&#160;</td>
-          <td class="paramname"><em>poolUsage</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -600,26 +580,36 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a6dd1c728578ce4139211383ef44d7eeb"></a>
+<a class="anchor" id="a7cbef0e050dec99535bbef4fd4c66f6f"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="namespacepvr_1_1api.html#a1b3e68c3dfaa2fb85e59e9481aacbc8c">api::DescriptorSetLayout</a> pvr::IGraphicsContext::createDescriptorSetLayout </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a637551c1f687221f14122e0beeee2730">api::DescriptorPool</a> pvr::IGraphicsContext::createDescriptorPool </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a new DescriptorPool. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="a5bcff5edc1743f9fccccfe044be50ccc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a51521c1bf928b30d4cb74cbdafda3710">api::DescriptorSetLayout</a> pvr::IGraphicsContext::createDescriptorSetLayout </td>
           <td>(</td>
           <td class="paramtype">const api::DescriptorSetLayoutCreateParam &amp;&#160;</td>
           <td class="paramname"><em>createParam</em>)</td><td></td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Create a new DescriptorSetLayout. </p>
@@ -635,12 +625,38 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a305fb0e7b1ab7ff6ab3b4725bca98347"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#adcc0a391e3ad0455b28b9ac4a1b2ec1a">api::DescriptorSet</a> pvr::IGraphicsContext::createDescriptorSetOnDefaultPool </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a51521c1bf928b30d4cb74cbdafda3710">api::DescriptorSetLayout</a> &amp;&#160;</td>
+          <td class="paramname"><em>layout</em>)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a new DescriptorSet on the PVRApi default allocation pool. </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">layout</td><td>The layout of the DescriptorSet object </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A new DescriptorSet object </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="aa94065f8d6a7f9fbb74f67c5362fe3eb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a8cf3ab3894af2e6b83c97838c68150ba">api::EffectApi</a> pvr::IGraphicsContext::createEffectApi </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a24b17b0ebc4dac68845f79900e7ef20e">api::EffectApi</a> pvr::IGraphicsContext::createEffectApi </td>
           <td>(</td>
           <td class="paramtype">assets::Effect &amp;&#160;</td>
           <td class="paramname"><em>effectDesc</em>, </td>
@@ -684,7 +700,7 @@ Friends</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a7107142f9769b39a7e25d663b1d9ec17">api::Fbo</a> pvr::IGraphicsContext::createFbo </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a> pvr::IGraphicsContext::createFbo </td>
           <td>(</td>
           <td class="paramtype">const api::FboCreateParam &amp;&#160;</td>
           <td class="paramname"><em>createParam</em>)</td><td></td>
@@ -706,12 +722,28 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ab9c501ba804717b42efcc65fd494c059"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a026dbaa18337b444ba682d97038bbd19">api::Fence</a> pvr::IGraphicsContext::createFence </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>createSignaled</em> = <code>true</code>)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="af58105e3ccc71c785a826dd8a51f393f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a64870d56cd0094850683cbdd51ceb05a">api::GraphicsPipeline</a> pvr::IGraphicsContext::createGraphicsPipeline </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#ab07c0f5188f9b6484e4b19ad4fd2926c">api::GraphicsPipeline</a> pvr::IGraphicsContext::createGraphicsPipeline </td>
           <td>(</td>
           <td class="paramtype">api::GraphicsPipelineCreateParam &amp;&#160;</td>
           <td class="paramname"><em>createParam</em>)</td><td></td>
@@ -737,7 +769,7 @@ Friends</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a64870d56cd0094850683cbdd51ceb05a">api::GraphicsPipeline</a> pvr::IGraphicsContext::createGraphicsPipeline </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#ab07c0f5188f9b6484e4b19ad4fd2926c">api::GraphicsPipeline</a> pvr::IGraphicsContext::createGraphicsPipeline </td>
           <td>(</td>
           <td class="paramtype">api::GraphicsPipelineCreateParam &amp;&#160;</td>
           <td class="paramname"><em>createParam</em>, </td>
@@ -745,7 +777,7 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api.html#accf56755c3537630b62c480dce0f0ade">api::ParentableGraphicsPipeline</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1api.html#a29852cbd107e34395d2b61d8b12d23fd">api::ParentableGraphicsPipeline</a>&#160;</td>
           <td class="paramname"><em>parent</em>&#160;</td>
         </tr>
         <tr>
@@ -770,48 +802,51 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a1e791dd1777a2307a1d206d7e420e41f"></a>
+<a class="anchor" id="a859bfded0a9f1dca1786dfd4ee6bd8de"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="namespacepvr_1_1api.html#a7107142f9769b39a7e25d663b1d9ec17">api::Fbo</a> pvr::IGraphicsContext::createOnScreenFboWithParams </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a> pvr::IGraphicsContext::createOnScreenFbo </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794f">LoadOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>colorLoadOp</em> = <code><a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794faf11ff8d54c90d509e135d6507434da4e">LoadOp::Clear</a></code>, </td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramname"><em>swapIndex</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127">StoreOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>colorStoreOp</em> = <code><a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127a371f1b1d583321a34db5e8d93246e2a2">StoreOp::Store</a></code>, </td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>colorLoadOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794f">LoadOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>depthLoadOp</em> = <code><a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794faf11ff8d54c90d509e135d6507434da4e">LoadOp::Clear</a></code>, </td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>colorStoreOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1a211522bf686fe8b1238a53d956cc37df">types::StoreOp::Store</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127">StoreOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>depthStoreOp</em> = <code><a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127ac11c167283385dd0f83e4c172c6a2f69">StoreOp::Ignore</a></code>, </td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>depthLoadOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794f">LoadOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>stencilLoadOp</em> = <code><a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794faf11ff8d54c90d509e135d6507434da4e">LoadOp::Clear</a></code>, </td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>depthStoreOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1ab56f44876780a11c0999a2f10e05567c">types::StoreOp::Ignore</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127">StoreOp::Enum</a>&#160;</td>
-          <td class="paramname"><em>stencilStoreOp</em> = <code><a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127ac11c167283385dd0f83e4c172c6a2f69">StoreOp::Ignore</a></code>, </td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>stencilLoadOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>stencilStoreOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1ab56f44876780a11c0999a2f10e05567c">types::StoreOp::Ignore</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -831,53 +866,239 @@ Friends</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the most common parameters. </p>
 <hr/>
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">colorLoadOp</td><td>The Load Operation for the color attachment (Default is <a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794faf11ff8d54c90d509e135d6507434da4e">LoadOp::Clear</a>, clearing the color of the screen at every frame start) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">colorStoreOp</td><td>The Store Operation for the color attachment (Default is <a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127a371f1b1d583321a34db5e8d93246e2a2">StoreOp::Store</a>, storing the color before buffer swapping) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">depthLoadOp</td><td>The Load Operation for the depth (Default is <a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794faf11ff8d54c90d509e135d6507434da4e">LoadOp::Clear</a>, clearing the Depth at every frame start) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">depthStoreOp</td><td>The Store Operation for the depth buffer (Default is <a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127ac11c167283385dd0f83e4c172c6a2f69">StoreOp::Ignore</a>, discarding the Depth before buffer swapping) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">stencilLoadOp</td><td>The Load Operation for the stencil buffer (Default is <a class="el" href="namespacepvr_1_1_load_op.html#a875a7882d3c44ced84fbd6a48e28794faf11ff8d54c90d509e135d6507434da4e">LoadOp::Clear</a>, clearing the Stencil at every frame start) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">stencilStoreOp</td><td>The Store Operation for the stencil buffer (Default is <a class="el" href="namespacepvr_1_1_store_op.html#a6e746d156894439d853673450dd25127ac11c167283385dd0f83e4c172c6a2f69">StoreOp::Ignore</a>, discarding the Stencil before buffer swapping) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">colorLoadOp</td><td>The Load Operation for the color attachment (Default is LoadOp::Clear, clearing the color of the screen at every frame start) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">colorStoreOp</td><td>The Store Operation for the color attachment (Default is StoreOp::Store, storing the color before buffer swapping) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">depthLoadOp</td><td>The Load Operation for the depth (Default is LoadOp::Clear, clearing the Depth at every frame start) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">depthStoreOp</td><td>The Store Operation for the depth buffer (Default is StoreOp::Ignore, discarding the Depth before buffer swapping) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stencilLoadOp</td><td>The Load Operation for the stencil buffer (Default is LoadOp::Clear, clearing the Stencil at every frame start) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stencilStoreOp</td><td>The Store Operation for the stencil buffer (Default is StoreOp::Ignore, discarding the Stencil before buffer swapping) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">numcolorSamples</td><td>The number of Samples for an MSAA color attachment </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">numDepthStencilSamples</td><td>The number of Samples for an MSAA Depth/Stencil attachment </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A new FBO who can be used to write to the Screen. </dd></dl>
-<dl class="section user"><dt>Description:</dt><dd>This version uses the most typical parameters used for the backbuffer, and also creates the RenderPass for the FBO. Uses a single subpass at color attachment 0. Use the FBO-&gt;getRenderPass method if you wish to retrieve the renderpass created with this method. WARNING: Defaults discard Depth and Stencil at the end of the renderpass, for performance. This may cause unintended results as it is different from default OpenGL. If you wish to preserve depth and/or stencil after the renderpass, please specify <a class="el" href="namespacepvr_1_1_store_op.html" title="Enumerates all possible values of operations to be performed when Storing to a Framebuffer Object...">StoreOp</a>:Store for depth and stencil. </dd></dl>
+<dl class="section user"><dt>Description:</dt><dd>This version uses the most typical parameters used for the backbuffer, and also creates the RenderPass for the FBO. Uses a single subpass at color attachment 0. Use the FBO-&gt;getRenderPass method if you wish to retrieve the renderpass created with this method. WARNING: Defaults discard Depth and Stencil at the end of the renderpass, for performance. This may cause unintended results as it is different from default OpenGL. If you wish to preserve depth and/or stencil after the renderpass, please specify StoreOp:Store for depth and stencil. </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ab4c67643b22cb4a742280987c45aa1c0"></a>
+<a class="anchor" id="a4e5d6b20d60ac66a2aabaf344753fef0"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="namespacepvr_1_1api.html#a7107142f9769b39a7e25d663b1d9ec17">api::Fbo</a> pvr::IGraphicsContext::createOnScreenFboWithRenderPass </td>
+          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">Multi</a>&lt;<a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a>&gt; pvr::IGraphicsContext::createOnScreenFboSet </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a67c63964ff1d3b4179e038bb9a19f8f8">api::RenderPass</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>colorLoadOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>colorStoreOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1a211522bf686fe8b1238a53d956cc37df">types::StoreOp::Store</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>depthLoadOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>depthStoreOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1ab56f44876780a11c0999a2f10e05567c">types::StoreOp::Ignore</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673">types::LoadOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>stencilLoadOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_load_op.html#a312ac18f7ed9699e8216ac986feb8673ac6d3dba33728cfa0f18fc3bd1e17389b">types::LoadOp::Clear</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1">types::StoreOp::Enum</a>&#160;</td>
+          <td class="paramname"><em>stencilStoreOp</em> = <code><a class="el" href="namespacepvr_1_1types_1_1_store_op.html#ad3c962230ecf13bc4f5d7f99c0140fa1ab56f44876780a11c0999a2f10e05567c">types::StoreOp::Ignore</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramname"><em>numcolorSamples</em> = <code>1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramname"><em>numDepthStencilSamples</em> = <code>1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the most common parameters. </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">colorLoadOp</td><td>The Load Operation for the color attachment (Default is LoadOp::Clear, clearing the color of the screen at every frame start) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">colorStoreOp</td><td>The Store Operation for the color attachment (Default is StoreOp::Store, storing the color before buffer swapping) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">depthLoadOp</td><td>The Load Operation for the depth (Default is LoadOp::Clear, clearing the Depth at every frame start) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">depthStoreOp</td><td>The Store Operation for the depth buffer (Default is StoreOp::Ignore, discarding the Depth before buffer swapping) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stencilLoadOp</td><td>The Load Operation for the stencil buffer (Default is LoadOp::Clear, clearing the Stencil at every frame start) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stencilStoreOp</td><td>The Store Operation for the stencil buffer (Default is StoreOp::Ignore, discarding the Stencil before buffer swapping) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numcolorSamples</td><td>The number of Samples for an MSAA color attachment </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numDepthStencilSamples</td><td>The number of Samples for an MSAA Depth/Stencil attachment </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A new FBO who can be used to write to the Screen. </dd></dl>
+<dl class="section user"><dt>Description:</dt><dd>This version uses the most typical parameters used for the backbuffer, and also creates the RenderPass for the FBO. Uses a single subpass at color attachment 0. Use the FBO-&gt;getRenderPass method if you wish to retrieve the renderpass created with this method. WARNING: Defaults discard Depth and Stencil at the end of the renderpass, for performance. This may cause unintended results as it is different from default OpenGL. If you wish to preserve depth and/or stencil after the renderpass, please specify StoreOp:Store for depth and stencil. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="afdb2ad669fcc6b39e22977b35f605369"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">Multi</a>&lt;<a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a>&gt; pvr::IGraphicsContext::createOnScreenFboSetWithRenderPass </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a> &amp;&#160;</td>
           <td class="paramname"><em>renderPass</em>)</td><td></td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
+</div><div class="memdoc">
+
+<p>Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the RenderPass to use for it. compatible with the actual BackBuffer format and options - this is the user's responsibility. </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">renderPass</td><td>The renderpass that this FBO will use. Must be compatible with the backbuffer. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A new FBO who can be used to write to the Screen. </dd></dl>
+<dl class="section user"><dt>Description:</dt><dd>This version uses a RenderPass that was provided by the user. The color and Depth/Stencil formats must be compatible with the backbuffer, otherwise results are undefined. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a8cabfea01fb9be043ced21da10414adc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">Multi</a>&lt;<a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a>&gt; pvr::IGraphicsContext::createOnScreenFboSetWithRenderPass </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a> &amp;&#160;</td>
+          <td class="paramname"><em>renderPass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; api::OnScreenFboCreateParam &gt; &amp;&#160;</td>
+          <td class="paramname"><em>onScreenFboCreateParams</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the RenderPass to use for it. compatible with the actual BackBuffer format and options - this is the user's responsibility. </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">renderPass</td><td>The renderpass that this FBO will use. Must be compatible with the backbuffer. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">onScreenFboCreateParams</td><td>A vector with additional color view attachments per swap chain. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A new FBO who can be used to write to the Screen. </dd></dl>
+<dl class="section user"><dt>Description:</dt><dd>This version uses a RenderPass that was provided by the user. The color and Depth/Stencil formats must be compatible with the backbuffer, otherwise results are undefined. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a307ebb6fc8cae354bdf2fb873547b75e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a> pvr::IGraphicsContext::createOnScreenFboWithRenderPass </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramname"><em>swapIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a> &amp;&#160;</td>
+          <td class="paramname"><em>renderPass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const api::OnScreenFboCreateParam &amp;&#160;</td>
+          <td class="paramname"><em>onScreenFboCreateParam</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the RenderPass to use for it. compatible with the actual BackBuffer format and options - this is the user's responsibility. Allows the user to specify additional color view attachments for the FBO to use. </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">renderPass</td><td>The renderpass that this FBO will use. Must be compatible with the backbuffer. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">onScreenFboCreateParam</td><td>An additional set of creation parameters to use for the fbo. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A new FBO who can be used to write to the Screen. </dd></dl>
+<dl class="section user"><dt>Description:</dt><dd>This version uses a RenderPass that was provided by the user. The color and Depth/Stencil formats must be compatible with the backbuffer, otherwise results are undefined. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aa4de7a491fc07bd7ce50cb98cc007be7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">api::Fbo</a> pvr::IGraphicsContext::createOnScreenFboWithRenderPass </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramname"><em>swapIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a> &amp;&#160;</td>
+          <td class="paramname"><em>renderPass</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
 </div><div class="memdoc">
 
 <p>Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen rendering), using the RenderPass to use for it. compatible with the actual BackBuffer format and options - this is the user's responsibility. </p>
@@ -898,7 +1119,7 @@ Friends</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#accf56755c3537630b62c480dce0f0ade">api::ParentableGraphicsPipeline</a> pvr::IGraphicsContext::createParentableGraphicsPipeline </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a29852cbd107e34395d2b61d8b12d23fd">api::ParentableGraphicsPipeline</a> pvr::IGraphicsContext::createParentableGraphicsPipeline </td>
           <td>(</td>
           <td class="paramtype">const api::GraphicsPipelineCreateParam &amp;&#160;</td>
           <td class="paramname"><em>createParam</em>)</td><td></td>
@@ -925,7 +1146,7 @@ Friends</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a05ac1292357cf7a002c7aed54decfa21">api::PipelineLayout</a> pvr::IGraphicsContext::createPipelineLayout </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a34c808c2dcb00eb1fb273517d935c500">api::PipelineLayout</a> pvr::IGraphicsContext::createPipelineLayout </td>
           <td>(</td>
           <td class="paramtype">const api::PipelineLayoutCreateParam &amp;&#160;</td>
           <td class="paramname"><em>createParam</em>)</td><td></td>
@@ -952,7 +1173,7 @@ Friends</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a67c63964ff1d3b4179e038bb9a19f8f8">api::RenderPass</a> pvr::IGraphicsContext::createRenderPass </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a> pvr::IGraphicsContext::createRenderPass </td>
           <td>(</td>
           <td class="paramtype">const api::RenderPassCreateParam &amp;&#160;</td>
           <td class="paramname"><em>renderPassDesc</em>)</td><td></td>
@@ -973,14 +1194,14 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a937d611fceeab85c3359b17f250b8bc0"></a>
+<a class="anchor" id="a60946d81cc52d879aff6cf9934337c3f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#afe501cf37e6e5cccda63d5ac9b428ac7">api::Sampler</a> pvr::IGraphicsContext::createSampler </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a2cd1fd0d95a3694ae3e9c84b693f2626">api::Sampler</a> pvr::IGraphicsContext::createSampler </td>
           <td>(</td>
-          <td class="paramtype">const assets::SamplerCreateParam &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a902910f83ba922c5071d1efbb5cb1615">api::SamplerCreateParam</a> &amp;&#160;</td>
           <td class="paramname"><em>createParam</em>)</td><td></td>
           <td></td>
         </tr>
@@ -999,12 +1220,12 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ab3b8b7895f4da92d8de564693a48804f"></a>
+<a class="anchor" id="a2aef54bc5156298a23bc6b21a8467e46"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#aa9b4de2c1fac3e76a8d91888da1a0258">api::SecondaryCommandBuffer</a> pvr::IGraphicsContext::createSecondaryCommandBuffer </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a34f13eee73526c78f836fb36c30ea54b">api::SecondaryCommandBuffer</a> pvr::IGraphicsContext::createSecondaryCommandBufferOnDefaultPool </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>
@@ -1012,14 +1233,18 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Create a new secondary CommandBuffer on the default CommandPool. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>A newly created CommandBuffer. Null if failed. </dd></dl>
+
 </div>
 </div>
-<a class="anchor" id="a7c53c46408e4ebfcfbdded0b5fe385ba"></a>
+<a class="anchor" id="a8fb4c65752ef88cb3b6854f2b7a32d97"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#acc461c8a49bf816fba2c9e9c127cc914">api::Shader</a> pvr::IGraphicsContext::createShader </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#ac733c31aec277813c9aea6cdcf3d77e4">api::Shader</a> pvr::IGraphicsContext::createShader </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpvr_1_1_stream.html">Stream</a> &amp;&#160;</td>
           <td class="paramname"><em>shaderSrc</em>, </td>
@@ -1027,7 +1252,7 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1_shader_type.html#a6f899a0ef761563c001ac9402b7ad390">ShaderType::Enum</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_shader_type.html#a54457467baf7029937631daab072bbda">types::ShaderType::Enum</a>&#160;</td>
           <td class="paramname"><em>shaderType</em>, </td>
         </tr>
         <tr>
@@ -1050,11 +1275,9 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>*!********************************************************************************************* </p>
-<p>*!*********************************************************************************************</p>
+<p>Create Shader from source. Accepts an array of custom preprocessor definition directives. </p>
 <hr/>
-<p> Create Shader from source. Accepts an array of custom preprocessor definition directives. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+ <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">shaderSrc</td><td>The shader source, as a stream. </td></tr>
     <tr><td class="paramname">shaderType</td><td>The type of shader to create </td></tr>
@@ -1066,12 +1289,12 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a077ad88a8eda173679b061384011a3de"></a>
+<a class="anchor" id="a3589f947ecf8a39b0c67518bb7f732da"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#acc461c8a49bf816fba2c9e9c127cc914">api::Shader</a> pvr::IGraphicsContext::createShader </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#ac733c31aec277813c9aea6cdcf3d77e4">api::Shader</a> pvr::IGraphicsContext::createShader </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classpvr_1_1_stream.html">Stream</a> &amp;&#160;</td>
           <td class="paramname"><em>shaderData</em>, </td>
@@ -1079,13 +1302,13 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1_shader_type.html#a6f899a0ef761563c001ac9402b7ad390">ShaderType::Enum</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_shader_type.html#a54457467baf7029937631daab072bbda">types::ShaderType::Enum</a>&#160;</td>
           <td class="paramname"><em>shaderType</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1assets_1_1_shader_binary_format.html#afa41873f5e1b780924018ad9ca7bdd7c">assets::ShaderBinaryFormat::Enum</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1types_1_1_shader_binary_format.html#a081718b4fec389665e147313e5e9b5c6">types::ShaderBinaryFormat::Enum</a>&#160;</td>
           <td class="paramname"><em>binaryFormat</em>&#160;</td>
         </tr>
         <tr>
@@ -1109,57 +1332,12 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a502a5fe4273b1df66bd5c5b1380db8bf"></a>
+<a class="anchor" id="a9575179ad48d3f68e31366e645b71176"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a8090eb71d009c9a8f20459966602dfa1">api::SsboView</a> pvr::IGraphicsContext::createSsbo </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a5eb2fc1c534f1c783cc4fbcce6d5da2e">api::Buffer</a> &amp;&#160;</td>
-          <td class="paramname"><em>buffer</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>offset</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>range</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Create a new Shader Storage Buffer Object, with an existing backing buffer. </p>
-<hr/>
- <dl class="section return"><dt>Returns</dt><dd>A newly created SSBO, wrapping the specified range of the provided buffer. </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">buffer</td><td>The buffer that the SSBO will be a view of </td></tr>
-    <tr><td class="paramname">offset</td><td>The starting offset in "buffer" that the SSBO will represent </td></tr>
-    <tr><td class="paramname">range</td><td>The size of the new VBO, </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section user"><dt>Description:</dt><dd>he SSBO created will be representing, in Buffer, range of (offset, offset+range). </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a3c2a21a6b8bed41aa767587d99f40b14"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#ad9d65bb69c0ed139c737fcdd45632001">api::TextureView</a> pvr::IGraphicsContext::createTexture </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#aefa9a681992c85b2e2dfad5099c6fe5e">api::TextureStore</a> pvr::IGraphicsContext::createTexture </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>
@@ -1173,27 +1351,27 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a0c9bf1c8b7589a0c4d5b65d7074d5b80"></a>
+<a class="anchor" id="ab9cdcba772cf0521e16334f2c4e331d7"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a5b1b7b9923bfeb63300fdd676c264971">api::UboView</a> pvr::IGraphicsContext::createUbo </td>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#af939d9e7a622e7eda49f452643496ac7">api::TextureView</a> pvr::IGraphicsContext::createTextureView </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#a5eb2fc1c534f1c783cc4fbcce6d5da2e">api::Buffer</a> &amp;&#160;</td>
-          <td class="paramname"><em>buffer</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#aefa9a681992c85b2e2dfad5099c6fe5e">api::TextureStore</a> &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>offset</em>, </td>
+          <td class="paramtype"><a class="el" href="structpvr_1_1types_1_1_image_subresource_range.html">types::ImageSubresourceRange</a>&#160;</td>
+          <td class="paramname"><em>range</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>range</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structpvr_1_1types_1_1_swizzle_channels.html">types::SwizzleChannels</a>&#160;</td>
+          <td class="paramname"> = <code><a class="el" href="structpvr_1_1types_1_1_swizzle_channels.html">types::SwizzleChannels</a>()</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1203,18 +1381,39 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Create a new Uniform Buffer Object, with an existing backing buffer. </p>
+<p>Create a new Texture object. </p>
 <hr/>
- <dl class="section return"><dt>Returns</dt><dd>A newly created UBO, wrapping the specified range of the provided buffer. </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">buffer</td><td>The buffer that the UBO will be a view of </td></tr>
-    <tr><td class="paramname">offset</td><td>The starting offset in "buffer" that the UBO will represent </td></tr>
-    <tr><td class="paramname">range</td><td>The size of the new VBO, </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section user"><dt>Description:</dt><dd>The UBO created will be representing, in Buffer, range of (offset, offset+range) </dd></dl>
+ <dl class="section return"><dt>Returns</dt><dd>A newly created, unallocated Texture. Contains NULL if creation failed. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a497d4e5d350383d48aa52b5699971d26"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#af939d9e7a622e7eda49f452643496ac7">api::TextureView</a> pvr::IGraphicsContext::createTextureView </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepvr_1_1api.html#aefa9a681992c85b2e2dfad5099c6fe5e">api::TextureStore</a> &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structpvr_1_1types_1_1_swizzle_channels.html">types::SwizzleChannels</a>&#160;</td>
+          <td class="paramname"> = <code><a class="el" href="structpvr_1_1types_1_1_swizzle_channels.html">types::SwizzleChannels</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a new Texture object. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>A newly created, unallocated Texture. Contains NULL if creation failed. </dd></dl>
 
 </div>
 </div>
@@ -1278,7 +1477,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const <a class="el" href="namespacepvr_1_1api.html#a7107142f9769b39a7e25d663b1d9ec17">pvr::api::Fbo</a>&amp; pvr::IGraphicsContext::getBoundFbo </td>
+          <td class="memname">virtual const <a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">pvr::api::Fbo</a>&amp; pvr::IGraphicsContext::getBoundFbo </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td> const</td>
@@ -1293,6 +1492,78 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a6aeab1283c362deb08881e606f3aa00a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacepvr_1_1api.html#a7885487134a0e2a4b8e86d11c820a2c2">api::CommandPool</a>&amp; pvr::IGraphicsContext::getDefaultCommandPool </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the default, automatically generated CommandPool. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="a7da8573535066d07c5cd0fbd84fe38e5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a7885487134a0e2a4b8e86d11c820a2c2">api::CommandPool</a>&amp; pvr::IGraphicsContext::getDefaultCommandPool </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the default, automatically generated CommandPool. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="a092d9bd9bc2ada067a7b2bca5b39685e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacepvr_1_1api.html#a637551c1f687221f14122e0beeee2730">api::DescriptorPool</a>&amp; pvr::IGraphicsContext::getDefaultDescriptorPool </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the default, automatically generated DescriptorPool. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="a75059a73069601c41dd8ec754af5554f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a637551c1f687221f14122e0beeee2730">api::DescriptorPool</a>&amp; pvr::IGraphicsContext::getDefaultDescriptorPool </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the default, automatically generated DescriptorPool. </p>
+<hr/>
+ 
+</div>
+</div>
 <a class="anchor" id="a72f346f595c346dcbd7cb535af016994"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1301,7 +1572,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const <a class="el" href="namespacepvr_1_1api.html#a67c63964ff1d3b4179e038bb9a19f8f8">api::RenderPass</a>&amp; pvr::IGraphicsContext::getDefaultRenderPass </td>
+          <td class="memname">virtual const <a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a>&amp; pvr::IGraphicsContext::getDefaultRenderPass </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td> const</td>
@@ -1371,6 +1642,32 @@ Friends</h2></td></tr>
  
 </div>
 </div>
+<a class="anchor" id="ac6ba74fc8ec6284074c9a3bc976a585b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classpvr_1_1_i_platform_context.html">IPlatformContext</a>&amp; pvr::IGraphicsContext::getPlatformContext </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the <a class="el" href="classpvr_1_1_i_platform_context.html" title="Interface for the Platform context. Contains the necessary operations needed to get the context requi...">IPlatformContext</a> object powering this GraphicsContext. </p>
+<hr/>
+ 
+</div>
+</div>
 <a class="anchor" id="ab15994854eb809ceb39451fece16d95c"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1393,11 +1690,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the <a class="el" href="classpvr_1_1_i_platform_context.html" title="Interface for the Platform context. Contains the necessary operations needed to get the context requi...">IPlatformContext</a> object powering this GraphicsContext. </p>
+<p>Get <a class="el" href="structpvr_1_1_api_capabilities.html" title="Struct containing the API capabilities of a specified configuration. ">ApiCapabilities</a> object representing the capabilities of this GraphicsContext. </p>
 <hr/>
-<hr/>
-<p> Get <a class="el" href="structpvr_1_1_api_capabilities.html" title="Struct containing the API capabilities of a specified configuration. ">ApiCapabilities</a> object representing the capabilities of this GraphicsContext. </p>
-
+ 
 </div>
 </div>
 <a class="anchor" id="a52e098be5379bb1ba747fdcf7a5ba7a8"></a>
@@ -1486,7 +1781,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Call this function to initialise the Context using the information of a specific <a class="el" href="classpvr_1_1_o_s_manager.html" title="This interface abstracts the part of the Shell that will provide the Display and the Window so that t...">OSManager</a> (usually, the Shell instance). </p>
+<p>Call this function to initialize the Context using the information of a specific <a class="el" href="classpvr_1_1_o_s_manager.html" title="This interface abstracts the part of the Shell that will provide the Display and the Window so that t...">OSManager</a> (usually, the Shell instance). </p>
 <hr/>
  
 </div>
@@ -1585,7 +1880,7 @@ Friends</h2></td></tr>
  
 </div>
 </div>
-<a class="anchor" id="aea5087f43debfddc3e251140f793eadb"></a>
+<a class="anchor" id="a08d032c6f8ca689d6a609cf045363007"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1593,7 +1888,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bb">Result::Enum</a> pvr::IGraphicsContext::screenCaptureRegion </td>
+          <td class="memname">virtual bool pvr::IGraphicsContext::screenCaptureRegion </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
           <td class="paramname"><em>x</em>, </td>
@@ -1642,6 +1937,32 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>take a screenshot in the specified buffer of the specified screen area. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="a90844cc56ec06a167335b3e31140fe69"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void pvr::IGraphicsContext::waitIdle </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wait until all pending operations are done. </p>
 <hr/>
  
 </div>
@@ -1704,26 +2025,6 @@ Friends</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Api::Enum</a> pvr::IGraphicsContext::m_apiType</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a9f492bd29016ef5ab3652583bb93fb5e"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacepvr_1_1api.html#a411b791a2931d80bc5b907ab82821202">api::DescriptorPool</a> pvr::IGraphicsContext::m_defaultPool</td>
         </tr>
       </table>
   </td>

@@ -12,3 +12,10 @@
 #include "PVRCore/Stream.h"
 #include <functional>
 #include <map>
+
+namespace pvr {
+namespace assets {
+typedef ::pvr::types::VertexAttributeLayout  VertexAttributeLayout;
+typedef ::pvr::types::SamplerCreateParam SamplerCreateParam;
+}
+}

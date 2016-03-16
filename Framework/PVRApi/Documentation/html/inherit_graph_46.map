@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html" title="Contains parameters needed to set depth stencil states to a pipeline create params. This object can be added to a PipelineCreateParam to set a depth&#45;stencil state to values other than their defaults. " alt="" coords="5,5,216,46"/>
+<area shape="rect" id="node2" href="$classpvr_1_1api_1_1gles_1_1_sampler_gles__.html" title="pvr::api::gles::SamplerGles_" alt="" coords="214,5,399,32"/>
+<area shape="rect" id="node3" href="$classpvr_1_1api_1_1vulkan_1_1_sampler_vk__.html" title="pvr::api::vulkan::SamplerVk_" alt="" coords="213,56,400,83"/>
+<area shape="rect" id="node4" href="$classpvr_1_1api_1_1impl_1_1_sampler__.html" title="The Sampler Framework API object. Wrapped in the pvr::api::Sampler as a Reference counted Framework o..." alt="" coords="6,56,165,83"/>
 </map>

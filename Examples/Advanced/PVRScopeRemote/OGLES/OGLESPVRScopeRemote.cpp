@@ -26,7 +26,7 @@ enum Enum
 };
 }
 const char* FrameDefs[CounterDefs::NumCounter] = { "Frames", "Frames10" };
-
+using namespace pvr;
 /*!*********************************************************************************************************************
 \brief Class implementing the PVRShell functions.
 ***********************************************************************************************************************/
@@ -130,18 +130,18 @@ bool OGLESPVRScopeRemote::createTexSamplerDescriptorSet()
 	}
 
 	pvr::assets::SamplerCreateParam samplerDesc;
-	samplerDesc.minificationFilter = pvr::SamplerFilter::Linear;
-	samplerDesc.mipMappingFilter = pvr::SamplerFilter::Nearest;
-	samplerDesc.magnificationFilter = pvr::SamplerFilter::Linear;
+	samplerDesc.minificationFilter = types::SamplerFilter::Linear;
+	samplerDesc.mipMappingFilter = types::SamplerFilter::Nearest;
+	samplerDesc.magnificationFilter = types::SamplerFilter::Linear;
 	pvr::api::Sampler bilinearSampler = m_context->createSampler(samplerDesc);
 
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
-	descSetLayoutInfo.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, pvr::api::ShaderStageFlags::Fragment);
+	descSetLayoutInfo.setBinding(0, types::DescriptorType::CombinedImageSampler, types::ShaderStageFlags::Fragment);
 	m_deviceResource->descriptorSetLayout = m_context->createDescriptorSetLayout(descSetLayoutInfo);
 
-	pvr::api::DescriptorSetUpdateParam descriptorSetUpdate;
-	descriptorSetUpdate.addCombinedImageSampler(0, 0, m_deviceResource->texture, bilinearSampler);
-	m_deviceResource->descriptorSet = m_context->allocateDescriptorSet(m_deviceResource->descriptorSetLayout);
+	pvr::api::DescriptorSetUpdate descriptorSetUpdate;
+	descriptorSetUpdate.setCombinedImageSampler(0, m_deviceResource->texture, bilinearSampler);
+	m_deviceResource->descriptorSet = m_context->createDescriptorSetOnDefaultPool(m_deviceResource->descriptorSetLayout);
 	m_deviceResource->descriptorSet->update(descriptorSetUpdate);
 	return true;
 }
@@ -171,10 +171,10 @@ bool OGLESPVRScopeRemote::createPipeline(const char* const fragShaderSource, con
 	pvr::BufferStream vertexShaderStream("", vertShaderSource, strlen(vertShaderSource));
 	pvr::BufferStream fragShaderStream("", fragShaderSource, strlen(fragShaderSource));
 
-	pipeDesc.vertexShader.setShader(m_context->createShader(vertexShaderStream, pvr::ShaderType::VertexShader));
-	pipeDesc.fragmentShader.setShader(m_context->createShader(fragShaderStream, pvr::ShaderType::FragmentShader));
+	pipeDesc.vertexShader.setShader(m_context->createShader(vertexShaderStream, types::ShaderType::VertexShader));
+	pipeDesc.fragmentShader.setShader(m_context->createShader(fragShaderStream, types::ShaderType::FragmentShader));
 	pipeDesc.pipelineLayout = m_context->createPipelineLayout(pipeLayoutInfo);
-
+	pipeDesc.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
 	pvr::utils::createInputAssemblyFromMesh(scene->getMesh(0), vertexBindings, 3, pipeDesc);
 
 	pvr::api::GraphicsPipeline tmpPipeline = m_context->createGraphicsPipeline(pipeDesc);
@@ -233,7 +233,7 @@ pvr::Result::Enum OGLESPVRScopeRemote::initApplication()
 	if (!assetStore.loadModel(SceneFile, scene))
 	{
 		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 	// We want a data connection to PVRPerfServer
 	{
@@ -266,7 +266,7 @@ pvr::Result::Enum OGLESPVRScopeRemote::initApplication()
 	if (!assetStore.loadModel(SceneFile, scene))
 	{
 		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 
 	// set angle of rotation
@@ -437,8 +437,8 @@ pvr::Result::Enum OGLESPVRScopeRemote::initView()
 	m_context = getGraphicsContext();
 	m_deviceResource.reset(new DeviceResources());
 	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
-
-	m_deviceResource->commandBuffer = m_context->createCommandBuffer();
+	m_deviceResource->onScreenFbo = m_context->createOnScreenFbo(0);
+	m_deviceResource->commandBuffer = m_context->createCommandBufferOnDefaultPool();
 	//	Initialize VBO data
 	loadVbos();
 
@@ -446,7 +446,7 @@ pvr::Result::Enum OGLESPVRScopeRemote::initView()
 	if (!createTexSamplerDescriptorSet())
 	{
 		setExitMessage("ERROR:Failed to create DescriptorSets.");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 
 	size_t dataRead;
@@ -470,17 +470,15 @@ pvr::Result::Enum OGLESPVRScopeRemote::initView()
 	if (!createPipeline(&fragShaderSrc[0], &vertShaderSrc[0]))
 	{
 		setExitMessage("ERROR:Failed to create pipelines.");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 
 	//	Initialize the UI Renderer
-	if (uiRenderer.init(getGraphicsContext()) != pvr::Result::Success)
+	if (uiRenderer.init(getGraphicsContext(), m_deviceResource->onScreenFbo->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
-
-	m_deviceResource->onScreenFbo = m_context->createOnScreenFboWithParams();
 
 	// create the pvrscope connection pass and fail text
 	uiRenderer.getDefaultTitle()->setText("PVRScopeRemote");
@@ -495,7 +493,7 @@ pvr::Result::Enum OGLESPVRScopeRemote::initView()
 	bool isRotated = this->isScreenRotated() && this->isFullScreen();
 	if (isRotated)
 	{
-		progUniforms.projectionMtx = pvr::math::perspectiveFov(glm::pi<pvr::float32>() / 6, (pvr::float32)getHeight(),
+		progUniforms.projectionMtx = pvr::math::perspectiveFov(getApiType(), glm::pi<pvr::float32>() / 6, (pvr::float32)getHeight(),
 		                             (pvr::float32)getWidth(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar(), glm::pi<pvr::float32>() * .5f);
 	}
 	else
@@ -708,7 +706,7 @@ void OGLESPVRScopeRemote::drawMesh(int nodeIndex)
 		if (m_deviceResource->ibos[meshIndex].isValid())
 		{
 			// Indexed Triangle list
-			m_deviceResource->commandBuffer->bindIndexBuffer(m_deviceResource->ibos[meshIndex], 0, pvr::IndexType::IndexType16Bit);
+			m_deviceResource->commandBuffer->bindIndexBuffer(m_deviceResource->ibos[meshIndex], 0, types::IndexType::IndexType16Bit);
 			m_deviceResource->commandBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 		}
 		else
@@ -724,7 +722,7 @@ void OGLESPVRScopeRemote::drawMesh(int nodeIndex)
 			int offset = 0;
 			if (m_deviceResource->ibos[meshIndex].isValid())
 			{
-				m_deviceResource->commandBuffer->bindIndexBuffer(m_deviceResource->ibos[meshIndex], 0, pvr::IndexType::IndexType16Bit);
+				m_deviceResource->commandBuffer->bindIndexBuffer(m_deviceResource->ibos[meshIndex], 0, types::IndexType::IndexType16Bit);
 
 				// Indexed Triangle strips
 				m_deviceResource->commandBuffer->drawIndexed(0, mesh.getStripLength(i) + 2, offset * 2, 0, 1);
@@ -747,12 +745,12 @@ void OGLESPVRScopeRemote::recordCommandBuffer()
 	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
 	m_deviceResource->commandBuffer->beginRecording();
 
-	m_deviceResource->commandBuffer->beginRenderPass(m_deviceResource->onScreenFbo, pvr::Rectanglei(0, 0, getWidth(), getHeight()), glm::vec4(0.00, 0.70, 0.67, 1.0f));
+	m_deviceResource->commandBuffer->beginRenderPass(m_deviceResource->onScreenFbo, pvr::Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(0.00, 0.70, 0.67, 1.0f));
 
 	// Use shader program
 	m_deviceResource->commandBuffer->bindPipeline(m_deviceResource->pipeline);
 	// Bind texture
-	m_deviceResource->commandBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics, m_deviceResource->pipeline->getPipelineLayout(), m_deviceResource->descriptorSet, 0);
+	m_deviceResource->commandBuffer->bindDescriptorSet(m_deviceResource->pipeline->getPipelineLayout(), 0, m_deviceResource->descriptorSet, 0);
 
 	m_deviceResource->commandBuffer->setUniformPtr<glm::vec3>(uniformLocations.lightDirView, 1, &progUniforms.lightDirView);
 	m_deviceResource->commandBuffer->setUniformPtr<glm::mat4>(uniformLocations.mvpMtx, 1, &progUniforms.mvpMatrix);
@@ -765,10 +763,10 @@ void OGLESPVRScopeRemote::recordCommandBuffer()
 
 	drawMesh(0);
 
-	pvr::api::SecondaryCommandBuffer uicmd = m_context->createSecondaryCommandBuffer();
+	pvr::api::SecondaryCommandBuffer uicmd = m_context->createSecondaryCommandBufferOnDefaultPool();
 	uiRenderer.beginRendering(uicmd);
 	// Displays the demo name using the tools. For a detailed explanation, see the example
-	// IntroducingPVRUIRenderer
+	// IntroUIRenderer
 	uiRenderer.getDefaultTitle()->render();
 	uiRenderer.getDefaultDescription()->render();
 	uiRenderer.getSdkLogo()->render();

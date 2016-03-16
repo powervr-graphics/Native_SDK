@@ -4,7 +4,7 @@ var searchData=
   ['setaasamples',['setAASamples',['../classpvr_1_1system_1_1_shell.html#acfc28bd19d17e85727a0775127a4a70c',1,'pvr::system::Shell']]],
   ['setapityperequired',['setApiTypeRequired',['../classpvr_1_1system_1_1_shell.html#a04aa4f5724d37b1861fe5dfb82e4b2c6',1,'pvr::system::Shell']]],
   ['setapplicationname',['setApplicationName',['../classpvr_1_1system_1_1_shell_o_s.html#aa582d3cef5341eb0036464afa7189a6a',1,'pvr::system::ShellOS::setApplicationName()'],['../classpvr_1_1system_1_1_shell.html#a0d46d620065c072896220f6e960777e8',1,'pvr::system::Shell::setApplicationName()']]],
-  ['setbackbuffercolorspace',['setBackBufferColorspace',['../classpvr_1_1system_1_1_shell.html#a385611ce038b6b2c4eaf4434bf82736d',1,'pvr::system::Shell']]],
+  ['setbackbuffercolorspace',['setBackBufferColorspace',['../classpvr_1_1system_1_1_shell.html#a637ac6fc3f0a98e00ec6f8afbf786922',1,'pvr::system::Shell']]],
   ['setbutton',['setButton',['../structpvr_1_1system_1_1_shell_1_1_private_pointer_state.html#a94d5451ea9f1b63b90044fefe64b78c1',1,'pvr::system::Shell::PrivatePointerState']]],
   ['setcaptureframes',['setCaptureFrames',['../classpvr_1_1system_1_1_shell.html#aa3170e1f02fdbc8d82b7971d5aeb5bda',1,'pvr::system::Shell']]],
   ['setcaptureframescale',['setCaptureFrameScale',['../classpvr_1_1system_1_1_shell.html#a6c324b4bf625ec1a4fd07e1c59591c34',1,'pvr::system::Shell']]],

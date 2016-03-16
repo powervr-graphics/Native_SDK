@@ -1,0 +1,322 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E13081E1BC562B40027D06D /* ShaderUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E13081D1BC562B40027D06D /* ShaderUtils.h */; settings = {ASSET_TAGS = (); }; };
+		0E3AE6681C69E56C006FE386 /* TextureUtilsGles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3AE6671C69E56C006FE386 /* TextureUtilsGles.h */; settings = {ASSET_TAGS = (); }; };
+		0E4EB01E1B668EA500635FED /* NativeObjectsGles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E4EB0191B668EA500635FED /* NativeObjectsGles.h */; };
+		0EB9410D1B1708C400E2967A /* ApiErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB940E41B1708C400E2967A /* ApiErrors.cpp */; };
+		0EB9410F1B1708C400E2967A /* ApiGles2.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940E61B1708C400E2967A /* ApiGles2.h */; };
+		0EB941101B1708C400E2967A /* ApiGles3.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940E71B1708C400E2967A /* ApiGles3.h */; };
+		0EB941111B1708C400E2967A /* ApiGles31.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940E81B1708C400E2967A /* ApiGles31.h */; };
+		0EB941121B1708C400E2967A /* ApiGlesExt.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940E91B1708C400E2967A /* ApiGlesExt.h */; };
+		0EB941141B1708C400E2967A /* ConvertToApiTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB940EB1B1708C400E2967A /* ConvertToApiTypes.cpp */; };
+		0EB941191B1708C400E2967A /* ConvertToApiTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940F01B1708C400E2967A /* ConvertToApiTypes.h */; };
+		0EB9411B1B1708C400E2967A /* ExtensionLoaderGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB940F21B1708C400E2967A /* ExtensionLoaderGles.cpp */; };
+		0EB9411C1B1708C400E2967A /* ExtensionLoaderGles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940F31B1708C400E2967A /* ExtensionLoaderGles.h */; };
+		0EB941201B1708C400E2967A /* OpenGLESBindings.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940F71B1708C400E2967A /* OpenGLESBindings.h */; };
+		0EB941211B1708C400E2967A /* OpenGLESHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940F81B1708C400E2967A /* OpenGLESHeaders.h */; };
+		0EB941271B1708C400E2967A /* LibraryLoaderGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB940FE1B1708C400E2967A /* LibraryLoaderGles.cpp */; };
+		0EB941281B1708C400E2967A /* LibraryLoaderGles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940FF1B1708C400E2967A /* LibraryLoaderGles.h */; };
+		0EB941321B1708C400E2967A /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB941091B1708C400E2967A /* TextureUtils.cpp */; };
+		0EB941D21B2706B800E2967A /* ApiErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941C31B2706B800E2967A /* ApiErrors.h */; };
+		0EE12A6B1B8F4EC8006ACAEB /* ShaderUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EE12A691B8F4EC8006ACAEB /* ShaderUtils.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0E13081D1BC562B40027D06D /* ShaderUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderUtils.h; path = ../../../ShaderUtils.h; sourceTree = "<group>"; };
+		0E3AE6671C69E56C006FE386 /* TextureUtilsGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureUtilsGles.h; path = ../../TextureUtilsGles.h; sourceTree = "<group>"; };
+		0E4EB0191B668EA500635FED /* NativeObjectsGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeObjectsGles.h; path = ../../NativeObjectsGles.h; sourceTree = "<group>"; };
+		0EB940E41B1708C400E2967A /* ApiErrors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ApiErrors.cpp; path = ../../ApiErrors.cpp; sourceTree = "<group>"; };
+		0EB940E61B1708C400E2967A /* ApiGles2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiGles2.h; path = ../../ApiGles2.h; sourceTree = "<group>"; };
+		0EB940E71B1708C400E2967A /* ApiGles3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiGles3.h; path = ../../ApiGles3.h; sourceTree = "<group>"; };
+		0EB940E81B1708C400E2967A /* ApiGles31.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiGles31.h; path = ../../ApiGles31.h; sourceTree = "<group>"; };
+		0EB940E91B1708C400E2967A /* ApiGlesExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiGlesExt.h; path = ../../ApiGlesExt.h; sourceTree = "<group>"; };
+		0EB940EB1B1708C400E2967A /* ConvertToApiTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ConvertToApiTypes.cpp; path = ../../ConvertToApiTypes.cpp; sourceTree = "<group>"; };
+		0EB940F01B1708C400E2967A /* ConvertToApiTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConvertToApiTypes.h; path = ../../ConvertToApiTypes.h; sourceTree = "<group>"; };
+		0EB940F21B1708C400E2967A /* ExtensionLoaderGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExtensionLoaderGles.cpp; path = ../../ExtensionLoaderGles.cpp; sourceTree = "<group>"; };
+		0EB940F31B1708C400E2967A /* ExtensionLoaderGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtensionLoaderGles.h; path = ../../ExtensionLoaderGles.h; sourceTree = "<group>"; };
+		0EB940F71B1708C400E2967A /* OpenGLESBindings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenGLESBindings.h; path = ../../OpenGLESBindings.h; sourceTree = "<group>"; };
+		0EB940F81B1708C400E2967A /* OpenGLESHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenGLESHeaders.h; path = ../../OpenGLESHeaders.h; sourceTree = "<group>"; };
+		0EB940FE1B1708C400E2967A /* LibraryLoaderGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryLoaderGles.cpp; path = ../../LibraryLoaderGles.cpp; sourceTree = "<group>"; };
+		0EB940FF1B1708C400E2967A /* LibraryLoaderGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryLoaderGles.h; path = ../../LibraryLoaderGles.h; sourceTree = "<group>"; };
+		0EB941091B1708C400E2967A /* TextureUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureUtils.cpp; path = ../../TextureUtils.cpp; sourceTree = "<group>"; };
+		0EB941C31B2706B800E2967A /* ApiErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiErrors.h; path = ../../../ApiErrors.h; sourceTree = "<group>"; };
+		0EE12A691B8F4EC8006ACAEB /* ShaderUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderUtils.cpp; path = ../../ShaderUtils.cpp; sourceTree = "<group>"; };
+		AC99070D19F547F800447292 /* libPVRNativeGles.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVRNativeGles.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AC99070A19F547F800447292 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AC99070419F547F800447292 = {
+			isa = PBXGroup;
+			children = (
+				AC99071419F5482C00447292 /* Sources */,
+				AC99070E19F547F800447292 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AC99070E19F547F800447292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AC99070D19F547F800447292 /* libPVRNativeGles.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AC99071419F5482C00447292 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				0E3AE6671C69E56C006FE386 /* TextureUtilsGles.h */,
+				0E13081D1BC562B40027D06D /* ShaderUtils.h */,
+				0EE12A691B8F4EC8006ACAEB /* ShaderUtils.cpp */,
+				0E4EB0191B668EA500635FED /* NativeObjectsGles.h */,
+				0EB941C31B2706B800E2967A /* ApiErrors.h */,
+				0EB940E41B1708C400E2967A /* ApiErrors.cpp */,
+				0EB940E61B1708C400E2967A /* ApiGles2.h */,
+				0EB940E71B1708C400E2967A /* ApiGles3.h */,
+				0EB940E81B1708C400E2967A /* ApiGles31.h */,
+				0EB940E91B1708C400E2967A /* ApiGlesExt.h */,
+				0EB940EB1B1708C400E2967A /* ConvertToApiTypes.cpp */,
+				0EB940F01B1708C400E2967A /* ConvertToApiTypes.h */,
+				0EB940F21B1708C400E2967A /* ExtensionLoaderGles.cpp */,
+				0EB940F31B1708C400E2967A /* ExtensionLoaderGles.h */,
+				0EB940F71B1708C400E2967A /* OpenGLESBindings.h */,
+				0EB940F81B1708C400E2967A /* OpenGLESHeaders.h */,
+				0EB940FE1B1708C400E2967A /* LibraryLoaderGles.cpp */,
+				0EB940FF1B1708C400E2967A /* LibraryLoaderGles.h */,
+				0EB941091B1708C400E2967A /* TextureUtils.cpp */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		AC99070B19F547F800447292 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0EB941D21B2706B800E2967A /* ApiErrors.h in Headers */,
+				0EB941101B1708C400E2967A /* ApiGles3.h in Headers */,
+				0E13081E1BC562B40027D06D /* ShaderUtils.h in Headers */,
+				0EB941191B1708C400E2967A /* ConvertToApiTypes.h in Headers */,
+				0EB941111B1708C400E2967A /* ApiGles31.h in Headers */,
+				0EB9411C1B1708C400E2967A /* ExtensionLoaderGles.h in Headers */,
+				0E4EB01E1B668EA500635FED /* NativeObjectsGles.h in Headers */,
+				0E3AE6681C69E56C006FE386 /* TextureUtilsGles.h in Headers */,
+				0EB941121B1708C400E2967A /* ApiGlesExt.h in Headers */,
+				0EB941281B1708C400E2967A /* LibraryLoaderGles.h in Headers */,
+				0EB941201B1708C400E2967A /* OpenGLESBindings.h in Headers */,
+				0EB9410F1B1708C400E2967A /* ApiGles2.h in Headers */,
+				0EB941211B1708C400E2967A /* OpenGLESHeaders.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		AC99070C19F547F800447292 /* PVRNativeGles */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AC99071119F547F800447292 /* Build configuration list for PBXNativeTarget "PVRNativeGles" */;
+			buildPhases = (
+				AC99070919F547F800447292 /* Sources */,
+				AC99070A19F547F800447292 /* Frameworks */,
+				AC99070B19F547F800447292 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PVRNativeGles;
+			productName = PVRNativeGles;
+			productReference = AC99070D19F547F800447292 /* libPVRNativeGles.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AC99070519F547F800447292 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "___ImaginationTechnology___";
+			};
+			buildConfigurationList = AC99070819F547F800447292 /* Build configuration list for PBXProject "PVRNativeGles" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = AC99070419F547F800447292;
+			productRefGroup = AC99070E19F547F800447292 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AC99070C19F547F800447292 /* PVRNativeGles */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AC99070919F547F800447292 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0EB941141B1708C400E2967A /* ConvertToApiTypes.cpp in Sources */,
+				0EB9411B1B1708C400E2967A /* ExtensionLoaderGles.cpp in Sources */,
+				0EB941271B1708C400E2967A /* LibraryLoaderGles.cpp in Sources */,
+				0EB941321B1708C400E2967A /* TextureUtils.cpp in Sources */,
+				0EE12A6B1B8F4EC8006ACAEB /* ShaderUtils.cpp in Sources */,
+				0EB9410D1B1708C400E2967A /* ApiErrors.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AC99070F19F547F800447292 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../../Bin/OSX/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_MAC=1",
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "../../../../ ../../../../../Builds/Include ../../../../PVRShell/OS/AppKit ../../../../PVRNativeApi/EGL";
+			};
+			name = Debug;
+		};
+		AC99071019F547F800447292 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../../Bin/OSX/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_MAC=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "../../../../ ../../../../../Builds/Include ../../../../PVRShell/OS/AppKit ../../../../PVRNativeApi/EGL";
+			};
+			name = Release;
+		};
+		AC99071219F547F800447292 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		AC99071319F547F800447292 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				EXECUTABLE_PREFIX = lib;
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AC99070819F547F800447292 /* Build configuration list for PBXProject "PVRNativeGles" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC99070F19F547F800447292 /* Debug */,
+				AC99071019F547F800447292 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AC99071119F547F800447292 /* Build configuration list for PBXNativeTarget "PVRNativeGles" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC99071219F547F800447292 /* Debug */,
+				AC99071319F547F800447292 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AC99070519F547F800447292 /* Project object */;
+}

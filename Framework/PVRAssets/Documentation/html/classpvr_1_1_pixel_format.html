@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -105,7 +105,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a88c4eeb2a4d4484037bccb2cbb1e13e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default Constructor. Creates an empty pixeltype.  <a href="#a88c4eeb2a4d4484037bccb2cbb1e13e3">More...</a><br/></td></tr>
 <tr class="separator:a88c4eeb2a4d4484037bccb2cbb1e13e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7520e763ed89849679ec92d815e9dce1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_pixel_format.html#a7520e763ed89849679ec92d815e9dce1">PixelFormat</a> (uint64 Type)</td></tr>
-<tr class="memdesc:a7520e763ed89849679ec92d815e9dce1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialises a new pixel type from a 64 bit integer value.  <a href="#a7520e763ed89849679ec92d815e9dce1">More...</a><br/></td></tr>
+<tr class="memdesc:a7520e763ed89849679ec92d815e9dce1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new pixel type from a 64 bit integer value.  <a href="#a7520e763ed89849679ec92d815e9dce1">More...</a><br/></td></tr>
 <tr class="separator:a7520e763ed89849679ec92d815e9dce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b9d82c3c75c1399966fcd28d9211297"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_pixel_format.html#a2b9d82c3c75c1399966fcd28d9211297">PixelFormat</a> (uint8 C1Name, uint8 C2Name, uint8 C3Name, uint8 C4Name, uint8 C1Bits, uint8 C2Bits, uint8 C3Bits, uint8 C4Bits)</td></tr>
 <tr class="memdesc:a2b9d82c3c75c1399966fcd28d9211297"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a Pixel format from the given channels which takes up to 4 characters (CnName) and 4 values (CnBits). Any unused channels should be set to 0.  <a href="#a2b9d82c3c75c1399966fcd28d9211297">More...</a><br/></td></tr>
@@ -134,11 +134,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a05722cf79a9ddf4992bfc10e66fa3a7c"><td class="memItemLeft" align="right" valign="top">uint64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_pixel_format.html#a05722cf79a9ddf4992bfc10e66fa3a7c">getPixelTypeId</a> () const </td></tr>
 <tr class="memdesc:a05722cf79a9ddf4992bfc10e66fa3a7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the pixel type id.  <a href="#a05722cf79a9ddf4992bfc10e66fa3a7c">More...</a><br/></td></tr>
 <tr class="separator:a05722cf79a9ddf4992bfc10e66fa3a7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c9303d13d03bcedb1872835081fe6ee"><td class="memItemLeft" align="right" valign="top">uint8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_pixel_format.html#a2c9303d13d03bcedb1872835081fe6ee">isCompressedFormat</a> ()</td></tr>
+<tr class="memdesc:a2c9303d13d03bcedb1872835081fe6ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the format is a "normal" compressed format, i.e. the format is not regular (channel type/ bitrate combination), but excludes some special packed formats that are not compressed, such as shared exponent formats.  <a href="#a2c9303d13d03bcedb1872835081fe6ee">More...</a><br/></td></tr>
+<tr class="separator:a2c9303d13d03bcedb1872835081fe6ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeec2f5a1abee0d4c0abf48d388b09b73"><td class="memItemLeft" align="right" valign="top">uint8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_pixel_format.html#aeec2f5a1abee0d4c0abf48d388b09b73">isIrregularFormat</a> ()</td></tr>
+<tr class="memdesc:aeec2f5a1abee0d4c0abf48d388b09b73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns if the format is some kind of directly supported format that is not regular (i.e. channel type/ channel bitrate combination). I.e. returns true if the format is any of the formats described in the supported "compressed" formats enumeration.  <a href="#aeec2f5a1abee0d4c0abf48d388b09b73">More...</a><br/></td></tr>
+<tr class="separator:aeec2f5a1abee0d4c0abf48d388b09b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa35982461451ac343537531de40478f2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_pixel_format.html#aa35982461451ac343537531de40478f2">operator!=</a> (const <a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a> &amp;rhs) const </td></tr>
 <tr class="memdesc:aa35982461451ac343537531de40478f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">operator!=, validate if a give pixel format is not same as this.  <a href="#aa35982461451ac343537531de40478f2">More...</a><br/></td></tr>
 <tr class="separator:aa35982461451ac343537531de40478f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa7d64228ca9d2b7f5a61c399b1f9b55"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_pixel_format.html#aaa7d64228ca9d2b7f5a61c399b1f9b55">operator==</a> (const <a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a> &amp;rhs) const </td></tr>
-<tr class="memdesc:aaa7d64228ca9d2b7f5a61c399b1f9b55"><td class="mdescLeft">&#160;</td><td class="mdescRight">operator==, validate if a give pixel format is same as this.  <a href="#aaa7d64228ca9d2b7f5a61c399b1f9b55">More...</a><br/></td></tr>
+<tr class="memdesc:aaa7d64228ca9d2b7f5a61c399b1f9b55"><td class="mdescLeft">&#160;</td><td class="mdescRight">operator==, validate if a given pixel format is same as this.  <a href="#aaa7d64228ca9d2b7f5a61c399b1f9b55">More...</a><br/></td></tr>
 <tr class="separator:aaa7d64228ca9d2b7f5a61c399b1f9b55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
@@ -246,7 +252,7 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Initialises a new pixel type from a 64 bit integer value. </p>
+<p>Initializes a new pixel type from a 64 bit integer value. </p>
 <hr/>
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -577,6 +583,58 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a2c9303d13d03bcedb1872835081fe6ee"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8 pvr::PixelFormat::isCompressedFormat </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns true if the format is a "normal" compressed format, i.e. the format is not regular (channel type/ bitrate combination), but excludes some special packed formats that are not compressed, such as shared exponent formats. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="aeec2f5a1abee0d4c0abf48d388b09b73"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8 pvr::PixelFormat::isIrregularFormat </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns if the format is some kind of directly supported format that is not regular (i.e. channel type/ channel bitrate combination). I.e. returns true if the format is any of the formats described in the supported "compressed" formats enumeration. </p>
+<hr/>
+ 
+</div>
+</div>
 <a class="anchor" id="aa35982461451ac343537531de40478f2"></a>
 <div class="memitem">
 <div class="memproto">
@@ -633,7 +691,7 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>operator==, validate if a give pixel format is same as this. </p>
+<p>operator==, validate if a given pixel format is same as this. </p>
 <hr/>
  <dl class="section return"><dt>Returns</dt><dd>Return true if the given pixel format is same </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>

@@ -8,8 +8,8 @@
 #import <AVFoundation/AVFoundation.h>
 #include "CameraInterface.h"
 #import <OpenGLES/EAGL.h>
-#include "PVRApi/OGLES/OpenGLESBindings.h"
-#include "PVRApi/OGLES/NativeObjectsGles.h"
+#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
+#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
 #include "PVRCore/IGraphicsContext.h"
 #include "PVRApi/ApiObjects/Texture.h"
 //Description  Delegate Obj-C class required by AVCaptureVideoDataOutput
@@ -34,7 +34,7 @@
 
 @implementation CameraInterfaceImpl
 
-//Initialises the capture session
+//Initializes the capture session
 - (BOOL) intialiseCaptureSessionFromCamera:(pvr::HWCamera::Enum)cam withError:(NSString**)error
 {
 	pAVSessionPreset = AVCaptureSessionPresetHigh;
@@ -252,7 +252,7 @@ pvr::CameraInterface::~CameraInterface()
 	[impl release];
 }
 
-bool pvr::CameraInterface::initialiseSession(pvr::HWCamera::Enum eCamera, int preferredResX, int preferredResY)
+bool pvr::CameraInterface::initializeSession(pvr::HWCamera::Enum eCamera, int preferredResX, int preferredResY)
 {
 	CameraInterfaceImpl* impl = static_cast<CameraInterfaceImpl*>(pImpl);
 
@@ -311,7 +311,9 @@ namespace pvr{
 pvr::api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& context, const pvr::native::HTexture_& cameraTexture)
 {
 	pvr::Log(pvr::Log.Verbose, "Camera interface util: Handle %d, Target 0x%08X", cameraTexture.handle, cameraTexture.target);
-	pvr::api::TextureView tex; tex.construct(context, cameraTexture); return tex;
+    api::TextureStore texStore = context->createTexture();
+    texStore->getNativeObject() = cameraTexture;
+    api::TextureView tex; tex.construct(texStore); return tex;
 }
 }
 //!\cond NO_DOXYGEN

@@ -1,5 +1,9 @@
 var searchData=
 [
+  ['semaphorecanbeginrendering',['semaphoreCanBeginRendering',['../structpvr_1_1system_1_1_native_platform_handles__.html#a83e5238cb6ccf8e7ed088c9e6156923f',1,'pvr::system::NativePlatformHandles_']]],
+  ['semaphorecanpresent',['semaphoreCanPresent',['../structpvr_1_1system_1_1_native_platform_handles__.html#a9e5261be04eefd73a6c21ad168062de9',1,'pvr::system::NativePlatformHandles_']]],
+  ['semaphorefinishedrendering',['semaphoreFinishedRendering',['../structpvr_1_1system_1_1_native_platform_handles__.html#a5f3a8ecfe515b30a81d7babec2d0fad1',1,'pvr::system::NativePlatformHandles_']]],
+  ['semaphoreimageacquired',['semaphoreImageAcquired',['../structpvr_1_1system_1_1_native_platform_handles__.html#a1e3e588932d9e2d06f4f4d309a3fe603',1,'pvr::system::NativePlatformHandles_']]],
   ['setblobcachefuncsandroid',['SetBlobCacheFuncsANDROID',['../classeglext.html#abcf7508211cbc9ea99173ff00f1d4d73',1,'eglext']]],
   ['setswaprectangleandroid',['SetSwapRectangleANDROID',['../classeglext.html#a8ca34a052c9c7c4e5bdfbd768a47555e',1,'eglext']]],
   ['signalsynckhr',['SignalSyncKHR',['../classeglext.html#acc4267577ef837d87a94363398c58764',1,'eglext']]],
@@ -26,8 +30,12 @@ var searchData=
   ['supports_5fegl_5fkhr_5freusable_5fsync',['supports_EGL_KHR_reusable_sync',['../classpvr_1_1native_1_1_egl_extensions.html#a3cb8ca705791e3e72ca18514e38f9259',1,'pvr::native::EglExtensions']]],
   ['supports_5fegl_5fkhr_5fwait_5fsync',['supports_EGL_KHR_wait_sync',['../classpvr_1_1native_1_1_egl_extensions.html#a5744ae213a231d0d510ab192803909b5',1,'pvr::native::EglExtensions']]],
   ['supports_5fegl_5fnok_5ftexture_5ffrom_5fpixmap',['supports_EGL_NOK_texture_from_pixmap',['../classpvr_1_1native_1_1_egl_extensions.html#abdd90357a76abad9438b584299bf2fbe',1,'pvr::native::EglExtensions']]],
+  ['supports_5fvk_5fglue_5fsomething_5for_5fother',['supports_VK_Glue_Something_or_other',['../classpvr_1_1native_1_1_vkglue_extensions.html#a0ff4b274704446a46e6826e78f8dce77',1,'pvr::native::VkglueExtensions']]],
+  ['surface',['surface',['../structpvr_1_1system_1_1_native_display_handle__.html#a19833217c8dd85f3e1ecfc9c8038266f',1,'pvr::system::NativeDisplayHandle_']]],
   ['surfaceattrib',['SurfaceAttrib',['../classegl.html#af332c5511033d2d7189058fb4a9c52bc',1,'egl']]],
   ['swapbuffers',['SwapBuffers',['../classegl.html#ad5472da8bc3945dcb71abecccb5d3bfd',1,'egl']]],
   ['swapbufferswithdamageext',['SwapBuffersWithDamageEXT',['../classeglext.html#abc5efc75c3334ec628c1bfb9c0b9b5f7',1,'eglext']]],
+  ['swapchain',['swapChain',['../structpvr_1_1system_1_1_native_display_handle__.html#a42f99da39181fa8b9504fe62df99c3a7',1,'pvr::system::NativeDisplayHandle_']]],
+  ['swapchainlength',['swapChainLength',['../structpvr_1_1system_1_1_native_display_handle__.html#a46bf47e44318d562efdaeaa791249315',1,'pvr::system::NativeDisplayHandle_']]],
   ['swapinterval',['SwapInterval',['../classegl.html#a4576cba4b661fd80eb13f68bb5a668db',1,'egl']]]
 ];

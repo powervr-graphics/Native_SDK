@@ -320,7 +320,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event)
 }
 
 // Setup the capabilities.
-const ShellOS::Capabilities ShellOS::m_capabilities = { Capability::Unsupported, Capability::Unsupported };
+const ShellOS::Capabilities ShellOS::m_capabilities = { types::Capability::Unsupported, types::Capability::Unsupported };
 
 ShellOS::ShellOS(void* hInstance, OSDATA osdata) : m_instance(hInstance)
 {
@@ -440,12 +440,12 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	return Result::Success;
 }
 
-Result::Enum ShellOS::initialiseWindow(DisplayAttributes& data)
+Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	android_app* instance = static_cast<android_app*>(m_instance);
 	if (!instance->window)
 	{
-		return Result::NotInitialised;
+		return Result::NotInitialized;
 	}
 
 	data.fullscreen = true;

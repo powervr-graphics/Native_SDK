@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['samplercreateparam',['SamplerCreateParam',['../structpvr_1_1assets_1_1_sampler_create_param.html',1,'pvr::assets']]],
   ['semanticnameidpair',['SemanticNameIdPair',['../structpvr_1_1assets_1_1_semantic_name_id_pair.html',1,'pvr::assets']]],
   ['shaderfile',['ShaderFile',['../classpvr_1_1assets_1_1_shader_file.html',1,'pvr::assets']]],
   ['shadowvolume',['ShadowVolume',['../classpvr_1_1_shadow_volume.html',1,'pvr']]],

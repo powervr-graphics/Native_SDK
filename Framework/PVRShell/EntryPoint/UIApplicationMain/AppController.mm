@@ -46,7 +46,7 @@ const int kFPS = 60.0;
 	
 	if(stateMachine->init() != pvr::Result::Success)
 	{
-		NSLog(@"Failed to initialise stateMachine.\n");
+		NSLog(@"Failed to initialize stateMachine.\n");
         delete stateMachine;
         stateMachine = NULL;
 		return;

@@ -91,7 +91,7 @@ bool FileStream::read(size_t elementSize, size_t elementCount, void* const outBu
 				else
 				{
 					Log("[Filestream::read] Unknown Error.");
-					PVR_ASSERT("[Filestream::read] Unknown Error.");
+					assertion(false, "[Filestream::read] Unknown Error.");
 					result = false;
 				}
 			}
@@ -99,14 +99,14 @@ bool FileStream::read(size_t elementSize, size_t elementCount, void* const outBu
 		else
 		{
 			Log("[Filestream::read] Attempted to read non-readable stream.");
-			PVR_ASSERT("[Filestream::read] Attempted to read non-readable stream.");
+			assertion(false, "[Filestream::read] Attempted to read non-readable stream.");
 			result = false;
 		}
 	}
 	else
 	{
 		Log("[Filestream::read] Attempted to read empty stream.");
-		PVR_ASSERT("[Filestream::read] Attempted to read empty stream.");
+		assertion(false, "[Filestream::read] Attempted to read empty stream.");
 		result = false;
 	}
 
@@ -132,7 +132,7 @@ bool FileStream::write(size_t size, size_t count, const void* data, size_t& data
 				else
 				{
 					Log("[Filestream::read] Unknown Error.");
-					PVR_ASSERT("[Filestream::read] Unknown Error.");
+					assertion(false, "[Filestream::read] Unknown Error.");
 					result = false;
 				}
 			}
@@ -140,14 +140,14 @@ bool FileStream::write(size_t size, size_t count, const void* data, size_t& data
 		else
 		{
 			Log("[Filestream::read] Attempted to write a non-writable stream.");
-			PVR_ASSERT("[Filestream::read] Attempted to write a non-writable stream.");
+			assertion(false, "[Filestream::read] Attempted to write a non-writable stream.");
 			result = false;
 		}
 	}
 	else
 	{
 		Log("[Filestream::read] Attempted to write an empty stream.");
-		PVR_ASSERT("[Filestream::read] Attempted to write an empty stream.");
+		assertion(false, "[Filestream::read] Attempted to write an empty stream.");
 		result = false;
 	}
 	return result;

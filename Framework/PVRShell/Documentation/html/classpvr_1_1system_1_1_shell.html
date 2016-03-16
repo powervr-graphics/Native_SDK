@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRShell</span> Documentation</a>
    <tbody>
@@ -133,8 +133,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a49ecee25e46038506e8fdab43c0d69f4"><td class="memItemLeft" align="right" valign="top">Stream::ptr_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a49ecee25e46038506e8fdab43c0d69f4">getAssetStream</a> (const string &amp;filename, bool logFileNotFound=true)</td></tr>
 <tr class="memdesc:a49ecee25e46038506e8fdab43c0d69f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create and return a Stream object for a specific filename. Uses platform dependent lookup rules to create the stream from the filesystem or a platform-specific store (Windows resources, Android .apk assets) etc. Will first try the filesystem (if available) and then the built-in stores, in order to allow the user to easily override built-in assets.  <a href="#a49ecee25e46038506e8fdab43c0d69f4">More...</a><br/></td></tr>
 <tr class="separator:a49ecee25e46038506e8fdab43c0d69f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aacc303c2be8668743564a55bda13edfe"><td class="memItemLeft" align="right" valign="top">pvr::ColorSpace::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#aacc303c2be8668743564a55bda13edfe">getBackBufferColorspace</a> ()</td></tr>
-<tr class="separator:aacc303c2be8668743564a55bda13edfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a793347b3600f2d5f85c7efa8d86827e7"><td class="memItemLeft" align="right" valign="top">types::ColorSpace::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a793347b3600f2d5f85c7efa8d86827e7">getBackBufferColorspace</a> ()</td></tr>
+<tr class="separator:a793347b3600f2d5f85c7efa8d86827e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ee2e7e7a36b05f22335256ab1fb84ff"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a9ee2e7e7a36b05f22335256ab1fb84ff">getCaptureFrameStart</a> () const </td></tr>
 <tr class="separator:a9ee2e7e7a36b05f22335256ab1fb84ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e5d3b9e9518c89922dc3dd010688fe1"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a2e5d3b9e9518c89922dc3dd010688fe1">getCaptureFrameStop</a> () const </td></tr>
@@ -263,9 +263,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0d46d620065c072896220f6e960777e8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a0d46d620065c072896220f6e960777e8">setApplicationName</a> (const tchar *const format,...)</td></tr>
 <tr class="memdesc:a0d46d620065c072896220f6e960777e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the application name.  <a href="#a0d46d620065c072896220f6e960777e8">More...</a><br/></td></tr>
 <tr class="separator:a0d46d620065c072896220f6e960777e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a385611ce038b6b2c4eaf4434bf82736d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a385611ce038b6b2c4eaf4434bf82736d">setBackBufferColorspace</a> (pvr::ColorSpace::Enum colorSpace)</td></tr>
-<tr class="memdesc:a385611ce038b6b2c4eaf4434bf82736d"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Specify the colorspace of the backbuffer. Default is a (linear) RGB BackBuffer. Use this to specifically request an sRGB backbuffer. Since the support of backbuffer colorspace is an extension in many implementations, if you use this function, you must call getBackBufferColorspace after initApplication (in initView) to determine the actual backBuffer colorspace that was obtained.  <a href="#a385611ce038b6b2c4eaf4434bf82736d">More...</a><br/></td></tr>
-<tr class="separator:a385611ce038b6b2c4eaf4434bf82736d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a637ac6fc3f0a98e00ec6f8afbf786922"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a637ac6fc3f0a98e00ec6f8afbf786922">setBackBufferColorspace</a> (types::ColorSpace::Enum colorSpace)</td></tr>
+<tr class="memdesc:a637ac6fc3f0a98e00ec6f8afbf786922"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Specify the colorspace of the backbuffer. Default is a (linear) RGB BackBuffer. Use this to specifically request an sRGB backbuffer. Since the support of backbuffer colorspace is an extension in many implementations, if you use this function, you must call getBackBufferColorspace after initApplication (in initView) to determine the actual backBuffer colorspace that was obtained.  <a href="#a637ac6fc3f0a98e00ec6f8afbf786922">More...</a><br/></td></tr>
+<tr class="separator:a637ac6fc3f0a98e00ec6f8afbf786922"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3170e1f02fdbc8d82b7971d5aeb5bda"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#aa3170e1f02fdbc8d82b7971d5aeb5bda">setCaptureFrames</a> (uint32 start, uint32 stop)</td></tr>
 <tr class="memdesc:aa3170e1f02fdbc8d82b7971d5aeb5bda"><td class="mdescLeft">&#160;</td><td class="mdescRight">ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Captures the frames between start and stop and saves them as TGA screenshots.  <a href="#aa3170e1f02fdbc8d82b7971d5aeb5bda">More...</a><br/></td></tr>
 <tr class="separator:aa3170e1f02fdbc8d82b7971d5aeb5bda"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -897,12 +897,12 @@ Protected Member Functions</h2></td></tr>
  
 </div>
 </div>
-<a class="anchor" id="aacc303c2be8668743564a55bda13edfe"></a>
+<a class="anchor" id="a793347b3600f2d5f85c7efa8d86827e7"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">pvr::ColorSpace::Enum pvr::system::Shell::getBackBufferColorspace </td>
+          <td class="memname">types::ColorSpace::Enum pvr::system::Shell::getBackBufferColorspace </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>
@@ -1674,7 +1674,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents successful context aquisition. </p>
 <hr/>
- <dl class="section user"><dt>Description:</dt><dd>This function must be implemented in the user's application class. It will be fired once after every time the main Graphics Context (the one the Application Window is using) is initialised. This is usually once per application run, but in some cases (context lost) it may be called more than once. If the context is lost, the <a class="el" href="classpvr_1_1system_1_1_shell.html#ad9a8b66f7385389d68714087a053cb79" title="IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents graphics context released...">releaseView()</a> callback will be fired, and if it is reaquired this function will be called again. This callback is suitable to do all do-once tasks that require a graphics context, such as creating an On-Screen FBO, and for simple applications creating the graphics objects. </dd></dl>
+ <dl class="section user"><dt>Description:</dt><dd>This function must be implemented in the user's application class. It will be fired once after every time the main Graphics Context (the one the Application Window is using) is initialized. This is usually once per application run, but in some cases (context lost) it may be called more than once. If the context is lost, the <a class="el" href="classpvr_1_1system_1_1_shell.html#ad9a8b66f7385389d68714087a053cb79" title="IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents graphics context released...">releaseView()</a> callback will be fired, and if it is reaquired this function will be called again. This callback is suitable to do all do-once tasks that require a graphics context, such as creating an On-Screen FBO, and for simple applications creating the graphics objects. </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>When implementing, return a suitable error code to signify failure. If pvr::Result::Success is not returned , the <a class="el" href="classpvr_1_1system_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a> will detect that, clean up, and exit. </dd></dl>
 
 </div>
@@ -2158,14 +2158,14 @@ Protected Member Functions</h2></td></tr>
  
 </div>
 </div>
-<a class="anchor" id="a385611ce038b6b2c4eaf4434bf82736d"></a>
+<a class="anchor" id="a637ac6fc3f0a98e00ec6f8afbf786922"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::system::Shell::setBackBufferColorspace </td>
           <td>(</td>
-          <td class="paramtype">pvr::ColorSpace::Enum&#160;</td>
+          <td class="paramtype">types::ColorSpace::Enum&#160;</td>
           <td class="paramname"><em>colorSpace</em>)</td><td></td>
           <td></td>
         </tr>

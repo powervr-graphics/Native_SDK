@@ -12,8 +12,8 @@
 namespace pvr {
 /*!*********************************************************************************************
 \brief Implementation of a hashed string with functionality for fast compares.
-\description In most cases, can be used as a drop-in replacement for std::strings to take advantage 
-		of fast hashed  comparisons. On debug builds, tests for hash collisions are performed 
+\description In most cases, can be used as a drop-in replacement for std::strings to take advantage
+		of fast hashed  comparisons. On debug builds, tests for hash collisions are performed
 		(Assertion + error log if collision found)
  ***********************************************************************************************/
 class StringHash
@@ -30,8 +30,15 @@ public:
 	**********************************************************************************************/
 	StringHash(const std::string& right) : m_String(right), m_Hash(HashFn()(m_String)) { }
 
-	operator const std::string&() const { return m_String; }
+	/*!*********************************************************************************************
+	\brief Convert to string
+	\return A string representatation of this hash
+	************************************************************************************************/
+	operator const std::string& () const { return m_String; }
 
+	/*!*********************************************************************************************
+	\brief ctor. Default constructor
+	************************************************************************************************/
 	StringHash() : m_String(""), m_Hash(HashFn()(m_String)) {}
 
 	/*!*********************************************************************************************
@@ -83,6 +90,18 @@ public:
 	}
 
 	/*!**********************************************************************************************
+	\brief      		Return the length of this string hash
+	\return 			Length of this string hash
+	************************************************************************************************/
+	size_t size() const { return m_String.size(); }
+	
+	/*!**********************************************************************************************
+	\brief      		Return the length of this string hash
+	\return 			Length of this string hash
+	************************************************************************************************/
+	size_t length() const { return m_String.length(); }
+
+	/*!**********************************************************************************************
 	\brief      	== Operator. This function compares the hash values of the StringHashes.
 	\param[in]		str 	A hashed string to compare with
 	\return 		True if they match
@@ -95,7 +114,7 @@ public:
 			Log(Log.Critical, "***** STRING HASH COLLISION DETECTED ********************");
 			Log(Log.Critical, "** String [%s] collides with string [%s] ", m_String.c_str(), str.m_String.c_str());
 			Log(Log.Critical, "*********************************************************");
-			PVR_ASSERT(0 && "COLLISION FOUND");
+			assertion(0 ,  "StringHash COLLISION FOUND");
 		}
 #endif
 
@@ -107,15 +126,12 @@ public:
 	}
 
 	/*!**********************************************************************************************
-	\brief      	== Operator. This function performs a strcmp() as it's more efficient to strcmp 
+	\brief      	== Operator. This function performs a strcmp() as it's more efficient to strcmp
 	                than to hash the string for every comparison.
 	\param[in]		str 	A string to compare with
 	\return 		True if they match
 	************************************************************************************************/
-	bool operator==(const char* str) const
-	{
-		return (m_String.compare(str) == 0);
-	}
+	bool operator==(const char* str) const{	return (m_String.compare(str) == 0); }
 
 	/*!**********************************************************************************************
 	\brief      	== Operator. This function performs a strcmp()
@@ -124,25 +140,19 @@ public:
 	\param[in]		str 	A string to compare with
 	\return 		True if they match
 	************************************************************************************************/
-	bool operator==(const std::string& str) const
-	{
-		return m_String == str;
-	}
+	bool operator==(const std::string& str) const{	return m_String == str;	}
 
 	/*!***********************************************************************
 	\brief      	!= Operator. Compares hash values.
 	\param[in]		str 	A StringHash to compare with
 	\return 		True if they don't match
 	*************************************************************************/
-	bool operator!=(const StringHash& str) const
-	{
-		return !(*this == str);
-	}
+	bool operator!=(const StringHash& str) const{ return !(*this == str);	}
 
 	bool operator<(const StringHash& str)const
 	{
 #ifndef DEBUG //Collision detection
-        PVR_ASSERT(m_Hash != str.getHash() || m_String == str.m_String);
+		assertion(m_Hash != str.getHash() || m_String == str.m_String);
 #endif
 #ifndef PVR_STRING_HASH_STRONG_COMPARISONS
 		return m_Hash < str.getHash();
@@ -154,26 +164,17 @@ public:
 	/*!***********************************************************************
 	\return 		The base string object contained.
 	*************************************************************************/
-	const string& getString() const
-	{
-		return m_String;
-	}
+	const string& str() const{	return m_String;	}
 
 	/*!***********************************************************************
 	\return 		The hash value of this StringHash.
 	*************************************************************************/
-	const std::size_t getHash() const
-	{
-		return m_Hash;
-	}
+	const std::size_t getHash() const{	return m_Hash;	}
 
 	/*!***************************************************************************
 	\return			A c-string of the contained string.
 	*****************************************************************************/
-	const char* c_str() const
-	{
-		return m_String.c_str();
-	}
+	const char* c_str() const{	return m_String.c_str(); }
 
 private:
 	std::string m_String;

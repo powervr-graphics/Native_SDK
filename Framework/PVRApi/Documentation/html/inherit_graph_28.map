@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structpvr_1_1api_1_1impl_1_1_depth_stencil_view_impl.html" title="Api DepthStencilView wrapper. Use through the Reference Counted API object pvr::api::DepthStencilView..." alt="" coords="6,5,183,46"/>
+<area shape="rect" id="node2" href="$classpvr_1_1api_1_1gles_1_1_buffer_gles__.html" title="OpenGL ES implementation of the Buffer. " alt="" coords="197,5,368,32"/>
+<area shape="rect" id="node3" href="$classpvr_1_1api_1_1vulkan_1_1_buffer_vk__.html" title="OpenGL ES implementation of the Buffer. " alt="" coords="197,56,368,83"/>
+<area shape="rect" id="node4" href="$classpvr_1_1api_1_1impl_1_1_buffer__.html" title="Buffer Implementation. Access through the Refcounted Framework object Buffer. All buffer types contai..." alt="" coords="6,56,149,83"/>
 </map>

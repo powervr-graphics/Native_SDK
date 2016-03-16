@@ -6,7 +6,7 @@ var searchData=
   ['getapplication',['getApplication',['../classpvr_1_1system_1_1_shell_o_s.html#ad414b947e4cee79634f1ea421d41e001',1,'pvr::system::ShellOS']]],
   ['getapplicationname',['getApplicationName',['../classpvr_1_1system_1_1_shell_o_s.html#ab9de462085ab0a16f07ea99d445323d2',1,'pvr::system::ShellOS::getApplicationName()'],['../classpvr_1_1system_1_1_shell.html#a8a48b72b99d3e2c251127eba43a9a54c',1,'pvr::system::Shell::getApplicationName()']]],
   ['getassetstream',['getAssetStream',['../classpvr_1_1system_1_1_shell.html#a49ecee25e46038506e8fdab43c0d69f4',1,'pvr::system::Shell']]],
-  ['getbackbuffercolorspace',['getBackBufferColorspace',['../classpvr_1_1system_1_1_shell.html#aacc303c2be8668743564a55bda13edfe',1,'pvr::system::Shell']]],
+  ['getbackbuffercolorspace',['getBackBufferColorspace',['../classpvr_1_1system_1_1_shell.html#a793347b3600f2d5f85c7efa8d86827e7',1,'pvr::system::Shell']]],
   ['getbooloptionsetfalseifpresent',['getBoolOptionSetFalseIfPresent',['../classpvr_1_1system_1_1_command_line_parser_1_1_parsed_command_line.html#a06b1155c3207a3447fe97eb39748ee99',1,'pvr::system::CommandLineParser::ParsedCommandLine']]],
   ['getbooloptionsettrueifpresent',['getBoolOptionSetTrueIfPresent',['../classpvr_1_1system_1_1_command_line_parser_1_1_parsed_command_line.html#a6f3ecda350cb1568490f53c274c7c02a',1,'pvr::system::CommandLineParser::ParsedCommandLine']]],
   ['getcapabilities',['getCapabilities',['../classpvr_1_1system_1_1_shell_o_s.html#a6ea6a9911f869276825395c9a9fe54cc',1,'pvr::system::ShellOS']]],

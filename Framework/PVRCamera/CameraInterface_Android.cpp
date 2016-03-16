@@ -7,8 +7,8 @@
 
 #include "PVRCamera/CameraInterface.h"
 #include "PVRApi/Api.h"
-#include "PVRApi/OGLES/OpenGLESBindings.h"
-#include "PVRApi/OGLES/NativeObjectsGles.h"
+#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
+#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
 #include <jni.h>
 
 #ifdef __cplusplus
@@ -47,7 +47,7 @@ public:
 	}
 
 
-	bool initialiseSession(HWCamera::Enum eCamera, int width, int height)
+	bool initializeSession(HWCamera::Enum eCamera, int width, int height)
 	{
 		if (strstr((const char*)gl::GetString(GL_EXTENSIONS), "OES_EGL_image_external") == 0)
 		{
@@ -238,9 +238,9 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
 	return JNI_VERSION_1_6;
 }
 
-bool pvr::CameraInterface::initialiseSession(HWCamera::Enum camera, int width, int height)
+bool pvr::CameraInterface::initializeSession(HWCamera::Enum camera, int width, int height)
 {
-	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->initialiseSession(camera, width, height);
+	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->initializeSession(camera, width, height);
 }
 
 bool global_dummy = false;
@@ -315,8 +315,8 @@ namespace pvr{
 api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& context, const native::HTexture_& cameraTexture)
 {
 	Log(Log.Verbose, "Camera interface util: Handle %d, Target 0x%08X", cameraTexture.handle, cameraTexture.target);
-	api::TextureView tex;
-	tex.construct(context, cameraTexture);
-	return tex;
+	api::TextureStore texStore = context->createTexture();
+	texStore->getNativeObject() = cameraTexture;
+	api::TextureView tex; tex.construct(texStore); return tex;
 }
 }

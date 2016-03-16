@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -111,16 +111,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a79ec9890450c398db602cb45fed2350a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a79ec9890450c398db602cb45fed2350a">AssetStore</a> (ErrorLogger logger=&amp;Logger::static_output)</td></tr>
 <tr class="memdesc:a79ec9890450c398db602cb45fed2350a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="#a79ec9890450c398db602cb45fed2350a">More...</a><br/></td></tr>
 <tr class="separator:a79ec9890450c398db602cb45fed2350a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad858d3f33d83406169c3b3c7b4c4e409"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#ad858d3f33d83406169c3b3c7b4c4e409">effectOnLoadTexture</a> (const <a class="el" href="_api_gles2_8h.html#ac83513893df92266f79a515488701770">string</a> &amp;textureName, api::TextureView &amp;outTex2d)</td></tr>
+<tr class="memitem:ad858d3f33d83406169c3b3c7b4c4e409"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#ad858d3f33d83406169c3b3c7b4c4e409">effectOnLoadTexture</a> (const string &amp;textureName, api::TextureView &amp;outTex2d)</td></tr>
 <tr class="memdesc:ad858d3f33d83406169c3b3c7b4c4e409"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of the <a class="el" href="classpvr_1_1api_1_1_asset_loading_delegate.html" title="Interface for a class that can provide Asset Loading and Uploading. Used by PFX API parser and simila...">AssetLoadingDelegate</a>. Allows this class to be passed to the EffectApi constructor as the effectDelegate to automate loading and uploading of textures.  <a href="#ad858d3f33d83406169c3b3c7b4c4e409">More...</a><br/></td></tr>
 <tr class="separator:ad858d3f33d83406169c3b3c7b4c4e409"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af34cec4c03a3293e01b687e9dd5d894c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#af34cec4c03a3293e01b687e9dd5d894c">findAndReleaseModel</a> (assets::ModelHandle model)</td></tr>
+<tr class="memitem:af34cec4c03a3293e01b687e9dd5d894c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#af34cec4c03a3293e01b687e9dd5d894c">findAndReleaseModel</a> (assets::ModelHandle model)</td></tr>
 <tr class="memdesc:af34cec4c03a3293e01b687e9dd5d894c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release any references to a specified Model object that this <a class="el" href="classpvr_1_1api_1_1_asset_store.html" title="Manages scene assets. Use this class to easily load assets without needing to worry about duplicates...">AssetStore</a> may be holding.  <a href="#af34cec4c03a3293e01b687e9dd5d894c">More...</a><br/></td></tr>
 <tr class="separator:af34cec4c03a3293e01b687e9dd5d894c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1cbef573f3512dda13e3ed914431c3eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a1cbef573f3512dda13e3ed914431c3eb">findAndReleaseTexture</a> (api::TextureView <a class="el" href="_api_gles2_8h.html#a8f486379aef534669f4f06f515e7ce6c">texture</a>)</td></tr>
+<tr class="memitem:a1cbef573f3512dda13e3ed914431c3eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a1cbef573f3512dda13e3ed914431c3eb">findAndReleaseTexture</a> (api::TextureView texture)</td></tr>
 <tr class="memdesc:a1cbef573f3512dda13e3ed914431c3eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release any references to a specified Texture object that this <a class="el" href="classpvr_1_1api_1_1_asset_store.html" title="Manages scene assets. Use this class to easily load assets without needing to worry about duplicates...">AssetStore</a> may be holding.  <a href="#a1cbef573f3512dda13e3ed914431c3eb">More...</a><br/></td></tr>
 <tr class="separator:a1cbef573f3512dda13e3ed914431c3eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9e636b1c72f60228c797d168be7a813"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#aa9e636b1c72f60228c797d168be7a813">forceLoadTexture</a> (GraphicsContext &amp;context, const StringHash &amp;filename, assets::TextureFileFormat::Enum <a class="el" href="_api_gles2_8h.html#a71a65ffd977afe9c3fef116a5bc9ee27">format</a>)</td></tr>
+<tr class="memitem:aa9e636b1c72f60228c797d168be7a813"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#aa9e636b1c72f60228c797d168be7a813">forceLoadTexture</a> (GraphicsContext &amp;context, const StringHash &amp;filename, assets::TextureFileFormat::Enum format)</td></tr>
 <tr class="memdesc:aa9e636b1c72f60228c797d168be7a813"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a texture from the asset store and cache it and for later use (through getTextureWithCaching). If the texture already exists, it is re-loaded from disk anyway (see loadTexture, where, if a texture is found, it is returned instead of reloaded)  <a href="#aa9e636b1c72f60228c797d168be7a813">More...</a><br/></td></tr>
 <tr class="separator:aa9e636b1c72f60228c797d168be7a813"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3f91df2789f02b747f36f3e2b85407d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#ab3f91df2789f02b747f36f3e2b85407d">forceLoadTexture</a> (GraphicsContext &amp;context, const StringHash &amp;filename)</td></tr>
@@ -129,25 +129,25 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:affc3b4c542a5ef827bec8f977cea69a8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#affc3b4c542a5ef827bec8f977cea69a8">getTextureWithCaching</a> (GraphicsContext &amp;context, const StringHash &amp;filename, api::TextureView *outTexture, assets::TextureHeader *outDescriptor)</td></tr>
 <tr class="memdesc:affc3b4c542a5ef827bec8f977cea69a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a texture from the asset store, cache it and return a Texture object and/or Descriptor. If the texture is already loaded, return the cached information without loading from disc.  <a href="#affc3b4c542a5ef827bec8f977cea69a8">More...</a><br/></td></tr>
 <tr class="separator:affc3b4c542a5ef827bec8f977cea69a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76f921260a4947f0c7ed930a5731025e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a76f921260a4947f0c7ed930a5731025e">getTextureWithCaching</a> (GraphicsContext &amp;context, const StringHash &amp;filename, assets::TextureFileFormat::Enum <a class="el" href="_api_gles2_8h.html#a71a65ffd977afe9c3fef116a5bc9ee27">format</a>, api::TextureView *outTexture, assets::TextureHeader *outDescriptor)</td></tr>
+<tr class="memitem:a76f921260a4947f0c7ed930a5731025e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a76f921260a4947f0c7ed930a5731025e">getTextureWithCaching</a> (GraphicsContext &amp;context, const StringHash &amp;filename, assets::TextureFileFormat::Enum format, api::TextureView *outTexture, assets::TextureHeader *outDescriptor)</td></tr>
 <tr class="memdesc:a76f921260a4947f0c7ed930a5731025e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a texture from the asset store, cache it and return a Texture object and/or Descriptor. If the texture is already loaded, return the cached information without loading from disc.  <a href="#a76f921260a4947f0c7ed930a5731025e">More...</a><br/></td></tr>
 <tr class="separator:a76f921260a4947f0c7ed930a5731025e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a2765e9a503190392baa7fbaa6194f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a1a2765e9a503190392baa7fbaa6194f8">init</a> (IAssetProvider &amp;theShell)</td></tr>
+<tr class="memitem:a1a2765e9a503190392baa7fbaa6194f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a1a2765e9a503190392baa7fbaa6194f8">init</a> (IAssetProvider &amp;theShell)</td></tr>
 <tr class="memdesc:a1a2765e9a503190392baa7fbaa6194f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize.  <a href="#a1a2765e9a503190392baa7fbaa6194f8">More...</a><br/></td></tr>
 <tr class="separator:a1a2765e9a503190392baa7fbaa6194f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aedf1a093517d53c4cfa0f1731e3735ec"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#aedf1a093517d53c4cfa0f1731e3735ec">loadModel</a> (const char *filename, assets::ModelHandle &amp;outModel, bool force=false)</td></tr>
 <tr class="memdesc:aedf1a093517d53c4cfa0f1731e3735ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load model from file.  <a href="#aedf1a093517d53c4cfa0f1731e3735ec">More...</a><br/></td></tr>
 <tr class="separator:aedf1a093517d53c4cfa0f1731e3735ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4bd10b35cf12ae0e49184d0d1cabadcc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a4bd10b35cf12ae0e49184d0d1cabadcc">loadPfx</a> (const char *filename, <a class="el" href="namespacepvr_1_1api.html#a9698b68c02758e0d33254850c950b768">EffectApi</a> &amp;outPfx, bool force=false)</td></tr>
+<tr class="memitem:a4bd10b35cf12ae0e49184d0d1cabadcc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a4bd10b35cf12ae0e49184d0d1cabadcc">loadPfx</a> (const char *filename, <a class="el" href="namespacepvr_1_1api.html#a7da31b152ede5cfcb580a169e7847858">EffectApi</a> &amp;outPfx, bool force=false)</td></tr>
 <tr class="memdesc:a4bd10b35cf12ae0e49184d0d1cabadcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load pfx.  <a href="#a4bd10b35cf12ae0e49184d0d1cabadcc">More...</a><br/></td></tr>
 <tr class="separator:a4bd10b35cf12ae0e49184d0d1cabadcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b275deaa888db9db12b286618d056dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a7b275deaa888db9db12b286618d056dd">releaseAll</a> ()</td></tr>
+<tr class="memitem:a7b275deaa888db9db12b286618d056dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a7b275deaa888db9db12b286618d056dd">releaseAll</a> ()</td></tr>
 <tr class="memdesc:a7b275deaa888db9db12b286618d056dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release all assets held by this AssetManager. Best practice is to always call this function in ReleaseView, as any resources held by the AssetManager will be invalid anyway. Calling this function or similar (usually releaseAll) is necessary so that the resources may be released. Otherwise, since the <a class="el" href="classpvr_1_1api_1_1_asset_store.html" title="Manages scene assets. Use this class to easily load assets without needing to worry about duplicates...">AssetStore</a> is holding references to its objects, these objects are kept from being destroyed even after the user stops using them.  <a href="#a7b275deaa888db9db12b286618d056dd">More...</a><br/></td></tr>
 <tr class="separator:a7b275deaa888db9db12b286618d056dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abed9c1ea7f0dd1ae79a28f0bde424564"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#abed9c1ea7f0dd1ae79a28f0bde424564">releaseModel</a> (const StringHash &amp;modelName)</td></tr>
+<tr class="memitem:abed9c1ea7f0dd1ae79a28f0bde424564"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#abed9c1ea7f0dd1ae79a28f0bde424564">releaseModel</a> (const StringHash &amp;modelName)</td></tr>
 <tr class="memdesc:abed9c1ea7f0dd1ae79a28f0bde424564"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release any references to a specified Model object that this <a class="el" href="classpvr_1_1api_1_1_asset_store.html" title="Manages scene assets. Use this class to easily load assets without needing to worry about duplicates...">AssetStore</a> may be holding.  <a href="#abed9c1ea7f0dd1ae79a28f0bde424564">More...</a><br/></td></tr>
 <tr class="separator:abed9c1ea7f0dd1ae79a28f0bde424564"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a8698aa8b22852f4b910c4e9bdb5ed8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a0a8698aa8b22852f4b910c4e9bdb5ed8">releaseTexture</a> (const StringHash &amp;textureName)</td></tr>
+<tr class="memitem:a0a8698aa8b22852f4b910c4e9bdb5ed8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_asset_store.html#a0a8698aa8b22852f4b910c4e9bdb5ed8">releaseTexture</a> (const StringHash &amp;textureName)</td></tr>
 <tr class="memdesc:a0a8698aa8b22852f4b910c4e9bdb5ed8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release any references to a specified Texture object that this <a class="el" href="classpvr_1_1api_1_1_asset_store.html" title="Manages scene assets. Use this class to easily load assets without needing to worry about duplicates...">AssetStore</a> may be holding.  <a href="#a0a8698aa8b22852f4b910c4e9bdb5ed8">More...</a><br/></td></tr>
 <tr class="separator:a0a8698aa8b22852f4b910c4e9bdb5ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpvr_1_1api_1_1_asset_loading_delegate"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpvr_1_1api_1_1_asset_loading_delegate')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpvr_1_1api_1_1_asset_loading_delegate.html">pvr::api::AssetLoadingDelegate</a></td></tr>
@@ -221,7 +221,7 @@ Static Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">bool pvr::api::AssetStore::effectOnLoadTexture </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="_api_gles2_8h.html#ac83513893df92266f79a515488701770">string</a> &amp;&#160;</td>
+          <td class="paramtype">const string &amp;&#160;</td>
           <td class="paramname"><em>textureName</em>, </td>
         </tr>
         <tr>
@@ -265,7 +265,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::api::AssetStore::findAndReleaseModel </td>
+          <td class="memname">void pvr::api::AssetStore::findAndReleaseModel </td>
           <td>(</td>
           <td class="paramtype">assets::ModelHandle&#160;</td>
           <td class="paramname"><em>model</em>)</td><td></td>
@@ -299,7 +299,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::api::AssetStore::findAndReleaseTexture </td>
+          <td class="memname">void pvr::api::AssetStore::findAndReleaseTexture </td>
           <td>(</td>
           <td class="paramtype">api::TextureView&#160;</td>
           <td class="paramname"><em>texture</em>)</td><td></td>
@@ -559,7 +559,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::api::AssetStore::init </td>
+          <td class="memname">void pvr::api::AssetStore::init </td>
           <td>(</td>
           <td class="paramtype">IAssetProvider &amp;&#160;</td>
           <td class="paramname"><em>theShell</em>)</td><td></td>
@@ -644,7 +644,7 @@ Static Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api.html#a9698b68c02758e0d33254850c950b768">EffectApi</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1api.html#a7da31b152ede5cfcb580a169e7847858">EffectApi</a> &amp;&#160;</td>
           <td class="paramname"><em>outPfx</em>, </td>
         </tr>
         <tr>
@@ -676,7 +676,7 @@ Static Public Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>return Result::Success if load success, else error </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>return true if load success, else error </dd></dl>
 
 </div>
 </div>
@@ -688,7 +688,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::api::AssetStore::releaseAll </td>
+          <td class="memname">void pvr::api::AssetStore::releaseAll </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>
@@ -714,7 +714,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::api::AssetStore::releaseModel </td>
+          <td class="memname">void pvr::api::AssetStore::releaseModel </td>
           <td>(</td>
           <td class="paramtype">const StringHash &amp;&#160;</td>
           <td class="paramname"><em>modelName</em>)</td><td></td>
@@ -748,7 +748,7 @@ Static Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::api::AssetStore::releaseTexture </td>
+          <td class="memname">void pvr::api::AssetStore::releaseTexture </td>
           <td>(</td>
           <td class="paramtype">const StringHash &amp;&#160;</td>
           <td class="paramname"><em>textureName</em>)</td><td></td>

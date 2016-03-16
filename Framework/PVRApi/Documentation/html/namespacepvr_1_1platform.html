@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -96,13 +96,13 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_gles.html">ContextGles</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">IGraphicsContext implementation that supports all OpenGL ES 2 and above versions.  <a href="classpvr_1_1platform_1_1_context_gles.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1platform_1_1_extension_entry.html">ExtensionEntry</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This struct is used to describe an extension entry for the purpose of OpenGL ES Capability definition. Capabilities can the be queried with the IGraphicsContext::hasApiCapability() functions.  <a href="structpvr_1_1platform_1_1_extension_entry.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html">ContextVk</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">IGraphicsContext implementation that supports all OpenGL ES 2 and above versions.  <a href="classpvr_1_1platform_1_1_context_vk.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:acaf39e81e2bdd075de2edac7d8b38569"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> GL_APIENTRY&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1platform.html#acaf39e81e2bdd075de2edac7d8b38569">debugCallback</a> (<a class="el" href="_api_gles3_8h.html#add822650c9007f81c71fd30bfc9fc3b9">GLenum</a> <a class="el" href="_api_gles2_8h.html#a6ffd2192cbc75d017665e95207ee36a7">source</a>, <a class="el" href="_api_gles3_8h.html#add822650c9007f81c71fd30bfc9fc3b9">GLenum</a> <a class="el" href="_api_gles2_8h.html#a7d05960f4f1c1b11f3177dc963a45d86">type</a>, <a class="el" href="_api_gles31_8h.html#a9b83496def9a3e2f011efa052181116f">GLuint</a> <a class="el" href="_api_gles3_8h.html#a58c2a664503e14ffb8f21012aabff3e9">id</a>, <a class="el" href="_api_gles3_8h.html#add822650c9007f81c71fd30bfc9fc3b9">GLenum</a> <a class="el" href="_api_gles_ext_8h.html#acc39d4387d4f2d172de77ed0c5208990">severity</a>, GLsizei <a class="el" href="_api_gles2_8h.html#a4b0c8e796f240df86333df9dd6ff4361">length</a>, const GLchar *<a class="el" href="_api_gles_ext_8h.html#abafd1848498af1e630470ac60a9abae6">message</a>, const <a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> *<a class="el" href="_api_gles_ext_8h.html#aff79ccea99d34c75703ac5b2f982c421">userParam</a>)</td></tr>
+<tr class="memitem:acaf39e81e2bdd075de2edac7d8b38569"><td class="memItemLeft" align="right" valign="top">void GL_APIENTRY&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1platform.html#acaf39e81e2bdd075de2edac7d8b38569">debugCallback</a> (GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)</td></tr>
 <tr class="memdesc:acaf39e81e2bdd075de2edac7d8b38569"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class is added as the Debug Callback. Redirects the debug output to the Log object.  <a href="#acaf39e81e2bdd075de2edac7d8b38569">More...</a><br/></td></tr>
 <tr class="separator:acaf39e81e2bdd075de2edac7d8b38569"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -118,27 +118,27 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> GL_APIENTRY pvr::platform::debugCallback </td>
+          <td class="memname">void GL_APIENTRY pvr::platform::debugCallback </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="_api_gles3_8h.html#add822650c9007f81c71fd30bfc9fc3b9">GLenum</a>&#160;</td>
+          <td class="paramtype">GLenum&#160;</td>
           <td class="paramname"><em>source</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="_api_gles3_8h.html#add822650c9007f81c71fd30bfc9fc3b9">GLenum</a>&#160;</td>
+          <td class="paramtype">GLenum&#160;</td>
           <td class="paramname"><em>type</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="_api_gles31_8h.html#a9b83496def9a3e2f011efa052181116f">GLuint</a>&#160;</td>
+          <td class="paramtype">GLuint&#160;</td>
           <td class="paramname"><em>id</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="_api_gles3_8h.html#add822650c9007f81c71fd30bfc9fc3b9">GLenum</a>&#160;</td>
+          <td class="paramtype">GLenum&#160;</td>
           <td class="paramname"><em>severity</em>, </td>
         </tr>
         <tr>
@@ -156,7 +156,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> *&#160;</td>
+          <td class="paramtype">const void *&#160;</td>
           <td class="paramname"><em>userParam</em>&#160;</td>
         </tr>
         <tr>

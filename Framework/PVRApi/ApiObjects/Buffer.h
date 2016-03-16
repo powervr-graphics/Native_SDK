@@ -1,22 +1,17 @@
-﻿/*!*********************************************************************************************************************
+/*!*********************************************************************************************************************
 \file         PVRApi\ApiObjects\Buffer.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief		  Contains the pvr::Api::Buffer class and BufferViews classes definitions
 ***********************************************************************************************************************/
 #pragma once
-#include "PVRCore/ForwardDecApiObjects.h"
-#include "PVRApi/Bindables.h"
-#include "PVRCore/IGraphicsContext.h"
-
+#include "PVRApi/ApiIncludes.h"
+#include "PVRCore/Types.h"
 
 namespace pvr {
 /*!*********************************************************************************************************************
 \brief Buffer mapping flags.
 ***********************************************************************************************************************/
-namespace MapBufferFlags {
-enum Enum { Read = 1, Write = 2, Unsynchronised = 4 };
-}
 
 namespace api {
 // Forward Declarations
@@ -25,7 +20,6 @@ class DrawIndexed;
 struct ImageDataFormat;
 class BindDescriptorSets;
 namespace impl {
-class DescriptorSetGlesImpl;
 
 /*!*********************************************************************************************************************
 \brief Class containing the necessary information for a CommandBuffer::drawIndexedIndirect command. Should be filled and uploaded to
@@ -58,22 +52,15 @@ struct DrawIndirect
 \brief Buffer Implementation. Access through the Refcounted Framework object Buffer. All buffer types contain or extend the
        Buffer implementation.
 ***********************************************************************************************************************/
-class BufferImpl
+class Buffer_
 {
-	friend class UboViewImpl;
-	friend class AtomicBufferViewImpl;
-	friend class SsboViewImpl;
-	BufferImpl& operator=(BufferImpl&);//deleted
+	Buffer_& operator=(Buffer_&);//deleted
 protected:
 	uint32 m_size;
-	BufferBindingUse::Bits m_usage;
-	uint32 m_hint;
-	uint32 m_lastUse;
-	bool m_allocated;
+	types::BufferBindingUse::Bits m_usage;
 	GraphicsContext m_context;
-	bool m_memMapped;
-	BufferImpl(GraphicsContext& context, uint32 size, api::BufferBindingUse::Bits bufferUsage,
-	           BufferUse::Flags hints) : m_usage(bufferUsage), m_lastUse(0), m_allocated(false), m_context(context), m_memMapped(false) {}
+	Buffer_(GraphicsContext& context) : m_context(context) {}
+	void destroy();
 public:
 	/*!*********************************************************************************************************************
 	\return The size of the buffer.
@@ -83,14 +70,16 @@ public:
 	/*!*********************************************************************************************************************
 	\return The context for the specified resource creator.
 	***********************************************************************************************************************/
-	const IGraphicsContext& getContext() const { return *m_context; }
+	const GraphicsContext& getContext() const { return m_context; }
+
+	GraphicsContext& getContext() { return m_context; }
 
 	/*!*********************************************************************************************************************
 	\return Get buffer usage.
 	***********************************************************************************************************************/
-	BufferBindingUse::Bits getBufferUsage()const { return m_usage; }
+	types::BufferBindingUse::Bits getBufferUsage()const { return m_usage; }
 
-	virtual ~BufferImpl() { }
+	virtual ~Buffer_() { destroy(); }
 
 	/*!*********************************************************************************************************************
 	\brief Update the buffer.
@@ -106,12 +95,23 @@ public:
 	\param[in] offset in buffer
 	\param[in] length range to be mapped in the buffer
 	***********************************************************************************************************************/
-	void* map(MapBufferFlags::Enum flags, uint32 offset, uint32 length);
+	void* map(types::MapBufferFlags::Enum flags, uint32 offset, uint32 length);
 
 	/*!*********************************************************************************************************************
 	\brief Unmap the buffer, @see map.
 	***********************************************************************************************************************/
 	void unmap();
+
+	/*!*********************************************************************************************************************
+	\brief Allocate a new buffer on the \p context GraphicsContext
+	\param context The graphics context
+	\param size buffer size, in bytes
+	\param hint The expected use of the buffer (CPU Read, GPU write etc)
+	***********************************************************************************************************************/
+	bool allocate(uint32 size, types::BufferBindingUse::Bits bufferUsage, types::BufferUse::Flags hint = types::BufferUse::DEFAULT);
+
+	const native::HBuffer_& getNativeObject()const;
+	native::HBuffer_& getNativeObject();
 };
 }//namespace impl
 
@@ -120,7 +120,7 @@ namespace impl {
 \brief BufferView.
 \brief See class pvr::api::Buffer. Base class to interpret how the buffer will be used.
 ******************************************************************************************************************/
-class BufferViewImpl
+class BufferView_
 {
 public:
 	/*!*********************************************************************************************************************
@@ -144,12 +144,12 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Releases all held resources.
 	***********************************************************************************************************************/
-	void destroy()	{ buffer.reset(); }
+	void destroy();
 
 	/*!*********************************************************************************************************************
 	\brief Releases all resources.
 	***********************************************************************************************************************/
-	~BufferViewImpl() { destroy(); }
+	virtual ~BufferView_() { destroy(); }
 
 	/*!*********************************************************************************************************************
 	\brief Update the buffer.
@@ -169,7 +169,7 @@ public:
 	\param[in] length Range of the buffer to map
 	\return		A pointer to the region of memory where the buffer is mapped.
 	***********************************************************************************************************************/
-	void* map(MapBufferFlags::Enum flags, uint32 offset, uint32 length)
+	void* map(types::MapBufferFlags::Enum flags, uint32 offset, uint32 length)
 	{
 		return buffer->map(flags, offset, length);
 	}
@@ -177,66 +177,21 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Unmap the buffer. Flushes all operations performed after mapping it.
 	***********************************************************************************************************************/
-	void unmap() {	buffer->unmap(); }
+	void unmap() { buffer->unmap(); }
+
+	uint32 getOffset() const { return offset; }
+	uint32 getRange() const { return range; }
+	const pvr::native::HBufferView_& getNativeObject()const;
+	pvr::native::HBufferView_& getNativeObject();
+	GraphicsContext& getContext() { return getResource()->getContext(); }
+	const GraphicsContext& getContext()const { return getResource()->getContext(); }
 protected:
 	Buffer buffer;
-
 	uint32 offset;
 	uint32 range;
-	BufferViewImpl(const Buffer& buffer, uint32 offset, uint32 range) : buffer(buffer),
+	BufferView_(const Buffer& buffer, uint32 offset, uint32 range) : buffer(buffer),
 		offset(offset), range(range) { }
 };
-
-/*!****************************************************************************************************************
-\brief See class pvr::api::UboView. Create with pvr::api::IGraphicsContext::createUbo
-******************************************************************************************************************/
-class UboViewImpl : public BufferViewImpl
-{
-	template<typename MyClass_> friend struct ::pvr::RefCountEntryIntrusive;
-	friend class ::pvr::api::BindDescriptorSets;
-	friend class ::pvr::api::impl::DescriptorSetGlesImpl;
-	friend class IGraphicsContext;
-	void bind(IGraphicsContext& context, uint16 index) const;
-	void bind(IGraphicsContext& context, uint16 index, uint32 offset)const;
-	void bind(IGraphicsContext& context, uint16 index, uint32 offset, uint32 range)const;
-
-	UboViewImpl(const Buffer& buffer, uint32 offset, uint32 range) :
-		BufferViewImpl(buffer, offset, range) { }
-};
-
-/*!****************************************************************************************************************
-\brief See class pvr::api::SsboView.
-******************************************************************************************************************/
-class SsboViewImpl : public BufferViewImpl
-{
-	template<typename MyClass_> friend struct ::pvr::RefCountEntryIntrusive;
-	template<typename, typename> friend class ::pvr::api::impl::PackagedBindableWithParam;
-	friend class ::pvr::api::BindDescriptorSets;
-	friend class ::pvr::api::impl::DescriptorSetGlesImpl;
-	friend class IGraphicsContext;
-
-	void bind(IGraphicsContext& context, uint16 index) const;
-	void bind(IGraphicsContext& context, uint16 index, uint32 offset)const;
-	void bind(IGraphicsContext& context, uint16 index, uint32 offset, uint32 range)const;
-
-	SsboViewImpl(const Buffer& buffer, uint32 offset, uint32 range) : BufferViewImpl(buffer, offset, range) {}
-};
-
-/*!****************************************************************************************************************
-\brief See class pvr::api::AtomicBufferView.
-******************************************************************************************************************/
-class AtomicBufferViewImpl : public BufferViewImpl
-{
-	template<typename, typename> friend class ::pvr::api::impl::PackagedBindableWithParam;
-	friend class ::pvr::api::BindDescriptorSets;
-	friend class ::pvr::api::impl::DescriptorSetImpl;
-	void bind(IGraphicsContext& context, uint16 index) const;
-	void bind(IGraphicsContext& context, uint16 index, uint32 offset)const;
-	void bind(IGraphicsContext& context, uint16 index, uint32 offset, uint32 range)const;
-	AtomicBufferViewImpl(const Buffer& buffer) : BufferViewImpl(buffer, 0, 0) {}
-};
-
-}//namespace impl
-
+}// namespace impl
 }// namespace api
 }// namespace pvr

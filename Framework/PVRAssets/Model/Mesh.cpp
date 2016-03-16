@@ -14,6 +14,7 @@ using pvr::hash;
 using std::vector;
 
 namespace pvr {
+using namespace types;
 namespace assets {
 class SemanticLessThan
 {
@@ -197,7 +198,7 @@ uint32 Mesh::getNumFaces(uint32 batch) const
 	}
 	else
 	{
-		PVR_ASSERT(batch < m_data.boneBatches.getCount());
+		assertion(batch < m_data.boneBatches.getCount());
 
 		if (batch + 1 < m_data.boneBatches.getCount())
 		{

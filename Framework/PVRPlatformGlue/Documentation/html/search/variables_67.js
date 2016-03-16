@@ -9,5 +9,7 @@ var searchData=
   ['geterror',['GetError',['../classegl.html#a022b9baf8be6d63705d39fab280950b2',1,'egl']]],
   ['getprocaddress',['GetProcAddress',['../classegl.html#a2a4a6e7bb8c04ce1635105feffd93e38',1,'egl']]],
   ['getrenderbufferandroid',['GetRenderBufferANDROID',['../classeglext.html#a7527263be5bdad60f07f663b96f97f42',1,'eglext']]],
-  ['getsyncattribkhr',['GetSyncAttribKHR',['../classeglext.html#a7abec9cea6dc8884dd26a569d2fc3a5c',1,'eglext']]]
+  ['getsyncattribkhr',['GetSyncAttribKHR',['../classeglext.html#a7abec9cea6dc8884dd26a569d2fc3a5c',1,'eglext']]],
+  ['graphicsqueue',['graphicsQueue',['../structpvr_1_1system_1_1_native_platform_handles__.html#ac6117e51fe66b158cbfda5e646dbe412',1,'pvr::system::NativePlatformHandles_']]],
+  ['graphicsqueueindex',['graphicsQueueIndex',['../structpvr_1_1system_1_1_native_platform_handles__.html#abbe1c1f6169677e83133da29f46f8a4b',1,'pvr::system::NativePlatformHandles_']]]
 ];

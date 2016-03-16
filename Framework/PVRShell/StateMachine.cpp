@@ -23,7 +23,7 @@ using std::string;
 namespace pvr {
 namespace system {
 
-StateMachine::StateMachine(OSApplication instance, system::CommandLineParser& commandLine, OSDATA osdata) : ShellOS(instance, osdata), m_currentState(StateNotInitialised),
+StateMachine::StateMachine(OSApplication instance, system::CommandLineParser& commandLine, OSDATA osdata) : ShellOS(instance, osdata), m_currentState(StateNotInitialized),
 	m_pause(false)
 {
 	m_shellData.os = this;
@@ -175,6 +175,11 @@ void StateMachine::applyCommandLine()
 			{
 				m_shell->setDesiredConfig(atoi(val));
 			}
+			/*	else if(strcasecmp(arg, "-display") == 0)
+			{
+			// TODO:
+			m_shell->PVRShellset(PVRShell::prefNativeDisplay, atoi(val));
+			}*/
 			else if (strcasecmp(arg, "-forceframetime") == 0 || strcasecmp(arg, "-fft") == 0)
 			{
 				m_shell->setForceFrameTime(true);
@@ -250,12 +255,16 @@ Result::Enum StateMachine::executeOnce()
 	// Handle our state
 	switch (m_currentState)
 	{
-	case StateNotInitialised:
-		return Result::NotInitialised;
+	case StateNotInitialized:
+		return Result::NotInitialized;
 	case StateInitApplication:
 		m_shell = newDemo();
 		m_shellData.platformContext = pvr::createNativePlatformContext(*m_shell);
-		result = m_shell->init(&m_shellData);
+		result = Result::UnableToOpen;
+		if (m_shellData.platformContext.get())
+		{
+			result = m_shell->init(&m_shellData);
+		}
 
 		if (result == Result::Success)
 		{
@@ -279,7 +288,7 @@ Result::Enum StateMachine::executeOnce()
 		{
 			m_shell.reset();
 
-			m_currentState = StatePreExit; // If we have reached this point, then m_shell has already been initialised.
+			m_currentState = StatePreExit; // If we have reached this point, then m_shell has already been initialized.
 			string error = string("State Machine initialisation failed with error '") + Log.getResultCodeString(result) + string("'\n");
 			Log(Log.Error, error.c_str());
 		}
@@ -287,8 +296,8 @@ Result::Enum StateMachine::executeOnce()
 	case StateInitWindow:
 	{
 		applyCommandLine();
-		// Initialise our window. On some platforms this will be a dummy function
-		result = ShellOS::initialiseWindow(m_shellData.attributes);
+		// Initialize our window. On some platforms this will be a dummy function
+		result = ShellOS::initializeWindow(m_shellData.attributes);
 		if (result == Result::Success) {	m_currentState = StateInitAPI;}
 		else {	m_currentState = StateQuitApplication;	}
 	}
@@ -297,7 +306,7 @@ Result::Enum StateMachine::executeOnce()
 		if (!m_shellData.platformContext.get())
 		{
 			m_currentState = StateReleaseWindow;
-			return Result::NotInitialised;
+			return Result::NotInitialized;
 		}
 		else
 		{
@@ -359,7 +368,7 @@ Result::Enum StateMachine::executeOnce()
 		if (result == Result::Success)
 		{
 			// Swap buffers
-			result = m_shellData.presentBackBuffer ? m_shellData.platformContext->presentBackbuffer() : Result::Success;
+			result = (m_shellData.presentBackBuffer && m_shellData.platformContext->presentBackbuffer()) ? Result::Success : Result::UnknownError;
 
 			if (result != Result::Success)
 			{
@@ -442,9 +451,9 @@ Result::Enum StateMachine::executeOnce()
 		if (m_shellData.graphicsContextStore.isValid())
 		{
 			m_shellData.graphicsContextStore->release();
-			m_shellData.graphicsContextStore.release();
+			m_shellData.graphicsContextStore.reset();
 		}
-		m_shellData.graphicsContext.release();
+		m_shellData.graphicsContext.reset();
 		m_currentState = StateReleaseWindow;
 		break;
 	case StateReleaseWindow:
@@ -460,7 +469,10 @@ Result::Enum StateMachine::executeOnce()
 		{
 			m_currentState = StateQuitApplication;
 		}
-		m_shellData.platformContext->release();
+		if (m_shellData.platformContext.get())
+		{
+			m_shellData.platformContext->release();
+		}
 		break;
 	case StateQuitApplication:
 		Log(Log.Debug, "QuitApplication");

@@ -133,7 +133,7 @@ public:
 	// EGL_EXT_buffer_age
 	bool supports_EGL_EXT_buffer_age;
 
-	bool isInitialised;
+	bool isInitialized;
 
 	EglExtensions();
 	void init(const char* const extensions);

@@ -40,8 +40,8 @@ struct HelloAPIData
 	// Should the app still be animating?
 	bool                isAnimating;
 
-	// Is everything required initialised?
-	bool				isInitialised;
+	// Is everything required initialized?
+	bool				isInitialized;
 
 	// Has an error occurred?
 	bool				errorOccurred;
@@ -89,7 +89,7 @@ bool TestGLError(const char* functionLastCalled)
 /*!*********************************************************************************************************************
 \param[out]		eglDisplay				    EGLDisplay created by the function
 \return		Whether the function succeeded or not.
-\brief	Creates an EGLDisplay and initialises it.
+\brief	Creates an EGLDisplay and initializes it.
 ***********************************************************************************************************************/
 bool CreateEGLDisplay(EGLDisplay& eglDisplay)
 {
@@ -105,14 +105,14 @@ bool CreateEGLDisplay(EGLDisplay& eglDisplay)
 
 	//	Initialize EGL.
 	//	EGL has to be initialized with the display obtained in the previous step. All EGL functions other than eglGetDisplay
-	//	and eglGetError need an initialised EGLDisplay.
+	//	and eglGetError need an initialized EGLDisplay.
 	//	If an application is not interested in the EGL version number it can just pass NULL for the second and third parameters, but they
 	//	are queried here for illustration purposes.
 
 	EGLint eglMajorVersion, eglMinorVersion;
 	if (!eglInitialize(eglDisplay, &eglMajorVersion, &eglMinorVersion))
 	{
-		__android_log_print(ANDROID_LOG_ERROR, ApplicationName, "Failed to initialise the EGLDisplay");
+		__android_log_print(ANDROID_LOG_ERROR, ApplicationName, "Failed to initialize the EGLDisplay");
 		return false;
 	}
 	return true;
@@ -226,9 +226,9 @@ bool SetupEGLContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface eglS
 /*!*********************************************************************************************************************
 \param[out]		vertexBuffer                Handle to a vertex buffer object
 \return		Whether the function succeeds or not.
-\brief	Initialises shaders, buffers and other state required to begin rendering with OpenGL ES
+\brief	Initializes shaders, buffers and other state required to begin rendering with OpenGL ES
 ***********************************************************************************************************************/
-bool InitialiseBuffer(GLuint& vertexBuffer)
+bool InitializeBuffer(GLuint& vertexBuffer)
 {
 	//	Concept: Vertices
 	//	When rendering a polygon or model to screen, OpenGL ES has to be told where to draw the object, and more fundamentally what shape
@@ -270,9 +270,9 @@ bool InitialiseBuffer(GLuint& vertexBuffer)
 \param[out]		vertexShader                Handle to a vertex shader
 \param[out]		shaderProgram               Handle to a shader program containing the fragment and vertex shader
 \return		Whether the function succeeds or not.
-\brief	Initialises shaders, buffers and other state required to begin rendering with OpenGL ES
+\brief	Initializes shaders, buffers and other state required to begin rendering with OpenGL ES
 ***********************************************************************************************************************/
-bool InitialiseShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram)
+bool InitializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram)
 {
 	//	Concept: Shaders
 	//	OpenGL ES 2.0 uses what are known as shaders to determine how to draw objects on the screen. Instead of the fixed function
@@ -510,9 +510,9 @@ bool RenderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 \param[in]		vertexShader                Handle to a vertex shader
 \param[in]		shaderProgram               Handle to a shader program containing the fragment and vertex shader
 \param[in]		vertexBuffer                Handle to a vertex buffer object
-\brief	Releases the resources created by "InitialiseGLState"
+\brief	Releases the resources created by "InitializeGLState"
 ***********************************************************************************************************************/
-void DeInitialiseGLState(GLuint fragmentShader, GLuint vertexShader, GLuint shaderProgram, GLuint vertexBuffer)
+void DeInitializeGLState(GLuint fragmentShader, GLuint vertexShader, GLuint shaderProgram, GLuint vertexBuffer)
 {
 	// Frees the OpenGL handles for the program and the 2 shaders
 	glDeleteShader(fragmentShader);
@@ -584,20 +584,20 @@ static void HandleAndroidCommands(struct android_app* application, int32_t comma
 
 						if (applicationData->errorOccurred != true)
 						{
-							if (!InitialiseBuffer(applicationData->vertexBuffer))
+							if (!InitializeBuffer(applicationData->vertexBuffer))
 							{
 								applicationData->errorOccurred = true;
 							}
 							if (applicationData->errorOccurred != true)
 							{
-								if (!InitialiseShaders(applicationData->fragmentShader, applicationData->vertexShader,
+								if (!InitializeShaders(applicationData->fragmentShader, applicationData->vertexShader,
 								                       applicationData->shaderProgram))
 								{
 									applicationData->errorOccurred = true;
 								}
 								else
 								{
-									applicationData->isInitialised = true;
+									applicationData->isInitialized = true;
 								}
 							}
 						}
@@ -611,12 +611,12 @@ static void HandleAndroidCommands(struct android_app* application, int32_t comma
 
 	case APP_CMD_TERM_WINDOW:
 	{
-		DeInitialiseGLState(applicationData->fragmentShader, applicationData->vertexShader,
+		DeInitializeGLState(applicationData->fragmentShader, applicationData->vertexShader,
 		                    applicationData->shaderProgram, applicationData->vertexBuffer);
 
 		ReleaseEGLState(applicationData->eglDisplay);
 
-		applicationData->isInitialised = false;
+		applicationData->isInitialized = false;
 	}
 	case APP_CMD_PAUSE:
 	case APP_CMD_SAVE_STATE:
@@ -664,7 +664,7 @@ void android_main(struct android_app* application)
 	while (true)
 	{
 		// Block while there are events to process or if we're not animating
-		while ((eventIdentifier = ALooper_pollAll(applicationData.isInitialised && applicationData.isAnimating ? 0 : -1, NULL, &events, (void**)&pollSource)) >= 0)
+		while ((eventIdentifier = ALooper_pollAll(applicationData.isInitialized && applicationData.isAnimating ? 0 : -1, NULL, &events, (void**)&pollSource)) >= 0)
 		{
 			if (pollSource != NULL)
 			{
@@ -675,7 +675,7 @@ void android_main(struct android_app* application)
 			if (application->destroyRequested != 0)
 			{
 				// Release the GL vertex buffer
-				DeInitialiseGLState(applicationData.fragmentShader, applicationData.vertexShader,
+				DeInitializeGLState(applicationData.fragmentShader, applicationData.vertexShader,
 				                    applicationData.shaderProgram, applicationData.vertexBuffer);
 
 				// Release EGL

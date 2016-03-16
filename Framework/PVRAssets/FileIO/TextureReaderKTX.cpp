@@ -170,7 +170,7 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 	textureHeader.setNumberOfMIPLevels(ktxFileHeader.numberOfMipmapLevels);
 	textureHeader.setOrientation(static_cast<TextureMetaData::AxisOrientation>(orientation));
 
-	// Initialise the texture to allocate data
+	// Initialize the texture to allocate data
 	asset = Texture(textureHeader, NULL);
 
 	// Seek to the start of the texture data, just in case.

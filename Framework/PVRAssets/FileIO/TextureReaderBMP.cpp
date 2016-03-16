@@ -26,7 +26,7 @@ bool TextureReaderBMP::readNextAsset(Texture& asset)
 	bool result = true;
 	if (m_hasNewAssetStream)
 	{
-		result = initialiseFile();
+		result = initializeFile();
 		if (result)
 		{
 			m_texturesToLoad = true;
@@ -120,7 +120,7 @@ string TextureReaderBMP::getReaderVersion()
 	return "1.0.0";
 }
 
-bool TextureReaderBMP::initialiseFile()
+bool TextureReaderBMP::initializeFile()
 {
 	// Read the file header
 	bool result = readFileHeader(m_fileHeader);
@@ -424,12 +424,12 @@ bool TextureReaderBMP::translateInfoHeader(const texture_bmp::InfoHeader5& infoH
 	if (infoHeader.compressionType == texture_bmp::CompressionMethod::Bitfields &&
 	    infoHeader.headerSize >= texture_bmp::HeaderSize::Info2)
 	{
-        PVR_ASSERT(false && "Check for gaps in the bitfields, these are invalid. A single gap at the end is ok - shove in an X channel.");
+        assertion(false ,  "Check for gaps in the bitfields, these are invalid. A single gap at the end is ok - shove in an X channel.");
 	}
 	else if (infoHeader.compressionType == texture_bmp::CompressionMethod::AlphaBitfields &&
 	         infoHeader.headerSize >= texture_bmp::HeaderSize::Info3)
 	{
-        PVR_ASSERT(false && " Check for gaps in the bitfields, and that the scheme can be represented by PVRTexTool. An X channel can't be put in at the end as above if there's already 4 channels.");
+        assertion(false ,  " Check for gaps in the bitfields, and that the scheme can be represented by PVRTexTool. An X channel can't be put in at the end as above if there's already 4 channels.");
     }
     else
 	{
@@ -494,7 +494,7 @@ bool TextureReaderBMP::translateInfoHeader(const texture_bmp::InfoHeader5& infoH
 		case texture_bmp::ColorSpace::sRGB:
 		case texture_bmp::ColorSpace::Windows:
 		{
-			header.setColorSpace(ColorSpace::lRGB);
+            header.setColorSpace(types::ColorSpace::lRGB);
 			break;
 		}
 		case texture_bmp::ColorSpace::ProfileLinked:
@@ -581,7 +581,7 @@ bool TextureReaderBMP::readImageInfoHeader(const texture_bmp::InfoHeader5& infoH
 	if (infoHeader.compressionType == texture_bmp::CompressionMethod::RunLength4 ||
 	    infoHeader.compressionType == texture_bmp::CompressionMethod::RunLength8)
 	{
-        PVR_ASSERT(false);
+        assertion(false);
 		return false;
 	}
 	else if (infoHeader.compressionType == texture_bmp::CompressionMethod::None ||

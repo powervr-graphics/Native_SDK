@@ -20,12 +20,12 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 		pvr::Log(pvr::Log.Debug, "APP_CMD_START");
 		result = pvr::Result::Success;
 
-		if (stateMachinePtr->getCurrentState() == pvr::system::StateMachine::StateNotInitialised)
+		if (stateMachinePtr->getCurrentState() == pvr::system::StateMachine::StateNotInitialized)
 		{
 			pvr::Log(pvr::Log.Debug, "Initializing State Machine");
 			if ((result = stateMachinePtr->init()) != pvr::Result::Success)
 			{
-				pvr::Log(pvr::Log.Error, "Error: Failed to initialise main State Machine with code %s", pvr::Log.getResultCodeString(result));
+				pvr::Log(pvr::Log.Error, "Error: Failed to initialize main State Machine with code %s", pvr::Log.getResultCodeString(result));
 				ANativeActivity_finish(app->activity);
 				return;
 			}
@@ -184,7 +184,7 @@ void android_main(struct android_app* state)
 	int events;
 	struct android_poll_source* source;
 
-	//	Initialise our window/run/shutdown
+	//	Initialize our window/run/shutdown
 	while (true)
 	{
 		while (ALooper_pollAll((stateMachine.getState() == pvr::system::StateMachine::StateRenderScene && !stateMachine.isPaused()) ? 0 : -1, NULL, &events, (void**)&source) >= 0)

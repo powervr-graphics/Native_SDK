@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -105,7 +105,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Toutput_, <span class="keyword">typename</span> Tinput_&gt;</div>
 <div class="line"><a name="l00020"></a><span class="lineno"><a class="code" href="namespacepvr.html#a76f231dbfb5ad9022123a9972f169854">   20</a></span>&#160;    Toutput_ <a class="code" href="namespacepvr.html#a76f231dbfb5ad9022123a9972f169854" title="Take a value&#39;s bit representation and reinterpret them as another type. Second template parameter sho...">reinterpretBits</a>(<span class="keyword">const</span> Tinput_&amp; value)</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <a class="code" href="_assert___8h.html#ac0f18385a9060ed4e9a550bff41a1851">PVR_ASSERT</a>(<span class="keyword">sizeof</span>(Tinput_) &lt;= <span class="keyword">sizeof</span>(Toutput_));</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        <a class="code" href="namespacepvr.html#aa69b189dd10155f70a1d26e3cbd74bf1">assertion</a>(<span class="keyword">sizeof</span>(Tinput_) &lt;= <span class="keyword">sizeof</span>(Toutput_));</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        Toutput_ ret = <span class="keyword">static_cast&lt;</span>Toutput_<span class="keyword">&gt;</span>(0);</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        memcpy(&amp;ret, &amp;value, <span class="keyword">sizeof</span>(Tinput_));</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        <span class="keywordflow">return</span> ret;</div>
@@ -120,9 +120,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">               representation of value.</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">    *******************************************************************************************************************/</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T1_&gt;</div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="code" href="namespacepvr.html#a54e54e921d1a9d11ed2059b43fd1d2c9">   37</a></span>&#160;    <a class="code" href="structpvr_1_1_static_array.html" title="A fixed size array data structure wrapper. ">StaticArray&lt;T1_, sizeof(T1_)&gt;</a> <a class="code" href="namespacepvr.html#a54e54e921d1a9d11ed2059b43fd1d2c9" title="Store the bits of a value in a static array of char. ">readBits</a>(<span class="keyword">const</span> T1_&amp; value)</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="code" href="namespacepvr.html#a37496ce30d200726b9bef9242ba09067">   37</a></span>&#160;    std::array&lt;T1_, sizeof(T1_)&gt; <a class="code" href="namespacepvr.html#a37496ce30d200726b9bef9242ba09067" title="Store the bits of a value in a static array of char. ">readBits</a>(<span class="keyword">const</span> T1_&amp; value)</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <a class="code" href="structpvr_1_1_static_array.html" title="A fixed size array data structure wrapper. ">StaticArray&lt;char, sizeof(T1_)&gt;</a> retval;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        std::array&lt;char, sizeof(T1_)&gt; retval;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        memcpy(&amp;retval[0], &amp;value, <span class="keyword">sizeof</span>(T1_));</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordflow">return</span> retval;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    }</div>

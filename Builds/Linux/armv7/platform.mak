@@ -6,7 +6,7 @@
 # Copyright		Copyright (C) by Imagination Technologies Limited.
 #
 
-CROSS_COMPILE ?= arm-none-linux-gnueabi-
+CROSS_COMPILE ?= arm-linux-gnueabi-
 
 ifdef TOOLCHAIN
 PLAT_CC  = $(TOOLCHAIN)/bin/$(CROSS_COMPILE)gcc

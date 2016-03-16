@@ -8,22 +8,22 @@
 
 #pragma once
 #include "PVRApi/ApiObjects/Shader.h"
-#include "PVRApi/OGLES/NativeObjectsGles.h"
+#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
 
 namespace pvr {
 namespace api {
-namespace impl {
+namespace gles {
 /*!*********************************************************************************************************************
 \param  gles shader wrapper
 ***********************************************************************************************************************/
-class ShaderGlesImpl : public native::HShader_, public ShaderImpl
+class ShaderGles_ : public native::HShader_, public impl::Shader_
 {
 public:
 
 	/*!*********************************************************************************************************************
 	\brief ctor. Construct with namtoe shader handle.
 	***********************************************************************************************************************/
-	ShaderGlesImpl(const native::HShader_& shader)
+	ShaderGles_(GraphicsContext& context, const native::HShader_& shader) : impl::Shader_(context)
 	{
 		this->handle = shader.handle;
 	}
@@ -31,11 +31,10 @@ public:
 	/*!*********************************************************************************************************************
 	\brief dtor.
 	***********************************************************************************************************************/
-	virtual ~ShaderGlesImpl() {}
+	virtual ~ShaderGles_();
 };
+typedef RefCountedResource<ShaderGles_> ShaderGles;
 }
-
-typedef RefCountedResource<impl::ShaderGlesImpl> ShaderGles;
 }
 namespace native {
 /*!*********************************************************************************************************************
@@ -46,21 +45,26 @@ namespace native {
              references to it (including the one that was passed to this function) are released. Release when done using it to
 			 avoid leaking the object.
 ***********************************************************************************************************************/
-inline RefCountedResource<HShader_> getNativeHandle(const RefCountedResource<api::impl::ShaderImpl>& Shader)
+inline HShader createNativeHandle(const RefCountedResource<api::impl::Shader_>& Shader)
 {
-	return static_cast<RefCountedResource<native::HShader_>/**/>(static_cast<RefCountedResource<api::impl::ShaderGlesImpl>/**/>(Shader));
+	return static_cast<RefCountedResource<native::HShader_>/**/>(static_cast<RefCountedResource<api::gles::ShaderGles_>/**/>(Shader));
 }
 
+}
+namespace utils {
 /*!*********************************************************************************************************************
-\brief Get the OpenGL ES Shader object underlying a PVRApi Buffer object.
-\return A OpenGL ES Shader. For immediate use only.
-\description The object returned by this function will only be kept alive as long as there are other references to it. If all
-        other references to it are released or out of scope, the Shader returned by this function will be deleted and invalid.
+\brief Create a native shader program from an array of native shader handles.
+\param pShaders array of shaders
+\param count number shaders in the array
+\param attribs array of attributes
+\param attribIndex array of attributeIndices
+\param attribCount Number of attributes in the attributes array
+\param outShaderProg Output, the shader program
+\param infolog OPTIONAL Output, the infolog of the shader
+\param contextCapabilities OPTIONAL can be used to pass specific context capabilities
+\return true on success
 ***********************************************************************************************************************/
-inline HShader_::NativeType useNativeHandle(const RefCountedResource<api::impl::ShaderImpl>& Shader)
-{
-	return static_cast<const api::impl::ShaderGlesImpl&>(*Shader).handle;
-}
-
+bool createShaderProgram(native::HShader_ pShaders[], uint32 count, const char** const attribs, pvr::uint16* attribIndex, uint32 attribCount, native::HPipeline_& outShaderProg,
+                         string* infolog, const ApiCapabilities* contextCapabilities = 0);
 }
 }

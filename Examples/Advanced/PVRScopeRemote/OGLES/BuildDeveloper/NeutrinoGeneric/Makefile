@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESPVRScopeRemote
-DEPENDS =  PVRCore PVRAssets PVREgl PVRGles PVRShell PVRUIRenderer
-LIBRARIES =  PVRScopeDeveloper socket PVRUIRenderer PVRShell PVRGles PVREgl PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVREgl PVRNativeGles PVRGles PVRShell PVRUIRenderer
+LIBRARIES =  PVRScopeDeveloper socket PVRUIRenderer PVRShell PVRGles PVRNativeGles PVREgl PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Neutrino_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS) ../../../../../../Builds/Neutrino/$(PLAT_SUFFIX)/Lib
 
 OBJECTS +=	\

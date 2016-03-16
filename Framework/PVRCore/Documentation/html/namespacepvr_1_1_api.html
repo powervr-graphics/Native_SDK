@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -100,6 +100,7 @@ Enumerations</h2></td></tr>
 <a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05caba5a417247862032ed7edf20b63a646a">OpenGLES31</a>, 
 <br/>
 &#160;&#160;<a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05ca0d456167e6cf764e8cc4034e6fe9b5da">OpenGLESMaxVersion</a> = OpenGLES31, 
+<a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05ca453f90e3c6f1d4d6f78e232a952ea2b8">Vulkan</a>, 
 <a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05cafc41e97d3a6acbd798d86d976516389a">Count</a>
 <br/>
  }</td></tr>
@@ -109,6 +110,10 @@ Enumerations</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a95a8ebe9f0cf951899d3bf8693aaebf4"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1_api.html#a95a8ebe9f0cf951899d3bf8693aaebf4">getApiCode</a> (<a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Enum</a> api)</td></tr>
 <tr class="separator:a95a8ebe9f0cf951899d3bf8693aaebf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c310264e26f9cbc6be7d31464c113b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1_api.html#a5c310264e26f9cbc6be7d31464c113b0">getApiFamilyMax</a> (<a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Enum</a> api)</td></tr>
+<tr class="separator:a5c310264e26f9cbc6be7d31464c113b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c413c1397785a19444b33bd8a59be3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1_api.html#a2c413c1397785a19444b33bd8a59be3e">getApiFamilyMin</a> (<a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Enum</a> api)</td></tr>
+<tr class="separator:a2c413c1397785a19444b33bd8a59be3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac58880def2ce86c7d029225886f58a2e"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1_api.html#ac58880def2ce86c7d029225886f58a2e">getApiName</a> (<a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Enum</a> api)</td></tr>
 <tr class="separator:ac58880def2ce86c7d029225886f58a2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -136,6 +141,8 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><em><a class="anchor" id="a0046dbd915ab5fe111df975febf4c05ca0d456167e6cf764e8cc4034e6fe9b5da"></a>OpenGLESMaxVersion</em>&nbsp;</td><td class="fielddoc">
 </td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a0046dbd915ab5fe111df975febf4c05ca453f90e3c6f1d4d6f78e232a952ea2b8"></a>Vulkan</em>&nbsp;</td><td class="fielddoc">
+</td></tr>
 <tr><td class="fieldname"><em><a class="anchor" id="a0046dbd915ab5fe111df975febf4c05cafc41e97d3a6acbd798d86d976516389a"></a>Count</em>&nbsp;</td><td class="fielddoc">
 </td></tr>
 </table>
@@ -152,6 +159,54 @@ Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">const char* pvr::Api::getApiCode </td>
+          <td>(</td>
+          <td class="paramtype">Enum&#160;</td>
+          <td class="paramname"><em>api</em>)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a5c310264e26f9cbc6be7d31464c113b0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Enum</a> pvr::Api::getApiFamilyMax </td>
+          <td>(</td>
+          <td class="paramtype">Enum&#160;</td>
+          <td class="paramname"><em>api</em>)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a2c413c1397785a19444b33bd8a59be3e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">Enum</a> pvr::Api::getApiFamilyMin </td>
           <td>(</td>
           <td class="paramtype">Enum&#160;</td>
           <td class="paramname"><em>api</em>)</td><td></td>

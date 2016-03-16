@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="generator" content="Doxygen 1.8.4"/>
-<title>PVRApi: C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/OGLES/TextureUtils.h Source File</title>
+<title>PVRApi: C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/TextureUtils.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_f3778daf1425e8df0e4ba29e94b76937.html">Framework</a></li><li class="navelem"><a class="el" href="dir_575f8b1bed935845734cc153028542ad.html">PVRApi</a></li><li class="navelem"><a class="el" href="dir_a8c874ad9c2b5f8b208eb71269d75b73.html">OGLES</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_f3778daf1425e8df0e4ba29e94b76937.html">Framework</a></li><li class="navelem"><a class="el" href="dir_575f8b1bed935845734cc153028542ad.html">PVRApi</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -85,77 +85,45 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <a href="_texture_utils_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">\file         PVRApi\OGLES\TextureUtils.h</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">\file         PVRApi\TextureUtils.h</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">\author       PowerVR by Imagination, Developer Technology Team</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">\copyright    Copyright (c) Imagination Technologies Limited.</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">\brief         Contains OpenGL ES specific Helper utilities. Use only if directly using the underlying API&#39;s.</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;PVRCore/IGraphicsContext.h&quot;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_texture_8h.html" title="The PVRApi basic Texture implementation. ">PVRApi/ApiObjects/Texture.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;PVRAssets/Model/Mesh.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;PVRAssets/Texture/Texture.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_texture_formats_8h.html" title="Contains preprocessor definitions for OpenGL texture formats, in order to avoid needless inclusions a...">PVRApi/OGLES/TextureFormats.h</a>&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_native_objects_gles_8h.html" title="This file contains the OpenGL ES definitions of the (normally only forward-declared in app code) nati...">PVRApi/OGLES/NativeObjectsGles.h</a>&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;PVRAssets/Model/Mesh.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;PVRAssets/Texture/Texture.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>pvr {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>utils {</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>utils {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">\brief  Gets the openGL/ES equivalent texture format values, as per the</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">        Khronos KTX specification:</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">        http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">\param[in]          pixelFormat The pixel format (RGBA8888 etc)</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">\param[in]          colorSpace  The colorspace   (srgb/lrgb)</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">\param[in]          dataType    The datatype     (Float32, unsignedbyte...)</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">\param[out]         glInternalFormat Set to The internal format (a GLenum of the specified format GL_RGBA8888_sRGB)</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">\param[out]         glFormat         Set to The format (a GLenum of the specified format GL_RGBA)</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">\param[out]         glType           Set to The type    (a GLenum of the specified format GL_FLOAT, GL_UNSIGNED_SHORT_1_5_5_5_REV)</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">\param[out]         glTypeSize       Set to the number of components in the format</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">\param[out]         isCompressedFormat  Set to true if the format is compressed, false otherwise</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">\return         true on success, false if a suitable type cannot be matched</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="namespacepvr_1_1utils.html#a8019161497bc5246e8e479da9030e6b0" title="Gets the openGL/ES equivalent texture format values, as per the Khronos KTX specification: http://www...">getOpenGLFormat</a>(PixelFormat pixelFormat, <a class="code" href="namespacepvr_1_1_map_buffer_flags.html#a7a32055112a5d166cffe0d4e3403e89e">ColorSpace::Enum</a> colorSpace, <a class="code" href="namespacepvr_1_1_map_buffer_flags.html#a7a32055112a5d166cffe0d4e3403e89e">VariableType::Enum</a> <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a46ea08e2dba153086d11a3ad9c5f08b4" title="Convert to opengl data type. ">dataType</a>,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                     uint32&amp; glInternalFormat, uint32&amp; glFormat,</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                     uint32&amp; glType, uint32&amp; glTypeSize, <span class="keywordtype">bool</span>&amp; isCompressedFormat);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">\brief Gets OpenGL/ES equivalent texture storage format values, as per the khronos KTX specification</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">        http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">\param[in]          pixelFormat The pixel format (RGBA8888 etc)</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">\param[in]          colorSpace  The colorspace   (srgb/lrgb)</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">\param[in]          dataType    The datatype     (Float32, unsignedbyte...)</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">\param[out]         glInternalFormat             (a GLenum of the specified format GL_RGBA8888_sRGB)</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">\return         true on success, returns false if it cannot find a suitable type</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="namespacepvr_1_1utils.html#a4ed2a8405b7001458756a11e03d59023" title="Gets OpenGL/ES equivalent texture storage format values, as per the khronos KTX specification http://...">getOpenGLStorageFormat</a>(PixelFormat pixelFormat, <a class="code" href="namespacepvr_1_1_map_buffer_flags.html#a7a32055112a5d166cffe0d4e3403e89e">ColorSpace::Enum</a> colorSpace, <a class="code" href="namespacepvr_1_1_map_buffer_flags.html#a7a32055112a5d166cffe0d4e3403e89e">VariableType::Enum</a> <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a46ea08e2dba153086d11a3ad9c5f08b4" title="Convert to opengl data type. ">dataType</a>,  <a class="code" href="_api_gles2_8h.html#a8c9fed4ef34d7b649243e47ab734596e">GLenum</a>&amp; glInternalFormat);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">\brief Upload a texture to the GPU and retrieve the into native handle.</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">\param device</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">\param[in] texture texture to upload</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">\param[in] allowDecompress allow de-compress before upload the texture</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">\param[out] outTextureName native texture handle to upload into</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">\return         Result::Success on success, errorcode otherwise</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<a class="code" href="namespacepvr_1_1_map_buffer_flags.html#a7a32055112a5d166cffe0d4e3403e89e">Result::Enum</a> <a class="code" href="namespacepvr_1_1utils.html#adf6012ff44e23c583f260e984427cb23" title="Upload a texture to the GPU and retrieve the into native handle. ">textureUpload</a>(GraphicsContext&amp; device, <span class="keyword">const</span> assets::Texture&amp; <a class="code" href="_api_gles2_8h.html#a8f486379aef534669f4f06f515e7ce6c">texture</a>, native::HTexture_&amp; outTextureName, <span class="keywordtype">bool</span> allowDecompress = <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">\brief Upload texture into the GPU, retrieve a pvr::API TextureView object.</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">\param context The GraphicsContext to use</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">\param[in] texture The texture to upload</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">\param[in] allowDecompress Allow de-compress a compressed format if the format is not natively supported. If this is set</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="comment">           to true and an unsupported compressed format before uploading the texture, the implementation will uncompress</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="comment">           the texture on the CPU and upload the uncompressed texture. If set to false, the implementation will return</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="comment">           failure in this case.</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">\param[out] outTexture The api texture to upload into</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">\return         Result::Success on success, errorcode otherwise</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<a class="code" href="namespacepvr_1_1_map_buffer_flags.html#a7a32055112a5d166cffe0d4e3403e89e">Result::Enum</a> <a class="code" href="namespacepvr_1_1utils.html#adf6012ff44e23c583f260e984427cb23" title="Upload a texture to the GPU and retrieve the into native handle. ">textureUpload</a>(GraphicsContext&amp; context, <span class="keyword">const</span> assets::Texture&amp; <a class="code" href="_api_gles2_8h.html#a8f486379aef534669f4f06f515e7ce6c">texture</a>, api::TextureView&amp; outTexture, <span class="keywordtype">bool</span> allowDecompress = <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}<span class="comment">// namespace utils</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;}<span class="comment">// namespace pvr</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="code" href="namespacepvr_1_1utils_1_1impl.html">   15</a></span>&#160;<span class="keyword">namespace </span>impl {</div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="code" href="structpvr_1_1utils_1_1impl_1_1unused.html">   16</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structpvr_1_1utils_1_1impl_1_1unused.html">unused</a></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="code" href="structpvr_1_1utils_1_1impl_1_1unused.html#ad00b23f5b0cfef14bf9983d7364b4c32">   18</a></span>&#160;    <span class="keyword">static</span> PixelFormat <a class="code" href="structpvr_1_1utils_1_1impl_1_1unused.html#ad00b23f5b0cfef14bf9983d7364b4c32">unused1</a>;</div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="code" href="structpvr_1_1utils_1_1impl_1_1unused.html#aba242fa0b2419bdd891c9cc924813331">   19</a></span>&#160;    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="structpvr_1_1utils_1_1impl_1_1unused.html#aba242fa0b2419bdd891c9cc924813331">unused2</a>;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;};</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">\brief Upload texture into the GPU, retrieve a pvr::API TextureView object.</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">\param context The GraphicsContext to use</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">\param[in] texture The texture to upload</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">\param[in] allowDecompress Allow de-compress a compressed format if the format is not natively supported. If this is set</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">to true and an unsupported compressed format before uploading the texture, the implementation will uncompress</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">the texture on the CPU and upload the uncompressed texture. If set to false, the implementation will return</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">failure in this case.</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">\param[out] outTexture The api texture to upload into</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">\return         Result::Success on success, errorcode otherwise</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">//Result::Enum textureUpload(GraphicsContext&amp; context, const assets::Texture&amp; texture, api::TextureView&amp; outTexture, bool allowDecompress = true);</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<a class="code" href="namespacepvr_1_1api_1_1gpu_capabilities_1_1_texture_and_samplers.html#a695573d1b935d53701f4a44d2bb69590" title="Texture and Sampler query. ">Result::Enum</a> <a class="code" href="namespacepvr_1_1utils.html#a88a3cee8879252c25235d339df41a8c2" title="Upload texture into the GPU, retrieve a pvr::API TextureView object. ">textureUpload</a>(GraphicsContext&amp; context, <span class="keyword">const</span> assets::Texture&amp; texture, api::TextureView&amp; outTextureView, <span class="keywordtype">bool</span> allowDecompress = <span class="keyword">true</span>,</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                           PixelFormat&amp; outDeCompressedFormat = <a class="code" href="structpvr_1_1utils_1_1impl_1_1unused.html#ad00b23f5b0cfef14bf9983d7364b4c32">impl::unused::unused1</a>, <span class="keywordtype">bool</span>&amp; isCompressed = <a class="code" href="structpvr_1_1utils_1_1impl_1_1unused.html#aba242fa0b2419bdd891c9cc924813331">impl::unused::unused2</a>);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}<span class="comment">// namespace utils</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}<span class="comment">// namespace pvr</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->
