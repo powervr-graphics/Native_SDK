@@ -7,5 +7,5 @@ var searchData=
   ['vertexshader',['vertexShader',['../structpvr_1_1assets_1_1_effect.html#ac981d0d7028f5f81e918aa24eb81db16',1,'pvr::assets::Effect']]],
   ['vertexshadername',['vertexShaderName',['../structpvr_1_1assets_1_1_pfx_parser_effect.html#a33fea7ea7a0af78a5969d7c5a444d56e',1,'pvr::assets::PfxParserEffect']]],
   ['viewport',['viewport',['../structpvr_1_1assets_1_1_effect.html#aa840956b39f46346d7b28ccae90e5779',1,'pvr::assets::Effect']]],
-  ['viewtype',['viewType',['../structpvr_1_1assets_1_1_pfx_render_pass.html#af4b53de1ddab7f52c67c53fa3fcaf47d',1,'pvr::assets::PfxRenderPass']]]
+  ['viewtype',['viewType',['../structpvr_1_1assets_1_1_pfx_render_pass.html#af38ada6dc9d3dd1426e77468a2eb154a',1,'pvr::assets::PfxRenderPass']]]
 ];

@@ -36,10 +36,5 @@ var searchData=
   ['bonematrixarray',['BoneMatrixArray',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926aa86428acf365c402a41141bb940f58cf',1,'pvr::assets::PVRShamanSemantics']]],
   ['bonematrixarrayit',['BoneMatrixArrayIT',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926acf8c02c3c5de362e4a8cc8bba65a862e',1,'pvr::assets::PVRShamanSemantics']]],
   ['boneweight',['BoneWeight',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926aac96cce9904a8cab0bc75865414431c4',1,'pvr::assets::PVRShamanSemantics']]],
-  ['bool1',['Bool1',['../namespacepvr_1_1assets_1_1_semantic_data_type.html#abdca3054ed51b45293edc3c641e0538ea4a49c6cf9d394d2f11e884924d0ab2e8',1,'pvr::assets::SemanticDataType']]],
-  ['boolean',['Boolean',['../namespacepvr_1_1assets_1_1_effect_default_data_internal_type.html#accbb71fcf19a633ba0809010eced7b9ca44565ca53eea98f9b981b92355a91ab9',1,'pvr::assets::EffectDefaultDataInternalType']]],
-  ['bvec2',['BVec2',['../namespacepvr_1_1assets_1_1_semantic_data_type.html#abdca3054ed51b45293edc3c641e0538ea6f2e9585afb2627c879f629dc186d88f',1,'pvr::assets::SemanticDataType']]],
-  ['bvec3',['BVec3',['../namespacepvr_1_1assets_1_1_semantic_data_type.html#abdca3054ed51b45293edc3c641e0538eac96c31bb4aaf971ef5a0e499ac0db395',1,'pvr::assets::SemanticDataType']]],
-  ['bvec4',['BVec4',['../namespacepvr_1_1assets_1_1_semantic_data_type.html#abdca3054ed51b45293edc3c641e0538ea440c96591848cc69d2462ce4a72f8a63',1,'pvr::assets::SemanticDataType']]],
   ['bw1bpp',['BW1bpp',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849eab9c81834d6c5362b1a00312bfc040aa2',1,'pvr::CompressedPixelFormat']]]
 ];

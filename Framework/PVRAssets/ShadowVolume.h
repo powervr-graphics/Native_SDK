@@ -35,8 +35,8 @@ public:
 	~ShadowVolume();
 
 	/*!**************************************************************************************************************
-	\brief    Initialise a shadow volume from the data of a Mesh.
-	\param   mesh  A mesh whose vertex data is used to initialise this ShadowVolume instance. The POSITION semantic
+	\brief    Initialize a shadow volume from the data of a Mesh.
+	\param   mesh  A mesh whose vertex data is used to initialize this ShadowVolume instance. The POSITION semantic
 	         must be present in the mesh.
 	\description   This method will pre-process the data in the mesh, to calculate all vertices, edges and faces
 	         of the mesh as required. In effect it will extract the POSITION semantic data and the face data and
@@ -46,7 +46,7 @@ public:
 	Result::Enum init(const assets::Mesh& mesh);
 
 	/*!**************************************************************************************************************
-	\brief    Initialise a shadow volume from raw data.
+	\brief    Initialize a shadow volume from raw data.
 	\param   data Pointer to the first POSITION attribute of vertex data (so buffer_start + offset)
 	\param   numVertices Number of vertices in (data)
 	\param   verticesStride Stride between each vertex attribute
@@ -61,8 +61,8 @@ public:
 			 calculate extruded shadow volumes as required.
 	****************************************************************************************************************/
 	Result::Enum init(const byte* const data, uint32 numVertices, uint32 verticesStride,
-	                  DataType::Enum vertexType, const byte* const faceData, uint32 numFaces,
-	                  IndexType::Enum indexType);
+                      types::DataType::Enum vertexType, const byte* const faceData, uint32 numFaces,
+                      types::IndexType::Enum indexType);
 
 
 	/*!**************************************************************************************************************
@@ -153,7 +153,7 @@ public:
 	                               byte** externalIndexBuffer = NULL);
 
 private:
-	void initialiseVertexData(byte** externalBuffer = NULL);
+	void initializeVertexData(byte** externalBuffer = NULL);
 
 	struct ShadowVolumeEdge
 	{

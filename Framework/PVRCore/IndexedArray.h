@@ -472,7 +472,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Gets the number of items in the IndexedArray.
-	\return Τhe number of items in the IndexedArray.
+	\return The number of items in the IndexedArray.
 	***********************************************************************************************************************/
 	size_t size() const
 	{
@@ -481,7 +481,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Gets the number of items in the IndexedArray, including items that have been deleted.
-	\return Τhe number of items in the IndexedArray, including items that have been deleted.
+	\return The number of items in the IndexedArray, including items that have been deleted.
 	***********************************************************************************************************************/
 	size_t sizeWithDeleted() const
 	{
@@ -490,7 +490,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Gets the current capacity of the backing array of the IndexedArray.
-	\return Τhe current capacity of the backing array of the IndexedArray.
+	\return The current capacity of the backing array of the IndexedArray.
 	***********************************************************************************************************************/
 	size_t capacity() const
 	{
@@ -533,7 +533,7 @@ public:
 		else if (mystorage[index].isUnused) // Lucky! Storage is big enough, and the item is not used!
 		{
 			deleteditemlisttype_::iterator place = std::find(myDeletedItems.begin(), myDeletedItems.end(), index);
-			assert(place != myDeletedItems.end()); // Shouldn't happen!! Ever!!
+			assert(place != myDeletedItems.end()); // Shouldn't happen! Ever!
 			myDeletedItems.erase(place);
 			mystorage[index] = mystorage[old_index];
 			removefromvector(old_index);

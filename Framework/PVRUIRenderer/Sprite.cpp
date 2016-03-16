@@ -7,13 +7,20 @@
 ***********************************************************************************************************************/
 #include "PVRUIRenderer/Sprite.h"
 #include "PVRUIRenderer/UIRenderer.h"
-#include "PVRApi/OGLES/OpenGLESBindings.h"
 
 using namespace glm;
 
 namespace pvr {
 namespace ui {
 namespace impl {
+
+struct UboData
+{
+	glm::mat4 mvp;
+	glm::mat4 uv;
+	glm::vec4 color;
+	bool	  alphaMode;
+};
 
 Sprite_::Sprite_(UIRenderer& uiRenderer) :
 	m_color(1.f, 1.f, 1.f, 1.f),
@@ -26,7 +33,7 @@ Sprite_::Sprite_(UIRenderer& uiRenderer) :
 
 void Sprite_::commitUpdates()const
 {
-	calculateMvp(0, glm::mat4(1.f),m_uiRenderer.getScreenRotation() * m_uiRenderer.getProjection(), m_viewport);
+	calculateMvp(0, glm::mat4(1.f), m_uiRenderer.getScreenRotation() * m_uiRenderer.getProjection(), m_viewport);
 }
 
 void Sprite_::render() const
@@ -39,17 +46,55 @@ void Sprite_::render() const
 	onRender(m_uiRenderer.getActiveCommandBuffer(), 0);
 }
 
-pvr::Result::Enum Image_::updateDescriptorSet()const
+void Image_::writeUboDescriptorSet(pvr::uint64 parentId)const
 {
-	pvr::api::DescriptorSetUpdateParam descSetCreateParam;
-	descSetCreateParam.addCombinedImageSampler(0, 0, getTexture(), getSampler());
-	if (!m_descriptorSet.isValid())
+	// update the ubo descriptor set
+
+}
+
+void Image_::updateUbo(pvr::uint64 parentIds)const
+{
+	if ((m_uiRenderer.getContext().getApiType() > pvr::Api::OpenGLESMaxVersion))
+	{
+		if (m_mvpPools[parentIds].buffer.isNull())
+		{
+			m_mvpPools[parentIds].buffer = m_uiRenderer.getContext().createBuffer(sizeof(UboData), pvr::types::BufferBindingUse::UniformBuffer);
+			m_mvpPools[parentIds].bufferView = m_uiRenderer.getContext().createBufferView(m_mvpPools[parentIds].buffer, 0, sizeof(UboData));
+		}
+
+		if (m_mvpPools[parentIds].uboDescSet.isNull())
+		{
+			pvr::api::DescriptorSetUpdate descSetCreateParam;
+			descSetCreateParam.setUbo(0, m_mvpPools[parentIds].bufferView);
+			m_mvpPools[parentIds].uboDescSet = m_uiRenderer.getContext().createDescriptorSetOnDefaultPool(m_uiRenderer.getUboDescSetLayout());
+			m_mvpPools[parentIds].uboDescSet->update(descSetCreateParam);
+		}
+
+		// update the ubo
+		UboData* uboData = (UboData*)m_mvpPools[parentIds].buffer->map(types::MapBufferFlags::Write, 0, sizeof(UboData));
+		uboData->mvp = m_mvpPools[parentIds].mvp;
+		uboData->uv = glm::mat4(1.f);
+		uboData->color = m_color;
+		uboData->alphaMode = m_alphaMode;
+		m_mvpPools[parentIds].buffer->unmap();
+	}
+}
+
+pvr::Result::Enum Image_::updateTextureDescriptorSet()const
+{
+	if (!m_texDescSet.isValid())
 	{
 		pvr::Log("Failed to create descriptor set for Image sprite");
 		return pvr::Result::UnknownError;
 	}
-	m_descriptorSet->update(descSetCreateParam);
-	m_isDescriptorSetDirty = false;
+	// update the texture descriptor set
+	if (m_isTextureDirty)
+	{
+		pvr::api::DescriptorSetUpdate descSetCreateParam;
+		descSetCreateParam.setCombinedImageSampler(0, getTexture(), getSampler());
+		m_texDescSet->update(descSetCreateParam);
+		m_isTextureDirty = false;
+	}
 	return pvr::Result::Success;
 }
 
@@ -107,29 +152,36 @@ void Image_::calculateMvp(pvr::uint64 parentIds, glm::mat4 const& srt, const glm
 		//1: Apply the offsetting (i.e. place the center at its correct spot. THIS IS NOT THE SCREEN POSITIONING, only the anchor.)
 		m_cachedMatrix = translate(m_cachedMatrix, vec3(-offset, 0.0f));
 	}
-	m_mvpPools[parentIds] = viewProj  *  srt * m_cachedMatrix;
+	m_mvpPools[parentIds].mvp = viewProj  *  srt * m_cachedMatrix;
+	updateUbo(parentIds);
 }
 
 void Image_::onRender(api::SecondaryCommandBuffer& commandBuffer, pvr::uint64 parentId) const
 {
-	if (m_isDescriptorSetDirty){ updateDescriptorSet(); }
-	commandBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics,
-	                                  m_uiRenderer.getPipelineLayout(), getDescriptorSet(), 0);
-	commandBuffer->setUniformPtr<mat4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformMVPmtx], 1, &m_mvpPools[parentId]);
-	commandBuffer->setUniformPtr<vec4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformColor], 1, &m_color);
-	commandBuffer->setUniformPtr<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformAlphaMode], 1, (int32*)&m_alphaMode);
-	commandBuffer->setUniform<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformFontTexture], 0);
-	commandBuffer->setUniformPtr<glm::mat3>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformUVmtx], 1, &m_matrixUV);
+	glm::mat4 mvp;
+	commandBuffer->bindDescriptorSet(m_uiRenderer.getPipelineLayout(), 0, getTexDescriptorSet(), NULL, 0);
+	if (m_uiRenderer.getContext().getApiType() <= pvr::Api::OpenGLESMaxVersion)
+	{
+		commandBuffer->setUniformPtr<mat4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformMVPmtx], 1, &m_mvpPools[parentId].mvp);
+		commandBuffer->setUniformPtr<vec4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformColor], 1, &m_color);
+		commandBuffer->setUniformPtr<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformAlphaMode], 1, &m_alphaMode);
+		commandBuffer->setUniform<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformFontTexture], 0);
+		commandBuffer->setUniformPtr<glm::mat3>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformUVmtx], 1, &m_matrixUV);
+	}
+	else
+	{
+		commandBuffer->bindDescriptorSet(m_uiRenderer.getPipelineLayout(), 1, m_mvpPools[parentId].uboDescSet, NULL, 0);
+	}
 	commandBuffer->bindVertexBuffer(m_uiRenderer.getImageVbo(), 0, 0);
 	commandBuffer->drawArrays(0, 6, 0, 1);
 }
 
 Image_::Image_(UIRenderer& uiRenderer, api::TextureView& tex, uint32 width, uint32 height) :
 	Sprite_(uiRenderer), m_matrixUV(1.f), m_texW(width), m_texH(height),  m_texture(tex),
-	m_isDescriptorSetDirty(true)
+	m_isTextureDirty(true)
 {
 	m_boundingRect.setMinMax(glm::vec3(width * -.5f, height * -.5f, 0.0f), glm::vec3(width * .5f, height * .5f, 0.0f));
-	m_descriptorSet = uiRenderer.getContext().allocateDescriptorSet(uiRenderer.getDescriptorSetLayout());
+	m_texDescSet = uiRenderer.getContext().createDescriptorSetOnDefaultPool(uiRenderer.getTexDescriptorSetLayout());
 }
 
 bool Font_::loadFontData(const assets::Texture& texture)
@@ -140,7 +192,7 @@ bool Font_::loadFontData(const assets::Texture& texture)
 
 	const Header* header = reinterpret_cast<const Header*>(texture.getMetaDataMap()->at(assets::TextureHeader::Header::PVRv3)
 	                       .at(FontHeader).getData());
-	PVR_ASSERT(header);
+	assertion(header != NULL);
 
 	if (header->version != UIRenderer::getEngineVersion()) { return false; }
 
@@ -348,7 +400,7 @@ uint32 Text_::updateVertices(float32 fZPos, float32 xPos, float32 yPos, const st
 
 	if (m_vbo.isNull() || m_vbo->getSize() < sizeof(Vertex)* vertexCount)
 	{
-		m_vbo = m_uiRenderer.getContext().createBuffer(sizeof(Vertex) * vertexCount, pvr::api::BufferBindingUse::VertexBuffer);
+		m_vbo = m_uiRenderer.getContext().createBuffer(sizeof(Vertex) * vertexCount, types::BufferBindingUse::VertexBuffer);
 	}
 	m_vbo->update(pVertices, 0, sizeof(Vertex)* vertexCount);
 	return vertexCount;
@@ -384,8 +436,8 @@ void Text_::regenerateText() const
 	if (m_vertices.size() < (m_utf32.size() * 4)) { m_vertices.resize(m_utf32.size() * 4); }
 
 	m_numCachedVerts = updateVertices(0.0f, 0.f, 0.f, m_utf32, m_vertices.size() ? &m_vertices[0] : 0);
-	PVR_ASSERT((m_numCachedVerts % 4) == 0);
-	PVR_ASSERT((m_numCachedVerts / 4) < MaxLetters);
+	assertion((m_numCachedVerts % 4) == 0);
+	assertion((m_numCachedVerts / 4) < MaxLetters);
 	m_isTextDirty = false;
 }
 
@@ -416,7 +468,7 @@ void Text_::calculateMvp(pvr::uint64 parentIds, glm::mat4 const& srt, const glm:
 
 		m_cachedMatrix = glm::mat4(1.f);
 		//m_matrix = translate(vec3(pos, 0.f));  //5: Finally, move it to its position
-		//ASSUMING IDENTITY MATRIX!!! - OPTIMIZE OUT THE OPS
+		//ASSUMING IDENTITY MATRIX! - OPTIMIZE OUT THE OPS
 		glm::vec2 tmpPos;
 		tmpPos.x = m_position.x * viewport.getDimension().x * .5f + viewport.getDimension().x * .5f;
 		tmpPos.y = m_position.y * viewport.getDimension().y * .5f + viewport.getDimension().y * .5f;
@@ -435,7 +487,8 @@ void Text_::calculateMvp(pvr::uint64 parentIds, glm::mat4 const& srt, const glm:
 		m_cachedMatrix = glm::translate(m_cachedMatrix, vec3(-offset, 0.f)); //1: Anchor the text properly
 		m_isPositioningDirty = false;
 	}
-	m_mvpPools[parentIds] =  viewProj * srt * m_cachedMatrix;
+	m_mvpPools[parentIds].mvp =  viewProj * srt * m_cachedMatrix;
+	updateUbo(parentIds);
 }
 
 void Text_::calculateMvp(const glm::mat4& matrix, pvr::uint64 parentIds) const
@@ -466,7 +519,7 @@ void Text_::calculateMvp(const glm::mat4& matrix, pvr::uint64 parentIds) const
 
 		m_cachedMatrix = glm::mat4();
 		//m_matrix = translate(vec3(pos, 0.f));  //5: Finally, move it to its position
-		//ASSUMING IDENTITY MATRIX!!! - OPTIMIZE OUT THE OPS
+		//ASSUMING IDENTITY MATRIX! - OPTIMIZE OUT THE OPS
 		m_cachedMatrix[3][0] = m_position.x;  //5: Finally, move it to its position
 		m_cachedMatrix[3][1] = m_position.y;  //5: Finally, move it to its position
 
@@ -481,41 +534,84 @@ void Text_::calculateMvp(const glm::mat4& matrix, pvr::uint64 parentIds) const
 		m_cachedMatrix = glm::translate(m_cachedMatrix, vec3(-offset, 0.f)); //1: Anchor the text propely
 		m_isPositioningDirty = false;
 	}
-	m_mvpPools[parentIds] = matrix * m_cachedMatrix;
+	m_mvpPools[parentIds].mvp = matrix * m_cachedMatrix;
+}
+
+void Text_::updateUbo(pvr::uint64 parentIds)const
+{
+	// update the descriptor set once
+	if (m_uiRenderer.getContext().getApiType() > Api::OpenGLESMaxVersion)
+	{
+		if (m_mvpPools[parentIds].buffer.isNull())
+		{
+			m_mvpPools[parentIds].buffer = m_uiRenderer.getContext().createBuffer(sizeof(UboData), types::BufferBindingUse::UniformBuffer);
+			m_mvpPools[parentIds].bufferView = m_uiRenderer.getContext().createBufferView(m_mvpPools[parentIds].buffer, 0, sizeof(UboData));
+		}
+		// update the ubo
+		UboData* uboData = (UboData*)m_mvpPools[parentIds].buffer->map(types::MapBufferFlags::Write, 0, sizeof(UboData));
+		uboData->mvp = m_mvpPools[parentIds].mvp;
+		uboData->uv = glm::mat4(1.f);
+		uboData->color = m_color;
+		uboData->alphaMode = m_alphaMode;
+		m_mvpPools[parentIds].buffer->unmap();
+
+		if (m_mvpPools[parentIds].descSet.isNull())
+		{
+			m_mvpPools[parentIds].descSet = m_uiRenderer.getContext().createDescriptorSetOnDefaultPool(m_uiRenderer.getUboDescSetLayout());
+			api::DescriptorSetUpdate descWrite;
+			descWrite.setUbo(0, m_mvpPools[parentIds].bufferView);
+			m_mvpPools[parentIds].descSet->update(descWrite);
+		}
+	}
 }
 
 void Text_::onRender(api::SecondaryCommandBuffer& commandBuffer, pvr::uint64 parentId) const
 {
 	if (!m_utf32.size()) { return; }
-
-	commandBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics, m_uiRenderer.getPipelineLayout(), getDescriptorSet(),
-	                                  0);
-	commandBuffer->setUniformPtr<mat4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformMVPmtx], 1, &m_mvpPools[parentId]);
-	commandBuffer->setUniformPtr<vec4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformColor], 1, &m_color);
-	commandBuffer->setUniformPtr<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformAlphaMode], 1, (int32*)&m_alphaMode);
-	commandBuffer->setUniform<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformFontTexture], 0);
-	commandBuffer->setUniform<mat3>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformUVmtx], mat3(1.));
-
+	updateUbo(parentId);
+	commandBuffer->bindDescriptorSet(m_uiRenderer.getPipelineLayout(), 0, getTexDescriptorSet(), NULL, 0);
+	if (m_uiRenderer.getContext().getApiType() <= pvr::Api::OpenGLESMaxVersion)
+	{
+		commandBuffer->setUniformPtr<mat4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformMVPmtx], 1, &m_mvpPools[parentId].mvp);
+		commandBuffer->setUniformPtr<vec4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformColor], 1, &m_color);
+		commandBuffer->setUniformPtr<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformAlphaMode], 1, (int32*)&m_alphaMode);
+		commandBuffer->setUniform<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformFontTexture], 0);
+		commandBuffer->setUniform<mat3>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformUVmtx], mat3(1.));
+	}
+	else
+	{
+		commandBuffer->bindDescriptorSet(m_uiRenderer.getPipelineLayout(), 1, m_mvpPools[parentId].descSet);
+	}
 	commandBuffer->bindVertexBuffer(m_vbo, 0, 0);
-	commandBuffer->bindIndexBuffer(m_uiRenderer.getFontIbo(), 0, pvr::IndexType::IndexType16Bit);
+	commandBuffer->bindIndexBuffer(m_uiRenderer.getFontIbo(), 0, types::IndexType::IndexType16Bit);
 	commandBuffer->drawIndexed(0, (min<int32>(m_numCachedVerts, 0xFFFC) >> 1) * 3, 0, 0, 1);
 }
 
 Text_::Text_(UIRenderer& uiRenderer, const Font& font) : Sprite_(uiRenderer), m_isUtf8(true), m_font(font), m_isTextDirty(true)
-{ m_alphaMode = font->getAlphaRenderingMode(); }
+{
+	m_alphaMode = font->getAlphaRenderingMode();
+}
 
 Text_::Text_(UIRenderer& uiRenderer, const std::string& text, const Font& font) : Sprite_(uiRenderer), m_isUtf8(true), m_font(font), m_isTextDirty(true), m_textStr(text)
-{ m_alphaMode = font->getAlphaRenderingMode(); }
+{
+	m_alphaMode = font->getAlphaRenderingMode();
+}
 
 Text_::Text_(UIRenderer& uiRenderer, const std::wstring& text, const Font& font) : Sprite_(uiRenderer), m_isUtf8(false), m_font(font), m_isTextDirty(true),	m_textWStr(text)
-{ m_alphaMode = font->getAlphaRenderingMode(); }
+{
+	m_alphaMode = font->getAlphaRenderingMode();
+}
 
 #ifdef PVR_SUPPORT_MOVE_SEMANTICS
 Text_::Text_(UIRenderer& uiRenderer, std::string&& text, const Font& font) : Sprite_(uiRenderer), m_isUtf8(true), m_font(font), m_isTextDirty(true), m_textStr(text)
-{ m_alphaMode = font->getAlphaRenderingMode(); }
+{
+	m_alphaMode = font->getAlphaRenderingMode();
+}
 
 Text_::Text_(UIRenderer& uiRenderer, std::wstring&& text, const Font& font) : Sprite_(uiRenderer), m_isUtf8(false), m_font(font), m_isTextDirty(true), m_textWStr(text)
-{ m_alphaMode = font->getAlphaRenderingMode(); }
+{
+	m_alphaMode = font->getAlphaRenderingMode();
+}
 
 #endif
 
@@ -564,7 +660,7 @@ Text_& Text_::setText(std::wstring&& str)
 #endif
 
 MatrixGroup_::MatrixGroup_(UIRenderer& uiRenderer, pvr::uint64 id) :
-	Group_(uiRenderer, id){}
+	Group_(uiRenderer, id) {}
 
 void MatrixGroup_::commitUpdates() const
 {

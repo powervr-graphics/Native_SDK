@@ -192,8 +192,8 @@ Result::Enum UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, v
 
 Result::Enum UnicodeConverter::convertUTF8ToUTF16(const utf8* unicodeString, vector<utf16>& unicodeStringOut)
 {
-    PVR_ASSERT(false && "UTF8 to UTF16 conversion not implmented");
-	return Result::Success;
+	assertion(false ,  "UTF8 to UTF16 conversion not implmented");
+	return Result::UnknownError;
 }
 
 Result::Enum UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<utf32>& unicodeStringOut)
@@ -278,8 +278,8 @@ Result::Enum UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vec
 
 Result::Enum UnicodeConverter::convertUTF16ToUTF8(const utf16* unicodeString, vector<utf8>& unicodeStringOut)
 {
-     PVR_ASSERT(false && "UTF16 to UTF8 conversion not implmented");
-	return Result::Success;
+	assertion(false ,  "UTF16 to UTF8 conversion not implmented");
+	return Result::UnknownError;
 }
 
 Result::Enum UnicodeConverter::convertUTF16ToUTF32(const utf16* unicodeString, vector<utf32>& unicodeStringOut)
@@ -343,14 +343,14 @@ Result::Enum UnicodeConverter::convertUTF16ToUTF32(const utf16* unicodeString, v
 
 Result::Enum UnicodeConverter::convertUTF32ToUTF8(const utf32* unicodeString, vector<utf8>& unicodeStringOut)
 {
-     PVR_ASSERT(false && "UTF32 to UTF8 conversion not implmented");
-	return Result::Success;
+	assertion(false ,  "UTF32 to UTF8 conversion not implmented");
+	return Result::UnknownError;
 }
 
 Result::Enum UnicodeConverter::convertUTF32ToUTF16(const utf32* unicodeString, vector<utf16>& unicodeStringOut)
 {
-     PVR_ASSERT(false && "UTF32 to UTF16 conversion not implmented");
-	return Result::Success;
+	assertion(false ,  "UTF32 to UTF16 conversion not implmented");
+	return Result::UnknownError;
 }
 
 bool UnicodeConverter::isAsciiChar(char8 asciiChar)

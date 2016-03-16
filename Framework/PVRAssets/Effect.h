@@ -13,64 +13,6 @@
 namespace pvr {
 namespace assets {
 
-/*!*****************************************************************************************************************
-\brief  Enum values for defining whether a variable is float, integer or bool.
-*******************************************************************************************************************/
-namespace EffectDefaultDataInternalType {
-enum Enum
-{
-	Float,//!< Float
-	Integer,//!< Integer
-	Boolean//!< Boolean
-};
-}
-
-/*!*****************************************************************************************************************
-\brief  Enumeration of the type of render required for an effect.
-*******************************************************************************************************************/
-namespace EffectPassType {
-enum Enum
-{
-	Null,		//!< Null pass
-	Camera,		//!< Camera
-	PostProcess,	//!< Post-process
-	EnvMapCube,	//!< Environment cube-map
-	EnvMapSph,	//!< Environment sphere map
-	Count		//!< Number of supported pass
-};
-}
-
-
-/*!*****************************************************************************************************************
-\brief  Enum values for the various variable types supported by Semantics.
-*******************************************************************************************************************/
-namespace SemanticDataType {
-enum Enum
-{
-	Mat2,//!< 2x2 matrix
-	Mat3,//!< 3x3 matrix
-	Mat4,//!< 4x4 matrix
-	Vec2,//!< 2d vector
-	Vec3,//!< 3d vector
-	Vec4,//!< 4d vector
-	IVec2,//!< 2d integer vector
-	IVec3,//!< 3d integer vector
-	IVec4,//!< 4d integer vector
-	BVec2,//!< 2d bool vector
-	BVec3,//!< 3d bool vector
-	BVec4,//!< 4d bool vector
-	Float,//!< float
-	Int1,//!< integer
-	Bool1,//!< bool
-
-	Count,//!< number of supported semantic type
-	None,
-
-	// Conceptual data types
-	RGB,//!< Semantic RGB
-	RGBA//!< Semantic RGBA
-};
-}// namespace SemanticDefaultDataType
 
 /*!*****************************************************************************************************************
 \brief   Stores effect texture information.
@@ -81,37 +23,24 @@ struct EffectTexture
 	StringHash fileName;		//!< File name
 	uint8 number;			//!< Texture number to set
 	uint8 unit;			//!< Texture binding unit
-	SamplerFilter::Enum minFilter, magFilter, mipFilter;	//!< Sampler Filters
-	SamplerWrap::Enum wrapS, wrapT, wrapR;	//!< Either Clamp or Repeat
+    types::SamplerFilter::Enum minFilter, magFilter, mipFilter;	//!< Sampler Filters
+    types::SamplerWrap::Enum wrapS, wrapT, wrapR;	//!< Either Clamp or Repeat
 	uint32 width, height;	//!< texture dimension
 	uint64 flags;
 	bool renderToTexture; //!< render to the texture
 };
 
 /*!*****************************************************************************************************************
-\brief   Enumeration Describes the type of different Effect Passes.
-*******************************************************************************************************************/
-namespace EffectPassView {
-enum Enum
-{
-	Current,			//!< The scene's active camera is used
-	PodCamera,		//!< The specified camera is used
-	None				//!< No specified view
-};
-}// namespace EffectPassView
-
-
-/*!*****************************************************************************************************************
 \brief  Stores type information for a default data type.
 *******************************************************************************************************************/
 struct EffectSemanticDefaultDataTypeInfo
 {
-	SemanticDataType::Enum	type; //!< Semantic data type
+    types::SemanticDataType::Enum	type; //!< Semantic data type
 	const char8* name; 
 	uint32 numDataItems;    //!< Number of data types
 	uint32 internalType;    //!< Data internal type
 
-	const static EffectSemanticDefaultDataTypeInfo& getSemanticDefaultTypeInfo(SemanticDataType::Enum semanticDfltType);
+    const static EffectSemanticDefaultDataTypeInfo& getSemanticDefaultTypeInfo(types::SemanticDataType::Enum semanticDfltType);
 };
 
 /*!*****************************************************************************************************************
@@ -126,9 +55,9 @@ struct EffectSemanticData
 		bool			dataBool[64];   //!< bool
 		char			dataChar[64];   //!< char
 	};
-	SemanticDataType::Enum	type;
+    types::SemanticDataType::Enum	type;
 
-	EffectSemanticData() : type(SemanticDataType::None) {}
+    EffectSemanticData() : type(types::SemanticDataType::None) {}
 };
 
 /*!*****************************************************************************************************************

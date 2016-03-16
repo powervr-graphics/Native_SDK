@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
@@ -91,8 +92,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Contains functionality (especially free-standing functions) used to facilitate and simplify common tasks, such as automated generation of VBOs for specific meshes, or tying together Effects and Meshes to automate Pipeline creation.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacepvr_1_1utils_1_1impl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils_1_1impl.html">impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_view.html">StructuredMemoryView</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1utils_1_1_vertex_bindings.html">VertexBindings</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a shader Explicit binding, tying a Semantic name to an Attribute Index.  <a href="structpvr_1_1utils_1_1_vertex_bindings.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -103,57 +111,42 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ae5ee552a08543cb9df91c8b9aa50e376"><td class="memTemplParams" colspan="2">template&lt;typename VboContainer_ , typename IboContainer_ &gt; </td></tr>
-<tr class="memitem:ae5ee552a08543cb9df91c8b9aa50e376"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#ae5ee552a08543cb9df91c8b9aa50e376">appendSingleBuffersFromModel</a> (GraphicsContext &amp;context, const assets::Model &amp;model, VboContainer_ &amp;vbos, IboContainer_ &amp;ibos)</td></tr>
+<tr class="memitem:ae5ee552a08543cb9df91c8b9aa50e376"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#ae5ee552a08543cb9df91c8b9aa50e376">appendSingleBuffersFromModel</a> (GraphicsContext &amp;context, const assets::Model &amp;model, VboContainer_ &amp;vbos, IboContainer_ &amp;ibos)</td></tr>
 <tr class="memdesc:ae5ee552a08543cb9df91c8b9aa50e376"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auto generates a set of VBOs and a set of IBOs from the vertex data of the meshes of a model and appends them at the end of containers provided by the user.  <a href="#ae5ee552a08543cb9df91c8b9aa50e376">More...</a><br/></td></tr>
 <tr class="separator:ae5ee552a08543cb9df91c8b9aa50e376"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4039788ea70bf16a586f648563d7d78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#aa4039788ea70bf16a586f648563d7d78">createInputAssemblyFromMesh</a> (const assets::Mesh &amp;mesh, <a class="el" href="structpvr_1_1utils_1_1_vertex_bindings.html">VertexBindings</a> *bindingMap, uint16 numBindings, <a class="el" href="structpvr_1_1api_1_1_graphics_pipeline_create_param.html">api::GraphicsPipelineCreateParam</a> &amp;inoutDesc, uint16 *outNumBuffers=NULL)</td></tr>
-<tr class="memdesc:aa4039788ea70bf16a586f648563d7d78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use a assets::Mesh object and a list of Attribute Semantics mapping to binding points to generate the Input Assembly into a GraphicsPipelineCreateParam object.  <a href="#aa4039788ea70bf16a586f648563d7d78">More...</a><br/></td></tr>
-<tr class="separator:aa4039788ea70bf16a586f648563d7d78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc90bb1fd5aeaab4dc435a45ffcd2c59"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#acc90bb1fd5aeaab4dc435a45ffcd2c59">createInputAssemblyFromMesh</a> (const assets::Mesh &amp;mesh, const <a class="el" href="structpvr_1_1utils_1_1_vertex_bindings___name.html">VertexBindings_Name</a> *bindingMap, uint16 numBindings, <a class="el" href="structpvr_1_1api_1_1_graphics_pipeline_create_param.html">api::GraphicsPipelineCreateParam</a> &amp;inoutDesc, uint16 *outNumBuffers=NULL)</td></tr>
+<tr class="memitem:a6a6201dfb94919344e2470887e7da9d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a6a6201dfb94919344e2470887e7da9d4">createInputAssemblyFromMesh</a> (const assets::Mesh &amp;mesh, const <a class="el" href="structpvr_1_1utils_1_1_vertex_bindings.html">VertexBindings</a> *bindingMap, uint16 numBindings, <a class="el" href="structpvr_1_1api_1_1_graphics_pipeline_create_param.html">api::GraphicsPipelineCreateParam</a> &amp;inoutDesc, uint16 *outNumBuffers=NULL)</td></tr>
+<tr class="memdesc:a6a6201dfb94919344e2470887e7da9d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use a assets::Mesh object and a list of Attribute Semantics mapping to binding points to generate the Input Assembly into a GraphicsPipelineCreateParam object.  <a href="#a6a6201dfb94919344e2470887e7da9d4">More...</a><br/></td></tr>
+<tr class="separator:a6a6201dfb94919344e2470887e7da9d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc90bb1fd5aeaab4dc435a45ffcd2c59"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#acc90bb1fd5aeaab4dc435a45ffcd2c59">createInputAssemblyFromMesh</a> (const assets::Mesh &amp;mesh, const <a class="el" href="structpvr_1_1utils_1_1_vertex_bindings___name.html">VertexBindings_Name</a> *bindingMap, uint16 numBindings, <a class="el" href="structpvr_1_1api_1_1_graphics_pipeline_create_param.html">api::GraphicsPipelineCreateParam</a> &amp;inoutDesc, uint16 *outNumBuffers=NULL)</td></tr>
 <tr class="memdesc:acc90bb1fd5aeaab4dc435a45ffcd2c59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use a assets::Mesh object and a list of Attribute Semantics mapping to shader variable names to generate the Input Assembly into a GraphicsPipelineCreateParam object.  <a href="#acc90bb1fd5aeaab4dc435a45ffcd2c59">More...</a><br/></td></tr>
 <tr class="separator:acc90bb1fd5aeaab4dc435a45ffcd2c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8422cc2313780b8b024b0ce706e74047"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a8422cc2313780b8b024b0ce706e74047">createInputAssemblyFromMeshAndEffect</a> (const assets::Mesh &amp;mesh, assets::Effect effect, <a class="el" href="structpvr_1_1api_1_1_graphics_pipeline_create_param.html">api::GraphicsPipelineCreateParam</a> &amp;inoutDesc, uint16 *outNumBuffers=NULL)</td></tr>
+<tr class="memitem:a8422cc2313780b8b024b0ce706e74047"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a8422cc2313780b8b024b0ce706e74047">createInputAssemblyFromMeshAndEffect</a> (const assets::Mesh &amp;mesh, assets::Effect effect, <a class="el" href="structpvr_1_1api_1_1_graphics_pipeline_create_param.html">api::GraphicsPipelineCreateParam</a> &amp;inoutDesc, uint16 *outNumBuffers=NULL)</td></tr>
 <tr class="memdesc:a8422cc2313780b8b024b0ce706e74047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use a assets::Mesh object and a assets::Effect object to generate the Input Assembly information for a pipeline object.  <a href="#a8422cc2313780b8b024b0ce706e74047">More...</a><br/></td></tr>
 <tr class="separator:a8422cc2313780b8b024b0ce706e74047"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac87b0c61478cf697ec2583d36841500e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#ac87b0c61478cf697ec2583d36841500e">createMultipleBuffersFromMesh</a> (GraphicsContext &amp;context, const assets::Mesh &amp;mesh, std::vector&lt; <a class="el" href="classpvr_1_1api_1_1_buffer.html">api::Buffer</a> &gt; &amp;outVbos, <a class="el" href="classpvr_1_1api_1_1_buffer.html">api::Buffer</a> &amp;outIbo)</td></tr>
+<tr class="memitem:ac87b0c61478cf697ec2583d36841500e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#ac87b0c61478cf697ec2583d36841500e">createMultipleBuffersFromMesh</a> (GraphicsContext &amp;context, const assets::Mesh &amp;mesh, std::vector&lt; <a class="el" href="classpvr_1_1api_1_1_buffer.html">api::Buffer</a> &gt; &amp;outVbos, <a class="el" href="classpvr_1_1api_1_1_buffer.html">api::Buffer</a> &amp;outIbo)</td></tr>
 <tr class="memdesc:ac87b0c61478cf697ec2583d36841500e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auto generates a set of VBOs and a single IBO from all the vertex data of a mesh.  <a href="#ac87b0c61478cf697ec2583d36841500e">More...</a><br/></td></tr>
 <tr class="separator:ac87b0c61478cf697ec2583d36841500e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9bba42d4a1a60e8c2114ec5a494f9fc8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a9bba42d4a1a60e8c2114ec5a494f9fc8">createShaderProgram</a> (<a class="el" href="structpvr_1_1native_1_1_h_shader__.html">native::HShader_</a> pShaders[], uint32 <a class="el" href="_api_gles2_8h.html#a5b40aca7a9682963dd00a8f5aef0a901">count</a>, const char **const attribs, pvr::uint16 *attribIndex, uint32 attribCount, <a class="el" href="namespacepvr_1_1native.html#a1f28f4c885a54dec2893b03d12d54053">native::HShaderProgram</a> &amp;outShaderProg, <a class="el" href="_api_gles2_8h.html#ac83513893df92266f79a515488701770">string</a> *infolog, const ApiCapabilities *contextCapabilities=0)</td></tr>
-<tr class="memdesc:a9bba42d4a1a60e8c2114ec5a494f9fc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a native shader program from an array of native shader handles.  <a href="#a9bba42d4a1a60e8c2114ec5a494f9fc8">More...</a><br/></td></tr>
-<tr class="separator:a9bba42d4a1a60e8c2114ec5a494f9fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a197a9b52b2f471414c34e27bdf111e06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a197a9b52b2f471414c34e27bdf111e06">createSingleBuffersFromMesh</a> (GraphicsContext &amp;context, const assets::Mesh &amp;mesh, <a class="el" href="classpvr_1_1api_1_1_buffer.html">api::Buffer</a> &amp;outVbo, <a class="el" href="classpvr_1_1api_1_1_buffer.html">api::Buffer</a> &amp;outIbo)</td></tr>
+<tr class="memitem:af919d1d6036c4799a503fa4e86a68ebd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#af919d1d6036c4799a503fa4e86a68ebd">createShaderProgram</a> (native::HShader_ pShaders[], uint32 count, const char **const attribs, pvr::uint16 *attribIndex, uint32 attribCount, native::HPipeline_ &amp;outShaderProg, string *infolog, const ApiCapabilities *contextCapabilities=0)</td></tr>
+<tr class="memdesc:af919d1d6036c4799a503fa4e86a68ebd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a native shader program from an array of native shader handles.  <a href="#af919d1d6036c4799a503fa4e86a68ebd">More...</a><br/></td></tr>
+<tr class="separator:af919d1d6036c4799a503fa4e86a68ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a197a9b52b2f471414c34e27bdf111e06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a197a9b52b2f471414c34e27bdf111e06">createSingleBuffersFromMesh</a> (GraphicsContext &amp;context, const assets::Mesh &amp;mesh, <a class="el" href="classpvr_1_1api_1_1_buffer.html">api::Buffer</a> &amp;outVbo, <a class="el" href="classpvr_1_1api_1_1_buffer.html">api::Buffer</a> &amp;outIbo)</td></tr>
 <tr class="memdesc:a197a9b52b2f471414c34e27bdf111e06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auto generates a single VBO and a single IBO from all the vertex data of a mesh.  <a href="#a197a9b52b2f471414c34e27bdf111e06">More...</a><br/></td></tr>
 <tr class="separator:a197a9b52b2f471414c34e27bdf111e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77b08e475f397bd20d6d1ea49c24494f"><td class="memTemplParams" colspan="2">template&lt;typename MeshIterator_ , typename VboInsertIterator_ , typename IboInsertIterator_ &gt; </td></tr>
-<tr class="memitem:a77b08e475f397bd20d6d1ea49c24494f"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a77b08e475f397bd20d6d1ea49c24494f">createSingleBuffersFromMeshes</a> (GraphicsContext &amp;context, MeshIterator_ meshIter, MeshIterator_ meshIterEnd, VboInsertIterator_ outVbos, IboInsertIterator_ outIbos)</td></tr>
+<tr class="memitem:a77b08e475f397bd20d6d1ea49c24494f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a77b08e475f397bd20d6d1ea49c24494f">createSingleBuffersFromMeshes</a> (GraphicsContext &amp;context, MeshIterator_ meshIter, MeshIterator_ meshIterEnd, VboInsertIterator_ outVbos, IboInsertIterator_ outIbos)</td></tr>
 <tr class="memdesc:a77b08e475f397bd20d6d1ea49c24494f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auto generates a set of VBOs and a set of IBOs from the vertex data of multiple meshes and uses std::inserter provided by the user to insert them to any container.  <a href="#a77b08e475f397bd20d6d1ea49c24494f">More...</a><br/></td></tr>
 <tr class="separator:a77b08e475f397bd20d6d1ea49c24494f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2dfc2ee737d8141a795e855a2f5ffc6e"><td class="memTemplParams" colspan="2">template&lt;typename MeshIterator_ , typename VboContainer_ , typename IboContainer_ &gt; </td></tr>
-<tr class="memitem:a2dfc2ee737d8141a795e855a2f5ffc6e"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a2dfc2ee737d8141a795e855a2f5ffc6e">createSingleBuffersFromMeshes</a> (GraphicsContext &amp;context, MeshIterator_ meshIter, MeshIterator_ meshIterEnd, VboContainer_ &amp;outVbos, typename VboContainer_::iterator vbos_where, IboContainer_ &amp;outIbos, typename IboContainer_::iterator ibos_where)</td></tr>
+<tr class="memitem:a2dfc2ee737d8141a795e855a2f5ffc6e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a2dfc2ee737d8141a795e855a2f5ffc6e">createSingleBuffersFromMeshes</a> (GraphicsContext &amp;context, MeshIterator_ meshIter, MeshIterator_ meshIterEnd, VboContainer_ &amp;outVbos, typename VboContainer_::iterator vbos_where, IboContainer_ &amp;outIbos, typename IboContainer_::iterator ibos_where)</td></tr>
 <tr class="memdesc:a2dfc2ee737d8141a795e855a2f5ffc6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auto generates a set of VBOs and a set of IBOs from the vertex data of multiple meshes and insert them at the specified spot in a user-provided container.  <a href="#a2dfc2ee737d8141a795e855a2f5ffc6e">More...</a><br/></td></tr>
 <tr class="separator:a2dfc2ee737d8141a795e855a2f5ffc6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe79a94fc65e95490b9da43ec68421b3"><td class="memTemplParams" colspan="2">template&lt;typename VboInsertIterator_ , typename IboInsertIterator_ &gt; </td></tr>
-<tr class="memitem:abe79a94fc65e95490b9da43ec68421b3"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#abe79a94fc65e95490b9da43ec68421b3">createSingleBuffersFromModel</a> (GraphicsContext &amp;context, const assets::Model &amp;model, VboInsertIterator_ vbos, IboInsertIterator_ ibos)</td></tr>
+<tr class="memitem:abe79a94fc65e95490b9da43ec68421b3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#abe79a94fc65e95490b9da43ec68421b3">createSingleBuffersFromModel</a> (GraphicsContext &amp;context, const assets::Model &amp;model, VboInsertIterator_ vbos, IboInsertIterator_ ibos)</td></tr>
 <tr class="memdesc:abe79a94fc65e95490b9da43ec68421b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auto generates a set of VBOs and a set of IBOs from the vertex data of the meshes of a model and inserts them into containers provided by the user using std::inserters.  <a href="#abe79a94fc65e95490b9da43ec68421b3">More...</a><br/></td></tr>
 <tr class="separator:abe79a94fc65e95490b9da43ec68421b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8019161497bc5246e8e479da9030e6b0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a8019161497bc5246e8e479da9030e6b0">getOpenGLFormat</a> (PixelFormat pixelFormat, ColorSpace::Enum colorSpace, VariableType::Enum dataType, uint32 &amp;glInternalFormat, uint32 &amp;glFormat, uint32 &amp;glType, uint32 &amp;glTypeSize, bool &amp;isCompressedFormat)</td></tr>
-<tr class="memdesc:a8019161497bc5246e8e479da9030e6b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the openGL/ES equivalent texture format values, as per the Khronos KTX specification: <a href="http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/">http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/</a>.  <a href="#a8019161497bc5246e8e479da9030e6b0">More...</a><br/></td></tr>
-<tr class="separator:a8019161497bc5246e8e479da9030e6b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ed2a8405b7001458756a11e03d59023"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a4ed2a8405b7001458756a11e03d59023">getOpenGLStorageFormat</a> (PixelFormat pixelFormat, ColorSpace::Enum colorSpace, VariableType::Enum dataType, <a class="el" href="_api_gles3_8h.html#add822650c9007f81c71fd30bfc9fc3b9">GLenum</a> &amp;glInternalFormat)</td></tr>
-<tr class="memdesc:a4ed2a8405b7001458756a11e03d59023"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets OpenGL/ES equivalent texture storage format values, as per the khronos KTX specification <a href="http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/">http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/</a>.  <a href="#a4ed2a8405b7001458756a11e03d59023">More...</a><br/></td></tr>
-<tr class="separator:a4ed2a8405b7001458756a11e03d59023"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af628b2473e88e87cc9be9eef1d331f2b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#af628b2473e88e87cc9be9eef1d331f2b">loadShader</a> (Stream &amp;shaderData, ShaderType::Enum shaderType, assets::ShaderBinaryFormat::Enum <a class="el" href="_api_gles3_8h.html#acfd8d54d87b3ab89bda61905c33a5382">binaryFormat</a>, <a class="el" href="namespacepvr_1_1native.html#a62f01cc1cb2e72eac1708ab72a25fd09">native::HShader</a> &amp;outShader, const ApiCapabilities *contextCapabilities=0)</td></tr>
-<tr class="memdesc:af628b2473e88e87cc9be9eef1d331f2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a shader from binary.  <a href="#af628b2473e88e87cc9be9eef1d331f2b">More...</a><br/></td></tr>
-<tr class="separator:af628b2473e88e87cc9be9eef1d331f2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af54168960a1b1eb2e6bce93748254fa2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#af54168960a1b1eb2e6bce93748254fa2">loadShader</a> (const Stream &amp;shaderSource, ShaderType::Enum shaderType, const char *const *defines, uint32 numDefines, <a class="el" href="namespacepvr_1_1native.html#a62f01cc1cb2e72eac1708ab72a25fd09">native::HShader</a> &amp;outShader, const ApiCapabilities *contextCapabilities=0)</td></tr>
-<tr class="memdesc:af54168960a1b1eb2e6bce93748254fa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load shader from shader source.  <a href="#af54168960a1b1eb2e6bce93748254fa2">More...</a><br/></td></tr>
-<tr class="separator:af54168960a1b1eb2e6bce93748254fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf6012ff44e23c583f260e984427cb23"><td class="memItemLeft" align="right" valign="top">Result::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#adf6012ff44e23c583f260e984427cb23">textureUpload</a> (GraphicsContext &amp;device, const assets::Texture &amp;<a class="el" href="_api_gles2_8h.html#a8f486379aef534669f4f06f515e7ce6c">texture</a>, <a class="el" href="structpvr_1_1native_1_1_h_texture__.html">native::HTexture_</a> &amp;outTextureName, bool allowDecompress=true)</td></tr>
-<tr class="memdesc:adf6012ff44e23c583f260e984427cb23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload a texture to the GPU and retrieve the into native handle.  <a href="#adf6012ff44e23c583f260e984427cb23">More...</a><br/></td></tr>
-<tr class="separator:adf6012ff44e23c583f260e984427cb23"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4614171c90970650eb44038e0ffaa77e"><td class="memItemLeft" align="right" valign="top">Result::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a4614171c90970650eb44038e0ffaa77e">textureUpload</a> (GraphicsContext &amp;context, const assets::Texture &amp;<a class="el" href="_api_gles2_8h.html#a8f486379aef534669f4f06f515e7ce6c">texture</a>, api::TextureView &amp;outTexture, bool allowDecompress=true)</td></tr>
-<tr class="memdesc:a4614171c90970650eb44038e0ffaa77e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload texture into the GPU, retrieve a pvr::API TextureView object.  <a href="#a4614171c90970650eb44038e0ffaa77e">More...</a><br/></td></tr>
-<tr class="separator:a4614171c90970650eb44038e0ffaa77e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88a3cee8879252c25235d339df41a8c2"><td class="memItemLeft" align="right" valign="top">Result::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a88a3cee8879252c25235d339df41a8c2">textureUpload</a> (GraphicsContext &amp;context, const assets::Texture &amp;texture, api::TextureView &amp;outTextureView, bool allowDecompress=true, PixelFormat &amp;outDeCompressedFormat=<a class="el" href="structpvr_1_1utils_1_1impl_1_1unused.html#ad00b23f5b0cfef14bf9983d7364b4c32">impl::unused::unused1</a>, bool &amp;isCompressed=<a class="el" href="structpvr_1_1utils_1_1impl_1_1unused.html#aba242fa0b2419bdd891c9cc924813331">impl::unused::unused2</a>)</td></tr>
+<tr class="memdesc:a88a3cee8879252c25235d339df41a8c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload texture into the GPU, retrieve a pvr::API TextureView object.  <a href="#a88a3cee8879252c25235d339df41a8c2">More...</a><br/></td></tr>
+<tr class="separator:a88a3cee8879252c25235d339df41a8c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains functionality (especially free-standing functions) used to facilitate and simplify common tasks, such as automated generation of VBOs for specific meshes, or tying together Effects and Meshes to automate Pipeline creation. </p>
@@ -169,7 +162,7 @@ template&lt;typename VboContainer_ , typename IboContainer_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::utils::appendSingleBuffersFromModel </td>
+          <td class="memname">void pvr::utils::appendSingleBuffersFromModel </td>
           <td>(</td>
           <td class="paramtype">GraphicsContext &amp;&#160;</td>
           <td class="paramname"><em>context</em>, </td>
@@ -220,7 +213,7 @@ template&lt;typename VboContainer_ , typename IboContainer_ &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="aa4039788ea70bf16a586f648563d7d78"></a>
+<a class="anchor" id="a6a6201dfb94919344e2470887e7da9d4"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -228,7 +221,7 @@ template&lt;typename VboContainer_ , typename IboContainer_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::utils::createInputAssemblyFromMesh </td>
+          <td class="memname">void pvr::utils::createInputAssemblyFromMesh </td>
           <td>(</td>
           <td class="paramtype">const assets::Mesh &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
@@ -236,7 +229,7 @@ template&lt;typename VboContainer_ , typename IboContainer_ &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">VertexBindings *&#160;</td>
+          <td class="paramtype">const VertexBindings *&#160;</td>
           <td class="paramname"><em>bindingMap</em>, </td>
         </tr>
         <tr>
@@ -294,7 +287,7 @@ template&lt;typename VboContainer_ , typename IboContainer_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::utils::createInputAssemblyFromMesh </td>
+          <td class="memname">void pvr::utils::createInputAssemblyFromMesh </td>
           <td>(</td>
           <td class="paramtype">const assets::Mesh &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
@@ -360,7 +353,7 @@ template&lt;typename VboContainer_ , typename IboContainer_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::utils::createInputAssemblyFromMeshAndEffect </td>
+          <td class="memname">void pvr::utils::createInputAssemblyFromMeshAndEffect </td>
           <td>(</td>
           <td class="paramtype">const assets::Mesh &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
@@ -419,7 +412,7 @@ template&lt;typename VboContainer_ , typename IboContainer_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::utils::createMultipleBuffersFromMesh </td>
+          <td class="memname">void pvr::utils::createMultipleBuffersFromMesh </td>
           <td>(</td>
           <td class="paramtype">GraphicsContext &amp;&#160;</td>
           <td class="paramname"><em>context</em>, </td>
@@ -470,7 +463,7 @@ template&lt;typename VboContainer_ , typename IboContainer_ &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a9bba42d4a1a60e8c2114ec5a494f9fc8"></a>
+<a class="anchor" id="af919d1d6036c4799a503fa4e86a68ebd"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -507,13 +500,13 @@ template&lt;typename VboContainer_ , typename IboContainer_ &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">native::HShaderProgram &amp;&#160;</td>
+          <td class="paramtype">native::HPipeline_ &amp;&#160;</td>
           <td class="paramname"><em>outShaderProg</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="_api_gles2_8h.html#ac83513893df92266f79a515488701770">string</a> *&#160;</td>
+          <td class="paramtype">string *&#160;</td>
           <td class="paramname"><em>infolog</em>, </td>
         </tr>
         <tr>
@@ -557,7 +550,7 @@ template&lt;typename VboContainer_ , typename IboContainer_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::utils::createSingleBuffersFromMesh </td>
+          <td class="memname">void pvr::utils::createSingleBuffersFromMesh </td>
           <td>(</td>
           <td class="paramtype">GraphicsContext &amp;&#160;</td>
           <td class="paramname"><em>context</em>, </td>
@@ -618,7 +611,7 @@ template&lt;typename MeshIterator_ , typename VboInsertIterator_ , typename IboI
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::utils::createSingleBuffersFromMeshes </td>
+          <td class="memname">void pvr::utils::createSingleBuffersFromMeshes </td>
           <td>(</td>
           <td class="paramtype">GraphicsContext &amp;&#160;</td>
           <td class="paramname"><em>context</em>, </td>
@@ -686,7 +679,7 @@ template&lt;typename MeshIterator_ , typename VboContainer_ , typename IboContai
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::utils::createSingleBuffersFromMeshes </td>
+          <td class="memname">void pvr::utils::createSingleBuffersFromMeshes </td>
           <td>(</td>
           <td class="paramtype">GraphicsContext &amp;&#160;</td>
           <td class="paramname"><em>context</em>, </td>
@@ -768,7 +761,7 @@ template&lt;typename VboInsertIterator_ , typename IboInsertIterator_ &gt; </div
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::utils::createSingleBuffersFromModel </td>
+          <td class="memname">void pvr::utils::createSingleBuffersFromModel </td>
           <td>(</td>
           <td class="paramtype">GraphicsContext &amp;&#160;</td>
           <td class="paramname"><em>context</em>, </td>
@@ -819,311 +812,7 @@ template&lt;typename VboInsertIterator_ , typename IboInsertIterator_ &gt; </div
 
 </div>
 </div>
-<a class="anchor" id="a8019161497bc5246e8e479da9030e6b0"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool pvr::utils::getOpenGLFormat </td>
-          <td>(</td>
-          <td class="paramtype">PixelFormat&#160;</td>
-          <td class="paramname"><em>pixelFormat</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ColorSpace::Enum&#160;</td>
-          <td class="paramname"><em>colorSpace</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">VariableType::Enum&#160;</td>
-          <td class="paramname"><em>dataType</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32 &amp;&#160;</td>
-          <td class="paramname"><em>glInternalFormat</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32 &amp;&#160;</td>
-          <td class="paramname"><em>glFormat</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32 &amp;&#160;</td>
-          <td class="paramname"><em>glType</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32 &amp;&#160;</td>
-          <td class="paramname"><em>glTypeSize</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool &amp;&#160;</td>
-          <td class="paramname"><em>isCompressedFormat</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Gets the openGL/ES equivalent texture format values, as per the Khronos KTX specification: <a href="http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/">http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/</a>. </p>
-<hr/>
- <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">pixelFormat</td><td>The pixel format (RGBA8888 etc) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">colorSpace</td><td>The colorspace (srgb/lrgb) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dataType</td><td>The datatype (Float32, unsignedbyte...) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">glInternalFormat</td><td>Set to The internal format (a GLenum of the specified format GL_RGBA8888_sRGB) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">glFormat</td><td>Set to The format (a GLenum of the specified format GL_RGBA) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">glType</td><td>Set to The type (a GLenum of the specified format GL_FLOAT, GL_UNSIGNED_SHORT_1_5_5_5_REV) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">glTypeSize</td><td>Set to the number of components in the format </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">isCompressedFormat</td><td>Set to true if the format is compressed, false otherwise </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>true on success, false if a suitable type cannot be matched </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a4ed2a8405b7001458756a11e03d59023"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool pvr::utils::getOpenGLStorageFormat </td>
-          <td>(</td>
-          <td class="paramtype">PixelFormat&#160;</td>
-          <td class="paramname"><em>pixelFormat</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ColorSpace::Enum&#160;</td>
-          <td class="paramname"><em>colorSpace</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">VariableType::Enum&#160;</td>
-          <td class="paramname"><em>dataType</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="_api_gles3_8h.html#add822650c9007f81c71fd30bfc9fc3b9">GLenum</a> &amp;&#160;</td>
-          <td class="paramname"><em>glInternalFormat</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Gets OpenGL/ES equivalent texture storage format values, as per the khronos KTX specification <a href="http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/">http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/</a>. </p>
-<hr/>
- <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">pixelFormat</td><td>The pixel format (RGBA8888 etc) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">colorSpace</td><td>The colorspace (srgb/lrgb) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dataType</td><td>The datatype (Float32, unsignedbyte...) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">glInternalFormat</td><td>(a GLenum of the specified format GL_RGBA8888_sRGB) </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>true on success, returns false if it cannot find a suitable type </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="af628b2473e88e87cc9be9eef1d331f2b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool pvr::utils::loadShader </td>
-          <td>(</td>
-          <td class="paramtype">Stream &amp;&#160;</td>
-          <td class="paramname"><em>shaderData</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ShaderType::Enum&#160;</td>
-          <td class="paramname"><em>shaderType</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">assets::ShaderBinaryFormat::Enum&#160;</td>
-          <td class="paramname"><em>binaryFormat</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">native::HShader &amp;&#160;</td>
-          <td class="paramname"><em>outShader</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const ApiCapabilities *&#160;</td>
-          <td class="paramname"><em>contextCapabilities</em> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Load a shader from binary. </p>
-<hr/>
- <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">shaderData</td><td>A stream containing the shader binary data </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">shaderType</td><td>The type (stage) of the shader (vertex, fragment...) </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">binaryFormat</td><td>The binary format of the shader </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">outShader</td><td>The native Shader object will be saved here </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">contextCapabilities</td><td>Optional A pointer to the API capabilities can be passed here </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>true on success </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="af54168960a1b1eb2e6bce93748254fa2"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool pvr::utils::loadShader </td>
-          <td>(</td>
-          <td class="paramtype">const Stream &amp;&#160;</td>
-          <td class="paramname"><em>shaderSource</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ShaderType::Enum&#160;</td>
-          <td class="paramname"><em>shaderType</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *const *&#160;</td>
-          <td class="paramname"><em>defines</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32&#160;</td>
-          <td class="paramname"><em>numDefines</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">native::HShader &amp;&#160;</td>
-          <td class="paramname"><em>outShader</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const ApiCapabilities *&#160;</td>
-          <td class="paramname"><em>contextCapabilities</em> = <code>0</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Load shader from shader source. </p>
-<hr/>
- <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">shaderSource</td><td>A stream containing the shader source text data </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">shaderType</td><td>The type (stage) of the shader (vertex, fragment...) </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">defines</td><td>A number of preprocessor definitions that will be passed to the shader </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">numDefines</td><td>The number of defines </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">outShader</td><td>The native Shader object will be saved here </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">contextCapabilities</td><td>Optional A pointer to the API capabilities can be passed here </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>true on success </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="adf6012ff44e23c583f260e984427cb23"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Result::Enum pvr::utils::textureUpload </td>
-          <td>(</td>
-          <td class="paramtype">GraphicsContext &amp;&#160;</td>
-          <td class="paramname"><em>device</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const assets::Texture &amp;&#160;</td>
-          <td class="paramname"><em>texture</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">native::HTexture_ &amp;&#160;</td>
-          <td class="paramname"><em>outTextureName</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>allowDecompress</em> = <code>true</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Upload a texture to the GPU and retrieve the into native handle. </p>
-<hr/>
- <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">device</td><td></td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">texture</td><td>texture to upload </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">allowDecompress</td><td>allow de-compress before upload the texture </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">outTextureName</td><td>native texture handle to upload into </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Result::Success on success, errorcode otherwise </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a4614171c90970650eb44038e0ffaa77e"></a>
+<a class="anchor" id="a88a3cee8879252c25235d339df41a8c2"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1143,13 +832,25 @@ template&lt;typename VboInsertIterator_ , typename IboInsertIterator_ &gt; </div
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">api::TextureView &amp;&#160;</td>
-          <td class="paramname"><em>outTexture</em>, </td>
+          <td class="paramname"><em>outTextureView</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>allowDecompress</em> = <code>true</code>&#160;</td>
+          <td class="paramname"><em>allowDecompress</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PixelFormat &amp;&#160;</td>
+          <td class="paramname"><em>outDeCompressedFormat</em> = <code>impl::unused::unused1</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>isCompressed</em> = <code>impl::unused::unused2</code>&#160;</td>
         </tr>
         <tr>
           <td></td>

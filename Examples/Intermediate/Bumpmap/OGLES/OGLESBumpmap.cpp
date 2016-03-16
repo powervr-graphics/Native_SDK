@@ -8,7 +8,7 @@
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
 #include "PVRUIRenderer/PVRUIRenderer.h"
-
+using namespace pvr::types;
 const pvr::float32 RotateY = glm::pi<pvr::float32>() / 150;
 const glm::vec4 LightDir(.24f, .685f, -.685f, 0.0f);
 
@@ -120,12 +120,12 @@ bool OGLESBumpMap::createImageSamplerDescriptor()
 
 	// create the bilinear sampler
 	pvr::assets::SamplerCreateParam samplerInfo;
-	samplerInfo.magnificationFilter = pvr::SamplerFilter::Linear;
-	samplerInfo.minificationFilter = pvr::SamplerFilter::Linear;
-	samplerInfo.mipMappingFilter = pvr::SamplerFilter::Nearest;
+	samplerInfo.magnificationFilter = SamplerFilter::Linear;
+	samplerInfo.minificationFilter = SamplerFilter::Linear;
+	samplerInfo.mipMappingFilter = SamplerFilter::Nearest;
 	pvr::api::Sampler samplerMipBilinear = context->createSampler(samplerInfo);
 
-	samplerInfo.mipMappingFilter = pvr::SamplerFilter::Linear;
+	samplerInfo.mipMappingFilter = SamplerFilter::Linear;
 	pvr::api::Sampler samplerTrilinear = context->createSampler(samplerInfo);
 
 	if (!assetManager.getTextureWithCaching(getGraphicsContext(), StatueTexFile,	&texBase, NULL) ||
@@ -135,10 +135,10 @@ bool OGLESBumpMap::createImageSamplerDescriptor()
 		return false;
 	}
 	// create the descriptor set
-	pvr::api::DescriptorSetUpdateParam descSetCreateInfo;
-	descSetCreateInfo.addCombinedImageSampler(0, 0, texBase, samplerMipBilinear)
-	.addCombinedImageSampler(1, 0, texNormalMap, samplerTrilinear);
-	deviceResource->imageSamplerDescSet = context->allocateDescriptorSet(deviceResource->descSetLayout);
+	pvr::api::DescriptorSetUpdate descSetCreateInfo;
+	descSetCreateInfo.setCombinedImageSampler(0, texBase, samplerMipBilinear)
+	.setCombinedImageSampler(1, texNormalMap, samplerTrilinear);
+	deviceResource->imageSamplerDescSet = context->createDescriptorSetOnDefaultPool(deviceResource->descSetLayout);
 	if (!deviceResource->imageSamplerDescSet.isValid())
 	{
 		setExitMessage("ERROR: Failed to create Combined Image Sampler Descriptor set.");
@@ -160,8 +160,8 @@ bool OGLESBumpMap::loadPipeline()
 
 	//--- create the descriptor set layout
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
-	descSetLayoutInfo.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment).
-	addBinding(1, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
+	descSetLayoutInfo.setBinding(0, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment).
+	setBinding(1, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
 	deviceResource->descSetLayout = context->createDescriptorSetLayout(descSetLayoutInfo);
 
 	//--- create the pipeline layout
@@ -173,18 +173,18 @@ bool OGLESBumpMap::loadPipeline()
 	pvr::assets::ShaderFile fileVersioning;
 	fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
 	pipeInfo.vertexShader = context->createShader(*fileVersioning.getBestStreamForApi(context->getApiType()),
-	                        pvr::ShaderType::VertexShader);
+	                        ShaderType::VertexShader);
 
 	fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
 	pipeInfo.fragmentShader = context->createShader(*fileVersioning.getBestStreamForApi(context->getApiType()),
-	                          pvr::ShaderType::FragmentShader);
+	                          ShaderType::FragmentShader);
 
 	const pvr::assets::Mesh& mesh = scene->getMesh(0);
 	pipeInfo.inputAssembler.setPrimitiveTopology(mesh.getPrimitiveType());
 	pipeInfo.pipelineLayout = context->createPipelineLayout(pipeLayoutInfo);
 	// Enable z-buffer test. We are using a projection matrix optimized for a floating point depth buffer,
 	// so the depth test and clear value need to be inverted (1 becomes near, 0 becomes far).
-	pipeInfo.depthStencil.setDepthTestEnable(true).setDepthCompareFunc(pvr::ComparisonMode::Less).setDepthWrite(true);
+	pipeInfo.depthStencil.setDepthTestEnable(true).setDepthCompareFunc(ComparisonMode::Less).setDepthWrite(true);
 	pvr::utils::createInputAssemblyFromMesh(mesh, VertexAttribBindings,
 	                                        sizeof(VertexAttribBindings) / sizeof(VertexAttribBindings[0]), pipeInfo);
 
@@ -223,7 +223,7 @@ pvr::Result::Enum OGLESBumpMap::initApplication()
 	if (!assetManager.loadModel(SceneFile, scene))
 	{
 		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
-		return pvr::Result::NotInitialised;
+		return pvr::Result::NotInitialized;
 	}
 	angleY = 0.0f;
 	return pvr::Result::Success;
@@ -245,7 +245,7 @@ pvr::Result::Enum OGLESBumpMap::initView()
 {
 	context = getGraphicsContext();
 	deviceResource.reset(new DeviceResources());
-	deviceResource->commandBuffer = context->createCommandBuffer();
+	deviceResource->commandBuffer = context->createCommandBufferOnDefaultPool();
 	// load the vbo and ibo data
 	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *scene, deviceResource->vbo, deviceResource->ibo);
 
@@ -254,10 +254,10 @@ pvr::Result::Enum OGLESBumpMap::initView()
 	if (!createImageSamplerDescriptor()) { return pvr::Result::UnknownError; }
 
 	// create OnScreen FBO
-	deviceResource->fboOnScreen = context->createOnScreenFboWithParams();
+	deviceResource->fboOnScreen = context->createOnScreenFbo(0);
 
 	//	Initialize UIRenderer
-	if (uiRenderer.init(context) != pvr::Result::Success)
+	if (uiRenderer.init(context, deviceResource->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
 		return pvr::Result::UnknownError;
@@ -274,7 +274,7 @@ pvr::Result::Enum OGLESBumpMap::initView()
 
 	//	Calculate the projection and rotate it by 90 degree if the screen is rotated.
 	viewProj = (bRotate ?
-	            pvr::math::perspectiveFov(fov, (float)this->getHeight(), (float)this->getWidth(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar(), glm::pi<pvr::float32>() * .5f) :
+	            pvr::math::perspectiveFov(getApiType(), fov, (float)this->getHeight(), (float)this->getWidth(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar(), glm::pi<pvr::float32>() * .5f) :
 	            glm::perspectiveFov<pvr::float32>(fov, (float)this->getWidth(),	(float)this->getHeight(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar()));
 
 	viewProj = viewProj * glm::lookAt(from, to, up);
@@ -340,7 +340,7 @@ void OGLESBumpMap::drawMesh(int nodeIndex)
 		// Indexed Triangle list
 		if (deviceResource->ibo[meshId].isValid())
 		{
-            deviceResource->commandBuffer->bindIndexBuffer(deviceResource->ibo[meshId], 0, mesh.getFaces().getDataType());
+			deviceResource->commandBuffer->bindIndexBuffer(deviceResource->ibo[meshId], 0, mesh.getFaces().getDataType());
 			deviceResource->commandBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 		}
 		else
@@ -377,18 +377,17 @@ void OGLESBumpMap::drawMesh(int nodeIndex)
 void OGLESBumpMap::recordCommandBuffer()
 {
 	deviceResource->commandBuffer->beginRecording();
-	deviceResource->commandBuffer->beginRenderPass(deviceResource->fboOnScreen, pvr::Rectanglei(0, 0, getWidth(), getHeight()), glm::vec4(0.00, 0.70, 0.67, 1.f));
+	deviceResource->commandBuffer->beginRenderPass(deviceResource->fboOnScreen, pvr::Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(0.00, 0.70, 0.67, 1.f));
 
 	// enqueue the static states which wont be changed through out the frame
 	deviceResource->commandBuffer->bindPipeline(deviceResource->pipe);
 	deviceResource->commandBuffer->setUniformPtr<glm::vec3>(pipeUniformLoc[Uniform::LightDir], 1, &drawPass.lightDir);
 
-	deviceResource->commandBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics,
-	        deviceResource->pipe->getPipelineLayout(), deviceResource->imageSamplerDescSet, 0);
+	deviceResource->commandBuffer->bindDescriptorSet(deviceResource->pipe->getPipelineLayout(), 0, deviceResource->imageSamplerDescSet, 0);
 	deviceResource->commandBuffer->setUniformPtr<glm::mat4>(pipeUniformLoc[Uniform::MVPMatrix], 1, &drawPass.mvp);
 	drawMesh(0);
 
-	pvr::api::SecondaryCommandBuffer uiCmdBuffer = context->createSecondaryCommandBuffer();
+	pvr::api::SecondaryCommandBuffer uiCmdBuffer = context->createSecondaryCommandBufferOnDefaultPool();
 	uiRenderer.beginRendering(uiCmdBuffer);
 	uiRenderer.getDefaultTitle()->render();
 	uiRenderer.getSdkLogo()->render();

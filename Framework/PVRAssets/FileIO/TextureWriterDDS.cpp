@@ -21,7 +21,7 @@ bool TextureWriterDDS::addAssetToWrite(const Texture& asset)
 	}
 	else
 	{
-		PVR_ASSERT(0 && "OUT OF BOUNDS");
+		assertion(0 ,  "OUT OF BOUNDS");
 		return false;
 	}
 }
@@ -53,7 +53,7 @@ bool TextureWriterDDS::writeAllAssets()
 	ddsFileHeader.Capabilities3 = 0;
 	ddsFileHeader.Capabilities4 = 0;
 
-	// Initialise the reserved data.
+	// Initialize the reserved data.
 	ddsFileHeader.reserved2 = 0;
 	memset(ddsFileHeader.reserved, 0, sizeof(ddsFileHeader.reserved));
 
@@ -87,7 +87,7 @@ bool TextureWriterDDS::writeAllAssets()
 	{
 		if (m_assetsToWrite[0]->getNumberOfFaces() > 6)
 		{
-			PVR_ASSERT(0 && "Invalid Argument");
+			assertion(0 ,  "Invalid Argument");
 			return false;
 		}
 
@@ -155,7 +155,7 @@ bool TextureWriterDDS::writeAllAssets()
 		bool notAlpha = false;
 		if (!m_assetsToWrite[0]->getDirectXGIFormat(ddsFileHeaderDX10.dxgiFormat, notAlpha))
 		{
-			PVR_ASSERT(0 && "INVALID ARGUMENT");
+			assertion(0 ,  "INVALID ARGUMENT");
 			return false;
 		}
 
@@ -180,7 +180,7 @@ bool TextureWriterDDS::writeAllAssets()
 		}
 		else if (m_assetsToWrite[0]->getNumberOfFaces() != 1)
 		{
-			PVR_ASSERT(0 && "INVALID ARGUMENT");
+			assertion(0 ,  "INVALID ARGUMENT");
 			return false;
 		}
 

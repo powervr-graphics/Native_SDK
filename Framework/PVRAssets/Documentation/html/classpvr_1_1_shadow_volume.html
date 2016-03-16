@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -138,11 +138,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae39dc341d774383550aec2dc3a8965a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stride of each vertex attribute in bytes. Is 4.  <a href="#ae39dc341d774383550aec2dc3a8965a9">More...</a><br/></td></tr>
 <tr class="separator:ae39dc341d774383550aec2dc3a8965a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3bc9d295b4a0051c5e90e7798900ed41"><td class="memItemLeft" align="right" valign="top">Result::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_shadow_volume.html#a3bc9d295b4a0051c5e90e7798900ed41">init</a> (const <a class="el" href="classpvr_1_1assets_1_1_mesh.html">assets::Mesh</a> &amp;mesh)</td></tr>
-<tr class="memdesc:a3bc9d295b4a0051c5e90e7798900ed41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise a shadow volume from the data of a Mesh.  <a href="#a3bc9d295b4a0051c5e90e7798900ed41">More...</a><br/></td></tr>
+<tr class="memdesc:a3bc9d295b4a0051c5e90e7798900ed41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a shadow volume from the data of a Mesh.  <a href="#a3bc9d295b4a0051c5e90e7798900ed41">More...</a><br/></td></tr>
 <tr class="separator:a3bc9d295b4a0051c5e90e7798900ed41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aebea7084e396f46b152c1578b778faed"><td class="memItemLeft" align="right" valign="top">Result::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_shadow_volume.html#aebea7084e396f46b152c1578b778faed">init</a> (const byte *const data, uint32 numVertices, uint32 verticesStride, DataType::Enum vertexType, const byte *const faceData, uint32 numFaces, IndexType::Enum indexType)</td></tr>
-<tr class="memdesc:aebea7084e396f46b152c1578b778faed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise a shadow volume from raw data.  <a href="#aebea7084e396f46b152c1578b778faed">More...</a><br/></td></tr>
-<tr class="separator:aebea7084e396f46b152c1578b778faed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52e9237ff0fafaab408673f50ef7523d"><td class="memItemLeft" align="right" valign="top">Result::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_shadow_volume.html#a52e9237ff0fafaab408673f50ef7523d">init</a> (const byte *const data, uint32 numVertices, uint32 verticesStride, types::DataType::Enum vertexType, const byte *const faceData, uint32 numFaces, types::IndexType::Enum indexType)</td></tr>
+<tr class="memdesc:a52e9237ff0fafaab408673f50ef7523d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a shadow volume from raw data.  <a href="#a52e9237ff0fafaab408673f50ef7523d">More...</a><br/></td></tr>
+<tr class="separator:a52e9237ff0fafaab408673f50ef7523d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40ffb015b1dd79b7bb42c483fa2e6d4e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_shadow_volume.html#a40ffb015b1dd79b7bb42c483fa2e6d4e">isIndexDataInternal</a> (uint32 volumeID)</td></tr>
 <tr class="memdesc:a40ffb015b1dd79b7bb42c483fa2e6d4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if this shadow volume is using internal index data.  <a href="#a40ffb015b1dd79b7bb42c483fa2e6d4e">More...</a><br/></td></tr>
 <tr class="separator:a40ffb015b1dd79b7bb42c483fa2e6d4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -423,11 +423,11 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initialise a shadow volume from the data of a Mesh. </p>
+<p>Initialize a shadow volume from the data of a Mesh. </p>
 <hr/>
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mesh</td><td>A mesh whose vertex data is used to initialise this <a class="el" href="classpvr_1_1_shadow_volume.html" title="Represents data for handling Shadow volumes of a single Mesh. ">ShadowVolume</a> instance. The POSITION semantic must be present in the mesh. </td></tr>
+    <tr><td class="paramname">mesh</td><td>A mesh whose vertex data is used to initialize this <a class="el" href="classpvr_1_1_shadow_volume.html" title="Represents data for handling Shadow volumes of a single Mesh. ">ShadowVolume</a> instance. The POSITION semantic must be present in the mesh. </td></tr>
   </table>
   </dd>
 </dl>
@@ -435,7 +435,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aebea7084e396f46b152c1578b778faed"></a>
+<a class="anchor" id="a52e9237ff0fafaab408673f50ef7523d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -460,7 +460,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">DataType::Enum&#160;</td>
+          <td class="paramtype">types::DataType::Enum&#160;</td>
           <td class="paramname"><em>vertexType</em>, </td>
         </tr>
         <tr>
@@ -478,7 +478,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">IndexType::Enum&#160;</td>
+          <td class="paramtype">types::IndexType::Enum&#160;</td>
           <td class="paramname"><em>indexType</em>&#160;</td>
         </tr>
         <tr>
@@ -489,7 +489,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initialise a shadow volume from raw data. </p>
+<p>Initialize a shadow volume from raw data. </p>
 <hr/>
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

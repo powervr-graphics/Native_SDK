@@ -175,7 +175,7 @@ bool createNativeWindow(Display* nativeDisplay, Window* nativeWindow)
 \param[in]		nativeDisplay               The native display used by the application
 \param[out]		eglDisplay				    EGLDisplay created from nativeDisplay
 \return		Whether the function succeeded or not.
-\brief	Creates an EGLDisplay from a native native display, and initialises it.
+\brief	Creates an EGLDisplay from a native native display, and initializes it.
 ***********************************************************************************************************************/
 bool createEGLDisplay(Display* nativeDisplay, EGLDisplay& eglDisplay)
 {
@@ -193,13 +193,13 @@ bool createEGLDisplay(Display* nativeDisplay, EGLDisplay& eglDisplay)
 
 	//	Initialize EGL.
 	//	EGL has to be initialized with the display obtained in the previous step. All EGL functions other than eglGetDisplay
-	//	and eglGetError need an initialised EGLDisplay.
+	//	and eglGetError need an initialized EGLDisplay.
 	//	If an application is not interested in the EGL version number it can just pass NULL for the second and third parameters, but they
 	//	are queried here for illustration purposes.
 	EGLint eglMajorVersion, eglMinorVersion;
 	if (!eglInitialize(eglDisplay, &eglMajorVersion, &eglMinorVersion))
 	{
-		printf("Failed to initialise the EGLDisplay");
+		printf("Failed to initialize the EGLDisplay");
 		return false;
 	}
 	return true;
@@ -311,9 +311,9 @@ bool setupEGLContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface eglS
 /*!*********************************************************************************************************************
 \param[out]		vertexBuffer     Handle to a vertex buffer object
 \return		Whether the function succeeds or not.
-\brief	Initialises shaders, buffers and other state required to begin rendering with OpenGL ES
+\brief	Initializes shaders, buffers and other state required to begin rendering with OpenGL ES
 ***********************************************************************************************************************/
-bool initialiseBuffer(GLuint& vertexBuffer)
+bool initializeBuffer(GLuint& vertexBuffer)
 {
 	//	Concept: Vertices
 	//	When rendering a polygon or model to screen, OpenGL ES has to be told where to draw the object, and more fundamentally what shape
@@ -354,9 +354,9 @@ bool initialiseBuffer(GLuint& vertexBuffer)
 \param[out]		vertexShader                Handle to a vertex shader
 \param[out]		shaderProgram               Handle to a shader program containing the fragment and vertex shader
 \return		Whether the function succeeds or not.
-\brief	Initialises shaders, buffers and other state required to begin rendering with OpenGL ES
+\brief	Initializes shaders, buffers and other state required to begin rendering with OpenGL ES
 ***********************************************************************************************************************/
-bool initialiseShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram)
+bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& shaderProgram)
 {
 	//	Concept: Shaders
 	//	OpenGL ES 2.0 uses what are known as shaders to determine how to draw objects on the screen. Instead of the fixed function
@@ -589,9 +589,9 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 \param[in]			vertexShader                Handle to a vertex shader
 \param[in]			shaderProgram               Handle to a shader program containing the fragment and vertex shader
 \param[in]			vertexBuffer                Handle to a vertex buffer object
-\brief	Releases the resources created by "InitialiseGLState"
+\brief	Releases the resources created by "InitializeGLState"
 ***********************************************************************************************************************/
-void deInitialiseGLState(GLuint fragmentShader, GLuint vertexShader, GLuint shaderProgram, GLuint vertexBuffer)
+void deInitializeGLState(GLuint fragmentShader, GLuint vertexShader, GLuint shaderProgram, GLuint vertexBuffer)
 {
 	// Frees the OpenGL handles for the program and the 2 shaders
 	glDeleteShader(fragmentShader);
@@ -663,7 +663,7 @@ int main(int /*argc*/, char** /*argv*/)
 	// Setup the windowing system, create a window
 	if (!createNativeWindow(nativeDisplay, &nativeWindow)){	goto cleanup;	}
 
-	// Create and Initialise an EGLDisplay from the native display
+	// Create and Initialize an EGLDisplay from the native display
 	if (!createEGLDisplay(nativeDisplay, eglDisplay)){	goto cleanup;	}
 
 	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
@@ -675,11 +675,11 @@ int main(int /*argc*/, char** /*argv*/)
 	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
 	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, eglContext)){	goto cleanup;	}
 
-	// Initialise the vertex data in the application
-	if (!initialiseBuffer(vertexBuffer)){	goto cleanup;	}
+	// Initialize the vertex data in the application
+	if (!initializeBuffer(vertexBuffer)){	goto cleanup;	}
 
-	// Initialise the fragment and vertex shaders used in the application
-	if (!initialiseShaders(fragmentShader, vertexShader, shaderProgram)){	goto cleanup;	}
+	// Initialize the fragment and vertex shaders used in the application
+	if (!initializeShaders(fragmentShader, vertexShader, shaderProgram)){	goto cleanup;	}
 
 	// Renders a triangle for 800 frames using the state setup in the previous function
 	for (int i = 0; i < 800; ++i)
@@ -687,8 +687,8 @@ int main(int /*argc*/, char** /*argv*/)
 		if (!renderScene(shaderProgram, eglDisplay, eglSurface, nativeDisplay))	{	break;	}
 	}
 
-	// Release any resources we created in the Initialise functions
-	deInitialiseGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
+	// Release any resources we created in the Initialize functions
+	deInitializeGLState(fragmentShader, vertexShader, shaderProgram, vertexBuffer);
 
 cleanup:
 	// Release the EGL State

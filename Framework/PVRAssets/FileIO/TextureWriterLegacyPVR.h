@@ -37,7 +37,7 @@ private:
 	virtual bool addAssetToWrite(const Texture& asset);
 	bool convertTextureHeader3To2(texture_legacy::HeaderV2& legacyHeader, const TextureHeader& newHeader);
 	bool mapNewFormatToLegacyEnum(texture_legacy::PixelFormat& legacyPixelType, const PixelFormat pixelType,
-	    const ColorSpace::Enum colorSpace, const VariableType::Enum channelType,const bool isPremultiplied);
+        const types::ColorSpace::Enum colorSpace, const VariableType::Enum channelType,const bool isPremultiplied);
 
 private:
 	texture_legacy::API m_targetAPI;

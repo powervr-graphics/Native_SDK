@@ -52,7 +52,7 @@ Result::Enum textureLoad(Stream::ptr_type textureStream, TextureFileFormat::Enum
 	case TextureFileFormat::TGA: assetRd.reset(new assetReaders::TextureReaderTGA(textureStream)); break;
 	case TextureFileFormat::BMP: assetRd.reset(new assetReaders::TextureReaderBMP(textureStream)); break;
 	case TextureFileFormat::DDS: assetRd.reset(new assetReaders::TextureReaderDDS(textureStream)); break;
-	default: PVR_ASSERT(0); return Result::UnsupportedRequest; break;
+	default: assertion(0); return Result::UnsupportedRequest; break;
 	}
 
 	rslt = (assetRd->readAsset(outTex) ? Result::Success : Result::NotFound);
@@ -77,7 +77,7 @@ Texture::Texture(const TextureHeader& sHeader, const byte* pData)
 	}
 }
 
-void Texture::initialiseWithHeader(const TextureHeader& sHeader)
+void Texture::initializeWithHeader(const TextureHeader& sHeader)
 {
 	*this = sHeader;
 	//Get the data size from the newly attached header.
@@ -119,7 +119,7 @@ const byte* Texture::getDataPointer(uint32 mipMapLevel/*= 0*/, uint32 arrayMembe
 
 byte* Texture::getDataPointer(uint32 mipMapLevel/*= 0*/, uint32 arrayMember/*= 0*/, uint32 face/*= 0*/)
 {
-	//Initialise the offSet value.
+	//Initialize the offSet value.
 	uint32 offSet = 0;
 
 	//Error checking

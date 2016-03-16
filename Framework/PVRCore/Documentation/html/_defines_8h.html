@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -115,6 +115,8 @@ Constant Groups</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:a77f843445aa018eaf45681e441e15f35"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_defines_8h.html#a77f843445aa018eaf45681e441e15f35">PVR_ASSERT_SUCCESS</a>(result)&#160;&#160;&#160;do { if ((result) != <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba844ad1ac1d6c105b75bb41329180627f">pvr::Result::Success</a>) { assertion(false, &quot;Assertion failed: Result was NOT <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba844ad1ac1d6c105b75bb41329180627f">pvr::Result::Success</a>&quot;); }} while (false)</td></tr>
+<tr class="separator:a77f843445aa018eaf45681e441e15f35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8e0cce5c5ec63567c7cd792472aa066"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_defines_8h.html#ad8e0cce5c5ec63567c7cd792472aa066">PVR_PLATFORM_IS_DESKTOP</a>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:ad8e0cce5c5ec63567c7cd792472aa066"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -123,6 +125,18 @@ Functions</h2></td></tr>
 <tr class="memitem:a4eeeff8a7e62ee09b82b3357b186c221"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a4eeeff8a7e62ee09b82b3357b186c221">pvr::utils::isLittleEndian</a> ()</td></tr>
 <tr class="memdesc:a4eeeff8a7e62ee09b82b3357b186c221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests endianness of the current platform.  <a href="#a4eeeff8a7e62ee09b82b3357b186c221">More...</a><br/></td></tr>
 <tr class="separator:a4eeeff8a7e62ee09b82b3357b186c221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1d2042ec2af243eaf4bcce0a06d6e5e"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
+<tr class="memitem:ad1d2042ec2af243eaf4bcce0a06d6e5e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#ad1d2042ec2af243eaf4bcce0a06d6e5e">pvr::utils::memCopy</a> (T1 &amp;dst, const T2 &amp;src)</td></tr>
+<tr class="separator:ad1d2042ec2af243eaf4bcce0a06d6e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cc463ddc39c05eec129ff4264710314"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
+<tr class="memitem:a5cc463ddc39c05eec129ff4264710314"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a5cc463ddc39c05eec129ff4264710314">pvr::utils::memCopyFromVolatile</a> (T1 &amp;dst, const volatile T2 &amp;src)</td></tr>
+<tr class="separator:a5cc463ddc39c05eec129ff4264710314"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac847f23ce66e96bbbb645d41e9bc54da"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
+<tr class="memitem:ac847f23ce66e96bbbb645d41e9bc54da"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#ac847f23ce66e96bbbb645d41e9bc54da">pvr::utils::memCopyToVolatile</a> (volatile T1 &amp;dst, const T2 &amp;src)</td></tr>
+<tr class="separator:ac847f23ce66e96bbbb645d41e9bc54da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5b0d60fcb212efafcea8302529bbb5e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:af5b0d60fcb212efafcea8302529bbb5e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#af5b0d60fcb212efafcea8302529bbb5e">pvr::utils::memSet</a> (T &amp;dst, int32 i)</td></tr>
+<tr class="separator:af5b0d60fcb212efafcea8302529bbb5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains several definitions used throughout the PowerVR Framework. </p>
@@ -130,6 +144,22 @@ Functions</h2></td></tr>
 <dl class="section author"><dt>Author</dt><dd>PowerVR by Imagination, Developer Technology Team </dd></dl>
 <dl class="section user"><dt>Copyright:</dt><dd>Copyright (c) Imagination Technologies Limited. </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="a77f843445aa018eaf45681e441e15f35"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define PVR_ASSERT_SUCCESS</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">result)</td><td></td>
+          <td>&#160;&#160;&#160;do { if ((result) != <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba844ad1ac1d6c105b75bb41329180627f">pvr::Result::Success</a>) { assertion(false, &quot;Assertion failed: Result was NOT <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba844ad1ac1d6c105b75bb41329180627f">pvr::Result::Success</a>&quot;); }} while (false)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="ad8e0cce5c5ec63567c7cd792472aa066"></a>
 <div class="memitem">
 <div class="memproto">

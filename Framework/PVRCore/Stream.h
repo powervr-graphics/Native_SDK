@@ -115,7 +115,7 @@ public:
 	\tparam   Type_ The type of item that will be read into.
 	\return   A std::vector<Type_> containing all data from the current point to the end of the stream.
 	**********************************************************************************************************/
-	template<typename Type_> std::vector<Type_> readToEnd()
+	template<typename Type_> std::vector<Type_> readToEnd() const
 	{
 		std::vector<Type_> ret;
 		size_t mySize = getSize();
@@ -128,26 +128,34 @@ public:
 
 	/*!********************************************************************************************************
 	\brief    Convenience function that reads all data in the stream into a raw, contiguous block of memory.
-	          Requires random-access stream.
+	Requires random-access stream.
 	\param[out] outString  A std::vector<char> that will contain all data in the stream.
-	\return   pvr::Result::Success if successful, error code if otherwise.
+	\return   true if successful, false otherwise.
 	**********************************************************************************************************/
 	bool readIntoCharBuffer(std::vector<char>& outString) const
 	{
-		bool rslt = Result::Success;
 		if (!isopen()) { return false; }
-		PVR_ASSERT(getSize() < (std::numeric_limits<size_t>::max)());
 		outString.resize(getSize() + 1);
 
 		size_t dataRead;
-		rslt = read(1, getSize(), outString.data(), dataRead);
-		if (rslt != Result::Success)
-		{
-			return rslt;
-		}
+		return read(1, getSize(), outString.data(), dataRead);
+	}
 
-		outString[dataRead] = '\0';
-		return rslt;
+	/*!********************************************************************************************************
+	\brief    Convenience function that reads all data in the stream into a raw, contiguous block of memory.
+	Requires random-access stream.
+	\param[out] outString  A std::vector<char> that will contain all data in the stream.
+	\return   true if successful, false otherwise.
+	**********************************************************************************************************/
+	template<typename T_>
+	bool readIntoBuffer(std::vector<T_>& outString) const
+	{
+		if (!isopen()) { return false; }
+		assertion(getSize() < (std::numeric_limits<size_t>::max)());
+		outString.resize(getSize());
+
+		size_t dataRead;
+		return read(sizeof(T_), getSize(), outString.data(), dataRead);
 	}
 
 	/*!********************************************************************************************************

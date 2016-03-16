@@ -10,7 +10,6 @@
 		0E35042C1BF6511200EC0B4E /* PVRAssets.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E35042B1BF6511200EC0B4E /* PVRAssets.h */; settings = {ASSET_TAGS = (); }; };
 		0E47C90D1AC1681F0021937F /* Effect.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E47C9071AC1681F0021937F /* Effect.h */; };
 		0E47C90E1AC1681F0021937F /* AssetIncludes.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E47C9081AC1681F0021937F /* AssetIncludes.h */; };
-		0E47C90F1AC1681F0021937F /* SamplerDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E47C9091AC1681F0021937F /* SamplerDescription.h */; };
 		0E47C9101AC1681F0021937F /* ShaderDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E47C90A1AC1681F0021937F /* ShaderDescription.h */; };
 		0E47C9131AC168370021937F /* PFXReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E47C9111AC168370021937F /* PFXReader.cpp */; };
 		0E47C9141AC168370021937F /* PFXReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E47C9121AC168370021937F /* PFXReader.h */; };
@@ -71,7 +70,6 @@
 		AC6EFF5319F162690012DD2F /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC6EFF4919F162690012DD2F /* Mesh.cpp */; };
 		AC6EFF5419F162690012DD2F /* Mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6EFF4A19F162690012DD2F /* Mesh.h */; };
 		AC6EFF5519F162690012DD2F /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC6EFF4B19F162690012DD2F /* Model.cpp */; };
-		AC6EFF5619F162690012DD2F /* Semantic.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6EFF4C19F162690012DD2F /* Semantic.h */; };
 		AC9FDDB819FA569E000955EC /* PODReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC9FDDB619FA569E000955EC /* PODReader.cpp */; };
 		AC9FDDB919FA569E000955EC /* PODReader.h in Headers */ = {isa = PBXBuildFile; fileRef = AC9FDDB719FA569E000955EC /* PODReader.h */; };
 /* End PBXBuildFile section */
@@ -80,7 +78,6 @@
 		0E35042B1BF6511200EC0B4E /* PVRAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRAssets.h; path = ../../PVRAssets.h; sourceTree = "<group>"; };
 		0E47C9071AC1681F0021937F /* Effect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Effect.h; path = ../../Effect.h; sourceTree = "<group>"; };
 		0E47C9081AC1681F0021937F /* AssetIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetIncludes.h; path = ../../AssetIncludes.h; sourceTree = "<group>"; };
-		0E47C9091AC1681F0021937F /* SamplerDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SamplerDescription.h; path = ../../SamplerDescription.h; sourceTree = "<group>"; };
 		0E47C90A1AC1681F0021937F /* ShaderDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderDescription.h; path = ../../ShaderDescription.h; sourceTree = "<group>"; };
 		0E47C9111AC168370021937F /* PFXReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PFXReader.cpp; path = ../../FileIO/PFXReader.cpp; sourceTree = "<group>"; };
 		0E47C9121AC168370021937F /* PFXReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PFXReader.h; path = ../../FileIO/PFXReader.h; sourceTree = "<group>"; };
@@ -150,7 +147,6 @@
 		AC6EFF4919F162690012DD2F /* Mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Mesh.cpp; path = ../../Model/Mesh.cpp; sourceTree = "<group>"; };
 		AC6EFF4A19F162690012DD2F /* Mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mesh.h; path = ../../Model/Mesh.h; sourceTree = "<group>"; };
 		AC6EFF4B19F162690012DD2F /* Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Model.cpp; path = ../../Model/Model.cpp; sourceTree = "<group>"; };
-		AC6EFF4C19F162690012DD2F /* Semantic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Semantic.h; path = ../../Model/Semantic.h; sourceTree = "<group>"; };
 		AC9FDDB619FA569E000955EC /* PODReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PODReader.cpp; path = ../../FileIO/PODReader.cpp; sourceTree = "<group>"; };
 		AC9FDDB719FA569E000955EC /* PODReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PODReader.h; path = ../../FileIO/PODReader.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -174,27 +170,15 @@
 			);
 			sourceTree = "<group>";
 		};
-		3E82A05E19AC8E5500EC7AEE /* Textures */ = {
+		3E82A09919AC98B100EC7AEE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3E82A05F19AC8E7D00EC7AEE /* MetaData.cpp */,
-				3E82A06019AC8E7D00EC7AEE /* MetaData.h */,
-				3E82A06219AC8E7D00EC7AEE /* PixelFormat.h */,
-				3E82A06319AC8E7D00EC7AEE /* PVRTDecompress.cpp */,
-				3E82A06419AC8E7D00EC7AEE /* PVRTDecompress.h */,
-				3E82A06519AC8E7D00EC7AEE /* Texture.cpp */,
-				3E82A06619AC8E7D00EC7AEE /* Texture.h */,
-				3E82A06719AC8E7D00EC7AEE /* TextureDefines.h */,
-				3E82A06819AC8E7D00EC7AEE /* TextureFormats.h */,
-				3E82A06919AC8E7D00EC7AEE /* TextureHeader.cpp */,
-				3E82A06A19AC8E7D00EC7AEE /* TextureHeader.h */,
-				3E82A06B19AC8E7D00EC7AEE /* TextureHeaderWithMetaData.cpp */,
-				3E82A06C19AC8E7D00EC7AEE /* TextureHeaderWithMetaData.h */,
+				3E82A09819AC98B100EC7AEE /* libPVRAssets.a */,
 			);
-			name = Textures;
+			name = Products;
 			sourceTree = "<group>";
 		};
-		3E82A06D19AC8EA000EC7AEE /* FileIO */ = {
+		3E82A0A319AC9B9400EC7AEE /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				AC9FDDB619FA569E000955EC /* PODReader.cpp */,
@@ -228,21 +212,28 @@
 				AC6EFF2419F1624C0012DD2F /* TextureWriterPVR.cpp */,
 				AC6EFF2519F1624C0012DD2F /* TextureWriterPVR.h */,
 				AC6EFF0419F1621C0012DD2F /* PODDefines.h */,
-			);
-			name = FileIO;
-			sourceTree = "<group>";
-		};
-		3E82A09919AC98B100EC7AEE /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				3E82A09819AC98B100EC7AEE /* libPVRAssets.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		3E82A0A319AC9B9400EC7AEE /* Sources */ = {
-			isa = PBXGroup;
-			children = (
+				3E82A05F19AC8E7D00EC7AEE /* MetaData.cpp */,
+				3E82A06019AC8E7D00EC7AEE /* MetaData.h */,
+				3E82A06219AC8E7D00EC7AEE /* PixelFormat.h */,
+				3E82A06319AC8E7D00EC7AEE /* PVRTDecompress.cpp */,
+				3E82A06419AC8E7D00EC7AEE /* PVRTDecompress.h */,
+				3E82A06519AC8E7D00EC7AEE /* Texture.cpp */,
+				3E82A06619AC8E7D00EC7AEE /* Texture.h */,
+				3E82A06719AC8E7D00EC7AEE /* TextureDefines.h */,
+				3E82A06819AC8E7D00EC7AEE /* TextureFormats.h */,
+				3E82A06919AC8E7D00EC7AEE /* TextureHeader.cpp */,
+				3E82A06A19AC8E7D00EC7AEE /* TextureHeader.h */,
+				3E82A06B19AC8E7D00EC7AEE /* TextureHeaderWithMetaData.cpp */,
+				3E82A06C19AC8E7D00EC7AEE /* TextureHeaderWithMetaData.h */,
+				AC6EFF4319F162690012DD2F /* Animation.cpp */,
+				AC6EFF4419F162690012DD2F /* Animation.h */,
+				AC6EFF4519F162690012DD2F /* Camera.cpp */,
+				AC6EFF4619F162690012DD2F /* Camera.h */,
+				AC6EFF4719F162690012DD2F /* Light.cpp */,
+				AC6EFF4819F162690012DD2F /* Light.h */,
+				AC6EFF4919F162690012DD2F /* Mesh.cpp */,
+				AC6EFF4A19F162690012DD2F /* Mesh.h */,
+				AC6EFF4B19F162690012DD2F /* Model.cpp */,
 				0EE12A811B8F5349006ACAEB /* Asset.h */,
 				0EE12A821B8F5349006ACAEB /* BoundingBox.h */,
 				0EE12A831B8F5349006ACAEB /* PVRShamanSemantics.h */,
@@ -252,11 +243,7 @@
 				0E47C9121AC168370021937F /* PFXReader.h */,
 				0E47C9071AC1681F0021937F /* Effect.h */,
 				0E47C9081AC1681F0021937F /* AssetIncludes.h */,
-				0E47C9091AC1681F0021937F /* SamplerDescription.h */,
 				0E47C90A1AC1681F0021937F /* ShaderDescription.h */,
-				3E82A06D19AC8EA000EC7AEE /* FileIO */,
-				3E82A05E19AC8E5500EC7AEE /* Textures */,
-				AC6EFF4219F162590012DD2F /* Model */,
 				AC6EFEE619F161FB0012DD2F /* AssetReader.h */,
 				AC6EFEE719F161FB0012DD2F /* AssetWriter.h */,
 				AC6EFEE819F161FB0012DD2F /* Geometry.cpp */,
@@ -271,23 +258,6 @@
 			name = Sources;
 			sourceTree = "<group>";
 		};
-		AC6EFF4219F162590012DD2F /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				AC6EFF4319F162690012DD2F /* Animation.cpp */,
-				AC6EFF4419F162690012DD2F /* Animation.h */,
-				AC6EFF4519F162690012DD2F /* Camera.cpp */,
-				AC6EFF4619F162690012DD2F /* Camera.h */,
-				AC6EFF4719F162690012DD2F /* Light.cpp */,
-				AC6EFF4819F162690012DD2F /* Light.h */,
-				AC6EFF4919F162690012DD2F /* Mesh.cpp */,
-				AC6EFF4A19F162690012DD2F /* Mesh.h */,
-				AC6EFF4B19F162690012DD2F /* Model.cpp */,
-				AC6EFF4C19F162690012DD2F /* Semantic.h */,
-			);
-			name = Model;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -298,7 +268,6 @@
 				0E35042C1BF6511200EC0B4E /* PVRAssets.h in Headers */,
 				AC6EFF3D19F1624C0012DD2F /* TextureWriterKTX.h in Headers */,
 				AC6EFF3319F1624C0012DD2F /* TextureReaderKTX.h in Headers */,
-				0E47C90F1AC1681F0021937F /* SamplerDescription.h in Headers */,
 				AC6EFF4E19F162690012DD2F /* Animation.h in Headers */,
 				AC6EFEF619F161FB0012DD2F /* AssetWriter.h in Headers */,
 				AC6EFF4119F1624C0012DD2F /* TextureWriterPVR.h in Headers */,
@@ -323,7 +292,6 @@
 				AC6EFF5419F162690012DD2F /* Mesh.h in Headers */,
 				AC6EFF3519F1624C0012DD2F /* TextureReaderPVR.h in Headers */,
 				AC6EFF3919F1624C0012DD2F /* TextureReaderXNB.h in Headers */,
-				AC6EFF5619F162690012DD2F /* Semantic.h in Headers */,
 				AC6EFF2619F1624C0012DD2F /* FileDefinesBMP.h in Headers */,
 				AC6EFF2919F1624C0012DD2F /* FileDefinesPVR.h in Headers */,
 				0E47C9141AC168370021937F /* PFXReader.h in Headers */,

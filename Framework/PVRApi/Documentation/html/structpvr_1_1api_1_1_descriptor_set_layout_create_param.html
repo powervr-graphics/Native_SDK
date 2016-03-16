@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="structpvr_1_1api_1_1_descriptor_set_layout_create_param-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -91,17 +92,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Contains all information required to create a Descriptor Set Layout. This is the number of Textures, Samplers, Uniform <a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> Objects, and Shader Storage <a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> Objects bound for any shader stage.  
  <a href="structpvr_1_1api_1_1_descriptor_set_layout_create_param.html#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_descriptor_set_layout_create_param_1_1_bind_info.html">BindInfo</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a72e95ea2ea8327446ffc24a5fe8de817"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_descriptor_set_layout_create_param.html">DescriptorSetLayoutCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_descriptor_set_layout_create_param.html#a72e95ea2ea8327446ffc24a5fe8de817">addBinding</a> (pvr::uint32 bindIndex, <a class="el" href="namespacepvr_1_1api_1_1_descriptor_type.html#ab72c62ab2795ef42e811ab94181618c0">DescriptorType::Enum</a> descType, pvr::uint32 arraySize=1, <a class="el" href="namespacepvr_1_1api_1_1_shader_stage_flags.html#a9c6ae51aed3331d527991c4f8b6c4032">ShaderStageFlags::Enum</a> stageFlags=<a class="el" href="namespacepvr_1_1api_1_1_shader_stage_flags.html#a9c6ae51aed3331d527991c4f8b6c4032a01a694245ec949f1dff60097d7ad2c6f">ShaderStageFlags::AllGraphicsStages</a>)</td></tr>
-<tr class="memdesc:a72e95ea2ea8327446ffc24a5fe8de817"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the buffer binding of Descriptor Objects in the specified shader stages.  <a href="#a72e95ea2ea8327446ffc24a5fe8de817">More...</a><br/></td></tr>
-<tr class="separator:a72e95ea2ea8327446ffc24a5fe8de817"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c75804758a09443cda88f9f0233cdb4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1api_1_1_descriptor_set_layout_create_param.html">DescriptorSetLayoutCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_descriptor_set_layout_create_param.html#a4c75804758a09443cda88f9f0233cdb4">setBinding</a> (pvr::uint32 bindIndex, types::DescriptorType::Enum descType, pvr::uint32 arraySize=1, types::ShaderStageFlags::Enum stageFlags=types::ShaderStageFlags::AllGraphicsStages)</td></tr>
+<tr class="memdesc:a4c75804758a09443cda88f9f0233cdb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the buffer binding of Descriptor Objects in the specified shader stages.  <a href="#a4c75804758a09443cda88f9f0233cdb4">More...</a><br/></td></tr>
+<tr class="separator:a4c75804758a09443cda88f9f0233cdb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains all information required to create a Descriptor Set Layout. This is the number of Textures, Samplers, Uniform <a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> Objects, and Shader Storage <a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> Objects bound for any shader stage. </p>
 <hr/>
  </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a72e95ea2ea8327446ffc24a5fe8de817"></a>
+<a class="anchor" id="a4c75804758a09443cda88f9f0233cdb4"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -109,7 +115,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structpvr_1_1api_1_1_descriptor_set_layout_create_param.html">DescriptorSetLayoutCreateParam</a>&amp; pvr::api::DescriptorSetLayoutCreateParam::addBinding </td>
+          <td class="memname"><a class="el" href="structpvr_1_1api_1_1_descriptor_set_layout_create_param.html">DescriptorSetLayoutCreateParam</a>&amp; pvr::api::DescriptorSetLayoutCreateParam::setBinding </td>
           <td>(</td>
           <td class="paramtype">pvr::uint32&#160;</td>
           <td class="paramname"><em>bindIndex</em>, </td>
@@ -117,7 +123,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_descriptor_type.html#ab72c62ab2795ef42e811ab94181618c0">DescriptorType::Enum</a>&#160;</td>
+          <td class="paramtype">types::DescriptorType::Enum&#160;</td>
           <td class="paramname"><em>descType</em>, </td>
         </tr>
         <tr>
@@ -129,8 +135,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr_1_1api_1_1_shader_stage_flags.html#a9c6ae51aed3331d527991c4f8b6c4032">ShaderStageFlags::Enum</a>&#160;</td>
-          <td class="paramname"><em>stageFlags</em> = <code><a class="el" href="namespacepvr_1_1api_1_1_shader_stage_flags.html#a9c6ae51aed3331d527991c4f8b6c4032a01a694245ec949f1dff60097d7ad2c6f">ShaderStageFlags::AllGraphicsStages</a></code>&#160;</td>
+          <td class="paramtype">types::ShaderStageFlags::Enum&#160;</td>
+          <td class="paramname"><em>stageFlags</em> = <code>types::ShaderStageFlags::AllGraphicsStages</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -161,7 +167,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/ApiObjects/<a class="el" href="_descriptor_table_8h_source.html">DescriptorTable.h</a></li>
+<li>C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRApi/ApiObjects/<a class="el" href="_descriptor_set_8h_source.html">DescriptorSet.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

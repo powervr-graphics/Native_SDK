@@ -26,6 +26,10 @@ static pvr::native::NativeLibrary& eglLib()
 
 bool egl::initEgl()
 {
+	if (eglLib().LoadFailed())
+	{
+		return false;
+	}
 	egl::ChooseConfig = eglLib().getFunction<PROC_EGL_eglChooseConfig>("eglChooseConfig");
 	egl::CopyBuffers = eglLib().getFunction<PROC_EGL_eglCopyBuffers>("eglCopyBuffers");
 	egl::CreateContext = eglLib().getFunction<PROC_EGL_eglCreateContext>("eglCreateContext");

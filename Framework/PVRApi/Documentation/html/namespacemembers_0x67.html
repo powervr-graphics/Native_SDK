@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -78,10 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="namespacemembers_0x65.html#index_e"><span>e</span></a></li>
       <li><a href="namespacemembers_0x66.html#index_f"><span>f</span></a></li>
       <li class="current"><a href="namespacemembers_0x67.html#index_g"><span>g</span></a></li>
-      <li><a href="namespacemembers_0x68.html#index_h"><span>h</span></a></li>
       <li><a href="namespacemembers_0x69.html#index_i"><span>i</span></a></li>
-      <li><a href="namespacemembers_0x6b.html#index_k"><span>k</span></a></li>
-      <li><a href="namespacemembers_0x6c.html#index_l"><span>l</span></a></li>
       <li><a href="namespacemembers_0x6d.html#index_m"><span>m</span></a></li>
       <li><a href="namespacemembers_0x6e.html#index_n"><span>n</span></a></li>
       <li><a href="namespacemembers_0x6f.html#index_o"><span>o</span></a></li>
@@ -91,9 +88,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="namespacemembers_0x74.html#index_t"><span>t</span></a></li>
       <li><a href="namespacemembers_0x75.html#index_u"><span>u</span></a></li>
       <li><a href="namespacemembers_0x76.html#index_v"><span>v</span></a></li>
-      <li><a href="namespacemembers_0x77.html#index_w"><span>w</span></a></li>
-      <li><a href="namespacemembers_0x78.html#index_x"><span>x</span></a></li>
-      <li><a href="namespacemembers_0x7a.html#index_z"><span>z</span></a></li>
     </ul>
   </div>
 </div><!-- top -->
@@ -115,12 +109,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock">Here is a list of all namespace members with links to the namespace documentation for each member:</div>
 
 <h3><a class="anchor" id="index_g"></a>- g -</h3><ul>
-<li>G
-: <a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61ae7765da275a2b9b93d228cc1cedb03c5">pvr::api::SwizzleMask</a>
-, <a class="el" href="namespacepvr_1_1api_1_1_color_channel.html#a789b641691d9ad20ccab910ec913521ca355cd86488f0a8a4b8023cee08e01197">pvr::api::ColorChannel</a>
-</li>
 <li>get()
-: <a class="el" href="namespacepvr_1_1api_1_1gpu_capabilities.html#a16a3a4505e899048b5a00e27fd0b369a">pvr::api::gpuCapabilities</a>
+: <a class="el" href="namespacepvr_1_1api_1_1gpu_capabilities.html#a6e11dd7df2d3b0ff25638fae183725a4">pvr::api::gpuCapabilities</a>
+</li>
+<li>getAlignment()
+: <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#a8883d24655421891d92d8307bf2e6117">pvr::GpuDatatypes</a>
+</li>
+<li>getBaseType()
+: <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#a7967dbd5cdb0c2b779b4b06873dbbfb5">pvr::GpuDatatypes</a>
 </li>
 <li>getDisplayColorFormat()
 : <a class="el" href="namespacepvr_1_1api.html#afb70e692b575d23fd009332d750f1147">pvr::api</a>
@@ -131,44 +127,32 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>getDisplayFormat()
 : <a class="el" href="namespacepvr_1_1api.html#a81a8d84c51eee8bb5bf9ee6a6aa361d3">pvr::api</a>
 </li>
-<li>getNativeHandle()
-: <a class="el" href="namespacepvr_1_1native.html#a48f95361fafdb5cc4a7f4e7e92c6aedf">pvr::native</a>
+<li>getNumMatrixColumns()
+: <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#a3170bdc4f8aee81973816017ec68c950">pvr::GpuDatatypes</a>
 </li>
-<li>getOpenGLFormat()
-: <a class="el" href="namespacepvr_1_1utils.html#a8019161497bc5246e8e479da9030e6b0">pvr::utils</a>
+<li>getNumVecElements()
+: <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#a40ac8415d45c06f3fafe03bb884dc635">pvr::GpuDatatypes</a>
 </li>
-<li>getOpenGLStorageFormat()
-: <a class="el" href="namespacepvr_1_1utils.html#a4ed2a8405b7001458756a11e03d59023">pvr::utils</a>
+<li>getOffsetAfter()
+: <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#aa7cdf4994814b63a04499c8334f14beb">pvr::GpuDatatypes</a>
 </li>
-<li>gpuCapabilitiesBuffers()
-: <a class="el" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a8ce6bc6d67d57ffab19e7c3b678c1998">pvr::api::ConvertToGles</a>
+<li>getSelfAlignedArraySize()
+: <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#a848004c55cf54e72dccf0301d9433e07">pvr::GpuDatatypes</a>
 </li>
-<li>gpuCapabilitiesElement()
-: <a class="el" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a73256f752b84bcaab289da51febcda0b">pvr::api::ConvertToGles</a>
+<li>getSelfAlignedSize()
+: <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#ae10264f1cc438c3455887efbe4785c97">pvr::GpuDatatypes</a>
 </li>
-<li>gpuCapabilitiesFragment()
-: <a class="el" href="namespacepvr_1_1api_1_1_convert_to_gles.html#af5ec5f4bf09fc97ea195653653a14fdf">pvr::api::ConvertToGles</a>
+<li>getTotalSizeAfter()
+: <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#a220ba3b56e9cfec0630d7d2831e291fa">pvr::GpuDatatypes</a>
 </li>
-<li>gpuCapabilitiesShaderAndPrograms()
-: <a class="el" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a78c732f72903ee459c9d12acaa21cdca">pvr::api::ConvertToGles</a>
+<li>getUnalignedSize()
+: <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#af2606c8e5af8252b21112ae43cbac2df">pvr::GpuDatatypes</a>
 </li>
-<li>gpuCapabilitiesTextureAndSamplers()
-: <a class="el" href="namespacepvr_1_1api_1_1_convert_to_gles.html#abcf7dd1675966dd62bd331d54ab7054a">pvr::api::ConvertToGles</a>
+<li>getVectorSelfAlignedSize()
+: <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#a187a2867e0ce6a1f6205c7181dcab4dc">pvr::GpuDatatypes</a>
 </li>
-<li>gpuCapabilitiesTransformFeedback()
-: <a class="el" href="namespacepvr_1_1api_1_1_convert_to_gles.html#adcbd44a50280c77a86eb938f9acc8aca">pvr::api::ConvertToGles</a>
-</li>
-<li>gpuCapabilitiesUniform()
-: <a class="el" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a991ae77b50ae031f8229bf5256fe4ba6">pvr::api::ConvertToGles</a>
-</li>
-<li>Graphics
-: <a class="el" href="namespacepvr_1_1api_1_1_pipeline_binding_point.html#a321e31cba9cffb8c4fc858ac34ebec8fa45689abec4d0878daf8281c4e0f656c4">pvr::api::PipelineBindingPoint</a>
-</li>
-<li>Green
-: <a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a270c18545bcdb3a696179c78d2656095">pvr::api::SwizzleMask</a>
-</li>
-<li>GreenChannel
-: <a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a697454c29fa5e7cbf67bcdc2345cd2c1">pvr::api::SwizzleMask</a>
+<li>getVectorUnalignedSize()
+: <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#aecdcefb02beb76d6c73585b756b5f63a">pvr::GpuDatatypes</a>
 </li>
 </ul>
 </div><!-- contents -->

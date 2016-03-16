@@ -2,15 +2,15 @@
 \file         PVRShell\OS\ShellOS.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Contains the declaration of the ShellOS class. Most of the functionality is platform-specific, and as such is 
+\brief     	  Contains the declaration of the ShellOS class. Most of the functionality is platform-specific, and as such is
               delegated to platform-specific ShellOS.cpp files. Do not access or use directly.
 ***********************************************************************************************************************/
 #pragma once
 #include "PVRShell/ShellIncludes.h"
 #include "PVRShell/ShellData.h"
 #include "PVRShell/Shell.h"
-namespace pvr{
-namespace system{
+namespace pvr {
+namespace system {
 //Forward declaration of internal implementation.
 struct InternalOS;
 
@@ -26,8 +26,8 @@ public:
 	*******************************************************************************************************************/
 	struct Capabilities
 	{
-		Capability::Enum resizable;
-		Capability::Enum movable;
+		types::Capability::Enum resizable;
+		types::Capability::Enum movable;
 	};
 
 	ShellData m_shellData;
@@ -36,8 +36,8 @@ public:
 	virtual ~ShellOS();
 
 	Result::Enum init(DisplayAttributes& data); // Accepts a data struct so it can overide default values
-	Result::Enum initialiseWindow(DisplayAttributes& data);
-	bool isInitialised();
+	Result::Enum initializeWindow(DisplayAttributes& data);
+	bool isInitialized();
 	void releaseWindow();
 
 	//Getters
@@ -79,7 +79,7 @@ inline const string& ShellOS::getApplicationName() const { return m_AppName; }
 inline void ShellOS::setApplicationName(const std::string& appName) { m_AppName = appName; }
 inline const string& ShellOS::getDefaultReadPath() const
 {
-	PVR_ASSERT(m_ReadPaths.size());
+	assertion(m_ReadPaths.size() != 0);
 	return m_ReadPaths[0];
 }
 inline const std::vector<std::string>& ShellOS::getReadPaths() const

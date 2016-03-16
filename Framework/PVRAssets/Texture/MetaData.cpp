@@ -75,7 +75,7 @@ TextureMetaData& TextureMetaData::operator=(const TextureMetaData& rhs)
 		return *this;
 	}
 
-	// Initialise
+	// Initialize
 	m_fourCC = m_key = m_dataSize = 0;
 
 	// Delete any old data

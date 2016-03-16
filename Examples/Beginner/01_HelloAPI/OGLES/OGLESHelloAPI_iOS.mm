@@ -67,11 +67,11 @@ bool testGlError(const char* functionLastCalled)
 - (void) renderScene;
 - (void) dealloc;
 - (id)   initWithFrame:(CGRect)frame scale:(CGFloat)scale;
-- (BOOL) initialiseBuffer:(GLuint*)vertexBuffer;
-- (BOOL) initialiseFragmentShader:(GLuint*)fragmentShader vertexShader:(GLuint*)vertexShader programObject:(GLuint*)shaderProgram;
+- (BOOL) initializeBuffer:(GLuint*)vertexBuffer;
+- (BOOL) initializeFragmentShader:(GLuint*)fragmentShader vertexShader:(GLuint*)vertexShader programObject:(GLuint*)shaderProgram;
 - (BOOL) createEAGLContext:(CAEAGLLayer*)eaglLayer frame:(CGRect)frame scale:(CGFloat)scale;
 - (BOOL) createRenderbuffer:(CAEAGLLayer*)eaglLayer;
-- (void) deInitialiseGLState;
+- (void) deInitializeGLState;
 
 @end
 
@@ -85,9 +85,9 @@ bool testGlError(const char* functionLastCalled)
 /*!*********************************************************************************************************************
 \param[out]		vertexBuffer                Handle to a vertex buffer object
 \return		Whether the function succeeds or not.
-\brief	Initialises shaders, buffers and other state required to begin rendering with OpenGL ES
+\brief	Initializes shaders, buffers and other state required to begin rendering with OpenGL ES
 ************************************************************************************************************************/
-- (BOOL) initialiseBuffer:(GLuint*)vertexBuffer
+- (BOOL) initializeBuffer:(GLuint*)vertexBuffer
 {
 	if(!vertexBuffer){	return FALSE;  }
 	// Concept: Vertices
@@ -133,9 +133,9 @@ bool testGlError(const char* functionLastCalled)
 \param[out]		vertexShader                Handle to a vertex shader
 \param[out]		shaderProgram               Handle to a shader program containing the fragment and vertex shader
 \return		Whether the function succeeds or not.
-\brief	Initialises shaders, buffers and other state required to begin rendering with OpenGL ES
+\brief	Initializes shaders, buffers and other state required to begin rendering with OpenGL ES
 ***********************************************************************************************************************/
-- (BOOL) initialiseFragmentShader:(GLuint*)fragmentShader vertexShader:(GLuint*)vertexShader programObject:(GLuint*)shaderProgram
+- (BOOL) initializeFragmentShader:(GLuint*)fragmentShader vertexShader:(GLuint*)vertexShader programObject:(GLuint*)shaderProgram
 {
 	if(!fragmentShader || !vertexShader || !shaderProgram){	return FALSE;   }
 	//	Concept: Shaders
@@ -303,7 +303,7 @@ bool testGlError(const char* functionLastCalled)
 
 /*!*********************************************************************************************************************
 \return  Whether the function succeeds or not.
-\brief	Initialises EAGL and sets of the context for rendering.
+\brief	Initializes EAGL and sets of the context for rendering.
  ***********************************************************************************************************************/
 - (BOOL) createEAGLContext:(CAEAGLLayer*)eaglLayer frame:(CGRect)frame scale:(CGFloat)scale
 {
@@ -312,7 +312,7 @@ bool testGlError(const char* functionLastCalled)
 	// resources and state. What appear to be "global" functions in OpenGL actually only operate on the current context. A context
 	// is required for any operations in OpenGL ES.
 
-	// Initialise EAGL.
+	// Initialize EAGL.
 	[eaglLayer setDrawableProperties: [	NSDictionary dictionaryWithObjectsAndKeys: [NSNumber numberWithBool:NO],
 									   kEAGLDrawablePropertyRetainedBacking,kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil]];
 
@@ -385,7 +385,7 @@ bool testGlError(const char* functionLastCalled)
 /*!*********************************************************************************************************************
 \param[in]		frame The Frame to iniitilise with
 \return        Return self on success or nil
-\brief	Initialises EAGL and sets of the context for rendering. Also call functions to setup GL resources.
+\brief	Initializes EAGL and sets of the context for rendering. Also call functions to setup GL resources.
 ***********************************************************************************************************************/
 - (id) initWithFrame:(CGRect)frame scale:(CGFloat)scale
 {
@@ -405,13 +405,13 @@ bool testGlError(const char* functionLastCalled)
 		return nil;
 	}
 
-	if(![self initialiseFragmentShader:&m_fragmentShader vertexShader:&m_vertexBuffer programObject:&m_shaderProgram])
+	if(![self initializeFragmentShader:&m_fragmentShader vertexShader:&m_vertexBuffer programObject:&m_shaderProgram])
 	{
 		[self release];
 		return nil;
 	}
 
-	if(![self initialiseBuffer:&m_vertexBuffer])
+	if(![self initializeBuffer:&m_vertexBuffer])
 	{
 		[self release];
 		return nil;
@@ -495,7 +495,7 @@ bool testGlError(const char* functionLastCalled)
 /*!*********************************************************************************************************************
 \brief	Releases GL resources previously allocated
 ***********************************************************************************************************************/
-- (void) deInitialiseGLState
+- (void) deInitializeGLState
 {
 	// Delete the VBO as it is no longer needed
 	glDeleteBuffers(1, &m_vertexBuffer);
@@ -535,7 +535,7 @@ bool testGlError(const char* functionLastCalled)
 ***********************************************************************************************************************/
 - (void) dealloc
 {
-	[self deInitialiseGLState];
+	[self deInitializeGLState];
 	[super dealloc];
 }
 

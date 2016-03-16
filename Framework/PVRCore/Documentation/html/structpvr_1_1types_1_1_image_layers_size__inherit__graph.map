@@ -1,0 +1,5 @@
+<map id="pvr::types::ImageLayersSize" name="pvr::types::ImageLayersSize">
+<area shape="rect" id="node2" href="$structpvr_1_1types_1_1_image_area_size.html" title="pvr::types::ImageAreaSize" alt="" coords="5,88,179,115"/>
+<area shape="rect" id="node4" href="$structpvr_1_1types_1_1_image_subresource_range.html" title="pvr::types::ImageSubresource\lRange" alt="" coords="204,81,399,122"/>
+<area shape="rect" id="node3" href="$structpvr_1_1types_1_1_image_area.html" title="pvr::types::ImageArea" alt="" coords="18,171,165,197"/>
+</map>

@@ -1,21 +1,12 @@
 var searchData=
 [
-  ['sampledimage',['SampledImage',['../namespacepvr_1_1api_1_1_descriptor_type.html#ab72c62ab2795ef42e811ab94181618c0a5584188d9e1cc3f7f941a74440fb8a1e',1,'pvr::api::DescriptorType']]],
-  ['sampler',['Sampler',['../namespacepvr_1_1api_1_1_descriptor_type.html#ab72c62ab2795ef42e811ab94181618c0a48eb6c324f1b49ce9f3fcd3f6f0a34bd',1,'pvr::api::DescriptorType']]],
-  ['secondarycommandbuffers',['SecondaryCommandBuffers',['../namespacepvr_1_1api_1_1_render_pass_contents.html#aeebeac762598065361d96782d2158ab5a3166dbd6d1166e4cf303da50d44828be',1,'pvr::api::RenderPassContents']]],
+  ['scalar',['Scalar',['../namespacepvr_1_1_gpu_datatypes_1_1_vector_width.html#a2ac080b111f3f5753e1b07b2f3fc0d43a02c6f2d5eea6b5e7053f7705aecdc590',1,'pvr::GpuDatatypes::VectorWidth']]],
   ['separatecomponents',['SeparateComponents',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_transform_feedback.html#a75370983dd08cce46c1b4691bd272c54a6a19e1a22f122a30570d18dfd1037ce6',1,'pvr::api::gpuCapabilities::TransformFeedback']]],
-  ['set',['Set',['../namespacepvr_1_1api_1_1_logic_op.html#a2b6d9714a1ee981e92578c4a7b170242a84dfaa99d56a8b1e7f83426db94d9ac9',1,'pvr::api::LogicOp']]],
-  ['shaderread',['ShaderRead',['../namespacepvr_1_1api_1_1_mem_barrier_flag_in.html#a6975b14808fa599befde0e4a568df771ad836a6142271b96889b5c79d7d6c8468',1,'pvr::api::MemBarrierFlagIn']]],
-  ['shaderwrite',['ShaderWrite',['../namespacepvr_1_1api_1_1_mem_barrier_flagout.html#a47de114c373fc38d874a2cd3622a0926a6520a5e5c319d6ad635391596571d8db',1,'pvr::api::MemBarrierFlagout']]],
-  ['smallbatch',['SmallBatch',['../namespacepvr_1_1api_1_1_cmd_buffer_optimize_flags.html#afc303abbd00ee1f7dc79f91fba172361a117e34caa002bf5fd946ae23811a3705',1,'pvr::api::CmdBufferOptimizeFlags']]],
-  ['srcalpha',['SrcAlpha',['../namespacepvr_1_1api_1_1_blend_factor.html#a89ba32abf9812156c1c0ba2fd15da88fa410f6f881500a5f283b82ad706159768',1,'pvr::api::BlendFactor']]],
-  ['srcalphasaturate',['SrcAlphaSaturate',['../namespacepvr_1_1api_1_1_blend_factor.html#a89ba32abf9812156c1c0ba2fd15da88fa22fcd56c0faccf2f14e6ad2e4828244f',1,'pvr::api::BlendFactor']]],
-  ['srccolor',['SrcColor',['../namespacepvr_1_1api_1_1_blend_factor.html#a89ba32abf9812156c1c0ba2fd15da88fa32dfdd89d13a89955183acb513228fdf',1,'pvr::api::BlendFactor']]],
-  ['stencil',['Stencil',['../structpvr_1_1api_1_1impl_1_1_depth_stencil_view_impl.html#a0381bd82f65aade8108ce7791b31bb77a44d5dbd8dff43aae4a2c40d1db6df767',1,'pvr::api::impl::DepthStencilViewImpl::Stencil()'],['../namespacepvr_1_1api_1_1_image_aspect.html#a07ea5fc4e8b10b17cd03edb4ae66550fa4a5f5dde97d2108502c142e765663610',1,'pvr::api::ImageAspect::Stencil()'],['../namespacepvr_1_1api_1_1_fbo_attachment_type.html#a0f358f5908ffc0f062c5fcb90fb74507a4c9248229d862431446b9baf9d8c3dfd',1,'pvr::api::FboAttachmentType::Stencil()']]],
-  ['storagebuffer',['StorageBuffer',['../namespacepvr_1_1api_1_1_descriptor_type.html#ab72c62ab2795ef42e811ab94181618c0a07c0e82ddb342cdfa3fd7d336d74f0c7',1,'pvr::api::DescriptorType']]],
-  ['storagebufferdynamic',['StorageBufferDynamic',['../namespacepvr_1_1api_1_1_descriptor_type.html#ab72c62ab2795ef42e811ab94181618c0a1f687f67b381e0881402dafe750dcc2a',1,'pvr::api::DescriptorType']]],
-  ['storageimage',['StorageImage',['../namespacepvr_1_1api_1_1_descriptor_type.html#ab72c62ab2795ef42e811ab94181618c0a06c51cefb3643002918b42bfa38445a1',1,'pvr::api::DescriptorType']]],
-  ['storagetexelbuffer',['StorageTexelBuffer',['../namespacepvr_1_1api_1_1_descriptor_type.html#ab72c62ab2795ef42e811ab94181618c0a9718efea2eae26fb3abbe12b94738be0',1,'pvr::api::DescriptorType']]],
-  ['subtract',['Subtract',['../namespacepvr_1_1api_1_1_blend_op.html#a422062f9b30e2952daf73a2e44431bdea9a55596bed60c46cd4a276f79793837e',1,'pvr::api::BlendOp']]],
+  ['shiftcols',['ShiftCols',['../namespacepvr_1_1_gpu_datatypes_1_1_bits.html#ab31e3326f7cd7155544edcba68b74cd3afcb247bb379f80a7eacd02b0dd18ed66',1,'pvr::GpuDatatypes::Bits']]],
+  ['shifttype',['ShiftType',['../namespacepvr_1_1_gpu_datatypes_1_1_bits.html#ab31e3326f7cd7155544edcba68b74cd3a726412226dae8cff9ae6fd820c4f0baf',1,'pvr::GpuDatatypes::Bits']]],
+  ['shiftvec',['ShiftVec',['../namespacepvr_1_1_gpu_datatypes_1_1_bits.html#ab31e3326f7cd7155544edcba68b74cd3abccf8904e2ee4f987a71de93aa6796cc',1,'pvr::GpuDatatypes::Bits']]],
+  ['std140',['std140',['../namespacepvr_1_1_gpu_datatypes_1_1_standard.html#a70d716c672f33dc82dc7100e4ffb27faa909f4f345def2f997b4a344035ad18cb',1,'pvr::GpuDatatypes::Standard']]],
+  ['storagebuffer',['StorageBuffer',['../namespacepvr_1_1_buffer_view_types.html#abef9a385ff1fa334bc7df9b222dae05da0297f9b740ec0a7c1746e53d344be09a',1,'pvr::BufferViewTypes']]],
+  ['storagebufferdynamic',['StorageBufferDynamic',['../namespacepvr_1_1_buffer_view_types.html#abef9a385ff1fa334bc7df9b222dae05dab323f06d931443e746b5574b33bc6909',1,'pvr::BufferViewTypes']]],
   ['syncpointnotcreatedyet',['SyncPointNotCreatedYet',['../structpvr_1_1api_1_1impl_1_1_sync_wait_result.html#ab6a55d9bcdc689af75bace5abfc9fb63ac60b910e97b82713ee79f55a2888982c',1,'pvr::api::impl::SyncWaitResult']]]
 ];

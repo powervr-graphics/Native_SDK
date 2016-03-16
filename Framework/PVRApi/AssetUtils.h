@@ -5,8 +5,9 @@
 \brief		  Contains utility functions to facilitate tasks to create PVRApi objects form assets
 ***********************************************************************************************************************/
 #pragma once
+#include "PVRApi/ApiIncludes.h"
+#include "PVRApi/StructuredMemory.h"
 #include "PVRAssets/Model.h"
-#include "PVRApi/Api.h"
 #include <iterator>
 
 namespace pvr {
@@ -17,7 +18,6 @@ such as automated generation of VBOs for specific meshes, or tying together Effe
 creation.
 *******************************************************************************************************************/
 namespace utils {
-
 /*!****************************************************************************************************************
 \brief  Represents a shader Explicit binding, tying a Semantic name to an Attribute Index.
 *******************************************************************************************************************/
@@ -47,25 +47,25 @@ inline static std::vector<VertexBindings_Name> getVertexBindingsFromEffect(const
 	std::vector<VertexBindings_Name> retval;
 	for (std::vector<assets::EffectSemantic>::const_iterator it = effect.attributes.begin(); it != effect.attributes.end(); ++it)
 	{
-        VertexBindings_Name vn = { it->semantic.c_str(), it->variableName };
+		VertexBindings_Name vn = { it->semantic.c_str(), it->variableName };
 		retval.push_back(vn);
 	}
 	return retval;
 }
 
 /*!****************************************************************************************************************
-\brief Use a assets::Mesh object and a assets::Effect object to generate the Input Assembly information 
+\brief Use a assets::Mesh object and a assets::Effect object to generate the Input Assembly information
        for a pipeline object.
 \param[in] mesh The mesh object
 \param[in] effect The effect object
 \param[out] inoutDesc The GraphicsPipelineCreateParam object. Only the vertexInput and InputAssembler objects are
             modified.
-\param[out] outNumBuffers OPTIONAL. Return the number of buffers used by the mesh 
+\param[out] outNumBuffers OPTIONAL. Return the number of buffers used by the mesh
 \description This function allows the user to automatically generate the Input Assembly data that a Pipeline object
-              requires from the semantic info of a Mesh and an Effect. It will corellate the Attribute Semantics 
+              requires from the semantic info of a Mesh and an Effect. It will corellate the Attribute Semantics
 			  provided by the Mesh with the Attribute Semantics required by the Effect, and create suitable input
 			  bindings into the provided GraphicsPipelineCreateParam object. The user then does not need to set the
-			  Vertex Attributes, Input Bindings and Primitive Topology of this object manually. The rest of the 
+			  Vertex Attributes, Input Bindings and Primitive Topology of this object manually. The rest of the
 			  GraphicsPipelineCreateParam must be set normally.
 *******************************************************************************************************************/
 inline void createInputAssemblyFromMeshAndEffect(const assets::Mesh& mesh, assets::Effect effect,
@@ -80,10 +80,13 @@ inline void createInputAssemblyFromMeshAndEffect(const assets::Mesh& mesh, asset
 		auto attr = mesh.getVertexAttributeByName(bindingMap[current].semantic.c_str());
 		if (attr)
 		{
+			assets::VertexAttributeLayout layout = attr->getVertexLayout();
+			uint32 stride = mesh.getStride(attr->getDataIndex());
+
 			if (outNumBuffers) { *outNumBuffers = uint16(std::max<int32>(attr->getDataIndex() + 1, *outNumBuffers)); }
 			inoutDesc.vertexInput
-			.addVertexAttribute(current, attr->getDataIndex(), attr->getVertexLayout(), bindingMap[current].variableName.c_str())
-			.setInputBinding(attr->getDataIndex(), mesh.getStride(attr->getDataIndex()), api::StepRate::Vertex);
+			.addVertexAttribute(current, attr->getDataIndex(), layout, bindingMap[current].variableName.c_str())
+			.setInputBinding(attr->getDataIndex(), stride, types::StepRate::Vertex);
 			inoutDesc.inputAssembler.setPrimitiveTopology(mesh.getMeshInfo().primitiveType);
 		}
 		else
@@ -106,16 +109,16 @@ inline void createInputAssemblyFromMeshAndEffect(const assets::Mesh& mesh, asset
 \param[in] numBindings number of binding map in array
 \param[out] inoutDesc The GraphicsPipelineCreateParam object. Only the vertexInput and InputAssembler objects are
             modified.
-\param[out] outNumBuffers OPTIONAL. Return the number of buffers used by the mesh 
+\param[out] outNumBuffers OPTIONAL. Return the number of buffers used by the mesh
 \description This function allows the user to automatically generate the Input Assembly data that a Pipeline object
               requires from the semantic info of a Mesh and an list of explicit bindings. These bindings are usually
 			  created by the user, who needs to corellate the Attribute Semantics of the Mesh with the explicit
 			  Binding Points of these attributes into a shader. This function will then create suitable input
 			  bindings into the provided GraphicsPipelineCreateParam object. The user then does not need to set the
-			  Vertex Attributes, Input Bindings and Primitive Topology of this object. The rest of the 
+			  Vertex Attributes, Input Bindings and Primitive Topology of this object. The rest of the
 			  GraphicsPipelineCreateParam must be set normally.
 *******************************************************************************************************************/
-inline void createInputAssemblyFromMesh(const assets::Mesh& mesh, VertexBindings* bindingMap, uint16 numBindings,
+inline void createInputAssemblyFromMesh(const assets::Mesh& mesh, const VertexBindings* bindingMap, uint16 numBindings,
                                         api::GraphicsPipelineCreateParam& inoutDesc,
                                         uint16* outNumBuffers = NULL)
 {
@@ -126,10 +129,12 @@ inline void createInputAssemblyFromMesh(const assets::Mesh& mesh, VertexBindings
 		auto attr = mesh.getVertexAttributeByName(bindingMap[current].semanticName.c_str());
 		if (attr)
 		{
+			assets::VertexAttributeLayout layout = attr->getVertexLayout();
+			uint32 stride = mesh.getStride(attr->getDataIndex());
 			if (outNumBuffers) { *outNumBuffers = uint16(std::max<int32>(attr->getDataIndex() + 1, *outNumBuffers)); }
 			inoutDesc.vertexInput
-			.addVertexAttribute(bindingMap[current].binding, attr->getDataIndex(), attr->getVertexLayout())
-			.setInputBinding(attr->getDataIndex(), mesh.getStride(attr->getDataIndex()), api::StepRate::Vertex);
+			.addVertexAttribute(bindingMap[current].binding, attr->getDataIndex(), layout)
+			.setInputBinding(attr->getDataIndex(), stride, types::StepRate::Vertex);
 		}
 		else
 		{
@@ -142,20 +147,20 @@ inline void createInputAssemblyFromMesh(const assets::Mesh& mesh, VertexBindings
 }
 
 /*!****************************************************************************************************************
-\brief Use a assets::Mesh object and a list of Attribute Semantics mapping to shader variable names to 
+\brief Use a assets::Mesh object and a list of Attribute Semantics mapping to shader variable names to
        generate the Input Assembly into a GraphicsPipelineCreateParam object.
 \param[in] mesh The mesh
 \param[in] bindingMap A user-provided list that maps Attribute Semantics (strings) to shader Variable Names(strings)
 \param[in] numBindings number of bindings in the array
 \param[out] inoutDesc The GraphicsPipelineCreateParam object. Only the vertexInput and InputAssembler objects are
             modified.
-\param[out] outNumBuffers OPTIONAL. Return the number of buffers used by the mesh 
+\param[out] outNumBuffers OPTIONAL. Return the number of buffers used by the mesh
 \description This function allows the user to automatically generate the Input Assembly data that a Pipeline object
-              requires from the semantic info of a Mesh and an list that connects Semantics from the mesh to 
-			  attribute (input) variables in the vertext shader. These bindings are usually created by the user, 
-			  who needs to corellate the Attribute Semantics of the Mesh with the shader vertex attributes. This 
+              requires from the semantic info of a Mesh and an list that connects Semantics from the mesh to
+			  attribute (input) variables in the vertext shader. These bindings are usually created by the user,
+			  who needs to corellate the Attribute Semantics of the Mesh with the shader vertex attributes. This
 			  function will then create suitable input bindings into the provided GraphicsPipelineCreateParam object.
-			  The user then does not need to set the Vertex Attributes, Input Bindings and Primitive Topology of 
+			  The user then does not need to set the Vertex Attributes, Input Bindings and Primitive Topology of
 			  this object. The rest of the GraphicsPipelineCreateParam must be set normally.
 *******************************************************************************************************************/
 inline void createInputAssemblyFromMesh(const assets::Mesh& mesh, const VertexBindings_Name* bindingMap, uint16 numBindings,
@@ -169,10 +174,13 @@ inline void createInputAssemblyFromMesh(const assets::Mesh& mesh, const VertexBi
 		auto attr = mesh.getVertexAttributeByName(bindingMap[current].semantic);
 		if (attr)
 		{
+			assets::VertexAttributeLayout layout = attr->getVertexLayout();
+			uint32 stride = mesh.getStride(attr->getDataIndex());
+
 			if (outNumBuffers) { *outNumBuffers = (uint16)std::max<int32>(attr->getDataIndex() + 1, *outNumBuffers); }
 			inoutDesc.vertexInput
-			.addVertexAttribute(current, attr->getDataIndex(), attr->getVertexLayout(), bindingMap[current].variableName.c_str())
-			.setInputBinding(attr->getDataIndex(), mesh.getStride(attr->getDataIndex()), api::StepRate::Vertex);
+			.addVertexAttribute(current, attr->getDataIndex(), layout, bindingMap[current].variableName.c_str())
+			.setInputBinding(attr->getDataIndex(), stride, types::StepRate::Vertex);
 			inoutDesc.inputAssembler.setPrimitiveTopology(mesh.getMeshInfo().primitiveType);
 		}
 		else
@@ -205,7 +213,7 @@ inline void createSingleBuffersFromMesh(GraphicsContext& context, const assets::
 		total += mesh.getDataSize(i);
 	}
 
-	outVbo = context->createBuffer((uint32)mesh.getDataSize(0), api::BufferBindingUse::VertexBuffer, api::BufferUse::DEFAULT);
+	outVbo = context->createBuffer((uint32)mesh.getDataSize(0), types::BufferBindingUse::VertexBuffer, types::BufferUse::DEFAULT);
 
 	size_t current = 0;
 	for (uint32 i = 0; i < mesh.getNumDataElements(); ++i)
@@ -216,14 +224,13 @@ inline void createSingleBuffersFromMesh(GraphicsContext& context, const assets::
 
 	if (mesh.getNumFaces())
 	{
-		outIbo = context->createBuffer((uint32)mesh.getFaces().getDataSize(), api::BufferBindingUse::IndexBuffer, api::BufferUse::DEFAULT);
+		outIbo = context->createBuffer((uint32)mesh.getFaces().getDataSize(), types::BufferBindingUse::IndexBuffer, types::BufferUse::DEFAULT);
 		outIbo->update((void*)mesh.getFaces().getData(), 0, mesh.getFaces().getDataSize());
 	}
 	else
 	{
 		outIbo.reset();
 	}
-	api::logApiError("utils::createVboFromMesh API error");
 }
 
 /*!*****************************************************************************************************************
@@ -242,16 +249,13 @@ inline void createMultipleBuffersFromMesh(GraphicsContext& context, const assets
 {
 	for (uint32 i = 0; i < mesh.getNumDataElements(); ++i)
 	{
-		outVbos.push_back(context->createBuffer((uint32)mesh.getDataSize(i), api::BufferBindingUse::VertexBuffer, api::BufferUse::DEFAULT));
+		outVbos.push_back(context->createBuffer((uint32)mesh.getDataSize(i), types::BufferBindingUse::VertexBuffer, types::BufferUse::DEFAULT));
 		outVbos.back()->update((void*)mesh.getData(i), 0, (uint32)mesh.getDataSize(0));
-		api::logApiError(
-		    strings::createFormatted("utils::createVbosFromMesh API error creating and updating Vertex buffer #%d", i).c_str());
 	}
 	if (mesh.getNumFaces())
 	{
-		outIbo = context->createBuffer(mesh.getFaces().getDataSize(), api::BufferBindingUse::IndexBuffer, api::BufferUse::DEFAULT);
+		outIbo = context->createBuffer(mesh.getFaces().getDataSize(), types::BufferBindingUse::IndexBuffer, types::BufferUse::DEFAULT);
 		outIbo->update((void*)mesh.getFaces().getData(), 0, mesh.getFaces().getDataSize());
-		api::logApiError("utils::createVbosFromMesh API error creating and updating Index buffer");
 	}
 }
 
@@ -259,7 +263,7 @@ inline void createMultipleBuffersFromMesh(GraphicsContext& context, const assets
 //{
 //
 //	//float32 vertices[24 * 5];
-//	//outBuffer = device.createBuffer(sizeof(vertices), api::BufferBindingUse::VertexBuffer);
+//	//outBuffer = device.createBuffer(sizeof(vertices), types::BufferBindingUse::VertexBuffer);
 //	//float32 unit(1.f);
 //	//float32 a0(0.0f), a1(unit);
 //	//if (adjustUV)
@@ -370,14 +374,13 @@ inline void createSingleBuffersFromMeshes(
 	int i = 0;
 	while (meshIter != meshIterEnd)
 	{
-
 		size_t total = 0;
 		for (uint32 ii = 0; ii < meshIter->getNumDataElements(); ++ii)
 		{
 			total += meshIter->getDataSize(ii);
 		}
 
-		api::Buffer vbo = context->createBuffer((uint32)total, api::BufferBindingUse::VertexBuffer, api::BufferUse::DEFAULT);
+		api::Buffer vbo = context->createBuffer((uint32)total, types::BufferBindingUse::VertexBuffer, types::BufferUse::DEFAULT);
 		size_t current = 0;
 		for (size_t ii = 0; ii < meshIter->getNumDataElements(); ++ii)
 		{
@@ -386,15 +389,10 @@ inline void createSingleBuffersFromMeshes(
 		}
 
 		outVbos = vbo;
-		api::logApiError(strings::createFormatted("utils::createVbosFromMesh API error"
-		                 " creating and updating Vertex buffer for Mesh #%d", i).c_str());
 		if (meshIter->getNumFaces())
 		{
-			api::Buffer ibo = context->createBuffer(meshIter->getFaces().getDataSize(), api::BufferBindingUse::IndexBuffer,
-			                                       api::BufferUse::DEFAULT);
+			api::Buffer ibo = context->createBuffer(meshIter->getFaces().getDataSize(), types::BufferBindingUse::IndexBuffer, types::BufferUse::DEFAULT);
 			ibo->update((void*)meshIter->getFaces().getData(), 0, meshIter->getFaces().getDataSize());
-			api::logApiError(strings::createFormatted("utils::createVbosFromMesh API error"
-			                 " creating and updating Indexbuffer for Mesh #%d", i).c_str());
 			outIbos = ibo;
 		}
 		else
@@ -415,7 +413,7 @@ inline void createSingleBuffersFromMeshes(
 \param[in]	meshIter	Iterator for a collection of meshes.
 \param[in]	meshIterEnd	End Iterator for meshIter.
 \param[out]	outVbos		Collection of api::Buffer handles. It will be used to insert one VBO per mesh.
-\param[out]	outIbos		Collection of api::Buffer handles. It will be used to insert one IBO per mesh. If face data is 
+\param[out]	outIbos		Collection of api::Buffer handles. It will be used to insert one IBO per mesh. If face data is
 					not present on the mesh, a null handle will be inserted.
 \param[inout]	vbos_where		Iterator on outVbos - the position where the insertion will happen.
 \param[inout]	ibos_where		Iterator on outIbos - the position where the insertion will happen.

@@ -22,7 +22,7 @@
     </Filter>
     <Filter Include="Content Files\Shaders">
       <UniqueIdentifier>{2c3d4c8c-5d1a-459a-a05a-a4e4b608a44e}</UniqueIdentifier>
-      <Extensions>vsh;csh;fsh;psh;glsl;hlsl;frag;vert</Extensions>
+      <Extensions>vsh;csh;fsh;psh;glsl;hlsl;frag;vert;spv</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>

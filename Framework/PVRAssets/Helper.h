@@ -15,7 +15,7 @@ namespace pvr {
 \param[in] count Number of vertices to read
 \param[out] out Array of vertex read
 ***********************************************************************************************************************/
-inline void VertexRead(const byte* const data, const DataType::Enum type, uint32 count, float32* out)
+inline void VertexRead(const byte* const data, const types::DataType::Enum type, uint32 count, float32* out)
 {
 	uint32	i;
 
@@ -39,80 +39,80 @@ inline void VertexRead(const byte* const data, const DataType::Enum type, uint32
 	switch (type)
 	{
 	default:
-		PVR_ASSERT(false);
+		assertion(false);
 		break;
 
-	case DataType::Float32:
+    case types::DataType::Float32:
 		for (i = 0; i < count; ++i)
 		{
 			out[i] = ((float32*)data)[i];
 		}
 		break;
 
-	case DataType::Fixed16_16:
+    case types::DataType::Fixed16_16:
 		for (i = 0; i < count; ++i)
 		{
 			out[i] = ((int32*)data)[i] * 1.0f / (float32)(1 << 16);
 		}
 		break;
 
-	case DataType::Int32:
+    case types::DataType::Int32:
 		for (i = 0; i < count; ++i)
 		{
 			out[i] = (float32)((int32*)data)[i];
 		}
 		break;
 
-	case DataType::UInt32:
+    case types::DataType::UInt32:
 		for (i = 0; i < count; ++i)
 		{
 			out[i] = (float32)((uint32*)data)[i];
 		}
 		break;
 
-	case DataType::Int8:
+    case types::DataType::Int8:
 		for (i = 0; i < count; ++i)
 		{
 			out[i] = (float32)((char8*)data)[i];
 		}
 		break;
 
-	case DataType::Int8Norm:
+    case types::DataType::Int8Norm:
 		for (i = 0; i < count; ++i)
 		{
 			out[i] = (float32)((char8*)data)[i] / (float32)((1 << 7) - 1);
 		}
 		break;
 
-	case DataType::UInt8:
+    case types::DataType::UInt8:
 		for (i = 0; i < count; ++i)
 		{
 			out[i] = (float32)((byte*)data)[i];
 		}
 		break;
 
-	case DataType::UInt8Norm:
+    case types::DataType::UInt8Norm:
 		for (i = 0; i < count; ++i)
 		{
 			out[i] = (float32)((byte*)data)[i] / (float32)((1 << 8) - 1);
 		}
 		break;
 
-	case DataType::Int16:
+    case types::DataType::Int16:
 		for (i = 0; i < count; ++i)
 		{
 			out[i] = (float32)((int16*)data)[i];
 		}
 		break;
 
-	case DataType::Int16Norm:
+    case types::DataType::Int16Norm:
 		for (i = 0; i < count; ++i)
 		{
 			out[i] = (float32)((int16*)data)[i] / (float32)((1 << 15) - 1);
 		}
 		break;
 
-	case DataType::UInt16:
+    case types::DataType::UInt16:
 		for (i = 0; i < count; ++i)
 		{
 			out[i] = (float32)((uint16*)data)[i];
@@ -124,7 +124,7 @@ inline void VertexRead(const byte* const data, const DataType::Enum type, uint32
 	//		out[i] = (float32)((uint16*)data)[i] / (float32)((1 << 16)-1);
 	//	break;
 
-	case DataType::RGBA:
+    case types::DataType::RGBA:
 	{
 		uint32 dwVal = *(uint32*)data;
 		byte v[4];
@@ -141,7 +141,7 @@ inline void VertexRead(const byte* const data, const DataType::Enum type, uint32
 	}
 	break;
 
-	case DataType::ABGR:
+    case types::DataType::ABGR:
 	{
 		uint32 dwVal = *(uint32*)data;
 		byte v[4];
@@ -158,8 +158,8 @@ inline void VertexRead(const byte* const data, const DataType::Enum type, uint32
 	}
 	break;
 
-	case DataType::ARGB:
-	case DataType::D3DCOLOR:
+    case types::DataType::ARGB:
+    case types::DataType::D3DCOLOR:
 	{
 		uint32 dwVal = *(uint32*)data;
 		byte v[4];
@@ -176,7 +176,7 @@ inline void VertexRead(const byte* const data, const DataType::Enum type, uint32
 	}
 	break;
 
-	case DataType::UBYTE4:
+    case types::DataType::UBYTE4:
 	{
 		uint32 dwVal = *(uint32*)data;
 		byte v[4];
@@ -193,7 +193,7 @@ inline void VertexRead(const byte* const data, const DataType::Enum type, uint32
 	}
 	break;
 
-	case DataType::DEC3N:
+    case types::DataType::DEC3N:
 	{
 		int32 dwVal = *(int32*)data;
 		int32 v[4];
@@ -218,19 +218,19 @@ inline void VertexRead(const byte* const data, const DataType::Enum type, uint32
 \param[in] type Index type to read
 \param[out] out of index data read
 ***********************************************************************************************************************/
-inline void VertexIndexRead(const byte* const data, const IndexType::Enum type, uint32* const out)
+inline void VertexIndexRead(const byte* const data, const types::IndexType::Enum type, uint32* const out)
 {
 	switch (type)
 	{
 	default:
-		PVR_ASSERT(false);
+		assertion(false);
 		break;
 
-	case IndexType::IndexType16Bit:
+    case types::IndexType::IndexType16Bit:
 		*out = *(uint16*)data;
 		break;
 
-	case IndexType::IndexType32Bit:
+    case types::IndexType::IndexType32Bit:
 		*out = *(uint32*)data;
 		break;
 	}

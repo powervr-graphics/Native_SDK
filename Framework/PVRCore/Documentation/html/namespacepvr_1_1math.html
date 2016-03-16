@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -99,9 +99,21 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1math_1_1_axis_aligned_box_min_max.html">AxisAlignedBoxMinMax</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An AABB with a min-max representation.  <a href="classpvr_1_1math_1_1_axis_aligned_box_min_max.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1math_1_1_frustum.html">Frustum</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class provides functionality to handle the volume enclosed by 6 planes, normally the viewing frustum. The planes are represented in Hessian Normal Form (normal, distance) as vec4( (xyz):[normal], w:[distance from 0,0,0] ) In order to optimize the frustum, the following are assumed: A "frustum part" of a plane means "the quadrilateral of the plane that is enclosed by the 4 other planes not opposite to it" 1) <a class="el" href="structpvr_1_1math_1_1_frustum.html" title="This class provides functionality to handle the volume enclosed by 6 planes, normally the viewing fru...">Frustum</a> parts opposite each other do not intersect 2) Any point of a positive(negative) part of the frustum has a larger(smaller) corresponding coordinate than its opposite part 3) The frustum is "opening" accross the z axis accross al direction, meaning that the positive Z part of the frustum completely encloses the projection of the negative z part on it. These optimizations allow us to.  <a href="structpvr_1_1math_1_1_frustum.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1math_1_1_viewing_frustum.html">ViewingFrustum</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class provides specialized functionality for when a frustum is a "normal"viewing frustum, that is, the following conditions hold (The conditions ARE NOT checked) Note: A "frustum side" of a plane means "the quadrilateral of the plane that is enclosed by the 4 other planes not opposite to it" "Opposite" means the "other" side of the frustum (minusX is opposit plusX). 1) Opposite <a class="el" href="structpvr_1_1math_1_1_frustum.html" title="This class provides functionality to handle the volume enclosed by 6 planes, normally the viewing fru...">Frustum</a> sides do not intersect (their planes may do so outside the frustum) 2) The frustum is "opening", or at least not "closing" accross the z axis accross al direction, meaning that the any point of the projection of the negative Z side of the frustum on the positive Z plane, is inside or on the positive Z side of the frustum. 3) Any point of a positive(negative) part of the frustum has a larger(smaller) corresponding coordinate than its opposite part These optimizations allow us to greatly reduce the calculations for a viewing frustum. 4) All plane normals point INTO of the frustum.  <a href="structpvr_1_1math_1_1_viewing_frustum.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a45d744e73481d0d55e1ef85e352b9c80"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a45d744e73481d0d55e1ef85e352b9c80">aabbInFrustum</a> (const <a class="el" href="classpvr_1_1math_1_1_axis_aligned_box.html">AxisAlignedBox</a> &amp;box, const <a class="el" href="structpvr_1_1math_1_1_viewing_frustum.html">ViewingFrustum</a> &amp;frustum)</td></tr>
+<tr class="separator:a45d744e73481d0d55e1ef85e352b9c80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a604fa4c3a5bcbcdd7ea87858b235e780"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a604fa4c3a5bcbcdd7ea87858b235e780">distancePointToPlane</a> (const glm::vec3 &amp;point, const glm::vec4 &amp;plane)</td></tr>
+<tr class="separator:a604fa4c3a5bcbcdd7ea87858b235e780"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a966396be32d46b25b372882885738b80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a966396be32d46b25b372882885738b80">getFrustumPlanes</a> (const glm::mat4 &amp;projection_from_world, <a class="el" href="structpvr_1_1math_1_1_viewing_frustum.html">ViewingFrustum</a> &amp;frustum_out)</td></tr>
+<tr class="separator:a966396be32d46b25b372882885738b80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8deecf91075b1a9c0fac46fc682b0578"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">int32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a8deecf91075b1a9c0fac46fc682b0578">makePowerOfTwoHigh</a> (<a class="el" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">int32</a> iVal)</td></tr>
 <tr class="memdesc:a8deecf91075b1a9c0fac46fc682b0578"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the smallest power of two that is greater than or equal to the provided value.  <a href="#a8deecf91075b1a9c0fac46fc682b0578">More...</a><br/></td></tr>
 <tr class="separator:a8deecf91075b1a9c0fac46fc682b0578"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -111,21 +123,25 @@ Functions</h2></td></tr>
 <tr class="memitem:ab2868d2cfca9242c568a796aac2fb63f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">pvr::int32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#ab2868d2cfca9242c568a796aac2fb63f">ndcToPixel</a> (<a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">pvr::float32</a> ndc, <a class="el" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">pvr::int32</a> screenSize)</td></tr>
 <tr class="memdesc:ab2868d2cfca9242c568a796aac2fb63f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a normalized device coordinate (-1..1) to a number of pixels from the start (left or top)  <a href="#ab2868d2cfca9242c568a796aac2fb63f">More...</a><br/></td></tr>
 <tr class="separator:ab2868d2cfca9242c568a796aac2fb63f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34b2cdbc8948a2b9d33c8fef29ae6eef"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a34b2cdbc8948a2b9d33c8fef29ae6eef">ortho</a> (<a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">pvr::Api::Enum</a> api, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> left, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> right, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> bottom, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> top, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> rotate=0.0f)</td></tr>
+<tr class="separator:a34b2cdbc8948a2b9d33c8fef29ae6eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62882908b5ee7867c04af6d10d80396c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a62882908b5ee7867c04af6d10d80396c">packRGBA</a> (<a class="el" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> r, <a class="el" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> g, <a class="el" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> b, <a class="el" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> a)</td></tr>
 <tr class="memdesc:a62882908b5ee7867c04af6d10d80396c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack 4 values (red, green, blue, alpha) in the range of 0-255 into a single 32 bit unsigned integer unsigned.  <a href="#a62882908b5ee7867c04af6d10d80396c">More...</a><br/></td></tr>
 <tr class="separator:a62882908b5ee7867c04af6d10d80396c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe0de90fdd7eb41d69cb115ae3bd38fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#afe0de90fdd7eb41d69cb115ae3bd38fd">packRGBA</a> (<a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> r, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> g, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> b, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> a)</td></tr>
 <tr class="memdesc:afe0de90fdd7eb41d69cb115ae3bd38fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack 4 values (red, green, blue, alpha) in the range of 0.0-1.0 into a single 32 bit unsigned integer unsigned.  <a href="#afe0de90fdd7eb41d69cb115ae3bd38fd">More...</a><br/></td></tr>
 <tr class="separator:afe0de90fdd7eb41d69cb115ae3bd38fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abae1b927622eb60cfc14187d483dad95"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#abae1b927622eb60cfc14187d483dad95">perspective</a> (<a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> const &amp;fovy, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> const &amp;aspect, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> const &amp;near1, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> const &amp;far1, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">pvr::float32</a> rotate)</td></tr>
-<tr class="memdesc:abae1b927622eb60cfc14187d483dad95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculated a tilted projection matrix.  <a href="#abae1b927622eb60cfc14187d483dad95">More...</a><br/></td></tr>
-<tr class="separator:abae1b927622eb60cfc14187d483dad95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a250310d5e21020f5b721b63a29543651"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a250310d5e21020f5b721b63a29543651">perspectiveFov</a> (<a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> const &amp;fovy, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> const &amp;width, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> const &amp;height, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> const &amp;near1, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> const &amp;far1, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">pvr::float32</a> rotate)</td></tr>
-<tr class="memdesc:a250310d5e21020f5b721b63a29543651"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculated a tilted projection matrix.  <a href="#a250310d5e21020f5b721b63a29543651">More...</a><br/></td></tr>
-<tr class="separator:a250310d5e21020f5b721b63a29543651"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76145aa2629a7ebd21ba49de77ed021d"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a76145aa2629a7ebd21ba49de77ed021d">perspective</a> (<a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">pvr::Api::Enum</a> api, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> fovy, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> aspect, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> near1, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> far1, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">pvr::float32</a> rotate=.0f)</td></tr>
+<tr class="memdesc:a76145aa2629a7ebd21ba49de77ed021d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculated a tilted projection matrix.  <a href="#a76145aa2629a7ebd21ba49de77ed021d">More...</a><br/></td></tr>
+<tr class="separator:a76145aa2629a7ebd21ba49de77ed021d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d4c20bc21db52b04e9d1c9655b74c5a"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a8d4c20bc21db52b04e9d1c9655b74c5a">perspectiveFov</a> (<a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">pvr::Api::Enum</a> api, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> fovy, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> width, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> height, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> near1, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> far1, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">pvr::float32</a> rotate=.0f)</td></tr>
+<tr class="memdesc:a8d4c20bc21db52b04e9d1c9655b74c5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculated a tilted projection matrix.  <a href="#a8d4c20bc21db52b04e9d1c9655b74c5a">More...</a><br/></td></tr>
+<tr class="separator:a8d4c20bc21db52b04e9d1c9655b74c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a1920c6e14280fcbcad30ec364e9385"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">pvr::float32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a9a1920c6e14280fcbcad30ec364e9385">pixelToNdc</a> (<a class="el" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">pvr::int32</a> pixelCoord, <a class="el" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">pvr::int32</a> screenSize)</td></tr>
 <tr class="memdesc:a9a1920c6e14280fcbcad30ec364e9385"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a number of pixels (left or top) to a normalized device coordinate (-1..1)  <a href="#a9a1920c6e14280fcbcad30ec364e9385">More...</a><br/></td></tr>
 <tr class="separator:a9a1920c6e14280fcbcad30ec364e9385"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76ff8b92d0032831704d3502ea7b6abd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#a76ff8b92d0032831704d3502ea7b6abd">pointOnSide</a> (const glm::vec3 &amp;point, const glm::vec4 &amp;plane)</td></tr>
+<tr class="separator:a76ff8b92d0032831704d3502ea7b6abd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5da1394a48c59462f0527f3a1816035"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1math.html#ab5da1394a48c59462f0527f3a1816035">quadraticEaseIn</a> (<a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">pvr::float32</a> start, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">pvr::float32</a> end, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">pvr::float32</a> factor)</td></tr>
 <tr class="memdesc:ab5da1394a48c59462f0527f3a1816035"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs quadratic interpolation between two points, beginning with a slow rate and speeding up.  <a href="#ab5da1394a48c59462f0527f3a1816035">More...</a><br/></td></tr>
 <tr class="separator:ab5da1394a48c59462f0527f3a1816035"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,6 +153,108 @@ Functions</h2></td></tr>
 <div class="textblock"><p>Contains mathematical functionality and classes, such as bounding box calculations, intersections etc. </p>
 <hr/>
  </div><h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a45d744e73481d0d55e1ef85e352b9c80"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::math::aabbInFrustum </td>
+          <td>(</td>
+          <td class="paramtype">const AxisAlignedBox &amp;&#160;</td>
+          <td class="paramname"><em>box</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ViewingFrustum &amp;&#160;</td>
+          <td class="paramname"><em>frustum</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a604fa4c3a5bcbcdd7ea87858b235e780"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float pvr::math::distancePointToPlane </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec4 &amp;&#160;</td>
+          <td class="paramname"><em>plane</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a966396be32d46b25b372882885738b80"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::math::getFrustumPlanes </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>projection_from_world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ViewingFrustum &amp;&#160;</td>
+          <td class="paramname"><em>frustum_out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a8deecf91075b1a9c0fac46fc682b0578"></a>
 <div class="memitem">
 <div class="memproto">
@@ -233,6 +351,64 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a34b2cdbc8948a2b9d33c8fef29ae6eef"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::mat4 pvr::math::ortho </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">pvr::Api::Enum</a>&#160;</td>
+          <td class="paramname"><em>api</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float32&#160;</td>
+          <td class="paramname"><em>left</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float32&#160;</td>
+          <td class="paramname"><em>right</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float32&#160;</td>
+          <td class="paramname"><em>bottom</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float32&#160;</td>
+          <td class="paramname"><em>top</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float32&#160;</td>
+          <td class="paramname"><em>rotate</em> = <code>0.0f</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -334,7 +510,7 @@ Functions</h2></td></tr>
  
 </div>
 </div>
-<a class="anchor" id="abae1b927622eb60cfc14187d483dad95"></a>
+<a class="anchor" id="a76145aa2629a7ebd21ba49de77ed021d"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -344,32 +520,38 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">glm::mat4 pvr::math::perspective </td>
           <td>(</td>
-          <td class="paramtype">float32 const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">pvr::Api::Enum</a>&#160;</td>
+          <td class="paramname"><em>api</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float32&#160;</td>
           <td class="paramname"><em>fovy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float32 const &amp;&#160;</td>
+          <td class="paramtype">float32&#160;</td>
           <td class="paramname"><em>aspect</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float32 const &amp;&#160;</td>
+          <td class="paramtype">float32&#160;</td>
           <td class="paramname"><em>near1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float32 const &amp;&#160;</td>
+          <td class="paramtype">float32&#160;</td>
           <td class="paramname"><em>far1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">pvr::float32</a>&#160;</td>
-          <td class="paramname"><em>rotate</em>&#160;</td>
+          <td class="paramname"><em>rotate</em> = <code>.0f</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -400,7 +582,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a250310d5e21020f5b721b63a29543651"></a>
+<a class="anchor" id="a8d4c20bc21db52b04e9d1c9655b74c5a"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -410,38 +592,44 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">glm::mat4 pvr::math::perspectiveFov </td>
           <td>(</td>
-          <td class="paramtype">float32 const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05c">pvr::Api::Enum</a>&#160;</td>
+          <td class="paramname"><em>api</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float32&#160;</td>
           <td class="paramname"><em>fovy</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float32 const &amp;&#160;</td>
+          <td class="paramtype">float32&#160;</td>
           <td class="paramname"><em>width</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float32 const &amp;&#160;</td>
+          <td class="paramtype">float32&#160;</td>
           <td class="paramname"><em>height</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float32 const &amp;&#160;</td>
+          <td class="paramtype">float32&#160;</td>
           <td class="paramname"><em>near1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float32 const &amp;&#160;</td>
+          <td class="paramtype">float32&#160;</td>
           <td class="paramname"><em>far1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">pvr::float32</a>&#160;</td>
-          <td class="paramname"><em>rotate</em>&#160;</td>
+          <td class="paramname"><em>rotate</em> = <code>.0f</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -515,6 +703,40 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a class="anchor" id="a76ff8b92d0032831704d3502ea7b6abd"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::math::pointOnSide </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec3 &amp;&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::vec4 &amp;&#160;</td>
+          <td class="paramname"><em>plane</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

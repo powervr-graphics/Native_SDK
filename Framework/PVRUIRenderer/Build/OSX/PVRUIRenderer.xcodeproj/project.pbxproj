@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0E3504341BF6519F00EC0B4E /* PVRUIRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3504331BF6519F00EC0B4E /* PVRUIRenderer.h */; settings = {ASSET_TAGS = (); }; };
-		0E53CE6A1AC551E00032B504 /* UIRendererShaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E53CE691AC551E00032B504 /* UIRendererShaders.h */; };
+		0E55434D1C916797007DFD73 /* UIRendererShaders_ES.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E55434C1C916797007DFD73 /* UIRendererShaders_ES.h */; settings = {ASSET_TAGS = (); }; };
 		0E65D44E1B395B66004D80D5 /* ArialBoldFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E65D4491B395B66004D80D5 /* ArialBoldFont.h */; };
 		0E65D44F1B395B66004D80D5 /* PowerVRLogo.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E65D44A1B395B66004D80D5 /* PowerVRLogo.h */; };
 		0E65D4501B395B66004D80D5 /* Sprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E65D44B1B395B66004D80D5 /* Sprite.cpp */; };
@@ -20,7 +20,7 @@
 /* Begin PBXFileReference section */
 		0E3504331BF6519F00EC0B4E /* PVRUIRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRUIRenderer.h; path = ../../PVRUIRenderer.h; sourceTree = "<group>"; };
 		0E47C8281AC0563E0021937F /* libPVRUIRenderer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVRUIRenderer.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E53CE691AC551E00032B504 /* UIRendererShaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIRendererShaders.h; path = ../../UIRendererShaders.h; sourceTree = "<group>"; };
+		0E55434C1C916797007DFD73 /* UIRendererShaders_ES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIRendererShaders_ES.h; path = ../../UIRendererShaders_ES.h; sourceTree = "<group>"; };
 		0E65D4491B395B66004D80D5 /* ArialBoldFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArialBoldFont.h; path = ../../ArialBoldFont.h; sourceTree = "<group>"; };
 		0E65D44A1B395B66004D80D5 /* PowerVRLogo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PowerVRLogo.h; path = ../../PowerVRLogo.h; sourceTree = "<group>"; };
 		0E65D44B1B395B66004D80D5 /* Sprite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sprite.cpp; path = ../../Sprite.cpp; sourceTree = "<group>"; };
@@ -59,6 +59,7 @@
 		0E53CE601AC551BC0032B504 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				0E55434C1C916797007DFD73 /* UIRendererShaders_ES.h */,
 				0E65D4491B395B66004D80D5 /* ArialBoldFont.h */,
 				0E65D44A1B395B66004D80D5 /* PowerVRLogo.h */,
 				0E3504331BF6519F00EC0B4E /* PVRUIRenderer.h */,
@@ -66,7 +67,6 @@
 				0E65D44C1B395B66004D80D5 /* Sprite.h */,
 				0E65D44D1B395B66004D80D5 /* UIRenderer.h */,
 				0EB940E01B1707B500E2967A /* UIRenderer.cpp */,
-				0E53CE691AC551E00032B504 /* UIRendererShaders.h */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -78,12 +78,12 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E55434D1C916797007DFD73 /* UIRendererShaders_ES.h in Headers */,
 				0E3504341BF6519F00EC0B4E /* PVRUIRenderer.h in Headers */,
 				0E65D44F1B395B66004D80D5 /* PowerVRLogo.h in Headers */,
 				0E65D4511B395B66004D80D5 /* Sprite.h in Headers */,
 				0E65D44E1B395B66004D80D5 /* ArialBoldFont.h in Headers */,
 				0E65D4521B395B66004D80D5 /* UIRenderer.h in Headers */,
-				0E53CE6A1AC551E00032B504 /* UIRendererShaders.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

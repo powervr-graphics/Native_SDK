@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structpvr_1_1api_1_1pipeline_creation_1_1_compute_shader_stage_create_param.html" title="Computer shader stage creator. " alt="" coords="6,5,239,46"/>
+<area shape="rect" id="node2" href="$classpvr_1_1api_1_1vulkan_1_1_render_pass_vk__.html" title="pvr::api::vulkan::Render\lPassVk_" alt="" coords="245,5,401,46"/>
+<area shape="rect" id="node3" href="$classpvr_1_1api_1_1impl_1_1_render_pass__.html" title="The implementation of the RenderPass. Use through the Reference counted framework object pvr::api::Re..." alt="" coords="5,71,187,97"/>
+<area shape="rect" id="node4" href="$classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html" title="pvr::api::gles::RenderPass\lGles_" alt="" coords="235,70,410,111"/>
 </map>

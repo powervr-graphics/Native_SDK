@@ -41,7 +41,7 @@ private:
 
 	texture_bmp::FileHeader m_fileHeader;
 
-	bool initialiseFile();
+	bool initializeFile();
 	bool loadImageFromFile(Texture& asset);
 
 	bool readFileHeader(texture_bmp::FileHeader& fileheader);

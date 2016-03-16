@@ -1,4 +1,4 @@
-ifneq (,$(filter OGLES OGLES2 OGLES3 OGLES31 OCL,$(APIS)))
+ifneq (,$(filter OGLES OGLES2 OGLES3 OGLES31 VULKAN OCL,$(APIS)))
 LIBDIR ?= "$(SDKDIR)/Builds/Linux/x86_64/Lib"
 endif
 

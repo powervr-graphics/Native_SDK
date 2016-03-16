@@ -1,12 +1,24 @@
 var searchData=
 [
-  ['oneshot',['OneShot',['../namespacepvr_1_1api_1_1_descriptor_pool_usage.html#a5c8a44b44ed639f402236730da2b3de9aeecbfd8def20b9c661eda6ae7354cb65',1,'pvr::api::DescriptorPoolUsage::OneShot()'],['../namespacepvr_1_1api_1_1_descriptor_set_usage.html#ad9614b2864bf40ed5c6b9799ae248732a86fd91050789a55fab9b4fd37fd47d7e',1,'pvr::api::DescriptorSetUsage::OneShot()']]],
-  ['opaqueblack',['OpaqueBlack',['../namespacepvr_1_1_border_color.html#a653576974c05e7c08e2b61977364c35ca5773480c1100f7077deb856bf1c29b1c',1,'pvr::BorderColor']]],
-  ['opaquewhite',['OpaqueWhite',['../namespacepvr_1_1_border_color.html#a653576974c05e7c08e2b61977364c35ca33428d511c4960b3ae8d9b70188517df',1,'pvr::BorderColor']]],
+  ['one',['One',['../namespacepvr_1_1types_1_1_swizzle.html#a7b7e6f2f6c9576ec435072d0c8dded40af2d3efd623061fbac3c480bb81f73781',1,'pvr::types::Swizzle::One()'],['../namespacepvr_1_1types_1_1_blend_factor.html#a4d038daad3a28ddd7e3ae5254b4b9068af036b6a31e4f91d348b63ec1520f0cc7',1,'pvr::types::BlendFactor::One()']]],
+  ['oneminusconstantalpha',['OneMinusConstantAlpha',['../namespacepvr_1_1types_1_1_blend_factor.html#a4d038daad3a28ddd7e3ae5254b4b9068ad34b69d6d2b75a49612d1cbab898131b',1,'pvr::types::BlendFactor']]],
+  ['oneminusconstantcolor',['OneMinusConstantColor',['../namespacepvr_1_1types_1_1_blend_factor.html#a4d038daad3a28ddd7e3ae5254b4b9068a71377de5203504dc5047ed6b44f72366',1,'pvr::types::BlendFactor']]],
+  ['oneminusdstalpha',['OneMinusDstAlpha',['../namespacepvr_1_1types_1_1_blend_factor.html#a4d038daad3a28ddd7e3ae5254b4b9068a98417f23e2ca7567e33089749049d46f',1,'pvr::types::BlendFactor']]],
+  ['oneminusdstcolor',['OneMinusDstColor',['../namespacepvr_1_1types_1_1_blend_factor.html#a4d038daad3a28ddd7e3ae5254b4b9068ae4145edfc531d321476fa71896ffd88f',1,'pvr::types::BlendFactor']]],
+  ['oneminussrc1alpha',['OneMinusSrc1Alpha',['../namespacepvr_1_1types_1_1_blend_factor.html#a4d038daad3a28ddd7e3ae5254b4b9068a6a3eb5b896ea32ba8ea4c4c90c5420f6',1,'pvr::types::BlendFactor']]],
+  ['oneminussrc1color',['OneMinusSrc1Color',['../namespacepvr_1_1types_1_1_blend_factor.html#a4d038daad3a28ddd7e3ae5254b4b9068aa5ed4c812f021f8130682d9215861e91',1,'pvr::types::BlendFactor']]],
+  ['oneminussrcalpha',['OneMinusSrcAlpha',['../namespacepvr_1_1types_1_1_blend_factor.html#a4d038daad3a28ddd7e3ae5254b4b9068a24de8283b497b5fc46796a073adbf87f',1,'pvr::types::BlendFactor']]],
+  ['oneminussrccolor',['OneMinusSrcColor',['../namespacepvr_1_1types_1_1_blend_factor.html#a4d038daad3a28ddd7e3ae5254b4b9068a5ee16f7f049fa67d10c07b2ac9a59216',1,'pvr::types::BlendFactor']]],
+  ['oneshot',['OneShot',['../namespacepvr_1_1types_1_1_descriptor_pool_usage.html#a74754c4283cea71feb3d53b87c0dc670aac149b5fa2abfdf78e0f2149eed37a1e',1,'pvr::types::DescriptorPoolUsage::OneShot()'],['../namespacepvr_1_1types_1_1_descriptor_set_usage.html#af80d8e3f857803faff9c879120217dcbad20c0f760ccf1452c1b6ffae16818d8d',1,'pvr::types::DescriptorSetUsage::OneShot()']]],
+  ['opaqueblack',['OpaqueBlack',['../namespacepvr_1_1types_1_1_border_color.html#a4a7004c58006e61024481fe7d0ef52b0a621fb85bcc5029335f1da880a12aa98b',1,'pvr::types::BorderColor']]],
+  ['opaquewhite',['OpaqueWhite',['../namespacepvr_1_1types_1_1_border_color.html#a4a7004c58006e61024481fe7d0ef52b0af2a670868bdf8a2390901bf6f19a47a6',1,'pvr::types::BorderColor']]],
   ['opengles2',['OpenGLES2',['../namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05cafd519f6928dd268f837fd715b3792916',1,'pvr::Api']]],
   ['opengles3',['OpenGLES3',['../namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05cacee2c8fb011d7b7a3057dc6091a1e003',1,'pvr::Api']]],
   ['opengles31',['OpenGLES31',['../namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05caba5a417247862032ed7edf20b63a646a',1,'pvr::Api']]],
   ['openglesmaxversion',['OpenGLESMaxVersion',['../namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05ca0d456167e6cf764e8cc4034e6fe9b5da',1,'pvr::Api']]],
+  ['or',['Or',['../namespacepvr_1_1types_1_1_logic_op.html#adee99c6dcf6d8cb46dacb1fc3942a391a62ab60c02050e57d3e133641ca9e5429',1,'pvr::types::LogicOp']]],
+  ['orinverted',['OrInverted',['../namespacepvr_1_1types_1_1_logic_op.html#adee99c6dcf6d8cb46dacb1fc3942a391a3c3873346cc6b587566fd563c1fa6f31',1,'pvr::types::LogicOp']]],
+  ['orreverse',['OrReverse',['../namespacepvr_1_1types_1_1_logic_op.html#adee99c6dcf6d8cb46dacb1fc3942a391ac46c06ddbca82c9484d682ed6b5eb699',1,'pvr::types::LogicOp']]],
   ['outofbounds',['OutOfBounds',['../namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba2a5ebdfe6696fe138841bdb45b1e081a',1,'pvr::Result']]],
   ['outofmemory',['OutOfMemory',['../namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bbae500e1b6fba01c148efb000c9a444e55',1,'pvr::Result']]]
 ];

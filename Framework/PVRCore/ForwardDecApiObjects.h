@@ -6,7 +6,7 @@
 ***********************************************************************************************************************/
 #pragma once
 #include "PVRCore/CoreIncludes.h"
-#include "PVRApi/ApiObjectTypes.h"
+#include "PVRCore/RefCounted.h"
 
 namespace pvr {
 
@@ -18,34 +18,36 @@ namespace api {
 //!\cond NO_DOXYGEN
 namespace impl {
 class ResetPipeline;
-class GraphicsPipelineImpl;
-class ComputePipelineImpl;
-class ParentableGraphicsPipelineImpl;
-class TextureStoreImpl;
-class FboImpl;
-class BufferImpl;
-class SamplerImpl;
-class EffectApiImpl;
-class TextureViewImpl;
-class BufferViewImpl;
-class UboViewImpl;
-class SsboViewImpl;
-class AtomicBufferViewImpl;
-class ShaderImpl;
-class RenderPassImpl;
-struct ColorAttachmentViewImpl;
-struct DepthStencilViewImpl;
-class DescriptorSetImpl;
-class DescriptorSetLayoutImpl;
-struct DescriptorSetLayoutChainDescriptorImpl;
-class TextureStoreImpl;
-class DescriptorPoolImpl;
-class CommandBufferBaseImpl;
-class CommandBufferImpl;
-class SecondaryCommandBufferImpl;
-class PipelineLayoutImpl;
+class GraphicsPipeline_;
+class ComputePipeline_;
+class ParentableGraphicsPipeline_;
+class TextureStore_;
+class Fbo_;
+class Buffer_;
+class Sampler_;
+class EffectApi_;
+class TextureView_;
+class BufferView_;
+class Shader_;
+class RenderPass_;
+class DescriptorSet_;
+class DescriptorSetLayout_;
+class DescriptorPool_;
+class CommandBufferBase_;
+class CommandBuffer_;
+class SecondaryCommandBuffer_;
+class PipelineLayout_;
+class CommandPool_;
+class Fence_;
+class Semaphore_;
+class Event_;
+class SemaphoreSet_;
+class FenceSet_;
+class EventSet_;
 }
 //!\endcond
+//SPECIAL CASE
+class MemoryBarrierSet;
 
 class IBindable;
 class IIndexBindable;
@@ -55,195 +57,206 @@ struct RenderPassCreateParam;
 struct ComputePipelineCreateParam;
 struct FboCreateParam;
 struct DescriptorSetLayoutCreateParam;
-struct ColorAttachmentViewCreateParam;
-struct DepthStencilViewCreateParam;
 struct DescriptorPoolCreateParam;
-struct DescriptorSetUpdateParam;
+struct DescriptorSetUpdate;
 struct PipelineLayoutCreateParam;
+struct OnScreenFboCreateParam;
 
 /*!********************************************************************************************************************
 \brief        Framebuffer Object.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::FboImpl> Fbo;
+typedef RefCountedResource<impl::Fbo_> Fbo;
 
 /*!********************************************************************************************************************
 \brief        Buffer Object.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::BufferImpl> Buffer;
+typedef RefCountedResource<impl::Buffer_> Buffer;
 
 /*!********************************************************************************************************************
 \brief        GraphicsPipeline.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::GraphicsPipelineImpl> GraphicsPipeline;
+typedef RefCountedResource<impl::GraphicsPipeline_> GraphicsPipeline;
 
 /*!********************************************************************************************************************
 \brief        ComputePipeline.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::ComputePipelineImpl> ComputePipeline;
+typedef RefCountedResource<impl::ComputePipeline_> ComputePipeline;
 
 /*!********************************************************************************************************************
 \brief        Parentable GraphicsPipeline can be used as a parent to other GraphicsPipeline objects.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::ParentableGraphicsPipelineImpl> ParentableGraphicsPipeline;
+typedef RefCountedResource<impl::ParentableGraphicsPipeline_> ParentableGraphicsPipeline;
 
 /*!********************************************************************************************************************
 \brief        Sampler.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::SamplerImpl> Sampler;
+typedef RefCountedResource<impl::Sampler_> Sampler;
 
 /*!********************************************************************************************************************
 \brief        An Effect that has been cooked to render with with a specified API.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::EffectApiImpl> EffectApi;
+typedef RefCountedResource<impl::EffectApi_> EffectApi;
 
 /*!********************************************************************************************************************
 \brief  A generic Buffer. Can be directly bound as a VBO /IBO or wrapped with a BufferView(SsboView, UboView) to
 		be bound via a DescriptorSet
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::BufferViewImpl> BufferView;
-
-/*!********************************************************************************************************************
-\brief        A Uniform Buffer Object view of a Buffer.
-***********************************************************************************************************************/
-typedef RefCountedResource<impl::UboViewImpl> UboView;
-
-/*!********************************************************************************************************************
-\brief        A Shader Storage Buffer Object view of a Buffer.
-***********************************************************************************************************************/
-typedef RefCountedResource<impl::SsboViewImpl> SsboView;
-
-/*!********************************************************************************************************************
-\brief        An Atomic Buffer Object view of a Buffer.
-***********************************************************************************************************************/
-typedef RefCountedResource<impl::AtomicBufferViewImpl> AtomicBufferView;
+typedef RefCountedResource<impl::BufferView_> BufferView;
 
 /*!********************************************************************************************************************
 \brief        An Shader object.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::ShaderImpl> Shader;
+typedef RefCountedResource<impl::Shader_> Shader;
 
 /*!********************************************************************************************************************
 \brief        An Renderpass object represents a drawing cycle that ends up rendering to a single FBO.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::RenderPassImpl> RenderPass;
-
-/*!********************************************************************************************************************
-\brief        An ColorAttachmentView object.
-***********************************************************************************************************************/
-typedef RefCountedResource<impl::ColorAttachmentViewImpl> ColorAttachmentView;
-
-/*!********************************************************************************************************************
-\brief        A DepthStencilView object.
-***********************************************************************************************************************/
-typedef RefCountedResource<impl::DepthStencilViewImpl> DepthStencilView;
+typedef RefCountedResource<impl::RenderPass_> RenderPass;
 
 /*!********************************************************************************************************************
 \brief        A DescriptorSet represents a collection of resources (Textures, Buffers, Samplers, etc.) that can all be
 bound together for use by a rendering run.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::DescriptorSetImpl> DescriptorSet;
+typedef RefCountedResource<impl::DescriptorSet_> DescriptorSet;
 
 /*!********************************************************************************************************************
 \brief        A DescriptorSet Layout represents a "recipe" for a descriptor set. It is used for other objects to ensure
 compatibility with a specific DescriptorSet family.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::DescriptorSetLayoutImpl> DescriptorSetLayout;
+typedef RefCountedResource<impl::DescriptorSetLayout_> DescriptorSetLayout;
 
 /*!********************************************************************************************************************
 \brief        A backing store for any kind of texture.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::TextureStoreImpl> TextureStore;
+typedef RefCountedResource<impl::TextureStore_> TextureStore;
 
 /*!********************************************************************************************************************
 \brief        Base class for the view of any kind of texture view.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::TextureViewImpl> TextureView;
+typedef RefCountedResource<impl::TextureView_> TextureView;
 
 /*!********************************************************************************************************************
 \brief        A descriptor pool represents a specific chunk of memory from which descriptor pools will be allocated.
 It is intended that different threads will use different descriptor pools to avoid having contention and
 the need to lock between them.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::DescriptorPoolImpl> DescriptorPool;
+typedef EmbeddedRefCountedResource<impl::DescriptorPool_> DescriptorPool;
 
 /*!********************************************************************************************************************
 \brief        A CommandBuffer(Base) represents a string of commands that will be submitted to the GPU in a batch.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::CommandBufferBaseImpl>CommandBufferBase;
+typedef RefCountedResource<impl::CommandBufferBase_>CommandBufferBase;
 /*!********************************************************************************************************************
 \brief        A CommandBuffer(Primary) is a CommandBuffer that can be submitted to the GPU and can contain secondary command buffers
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::CommandBufferImpl> CommandBuffer;
+typedef RefCountedResource<impl::CommandBuffer_> CommandBuffer;
 /*!********************************************************************************************************************
 \brief        A SecondaryCommandBufferis a CommandBuffer that can only be submitted to a primary CommandBuffer and cannot contain a RenderPass
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::SecondaryCommandBufferImpl> SecondaryCommandBuffer;
+typedef RefCountedResource<impl::SecondaryCommandBuffer_> SecondaryCommandBuffer;
 
 /*!********************************************************************************************************************
 \brief       A PipelineLayout represents the blueprint out of which a pipeline will be created, needed by other objects
 to ensure compatibility with a family of GraphicsPipelines.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::PipelineLayoutImpl> PipelineLayout;
+typedef RefCountedResource<impl::PipelineLayout_> PipelineLayout;
 
 /*!****************************************************************************************************************
-\brief Reference-counted handle to a Uniform Buffer object view of a Buffer.
-Default constructor returns an empty handle that wraps a NULL object.
-Use the IGraphicsContext's createUbo to construct a UboView.
+\brief Forwared-declared reference-counted handle to a Buffer. For detailed documentation, see PVRApi module
+\remarks Default constructor returns an empty handle that wraps a NULL object.
+Use the IGraphicsContext's createBuffer to construct a Buffer.
 As with all reference-counted handles, access with the arrow operator.
 *******************************************************************************************************************/
-typedef RefCountedResource<impl::UboViewImpl> UboView;
+typedef RefCountedResource<impl::Buffer_> Buffer;
+
 
 /*!****************************************************************************************************************
-\brief Reference-counted handle to a Shader Storage Buffer object view of a Buffer.
-Default constructor returns an empty handle that wraps a NULL object.
-Use the IGraphicsContext's createUbo to construct a SsboView.
+\brief Forwared-declared reference-counted handle to a Buffer. For detailed documentation, see PVRApi module
+\remarks Default constructor returns an empty handle that wraps a NULL object.
+Use the IGraphicsContext's createBufferView to construct a Buffer.
 As with all reference-counted handles, access with the arrow operator.
 *******************************************************************************************************************/
-typedef RefCountedResource<impl::SsboViewImpl> SsboView;
+typedef EmbeddedRefCountedResource<impl::CommandPool_> CommandPool;
 
 
 
 /*!****************************************************************************************************************
 \brief Forwared-declared reference-counted handle to a Buffer. For detailed documentation, see PVRApi module
 \remarks Default constructor returns an empty handle that wraps a NULL object.
-Use the IGraphicsContext's createUbo to construct a Buffer.
+Use the IGraphicsContext's createBufferView to construct a Buffer.
 As with all reference-counted handles, access with the arrow operator.
 *******************************************************************************************************************/
-typedef RefCountedResource<impl::BufferImpl> Buffer;
+typedef RefCountedResource<impl::Fence_> Fence;
 
+
+
+/*!****************************************************************************************************************
+\brief Forwared-declared reference-counted handle to a Buffer. For detailed documentation, see PVRApi module
+\remarks Default constructor returns an empty handle that wraps a NULL object.
+Use the IGraphicsContext's createBufferView to construct a Buffer.
+As with all reference-counted handles, access with the arrow operator.
+*******************************************************************************************************************/
+typedef RefCountedResource<impl::Semaphore_> Semaphore;
+
+
+
+/*!****************************************************************************************************************
+\brief Forwared-declared reference-counted handle to a Buffer. For detailed documentation, see PVRApi module
+\remarks Default constructor returns an empty handle that wraps a NULL object.
+Use the IGraphicsContext's createBufferView to construct a Buffer.
+As with all reference-counted handles, access with the arrow operator.
+*******************************************************************************************************************/
+typedef RefCountedResource<impl::Event_> Event;
+
+typedef RefCountedResource<impl::EventSet_> EventSet;
+typedef RefCountedResource<impl::FenceSet_> FenceSet;
+typedef RefCountedResource<impl::SemaphoreSet_> SemaphoreSet;
 }
 
 //!\cond NO_DOXYGEN
 namespace native {
-struct HFbo_;					//!< Handle to the api's specific Frame-Buffer-Object
-struct HTexture_;				//!< Handle to the api's specific texture
-struct HSampler_;				//!< Handle to the api's specific sampler
+struct HContext_;				//!< Handle to the api's Context, for use with Utilities
+
 struct HBuffer_;				//!< Handle to the api's specifics buffer
-struct HShader_;				//!< Handle to the api's specifics shader
-struct HShaderProgram_;			//!< Handle to the api's specifics compiled shader program
+struct HBufferView_;            //!< Handle to the api's BufferView, if it exists
 struct HColorAttachmentView_;   //!< Handle to the api's specifics color attachment
+struct HCommandPool_;           //!< Handle to the api's CommandPool, if it exists
+struct HCommandBuffer_;         //!< Handle to the api's CommandBuffer, if it exists
 struct HDepthStencilView_;      //!< Handle to the api's depth Stencil attachment view
 struct HDescriptorSetLayout_;   //!< Handle to the api's DescriptorSetLayout, if it exists
 struct HDescriptorSet_;         //!< Handle to the api's DescriptorSet, if it exists
 struct HDescriptorPool_;        //!< Handle to the api's DescriptorPool, if it exists
-struct HCommandBuffer_;         //!< Handle to the api's CommandBuffer, if it exists
-struct HRenderPass_;            //!< Handle to the api's RenderPass, if it exists
+struct HFbo_;					//!< Handle to the api's specific Frame-Buffer-Object
+struct HImageView_;             //!< Handle to the api's ImageView, if it exists
+struct HPipeline_;              //!< Handle to the api's PipelineLayout, if it exists
 struct HPipelineLayout_;        //!< Handle to the api's PipelineLayout, if it exists
+struct HRenderPass_;            //!< Handle to the api's RenderPass, if it exists
+struct HSampler_;				//!< Handle to the api's specific sampler
+struct HShader_;				//!< Handle to the api's specifics shader
+struct HTexture_;				//!< Handle to the api's specific texture
+struct HFence_;
+struct HSemaphore_;
+struct HEvent_;
 
 typedef RefCountedResource<HFbo_> HFbo; //!< Pointer to the api's specific Frame-Buffer-Object
 typedef RefCountedResource<HTexture_> HTexture; //!< Pointer to the api's specific Texture
 typedef RefCountedResource<HSampler_> HSampler; //!< Pointer to the api's specific Sampler
 typedef RefCountedResource<HBuffer_> HBuffer; //!< Pointer to the api's specific Buffer
 typedef RefCountedResource<HShader_> HShader; //!< Pointer to the api's specific Shader
-typedef RefCountedResource<HShaderProgram_> HShaderProgram;//!< Pointer to the api's specific Shader Program
-typedef RefCountedResource<HColorAttachmentView_> HColorAttachmentView;//!< Pointer to the api's specific color Attachment view
 typedef RefCountedResource<HDepthStencilView_> HDepthStencilView;//!< Pointer to the api's specific Depth Stencil Attachment view
 typedef RefCountedResource<HDescriptorSetLayout_> HDescriptorSetLayout;//!< Pointer to the api's specific Descriptor Set Layout
 typedef RefCountedResource<HDescriptorSet_> HDescriptorSet;//!< Pointer to the api's specific Descriptor Set
 typedef RefCountedResource<HDescriptorPool_> HDescriptorPool;//!< Pointer to the api's specific Descriptor Pool
+typedef EmbeddedRefCountedResource<HCommandPool_> HCommandPool;//!< Pointer to the api's specific Descriptor Pool
 typedef RefCountedResource<HCommandBuffer_> HCommandBuffer;//!< Pointer to the api's specific  CommandBuffer
 typedef RefCountedResource<HRenderPass_> HRenderPass;//!< Pointer to the api's specific  RenderPass
 typedef RefCountedResource<HPipelineLayout_> HPipelineLayout;//!< Pointer to the api's specific  PipelineLayout
+typedef RefCountedResource<HPipeline_> HPipeline;//!< Pointer to the api's specific  PipelineLayout
+typedef RefCountedResource<HBufferView_> HBufferView;//!< Pointer to the api's specific  BufferView
+typedef RefCountedResource<HImageView_> HImageView;//!< Pointer to the api's specific  ImageView
+typedef RefCountedResource<HFence_> HFence;//!< Pointer to the api's specific  Fence
+typedef RefCountedResource<HSemaphore_> HSemaphore;//!< Pointer to the api's specific  Semaphore
+typedef RefCountedResource<HEvent_> HEvent;//!< Pointer to the api's specific  Event
 
 }
 //!\endcond

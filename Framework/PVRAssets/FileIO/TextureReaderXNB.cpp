@@ -20,7 +20,7 @@ bool  TextureReaderXNB::readNextAsset(Texture& asset)
 	bool result;
 	if (m_hasNewAssetStream)
 	{
-		result = initialiseFile();
+		result = initializeFile();
 		m_hasNewAssetStream = false;
 		if (result)
 		{
@@ -127,7 +127,7 @@ string TextureReaderXNB::getReaderVersion()
 	return "1.0.0";
 }
 
-bool TextureReaderXNB::initialiseFile()
+bool TextureReaderXNB::initializeFile()
 {
 	const uint32 c_objectNotFound = 0xffffffffu;
 
@@ -286,7 +286,7 @@ bool TextureReaderXNB::read7BitEncodedInt(int32& decodedInteger)
 	int32 bitsRead = 0;
 	int32 value = 0;
 
-	// Initialise the decoded integer
+	// Initialize the decoded integer
 	decodedInteger = 0;
 
 	// Loop through and read all the appropriate data to decode the integer

@@ -33,12 +33,12 @@
 #else
 #include <windows.h>
 #endif
-
+using namespace pvr::types;
 namespace pvr {
 namespace system {
 struct InternalOS
 {
-	bool isInitialised;
+	bool isInitialized;
 	uint32 display;
 
 #if defined(__linux__)
@@ -50,7 +50,7 @@ struct InternalOS
 	bool keyboardShiftHeld; // Is one of the shift keys on the keyboard being held down? (Keyboard device only - not terminal).
 #endif
 
-	InternalOS() : isInitialised(false), display(0)
+	InternalOS() : isInitialized(false), display(0)
 #if defined(__linux__)
 		, devfd(0), keypad_fd(0), keyboard_fd(0), keyboardShiftHeld(false)
 #endif
@@ -230,9 +230,9 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	return Result::Success;
 }
 
-Result::Enum ShellOS::initialiseWindow(DisplayAttributes& data)
+Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 {
-	m_OSImplementation->isInitialised = true;
+	m_OSImplementation->isInitialized = true;
 	data.fullscreen = true;
 	data.x = data.y = 0;
     data.width = data.height = 0; //no way of getting the monitor resolution.
@@ -241,7 +241,7 @@ Result::Enum ShellOS::initialiseWindow(DisplayAttributes& data)
 
 void ShellOS::releaseWindow()
 {
-	m_OSImplementation->isInitialised = false;
+	m_OSImplementation->isInitialized = false;
 
 	close(m_OSImplementation->keyboard_fd);
 	close(m_OSImplementation->keypad_fd);
@@ -612,9 +612,9 @@ Result::Enum ShellOS::handleOSEvents()
 	return Result::Success;
 }
 
-bool ShellOS::isInitialised()
+bool ShellOS::isInitialized()
 {
-	return m_OSImplementation && m_OSImplementation->isInitialised;
+	return m_OSImplementation && m_OSImplementation->isInitialized;
 }
 
 Result::Enum ShellOS::popUpMessage(const tchar* title, const tchar* message, ...) const

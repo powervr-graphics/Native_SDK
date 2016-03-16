@@ -5,152 +5,207 @@
 \brief    Contains the definition of the FrameBuffer Object class
 ***********************************************************************************************************************/
 #pragma once
-#include "PVRCore/IGraphicsContext.h"
-#include "PVRCore/RefCounted.h"
+#include "PVRApi/ApiIncludes.h"
+#include "PVRApi/ApiObjects/Buffer.h"
 #include "PVRApi/ApiObjects/Texture.h"
-#include "PVRApi/ApiObjects/FboCreateParam.h"
 namespace pvr {
-namespace platform {
-class ContextGles;
-}
+
 class IGraphicsContext;
 namespace api {
 namespace impl {
-class RenderPassImpl;
+class RenderPass_;
 class BeginRenderPass;
 class EndRenderPass;
-/*!*********************************************************************************************************************
-\brief  PVR Api Color attachment View. Use through the Reference Counted API object pvr::api::ColorAttachmentView.
-        Contains a Color Attachment of an image.
-***********************************************************************************************************************/
-struct ColorAttachmentViewImpl
+}
+/*!****************************************************************************************************************
+\brief  Fbo creation descriptor.
+*******************************************************************************************************************/
+struct FboCreateParam
 {
-	TextureView texture;	//!< Texture to be rendered to
-	uint32 mipLevel;			//!< Mip-map level to use
-	pvr::uint32 baseArraySlice;	//!< Array Slice starting index to use
-	pvr::uint32 arraySize;		//!< Number of Array Slices to use
-	TextureView msaaResolveImage;	//!< Image to use for MSAA resolve
-	ImageSubResourceRange msaaResolveSubResRange;//!< SubResourceRange to use for MSAA resolve
+	friend class impl::Fbo_;
+	TextureView depthStencilView;
+	//< fbo's color attachments the attachments are mapped in the order they are added
+	pvr::uint32 layers;
+	pvr::uint32 width, height;
+	RenderPass	renderPass;
+	std::vector<TextureView> colorViews;
+public:
+	FboCreateParam() : width(0), height(0), layers(1) {}
 
-	mutable uint32     samples;//!< number of samples, used for MultiSampling
-	/*!************************************************************************************
-	\brief Which attachment point to attach this object to.
-	***************************************************************************************/
-	void attachTo(uint32 attachment)const;
+	pvr::uint32 getNumColorAttachements()const { return (uint32)colorViews.size(); }
 
-	/*!************************************************************************************
-	\brief Create an empty ColorAttachmentView object.
-	***************************************************************************************/
-	ColorAttachmentViewImpl(GraphicsContext& device) :
-		mipLevel(0), samples(0), device(device) {}
-private:
-	friend class ::pvr::IGraphicsContext;
-	Result::Enum init(const pvr::api::ColorAttachmentViewCreateParam& createParam);
-	native::HColorAttachmentView colorAttachmentView;
-	GraphicsContext device;
-};
-
-/*!********************************************************************************************
-\brief  Api DepthStencilView wrapper. Use through the Reference Counted API object pvr::api::DepthStencilView.
-        Contains a Color Attachment of an image.
-***********************************************************************************************/
-struct DepthStencilViewImpl
-{
-	enum DepthStencilBit
+	const TextureView& getColorAttachment(pvr::uint32 index)const
 	{
-		Depth,
-		Stencil
-	};
-	TextureView texture;	//!< texture to be attached
-	DepthStencilBit bitFlag;	//!< Depth, Stencil, DepthStencil
-	uint32 mipLevel;			//!< Mip-map level to use
-	pvr::uint32 baseArraySlice;	//!< Array Slice starting index to use
-	pvr::uint32 arraySize;		//!< Number of Array Slices to use
-	TextureView msaaResolveImage;	//!< Image to use for MSAA resolve
-	ImageSubResourceRange msaaResolveSubResRange;//!< SubResourceRange to use for MSAA resolve
+		assertion(index < colorViews.size() ,  " Invalid Color Attachment index");
+		return colorViews[index];
+	}
+	const std::vector<TextureView>& getColorAttachments()const
+	{
+		return colorViews;
+	}
 
-	/*!************************************************************************************
-	\brief Which attachment point to attach this object to.
-	***************************************************************************************/
-	void attachTo()const;
-	DepthStencilViewImpl(api::FboAttachmentType::Enum attachmentType) : type(attachmentType) {}
-private:
-	friend class pvr::IGraphicsContext;
-	pvr::Result::Enum init(const pvr::api::DepthStencilViewCreateParam& createParam);
-	api::FboAttachmentType::Enum	type;
-	pvr::native::HDepthStencilView depthStencilView;
+	const RenderPass& getRenderPass()const { return renderPass; }
+
+
+	RenderPass& getRenderPass() { return renderPass; }
+
+	TextureView& getDepthStencilAttachment() { return depthStencilView; }
+
+	const TextureView& getDepthStencilAttachment() const { return depthStencilView; }
+
+	glm::ivec2 getDimension()const {	return glm::vec2(width, height); }
+
+	FboCreateParam& setDimension(pvr::uint32 width, pvr::uint32 height)
+	{
+		this->width = width; this->height = height; return *this;
+	}
+
+	/*!*********************************************************************************************************************
+	\brief Set the depthstencil attachment.
+	\param depthStencilView A depthstencil bind info
+	\return this (allow chaining)
+	***********************************************************************************************************************/
+	FboCreateParam& setDepthStencil(const TextureView depthStencilView)
+	{
+		// validate the attachment format
+		//const auto& format = depthStencilView->getResource()->getFormat().format.;
+		//if (format == PixelFormat::Depth16 || format == PixelFormat::Depth24 &&
+		//    format == PixelFormat::Depth32 || format == PixelFormat::Depth24Stencil8 &&
+		//    format == PixelFormat::Depth32Stencil8)
+		{
+			this->depthStencilView = depthStencilView; return *this;
+		}
+		//	assertion(false, "Invalid Depth stencil attachemnt");
+	}
+
+	/*!*********************************************************************************************************************
+	\brief Add a color attachment to a specified attachment point.
+	\param index The attachment point
+	\param colorView The color attachment
+	\return this (allow chaining)
+	***********************************************************************************************************************/
+	FboCreateParam& addColor(pvr::uint32 index, const TextureView colorView)
+	{
+		if (index >= this->colorViews.size()) { this->colorViews.resize(index + 1); }
+		this->colorViews[index] = colorView;
+		return *this;
+	}
+
+	/*!*********************************************************************************************************************
+	\brief Set the number of layers.
+	\return this (allow chaining)
+	***********************************************************************************************************************/
+	FboCreateParam& setNumLayers(pvr::uint32 count) { layers = count; return *this; }
+
+	/*!*********************************************************************************************************************
+	\brief Set the Renderpass which this FBO will be invoking when bound.
+	\param renderPass A renderpass. When binding this FBO, this renderpass will be the one to be bound.
+	\return this (allow chaining)
+	***********************************************************************************************************************/
+	FboCreateParam& setRenderPass(const RenderPass& renderPass) { this->renderPass = renderPass; return *this; }
 };
-}// namespace impl
-typedef RefCountedResource<impl::ColorAttachmentViewImpl> ColorAttachmentView;
-typedef RefCountedResource<impl::DepthStencilViewImpl> DepthStencilView;
-namespace impl {
 
+/*!****************************************************************************************************************
+\brief  on screen Fbo creation descriptor - provides limited additional functionality when creating an on screen FBO
+primarily the ability to add additional color attachments.
+*******************************************************************************************************************/
+struct OnScreenFboCreateParam
+{
+	friend class impl::Fbo_;
+	std::map<pvr::uint32, TextureView> colorViews;
+public:
+	OnScreenFboCreateParam() {}
+
+	pvr::uint32 getNumColorAttachements()const { return (uint32)colorViews.size(); }
+
+	const TextureView& getColorAttachment(pvr::uint32 index)const
+	{
+		assertion(index < colorViews.size(), " Invalid Color Attachment index");
+		assertion(index > 0u, " Invalid Color Attachment - Index 0 corresponds to presentation image");
+		auto foundColorView = colorViews.find(index);
+		assertion(foundColorView != colorViews.end(), " Invalid Color Attachment index");
+		return foundColorView->second;
+	}
+
+	const std::map<pvr::uint32, TextureView>& getColorAttachments()const
+	{
+		return colorViews;
+	}
+
+	/*!*********************************************************************************************************************
+	\brief Add a color attachment to a specified attachment point.
+	\param index The attachment point
+	\param colorView The color attachment
+	\return this (allow chaining)
+	***********************************************************************************************************************/
+	OnScreenFboCreateParam& addColor(pvr::uint32 index, const TextureView colorView)
+	{
+		assertion(index > 0u, " Invalid Color Attachment index - Index 0 corresponds to presentation image");
+		this->colorViews[index] = colorView;
+		return *this;
+	}
+};
+
+namespace impl {
 /*!*********************************************************************************************************************
 \brief A PVRApi FrameBufferObject implementation. Use through the Reference counted Framework object Fbo. Use a Context to
       create an FBO (IGraphicsContext::createFbo()).
 ***********************************************************************************************************************/
-class FboImpl
+class Fbo_
 {
-	friend class ::pvr::api::impl::RenderPassImpl;
+	friend class ::pvr::api::impl::RenderPass_;
 	friend class ::pvr::api::impl::BeginRenderPass;
 	friend class ::pvr::api::impl::EndRenderPass;
-	friend class ::pvr::platform::ContextGles;
-	FboImpl& operator=(const FboImpl&);
+	Fbo_& operator=(const Fbo_&);
 public:
-	typedef RefCountedResource<FboImpl> Fbo_;
 
 	/*!*********************************************************************************************************************
-	\brief  Construct default on a device.
+	\brief  Construct Fbo on a Context.
 	***********************************************************************************************************************/
-	FboImpl(GraphicsContext& device);
+	Fbo_(GraphicsContext& m_context);
 
 	/*!*********************************************************************************************************************
 	\brief Destroy this object and free all resources owned.
 	***********************************************************************************************************************/
-	virtual void destroy();
+	void destroy();
 
 	/*!*********************************************************************************************************************
 	\brief Destructor. Destroys this object and free all resources owned.
 	***********************************************************************************************************************/
-	virtual ~FboImpl() {  destroy(); }
+	virtual ~Fbo_() {  destroy(); }
 
 	/*!*********************************************************************************************************************
 	\brief Construct an FBO on device with create description.
 	\param desc Creation information for an FBO
 	\param device A Context to create this FBO on
 	***********************************************************************************************************************/
-	FboImpl(const FboCreateParam& desc, GraphicsContext& device);
+	Fbo_(const FboCreateParam& desc, GraphicsContext& device);
 
 	/*!*********************************************************************************************************************
 	\brief Return if this is a Default Fbo (onScreen).
 	\return True if this is an Fbo that renders on Screen
 	***********************************************************************************************************************/
-	virtual bool isDefault()const { return false; }
+	virtual bool isDefault() const { return false; }
 
 	/*!*********************************************************************************************************************
 	\brief Return the renderpass that this fbo uses.
 	\return The renderpass that this FBO uses.
 	***********************************************************************************************************************/
-	const RenderPass& getRenderPass()const { return m_desc.renderPass; }
+	const native::HFbo_& getNativeObject() const;
 
 	/*!*********************************************************************************************************************
 	\brief Return the renderpass that this fbo uses.
 	\return The renderpass that this FBO uses.
 	***********************************************************************************************************************/
-	const native::HFbo& getNativeHandle()const { return m_fbo; }
+	const RenderPass& getRenderPass() const { return m_desc.renderPass; }
+
+	native::HFbo_& getNativeObject();
 protected:
-	native::HFbo m_fbo;
-	mutable FboBindingTarget::Enum m_target;
-	virtual void bind(IGraphicsContext& context, api::FboBindingTarget::Enum target)const;
-	virtual Result::Enum init(const FboCreateParam& desc);
-	virtual bool checkFboStatus();
-	std::vector<ColorAttachmentView> m_colorAttachments;
-	std::vector<DepthStencilView> m_depthStencilAttachment;
-	GraphicsContext m_context;
 	FboCreateParam m_desc;
+	GraphicsContext m_context;
 };
 }//	namespace impl
-typedef impl::FboImpl::Fbo_ Fbo;
+typedef RefCountedResource<impl::Fbo_> Fbo;
 
 }// namespace api
 }// namespace pvr

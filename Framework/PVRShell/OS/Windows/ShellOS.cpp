@@ -28,7 +28,7 @@ struct InternalOS
 };
 
 // Setup the capabilities.
-const ShellOS::Capabilities ShellOS::m_capabilities = { Capability::Immutable, Capability::Immutable };
+const ShellOS::Capabilities ShellOS::m_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
 
 ShellOS::ShellOS(OSApplication hInstance, OSDATA osdata) : m_instance(hInstance), m_shell(0)
 {
@@ -239,7 +239,7 @@ Result::Enum ShellOS::init(DisplayAttributes& /*data*/)
 	return Result::Success;
 }
 
-Result::Enum ShellOS::initialiseWindow(DisplayAttributes& data)
+Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	HWND		hWnd;
 	POINT		p;
@@ -370,7 +370,7 @@ Result::Enum ShellOS::handleOSEvents()
 	return Result::Success;
 }
 
-bool ShellOS::isInitialised()
+bool ShellOS::isInitialized()
 {
 	return m_OSImplementation && m_OSImplementation->hDC;
 }

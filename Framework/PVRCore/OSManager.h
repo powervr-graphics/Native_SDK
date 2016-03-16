@@ -95,7 +95,7 @@ typedef void* OSDATA;
 
 /*!*********************************************************************************************************************
 \brief	This interface abstracts the part of the Shell that will provide the Display and the Window so that the context
-		can be initialised.
+		can be initialized.
 ***********************************************************************************************************************/
 class OSManager
 {

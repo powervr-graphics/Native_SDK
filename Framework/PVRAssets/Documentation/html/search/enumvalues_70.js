@@ -1,9 +1,7 @@
 var searchData=
 [
-  ['podcamera',['PodCamera',['../namespacepvr_1_1assets_1_1_effect_pass_view.html#a50eed50baf959babed2672db8a3b306fa3cd6a9128263d1e560e7aba6fd8e8412',1,'pvr::assets::EffectPassView']]],
   ['point',['Point',['../classpvr_1_1assets_1_1_light.html#a6c46cd62c805c31bdc99f79137e1421baa0244801b0e056f768687e509549c0fb',1,'pvr::assets::Light']]],
   ['position',['Position',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a2be87408f3ff795edd9fc8432f3e5ebb',1,'pvr::assets::PVRShamanSemantics']]],
-  ['postprocess',['PostProcess',['../namespacepvr_1_1assets_1_1_effect_pass_type.html#aebb1b7bae82399d869effc200550a247ad629f80ca415aab86b84b953e11bba0a',1,'pvr::assets::EffectPassType']]],
   ['premultipliedflag',['PremultipliedFlag',['../structpvr_1_1assets_1_1_texture_header_1_1_header.html#aa0077037f375fc855e1b15cef9422c54ac9efabc59acad53867c3b87123c4b1db',1,'pvr::assets::TextureHeader::Header']]],
   ['projection',['Projection',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a677c54e59afdbfb1ec923a76cf8a0414',1,'pvr::assets::PVRShamanSemantics']]],
   ['projectioni',['ProjectionI',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a33f5838dae401d8b6fc0ce3e2f865519',1,'pvr::assets::PVRShamanSemantics']]],

@@ -17,5 +17,5 @@ var searchData=
   ['menukey',['MenuKey',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a6af40f952d0053e27c1c64ecd3120711',1,'pvr::Keys']]],
   ['mincontexttype',['minContextType',['../structpvr_1_1system_1_1_shell_data.html#a30124515a96521fe5f7774cee3f06fbe',1,'pvr::system::ShellData']]],
   ['minus',['Minus',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a68ca5fdc0dee1b1a5477ee7d4832bed8',1,'pvr::Keys']]],
-  ['movable',['movable',['../structpvr_1_1system_1_1_shell_o_s_1_1_capabilities.html#a355dba5d8df740bed297b987fb68e064',1,'pvr::system::ShellOS::Capabilities']]]
+  ['movable',['movable',['../structpvr_1_1system_1_1_shell_o_s_1_1_capabilities.html#a8f6eeace140487bb9ff8718b171b968a',1,'pvr::system::ShellOS::Capabilities']]]
 ];

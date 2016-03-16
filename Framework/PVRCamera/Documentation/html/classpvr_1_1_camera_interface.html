@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCamera</span> Documentation</a>
    <tbody>
@@ -125,9 +125,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac00b57938d955f8ae6e0f7220b2f4549"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#ac00b57938d955f8ae6e0f7220b2f4549">hasRgbTexture</a> ()</td></tr>
 <tr class="memdesc:ac00b57938d955f8ae6e0f7220b2f4549"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if this implementation supports a single RGB texture for the camera streaming interface.  <a href="#ac00b57938d955f8ae6e0f7220b2f4549">More...</a><br/></td></tr>
 <tr class="separator:ac00b57938d955f8ae6e0f7220b2f4549"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a896b8ba0083d05b5fe668a4717b14590"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#a896b8ba0083d05b5fe668a4717b14590">initialiseSession</a> (<a class="el" href="namespacepvr_1_1_h_w_camera.html#a77929091f777ed468df6cb128dbfdb08">HWCamera::Enum</a> eCamera, int preferredResX=0, int preferredResY=0)</td></tr>
-<tr class="memdesc:a896b8ba0083d05b5fe668a4717b14590"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialises the capture session using the given hardware camera, if it is available.  <a href="#a896b8ba0083d05b5fe668a4717b14590">More...</a><br/></td></tr>
-<tr class="separator:a896b8ba0083d05b5fe668a4717b14590"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b87146861e45d21ab1ff4aa41fe2cd8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#a6b87146861e45d21ab1ff4aa41fe2cd8">initializeSession</a> (<a class="el" href="namespacepvr_1_1_h_w_camera.html#a77929091f777ed468df6cb128dbfdb08">HWCamera::Enum</a> eCamera, int preferredResX=0, int preferredResY=0)</td></tr>
+<tr class="memdesc:a6b87146861e45d21ab1ff4aa41fe2cd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the capture session using the given hardware camera, if it is available.  <a href="#a6b87146861e45d21ab1ff4aa41fe2cd8">More...</a><br/></td></tr>
+<tr class="separator:a6b87146861e45d21ab1ff4aa41fe2cd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad452083810797f079a8d5efbe02e1909"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_camera_interface.html#ad452083810797f079a8d5efbe02e1909">updateImage</a> ()</td></tr>
 <tr class="memdesc:ad452083810797f079a8d5efbe02e1909"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks to see if the image has been updated.  <a href="#ad452083810797f079a8d5efbe02e1909">More...</a><br/></td></tr>
 <tr class="separator:ad452083810797f079a8d5efbe02e1909"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -357,16 +357,16 @@ Public Member Functions</h2></td></tr>
 <p>Query if this implementation supports a single RGB texture for the camera streaming interface. </p>
 <hr/>
  <dl class="section return"><dt>Returns</dt><dd>True if the implementation supports an RGB texture, false otherwise</dd></dl>
-<p>This function will return true if the <a class="el" href="classpvr_1_1_camera_interface.html#ab77ba12e270dbe136e09361af3e0c36e" title="Retrieves the texture name for the YUV camera texture. ">getRgbTexture()</a> can be used. In implementations where this is not supported (e.g. iOS), this function will return false, and the <a class="el" href="classpvr_1_1_camera_interface.html#ab77ba12e270dbe136e09361af3e0c36e" title="Retrieves the texture name for the YUV camera texture. ">getRgbTexture()</a> function will return an empty (invalid) texture if used. See <a class="el" href="classpvr_1_1_camera_interface.html#aef1d4aa9955ef0a5b1a3310b6b50adbd" title="Query if this implementation supports YUV (Luma/Chroma)planar textures. ">hasLumaChromaTextures()</a>. In implementations where RGB textures are supported (e.g. Android) this function will return true and the <a class="el" href="classpvr_1_1_camera_interface.html#ab77ba12e270dbe136e09361af3e0c36e" title="Retrieves the texture name for the YUV camera texture. ">getRgbTexture()</a> will return a valid texture handle (if called after this interface was successfully initialised). </p>
+<p>This function will return true if the <a class="el" href="classpvr_1_1_camera_interface.html#ab77ba12e270dbe136e09361af3e0c36e" title="Retrieves the texture name for the YUV camera texture. ">getRgbTexture()</a> can be used. In implementations where this is not supported (e.g. iOS), this function will return false, and the <a class="el" href="classpvr_1_1_camera_interface.html#ab77ba12e270dbe136e09361af3e0c36e" title="Retrieves the texture name for the YUV camera texture. ">getRgbTexture()</a> function will return an empty (invalid) texture if used. See <a class="el" href="classpvr_1_1_camera_interface.html#aef1d4aa9955ef0a5b1a3310b6b50adbd" title="Query if this implementation supports YUV (Luma/Chroma)planar textures. ">hasLumaChromaTextures()</a>. In implementations where RGB textures are supported (e.g. Android) this function will return true and the <a class="el" href="classpvr_1_1_camera_interface.html#ab77ba12e270dbe136e09361af3e0c36e" title="Retrieves the texture name for the YUV camera texture. ">getRgbTexture()</a> will return a valid texture handle (if called after this interface was successfully initialized). </p>
 
 </div>
 </div>
-<a class="anchor" id="a896b8ba0083d05b5fe668a4717b14590"></a>
+<a class="anchor" id="a6b87146861e45d21ab1ff4aa41fe2cd8"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool pvr::CameraInterface::initialiseSession </td>
+          <td class="memname">bool pvr::CameraInterface::initializeSession </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespacepvr_1_1_h_w_camera.html#a77929091f777ed468df6cb128dbfdb08">HWCamera::Enum</a>&#160;</td>
           <td class="paramname"><em>eCamera</em>, </td>
@@ -391,7 +391,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initialises the capture session using the given hardware camera, if it is available. </p>
+<p>Initializes the capture session using the given hardware camera, if it is available. </p>
 <hr/>
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

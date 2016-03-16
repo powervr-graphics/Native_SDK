@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -137,7 +137,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno"><a class="code" href="classpvr_1_1_skip_graph_node.html#a6e94f04fc6302116558b0ccaa02d3007">   52</a></span>&#160;    <a class="code" href="classpvr_1_1_skip_graph_node.html" title="Stores a pointer to the node&#39;s data and also uses a dynamic array to store pointer to nodes this node...">SkipGraphNode</a>&amp; <a class="code" href="classpvr_1_1_skip_graph_node.html#a6e94f04fc6302116558b0ccaa02d3007" title="Get given dependency. ">getDependency</a>(uint32 <span class="keywordtype">id</span>)<span class="keyword"> const</span></div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        PVR_ASSERT(<span class="keywordtype">id</span> &gt;= 0 &amp;&amp; <span class="keywordtype">id</span> &lt; (uint32)m_apDependencies.size());</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        assertion(<span class="keywordtype">id</span> &gt;= 0 &amp;&amp; <span class="keywordtype">id</span> &lt; (uint32)m_apDependencies.size(), <span class="stringliteral">&quot;SkipGraph::getDependency id out of range&quot;</span>);</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordflow">return</span> *m_apDependencies[id];</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
@@ -333,7 +333,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00247"></a><span class="lineno"><a class="code" href="classpvr_1_1_skip_graph_root.html#a83f4087d4362366e89b0d471598475f1">  247</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_skip_graph_root.html#a83f4087d4362366e89b0d471598475f1" title="Returns a sorted list of dependencies for the specified node. The list is ordered with the leaf nodes...">RetreiveSortedDependencyList</a>(std::vector&lt;T&gt;&amp; aOutputArray,</div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;                                      <span class="keyword">const</span> uint32 nodeID)</div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    {</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        PVR_ASSERT(nodeID &gt;= 0 &amp;&amp; nodeID &lt; (uint32)m_aHashTable.size());</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        assertion(nodeID &gt;= 0 &amp;&amp; nodeID &lt; (uint32)m_aHashTable.size(), <span class="stringliteral">&quot;SkipGraph::RetreiveSortedDependencyList nodeId out of range&quot;</span>);</div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        recursiveSortedListAdd(aOutputArray, m_aHashTable[nodeID].getNode());</div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    }</div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;</div>
@@ -379,7 +379,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    T* getNodeData(uint32 nodeID)</div>
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    {</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        PVR_ASSERT(nodeID &gt;= 0 &amp;&amp; nodeID &lt; (uint32)m_aHashTable.size());</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        assertion(nodeID &gt;= 0 &amp;&amp; nodeID &lt; (uint32)m_aHashTable.size(), <span class="stringliteral">&quot;SkipGraph::getNodeData nodeId out of range&quot;</span>);</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        <span class="keywordflow">return</span> &amp;m_aHashTable[nodeID].getNode().getData();</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    }</div>
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;</div>
@@ -395,7 +395,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        <span class="keywordtype">int</span> i(0);</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        <span class="keywordtype">int</span> i32HashTableSize((int32)m_aHashTable.size());</div>
 <div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        <span class="comment">//  A NULL hash means the node has not initialised</span></div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        <span class="comment">//  A NULL hash means the node has not initialized</span></div>
 <div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        <span class="comment">//  correctly.</span></div>
 <div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;        <span class="keywordflow">if</span> (hash == 0) { <span class="keywordflow">return</span> NULL; }</div>
 <div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;</div>

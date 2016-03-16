@@ -12,7 +12,7 @@ namespace pvr {
 namespace system {
 /*!*********************************************************************************************************************
 \brief    Abstract class defining a messaging interface. This class implements the printing/messaging capabilities used by the
-         Logger class. A class implementing it needs το implement the outputMessage function.
+         Logger class. A class implementing it needs to implement the outputMessage function.
 ***********************************************************************************************************************/
 class Messenger
 {
@@ -30,7 +30,7 @@ public:
 
 	Messenger() : m_verbosityThreshold(
 #ifdef DEBUG
-		Debug
+		Verbose
 #else
 		Information
 #endif

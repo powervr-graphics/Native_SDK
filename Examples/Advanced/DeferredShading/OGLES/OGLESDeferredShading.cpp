@@ -8,7 +8,7 @@
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
 #include "PVRUIRenderer/PVRUIRenderer.h"
-
+using namespace pvr::types;
 namespace QuadAttributes {
 enum Enum
 {
@@ -36,6 +36,15 @@ enum Enum
 	Normal,
 	Depth,
 	Count
+};
+}
+
+namespace MeshNodes {
+enum Enum
+{
+	Satyr = 0,
+	Floor = 1,
+	NumberOfMeshNodes
 };
 }
 
@@ -182,8 +191,8 @@ struct RenderData
 	DrawLightSources pointLightSourcesPass;
 	DrawPointLightProxy pointLightProxyPass;
 	DrawPointLightGeom pointLightGeomPass;
-	DrawDirLight dirLightPass;
-	DrawGBuffer gBufferPass;
+	DrawDirLight directionalLightPass;
+	DrawGBuffer storeRenderDataPass;
 	DrawDepthStencil depthStencilPass;
 	DrawQuad writePlsPass;
 };
@@ -215,7 +224,7 @@ public:
 	struct Material
 	{
 		pvr::api::GraphicsPipeline materialPipeline;
-		pvr::api::DescriptorSet materialDescSet;
+		pvr::api::DescriptorSet materialDescriptorSet;
 		pvr::float32 specularStrength;
 		glm::vec3 diffuseColor;
 	};
@@ -225,7 +234,7 @@ public:
 		// Handles for FBOs and surfaces
 		pvr::api::Fbo  onScreenFbo;
 		pvr::api::Fbo  gBufferFBO;
-		pvr::api::TextureView renderTextures[Fbo::Count];
+		pvr::api::TextureView renderTextureViews[Fbo::Count];
 
 		pvr::api::RenderPass gBufferRenderPass;
 		pvr::api::RenderPass defaultRenderPass;
@@ -236,15 +245,13 @@ public:
 		// commandbuffers for each pass
 		pvr::api::CommandBuffer cmdBufferMain;
 		pvr::api::SecondaryCommandBuffer cmdBuffUIRenderer;
-		pvr::api::SecondaryCommandBuffer cmdBuffAlbdeoNormalDepth;
 		pvr::api::SecondaryCommandBuffer cmdBuffSceneGeometry;
 		pvr::api::SecondaryCommandBuffer cmdBuffRenderGbuffer;
 		pvr::api::SecondaryCommandBuffer cmdBuffLighting;
 		pvr::api::SecondaryCommandBuffer cmdBuffRenderDepthStencil;
 
-		pvr::api::DescriptorSet renderTexDescSets[Fbo::Count];
-		pvr::api::DescriptorSet albedoNormalDepthEnvDescSet;
-		pvr::api::DescriptorSet albedoNormalDescSet;
+		pvr::api::DescriptorSet pointLightDescriptorSet;
+		pvr::api::DescriptorSet directionalLightDescriptorSet;
 
 		//Layouts we will be needing
 		pvr::api::DescriptorSetLayout noSamplerLayout;
@@ -315,7 +322,7 @@ public:
 
 	void recordCommandBufferRenderGBuffer(pvr::api::SecondaryCommandBuffer& cmdBuffer);
 	void recordCommandBufferDepthStencil(pvr::api::SecondaryCommandBuffer& cmdBuffer);
-	void recordCommandsDirLights(pvr::api::SecondaryCommandBuffer& cmdBuffer);
+	void recordCommandsDirectionalLights(pvr::api::SecondaryCommandBuffer& cmdBuffer);
 	void recordCommandsPointLights(pvr::api::SecondaryCommandBuffer& cmdBuffer);
 	void recordCommandsMRT(pvr::api::CommandBuffer& cmdBuff);
 	void recordCommandsPLS(pvr::api::CommandBuffer& cmdBuff);
@@ -323,9 +330,7 @@ public:
 
 	void recordSecondaryCommandBuffers();
 
-
 	void allocateUniforms();
-
 
 	bool createMaterialsAndDescriptorSets();
 	bool loadVbos();
@@ -364,38 +369,42 @@ bool OGLESDeferredShading::createMaterialsAndDescriptorSets()
 		return false;
 	}
 
+
 	//1: CREATE THE SAMPLERS
 	// create point sampler
 	pvr::assets::SamplerCreateParam samplerDesc;
-	samplerDesc.minificationFilter = pvr::SamplerFilter::Nearest;
-	samplerDesc.magnificationFilter = pvr::SamplerFilter::Nearest;
-	samplerDesc.wrapModeU = samplerDesc.wrapModeV = samplerDesc.wrapModeW = pvr::SamplerWrap::Repeat;
+	samplerDesc.minificationFilter = SamplerFilter::Nearest;
+	samplerDesc.magnificationFilter = SamplerFilter::Nearest;
+	samplerDesc.wrapModeU = samplerDesc.wrapModeV = samplerDesc.wrapModeW = SamplerWrap::Repeat;
 	pvr::api::Sampler samplerNearest = context->createSampler(samplerDesc);
 
 	// create trilinear sampler
-	samplerDesc.minificationFilter = pvr::SamplerFilter::Linear;
-	samplerDesc.magnificationFilter = pvr::SamplerFilter::Linear;
-	samplerDesc.mipMappingFilter = pvr::SamplerFilter::Linear;
+	samplerDesc.minificationFilter = SamplerFilter::Linear;
+	samplerDesc.magnificationFilter = SamplerFilter::Linear;
+	samplerDesc.mipMappingFilter = SamplerFilter::Linear;
 	pvr::api::Sampler samplerTrilinear = context->createSampler(samplerDesc);
 
+
 	//2: CREATE THE DESCRIPTOR SET LAYOUTS
-	// Single texture sampler layout
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
+
+	// no texture sampler layout
 	apiObj->noSamplerLayout = context->createDescriptorSetLayout(descSetLayoutInfo);
-	descSetLayoutInfo.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
+
+	// Single texture sampler layout
+	descSetLayoutInfo.setBinding(0, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
 	apiObj->oneSamplerLayout = context->createDescriptorSetLayout(descSetLayoutInfo);
 
 	// Two textures sampler layout
-	descSetLayoutInfo.addBinding(1, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
+	descSetLayoutInfo.setBinding(1, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
 	apiObj->twoSamplerLayout = context->createDescriptorSetLayout(descSetLayoutInfo);
 
 	// Three textures sampler layout
-	descSetLayoutInfo.addBinding(1, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
+	descSetLayoutInfo.setBinding(2, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
 	apiObj->threeSamplerLayout = context->createDescriptorSetLayout(descSetLayoutInfo);
 
 	// Four textures sampler layout (for GBuffer rendering)
-	descSetLayoutInfo.addBinding(2, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment)
-	.addBinding(3, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
+	descSetLayoutInfo.setBinding(3, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
 	apiObj->fourSamplerLayout = context->createDescriptorSetLayout(descSetLayoutInfo);
 
 
@@ -403,14 +412,20 @@ bool OGLESDeferredShading::createMaterialsAndDescriptorSets()
 	apiObj->materials.resize(scene->getNumMaterials());
 	for (pvr::uint32 i = 0; i < scene->getNumMaterials(); ++i)
 	{
-		pvr::api::DescriptorSetUpdateParam descSetInfo;
+		pvr::api::DescriptorSetUpdate descSetInfo;
 
 		pvr::api::TextureView diffuseMap;
 		pvr::api::TextureView bumpMap;
+
+		// get the current material
 		const pvr::assets::Model::Material& material = scene->getMaterial(i);
+
+		// get material properties
 		apiObj->materials[i].specularStrength = material.getShininess();
-		apiObj->materials[i].diffuseColor = glm::vec3(material.getDiffuse()[0], material.getDiffuse()[1], material.getDiffuse()[2]);
+		apiObj->materials[i].diffuseColor = material.getDiffuse();
+
 		int numTextures = 0;
+
 		if (material.getDiffuseTextureIndex() != -1)
 		{
 			// Load the diffuse texture map
@@ -419,7 +434,7 @@ bool OGLESDeferredShading::createMaterialsAndDescriptorSets()
 				setExitMessage("ERROR: Failed to load texture %s", scene->getTexture(material.getDiffuseTextureIndex()).getName().c_str());
 				return false;
 			}
-			descSetInfo.addCombinedImageSampler(0, 0, diffuseMap, samplerTrilinear);
+			descSetInfo.setCombinedImageSampler(0, diffuseMap, samplerTrilinear);
 			++numTextures;
 		}
 		if (material.getBumpMapTextureIndex() != -1)
@@ -431,49 +446,55 @@ bool OGLESDeferredShading::createMaterialsAndDescriptorSets()
 				return false;
 			}
 			++numTextures;
-			descSetInfo.addCombinedImageSampler(1, 0, bumpMap, samplerTrilinear);
+			descSetInfo.setCombinedImageSampler(1, bumpMap, samplerTrilinear);
 		}
+
+		// based on the number of textures select the correct descriptor set
 		switch (numTextures)
 		{
-		case 0: apiObj->materials[i].materialDescSet = context->allocateDescriptorSet(apiObj->noSamplerLayout); break;
-		case 1: apiObj->materials[i].materialDescSet = context->allocateDescriptorSet(apiObj->oneSamplerLayout); break;
-		case 2: apiObj->materials[i].materialDescSet = context->allocateDescriptorSet(apiObj->twoSamplerLayout); break;
-		case 3: apiObj->materials[i].materialDescSet = context->allocateDescriptorSet(apiObj->threeSamplerLayout); break;
-		case 4: apiObj->materials[i].materialDescSet = context->allocateDescriptorSet(apiObj->fourSamplerLayout); break;
+		case 0: apiObj->materials[i].materialDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->noSamplerLayout); break;
+		case 1: apiObj->materials[i].materialDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->oneSamplerLayout); break;
+		case 2: apiObj->materials[i].materialDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->twoSamplerLayout); break;
+		case 3: apiObj->materials[i].materialDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->threeSamplerLayout); break;
+		case 4: apiObj->materials[i].materialDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->fourSamplerLayout); break;
 		default:
 			break;
 		}
-		apiObj->materials[i].materialDescSet->update(descSetInfo);
+
+		apiObj->materials[i].materialDescriptorSet->update(descSetInfo);
 	}
 
-	// 3: CREATE G-BUFFER (MRT) Descriptor set
-	for (pvr::uint32 i = 0; i < Fbo::Count; ++i)
+	// 3: CREATE DESCRIPTOR SET USED TO RENDER THE LIGHTS USING EITHER GBUFFER OR PLS AS INPUT
+	if (!usePixelLocalStorage)
 	{
-		pvr::api::DescriptorSetUpdateParam descSetInfo;
-		descSetInfo.addCombinedImageSampler(0, 0, apiObj->renderTextures[i], samplerNearest);
-		apiObj->renderTexDescSets[i] = context->allocateDescriptorSet(apiObj->oneSamplerLayout);
-		apiObj->renderTexDescSets[i]->update(descSetInfo);
-	}
+		// GBuffer with multiple render targets to sample from
+		pvr::api::DescriptorSetUpdate descSetInfo;
+		for (pvr::uint32 i = 0; i < Fbo::Count; ++i)
+		{
+			descSetInfo.setCombinedImageSampler(i, apiObj->renderTextureViews[i], samplerNearest);
+		}
 
-	//albedo, normal ???????????????
-	{
-		// uses three texture and sampler descriptor setlayout
-		pvr::api::DescriptorSetUpdateParam descSetInfo;
-		descSetInfo.addCombinedImageSampler(0, 0, apiObj->renderTextures[Fbo::Albedo], samplerNearest)
-		.addCombinedImageSampler(1, 0, apiObj->renderTextures[Fbo::Normal], samplerNearest);
-		apiObj->albedoNormalDescSet = context->allocateDescriptorSet(apiObj->twoSamplerLayout);
-		apiObj->albedoNormalDescSet->update(descSetInfo);
-	}
+		apiObj->pointLightDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->threeSamplerLayout);
+		apiObj->pointLightDescriptorSet->update(descSetInfo);
 
-	// albedo, normal, depth and environment map ???????????????
+		{
+			// uses three texture and sampler descriptor setlayout
+			pvr::api::DescriptorSetUpdate descSetInfo;
+			descSetInfo.setCombinedImageSampler(0, apiObj->renderTextureViews[Fbo::Albedo], samplerNearest);
+			descSetInfo.setCombinedImageSampler(1, apiObj->renderTextureViews[Fbo::Normal], samplerNearest);
+			apiObj->directionalLightDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->twoSamplerLayout);
+			apiObj->directionalLightDescriptorSet->update(descSetInfo);
+		}
+	}
+	else
 	{
-		// uses three texture and sampler descriptor setlayout
-		pvr::api::DescriptorSetUpdateParam descSetInfo;
-		descSetInfo.addCombinedImageSampler(0, 0, apiObj->renderTextures[Fbo::Albedo], samplerNearest)
-		.addCombinedImageSampler(1, 0, apiObj->renderTextures[Fbo::Normal], samplerNearest)
-		.addCombinedImageSampler(2, 0, apiObj->renderTextures[Fbo::Depth], samplerNearest);
-		apiObj->albedoNormalDepthEnvDescSet = context->allocateDescriptorSet(apiObj->threeSamplerLayout);
-		apiObj->albedoNormalDepthEnvDescSet->update(descSetInfo);
+		// Pixel Local Storage data directly available
+		pvr::api::DescriptorSetUpdate descSetInfo;
+		apiObj->pointLightDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->noSamplerLayout);
+		apiObj->pointLightDescriptorSet->update(descSetInfo);
+
+		apiObj->directionalLightDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->noSamplerLayout);
+		apiObj->directionalLightDescriptorSet->update(descSetInfo);
 	}
 
 	return true;
@@ -491,123 +512,248 @@ bool OGLESDeferredShading::createPipelines()
 	// Set up a little bit in advance - we'll be reusing them for the actual object.
 	GraphicsPipelineCreateParam pipeInfo;
 	pipeInfo.rasterizer.setCullFace(Face::Back);
-	pipeInfo.depthStencil.setDepthTestEnable(true).setStencilTest(false).setDepthWrite(true);
+
+	// enable depth testing and depth writing
+	pipeInfo.depthStencil.setDepthTestEnable(true);
+	pipeInfo.depthStencil.setDepthWrite(true);
+
+	// disable stencil test
+	pipeInfo.depthStencil.setStencilTest(false);
 
 	pipelineCreation::ColorBlendAttachmentState colorAttachment;
 	colorAttachment.channelWriteMask = ColorChannel::All;
 	colorAttachment.blendEnable = false;
-	colorAttachment.srcBlendColor = colorAttachment.srcBlendAlpha = BlendFactor::One;
-	colorAttachment.destBlendColor = colorAttachment.destBlendAlpha = BlendFactor::One;
-	pipeInfo.colorBlend.addAttachmentState(0, colorAttachment);
+
+	pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
 
 	//CREATING THE ACTUAL PIPELINES FOR EACH OF OUR PASSES:
 
-	// 1) G-BUFFER - We will store the material properties in an FBO during this pass. No depth/stencil attachments.
+	// 1) RENDER TO EITHER GBUFFER USING MRTS OR INTO PIXEL LOCAL STORAGE
 	{
 		pipeInfo.vertexInput.clear();
 		pvr::utils::createInputAssemblyFromMeshAndEffect(scene->getMesh(0), effects[EffectId::RenderGBuffer]->getEffectAsset(), pipeInfo);
 
-		renderInfo.gBufferPass.objects.resize(scene->getNumMeshNodes()); //2
+		// if using pixel local storage then merge passes 1 and 2
+		// Pixel local storage can be used on the default frame buffer object and therefore the stencil buffer can be shared between passes
+		// if using GBuffer approach the default fbo stencil buffer cannot be shared with the GBuffer fbo rendered into
+		if (usePixelLocalStorage)
+		{
+			// enable stencil testing only if pixel local storage is used
+			pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState stencilState;
+
+			// only replace stencil buffer when the depth test passes
+			stencilState.opStencilFail = StencilOp::Keep;
+			stencilState.opDepthFail = StencilOp::Keep;
+			stencilState.opDepthPass = StencilOp::Replace;
+
+			stencilState.compareOp = ComparisonMode::Always;
+
+			pipeInfo.depthStencil.setStencilTest(true);
+
+			pipeInfo.depthStencil.setStencilFront(stencilState);
+			pipeInfo.depthStencil.setStencilBack(stencilState);
+		}
+
+		// 2 mesh nodes are used in this scene (floor and Satyr model)
+		renderInfo.storeRenderDataPass.objects.resize(scene->getNumMeshNodes());
+
 		// setup the MRT
-		renderInfo.gBufferPass.objects[0].pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderGBuffer]->getPipeline());
-		renderInfo.gBufferPass.objects[0].effectId = EffectId::RenderGBuffer;
-		renderInfo.gBufferPass.objects[1].pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderGBufferFloor]->getPipeline());
-		renderInfo.gBufferPass.objects[1].effectId = EffectId::RenderGBufferFloor;
+		renderInfo.storeRenderDataPass.objects[MeshNodes::Satyr].pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderGBuffer]->getPipeline());
+		renderInfo.storeRenderDataPass.objects[MeshNodes::Satyr].effectId = EffectId::RenderGBuffer;
+
+		renderInfo.storeRenderDataPass.objects[MeshNodes::Floor].pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderGBufferFloor]->getPipeline());
+		renderInfo.storeRenderDataPass.objects[MeshNodes::Floor].effectId = EffectId::RenderGBufferFloor;
 	}
 
-	// 2) DEPTH STENCIL PASS - That will draw the geometry in the stencil buffer so that we can skip lighting fragments that do not contain objects easier.
-	// This is an optimisation pass, could be omitted with a little restructuring but the directional pass would be slower
+	// as discussed above the depth stencil pass can be avoided if pixel local storage is used
+	if (!usePixelLocalStorage)
 	{
-		pipeInfo.vertexInput.clear();
-		pvr::utils::createInputAssemblyFromMeshAndEffect(scene->getMesh(0), effects[EffectId::RenderNullColor]->getEffectAsset(), pipeInfo);
-		// write only into depth and stencil.
-		colorAttachment.channelWriteMask = 0;
-		pipeInfo.colorBlend.clearAttachments();
-		pipeInfo.depthStencil.setStencilTest(true).setStencilCompareFunc(Face::FrontBack, ComparisonMode::Always)
-		.setStencilOp(Face::FrontBack, StencilOp::Replace, StencilOp::Replace, StencilOp::Replace);
-		renderInfo.depthStencilPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderNullColor]->getPipeline());
-		renderInfo.depthStencilPass.effectId = EffectId::RenderNullColor;
+		// 2) DEPTH STENCIL PASS - That will draw the geometry in the stencil buffer so that we can skip lighting fragments that do not contain objects easier.
+		// This is an optimisation pass, could be omitted with a little restructuring but the directional pass would be slower
+		{
+			pipeInfo.vertexInput.clear();
+			pvr::utils::createInputAssemblyFromMeshAndEffect(scene->getMesh(0), effects[EffectId::RenderNullColor]->getEffectAsset(), pipeInfo);
+
+			// write only into depth and stencil.
+			colorAttachment.channelWriteMask = 0;
+			pipeInfo.colorBlend.clearAttachments();
+
+			pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState stencilState;
+
+			// only replace stencil buffer when the depth test passes
+			stencilState.opStencilFail = StencilOp::Keep;
+			stencilState.opDepthFail = StencilOp::Keep;
+			stencilState.opDepthPass = StencilOp::Replace;
+
+			stencilState.compareOp = ComparisonMode::Always;
+
+			pipeInfo.depthStencil.setStencilTest(true);
+
+			pipeInfo.depthStencil.setStencilFront(stencilState);
+			pipeInfo.depthStencil.setStencilBack(stencilState);
+
+			pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
+
+			renderInfo.depthStencilPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderNullColor]->getPipeline());
+			renderInfo.depthStencilPass.effectId = EffectId::RenderNullColor;
+		}
 	}
 
 	// 3) DIRECTIONAL LIGHTING - A full-screen quad that will apply any global (ambient/directional) lighting
 	{
 		// disable the depth write as we do not want to modify the depth buffer while rendering directional lights
 		// Make use of the stencil buffer contents to only shade pixels where actual geometry is located.
-		pipeInfo.depthStencil.setDepthWrite(false).setDepthTestEnable(false).setStencilTest(true)
-		.setStencilOp(pvr::api::Face::FrontBack, pvr::api::StencilOp::Zero, pvr::api::StencilOp::Zero, pvr::api::StencilOp::Zero)
-		.setDepthCompareFunc(pvr::ComparisonMode::LessEqual).setStencilCompareFunc(pvr::api::Face::FrontBack, pvr::ComparisonMode::Equal);
+		pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState stencilState;
+
+		// keep the stencil states the same as the previous pass - THESE DON'T MATTER
+		stencilState.opStencilFail = StencilOp::Keep;
+		stencilState.opDepthFail = StencilOp::Keep;
+		stencilState.opDepthPass = StencilOp::Replace;
+
+		// if the stencil is equal to the value specified then stencil passes
+		stencilState.compareOp = ComparisonMode::Equal;
+
+		// disable depth writing and depth testing
+		pipeInfo.depthStencil.setDepthWrite(false);
+		pipeInfo.depthStencil.setDepthTestEnable(false);
+
+		// enable stencil testing
+		pipeInfo.depthStencil.setStencilTest(true);
+		pipeInfo.depthStencil.setStencilFront(stencilState);
+		pipeInfo.depthStencil.setStencilBack(stencilState);
 
 		// write in to the color
-		colorAttachment.channelWriteMask = pvr::api::ColorChannel::All;
+		colorAttachment.channelWriteMask = ColorChannel::All;
 		colorAttachment.blendEnable = false;
-		pipeInfo.colorBlend.addAttachmentState(0, colorAttachment);
-		pipeInfo.vertexInput.clear(); //Rendering without attributes
-		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::TriangleStrips);
+		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
 
-		renderInfo.dirLightPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderDirLight]->getPipeline());
-		renderInfo.dirLightPass.effectId = EffectId::RenderDirLight;
+		//Rendering without attributes
+		pipeInfo.vertexInput.clear();
+
+		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrips);
+
+		renderInfo.directionalLightPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderDirLight]->getPipeline());
+		renderInfo.directionalLightPass.effectId = EffectId::RenderDirLight;
 	}
 
-	// 4) POINT LIGHTS GEOMETRY STENCIL PASS - Each point light to the stencil buffer so that only parts that are covered
-	// by the spheres representing the light will be rendered.
+	// 4) POINT LIGHTS GEOMETRY STENCIL PASS
+	// Render the front face of each light volume
+	// Z function is set as Less/Equal
+	// Z test passes will leave the stencil as 0 i.e. the front of the light is infront of all geometry in the current pixel
+	//		This is the condition we want for determining whether the geometry can be affected by the point lights
+	// Z test fails will increment the stencil to 1. i.e. the front of the light is behind all of the geometry in the current pixel
+	//		Under this condition the current pixel cannot be affected by the current point light as the geometry is infront of the front of the point light
 	{
 		pipeInfo.vertexInput.clear();
 		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), effects[EffectId::RenderNullColor]->getEffectAsset(), pipeInfo);
 
-		colorAttachment.blendEnable = true;
 		colorAttachment.channelWriteMask = 0;// write only in to depth and stencil buffer
-		pipeInfo.colorBlend.addAttachmentState(0, colorAttachment);// Additively blend the light contributions
+		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);// Additively blend the light contributions
 
-		pipeInfo.rasterizer.setCullFace(pvr::api::Face::None);
-		pipeInfo.depthStencil.setDepthTestEnable(true).setStencilTest(true);
+		pipeInfo.rasterizer.setCullFace(Face::Back);
+
+		// disable depth write
+		pipeInfo.depthStencil.setDepthWrite(false);
+
+		// set depth comparison to less/equal
+		pipeInfo.depthStencil.setDepthCompareFunc(pvr::types::ComparisonMode::LessEqual);
+		pipeInfo.depthStencil.setDepthTestEnable(true);
+		pipeInfo.depthStencil.setStencilTest(true);
+
 		// by setting the stencilOp we pick only the pixel of the objects which are inside a point light.
-		pipeInfo.depthStencil
-		.setStencilOp(pvr::api::Face::Front, pvr::api::StencilOp::Keep, pvr::api::StencilOp::IncrementWrap, pvr::api::StencilOp::Keep)
-		.setStencilOp(pvr::api::Face::Back, pvr::api::StencilOp::Keep, pvr::api::StencilOp::DecrementWrap, pvr::api::StencilOp::Keep)
-		.setStencilCompareFunc(pvr::api::Face::FrontBack, pvr::ComparisonMode::Always);
+		pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState stencilState;
 
-		renderInfo.pointLightGeomPass.pipeline =
-		    context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderNullColor]->getPipeline());
+		stencilState.compareOp = ComparisonMode::Always;
+
+		// keep current value if the stencil test fails
+		stencilState.opStencilFail = StencilOp::Keep;
+
+		// if the depth test fails then increment wrap
+		stencilState.opDepthFail = StencilOp::IncrementWrap;
+		stencilState.opDepthPass = StencilOp::Keep;
+
+		pipeInfo.depthStencil.setStencilFront(stencilState);
+
+		stencilState.opDepthFail = StencilOp::Keep;
+		pipeInfo.depthStencil.setStencilBack(stencilState);
+
+		renderInfo.pointLightGeomPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderNullColor]->getPipeline());
 		renderInfo.pointLightGeomPass.effectId = EffectId::RenderNullColor;
 	}
 
 	// 5) POINT LIGHTS PROXIES - Actually light the pixels touched by a point light.
+	// Render the back faces of the light volumes
+	// Z function is set as Greater/Equal
+	// Z test passes signify that there is geometry infront of the back face of the light volume i.e. for the current pixel there is some geometry infront of the back face of the light volume
+	// Stencil function is Equal i.e. the stencil renference is set to 0
+	// Stencil passes signify that for the current pixel there exists a front face of a light volume infront of the current geometry
+	// Point light calculations occur every time a pixel passes both the stencil AND Z test
 	{
-		colorAttachment.srcBlendColor = colorAttachment.srcBlendAlpha = pvr::api::BlendFactor::SrcAlpha;
-		colorAttachment.destBlendColor = colorAttachment.destBlendAlpha = pvr::api::BlendFactor::OneMinusSrcAlpha;
-		colorAttachment.channelWriteMask = pvr::api::ColorChannel::All;
+		colorAttachment.channelWriteMask = ColorChannel::All;
 
-		pipeInfo.colorBlend.addAttachmentState(0, colorAttachment);
-		pipeInfo.depthStencil.setStencilTest(true).setDepthWrite(true);
-		pipeInfo.rasterizer.setCullFace(pvr::api::Face::Back);
+		pipeInfo.rasterizer.setCullFace(Face::Front);
+
+		pipeInfo.depthStencil.setStencilTest(true);
+
+		pipeInfo.depthStencil.setDepthTestEnable(true);
+		pipeInfo.depthStencil.setDepthCompareFunc(pvr::types::ComparisonMode::GreaterEqual);
+		pipeInfo.depthStencil.setDepthWrite(false);
 
 		pipeInfo.vertexInput.clear();
-		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0),
-		        effects[EffectId::RenderPointLight]->getEffectAsset(), pipeInfo);
+		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), effects[EffectId::RenderPointLight]->getEffectAsset(), pipeInfo);
 
 		// Set the stencil test to only shade the lit areas and re-enable color writes.
 		pipeInfo.depthStencil.setStencilTest(true);
-		colorAttachment.srcBlendColor = colorAttachment.srcBlendAlpha = pvr::api::BlendFactor::One;
-		colorAttachment.destBlendColor = colorAttachment.destBlendAlpha = pvr::api::BlendFactor::One;
-		pipeInfo.colorBlend.addAttachmentState(0, colorAttachment);
 
-		pipeInfo.depthStencil.setDepthTestEnable(false).setDepthWrite(false)
-		.setStencilCompareFunc(pvr::api::Face::FrontBack, pvr::ComparisonMode::NotEqual);
+		if (!usePixelLocalStorage)
+		{
+			colorAttachment.blendEnable = true;
+			colorAttachment.srcBlendColor = BlendFactor::One;
+			colorAttachment.srcBlendAlpha = BlendFactor::One;
+			colorAttachment.destBlendColor = BlendFactor::One;
+			colorAttachment.destBlendAlpha = BlendFactor::One;
+		}
 
-		renderInfo.pointLightProxyPass.pipeline =
-		    context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderPointLight]->getPipeline());
+		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
+
+		pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState stencilState;
+		stencilState.compareOp = ComparisonMode::Always;
+		stencilState.reference = 0;
+
+		pipeInfo.depthStencil.setStencilFront(stencilState);
+		pipeInfo.depthStencil.setStencilBack(stencilState);
+
+		renderInfo.pointLightProxyPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderPointLight]->getPipeline());
 		renderInfo.pointLightProxyPass.effectId = EffectId::RenderPointLight;
 	}
 
-	// 6) LIGHT SOURCES : Rendering the "will-o-wisps" that are the sources of the light.
+	// 6) LIGHT SOURCES : Rendering the "will-o-wisps" that are the sources of the light
 	{
 		pipeInfo.vertexInput.clear();
 		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), effects[EffectId::RenderSolidColor]->getEffectAsset(), pipeInfo);
 
-		pipeInfo.rasterizer.setCullFace(pvr::api::Face::Back);
-		pipeInfo.depthStencil.setStencilTest(false).setDepthTestEnable(true).setDepthWrite(true).setDepthCompareFunc(pvr::ComparisonMode::LessEqual);
-		colorAttachment.blendEnable = true;
-		pipeInfo.colorBlend.addAttachmentState(0, colorAttachment);
+		pipeInfo.rasterizer.setCullFace(Face::Back);
+
+		// disable stencil testing
+		pipeInfo.depthStencil.setStencilTest(false);
+
+		// re-enable depth testing and depth writing
+		pipeInfo.depthStencil.setDepthTestEnable(true);
+		pipeInfo.depthStencil.setDepthWrite(true);
+		pipeInfo.depthStencil.setDepthCompareFunc(ComparisonMode::LessEqual);
+
+		if (!usePixelLocalStorage)
+		{
+			// use blending
+			colorAttachment.blendEnable = true;
+			colorAttachment.srcBlendColor = BlendFactor::One;
+			colorAttachment.srcBlendAlpha = BlendFactor::One;
+			colorAttachment.destBlendColor = BlendFactor::One;
+			colorAttachment.destBlendAlpha = BlendFactor::One;
+		}
+
+		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
+
 		renderInfo.pointLightSourcesPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderSolidColor]->getPipeline());
 		renderInfo.pointLightSourcesPass.effectId = EffectId::RenderSolidColor;
 	}
@@ -615,39 +761,50 @@ bool OGLESDeferredShading::createPipelines()
 	// &) WRITE OUT PIXEL LOCAL STORAGE: IF using pixel local storage, we need a final pass to write out from the pixel local storage colour to the FBO
 	if (usePixelLocalStorage)
 	{
-		// disable the depth write as we do not want to modify the depth buffer while rendering directional lights
-		// Make use of the stencil buffer contents to only shade pixels where actual geometry is located.
-		pipeInfo.depthStencil.setDepthWrite(false).setDepthTestEnable(false).setStencilTest(false);
+		// we don't need to check depth or stencil tests
+		pipeInfo.depthStencil.setDepthWrite(false);
+		pipeInfo.depthStencil.setDepthTestEnable(false);
+		pipeInfo.depthStencil.setStencilTest(false);
+
 		// write in to the color
-		colorAttachment.channelWriteMask = pvr::api::ColorChannel::All;
+		colorAttachment.channelWriteMask = ColorChannel::All;
 		colorAttachment.blendEnable = false;
-		pipeInfo.colorBlend.addAttachmentState(0, colorAttachment);
+		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
 		pipeInfo.vertexInput.clear();
-		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::TriangleStrips);
+		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrips);
 
 		renderInfo.writePlsPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::WriteOutColorFromPls]->getPipeline());
 		renderInfo.writePlsPass.effectId = EffectId::WriteOutColorFromPls;
 	}
+
 	return true;
 }
 
 bool OGLESDeferredShading::setUpRenderPass()
 {
 	// Create on-screen-renderpass/fbo with its subpasses.
-	pvr::api::SubPass subPass0(pvr::api::PipelineBindingPoint::Graphics);
-	subPass0.setColorAttachment(0); // use the first color attachment
+	pvr::api::SubPass subPass0(PipelineBindPoint::Graphics);
+
+	// use the first color attachment
+	subPass0.setColorAttachment(0);
 
 	pvr::api::RenderPassCreateParam renderPassInfo;
-	renderPassInfo.setDepthStencilInfo(pvr::api::RenderPassDepthStencilInfo(
-	                                       pvr::api::getDisplayDepthStencilFormat(getDisplayAttributes()), pvr::LoadOp::Clear, pvr::StoreOp::Store, pvr::LoadOp::Clear, pvr::StoreOp::Store));
-	renderPassInfo.addColorInfo(0, pvr::api::RenderPassColorInfo(pvr::api::getDisplayColorFormat(getDisplayAttributes()), pvr::LoadOp::Clear));
+	pvr::api::RenderPassDepthStencilInfo renderPassDepthStencilInfo = pvr::api::RenderPassDepthStencilInfo(
+	      pvr::api::getDisplayDepthStencilFormat(getDisplayAttributes()),
+	      LoadOp::Clear, StoreOp::Store, LoadOp::Clear, StoreOp::Store);
+	renderPassInfo.setDepthStencilInfo(renderPassDepthStencilInfo);
+	renderPassInfo.addColorInfo(0, pvr::api::RenderPassColorInfo(pvr::api::getDisplayColorFormat(getDisplayAttributes()), LoadOp::Clear));
 	renderPassInfo.addSubPass(0, subPass0);
+
+	// if using pls then add a second subpass
 	if (usePixelLocalStorage)
 	{
-		pvr::api::SubPass subPass1(pvr::api::PipelineBindingPoint::Graphics);
+		pvr::api::SubPass subPass1(PipelineBindPoint::Graphics);
 		renderPassInfo.addSubPass(1, subPass1);
-	}// If we use PLS we need more subpasses.
-	apiObj->onScreenFbo = getGraphicsContext()->createOnScreenFboWithRenderPass(getGraphicsContext()->createRenderPass(renderPassInfo));
+	}
+
+	apiObj->onScreenFbo = getGraphicsContext()->createOnScreenFboWithRenderPass(0, getGraphicsContext()->createRenderPass(renderPassInfo));
+
 	return true;
 }
 
@@ -665,6 +822,7 @@ bool OGLESDeferredShading::loadVbos()
 		setExitMessage("Invalid Scene Buffers");
 		return false;
 	}
+
 	return true;
 }
 
@@ -679,15 +837,15 @@ bool OGLESDeferredShading::setUpEffectHelper(EffectId::Enum effectId, const pvr:
 {
 	//STEP 1: Set up the basic pipeline state. It's pretty much the same for all effects - only the layouts will change.
 	pvr::api::GraphicsPipelineCreateParam pipeDesc;
-	pipeDesc.rasterizer.setCullFace(pvr::api::Face::Back);
+	pipeDesc.rasterizer.setCullFace(Face::Back);
 	pipeDesc.depthStencil.setDepthTestEnable(true);
 	pvr::api::pipelineCreation::ColorBlendAttachmentState colorAttachment;
 	colorAttachment.blendEnable = false;
-	pipeDesc.colorBlend.addAttachmentState(0, colorAttachment);
+	pipeDesc.colorBlend.setAttachmentState(0, colorAttachment);
 
 	//STEP 2: Load the effect from a file.
 	pvr::assets::Effect effectDesc;
-	if (!reader.getEffect(effectDesc, EffectNames[effectId])) {	return false;	}
+	if (!reader.getEffect(effectDesc, EffectNames[effectId])) { return false; }
 
 
 	//STEP 3: We have created in advance some Pipeline Layouts in order to be able to reuse them. So, we count the number of Texture Semantics
@@ -711,7 +869,7 @@ bool OGLESDeferredShading::setUpEffectHelper(EffectId::Enum effectId, const pvr:
 		return false;
 	}
 
-	PVR_ASSERT(effectId >= 0 && "invalid effect id");
+	pvr::assertion(effectId >= 0, "invalid effect id");
 
 	//STEP 5: Actually create the EffectAPI object from the EffectAPI object.
 	effects[effectId] = context->createEffectApi(effectDesc, pipeDesc, assetManager);
@@ -739,7 +897,7 @@ bool OGLESDeferredShading::setUpEffectHelper(EffectId::Enum effectId, const pvr:
 	{
 		uniformMapping[effectId][j] = -1;
 		pvr::int32 tmpSemanticId = effectDesc.getUniformSemanticId(semanticsName[j]);
-		if (tmpSemanticId != -1) {	uniformMapping[effectId][j] = effects[effectId]->getUniform(tmpSemanticId).location; 	}
+		if (tmpSemanticId != -1) { uniformMapping[effectId][j] = effects[effectId]->getUniform(tmpSemanticId).location; }
 	}
 	return true;
 }
@@ -762,6 +920,7 @@ bool OGLESDeferredShading::loadPFX()
 		setExitMessage(error.c_str());
 		return false;
 	}
+
 	const pvr::uint32 numEffects = pfxParser.getNumberEffects();
 	effects.resize(EffectId::Count);
 	uniformMapping.resize(numEffects);
@@ -774,19 +933,21 @@ bool OGLESDeferredShading::loadPFX()
 		EffectId::Enum effectId = EffectId::Enum(i);
 		if (usePixelLocalStorage || effectId != EffectId::WriteOutColorFromPls)
 		{
-			if (!setUpEffectHelper(EffectId::Enum(effectId), pfxParser)) {	return false;	}
+			if (!setUpEffectHelper(EffectId::Enum(effectId), pfxParser)) { return false; }
 		}
 	}
+
 	apiObj->cmdBufferMain->endRecording();
 	apiObj->cmdBufferMain->submit();
+
 	return true;
 }
 
 /*!*********************************************************************************************************************
 \return	Return true if no error occurred
 \brief	Code in initApplication() will be called by pvr::Shell once per run, before the rendering context is created.
-		Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-		If the rendering context is lost, initApplication() will not be called again.
+Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
+If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
 pvr::Result::Enum OGLESDeferredShading::initApplication()
 {
@@ -825,34 +986,22 @@ pvr::Result::Enum OGLESDeferredShading::initApplication()
 /*!*********************************************************************************************************************
 \return	Return pvr::Result::Success if no error occurred
 \brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
-		If the rendering context is lost, QuitApplication() will not be called.x
+If the rendering context is lost, QuitApplication() will not be called.x
 ***********************************************************************************************************************/
 pvr::Result::Enum OGLESDeferredShading::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return	Return pvr::Result::Success if no error occurred
 \brief	Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
-		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
+Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
 pvr::Result::Enum OGLESDeferredShading::initView()
 {
 	//Create the empty API objects.
 	apiObj.reset(new ApiObjects);
 
-	//Initialise free-floating objects (commandBuffers).
+	//Initialize free-floating objects (commandBuffers).
 	context = getGraphicsContext();
-	apiObj->uiRenderer.init(context);
-	apiObj->uiRenderer.getDefaultTitle()->setText("DeferredShading");
-	apiObj->uiRenderer.getDefaultTitle()->commitUpdates();
-	apiObj->uiRenderer.getDefaultControls()->setText("Action1: Pause\nAction2: Orbit Camera\n");
-	apiObj->uiRenderer.getDefaultControls()->commitUpdates();
-	apiObj->cmdBufferMain = context->createCommandBuffer();
-	apiObj->cmdBuffSceneGeometry = context->createSecondaryCommandBuffer();
-	apiObj->cmdBuffAlbdeoNormalDepth = context->createSecondaryCommandBuffer();
-	apiObj->cmdBuffRenderGbuffer = context->createSecondaryCommandBuffer();
-	apiObj->cmdBuffRenderDepthStencil = context->createSecondaryCommandBuffer();
-	apiObj->cmdBuffLighting = context->createSecondaryCommandBuffer();
-	apiObj->cmdBuffUIRenderer = context->createSecondaryCommandBuffer();
 
 	fboWidth = windowWidth = getWidth();
 	fboHeight = windowHeight = getHeight();
@@ -883,37 +1032,56 @@ pvr::Result::Enum OGLESDeferredShading::initView()
 
 	setUpRenderPass();
 
+	// setup UI renderer
+	apiObj->uiRenderer.init(context, apiObj->onScreenFbo->getRenderPass(), 0);
+	apiObj->uiRenderer.getDefaultTitle()->setText("DeferredShading");
+	apiObj->uiRenderer.getDefaultTitle()->commitUpdates();
+	apiObj->uiRenderer.getDefaultControls()->setText("Action1: Pause\nAction2: Orbit Camera\n");
+	apiObj->uiRenderer.getDefaultControls()->commitUpdates();
+
+	// setup command buffers
+	apiObj->cmdBufferMain = context->createCommandBufferOnDefaultPool();
+	apiObj->cmdBuffSceneGeometry = context->createSecondaryCommandBufferOnDefaultPool();
+	apiObj->cmdBuffRenderGbuffer = context->createSecondaryCommandBufferOnDefaultPool();
+	apiObj->cmdBuffRenderDepthStencil = context->createSecondaryCommandBufferOnDefaultPool();
+	apiObj->cmdBuffLighting = context->createSecondaryCommandBufferOnDefaultPool();
+	apiObj->cmdBuffUIRenderer = context->createSecondaryCommandBufferOnDefaultPool();
+
 	viewportOffsets[0] = (windowWidth - fboWidth) / 2;
 	viewportOffsets[1] = (windowHeight - fboHeight) / 2;
 
 	pvr::Log(pvr::Log.Information, "FBO dimensions: %d x %d\n", fboWidth, fboHeight);
 	pvr::Log(pvr::Log.Information, "Onscreen Framebuffer dimensions: %d x %d\n", windowWidth, windowHeight);
 
-	//	Allocates the gbuffer buffer objects
-	if (!createGBufferMRT()) { return pvr::Result::NotInitialised; }
+	// Only need to setup GBuffer if not using pixel local storage
+	if (!usePixelLocalStorage)
+	{
+		//	Allocates the gbuffer buffer objects
+		if (!createGBufferMRT()) { return pvr::Result::NotInitialized; }
+	}
 
 	//  Load textures
-	if (!createMaterialsAndDescriptorSets()) { return pvr::Result::NotInitialised; }
+	if (!createMaterialsAndDescriptorSets()) { return pvr::Result::NotInitialized; }
 
 	// create the pipeline layout
 	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
-	apiObj->pipeLayoutNoSamplers = context->createPipelineLayout(pipeLayoutInfo);// has no texture bindings
+	apiObj->pipeLayoutNoSamplers = context->createPipelineLayout(pipeLayoutInfo);
 
-	pipeLayoutInfo.addDescSetLayout(0, apiObj->oneSamplerLayout);
+	pipeLayoutInfo.setDescSetLayout(0, apiObj->oneSamplerLayout);
 	apiObj->pipeLayoutOneSampler = context->createPipelineLayout(pipeLayoutInfo);
 
-	pipeLayoutInfo.addDescSetLayout(0, apiObj->twoSamplerLayout);
+	pipeLayoutInfo.setDescSetLayout(0, apiObj->twoSamplerLayout);
 	apiObj->pipeLayoutTwoSamplers = context->createPipelineLayout(pipeLayoutInfo);
 
-	pipeLayoutInfo.addDescSetLayout(0, apiObj->threeSamplerLayout);
+	pipeLayoutInfo.setDescSetLayout(0, apiObj->threeSamplerLayout);
 	apiObj->pipeLayoutThreeSamplers = context->createPipelineLayout(pipeLayoutInfo);
 
-	pipeLayoutInfo.addDescSetLayout(0, apiObj->fourSamplerLayout);
+	pipeLayoutInfo.setDescSetLayout(0, apiObj->fourSamplerLayout);
 	apiObj->pipeLayoutFourSamplers = context->createPipelineLayout(pipeLayoutInfo);
 
 	if (isScreenRotated() && isFullScreen())
 	{
-		projMtx = pvr::math::perspectiveFov(scene->getCamera(0).getFOV(), (pvr::float32)fboHeight, (pvr::float32)fboWidth, scene->getCamera(0).getNear(), scene->getCamera(0).getFar(),
+		projMtx = pvr::math::perspectiveFov(getApiType(), scene->getCamera(0).getFOV(), (pvr::float32)fboHeight, (pvr::float32)fboWidth, scene->getCamera(0).getNear(), scene->getCamera(0).getFar(),
 		                                    glm::pi<pvr::float32>() * .5f);
 	}
 	else
@@ -926,9 +1094,24 @@ pvr::Result::Enum OGLESDeferredShading::initView()
 
 	//	Load and compile the shaders & link programs
 	if (!loadPFX()) { return pvr::Result::UnknownError; }
+
 	createPipelines();
+
 	allocateUniforms();
+
 	recordSecondaryCommandBuffers();
+
+	apiObj->cmdBufferMain->beginRecording();
+	if (usePixelLocalStorage)
+	{
+		recordCommandsPLS(apiObj->cmdBufferMain);
+	}
+	else
+	{
+		recordCommandsMRT(apiObj->cmdBufferMain);
+	}
+	apiObj->cmdBufferMain->endRecording();
+
 	return pvr::Result::Success;
 }
 
@@ -954,17 +1137,6 @@ pvr::Result::Enum OGLESDeferredShading::renderFrame()
 	//  Handle user input and update object animations
 	updateAnimation();
 	updateSceneUniforms();
-
-	apiObj->cmdBufferMain->beginRecording();
-	if (usePixelLocalStorage)
-	{
-		recordCommandsPLS(apiObj->cmdBufferMain);
-	}
-	else
-	{
-		recordCommandsMRT(apiObj->cmdBufferMain);
-	}
-	apiObj->cmdBufferMain->endRecording();
 	apiObj->cmdBufferMain->submit();
 
 	return pvr::Result::Success;
@@ -976,44 +1148,52 @@ pvr::Result::Enum OGLESDeferredShading::renderFrame()
 bool OGLESDeferredShading::createGBufferMRT()
 {
 	//Sets up the RenderPass, FBO's, Textures for MRT rendering.
-	pvr::api::RenderPassCreateParam renderpassDesc;
-	pvr::api::FboCreateParam gbufFboDesc;
+	pvr::api::RenderPassCreateParam renderpassCreateParam;
+	pvr::api::FboCreateParam gbufferFboCreateParam;
 	pvr::api::SubPass subPassInfo;
 	const pvr::api::ImageStorageFormat internalsFormats[3] =
 	{
-
-		pvr::api::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, pvr::ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),// albedo
-		pvr::api::ImageStorageFormat(pvr::PixelFormat::RGB_888, 1, pvr::ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),// normal
-		pvr::api::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, pvr::ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),// depth
+		pvr::api::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),	// albedo
+		pvr::api::ImageStorageFormat(pvr::PixelFormat::RGB_888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),	// normal
+		pvr::api::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),	// depth
 	};
 
 	// Allocate the render targets
 	for (pvr::uint32 i = 0; i < Fbo::Count; i++)
 	{
-		apiObj->renderTextures[i] = context->createTexture();
-		apiObj->renderTextures[i]->allocate2D(internalsFormats[i], fboWidth, fboHeight);
+		pvr::api::TextureStore renderTexure = context->createTexture();
+		renderTexure->allocate2D(internalsFormats[i], fboWidth, fboHeight);
+		apiObj->renderTextureViews[i] = context->createTextureView(renderTexure);
 
 		// setup the albedo, normal, depth attachment view
 		subPassInfo.setColorAttachment(i);
-		pvr::api::ColorAttachmentViewCreateParam colorViewInfo(apiObj->renderTextures[i]);
-		gbufFboDesc.addColor(i, context->createColorAttachmentView(colorViewInfo));
-		renderpassDesc.addColorInfo(i, pvr::api::RenderPassColorInfo(internalsFormats[i], pvr::LoadOp::Clear, pvr::StoreOp::Store));
+		gbufferFboCreateParam.addColor(i, apiObj->renderTextureViews[i]);
+		renderpassCreateParam.addColorInfo(i, pvr::api::RenderPassColorInfo(internalsFormats[i], LoadOp::Clear, StoreOp::Store));
 	}
 
 	// create the depth stencil attachment
-	const pvr::api::ImageStorageFormat depthStencilFmt(pvr::PixelFormat::Depth24Stencil8, 1, pvr::ColorSpace::lRGB, pvr::VariableType::Float);
-	pvr::api::TextureView gbufferDepthStencil = context->createTexture();
-	gbufferDepthStencil->allocate2D(depthStencilFmt, fboWidth, fboHeight);
+	const pvr::api::ImageStorageFormat depthStencilFormat(pvr::PixelFormat::Depth24Stencil8, 1, ColorSpace::lRGB, pvr::VariableType::Float);
+	pvr::api::TextureStore gbufferDepthStencilTexure = context->createTexture();
+	gbufferDepthStencilTexure->allocate2D(depthStencilFormat, fboWidth, fboHeight);
+	pvr::api::TextureView gbufferDepthStencilView = context->createTextureView(gbufferDepthStencilTexure);
 
 	// set up the depth stencil view
-	pvr::api::DepthStencilViewCreateParam dsViewInfo(gbufferDepthStencil);
-	gbufFboDesc.setDepthStencil(context->createDepthStencilView(dsViewInfo));
-	renderpassDesc.setDepthStencilInfo(pvr::api::RenderPassDepthStencilInfo(depthStencilFmt, pvr::LoadOp::Clear,
-	                                   pvr::StoreOp::Ignore, pvr::LoadOp::Clear, pvr::StoreOp::Ignore)).addSubPass(0, subPassInfo);
+	gbufferFboCreateParam.setDepthStencil(gbufferDepthStencilView);
 
-	apiObj->gBufferRenderPass = context->createRenderPass(renderpassDesc);
-	gbufFboDesc.setRenderPass(apiObj->gBufferRenderPass);
-	apiObj->gBufferFBO = context->createFbo(gbufFboDesc);
+	pvr::api::RenderPassDepthStencilInfo renderPassDepthStencilInfo = pvr::api::RenderPassDepthStencilInfo(depthStencilFormat,
+	    LoadOp::Clear, StoreOp::Ignore, LoadOp::Clear, StoreOp::Ignore);
+	renderpassCreateParam.setDepthStencilInfo(renderPassDepthStencilInfo);
+
+	// add the sub pass information
+	renderpassCreateParam.addSubPass(0, subPassInfo);
+
+	// create the gBuffer render pass
+	apiObj->gBufferRenderPass = context->createRenderPass(renderpassCreateParam);
+
+	gbufferFboCreateParam.setRenderPass(apiObj->gBufferRenderPass);
+
+	// create the gbuffer fbo
+	apiObj->gBufferFBO = context->createFbo(gbufferFboCreateParam);
 	if (!apiObj->gBufferFBO.isValid())
 	{
 		this->setExitMessage("G-Buffer Fbo creation failed");
@@ -1034,10 +1214,10 @@ void OGLESDeferredShading::updateSceneUniforms()
 	for (pvr::uint32 i = 0; i < scene->getNumMeshNodes(); ++i)
 	{
 		const pvr::assets::Model::Node& node = scene->getNode(i);
-		pass.gBufferPass.objects[i].world = scene->getWorldMatrix(node.getObjectId());
-		pass.gBufferPass.objects[i].worldView = viewMtx * pass.gBufferPass.objects[i].world;
-		pass.gBufferPass.objects[i].worldViewProj = viewProjMtx * pass.gBufferPass.objects[i].world;
-		pass.gBufferPass.objects[i].worldViewIT3x3 = glm::inverseTranspose(glm::mat3(pass.gBufferPass.objects[i].worldView));
+		pass.storeRenderDataPass.objects[i].world = scene->getWorldMatrix(node.getObjectId());
+		pass.storeRenderDataPass.objects[i].worldView = viewMtx * pass.storeRenderDataPass.objects[i].world;
+		pass.storeRenderDataPass.objects[i].worldViewProj = viewProjMtx * pass.storeRenderDataPass.objects[i].world;
+		pass.storeRenderDataPass.objects[i].worldViewIT3x3 = glm::inverseTranspose(glm::mat3(pass.storeRenderDataPass.objects[i].worldView));
 	}
 
 	// Imprint a 1 into the stencil buffer to indicate where geometry is found.
@@ -1077,7 +1257,6 @@ void OGLESDeferredShading::updateSceneUniforms()
 			pass.pointLightGeomPass.uniforms[pointLight].worldViewProj = viewProjMtx * mWorldScale;
 
 			//POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
-
 			pass.pointLightProxyPass.uniforms[pointLight].lightIntensity = light.getColor() * Configuration::PointlightIntensity;
 			pass.pointLightProxyPass.uniforms[pointLight].worldView = viewMtx * mWorldScale;
 			pass.pointLightProxyPass.uniforms[pointLight].worldViewProj = viewProjMtx * mWorldScale;
@@ -1094,8 +1273,8 @@ void OGLESDeferredShading::updateSceneUniforms()
 		case pvr::assets::Light::Directional:
 		{
 			const glm::mat4& transMtx = scene->getWorldMatrix(scene->getNodeIdFromLightNodeId(i));
-			pass.dirLightPass.uniforms[directionalLight].lightIntensity = light.getColor() * Configuration::DirLightIntensity;
-			pass.dirLightPass.uniforms[directionalLight].lightDirView = viewMtx * transMtx * glm::vec4(0.f, -1.f, 0.f, 0.f);
+			pass.directionalLightPass.uniforms[directionalLight].lightIntensity = light.getColor() * Configuration::DirLightIntensity;
+			pass.directionalLightPass.uniforms[directionalLight].lightDirView = viewMtx * transMtx * glm::vec4(0.f, -1.f, 0.f, 0.f);
 			++directionalLight;
 		}
 		break;
@@ -1104,8 +1283,8 @@ void OGLESDeferredShading::updateSceneUniforms()
 	int numSceneLights = pointLight;
 	if (Configuration::AdditionalDirectionalLight)
 	{
-		pass.dirLightPass.uniforms[directionalLight].lightIntensity = glm::vec3(1, 1, 1) * Configuration::DirLightIntensity;
-		pass.dirLightPass.uniforms[directionalLight].lightDirView = viewMtx * glm::vec4(0.f, -1.f, 0.f, 0.f);
+		pass.directionalLightPass.uniforms[directionalLight].lightIntensity = glm::vec3(1, 1, 1) * Configuration::DirLightIntensity;
+		pass.directionalLightPass.uniforms[directionalLight].lightDirView = viewMtx * glm::vec4(0.f, -1.f, 0.f, 0.f);
 		++directionalLight;
 	}
 	for (; pointLight < numSceneLights + Configuration::NumProceduralPointLights; ++pointLight)
@@ -1130,7 +1309,7 @@ float LightMaxVerticalVelocity = 5.f;
 }
 
 void OGLESDeferredShading::updateProceduralPointLight(DrawPointLightProxy::InitialData& data, DrawPointLightProxy::Uniforms& proxy,
-        DrawPointLightGeom::Uniforms& geom, DrawLightSources::Uniforms& source, bool initial)
+    DrawPointLightGeom::Uniforms& geom, DrawLightSources::Uniforms& source, bool initial)
 {
 	if (initial)
 	{
@@ -1215,7 +1394,7 @@ void OGLESDeferredShading::updateAnimation()
 	farClipDist = scene->getCamera(cameraId).getFar();
 	// Update camera matrices
 	static float angle = 0;
-	if (animateCamera) {	angle += getFrameTime() / 1000.f; }
+	if (animateCamera) { angle += getFrameTime() / 1000.f; }
 	viewMtx = glm::lookAt(glm::vec3(sin(angle) * 100.f + vTo.x, vTo.y + 30., cos(angle) * 100.f + vTo.z), vTo, vUp);
 	viewProjMtx = projMtx * viewMtx;
 	invViewMtx = glm::inverse(viewMtx);
@@ -1232,10 +1411,9 @@ void OGLESDeferredShading::recordCommandsPLS(pvr::api::CommandBuffer& cmdBuff)
 	//Pixel local storage defines that the value of PLS variables are "a function of the clear value" if the FBO
 	//has been cleared, which is NOT necessarily the same value they were cleared to.
 	//Only clearing to the value 0.0f is guaranteed to leave the PLS store with the value 0.0f.
-	cmdBuff->beginRenderPass(apiObj->onScreenFbo, renderArea, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), 1.f, 0);
+	cmdBuff->beginRenderPass(apiObj->onScreenFbo, renderArea, false, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), 1.f, 0);
 
 	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffRenderGbuffer);
-	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffRenderDepthStencil);
 	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffLighting);
 
 	cmdBuff->bindPipeline(renderInfo.writePlsPass.pipeline);
@@ -1252,7 +1430,7 @@ void OGLESDeferredShading::recordCommandsMRT(pvr::api::CommandBuffer& cmdBuff)
 {
 	pvr::Rectanglei renderArea(0, 0, fboWidth, fboHeight);
 
-	cmdBuff->beginRenderPass(apiObj->gBufferFBO, renderArea, glm::vec4(.0f, 0.0f, 0.0f, 1.0f), 1.f, 0);
+	cmdBuff->beginRenderPass(apiObj->gBufferFBO, renderArea, false, glm::vec4(.0f, 0.0f, 0.0f, 1.0f), 1.f, 0);
 	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffRenderGbuffer);
 	cmdBuff->endRenderPass();
 
@@ -1268,9 +1446,15 @@ void OGLESDeferredShading::recordCommandsMRT(pvr::api::CommandBuffer& cmdBuff)
 	//  After that render the point light source contributions; in order to limit the amount of shaded fragments
 	//  make use of the stencil buffer to imprint the areas that are actually affected by the light sources.
 	//  This is similar to the stencil buffer shadow algorithm which runs very efficiently on tile based renderer.
-	cmdBuff->beginRenderPass(apiObj->onScreenFbo, renderArea, glm::vec4(0.f, 0.f, 0.f, 1.0f), 1.f, 0);
-	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffRenderDepthStencil);
+	cmdBuff->beginRenderPass(apiObj->onScreenFbo, renderArea, false, glm::vec4(0.f, 0.f, 0.f, 1.0f), 1.f, 0);
+
+	if (!usePixelLocalStorage)
+	{
+		cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffRenderDepthStencil);
+	}
+
 	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffLighting);
+
 	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffUIRenderer);
 	cmdBuff->endRenderPass();
 }
@@ -1295,13 +1479,13 @@ void OGLESDeferredShading::allocateUniforms()
 	if (countPoint >= Configuration::MaxScenePointLights) { countPoint = Configuration::MaxScenePointLights; }
 	countPoint += Configuration::NumProceduralPointLights;
 
-	renderInfo.dirLightPass.uniforms.resize(countDirectional);
+	renderInfo.directionalLightPass.uniforms.resize(countDirectional);
 	renderInfo.pointLightGeomPass.uniforms.resize(countPoint);
 	renderInfo.pointLightProxyPass.uniforms.resize(countPoint);
 	renderInfo.pointLightProxyPass.data.resize(countPoint);
 	renderInfo.pointLightSourcesPass.uniforms.resize(countPoint);
 	renderInfo.depthStencilPass.uniforms.resize(scene->getNumMeshNodes());
-	renderInfo.gBufferPass.objects.resize(scene->getNumMeshNodes());
+	renderInfo.storeRenderDataPass.objects.resize(scene->getNumMeshNodes());
 
 	for (int i = countPoint - Configuration::NumProceduralPointLights; i < countPoint; ++i)
 	{
@@ -1317,7 +1501,11 @@ void OGLESDeferredShading::recordSecondaryCommandBuffers()
 {
 	recordCommandUIRenderer(apiObj->cmdBuffUIRenderer);
 	recordCommandBufferRenderGBuffer(apiObj->cmdBuffRenderGbuffer);
-	recordCommandBufferDepthStencil(apiObj->cmdBuffRenderDepthStencil);
+
+	if (!usePixelLocalStorage)
+	{
+		recordCommandBufferDepthStencil(apiObj->cmdBuffRenderDepthStencil);
+	}
 
 	pvr::Rectanglei renderArea(0, 0, fboWidth, fboHeight);
 	if ((fboWidth != windowWidth) || (fboHeight != windowHeight))
@@ -1325,9 +1513,12 @@ void OGLESDeferredShading::recordSecondaryCommandBuffers()
 		renderArea = pvr::Rectanglei(viewportOffsets[0], viewportOffsets[1], fboWidth, fboHeight);
 	}
 
-	apiObj->cmdBuffLighting->beginRecording();
-	recordCommandsDirLights(apiObj->cmdBuffLighting);
+	apiObj->cmdBuffLighting->beginRecording(apiObj->defaultRenderPass);
+	recordCommandsDirectionalLights(apiObj->cmdBuffLighting);
+
+	// clear stencil to 0's to make use of it again for point lights
 	apiObj->cmdBuffLighting->clearStencilAttachment(renderArea, 0);
+
 	recordCommandsPointLights(apiObj->cmdBuffLighting);
 	apiObj->cmdBuffLighting->endRecording();
 }
@@ -1339,14 +1530,30 @@ void OGLESDeferredShading::recordSecondaryCommandBuffers()
 ***********************************************************************************************************************/
 void OGLESDeferredShading::recordCommandBufferRenderGBuffer(pvr::api::SecondaryCommandBuffer& cmdBuffer)
 {
-	DrawGBuffer& pass = renderInfo.gBufferPass;
-	cmdBuffer->beginRecording();
+	DrawGBuffer& pass = renderInfo.storeRenderDataPass;
+
+	if (usePixelLocalStorage)
+	{
+		cmdBuffer->beginRecording(apiObj->defaultRenderPass);
+	}
+	else
+	{
+		cmdBuffer->beginRecording(apiObj->gBufferRenderPass);
+	}
 
 	// write 1 to the stencil buffer when the stencil passes
 
 	for (pvr::uint32 i = 0; i < scene->getNumMeshNodes(); ++i)
 	{
 		cmdBuffer->bindPipeline(pass.objects[i].pipeline);
+		if (usePixelLocalStorage)
+		{
+			// set stencil reference to 1
+			cmdBuffer->setStencilReference(StencilFace::FrontBack, 1);
+
+			// enable stencil writing
+			cmdBuffer->setStencilWriteMask(pvr::types::StencilFace::FrontBack, 0xFF);
+		}
 		pvr::int32 effectId = pass.objects[i].effectId;
 		cmdBuffer->setUniformPtr<pvr::float32>(uniformMapping[effectId][Semantics::CustomSemanticFarClipDist], 1, &farClipDist);
 
@@ -1355,8 +1562,8 @@ void OGLESDeferredShading::recordCommandBufferRenderGBuffer(pvr::api::SecondaryC
 
 		const Material& material = apiObj->materials[node.getMaterialIndex()];
 		// bind the material descriptor sets (diffuse and bumpmap)
-		cmdBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics, pass.objects[i].pipeline->getPipelineLayout(),
-		                              apiObj->materials[node.getMaterialIndex()].materialDescSet, 0);
+		cmdBuffer->bindDescriptorSet(pass.objects[i].pipeline->getPipelineLayout(),
+		                             0, apiObj->materials[node.getMaterialIndex()].materialDescriptorSet, 0);
 
 		cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[effectId][Semantics::WorldView], 1, &pass.objects[i].worldView);
 		cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[effectId][Semantics::WorldViewProjection], 1, &pass.objects[i].worldViewProj);
@@ -1378,7 +1585,7 @@ void OGLESDeferredShading::recordCommandBufferRenderGBuffer(pvr::api::SecondaryC
 ***********************************************************************************************************************/
 void OGLESDeferredShading::recordCommandUIRenderer(pvr::api::SecondaryCommandBuffer& cmdBuff)
 {
-	cmdBuff->beginRecording();
+	cmdBuff->beginRecording(apiObj->defaultRenderPass);
 	apiObj->uiRenderer.beginRendering(cmdBuff);
 	apiObj->uiRenderer.getDefaultTitle()->render();
 	apiObj->uiRenderer.getDefaultControls()->render();
@@ -1394,11 +1601,14 @@ void OGLESDeferredShading::recordCommandUIRenderer(pvr::api::SecondaryCommandBuf
 void OGLESDeferredShading::recordCommandBufferDepthStencil(pvr::api::SecondaryCommandBuffer& cmdBuffer)
 {
 	DrawDepthStencil& pass = renderInfo.depthStencilPass;
-	apiObj->cmdBuffRenderDepthStencil->beginRecording();
+	apiObj->cmdBuffRenderDepthStencil->beginRecording(apiObj->defaultRenderPass);
 	// Imprint a 1 into the stencil buffer to indicate where geometry is found.
 	// This optimizes the rendering of directional light sources as the shader then only has to be executed where necessary.
 	cmdBuffer->bindPipeline(pass.pipeline);
-	cmdBuffer->setStencilReference(pvr::api::Face::FrontBack, 1);
+	cmdBuffer->setStencilReference(StencilFace::FrontBack, 1);
+
+	// enable stencil writing
+	cmdBuffer->setStencilWriteMask(pvr::types::StencilFace::FrontBack, 0xFF);
 	for (pvr::uint32 i = 0; i < scene->getNumMeshNodes(); ++i)
 	{
 		const pvr::uint32 meshId = scene->getNode(i).getObjectId();
@@ -1419,19 +1629,23 @@ void OGLESDeferredShading::recordCommandBufferDepthStencil(pvr::api::SecondaryCo
 \brief	Record directional light draw commands
 \param  cmdBuffer Commandbuffer to record
 ***********************************************************************************************************************/
-void OGLESDeferredShading::recordCommandsDirLights(pvr::api::SecondaryCommandBuffer& cmdBuffer)
+void OGLESDeferredShading::recordCommandsDirectionalLights(pvr::api::SecondaryCommandBuffer& cmdBuffer)
 {
-	DrawDirLight& pass = renderInfo.dirLightPass;
+	DrawDirLight& pass = renderInfo.directionalLightPass;
 
 	//The "uniforms" variable is one per directional light...
 	if (pass.uniforms.empty()) { return; }
 	cmdBuffer->bindPipeline(pass.pipeline);
-	cmdBuffer->setStencilReference(pvr::api::Face::FrontBack, 1);
+
+	cmdBuffer->setStencilReference(pvr::types::StencilFace::FrontBack, 1);
+
+	// disable stencil writing
+	cmdBuffer->setStencilWriteMask(pvr::types::StencilFace::FrontBack, 0x00);
 
 	// Make use of the stencil buffer contents to only shade pixels where actual geometry is located.
 	// Reset the stencil buffer to 0 at the same time to avoid the stencil clear operation afterwards.
 	// bind the albedo and normal textures from the gbuffer
-	cmdBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics, renderInfo.dirLightPass.pipeline->getPipelineLayout(), apiObj->albedoNormalDescSet, 0);
+	cmdBuffer->bindDescriptorSet(renderInfo.directionalLightPass.pipeline->getPipelineLayout(), 0, apiObj->directionalLightDescriptorSet, 0);
 	for (size_t i = 0; i < pass.uniforms.size(); i++)
 	{
 		cmdBuffer->setUniformPtr<glm::vec3>(uniformMapping[pass.effectId][Semantics::LightColor], 1, &pass.uniforms[i].lightIntensity);
@@ -1451,13 +1665,14 @@ void OGLESDeferredShading::recordCommandsPointLights(pvr::api::SecondaryCommandB
 	if (renderInfo.pointLightProxyPass.uniforms.empty()) { return; }
 
 	const pvr::assets::Mesh& mesh = pointLightModel->getMesh(0);
-	cmdBuffer->setStencilReference(pvr::api::Face::FrontBack, 0);
+
+	cmdBuffer->setStencilReference(StencilFace::FrontBack, 0);
 
 	//POINT LIGHTS: 1) Draw stencil to discard useless pixels
 	cmdBuffer->bindPipeline(renderInfo.pointLightGeomPass.pipeline);
 	// Bind the vertex and index buffer for the point light
 	cmdBuffer->bindVertexBuffer(apiObj->pointLightVbo, 0, 0);
-	cmdBuffer->bindIndexBuffer(apiObj->pointLightIbo, 0, pvr::IndexType::IndexType16Bit);
+	cmdBuffer->bindIndexBuffer(apiObj->pointLightIbo, 0, IndexType::IndexType16Bit);
 
 	for (size_t i = 0; i < renderInfo.pointLightGeomPass.uniforms.size(); i++)
 	{
@@ -1467,7 +1682,7 @@ void OGLESDeferredShading::recordCommandsPointLights(pvr::api::SecondaryCommandB
 	}
 
 	//POINT LIGHTS: 2) Lighting
-	cmdBuffer->bindDescriptorSets(pvr::api::PipelineBindingPoint::Graphics, renderInfo.pointLightProxyPass.pipeline->getPipelineLayout(), apiObj->albedoNormalDepthEnvDescSet, 0);
+	cmdBuffer->bindDescriptorSet(renderInfo.pointLightProxyPass.pipeline->getPipelineLayout(), 0, apiObj->pointLightDescriptorSet, 0);
 
 	cmdBuffer->bindPipeline(renderInfo.pointLightProxyPass.pipeline);
 	if (uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticFarClipDist] >= 0)
@@ -1528,7 +1743,6 @@ void OGLESDeferredShading::recordCommandsPointLights(pvr::api::SecondaryCommandB
 /*!*********************************************************************************************************************
 \return	Return an auto_ptr to a new Demo class, supplied by the user
 \brief	This function must be implemented by the user of the shell. The user should return its Shell object defining the
-        behaviour of the application.
+behaviour of the application.
 ***********************************************************************************************************************/
 std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new OGLESDeferredShading()); }
-

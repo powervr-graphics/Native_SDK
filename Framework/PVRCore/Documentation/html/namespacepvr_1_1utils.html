@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -102,6 +102,18 @@ Functions</h2></td></tr>
 <tr class="memitem:a4eeeff8a7e62ee09b82b3357b186c221"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a4eeeff8a7e62ee09b82b3357b186c221">isLittleEndian</a> ()</td></tr>
 <tr class="memdesc:a4eeeff8a7e62ee09b82b3357b186c221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests endianness of the current platform.  <a href="#a4eeeff8a7e62ee09b82b3357b186c221">More...</a><br/></td></tr>
 <tr class="separator:a4eeeff8a7e62ee09b82b3357b186c221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1d2042ec2af243eaf4bcce0a06d6e5e"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
+<tr class="memitem:ad1d2042ec2af243eaf4bcce0a06d6e5e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#ad1d2042ec2af243eaf4bcce0a06d6e5e">memCopy</a> (T1 &amp;dst, const T2 &amp;src)</td></tr>
+<tr class="separator:ad1d2042ec2af243eaf4bcce0a06d6e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cc463ddc39c05eec129ff4264710314"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
+<tr class="memitem:a5cc463ddc39c05eec129ff4264710314"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#a5cc463ddc39c05eec129ff4264710314">memCopyFromVolatile</a> (T1 &amp;dst, const volatile T2 &amp;src)</td></tr>
+<tr class="separator:a5cc463ddc39c05eec129ff4264710314"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac847f23ce66e96bbbb645d41e9bc54da"><td class="memTemplParams" colspan="2">template&lt;typename T1 , typename T2 &gt; </td></tr>
+<tr class="memitem:ac847f23ce66e96bbbb645d41e9bc54da"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#ac847f23ce66e96bbbb645d41e9bc54da">memCopyToVolatile</a> (volatile T1 &amp;dst, const T2 &amp;src)</td></tr>
+<tr class="separator:ac847f23ce66e96bbbb645d41e9bc54da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5b0d60fcb212efafcea8302529bbb5e"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:af5b0d60fcb212efafcea8302529bbb5e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1utils.html#af5b0d60fcb212efafcea8302529bbb5e">memSet</a> (T &amp;dst, <a class="el" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">int32</a> i)</td></tr>
+<tr class="separator:af5b0d60fcb212efafcea8302529bbb5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains assorted utility functions (test endianness, unicode conversions etc.) </p>
@@ -131,6 +143,150 @@ Functions</h2></td></tr>
 <p>Tests endianness of the current platform. </p>
 <hr/>
  <dl class="section return"><dt>Returns</dt><dd>True if this platform is Little Endian, false if it is Big Endian. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ad1d2042ec2af243eaf4bcce0a06d6e5e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , typename T2 &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::utils::memCopy </td>
+          <td>(</td>
+          <td class="paramtype">T1 &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T2 &amp;&#160;</td>
+          <td class="paramname"><em>src</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a5cc463ddc39c05eec129ff4264710314"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , typename T2 &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::utils::memCopyFromVolatile </td>
+          <td>(</td>
+          <td class="paramtype">T1 &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const volatile T2 &amp;&#160;</td>
+          <td class="paramname"><em>src</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ac847f23ce66e96bbbb645d41e9bc54da"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T1 , typename T2 &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::utils::memCopyToVolatile </td>
+          <td>(</td>
+          <td class="paramtype">volatile T1 &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const T2 &amp;&#160;</td>
+          <td class="paramname"><em>src</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="af5b0d60fcb212efafcea8302529bbb5e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::utils::memSet </td>
+          <td>(</td>
+          <td class="paramtype">T &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32&#160;</td>
+          <td class="paramname"><em>i</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

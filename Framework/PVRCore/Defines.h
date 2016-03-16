@@ -32,6 +32,11 @@
 #endif
 
 #include "PVRCore/Types.h"
+#include "PVRCore/ComplexTypes.h"
+
+#if !defined(PVR_ASSERT_SUCCESS)
+#define PVR_ASSERT_SUCCESS(result) do { if ((result) != pvr::Result::Success) { assertion(false, "Assertion failed: Result was NOT pvr::Result::Success"); }} while (false)
+#endif
 
 /*!*********************************************************************************************************************
 \brief  Main PowerVR Framework Namespace
@@ -57,6 +62,33 @@ inline bool isLittleEndian()
 		bIsInit = true;
 	}
 	return bLittleEndian;
+}
+
+template<typename T>
+inline void memSet(T& dst, int32 i)
+{
+	memset(&dst, i, sizeof(T));
+}
+
+template<typename T1, typename T2>
+inline void memCopy(T1& dst, const T2& src)
+{
+	PVR_ASSERTION(sizeof(T1) == sizeof(T2));
+	memcpy(&dst, &src, sizeof(T1));
+}
+
+template<typename T1, typename T2>
+inline void memCopyFromVolatile(T1& dst, const volatile T2& src)
+{
+	PVR_ASSERTION(sizeof(T1) == sizeof(T2));
+	memcpy(&dst, &(const T2&)src, sizeof(T1));
+}
+
+template<typename T1, typename T2>
+inline void memCopyToVolatile(volatile T1& dst, const T2& src)
+{
+	PVR_ASSERTION(sizeof(T1) == sizeof(T2));
+	memcpy(&(T1&)dst, &src, sizeof(T1));
 }
 
 }

@@ -1,10 +1,7 @@
 var searchData=
 [
-  ['increment',['Increment',['../namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24a9d3cb2775ac4fddf8d1187c1bfd65dc8',1,'pvr::api::StencilOp']]],
-  ['incrementwrap',['IncrementWrap',['../namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24a41a2fafb6aac7919f9378b0caaed26b0',1,'pvr::api::StencilOp']]],
-  ['indexfetch',['IndexFetch',['../namespacepvr_1_1api_1_1_mem_barrier_flag_in.html#a6975b14808fa599befde0e4a568df771a7406fa7a9d44b31c3636a5331710362c',1,'pvr::api::MemBarrierFlagIn']]],
-  ['indirectcommand',['IndirectCommand',['../namespacepvr_1_1api_1_1_mem_barrier_flag_in.html#a6975b14808fa599befde0e4a568df771ab63b202fe50b8b6aa62341ed25cd0f4c',1,'pvr::api::MemBarrierFlagIn']]],
-  ['inline',['Inline',['../namespacepvr_1_1api_1_1_render_pass_contents.html#aeebeac762598065361d96782d2158ab5aaa19f84204026a91f945e4eb44a37587',1,'pvr::api::RenderPassContents']]],
-  ['instance',['Instance',['../namespacepvr_1_1api_1_1_step_rate.html#a5f651fa0bbd3c187b470cbd86d1838eda44b1e6e7f8f8a8e6dd048f73b4d1f6b1',1,'pvr::api::StepRate']]],
-  ['invert',['Invert',['../namespacepvr_1_1api_1_1_logic_op.html#a2b6d9714a1ee981e92578c4a7b170242ab0893b6872641234c19af2b929799cd9',1,'pvr::api::LogicOp::Invert()'],['../namespacepvr_1_1api_1_1_stencil_op.html#a2d44cdef5074870750675b0db89caf24a75ced75041945c7898e6c95bdeb6e2a9',1,'pvr::api::StencilOp::Invert()']]]
+  ['integer',['integer',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107ca5946468243e0fc1414d3c753837b882b',1,'pvr::GpuDatatypes::integer()'],['../namespacepvr_1_1_gpu_datatypes_1_1_base_type.html#a6419f04ab1a0c3c36471aa2b6d654fe8ac7615a148a85e99d3d5eb265e53e4958',1,'pvr::GpuDatatypes::BaseType::Integer()'],['../namespacepvr_1_1_gpu_datatypes_1_1_bits.html#ab31e3326f7cd7155544edcba68b74cd3aed568a5867de616f73a0243c480fd35e',1,'pvr::GpuDatatypes::Bits::Integer()']]],
+  ['ivec2',['ivec2',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107ca47cc079a074167a6364e39d021c9cdc8',1,'pvr::GpuDatatypes']]],
+  ['ivec3',['ivec3',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107cadcca3cedcc9b1274c27d7cceed5a06fb',1,'pvr::GpuDatatypes']]],
+  ['ivec4',['ivec4',['../namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107cad56dd0fc061c7dca97aebff48493f9cd',1,'pvr::GpuDatatypes']]]
 ];

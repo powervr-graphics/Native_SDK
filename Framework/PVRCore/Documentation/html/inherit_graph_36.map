@@ -1,0 +1,12 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$structpvr_1_1types_1_1_image_aspect_range.html" title="pvr::types::ImageAspectRange" alt="" coords="6,5,205,32"/>
+<area shape="rect" id="node2" href="$structpvr_1_1types_1_1_image_subresource_range.html" title="pvr::types::ImageSubresource\lRange" alt="" coords="253,41,448,82"/>
+<area shape="rect" id="node3" href="$structpvr_1_1types_1_1_image_extents.html" title="pvr::types::ImageExtents" alt="" coords="22,157,189,184"/>
+<area shape="rect" id="node4" href="$structpvr_1_1types_1_1_image_area_size.html" title="pvr::types::ImageAreaSize" alt="" coords="263,107,438,133"/>
+<area shape="rect" id="node6" href="$structpvr_1_1types_1_1_image_range.html" title="pvr::types::ImageRange" alt="" coords="271,208,430,235"/>
+<area shape="rect" id="node5" href="$structpvr_1_1types_1_1_image_area.html" title="pvr::types::ImageArea" alt="" coords="497,132,645,159"/>
+<area shape="rect" id="node7" href="$structpvr_1_1types_1_1_image_layers_size.html" title="pvr::types::ImageLayersSize" alt="" coords="12,56,199,83"/>
+<area shape="rect" id="node8" href="$structpvr_1_1types_1_1_image_offset.html" title="pvr::types::ImageOffset" alt="" coords="28,208,183,235"/>
+<area shape="rect" id="node9" href="$structpvr_1_1types_1_1_image_area_offset.html" title="pvr::types::ImageAreaOffset" alt="" coords="259,157,442,184"/>
+<area shape="rect" id="node10" href="$structpvr_1_1types_1_1_image_subresource.html" title="Describes an area of an image, out of which a Subresource can be defined. This area is a subarea of t..." alt="" coords="8,107,203,133"/>
+</map>

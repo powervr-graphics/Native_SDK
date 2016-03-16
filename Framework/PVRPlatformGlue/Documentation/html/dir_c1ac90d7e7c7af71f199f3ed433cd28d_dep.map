@@ -1,6 +1,7 @@
 <map id="C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRPlatformGlue" name="C:/dev/buildxl/buildroot/sdk/branch/Framework/PVRPlatformGlue">
-<area shape="rect" id="node2" href="dir_a9299ab6240f74d97d9cf350e2857978.html" title="EAGL" alt="" coords="133,63,205,111"/>
-<area shape="rect" id="node3" href="dir_677191bfe2fff559d9db6336564925aa.html" title="EGL" alt="" coords="37,63,109,111"/>
-<area shape="rect" id="clust2" href="dir_c1ac90d7e7c7af71f199f3ed433cd28d.html" alt="" coords="27,52,365,121"/>
-<area shape="rect" id="clust1" href="dir_f3778daf1425e8df0e4ba29e94b76937.html" title="Framework" alt="" coords="16,16,376,132"/>
+<area shape="rect" id="node2" href="dir_a9299ab6240f74d97d9cf350e2857978.html" title="EAGL" alt="" coords="229,63,301,111"/>
+<area shape="rect" id="node3" href="dir_677191bfe2fff559d9db6336564925aa.html" title="EGL" alt="" coords="133,63,205,111"/>
+<area shape="rect" id="node4" href="dir_6d9f1e93c022013aac0bf87eb3c94050.html" title="Vulkan" alt="" coords="37,63,109,111"/>
+<area shape="rect" id="clust2" href="dir_c1ac90d7e7c7af71f199f3ed433cd28d.html" alt="" coords="27,52,461,121"/>
+<area shape="rect" id="clust1" href="dir_f3778daf1425e8df0e4ba29e94b76937.html" title="Framework" alt="" coords="16,16,472,132"/>
 </map>

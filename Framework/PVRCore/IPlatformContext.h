@@ -22,6 +22,10 @@ enum Enum
 };
 };
 
+namespace system {
+struct NativePlatformHandles_; struct NativeDisplayHandle_;
+}
+
 class OSManager;
 /*!*********************************************************************************************************************
 \brief Interface for the Platform context. Contains the necessary operations needed to get the context required to create a window,
@@ -32,26 +36,24 @@ class IPlatformContext
 {
 public:
 	/*!*********************************************************************************************************************
-	\brief release the resources used by this context.
-	***********************************************************************************************************************/
-	virtual void release() = 0;
-
-	/*!*********************************************************************************************************************
-	\brief Initialise this platform context using the functions provided by an OSManager object (e.g. the Shell). Must be called
-	       before any other operations are done. Must be called AFTER the IOS manager object that this context belongs to is
-		   initialised. Called by the State Machine.
+	\brief Swap the front and back buffers (called at the end of each frame to show the rendering).
 	***********************************************************************************************************************/
 	virtual Result::Enum init() = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Swap the front and back buffers (called at the end of each frame to show the rendering).
 	***********************************************************************************************************************/
-	virtual Result::Enum presentBackbuffer() = 0;
+	virtual void release() = 0;
+
+	/*!*********************************************************************************************************************
+	\brief Swap the front and back buffers (called at the end of each frame to show the rendering).
+	***********************************************************************************************************************/
+	virtual bool presentBackbuffer() = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Bind this context for using.
 	***********************************************************************************************************************/
-	virtual Result::Enum makeCurrent() = 0;
+	virtual bool makeCurrent() = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Print information about this context.
@@ -59,14 +61,14 @@ public:
 	virtual std::string getInfo() = 0;
 
 	/*!*********************************************************************************************************************
-	\brief Check if this context is initialised.
+	\brief Check if this context is initialized.
 	***********************************************************************************************************************/
-	virtual bool isInitialised() = 0;
+	virtual bool isInitialized() const = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Get an integer number uniquely identifying this context.
 	***********************************************************************************************************************/
-	virtual size_t getID() = 0;
+	virtual size_t getID() const = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Get the maximum API version supported by this context.
@@ -74,11 +76,51 @@ public:
 	virtual Api::Enum getMaxApiVersion() = 0;
 
 	/*!*********************************************************************************************************************
+	\brief Get the maximum API version supported by this context.
+	***********************************************************************************************************************/
+	Api::Enum getApiType() { return apiType; }
+
+	/*!*********************************************************************************************************************
 	\brief Query if the specified Api is supported by this context.
 	***********************************************************************************************************************/
 	virtual bool isApiSupported(Api::Enum api) = 0;
 
-	virtual ~IPlatformContext() {}
+	/*!*********************************************************************************************************************
+	\brief Get the NativePlatformHandles wrapped by this context.
+	***********************************************************************************************************************/
+	virtual const system::NativePlatformHandles_& getNativePlatformHandles() const = 0;
+
+	/*!*********************************************************************************************************************
+	\brief Get the NativePlatformHandles wrapped by this context.
+	***********************************************************************************************************************/
+	virtual system::NativePlatformHandles_& getNativePlatformHandles() = 0;
+
+	/*!*********************************************************************************************************************
+	\brief Get the NativePlatformHandles wrapped by this context.
+	***********************************************************************************************************************/
+	virtual const system::NativeDisplayHandle_& getNativeDisplayHandle() const = 0;
+
+	/*!*********************************************************************************************************************
+	\brief Get the NativePlatformHandles wrapped by this context.
+	***********************************************************************************************************************/
+	virtual system::NativeDisplayHandle_& getNativeDisplayHandle() = 0;
+
+	/*!*********************************************************************************************************************
+	\brief Get the NativePlatformHandles wrapped by this context.
+	***********************************************************************************************************************/
+	virtual uint32 getSwapChainLength() const = 0;
+
+	/*!*********************************************************************************************************************
+	\brief Get the NativePlatformHandles wrapped by this context.
+	***********************************************************************************************************************/
+	uint32 getSwapChainIndex() const { return swapIndex; }
+
+	IPlatformContext() : swapIndex(0), lastPresentedSwapIndex(0), apiType(Api::Unspecified) {}
+	virtual ~IPlatformContext() { }
+//protected:
+	uint32 swapIndex;
+	uint32 lastPresentedSwapIndex;
+	Api::Enum apiType;
 };
 
 /*!*********************************************************************************************************************
@@ -86,15 +128,5 @@ public:
         PVRPlatformGlue to return the correct type of context required.
 ***********************************************************************************************************************/
 std::auto_ptr<IPlatformContext> createNativePlatformContext(OSManager& osManager);
-
-/*!*********************************************************************************************************************
-\brief	Performs one-time-only initialisation for the platform context. Implemented in the specific PVRPlatformGlue.
-***********************************************************************************************************************/
-void initialiseNativeContext();
-
-/*!*********************************************************************************************************************
-\brief	Performs one-time-only resource release for the platform context. Implemented in the specific PVRPlatformGlue.
-***********************************************************************************************************************/
-void releaseNativeContext();
 
 }// namespace pvr

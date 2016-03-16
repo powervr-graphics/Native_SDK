@@ -5,13 +5,6 @@
 \brief         Utilities to facilitate loading native libraries in a platform-agnostic way.
 ***********************************************************************************************************************/
 #pragma once
-#if defined( _WIN32 )
-#include <windows.h>
-typedef HINSTANCE LIBTYPE;
-#else
-typedef void* LIBTYPE;
-#endif
-
 #include <string>
 
 namespace pvr {
@@ -62,7 +55,7 @@ public:
 	***********************************************************************************************************************/
 	void CloseLib();
 protected:
-	LIBTYPE		m_hHostLib;
+	void*		m_hHostLib;
 	bool		m_bError;
 };
 }

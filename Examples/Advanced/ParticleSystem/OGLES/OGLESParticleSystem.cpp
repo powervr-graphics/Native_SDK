@@ -9,7 +9,7 @@
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
 #include "PVRUIRenderer/PVRUIRenderer.h"
-
+using namespace pvr::types;
 
 namespace Files {
 // Asset files
@@ -126,7 +126,7 @@ private:
 		} pipelineFloor;
 
 		ParticleSystemGPU particleSystemGPU;
-		ApiObjects(OGLESParticleSystem& thisApp) : particleSystemGPU(thisApp){ }
+		ApiObjects(OGLESParticleSystem& thisApp) : particleSystemGPU(thisApp) { }
 	};
 	std::auto_ptr<ApiObjects> apiObj;
 public:
@@ -203,7 +203,7 @@ void OGLESParticleSystem::respecifyParticleBuffer(pvr::uint32 numberOfParticles)
 	for (pvr::uint32 i = 0; i < NumBuffers; ++i)
 	{
 		apiObj->particleVbos[i] = apiObj->context->createBuffer(sizeof(Particle) * numberOfParticles,
-		                          pvr::api::BufferBindingUse::VertexBuffer | pvr::api::BufferBindingUse::StorageBuffer);
+		                          BufferBindingUse::VertexBuffer | BufferBindingUse::StorageBuffer);
 	}
 	apiObj->particleSystemGPU.setParticleVboBuffers(apiObj->particleVbos);
 	apiObj->particleSystemGPU.setNumberOfParticles(numberOfParticles);
@@ -212,7 +212,7 @@ void OGLESParticleSystem::respecifyParticleBuffer(pvr::uint32 numberOfParticles)
 /*!*********************************************************************************************************************
 \brief ctor
 ***********************************************************************************************************************/
-OGLESParticleSystem::OGLESParticleSystem() : isCameraPaused(0){ }
+OGLESParticleSystem::OGLESParticleSystem() : isCameraPaused(0) { }
 
 /*!*********************************************************************************************************************
 \brief	Loads the mesh data required for this training course into vertex buffer objects
@@ -222,21 +222,22 @@ bool OGLESParticleSystem::createBuffers()
 {
 	pvr::utils::createSingleBuffersFromMesh(getGraphicsContext(), scene->getMesh(0), apiObj->sphereVbo, apiObj->sphereIbo);
 
-	//Initialise the vertex buffer data for the floor - 3*Position data, 3* normal data
+	//Initialize the vertex buffer data for the floor - 3*Position data, 3* normal data
 	glm::vec2 maxCorner(40, 40);
-	const float afVertexBufferData[] = {
-										-maxCorner.x, 0.0f, -maxCorner.y, 0.0f, 1.0f, 0.0f,
-	                                    -maxCorner.x, 0.0f, maxCorner.y, 0.0f, 1.0f, 0.0f,
-	                                    maxCorner.x, 0.0f, -maxCorner.y, 0.0f, 1.0f, 0.0f,
-	                                    maxCorner.x, 0.0f, maxCorner.y, 0.0f, 1.0f, 0.0f
-	                                   };
+	const float afVertexBufferData[] =
+	{
+		-maxCorner.x, 0.0f, -maxCorner.y, 0.0f, 1.0f, 0.0f,
+		-maxCorner.x, 0.0f, maxCorner.y, 0.0f, 1.0f, 0.0f,
+		maxCorner.x, 0.0f, -maxCorner.y, 0.0f, 1.0f, 0.0f,
+		maxCorner.x, 0.0f, maxCorner.y, 0.0f, 1.0f, 0.0f
+	};
 
-	apiObj->floorVbo = apiObj->context->createBuffer(sizeof(afVertexBufferData), pvr::api::BufferBindingUse::VertexBuffer);
+	apiObj->floorVbo = apiObj->context->createBuffer(sizeof(afVertexBufferData), BufferBindingUse::VertexBuffer);
 	apiObj->floorVbo->update(afVertexBufferData, 0, sizeof(afVertexBufferData));
 	for (int i = 0; i < NumBuffers; ++i)
 	{
 		apiObj->particleVbos[i] = apiObj->context->createBuffer(sizeof(Particle) * Configuration::InitialNoParticles,
-		                          pvr::api::BufferBindingUse::VertexBuffer | pvr::api::BufferBindingUse::StorageBuffer);
+		                          BufferBindingUse::VertexBuffer | BufferBindingUse::StorageBuffer);
 	}
 	return true;
 }
@@ -252,29 +253,31 @@ bool OGLESParticleSystem::createPipelines()
 	pvr::api::PipelineLayout pipeLayout = apiObj->context->createPipelineLayout(pvr::api::PipelineLayoutCreateParam());
 	pvr::assets::ShaderFile fileVersioning;
 
-    // Simple Pipeline
+	// Simple Pipeline
 	{
 		pvr::api::VertexAttributeInfo attributes[] =
 		{
-			pvr::api::VertexAttributeInfo(Attributes::VertexArray, pvr::DataType::Float32, 3, 0, "inVertex"),
-			pvr::api::VertexAttributeInfo(Attributes::NormalArray, pvr::DataType::Float32, 3, 3 * sizeof(float), "inNormal")
+			pvr::api::VertexAttributeInfo(Attributes::VertexArray, DataType::Float32, 3, 0, "inVertex"),
+			pvr::api::VertexAttributeInfo(Attributes::NormalArray, DataType::Float32, 3, 3 * sizeof(float), "inNormal")
 		};
 		const char* simplePipeAttributes[] = { "inVertex", "inNormal" };
 		const unsigned int numSimpleAttribs = sizeof(simplePipeAttributes) / sizeof(simplePipeAttributes[0]);
 
 		pvr::api::GraphicsPipelineCreateParam pipeCreateInfo;
 		fileVersioning.populateValidVersions(Files::VertShaderSrcFile, *this);
-		pipeCreateInfo.vertexShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES31), pvr::ShaderType::VertexShader));
+		pipeCreateInfo.vertexShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES31), ShaderType::VertexShader));
 
 		fileVersioning.populateValidVersions(Files::FragShaderSrcFile, *this);
-		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES31), pvr::ShaderType::FragmentShader));
+		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES31), ShaderType::FragmentShader));
+
+		pipeCreateInfo.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
 
 		pipeCreateInfo.vertexInput.addVertexAttribute(0, attributes[0]).addVertexAttribute(0, attributes[1])
 		.setInputBinding(0, mesh.getStride(0));
 
 		pipeCreateInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
 
-		pipeCreateInfo.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::TriangleList);
+		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleList);
 		pipeCreateInfo.pipelineLayout = pipeLayout;
 		apiObj->pipelineSimple.pipe = apiObj->context->createGraphicsPipeline(pipeCreateInfo);
 		apiObj->pipelineSimple.mvMatrixLoc = apiObj->pipelineSimple.pipe->getUniformLocation("uModelViewMatrix");
@@ -283,26 +286,27 @@ bool OGLESParticleSystem::createPipelines()
 		apiObj->pipelineSimple.lightPosition = apiObj->pipelineSimple.pipe->getUniformLocation("uLightPosition");
 	}
 
-    //	Floor Pipeline
+	//	Floor Pipeline
 	{
 		pvr::api::VertexAttributeInfo attributes[] =
 		{
-			pvr::api::VertexAttributeInfo(Attributes::VertexArray, pvr::DataType::Float32, 3, 0, "inVertex"),
-			pvr::api::VertexAttributeInfo(Attributes::NormalArray, pvr::DataType::Float32, 3, 3 * sizeof(float), "inNormal")
+			pvr::api::VertexAttributeInfo(Attributes::VertexArray, DataType::Float32, 3, 0, "inVertex"),
+			pvr::api::VertexAttributeInfo(Attributes::NormalArray, DataType::Float32, 3, 3 * sizeof(float), "inNormal")
 		};
 
 		const char* floorPipeAttributes[] = { "inVertex", "inNormal" };
 		const unsigned int numFloorAttribs = sizeof(floorPipeAttributes) / sizeof(floorPipeAttributes[0]);
 		pvr::api::GraphicsPipelineCreateParam pipeCreateInfo;
+		pipeCreateInfo.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
 
 		fileVersioning.populateValidVersions(Files::VertShaderSrcFile, *this);
-		pipeCreateInfo.vertexShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), pvr::ShaderType::VertexShader));
+		pipeCreateInfo.vertexShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), ShaderType::VertexShader));
 
 		fileVersioning.populateValidVersions(Files::FragShaderSrcFile, *this);
-		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), pvr::ShaderType::FragmentShader));
+		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), ShaderType::FragmentShader));
 		pipeCreateInfo.vertexInput.addVertexAttribute(0, attributes[0]).addVertexAttribute(0, attributes[1]).setInputBinding(0, 6 * sizeof(float));
 
-		pipeCreateInfo.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::TriangleStrips);
+		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrips);
 		pipeCreateInfo.pipelineLayout = pipeLayout;
 		apiObj->pipelineFloor.pipe = apiObj->context->createGraphicsPipeline(pipeCreateInfo);
 		apiObj->pipelineFloor.mvMatrixLoc = apiObj->pipelineFloor.pipe->getUniformLocation("uModelViewMatrix");
@@ -311,32 +315,33 @@ bool OGLESParticleSystem::createPipelines()
 		apiObj->pipelineFloor.lightPosition = apiObj->pipelineFloor.pipe->getUniformLocation("uLightPosition");
 	}
 
-    //  Particle Pipeline
+	//  Particle Pipeline
 	{
 		const char* particleAttribs[] = { "inPosition", "inLifespan" };
 		pvr::api::VertexAttributeInfo attributes[] =
 		{
-			pvr::api::VertexAttributeInfo(Attributes::ParticlePoisitionArray, pvr::DataType::Float32, 3, 0, "inPosition"),
-			pvr::api::VertexAttributeInfo(Attributes::ParticleLifespanArray, pvr::DataType::Float32, 1, (sizeof(float) * 7), "inLifespan")
+			pvr::api::VertexAttributeInfo(Attributes::ParticlePoisitionArray, DataType::Float32, 3, 0, "inPosition"),
+			pvr::api::VertexAttributeInfo(Attributes::ParticleLifespanArray, DataType::Float32, 1, (sizeof(float) * 7), "inLifespan")
 		};
 		const unsigned int numParticleAttribs = sizeof(particleAttribs) / sizeof(particleAttribs[0]);
 		pvr::api::ImageDataFormat colorFmt;
 		pvr::api::GraphicsPipelineCreateParam pipeCreateInfo;
-		pipeCreateInfo.colorBlend.addAttachmentState(0, pvr::api::pipelineCreation::ColorBlendAttachmentState(
-		      true, pvr::api::BlendFactor::SrcAlpha, pvr::api::BlendFactor::One, pvr::api::BlendOp::Add));
+		pipeCreateInfo.colorBlend.addAttachmentState(
+		  pvr::api::pipelineCreation::ColorBlendAttachmentState(
+		    true, BlendFactor::SrcAlpha, BlendFactor::One, BlendOp::Add));
 
 		pipeCreateInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
 		fileVersioning.populateValidVersions(Files::ParticleShaderVertSrcFile, *this);
 
-		pipeCreateInfo.vertexShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), pvr::ShaderType::VertexShader));
+		pipeCreateInfo.vertexShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), ShaderType::VertexShader));
 
 		fileVersioning.populateValidVersions(Files::ParticleShaderFragSrcFile, *this);
-		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), pvr::ShaderType::FragmentShader));
+		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), ShaderType::FragmentShader));
 
 		pipeCreateInfo.vertexInput.addVertexAttribute(0, attributes[0]).addVertexAttribute(0, attributes[1])
-		.setInputBinding(0, sizeof(Particle), pvr::api::StepRate::Draw);
+		.setInputBinding(0, sizeof(Particle));
 
-		pipeCreateInfo.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::Points);
+		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::Points);
 		pipeCreateInfo.pipelineLayout = pipeLayout;
 		apiObj->pipeParticle.pipe = apiObj->context->createGraphicsPipeline(pipeCreateInfo);
 		apiObj->pipeParticle.mvpMatrixLoc = apiObj->pipeParticle.pipe->getUniformLocation("uModelViewProjectionMatrix");
@@ -385,19 +390,19 @@ pvr::Result::Enum OGLESParticleSystem::initView()
 {
 	apiObj.reset(new ApiObjects(*this));
 	apiObj->context = getGraphicsContext();
-	for (pvr::uint8 i = 0; i < NumBuffers; ++i)	{	apiObj->commandBuffers[i] = apiObj->context->createCommandBuffer();	}
+	for (pvr::uint8 i = 0; i < NumBuffers; ++i)	{	apiObj->commandBuffers[i] = apiObj->context->createCommandBufferOnDefaultPool();	}
 
-	apiObj->onscreenFbo = apiObj->context->createOnScreenFboWithParams();
+	apiObj->onscreenFbo = apiObj->context->createOnScreenFbo(0);
 
 	// Initialize Print3D textures
-	if (apiObj->uiRenderer.init(apiObj->context))
+	if (apiObj->uiRenderer.init(apiObj->context, apiObj->onscreenFbo->getRenderPass(), 0))
 	{
-		setExitMessage("Could not initialise UIRenderer");
+		setExitMessage("Could not initialize UIRenderer");
 		return pvr::Result::UnknownError;
 	}
 
 	//	Create the Buffers
-	if (!createBuffers()){	return pvr::Result::UnknownError;	}
+	if (!createBuffers()) {	return pvr::Result::UnknownError;	}
 
 	//	Load and compile the shaders & link programs
 	if (!createPipelines())	{	return pvr::Result::UnknownError;	}
@@ -455,7 +460,8 @@ pvr::Result::Enum OGLESParticleSystem::releaseView()
 ***********************************************************************************************************************/
 pvr::Result::Enum OGLESParticleSystem::renderFrame()
 {
-	currentBufferIdx++; if (currentBufferIdx >= NumBuffers) { currentBufferIdx = 0;}
+	currentBufferIdx++;
+	if (currentBufferIdx >= NumBuffers) { currentBufferIdx = 0;}
 
 	updateParticleUniforms();
 
@@ -489,7 +495,7 @@ void OGLESParticleSystem::updateSpheres(const glm::mat4& proj, const glm::mat4& 
 	{
 		const glm::vec3& position = Configuration::Spheres[i].vPosition;
 		float radius = Configuration::Spheres[i].fRadius;
-        	DrawPass& pass = passSphere[i];
+		DrawPass& pass = passSphere[i];
 
 		const glm::mat4 mModel = glm::translate(position) * glm::scale(glm::vec3(radius, radius, radius));
 		pass.modelView = view * mModel;
@@ -517,9 +523,9 @@ void OGLESParticleSystem::updateParticleUniforms()
 {
 	float step = (float)getFrameTime();
 
-    static pvr::float32 rot_angle = 0.0f;
+	static pvr::float32 rot_angle = 0.0f;
 	rot_angle += step / 500.0f;
-    pvr::float32 el_angle = (sinf(rot_angle / 4.0f) + 1.0f) * 0.2f + 0.2f;
+	pvr::float32 el_angle = (sinf(rot_angle / 4.0f) + 1.0f) * 0.2f + 0.2f;
 
 	glm::mat4 rot = glm::rotate(rot_angle, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 skew = glm::rotate(el_angle, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -535,7 +541,7 @@ void OGLESParticleSystem::updateParticleUniforms()
 ***********************************************************************************************************************/
 void OGLESParticleSystem::recordCommandBuffers()
 {
-	for (pvr::uint8 i = 0; i < NumBuffers; ++i){	recordCommandBuffer(i); 	}
+	for (pvr::uint8 i = 0; i < NumBuffers; ++i) { recordCommandBuffer(i); }
 }
 
 /*!*********************************************************************************************************************
@@ -545,7 +551,7 @@ void OGLESParticleSystem::recordCommandBuffers()
 void OGLESParticleSystem::recordCommandBuffer(pvr::uint8 idx)
 {
 	apiObj->commandBuffers[idx]->beginRecording();
-	apiObj->commandBuffers[idx]->beginRenderPass(apiObj->onscreenFbo, pvr::Rectanglei(0, 0, getWidth(), getHeight()));
+	apiObj->commandBuffers[idx]->beginRenderPass(apiObj->onscreenFbo, pvr::Rectanglei(0, 0, getWidth(), getHeight()), true);
 	const char* err = 0;
 
 	// Render floor
@@ -555,7 +561,7 @@ void OGLESParticleSystem::recordCommandBuffer(pvr::uint8 idx)
 
 	// Render particles
 	recordCmdDrawParticles(idx);
-	pvr::api::SecondaryCommandBuffer uicmd = apiObj->context->createSecondaryCommandBuffer();
+	pvr::api::SecondaryCommandBuffer uicmd = apiObj->context->createSecondaryCommandBufferOnDefaultPool();
 	apiObj->uiRenderer.beginRendering(uicmd);
 	apiObj->uiRenderer.getDefaultTitle()->render();
 	apiObj->uiRenderer.getDefaultDescription()->render();
@@ -566,8 +572,11 @@ void OGLESParticleSystem::recordCommandBuffer(pvr::uint8 idx)
 	apiObj->commandBuffers[idx]->endRenderPass();
 
 	apiObj->particleSystemGPU.recordCommandBuffer(apiObj->commandBuffers[idx], idx);
-	pvr::api::PipelineBarrier pipeBarrier;
-	pipeBarrier.addMemoryBarrier(pvr::api::MemBarrierFlagIn::VertexAttributeFetch, pvr::api::MemBarrierFlagout::ShaderWrite);
+
+	pvr::api::MemoryBarrierSet memBarrierSet;
+	memBarrierSet.addBarrier(pvr::api::MemoryBarrier(pvr::types::AccessFlags::ShaderWrite, pvr::types::AccessFlags::VertexAttributeRead));
+
+	apiObj->commandBuffers[idx]->pipelineBarrier(pvr::types::ShaderStageFlags::Compute, pvr::types::ShaderStageFlags::Vertex, memBarrierSet);
 	apiObj->commandBuffers[idx]->endRecording();
 }
 
@@ -629,4 +638,4 @@ void OGLESParticleSystem::recordCmdDrawFloor(pvr::uint8 idx)
 \return Return a smart pointer to the application class.
 \brief	This function must be implemented by the user of the shell. It should return the Application class (a class inheriting from pvr::Shell.
 ***********************************************************************************************************************/
-std::auto_ptr<pvr::Shell> pvr::newDemo(){	return std::auto_ptr<pvr::Shell>(new OGLESParticleSystem());  }
+std::auto_ptr<pvr::Shell> pvr::newDemo() {	return std::auto_ptr<pvr::Shell>(new OGLESParticleSystem());  }

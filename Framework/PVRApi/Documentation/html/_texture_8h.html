@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -84,7 +84,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#namespaces">Constant Groups</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Texture.h File Reference</div>  </div>
@@ -110,14 +109,11 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_image_storage_format_compressed.html">pvr::api::ImageStorageFormatCompressed</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes a Compressed format. Compressed formats provide less information than the uncompressed format, as they can only be accessed "black box".  <a href="structpvr_1_1api_1_1_image_storage_format_compressed.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_image_sub_resource_range.html">pvr::api::ImageSubResourceRange</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes an area of an image, out of which a SubResource can be defined. This area is a subarea of the image, containing a part of the image array slices, mip levels, or aspects.  <a href="structpvr_1_1api_1_1_image_sub_resource_range.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_texture_store__.html">pvr::api::impl::TextureStore_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The class powering any texture. Wraps the underlying API Texture object and represents the storage bits of any texture. Is normally used through a TextureView object. Wrapped and accessed in a TextureStore Reference Counted Framework object.  <a href="classpvr_1_1api_1_1impl_1_1_texture_store__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_texture_store_impl.html">pvr::api::impl::TextureStoreImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The class powering any texture. Wraps the underlying API Texture object and represents the storage bits of any texture. Is normally used through a TextureView object. Wrapped and accessed in a TextureStore Reference Counted Framework object.  <a href="classpvr_1_1api_1_1impl_1_1_texture_store_impl.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_texture_view_impl.html">pvr::api::impl::TextureViewImpl</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base texture view class.  <a href="classpvr_1_1api_1_1impl_1_1_texture_view_impl.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_texture_view__.html">pvr::api::impl::TextureView_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base texture view class.  <a href="classpvr_1_1api_1_1impl_1_1_texture_view__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_texture_area.html">pvr::api::TextureArea</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class used by texture update functions. Represents an area of the texture to be updated. Default value: width=1, height=1, (depth=1), offsetx=0,offsety=0,offsetz=0, arrayslice=0, cubeface=0, miplevel=0.  <a href="structpvr_1_1api_1_1_texture_area.html#details">More...</a><br/></td></tr>
@@ -129,16 +125,9 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html">pvr::api</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PVRApi Namespace. <br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepvr_1_1api_1_1_image_aspect"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1_image_aspect.html">pvr::api::ImageAspect</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1_image_aspect"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of the "aspect" (or "semantics") of an image: Color, Depth, Stencil. <br/></td></tr>
+<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> mapping flags. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api_1_1impl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html">pvr::api::impl</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1impl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains internal objects and wrapped versions of the PVRApi module. <br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepvr_1_1api_1_1_swizzle_mask"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html">pvr::api::SwizzleMask</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1_swizzle_mask"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of texture Swizzle mask channels. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -147,47 +136,10 @@ Constant Groups</h2></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html">pvr::api</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PVRApi Namespace. <br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepvr_1_1api_1_1_image_aspect"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1_image_aspect.html">pvr::api::ImageAspect</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1_image_aspect"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of the "aspect" (or "semantics") of an image: Color, Depth, Stencil. <br/></td></tr>
+<tr class="memdesc:namespacepvr_1_1api"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> mapping flags. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepvr_1_1api_1_1impl"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1impl.html">pvr::api::impl</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1impl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains internal objects and wrapped versions of the PVRApi module. <br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepvr_1_1api_1_1_swizzle_mask"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html">pvr::api::SwizzleMask</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1api_1_1_swizzle_mask"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of texture Swizzle mask channels. <br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:abce0a39f04af1cddbe03e42bcb5f3b61"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61">pvr::api::SwizzleMask::Enum</a> { <br/>
-&#160;&#160;<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a4c8d41ccbee6d8a76b19f9ed1d6d1b63">pvr::api::SwizzleMask::Unset</a>, 
-<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61af838818bd26862b8cd34743c17a5a6d0">pvr::api::SwizzleMask::RedChannel</a> = 1, 
-<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a1463a4ff5b5aed084dfd0cfc8ef318d7">pvr::api::SwizzleMask::Red</a> = 1, 
-<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a7fa1db5e50bbbb0133cf2168909d33ba">pvr::api::SwizzleMask::R</a> = 1, 
-<br/>
-&#160;&#160;<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a697454c29fa5e7cbf67bcdc2345cd2c1">pvr::api::SwizzleMask::GreenChannel</a> = 2, 
-<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a270c18545bcdb3a696179c78d2656095">pvr::api::SwizzleMask::Green</a> = 2, 
-<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61ae7765da275a2b9b93d228cc1cedb03c5">pvr::api::SwizzleMask::G</a> = 2, 
-<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a28e71ae2791ed86185720c82b27f6e5a">pvr::api::SwizzleMask::BlueChannel</a> = 3, 
-<br/>
-&#160;&#160;<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a42a1ed733089cc11eb40bb0635e97330">pvr::api::SwizzleMask::Blue</a> = 3, 
-<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61adccbca5ce9d0a6a89eb032fabc76d8b9">pvr::api::SwizzleMask::B</a> = 3, 
-<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a007c1184a310c39a14325ce8be352a9d">pvr::api::SwizzleMask::AlphaChannel</a> = 4, 
-<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a0ba71758d2822fe2d1c02682515296ec">pvr::api::SwizzleMask::Alpha</a> = 4, 
-<br/>
-&#160;&#160;<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a3615461506f6901aa35d8e9fdb258393">pvr::api::SwizzleMask::A</a> = 4, 
-<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61a0f486705a7444d5805adf3e3360293f3">pvr::api::SwizzleMask::Zero</a> = 5, 
-<a class="el" href="namespacepvr_1_1api_1_1_swizzle_mask.html#abce0a39f04af1cddbe03e42bcb5f3b61ac64d34a5f745a6af68d7525659c766bd">pvr::api::SwizzleMask::One</a> = 6
-<br/>
- }</td></tr>
-<tr class="separator:abce0a39f04af1cddbe03e42bcb5f3b61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07ea5fc4e8b10b17cd03edb4ae66550f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_1_1_image_aspect.html#a07ea5fc4e8b10b17cd03edb4ae66550f">pvr::api::ImageAspect::Enum</a> { <a class="el" href="namespacepvr_1_1api_1_1_image_aspect.html#a07ea5fc4e8b10b17cd03edb4ae66550fa6a7a4d57cb53ef46e7f8acde58350e2e">pvr::api::ImageAspect::Color</a>, 
-<a class="el" href="namespacepvr_1_1api_1_1_image_aspect.html#a07ea5fc4e8b10b17cd03edb4ae66550fad3164a53ea7fad9fb7b752ae86336a93">pvr::api::ImageAspect::Depth</a>, 
-<a class="el" href="namespacepvr_1_1api_1_1_image_aspect.html#a07ea5fc4e8b10b17cd03edb4ae66550fa4a5f5dde97d2108502c142e765663610">pvr::api::ImageAspect::Stencil</a>
- }</td></tr>
-<tr class="separator:a07ea5fc4e8b10b17cd03edb4ae66550f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -197,7 +149,7 @@ Functions</h2></td></tr>
 <tr class="memitem:ae75df536ab883f7319c54866fd8010b1"><td class="memItemLeft" align="right" valign="top">api::ImageDataFormat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#ae75df536ab883f7319c54866fd8010b1">pvr::api::getDisplayDepthStencilFormat</a> (const system::DisplayAttributes &amp;attribute)</td></tr>
 <tr class="memdesc:ae75df536ab883f7319c54866fd8010b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the depth and/or stencil format from a Displaydisplay's color format.  <a href="#ae75df536ab883f7319c54866fd8010b1">More...</a><br/></td></tr>
 <tr class="separator:ae75df536ab883f7319c54866fd8010b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81a8d84c51eee8bb5bf9ee6a6aa361d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a81a8d84c51eee8bb5bf9ee6a6aa361d3">pvr::api::getDisplayFormat</a> (const system::DisplayAttributes &amp;attribute, api::ImageDataFormat *outColorFmt, api::ImageDataFormat *outDepthStencilFmt)</td></tr>
+<tr class="memitem:a81a8d84c51eee8bb5bf9ee6a6aa361d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a81a8d84c51eee8bb5bf9ee6a6aa361d3">pvr::api::getDisplayFormat</a> (const system::DisplayAttributes &amp;attribute, api::ImageDataFormat *outColorFmt, api::ImageDataFormat *outDepthStencilFmt)</td></tr>
 <tr class="memdesc:a81a8d84c51eee8bb5bf9ee6a6aa361d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the display's color, depth and or stencil format from a DisplayAttributes object.  <a href="#a81a8d84c51eee8bb5bf9ee6a6aa361d3">More...</a><br/></td></tr>
 <tr class="separator:a81a8d84c51eee8bb5bf9ee6a6aa361d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>

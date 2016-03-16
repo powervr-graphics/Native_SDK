@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRAssets</span> Documentation</a>
    <tbody>
@@ -111,9 +111,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00025"></a><span class="lineno"><a class="code" href="namespacepvr_1_1assets_1_1utils.html#aa6808ad1aa34ddf950b27741ef9ca3af">   25</a></span>&#160;<span class="keyword">inline</span> math::AxisAlignedBox <a class="code" href="namespacepvr_1_1assets_1_1utils.html#aa6808ad1aa34ddf950b27741ef9ca3af" title="Return bounding box from vertex data. ">getBoundingBox</a>(<span class="keyword">const</span> byte* data, <span class="keywordtype">size_t</span> stride_bytes, <span class="keywordtype">size_t</span> offset_bytes, <span class="keywordtype">size_t</span> size_bytes)</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;{</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    math::AxisAlignedBox aabb;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    PVR_ASSERT(data);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    PVR_ASSERT(stride_bytes &gt;= 12 || !stride_bytes);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    PVR_ASSERT(size_bytes &gt;= stride_bytes);</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    assertion(data);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    assertion(stride_bytes &gt;= 12 || !stride_bytes);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    assertion(size_bytes &gt;= stride_bytes);</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordflow">if</span> (size_bytes &amp;&amp; data)</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    {</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        data = data + offset_bytes;</div>

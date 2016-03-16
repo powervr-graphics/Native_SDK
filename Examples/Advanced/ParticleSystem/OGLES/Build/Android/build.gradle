@@ -67,7 +67,6 @@ android {
 //Copy all our asset files into the android assets folder.
 //Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
 FileCollection assetFiles = files(
-"${pvrSdkDir}/Examples/Advanced/ParticleSystem/ProcessedAssets/ParticleGradient.pvr",
 "${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/FragShader_ES31.fsh",
 "${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/VertShader_ES31.vsh",
 "${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/ParticleFragShader_ES31.fsh",
@@ -113,6 +112,7 @@ FileCollection assetFiles = files(
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
     ["PVRAssets", "${pvrSdkDir}/Framework/PVRAssets/Build/Android"],
     ["PVRPlatformGlue", "${pvrSdkDir}/Framework/PVRPlatformGlue/EGL/Build/Android"],
+    ["PVRNativeGles", "${pvrSdkDir}/Framework/PVRNativeApi/OGLES/Build/Android"],
     ["PVRGles", "${pvrSdkDir}/Framework/PVRApi/OGLES/Build/Android"],
     ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
     ["PVRUIRenderer", "${pvrSdkDir}/Framework/PVRUIRenderer/Build/Android"]

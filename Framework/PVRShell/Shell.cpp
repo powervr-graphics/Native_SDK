@@ -151,7 +151,7 @@ void Shell::implKeyUp(Keys::Enum key)
 
 Result::Enum Shell::shellInitApplication()
 {
-	PVR_ASSERT(m_data != NULL);
+	assertion(m_data != NULL);
 
 	m_data->timeAtInitApplication = getTime();
 	m_data->lastFrameTime = m_data->timeAtInitApplication;
@@ -172,13 +172,18 @@ Result::Enum Shell::shellInitView()
 		m_data->graphicsContext = m_data->graphicsContextStore;
 		m_data->graphicsContext->init(*this, m_data->graphicsContext);
 	}
-	return initView();
-	m_data->lastFrameTime = m_data->currentFrameTime;
-	m_data->currentFrameTime = getTime(); //Avoid first frame huge times
+	pvr::Result::Enum res = initView();
+	m_data->currentFrameTime = getTime() - 17; //Avoid first frame huge times
+	m_data->lastFrameTime = getTime() - 32;
+	return res;
 }
 
 Result::Enum Shell::shellReleaseView()
 {
+	if (m_data->graphicsContext.isValid())
+	{
+		m_data->graphicsContext->waitIdle();
+	}
 	pvr::Result::Enum retval = releaseView();
 	return retval;
 }
@@ -248,7 +253,7 @@ Result::Enum Shell::init(struct ShellData* data)
 		return Result::Success;
 	}
 
-	return Result::AlreadyInitialised;
+	return Result::AlreadyInitialized;
 }
 
 const system::CommandLineParser::ParsedCommandLine& Shell::getCommandLine() const
@@ -258,7 +263,7 @@ const system::CommandLineParser::ParsedCommandLine& Shell::getCommandLine() cons
 
 void Shell::setFullscreen(const bool fullscreen)
 {
-	if (ShellOS::getCapabilities().resizable != Capability::Unsupported)
+	if (ShellOS::getCapabilities().resizable != types::Capability::Unsupported)
 	{
 		m_data->attributes.fullscreen = fullscreen;
 	}
@@ -271,7 +276,7 @@ bool Shell::isFullScreen() const
 
 Result::Enum Shell::setDimensions(uint32 w, uint32 h)
 {
-	if (ShellOS::getCapabilities().resizable != Capability::Unsupported)
+	if (ShellOS::getCapabilities().resizable != types::Capability::Unsupported)
 	{
 		m_data->attributes.width = w;
 		m_data->attributes.height = h;
@@ -293,7 +298,7 @@ uint32 Shell::getHeight() const
 
 Result::Enum Shell::setPosition(uint32 x, uint32 y)
 {
-	if (ShellOS::getCapabilities().resizable != Capability::Unsupported)
+	if (ShellOS::getCapabilities().resizable != types::Capability::Unsupported)
 	{
 		m_data->attributes.x = x;
 		m_data->attributes.y = y;
@@ -326,6 +331,16 @@ float32 Shell::getQuitAfterTime() const
 uint32 Shell::getSwapInterval() const
 {
 	return m_data->attributes.swapInterval;
+}
+
+uint32 Shell::getSwapChainLength() const
+{
+	return getPlatformContext().getSwapChainLength();
+}
+
+uint32 Shell::getSwapChainIndex() const
+{
+	return getPlatformContext().getSwapChainIndex();
 }
 
 uint32 Shell::getAASamples() const
@@ -370,8 +385,7 @@ void Shell::forceReinitView()
 
 void Shell::setAASamples(uint32 value)
 {
-	m_data->attributes.aaSamples =
-	  value; // Should this be passed to the api context instead just incase the API supports dynamic changing of the aa settings e.g. openVG
+	m_data->attributes.aaSamples = value; // Should this be passed to the api context instead just incase the API supports dynamic changing of the aa settings e.g. openVG
 }
 
 void Shell::setColorBitsPerPixel(uint32 r, uint32 g, uint32 b, uint32 a)
@@ -382,14 +396,14 @@ void Shell::setColorBitsPerPixel(uint32 r, uint32 g, uint32 b, uint32 a)
 	m_data->attributes.alphaBits = a;
 }
 
-void Shell::setBackBufferColorspace(pvr::ColorSpace::Enum colorSpace)
+void Shell::setBackBufferColorspace(types::ColorSpace::Enum colorSpace)
 {
-	m_data->attributes.frameBufferSrgb = (colorSpace == pvr::ColorSpace::sRGB);
+	m_data->attributes.frameBufferSrgb = (colorSpace == types::ColorSpace::sRGB);
 }
 
-pvr::ColorSpace::Enum Shell::getBackBufferColorspace()
+types::ColorSpace::Enum Shell::getBackBufferColorspace()
 {
-	return m_data->attributes.frameBufferSrgb ? pvr::ColorSpace::sRGB : pvr::ColorSpace::lRGB;
+	return m_data->attributes.frameBufferSrgb ? types::ColorSpace::sRGB : types::ColorSpace::lRGB;
 }
 
 void Shell::setDepthBitsPerPixel(uint32 value)
@@ -569,6 +583,10 @@ IPlatformContext& Shell::getPlatformContext()
 {
 	return *m_data->platformContext;
 }
+const IPlatformContext& Shell::getPlatformContext() const
+{
+	return *m_data->platformContext;
+}
 
 GraphicsContext& Shell::getGraphicsContext()
 {
@@ -643,7 +661,7 @@ void Shell::showOutputInfo()
 	}
 	else
 	{
-		attributesInfo.append("The API is currently un-initialised.");
+		attributesInfo.append("The API is currently un-initialized.");
 	}
 
 #if defined(__ANDROID__)
@@ -697,7 +715,7 @@ void Shell::takeScreenshot() const
 {
 	byte* pBuffer = (byte*) calloc(1, m_data->attributes.width * m_data->attributes.height * 4);
 	if (m_data->graphicsContext->screenCaptureRegion(0, 0, m_data->attributes.width, m_data->attributes.height, pBuffer,
-	    IGraphicsContext::ImageFormatBGRA) == Result::Success)
+	    IGraphicsContext::ImageFormatBGRA))
 	{
 		string filename;
 

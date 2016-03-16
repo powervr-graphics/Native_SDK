@@ -9,6 +9,7 @@
 
 using std::vector;
 namespace pvr {
+using namespace types;
 namespace utils {
 //CAUTION: This is a "hidden" dependency on PVRApi. If someone wants to use TextureWriterKTX without PVRApi, he would need to implement
 //and link in this function, otherwise there will be linker errors. The implementation can be found (and possibly copied from) PVRApi/TextureUtils.h

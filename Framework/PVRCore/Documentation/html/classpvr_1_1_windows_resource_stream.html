@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRCore</span> Documentation</a>
    <tbody>
@@ -146,16 +146,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9290b6c6fc81f6a094bb4947ba5dc388 inherit pub_methods_classpvr_1_1_stream"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#a9290b6c6fc81f6a094bb4947ba5dc388">readChars</a> () const </td></tr>
 <tr class="memdesc:a9290b6c6fc81f6a094bb4947ba5dc388 inherit pub_methods_classpvr_1_1_stream"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a raw, contiguous block of memory. Requires random-access stream.  <a href="#a9290b6c6fc81f6a094bb4947ba5dc388">More...</a><br/></td></tr>
 <tr class="separator:a9290b6c6fc81f6a094bb4947ba5dc388 inherit pub_methods_classpvr_1_1_stream"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a610e18193d890f77549934f3cdd556af inherit pub_methods_classpvr_1_1_stream"><td class="memTemplParams" colspan="2">template&lt;typename T_ &gt; </td></tr>
+<tr class="memitem:a610e18193d890f77549934f3cdd556af inherit pub_methods_classpvr_1_1_stream"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#a610e18193d890f77549934f3cdd556af">readIntoBuffer</a> (std::vector&lt; T_ &gt; &amp;outString) const </td></tr>
+<tr class="memdesc:a610e18193d890f77549934f3cdd556af inherit pub_methods_classpvr_1_1_stream"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a raw, contiguous block of memory. Requires random-access stream.  <a href="#a610e18193d890f77549934f3cdd556af">More...</a><br/></td></tr>
+<tr class="separator:a610e18193d890f77549934f3cdd556af inherit pub_methods_classpvr_1_1_stream"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3364094c04b3f164e361587317caf94 inherit pub_methods_classpvr_1_1_stream"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#af3364094c04b3f164e361587317caf94">readIntoCharBuffer</a> (std::vector&lt; char &gt; &amp;outString) const </td></tr>
 <tr class="memdesc:af3364094c04b3f164e361587317caf94 inherit pub_methods_classpvr_1_1_stream"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a raw, contiguous block of memory. Requires random-access stream.  <a href="#af3364094c04b3f164e361587317caf94">More...</a><br/></td></tr>
 <tr class="separator:af3364094c04b3f164e361587317caf94 inherit pub_methods_classpvr_1_1_stream"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3af42a7b1bc20d9df7fd59bccee6143 inherit pub_methods_classpvr_1_1_stream"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#ad3af42a7b1bc20d9df7fd59bccee6143">readIntoString</a> (std::string &amp;outString) const </td></tr>
 <tr class="memdesc:ad3af42a7b1bc20d9df7fd59bccee6143 inherit pub_methods_classpvr_1_1_stream"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience function that reads all data in the stream into a std::string.  <a href="#ad3af42a7b1bc20d9df7fd59bccee6143">More...</a><br/></td></tr>
 <tr class="separator:ad3af42a7b1bc20d9df7fd59bccee6143 inherit pub_methods_classpvr_1_1_stream"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50ec37f36fc198a87a844ca150afcdb1 inherit pub_methods_classpvr_1_1_stream"><td class="memTemplParams" colspan="2">template&lt;typename Type_ &gt; </td></tr>
-<tr class="memitem:a50ec37f36fc198a87a844ca150afcdb1 inherit pub_methods_classpvr_1_1_stream"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Type_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#a50ec37f36fc198a87a844ca150afcdb1">readToEnd</a> ()</td></tr>
-<tr class="memdesc:a50ec37f36fc198a87a844ca150afcdb1 inherit pub_methods_classpvr_1_1_stream"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience functions that reads all data in the stream into a contiguous block of memory of a specified element type. Requires random-access stream.  <a href="#a50ec37f36fc198a87a844ca150afcdb1">More...</a><br/></td></tr>
-<tr class="separator:a50ec37f36fc198a87a844ca150afcdb1 inherit pub_methods_classpvr_1_1_stream"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa67b74d82cdf80fa57ebfb15cbf1e70d inherit pub_methods_classpvr_1_1_stream"><td class="memTemplParams" colspan="2">template&lt;typename Type_ &gt; </td></tr>
+<tr class="memitem:aa67b74d82cdf80fa57ebfb15cbf1e70d inherit pub_methods_classpvr_1_1_stream"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Type_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1_stream.html#aa67b74d82cdf80fa57ebfb15cbf1e70d">readToEnd</a> () const </td></tr>
+<tr class="memdesc:aa67b74d82cdf80fa57ebfb15cbf1e70d inherit pub_methods_classpvr_1_1_stream"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience functions that reads all data in the stream into a contiguous block of memory of a specified element type. Requires random-access stream.  <a href="#aa67b74d82cdf80fa57ebfb15cbf1e70d">More...</a><br/></td></tr>
+<tr class="separator:aa67b74d82cdf80fa57ebfb15cbf1e70d inherit pub_methods_classpvr_1_1_stream"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>

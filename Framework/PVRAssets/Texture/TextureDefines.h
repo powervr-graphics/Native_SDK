@@ -91,7 +91,8 @@ enum Enum
 	UnsignedFloat,
 	NumVarTypes
 };
-
+inline bool isSigned(Enum item) { return item < 11 ? item & 1 : item != 13; }
+inline bool isNormalized(Enum item) { return (item < 10) && !(item & 2); }
 };
 
 namespace assets {
@@ -117,10 +118,10 @@ class GeneratePixelType4
 {
 public:
 	static const uint64 ID =
-	    (static_cast<uint64>(C1Name)      + (static_cast<uint64>(C2Name) << 8)  +
-	     (static_cast<uint64>(C3Name) << 16) + (static_cast<uint64>(C4Name) << 24) +
-	     (static_cast<uint64>(C1Bits) << 32) + (static_cast<uint64>(C2Bits) << 40) +
-	     (static_cast<uint64>(C3Bits) << 48) + (static_cast<uint64>(C4Bits) << 56));
+	  (static_cast<uint64>(C1Name)      + (static_cast<uint64>(C2Name) << 8)  +
+	   (static_cast<uint64>(C3Name) << 16) + (static_cast<uint64>(C4Name) << 24) +
+	   (static_cast<uint64>(C1Bits) << 32) + (static_cast<uint64>(C2Bits) << 40) +
+	   (static_cast<uint64>(C3Bits) << 48) + (static_cast<uint64>(C4Bits) << 56));
 };
 
 /*!****************************************************************************************
@@ -161,9 +162,9 @@ class GeneratePixelType2
 {
 public:
 	static const uint64 ID =
-	    (static_cast<uint64>(C1Name) + (static_cast<uint64>(C2Name) << 8) + (static_cast<uint64>(0) << 16) +
-	     (static_cast<uint64>(0) << 24) + (static_cast<uint64>(C1Bits) << 32) + (static_cast<uint64>(C2Bits) << 40) +
-	     (static_cast<uint64>(0) << 48) + (static_cast<uint64>(0) << 56));
+	  (static_cast<uint64>(C1Name) + (static_cast<uint64>(C2Name) << 8) + (static_cast<uint64>(0) << 16) +
+	   (static_cast<uint64>(0) << 24) + (static_cast<uint64>(C1Bits) << 32) + (static_cast<uint64>(C2Bits) << 40) +
+	   (static_cast<uint64>(0) << 48) + (static_cast<uint64>(0) << 56));
 };
 
 /*!****************************************************************************************

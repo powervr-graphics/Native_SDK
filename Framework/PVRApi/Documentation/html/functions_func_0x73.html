@@ -23,7 +23,7 @@
 <table cellspacing="0" cellpadding="0">
   <div class="headercontent">
     <div class="PVRlogo">
-      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%" border="none"/></a>
+      <a href="http://www.powervrinsider.com" target="_blank"><img src="PVRlogo.png" width="40%" height="40%"  border="none" /></a>
     </div>
     <a class="SiteTitle"><span id="projectname">PVRApi</span> Documentation</a>
    <tbody>
@@ -92,6 +92,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_func_0x74.html#index_t"><span>t</span></a></li>
       <li><a href="functions_func_0x75.html#index_u"><span>u</span></a></li>
       <li><a href="functions_func_0x76.html#index_v"><span>v</span></a></li>
+      <li><a href="functions_func_0x77.html#index_w"><span>w</span></a></li>
       <li><a href="functions_func_0x7e.html#index_0x7e"><span>~</span></a></li>
     </ul>
   </div>
@@ -114,22 +115,57 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 &#160;
 
 <h3><a class="anchor" id="index_s"></a>- s -</h3><ul>
-<li>SamplerImpl()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_sampler_impl.html#a6fd5e9249548ede71ac97808c1b10b16">pvr::api::impl::SamplerImpl</a>
+<li>Sampler_()
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_sampler__.html#a25095bd17860b6ec7c9b304f660ecc6f">pvr::api::impl::Sampler_</a>
+</li>
+<li>SamplerGles_()
+: <a class="el" href="classpvr_1_1api_1_1gles_1_1_sampler_gles__.html#aceedec424da9b5e9b22ce4cb65dbcbfd">pvr::api::gles::SamplerGles_</a>
+</li>
+<li>SamplerVk_()
+: <a class="el" href="classpvr_1_1api_1_1vulkan_1_1_sampler_vk__.html#ac077cef672d865cb056f88e603336ced">pvr::api::vulkan::SamplerVk_</a>
 </li>
 <li>saveProgramBinary()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_shader_program_state.html#a87c23c304a06193a468b4f1dba27d33a">pvr::api::impl::GraphicsShaderProgramState</a>
+: <a class="el" href="classgles_1_1_graphics_shader_program_state.html#ad7ab1b166d4bccfe616d7ffe744fd50c">gles::GraphicsShaderProgramState</a>
+</li>
+<li>ScissorTestState()
+: <a class="el" href="classgles_1_1_scissor_test_state.html#ae3b6d2b0dcad2f5e66a2dc558a357db9">gles::ScissorTestState</a>
 </li>
 <li>screenCaptureRegion()
-: <a class="el" href="classpvr_1_1platform_1_1_context_gles.html#a6f76361934f06faed66caed6c477d7ac">pvr::platform::ContextGles</a>
+: <a class="el" href="classpvr_1_1platform_1_1_context_vk.html#a442770c615755249f5fd8d94ff5ed20e">pvr::platform::ContextVk</a>
+, <a class="el" href="classpvr_1_1platform_1_1_context_gles.html#a41628766860011713ea09da054f8bcbf">pvr::platform::ContextGles</a>
+</li>
+<li>Semaphore_()
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_semaphore__.html#a37a64b2467c733fd9034e224e4aca0b4">pvr::api::impl::Semaphore_</a>
+</li>
+<li>SemaphoreSet_()
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_semaphore_set__.html#a1834c8990f42ef6546325467fe3fe9aa">pvr::api::impl::SemaphoreSet_</a>
 </li>
 <li>set()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_pipeline_state.html#a6c4197ff11c34462c4c68047b591495f">pvr::api::impl::PipelineState</a>
-, <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_shader_program_state.html#a21640cf77cb2385bc20695e43f161a15">pvr::api::impl::GraphicsShaderProgramState</a>
-, <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_shader_program_state.html#a30381d66fb1d304f066fc5de73b2c12f">pvr::api::impl::ComputeShaderProgramState</a>
+: <a class="el" href="classgles_1_1_depth_write_state.html#a19f51991d69e9b915a289dc010885fce">gles::DepthWriteState</a>
+, <a class="el" href="classgles_1_1_compute_shader_program_state.html#a6188405fcde76bef63687d56d1f1fab9">gles::ComputeShaderProgramState</a>
+, <a class="el" href="classgles_1_1_polygon_front_face_state.html#ae347b6abde18907c3281ffaaf55b7185">gles::PolygonFrontFaceState</a>
+, <a class="el" href="classgles_1_1_polygon_winding_order_state.html#a812d3826aa606bc93f8c43ea00cddacf">gles::PolygonWindingOrderState</a>
+, <a class="el" href="classgles_1_1_color_write_mask.html#a06b5a3f7aa3700197cbe8ecc42431b37">gles::ColorWriteMask</a>
+, <a class="el" href="classgles_1_1_blending_enable_state.html#a59d2a7f281fddc6c4e783120997775ce">gles::BlendingEnableState</a>
+, <a class="el" href="classgles_1_1_blend_factor_state.html#a53d5c82f0e1b35974871b36d69acbd9b">gles::BlendFactorState</a>
+, <a class="el" href="classgles_1_1_blend_op_state.html#a1ca7d010323fd58196b742f0679a2630">gles::BlendOpState</a>
+, <a class="el" href="classgles_1_1_depth_clear_state.html#aa811798068f9a37c23f5c83e6f920b24">gles::DepthClearState</a>
+, <a class="el" href="classpvr_1_1api_1_1impl_1_1_event__.html#a091f3808df1392bbb768dfe731eb8d2b">pvr::api::impl::Event_</a>
+, <a class="el" href="classgles_1_1_stencil_clear_state.html#a4aac81a27ecae844600dcca41540cb84">gles::StencilClearState</a>
+, <a class="el" href="classgles_1_1_stencil_test_state.html#a1ac367cf90d50a3308c2a9340a025b2b">gles::StencilTestState</a>
+, <a class="el" href="class_pipeline_state.html#a994b5c7ca60e4ac12b75d5a556ecdc50">PipelineState</a>
+, <a class="el" href="classgles_1_1_stencil_compare_op_front.html#a976b59896630f679789a803ef6d5e299">gles::StencilCompareOpFront</a>
+, <a class="el" href="classgles_1_1_stencil_compare_op_back.html#a7ad7e2bfcb31621994c9a9c52635d78e">gles::StencilCompareOpBack</a>
+, <a class="el" href="classgles_1_1_depth_test_state.html#a1512d8335cabd1cf8eea9d7a079b33cf">gles::DepthTestState</a>
+, <a class="el" href="classgles_1_1_stencil_op_front_state.html#a5e3c1877685191ac8e6e168d2bfd28a1">gles::StencilOpFrontState</a>
+, <a class="el" href="classgles_1_1_stencil_op_back_state.html#a8f4f7af5a0bb15b94a333f1a64e52cbb">gles::StencilOpBackState</a>
+, <a class="el" href="classgles_1_1_depth_func_state.html#a079f9db84cf608c498d4a7c7386ce853">gles::DepthFuncState</a>
+, <a class="el" href="classgles_1_1_scissor_test_state.html#abb3611c67a9b76587b311f81a7419121">gles::ScissorTestState</a>
+, <a class="el" href="classgles_1_1_graphics_shader_program_state.html#a5cac92785cf93e30f00c84b18d957b70">gles::GraphicsShaderProgramState</a>
 </li>
 <li>setAll()
-: <a class="el" href="structpvr_1_1api_1_1impl_1_1_graphics_state_container.html#a9f864cb97bbc1f72c24a1f13bf7b6679">pvr::api::impl::GraphicsStateContainer</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_event_set__.html#a16c50cc9eb20c84f52bcb902e1c2c54f">pvr::api::impl::EventSet_</a>
+, <a class="el" href="structpvr_1_1api_1_1gles_1_1_graphics_state_container.html#a13c346db1abe071330a9f7aa7fa79477">pvr::api::gles::GraphicsStateContainer</a>
 </li>
 <li>setAlphaToCoverageEnable()
 : <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_color_blend_state_create_param.html#a09e870311af574c27a9e654defed86aa">pvr::api::pipelineCreation::ColorBlendStateCreateParam</a>
@@ -137,50 +173,85 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>setArraySlice()
 : <a class="el" href="structpvr_1_1api_1_1_texture_area.html#a6135f7592f7738d3204ec13ffa557612">pvr::api::TextureArea</a>
 </li>
-<li>setBlendConstants()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a262f87242f78cabe6979a880603748b6">pvr::api::impl::CommandBufferBaseImpl</a>
+<li>setArrayValue()
+: <a class="el" href="classpvr_1_1utils_1_1_structured_memory_view.html#a666c51254a7a71d789cbc64bd4dbb8b2">pvr::utils::StructuredMemoryView</a>
 </li>
-<li>setClipOrigin()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_viewport_state_create_param.html#a255292fa365ed4a2adc13c11e7b89aed">pvr::api::pipelineCreation::ViewportStateCreateParam</a>
+<li>setAttachmentState()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_color_blend_state_create_param.html#ab49b0c3072c6d56729e42c944807d6d0">pvr::api::pipelineCreation::ColorBlendStateCreateParam</a>
+</li>
+<li>setBinding()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_layout_create_param.html#a4c75804758a09443cda88f9f0233cdb4">pvr::api::DescriptorSetLayoutCreateParam</a>
+</li>
+<li>setBlendConstants()
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#abfefa9d65cd7b481c628517cbbb5f6c4">pvr::api::impl::CommandBufferBase_</a>
 </li>
 <li>setColorAttachment()
-: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#a6d3087821295bfc1f8726c8ae3772afa">pvr::api::SubPass</a>
+: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#ac1d72e12ef23cf8ee0bc84c8d80cbc0e">pvr::api::SubPass</a>
+</li>
+<li>setColorBlend()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_color_blend_state_create_param.html#a7047990ec483824631f894d78a72d9be">pvr::api::pipelineCreation::ColorBlendStateCreateParam</a>
+</li>
+<li>setCombinedImageSampler()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#a3c90a8cd1e694e6caaae903f6d343744">pvr::api::DescriptorSetUpdate</a>
+</li>
+<li>setCombinedImageSamplerAtIndex()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#a28ab4ffc3ebc855f24863957eb363d94">pvr::api::DescriptorSetUpdate</a>
 </li>
 <li>setCompressedSize()
 : <a class="el" href="structpvr_1_1api_1_1_texture_area.html#a0459a2b66321cb307ccc8c2455eb191e">pvr::api::TextureArea</a>
 </li>
 <li>setCubeFace()
-: <a class="el" href="structpvr_1_1api_1_1_texture_area.html#a0352626162900310f5b28c7be396ca1f">pvr::api::TextureArea</a>
+: <a class="el" href="structpvr_1_1api_1_1_texture_area.html#abbacd5a704a9058b7851008e0b86798a">pvr::api::TextureArea</a>
 </li>
 <li>setCullFace()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#ae019533f450f524d30db2de00b196b49">pvr::api::pipelineCreation::RasterStateCreateParam</a>
-</li>
-<li>setCullMode()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a8ba0b8b53b9a4fedebbdcf1a5bb7061c">pvr::api::pipelineCreation::RasterStateCreateParam</a>
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#acd7befa036344cf8eb0c024a6adf1558">pvr::api::pipelineCreation::RasterStateCreateParam</a>
 </li>
 <li>setDefault()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_pipeline_state.html#a00827e7fae6853629342e4b2845ac2a8">pvr::api::impl::PipelineState</a>
+: <a class="el" href="classgles_1_1_stencil_op_front_state.html#a45d84c30afd51e1e52ca110481e14b32">gles::StencilOpFrontState</a>
+, <a class="el" href="classgles_1_1_stencil_op_back_state.html#a4a6b7e98fb7cfd406ef8d8486e668f7a">gles::StencilOpBackState</a>
+, <a class="el" href="classgles_1_1_scissor_test_state.html#ab802ab2c58e7b80fe9cbe9d586e3ee94">gles::ScissorTestState</a>
+, <a class="el" href="class_pipeline_state.html#ae33b2cc4565b8309b4233ddcd92ae937">PipelineState</a>
+, <a class="el" href="classgles_1_1_depth_test_state.html#a84a32cfd5f323db2f02518cf93b296bc">gles::DepthTestState</a>
+, <a class="el" href="classgles_1_1_depth_func_state.html#a05b1fe82f6d56fb3ebb09a4a588469a2">gles::DepthFuncState</a>
+, <a class="el" href="classgles_1_1_depth_write_state.html#a963c3ec9ed333ff62e4facebe98edc25">gles::DepthWriteState</a>
+, <a class="el" href="classgles_1_1_polygon_front_face_state.html#a170d748c4bfc302308755a52dc589573">gles::PolygonFrontFaceState</a>
+, <a class="el" href="classgles_1_1_polygon_winding_order_state.html#ac3bed7af897979d259c82cd66cd3d50a">gles::PolygonWindingOrderState</a>
+, <a class="el" href="classgles_1_1_color_write_mask.html#a63ba895b1a2209c2bf06996c5c16a98d">gles::ColorWriteMask</a>
+, <a class="el" href="classgles_1_1_blending_enable_state.html#a9288535e88d1751bdcd93aadf022e5c4">gles::BlendingEnableState</a>
+, <a class="el" href="classgles_1_1_blend_factor_state.html#adfa6f28a2be7dac6553d3339e54e96ba">gles::BlendFactorState</a>
+, <a class="el" href="classgles_1_1_blend_op_state.html#a53a671d48258795448c3d51a3ef01c12">gles::BlendOpState</a>
+, <a class="el" href="classgles_1_1_depth_clear_state.html#ab2230b7580d3524719c9e9e83b6fe80c">gles::DepthClearState</a>
+, <a class="el" href="classgles_1_1_stencil_clear_state.html#a1c3977a29d8b7e75cba19b68907e85fd">gles::StencilClearState</a>
+, <a class="el" href="classgles_1_1_stencil_test_state.html#a21d1748eae895d5e661574324568a909">gles::StencilTestState</a>
+, <a class="el" href="classgles_1_1_stencil_compare_op_front.html#abfc6313688e1adf61c5cefe38fbc2968">gles::StencilCompareOpFront</a>
+, <a class="el" href="classgles_1_1_stencil_compare_op_back.html#a6ffb2469132a335a7f4e8c30d3c4c114">gles::StencilCompareOpBack</a>
 </li>
 <li>setDefaultUniformValue()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_effect_api_impl.html#a29b71f56cb67f24c04edbe275fc4fdf5">pvr::api::impl::EffectApiImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_effect_api__.html#a1a9c1d5676131ef35b50cbaadbc01fab">pvr::api::impl::EffectApi_</a>
 </li>
 <li>setDepthBias()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a9276a3b1720b910a2c2dd54dd4ae417a">pvr::api::impl::CommandBufferBaseImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#a260aaee98c7db97f6947d8548763e4d9">pvr::api::impl::CommandBufferBase_</a>
+</li>
+<li>setDepthBiasClampEnable()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a7436eb20d5f70340ada0133136976398">pvr::api::pipelineCreation::RasterStateCreateParam</a>
+</li>
+<li>setDepthBiasEnable()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#ab0b7d9b71a743d469f3981e4b9032b72">pvr::api::pipelineCreation::RasterStateCreateParam</a>
 </li>
 <li>setDepthBound()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a66eb6d0bb8395e236cfe4273a8c3280f">pvr::api::impl::CommandBufferBaseImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#a3c4a5cd3a6c82d3e400cb7af57557f84">pvr::api::impl::CommandBufferBase_</a>
 </li>
 <li>setDepthclipEnable()
 : <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#adde5ce5dde359be02b4a7d90f7b5b58a">pvr::api::pipelineCreation::RasterStateCreateParam</a>
 </li>
-<li>setDepthCompareFunc()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a1c151cdeb29fd65f96e5b8df3a80eb5a">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
+<li>setDepthClipEnable()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#af704c47ef1c2e258f400ff5a41e2198d">pvr::api::pipelineCreation::RasterStateCreateParam</a>
 </li>
-<li>setDepthMode()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_viewport_state_create_param.html#aa841994f48c8ef63dfc3c0e3bd6b6366">pvr::api::pipelineCreation::ViewportStateCreateParam</a>
+<li>setDepthCompareFunc()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#afbbd52e5e0beea551365e022f4035f2d">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
 </li>
 <li>setDepthStencil()
-: <a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a0ba1239744354d909f48490545876500">pvr::api::FboCreateParam</a>
+: <a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a954ce1aeda8c049b5966410fed0e375a">pvr::api::FboCreateParam</a>
 </li>
 <li>setDepthStencilInfo()
 : <a class="el" href="structpvr_1_1api_1_1_render_pass_create_param.html#aea2f789b2fb10caa69481dd07283a682">pvr::api::RenderPassCreateParam</a>
@@ -191,26 +262,61 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>setDepthWrite()
 : <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a4ec9ce90b1221444eae5607a4fef2a01">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
 </li>
+<li>setDescSetLayout()
+: <a class="el" href="structpvr_1_1api_1_1_pipeline_layout_create_param.html#aa71f016966c5b08055be5a8ffb381fb3">pvr::api::PipelineLayoutCreateParam</a>
+</li>
 <li>setDimension()
 : <a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a679cfb5661f746d3f2bfa01e464a6566">pvr::api::FboCreateParam</a>
 </li>
 <li>setDimensions()
 : <a class="el" href="structpvr_1_1api_1_1_texture_area.html#a1a69d1bd910729761e4b014b9f404de2">pvr::api::TextureArea</a>
+, <a class="el" href="classpvr_1_1api_1_1vulkan_1_1_texture_store_vk__.html#a292d4771206a44880e63c821a53e0ebb">pvr::api::vulkan::TextureStoreVk_</a>
+</li>
+<li>setDynamicSsbo()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#af3b55cdc5ca2eb2db9ae087549ddc35d">pvr::api::DescriptorSetUpdate</a>
+</li>
+<li>setDynamicSsboAtIndex()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#a6f2ae0a9bad031e9a9e1cd2e1f756731">pvr::api::DescriptorSetUpdate</a>
+</li>
+<li>setDynamicState()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_dynamic_states_create_param.html#a99dd86f93d0fecf0a87ce2ac0ad011f1">pvr::api::pipelineCreation::DynamicStatesCreateParam</a>
+</li>
+<li>setDynamicUbo()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#a44bce99eafee36cc037c2d1ccef2ba80">pvr::api::DescriptorSetUpdate</a>
+</li>
+<li>setDynamicUboAtIndex()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#acba4e65b9dfaca6dd4188e4388442591">pvr::api::DescriptorSetUpdate</a>
+</li>
+<li>setEvent()
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#abb770dfc40d84ff981770a325cff7c63">pvr::api::impl::CommandBufferBase_</a>
 </li>
 <li>setFillMode()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a5394ab8285ce63d470187390927e1dae">pvr::api::pipelineCreation::RasterStateCreateParam</a>
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a95e64c6e06859e427d547af6f348d2c8">pvr::api::pipelineCreation::RasterStateCreateParam</a>
+</li>
+<li>setFrontFaceWinding()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a6a38be2f3a9db95ccde047ac91a11834">pvr::api::pipelineCreation::RasterStateCreateParam</a>
 </li>
 <li>setInputAttachment()
-: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#a91df23934c04034dc8bcb3ecae9300c5">pvr::api::SubPass</a>
+: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#aa026bd2068a6ced292bf87bd9ea6aebe">pvr::api::SubPass</a>
 </li>
 <li>setInputBinding()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_vertex_input_create_param.html#aab6faa79a3d4c2df32e1b5e4383d7d6e">pvr::api::pipelineCreation::VertexInputCreateParam</a>
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_vertex_input_create_param.html#abce6141d6146b4b5820bc76b4947dfa0">pvr::api::pipelineCreation::VertexInputCreateParam</a>
+</li>
+<li>setInputImageAttachment()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#a76ad05b8415031bcd2053b585d3e4be8">pvr::api::DescriptorSetUpdate</a>
+</li>
+<li>setInputImageAttachmentAtIndex()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#abafa7c8c1bb7fcdf2ffe0cd59e5596f8">pvr::api::DescriptorSetUpdate</a>
+</li>
+<li>setLayers()
+: <a class="el" href="classpvr_1_1api_1_1vulkan_1_1_texture_store_vk__.html#a8b3fd1143f0cc15a71966fee776109cc">pvr::api::vulkan::TextureStoreVk_</a>
 </li>
 <li>setLineWidth()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a8be66d76224250dd22543464b583fa4a">pvr::api::impl::CommandBufferBaseImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#a5486b945bb413470d37961d19b6c2732">pvr::api::impl::CommandBufferBase_</a>
+, <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a37045510b5e97d0d62bcec5f2f4d8fce">pvr::api::pipelineCreation::RasterStateCreateParam</a>
 </li>
 <li>setLogicOp()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_color_blend_state_create_param.html#a5b8f301a1a2e7f80809cc800d548a521">pvr::api::pipelineCreation::ColorBlendStateCreateParam</a>
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_color_blend_state_create_param.html#ad7401fc3cf12617016969eef13bf696d">pvr::api::pipelineCreation::ColorBlendStateCreateParam</a>
 </li>
 <li>setLogicOpEnable()
 : <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_color_blend_state_create_param.html#a38e8bba87c2c9ab96f8dd9179fc5125d">pvr::api::pipelineCreation::ColorBlendStateCreateParam</a>
@@ -219,10 +325,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structpvr_1_1api_1_1_descriptor_pool_create_param.html#a06504b6a3535a4649131a1a7801031d9">pvr::api::DescriptorPoolCreateParam</a>
 </li>
 <li>setMaxSize()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_sync_impl.html#a49e57d8c812a42a51419643544fdd34c">pvr::api::impl::SyncImpl</a>
-</li>
-<li>setMemoryBarrier()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#ac87f7ad6fbb63bf3e997c2af0d81a331">pvr::api::impl::CommandBufferBaseImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_sync__.html#ab006ab324c24c5020e7774172fad9d30">pvr::api::impl::Sync_</a>
 </li>
 <li>setMipLevel()
 : <a class="el" href="structpvr_1_1api_1_1_texture_area.html#a8b50053f6ff329e86cdbc22e86bede75">pvr::api::TextureArea</a>
@@ -230,35 +333,26 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>setNumLayers()
 : <a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a40eeaff96790846fc9d25e908b33246d">pvr::api::FboCreateParam</a>
 </li>
-<li>setNumViewport()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_viewport_state_create_param.html#a5a9602d744835a6957c628cc48776c85">pvr::api::pipelineCreation::ViewportStateCreateParam</a>
-</li>
 <li>setOffset()
 : <a class="el" href="structpvr_1_1api_1_1_texture_area.html#a4d0a0c42a956693d394e2367ae4da689">pvr::api::TextureArea</a>
 </li>
-<li>setPipelineBindingPoint()
-: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#a29a5bb5be5d968a0638d07b47575431e">pvr::api::SubPass</a>
-</li>
-<li>setPointOrigin()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a1a8d66dc40837ad7c001fe224c301bc5">pvr::api::pipelineCreation::RasterStateCreateParam</a>
+<li>setPipelineBindPoint()
+: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#a03bc18a93fba2fa8c449d24c2c95dfc4">pvr::api::SubPass</a>
 </li>
 <li>setPreserveAttachment()
-: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#a3f92c243cceaf39cf3df87b740a21aed">pvr::api::SubPass</a>
+: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#a5716dc849f3911a36c3b0f8aae8d3dde">pvr::api::SubPass</a>
 </li>
 <li>setPrimitiveRestartEnable()
 : <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param.html#a9180218da370e305bdbcd710e628f225">pvr::api::pipelineCreation::InputAssemblerStateCreateParam</a>
 </li>
-<li>setPrimitiveRestartIndex()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param.html#ab8062ca3fec4c4ab11162d41169a09d5">pvr::api::pipelineCreation::InputAssemblerStateCreateParam</a>
-</li>
 <li>setPrimitiveTopology()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param.html#a6e3030e2f0355785ffa02006e72bd177">pvr::api::pipelineCreation::InputAssemblerStateCreateParam</a>
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param.html#ae4d1b62727ab1a8d4ae07b00fb8392a1">pvr::api::pipelineCreation::InputAssemblerStateCreateParam</a>
 </li>
 <li>setProgramPointSizeEnable()
 : <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a0aa153dc01a10c409feedfa400ab2c2e">pvr::api::pipelineCreation::RasterStateCreateParam</a>
 </li>
 <li>setProvokingVertex()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a3aa8bb067aa2bfb59262d0b0d4cdc6fe">pvr::api::pipelineCreation::RasterStateCreateParam</a>
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a95882e6075bbd1f2419ad369f59a1b68">pvr::api::pipelineCreation::RasterStateCreateParam</a>
 </li>
 <li>setRasterizerDiscardEnanle()
 : <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#ad0a09e0fbfbc91a707d939f1b61b2268">pvr::api::pipelineCreation::RasterStateCreateParam</a>
@@ -267,83 +361,130 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="structpvr_1_1api_1_1_fbo_create_param.html#a65bf0044679a92bcea815d7e8c58cf23">pvr::api::FboCreateParam</a>
 </li>
 <li>setResolveAttachment()
-: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#aa8009d88eb53167109e9bb50c9be45e1">pvr::api::SubPass</a>
+: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#acd1e03f0e660990838bd8201eeb8f356">pvr::api::SubPass</a>
 </li>
 <li>setResource()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_buffer_view_impl.html#a0ccb646449ef927a020ff5c053ff39f6">pvr::api::impl::BufferViewImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_buffer_view__.html#aab57556b998fdd3e3e0796c5ae9989ff">pvr::api::impl::BufferView_</a>
 </li>
 <li>setSampler()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_effect_api_impl.html#a528136f0d9040746538a5a2537d36a94">pvr::api::impl::EffectApiImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_effect_api__.html#a1e8a57333bf5ec256cd3ec7555c528ab">pvr::api::impl::EffectApi_</a>
 </li>
 <li>setScissor()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a9cc2efdf55fda8637e69a3131f10740d">pvr::api::impl::CommandBufferBaseImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#afd50dd59b73d0a5bc3c14aa5420f2da5">pvr::api::impl::CommandBufferBase_</a>
 </li>
 <li>setShader()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_fragment_shader_stage_create_param.html#ade34cdb21d7b6550451bfb1a61f4e795">pvr::api::pipelineCreation::FragmentShaderStageCreateParam</a>
-, <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_compute_shader_stage_create_param.html#a474c788360efb7ca0374849aca6d8059">pvr::api::pipelineCreation::ComputeShaderStageCreateParam</a>
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_compute_shader_stage_create_param.html#a474c788360efb7ca0374849aca6d8059">pvr::api::pipelineCreation::ComputeShaderStageCreateParam</a>
 , <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_vertex_shader_stage_create_param.html#adb6b72e57d7515e7ba16b10fe38a461e">pvr::api::pipelineCreation::VertexShaderStageCreateParam</a>
+, <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_fragment_shader_stage_create_param.html#ade34cdb21d7b6550451bfb1a61f4e795">pvr::api::pipelineCreation::FragmentShaderStageCreateParam</a>
 </li>
-<li>setStencilCompareFunc()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a7c637c2b1de7bf3dd0f768cac28302df">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
+<li>setShaderEntrypoint()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_compute_shader_stage_create_param.html#a2bb0e1827d9682db1c6fcfd22818404a">pvr::api::pipelineCreation::ComputeShaderStageCreateParam</a>
+</li>
+<li>setSsbo()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#a60529f76a4b98e5cb50faecc5ddd3004">pvr::api::DescriptorSetUpdate</a>
+</li>
+<li>setSsboAtIndex()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#a90f2fc782ea3c5ead37784ede878794d">pvr::api::DescriptorSetUpdate</a>
+</li>
+<li>setStencilBack()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#ad5978060d40704a3eeeae88e96ead844">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
 </li>
 <li>setStencilCompareMask()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a1d2f032337ffe811c70d5c449bfa9f88">pvr::api::impl::CommandBufferBaseImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#abb95f80d11c295ff4b9723fe57ebc728">pvr::api::impl::CommandBufferBase_</a>
 </li>
-<li>setStencilOp()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a91edf1fead53af36d592d6a28f967b48">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
+<li>setStencilFront()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a793d957c06743572232d7d44ab941637">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
 </li>
-<li>setStencilOpDepthFail()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#acfe4592c99848a79e61c558a1c446f42">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
-</li>
-<li>setStencilOpDepthPass()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#ab5d66069209e04bcfadfa5dbe150db34">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
-</li>
-<li>setStencilOpStencilFail()
-: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#ad60486d51c7cf13796909ccfbe41516d">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
+<li>setStencilFrontBack()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#a99fc75824b12581f54667c72768987cc">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
 </li>
 <li>setStencilReference()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a76d0ab31fa3bd9586c527f0ef095a909">pvr::api::impl::CommandBufferBaseImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#aca00266750f51b2cee0dd773999da400">pvr::api::impl::CommandBufferBase_</a>
 </li>
 <li>setStencilTest()
 : <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_depth_stencil_state_create_param.html#ae780bc0b6fa7d453f935fd976c038e5e">pvr::api::pipelineCreation::DepthStencilStateCreateParam</a>
 </li>
 <li>setStencilWriteMask()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a2442c5c8a2dc3c458ed4204a2aa592fe">pvr::api::impl::CommandBufferBaseImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#ab3a52b8b1ed23495c86e7416a122327d">pvr::api::impl::CommandBufferBase_</a>
 </li>
 <li>setSwizzle()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_texture_view_impl.html#a7b7b98765ab7cb87e0cf7e6d4824d860">pvr::api::impl::TextureViewImpl</a>
-, <a class="el" href="classpvr_1_1api_1_1impl_1_1_texture_store_impl.html#a0588b3d9bccb2050da1e69c94244f2f5">pvr::api::impl::TextureStoreImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1gles_1_1_texture_store_gles__.html#a981fcc5b84390638faa6177cb14423a2">pvr::api::gles::TextureStoreGles_</a>
 </li>
 <li>setTexture()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_effect_api_impl.html#ab95cca40dc23e33eb33736ec6fd31671">pvr::api::impl::EffectApiImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_effect_api__.html#aa25cd3005689633af7a8a78c1a90b208">pvr::api::impl::EffectApi_</a>
+</li>
+<li>setUbo()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#a5fcc157956e2e9415660a6971e837264">pvr::api::DescriptorSetUpdate</a>
+</li>
+<li>setUboAtIndex()
+: <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html#a28798deaa608003e3f70a98bd7d8f778">pvr::api::DescriptorSetUpdate</a>
 </li>
 <li>setUniform()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a5788b49a2711b621aa2efd7500c14ff6">pvr::api::impl::CommandBufferBaseImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#aa79d7417a9a47e2c98c1c44f1c7e12d7">pvr::api::impl::CommandBufferBase_</a>
 </li>
 <li>setUniformPtr()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a3121cfba7873242311eaae6e11d0e796">pvr::api::impl::CommandBufferBaseImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#a12b935dd4e7d4c1b0b32b6b879c8f7dc">pvr::api::impl::CommandBufferBase_</a>
+</li>
+<li>setupArray()
+: <a class="el" href="classpvr_1_1utils_1_1_structured_memory_view.html#aee96efecef833f6be6fb65c15c89802c">pvr::utils::StructuredMemoryView</a>
 </li>
 <li>setUpCapabilities()
-: <a class="el" href="classpvr_1_1platform_1_1_context_gles.html#a3550fa7c8b4d4c857e1aafcc6c9e72e8">pvr::platform::ContextGles</a>
+: <a class="el" href="classpvr_1_1platform_1_1_context_vk.html#a7578aa165843386f3070eec903b2093e">pvr::platform::ContextVk</a>
+, <a class="el" href="classpvr_1_1platform_1_1_context_gles.html#a3550fa7c8b4d4c857e1aafcc6c9e72e8">pvr::platform::ContextGles</a>
+</li>
+<li>setupDynamic()
+: <a class="el" href="classpvr_1_1utils_1_1_structured_memory_view.html#a24f52044d8edd42d4871bf32bd595421">pvr::utils::StructuredMemoryView</a>
+</li>
+<li>setValue()
+: <a class="el" href="classpvr_1_1utils_1_1_structured_memory_view.html#a52f69d6c2cee8ef49a5e07e7b3e97fed">pvr::utils::StructuredMemoryView</a>
 </li>
 <li>setVertexReuseDisable()
 : <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param.html#a4c116a44e5c1d0b3442b1460f6f7ba48">pvr::api::pipelineCreation::InputAssemblerStateCreateParam</a>
 </li>
 <li>setViewport()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#a439343e7e2554491d3e07014ad9b851b">pvr::api::impl::CommandBufferBaseImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#ae4aa1b5af0d5322fe4991d7c929a4913">pvr::api::impl::CommandBufferBase_</a>
 </li>
-<li>ShaderGlesImpl()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_shader_gles_impl.html#a4c50af166b203abcb637f8839f687752">pvr::api::impl::ShaderGlesImpl</a>
+<li>setViewportScissor()
+: <a class="el" href="structpvr_1_1api_1_1pipeline_creation_1_1_viewport_state_create_param.html#ad33d52666f5084cc0cc84f9f8ebf44f2">pvr::api::pipelineCreation::ViewportStateCreateParam</a>
 </li>
-<li>ShaderImpl()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_shader_impl.html#ab78c2bebe15cd2a98bffa7a08c38bc86">pvr::api::impl::ShaderImpl</a>
+<li>Shader_()
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_shader__.html#ad02bb3689fc97e12efe4104548a75d0b">pvr::api::impl::Shader_</a>
+</li>
+<li>ShaderGles_()
+: <a class="el" href="classpvr_1_1api_1_1gles_1_1_shader_gles__.html#a3ae8e4d40079083e1a2b9cf14b2dfb49">pvr::api::gles::ShaderGles_</a>
+</li>
+<li>ShaderVk_()
+: <a class="el" href="classpvr_1_1api_1_1vulkan_1_1_shader_vk__.html#aaea07576250731bd36178b81f516d792">pvr::api::vulkan::ShaderVk_</a>
+</li>
+<li>StencilClearState()
+: <a class="el" href="classgles_1_1_stencil_clear_state.html#a3cb7423022f8f6294708c31580de7011">gles::StencilClearState</a>
+</li>
+<li>StencilCompareOpBack()
+: <a class="el" href="classgles_1_1_stencil_compare_op_back.html#ae48ba6f56459855beccb57eaf1790e59">gles::StencilCompareOpBack</a>
+</li>
+<li>StencilCompareOpFront()
+: <a class="el" href="classgles_1_1_stencil_compare_op_front.html#a1f056762f43d290a8f9b834c475642e0">gles::StencilCompareOpFront</a>
+</li>
+<li>StencilOpBackState()
+: <a class="el" href="classgles_1_1_stencil_op_back_state.html#a5b201d995260c92cce465d6eabe2496f">gles::StencilOpBackState</a>
+</li>
+<li>StencilOpFrontState()
+: <a class="el" href="classgles_1_1_stencil_op_front_state.html#a8a2be908e33335c44b848c3ac8eee045">gles::StencilOpFrontState</a>
+</li>
+<li>StencilState()
+: <a class="el" href="structpvr_1_1api_1_1_stencil_state.html#abce94f8dfac3fb6feea2de6b532f46c7">pvr::api::StencilState</a>
+</li>
+<li>StencilTestState()
+: <a class="el" href="classgles_1_1_stencil_test_state.html#a34ab0c97844ac11941a550e59de31a54">gles::StencilTestState</a>
+</li>
+<li>StructuredMemoryView()
+: <a class="el" href="classpvr_1_1utils_1_1_structured_memory_view.html#a9a2c364b6f890357c20fa84bb72c5c7c">pvr::utils::StructuredMemoryView</a>
 </li>
 <li>submit()
-: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base_impl.html#ae2fa04f525650b99559baa79a7271aed">pvr::api::impl::CommandBufferBaseImpl</a>
-, <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_impl.html#abfdc68b7f476e1a4f564941352eea300">pvr::api::impl::CommandBufferImpl</a>
+: <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer__.html#ac9d352142dca558ea5c25d90775f2055">pvr::api::impl::CommandBuffer_</a>
 </li>
 <li>SubPass()
-: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#a65f0f2d91650adb7a55707594f006a4f">pvr::api::SubPass</a>
+: <a class="el" href="structpvr_1_1api_1_1_sub_pass.html#a05eddca8da540c7e42b42e4c85f668b7">pvr::api::SubPass</a>
 </li>
 </ul>
 </div><!-- contents -->

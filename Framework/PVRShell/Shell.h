@@ -265,7 +265,7 @@ protected:
 	/*!****************************************************************************************************************
 	\brief        IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents successful context aquisition.
 	\description  This function must be implemented in the user's application class. It will be fired once after every
-	              time the main Graphics Context (the one the Application Window is using) is initialised. This is
+	              time the main Graphics Context (the one the Application Window is using) is initialized. This is
 				  usually once per application run, but in some cases (context lost) it may be called more than once.
 				  If the context is lost, the releaseView() callback will be fired, and if it is reaquired this function
 				  will be called again.
@@ -646,6 +646,18 @@ public:
 	uint32 getSwapInterval() const;
 
 	/*!****************************************************************************************************************
+	\return   The number of logical swap chain images. This number is always one greater than the max number returned by
+	getSwapChainIndex().
+	******************************************************************************************************************/
+	uint32 getSwapChainLength() const;
+
+	/*!****************************************************************************************************************
+	\return   The logical backbuffer image that the application currently owns and should render to. It is undefined
+			  to use an Off Screen FBO that points to any swap image other than the one with index this number.
+	******************************************************************************************************************/
+	uint32 getSwapChainIndex() const;
+
+	/*!****************************************************************************************************************
 	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the swap interval (vertical sync).
 	\param   value The swap interval. 0 is no interval (no vsync). 1 is default.
 	******************************************************************************************************************/
@@ -685,7 +697,7 @@ public:
 	/*!****************************************************************************************************************
 	\return   The Colorspace of the main window backbuffer (linear RGB or sRGB).
 	******************************************************************************************************************/
-	pvr::ColorSpace::Enum getBackBufferColorspace();
+    types::ColorSpace::Enum getBackBufferColorspace();
 
 	/*!****************************************************************************************************************
 	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Specify the colorspace of the backbuffer. Default is a
@@ -693,7 +705,7 @@ public:
 	colorspace is an extension in many implementations, if you use this function, you must call getBackBufferColorspace
 	after initApplication (in initView) to determine the actual backBuffer colorspace that was obtained.
 	******************************************************************************************************************/
-	void setBackBufferColorspace(pvr::ColorSpace::Enum colorSpace);
+    void setBackBufferColorspace(types::ColorSpace::Enum colorSpace);
 
 	/*!****************************************************************************************************************
 	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of color bits per pixel.
@@ -965,6 +977,11 @@ public:
 	\return  Gets the Platform Context class used by this shell.
 	******************************************************************************************************************/
 	IPlatformContext& getPlatformContext();
+
+	/*!****************************************************************************************************************
+	\return  Gets the Platform Context class used by this shell.
+	******************************************************************************************************************/
+	const IPlatformContext& getPlatformContext() const;
 
 	/*!****************************************************************************************************************
 	\brief  Saves a screenshot of the current display.

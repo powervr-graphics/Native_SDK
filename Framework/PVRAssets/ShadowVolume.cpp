@@ -13,6 +13,7 @@
 #include "PVRCore/Log.h"
 using std::pair;
 using std::map;
+// TODO: Test the hyper cube bounding code as it is untested
 
 const static unsigned short c_linesHyperCube[64] =
 {
@@ -32,7 +33,7 @@ const static unsigned short c_linesHyperCube[64] =
 
 const static glm::vec3 c_rect0(-1, -1, 1), c_rect1(-1,  1, 1), c_rect2(1, -1, 1), c_rect3(1,  1, 1);
 namespace pvr {
-
+using namespace types;
 ShadowVolume::~ShadowVolume()
 {
 
@@ -301,7 +302,7 @@ Result::Enum ShadowVolume::init(const byte* const data, uint32 numVertices,
 			Every edge should be referenced exactly twice.
 			If they aren't then the mesh isn't closed which will cause problems when rendering the shadows.
 		*/
-		PVR_ASSERT(count == 2);
+		assertion(count == 2);
 	}
 
 #endif
@@ -333,11 +334,11 @@ Result::Enum ShadowVolume::init(const byte* const data, uint32 numVertices,
 
 	m_shadowMesh.needs32BitIndices = (m_shadowMesh.numTriangles * 2 * 3) > 65535;
 
-	initialiseVertexData();
+	initializeVertexData();
 	return Result::Success;
 }
 
-void ShadowVolume::initialiseVertexData(byte** externalBuffer)
+void ShadowVolume::initializeVertexData(byte** externalBuffer)
 {
 	byte* tmp;
 
@@ -387,7 +388,7 @@ void ShadowVolume::alllocateShadowVolume(uint32 volumeID)
 Result::Enum ShadowVolume::releaseVolume(uint32 volumeID)
 {
 	std::map<uint32, ShadowVolumeData>::iterator found = m_shadowVolumes.find(volumeID);
-	PVR_ASSERT(found != m_shadowVolumes.end());
+	assertion(found != m_shadowVolumes.end());
 
 	if (found == m_shadowVolumes.end())
 	{
@@ -453,7 +454,7 @@ uint32 ShadowVolume::getIndexCount(uint32 volumeID)
 {
 
 	ShadowVolumeMapType::iterator found = m_shadowVolumes.find(volumeID);
-	PVR_ASSERT(found != m_shadowVolumes.end());
+	assertion(found != m_shadowVolumes.end());
 
 	if (found == m_shadowVolumes.end())
 	{
@@ -466,7 +467,7 @@ uint32 ShadowVolume::getIndexCount(uint32 volumeID)
 byte* ShadowVolume::getIndices(uint32 volumeID)
 {
 	ShadowVolumeMapType::iterator found = m_shadowVolumes.find(volumeID);
-	PVR_ASSERT(found != m_shadowVolumes.end());
+	assertion(found != m_shadowVolumes.end());
 
 	if (found == m_shadowVolumes.end())
 	{
@@ -494,7 +495,7 @@ Result::Enum ShadowVolume::project(uint32 volumeID, uint32 flags, const glm::vec
                                    INDEXTYPE** externalIndexBuffer)
 {
 	ShadowVolumeMapType::iterator found = m_shadowVolumes.find(volumeID);
-	PVR_ASSERT(found != m_shadowVolumes.end());
+	assertion(found != m_shadowVolumes.end());
 
 	if (found != m_shadowVolumes.end())
 	{
@@ -570,11 +571,11 @@ Result::Enum ShadowVolume::project(uint32 volumeID, uint32 flags, const glm::vec
 	}
 
 #ifdef DEBUG // Sanity checks
-	PVR_ASSERT(volume.indexCount * sizeof(INDEXTYPE) <= getIndexDataSize()); // Have we accessed memory we shouldn't have?
+	assertion(volume.indexCount * sizeof(INDEXTYPE) <= getIndexDataSize()); // Have we accessed memory we shouldn't have?
 
 	for (uint32 i = 0; i < volume.indexCount; ++i)
 	{
-		PVR_ASSERT(indices[i] < m_shadowMesh.numVertices * 2);
+		assertion(indices[i] < m_shadowMesh.numVertices * 2);
 	}
 #endif
 
@@ -614,11 +615,11 @@ Result::Enum ShadowVolume::project(uint32 volumeID, uint32 flags, const glm::vec
 	}
 
 #ifdef DEBUG // Sanity checks
-	PVR_ASSERT(volume.indexCount * sizeof(INDEXTYPE) <= getIndexDataSize()); // Have we accessed memory we shouldn't have?
+	assertion(volume.indexCount * sizeof(INDEXTYPE) <= getIndexDataSize()); // Have we accessed memory we shouldn't have?
 
 	for (uint32 i = 0; i < volume.indexCount; ++i)
 	{
-		PVR_ASSERT(indices[i] < m_shadowMesh.numVertices * 2);
+		assertion(indices[i] < m_shadowMesh.numVertices * 2);
 	}
 #endif
 
@@ -784,7 +785,7 @@ static inline bool isFrontClipInVolume(const glm::vec4(&boundingHyperCube)[16])
 
 		Now decide if we can use Z-pass instead of Z-fail.
 
-		Possibility: if we calculate the convex hull of the front-clip intersection
+		TODO: if we calculate the convex hull of the front-clip intersection
 		points, we can use the connecting lines to do a more accurate on-
 		screen check (currently it just uses the bounding box of the
 		intersection points.)
@@ -799,7 +800,7 @@ static inline bool isFrontClipInVolume(const glm::vec4(&boundingHyperCube)[16])
 		if (v0.z * v1.z > 0)
 		{ continue; }
 
-		// Possibility: if fScale > 0.5f, do the lerp in the other direction; this is
+		// TODO: if fScale > 0.5f, do the lerp in the other direction; this is
 		// because we want fScale to be close to 0, not 1, to retain accuracy.
 		scale = (0 - v0.z) / (v1.z - v0.z);
 

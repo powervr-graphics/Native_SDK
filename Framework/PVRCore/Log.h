@@ -6,7 +6,6 @@
               the global Log functor (Log("a message")).
 ***********************************************************************************************************************/
 #pragma once
-#include "PVRCore/Messenger.h"
 #include "PVRCore/ConsoleMessenger.h"
 namespace pvr {
 
@@ -47,7 +46,7 @@ public:
 	           this logger's message handler.
 	\param     severity The severity of the message. Apart from being output into the message, the severity is used by
 	           the logger to discard log events less than a specified threshold. See setVerbosity(...)
-	\param     formatString  A printf-style format string 
+	\param     formatString  A printf-style format string
 	\param     ...  Variable arguments for the format string. Printf-style rules
 	*******************************************************************************************************************/
 	void operator()(Severity severity, const char8* const formatString, ...)
@@ -61,7 +60,7 @@ public:
 	/*!****************************************************************************************************************
 	\brief     Functor operator used to allow an instance of this class to be called as a function. Logs a message using
 	           this logger's message handler. Severity is fixed to "Error".
-	\param     formatString  A printf-style format string 
+	\param     formatString  A printf-style format string
 	\param     ...  Variable arguments for the format string. Printf-style rules
 	*******************************************************************************************************************/
 	void operator()(const char8* const formatString, ...)
@@ -76,7 +75,7 @@ public:
 	\brief     Logs a message using this logger's message handler.
 	\param     severity The severity of the message. Apart from being output into the message, the severity is used by
 	           the logger to discard log events less than a specified threshold. See setVerbosity(...)
-	\param     formatString  A printf-style format string 
+	\param     formatString  A printf-style format string
 	\param     ...  Variable arguments for the format string. Printf-style rules
 	*******************************************************************************************************************/
 	void output(Severity severity, const char8* const formatString, ...)
@@ -90,7 +89,7 @@ public:
 	/*!****************************************************************************************************************
 	\brief     Logs a message using the Default message handler.
 	\param     severity The severity of the message.
-	\param     formatString  A printf-style format string 
+	\param     formatString  A printf-style format string
 	\param     ...  Variable arguments for the format string. Printf-style rules
 	*******************************************************************************************************************/
 	static void static_output(Severity severity, const char8* const formatString, ...)
@@ -166,8 +165,8 @@ public:
 		case Result::UnknownError: return"Unknown Error";
 		case Result::OutOfMemory: return"Out Of Memory";
 		case Result::InvalidArgument: return"Invalid Argument";
-		case Result::AlreadyInitialised: return"Already Initialised";
-		case Result::NotInitialised: return"Not Initialised";
+		case Result::AlreadyInitialized: return"Already Initialized";
+		case Result::NotInitialized: return"Not Initialized";
 		case Result::UnsupportedRequest: return"Unsupported Request";
 		case Result::FileVersionMismatch: return"File Version Mismatch";
 		case Result::NotReadable: return"Not Readable";
@@ -197,4 +196,26 @@ extern ::pvr::Logger Log;
 *******************************************************************************************************************/
 typedef void(*ErrorLogger)(Logger::Severity severity, const char8*, ...);
 
+
+
+inline void assertion(bool condition, const std::string& message)
+{
+	if (!condition)
+	{
+		Log(Log.Critical, ("ASSERTION FAILED: " + message).c_str());
+		PVR_ASSERTION(0);
+	}
+}
+inline void assertion(bool condition, const char* msg)
+{
+	if (!condition)
+	{
+		assertion(condition, std::string(msg));
+	}
+}
+
+inline void assertion(bool condition)
+{
+	assertion(condition, "");
+}
 }

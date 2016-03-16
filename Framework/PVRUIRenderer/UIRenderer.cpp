@@ -6,88 +6,124 @@
 ***********************************************************************************************************************/
 #include "PVRUIRenderer/UIRenderer.h"
 #include "PVRCore/BufferStream.h"
-#include "PVRApi/OGLES/TextureUtils.h"
+#include "PVRApi/TextureUtils.h"
 #include "PVRUIRenderer/ArialBoldFont.h"
 #include "PVRUIRenderer/PowerVRLogo.h"
-#include "PVRUIRenderer/UIRendererShaders.h"
+#include "PVRUIRenderer/UIRendererShaders_ES.h"
+#include "PVRUIRenderer/UIRendererVertShader_VK.h"
+#include "PVRUIRenderer/UIRendererFragShader_VK.h"
 using std::map;
 using std::vector;
 namespace pvr {
+using namespace types;
 namespace ui {
 const glm::vec2 BaseScreenDim(640, 480);
 Result::Enum UIRenderer::init_CreatePipelineAndRenderPass()
 {
-	PVR_ASSERT(m_context.isValid() && "NULL Context");
+	assertion(m_context.isValid() ,  "NULL Context");
 	api::GraphicsPipelineCreateParam pipelineDesc;
 	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
-	pipeLayoutInfo.addDescSetLayout(m_defaultLayout);
+	pipeLayoutInfo.addDescSetLayout(m_texDescLayout);
+	if (!m_uboDescLayout.isNull()) {	pipeLayoutInfo.addDescSetLayout(m_uboDescLayout);   }
 	m_pipelineLayout = m_context->createPipelineLayout(pipeLayoutInfo);
+	if (!m_pipelineLayout.isValid())
+	{
+		Log(Log.Critical, "UIRenderer PipelinelineLayout could not be created.");
+		return Result::UnknownError;
+	}
 	pipelineDesc.pipelineLayout = m_pipelineLayout;
 	// Text_ pipe
+	api::Shader vs;
+	api::Shader fs;
+	switch (getContext().getApiType())
 	{
-		api::Shader vs = m_context->createShader(BufferStream("", _print3DShader_glsles200_vsh, _print3DShader_glsles200_vsh_size),
-		                 ShaderType::VertexShader);
-		api::Shader fs = m_context->createShader(BufferStream("", _print3DShader_glsles200_fsh, _print3DShader_glsles200_fsh_size),
-		                 ShaderType::FragmentShader);
-		if (vs.isNull() || fs.isNull())
-		{
-			Log(Log.Critical, "UIRenderer shaders could not be created.");
-			return Result::UnknownError;
-		}
-		pipelineDesc.vertexShader.setShader(vs);
-		pipelineDesc.fragmentShader.setShader(fs);
+	case pvr::Api::OpenGLES2:
+	case pvr::Api::OpenGLES3:
+	case pvr::Api::OpenGLES31:
+		vs = m_context->createShader(BufferStream("", _print3DShader_glsles200_vsh, _print3DShader_glsles200_vsh_size),
+		                             ShaderType::VertexShader);
 
-		api::VertexAttributeInfo posAttrib(0, DataType::Float32, 3, 0, "myVertex");
-		api::VertexAttributeInfo texCoordAttrib(1, DataType::Float32, 2, sizeof(float32) * 4, "myUV");
+		fs = m_context->createShader(BufferStream("", _print3DShader_glsles200_fsh, _print3DShader_glsles200_fsh_size),
+		                             ShaderType::FragmentShader);
+		break;
+	case pvr::Api::Vulkan:
+		vs = m_context->createShader(BufferStream("", spv_UIRendererVertShader_vert, sizeof(spv_UIRendererVertShader_vert)),
+		                             ShaderType::VertexShader);
 
-		pipelineDesc.vertexInput.setInputBinding(0, sizeof(float32) * 6, api::StepRate::Vertex)
-		.addVertexAttribute(0, posAttrib).addVertexAttribute(0, texCoordAttrib);
-
-		api::ImageDataFormat colorFormat;
-		m_context->getDisplayAttributes();
-		api::getDisplayFormat(m_context->getDisplayAttributes(), &colorFormat, NULL);
-		api::pipelineCreation::ColorBlendAttachmentState attachmentState(true, api::BlendFactor::SrcAlpha,
-		    api::BlendFactor::OneMinusSrcAlpha, api::BlendOp::Add, api::ColorChannel::All);
-		pipelineDesc.colorBlend.addAttachmentState(attachmentState);
-		pipelineDesc.depthStencil.setDepthTestEnable(false).setDepthWrite(false);
-		pipelineDesc.rasterizer.setCullFace(api::Face::None);
-		pipelineDesc.inputAssembler.setPrimitiveTopology(pvr::PrimitiveTopology::TriangleList);
+		fs = m_context->createShader(BufferStream("", spv_UIRendererFragShader_frag, sizeof(spv_UIRendererFragShader_frag)),
+		                             ShaderType::FragmentShader);
+		break;
+	// Suppress the warning
+	case pvr::Api::Unspecified:
+	case pvr::Api::Count:
+		assertion(false, "Invalid Api");
+		break;
 	}
+	if (vs.isNull() || fs.isNull())
+	{
+		Log(Log.Critical, "UIRenderer shaders could not be created.");
+		return Result::UnknownError;
+	}
+	pipelineDesc.vertexShader.setShader(vs);
+	pipelineDesc.fragmentShader.setShader(fs);
+
+	api::VertexAttributeInfo posAttrib(0, DataType::Float32, 3, 0, "myVertex");
+	api::VertexAttributeInfo texCoordAttrib(1, DataType::Float32, 2, sizeof(float32) * 4, "myUV");
+
+	pipelineDesc.vertexInput.setInputBinding(0, sizeof(float32) * 6, StepRate::Vertex)
+	.addVertexAttribute(0, posAttrib).addVertexAttribute(0, texCoordAttrib);
+
+
+	api::pipelineCreation::ColorBlendAttachmentState attachmentState(true, BlendFactor::SrcAlpha,
+	        BlendFactor::OneMinusSrcAlpha, BlendOp::Add, ColorChannel::All);
+	pipelineDesc.colorBlend.setAttachmentState(0, attachmentState);
+	pipelineDesc.depthStencil.setDepthTestEnable(false).setDepthWrite(false);
+	pipelineDesc.rasterizer.setCullFace(Face::None);
+	pipelineDesc.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleList);
+	pipelineDesc.renderPass = m_renderpass;
+	pipelineDesc.subPass = m_subpass;
 	m_pipeline = m_context->createParentableGraphicsPipeline(pipelineDesc);
 	if (m_pipeline.isNull())
 	{
 		Log(Log.Critical, "UIRenderer pipeline not be created.");
 		return Result::UnknownError;
 	}
-
-	const char8* attributes[] = { "myVertex", "myUV" };
-	if (api::logApiError("UIRenderer::createPipelineAndRenderPass createGraphicsPipeline"))
+	if (getContext().getApiType() <= pvr::Api::OpenGLESMaxVersion)
 	{
-		return Result::UnknownError;
-	}
-	const char8* textProgramUni[] = { "myMVPMatrix", "fontTexture", "varColor", "alphaMode", "myUVMatrix" };
-	if (api::logApiError("UIRenderer::createPipelineAndRenderPass setUniforms"))
-	{
-		return Result::UnknownError;
-	}
+		const char8* attributes[] = { "myVertex", "myUV" };
+		if (api::logApiError("UIRenderer::createPipelineAndRenderPass createGraphicsPipeline"))
+		{
+			return Result::UnknownError;
+		}
+		const char8* textProgramUni[] = { "myMVPMatrix", "fontTexture", "varColor", "alphaMode", "myUVMatrix" };
+		if (api::logApiError("UIRenderer::createPipelineAndRenderPass setUniforms"))
+		{
+			return Result::UnknownError;
+		}
 
-	m_pipeline->getAttributeLocation(attributes, 2, m_programData.attributes);
-	m_pipeline->getUniformLocation(textProgramUni, sizeof(textProgramUni) / sizeof(textProgramUni[0]), m_programData.uniforms);
-	if (api::logApiError("UIRenderer::createPipelineAndRenderPass getUniformLocation"))
-	{
-		return Result::UnknownError;
+		m_pipeline->getAttributeLocation(attributes, 2, m_programData.attributes);
+		m_pipeline->getUniformLocation(textProgramUni, sizeof(textProgramUni) / sizeof(textProgramUni[0]), m_programData.uniforms);
+		if (api::logApiError("UIRenderer::createPipelineAndRenderPass getUniformLocation"))
+		{
+			return Result::UnknownError;
+		}
 	}
-
 	return Result::Success;
 }
 
-pvr::Result::Enum UIRenderer::init_CreateDescriptors()
+pvr::Result::Enum UIRenderer::init_CreateDescriptorSetLayout()
 {
-	PVR_ASSERT(m_context.isValid() && "NULL GRAPHICS CONTEXT");
+	assertion(m_context.isValid() ,  "NULL GRAPHICS CONTEXT");
 	api::DescriptorSetLayoutCreateParam defaultDesc;
-	defaultDesc.addBinding(0, pvr::api::DescriptorType::CombinedImageSampler, 1, pvr::api::ShaderStageFlags::Fragment);
-	m_defaultLayout = m_context->createDescriptorSetLayout(defaultDesc);
-	if (m_defaultLayout.isNull()) { return Result::UnknownError; }
+	defaultDesc.setBinding(0, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
+	m_texDescLayout = m_context->createDescriptorSetLayout(defaultDesc);
+	if (m_context->getApiType() > Api::OpenGLESMaxVersion)// use uniform buffer
+	{
+		defaultDesc.setBinding(0, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Vertex | ShaderStageFlags::Fragment);
+		m_uboDescLayout = m_context->createDescriptorSetLayout(defaultDesc);
+		if (m_uboDescLayout.isNull()) { return Result::UnknownError; }
+	}
+	if (m_texDescLayout.isNull()) { return Result::UnknownError; }
 	return Result::Success;
 }
 
@@ -119,10 +155,7 @@ Image UIRenderer::createImage(const assets::Texture& texture)
 	Image image;
 	api::TextureView apiTexture;
 	utils::textureUpload(m_context, texture, apiTexture);
-	image.construct(*this, apiTexture, texture.getWidth(), texture.getHeight());
-	image->setSampler(m_samplerBilinear);
-	image->commitUpdates();
-	return image;
+	return createImage(apiTexture, texture.getWidth(), texture.getHeight());
 }
 
 MatrixGroup UIRenderer::createMatrixGroup()
@@ -145,7 +178,7 @@ Image UIRenderer::createImage(api::TextureView& tex, int32 width, int32 height)
 {
 	Image image;
 	image.construct(*this, tex, width, height);
-	image->setSampler(m_samplerBilinear);
+	image->setSampler(tex->getResource()->getFormat().mipmapLevels > 1 ? m_samplerTrilinear : m_samplerBilinear);
 	image->commitUpdates();
 	return image;
 }
@@ -175,14 +208,21 @@ Text UIRenderer::createText(const Font& font)
 
 bool UIRenderer::init_CreateDefaultSampler()
 {
-	assets::SamplerCreateParam samplerDesc;
-	samplerDesc.mipMappingFilter = SamplerFilter::Linear;
+	api::SamplerCreateParam samplerDesc;
+	samplerDesc.mipMappingFilter = SamplerFilter::None;
 	samplerDesc.minificationFilter = SamplerFilter::Linear;
 	samplerDesc.magnificationFilter = SamplerFilter::Linear;
 	m_samplerBilinear = m_context->createSampler(samplerDesc);
 	if (m_samplerBilinear.isNull())
 	{
 		Log("UIRenderer initialisation: Failed to create the default bilinear sampler. This should never have happened...");
+		return false;
+	}
+	samplerDesc.mipMappingFilter = SamplerFilter::Linear;
+	m_samplerTrilinear = m_context->createSampler(samplerDesc);
+	if (m_samplerTrilinear.isNull())
+	{
+		Log("UIRenderer initialisation: Failed to create the default trilinear sampler. This should never have happened...");
 		return false;
 	}
 	return true;

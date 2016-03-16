@@ -5,11 +5,10 @@
 \brief     	  Contains the Sprite classes and framework objects used by the UIRenderer (Sprite, Text, Image, Font, Group).
 ***********************************************************************************************************************/
 #pragma once
-#include "PVRCore/CoreIncludes.h"
+#include "PVRApi/PVRApi.h"
 #include "PVRCore/AxisAlignedBox.h"
 #include "PVRCore/UnicodeConverter.h"
 #include "PVRAssets/Texture/Texture.h"
-#include "PVRApi/Api.h"
 #define NUM_BITS_GROUP_ID 8
 
 /*!****************************************************************************************************************
@@ -231,7 +230,7 @@ public:
 
 	/*!****************************************************************************************************************
 	\brief	Get the sprite's own transformation matrix. Does not contain hierarchical transformations from groups etc.
-			This function is valid only after any changes to the sprite have been commited with commitUpdates as it is 
+			This function is valid only after any changes to the sprite have been commited with commitUpdates as it is
 			normally calculated in commitUpdates.
 	\return	The sprite's final transformation matrix. If the sprite is rendered on its own, this is the matrix that will
 	        be uploaded to the shader.
@@ -242,17 +241,17 @@ public:
 	/*!****************************************************************************************************************
 	\internal
 	\brief		Do not call directly. CommitUpdates will call this function.
-				If writing new sprite classes, implement this function to calculate the mvp matrix of the sprite from 
+				If writing new sprite classes, implement this function to calculate the mvp matrix of the sprite from
 				any other possible representation that the sprite's data contains into its own m_cachedMatrix member.
 	*******************************************************************************************************************/
 	virtual void calculateMvp(pvr::uint64 parentIds, glm::mat4 const& srt, const glm::mat4& viewProj,
 	                          pvr::Rectanglei const& viewport)const = 0;
-							  
+
 	/********************************************************************************************************
 	\internal
 	\brief		Do not call directly. Render will call this function.
-				If writing new sprites, implement this function to render a sprite with the provided 
-				transformation matrix. Necessary to support instanced rendering of the same sprite from 
+				If writing new sprites, implement this function to render a sprite with the provided
+				transformation matrix. Necessary to support instanced rendering of the same sprite from
 				different groups.
 	********************************************************************************************************/
 	virtual void onRender(api::SecondaryCommandBuffer& commands, pvr::uint64 parentId) const = 0;
@@ -345,6 +344,7 @@ public:
 class Image_ : public Sprite_, public I2dComponent
 {
 	friend class ::pvr::ui::UIRenderer;
+	friend class ::pvr::ui::impl::Text_;
 public:
 	Image_(UIRenderer& uiRenderer, api::TextureView& tex, uint32 width, uint32 height);
 
@@ -399,19 +399,15 @@ public:
 	/*!****************************************************************************************************************
 	\param sampler The pvr::api::Sampler that this Image will use for sampling the texture.
 	*******************************************************************************************************************/
-	void setSampler(const api::Sampler& sampler)
-	{
-		m_isDescriptorSetDirty = true;
-		m_sampler = sampler;
-	}
+	void setSampler(const api::Sampler& sampler) {	m_isTextureDirty = true; m_sampler = sampler; }
 
 	/*!****************************************************************************************************************
 	\return The descriptorSet containing this Image's texture.
 	*******************************************************************************************************************/
-	const api::DescriptorSet& getDescriptorSet() const
+	const api::DescriptorSet& getTexDescriptorSet() const
 	{
-		if (m_isDescriptorSetDirty) { updateDescriptorSet(); }
-		return m_descriptorSet;
+		updateTextureDescriptorSet();
+		return m_texDescSet;
 	}
 
 	/*!****************************************************************************************************************
@@ -422,17 +418,28 @@ public:
 	*******************************************************************************************************************/
 	void setUVMatrix(const glm::mat3x3& uvMatrix) const { m_matrixUV = uvMatrix; }
 protected:
-	pvr::Result::Enum updateDescriptorSet()const;
+	struct InstanceData
+	{
+		glm::mat4			mvp;		// model-view-projection
+		api::Buffer			buffer;		// ubo buffer
+		api::BufferView		bufferView; // ubo buffer view
+		api::DescriptorSet	uboDescSet; // ubo desciptor set
+	};
+	typedef std::map<pvr::uint64, InstanceData> UboPool;
+	pvr::Result::Enum updateTextureDescriptorSet()const;
+	void writeUboDescriptorSet(pvr::uint64 parentId)const;
+	void updateUbo(pvr::uint64 parentIds)const;
+
 
 	mutable glm::mat3x3 m_matrixUV;
 
-	mutable api::DescriptorSet m_descriptorSet; //!< The descriptor set containing the texture of this object
+	mutable api::DescriptorSet m_texDescSet; //!< The descriptor set containing the texture of this object
 	uint32 m_texW;						//!< Width of the image
 	uint32 m_texH;						//!< Height of the image
 	api::TextureView m_texture;		//!< The texture object of this image
 	api::Sampler m_sampler;				//!< The sampler used by this image
-	mutable std::map<pvr::uint64, glm::mat4> m_mvpPools;
-	mutable bool m_isDescriptorSetDirty;
+	mutable UboPool m_mvpPools;
+	mutable bool m_isTextureDirty;
 };
 
 /*!****************************************************************************************************************
@@ -556,8 +563,13 @@ public:
 	*******************************************************************************************************************/
 	static uint16* getFontFaces();
 private:
+#ifdef _WIN32
+	static int32 __cdecl characterCompFunc(const void* a, const void* b);
+	static int32 __cdecl kerningCompFunc(const void* a, const void* b);
+#else
 	static int32 characterCompFunc(const void* a, const void* b);
 	static int32 kerningCompFunc(const void* a, const void* b);
+#endif
 
 	struct Header	//12 bytes
 	{
@@ -698,18 +710,23 @@ public:
 
 
 private:
-	const api::DescriptorSet& getDescriptorSet() const
+	struct InstanceData
 	{
-		return m_font->getDescriptorSet();
-	}
+		glm::mat4 mvp;				// model-view-projection
+		api::Buffer buffer;			// ubo buffer
+		api::BufferView bufferView;	// ubo buffer view
+		api::DescriptorSet descSet;	// ubo descriptor set
+	};
+	const api::DescriptorSet& getTexDescriptorSet() const {	return m_font->getTexDescriptorSet(); }
 	void regenerateText() const;
 	void initializeText(const std::wstring& str);
 	void calculateMvp(const glm::mat4& matrix, pvr::uint64 parentIds) const;
 	void calculateMvp(pvr::uint64 parentIds, glm::mat4 const& srt, const glm::mat4& viewProj,
 	                  pvr::Rectanglei const& viewport)const;
+	void updateUbo(pvr::uint64 parentId)const;
 	uint32 m_spaceWidth;
 	bool m_isUtf8;
-	Font m_font;
+	mutable Font m_font;
 	mutable bool m_isTextDirty;
 	mutable api::Buffer m_vbo;
 	mutable std::string m_textStr;
@@ -718,7 +735,7 @@ private:
 	mutable std::vector<Vertex>	m_vertices;
 	mutable int32 m_numCachedVerts;
 
-	mutable std::map<pvr::uint64, glm::mat4> m_mvpPools;
+	mutable std::map<pvr::uint64, InstanceData> m_mvpPools;
 };
 
 /*!****************************************************************************************************************
@@ -767,11 +784,12 @@ public:
 	*******************************************************************************************************************/
 	void remove(const Sprite& sprite)
 	{
-        ChildContainer::iterator it = std::find_if(m_children.begin(), m_children.end(), SpriteEntryEquals(sprite));
-        if (it != m_children.end())	{
-            m_boundingRect.remove((*it)->getBoundingBox());
-            m_children.erase(it);
-        }
+		ChildContainer::iterator it = std::find_if(m_children.begin(), m_children.end(), SpriteEntryEquals(sprite));
+		if (it != m_children.end())
+		{
+			m_boundingRect.remove((*it)->getBoundingBox());
+			m_children.erase(it);
+		}
 	}
 
 	/*!****************************************************************************************************************

@@ -99,7 +99,7 @@ void CommandLineParser::prefix(const CommandLineParser& commandLine)
 	memcpy(newData.data(), commandLine.m_data.data(), commandLine.m_data.size());
 	memcpy(&newData[commandLine.m_data.size()], m_data.data(), m_data.size());
 
-	// Initialise the options
+	// Initialize the options
 	for (unsigned int i = 0; i < commandLine.m_commandLine.m_options.size(); ++i)
 	{
 		newOptions[i].arg = (const char*)((size_t)commandLine.m_commandLine.m_options[i].arg - (size_t)commandLine.m_data.data()) +
@@ -300,7 +300,7 @@ void CommandLineParser::append(const CommandLineParser& commandLine)
 	memcpy(newData.data(), m_data.data(), m_data.size());
 	memcpy(&newData[m_data.size()], commandLine.m_data.data(), commandLine.m_data.size());
 
-	// Initialise the options
+	// Initialize the options
 	for (unsigned int i = 0; i < m_commandLine.m_options.size(); ++i)
 	{
 		newOptions[i].arg = (const char*)((size_t)m_commandLine.m_options[i].arg - (size_t)m_data.data()) + (size_t)newData.data();
