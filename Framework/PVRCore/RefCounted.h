@@ -452,15 +452,6 @@ public:
 	}
 
 	/*!*********************************************************************************************************************
-	\brief       Decrements reference count. If it is the last pointer, destroys the pointed-to object. Else, abandons it and
-	             resets to nothing. Equivalent to reset(NULL).
-	***********************************************************************************************************************/
-	void release()
-	{
-		reset();
-	}
-
-	/*!*********************************************************************************************************************
 	\brief       Decrements reference count. If it is the last pointer, destroys the pointed-to object. Else, abandons it. Then,
 	             wraps the provided pointer and points to it. Equivalent to destroying the original smart pointer and creating a
 				 new one.
@@ -470,7 +461,7 @@ public:
 	template<typename MyPointer_>
 	void reset(MyPointer_* ref)
 	{
-		release();
+		reset();
 		RefcountEntryHolder<MyClass_>::refCountEntry = new RefCountEntry<MyPointer_>(ref);
 		Dereferenceable<MyClass_>::pointee = ref;
 	}
@@ -495,11 +486,6 @@ protected:
 	}
 
 private:
-	void retainOne()
-	{
-		if (RefcountEntryHolder<MyClass_>::refCountEntry) { RefcountEntryHolder<MyClass_>::refCountEntry->count++; }
-	}
-
 	void releaseOne()
 	{
 		if (RefcountEntryHolder<MyClass_>::refCountEntry)
@@ -544,14 +530,6 @@ private:
 				}
 			}
 		}
-	}
-
-	template<typename PointeeType>
-	void resetEntry(IRefCountEntry* entry, PointeeType* pointee)
-	{
-		release();
-		RefcountEntryHolder<MyClass_>::refCountEntry = entry;
-		++(entry->count);
 	}
 };
 
@@ -954,7 +932,7 @@ public:
 	\brief     Copy conversion constructor from Normal (non-weak) reference. Implements normal reference counting (increases
 	           Weak reference count).
 	***********************************************************************************************************************/
-	RefCountedWeakReference(const RefCountedResource<MyClass_>& rhs) : Dereferenceable<MyClass_>(rhs), RefcountEntryHolder<MyClass_>(rhs)
+	RefCountedWeakReference(const EmbeddedRefCountedResource<MyClass_>& rhs) : Dereferenceable<MyClass_>(rhs), RefcountEntryHolder<MyClass_>(rhs)
 	{
 		if (RefcountEntryHolder<MyClass_>::refCountEntry) { ++(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount); }
 	}
@@ -1102,6 +1080,7 @@ protected:
 		MyClass_* item = new MyClass_();
 		StrongReferenceType ptr(item, item);
 		--item->count;
+		return ptr;
 	}
 	template<typename T1>
 	static StrongReferenceType createNew(T1&& t1)

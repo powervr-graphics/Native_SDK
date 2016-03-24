@@ -11,13 +11,12 @@ class CommandPoolGles_ : public impl::CommandPool_, public native::HCommandPool_
 	template <typename> friend class ::pvr::EmbeddedRefCount;
 public:
 	bool init() { return true; }
-	void destroy() {/*DO NOTHING*/}
-	static CommandPoolGles createNew(GraphicsContext& ctx)
+	static CommandPoolGles createNew(const GraphicsContext& ctx)
 	{
 		return EmbeddedRefCount<CommandPoolGles_>::createNew(ctx);
 	}
 private:
-	CommandPoolGles_(GraphicsContext& context) : CommandPool_(context) {}
+	CommandPoolGles_(const GraphicsContext& context) : CommandPool_(context) {}
 	CommandPoolGles_(const CommandPoolGles_&); //deleted
 	/*!*********************************************************************************************************************
 	\brief ctor, Construct a CommandPool
@@ -25,7 +24,7 @@ private:
 	***********************************************************************************************************************/
 
 	/* IMPLEMENTING EmbeddedResource */
-	void destroyObject() { destroy(); }
+	void destroyObject() { }
 
 };
 }

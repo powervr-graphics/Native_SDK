@@ -28,7 +28,11 @@ inline static uint32 fboBindTargetToGlesName(types::FboBindingTarget::Enum targe
 namespace impl {
 Fbo_::Fbo_(GraphicsContext& context) : m_context(context) {}
 
-void Fbo_::destroy()
+
+}
+
+namespace gles {
+void FboGles_::destroy()
 {
 	if (m_context.isValid())
 	{
@@ -40,10 +44,6 @@ void Fbo_::destroy()
 		Log(Log.Warning, "FBO object was not cleaned up before context destruction");
 	}
 }
-
-}
-
-namespace gles {
 
 FboGles_::FboGles_(GraphicsContext& context) : Fbo_(context), m_target(types::FboBindingTarget::ReadWrite) {}
 
@@ -95,8 +95,8 @@ bool FboGles_::init(const FboCreateParam& desc)
 		auto& texViewEs = static_cast<gles::TextureViewGles_&>(*m_desc.getDepthStencilAttachment());
 		types::ImageAspect::Enum attachment;
 		if (texViewEs.getResource()->getFormat().format == PixelFormat::Depth16 ||
-		        texViewEs.getResource()->getFormat().format == PixelFormat::Depth24 ||
-		        texViewEs.getResource()->getFormat().format == PixelFormat::Depth32)
+		    texViewEs.getResource()->getFormat().format == PixelFormat::Depth24 ||
+		    texViewEs.getResource()->getFormat().format == PixelFormat::Depth32)
 		{
 			attachment = pvr::types::ImageAspect::Depth;
 		}
@@ -119,9 +119,6 @@ bool FboGles_::init(const FboCreateParam& desc)
 		}
 		else
 		{
-			auto miplevel = texViewEs.getSubResourceRange().mipLevelOffset;
-			auto handle = texViewEs.getResource()->getNativeObject().handle;
-			auto target = api::ConvertToGles::imageAspect(attachment);
 			gl::FramebufferTexture2D(GL_FRAMEBUFFER, api::ConvertToGles::imageAspect(attachment), GL_TEXTURE_2D,
 			                         texViewEs.getResource()->getNativeObject().handle, texViewEs.getSubResourceRange().mipLevelOffset);
 		}
@@ -139,7 +136,7 @@ bool FboGles_::init(const FboCreateParam& desc)
 	{
 		auto& texViewEs = static_cast<const gles::TextureViewGles_&>(*m_desc.getColorAttachment(i));
 		if (texViewEs.getResource()->getFormat() !=
-		        static_cast<const RenderPassGles_&>(*desc.getRenderPass()).getCreateParam().getColorInfo(i).format)
+		    static_cast<const RenderPassGles_&>(*desc.getRenderPass()).getCreateParam().getColorInfo(i).format)
 		{
 			pvr::Log("The renderPass color format does not match with color attachment view.");
 			assertion(false , "The renderPass color format does not match with color attachment view.");

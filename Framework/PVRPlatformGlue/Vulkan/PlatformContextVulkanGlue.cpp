@@ -615,14 +615,14 @@ static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplay
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
 	vkglue::GetPhysicalDeviceSurfaceCapabilitiesKHR(platformHandle.context.physicalDevice, displayHandle.surface, &surfaceCapabilities);
 
-	Log("Surface Capabilities:\n");
-	Log("Image count: %u - %u\n", surfaceCapabilities.minImageCount, surfaceCapabilities.maxImageCount);
-	Log("Array size: %u\n", surfaceCapabilities.maxImageArrayLayers);
-	Log("Image size (now): %dx%d\n", surfaceCapabilities.currentExtent.width, surfaceCapabilities.currentExtent.height);
-	Log("Image size (extent): %dx%d - %dx%d\n", surfaceCapabilities.minImageExtent.width, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.width,
+	Log(Log.Information, "Surface Capabilities:");
+	Log(Log.Information, "Image count: %u - %u", surfaceCapabilities.minImageCount, surfaceCapabilities.maxImageCount);
+	Log(Log.Information, "Array size: %u", surfaceCapabilities.maxImageArrayLayers);
+	Log(Log.Information, "Image size (now): %dx%d", surfaceCapabilities.currentExtent.width, surfaceCapabilities.currentExtent.height);
+	Log(Log.Information, "Image size (extent): %dx%d - %dx%d", surfaceCapabilities.minImageExtent.width, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.width,
 	    surfaceCapabilities.maxImageExtent.height);
-	Log("Usage: %x\n", surfaceCapabilities.supportedUsageFlags);
-	Log("Current transform: %u\n", surfaceCapabilities.currentTransform);
+	Log(Log.Information, "Usage: %x", surfaceCapabilities.supportedUsageFlags);
+	Log(Log.Information, "Current transform: %u\n", surfaceCapabilities.currentTransform);
 	//Log("Allowed transforms: %x\n", surfaceCapabilities.supportedTransforms);
 	outSize = surfaceCapabilities.currentExtent;
 	outmaxSize = surfaceCapabilities.maxImageExtent;

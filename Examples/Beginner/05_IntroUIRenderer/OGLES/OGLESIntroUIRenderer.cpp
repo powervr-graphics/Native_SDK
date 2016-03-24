@@ -335,13 +335,13 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::releaseView()
 	// Release uiRenderer Textures
 	uiRenderer.release();
 	centralTextLines.clear();
-	centralTitleLine1.release();
-	centralTitleLine2.release();
-	titleText1.release();
-	titleText2.release();
+	centralTitleLine1.reset();
+	centralTitleLine2.reset();
+	titleText1.reset();
+	titleText2.reset();
 	assetStore.releaseAll();
-	centralTextGroup.release();
-	background.release();
+	centralTextGroup.reset();
+	background.reset();
 	commandBufferWithIntro.reset();
 	commandBufferWithText.reset();
 	commandBufferSubtitle.reset();

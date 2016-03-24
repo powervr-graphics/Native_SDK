@@ -85,21 +85,23 @@ static ExtensionEntry extensionMap[] =
 
 }
 
+GraphicsContext IGraphicsContext::getWeakRef() { return static_cast<platform::ContextVk&>(*this).getWeakReference(); }
+
 api::EffectApi IGraphicsContext::createEffectApi(assets::Effect& effectDesc, api::GraphicsPipelineCreateParam& pipeDesc,
     api::AssetLoadingDelegate& effectDelegate)
 {
 	api::EffectApi effect;
-	effect.construct(m_this_shared, effectDelegate);
+	effect.construct(getWeakRef(), effectDelegate);
 	if (effect->init(effectDesc, pipeDesc) != Result::Success)
 	{
-		effect.release();
+		effect.reset();
 	}
 	return effect;
 }
 api::TextureStore IGraphicsContext::createTexture()
 {
 	api::vulkan::TextureStoreVk tex;
-	tex.construct(m_this_shared);
+	tex.construct(getWeakRef());
 	return tex;
 }
 
@@ -132,8 +134,7 @@ api::DescriptorSet IGraphicsContext::createDescriptorSetOnDefaultPool(const api:
 //Creates an instance of a graphics context.
 GraphicsContextStrongReference createGraphicsContext()
 {
-	RefCountedResource<platform::ContextVk> ctx;
-	ctx.construct();
+	GraphicsContextStrongReference ctx = platform::ContextVk::createNew();
 	//DEFAULT CONTEXT PER PLATFORM. CAN(WILL) BE OVERRIDEN BY PVRShell
 	ctx->m_apiType = Api::Vulkan;
 	return ctx;
@@ -143,10 +144,10 @@ api::Fbo IGraphicsContext::createFbo(const api::FboCreateParam& desc)
 {
 	api::vulkan::FboVk fbo;
 	// create fbo
-	fbo.construct(m_this_shared);
+	fbo.construct(getWeakRef());
 	if (!fbo->init(desc))
 	{
-		fbo.release();
+		fbo.reset();
 	}
 	return fbo;
 }
@@ -155,7 +156,7 @@ api::Fbo IGraphicsContext::createFbo(const api::FboCreateParam& desc)
 api::Fence IGraphicsContext::createFence(bool createSignaled)
 {
 	api::vulkan::FenceVk fence;
-	fence.construct(m_this_shared);
+	fence.construct(getWeakRef());
 	if (!fence->init(createSignaled))
 	{
 		fence.reset();
@@ -196,7 +197,7 @@ api::SecondaryCommandBuffer IGraphicsContext::createSecondaryCommandBufferOnDefa
 api::Buffer IGraphicsContext::createBuffer(uint32 size, types::BufferBindingUse::Bits bufferUsage, types::BufferUse::Flags hint)
 {
 	api::vulkan::BufferVk buffer;
-	buffer.construct(m_this_shared);
+	buffer.construct(getWeakRef());
 	if (!buffer->allocate(size, types::BufferBindingUse::Enum(bufferUsage), hint))
 	{
 		buffer.reset();
@@ -206,7 +207,7 @@ api::Buffer IGraphicsContext::createBuffer(uint32 size, types::BufferBindingUse:
 
 api::Shader IGraphicsContext::createShader(const Stream& shaderSrc, types::ShaderType::Enum type, const char* const* defines, uint32 numDefines)
 {
-	api::vulkan::ShaderVk vs; vs.construct(m_this_shared);
+	api::vulkan::ShaderVk vs; vs.construct(getWeakRef());
 	if (!utils::loadShader(static_cast<platform::ContextVk&>(*this).getContextHandle(), shaderSrc, type, defines, numDefines, *vs, &m_apiCapabilities))
 	{
 		Log(Log.Error, "Failed to create VertexShader.");
@@ -217,11 +218,11 @@ api::Shader IGraphicsContext::createShader(const Stream& shaderSrc, types::Shade
 
 api::Shader IGraphicsContext::createShader(Stream& shaderData, types::ShaderType::Enum type, types::ShaderBinaryFormat::Enum binaryFormat)
 {
-	api::vulkan::ShaderVk vs; vs.construct(m_this_shared);
+	api::vulkan::ShaderVk vs; vs.construct(getWeakRef());
 	if (!utils::loadShader(static_cast<platform::ContextVk&>(*this).getContextHandle(), shaderData, type, binaryFormat, *vs, &m_apiCapabilities))
 	{
 		Log(Log.Error, "Failed to create VertexShader.");
-		vs.release();
+		vs.reset();
 	}
 	return vs;
 }
@@ -229,10 +230,10 @@ api::Shader IGraphicsContext::createShader(Stream& shaderData, types::ShaderType
 api::Sampler IGraphicsContext::createSampler(const api::SamplerCreateParam& desc)
 {
 	api::vulkan::SamplerVk sampler;
-	sampler.construct(m_this_shared);
+	sampler.construct(getWeakRef());
 	if (!sampler->init(desc))
 	{
-		sampler.release();
+		sampler.reset();
 	}
 	return sampler;
 }
@@ -240,7 +241,7 @@ api::Sampler IGraphicsContext::createSampler(const api::SamplerCreateParam& desc
 api::GraphicsPipeline IGraphicsContext::createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc)
 {
 	api::GraphicsPipeline gp;
-	gp.construct(m_this_shared);
+	gp.construct(getWeakRef());
 	Result::Enum result = gp->init(desc);
 	if (result != Result::Success)
 	{
@@ -253,7 +254,7 @@ api::GraphicsPipeline IGraphicsContext::createGraphicsPipeline(api::GraphicsPipe
 api::GraphicsPipeline IGraphicsContext::createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc, api::ParentableGraphicsPipeline parent)
 {
 	api::GraphicsPipeline gp;
-	gp.construct(m_this_shared);
+	gp.construct(getWeakRef());
 	Result::Enum result = gp->init(desc, parent.get());
 	if (result != Result::Success)
 	{
@@ -266,7 +267,7 @@ api::GraphicsPipeline IGraphicsContext::createGraphicsPipeline(api::GraphicsPipe
 api::ComputePipeline IGraphicsContext::createComputePipeline(const api::ComputePipelineCreateParam& desc)
 {
 	api::ComputePipeline cp;
-	cp.construct(m_this_shared);
+	cp.construct(getWeakRef());
 	Result::Enum result = cp->init(desc);
 	if (result != Result::Success)
 	{
@@ -280,7 +281,7 @@ api::ComputePipeline IGraphicsContext::createComputePipeline(const api::ComputeP
 api::ParentableGraphicsPipeline IGraphicsContext::createParentableGraphicsPipeline(const api::GraphicsPipelineCreateParam& desc)
 {
 	api::ParentableGraphicsPipeline gp;
-	gp.construct(m_this_shared);
+	gp.construct(getWeakRef());
 	Result::Enum result = gp->init(desc);
 	if (result != Result::Success)
 	{
@@ -293,10 +294,10 @@ api::ParentableGraphicsPipeline IGraphicsContext::createParentableGraphicsPipeli
 api::RenderPass IGraphicsContext::createRenderPass(const api::RenderPassCreateParam& renderPass)
 {
 	api::vulkan::RenderPassVk rp;
-	rp.construct(m_this_shared);
+	rp.construct(getWeakRef());
 	if (!rp->init(renderPass))
 	{
-		rp.release();
+		rp.reset();
 	}
 	return rp;
 }
@@ -335,12 +336,12 @@ api::Fbo IGraphicsContext::createOnScreenFboWithRenderPass(uint32 swapIndex, con
 		hDepthTex.image = fb.depthStencilImage[i].first;
 		api::vulkan::TextureStoreVk texColor;
 		api::vulkan::TextureStoreVk texDs;
-		texColor.construct(m_this_shared, hColorTex, types::TextureDimension::Texture2D);
-		texDs.construct(m_this_shared, hDepthTex, types::TextureDimension::Texture2D);
+		texColor.construct(getWeakRef(), hColorTex, types::TextureDimension::Texture2D);
+		texDs.construct(getWeakRef(), hDepthTex, types::TextureDimension::Texture2D);
 		native::HImageView_ hTexViewColor(fb.colorImageViews[i], true);
 		native::HImageView_ hTexViewDs(fb.depthStencilImageView[i], true);
 
-		texViewColor.construct(texColor,hTexViewColor);
+		texViewColor.construct(texColor, hTexViewColor);
 		texViewDs.construct(texDs, hTexViewDs);
 		api::ImageStorageFormat fmt; fmt.numSamples = 1; fmt.mipmapLevels = 1;
 		static_cast<api::ImageDataFormat&>(fmt) = api::ConvertFromVulkan::imageDataFormat(fb.colorFormat);
@@ -360,7 +361,7 @@ api::Fbo IGraphicsContext::createOnScreenFboWithRenderPass(uint32 swapIndex, con
 		}
 
 	}
-	fbo.construct(m_this_shared);
+	fbo.construct(getWeakRef());
 	if (!fbo->init(fboInfo))
 	{
 		fbo.reset();
@@ -476,20 +477,20 @@ Multi<api::Fbo> IGraphicsContext::createOnScreenFboSet(types::LoadOp::Enum color
 
 api::DescriptorPool IGraphicsContext::createDescriptorPool(const api::DescriptorPoolCreateParam& createParam)
 {
-	api::vulkan::DescriptorPoolVk descPool = api::vulkan::DescriptorPoolVk_::createNew(m_this_shared);
+	api::vulkan::DescriptorPoolVk descPool = api::vulkan::DescriptorPoolVk_::createNew(getWeakRef());
 	if (!descPool->init(createParam))
 	{
-		descPool.release();
+		descPool.reset();
 	}
 	return descPool;
 }
 
 api::CommandPool IGraphicsContext::createCommandPool()
 {
-	api::vulkan::CommandPoolVk cmdpool = api::vulkan::CommandPoolVk_::createNew(m_this_shared);
+	api::vulkan::CommandPoolVk cmdpool = api::vulkan::CommandPoolVk_::createNew(getWeakRef());
 	if (!cmdpool->init())
 	{
-		cmdpool.release();
+		cmdpool.reset();
 	}
 	return cmdpool;
 }
@@ -497,10 +498,10 @@ api::CommandPool IGraphicsContext::createCommandPool()
 api::PipelineLayout IGraphicsContext::createPipelineLayout(const api::PipelineLayoutCreateParam& desc)
 {
 	pvr::api::vulkan::PipelineLayoutVk pipelayout;
-	pipelayout.construct(m_this_shared);
+	pipelayout.construct(getWeakRef());
 	if (!pipelayout->init(desc))
 	{
-		pipelayout.release();
+		pipelayout.reset();
 	}
 	return pipelayout;
 }
@@ -508,8 +509,11 @@ api::PipelineLayout IGraphicsContext::createPipelineLayout(const api::PipelineLa
 api::DescriptorSetLayout IGraphicsContext::createDescriptorSetLayout(const api::DescriptorSetLayoutCreateParam& desc)
 {
 	api::vulkan::DescriptorSetLayoutVk layout;
-	layout.construct(m_this_shared, desc);
-	if (!layout->init()) { layout.release(); }
+	layout.construct(getWeakRef(), desc);
+	if (!layout->init())
+	{
+		layout.reset();
+	}
 	return layout;
 }
 
@@ -533,7 +537,6 @@ void ContextVk::release()
 		m_renderStatesTracker.releaseAll();
 		vk::releaseVk();
 	}
-	m_this_shared.release();
 }
 
 void ContextVk::setUpCapabilities()
@@ -582,7 +585,7 @@ string ContextVk::getInfo()const
 	return "";
 }
 
-Result::Enum ContextVk::init(OSManager& osManager, GraphicsContext& my_wrapper)
+Result::Enum ContextVk::init(OSManager& osManager)
 {
 	if (m_osManager)
 	{
@@ -592,7 +595,6 @@ Result::Enum ContextVk::init(OSManager& osManager, GraphicsContext& my_wrapper)
 	{
 		return Result::NotInitialized;
 	}
-	m_this_shared = my_wrapper;
 	m_apiType = osManager.getApiTypeRequired(); //PlatformContext should have already made sure that this is actually possible.
 
 	if (m_apiType != Api::Vulkan)

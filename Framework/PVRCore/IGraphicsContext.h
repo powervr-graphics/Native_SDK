@@ -45,6 +45,7 @@ struct ApiCapabilitiesPrivate
 	uint16 maxglslesversion;
 	uint32 uboOffsetAlignment;
 	uint32 ssboOffsetAlignment;
+	ApiCapabilitiesPrivate() : maxglslesversion(0), uboOffsetAlignment(0), ssboOffsetAlignment(0) {}
 };
 //!\endcond
 
@@ -120,7 +121,7 @@ public:
 };
 //!\endcond
 
-typedef pvr::RefCountedResource<IGraphicsContext> GraphicsContextStrongReference;
+typedef pvr::EmbeddedRefCountedResource<IGraphicsContext> GraphicsContextStrongReference;
 typedef pvr::RefCountedWeakReference<IGraphicsContext> GraphicsContext;
 
 /*!****************************************************************************************************************
@@ -148,7 +149,6 @@ public:
 	*******************************************************************************************************************/
 	IGraphicsContext() : m_osManager(NULL), m_apiType(Api::Unspecified)
 	{
-		memset(&m_apiCapabilities, 0, sizeof(m_apiCapabilities));
 		((ApiCapabilitiesPrivate&)m_apiCapabilities).maxglslesversion = 200;
 	}
 	virtual ~IGraphicsContext()	{}
@@ -166,7 +166,7 @@ public:
 	\brief	Call this function to initialize the Context using the information of a specific OSManager (usually, the
 	        Shell instance).
 	*******************************************************************************************************************/
-	virtual Result::Enum init(OSManager& osManager, GraphicsContext& this_ref) = 0;
+	virtual Result::Enum init(OSManager& osManager) = 0;
 
 	/*!****************************************************************************************************************
 	\brief	Release the resources held by this context.
@@ -268,7 +268,7 @@ public:
 	        are performed when switching from a child to a parent or a sibling and vice versa.
 	*******************************************************************************************************************/
 	api::GraphicsPipeline createGraphicsPipeline(api::GraphicsPipelineCreateParam& createParam,
-	        api::ParentableGraphicsPipeline parent);
+	    api::ParentableGraphicsPipeline parent);
 
 	/*!****************************************************************************************************************
 	\brief	Create a new ComputePipeline object.
@@ -406,7 +406,7 @@ public:
 	formats must be compatible with the backbuffer, otherwise results are undefined.
 	*****************************************************************************************************/
 	api::Fbo createOnScreenFboWithRenderPass(uint32 swapIndex, const api::RenderPass& renderPass,
-	        const api::OnScreenFboCreateParam& onScreenFboCreateParam);
+	    const api::OnScreenFboCreateParam& onScreenFboCreateParam);
 
 	/*!***************************************************************************************************
 	\brief Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen
@@ -430,7 +430,7 @@ public:
 	formats must be compatible with the backbuffer, otherwise results are undefined.
 	*****************************************************************************************************/
 	Multi<api::Fbo> createOnScreenFboSetWithRenderPass(const api::RenderPass& renderPass,
-	        pvr::Multi<api::OnScreenFboCreateParam>& onScreenFboCreateParams);
+	    pvr::Multi<api::OnScreenFboCreateParam>& onScreenFboCreateParams);
 
 	/*!***************************************************************************************************
 	\brief Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen
@@ -463,10 +463,10 @@ public:
 	stencil after the renderpass, please specify StoreOp:Store for depth and stencil.
 	*****************************************************************************************************/
 	Multi<api::Fbo> createOnScreenFboSet(
-	    types::LoadOp::Enum colorLoadOp = types::LoadOp::Clear, types::StoreOp::Enum colorStoreOp = types::StoreOp::Store,
-	    types::LoadOp::Enum depthLoadOp = types::LoadOp::Clear, types::StoreOp::Enum depthStoreOp = types::StoreOp::Ignore,
-	    types::LoadOp::Enum stencilLoadOp = types::LoadOp::Clear, types::StoreOp::Enum stencilStoreOp = types::StoreOp::Ignore,
-	    uint32 numcolorSamples = 1, uint32 numDepthStencilSamples = 1);
+	  types::LoadOp::Enum colorLoadOp = types::LoadOp::Clear, types::StoreOp::Enum colorStoreOp = types::StoreOp::Store,
+	  types::LoadOp::Enum depthLoadOp = types::LoadOp::Clear, types::StoreOp::Enum depthStoreOp = types::StoreOp::Ignore,
+	  types::LoadOp::Enum stencilLoadOp = types::LoadOp::Clear, types::StoreOp::Enum stencilStoreOp = types::StoreOp::Ignore,
+	  uint32 numcolorSamples = 1, uint32 numDepthStencilSamples = 1);
 
 	/*!***************************************************************************************************
 	\brief Create an FBO that represents the actual backbuffer (i.e. an fbo to be used for on-screen
@@ -578,6 +578,6 @@ protected:
 	OSManager* m_osManager;
 	Api::Enum m_apiType;
 	ApiCapabilities m_apiCapabilities;
-	GraphicsContext m_this_shared;
+	GraphicsContext getWeakRef();
 };
 }

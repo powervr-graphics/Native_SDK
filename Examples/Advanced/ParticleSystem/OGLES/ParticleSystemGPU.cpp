@@ -31,8 +31,8 @@ ParticleSystemGPU::~ParticleSystemGPU()
 		descSets[i].reset();
 		particleBufferViewSsbos[i].reset();
 	}
-	particleConfigUbo.release();
-	collisonSpheresUbo.release();
+	particleConfigUbo.reset();
+	collisonSpheresUbo.reset();
 }
 
 /*!*********************************************************************************************************************

@@ -36,7 +36,7 @@ void pvr::api::impl::UpdateBuffer::execute_private(pvr::api::impl::CommandBuffer
 void bindVertexBuffer(platform::ContextGles& context)
 {
 	impl::GraphicsPipeline_* pipeline = context.getBoundGraphicsPipeline_();
-	assertion(pipeline, "valid Graphics pipeline need to bound");
+	assertion(pipeline != NULL, "valid Graphics pipeline need to bound");
 	platform::ContextGles::RenderStatesTracker& renderStates = context.getCurrentRenderStates();
 	for (platform::ContextGles::VboBindingMap::iterator it = renderStates.vboBindings.begin();
 	     it != renderStates.vboBindings.end(); ++it)
@@ -97,7 +97,7 @@ void DrawIndexed::execute_private(impl::CommandBufferBase_& cmdBuff)
 
 void BindIndexBuffer::execute_private(impl::CommandBufferBase_& cmdBuffer)
 {
-	assertion(buffer->getBufferUsage() & types::BufferBindingUse::IndexBuffer, "Invalid Buffer Usage");
+	assertion((buffer->getBufferUsage() & types::BufferBindingUse::IndexBuffer) != 0, "Invalid Buffer Usage");
 	platform::ContextGles::RenderStatesTracker& currentStates = static_cast<platform::ContextGles&>
 	    (*cmdBuffer.getContext()).getCurrentRenderStates();
 
@@ -241,7 +241,7 @@ void EndRenderPass::execute_private(impl::CommandBufferBase_& cmdBuff)
 	// bind our proxy fbo to let the driver that we have finish rednering to the currently bound fbo.
 	static_cast<const gles::RenderPassGles_&>(*static_cast<const gles::FboGles_&>(*cmdBuff.getContext()->getBoundFbo()).getRenderPass()).end(*cmdBuff.getContext());
 	// Unbind the framebuffer.
-	static_cast<platform::ContextGles&>(*cmdBuff.getContext()).getCurrentRenderStates().boundFbo.release();
+	static_cast<platform::ContextGles&>(*cmdBuff.getContext()).getCurrentRenderStates().boundFbo.reset();
 }
 
 void SetBlendConstants::execute_private(impl::CommandBufferBase_& cmdBuffer)
@@ -692,7 +692,7 @@ void BindVertexBuffer::execute_private(impl::CommandBufferBase_& cmdBuff)
 	platform::ContextGles& context = static_cast<platform::ContextGles&>(*cmdBuff.getContext());
 	for (pvr::uint16 i = 0, bindIndex = startBinding; i < (uint16)buffers.size(); ++i, ++bindIndex)
 	{
-		assertion(buffers[i]->getBufferUsage() & types::BufferBindingUse::VertexBuffer);
+		assertion((buffers[i]->getBufferUsage() & types::BufferBindingUse::VertexBuffer) != 0);
 		context.getCurrentRenderStates().vboBindings[bindIndex] = buffers[i];
 	}
 }

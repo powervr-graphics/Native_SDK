@@ -69,8 +69,10 @@ android {
 FileCollection assetFiles = files(
 "${pvrSdkDir}/Examples/Intermediate/Bumpmap/ProcessedAssets/MarbleNormalMap.pvr",
 "${pvrSdkDir}/Examples/Intermediate/Bumpmap/ProcessedAssets/Marble.pvr",
-"${pvrSdkDir}/Examples/Intermediate/Bumpmap/Vulkan/FragShader_VK.spv",
-"${pvrSdkDir}/Examples/Intermediate/Bumpmap/Vulkan/VertShader_VK.spv",
+"${pvrSdkDir}/Examples/Intermediate/Bumpmap/Vulkan/FragShader_VK.fsh",
+"${pvrSdkDir}/Examples/Intermediate/Bumpmap/Vulkan/FragShader_VK.fsh.spv",
+"${pvrSdkDir}/Examples/Intermediate/Bumpmap/Vulkan/VertShader_VK.vsh",
+"${pvrSdkDir}/Examples/Intermediate/Bumpmap/Vulkan/VertShader_VK.vsh.spv",
 "${pvrSdkDir}/Examples/Intermediate/Bumpmap/ProcessedAssets/scene.pod",
 
 )

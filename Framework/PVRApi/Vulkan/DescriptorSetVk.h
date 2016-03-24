@@ -32,6 +32,11 @@ public:
 	\return Return true on success.
 	***********************************************************************************************************************/
 	bool init();
+
+	/*!*********************************************************************************************************************
+	\brief Free all the resources held by this object
+	***********************************************************************************************************************/
+	void destroy();
 };
 
 /*!*********************************************************************************************************************
@@ -60,6 +65,11 @@ public:
 	\return Return true on success
 	***********************************************************************************************************************/
 	bool update(const DescriptorSetUpdate& descSet);
+
+	/*!*********************************************************************************************************************
+	\brief Free all the resources held by this object.
+	***********************************************************************************************************************/
+	void destroy();
 
 	/*!*********************************************************************************************************************
 	\brief dtor.
@@ -98,14 +108,14 @@ public:
 	\param ctx The GraphicsContext this commandpool will be created on.
 	\return Return a new Commandpool
 	***********************************************************************************************************************/
-	static DescriptorPoolVk createNew(GraphicsContext& ctx){ return EmbeddedRefCount<DescriptorPoolVk_>::createNew(ctx); }
+	static DescriptorPoolVk createNew(const GraphicsContext& ctx){ return EmbeddedRefCount<DescriptorPoolVk_>::createNew(ctx); }
 private:
 
 	/*!*********************************************************************************************************************
 	\brief ctor
 	\param device The GraphicsContext who owns this pool.
 	***********************************************************************************************************************/
-	DescriptorPoolVk_(GraphicsContext& device) : DescriptorPool_(device) {}
+	DescriptorPoolVk_(const GraphicsContext& device) : DescriptorPool_(device) {}
 
 	/* IMPLEMENTING EmbeddedResource */
 	void destroyObject() { destroy(); }

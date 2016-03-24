@@ -66,7 +66,7 @@ bool RenderPassVk_::init(const RenderPassCreateParam& createParam)
 
 	//--- Subpass
 	renderPassInfoVk.subpassCount = createParam.getNumSubPass();
-	
+
 	std::vector<VkAttachmentReference> colorAttachmentRefs;
 	std::vector<VkAttachmentReference> inputAttachmentsRefs;
 	std::vector<VkAttachmentReference> resolveAttachmentsRefs;
@@ -138,7 +138,7 @@ bool RenderPassVk_::init(const RenderPassCreateParam& createParam)
 		if (subPass.getNumResolveAttachment() > 0)
 		{
 			assertion(subPass.getNumResolveAttachment() == subPass.getNumColorAttachment(), " If the number of resolve attachments is not 0 then it must have colorAttachmentCount entries");
-			
+
 			subPassVk.pResolveAttachments = &resolveAttachmentsRefs[resolveAttachmentRefOffset];
 
 			for (pvr::uint8 j = 0; j < subPass.getNumResolveAttachment(); ++j)
@@ -210,16 +210,36 @@ bool RenderPassVk_::init(const RenderPassCreateParam& createParam)
 	vkThrowIfFailed(res, "Create RenderPass");
 	return (res == VK_SUCCESS ? true : false);
 }
+
+void RenderPassVk_::destroy()
+{
+	if (m_context.isValid())
+	{
+		if (handle != VK_NULL_HANDLE)
+		{
+			vk::DestroyRenderPass(native_cast(getContext())->getDevice(), getNativeObject(), NULL);
+			handle = VK_NULL_HANDLE;
+		}
+		m_context.reset();
+	}
+}
+
+RenderPassVk_::~RenderPassVk_()
+{
+	if (m_context.isValid())
+	{
+		destroy();
+	}
+	else
+	{
+		reportDestroyedAfterContext("RenderPass");
+	}
+}
 }//	namespace vulkan
 
 namespace impl {
 const native::HRenderPass_& RenderPass_::getNativeObject() const { return native_cast(*this); }
 native::HRenderPass_& RenderPass_::getNativeObject() { return native_cast(*this); }
-void RenderPass_::destroy()
-{
-	vk::DestroyRenderPass(native_cast(getContext())->getDevice(), getNativeObject(), NULL);
-	getNativeObject() = VK_NULL_HANDLE;
-}
 }// namespace impl
 }// namespace api
 }// namespace pvr

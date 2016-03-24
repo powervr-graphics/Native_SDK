@@ -7,13 +7,14 @@
 ***********************************************************************************************************************/
 #pragma once
 #include "PVRApi/ApiObjects/Sampler.h"
-#include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
+#include "PVRApi/Vulkan/ContextVk.h"
+
 namespace pvr {
 namespace api {
 namespace vulkan {
-	/*!*********************************************************************************************************************
-	\brief SamplerVk_ implementation that wraps the vulkan sampler
-	***********************************************************************************************************************/
+/*!*********************************************************************************************************************
+\brief SamplerVk_ implementation that wraps the vulkan sampler
+***********************************************************************************************************************/
 class SamplerVk_ : public impl::Sampler_, public native::HSampler_
 {
 public:
@@ -22,13 +23,30 @@ public:
 	\param context The Context to be construct from
 	***********************************************************************************************************************/
 	SamplerVk_(GraphicsContext& context) : Sampler_(context) {}
-	
+
 	/*!*********************************************************************************************************************
 	\brief Initialize this object
 	\param desc Sampler create parameters
 	\return Return true on success
 	***********************************************************************************************************************/
 	bool init(const api::SamplerCreateParam& desc);
+
+	/*!*********************************************************************************************************************
+	\brief Releases all resources held by this object
+	***********************************************************************************************************************/
+	void destroy();
+
+	~SamplerVk_()
+	{
+		if (this->m_context.isValid())
+		{
+			destroy();
+		}
+		else
+		{
+			reportDestroyedAfterContext("Sampler");
+		}
+	}
 };
 typedef RefCountedResource<SamplerVk_> SamplerVk;
 }

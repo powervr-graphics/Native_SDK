@@ -23,7 +23,7 @@ public:
 	/*!****************************************************************************************************************
 	\brief Destructor. Releases the object.
 	*******************************************************************************************************************/
-	virtual ~Sampler_() { destroy(); }
+	virtual ~Sampler_() { }
 
 	/*!****************************************************************************************************************
 	\brief Get const reference to the underlying API object of this sampler.
@@ -47,7 +47,6 @@ protected:
 	*******************************************************************************************************************/
 	Sampler_(GraphicsContext& device) : m_context(device){}
 protected:
-	void destroy();
 	GraphicsContext m_context;
 };
 }// namespace impl

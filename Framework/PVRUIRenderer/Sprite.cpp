@@ -75,7 +75,7 @@ void Image_::updateUbo(pvr::uint64 parentIds)const
 		uboData->mvp = m_mvpPools[parentIds].mvp;
 		uboData->uv = glm::mat4(1.f);
 		uboData->color = m_color;
-		uboData->alphaMode = m_alphaMode;
+		uboData->alphaMode = (m_alphaMode != 0);
 		m_mvpPools[parentIds].buffer->unmap();
 	}
 }
@@ -552,7 +552,7 @@ void Text_::updateUbo(pvr::uint64 parentIds)const
 		uboData->mvp = m_mvpPools[parentIds].mvp;
 		uboData->uv = glm::mat4(1.f);
 		uboData->color = m_color;
-		uboData->alphaMode = m_alphaMode;
+		uboData->alphaMode = (m_alphaMode != 0);
 		m_mvpPools[parentIds].buffer->unmap();
 
 		if (m_mvpPools[parentIds].descSet.isNull())

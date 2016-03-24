@@ -82,13 +82,26 @@ public:
     /*!*********************************************************************************************************************
     \brief dtor
     ***********************************************************************************************************************/
-    virtual ~PipelineLayout_(){ destroy(); }
+    virtual ~PipelineLayout_(){ }
 
     /*!*********************************************************************************************************************
     \brief Get list of descriptor set layout used by this.
     \return std::vector<pvr::api::DescriptorSetLayout>&
     ***********************************************************************************************************************/
     const std::vector<pvr::api::DescriptorSetLayout>& getDescriptorSetLayout()const { return m_desc.m_descLayout; }
+
+	/*!*********************************************************************************************************************
+	\brief Get a descriptor set layout used by this.
+	\param index Layout index
+	\return std::vector<pvr::api::DescriptorSetLayout>&
+	***********************************************************************************************************************/
+	const pvr::api::DescriptorSetLayout& getDescriptorSetLayout(pvr::uint32 index)const 
+	{ 
+		assertion(index < m_desc.m_descLayout.size() && "Invalid Index");
+		return m_desc.m_descLayout[index]; 
+	}
+
+	pvr::uint32 getNumDescritporSetLayout()const{ return m_desc.m_descLayout.size(); }
 
 	/*!*********************************************************************************************************************
     \brief Return create param
@@ -106,7 +119,6 @@ public:
     native::HPipelineLayout_& getNativeObject();
 protected:
     bool init(const PipelineLayoutCreateParam& createParam);
-    void destroy();
     GraphicsContext m_context;
     PipelineLayoutCreateParam m_desc;
 };

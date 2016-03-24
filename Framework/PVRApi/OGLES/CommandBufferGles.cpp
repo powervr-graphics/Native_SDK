@@ -123,7 +123,7 @@ public:
 const native::HCommandBuffer_& CommandBufferBase_::getNativeObject() const { return *pImpl; }
 native::HCommandBuffer_& CommandBufferBase_::getNativeObject() { return *pImpl; }
 
-CommandBufferBase_::CommandBufferBase_(GraphicsContext& context, CommandPool& pool, bool isPrimary)
+CommandBufferBase_::CommandBufferBase_(GraphicsContext& context, CommandPool& pool, native::HCommandBuffer_& cmdBuff)
 {
 	pImpl.construct(context);
 }
@@ -364,7 +364,7 @@ void CommandBufferBase_::logCommandStackTraces()
 #endif
 
 
-SecondaryCommandBuffer_::SecondaryCommandBuffer_(GraphicsContext& context, CommandPool& pool) : CommandBufferBase_(context, pool, false)
+SecondaryCommandBuffer_::SecondaryCommandBuffer_(GraphicsContext& context, CommandPool& pool, native::HCommandBuffer_& cmdBuff) : CommandBufferBase_(context, pool, cmdBuff)
 {
 }
 
@@ -378,7 +378,7 @@ void SecondaryCommandBuffer_::beginRecording(const Fbo& rp, uint32 subPass)
 	pImpl->beginRecording();
 }
 
-CommandBuffer_::CommandBuffer_(GraphicsContext& context, CommandPool& pool) : CommandBufferBase_(context, pool, true)
+CommandBuffer_::CommandBuffer_(GraphicsContext& context, CommandPool& pool, native::HCommandBuffer_& cmdBuff) : CommandBufferBase_(context, pool, cmdBuff)
 {
 }
 

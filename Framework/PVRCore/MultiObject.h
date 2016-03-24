@@ -42,23 +42,5 @@ public:
 			container[numItems++] = element[i];
 		}
 	}
-
-	Multi(const ElementType& element0) { container.push_back(element0); }
-	Multi(const ElementType& element0, const ElementType& element1)
-	{
-		add(element0); add(element1);
-	}
-	Multi(const ElementType& element0, const ElementType& element1, const ElementType& element2)
-	{
-		add(element0); add(element1); add(element2);
-	}
-	Multi(const ElementType& element0, const ElementType& element1, const ElementType& element2, const ElementType& element3)
-	{
-		add(element0); add(element1); add(element2); add(element3);
-	}
-	Multi(const ElementType& element0, const ElementType& element1, const ElementType& element2, const ElementType& element3, const ElementType& element4)
-	{
-		add(element0); add(element1); add(element2); add(element3); add(element4);
-	}
 };
 }

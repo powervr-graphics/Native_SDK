@@ -304,6 +304,8 @@ protected:
 	**********************************************************************************************/
 	TextureStore_(GraphicsContext& context): context(context) {}
 
+	TextureStore_() {}
+
 	GraphicsContext context;
 	ImageStorageFormat format;
 };

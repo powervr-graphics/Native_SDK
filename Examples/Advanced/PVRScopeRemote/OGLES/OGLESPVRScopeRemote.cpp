@@ -515,7 +515,7 @@ pvr::Result::Enum OGLESPVRScopeRemote::releaseView()
 	// Release UIRenderer
 	uiRenderer.release();
 	assetStore.releaseAll();
-	m_deviceResource.release();
+	m_deviceResource.reset();
 	return pvr::Result::Success;
 }
 

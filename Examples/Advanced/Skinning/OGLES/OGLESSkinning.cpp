@@ -373,7 +373,7 @@ pvr::Result::Enum OGLESSkinning::initApplication()
 ***********************************************************************************************************************/
 pvr::Result::Enum OGLESSkinning::quitApplication()
 {
-	scene.release();
+	scene.reset();
 	uniforms.perNonSkinnedMesh.clear();
 	uniforms.perSkinnedMesh.clear();
 	return pvr::Result::Success;

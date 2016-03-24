@@ -246,7 +246,7 @@ pvr::Result::Enum OGLESIntroducingPVRApi::releaseView()
 {
 	assetManager.releaseAll();
 	uiRenderer.release();
-	deviceResource.release();
+	deviceResource.reset();
 	return pvr::Result::Success;
 }
 

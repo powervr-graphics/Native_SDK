@@ -20,15 +20,15 @@
 	Defines
 *****************************************************************************/
 
-#define PVRSDK_VERSION 			"16.1@3972065"
+#define PVRSDK_VERSION 			"16.1@3980846"
 #define PVRVERSION_MAJ			"16"
 #define PVRVERSION_MIN			"1"
 #define PVRVERSION_BRANCH		"161"
 #define PVRVERSION_BRANCH_DEC	"16.1"
 #define PVRVERSION_BRANCH_NAME	"REL/16.1"
-#define PVRVERSION_BUILD		"3972065"
-#define PVRVERSION_BUILD_HI		"397"
-#define PVRVERSION_BUILD_LO		"2065"
+#define PVRVERSION_BUILD		"3980846"
+#define PVRVERSION_BUILD_HI		"398"
+#define PVRVERSION_BUILD_LO		"846"
 
 #define PVRSDK_COPYRIGHT_TXT	"Copyright (c) Imagination Technologies Ltd. All Rights Reserved."
 

@@ -25,8 +25,8 @@ namespace api {
 namespace impl {
 
 uint32 EffectApi_::loadSemantics(
-    const IGraphicsContext*,
-    bool isAttribute)
+  const IGraphicsContext*,
+  bool isAttribute)
 {
 	uint32 semanticIdx, nCount, nCountUnused;
 	int32 nLocation;
@@ -219,9 +219,9 @@ Result::Enum EffectApi_::init(const assets::Effect& effect, api::GraphicsPipelin
 	{
 		//--- create the descriptor set layout and pipeline layout
 		pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
-		for (pvr::uint32 i = 0; i < (pvr::uint32)m_effectTexSamplers.size(); ++i)
+		for (pvr::uint32 ii = 0; ii < (pvr::uint32)m_effectTexSamplers.size(); ++ii)
 		{
-			descSetLayoutInfo.setBinding(i,  types::DescriptorType::CombinedImageSampler,
+			descSetLayoutInfo.setBinding(ii,  types::DescriptorType::CombinedImageSampler,
 			                             0, types::ShaderStageFlags::Fragment);
 		}
 		m_descriptorSetLayout = m_context->createDescriptorSetLayout(descSetLayoutInfo);
@@ -232,9 +232,9 @@ Result::Enum EffectApi_::init(const assets::Effect& effect, api::GraphicsPipelin
 
 	//--- create the descriptor set
 	pvr::api::DescriptorSetUpdate descriptorSetInfo;
-	for (pvr::uint16 i = 0; i < m_effectTexSamplers.size(); ++i)
+	for (pvr::uint16 ii = 0; ii < m_effectTexSamplers.size(); ++ii)
 	{
-		descriptorSetInfo.setCombinedImageSamplerAtIndex(i, m_effectTexSamplers[i].unit, m_effectTexSamplers[i].texture, m_effectTexSamplers[i].sampler);
+		descriptorSetInfo.setCombinedImageSamplerAtIndex(ii, m_effectTexSamplers[ii].unit, m_effectTexSamplers[ii].texture, m_effectTexSamplers[ii].sampler);
 	}
 	if (m_effectTexSamplers.size())
 	{
@@ -300,18 +300,18 @@ Result::Enum EffectApi_::loadShadersForEffect(api::Shader& vertexShader, api::Sh
 
 	// create vertex shader stream from source/ binary.
 	BufferStream vertexShaderData(
-	    (isVertShaderBinary ? m_assetEffect.vertexShader.glslBinFile.c_str() :
-	     m_assetEffect.vertexShader.glslFile.c_str()),
-	    (isVertShaderBinary ? m_assetEffect.vertexShader.glslBin.c_str() : m_assetEffect.vertexShader.glslCode.c_str()),
-	    (isVertShaderBinary ? m_assetEffect.vertexShader.glslBin.length() : m_assetEffect.vertexShader.glslCode.length()));
+	  (isVertShaderBinary ? m_assetEffect.vertexShader.glslBinFile.c_str() :
+	   m_assetEffect.vertexShader.glslFile.c_str()),
+	  (isVertShaderBinary ? m_assetEffect.vertexShader.glslBin.c_str() : m_assetEffect.vertexShader.glslCode.c_str()),
+	  (isVertShaderBinary ? m_assetEffect.vertexShader.glslBin.length() : m_assetEffect.vertexShader.glslCode.length()));
 
 	// create fragment shader stream from source/ binary.
 	BufferStream fragmentShaderData(
-	    (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBinFile : m_assetEffect.fragmentShader.glslFile.c_str()),
-	    (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBin.c_str() :
-	     m_assetEffect.fragmentShader.glslCode.c_str()),
-	    (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBin.length() :
-	     m_assetEffect.fragmentShader.glslCode.length()));
+	  (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBinFile : m_assetEffect.fragmentShader.glslFile.c_str()),
+	  (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBin.c_str() :
+	   m_assetEffect.fragmentShader.glslCode.c_str()),
+	  (isFragShaderBinary ? m_assetEffect.fragmentShader.glslBin.length() :
+	   m_assetEffect.fragmentShader.glslCode.length()));
 
 	if (vertexShaderData.getSize() == 0)
 	{

@@ -22,7 +22,7 @@
 #endif
 namespace pvr {
 namespace system {
-Shell::Shell() : m_data(0)
+Shell::Shell() : m_data(0), m_dragging(false)
 {
 }
 
@@ -170,7 +170,7 @@ Result::Enum Shell::shellInitView()
 	if (m_data->graphicsContextStore.isValid())
 	{
 		m_data->graphicsContext = m_data->graphicsContextStore;
-		m_data->graphicsContext->init(*this, m_data->graphicsContext);
+		m_data->graphicsContext->init(*this);
 	}
 	pvr::Result::Enum res = initView();
 	m_data->currentFrameTime = getTime() - 17; //Avoid first frame huge times

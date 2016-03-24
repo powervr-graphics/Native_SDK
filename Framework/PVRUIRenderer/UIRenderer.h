@@ -352,7 +352,7 @@ public:
 				m_mustEndCommandBuffer = false;
 				m_activeCommandBuffer->endRecording();
 			}
-			m_activeCommandBuffer.release();
+			m_activeCommandBuffer.reset();
 		}
 	}
 

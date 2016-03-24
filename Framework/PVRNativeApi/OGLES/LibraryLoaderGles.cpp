@@ -24,6 +24,10 @@ static pvr::native::NativeLibrary& glesLibrary()
 	return mylib;
 }
 
+extern bool isOpenGLES31NotSupported_Workaround;
+
+static bool dummy = isOpenGLES31NotSupported_Workaround = !glesLibrary().getFunction<PROC_ES31_glDispatchCompute>("glDispatchCompute");
+
 #endif
 void gl::releaseGl()
 {
@@ -1337,18 +1341,4 @@ PROC_ES31_glGetMultisamplefv gl::GetMultisamplefv;
 PROC_ES31_glGetTexLevelParameteriv gl::GetTexLevelParameteriv;
 PROC_ES31_glGetTexLevelParameterfv gl::GetTexLevelParameterfv;
 //#endif
-
-
-namespace pvr {
-void initializeNativeContext_PROBABLY_NOT_NEEDED_CALL_DIRECTLY_OR_PASS_NATIVE_HANDLES()
-{
-	gl::initGl();
-	glext::initGlext();
-}
-
-void releaseNativeContext_PROBABLY_NOT_NEEDED_CALL_DIRECTLY_OR_PASS_NATIVE_HANDLES()
-{
-	gl::releaseGl();
-}
-}
 //!\endcond

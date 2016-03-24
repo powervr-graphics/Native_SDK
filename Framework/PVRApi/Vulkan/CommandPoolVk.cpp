@@ -37,16 +37,51 @@ void CommandPoolVk_::destroy()
 namespace impl {
 CommandBuffer CommandPool_::allocateCommandBuffer()
 {
-	CommandPool this_ref = static_cast<vulkan::CommandPoolVk_*>(this)->getReference();
 	api::CommandBuffer commandBuffer;
-	commandBuffer.construct(m_context, this_ref);
+	CommandPool this_ref = static_cast<vulkan::CommandPoolVk_*>(this)->getReference();
+
+	VkDevice device = native_cast(*m_context).getDevice();
+	native::HCommandBuffer_ buffer;
+
+	VkCommandBufferAllocateInfo nfo;
+	nfo.commandBufferCount = 1;
+	nfo.commandPool = static_cast<vulkan::CommandPoolVk_*>(this)->handle;
+	nfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	nfo.pNext = 0;
+	nfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	VkResult res;
+	if ((res = vk::AllocateCommandBuffers(native_cast(*m_context).getDevice(), &nfo, &buffer.handle)) != VK_SUCCESS)
+	{
+		Log(Log.Error, "CommandBuffer Allocation Failure with error %s. Use another command pool.", vkErrorToStr(res));
+	}
+	else
+	{
+		commandBuffer.construct(m_context, this_ref, buffer);
+	}
 	return commandBuffer;
 }
 SecondaryCommandBuffer CommandPool_::allocateSecondaryCommandBuffer()
 {
-	CommandPool this_ref = static_cast<vulkan::CommandPoolVk_*>(this)->getReference();
 	api::SecondaryCommandBuffer commandBuffer;
-	commandBuffer.construct(m_context, this_ref);
+	CommandPool this_ref = static_cast<vulkan::CommandPoolVk_*>(this)->getReference();
+	native::HCommandBuffer_ buffer;
+	VkDevice device = native_cast(*m_context).getDevice();
+
+	VkCommandBufferAllocateInfo nfo;
+	nfo.commandBufferCount = 1;
+	nfo.commandPool = static_cast<vulkan::CommandPoolVk_*>(this)->handle;
+	nfo.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
+	nfo.pNext = 0;
+	nfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	VkResult res;
+	if ((res = vk::AllocateCommandBuffers(native_cast(*m_context).getDevice(), &nfo, &buffer.handle)) != VK_SUCCESS)
+	{
+		Log(Log.Critical, "CommandBuffer Allocation Failure with error %s. Use another command pool.", vkErrorToStr(res));
+	}
+	else
+	{
+		commandBuffer.construct(m_context, this_ref, buffer);
+	}
 	return commandBuffer;
 }
 

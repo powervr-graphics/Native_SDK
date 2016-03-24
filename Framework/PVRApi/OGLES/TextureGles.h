@@ -34,6 +34,12 @@ public:
 	TextureStoreGles_(GraphicsContext& context) : TextureStore_(context), HTexture_(0, 0), m_sampler(0) {}
 
 	/*!*******************************************************************************************
+	\brief Constructor.
+	\param context The GraphicsContext where this Texture will belong
+	**********************************************************************************************/
+	TextureStoreGles_() : HTexture_(0, 0), m_sampler(0) {}
+
+	/*!*******************************************************************************************
 	\brief Constructor. Use to wrap a preexisting, underlying texture object.
 	\param context The GraphicsContext where this Texture will belong
 	\param texture An already existing texture object of the underlying API. The underlying object

@@ -17,7 +17,7 @@ public:
 	native::HCommandPool_& getNativeObject();
 	const native::HCommandPool_& getNativeObject()const;
 protected:
-	CommandPool_(GraphicsContext& context) : m_context(context) {}
+	CommandPool_(const GraphicsContext& context) : m_context(context) {}
 	GraphicsContext m_context;
 };
 }

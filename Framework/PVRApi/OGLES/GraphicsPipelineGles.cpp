@@ -169,8 +169,8 @@ inline void GraphicsPipelineImplementationDetails::unsetToParent() { m_states.un
 inline void GraphicsPipelineImplementationDetails::destroy()
 {
 	gles::GraphicsStateContainer&	containerGles = m_states;
-	containerGles.vertexShader.release();
-	containerGles.fragmentShader.release();
+	containerGles.vertexShader.reset();
+	containerGles.fragmentShader.reset();
 	containerGles.vertexInputBindings.clear();
 	for (gles::GraphicsStateContainer::StateContainer::iterator it = containerGles.states.begin(); it != containerGles.states.end(); ++it)
 	{

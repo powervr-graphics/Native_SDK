@@ -8,14 +8,6 @@
 namespace pvr {
 namespace api {
 namespace impl {
-
-
-void PipelineLayout_::destroy()
-{
-	vk::DestroyPipelineLayout(native_cast(*m_context).getDevice(), getNativeObject(), NULL);
-	getNativeObject() = VK_NULL_HANDLE;
-}
-
 const native::HPipelineLayout_& PipelineLayout_::getNativeObject() const
 {
 	return native_cast(*this);

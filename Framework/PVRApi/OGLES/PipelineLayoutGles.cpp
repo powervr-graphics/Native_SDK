@@ -1,7 +1,7 @@
 #include "PVRApi/OGLES/PipelineLayoutGles.h"
 namespace pvr{
 namespace api{
-void impl::PipelineLayout_::destroy(){ /*DO NOTHING*/ }
+
 const native::HPipelineLayout_& impl::PipelineLayout_::getNativeObject() const
 {
 	return static_cast<const native::HPipelineLayout_&>(static_cast<const gles::PipelineLayoutGles_&>(*this));

@@ -20,12 +20,6 @@ const native::HDescriptorPool_& DescriptorPool_::getNativeObject()const
 	return static_cast<const gles::DescriptorPoolGles_&>(*this);
 }
 
-void DescriptorSet_::destroy()
-{
-	static_cast<gles::DescriptorSetGles_&>(*this).m_descParam.clear();
-	static_cast<gles::DescriptorSetGles_&>(*this).m_descPool.reset();
-	static_cast<gles::DescriptorSetGles_&>(*this).m_descSetLayout.reset();
-}
 
 bool DescriptorSet_::update(const pvr::api::DescriptorSetUpdate& descSet)
 {
@@ -49,7 +43,6 @@ const native::HDescriptorSet_& DescriptorSet_::getNativeObject()const
 	return static_cast<const gles::DescriptorSetGles_&>(*this);
 }
 
-void DescriptorSetLayout_::destroy() {}
 }
 }
 

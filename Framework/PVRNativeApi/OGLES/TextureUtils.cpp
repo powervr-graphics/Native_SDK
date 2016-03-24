@@ -1879,7 +1879,6 @@ Result::Enum textureUpload(IPlatformContext& context, const assets::Texture& tex
 		// Only 2D Arrays are supported in this API.
 		if (textureToUse->getNumberOfArrayMembers() > 1)
 		{
-#pragma warning TODO_GET_RID_OF_BUILD_API_MAX
 #if !defined(BUILD_API_MAX)||BUILD_API_MAX>=30
 			//Make sure it's not also a cube map or 3D texture, as this is unsupported.
 			if (textureToUse->getNumberOfFaces() > 1)

@@ -16,6 +16,10 @@ public:
 
 	void end(IGraphicsContext& context)const;
 
+	void destroy();
+
+	~RenderPassGles_() { destroy(); }
+	
 	const RenderPassCreateParam& getCreateParam()const{ return m_desc; }
 private:
 	RenderPassCreateParam m_desc;
