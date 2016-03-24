@@ -57,10 +57,16 @@
   <None Include="..\..\..\ProcessedAssets\MarbleNormalMap.pvr">
       <Filter>Content Files\Textures</Filter>
   </None>
-  <None Include="..\..\FragShader_VK.spv">
+  <None Include="..\..\FragShader_VK.fsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\VertShader_VK.spv">
+  <None Include="..\..\FragShader_VK.fsh.spv">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\VertShader_VK.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\VertShader_VK.vsh.spv">
       <Filter>Content Files\Shaders</Filter>
   </None>
   </ItemGroup>

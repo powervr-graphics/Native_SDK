@@ -142,6 +142,7 @@
       <MinimalRebuild>true</MinimalRebuild>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

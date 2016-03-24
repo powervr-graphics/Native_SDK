@@ -19,7 +19,15 @@
 #include <stdlib.h>
 #include <bitset>
 
+
 namespace pvr {
+inline void reportDestroyedAfterContext(const char* objectName)
+{
+	Log(Log.Warning, "Attempted to destroy object of type [%s] after its corresponding context", objectName);
+#ifdef DEBUG
+#endif
+}
+
 /*!**********************************************************************************************************
 \brief Contains functions and methods related to the wiring of the PVRApi library to the underlying platform,
 including extensions and the Context classes.
@@ -29,7 +37,7 @@ namespace platform {
 /*!*********************************************************************************************************************
 \brief IGraphicsContext implementation that supports Vulkan
 ***********************************************************************************************************************/
-class ContextVk : public IGraphicsContext
+class ContextVk : public IGraphicsContext, public EmbeddedRefCount<ContextVk>
 {
 public:
 	/*!*********************************************************************************************************************
@@ -40,14 +48,14 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Virtual destructor.
 	***********************************************************************************************************************/
-	virtual ~ContextVk(){	release();	}
+	virtual ~ContextVk() {	release();	}
 
 	/*!*********************************************************************************************************************
 	\brief Implementation of IGraphicsContext. Initializes this class using an OS manager.
 	\description This function must be called before using the Context. Will use the OS manager to make this Context
 	ready to use.
 	***********************************************************************************************************************/
-	Result::Enum init(OSManager& osManager, GraphicsContext& my_wrapper);
+	Result::Enum init(OSManager& osManager);
 
 	void setUpCapabilities();
 
@@ -148,7 +156,7 @@ public:
 
 	RenderStatesTracker& getCurrentRenderStates() { return m_renderStatesTracker; }
 	RenderStatesTracker const& getCurrentRenderStates()const { return m_renderStatesTracker; }
-	
+
 	/*!*********************************************************************************************************************
 	\brief Get the default sampler object
 	\return Return the default sampler
@@ -171,7 +179,7 @@ public:
 	\brief Get the vulkan device
 	\return Return the vulkan device
 	***********************************************************************************************************************/
-	VkDevice& getDevice(){	return m_platformContext->getNativePlatformHandles().context.device;	}
+	VkDevice& getDevice() {	return m_platformContext->getNativePlatformHandles().context.device;	}
 
 	/*!*********************************************************************************************************************
 	\brief Get the const vulkan device
@@ -196,7 +204,7 @@ public:
 	\return Return the reference to the device queue
 	***********************************************************************************************************************/
 	VkQueue& getQueue() { return m_platformContext->getNativePlatformHandles().graphicsQueue; }
-	
+
 	/*!*********************************************************************************************************************
 	\brief Get the const reference to the device queue
 	\return Return the const reference to the device queue
@@ -262,12 +270,14 @@ public:
 	\brief Get the texture upload commandbuffer
 	\return Return the Texture upload commandbuffer
 	***********************************************************************************************************************/
-	native::HCommandBuffer_& getTextureUploadCommandBuffer(){	return pvr::api::native_cast(*m_cmdTextureUpload);	}
+	native::HCommandBuffer_& getTextureUploadCommandBuffer() {	return pvr::api::native_cast(*m_cmdTextureUpload);	}
 
 	api::RenderPass m_defaultRenderPass;
 	IPlatformContext* m_platformContext;
 	RenderStatesTracker m_renderStatesTracker;
+	static StrongReferenceType createNew() { return EmbeddedRefCount<ContextVk>::createNew(); }
 protected:
+	void destroyObject() { release(); }
 	size_t m_ContextImplementationID;
 	mutable std::string m_extensions;
 	api::Sampler m_defaultSampler;

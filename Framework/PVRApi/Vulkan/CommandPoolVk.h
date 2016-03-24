@@ -43,7 +43,7 @@ public:
 	\return Return a new Commandpool. This function is necessary because the CommandPool has its own refcounting embedded
 	so must always be created with this special factory.
 	***********************************************************************************************************************/
-	static CommandPoolVk createNew(GraphicsContext& ctx)
+	static CommandPoolVk createNew(const GraphicsContext& ctx)
 	{
 		return EmbeddedRefCount<CommandPoolVk_>::createNew(ctx);
 	}
@@ -54,7 +54,7 @@ private:
 	\brief ctor, Construct a CommandPool
 	\param context The GraphicsContext this command pool will be constructed from.
 	***********************************************************************************************************************/
-	CommandPoolVk_(GraphicsContext& context) : CommandPool_(context) {}
+	CommandPoolVk_(const GraphicsContext& context) : CommandPool_(context) {}
 
 	/* IMPLEMENTING EmbeddedResource */
 	void destroyObject() { destroy(); }

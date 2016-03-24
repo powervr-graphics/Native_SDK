@@ -348,7 +348,7 @@ public:
 protected:
 	friend class SecondaryCommandBufferPackager;
 	RefCountedResource<CommandBufferBaseImplementationDetails> pImpl;
-	CommandBufferBase_(GraphicsContext& context, CommandPool& pool, bool isPrimary);
+	CommandBufferBase_(GraphicsContext& context, CommandPool& pool, native::HCommandBuffer_& myHandle);
 };
 
 SET_UNIFORM_DECLARATION(uint32);
@@ -403,7 +403,7 @@ private:
 	// privated inherited members
 	template<typename MyClass_> friend struct ::pvr::RefCountEntryIntrusive;
 	template<typename MyClass_> friend class PackagedBindable;
-	SecondaryCommandBuffer_(GraphicsContext& context, CommandPool& pool);
+	SecondaryCommandBuffer_(GraphicsContext& context, CommandPool& pool, native::HCommandBuffer_& hBuff);
 };
 
 /*!*********************************************************************************************************************
@@ -421,7 +421,7 @@ class CommandBuffer_ : public CommandBufferBase_
 {
 	template<typename MyClass_> friend struct ::pvr::RefCountEntryIntrusive;
 protected:
-	CommandBuffer_(GraphicsContext& context, CommandPool& pool);
+	CommandBuffer_(GraphicsContext& context, CommandPool& pool, native::HCommandBuffer_& hCmdBuff);
 public:
 	/*!****************************************************************************************************************
 	\brief	Call this function before beginning to record commands.

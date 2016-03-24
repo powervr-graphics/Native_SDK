@@ -30,6 +30,10 @@ struct FboCreateParam
 	RenderPass	renderPass;
 	std::vector<TextureView> colorViews;
 public:
+	void clear()
+	{
+		width = 0; height = 0; layers = 1; renderPass.reset(); colorViews.clear(); depthStencilView.reset();
+	}
 	FboCreateParam() : width(0), height(0), layers(1) {}
 
 	pvr::uint32 getNumColorAttachements()const { return (uint32)colorViews.size(); }
@@ -165,14 +169,9 @@ public:
 	Fbo_(GraphicsContext& m_context);
 
 	/*!*********************************************************************************************************************
-	\brief Destroy this object and free all resources owned.
-	***********************************************************************************************************************/
-	void destroy();
-
-	/*!*********************************************************************************************************************
 	\brief Destructor. Destroys this object and free all resources owned.
 	***********************************************************************************************************************/
-	virtual ~Fbo_() {  destroy(); }
+	virtual ~Fbo_() { }
 
 	/*!*********************************************************************************************************************
 	\brief Construct an FBO on device with create description.

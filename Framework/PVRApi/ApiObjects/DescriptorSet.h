@@ -52,6 +52,10 @@ public:
 		return *this;
 	}
 
+	void clear()
+	{
+		m_bindings.clear();
+	}
 private:
 
 	friend class ::pvr::api::impl::DescriptorSetLayout_;
@@ -78,8 +82,6 @@ protected:
 	DescriptorSetLayoutCreateParam desc;
 	GraphicsContext device;
 	DescriptorSetLayout_(GraphicsContext& context, const DescriptorSetLayoutCreateParam& desc) : desc(desc), device(context) {}
-
-	void destroy();
 public:
 
 	/*!*********************************************************************************************************************
@@ -96,7 +98,7 @@ public:
 
 	const GraphicsContext& getContext()const { return device; }
 
-	virtual ~DescriptorSetLayout_() { destroy(); }
+	virtual ~DescriptorSetLayout_() { }
 
 	const native::HDescriptorSetLayout_& getNativeObject()const;
 
@@ -113,6 +115,8 @@ private:
 	std::map<types::DescriptorType::Enum, pvr::uint32> descriptorType;
 	pvr::uint32 maxSets;
 public:
+	DescriptorPoolCreateParam() : maxSets(200) {}
+
 	/*!*********************************************************************************************************************
 	\brief Add the maximum number of the specified descriptor types that the pool will contain.
 	\param[in] descType Descriptor type
@@ -163,7 +167,7 @@ public:
 	\brief Constructor. Do not use directly.
 	\param[in] device
 	***********************************************************************************************************************/
-	DescriptorPool_(GraphicsContext& device) : m_context(device) {}
+	DescriptorPool_(const GraphicsContext& device) : m_context(device) {}
 
 	api::DescriptorSet allocateDescriptorSet(const DescriptorSetLayout& layout);
 
@@ -371,7 +375,6 @@ struct DescriptorSetUpdate
 		return false;
 	}
 private:
-
 	friend class ::pvr::api::impl::DescriptorSet_;
 
 	DescriptorSetUpdate& addBuffer(pvr::uint16 bindingId, pvr::uint8 arrayIndex, types::DescriptorType::Enum type, const api::BufferView& item)
@@ -420,7 +423,7 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Destructor. Frees all resources owned by this object.
 	***********************************************************************************************************************/
-	virtual ~DescriptorSet_() { destroy(); }
+	virtual ~DescriptorSet_() { }
 
 	/*!*********************************************************************************************************************
 	\brief Return the layout of this DescriptorSet.
@@ -439,7 +442,6 @@ public:
 
 	bool update(const DescriptorSetUpdate& descSet);
 protected:
-	void destroy();
 	DescriptorSetLayout m_descSetLayout;
 	DescriptorPool m_descPool;
 };

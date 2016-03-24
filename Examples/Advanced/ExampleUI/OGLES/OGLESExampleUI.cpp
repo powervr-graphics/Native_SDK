@@ -197,7 +197,7 @@ struct SpriteDesc
 	pvr::uint32			uiSrcX;
 	pvr::uint32			uiSrcY;
 	bool			    bHasAlpha;
-	void release() {tex.release();}
+	void release() {tex.reset();}
 };
 
 struct Vertex

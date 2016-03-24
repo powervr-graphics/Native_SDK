@@ -824,7 +824,7 @@ protected:
 	pvr::uint64 packId(pvr::uint64 parentIds, pvr::uint64 id)const
 	{
 		pvr::uint64 packed = parentIds << NUM_BITS_GROUP_ID;
-		return packed |= id;
+		return packed | id;
 	}
 };
 

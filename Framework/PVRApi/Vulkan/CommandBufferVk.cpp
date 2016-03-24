@@ -53,18 +53,12 @@ public:
 	types::RenderPassContents::Enum m_nextSubPassContent;
 };
 
-CommandBufferBase_::CommandBufferBase_(GraphicsContext& context, CommandPool& cmdPool, bool primary)
+CommandBufferBase_::CommandBufferBase_(GraphicsContext& context, CommandPool& cmdPool, native::HCommandBuffer_& hCmdBuffer)
 {
 	pImpl.construct(context, cmdPool);
 
 	platform::ContextVk& vkctx = native_cast(*context);
-	VkCommandBufferAllocateInfo nfo;
-	nfo.commandBufferCount = 1;
-	nfo.commandPool = native_cast(cmdPool)->handle;
-	nfo.level = primary ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
-	nfo.pNext = 0;
-	nfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	vkThrowIfFailed(vk::AllocateCommandBuffers(vkctx.getDevice(), &nfo, &pImpl->handle), "CommandBuffer Allocation Failure");
+	pImpl->handle = hCmdBuffer;
 }
 
 CommandBufferBase_::~CommandBufferBase_()
@@ -527,7 +521,7 @@ void SecondaryCommandBuffer_::beginRecording(const RenderPass& renderPass, uint3
 	vkThrowIfFailed(vk::BeginCommandBuffer(pImpl->handle, &info), "CommandBufferBase::beginRecording(renderpass, [subpass]) failed");
 }
 
-SecondaryCommandBuffer_::SecondaryCommandBuffer_(GraphicsContext& context, CommandPool& cmdPool) : CommandBufferBase_(context, cmdPool, false) { }
+SecondaryCommandBuffer_::SecondaryCommandBuffer_(GraphicsContext& context, CommandPool& cmdPool, native::HCommandBuffer_& hBuff) : CommandBufferBase_(context, cmdPool, hBuff) { }
 
 inline static void submit_command_buffers(VkQueue queue, VkDevice device, VkCommandBuffer* cmdBuffs, uint32 numCmdBuffs = 1, VkSemaphore* waitSems = NULL, uint32 numWaitSems = 0,
     VkSemaphore* signalSems = NULL, uint32 numSignalSems = 0, VkFence fence = VK_NULL_HANDLE)
@@ -564,7 +558,7 @@ void CommandBuffer_::beginRecording()
 	vkThrowIfFailed(vk::BeginCommandBuffer(pImpl->handle, &info), "CommandBuffer::beginRecording(void) failed");
 }
 
-CommandBuffer_::CommandBuffer_(GraphicsContext& context, CommandPool& cmdPool) : CommandBufferBase_(context, cmdPool, true)
+CommandBuffer_::CommandBuffer_(GraphicsContext& context, CommandPool& cmdPool, native::HCommandBuffer_& hCmdBuff) : CommandBufferBase_(context, cmdPool, hCmdBuff)
 { }
 
 

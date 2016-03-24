@@ -98,7 +98,6 @@ public:
 
 	bool update_(const pvr::api::DescriptorSetUpdate& descSet)
 	{
-#pragma warning ADD_SOME_ERROR_CHECKING_OR_MAKE_THIS_VOID
 		m_descParam = descSet;
 		return true;
 	}
@@ -146,6 +145,13 @@ public:
 	bool init()
 	{
 		return m_descSetLayout.isValid() && m_descPool.isValid();
+	}
+
+	void destroy()
+	{
+		m_descParam.clear();
+		m_descPool.reset();
+		m_descSetLayout.reset();
 	}
 
 	/*!*********************************************************************************************************************

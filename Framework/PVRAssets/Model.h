@@ -503,8 +503,8 @@ public:
 		*****************************************************************************************************************/
 		InternalData() : numMeshNodes(0), numLightNodes(0), numCameraNodes(0), numFrames(0), currentFrame(0), FPS(30), units(1), flags(0)
 		{
-			memset(clearColor, 0, sizeof(clearColor) / sizeof(clearColor[0]));
-			memset(ambientColor, 0, sizeof(ambientColor) / sizeof(ambientColor[0]));
+			memset(clearColor, 0, sizeof(clearColor));
+			memset(ambientColor, 0, sizeof(ambientColor));
 		}
 	};
 public:

@@ -33,23 +33,33 @@ Fbo_::Fbo_(const FboCreateParam& desc, GraphicsContext& context) : m_context(con
 {
 }
 
-void Fbo_::destroy()
+}//namespace impl
+
+
+namespace vulkan {
+
+FboVk_::~FboVk_()
+{
+	if (m_context.isValid())
+	{
+		destroy();
+	}
+	else
+	{
+		Log(Log.Warning, "Attempted to free FBO after corresponding Context was destroyed.");
+	}
+
+}
+void FboVk_::destroy()
 {
 	if (m_context.isValid())
 	{
 		vk::DestroyFramebuffer(native_cast(*m_context).getDevice(), native_cast(*this), NULL);
 		debugLogApiError("Fbo_::destroy exit");
-		getNativeObject() = VK_NULL_HANDLE;
 	}
-	else
-	{
-		Log(Log.Warning, "FBO object was not cleaned up before context destruction");
-	}
+	handle = VK_NULL_HANDLE;
+	m_desc.clear();
 }
-}//namespace impl
-
-
-namespace vulkan {
 
 DefaultFboVk_::DefaultFboVk_(GraphicsContext& context) : FboVk_(context) {}
 

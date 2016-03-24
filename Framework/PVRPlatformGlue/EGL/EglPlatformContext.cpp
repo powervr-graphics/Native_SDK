@@ -13,6 +13,8 @@ application window.
 #include "PVRPlatformGlue/PlatformContext.h"
 #include "PVRCore/StringFunctions.h"
 
+bool isOpenGLES31NotSupported_Workaround = false;
+
 #ifndef EGL_CONTEXT_LOST_IMG
 /*! Extended error code EGL_CONTEXT_LOST_IMG generated when power management event has occurred. */
 #define EGL_CONTEXT_LOST_IMG				0x300E
@@ -94,9 +96,10 @@ void PlatformContext::release()
 	{
 		// Check the current context/surface/display. If they are equal to the handles in this class, remove them from the current context
 		if (m_platformContextHandles->display == egl::GetCurrentDisplay() &&
-		        m_platformContextHandles->drawSurface == egl::GetCurrentSurface(EGL_DRAW) &&
-		        m_platformContextHandles->readSurface == egl::GetCurrentSurface(EGL_READ) &&
-		        m_platformContextHandles->context == egl::GetCurrentContext())
+			m_platformContextHandles->display != EGL_NO_DISPLAY &&
+		    m_platformContextHandles->drawSurface == egl::GetCurrentSurface(EGL_DRAW) &&
+		    m_platformContextHandles->readSurface == egl::GetCurrentSurface(EGL_READ) &&
+		    m_platformContextHandles->context == egl::GetCurrentContext())
 		{
 			egl::MakeCurrent(egl::GetCurrentDisplay(), EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 		}
@@ -260,26 +263,26 @@ static inline Result::Enum isGlesVersionSupported(EGLDisplay display, Api::Enum 
 		configs.resize(configsSize);
 
 		if (egl::ChooseConfig(display, configAttributes, configs.data(), configsSize, &numConfigs) != EGL_TRUE
-		        || numConfigs != configsSize)
+		    || numConfigs != configsSize)
 		{
 			Log("EglPlatformContext.cpp: getMaxEglVersion - eglChooseConfig unexpected error %x getting list of configurations, but %d possible configs were already detected.",
 			    egl::GetError(), configsSize);
 			return Result::UnknownError;
 		}
 
-		for (size_t i = 0; i != configs.size(); ++i)
+		for (size_t ii = 0; ii != configs.size(); ++ii)
 		{
 
-			Log(Log.Verbose, "Trying to create context for config #%d...", i);
+			Log(Log.Verbose, "Trying to create context for config #%d...", ii);
 			EGLContext ctx;
-			if ((ctx = getContextForConfig(display, configs[i], graphicsapi)) != EGL_NO_CONTEXT)
+			if ((ctx = getContextForConfig(display, configs[ii], graphicsapi)) != EGL_NO_CONTEXT)
 			{
 				Log(Log.Verbose, "SUCCESS creating context! Reporting success.");
 				isSupported = true;
 				egl::DestroyContext(display, ctx);
 				return Result::Success;
 			}
-			Log(Log.Verbose, "Failed to create context for config #%d.", i);
+			Log(Log.Verbose, "Failed to create context for config #%d.", ii);
 		}
 
 		// Choose a config based on user supplied attributes
@@ -389,7 +392,7 @@ static inline Result::Enum initializeContext(const bool wantWindow, DisplayAttri
 		configs.resize(configsSize);
 
 		if (egl::ChooseConfig(handles->display, configAttributes, configs.data(), configsSize, &numConfigs) != EGL_TRUE
-		        || numConfigs != configsSize)
+		    || numConfigs != configsSize)
 		{
 			Log("EGL context creation: initializeContext Error choosing egl config. %x",
 			    egl::GetError());
@@ -406,13 +409,13 @@ static inline Result::Enum initializeContext(const bool wantWindow, DisplayAttri
 			for (; configIdx < configsSize; ++configIdx)
 			{
 				if ((egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_RED_SIZE, &value)
-				        && value == static_cast<EGLint>(attributes.redBits))
-				        && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_GREEN_SIZE, &value)
-				            && value == static_cast<EGLint>(attributes.greenBits))
-				        && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_BLUE_SIZE, &value)
-				            && value == static_cast<EGLint>(attributes.blueBits))
-				        && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_ALPHA_SIZE, &value)
-				            && value == static_cast<EGLint>(attributes.alphaBits))
+				     && value == static_cast<EGLint>(attributes.redBits))
+				    && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_GREEN_SIZE, &value)
+				        && value == static_cast<EGLint>(attributes.greenBits))
+				    && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_BLUE_SIZE, &value)
+				        && value == static_cast<EGLint>(attributes.blueBits))
+				    && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_ALPHA_SIZE, &value)
+				        && value == static_cast<EGLint>(attributes.alphaBits))
 				   )
 				{
 					break;
@@ -680,7 +683,7 @@ Result::Enum PlatformContext::init()
 	}
 
 	m_platformContextHandles->drawSurface = m_platformContextHandles->readSurface = egl::CreateWindowSurface(
-	        m_platformContextHandles->display, config, reinterpret_cast<EGLNativeWindowType>(m_OSManager.getWindow()), eglattribs);
+	    m_platformContextHandles->display, config, reinterpret_cast<EGLNativeWindowType>(m_OSManager.getWindow()), eglattribs);
 	if (m_platformContextHandles->drawSurface == EGL_NO_SURFACE)
 	{
 		Log(Log.Error, "Context creation failed\n");
@@ -730,6 +733,17 @@ void PlatformContext::populateMaxApiVersion()
 
 		if (result == Result::Success)
 		{
+			if (supported && graphicsapi == Api::OpenGLES31)
+			{
+				///////////////////////////  WORKAROUND FOR SOME DEBUG DRIVERS ///////////////////////////
+				if (isOpenGLES31NotSupported_Workaround)
+				{
+					supported = false;
+					Log(Log.Debug, "Activating workaround - OpenGL ES 3.1 support was reported, but is not present.");
+				}
+				/////////////////////////// /WORKAROUND FOR SOME DEBUG DRIVERS //////////////////////////
+			}
+
 			if (supported)
 			{
 				m_maxApiVersion = graphicsapi;
@@ -807,7 +821,7 @@ string PlatformContext::getInfo()
 
 	tmp = strings::createFormatted("\tExtensions:  %hs\n",
 	                               (const char*)egl::QueryString(m_platformContextHandles->display,
-	                                       EGL_EXTENSIONS));
+	                                   EGL_EXTENSIONS));
 	out.append(tmp);
 
 	if (egl::QueryContext(m_platformContextHandles->display, m_platformContextHandles->context, EGL_CONTEXT_PRIORITY_LEVEL_IMG, &i32Values[0]))
@@ -836,7 +850,7 @@ string PlatformContext::getInfo()
 #if defined(EGL_VERSION_1_2)
 	tmp = strings::createFormatted("\tClient APIs:  %hs\n",
 	                               (const char*)egl::QueryString(m_platformContextHandles->display,
-	                                       EGL_CLIENT_APIS));
+	                                   EGL_CLIENT_APIS));
 	out.append(tmp);
 #endif
 

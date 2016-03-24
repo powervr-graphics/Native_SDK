@@ -39,7 +39,7 @@ public:
 	\param bufferUsage how this buffer will be used for. e.g VertexBuffer, IndexBuffer.
 	\param hints What kind of access will be done (GPU Read, GPU Write, CPU Write, Copy etc)
 	***********************************************************************************************************************/
-	BufferGles_(GraphicsContext& context) : Buffer_(context), m_memMapped(false){}
+	BufferGles_(GraphicsContext& context) : Buffer_(context), m_memMapped(false) {}
 
 	/*!*********************************************************************************************************************
 	\brief Update the buffer.
@@ -63,20 +63,39 @@ public:
 	void unmap_();
 
 	/*!*********************************************************************************************************************
+	\brief Release the resources held by this object
+	***********************************************************************************************************************/
+	void destroy();
+
+	~BufferGles_()
+	{
+		if (m_context.isValid())
+		{
+			destroy();
+		}
+		else
+		{
+			Log(Log.Warning, "Buffer object was not released before context destruction");
+		}
+	}
+
+	/*!*********************************************************************************************************************
 	\brief Allocate a new buffer on the \p context GraphicsContext
 	\param context The graphics context
 	\param size buffer size, in bytes
 	\param hint The expected use of the buffer (CPU Read, GPU write etc)
 	***********************************************************************************************************************/
-	bool allocate_(uint32 size,types::BufferBindingUse::Bits bufferUsage,
-				  types::BufferUse::Flags hint = types::BufferUse::DEFAULT);
+	bool allocate_(uint32 size, types::BufferBindingUse::Bits bufferUsage,
+	               types::BufferUse::Flags hint = types::BufferUse::DEFAULT);
 };
 
 class BufferViewGles_ : public impl::BufferView_, public native::HBufferView_
 {
 public:
-	BufferViewGles_(const Buffer &buffer, uint32 offset, uint32 range) :
-		impl::BufferView_(buffer,offset,range){}
+	BufferViewGles_(const Buffer& buffer, uint32 offset, uint32 range) :
+		impl::BufferView_(buffer, offset, range) {}
+
+	void destroy();
 };
 
 /*!*********************************************************************************************************************

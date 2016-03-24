@@ -8,9 +8,12 @@
 #pragma once
 #include "PVRApi/ApiObjects/PipelineLayout.h"
 #include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
-namespace pvr{
-namespace api{
-namespace vulkan{
+#include "PVRNativeApi/Vulkan/VulkanBindings.h"
+#include "PVRApi/Vulkan/ContextVk.h"
+
+namespace pvr {
+namespace api {
+namespace vulkan {
 /*!*********************************************************************************************************************
 \brief Vulkan implementation of the PipelineLayout class.
 ***********************************************************************************************************************/
@@ -22,13 +25,31 @@ public:
 	\param createParam PipelineLayout create parameters
 	\return Return true on success, false in case of error
 	***********************************************************************************************************************/
-    bool init(const PipelineLayoutCreateParam &createParam);
-	
+	bool init(const PipelineLayoutCreateParam& createParam);
+
 	/*!*********************************************************************************************************************
 	\brief ctor, Construct a PipelineLayout
 	\param context The GraphicsContext this pipeline-layout will be constructed from.
 	***********************************************************************************************************************/
-    PipelineLayoutVk_(GraphicsContext& device) : PipelineLayout_(device){}
+	PipelineLayoutVk_(GraphicsContext& device) : PipelineLayout_(device) {}
+
+	/*!*********************************************************************************************************************
+	\brief ctor, Release all resources held by this object
+	***********************************************************************************************************************/
+	inline void destroy();
+
+	~PipelineLayoutVk_()
+	{
+		if (m_context.isValid())
+		{
+			destroy();
+		}
+		else
+		{
+			Log(Log.Warning, "PipelineLayout attempted to destroy after corresponding context destruction.");
+		}
+	}
+
 };
 typedef RefCountedResource<PipelineLayoutVk_> PipelineLayoutVk;
 }// namespace impl
@@ -36,3 +57,17 @@ typedef RefCountedResource<PipelineLayoutVk_> PipelineLayoutVk;
 }
 
 PVR_DECLARE_NATIVE_CAST(PipelineLayout)
+
+inline void pvr::api::vulkan::PipelineLayoutVk_::destroy()
+{
+	if (m_context.isValid())
+	{
+		if (handle != VK_NULL_HANDLE)
+		{
+			vk::DestroyPipelineLayout(native_cast(*m_context).getDevice(), getNativeObject(), NULL);
+		}
+		m_context.reset();
+	}
+	handle = VK_NULL_HANDLE;
+}
+

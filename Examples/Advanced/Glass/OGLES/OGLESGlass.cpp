@@ -331,7 +331,6 @@ bool OGLESGlass::createPipelines()
 		pipeInfo.pipelineLayout = apiObj->device->createPipelineLayout(pipeLayoutInfo);
 		pipeInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
 
-		pvr::assets::Mesh& mesh = apiObj->balloon.handle->getMesh(0);
 		pipeInfo.colorBlend.addAttachmentState(colorBlend);
 		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::TriangleList);
 		pvr::utils::createInputAssemblyFromMesh(apiObj->balloon.handle->getMesh(0),
@@ -760,7 +759,7 @@ void OGLESGlass::drawMesh(pvr::api::SecondaryCommandBuffer& cmdBuffer, int nodeI
 ***********************************************************************************************************************/
 void OGLESGlass::updateBalloons(ApiObjects::Pipeline& pipeline, const glm::mat4& projMtx, const glm::mat4& viewMtx, ApiObjects::Pass& passBalloon)
 {
-	for (pvr::uint32 i = 0; i < numBalloons; ++i)
+	for (pvr::int32 i = 0; i < numBalloons; ++i)
 	{
 		passBalloon.uniformData[i].modelView = viewMtx * balloons[i].modelMtx;
 		passBalloon.uniformData[i].modelViewProj = projMtx * passBalloon.uniformData[i].modelView;
@@ -879,13 +878,13 @@ void OGLESGlass::recordPerFrameCommandBuffer()
 	{
 		// Bind and clear the paraboloid framebuffer , Use a nice bright blue as clear color
 		// Set the renderArea to the left
-		apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboParaboloid.fbo, pvr::Rectanglei(0.0, 0.0f, 2 * ParaboloidTexSize, ParaboloidTexSize), false, ClearSkyColor);
+		apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboParaboloid.fbo, pvr::Rectanglei(0, 0, 2 * ParaboloidTexSize, ParaboloidTexSize), false, ClearSkyColor);
 		apiObj->primaryCommandBuffer->enqueueSecondaryCmds(apiObj->paraboloidCmdBuffer);
 		apiObj->primaryCommandBuffer->endRenderPass();
 	}
 
 	// Bind back the original frame buffer and reset the viewport
-	apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboOnScreen, pvr::Rectanglei(0.0, 0.0f, getWidth(), getHeight()), false, ClearSkyColor);
+	apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboOnScreen, pvr::Rectanglei(0, 0, getWidth(), getHeight()), false, ClearSkyColor);
 	apiObj->primaryCommandBuffer->enqueueSecondaryCmds(apiObj->sceneCmdBuffer);
 	apiObj->primaryCommandBuffer->enqueueSecondaryCmds(apiObj->uiRendererCmdBuffer);
 	apiObj->primaryCommandBuffer->endRenderPass();

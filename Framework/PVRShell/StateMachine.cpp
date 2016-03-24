@@ -458,6 +458,10 @@ Result::Enum StateMachine::executeOnce()
 		break;
 	case StateReleaseWindow:
 		Log(Log.Debug, "ReleaseWindow");
+		if (m_shellData.platformContext.get())
+		{
+			m_shellData.platformContext->release();
+		}
 		ShellOS::releaseWindow();
 
 		if (!m_shellData.weAreDone && m_shellData.forceReleaseInitCycle)
@@ -468,10 +472,6 @@ Result::Enum StateMachine::executeOnce()
 		else
 		{
 			m_currentState = StateQuitApplication;
-		}
-		if (m_shellData.platformContext.get())
-		{
-			m_shellData.platformContext->release();
 		}
 		break;
 	case StateQuitApplication:

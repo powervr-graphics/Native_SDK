@@ -252,15 +252,15 @@ Result::Enum OGLES3IntroducingPVRCamera::releaseView()
 
 	// Release Print3D Textures
 	uiRenderer.release();
-	renderingPipeline.release();
-	onScreenFbo.release();
-	descriptorLayout.release();
-	descriptorSet.release();
-	sampler.release();
-	vbo.release();
-	ibo.release();
-	onScreenFbo.release();
-	commandBuffer.release();
+	renderingPipeline.reset();
+	onScreenFbo.reset();
+	descriptorLayout.reset();
+	descriptorSet.reset();
+	sampler.reset();
+	vbo.reset();
+	ibo.reset();
+	onScreenFbo.reset();
+	commandBuffer.reset();
 	return Result::Success;
 }
 

@@ -43,8 +43,8 @@ enum Enum {	MVPMatrix, LightDir, NumUniforms };
  ***********************************************************************************************************************/
 
 // Source and binary shaders
-const char FragShaderSrcFile[]		= "FragShader_VK.spv";
-const char VertShaderSrcFile[]		= "VertShader_VK.spv";
+const char FragShaderSrcFile[]		= "FragShader_VK.fsh.spv";
+const char VertShaderSrcFile[]		= "VertShader_VK.vsh.spv";
 
 // PVR texture files
 const char StatueTexFile[]			= "Marble.pvr";
@@ -304,9 +304,9 @@ Result::Enum OGLESBumpMap::initView()
 ***********************************************************************************************************************/
 Result::Enum OGLESBumpMap::releaseView()
 {
-	deviceResource.release();
+	deviceResource.reset();
 	uiRenderer.release();
-	scene.release();
+	scene.reset();
 	assetManager.releaseAll();
 	return Result::Success;
 }

@@ -16,6 +16,10 @@ namespace pvr {
 using namespace types;
 namespace api {
 namespace gles {
+void RenderPassGles_::destroy() {
+	m_desc.clear();
+}
+
 bool RenderPassGles_::init(const RenderPassCreateParam& descriptor)
 {
 	m_desc = descriptor;
@@ -187,11 +191,11 @@ void RenderPassGles_::begin(IGraphicsContext& device, const api::Fbo& fbo, const
 		debugLogApiError("RenderPass_::begin invalidate");
 	}
 	if (clears)
-    {
-        debugLogApiError("RenderPass_::begin begin clear");
-        gl::Clear(clears);
-        debugLogApiError("RenderPass_::begin end clear");
-    }
+	{
+		debugLogApiError("RenderPass_::begin begin clear");
+		gl::Clear(clears);
+		debugLogApiError("RenderPass_::begin end clear");
+	}
 
 	// unset the states.
 	if (clears & GL_DEPTH_BUFFER_BIT && !renderStates.depthStencil.depthWrite)
@@ -221,7 +225,7 @@ void RenderPassGles_::begin(IGraphicsContext& device, const api::Fbo& fbo, const
 		gl::Scissor(renderStates.scissor.x, renderStates.scissor.y, renderStates.scissor.width, renderStates.scissor.height);
 		debugLogApiError("RenderPass_::begin end scissor");
 	}
-    debugLogApiError("RenderPass_::begin end scissor");
+	debugLogApiError("RenderPass_::begin end scissor");
 }
 
 void RenderPassGles_::end(IGraphicsContext& context) const
@@ -312,7 +316,6 @@ void RenderPassGles_::end(IGraphicsContext& context) const
 #endif
 }
 }
-void impl::RenderPass_::destroy() {}
 }
 }
 //!\endcond

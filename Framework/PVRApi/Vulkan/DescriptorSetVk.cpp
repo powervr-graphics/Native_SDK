@@ -21,36 +21,13 @@ api::DescriptorSet DescriptorPool_::allocateDescriptorSet(const DescriptorSetLay
 	set.construct(layout, this_ref);
 	if (!set->init())
 	{
-		set.release();
+		set.reset();
 	}
 	return set;
-}
-
-void DescriptorSet_::destroy()
-{
-	auto& vkobj = native_cast(*this);
-	if (vkobj.handle != VK_NULL_HANDLE)
-	{
-		if (m_descPool->getContext().isValid())
-		{
-			vk::FreeDescriptorSets(native_cast(*getContext()).getDevice(), native_cast(m_descPool)->handle, 1, &native_cast(*this).handle);
-		}
-		else
-		{
-			Log(Log.Warning, "Attempted to destroy descriptor set after corresponding pool or context was freed.");
-		}
-		vkobj.handle = VK_NULL_HANDLE;
-		m_descPool.reset();
-		m_descSetLayout.reset();
-	}
 }
 bool DescriptorSet_::update(const DescriptorSetUpdate& descSet)
 {
 	return native_cast(*this).update(descSet);
-}
-void DescriptorSetLayout_::destroy()
-{
-	vk::DestroyDescriptorSetLayout(native_cast(*getContext()).getDevice(), native_cast(*this), NULL);
 }
 
 const native::HDescriptorSet_& impl::DescriptorSet_::getNativeObject() const
@@ -76,9 +53,52 @@ native::HDescriptorPool_& DescriptorPool_::getNativeObject()
 }
 
 namespace vulkan {
+
+void DescriptorSetVk_::destroy()
+{
+	auto& vkobj = native_cast(*this);
+	if (vkobj.handle != VK_NULL_HANDLE)
+	{
+		if (m_descPool->getContext().isValid())
+		{
+			vk::FreeDescriptorSets(native_cast(*getContext()).getDevice(), native_cast(m_descPool)->handle, 1, &native_cast(*this).handle);
+		}
+		vkobj.handle = VK_NULL_HANDLE;
+		m_descPool.reset();
+		m_descSetLayout.reset();
+	}
+}
+void DescriptorSetLayoutVk_::destroy()
+{
+
+	if (device.isValid())
+	{
+		if (handle != VK_NULL_HANDLE)
+		{
+			vk::DestroyDescriptorSetLayout(native_cast(*getContext()).getDevice(), native_cast(*this), NULL);
+		}
+		device.reset();
+	}
+	desc.clear();
+}
+
 DescriptorSetVk_::~DescriptorSetVk_()
 {
-	destroy();
+	if (m_descPool.isValid() )
+	{
+		if (m_descPool->getContext().isValid())
+		{
+			destroy();
+		}
+		else
+		{
+			Log(Log.Warning, "Attempted to free DescriptorSet after its corresponding device was destroyed");
+		}
+	}
+	else
+	{
+		Log(Log.Warning, "Attempted to free DescriptorSet after its corresponding pool was destroyed");
+	}
 }
 
 //--- DescriptorSet Implementation

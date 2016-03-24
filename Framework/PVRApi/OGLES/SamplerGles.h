@@ -1,6 +1,7 @@
 #pragma once
 #include "PVRApi/ApiObjects/Sampler.h"
-#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
+#include "PVRApi/OGLES/ContextGles.h"
+
 namespace pvr {
 namespace api {
 namespace gles {
@@ -12,7 +13,19 @@ public:
 	SamplerGles_(GraphicsContext& device) : Sampler_(device), m_initialized(false) {}
 	void bind(IGraphicsContext& context, uint32 index) const;
 	bool init(const SamplerCreateParam& _desc);
-	void destroy_();
+	void destroy();
+	~SamplerGles_()
+	{
+		if (m_context.isValid())
+		{
+			destroy();
+		}
+		else
+		{
+			reportDestroyedAfterContext("Sampler");
+		}
+
+	}
 };
 typedef RefCountedResource<gles::SamplerGles_> SamplerGles;
 }

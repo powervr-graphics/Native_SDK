@@ -501,31 +501,6 @@ Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 
 void ShellOS::releaseWindow()
 {
-	// revert introductional resolution (full screen case, bad clock is default value meaning that good was not acquired)
-// #if defined(BUILDING_FOR_DESKTOP_GL)
-	// XF86VidModeModeInfo tmpmi;
-
-	// if (m_i32OriginalModeDotClock != XF86VidModeBadClock)
-	// {
-		// // revert desktop-resolution (stored previously) before exiting
-		// tmpmi.dotclock = m_OSImplementation->originalModeDotClock;
-		// tmpmi.c_private = m_OSImplementation->originalMode.c_private;
-		// tmpmi.flags = m_OSImplementation->originalMode.flags;
-		// tmpmi.hdisplay = m_OSImplementation->originalMode.hdisplay;
-		// tmpmi.hskew = m_OSImplementation->originalMode.hskew;
-		// tmpmi.hsyncend = m_OSImplementation->originalMode.hsyncend;
-		// tmpmi.hsyncstart = m_OSImplementation->originalMode.hsyncstart;
-		// tmpmi.htotal = m_OSImplementation->originalMode.htotal;
-		// tmpmi.privsize = m_OSImplementation->originalMode.privsize;
-		// tmpmi.vdisplay = m_OSImplementation->originalMode.vdisplay;
-		// tmpmi.vsyncend = m_OSImplementation->originalMode.vsyncend;
-		// tmpmi.vsyncstart = m_OSImplementation->originalMode.vsyncstart;
-		// tmpmi.vtotal = m_OSImplementation->originalMode.vtotal;
-
-		// XF86VidModeSwitchToMode(m_OSImplementation->display, m_OSImplementation->screen, &tmpmi);
-	// }
-// #endif
-
 	XDestroyWindow(m_OSImplementation->display, m_OSImplementation->window);
 	m_OSImplementation->window = 0;
 	XFreeColormap(m_OSImplementation->display, m_OSImplementation->colorMap);

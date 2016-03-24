@@ -29,11 +29,16 @@ namespace pvr {
 //Creates an instance of a graphics context.
 GraphicsContextStrongReference createGraphicsContext()
 {
-	RefCountedResource<platform::ContextGles> ctx;
-	ctx.construct();
-//DEFAULT CONTEXT PER PLATFORM. CAN(WILL) BE OVERRIDEN BY PVRShell
+	GraphicsContextStrongReference ctx = platform::ContextGles::createNew();
+	//DEFAULT CONTEXT PER PLATFORM. CAN(WILL) BE OVERRIDEN BY PVRShell
 	ctx->m_apiType = Api::OpenGLESMaxVersion;
 	return ctx;
+}
+
+
+inline GraphicsContext IGraphicsContext::getWeakRef()
+{
+	return static_cast<platform::ContextGles&>(*this).getWeakReference();
 }
 
 namespace platform {
@@ -101,7 +106,7 @@ void ContextGles::waitIdle()
 	gl::Finish();
 }
 
-Result::Enum ContextGles::init(OSManager& osManager, GraphicsContext& my_wrapper)
+Result::Enum ContextGles::init(OSManager& osManager)
 {
 	if (m_osManager)
 	{
@@ -111,7 +116,7 @@ Result::Enum ContextGles::init(OSManager& osManager, GraphicsContext& my_wrapper
 	{
 		return Result::NotInitialized;
 	}
-	m_this_shared = my_wrapper;
+
 	m_apiType = osManager.getApiTypeRequired(); //PlatformContext should have already made sure that this is actually possible.
 
 	if (m_apiType < Api::OpenGLES31 && ((osManager.getDeviceQueueTypesRequired() & DeviceQueueType::Compute) != 0))
@@ -286,14 +291,15 @@ bool ContextGles::isExtensionSupported(const char8* extension) const
 }
 }
 
+
 api::EffectApi IGraphicsContext::createEffectApi(assets::Effect& effectDesc, api::GraphicsPipelineCreateParam& pipeDesc,
         api::AssetLoadingDelegate& effectDelegate)
 {
 	api::EffectApi effect;
-	effect.construct(m_this_shared, effectDelegate);
+	effect.construct(getWeakRef(), effectDelegate);
 	if (effect->init(effectDesc, pipeDesc) != Result::Success)
 	{
-		effect.release();
+		effect.reset();
 	}
 	return effect;
 }
@@ -301,7 +307,7 @@ api::EffectApi IGraphicsContext::createEffectApi(assets::Effect& effectDesc, api
 api::TextureStore IGraphicsContext::createTexture()
 {
 	api::gles::TextureStoreGles tex;
-	tex.construct(m_this_shared);
+	tex.construct(getWeakRef());
 	return tex;
 }
 
@@ -327,7 +333,7 @@ api::DescriptorSet IGraphicsContext::createDescriptorSetOnDefaultPool(const api:
 	set.construct(layout, getDefaultDescriptorPool());
 	if (!set->init())
 	{
-		set.release();
+		set.reset();
 	}
 	return set;
 }
@@ -356,15 +362,15 @@ api::Buffer IGraphicsContext::createBuffer(uint32 size, types::BufferBindingUse:
         types::BufferUse::Flags hint)
 {
 	api::gles::BufferGles buffer;
-	buffer.construct(m_this_shared);
-	if (!buffer->allocate(size, bufferUsage, hint)) { buffer.release();	}
+	buffer.construct(getWeakRef());
+	if (!buffer->allocate(size, bufferUsage, hint)) { buffer.reset();	}
 	return buffer;
 }
 
 api::GraphicsPipeline IGraphicsContext::createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc)
 {
 	api::GraphicsPipeline gp;
-	gp.construct(m_this_shared);
+	gp.construct(getWeakRef());
 	Result::Enum result = gp->init(desc);
 	if (result != Result::Success)
 	{
@@ -378,7 +384,7 @@ api::GraphicsPipeline IGraphicsContext::createGraphicsPipeline(api::GraphicsPipe
         api::ParentableGraphicsPipeline parent)
 {
 	api::GraphicsPipeline gp;
-	gp.construct(m_this_shared);
+	gp.construct(getWeakRef());
 	Result::Enum result = gp->init(desc, parent.get());
 	if (result != Result::Success)
 	{
@@ -391,7 +397,7 @@ api::GraphicsPipeline IGraphicsContext::createGraphicsPipeline(api::GraphicsPipe
 api::ComputePipeline IGraphicsContext::createComputePipeline(const api::ComputePipelineCreateParam& desc)
 {
 	api::ComputePipeline cp;
-	cp.construct(m_this_shared);
+	cp.construct(getWeakRef());
 	Result::Enum result = cp->init(desc);
 	if (result != Result::Success)
 	{
@@ -405,7 +411,7 @@ api::ComputePipeline IGraphicsContext::createComputePipeline(const api::ComputeP
 api::ParentableGraphicsPipeline IGraphicsContext::createParentableGraphicsPipeline(const api::GraphicsPipelineCreateParam& desc)
 {
 	api::ParentableGraphicsPipeline gp;
-	gp.construct(m_this_shared);
+	gp.construct(getWeakRef());
 	Result::Enum result = gp->init(desc);
 	if (result != Result::Success)
 	{
@@ -419,10 +425,10 @@ api::ParentableGraphicsPipeline IGraphicsContext::createParentableGraphicsPipeli
 api::RenderPass IGraphicsContext::createRenderPass(const api::RenderPassCreateParam& renderPass)
 {
 	api::RenderPassGles rp;
-	rp.construct(m_this_shared);
+	rp.construct(getWeakRef());
 	if (!rp->init(renderPass))
 	{
-		rp.release();
+		rp.reset();
 	}
 	return rp;
 }
@@ -430,10 +436,10 @@ api::RenderPass IGraphicsContext::createRenderPass(const api::RenderPassCreatePa
 api::Sampler IGraphicsContext::createSampler(const assets::SamplerCreateParam& desc)
 {
 	api::gles::SamplerGles sampler;
-	sampler.construct(m_this_shared);
+	sampler.construct(getWeakRef());
 	if (!sampler->init(desc))
 	{
-		sampler.release();
+		sampler.reset();
 	}
 	return sampler;
 }
@@ -441,11 +447,11 @@ api::Sampler IGraphicsContext::createSampler(const assets::SamplerCreateParam& d
 api::Shader IGraphicsContext::createShader(const Stream& shaderSrc, types::ShaderType::Enum type, const char* const* defines, uint32 numDefines)
 {
 	api::gles::ShaderGles vs;
-	vs.construct(m_this_shared, 0);
+	vs.construct(getWeakRef(), 0);
 	if (!utils::loadShader(native::HContext_(), shaderSrc, type, defines, numDefines, *vs, &m_apiCapabilities))
 	{
 		Log(Log.Error, "Failed to create Shader.");
-		vs.release();
+		vs.reset();
 	}
 	return vs;
 }
@@ -453,11 +459,11 @@ api::Shader IGraphicsContext::createShader(const Stream& shaderSrc, types::Shade
 api::Shader IGraphicsContext::createShader(Stream& shaderData, types::ShaderType::Enum type, types::ShaderBinaryFormat::Enum binaryFormat)
 {
 	api::gles::ShaderGles vs;
-	vs.construct(m_this_shared, 0);
+	vs.construct(getWeakRef(), 0);
 	if (!utils::loadShader(native::HContext_(), shaderData, type, binaryFormat, *vs, &m_apiCapabilities))
 	{
 		Log(Log.Error, "Failed to create Shader.");
-		vs.release();
+		vs.reset();
 	}
 	return vs;
 }
@@ -497,10 +503,10 @@ api::BufferView IGraphicsContext::createBufferAndView(uint32 size, types::Buffer
 api::PipelineLayout IGraphicsContext::createPipelineLayout(const api::PipelineLayoutCreateParam& desc)
 {
 	pvr::api::gles::PipelineLayoutGles pipelayout;
-	pipelayout.construct(m_this_shared);
+	pipelayout.construct(getWeakRef());
 	if (!pipelayout->init(desc))
 	{
-		pipelayout.release();
+		pipelayout.reset();
 	}
 	return pipelayout;
 }
@@ -510,7 +516,7 @@ api::Fbo IGraphicsContext::createOnScreenFboWithRenderPass(uint32 swapIndex, con
 	pvr::api::FboCreateParam fboInfo;
 	fboInfo.setRenderPass(renderPass);
 	pvr::api::gles::DefaultFboGles fbo;
-	fbo.construct(m_this_shared);
+	fbo.construct(getWeakRef());
 	fboInfo.width = getDisplayAttributes().width;
 	fboInfo.height = getDisplayAttributes().height;
 
@@ -561,18 +567,18 @@ api::Fbo IGraphicsContext::createOnScreenFbo(uint32 swapIndex,
 api::DescriptorPool IGraphicsContext::createDescriptorPool(const api::DescriptorPoolCreateParam& createParam)
 {
 	api::gles::DescriptorPoolGles descPool;
-	descPool.construct(m_this_shared);
+	descPool.construct(getWeakRef());
 	if (!descPool->init(createParam))
 	{
-		descPool.release();
+		descPool.reset();
 	}
 	return descPool;
 }
 
 api::CommandPool IGraphicsContext::createCommandPool()
 {
-	api::gles::CommandPoolGles cmdpool = api::gles::CommandPoolGles_::createNew(m_this_shared);
-	if (!cmdpool->init()) { cmdpool.release(); }
+	api::gles::CommandPoolGles cmdpool = api::gles::CommandPoolGles_::createNew(getWeakRef());
+	if (!cmdpool->init()) { cmdpool.reset(); }
 	return cmdpool;
 }
 
@@ -580,10 +586,10 @@ api::Fbo IGraphicsContext::createFbo(const api::FboCreateParam& desc)
 {
 	api::gles::FboGles fbo;
 	// create fbo
-	fbo.construct(m_this_shared);
+	fbo.construct(getWeakRef());
 	if (!fbo->init(desc))
 	{
-		fbo.release();
+		fbo.reset();
 	}
 	return fbo;
 }
@@ -592,7 +598,7 @@ api::Fbo IGraphicsContext::createFbo(const api::FboCreateParam& desc)
 api::DescriptorSetLayout IGraphicsContext::createDescriptorSetLayout(const api::DescriptorSetLayoutCreateParam& desc)
 {
 	api::gles::DescriptorSetLayoutGles layout;
-	layout.construct(m_this_shared, desc);
+	layout.construct(getWeakRef(), desc);
 	return layout;
 }
 

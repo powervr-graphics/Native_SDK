@@ -274,6 +274,13 @@ public:
 		return addEntryAtOffset(name, type, GpuDatatypes::getOffsetAfter(type, getUnalignedElementSize()));
 	}
 
+	template<GpuDatatypes::Standard::Enum _standard_ = GpuDatatypes::Standard::std140>
+	void addEntriesPacked(const std::pair<StringHash, GpuDatatypes::Enum>* const entries, pvr::uint32 numEntries)
+	{
+		for (pvr::uint32 i = 0; i < numEntries; ++i){	addEntryPacked(entries[i].first, entries[i].second);	}
+	}
+
+
 	uint32 getOffset(const StringHash& name) const { return getOffset(getIndex(name)); }
 
 	uint32 getOffset(uint32 variableIndex) const

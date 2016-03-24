@@ -288,9 +288,9 @@ pvr::Result::Enum OGLESBumpMap::initView()
 ***********************************************************************************************************************/
 pvr::Result::Enum OGLESBumpMap::releaseView()
 {
-	deviceResource.release();
+	deviceResource.reset();
 	uiRenderer.release();
-	scene.release();
+	scene.reset();
 	assetManager.releaseAll();
 	return pvr::Result::Success;
 }

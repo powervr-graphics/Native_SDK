@@ -17,6 +17,13 @@
 #include <bitset>
 
 namespace pvr {
+inline void reportDestroyedAfterContext(const char* objectName)
+{
+	Log(Log.Warning, "Attempted to destroy object of type [%s] after its corresponding context", objectName);
+#ifdef DEBUG
+#endif
+}
+
 /*!**********************************************************************************************************
 \brief Contains functions and methods related to the wiring of the PVRApi library to the underlying platform,
 including extensions and the Context classes.
@@ -35,7 +42,7 @@ inline void GL_APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLe
 /*!*********************************************************************************************************************
 \brief IGraphicsContext implementation that supports all OpenGL ES 2 and above versions.
 ***********************************************************************************************************************/
-class ContextGles : public IGraphicsContext
+class ContextGles : public IGraphicsContext, public EmbeddedRefCount<ContextGles>
 {
 public:
 	typedef void(*fnBindPipeline)(void*, IGraphicsContext& context);
@@ -81,7 +88,7 @@ public:
 	\description This function must be called before using the Context. Will use the OS manager to make this Context
 	ready to use.
 	***********************************************************************************************************************/
-	Result::Enum init(OSManager& osManager, GraphicsContext& my_wrapper);
+	Result::Enum init(OSManager& osManager);
 
 	void setUpCapabilities();
 
@@ -94,15 +101,17 @@ public:
 		{
 			m_osManager = 0;
 			memset(&(ApiCapabilitiesPrivate&)m_apiCapabilities, 0, sizeof(ApiCapabilitiesPrivate));
-			m_defaultRenderPass.release();
+			m_defaultRenderPass.reset();
 			m_extensions.clear();
+			m_defaultCmdPool.reset();
+			m_defaultDescPool.reset();
+			m_defaultSampler.reset();
 			m_ContextImplementationID = (size_t)(-1);
 			m_platformContext = 0;
 			m_apiType = Api::Unspecified;
 			m_renderStatesTracker.releaseAll();
 			gl::releaseGl();
 		}
-		m_this_shared.release();
 	}		//Error if no display set
 
 	/*!****************************************************************************************************************
@@ -426,7 +435,10 @@ public:
 	}
 
 	const api::DescriptorPool& getDefaultDescriptorPool()const { return m_defaultDescPool; }
-
+	static StrongReferenceType createNew()
+	{
+		return EmbeddedRefCount<ContextGles>::createNew();
+	}
 protected:
 	RenderStatesTracker m_renderStatesTracker;
 
@@ -443,7 +455,6 @@ protected:
 	***********************************************************************************************************************/
 	ContextGles(size_t implementationId);
 
-protected:
 	api::CommandPool m_defaultCmdPool;
 	api::DescriptorPool m_defaultDescPool;
 	api::RenderPass m_defaultRenderPass;
@@ -452,6 +463,9 @@ protected:
 	mutable std::string m_extensions;
 	api::Sampler m_defaultSampler;
 	std::vector<std::pair<fnBindPipeline, void*>/**/> m_pushedPipelines;
+
+private:
+	virtual void destroyObject() { release(); }
 };
 }
 namespace native { struct HContext_ {}; }

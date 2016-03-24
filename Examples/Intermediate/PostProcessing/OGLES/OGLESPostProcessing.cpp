@@ -670,9 +670,9 @@ a change in the rendering context.
 pvr::Result::Enum OGLESBloom::releaseView()
 {
 	uiRenderer.release();
-	scene.release();
+	scene.reset();
 	assetManager.releaseAll();
-	deviceResource.release();
+	deviceResource.reset();
 	return pvr::Result::Success;
 }
 

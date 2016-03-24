@@ -34,6 +34,13 @@ public:
 	\return Return true on success, false in case of error
 	***********************************************************************************************************************/
 	bool init(const RenderPassCreateParam& createParam);
+
+	/*!*********************************************************************************************************************
+	\brief Release all resources held by this object
+	***********************************************************************************************************************/
+	void destroy();
+
+	~RenderPassVk_();
 };
 
 typedef RefCountedResource<RenderPassVk_> RenderPassVk;

@@ -44,10 +44,6 @@ bool Buffer_::allocate(uint32 size, types::BufferBindingUse::Bits bufferUsage, t
 	return native_cast(this)->allocate(size, types::BufferBindingUse::Enum(bufferUsage), hint);
 }
 
-void Buffer_::destroy() { static_cast<vulkan::BufferVk_*>(this)->destroy(); }
-
-void BufferView_::destroy() {}
-
 const native::HBuffer_& Buffer_::getNativeObject()const { return native_cast(*this); }
 
 native::HBuffer_& Buffer_::getNativeObject() {	return native_cast(*this); }
@@ -86,23 +82,20 @@ void BufferVk_::destroy()
 		}
 		memory = VK_NULL_HANDLE;
 		buffer = VK_NULL_HANDLE;
+		m_context.reset();
 	}
 }
 
 BufferVk_::~BufferVk_()
 {
-	if (isAllocated())
+	if (m_context.isValid())
 	{
-		if (m_context.isValid())
-		{
-			destroy();
-		}
-		else
-		{
-			Log(Log.Warning, "Buffer object was not released before context destruction");
-		}
+		destroy();
 	}
-	m_context.reset();
+	else
+	{
+		Log(Log.Warning, "Buffer object was not released before context destruction");
+	}
 }
 
 void BufferVk_::update(const void* data, uint32 offset, uint32 length)

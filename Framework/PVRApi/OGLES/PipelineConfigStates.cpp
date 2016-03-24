@@ -334,7 +334,7 @@ void GraphicsShaderProgramState::reset(pvr::IGraphicsContext& device)
 }
 void GraphicsShaderProgramState::destroy()
 {
-	gl::DeleteProgram(m_shaderProgram->handle); m_shaderProgram.release(); m_isValid = false;
+	gl::DeleteProgram(m_shaderProgram->handle); m_shaderProgram.reset(); m_isValid = false;
 	debugLogApiError("GraphicsShaderProgramState::destoy exit");
 }
 void GraphicsShaderProgramState::generate()

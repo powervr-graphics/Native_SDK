@@ -9,16 +9,18 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanBumpmap
-DEPENDS =  PVRCore PVRAssets PVRVulkanGlue PVRVulkan PVRNativeVulkan PVRShell PVRUIRenderer
-LIBRARIES =  PVRUIRenderer PVRShell PVRNativeVulkan PVRVulkan PVRVulkanGlue PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRVulkanGlue PVRNativeVulkan PVRVulkan PVRShell PVRUIRenderer
+LIBRARIES =  PVRUIRenderer PVRShell PVRVulkan PVRNativeVulkan PVRVulkanGlue PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
            Vulkan/VulkanBumpmap.o
 
 RESOURCES += \
-           FragShader_VK.spv\
-           VertShader_VK.spv\
+           FragShader_VK.fsh\
+           FragShader_VK.fsh.spv\
+           VertShader_VK.vsh\
+           VertShader_VK.vsh.spv\
 
 COMMON_RESOURCES += \
            MarbleNormalMap.pvr\

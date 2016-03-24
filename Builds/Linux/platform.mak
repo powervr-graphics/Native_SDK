@@ -17,7 +17,7 @@ DEBUG_RELEASE = Debug
 PLAT_CFLAGS   += -DDEBUG -g
 else
 DEBUG_RELEASE = Release
-PLAT_CFLAGS   += -DRELEASE -O3
+PLAT_CFLAGS   += -DRELEASE -O2
 endif
 PLAT_CFLAGS   += -Wno-psabi
 

@@ -111,7 +111,7 @@ public:
 		TileTasksQueue::ConsumerToken processQConsumerToken;
 		TileTasksQueue::ProducerToken drawQProducerToken;
 		uint8 lastSwapIndex;
-		api::CommandPool cmdPool;
+		std::vector<api::CommandPool> cmdPools;
 		std::array<std::vector<api::SecondaryCommandBuffer>, MAX_NUMBER_OF_SWAP_IMAGES> preFreeCmdBuffers;
 		std::array<std::vector<api::SecondaryCommandBuffer>, MAX_NUMBER_OF_SWAP_IMAGES> freeCmdBuffers;
 		ApiObjects(TileTasksQueue& processQ, TileTasksQueue& drawQ) :
@@ -430,7 +430,17 @@ api::SecondaryCommandBuffer GnomeHordeTileThreadData::getFreeCommandBuffer(uint8
 	}
 	if (retval.isNull())
 	{
-		retval = apiObj->cmdPool->allocateSecondaryCommandBuffer();
+		retval = apiObj->cmdPools.back()->allocateSecondaryCommandBuffer();
+		if (retval.isNull())
+		{
+			Log(Log.Error, "[THREAD %d] Command buffer allocation failed, . Trying to create additional command buffer pool.", id);
+			apiObj->cmdPools.push_back(app->getGraphicsContext()->createCommandPool());
+			retval = apiObj->cmdPools.back()->allocateSecondaryCommandBuffer();
+			if (retval.isNull())
+			{
+				Log(Log.Critical, "COMMAND BUFFER ALLOCATION FAILED ON FRESH COMMAND POOL.");
+			}
+		}
 	}
 	return retval;
 }
@@ -852,7 +862,8 @@ Result::Enum VulkanGnomeHorde::initView()
 			tileThreadData[i].id = i;
 			tileThreadData[i].app = this;
 			tileThreadData[i].apiObj.reset(new GnomeHordeTileThreadData::ApiObjects(tilesToProcessQ, tilesToDrawQ));
-			tileThreadData[i].apiObj->cmdPool = ctx->createCommandPool();
+			tileThreadData[i].apiObj->cmdPools.clear();
+			tileThreadData[i].apiObj->cmdPools.push_back(ctx->createCommandPool());
 			tileThreadData[i].thread = std::thread(&GnomeHordeTileThreadData::run, (GnomeHordeTileThreadData*)&tileThreadData[i]);
 		}
 	}

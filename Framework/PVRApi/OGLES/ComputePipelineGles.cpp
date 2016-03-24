@@ -35,7 +35,6 @@ public:
 
 	void setAll();
 
-#pragma warning IMPLEMENT_COMPUTE_PIPELINE
 	native::HPipeline_& getNativeObject() { return *this; }
 	const native::HPipeline_& getNativeObject() const { return *this; }
 
@@ -156,6 +155,7 @@ Result::Enum ComputePipelineImplementationDetails::createProgram()
 	if ((!pvr::utils::createShaderProgram(&shader, 1, 0, 0, 0, program->getNativeObject(), 0,
 	                                      &m_context->getApiCapabilities())))
 	{
+		delete program;
 		return Result::UnknownError;
 	}
 	m_states.states.push_back(program);

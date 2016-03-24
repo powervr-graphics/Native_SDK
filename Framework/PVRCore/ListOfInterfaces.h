@@ -144,7 +144,7 @@ class ListOfInterfaces
 		{
 			while (list.size())
 			{
-				delete(list.front());
+				free(list.front());
 				list.pop_front();
 			}
 		}

@@ -15,23 +15,6 @@
 namespace pvr {
 namespace api {
 namespace impl {
-void Sampler_::destroy()
-{
-	VkSampler& s = native_cast(*this).handle;
-	if (getContext().isValid())
-	{
-		if (s != VK_NULL_HANDLE)
-		{
-			vk::DestroySampler(native_cast(*getContext()).getDevice(), getNativeObject(), NULL);
-			s = VK_NULL_HANDLE;
-		}
-	}
-	else
-	{
-		Log(Log.Warning, "Sampler was destroyed AFTER its context was release");
-	}
-}
-
 native::HSampler_& Sampler_::getNativeObject()
 {
 	return native_cast(*this);
@@ -44,6 +27,21 @@ const native::HSampler_& Sampler_::getNativeObject() const
 }// namespace impl
 
 namespace vulkan {
+void SamplerVk_::destroy()
+{
+	VkSampler& s = native_cast(*this).handle;
+	if (getContext().isValid())
+	{
+		if (s != VK_NULL_HANDLE)
+		{
+			vk::DestroySampler(native_cast(*getContext()).getDevice(), getNativeObject(), NULL);
+			s = VK_NULL_HANDLE;
+		}
+	}
+}
+
+
+
 bool SamplerVk_::init(const api::SamplerCreateParam& samplerDesc)
 {
 	VkSamplerCreateInfo samplerInfo;

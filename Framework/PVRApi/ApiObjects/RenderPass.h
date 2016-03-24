@@ -24,7 +24,7 @@ struct RenderPassColorInfo
 	types::LoadOp::Enum         loadOpColor;//!< Color attachment load operation
 	types::StoreOp::Enum        storeOpColor;//!< Color attachment store operation
 	pvr::uint32          numSamples;//!< Number of samples
-	
+
 	/*!****************************************************************************************************************
 	\brief ctor
 	*******************************************************************************************************************/
@@ -32,7 +32,7 @@ struct RenderPassColorInfo
 	{
 		format.format = PixelFormat::Unknown;
 	}
-	
+
 	/*!****************************************************************************************************************
 	\brief ctor
 	\param format Color format
@@ -41,8 +41,8 @@ struct RenderPassColorInfo
 	\param numSamples Number of samples
 	*******************************************************************************************************************/
 	RenderPassColorInfo(const api::ImageDataFormat& format, types::LoadOp::Enum  loadOpColor = types::LoadOp::Load,
-	                    types::StoreOp::Enum  storeOpColor = types::StoreOp::Store, pvr::uint32  numSamples = 0) : 
-						format(format),	loadOpColor(loadOpColor), storeOpColor(storeOpColor), numSamples(numSamples)
+	                    types::StoreOp::Enum  storeOpColor = types::StoreOp::Store, pvr::uint32  numSamples = 0) :
+		format(format),	loadOpColor(loadOpColor), storeOpColor(storeOpColor), numSamples(numSamples)
 	{}
 };
 /*!*********************************************************************************************************************
@@ -68,7 +68,7 @@ public:
 	\param loadOpStencil Stencil load operator
 	\param storeOpStencil Stencil Store operator
 	\param numSamples Number of samples
-	*******************************************************************************************************************/	
+	*******************************************************************************************************************/
 	RenderPassDepthStencilInfo(const api::ImageDataFormat& format, types::LoadOp::Enum  loadOpDepth = types::LoadOp::Load,
 	                           types::StoreOp::Enum  storeOpDepth = types::StoreOp::Store, types::LoadOp::Enum  loadOpStencil = types::LoadOp::Load,
 	                           types::StoreOp::Enum storeOpStencil = types::StoreOp::Store, pvr::uint32 numSamples = 1) :
@@ -125,17 +125,17 @@ public:
 	\brief Return number of color attachments
 	***********************************************************************************************************************/
 	uint8 getNumColorAttachment()const { return numColorAttachment; }
-	
+
 	/*!*********************************************************************************************************************
 	\brief Return number of input attachments
 	***********************************************************************************************************************/
 	uint8 getNumInputAttachment()const { return numInputAttachment; }
-	
+
 	/*!*********************************************************************************************************************
 	\brief Return number of resolve attachments
 	***********************************************************************************************************************/
 	uint8 getNumResolveAttachment()const { return numResolveAttachment; }
-	
+
 	/*!*********************************************************************************************************************
 	\brief Return number of preserve attachments
 	***********************************************************************************************************************/
@@ -221,6 +221,13 @@ struct RenderPassCreateParam
 private:
 	friend class impl::RenderPass_;
 public:
+	void clear()
+	{
+		color.clear();
+		subPass.clear();
+		subPassDependency.clear();
+	}
+
 	RenderPassDepthStencilInfo        depthStencil;
 	std::vector<RenderPassColorInfo>  color;
 	std::vector<SubPass>			  subPass;
@@ -338,23 +345,23 @@ class EndRenderPass;
 class RenderPass_
 {
 public:
-	virtual ~RenderPass_() { destroy(); }
+	virtual ~RenderPass_() { }
 
 	/*!*********************************************************************************************************************
 	\brief Return const reference to the underlying native object
 	***********************************************************************************************************************/
 	const native::HRenderPass_& getNativeObject() const;
-	
+
 	/*!*********************************************************************************************************************
 	\brief Return reference to the underlying native object
 	***********************************************************************************************************************/
 	native::HRenderPass_& getNativeObject();
-	
+
 	/*!*********************************************************************************************************************
 	\brief Return const reference to the context which own this object
 	***********************************************************************************************************************/
 	const GraphicsContext& getContext()const { return m_context; }
-	
+
 	/*!*********************************************************************************************************************
 	\brief Return reference to the context which own this object
 	***********************************************************************************************************************/
@@ -364,7 +371,6 @@ protected:
 	\brief Creates a new RenderPass object. Use through the IGraphicsContext::createRenderPass.
 	*********************************************************************************************************************/
 	RenderPass_(GraphicsContext& device) : m_context(device) {}
-	void destroy();
 	GraphicsContext m_context;
 };
 }

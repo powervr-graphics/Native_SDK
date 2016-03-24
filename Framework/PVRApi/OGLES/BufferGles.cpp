@@ -97,22 +97,6 @@ const native::HBuffer_& impl::Buffer_::getNativeObject() const
 // inline) through this pointer.
 }
 
-void impl::Buffer_::destroy()
-{
-	if (m_context.isValid())
-	{
-		gl::DeleteBuffers(1, &getNativeObject().handle);
-		debugLogApiError("Buffer_::destroy exit");
-	}
-	else
-	{
-		Log(Log.Warning, "Buffer object was not released before context destruction");
-	}
-	m_context.release();
-}
-
-void impl::BufferView_::destroy() {	buffer.reset(); }
-
 const pvr::native::HBufferView_& impl::BufferView_::getNativeObject()const
 {
 	return static_cast<const gles::BufferViewGles_&>(*this);
@@ -123,6 +107,19 @@ pvr::native::HBufferView_& impl::BufferView_::getNativeObject()
 }
 
 namespace gles {
+void BufferGles_::destroy()
+{
+	if (m_context.isValid())
+	{
+		gl::DeleteBuffers(1, &getNativeObject().handle);
+		debugLogApiError("Buffer_::destroy exit");
+	}
+	m_context.reset();
+}
+
+void BufferViewGles_::destroy() { buffer.reset(); }
+
+
 inline void BufferGles_::update_(const void* data, uint32 offset, uint32 length)
 {
 	gl::BindBuffer(m_lastUse, handle);

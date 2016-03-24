@@ -30,12 +30,10 @@ native::HSampler_& Sampler_::getNativeObject()
 {
 	return static_cast<gles::SamplerGles_&>(*this);
 }
-
-void Sampler_::destroy() { static_cast<gles::SamplerGles_&>(*this).destroy_(); }
 }
 
 namespace gles {
-inline void SamplerGles_::destroy_()
+void SamplerGles_::destroy()
 {
 	if (m_initialized && m_context.isValid() && m_context->hasApiCapability(ApiCapabilities::Sampler))
 	{

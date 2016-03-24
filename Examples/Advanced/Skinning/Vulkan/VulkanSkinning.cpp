@@ -369,8 +369,8 @@ pvr::Result::Enum VulkanSkinning::initApplication()
 ***********************************************************************************************************************/
 pvr::Result::Enum VulkanSkinning::quitApplication()
 {
-	scene.release();
-	deviceResource.release();
+	scene.reset();
+	deviceResource.reset();
 	return pvr::Result::Success;
 }
 

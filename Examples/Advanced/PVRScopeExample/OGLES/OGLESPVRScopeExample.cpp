@@ -273,7 +273,7 @@ pvr::Result::Enum OGLESPVRScopeExample::initApplication()
 pvr::Result::Enum OGLESPVRScopeExample::quitApplication()
 {
 	//Instructs the Asset Store to free all resources
-	scene.release();
+	scene.reset();
 	assetStore.releaseAll();
 	return pvr::Result::Success;
 }
