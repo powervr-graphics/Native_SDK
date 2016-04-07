@@ -50,8 +50,133 @@
 
     <div class="content">
         <h1>Release Notes</h1>
-		<p><a href="#4.0" class="link">v4.0</a>  |  <a href="#3.5" class="link">v3.5</a>  |  <a href="#3.4" class="link">v3.4</a>  |  <a href="#3.3" class="link">v3.3</a></p>
+		<p><a href="#R1" class="link">2016 R1</a>  |  <a href="#4.0" class="link">v4.0</a>  |  <a href="#3.5" class="link">v3.5</a>  |  <a href="#3.4" class="link">v3.4</a>  |  <a href="#3.3" class="link">v3.3</a></p>
+		<p>For the latest version of the Release Notes please go <a href="https://community.imgtec.com/download-notes/">here</a>.</p>
 		
+		<div id="R1">
+			<h2>PowerVR Tools and SDK 2016 R1</h2>
+			<h3>Overview</h3>
+			<p>In our first release of 2016, we have provided a host of new fixes and updates – including a fully functioning Vulkan backend for the PVR Framework. The Framework itself consists of a light-weight abstraction layer, as well as utility functions, that provide explicit control of Vulkan whilst reducing the amount of code required to render a scene. It features, among other things: utilities for common tasks, such as object creation and asset uploading (e.g. mesh loading & pipeline baking), simplified object lifetime management, and cross-platform setup. It also includes the GnomeHorde demo, specifically created to show multi-threaded command buffer management for Vulkan.</p>
+			<h3>Builds</h3>
+				<ul>
+				<li>Added support for the MIPS r6el toolchain.</li>
+				</ul>
+			<h3>PVRFramework v4.1</h3>
+				<ul>	
+				<li>Brand new fully functioning Vulkan Backend.</li>
+				<li>PVRCore:</li>
+					<ul>
+					<li>New Embedded Refcounted Pointer allows better integration in several cases that need to have awareness of their refcounting and/or have to provide smart pointers to themselves.</li>
+					<li>Frustum class with frustum querying/culling functions to facilitate visibility tests.</li>
+					</ul>
+				<li>PVRApi:</li>
+					<ul>
+					<li> PVRApi has been broken into PVRNativeApi (the OpenGLES/Vulkan bindings) and the rest PVRApi (the API abstraction). </li>
+					<li> Several API objects had their implementations updated to correctly work with Vulkan.</li>
+					<li>Functions that create objects that are allocated from Pools have been moved from the Context to the actual Pool objects.</li>
+					<li>Numerous CPU-side performance/memory optimisations.</li>
+					<li> Textures and TextureViews had their interface changed slightly (Swizzling is now part of the view, Allocation is part of the texture).</li>
+					<li>Pipeline Creation had its interface tweaked to work with Vulkan (RenderPass/SubPass is now passed to the Pipeline as a parameter).</li>
+					<li>Some objects (Context, Pool) updated with the new embedded refcounting strategy.</li>
+					<li>Utils: a new StructuredMemoryView class allows storing the layout of UBOs and similar objects whose structure needs to be known to be updated. Supports providing custom pointers or connecting with buffers for auto-mapping/unmapping.</li>
+					<li>Texture upload util function also return de-compressed format and boolean indicating whether the texture has been de-compressed.</li>
+					<li>Framebuffer ColorAttachmentView and DepthStencilAttachmentView are now being removed and instead the Fbo uses the TextureView as their attachment.</li>
+					</ul>
+				<li>PVRUIRenderer:</li>
+					<ul>
+					<li>PVRUIRenderer needs the render pass and the subpass at the initialization.</li>
+					</ul>
+				<li>PVRNativeApi:</li>
+					<ul>
+					<li> Texture upload util function return de-compressed format and boolean indicating if the texture has been de-compressed.</li>
+					</ul>
+				</ul>
+			<h3>Examples</h3>
+				<ul>
+				<li> Gnome Horde: A demo specifically created to show a strategy for multi-threaded command buffer creation for Vulkan.</li> 
+				<li> Ported to Vulkan: HelloApi, IntroducingPVRShell, IntroducingPVRAssets, IntroducingPVRApi, Bumpmap, Skinning, Deferred shading.</li>
+				</ul>
+			<h3>PVRTexTool v4.16</h3>
+				<ul>
+				<li> Library: Fixed BRN58175. Declared and defined an empty default destructor for PVRTextureHeader to prevent the compilation of a default destructor in the linking binary.</li>
+				</ul>
+			<h3>PVRShaderEditor v2.7</h3>
+				<ul>
+				<li>ShaderEditComponent: Fixed an issue where the compiler process was timing out early, and no output would be retrieved.</li>
+				<li>The compiler executable is now selectable per tab.</li>
+				</ul>
+			<h3>PVRVFrame v10.3</h3>
+				<ul>
+				<li>Added support for EGL_KHR_create_context_no_error.</li>
+				<li>Added support for GL_KHR_no_error.</li>
+				<li>Fixed eglMakeCurrent returning EGL_BAD_ALLOC when requesting an ES 3.2 context.</li>
+				<li>Fixed EGL_BAD_MATCH being reported when explicitly requesting an ES 3.2 context.</li>
+				<li>Fixed a case where shaders may fail to translate when the host GLSL version is less than 330.</li>
+				<li>Fixed possible shader translation failures when using instancing or uniform blocks.</li>
+				<li>Fixed a bug where shaders might fail to translate when the host GLSL version is less than 150.</li>
+				<li>Fixed a possible crash on Linux during context creation when GLX_ARB_create_context is not available.</li>
+				<li>Fixed EGL_BUFFER_SIZE sometimes being initialized incorrectly on Windows (BRN57130).</li>
+				<li>Fixed error checking in glInvalidateFramebuffer and glInvalidateSubFramebuffer (BRN58009).</li>
+				<li> Stopped erroneously reporting support for GL_IMG_shader_binary and GL_IMG_program_binary.</li>
+				<li>Fixed a bug in OES_required_internalformat support where some internal formats weren't being accepted.</li>
+				</ul>
+			<h3>PVRGeoPOD v2.17</h3>
+				<ul>
+				<li>3DSMax: Added support for 3DSMax 2016 SP2 (igame version 18.6.667.0).</li>
+				</ul>
+			<h3>PVRTune v14.141</h3>
+				<ul>
+				<li>Added counter: "ISP pixel load".</li>
+				<li>Added "Overdraw" counter.</li>
+				<li>Hide counters for cores that the HW does not have.</li>
+				</ul>
+			<h3>PVRTrace v3.7</h3>
+				<h5>PVRTraceGUI</h5>
+					<ul>
+					<li>Added string representations of enums defined by EGL_EXT_image_dma_buf_import and EGL_IMG_image_plane_attribs .</li>
+					<li>Added a progress bar to show the progress of image analysis. This implements BRN49610 and BRN58206.</li>
+					<li>Added enums from GL_KHR_no_error and EGL_KHR_create_context_no_error. This fixes BRN56048.</li>
+					<li>Fixed a bug that caused image analysis to fail when interrupting the analysis.</li>
+					<li>Pixel analysis by default now works on the whole frame and not just up to the scrubber. An option is available in the preferences to make the pixel analysis work along with the scrubber.</li>
+					<li>The find results widget now becomes visible when a search is started. This fixes BRN58413.</li>
+					<li>Added support for viewing buffer object data in hex format.</li>
+					<li>Image analysis renders are now cached for all renders that don't require pixel analysis. The caching can be enabled/disabled in the preferences.</li>
+					<li>We no longer do highlighting in single primitive mode if it isn't the single primitive we're showing.</li>
+					<li>Added support for EGL Displays and GLES Samplers to the object data viewer.</li>
+					<li>When viewing a program object you can now see the values of uniforms (only if the trace file was recorded with 4.0 or later).</li>
+					<li>Added a Call Hierarchy widget which will show you all the calls the current call/object depends on at that point in time.</li>
+					<li>Added options to save out the pixel analysis table data.</li>
+					<li>Memory barriers will now display GL_ALL_BARRIER_BITS if that is what it is set to.</li>
+					<li>Program stages will now display GL_ALL_SHADER_BITS if that is what it is set to.</li>
+					<li>Fixed playback of separate shader objects.</li>	
+					<li>Tweaked the Draw Call List widget design to better accommodate separate shader objects.</li>
+					<li>Under the EGL Objects tabs EglImages are now split by target.</li>
+					<li>We now recognise extension GL_EXT_texture_sRGB_decode.</li>
+					<li>Fixed the function quick help for glUnmapBuffer.</li>
+					<li>Fixed the loading of ES1.1 trace files that do matrix operations using the default matrix mode.</li>
+					<li>Fixed a bug where it was possible to have an empty EGLSurfaces header in the EGL Objects list.</li>
+					<li>You can now copy search results to the clipboard by right-clicking on the Search's heading and choosing copy.</li>
+					</ul>
+				<h5>PVRTracePlayback</h5>
+					<ul>
+					<li>Added command-line option "--render-offscreen" that will render to an offscreen framebuffer object instead of the draw surface.</li>
+					<li>Saving screenshots now adequately takes into account the packing alignment and pixel pack buffers.</li>
+					<li>Added command-line option "--print-object-mapping" which will print the mapping between recorded object names and playback object names.</li>
+					<li>Added .pvrtrace to the recognised file types for the OSX playback.</li>
+					<li>Modified the usage of the command-line option "--save-frame-buffer" so it takes an optional range of frames to output instead of the output location. If you wish to define an output location for the framebuffers you can define it with "--output=".</li>
+					<li>Fixed the displaying of the filesize for files above 2147483647 bytes. This fixes BRN58259.</li>
+					<li>Added --override-shaders command-line option that will allow you to modify shaders. On first run this command-line will dump out the shader to the location of the trace file. On subsequent runs the shaders will be loaded and used during playback. This implements BRN58130.</li>
+					<li>Added command-line option --export-saved-frame-buffers that exports the framebuffers saved in the trace file. This implements BRN58141.</li>
+					<li>Added command-line option --disable-no-error which disables the use of EGL_KHR_create_context_no_error and GL_KHR_no_error during playback. This implements BRN56049.</li>
+					</ul>
+				<h5>PVRTrace Recorder</h5>
+					<ul>
+					<li>The message "Recording... Current frame" is now correctly output for frame 0.</li>
+					<li>Fixed a bug in the config attribute querying code that could have made the following call return an error of EGL_BAD_ATTRBUTE.</li>
+					<li>Optimised recording of glUnmapBuffer. Buffers mapped with GL_MAP_FLUSH_EXPLICIT_BIT or without GL_MAP_WRITE_BIT are not saved out during this call.</li>
+					</ul>
+		</div>
+&nbsp;	
 		<div id="4.0">
 			<h2>PowerVR Tools and SDK v4.0</h2>
 			<h3>Overview</h3>

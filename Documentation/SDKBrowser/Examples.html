@@ -70,12 +70,12 @@ OpenGL ES is a cross-platform API for 2D and 3D graphics on embedded systems suc
 						<input type="checkbox" id="HelloAPIFull2">
 							<label for="HelloAPIFull2" title="Click for more information"><h3>HelloAPI</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>Draw a triangle to the screen using hardware acceleration.
-</p><small><b>OpenGL ES 2.0
+</p><small><b>Vulkan 1.0, OpenGL ES 2.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>A basic tutorial that guides the user, step-by-step, through the process of initializing a window using OpenGL ES 2, drawing a triangle with a simple shader, and then terminating the window.
+								<p>A basic tutorial that guides the user, step-by-step, through the process of initializing a window using the "raw" API, (Vulkan or OpenGL ES 2), drawing a triangle with a simple shader, and then terminating the window.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
@@ -91,7 +91,7 @@ OpenGL ES is a cross-platform API for 2D and 3D graphics on embedded systems suc
 						<input type="checkbox" id="IntroducingPVRShellFull2">
 							<label for="IntroducingPVRShellFull2" title="Click for more information"><h3>IntroducingPVRShell</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>This training course introduces the PVRShell library.
-</p><small><b>OpenGL ES 2.0
+</p><small><b>Vulkan 1.0, OpenGL ES 2.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
@@ -111,13 +111,13 @@ OpenGL ES is a cross-platform API for 2D and 3D graphics on embedded systems suc
 						<a href="../../Examples/Beginner/03_IntroducingPVRAssets/IntroducingPVRAssets.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/03_IntroducingPVRAssets/IntroducingPVRAssets.png" alt="IntroducingPVRAssets" /></a>
 						<input type="checkbox" id="IntroducingPVRAssetsFull2">
 							<label for="IntroducingPVRAssetsFull2" title="Click for more information"><h3>IntroducingPVRAssets</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>Load a scene in POD format using the PVRAssets library, and render it using OpenGL ES 2.0
-</p><small><b>OpenGL ES 2.0
+							<div class="ShortDescription" id="TexturingShort"><p>Load a scene in POD format using the PVRAssets library, and render it using native API calls.
+</p><small><b>Vulkan 1.0, OpenGL ES 2.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This training course introduces the PowerVR Framework PVRAssets library, and shows how to use it to read a PowerVR Object Data (.pod) file and textures.  It goes into detail on how to open .pod files, .pvr files that have been referenced by it, and set up the cameras and lights from the .pod file. This demo also demonstrates the use of the PVR OpenGL ES bindings (a part of PVRGles), which is the OpenGL binding used in the native parts of this this SDK.
+								<p>This training course introduces the PowerVR Framework PVRAssets library, and shows how to use it to read a PowerVR Object Data (.pod) file and textures.  It goes into detail on how to open .pod files, .pvr files that have been referenced by it, and set up the cameras and lights from the .pod file. This demo also demonstrates the use of PVRNativeApi (either Vulkan or OpenGL ES), which is the API binding used in the native parts of this this SDK.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
@@ -132,13 +132,13 @@ OpenGL ES is a cross-platform API for 2D and 3D graphics on embedded systems suc
 						<a href="../../Examples/Beginner/04_IntroducingPVRApi/IntroducingPVRApi.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/04_IntroducingPVRApi/IntroducingPVRApi.png" alt="IntroducingPVRApi" /></a>
 						<input type="checkbox" id="IntroducingPVRApiFull2">
 							<label for="IntroducingPVRApiFull2" title="Click for more information"><h3>IntroducingPVRApi</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>Render a .pod scene using a .pfx effect file with automatic shader versioning using the PVRApi library.
-</p><small><b>OpenGL ES 2.0/3.0
+							<div class="ShortDescription" id="TexturingShort"><p>Ρender a .pod scene using a .pfx effect file with automatic shader versioning using the PVRApi library.
+</p><small><b>Vulkan 1.0, OpenGL ES 2.0/3.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This training course demonstrates how to use the PVRApi library to render a scene from a pod file, using a .pfx effect file. PFX is both a file format and an API, and stands for PowerVR Effects. The library loads the POD file and the PFX file separately, creates a PVRAssets Model from the POD and a PVRApi Effect from the PFX file, and combines them to render the scene using the PVRApi necessary objects. Uses the PVRUIRenderer library to display simple text on screen. Different Shader versions provided for OpenGL ES 2.x and 3.x.
+								<p>This training course demonstrates how to use the PVRApi library to render a scene from a pod file, using a .pfx effect file. PFX is both a file format and an API, and stands for PowerVR Effects. The library loads the POD file and the PFX file separately, creates a PVRAssets Model from the POD and a PVRApi Effect from the PFX file, and combines them to render the scene using the PVRApi necessary objects. Uses the PVRUIRenderer library to display simple text on screen. Provided for Vulkan (with SpirV shaders) and OpenGL ES(version 2.x and 3.x shaders).
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
@@ -148,13 +148,13 @@ OpenGL ES is a cross-platform API for 2D and 3D graphics on embedded systems suc
 						</input>
 					</div>
 				</li>
-				<li id="IntroducingPVRUIRenderer">
+				<li id="IntroUIRenderer">
 					<div class="title">
-						<a href="../../Examples/Beginner/05_IntroducingPVRUIRenderer/IntroducingPVRUIRenderer.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/05_IntroducingPVRUIRenderer/IntroducingPVRUIRenderer.png" alt="IntroducingPVRUIRenderer" /></a>
-						<input type="checkbox" id="IntroducingPVRUIRendererFull2">
-							<label for="IntroducingPVRUIRendererFull2" title="Click for more information"><h3>IntroducingPVRUIRenderer</h3></label>
+						<a href="../../Examples/Beginner/05_IntroUIRenderer/IntroUIRenderer.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/05_IntroUIRenderer/IntroUIRenderer.png" alt="IntroUIRenderer" /></a>
+						<input type="checkbox" id="IntroUIRendererFull2">
+							<label for="IntroUIRendererFull2" title="Click for more information"><h3>IntroUIRenderer</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>This training course introduces the PVRUIRenderer library to do advanced Text tasks.
-</p><small><b>OpenGL ES 2.0
+</p><small><b>Vulkan 1.0, OpenGL ES 2.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
@@ -165,7 +165,7 @@ In this example, UIRendererer is used to display images and Unicode text, screen
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
 								<p><strong>Links:</strong></p>
-								<p class="source"><a href="../../Examples/Beginner/05_IntroducingPVRUIRenderer/OGLES/OGLESIntroducingPVRUIRenderer.cpp" target="_blank">OGLESIntroducingPVRUIRenderer.cpp</a>  |  <a href="../../Examples/Beginner/05_IntroducingPVRUIRenderer/OGLES/Build/" target="_blank">Projects</a></p>
+								<p class="source"><a href="../../Examples/Beginner/05_IntroUIRenderer/OGLES/OGLESIntroUIRenderer.cpp" target="_blank">OGLESIntroUIRenderer.cpp</a>  |  <a href="../../Examples/Beginner/05_IntroUIRenderer/OGLES/Build/" target="_blank">Projects</a></p>
 							</div>
 						</input>
 					</div>
@@ -197,13 +197,13 @@ In this example, UIRendererer is used to display images and Unicode text, screen
 						<input type="checkbox" id="BumpmapFull2">
 							<label for="BumpmapFull2" title="Click for more information"><h3>Bumpmap</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>This training course demonstrates using a normal map to implement bump mapping using the PowerVR Framework.
-</p><small><b>OpenGL ES 2.0
+</p><small><b>Vulkan 1.0, OpenGL ES 2.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
 								<p>Bump mapping is a technique for simulating bumps and wrinkles on the surface of an object. This is achieved by perturbing the surface normals of the object and using the perturbed normal during the illumination calculations. The result is an apparently bumpy surface rather than a perfectly smooth surface although the surface of the underlying object is not actually changed. This technique is used extensively in graphics applications to add perceived detail to models without adding further geometry.
-This example can be used as the baseline for rendering an object. Uses different shaders for OpenGL ES 2.x and OpenGL ES 3.x
+This example can be used as the baseline for rendering an object. Implemented for Vulkan and OpenGL ES 2.0/3.0.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
@@ -219,7 +219,8 @@ This example can be used as the baseline for rendering an object. Uses different
 						<input type="checkbox" id="PostProcessingFull2">
 							<label for="PostProcessingFull2" title="Click for more information"><h3>PostProcessing</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>This training course demonstrates a simple implementation of a 'bloom' post processing effect.
-</p><small><b>OpenGL ES 2.0</small></b></div>
+</p><small><b>OpenGL ES 2.0
+</small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
@@ -370,7 +371,7 @@ Requires OpenGL ES 3.1 capable platform.
 						<input type="checkbox" id="SkinningFull2">
 							<label for="SkinningFull2" title="Click for more information"><h3>Skinning</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>This demo shows a scene with a combination of a skinned, bumpmapped character with non-skinned, non-bumpmapped objects.
-</p><small><b>OpenGL ES 2.0/3.0
+</p><small><b>Vulkan 1.0, OpenGL ES 2.0/3.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
@@ -378,7 +379,7 @@ Requires OpenGL ES 3.1 capable platform.
 								<p>The Skinning demo shows a Skinned Character in combination with bump mapping. Skinning is the act of animating a vertex over time given a set (palette) of matrices and a known set of blend weights assigned to those matrices. For each frame the Matrix Palette is recomputed based on time. PVRAssets and POD files support skinning. either full transformation Matrices, or Quaternion rotation with Scaling and Translation vectors. The provided POD file contains matrix animation.
 This example is using BoneBatching, which separates the mesh in smaller matrix palettes (Bone Batches) so that they can fit in the maximum number of allowed Uniform variables.
 Up to 4 matrices  from the palette, along with 4 weights can used for each vertext by the vertex shader to update the position to obtain the current animation frame position.
-Shaders provided for OpenGL ES 2.0 and OpenGL ES 3.0
+Versions provided for Vulkan, OpenGL ES 2.0 and OpenGL ES 3.0
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Action1/2/3	:	Pause</p><p>	Esc	:	Close</p></p>
