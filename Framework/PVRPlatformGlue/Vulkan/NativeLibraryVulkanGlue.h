@@ -9,10 +9,23 @@
 #define VK_USE_PLATFORM_ANDROID_KHR
 #elif defined(_WIN32)
 #define VK_USE_PLATFORM_WIN32_KHR
+#elif defined(X11)
+#define VK_USE_PLATFORM_XLIB_KHR
+#define VK_USE_PLATFORM_XCB_KHR
 #endif
 
 #define VK_NO_PROTOTYPES 1
 #include "vulkan/vulkan.h"
+#if defined (VK_USE_PLATFORM_XLIB_KHR)
+// undef these macros from the xlib files, they are breaking the framework types.
+#undef Success
+#undef Enum
+#undef None
+#undef Always
+#undef byte
+#undef char8
+#undef ShaderStageFlags
+#endif
 #include "PVRCore/Types.h"
 #include "PVRPlatformGlue/Vulkan/ApiVulkanGlue.h"
 #include <map>
@@ -34,41 +47,41 @@ public:
 	/*!*********************************************************************************************************************
 	\brief   Initialize the vullkan instance function pointers. Automatically Called just before context initialisation
 	***********************************************************************************************************************/
-	static bool initVulkanGlueInstance(VkInstance instance);	
-	
+	static bool initVulkanGlueInstance(VkInstance instance);
+
 	/*!*********************************************************************************************************************
 	\brief   Initialize the vullkan  device function pointers. Automatically called just before context initialisation
 	***********************************************************************************************************************/
 	static bool initVulkanGlueDevice(VkDevice device);
-	
+
 	/*!*********************************************************************************************************************
 	\brief   Check for the presense of an VulkanGlue extension for the specified display
 	***********************************************************************************************************************/
 	static bool isVulkanGlueExtensionSupported(void* display, const std::string& extension);
-	
+
 	/*!*********************************************************************************************************************
 	\brief   Check for the presense of a Vulkan extension for the current context
 	***********************************************************************************************************************/
 	static bool isVulkanExtensionSupported(const std::string& extension);
-	
+
 	/*!*********************************************************************************************************************
 	\brief  Get number of extensions supported
 	\return Number of supported extensions
 	***********************************************************************************************************************/
 	static pvr::uint32 getNumExtensions() { return (pvr::uint32)extensionStore.size(); }
-	
+
 	/*!*********************************************************************************************************************
 	\brief  Get number of layers supported
 	\return Number of supported layers
 	***********************************************************************************************************************/
 	static pvr::uint32 getNumLayers() { return (pvr::uint32)layerStore.size(); }
-	
+
 	/*!*********************************************************************************************************************
 	\brief   Get all supported layers
 	\return Return all supported layers
 	***********************************************************************************************************************/
 	static VkLayerProperties* getAllLayersName() { return layerStore.data(); }
-	
+
 	/*!*********************************************************************************************************************
 	\brief   Get all supported extensions
 	\return Return all supported extensions
@@ -77,6 +90,7 @@ public:
 
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(DestroySemaphore);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(ResetFences);
+	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetFenceStatus);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(WaitForFences);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(DestroyFence);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateImage);
@@ -101,6 +115,7 @@ public:
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(EnumerateInstanceLayerProperties);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetPhysicalDeviceSurfaceCapabilitiesKHR);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetPhysicalDeviceSurfaceFormatsKHR);
+	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetPhysicalDeviceFormatProperties);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateSwapchainKHR);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetSwapchainImagesKHR);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(AcquireNextImageKHR);
@@ -129,6 +144,10 @@ public:
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateAndroidSurfaceKHR);
 #elif defined(VK_USE_PLATFORM_WIN32_KHR)
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateWin32SurfaceKHR);
+	// expose both of them so one of them get used.
+#elif defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_XCB_KHR)
+	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateXlibSurfaceKHR);
+	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateXcbSurfaceKHR);
 #else
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetPhysicalDeviceDisplayPropertiesKHR);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetDisplayModePropertiesKHR);

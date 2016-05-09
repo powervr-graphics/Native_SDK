@@ -194,8 +194,10 @@ struct DescriptorSetUpdate
 		pvr::int16 bindingId;
 		pvr::uint16 arrayIndex;
 		types::DescriptorType::Enum type;
-		DescriptorBinding(pvr::uint16 bindingId, pvr::uint16 index, types::DescriptorType::Enum type, const _Binding& obj) :
-			binding(obj), bindingId(bindingId), type(type), arrayIndex(index) {}
+        std::string shaderVariableName;
+        DescriptorBinding(pvr::uint16 bindingId, pvr::uint16 index, types::DescriptorType::Enum type,
+                          const _Binding& obj, const char* shaderVariableName = "") :
+            binding(obj), bindingId(bindingId), arrayIndex(index),type(type),shaderVariableName(shaderVariableName) {}
 		DescriptorBinding() : bindingId(-1) {}
 	};
 	typedef DescriptorBinding<pvr::api::BufferView> BufferViewBinding;
@@ -313,9 +315,10 @@ struct DescriptorSetUpdate
 	\param	sampler The sampler to add
 	\return	this object (allow chaining)
 	***********************************************************************************************************************/
-	DescriptorSetUpdate& setCombinedImageSampler(pvr::uint16 bindingId, const pvr::api::TextureView& texture, const pvr::api::Sampler& sampler)
+    DescriptorSetUpdate& setCombinedImageSampler(pvr::uint16 bindingId, const pvr::api::TextureView& texture,
+                                                 const pvr::api::Sampler& sampler, const char* shaderTexSamplerName = "")
 	{
-		return addImageSampler(bindingId, 0, texture, sampler, types::DescriptorType::CombinedImageSampler);
+        return addImageSampler(bindingId, 0, texture, sampler, types::DescriptorType::CombinedImageSampler,shaderTexSamplerName);
 	}
 
 	/*!*********************************************************************************************************************
@@ -328,9 +331,9 @@ struct DescriptorSetUpdate
 	\return	this object (allow chaining)
 	***********************************************************************************************************************/
 	DescriptorSetUpdate& setCombinedImageSamplerAtIndex(pvr::uint16 bindingId, pvr::uint8 arrayIndex,
-	    const pvr::api::TextureView& texture, const pvr::api::Sampler& sampler)
+	    const pvr::api::TextureView& texture, const pvr::api::Sampler& sampler,const char* shaderTexSamplerName = "")
 	{
-		return addImageSampler(bindingId, arrayIndex, texture, sampler, types::DescriptorType::CombinedImageSampler);
+		return addImageSampler(bindingId, arrayIndex, texture, sampler, types::DescriptorType::CombinedImageSampler,shaderTexSamplerName);
 	}
 
 	/*!*********************************************************************************************************************
@@ -385,8 +388,8 @@ private:
 		return *this;
 	}
 
-	DescriptorSetUpdate& addImageSampler(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
-	                                     const pvr::api::Sampler& sampler, const pvr::types::DescriptorType::Enum type)
+	inline DescriptorSetUpdate& addImage(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
+		const pvr::api::Sampler& sampler, const pvr::types::DescriptorType::Enum type, bool useSampler, const char* shaderTexSamplerName = "")
 	{
 		assertion(texture.isValid() && sampler.isValid(), "Invalid Combined-Image-Sampler Item");
 		if (bindingId >= m_bindings.combinedSamplerImage.size())
@@ -394,8 +397,20 @@ private:
 			m_bindings.combinedSamplerImage.resize(bindingId + 1);
 		}
 		m_bindings.combinedSamplerImage[bindingId] = DescriptorBinding<CombinedImageSampler>(bindingId, arrayIndex, type,
-		    std::make_pair(sampler, texture));
+		    std::make_pair(sampler, texture),shaderTexSamplerName);
 		return *this;
+	}
+
+	DescriptorSetUpdate& addImageSampler(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
+	                                     const pvr::api::Sampler& sampler, const pvr::types::DescriptorType::Enum type,const char* shaderTexSamplerName = "")
+	{
+		return addImage(bindingId, arrayIndex, texture, sampler, type, true,shaderTexSamplerName);
+	}
+
+	DescriptorSetUpdate& addInputAttachment(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
+		const pvr::types::DescriptorType::Enum type)
+	{
+		return addImage(bindingId, arrayIndex, texture, pvr::api::Sampler(), type, false);
 	}
 
 	Bindings m_bindings;

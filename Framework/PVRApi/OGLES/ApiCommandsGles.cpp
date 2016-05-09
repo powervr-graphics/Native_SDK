@@ -61,11 +61,24 @@ void bindVertexBuffer(platform::ContextGles& context)
 	context.disableUnneededAttributes();
 }
 
+inline void setProgramTexUnits(platform::ContextGles& context)
+{
+	platform::ContextGles::RenderStatesTracker& renderStates = context.getCurrentRenderStates();
+	for(uint32 i = 0; i < renderStates.texUnits.size();++i)
+	{
+#pragma warning TODO_OPTIMISE_THIS_GL_CALLS
+		int32 location = context.getBoundGraphicsPipeline_()->getUniformLocation(renderStates.texUnits[i].first.c_str());
+		if(location >= 0){ gl::Uniform1i(location,renderStates.texUnits[i].second); }
+	}
+	renderStates.texUnits.clear();
+}
+
 void DrawArrays::execute_private(impl::CommandBufferBase_& cmdBuff)
 {
 	platform::ContextGles& context = static_cast<platform::ContextGles&>(*cmdBuff.getContext());
 	platform::ContextGles::RenderStatesTracker& renderStates = context.getCurrentRenderStates();
 	bindVertexBuffer(context);
+	setProgramTexUnits(context);
 	if (instanceCount > 1 && context.getApiCapabilities().supports(ApiCapabilities::Instancing))
 	{
 		gl::DrawArraysInstanced(ConvertToGles::drawPrimitiveType(renderStates.primitiveTopology), firstVertex, vertexCount, instanceCount);
@@ -81,6 +94,7 @@ void DrawIndexed::execute_private(impl::CommandBufferBase_& cmdBuff)
 	pvr::platform::ContextGles& context = static_cast<pvr::platform::ContextGles&>(*cmdBuff.getContext());
 	platform::ContextGles::RenderStatesTracker& renderStates = context.getCurrentRenderStates();
 	bindVertexBuffer(context);
+	setProgramTexUnits(context);
 	if (instanceCount > 1 && context.getApiCapabilities().supports(ApiCapabilities::Instancing))
 	{
 		gl::DrawElementsInstanced(ConvertToGles::drawPrimitiveType(renderStates.primitiveTopology), indexCount,
@@ -90,8 +104,8 @@ void DrawIndexed::execute_private(impl::CommandBufferBase_& cmdBuff)
 	else
 	{
 		gl::DrawElements(ConvertToGles::drawPrimitiveType(renderStates.primitiveTopology), indexCount,
-		                 renderStates.iboState.indexArrayFormat == types::IndexType::IndexType16Bit ?
-		                 GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void*)(intptr_t)vertexOffset);
+renderStates.iboState.indexArrayFormat == types::IndexType::IndexType16Bit ?
+GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void*)(intptr_t)vertexOffset);
 	}
 }
 
@@ -134,7 +148,7 @@ namespace {
 
 void PushPipeline::execute_private(impl::CommandBufferBase_& cmdBuff)
 {
-	pvr::platform::ContextGles& contextES =  static_cast<platform::ContextGles&>(*cmdBuff.getContext());
+	pvr::platform::ContextGles& contextES = static_cast<platform::ContextGles&>(*cmdBuff.getContext());
 	if (contextES.isLastBoundPipelineGraphics())
 	{
 		contextES.pushPipeline(&PopPipeline::bindGraphicsPipeline, cmdBuff.getContext()->getBoundGraphicsPipeline_());

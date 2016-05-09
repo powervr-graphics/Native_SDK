@@ -58,7 +58,7 @@ inline void bindIndexedBuffer(const BufferView& view, IGraphicsContext& context,
 }
 
 
-inline void bindTextureView(const TextureView& view, IGraphicsContext& context, uint16 bindIdx)
+inline void bindTextureView(const TextureView& view, IGraphicsContext& context, uint16 bindIdx, const char* shaderVaribleName)
 {
 	platform::ContextGles& contextEs = static_cast<platform::ContextGles&>(context);
 
@@ -80,7 +80,7 @@ inline void bindTextureView(const TextureView& view, IGraphicsContext& context, 
 	gl::BindTexture(resource->getNativeObject().target, resource->getNativeObject().handle);
 	debugLogApiError(strings::createFormatted("TextureView_::bind TARGET%x HANDLE%x",
 	                 resource->getNativeObject().target, resource->getNativeObject().handle).c_str());
-	contextEs.onBind(*view, bindIdx);
+    contextEs.onBind(*view, bindIdx,shaderVaribleName);
 }
 
 
@@ -129,7 +129,7 @@ public:
 
 			if (!walk.binding.second.isNull())
 			{
-				bindTextureView(walk.binding.second, device, walk.bindingId);//bind the texture
+				bindTextureView(walk.binding.second, device, walk.bindingId,walk.shaderVariableName.c_str());//bind the texture
 				if (walk.binding.first.isNull())
 				{
 					static_cast<SamplerGles_&>(*contextES.getDefaultSampler()).bind(device, walk.bindingId);

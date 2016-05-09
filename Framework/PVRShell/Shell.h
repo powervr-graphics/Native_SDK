@@ -643,7 +643,7 @@ public:
 	/*!****************************************************************************************************************
 	\return   The vertical synchronisation swap interval. 0 is immediate.
 	******************************************************************************************************************/
-	uint32 getSwapInterval() const;
+	VsyncMode::Enum getVsyncMode() const;
 
 	/*!****************************************************************************************************************
 	\return   The number of logical swap chain images. This number is always one greater than the max number returned by
@@ -661,7 +661,7 @@ public:
 	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the swap interval (vertical sync).
 	\param   value The swap interval. 0 is no interval (no vsync). 1 is default.
 	******************************************************************************************************************/
-	void setSwapInterval(uint32 value);
+	void setVsyncMode(VsyncMode::Enum mode);
 
 	/*!****************************************************************************************************************
 	\brief   EFFECTIVE IF CALLED during RenderFrame. Force the shell to ReleaseView and then InitView again after this

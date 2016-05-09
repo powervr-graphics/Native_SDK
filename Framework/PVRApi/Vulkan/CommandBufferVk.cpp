@@ -142,23 +142,23 @@ void CommandBufferBase_::bindPipeline(ParentableGraphicsPipeline& pipeline)
 
 void CommandBufferBase_::bindPipeline(ComputePipeline& pipeline)
 {
-	vk::CmdBindPipeline(*pImpl, VK_PIPELINE_BIND_POINT_GRAPHICS, native_cast(*pipeline));
+	vk::CmdBindPipeline(*pImpl, VK_PIPELINE_BIND_POINT_COMPUTE, native_cast(*pipeline));
 }
 
 void CommandBufferBase_::bindDescriptorSet(const api::PipelineLayout& pipelineLayout,
-    uint32 firstSet, const DescriptorSet& set, const uint32* dynamicOffsets, uint32 numDynamicOffset)
+        uint32 firstSet, const DescriptorSet& set, const uint32* dynamicOffsets, uint32 numDynamicOffset)
 {
 	bindDescriptorSets(types::PipelineBindPoint::Graphics, pipelineLayout, firstSet, &set, 1, dynamicOffsets, numDynamicOffset);
 }
 
 void CommandBufferBase_::bindDescriptorSetCompute(const api::PipelineLayout& pipelineLayout, uint32 firstSet, const DescriptorSet& set,
-    const uint32* dynamicOffsets, uint32 numDynamicOffset)
+        const uint32* dynamicOffsets, uint32 numDynamicOffset)
 {
 	vk::CmdBindDescriptorSets(pImpl->handle, VK_PIPELINE_BIND_POINT_COMPUTE, native_cast(*pipelineLayout), firstSet, 1, &(native_cast(*set).handle), numDynamicOffset, dynamicOffsets);
 }
 
 void CommandBufferBase_::bindDescriptorSets(types::PipelineBindPoint::Enum bindingPoint, const api::PipelineLayout& pipelineLayout,
-    uint32 firstSet, const DescriptorSet* sets, uint32 numDescSets, const uint32* dynamicOffsets, uint32 numDynamicOffset)
+        uint32 firstSet, const DescriptorSet* sets, uint32 numDescSets, const uint32* dynamicOffsets, uint32 numDynamicOffset)
 {
 	if (numDescSets < 10)
 	{
@@ -192,7 +192,7 @@ void CommandBufferBase_::clearColorAttachment(pvr::uint32 attachmentCount, glm::
 	VkClearAttachment att[8];
 	VkClearRect rec[8];
 	for (uint32 i = 0; i < attachmentCount; ++i)
-	{
+{
 		att[i].aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		memcpy(att[i].clearValue.color.float32, glm::value_ptr(clearColors[i]), 4 * 4);
 		att[i].colorAttachment = i;
@@ -478,12 +478,10 @@ void SecondaryCommandBuffer_::beginRecording(const Fbo& fbo, uint32 subPass)
 	}
 	clear();
 	pImpl->isRecording = true;
-	VkCommandBufferBeginInfo info;
-	VkCommandBufferInheritanceInfo inheritanceInfo;
+    VkCommandBufferBeginInfo info={};
+    VkCommandBufferInheritanceInfo inheritanceInfo={};
 	info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	info.pNext = NULL;
 	info.flags = VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
-	inheritanceInfo.pNext = NULL;
 	inheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
 	inheritanceInfo.renderPass = native_cast(*fbo->getRenderPass());
 	inheritanceInfo.framebuffer = native_cast(*fbo);
@@ -504,27 +502,23 @@ void SecondaryCommandBuffer_::beginRecording(const RenderPass& renderPass, uint3
 	}
 	clear();
 	pImpl->isRecording = true;
-	VkCommandBufferBeginInfo info;
-	VkCommandBufferInheritanceInfo inheritInfo;
+    VkCommandBufferBeginInfo info={};
+    VkCommandBufferInheritanceInfo inheritInfo={};
 	info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	info.pNext = NULL;
 	info.flags = VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
-	inheritInfo.pNext = NULL;
 	inheritInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
 	inheritInfo.renderPass = native_cast(*renderPass);
-	inheritInfo.framebuffer = VK_NULL_HANDLE;
 	inheritInfo.subpass = subPass;
 	inheritInfo.occlusionQueryEnable = VK_FALSE;
-	inheritInfo.queryFlags = 0;
-	inheritInfo.pipelineStatistics = 0;
 	info.pInheritanceInfo = &inheritInfo;
 	vkThrowIfFailed(vk::BeginCommandBuffer(pImpl->handle, &info), "CommandBufferBase::beginRecording(renderpass, [subpass]) failed");
 }
 
 SecondaryCommandBuffer_::SecondaryCommandBuffer_(GraphicsContext& context, CommandPool& cmdPool, native::HCommandBuffer_& hBuff) : CommandBufferBase_(context, cmdPool, hBuff) { }
 
-inline static void submit_command_buffers(VkQueue queue, VkDevice device, VkCommandBuffer* cmdBuffs, uint32 numCmdBuffs = 1, VkSemaphore* waitSems = NULL, uint32 numWaitSems = 0,
-    VkSemaphore* signalSems = NULL, uint32 numSignalSems = 0, VkFence fence = VK_NULL_HANDLE)
+inline static void submit_command_buffers(VkQueue queue, VkDevice device, VkCommandBuffer* cmdBuffs,
+        uint32 numCmdBuffs = 1, VkSemaphore* waitSems = NULL, uint32 numWaitSems = 0,
+        VkSemaphore* signalSems = NULL, uint32 numSignalSems = 0, VkFence fence = VK_NULL_HANDLE)
 {
 	VkPipelineStageFlags pipeStageFlags = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
 	VkSubmitInfo nfo;
@@ -537,7 +531,6 @@ inline static void submit_command_buffers(VkQueue queue, VkDevice device, VkComm
 	nfo.commandBufferCount = numCmdBuffs;
 	nfo.pSignalSemaphores =  signalSems;
 	nfo.signalSemaphoreCount = numSignalSems;
-
 	vkThrowIfFailed(vk::QueueSubmit(queue, 1, &nfo, fence), "CommandBufferBase::submitCommandBuffers failed");
 }
 
@@ -550,10 +543,9 @@ void CommandBuffer_::beginRecording()
 	}
 	clear();
 	pImpl->isRecording = true;
-	VkCommandBufferBeginInfo info;
+    VkCommandBufferBeginInfo info={};
 	info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	info.pNext = NULL;
-	info.flags = 0;
 	info.pInheritanceInfo = NULL;
 	vkThrowIfFailed(vk::BeginCommandBuffer(pImpl->handle, &info), "CommandBuffer::beginRecording(void) failed");
 }
@@ -695,8 +687,6 @@ void CommandBuffer_::beginRenderPass(api::Fbo& fbo, const Rectanglei& renderArea
 	nfo.renderPass = native_cast(*fbo->getRenderPass());
 	vk::CmdBeginRenderPass(pImpl->handle, &nfo, inlineFirstSubpass ? VK_SUBPASS_CONTENTS_INLINE : VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 }
-
-
 
 void CommandBuffer_::endRenderPass()
 {

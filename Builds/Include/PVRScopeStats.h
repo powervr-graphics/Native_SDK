@@ -53,6 +53,10 @@ extern "C" {
  @{
 */
 
+/****************************************************************************
+** Includes
+****************************************************************************/
+#include "64bit.h"
 
 /****************************************************************************
 ** Enums
@@ -87,6 +91,26 @@ enum EPVRScopeStandardCounter
 	ePVRScopeStandardCounter_Load_Shader_Pixel,		///< Shader core load due to pixels
 	ePVRScopeStandardCounter_Load_Shader_Vertex,	///< Shader core load due to vertices
 	ePVRScopeStandardCounter_Load_Shader_Compute,	///< Shader core load due to compute
+};
+
+/*!**************************************************************************
+ @enum			EPVRScopeEvent
+ @brief			Set of PVRScope event types.
+****************************************************************************/
+enum EPVRScopeEvent
+{
+	ePVRScopeEventComputeBegin,					///< Compute begin
+	ePVRScopeEventComputeEnd,					///< Compute end
+	ePVRScopeEventTABegin,						///< TA begin
+	ePVRScopeEventTAEnd,						///< TA end
+	ePVRScopeEvent3DBegin,						///< 3D begin
+	ePVRScopeEvent3DEnd,						///< 3D end
+	ePVRScopeEvent2DBegin,						///< 2D begin
+	ePVRScopeEvent2DEnd,						///< 2D end
+	ePVRScopeEventRTUBegin,						///< RTU begin
+	ePVRScopeEventRTUEnd,						///< RTU end
+	ePVRScopeEventSHGBegin,						///< SHG begin
+	ePVRScopeEventSHGEnd,						///< SHG end
 };
 
 /****************************************************************************
@@ -125,6 +149,17 @@ struct SPVRScopeCounterReading
 struct SPVRScopeGetInfo
 {
     unsigned int    nGroupMax;                  ///< Highest group number of any counter
+};
+
+/*!**************************************************************************
+@struct        SPVRScopeTimingPacket
+@brief         A start or end time.
+****************************************************************************/
+struct SPVRScopeTimingPacket
+{
+	enum EPVRScopeEvent eEventType;  ///< Event type
+	IMG_UINT64          ui64TimeUS;  ///< Event time (microseconds)
+	unsigned int        nPID;        ///< Event PID
 };
 
 /****************************************************************************
@@ -219,6 +254,20 @@ int PVRScopeReadCounters(
 void PVRScopeSetGroup(
 	struct SPVRScopeImplData		* const psData,		///< Context data
 	const unsigned int				nGroup	    		///< New group
+);
+
+/*!**************************************************************************
+ @brief			Retrieve the timing data packets.
+ @details       This function can be called periodically if you wish to access
+				the start and end times of tasks running on the GPU.
+				The first time this function is called will enable the feature;
+				from then on data will be stored. If you wish to call this
+				function once only at the end of a test run, call it once also
+				prior to the test run.
+****************************************************************************/
+const struct SPVRScopeTimingPacket *PVRScopeReadTimingData(
+	struct SPVRScopeImplData	* const psData,	///< Context data
+	unsigned int				* const pnCount	///< Returned number of packets
 );
 
 /*! @} */

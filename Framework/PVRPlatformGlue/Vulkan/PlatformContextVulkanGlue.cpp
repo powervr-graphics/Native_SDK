@@ -22,6 +22,7 @@ const char* instance_extension_names[] =
 	"",
 	"VK_KHR_surface",
 	"VK_KHR_win32_surface",
+	"VK_KHR_android_surface",
 //#ifdef DEBUG
 	"VK_EXT_debug_report",
 //#endif
@@ -45,6 +46,8 @@ const char* instance_layer_names[] =
 	"VK_LAYER_LUNARG_draw_state",
 	"VK_LAYER_LUNARG_param_checker",
 	"VK_LAYER_LUNARG_swapchain",
+    "VK_LAYER_LUNARG_core_validation",
+    "VK_LAYER_LUNARG_parameter_validation",
 	"VK_LAYER_LUNARG_device_limits",
 	"VK_LAYER_LUNARG_image",
 	"VK_LAYER_GOOGLE_unique_objects",
@@ -64,6 +67,8 @@ const char* device_layer_names[] =
 	"VK_LAYER_LUNARG_draw_state",
 	"VK_LAYER_LUNARG_param_checker",
 	"VK_LAYER_LUNARG_swapchain",
+    "VK_LAYER_LUNARG_core_validation",
+    "VK_LAYER_LUNARG_parameter_validation",
 	"VK_LAYER_LUNARG_device_limits",
 	"VK_LAYER_LUNARG_image",
 	"VK_LAYER_GOOGLE_unique_objects",
@@ -138,7 +143,24 @@ inline void vkSuccessOrDie(VkResult result, const char* msg)
 	}
 }
 
-bool allocateImageDeviceMemory(VkDevice device, VkImage& image, VkDeviceMemory& outMemory, VkMemoryRequirements* outMemRequirements)
+bool getMemoryTypeIndex(VkPhysicalDeviceMemoryProperties& deviceMemProps,uint32_t typeBits, VkMemoryPropertyFlagBits properties, uint32_t& outTypeIndex)
+{
+    for (uint32_t i = 0; i < 32; ++i)
+    {
+        if ((typeBits & 1) == 1)
+        {
+            if ((deviceMemProps.memoryTypes[i].propertyFlags & properties) == properties)
+{
+                outTypeIndex = i;
+                return true;
+            }
+        }
+        typeBits >>= 1;
+    }
+    return false;
+}
+
+bool allocateImageDeviceMemory(pvr::system::NativePlatformHandles_& platformHandle, VkImage& image, VkDeviceMemory& outMemory, VkMemoryRequirements* outMemRequirements)
 {
 	VkMemoryAllocateInfo memAllocInfo;
 	VkMemoryRequirements memReq;
@@ -147,27 +169,83 @@ bool allocateImageDeviceMemory(VkDevice device, VkImage& image, VkDeviceMemory& 
 	{
 		memReqPtr = outMemRequirements;
 	}
-	vkglue::GetImageMemoryRequirements(device, image, memReqPtr);
+    vkglue::GetImageMemoryRequirements(platformHandle.context.device, image, memReqPtr);
 	if (memReqPtr->memoryTypeBits == 0) // find the first allowed type
 	{
-		pvr::Log("Failed to get buffer memory requirements: memory requirements are 0");
+        pvr::Log("Failed to get image memory requirements: memory requirements are 0");
 		return false;
 	}
 	memAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	memAllocInfo.pNext = NULL;
 	memAllocInfo.allocationSize = memReqPtr->size;
 
-	pvr::uint32 firstAllowedType = memReqPtr->memoryTypeBits - 1;
-	memAllocInfo.memoryTypeIndex = firstAllowedType;
+    //Find the first allowed type:
+    getMemoryTypeIndex(platformHandle.deviceMemProperties,memReqPtr->memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memAllocInfo.memoryTypeIndex);
 
-	if (vkglue::AllocateMemory(device, &memAllocInfo, NULL, &outMemory) != VK_SUCCESS)
+    if (vkglue::AllocateMemory(platformHandle.context.device, &memAllocInfo, NULL, &outMemory) != VK_SUCCESS)
 	{
 		pvr::Log("Failed to allocate Image memory");
 		return false;
 	}
-	vkglue::BindImageMemory(device, image, outMemory, 0);
+    vkglue::BindImageMemory(platformHandle.context.device, image, outMemory, 0);
 	return true;
 }
+
+void setImageLayout(VkCommandBuffer& cmd, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectMask, VkAccessFlags srcAccessMask, VkImage image)
+{
+	VkImageMemoryBarrier imageMemBarrier = {};
+	imageMemBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	imageMemBarrier.pNext = NULL;
+	imageMemBarrier.srcAccessMask = srcAccessMask;
+	imageMemBarrier.dstAccessMask = 0;
+	imageMemBarrier.oldLayout = oldLayout;
+	imageMemBarrier.newLayout = newLayout;
+	imageMemBarrier.image = image;
+	imageMemBarrier.subresourceRange = { aspectMask, 0, 1, 0, 1 };
+
+	if (newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+	{
+		/* Make sure anything that was copying from this image has completed */
+		imageMemBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+	}
+
+	if (newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+	{
+		imageMemBarrier.dstAccessMask =
+		    VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	}
+
+	if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+	{
+		imageMemBarrier.dstAccessMask =
+		    VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	}
+
+	if (newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+	{
+		/* Make sure any Copy or CPU writes to image are flushed */
+		imageMemBarrier.dstAccessMask =
+		    VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+	}
+
+	VkImageMemoryBarrier* memBarries = &imageMemBarrier;
+	vkglue::CmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, NULL, 0,
+	                           NULL, 1, memBarries);
+}
+
+
+VkCommandBuffer allocPrimaryCmdBuffer(pvr::system::NativePlatformHandles_& platformHandle)
+{
+	VkCommandBufferAllocateInfo allocInfo = {};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.commandBufferCount = 1;
+	allocInfo.commandPool = platformHandle.commandPool;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	VkCommandBuffer cmd;
+	vkSuccessOrDie(vkglue::AllocateCommandBuffers(platformHandle.context.device, &allocInfo, &cmd), "Failed to allocate command buffer");
+	return cmd;
+}
+
 
 }
 
@@ -191,7 +269,6 @@ inline bool postAcquireTransition(NativePlatformHandles_& handles, uint32 swapIn
 	snfo.signalSemaphoreCount = (handles.semaphoreCanBeginRendering[swapIndex] != VK_NULL_HANDLE);
 	VkPipelineStageFlags flags = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
 	snfo.pWaitDstStageMask = &flags;
-
 	if (!vkIsSuccessful(vkglue::QueueSubmit(handles.graphicsQueue, 1, &snfo, fence),
 	                    "PresentBackBuffer: image layout transition PRESENTATION -> ATTACHMENT OPTIMAL failed"))
 	{
@@ -423,6 +500,12 @@ static inline bool initDevice(NativePlatformHandles_ & platformHandle, const Nat
 	VkDeviceQueueCreateInfo queueCreateInfo;
 	VkDeviceCreateInfo deviceCreateInfo;
 	// create the queue
+    uint32 count = 0;
+    vkglue::GetPhysicalDeviceQueueFamilyProperties(platformHandle.context.physicalDevice, &count, NULL);
+    std::vector<VkQueueFamilyProperties> queueProp(count);
+    vkglue::GetPhysicalDeviceQueueFamilyProperties(platformHandle.context.physicalDevice, &count, &queueProp[0]);
+
+
 	float priority = 1.f;
 	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	queueCreateInfo.pNext = NULL;
@@ -609,8 +692,23 @@ static inline VkFormat getDepthFormat(OSManager& osManager)
 	  (depthBpp == 16 ? VK_FORMAT_D16_UNORM : depthBpp == 24 ? VK_FORMAT_D32_SFLOAT : VK_FORMAT_D32_SFLOAT);
 }
 
+const std::string depthStencilFormatToStr(VkFormat format)
+{
+	const std::string preferredDsFormat[] = 
+	{ 
+		"VK_FORMAT_D16_UNORM",
+		"VK_FORMAT_X8_D24_UNORM_PACK32",
+		"VK_FORMAT_D32_SFLOAT",
+		"VK_FORMAT_S8_UINT",
+		"VK_FORMAT_D16_UNORM_S8_UINT",
+		"VK_FORMAT_D24_UNORM_S8_UINT", 
+		"VK_FORMAT_D32_SFLOAT_S8_UINT",
+	};
+	return preferredDsFormat[format - VK_FORMAT_D16_UNORM];
+}
+
 // create the swapchains, displayimages and views
-static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplayHandle_ & displayHandle, VkFormat dsFormat, VkExtent2D& outSize, VkExtent2D& outmaxSize)
+static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplayHandle_ & displayHandle, VkFormat dsFormat, VkExtent2D& outSize, VkExtent2D& outmaxSize, VsyncMode::Enum desiredVsyncMode)
 {
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
 	vkglue::GetPhysicalDeviceSurfaceCapabilitiesKHR(platformHandle.context.physicalDevice, displayHandle.surface, &surfaceCapabilities);
@@ -622,7 +720,7 @@ static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplay
 	Log(Log.Information, "Image size (extent): %dx%d - %dx%d", surfaceCapabilities.minImageExtent.width, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.width,
 	    surfaceCapabilities.maxImageExtent.height);
 	Log(Log.Information, "Usage: %x", surfaceCapabilities.supportedUsageFlags);
-	Log(Log.Information, "Current transform: %u\n", surfaceCapabilities.currentTransform);
+    Log(Log.Information, "Current transform: %u", surfaceCapabilities.currentTransform);
 	//Log("Allowed transforms: %x\n", surfaceCapabilities.supportedTransforms);
 	outSize = surfaceCapabilities.currentExtent;
 	outmaxSize = surfaceCapabilities.maxImageExtent;
@@ -642,7 +740,8 @@ static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplay
 
 	VkFormat preferredFormats[] =
 	{
-		VK_FORMAT_R8G8B8A8_SRGB, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_R8G8B8A8_SNORM, VK_FORMAT_B8G8R8_SNORM,  VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_R5G6B5_UNORM_PACK16
+        VK_FORMAT_R8G8B8A8_SRGB, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_R8G8B8A8_SNORM,
+        VK_FORMAT_B8G8R8_SNORM, VK_FORMAT_B8G8R8A8_UNORM,VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_R5G6B5_UNORM_PACK16
 	};
 	for (uint32_t f = 0; f < formatCount; ++f)
 	{
@@ -652,38 +751,89 @@ static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplay
 		}
 	}
 
-	uint32 numPresentMode;
-	vkSuccessOrDie(vkglue::GetPhysicalDeviceSurfacePresentModesKHR(platformHandle.context.physicalDevice, displayHandle.surface, &numPresentMode, NULL),
-	               "Failed to get the number of present modes count");
-	assertion(numPresentMode > 0);
-	std::vector<VkPresentModeKHR> presentModes(numPresentMode);
-	vkSuccessOrDie(vkglue::GetPhysicalDeviceSurfacePresentModesKHR(platformHandle.context.physicalDevice, displayHandle.surface, &numPresentMode, &presentModes[0]),
-	               "failed to get the present modes");
 
-	// Try to use mailbox mode, Low latency and non-tearing
-	VkPresentModeKHR swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
-	for (size_t i = 0; i < numPresentMode; i++)
+	VkFormat preferredDsFormat[] = { VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT, VK_FORMAT_D16_UNORM_S8_UINT, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D16_UNORM };
+	for (uint32_t f = 0; f < formatCount; ++f)
 	{
-		if (presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
+		if (allFormats[f].format == preferredFormats[0] || allFormats[f].format == preferredFormats[1])
 		{
-			swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
-			break;
-		}
-		if ((swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR) && (presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR))
-		{
-			swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+			format = allFormats[f]; break;
 		}
 	}
 
+	VkFormat dsFormatRequested = dsFormat;
+	for (uint32 f = 0; f < sizeof(preferredDsFormat) / sizeof(preferredDsFormat[0]);++f)
+	{
+		VkFormatProperties prop;
+		vkglue::GetPhysicalDeviceFormatProperties(platformHandle.context.physicalDevice,dsFormat,&prop);
+		if (prop.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) { break; }
+		dsFormat = preferredDsFormat[f];
+	}
+
+	if (dsFormatRequested != dsFormat)
+	{
+        pvr::Log(Logger::Severity::Information, "Required DepthStencil Format %s is not supported. Falling back to %s",
+                 depthStencilFormatToStr(dsFormatRequested).c_str(),depthStencilFormatToStr(dsFormat).c_str());
+	}
+    pvr::Log(Logger::Information,"Surface DepthStencil Format: %s", depthStencilFormatToStr(dsFormat).c_str());
+
+
+	uint32 numPresentMode;
+    vkSuccessOrDie(vkglue::GetPhysicalDeviceSurfacePresentModesKHR(platformHandle.context.physicalDevice,
+                    displayHandle.surface, &numPresentMode, NULL), "Failed to get the number of present modes count");
+	assertion(numPresentMode > 0);
+	std::vector<VkPresentModeKHR> presentModes(numPresentMode);
+    vkSuccessOrDie(vkglue::GetPhysicalDeviceSurfacePresentModesKHR(platformHandle.context.physicalDevice,
+            displayHandle.surface, &numPresentMode, &presentModes[0]),"failed to get the present modes");
+
+	// Default is FIFO - Which is typical Vsync.
+	VkPresentModeKHR swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+	VkPresentModeKHR desiredSwapMode = VK_PRESENT_MODE_FIFO_KHR;
+	switch (desiredVsyncMode)
+	{
+	case VsyncMode::Off: desiredSwapMode = VK_PRESENT_MODE_IMMEDIATE_KHR; break;
+	case VsyncMode::Mailbox: desiredSwapMode = VK_PRESENT_MODE_MAILBOX_KHR; break;
+	case VsyncMode::Relaxed: desiredSwapMode = VK_PRESENT_MODE_FIFO_RELAXED_KHR; break;
+	}
+	for (size_t i = 0; i < numPresentMode; i++)
+	{
+		if (presentModes[i] == desiredSwapMode)
+		{
+			//Precise match - Break!
+			swapchainPresentMode = desiredSwapMode;
+			break;
+		}
+		//Secondary matches : Immediate and Mailbox are better fits for each other than Fifo, so set them as secondaries
+		// If the user asked for Mailbox, and we found Immediate, set it (in case Mailbox is not found) and keep looking
+		if ((desiredSwapMode == VK_PRESENT_MODE_MAILBOX_KHR) && (presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR))
+		{
+			swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
+		}
+		// ... And vice versa: If the user asked for Immediate, and we found Mailbox, set it (in case Immediate is not found) and keep looking
+		if ((desiredSwapMode == VK_PRESENT_MODE_IMMEDIATE_KHR) && (presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR))
+		{
+			swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
+		}
+	}
+#if defined(X11)
+	// use Present mode FIFO which is the only one seems to be supported at the time of implementation.
+    pvr::Log(Logger::Warning, "Using VK_PRESENT_MODE_FIFO_KHR for X11");
+	swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+#endif
+	switch (swapchainPresentMode)
+	{
+    case VK_PRESENT_MODE_FIFO_KHR: Log(Logger::Information,"Presentation mode: FIFO (Vsync ON)"); break;
+    case VK_PRESENT_MODE_FIFO_RELAXED_KHR: Log(Logger::Information,"Presentation mode: Relaxed FIFO (Improved Vsync)"); break;
+    case VK_PRESENT_MODE_IMMEDIATE_KHR: Log(Logger::Information,"Presentation mode: Immediate (Vsync OFF)"); break;
+    case VK_PRESENT_MODE_MAILBOX_KHR: Log(Logger::Information,"Presentation mode: Mailbox (Vsync 'OFF' with anti-tearing)"); break;
+	}
 
 	displayHandle.fb.colorFormat = format.format;
 	displayHandle.displayExtent = surfaceCapabilities.currentExtent;
 
 	//--- create the swap chain
-	VkSwapchainCreateInfoKHR swapchainCreate;
+    VkSwapchainCreateInfoKHR swapchainCreate={};
 	swapchainCreate.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	swapchainCreate.pNext = NULL;
-	swapchainCreate.flags = 0;
 	swapchainCreate.clipped = VK_TRUE;
 	swapchainCreate.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	swapchainCreate.surface = displayHandle.surface;
@@ -696,12 +846,11 @@ static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplay
 	swapchainCreate.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 	swapchainCreate.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	swapchainCreate.presentMode = swapchainPresentMode;
-	swapchainCreate.oldSwapchain = VK_NULL_HANDLE;
 	swapchainCreate.queueFamilyIndexCount = 0;
 	swapchainCreate.pQueueFamilyIndices = NULL;
-	
+
 	assertion(swapchainCreate.minImageCount <= PVR_MAX_SWAPCHAIN_IMAGES, "Minimum number of swapchain images is larger than Max set");
-	
+
 	if (!vkIsSuccessful(vkglue::CreateSwapchainKHR(platformHandle.context.device, &swapchainCreate,
 	                    NULL, &displayHandle.swapChain), "Could not create the swap chain"))
 	{
@@ -758,10 +907,8 @@ static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplay
 		}
 
 		// create the depth stencil image
-		VkImageCreateInfo dsCreateInfo;
+        VkImageCreateInfo dsCreateInfo={};
 		dsCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-		dsCreateInfo.pNext = NULL;
-		dsCreateInfo.flags = 0;
 		dsCreateInfo.format = dsFormat;
 		dsCreateInfo.extent.width = displayHandle.displayExtent.width;
 		dsCreateInfo.extent.height = displayHandle.displayExtent.height;
@@ -770,25 +917,21 @@ static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplay
 		dsCreateInfo.arrayLayers = 1;
 		dsCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 		dsCreateInfo.mipLevels = 1;
-		dsCreateInfo.flags = 0;
 		dsCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 		dsCreateInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		dsCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		dsCreateInfo.pQueueFamilyIndices = 0;
 		dsCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		dsCreateInfo.queueFamilyIndexCount = 0;
 
 		VkResult rslt = vkglue::CreateImage(platformHandle.context.device, &dsCreateInfo, NULL, &displayHandle.fb.depthStencilImage[i].first);
 		vkSuccessOrDie(rslt, "Image creation failed");
 
-		if (!allocateImageDeviceMemory(platformHandle.context.device, displayHandle.fb.depthStencilImage[i].first, displayHandle.fb.depthStencilImage[i].second, NULL))
+        if (!allocateImageDeviceMemory(platformHandle, displayHandle.fb.depthStencilImage[i].first, displayHandle.fb.depthStencilImage[i].second, NULL))
 		{
 			assertion(false, "Memory allocation failed");
 		}
 		// create the depth stencil view
-		VkImageViewCreateInfo dsViewCreateInfo;
+        VkImageViewCreateInfo dsViewCreateInfo={};
 		dsViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		dsViewCreateInfo.pNext = NULL;
 		dsViewCreateInfo.image = displayHandle.fb.depthStencilImage[i].first;
 		dsViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		dsViewCreateInfo.format = dsFormat;
@@ -797,17 +940,58 @@ static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplay
 		dsViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_B;
 		dsViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_A;
 		dsViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-		dsViewCreateInfo.subresourceRange.baseMipLevel = 0;
 		dsViewCreateInfo.subresourceRange.levelCount = 1;
-		dsViewCreateInfo.subresourceRange.baseArrayLayer = 0;
 		dsViewCreateInfo.subresourceRange.layerCount = 1;
-		dsViewCreateInfo.flags = 0;
 
 		displayHandle.fb.depthStencilFormat = dsFormat;
 
 		vkSuccessOrDie(vkglue::CreateImageView(platformHandle.context.device, &dsViewCreateInfo, NULL, &displayHandle.fb.depthStencilImageView[i]), "Create Depth stencil image view");
 	}
 	return true;
+}
+
+inline static void setInitialSwapchainLayouts(NativePlatformHandles_ & platformHandle, NativeDisplayHandle_ & displayHandle, bool hasStencil,
+        pvr::uint32 waitSwapChain, pvr::uint32 swapChain)
+{
+	VkCommandBuffer cmdImgLayoutTrans = allocPrimaryCmdBuffer(platformHandle);
+	VkCommandBufferBeginInfo cmdBeginInfo = {};
+	cmdBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	cmdBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+	vkSuccessOrDie(vkglue::BeginCommandBuffer(cmdImgLayoutTrans, &cmdBeginInfo), "Failed to begin commandbuffer");
+
+	for (uint32 i = 0; i < displayHandle.swapChainLength; ++i)
+	{
+        // prepare the current swapchain image for writing
+		if (i == swapChain)
+		{
+			setImageLayout(cmdImgLayoutTrans, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			               VK_IMAGE_ASPECT_COLOR_BIT, 0, displayHandle.fb.colorImages[i]);
+		}
+        else// set all other swapchains to present so they will be transformed properly later.
+		{
+			setImageLayout(cmdImgLayoutTrans, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+			               VK_IMAGE_ASPECT_COLOR_BIT, 0, displayHandle.fb.colorImages[i]);
+		}
+		setImageLayout(cmdImgLayoutTrans, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+		               VK_IMAGE_ASPECT_DEPTH_BIT | (hasStencil ? VK_IMAGE_ASPECT_STENCIL_BIT : 0),
+		               0, displayHandle.fb.depthStencilImage[i].first);
+	}
+	vkglue::EndCommandBuffer(cmdImgLayoutTrans);
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.pCommandBuffers = &cmdImgLayoutTrans;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pSignalSemaphores = &platformHandle.semaphoreCanBeginRendering[swapChain];
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = &platformHandle.semaphoreImageAcquired[waitSwapChain];
+	submitInfo.waitSemaphoreCount = 1;
+
+	VkPipelineStageFlags pipeStageFlags = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+	submitInfo.pWaitDstStageMask = &pipeStageFlags;
+
+	vkglue::QueueSubmit(platformHandle.graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    vkSuccessOrDie(vkglue::QueueWaitIdle(platformHandle.graphicsQueue),"FAILED setInitialSwapchainLayouts end QueueSubmit");
+	vkglue::FreeCommandBuffers(platformHandle.context.device, platformHandle.commandPool, 1, &cmdImgLayoutTrans);
 }
 
 inline static bool initSynchronizationObjects(NativePlatformHandles_ & platformHandle, uint32 numSwapImages)
@@ -1025,19 +1209,16 @@ Result::Enum PlatformContext::init()
 
 	if (m_OSManager.getApiTypeRequired() != Api::Vulkan)
 	{
-		Log(Log.Error, "API level requested [%s] was not supported. Only Supported API level on this device is [%s]\n",
+        Log(Log.Error, "API level requested [%s] was not supported. Only Supported API level on this device is [%s]",
 		    Api::getApiName(m_OSManager.getApiTypeRequired()), Api::Vulkan);
 		return Result::UnsupportedRequest;
 	}
 	VkExtent2D size, maxsize;
 
-	std::vector<const char*> layers;
-	std::vector<const char*> extensions;
-
 	if (!initVkInstanceAndPhysicalDevice(*m_platformContextHandles, *m_displayHandle, m_OSManager, true)) { return Result::UnknownError; }
 	if (!initSurface(*m_platformContextHandles, *m_displayHandle)) { return Result::UnknownError; }
 	if (!initDevice(*m_platformContextHandles, *m_displayHandle, true)) { return Result::UnknownError; }
-	if (!initSwapChain(*m_platformContextHandles, *m_displayHandle, getDepthFormat(m_OSManager), size, maxsize)) { return Result::UnknownError; }
+	if (!initSwapChain(*m_platformContextHandles, *m_displayHandle, getDepthFormat(m_OSManager), size, maxsize, m_OSManager.getDisplayAttributes().vsyncMode)) { return Result::UnknownError; }
 	if (!initSynchronizationObjects(*m_platformContextHandles, m_displayHandle->swapChainLength)) { return Result::UnknownError; }
 	if (!initPresentationCommandBuffers(*m_platformContextHandles, *m_displayHandle)) { return Result::UnknownError; }
 
@@ -1064,7 +1245,6 @@ Result::Enum PlatformContext::init()
 
 	vkglue::ResetFences(m_platformContextHandles->context.device, 1, &m_platformContextHandles->fenceAcquire[swapIndex]);
 	vkglue::ResetFences(m_platformContextHandles->context.device, 1, &m_platformContextHandles->fenceRender[swapIndex]);
-
 	postAcquireTransition(*m_platformContextHandles, swapIndex, lastPresentedSwapIndex, handles.fenceAcquire[swapIndex]);
 
 	vkglue::QueueWaitIdle(handles.graphicsQueue);
@@ -1090,10 +1270,7 @@ bool PlatformContext::presentBackbuffer()
 	pInfo.pSwapchains = &m_displayHandle->swapChain;
 	pInfo.pImageIndices = &swapIndex;
 	pInfo.pWaitSemaphores = &m_platformContextHandles->semaphoreCanPresent[swapIndex];
-
-#ifndef __linux__
 	pInfo.waitSemaphoreCount = (m_platformContextHandles->semaphoreCanPresent[swapIndex] != 0);
-#endif
 	pInfo.pResults = &result;
 
 	if (!vkIsSuccessful(vkglue::QueuePresentKHR(m_platformContextHandles->graphicsQueue, &pInfo),
@@ -1125,7 +1302,6 @@ bool PlatformContext::presentBackbuffer()
 
 	//Transition: READY TO RENDER
 	if (!postAcquireTransition(*m_platformContextHandles, swapIndex, lastPresentedSwapIndex, m_platformContextHandles->fenceAcquire[swapIndex])) { return false; }
-
 
 	vkglue::WaitForFences(m_platformContextHandles->context.device, 1, &m_platformContextHandles->fenceRender[swapIndex], true, std::numeric_limits<int64>::max());
 	vkglue::ResetFences(m_platformContextHandles->context.device, 1, &m_platformContextHandles->fenceRender[swapIndex]);

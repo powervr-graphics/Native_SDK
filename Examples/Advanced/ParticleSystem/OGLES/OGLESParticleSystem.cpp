@@ -357,7 +357,6 @@ bool OGLESParticleSystem::createPipelines()
 ***********************************************************************************************************************/
 pvr::Result::Enum OGLESParticleSystem::initApplication()
 {
-	setSwapInterval(0);
 	setDeviceQueueTypesRequired(pvr::DeviceQueueType::Compute);
 	setMinApiType(pvr::Api::OpenGLES31);
 	// Load the scene

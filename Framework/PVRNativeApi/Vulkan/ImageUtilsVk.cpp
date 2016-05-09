@@ -7,11 +7,8 @@ namespace vulkan {
 
 void beginCommandBuffer(VkCommandBuffer& cmdBuffer)
 {
-	VkCommandBufferBeginInfo beginInfo;
-	memset(&beginInfo, 0, sizeof(VkCommandBufferBeginInfo));
+    VkCommandBufferBeginInfo beginInfo={};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.pNext = NULL;
-	beginInfo.flags = 0;
 	vk::BeginCommandBuffer(cmdBuffer, &beginInfo);
 }
 

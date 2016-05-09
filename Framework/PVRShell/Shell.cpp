@@ -20,6 +20,8 @@
 #include <android_native_app_glue.h>
 #include "PVRCore/Android/AndroidAssetStream.h"
 #endif
+
+#define EPSILON_PIXEL_SQUARE 100
 namespace pvr {
 namespace system {
 Shell::Shell() : m_data(0), m_dragging(false)
@@ -48,26 +50,28 @@ void Shell::implPointingDeviceUp(uint8 buttonIdx)
 {
 	if (!m_pointerState.isPressed(buttonIdx)) { return; }
 	m_pointerState.setButton(buttonIdx, false);
+    if (buttonIdx == 0) // NO buttons pressed - start drag
+    {
+        m_pointerState.endDragging();
+    }
 
-	eventButtonUp(buttonIdx); //send the ButtonUp event
+    eventButtonUp(buttonIdx); //send the ButtonUp event
 
-	bool drag = (m_dragging && buttonIdx == 0); //Detecting drag for first button only pointer
+    bool drag = (m_dragging && buttonIdx == 0); //Detecting drag for first button only pointer
 	if (drag) // Drag button was release - Detect Drag!
 	{
 		m_dragging = false;
 		eventDragFinished(m_pointerState.position());
 
-		const int16 epsilonPixelsSq = 9;
-		m_pointerState.endDragging();
 		int16 dx = m_pointerState.position().x - m_pointerState.dragStartPosition().x;
 		int16 dy = m_pointerState.position().y - m_pointerState.dragStartPosition().y;
-		drag = (dx * dx + dy * dy > epsilonPixelsSq);
+		drag = (dx * dx + dy * dy > EPSILON_PIXEL_SQUARE);
 
 		//////// MAPPING SWIPES - TOUCHES TO MAIN INPUT /////////
 		// Swiping motion -> Left/Right/Up/Down
 		// Touching : Center: Action1, Left part = Action2, Right part = Action3
 		float dist = float(dx * dx + dy * dy);
-		if (dist > 10 * epsilonPixelsSq) //SWIPE -- needs a slightly bigger gesture than drag, but otherwise it's the same...
+		if (dist > 10 * EPSILON_PIXEL_SQUARE) //SWIPE -- needs a slightly bigger gesture than drag, but otherwise it's the same...
 		{
 			SimplifiedInput::Enum act = (dy * dy > dx * dx) ? (dy < 0 ? SimplifiedInput::Up : SimplifiedInput::Down) :
 			                            (dx > 0 ? SimplifiedInput::Right : SimplifiedInput::Left);
@@ -117,11 +121,12 @@ void Shell::updatePointerPosition(PointerLocation location)
 	{
 		int16 dx = m_pointerState.position().x - m_pointerState.dragStartPosition().x;
 		int16 dy = m_pointerState.position().y - m_pointerState.dragStartPosition().y;
-		m_dragging = (dx * dx + dy * dy > 9);
+		m_dragging = (dx * dx + dy * dy > EPSILON_PIXEL_SQUARE);
 		if (m_dragging)
 		{
 			eventDragStart(0, m_pointerState.dragStartPosition());
 		}
+      
 	}
 }
 
@@ -328,9 +333,9 @@ float32 Shell::getQuitAfterTime() const
 	return m_data->dieAfterTime;
 }
 
-uint32 Shell::getSwapInterval() const
+VsyncMode::Enum Shell::getVsyncMode() const
 {
-	return m_data->attributes.swapInterval;
+	return m_data->attributes.vsyncMode;
 }
 
 uint32 Shell::getSwapChainLength() const
@@ -373,9 +378,9 @@ void Shell::setQuitAfterTime(float32 value)
 	m_data->dieAfterTime = value;
 }
 
-void Shell::setSwapInterval(uint32 value)
+void Shell::setVsyncMode(VsyncMode::Enum value)
 {
-	m_data->attributes.swapInterval = value;
+	m_data->attributes.vsyncMode = value;
 }
 
 void Shell::forceReinitView()
@@ -823,4 +828,5 @@ DeviceQueueType::Enum Shell::getDeviceQueueTypesRequired()
 }
 }
 }
+#undef EPSILON_PIXEL_SQUARE
 //!\endcond

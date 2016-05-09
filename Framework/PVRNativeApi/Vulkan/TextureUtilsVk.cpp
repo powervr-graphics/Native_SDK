@@ -216,8 +216,7 @@ Result::Enum textureUpload(IPlatformContext& context, const assets::Texture& tex
 	cbnfo.commandBufferCount = 1;
 	cbnfo.commandPool = contextVkGlue.getNativePlatformHandles().commandPool;
 	vk::AllocateCommandBuffers(contextVkGlue.getNativePlatformHandles().context.device, &cbnfo, &cb);
-	VkCommandBufferBeginInfo beginInfo;
-	memset(&beginInfo, 0, sizeof(VkCommandBufferBeginInfo));
+    VkCommandBufferBeginInfo beginInfo={};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
 	vk::BeginCommandBuffer(cb, &beginInfo);

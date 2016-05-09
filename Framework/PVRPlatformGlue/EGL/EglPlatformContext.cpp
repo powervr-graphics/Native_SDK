@@ -96,7 +96,7 @@ void PlatformContext::release()
 	{
 		// Check the current context/surface/display. If they are equal to the handles in this class, remove them from the current context
 		if (m_platformContextHandles->display == egl::GetCurrentDisplay() &&
-			m_platformContextHandles->display != EGL_NO_DISPLAY &&
+		    m_platformContextHandles->display != EGL_NO_DISPLAY &&
 		    m_platformContextHandles->drawSurface == egl::GetCurrentSurface(EGL_DRAW) &&
 		    m_platformContextHandles->readSurface == egl::GetCurrentSurface(EGL_READ) &&
 		    m_platformContextHandles->context == egl::GetCurrentContext())
@@ -697,7 +697,14 @@ Result::Enum PlatformContext::init()
 	egl::QuerySurface(m_platformContextHandles->display, m_platformContextHandles->drawSurface, EGL_HEIGHT,
 	                  (EGLint*)&m_OSManager.getDisplayAttributes().height);
 
-	m_swapInterval = m_OSManager.getDisplayAttributes().swapInterval;
+	m_swapInterval = 1;
+	switch (m_OSManager.getDisplayAttributes().vsyncMode)
+	{
+	case VsyncMode::Half: m_swapInterval = 2; break;
+	case VsyncMode::Mailbox: case VsyncMode::Off: m_swapInterval = 0; break;
+	case VsyncMode::Relaxed: m_swapInterval = -1; break;
+	default: break;
+	}
 	m_initialized = true;
 	return Result::Success;
 }

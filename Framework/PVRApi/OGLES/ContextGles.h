@@ -160,7 +160,7 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Internal use. State tracking. Outside code calls this to notify the context that a new texture has been bound to a texture unit.
 	***********************************************************************************************************************/
-	void onBind(const api::impl::TextureView_& texture, uint16 bindIndex)
+    void onBind(const api::impl::TextureView_& texture, uint16 bindIndex, const char* shaderVaribleName)
 	{
 		if (m_renderStatesTracker.texSamplerBindings.size() <= bindIndex)
 		{
@@ -169,6 +169,7 @@ public:
 		}
 		m_renderStatesTracker.lastBoundTexBindIndex = bindIndex;
 		m_renderStatesTracker.texSamplerBindings[bindIndex].toBindTex = &texture;
+        m_renderStatesTracker.texUnits.push_back(std::pair<string, uint32>(shaderVaribleName, bindIndex));
 	}
 
 	void onBind(const api::impl::Sampler_& sampler, uint16 bindIndex)
@@ -399,6 +400,7 @@ public:
 		Rectanglei viewport;
 		Rectanglei scissor;
 
+        std::vector<std::pair<string, uint32>/**/> texUnits;
 	private:
 		void releaseAll() {	*this = RenderStatesTracker();	}
 		uint32 attributesToEnableBitfield;
