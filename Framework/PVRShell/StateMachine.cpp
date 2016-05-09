@@ -122,7 +122,43 @@ void StateMachine::applyCommandLine()
 			}
 			else if (strcasecmp(arg, "-vsync") == 0)
 			{
-				m_shell->setSwapInterval(atoi(val));
+				if (!strcasecmp(val, "on"))
+				{
+					m_shell->setVsyncMode(VsyncMode::On);
+				}
+				else if (!strcasecmp(val, "off"))
+				{
+					m_shell->setVsyncMode(VsyncMode::Off);
+				}
+				else if (!strcasecmp(val, "relaxed"))
+				{
+					m_shell->setVsyncMode(VsyncMode::Relaxed);
+				}
+				else if (!strcasecmp(val, "mailbox"))
+				{
+					m_shell->setVsyncMode(VsyncMode::Mailbox);
+				}
+				else if (!strcasecmp(val, "half"))
+				{
+					m_shell->setVsyncMode(VsyncMode::Half);
+				}
+				else
+				{
+					char* converted;
+					int value = strtol(val, &converted, 0);
+					if (!*converted)
+					{
+						switch (value)
+						{
+						case 0: m_shell->setVsyncMode(VsyncMode::Off); break;
+						case 1: m_shell->setVsyncMode(VsyncMode::On); break;
+						case 2: m_shell->setVsyncMode(VsyncMode::Half); break;
+						case -1: m_shell->setVsyncMode(VsyncMode::Relaxed); break;
+						case -2: m_shell->setVsyncMode(VsyncMode::Mailbox); break;
+						default: break;
+						}
+					}
+				}
 			}
 			else if (strcasecmp(arg, "-colorbpp") == 0 || strcasecmp(arg, "-colourbpp") == 0
 			         || strcasecmp(arg, "-cbpp") == 0)

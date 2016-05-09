@@ -610,7 +610,7 @@ static inline VkFormat getDepthFormat(OSManager& osManager)
 }
 
 // create the swapchains, displayimages and views
-static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplayHandle_ & displayHandle, VkFormat dsFormat, VkExtent2D& outSize, VkExtent2D& outmaxSize)
+static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplayHandle_ & displayHandle, VkFormat dsFormat, VkExtent2D& outSize, VkExtent2D& outmaxSize, VsyncMode::Enum desiredVsyncMode)
 {
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
 	vkglue::GetPhysicalDeviceSurfaceCapabilitiesKHR(platformHandle.context.physicalDevice, displayHandle.surface, &surfaceCapabilities);
@@ -660,21 +660,43 @@ static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplay
 	vkSuccessOrDie(vkglue::GetPhysicalDeviceSurfacePresentModesKHR(platformHandle.context.physicalDevice, displayHandle.surface, &numPresentMode, &presentModes[0]),
 	               "failed to get the present modes");
 
-	// Try to use mailbox mode, Low latency and non-tearing
+	// Default is FIFO - Which is typical Vsync.
 	VkPresentModeKHR swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+	VkPresentModeKHR desiredSwapMode = VK_PRESENT_MODE_FIFO_KHR;
+	switch (desiredVsyncMode)
+	{
+	case VsyncMode::Off: desiredSwapMode = VK_PRESENT_MODE_IMMEDIATE_KHR; break;
+	case VsyncMode::Mailbox: desiredSwapMode = VK_PRESENT_MODE_MAILBOX_KHR; break;
+	case VsyncMode::Relaxed: desiredSwapMode = VK_PRESENT_MODE_FIFO_RELAXED_KHR; break;
+	}
 	for (size_t i = 0; i < numPresentMode; i++)
 	{
-		if (presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
+		if (presentModes[i] == desiredSwapMode)
 		{
-			swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
+			//Precise match - Break!
+			swapchainPresentMode = desiredSwapMode;
 			break;
 		}
-		if ((swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR) && (presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR))
+		//Secondary matches : Immediate and Mailbox are better fits for each other than Fifo, so set them as secondaries
+		// If the user asked for Mailbox, and we found Immediate, set it (in case Mailbox is not found) and keep looking
+		if ((desiredSwapMode == VK_PRESENT_MODE_MAILBOX_KHR) && (presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR))
 		{
 			swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
 		}
+		// ... And vice versa: If the user asked for Immediate, and we found Mailbox, set it (in case Immediate is not found) and keep looking
+		if ((desiredSwapMode == VK_PRESENT_MODE_IMMEDIATE_KHR) && (presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR))
+		{
+			swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
+		}
 	}
 
+	switch (swapchainPresentMode)
+	{
+	case VK_PRESENT_MODE_FIFO_KHR: Log("Presentation mode: FIFO (Vsync ON)"); break;
+	case VK_PRESENT_MODE_FIFO_RELAXED_KHR: Log("Presentation mode: Relaxed FIFO (Improved Vsync)"); break;
+	case VK_PRESENT_MODE_IMMEDIATE_KHR: Log("Presentation mode: Immediate (Vsync OFF)"); break;
+	case VK_PRESENT_MODE_MAILBOX_KHR: Log("Presentation mode: Mailbox (Vsync 'OFF' with anti-tearing)"); break;
+	}
 
 	displayHandle.fb.colorFormat = format.format;
 	displayHandle.displayExtent = surfaceCapabilities.currentExtent;
@@ -699,9 +721,9 @@ static bool initSwapChain(NativePlatformHandles_ & platformHandle, NativeDisplay
 	swapchainCreate.oldSwapchain = VK_NULL_HANDLE;
 	swapchainCreate.queueFamilyIndexCount = 0;
 	swapchainCreate.pQueueFamilyIndices = NULL;
-	
+
 	assertion(swapchainCreate.minImageCount <= PVR_MAX_SWAPCHAIN_IMAGES, "Minimum number of swapchain images is larger than Max set");
-	
+
 	if (!vkIsSuccessful(vkglue::CreateSwapchainKHR(platformHandle.context.device, &swapchainCreate,
 	                    NULL, &displayHandle.swapChain), "Could not create the swap chain"))
 	{
@@ -1037,7 +1059,7 @@ Result::Enum PlatformContext::init()
 	if (!initVkInstanceAndPhysicalDevice(*m_platformContextHandles, *m_displayHandle, m_OSManager, true)) { return Result::UnknownError; }
 	if (!initSurface(*m_platformContextHandles, *m_displayHandle)) { return Result::UnknownError; }
 	if (!initDevice(*m_platformContextHandles, *m_displayHandle, true)) { return Result::UnknownError; }
-	if (!initSwapChain(*m_platformContextHandles, *m_displayHandle, getDepthFormat(m_OSManager), size, maxsize)) { return Result::UnknownError; }
+	if (!initSwapChain(*m_platformContextHandles, *m_displayHandle, getDepthFormat(m_OSManager), size, maxsize, m_OSManager.getDisplayAttributes().vsyncMode)) { return Result::UnknownError; }
 	if (!initSynchronizationObjects(*m_platformContextHandles, m_displayHandle->swapChainLength)) { return Result::UnknownError; }
 	if (!initPresentationCommandBuffers(*m_platformContextHandles, *m_displayHandle)) { return Result::UnknownError; }
 

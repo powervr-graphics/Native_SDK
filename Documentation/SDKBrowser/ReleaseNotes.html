@@ -54,10 +54,27 @@
 		<p>For the latest version of the Release Notes please go <a href="https://community.imgtec.com/download-notes/">here</a>.</p>
 		
 		<div id="R1">
-			<h2>PowerVR Tools and SDK 2016 R1.1</h2>
-			<h3>PowerVR SDK v4.0.1</h3>
+			<h2>PowerVR Tools and SDK 2016 R1</h2>
+				<h3><strong>PowerVR Tools and SDK 2016 R1.2</strong></h3>
+				<h3>PowerVR SDK v4.1.2</h3>
 				<ul>
-				<li>Re-introduced and enhanced the workaround for EGL context report on systems that claim overoptimistic capabilities.</li>
+				<li>Fixed a bug in iOS touch input where it could sometimes be very difficult to register a touch due to very small allowed pixel distance.</li>
+				<li>Fixed a bug in the VulkanBumpmap example where Samplers were local and allowed to be destroyed while still in use.</li>
+				<li>Changed the SwapInterval / VSync strategy to map better between OpenGL and Vulkan. The -vsync command line parameter now works with either (On, Off, Relaxed, Mailbox, Half) methods, or with SwapInterval numbers of (0,1,2,-1). Half is not usually supported on Vulkan (and will map to On), Mailbox is not usually supported in OGLES (and will map to Off)</li>
+				<li>The Framework static library prebuild binaries are no longer packaged with the SDK to reduce package size.</li>
+				</ul>
+				<h3>PVRTune v14.141.1</h3>
+				<ul>
+				<li>New PVRScope API: PVRScopeReadTimingData(). This function can be called periodically if you wish to access the start and end times of tasks running on the GPU. The first time this function is called will enable the feature; from then on data will be stored. If you wish to call this function once only at the end of a test run, call it once also prior to the test run.</li>
+				</ul>
+				<h3>PVRShaman v2.3.1</h3>
+				<ul>
+				<li>Fixed failure to start on OS X due to missing QT library.</li>
+				</ul>
+			<h3><strong>PowerVR Tools and SDK 2016 R1.1</strong></h3>
+			<h3>PowerVR SDK v4.1.1</h3>
+				<ul>
+				<li>Re-introduced and enhanced workaround for EGL context report on systems that claim overoptimistic capabilities.</li>
 				<li>Fixed a memory corruption issue that could occur if the Context was not freed before exit.</li>
 				<li>Fixed a double-delete bug and made the object wrapper destructors more defensive.</li>
 				<li>Changed Linux builds default optimization level from O3 to O2 as this was causing instabilities with some GCC versions. This fixes pre-built demo binaries for Linux.</li>
@@ -65,13 +82,13 @@
 				</ul>
 			<h3>PVRVFrame v10.3.1</h3>
 				<ul>
-				<li>Fixed "strict" mode due to it being too strict, which caused issues on some AMD graphic cards.</li>
+				<li>Fixed "strict" mode being too strict, which caused issues on some AMD graphic cards.</li>
 				</ul>
 			<h3>Installer</h3>
 				<ul>
 				<li>Updated Windows signature to SHA-2. This will stop the “The signature is corrupt or invalid” message.</li>
 				</ul>
-			<h2>PowerVR Tools and SDK 2016 R1</h2>
+			<<h3><strong>PowerVR Tools and SDK 2016 R1</strong></h3>
 			<h3>Overview</h3>
 			<p>In our first release of 2016, we have provided a host of new fixes and updates – including a fully functioning Vulkan backend for the PVR Framework. The Framework itself consists of a light-weight abstraction layer, as well as utility functions, that provide explicit control of Vulkan whilst reducing the amount of code required to render a scene. It features, among other things: utilities for common tasks, such as object creation and asset uploading (e.g. mesh loading & pipeline baking), simplified object lifetime management, and cross-platform setup. It also includes the GnomeHorde demo, specifically created to show multi-threaded command buffer management for Vulkan.</p>
 			<h3>Builds</h3>

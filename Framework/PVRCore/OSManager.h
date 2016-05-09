@@ -9,8 +9,17 @@
 #include "PVRCore/IPlatformContext.h"
 
 namespace pvr {
+namespace VsyncMode {
+enum Enum
+{
+	Off,//!<The application does not synchronizes with the vertical sync. If application renders faster than the display refreshes, frames are wasted and tearing may be observed. FPS is uncapped. Maximum power consumption. If unsupported, "ON" value will be used instead. Minimum latency.
+	On,//!<The application is always syncrhonized with the vertical sync. Tearing does not happen. FPS is capped to the display's refresh rate. For fast applications, battery life is improved. Always supported.
+	Relaxed,//!<The application synchronizes with the vertical sync, but only if the application rendering speed is greater than refresh rate. Compared to OFF, there is no tearing. Compared to ON, the FPS will be improved for "slower" applications. If unsupported, "ON" value will be used instead. Recommended for most applications. Default if supported.
+	Mailbox, //!<The presentation engine will always use the latest fully rendered image. Compared to OFF, no tearing will be observed. Compared to ON, battery power will be worse, especially for faster applications. If unsupported,  "OFF" will be attempted next.
+	Half, //!<The application is capped to using half the vertical sync time. FPS artificially capped to Half the display speed (usually 30fps) to maintain battery. Best possible battery savings. Worst possibly performance. Recommended for specific applications where battery saving is critical.
+};
+};
 namespace system {
-
 /*!*********************************************************************************************************************
 \brief        Contains display configuration information (width, height, position, title, bpp etc.).
 ***********************************************************************************************************************/
@@ -41,7 +50,7 @@ public:
 
 	int32 configID;
 
-	int32 swapInterval;
+	VsyncMode::Enum vsyncMode;
 	int32 contextPriority;
 
 	bool forceColorBPP;
@@ -62,7 +71,7 @@ public:
 		alphaBits(8),
 		aaSamples(0),
 		configID(0),
-		swapInterval(1),
+		vsyncMode(VsyncMode::Relaxed),
 		contextPriority(2),
 		forceColorBPP(false),
 		fullscreen(false),
@@ -124,7 +133,7 @@ public:
 	\brief	Get the API that is the underlying API of this OS manager.
 	***********************************************************************************************************************/
 	virtual Api::Enum getApiTypeRequired() = 0;
-	
+
 	/*!*********************************************************************************************************************
 	\brief	Get the API that is the underlying API of this OS manager.
 	***********************************************************************************************************************/

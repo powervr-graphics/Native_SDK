@@ -82,6 +82,8 @@ class OGLESBumpMap : public Shell
 	{
 		std::vector<api::Buffer> vbo;
 		std::vector<api::Buffer> ibo;
+		api::Sampler samplerMipBilinear;
+		api::Sampler samplerTrilinear;
 		api::DescriptorSetLayout texLayout;
 		api::DescriptorSetLayout uboLayoutDynamic;
 		api::PipelineLayout pipelayout;
@@ -122,6 +124,7 @@ public:
 ***********************************************************************************************************************/
 bool OGLESBumpMap::createImageSamplerDescriptor()
 {
+	// The asset manager will be keeping these objects alive automatically, hence they can be local.
 	api::TextureView texBase;
 	api::TextureView texNormalMap;
 
@@ -130,13 +133,13 @@ bool OGLESBumpMap::createImageSamplerDescriptor()
 	samplerInfo.magnificationFilter = SamplerFilter::Linear;
 	samplerInfo.minificationFilter = SamplerFilter::Linear;
 	samplerInfo.mipMappingFilter = SamplerFilter::Nearest;
-	api::Sampler samplerMipBilinear = context->createSampler(samplerInfo);
+	deviceResource->samplerMipBilinear = context->createSampler(samplerInfo);
 
 	samplerInfo.mipMappingFilter = SamplerFilter::Linear;
-	api::Sampler samplerTrilinear = context->createSampler(samplerInfo);
+	deviceResource->samplerTrilinear = context->createSampler(samplerInfo);
 
 	if (!assetManager.getTextureWithCaching(getGraphicsContext(), StatueTexFile,	&texBase, NULL) ||
-	        !assetManager.getTextureWithCaching(getGraphicsContext(), StatueNormalMapFile, &texNormalMap, NULL))
+	    !assetManager.getTextureWithCaching(getGraphicsContext(), StatueNormalMapFile, &texNormalMap, NULL))
 	{
 		setExitMessage("ERROR: Failed to load texture.");
 		return false;
@@ -144,8 +147,8 @@ bool OGLESBumpMap::createImageSamplerDescriptor()
 	// create the descriptor set
 	api::DescriptorSetUpdate descSetCreateInfo;
 	descSetCreateInfo
-	.setCombinedImageSampler(0, texBase, samplerMipBilinear)
-	.setCombinedImageSampler(1, texNormalMap, samplerTrilinear);
+	.setCombinedImageSampler(0, texBase, deviceResource->samplerMipBilinear)
+	.setCombinedImageSampler(1, texNormalMap, deviceResource->samplerTrilinear);
 	deviceResource->texDescSet = context->createDescriptorSetOnDefaultPool(deviceResource->texLayout);
 	if (!deviceResource->texDescSet.isValid())
 	{
@@ -167,7 +170,7 @@ bool OGLESBumpMap::createUbo()
 		deviceResource->ubo[i].addEntryPacked("LightDirModel", pvr::GpuDatatypes::vec3);
 		auto buffer = context->createBuffer(deviceResource->ubo[i].getAlignedTotalSize(), BufferBindingUse::UniformBuffer);
 		deviceResource->ubo[i].connectWithBuffer(context->createBufferView(buffer, 0, deviceResource->ubo[i].getAlignedElementSize()),
-		        pvr::BufferViewTypes::UniformBufferDynamic);
+		    pvr::BufferViewTypes::UniformBufferDynamic);
 		deviceResource->uboDescSet[i] = context->createDescriptorSetOnDefaultPool(deviceResource->uboLayoutDynamic);
 		descUpdate.setDynamicUbo(0, deviceResource->ubo[i].getConnectedBuffer());
 		deviceResource->uboDescSet[i]->update(descUpdate);
