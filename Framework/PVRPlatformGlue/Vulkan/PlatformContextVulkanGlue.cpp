@@ -22,6 +22,7 @@ const char* instance_extension_names[] =
 	"",
 	"VK_KHR_surface",
 	"VK_KHR_win32_surface",
+	"VK_KHR_android_surface",
 //#ifdef DEBUG
 	"VK_EXT_debug_report",
 //#endif
