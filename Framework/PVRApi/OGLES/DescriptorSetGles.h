@@ -58,7 +58,7 @@ inline void bindIndexedBuffer(const BufferView& view, IGraphicsContext& context,
 }
 
 
-inline void bindTextureView(const TextureView& view, IGraphicsContext& context, uint16 bindIdx)
+inline void bindTextureView(const TextureView& view, IGraphicsContext& context, uint16 bindIdx, const char* shaderVaribleName)
 {
 	platform::ContextGles& contextEs = static_cast<platform::ContextGles&>(context);
 
@@ -80,7 +80,7 @@ inline void bindTextureView(const TextureView& view, IGraphicsContext& context, 
 	gl::BindTexture(resource->getNativeObject().target, resource->getNativeObject().handle);
 	debugLogApiError(strings::createFormatted("TextureView_::bind TARGET%x HANDLE%x",
 	                 resource->getNativeObject().target, resource->getNativeObject().handle).c_str());
-	contextEs.onBind(*view, bindIdx);
+    contextEs.onBind(*view, bindIdx,shaderVaribleName);
 }
 
 
@@ -123,21 +123,21 @@ public:
 			}
 		}
 		// bind the combined texture and samplers
-		for (pvr::uint16 j = 0; j < m_descParam.getBindingList().combinedSamplerImage.size(); ++j)
+		for (pvr::uint16 j = 0; j < m_descParam.getBindingList().images.size(); ++j)
 		{
-			auto const& walk = m_descParam.getBindingList().combinedSamplerImage[j];
+            const DescriptorSetUpdate::ImageBinding& walk = m_descParam.getBindingList().images[j];
 
 			if (!walk.binding.second.isNull())
 			{
-				bindTextureView(walk.binding.second, device, walk.bindingId);//bind the texture
-				if (walk.binding.first.isNull())
+                bindTextureView(walk.binding.second, device, walk.bindingId,walk.shaderVariableName.c_str());//bind the texture
+                if (walk.binding.first.useSampler && walk.binding.first.sampler.isNull())// bind the default sampler if necessary
 				{
 					static_cast<SamplerGles_&>(*contextES.getDefaultSampler()).bind(device, walk.bindingId);
 				}
 			}
-			if (!walk.binding.first.isNull())
+			if (walk.binding.first.useSampler && !walk.binding.first.sampler.isNull())
 			{
-				static_cast<const SamplerGles_&>(*walk.binding.first).bind(device, walk.bindingId);// bind the sampler
+				static_cast<const SamplerGles_&>(*walk.binding.first.sampler).bind(device, walk.bindingId);// bind the sampler
 			}
 		}
 	}
