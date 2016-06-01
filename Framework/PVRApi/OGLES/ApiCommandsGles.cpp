@@ -61,11 +61,24 @@ void bindVertexBuffer(platform::ContextGles& context)
 	context.disableUnneededAttributes();
 }
 
+inline void setProgramTexUnits(platform::ContextGles& context)
+{
+    platform::ContextGles::RenderStatesTracker& renderStates = context.getCurrentRenderStates();
+    for(uint32 i = 0; i < renderStates.texUnits.size();++i)
+    {
+#pragma warning TODO_OPTIMISE_THIS_GL_CALLS
+        int32 location = context.getBoundGraphicsPipeline_()->getUniformLocation(renderStates.texUnits[i].first.c_str());
+        if(location >= 0){ gl::Uniform1i(location,renderStates.texUnits[i].second); }
+    }
+    renderStates.texUnits.clear();
+}
+
 void DrawArrays::execute_private(impl::CommandBufferBase_& cmdBuff)
 {
 	platform::ContextGles& context = static_cast<platform::ContextGles&>(*cmdBuff.getContext());
 	platform::ContextGles::RenderStatesTracker& renderStates = context.getCurrentRenderStates();
 	bindVertexBuffer(context);
+    setProgramTexUnits(context);
 	if (instanceCount > 1 && context.getApiCapabilities().supports(ApiCapabilities::Instancing))
 	{
 		gl::DrawArraysInstanced(ConvertToGles::drawPrimitiveType(renderStates.primitiveTopology), firstVertex, vertexCount, instanceCount);
@@ -81,6 +94,7 @@ void DrawIndexed::execute_private(impl::CommandBufferBase_& cmdBuff)
 	pvr::platform::ContextGles& context = static_cast<pvr::platform::ContextGles&>(*cmdBuff.getContext());
 	platform::ContextGles::RenderStatesTracker& renderStates = context.getCurrentRenderStates();
 	bindVertexBuffer(context);
+    setProgramTexUnits(context);
 	if (instanceCount > 1 && context.getApiCapabilities().supports(ApiCapabilities::Instancing))
 	{
 		gl::DrawElementsInstanced(ConvertToGles::drawPrimitiveType(renderStates.primitiveTopology), indexCount,
@@ -90,8 +104,8 @@ void DrawIndexed::execute_private(impl::CommandBufferBase_& cmdBuff)
 	else
 	{
 		gl::DrawElements(ConvertToGles::drawPrimitiveType(renderStates.primitiveTopology), indexCount,
-		                 renderStates.iboState.indexArrayFormat == types::IndexType::IndexType16Bit ?
-		                 GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void*)(intptr_t)vertexOffset);
+renderStates.iboState.indexArrayFormat == types::IndexType::IndexType16Bit ?
+GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void*)(intptr_t)vertexOffset);
 	}
 }
 
@@ -99,10 +113,10 @@ void BindIndexBuffer::execute_private(impl::CommandBufferBase_& cmdBuffer)
 {
 	assertion((buffer->getBufferUsage() & types::BufferBindingUse::IndexBuffer) != 0, "Invalid Buffer Usage");
 	platform::ContextGles::RenderStatesTracker& currentStates = static_cast<platform::ContextGles&>
-	    (*cmdBuffer.getContext()).getCurrentRenderStates();
+		(*cmdBuffer.getContext()).getCurrentRenderStates();
 
 	if (!currentStates.iboState.buffer.isValid() ||
-	    (currentStates.iboState.buffer->getNativeObject() != buffer->getNativeObject()))
+		(currentStates.iboState.buffer->getNativeObject() != buffer->getNativeObject()))
 	{
 		gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, *buffer->getNativeObject());
 		currentStates.iboState.buffer = buffer;
@@ -128,13 +142,9 @@ void SetClearStencilVal::execute_private(impl::CommandBufferBase_&)
 	gl::ClearStencil(val);
 }
 
-namespace {
-
-}
-
 void PushPipeline::execute_private(impl::CommandBufferBase_& cmdBuff)
 {
-	pvr::platform::ContextGles& contextES =  static_cast<platform::ContextGles&>(*cmdBuff.getContext());
+	pvr::platform::ContextGles& contextES = static_cast<platform::ContextGles&>(*cmdBuff.getContext());
 	if (contextES.isLastBoundPipelineGraphics())
 	{
 		contextES.pushPipeline(&PopPipeline::bindGraphicsPipeline, cmdBuff.getContext()->getBoundGraphicsPipeline_());
@@ -143,6 +153,10 @@ void PushPipeline::execute_private(impl::CommandBufferBase_& cmdBuff)
 	{
 		contextES.pushPipeline(&PopPipeline::bindComputePipeline, cmdBuff.getContext()->getBoundComputePipeline());
 	}
+	else// assuming that no pipeline has been bound currently so push a null
+	{
+		contextES.pushPipeline(&PopPipeline::bindGraphicsPipeline, cmdBuff.getContext()->getBoundGraphicsPipeline_());
+}
 }
 
 void PopPipeline::execute_private(impl::CommandBufferBase_& cmdBuff)
@@ -172,6 +186,61 @@ void ResetPipeline::execute_private(impl::CommandBufferBase_& cmdBuff)
 	else if (ctx.isLastBoundPipelineGraphics() && ctx.getBoundComputePipeline())
 	{
 		ctx.setBoundComputePipeline(NULL);
+	}
+}
+
+void ClearColorImage::execute_private(impl::CommandBufferBase_& cmdBuffer)
+{
+	pvr::uint32 glInternalFormat;
+	pvr::uint32 glFormat;
+	pvr::uint32 glType;
+	pvr::uint32 glTypeSize;
+	bool isCompressedFormat;
+
+	pvr::api::ConvertToGles::getOpenGLFormat(imageToClear->getResource()->getFormat().format,
+		imageToClear->getResource()->getFormat().colorSpace, imageToClear->getResource()->getFormat().dataType, glInternalFormat, glFormat, glType, glTypeSize, isCompressedFormat);
+
+	glext::ClearTexSubImageIMG(imageToClear->getResource()->getNativeObject().handle,
+		baseMipLevel, 0, 0, baseArrayLayer, imageToClear->getResource()->getWidth(),
+		imageToClear->getResource()->getHeight(), layerCount, glFormat,
+		glType, glm::value_ptr(clearColor));
+}
+
+void ClearDepthStencilImage::execute_private(impl::CommandBufferBase_& cmdBuffer)
+{
+	pvr::uint32 glInternalFormat;
+	pvr::uint32 glFormat;
+	pvr::uint32 glType;
+	pvr::uint32 glTypeSize;
+	bool isCompressedFormat;
+
+	pvr::api::ConvertToGles::getOpenGLFormat(imageToClear->getResource()->getFormat().format,
+		imageToClear->getResource()->getFormat().colorSpace, imageToClear->getResource()->getFormat().dataType, glInternalFormat, glFormat, glType, glTypeSize, isCompressedFormat);
+
+	if (glFormat == GL_DEPTH_COMPONENT)
+	{
+		glext::ClearTexSubImageIMG(imageToClear->getResource()->getNativeObject().handle,
+			baseMipLevel, 0, 0, baseArrayLayer, imageToClear->getResource()->getWidth(),
+			imageToClear->getResource()->getHeight(), layerCount, glFormat,
+			glType, &clearDepth);
+	}
+	else if (glFormat == GL_STENCIL_INDEX_OES)
+	{
+		glext::ClearTexSubImageIMG(imageToClear->getResource()->getNativeObject().handle,
+			baseMipLevel, 0, 0, baseArrayLayer, imageToClear->getResource()->getWidth(),
+			imageToClear->getResource()->getHeight(), layerCount, glFormat,
+			glType, &clearStencil);
+	}
+	else if (glFormat == GL_DEPTH_STENCIL)
+	{
+		float data[2];
+		data[0] = clearDepth;
+		data[1] = clearStencil;
+
+		glext::ClearTexSubImageIMG(imageToClear->getResource()->getNativeObject().handle,
+			baseMipLevel, 0, 0, baseArrayLayer, imageToClear->getResource()->getWidth(),
+			imageToClear->getResource()->getHeight(), layerCount, glFormat,
+			glType, data);
 	}
 }
 
