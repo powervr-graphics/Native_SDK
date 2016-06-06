@@ -123,21 +123,21 @@ public:
 			}
 		}
 		// bind the combined texture and samplers
-		for (pvr::uint16 j = 0; j < m_descParam.getBindingList().images.size(); ++j)
+		for (pvr::uint16 j = 0; j < m_descParam.getBindingList().combinedSamplerImage.size(); ++j)
 		{
-            const DescriptorSetUpdate::ImageBinding& walk = m_descParam.getBindingList().images[j];
+			auto const& walk = m_descParam.getBindingList().combinedSamplerImage[j];
 
 			if (!walk.binding.second.isNull())
 			{
-                bindTextureView(walk.binding.second, device, walk.bindingId,walk.shaderVariableName.c_str());//bind the texture
-                if (walk.binding.first.useSampler && walk.binding.first.sampler.isNull())// bind the default sampler if necessary
+				bindTextureView(walk.binding.second, device, walk.bindingId,walk.shaderVariableName.c_str());//bind the texture
+				if (walk.binding.first.isNull())
 				{
 					static_cast<SamplerGles_&>(*contextES.getDefaultSampler()).bind(device, walk.bindingId);
 				}
 			}
-			if (walk.binding.first.useSampler && !walk.binding.first.sampler.isNull())
+			if (!walk.binding.first.isNull())
 			{
-				static_cast<const SamplerGles_&>(*walk.binding.first.sampler).bind(device, walk.bindingId);// bind the sampler
+				static_cast<const SamplerGles_&>(*walk.binding.first).bind(device, walk.bindingId);// bind the sampler
 			}
 		}
 	}

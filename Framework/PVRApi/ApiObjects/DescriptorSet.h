@@ -52,9 +52,9 @@ public:
 		return *this;
 	}
 
-	DescriptorSetLayoutCreateParam& clear()
+	void clear()
 	{
-		m_bindings.clear(); return *this;
+		m_bindings.clear();
 	}
 private:
 
@@ -192,7 +192,7 @@ struct DescriptorSetUpdate
 	{
 		_Binding    binding;
 		pvr::int16 bindingId;
-		pvr::int16 arrayIndex;
+		pvr::uint16 arrayIndex;
 		types::DescriptorType::Enum type;
         std::string shaderVariableName;
         DescriptorBinding(pvr::uint16 bindingId, pvr::uint16 index, types::DescriptorType::Enum type,
@@ -200,22 +200,15 @@ struct DescriptorSetUpdate
             binding(obj), bindingId(bindingId), arrayIndex(index),type(type),shaderVariableName(shaderVariableName) {}
 		DescriptorBinding() : bindingId(-1) {}
 	};
-
-	struct DescriptorSampler
-	{
-		pvr::api::Sampler sampler;
-		bool useSampler;
-	};
-
 	typedef DescriptorBinding<pvr::api::BufferView> BufferViewBinding;
-	typedef std::pair<DescriptorSampler, pvr::api::TextureView/**/> Image;
-	typedef DescriptorBinding<Image> ImageBinding;
+	typedef std::pair<pvr::api::Sampler, pvr::api::TextureView/**/> CombinedImageSampler;
+	typedef DescriptorBinding<CombinedImageSampler> CombImageSamplerBinding;
 	typedef std::vector<BufferViewBinding> BufferBindingList;
-	typedef std::vector<ImageBinding> ImageBindingList;
+	typedef std::vector<CombImageSamplerBinding> CombImageSamplerBindingList;
 	struct Bindings
 	{
 		BufferBindingList buffers;
-		ImageBindingList images;
+		CombImageSamplerBindingList combinedSamplerImage;
 	};
 
 	/*!*********************************************************************************************************************
@@ -350,9 +343,9 @@ struct DescriptorSetUpdate
 	\param	sampler The sampler to add
 	\return	this object (allow chaining)
 	***********************************************************************************************************************/
-	DescriptorSetUpdate& setInputImageAttachment(pvr::uint16 bindingId, const pvr::api::TextureView& texture)
+	DescriptorSetUpdate& setInputImageAttachment(pvr::uint16 bindingId, const pvr::api::TextureView& texture, const pvr::api::Sampler& sampler)
 	{
-		return addInputAttachment(bindingId, 0, texture, types::DescriptorType::InputAttachment);
+		return addImageSampler(bindingId, 0, texture, sampler, types::DescriptorType::InputAttachment);
 	}
 
 	/*!*********************************************************************************************************************
@@ -365,18 +358,17 @@ struct DescriptorSetUpdate
 	\return	this object (allow chaining)
 	***********************************************************************************************************************/
 	DescriptorSetUpdate& setInputImageAttachmentAtIndex(pvr::uint16 bindingId, pvr::uint8 arrayIndex,
-		const pvr::api::TextureView& texture)
+	    const pvr::api::TextureView& texture, const pvr::api::Sampler& sampler)
 	{
-		return addInputAttachment(bindingId, arrayIndex, texture, types::DescriptorType::InputAttachment);
+		return addImageSampler(bindingId, arrayIndex, texture, sampler, types::DescriptorType::InputAttachment);
 	}
 
 	const DescriptorSetUpdate::Bindings& getBindingList() const { return m_bindings; }
 
-	DescriptorSetUpdate& clear()
+	void clear()
     {
-		this->m_bindings.images.clear();
+        this->m_bindings.combinedSamplerImage.clear();
         this->m_bindings.buffers.clear();
-		return *this;
     }
     
 	template<class _Binding> static bool cmpDescriptorBinding(const _Binding& a, const _Binding& b)
@@ -399,26 +391,20 @@ private:
 	inline DescriptorSetUpdate& addImage(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
 		const pvr::api::Sampler& sampler, const pvr::types::DescriptorType::Enum type, bool useSampler, const char* shaderTexSamplerName = "")
 	{
-		assertion(texture.isValid(), "Invalid Image Item");
-		if (useSampler)
-	{
-			assertion(sampler.isValid(), "Invalid Sampler Item");
-		}
-		if (bindingId >= m_bindings.images.size())
+		assertion(texture.isValid() && sampler.isValid(), "Invalid Combined-Image-Sampler Item");
+		if (bindingId >= m_bindings.combinedSamplerImage.size())
 		{
-			m_bindings.images.resize(bindingId + 1);
+			m_bindings.combinedSamplerImage.resize(bindingId + 1);
 		}
-		DescriptorSampler descriptorSampler{ sampler, useSampler };
-
-		m_bindings.images[bindingId] = DescriptorBinding<Image>(bindingId, arrayIndex, type,
-            std::make_pair(descriptorSampler, texture),shaderTexSamplerName);
+		m_bindings.combinedSamplerImage[bindingId] = DescriptorBinding<CombinedImageSampler>(bindingId, arrayIndex, type,
+		    std::make_pair(sampler, texture),shaderTexSamplerName);
 		return *this;
 	}
 
 	DescriptorSetUpdate& addImageSampler(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
 	                                     const pvr::api::Sampler& sampler, const pvr::types::DescriptorType::Enum type,const char* shaderTexSamplerName = "")
 	{
-		return addImage(bindingId, arrayIndex, texture, sampler, type, true);
+		return addImage(bindingId, arrayIndex, texture, sampler, type, true,shaderTexSamplerName);
 	}
 
 	DescriptorSetUpdate& addInputAttachment(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,

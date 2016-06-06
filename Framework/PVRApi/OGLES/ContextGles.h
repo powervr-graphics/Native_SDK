@@ -170,9 +170,9 @@ public:
 		m_renderStatesTracker.lastBoundTexBindIndex = bindIndex;
 		m_renderStatesTracker.texSamplerBindings[bindIndex].toBindTex = &texture;
         m_renderStatesTracker.texUnits.push_back(std::pair<string, uint32>(shaderVaribleName, bindIndex));
-    }
+	}
 
-    void onBind(const api::impl::Sampler_& sampler, uint16 bindIndex)
+	void onBind(const api::impl::Sampler_& sampler, uint16 bindIndex)
 	{
 		if (m_renderStatesTracker.texSamplerBindings.size() <= bindIndex)
 		{
@@ -470,4 +470,5 @@ private:
 	virtual void destroyObject() { release(); }
 };
 }
+namespace native { struct HContext_ {}; }
 }
