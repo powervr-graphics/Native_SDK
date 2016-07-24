@@ -142,7 +142,7 @@ void CommandBufferBase_::bindPipeline(ParentableGraphicsPipeline& pipeline)
 
 void CommandBufferBase_::bindPipeline(ComputePipeline& pipeline)
 {
-	vk::CmdBindPipeline(*pImpl, VK_PIPELINE_BIND_POINT_GRAPHICS, native_cast(*pipeline));
+	vk::CmdBindPipeline(*pImpl, VK_PIPELINE_BIND_POINT_COMPUTE, native_cast(*pipeline));
 }
 
 void CommandBufferBase_::bindDescriptorSet(const api::PipelineLayout& pipelineLayout,
