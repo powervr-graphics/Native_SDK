@@ -31,13 +31,13 @@
 		F8205A91130408E100253AE7 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A88130408E100253AE7 /* Icon.png */; };
 		F8205A92130408E100253AE7 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A89130408E100253AE7 /* Icon@2x.png */; };
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
-		F8290C62EF1C6F304CCD5D21 /* OGLESIntroducingPVRApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F882538380FCC695BA40A7F8 /* OGLESIntroducingPVRApi.cpp */; };
-		F865BD586B1E437C21BD059D /* GnomeToy.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8A548544F0FD7393BAF3890 /* GnomeToy.pod */; };
-		F80F85B31A82D95240C7FC18 /* GnomeWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83987E258B3C65E6C071245 /* GnomeWood.pvr */; };
-		F8EE4D05F9CB49F44068B9D2 /* DarkWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8826308A580B4D8F1B0870D /* DarkWood.pvr */; };
-		F88DCB8438E405666A2192F7 /* ClearWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C4D699C2E947AE6615C20E /* ClearWood.pvr */; };
-		F8D80938246E7B764EBC0B82 /* effect_ES2.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F88ADE514E9DEAC3D9368317 /* effect_ES2.pfx */; };
-		F86DE34DDF8B3E6200CA0971 /* effect_ES3.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F8C3A68FF54B9D41D4FD55E4 /* effect_ES3.pfx */; };
+		F8290C62EF1C6F304CCD5D21 /* OGLESIntroducingPVRApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8D33EEDD77896D86FE0FCC6 /* OGLESIntroducingPVRApi.cpp */; };
+		F865BD586B1E437C21BD059D /* GnomeToy.pod in Resources */ = {isa = PBXBuildFile; fileRef = F88B3A25819F6070B6F52E27 /* GnomeToy.pod */; };
+		F80F85B31A82D95240C7FC18 /* GnomeWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */; };
+		F8EE4D05F9CB49F44068B9D2 /* DarkWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */; };
+		F88DCB8438E405666A2192F7 /* ClearWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EB813261D4F268F63A078F /* ClearWood.pvr */; };
+		F8D80938246E7B764EBC0B82 /* effect_ES2.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F8762F54B39C2B466B7E76D9 /* effect_ES2.pfx */; };
+		F86DE34DDF8B3E6200CA0971 /* effect_ES3.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F811FF3DD74F8045685791BD /* effect_ES3.pfx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -202,13 +202,13 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F882538380FCC695BA40A7F8 /* OGLESIntroducingPVRApi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRApi.cpp; path = ../../OGLESIntroducingPVRApi.cpp; sourceTree = SOURCE_ROOT; };
-		F8A548544F0FD7393BAF3890 /* GnomeToy.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeToy.pod; path = ../../../ProcessedAssets/GnomeToy.pod; sourceTree = SOURCE_ROOT; };
-		F83987E258B3C65E6C071245 /* GnomeWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeWood.pvr; path = ../../../ProcessedAssets/GnomeWood.pvr; sourceTree = SOURCE_ROOT; };
-		F8826308A580B4D8F1B0870D /* DarkWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = DarkWood.pvr; path = ../../../ProcessedAssets/DarkWood.pvr; sourceTree = SOURCE_ROOT; };
-		F8C4D699C2E947AE6615C20E /* ClearWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = ClearWood.pvr; path = ../../../ProcessedAssets/ClearWood.pvr; sourceTree = SOURCE_ROOT; };
-		F88ADE514E9DEAC3D9368317 /* effect_ES2.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = effect_ES2.pfx; path = ../../effect_ES2.pfx; sourceTree = SOURCE_ROOT; };
-		F8C3A68FF54B9D41D4FD55E4 /* effect_ES3.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = effect_ES3.pfx; path = ../../effect_ES3.pfx; sourceTree = SOURCE_ROOT; };
+		F8D33EEDD77896D86FE0FCC6 /* OGLESIntroducingPVRApi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRApi.cpp; path = ../../OGLESIntroducingPVRApi.cpp; sourceTree = SOURCE_ROOT; };
+		F88B3A25819F6070B6F52E27 /* GnomeToy.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeToy.pod; path = ../../../ProcessedAssets/GnomeToy.pod; sourceTree = SOURCE_ROOT; };
+		F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeWood.pvr; path = ../../../ProcessedAssets/GnomeWood.pvr; sourceTree = SOURCE_ROOT; };
+		F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = DarkWood.pvr; path = ../../../ProcessedAssets/DarkWood.pvr; sourceTree = SOURCE_ROOT; };
+		F8EB813261D4F268F63A078F /* ClearWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = ClearWood.pvr; path = ../../../ProcessedAssets/ClearWood.pvr; sourceTree = SOURCE_ROOT; };
+		F8762F54B39C2B466B7E76D9 /* effect_ES2.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = effect_ES2.pfx; path = ../../effect_ES2.pfx; sourceTree = SOURCE_ROOT; };
+		F811FF3DD74F8045685791BD /* effect_ES3.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = effect_ES3.pfx; path = ../../effect_ES3.pfx; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -373,8 +373,8 @@
 		F82C4A6F10298C9800FF3CC6 /* Effects */ = {
 			isa = PBXGroup;
 			children = (
-				F88ADE514E9DEAC3D9368317 /* effect_ES2.pfx */,
-				F8C3A68FF54B9D41D4FD55E4 /* effect_ES3.pfx */,
+				F8762F54B39C2B466B7E76D9 /* effect_ES2.pfx */,
+				F811FF3DD74F8045685791BD /* effect_ES3.pfx */,
 			);
 			name = Effects;
 			sourceTree = "<group>";
@@ -382,7 +382,7 @@
 		F85E2B260DD21E3F00CA9BEB /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				F882538380FCC695BA40A7F8 /* OGLESIntroducingPVRApi.cpp */,
+				F8D33EEDD77896D86FE0FCC6 /* OGLESIntroducingPVRApi.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -390,7 +390,7 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F8A548544F0FD7393BAF3890 /* GnomeToy.pod */,
+				F88B3A25819F6070B6F52E27 /* GnomeToy.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -405,9 +405,9 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F83987E258B3C65E6C071245 /* GnomeWood.pvr */,
-				F8826308A580B4D8F1B0870D /* DarkWood.pvr */,
-				F8C4D699C2E947AE6615C20E /* ClearWood.pvr */,
+				F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */,
+				F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */,
+				F8EB813261D4F268F63A078F /* ClearWood.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -724,7 +724,6 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info.plist;

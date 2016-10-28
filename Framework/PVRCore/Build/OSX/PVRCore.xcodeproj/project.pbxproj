@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		0E3504301BF6514400EC0B4E /* PVRCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E35042F1BF6514400EC0B4E /* PVRCore.h */; settings = {ASSET_TAGS = (); }; };
+		0E88C44D1D54A827004028CA /* pugiconfig.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0E88C44A1D54A827004028CA /* pugiconfig.hpp */; settings = {ASSET_TAGS = (); }; };
+		0E88C44E1D54A827004028CA /* pugixml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E88C44B1D54A827004028CA /* pugixml.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E88C44F1D54A827004028CA /* pugixml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0E88C44C1D54A827004028CA /* pugixml.hpp */; settings = {ASSET_TAGS = (); }; };
 		0EB941631B17091300E2967A /* Assert_.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941341B17091300E2967A /* Assert_.h */; };
 		0EB941651B17091300E2967A /* AxisAlignedBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941361B17091300E2967A /* AxisAlignedBox.h */; };
 		0EB941661B17091300E2967A /* BufferStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB941371B17091300E2967A /* BufferStream.cpp */; };
@@ -59,6 +62,9 @@
 
 /* Begin PBXFileReference section */
 		0E35042F1BF6514400EC0B4E /* PVRCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRCore.h; path = ../../PVRCore.h; sourceTree = "<group>"; };
+		0E88C44A1D54A827004028CA /* pugiconfig.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pugiconfig.hpp; path = ../../../../External/pugixml/pugiconfig.hpp; sourceTree = "<group>"; };
+		0E88C44B1D54A827004028CA /* pugixml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pugixml.cpp; path = ../../../../External/pugixml/pugixml.cpp; sourceTree = "<group>"; };
+		0E88C44C1D54A827004028CA /* pugixml.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = pugixml.hpp; path = ../../../../External/pugixml/pugixml.hpp; sourceTree = "<group>"; };
 		0EB941341B17091300E2967A /* Assert_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Assert_.h; path = ../../Assert_.h; sourceTree = "<group>"; };
 		0EB941361B17091300E2967A /* AxisAlignedBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AxisAlignedBox.h; path = ../../AxisAlignedBox.h; sourceTree = "<group>"; };
 		0EB941371B17091300E2967A /* BufferStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BufferStream.cpp; path = ../../BufferStream.cpp; sourceTree = "<group>"; };
@@ -124,6 +130,9 @@
 		3E46718C19AF697D00A81031 = {
 			isa = PBXGroup;
 			children = (
+				0E88C44A1D54A827004028CA /* pugiconfig.hpp */,
+				0E88C44B1D54A827004028CA /* pugixml.cpp */,
+				0E88C44C1D54A827004028CA /* pugixml.hpp */,
 				3E46719C19AF699A00A81031 /* Sources */,
 				3E46719619AF697D00A81031 /* Products */,
 			);
@@ -200,6 +209,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E88C44F1D54A827004028CA /* pugixml.hpp in Headers */,
 				0EB941741B17091300E2967A /* Hash_.h in Headers */,
 				0EB941861B17091300E2967A /* ReinterpretBits.h in Headers */,
 				0EB941771B17091300E2967A /* ListOfInterfaces.h in Headers */,
@@ -223,6 +233,7 @@
 				0EE12A7A1B8F52D3006ACAEB /* OSManager.h in Headers */,
 				0EB941911B17091300E2967A /* UnicodeConverter.h in Headers */,
 				0EE12A781B8F52D3006ACAEB /* IGraphicsContext.h in Headers */,
+				0E88C44D1D54A827004028CA /* pugiconfig.hpp in Headers */,
 				0EB9417D1B17091300E2967A /* NativeLibrary.h in Headers */,
 				0EB941841B17091300E2967A /* Rectangle.h in Headers */,
 				0E3504301BF6514400EC0B4E /* PVRCore.h in Headers */,
@@ -266,7 +277,7 @@
 		3E46718D19AF697D00A81031 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "___ImaginationTechnology___";
 			};
 			buildConfigurationList = 3E46719019AF697D00A81031 /* Build configuration list for PBXProject "PVRCore" */;
@@ -297,6 +308,7 @@
 				0EB941901B17091300E2967A /* UnicodeConverter.cpp in Sources */,
 				0EB941781B17091300E2967A /* Log.cpp in Sources */,
 				0EB9418A1B17091300E2967A /* StringFunctions.cpp in Sources */,
+				0E88C44E1D54A827004028CA /* pugixml.cpp in Sources */,
 				0EB941681B17091300E2967A /* ConsoleMessenger.cpp in Sources */,
 				0EB9416B1B17091300E2967A /* FilePath.cpp in Sources */,
 				0EB9417C1B17091300E2967A /* NativeLibrary.cpp in Sources */,
@@ -326,6 +338,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CONFIGURATION_BUILD_DIR = "../../../Bin/OSX/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;

@@ -26,7 +26,7 @@ using namespace pvr;
 /*!*********************************************************************************************************************
 Class implementing the pvr::Shell functions.
 ***********************************************************************************************************************/
-class OGLES3IntroducingPVRCamera : public Shell
+class OGLESIntroducingPVRCamera : public Shell
 {
 	api::Fbo onScreenFbo;
 	api::Buffer vbo;
@@ -44,29 +44,26 @@ class OGLES3IntroducingPVRCamera : public Shell
 	// Camera interface
 	CameraInterface m_Camera;
 public:
-	virtual Result::Enum initApplication();
-	virtual Result::Enum initView();
-	virtual Result::Enum releaseView();
-	virtual Result::Enum quitApplication();
-	virtual Result::Enum renderFrame();
+	virtual Result initApplication();
+	virtual Result initView();
+	virtual Result releaseView();
+	virtual Result quitApplication();
+	virtual Result renderFrame();
 
 	void createBuffers();
 	bool createPipelineAndDescriptors();
 	void recordCommandBuffers();
-
-	void drawScene();
-	void drawQuad();
 };
 
-void OGLES3IntroducingPVRCamera::createBuffers()
+void OGLESIntroducingPVRCamera::createBuffers()
 {
 	glm::vec2 VBOmem[] =
 	{
 		//POSITION,
-		{ -1., -1. },	//0:BL
-		{ 1., -1. },	//1:BR
-		{ 1., 1. },		//2:TR
-		{ -1., 1. },	//3:TL
+		{ -1., -1. }, //0:BL
+		{ 1., -1. },  //1:BR
+		{ 1., 1. },   //2:TR
+		{ -1., 1. },  //3:TL
 	};
 	int16 IBOmem[] =
 	{
@@ -74,20 +71,20 @@ void OGLES3IntroducingPVRCamera::createBuffers()
 		0, 2, 3
 	};
 
-	vbo = getGraphicsContext()->createBuffer(sizeof(VBOmem), pvr::types::BufferBindingUse::VertexBuffer, pvr::types::BufferUse::GPU_READ);
-	ibo = getGraphicsContext()->createBuffer(sizeof(IBOmem), pvr::types::BufferBindingUse::IndexBuffer, pvr::types::BufferUse::GPU_READ);
+	vbo = getGraphicsContext()->createBuffer(sizeof(VBOmem), pvr::types::BufferBindingUse::VertexBuffer, true);
+	ibo = getGraphicsContext()->createBuffer(sizeof(IBOmem), pvr::types::BufferBindingUse::IndexBuffer, true);
 
 	vbo->update(VBOmem, 0, sizeof(VBOmem));
 	ibo->update(IBOmem, 0, sizeof(IBOmem));
 }
 
 /*!*********************************************************************************************************************
-\brief	Create pipeline and combined-image-sampler DescriptorSet
-\return	Return true if no error occurred
+\brief  Create pipeline and combined-image-sampler DescriptorSet
+\return Return true if no error occurred
 ***********************************************************************************************************************/
-bool OGLES3IntroducingPVRCamera::createPipelineAndDescriptors()
+bool OGLESIntroducingPVRCamera::createPipelineAndDescriptors()
 {
-	if (!m_Camera.initializeSession(HWCamera::Front, 800, 600)) { return false; }
+	if (!m_Camera.initializeSession(HWCamera::Front, getWidth(), getHeight())) { return false; }
 	pvr::api::DescriptorSetLayoutCreateParam descriptorLayoutDesc;
 
 	pvr::assets::SamplerCreateParam desc;
@@ -100,22 +97,19 @@ bool OGLES3IntroducingPVRCamera::createPipelineAndDescriptors()
 		descriptorLayoutDesc.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
 		descriptorLayout = getGraphicsContext()->createDescriptorSetLayout(descriptorLayoutDesc);
 		pvr::api::DescriptorSetUpdate descSetCreateParam;
-		descSetCreateParam.setCombinedImageSampler(0, getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getRgbTexture()),
-		        sampler);
+		descSetCreateParam.setCombinedImageSampler(0, getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getRgbTexture()), sampler);
 		descriptorSet = getGraphicsContext()->createDescriptorSetOnDefaultPool(descriptorLayout);
 		descriptorSet->update(descSetCreateParam);
 	}
 	else if (m_Camera.hasLumaChromaTextures()) // use the chrominance and luminance
 	{
 		descriptorLayoutDesc.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment)
-		.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
+		.setBinding(1, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
 		descriptorLayout = getGraphicsContext()->createDescriptorSetLayout(descriptorLayoutDesc);
 		pvr::api::DescriptorSetUpdate descSetCreateParam;
 
-		descSetCreateParam.setCombinedImageSampler(0, getTextureFromPVRCameraHandle(getGraphicsContext(),
-		        m_Camera.getChrominanceTexture()), sampler);
-		descSetCreateParam.setCombinedImageSampler(1, getTextureFromPVRCameraHandle(getGraphicsContext(),
-		        m_Camera.getLuminanceTexture()),  sampler);
+		descSetCreateParam.setCombinedImageSampler(0, getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getChrominanceTexture()), sampler);
+		descSetCreateParam.setCombinedImageSampler(1, getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getLuminanceTexture()),  sampler);
 
 		descriptorSet = getGraphicsContext()->createDescriptorSetOnDefaultPool(descriptorLayout);
 		descriptorSet->update(descSetCreateParam);
@@ -149,9 +143,9 @@ bool OGLES3IntroducingPVRCamera::createPipelineAndDescriptors()
 	pipeParams.vertexInput.setInputBinding(0, 0);
 
 	pipeParams.pipelineLayout = getGraphicsContext()->createPipelineLayout(api::PipelineLayoutCreateParam().addDescSetLayout(
-	                                descriptorLayout));
+	                              descriptorLayout));
 
-	pipeParams.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
+	pipeParams.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
 	renderingPipeline = getGraphicsContext()->createGraphicsPipeline(pipeParams);
 	uvTransformLocation = renderingPipeline->getUniformLocation("uvTransform");
 
@@ -179,9 +173,9 @@ bool OGLES3IntroducingPVRCamera::createPipelineAndDescriptors()
 }
 
 /*!*********************************************************************************************************************
-\brief	Pre-record the rendering commands
+\brief  Pre-record the rendering commands
 ***********************************************************************************************************************/
-void OGLES3IntroducingPVRCamera::recordCommandBuffers()
+void OGLESIntroducingPVRCamera::recordCommandBuffers()
 {
 	commandBuffer = getGraphicsContext()->createCommandBufferOnDefaultPool();
 	commandBuffer->beginRecording();
@@ -206,33 +200,33 @@ void OGLES3IntroducingPVRCamera::recordCommandBuffers()
 }
 
 /*!*********************************************************************************************************************
-\return	Return ::pvr::Result::Success if no error occured
-\brief	Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+\return Return ::pvr::Result::Success if no error occured
+\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
         Used to configure the application window and rendering context (API version, vsync, window size etc.), and to load modules
         and objects not dependent on the context.
 ***********************************************************************************************************************/
-Result::Enum OGLES3IntroducingPVRCamera::initApplication()
+Result OGLESIntroducingPVRCamera::initApplication()
 {
 	return Result::Success;
 }
 
 /*!*********************************************************************************************************************
-\return	Return ::pvr::Result::Success if no error occurred
-\brief	Will be called by Shell once per run, just before exiting the program. Nothing to do in this demo.
+\return Return ::pvr::Result::Success if no error occurred
+\brief  Will be called by Shell once per run, just before exiting the program. Nothing to do in this demo.
 ***********************************************************************************************************************/
-Result::Enum OGLES3IntroducingPVRCamera::quitApplication() { return Result::Success; }
+Result OGLESIntroducingPVRCamera::quitApplication() { return Result::Success; }
 
 /*!*********************************************************************************************************************
-\return	Return ::pvr::Result::Success if no error occured
-\brief	Code in initView() will be called by PVRShell upon initialization, and after any change to the rendering context.Used to
+\return Return ::pvr::Result::Success if no error occured
+\brief  Code in initView() will be called by PVRShell upon initialization, and after any change to the rendering context.Used to
         initialize variables that are dependent on the rendering context (i.e. API objects)
 ***********************************************************************************************************************/
-Result::Enum OGLES3IntroducingPVRCamera::initView()
+Result OGLESIntroducingPVRCamera::initView()
 {
 	createBuffers();
-	//	Load and compile the shaders & link programs
-	if (!createPipelineAndDescriptors()) {	return Result::UnknownError;  }
-	if (uiRenderer.init(getGraphicsContext(), onScreenFbo->getRenderPass(), 0) != Result::Success) { return Result::UnknownError; }
+	//  Load and compile the shaders & link programs
+	if (!createPipelineAndDescriptors()) {  return Result::UnknownError;  }
+	if (uiRenderer.init(onScreenFbo->getRenderPass(), 0) != Result::Success) { return Result::UnknownError; }
 	uiRenderer.getDefaultDescription()->setText("Streaming of hardware Camera video preview");
 	uiRenderer.getDefaultDescription()->commitUpdates();
 	uiRenderer.getDefaultTitle()->setText("IntroducingPVRCamera");
@@ -242,10 +236,10 @@ Result::Enum OGLES3IntroducingPVRCamera::initView()
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
-Result::Enum OGLES3IntroducingPVRCamera::releaseView()
+Result OGLESIntroducingPVRCamera::releaseView()
 {
 	// Clean up AV capture
 	m_Camera.destroySession();
@@ -265,10 +259,10 @@ Result::Enum OGLES3IntroducingPVRCamera::releaseView()
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Main rendering loop function of the program. The shell will call this function every frame.
+\return Return pvr::Result::Success if no error occurred
+\brief  Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
-Result::Enum OGLES3IntroducingPVRCamera::renderFrame()
+Result OGLESIntroducingPVRCamera::renderFrame()
 {
 	m_Camera.updateImage();
 #if defined(TARGET_OS_IPHONE)
@@ -289,7 +283,7 @@ Result::Enum OGLES3IntroducingPVRCamera::renderFrame()
 }
 
 /*!*********************************************************************************************************************
-\return	Return an auto ptr to the demo supplied by the user
-\brief	This function must be implemented by the user of the shell. The user should return its PVRShell object defining the behaviour of the application.
+\return Return an auto ptr to the demo supplied by the user
+\brief  This function must be implemented by the user of the shell. The user should return its PVRShell object defining the behaviour of the application.
 ***********************************************************************************************************************/
-std::auto_ptr<Shell> pvr::newDemo() { return std::auto_ptr<Shell>(new OGLES3IntroducingPVRCamera()); }
+std::auto_ptr<Shell> pvr::newDemo() { return std::auto_ptr<Shell>(new OGLESIntroducingPVRCamera()); }

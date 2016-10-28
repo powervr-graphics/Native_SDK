@@ -31,9 +31,6 @@ public:
 
 	virtual bool isSupportedFile(Stream& assetStream);
 	virtual std::vector<std::string>  getSupportedFileExtensions();
-	virtual std::string getReaderName();
-	virtual std::string getReaderVersion();
-
 private:
 	virtual bool readNextAsset(Texture& asset);
 	bool m_texturesToLoad;
@@ -54,12 +51,12 @@ private:
 
 	bool loadRowAligned(Texture& asset, uint32 bytesPerDataEntry, uint32 rowAlignment);
 	bool loadIndexed(Texture& asset, uint32 bytesPerPaletteEntry, uint32 bitsPerDataEntry,
-	                         uint32 numberOfPaletteEntries, uint32 rowAlignment);
+	                 uint32 numberOfPaletteEntries, uint32 rowAlignment);
 	bool loadRunLength(Texture& asset, uint32 bytesPerDataEntry,
-	                           uint32 rowAlignment);
+	                   uint32 rowAlignment);
 	bool loadRunLengthIndexed(Texture& asset, uint32 bytesPerPaletteEntry,
-	                                  uint32 bytesPerDataEntry, uint32 numberOfPaletteEntries,
-	                                  uint32 rowAlignment);
+	                          uint32 bytesPerDataEntry, uint32 numberOfPaletteEntries,
+	                          uint32 rowAlignment);
 };
 
 }

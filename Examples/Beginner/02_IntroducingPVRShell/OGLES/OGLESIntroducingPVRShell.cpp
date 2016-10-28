@@ -79,11 +79,11 @@ class OGLESIntroducingPVRShell : public pvr::Shell
 
 public:
     // following function must be override
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 };
 
 /*!*********************************************************************************************************************
@@ -92,21 +92,21 @@ public:
 		Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
 		If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRShell::initApplication(){	return pvr::Result::Success; }
+pvr::Result OGLESIntroducingPVRShell::initApplication(){	return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return	Return Result::Success if no error occurred
 \brief	Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
         If the rendering context is lost, QuitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRShell::quitApplication(){	return pvr::Result::Success; }
+pvr::Result OGLESIntroducingPVRShell::quitApplication(){	return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return	Return Result::Success if no error occured
 \brief	Code in initView() will be called by pvr::Shell upon initialization or after a change in the rendering context.
 		Used to initialize variables that are dependant on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRShell::initView()
+pvr::Result OGLESIntroducingPVRShell::initView()
 {
 	// Fragment and vertex shaders code
 	const char* pszFragShader = "\
@@ -233,7 +233,7 @@ pvr::Result::Enum OGLESIntroducingPVRShell::initView()
 \return	Return Result::Success if no error occurred
 \brief	Code in releaseView() will be called by pvr::Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRShell::releaseView()
+pvr::Result OGLESIntroducingPVRShell::releaseView()
 {
 	// Release Vertex buffer object.
 	glDeleteBuffers(1, &vbo);
@@ -249,7 +249,7 @@ pvr::Result::Enum OGLESIntroducingPVRShell::releaseView()
 \return	Return Result::Success if no error occurred
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRShell::renderFrame()
+pvr::Result OGLESIntroducingPVRShell::renderFrame()
 {
 	// Matrix used for projection model view
 	float afIdentity[] = 

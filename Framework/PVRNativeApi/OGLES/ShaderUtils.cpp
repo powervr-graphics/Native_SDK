@@ -1,5 +1,5 @@
 /*!*********************************************************************************************************************
-\file         PVRApi\OGLES\ShaderUtils.cpp
+\file         PVRNativeApi\OGLES\ShaderUtils.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief         Implementations of the shader utility functions
@@ -13,7 +13,7 @@
 namespace pvr {
 namespace utils {
 
-bool loadShader(const native::HContext_& context, const Stream& shaderSource, types::ShaderType::Enum shaderType, const char* const* defines, uint32 defineCount,
+bool loadShader(const native::HContext_& context, const Stream& shaderSource, types::ShaderType shaderType, const char* const* defines, uint32 defineCount,
                 pvr::native::HShader_& outShader, const ApiCapabilities* contextCapabilities)
 {
 	if (!shaderSource.isopen() && !shaderSource.open())
@@ -40,7 +40,7 @@ bool loadShader(const native::HContext_& context, const Stream& shaderSource, ty
 		outShader = gl::CreateShader(GL_FRAGMENT_SHADER);
 		break;
 	case types::ShaderType::ComputeShader:
-#if !defined(BUILD_API_MAX)||BUILD_API_MAX >= 31
+#if defined(GL_COMPUTE_SHADER)
 		if (!contextCapabilities || contextCapabilities->supports(ApiCapabilities::ComputeShader))
 		{
 			outShader = gl::CreateShader(GL_COMPUTE_SHADER);
@@ -52,8 +52,46 @@ bool loadShader(const native::HContext_& context, const Stream& shaderSource, ty
 			return false;
 		}
 		break;
+	case types::ShaderType::GeometryShader:
+#if defined(GL_GEOMETRY_SHADER_EXT)
+		if (!contextCapabilities || contextCapabilities->supports(ApiCapabilities::GeometryShader))
+		{
+			outShader = gl::CreateShader(GL_GEOMETRY_SHADER_EXT);
+		}
+		else
+#endif
+		{
+			Log("loadShader: Geometry Shader not supported on this context");
+			return false;
+		}
 
-
+		break;
+	case types::ShaderType::TessControlShader:
+#if defined(GL_TESS_CONTROL_SHADER_EXT)
+		if (!contextCapabilities || contextCapabilities->supports(ApiCapabilities::Tessellation))
+		{
+			outShader = gl::CreateShader(GL_TESS_CONTROL_SHADER_EXT);
+		}
+		else
+#endif
+		{
+			Log("loadShader: Tessellation not supported on this context");
+			return false;
+		}
+		break;
+	case types::ShaderType::TessEvaluationShader:
+#if defined(GL_TESS_EVALUATION_SHADER_EXT)
+		if (!contextCapabilities || contextCapabilities->supports(ApiCapabilities::Tessellation))
+		{
+			outShader = gl::CreateShader(GL_TESS_EVALUATION_SHADER_EXT);
+		}
+		else
+#endif
+		{
+			Log("loadShader: Tessellation not supported on this context");
+			return false;
+		}
+		break;
 	default:
 		Log("loadShader: Unknown shader type requested.");
 		return false;
@@ -98,7 +136,8 @@ bool loadShader(const native::HContext_& context, const Stream& shaderSource, ty
 		  (shaderType == types::ShaderType::VertexShader ? "Vertex" :
 		   shaderType == types::ShaderType::FragmentShader ? "Fragment" :
 		   shaderType == types::ShaderType::ComputeShader ? "Compute" :
-		   shaderType == types::ShaderType::FrameShader ? "Frame" :
+		   shaderType == types::ShaderType::TessControlShader ? "TessellationControl" :
+		   shaderType == types::ShaderType::TessEvaluationShader ? "TessellationEvaluation" :
 		   shaderType == types::ShaderType::RayShader ? "Ray" : "Unknown");
 
 
@@ -109,13 +148,13 @@ bool loadShader(const native::HContext_& context, const Stream& shaderSource, ty
 	return true;
 }
 
-bool loadShader(const native::HContext_& context, Stream& shaderData, types::ShaderType::Enum shaderType,
-                types::ShaderBinaryFormat::Enum binaryFormat, pvr::native::HShader_& outShader,
+bool loadShader(const native::HContext_& context, Stream& shaderData, types::ShaderType shaderType,
+                types::ShaderBinaryFormat binaryFormat, pvr::native::HShader_& outShader,
                 const ApiCapabilities* contextCapabilities)
 {
 #if defined(TARGET_OS_IPHONE)
 	assertion(false , "Target IPhone does not support Binary");
-	return Result::UnsupportedRequest;
+	return false;
 #else
 
 	if (binaryFormat != types::ShaderBinaryFormat::ImgSgx)

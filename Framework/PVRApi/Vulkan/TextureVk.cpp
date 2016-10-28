@@ -1,5 +1,5 @@
 /*!*********************************************************************************************************************
-\file         PVRApi\Vulkan\TextureGles.cpp
+\file         PVRApi\Vulkan\TextureVk.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief         Contains definitions for the OpenGL ES texture implementation methods.
@@ -13,73 +13,12 @@
 #include "PVRApi/TextureUtils.h"
 #include "PVRNativeApi/Vulkan/ConvertToVkTypes.h"
 #include "PVRNativeApi/Vulkan/ImageUtilsVk.h"
-
-namespace { /* dummy */
-
-inline bool createTexture(pvr::platform::ContextVk& context, pvr::uint32 width, pvr::uint32 height, pvr::uint32 depth,
-                          const pvr::api::ImageStorageFormat& format, pvr::uint32 arrayLayers,
-                          VkImageType imageType, bool isCubeMap, bool isTransient, pvr::native::HTexture_& outTexture)
-{
-	VkImageCreateInfo nfo;
-	memset(&nfo, 0, sizeof(nfo));
-
-	nfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-	nfo.pNext = NULL;
-	nfo.flags = pvr::uint32(isCubeMap) * VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-	nfo.imageType = imageType;
-	nfo.extent.width = width;
-	nfo.extent.height = height;
-	nfo.extent.depth = depth;
-	nfo.mipLevels = format.mipmapLevels;
-	nfo.arrayLayers = arrayLayers;
-	nfo.samples = VK_SAMPLE_COUNT_1_BIT;
-	bool isCompressed;
-	nfo.format = pvr::api::ConvertToVk::pixelFormat(format.format, format.colorSpace, format.dataType, isCompressed);
-	nfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-	nfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-	nfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-
-	VkMemoryPropertyFlagBits memoryPropertyFlagBits;
-
-	if (isTransient)
-	{
-		nfo.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
-		memoryPropertyFlagBits = VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT;
-		nfo.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	}
-	else
-	{
-		memoryPropertyFlagBits = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-		nfo.initialLayout = VK_IMAGE_LAYOUT_PREINITIALIZED;
-	}
-
-	//Create the final image
-	pvr::vkThrowIfFailed(vk::CreateImage(context.getDevice(), &nfo, NULL, &outTexture.image),
-	                     "TextureUtils:TextureUpload createImage");
-
-	VkMemoryRequirements memReqDst;
-	if (!pvr::apiutils::vulkan::allocateImageDeviceMemory(context.getDevice(),
-	    context.getPlatformContext().getNativePlatformHandles().deviceMemProperties, memoryPropertyFlagBits,
-	    outTexture, &memReqDst))
-	{
-		return false;
-	}
-	return true;
-}
-
-}
-
 namespace pvr {
 using namespace types;
 namespace api {
 namespace impl {
 native::HTexture_& TextureStore_::getNativeObject() { return native_cast(*this); }
 const native::HTexture_& TextureStore_::getNativeObject() const { return native_cast(*this); }
-
-TextureDimension::Enum TextureStore_::getDimensions() const
-{
-	return native_cast(*this).getDimension();
-}
 
 bool TextureStore_::isAllocated() const
 {
@@ -103,44 +42,139 @@ native::HImageView_& TextureView_::getNativeObject()
 
 TextureView_::TextureView_(const TextureStore& texture): resource(texture) { }
 
-void TextureStore_::allocate2D(const ImageStorageFormat& format, uint32 width, uint32 height)
+void TextureStore_::allocate2D(const ImageStorageFormat& format, uint32 width, uint32 height,
+                               types::ImageUsageFlags usage, types::ImageLayout newLayout)
 {
-	createTexture(native_cast(*context), width, height, 1, format, 1, VK_IMAGE_TYPE_2D, false, false, this->getNativeObject());
-	this->format = format;
-	native_cast(*this).setDimensions(types::ImageExtents(width, height, 1));
-	native_cast(*this).setLayers(types::ImageLayersSize(1, format.mipmapLevels));
+	newLayout = (static_cast<pvr::uint32>(usage & types::ImageUsageFlags::DepthStencilAttachment) != 0 ?
+	             types::ImageLayout::DepthStencilAttachmentOptimal : newLayout);
+
+	allocate2DArrayMS(format, width, height, 1, types::SampleCount::Count1, usage, newLayout);
+}
+
+void TextureStore_::allocate2DArray(const ImageStorageFormat& format, uint32 width, uint32 height,
+                                    uint32 arraySlices, types::ImageUsageFlags usage,
+                                    types::ImageLayout newLayout)
+{
+	allocate2DArrayMS(format, width, height, arraySlices, types::SampleCount::Count1, usage, newLayout);
+}
+
+void TextureStore_::allocate2DMS(const ImageStorageFormat& format, uint32 width, uint32 height,
+                                 SampleCount samples, ImageUsageFlags usage,
+                                 ImageLayout newLayout)
+{
+	allocate2DArrayMS(format, width, height, 1, samples, usage, newLayout);
+}
+
+void TextureStore_::allocate2DArrayMS(const ImageStorageFormat& format, uint32 width, uint32 height, uint32 arraySize,
+                                      types::SampleCount samples, types::ImageUsageFlags usage,
+                                      types::ImageLayout newLayout)
+{
+	bool isCompressed ;
+	VkFormat vkFormat =  pvr::api::ConvertToVk::pixelFormat(format.format, format.colorSpace, format.dataType, isCompressed);
+
+	utils::vulkan::createImageAndMemory(context->getPlatformContext(), types::Extent3D(width, height, 1),
+	                                    arraySize, ConvertToVk::sampleCount(samples), format.mipmapLevels,
+	                                    true, false, VK_IMAGE_TYPE_2D, vkFormat, ConvertToVk::imageUsageFlags(usage),
+	                                    ConvertToVk::imageLayout(newLayout), VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+	                                    this->getNativeObject());
+	native_cast(*this).setNumSamples(samples);
+	native_cast(*this).setDimensions(types::Extent3D(width, height, 1));
+	native_cast(*this).setFormat(format);
+	native_cast(*this).setLayers(types::ImageLayersSize((uint16)arraySize, format.mipmapLevels));
 }
 
 void TextureStore_::allocateTransient(const ImageStorageFormat& format, uint32 width, uint32 height)
 {
-	createTexture(native_cast(*context), width, height, 1, format, 1, VK_IMAGE_TYPE_2D, false, true, this->getNativeObject());
-	this->format = format;
-	native_cast(*this).setDimensions(types::ImageExtents(width, height, 1));
+	types::ImageUsageFlags usage = types::ImageUsageFlags::ColorAttachment |
+	                               types::ImageUsageFlags::InputAttachment |
+	                               types::ImageUsageFlags::TransientAttachment;
+
+	types::ImageLayout imageLayout = types::ImageLayout::ColorAttachmentOptimal;
+
+	bool isCompressed ;
+	VkFormat vkFormat =  pvr::api::ConvertToVk::pixelFormat(format.format, format.colorSpace, format.dataType, isCompressed);
+
+	utils::vulkan::createImageAndMemory(context->getPlatformContext(), types::Extent3D(width, height, 1), 1,
+	                                    VK_SAMPLE_COUNT_1_BIT, format.mipmapLevels, true, false, VK_IMAGE_TYPE_2D,
+	                                    vkFormat, ConvertToVk::imageUsageFlags(usage),
+	                                    ConvertToVk::imageLayout(imageLayout), VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT,
+	                                    this->getNativeObject());
+
+	native_cast(*this).setDimensions(types::Extent3D(width, height, 1));
+	native_cast(*this).setFormat(format);
 	native_cast(*this).setLayers(types::ImageLayersSize(1, format.mipmapLevels));
 }
 
-void TextureStore_::allocate3D(const ImageStorageFormat& format, uint32 width, uint32 height, uint32 depth)
+void TextureStore_::allocateStorage(const ImageStorageFormat& format, uint32 width, uint32 height)
 {
-	createTexture(native_cast(*context), width, height, depth, format, 1, VK_IMAGE_TYPE_3D, false, false, this->getNativeObject());
-}
-void TextureStore_::allocate2DArray(const ImageStorageFormat& format, uint32 width, uint32 height, uint32 arraySlices)
-{
-	createTexture(native_cast(*context), width, height, 1, format, arraySlices, VK_IMAGE_TYPE_2D, false, false, this->getNativeObject());
+	types::ImageUsageFlags usage = types::ImageUsageFlags::TransferDest | types::ImageUsageFlags::Storage;
+
+	types::ImageLayout imageLayout = types::ImageLayout::General;
+
+	bool isCompressed ;
+	VkFormat vkFormat =  pvr::api::ConvertToVk::pixelFormat(format.format, format.colorSpace, format.dataType, isCompressed);
+
+	utils::vulkan::createImageAndMemory(context->getPlatformContext(), types::Extent3D(width, height, 1), 1,
+	                                    VK_SAMPLE_COUNT_1_BIT, format.mipmapLevels, true, false,
+	                                    VK_IMAGE_TYPE_2D, vkFormat, ConvertToVk::imageUsageFlags(usage),
+	                                    ConvertToVk::imageLayout(imageLayout),
+	                                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, this->getNativeObject());
+
+	native_cast(*this).setDimensions(types::Extent3D(width, height, 1));
+	native_cast(*this).setFormat(format);
+	native_cast(*this).setLayers(types::ImageLayersSize(1, format.mipmapLevels));
+
 }
 
-void TextureStore_::allocate2DCube(const ImageStorageFormat& format, uint32 width, uint32 height)
+void TextureStore_::allocate3D(const ImageStorageFormat& format, uint32 width, uint32 height, uint32 depth,
+                               types::ImageUsageFlags usage, types::ImageLayout newLayout)
 {
-	createTexture(native_cast(*context), width, height, 1, format, 1, VK_IMAGE_TYPE_3D, false, false, this->getNativeObject());
+	bool isCompressed ;
+	VkFormat vkFormat =  pvr::api::ConvertToVk::pixelFormat(format.format, format.colorSpace, format.dataType, isCompressed);
+
+	utils::vulkan::createImageAndMemory(context->getPlatformContext(), types::Extent3D(width, height, depth),
+	                                    1, VK_SAMPLE_COUNT_1_BIT, format.mipmapLevels, true, false,
+	                                    VK_IMAGE_TYPE_3D, vkFormat, ConvertToVk::imageUsageFlags(usage),
+	                                    ConvertToVk::imageLayout(newLayout), VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT,
+	                                    this->getNativeObject());
+
+
+	native_cast(*this).setFormat(format);
+	native_cast(*this).setLayers(types::ImageLayersSize(1, format.mipmapLevels));
+}
+
+void TextureStore_::allocate2DCube(const ImageStorageFormat& format, uint32 width, uint32 height,
+                                   types::ImageUsageFlags usage, types::ImageLayout newLayout)
+{
+	bool isCompressed ;
+	VkFormat vkFormat =  pvr::api::ConvertToVk::pixelFormat(format.format, format.colorSpace, format.dataType, isCompressed);
+
+	utils::vulkan::createImageAndMemory(context->getPlatformContext(), types::Extent3D(width, height, 1), 1,
+	                                    VK_SAMPLE_COUNT_1_BIT, format.mipmapLevels, true, true, VK_IMAGE_TYPE_2D,
+	                                    vkFormat, ConvertToVk::imageUsageFlags(usage), ConvertToVk::imageLayout(newLayout),
+	                                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, this->getNativeObject());
+
+
+	native_cast(*this).setFormat(format);
+	native_cast(*this).setLayers(types::ImageLayersSize(1, format.mipmapLevels));
+	isCubeMap = true;
 }
 
 void TextureStore_::update(const void* data, const ImageDataFormat& format, const TextureArea& area)
 {
-	//NOT IMPLEMENTED//
-	//pseudocode:
-	//Create linear images for each layer/miplevel
-	//Copy data into them
-	//Launch image copies
-	//Synchronise
+	if (!isAllocated()) { assertion(false, "Texture must be allocated before updating"); }
+	vulkan::TextureStoreVk_& thisVk = native_cast(*this);
+	utils::vulkan::ImageUpdateParam imageUpdate;
+	Log(Log.Information, "IMAGE UPDATE LEVEL: %d", area.mipLevel);
+	imageUpdate.mipLevel = area.mipLevel;
+	imageUpdate.data = data;
+	imageUpdate.arrayIndex = area.arrayIndex;
+	imageUpdate.depth = area.depth;
+	imageUpdate.cubeFace = area.cubeFace;
+	imageUpdate.width = area.width;
+	imageUpdate.height = area.height;
+	utils::vulkan::updateImage(getContext().getPlatformContext(), &imageUpdate, 1, thisVk.layersSize.numArrayLevels,
+	                           ConvertToVk::pixelFormat(format), isCubeMap, this->getNativeObject().image);
 }
 
 TextureStore_::~TextureStore_()
@@ -190,12 +224,15 @@ void TextureViewVk_::destroy()
 	handle = VK_NULL_HANDLE;
 }
 
-TextureViewVk_::TextureViewVk_(const TextureStoreVk& texture, const types::ImageSubresourceRange& range, SwizzleChannels swizzleChannels) : TextureView_(texture)
+TextureViewVk_::TextureViewVk_(const TextureStoreVk& texture, const types::ImageSubresourceRange& range,
+                               SwizzleChannels swizzleChannels) : TextureView_(texture)
 {
 	VkImageViewCreateInfo viewCreateInfo = {};
 	viewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 	viewCreateInfo.image = getResource()->getNativeObject().image;
-	viewCreateInfo.viewType = pvr::api::ConvertToVk::textureDimensionImageView(texture->getDimension());
+	viewCreateInfo.viewType = pvr::api::ConvertToVk::imageBaseTypeToTexViewType(texture->getImageBaseType(),
+	                          range.numArrayLevels, texture->is2DCubeMap());
+
 	viewCreateInfo.format = api::ConvertToVk::pixelFormat(getResource()->getFormat().format,
 	                        getResource()->getFormat().colorSpace, getResource()->getFormat().dataType);
 	viewCreateInfo.components.r = api::ConvertToVk::swizzle(swizzleChannels.r);
@@ -203,12 +240,14 @@ TextureViewVk_::TextureViewVk_(const TextureStoreVk& texture, const types::Image
 	viewCreateInfo.components.b = api::ConvertToVk::swizzle(swizzleChannels.b);
 	viewCreateInfo.components.a = api::ConvertToVk::swizzle(swizzleChannels.a);
 
-	viewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	viewCreateInfo.subresourceRange.aspectMask = pvr::api::ConvertToVk::imageAspect(range.aspect);
 	viewCreateInfo.subresourceRange.baseMipLevel = range.mipLevelOffset;
 	viewCreateInfo.subresourceRange.levelCount = range.numMipLevels;
 	viewCreateInfo.subresourceRange.baseArrayLayer = range.arrayLayerOffset;
 	viewCreateInfo.subresourceRange.layerCount = range.numArrayLevels;
-	if (vk::CreateImageView(native_cast(getResource()->getContext()).getDevice(), &viewCreateInfo, NULL, &getNativeObject().handle) != VK_SUCCESS)
+
+	if (vk::CreateImageView(native_cast(getResource()->getContext()).getDevice(), &viewCreateInfo, NULL,
+	                        &getNativeObject().handle) != VK_SUCCESS)
 	{
 		assertion(false, "Failed to create ImageView");
 	}

@@ -1,3 +1,10 @@
+/*!*********************************************************************************************************************
+\file         PVRApi/OGLES/CommandPoolGles.h
+\author       PowerVR by Imagination, Developer Technology Team
+\copyright    Copyright (c) Imagination Technologies Limited.
+\brief        OpenGL ES Implementation details of the CommandPool class.
+***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #include "PVRApi/OGLES/CommandPoolGles.h"
 namespace pvr {
 namespace api {
@@ -22,3 +29,4 @@ api::SecondaryCommandBuffer CommandPool_::allocateSecondaryCommandBuffer()
 }
 }
 }
+//!\endcond

@@ -13,7 +13,7 @@ namespace assets {
 class Model;
 
 /*!*********************************************************************************************************************
-\brief    This class creates pvr::assets::Model object from Streams of POD Model data. Use the readAsset method to 
+\brief    This class creates pvr::assets::Model object from Streams of POD Model data. Use the readAsset method to
          create Model objects from the data in your stream.
 ***********************************************************************************************************************/
 class PODReader : public AssetReader<Model>
@@ -26,7 +26,7 @@ public:
 	/*!******************************************************************************************************************
 	\brief    Construct reader from the specified stream.
 	********************************************************************************************************************/
-	PODReader(Stream::ptr_type assetStream) : AssetReader<Model>(assetStream){ }
+	PODReader(Stream::ptr_type assetStream) : AssetReader<Model>(assetStream) { }
 
 	/*!******************************************************************************************************************
 	\brief    Check if there more assets in the stream.
@@ -51,20 +51,9 @@ public:
 	\return  A vector with the expected file extensions for files supported by this reader
 	********************************************************************************************************************/
 	virtual std::vector<std::string> getSupportedFileExtensions();
-
-	/*!******************************************************************************************************************
-	\brief    Get an identifying name for this reader.
-	********************************************************************************************************************/
-	virtual std::string getReaderName();
-	
-	/*!******************************************************************************************************************
-	\brief    Get an identifying version string for this reader.
-	********************************************************************************************************************/
-	virtual std::string getReaderVersion();
-
 private:
 	bool readNextAsset(Model& asset);
-	static Result::Enum getInformation(Stream& stream, std::string* history, std::string* options);
+	static Result getInformation(Stream& stream, std::string* history, std::string* options);
 
 	bool m_modelsToLoad;
 };

@@ -137,8 +137,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>getConsumerToken()
 : <a class="el" href="classpvr_1_1_locked_queue.html#ac860110478a94bc851e44f79751f29db">pvr::LockedQueue&lt; T &gt;</a>
 </li>
-<li>getContainer()
-: <a class="el" href="classpvr_1_1_multi.html#a5e98145f4f2703f6e2be890be58ff20b">pvr::Multi&lt; T_ &gt;</a>
+<li>getContainer1()
+: <a class="el" href="classpvr_1_1_multi.html#ae01c94b4dde3801611dd1d0c677dafcc">pvr::Multi&lt; T_, MAX_ITEMS &gt;</a>
+</li>
+<li>getCurrentSwapChain()
+: <a class="el" href="classpvr_1_1_i_graphics_context.html#a911296bb4d47bb2bda31dbb3d8fb19dc">pvr::IGraphicsContext</a>
 </li>
 <li>getCurrentTimeHours()
 : <a class="el" href="classpvr_1_1_time.html#aafbf2d1fdee8537ee069c207012df2a4">pvr::Time</a>
@@ -255,8 +258,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="classpvr_1_1_indexed_array_1_1const__iterator.html#a72d46c33d947e474bad9ae0a8268c1c9">pvr::IndexedArray&lt; ValueType_, IndexType_ &gt;::const_iterator</a>
 </li>
 <li>getLowestValue()
-: <a class="el" href="classpvr_1_1_half_float.html#ad0bbb0f15c913f837a8bb60e56b85f62">pvr::HalfFloat</a>
-, <a class="el" href="class_fixed_point.html#af98e83bdc763c1fe9788ea0232047a8d">FixedPoint&lt; IntegerType, IsSigned &gt;</a>
+: <a class="el" href="class_fixed_point.html#af98e83bdc763c1fe9788ea0232047a8d">FixedPoint&lt; IntegerType, IsSigned &gt;</a>
+, <a class="el" href="classpvr_1_1_half_float.html#ad0bbb0f15c913f837a8bb60e56b85f62">pvr::HalfFloat</a>
 </li>
 <li>getMax()
 : <a class="el" href="classpvr_1_1math_1_1_axis_aligned_box.html#adac27a8e6f7fa53e41806edb273c8420">pvr::math::AxisAlignedBox</a>
@@ -299,14 +302,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classpvr_1_1_normalised_integer.html#a9f37420d9d5a1089e1ea2d1a65e02dae">pvr::NormalisedInteger&lt; IntegerType &gt;</a>
 </li>
 <li>getPlatformContext()
-: <a class="el" href="classpvr_1_1_i_graphics_context.html#ac6ba74fc8ec6284074c9a3bc976a585b">pvr::IGraphicsContext</a>
-, <a class="el" href="classpvr_1_1_o_s_manager.html#a1eb7917fc7c0de34031aaa34b48505e5">pvr::OSManager</a>
+: <a class="el" href="classpvr_1_1_o_s_manager.html#a1eb7917fc7c0de34031aaa34b48505e5">pvr::OSManager</a>
+, <a class="el" href="classpvr_1_1_i_graphics_context.html#ac6ba74fc8ec6284074c9a3bc976a585b">pvr::IGraphicsContext</a>
 </li>
 <li>getPosition()
-: <a class="el" href="classpvr_1_1_android_asset_stream.html#a50221e44cbc9ed04cd02018536349ac1">pvr::AndroidAssetStream</a>
-, <a class="el" href="classpvr_1_1_file_stream.html#a16a0176e83b7d708afc77a09481cd264">pvr::FileStream</a>
-, <a class="el" href="classpvr_1_1_buffer_stream.html#ab82888748a24c8c535801b70d7335c14">pvr::BufferStream</a>
+: <a class="el" href="classpvr_1_1_file_stream.html#a16a0176e83b7d708afc77a09481cd264">pvr::FileStream</a>
 , <a class="el" href="classpvr_1_1_stream.html#a5b00fee922f29fbd10889ef34e0a42dc">pvr::Stream</a>
+, <a class="el" href="classpvr_1_1_android_asset_stream.html#a50221e44cbc9ed04cd02018536349ac1">pvr::AndroidAssetStream</a>
+, <a class="el" href="classpvr_1_1_buffer_stream.html#ab82888748a24c8c535801b70d7335c14">pvr::BufferStream</a>
 </li>
 <li>getProducerToken()
 : <a class="el" href="classpvr_1_1_locked_queue.html#a2be3fa1969e2978d8716bc1f50ee1429">pvr::LockedQueue&lt; T &gt;</a>
@@ -316,21 +319,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>getSize()
 : <a class="el" href="classpvr_1_1_sized_pointer.html#abeb05f1ba11eb6ee7a03e3d9d33d1f1d">pvr::SizedPointer&lt; TYPE &gt;</a>
-, <a class="el" href="classpvr_1_1_file_stream.html#aad5aa051f4cbc0c4e38db063a8340755">pvr::FileStream</a>
-, <a class="el" href="classpvr_1_1_android_asset_stream.html#a511299b45cdb5f16ee7c070cbc0259e7">pvr::AndroidAssetStream</a>
-, <a class="el" href="classpvr_1_1_buffer_stream.html#a468a82e13e3167396f90066b9036e1d1">pvr::BufferStream</a>
-, <a class="el" href="classpvr_1_1_stream.html#a3991f8b372ea62c75396228aa9a0cf9b">pvr::Stream</a>
 , <a class="el" href="classpvr_1_1math_1_1_axis_aligned_box.html#a710f83b51306ddfc577dfac175dae617">pvr::math::AxisAlignedBox</a>
+, <a class="el" href="classpvr_1_1_android_asset_stream.html#a511299b45cdb5f16ee7c070cbc0259e7">pvr::AndroidAssetStream</a>
+, <a class="el" href="classpvr_1_1_stream.html#a3991f8b372ea62c75396228aa9a0cf9b">pvr::Stream</a>
+, <a class="el" href="classpvr_1_1_file_stream.html#aad5aa051f4cbc0c4e38db063a8340755">pvr::FileStream</a>
+, <a class="el" href="classpvr_1_1_buffer_stream.html#a468a82e13e3167396f90066b9036e1d1">pvr::BufferStream</a>
 </li>
 <li>getSwapChainIndex()
-: <a class="el" href="classpvr_1_1_i_platform_context.html#a9e7d5c21a9ccf9599f9ee276aed69a2c">pvr::IPlatformContext</a>
+: <a class="el" href="classpvr_1_1_i_platform_context.html#a3dc421371b2be222e2d1f31d2984dc14">pvr::IPlatformContext</a>
 </li>
 <li>getSwapChainLength()
-: <a class="el" href="classpvr_1_1_i_platform_context.html#ad705dfe1a95e7991712f0b51cf57da8b">pvr::IPlatformContext</a>
+: <a class="el" href="classpvr_1_1_i_graphics_context.html#aea9eff125221c7878cc5e5cd87193008">pvr::IGraphicsContext</a>
+, <a class="el" href="classpvr_1_1_i_platform_context.html#a7a042510850436ac2cf1008a3a186e59">pvr::IPlatformContext</a>
 </li>
 <li>getVerbosity()
 : <a class="el" href="classpvr_1_1system_1_1_messenger.html#a014cedab893a47460a44f2e2d42c1473">pvr::system::Messenger</a>
 , <a class="el" href="classpvr_1_1_logger.html#ad30249db37a015014a39d96eb1214df2">pvr::Logger</a>
+</li>
+<li>getWeakRef()
+: <a class="el" href="classpvr_1_1_i_graphics_context.html#a0e79c6a5c76ed65326115af6fc7b04dd">pvr::IGraphicsContext</a>
 </li>
 <li>getWindow()
 : <a class="el" href="classpvr_1_1_o_s_manager.html#ae831fcb0a354044b35304a17b14b47dd">pvr::OSManager</a>

@@ -8,7 +8,8 @@
 #include "PVRApi/OGLES/ApiCommand.h"
 #include "PVRApi/OGLES/ApiCommands.h"
 #include "PVRCore/IGraphicsContext.h"
-#include "PVRApi/ApiObjects/GraphicsPipeline.h"
+#include "PVRApi/OGLES/GraphicsPipelineGles.h"
+#include "PVRApi/OGLES/ComputePipelineGles.h"
 #include "PVRApi/ApiObjects/Buffer.h"
 #include "PVRNativeApi/OGLES/ConvertToApiTypes.h"
 #include "PVRNativeApi/ApiErrors.h"
@@ -19,8 +20,6 @@
 #include "PVRApi/OGLES/StateContainerGles.h"
 #include "PVRApi/OGLES/BufferGles.h"
 #include "PVRApi/ApiObjects/CommandBuffer.h"
-#include "PVRApi/ApiObjects/GraphicsPipeline.h"
-#include "PVRApi/ApiObjects/ComputePipeline.h"
 #include "PVRApi/OGLES/DescriptorSetGles.h"
 
 namespace pvr {
@@ -30,7 +29,7 @@ namespace impl {
 void pvr::api::impl::UpdateBuffer::execute_private(pvr::api::impl::CommandBufferBase_ &cmdBuffer)
 {
 	//Safe downcast. We already KNOW that this is our class.
-	buffer->update(data, offset, length);
+	static_cast<gles::BufferGles_&>(*buffer).update(data, offset, length);
 }
 
 void bindVertexBuffer(platform::ContextGles& context)
@@ -54,23 +53,11 @@ void bindVertexBuffer(platform::ContextGles& context)
 			const VertexAttributeInfo& attrib = attributes[i];
 			context.enableAttribute(attrib.index);
 			gl::VertexAttribPointer(attrib.index, attrib.width, ConvertToGles::dataType(attrib.format),
-			                        types::DataType::isNormalised(attrib.format), bindingInfo->strideInBytes,
+			                        types::dataTypeIsNormalised(attrib.format), bindingInfo->strideInBytes,
 			                        (void*)(intptr_t)attrib.offsetInBytes);
 		}
 	}
 	context.disableUnneededAttributes();
-}
-
-inline void setProgramTexUnits(platform::ContextGles& context)
-{
-	platform::ContextGles::RenderStatesTracker& renderStates = context.getCurrentRenderStates();
-	for(uint32 i = 0; i < renderStates.texUnits.size();++i)
-	{
-#pragma warning TODO_OPTIMISE_THIS_GL_CALLS
-		int32 location = context.getBoundGraphicsPipeline_()->getUniformLocation(renderStates.texUnits[i].first.c_str());
-		if(location >= 0){ gl::Uniform1i(location,renderStates.texUnits[i].second); }
-	}
-	renderStates.texUnits.clear();
 }
 
 void DrawArrays::execute_private(impl::CommandBufferBase_& cmdBuff)
@@ -78,7 +65,6 @@ void DrawArrays::execute_private(impl::CommandBufferBase_& cmdBuff)
 	platform::ContextGles& context = static_cast<platform::ContextGles&>(*cmdBuff.getContext());
 	platform::ContextGles::RenderStatesTracker& renderStates = context.getCurrentRenderStates();
 	bindVertexBuffer(context);
-	setProgramTexUnits(context);
 	if (instanceCount > 1 && context.getApiCapabilities().supports(ApiCapabilities::Instancing))
 	{
 		gl::DrawArraysInstanced(ConvertToGles::drawPrimitiveType(renderStates.primitiveTopology), firstVertex, vertexCount, instanceCount);
@@ -94,24 +80,23 @@ void DrawIndexed::execute_private(impl::CommandBufferBase_& cmdBuff)
 	pvr::platform::ContextGles& context = static_cast<pvr::platform::ContextGles&>(*cmdBuff.getContext());
 	platform::ContextGles::RenderStatesTracker& renderStates = context.getCurrentRenderStates();
 	bindVertexBuffer(context);
-	setProgramTexUnits(context);
 	if (instanceCount > 1 && context.getApiCapabilities().supports(ApiCapabilities::Instancing))
 	{
 		gl::DrawElementsInstanced(ConvertToGles::drawPrimitiveType(renderStates.primitiveTopology), indexCount,
-		                          renderStates.iboState.indexArrayFormat == types::IndexType::IndexType16Bit ?
-		                          GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void*)(intptr_t)vertexOffset, instanceCount);
+		                          renderStates.iboState.indexArrayFormat == types::IndexType::IndexType16Bit ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT,
+		                          (void*)(intptr_t)(firstIndex * (renderStates.iboState.indexArrayFormat == types::IndexType::IndexType16Bit ? 2 : 4)), instanceCount);
 	}
 	else
 	{
 		gl::DrawElements(ConvertToGles::drawPrimitiveType(renderStates.primitiveTopology), indexCount,
-renderStates.iboState.indexArrayFormat == types::IndexType::IndexType16Bit ?
-GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void*)(intptr_t)vertexOffset);
+		                 renderStates.iboState.indexArrayFormat == types::IndexType::IndexType16Bit ?  GL_UNSIGNED_SHORT : GL_UNSIGNED_INT,
+		                 (void*)(intptr_t)(firstIndex * (renderStates.iboState.indexArrayFormat == types::IndexType::IndexType16Bit ? 2 : 4)));
 	}
 }
 
 void BindIndexBuffer::execute_private(impl::CommandBufferBase_& cmdBuffer)
 {
-	assertion((buffer->getBufferUsage() & types::BufferBindingUse::IndexBuffer) != 0, "Invalid Buffer Usage");
+	assertion(static_cast<pvr::uint32>(buffer->getBufferUsage() & types::BufferBindingUse::IndexBuffer) != 0, "Invalid Buffer Usage");
 	platform::ContextGles::RenderStatesTracker& currentStates = static_cast<platform::ContextGles&>
 	    (*cmdBuffer.getContext()).getCurrentRenderStates();
 
@@ -127,12 +112,13 @@ void BindIndexBuffer::execute_private(impl::CommandBufferBase_& cmdBuffer)
 
 void BindDescriptorSets::execute_private(impl::CommandBufferBase_& cmd)
 {
+	uint32* dynamicOffset = dynamicOffsets.size() ? dynamicOffsets.data() : 0;
 	for (pvr::uint32 i = 0; i < set.size(); ++i)
 	{
 		assertion(set[i].isValid(), "Invalid Descriptor Set");
 		if (!set[i].isNull())
 		{
-			static_cast<gles::DescriptorSetGles_&>(*(set[i])).bind(*cmd.getContext(), (i < dynamicOffsets.size() ? dynamicOffsets[i] : 0));
+			static_cast<gles::DescriptorSetGles_&>(*(set[i])).bind(*cmd.getContext(), dynamicOffset);
 		}
 	}
 }
@@ -140,10 +126,6 @@ void BindDescriptorSets::execute_private(impl::CommandBufferBase_& cmd)
 void SetClearStencilVal::execute_private(impl::CommandBufferBase_&)
 {
 	gl::ClearStencil(val);
-}
-
-namespace {
-
 }
 
 void PushPipeline::execute_private(impl::CommandBufferBase_& cmdBuff)
@@ -157,6 +139,10 @@ void PushPipeline::execute_private(impl::CommandBufferBase_& cmdBuff)
 	{
 		contextES.pushPipeline(&PopPipeline::bindComputePipeline, cmdBuff.getContext()->getBoundComputePipeline());
 	}
+	else// assuming that no pipeline has been bound currently so push a null
+	{
+		contextES.pushPipeline(&PopPipeline::bindGraphicsPipeline, cmdBuff.getContext()->getBoundGraphicsPipeline_());
+	}
 }
 
 void PopPipeline::execute_private(impl::CommandBufferBase_& cmdBuff)
@@ -167,12 +153,14 @@ void PopPipeline::execute_private(impl::CommandBufferBase_& cmdBuff)
 
 void PopPipeline::bindGraphicsPipeline(void* pipeline, IGraphicsContext& context)
 {
-	static_cast<impl::GraphicsPipeline_*>(pipeline)->bind(context);
+	static_cast<gles::GraphicsPipelineImplGles&>(
+	  static_cast<impl::GraphicsPipeline_*>(pipeline)->getImpl()).bind();
 }
 
 void PopPipeline::bindComputePipeline(void* pipeline, IGraphicsContext& context)
 {
-	static_cast<impl::ComputePipeline_*>(pipeline)->bind(context);
+	static_cast<gles::ComputePipelineImplGles&>(
+	  static_cast<impl::ComputePipeline_*>(pipeline)->getImpl()).bind();
 }
 
 void ResetPipeline::execute_private(impl::CommandBufferBase_& cmdBuff)
@@ -186,6 +174,63 @@ void ResetPipeline::execute_private(impl::CommandBufferBase_& cmdBuff)
 	else if (ctx.isLastBoundPipelineGraphics() && ctx.getBoundComputePipeline())
 	{
 		ctx.setBoundComputePipeline(NULL);
+	}
+}
+
+void ClearColorImage::execute_private(impl::CommandBufferBase_& cmdBuffer)
+{
+	pvr::uint32 glInternalFormat;
+	pvr::uint32 glFormat;
+	pvr::uint32 glType;
+	pvr::uint32 glTypeSize;
+	bool isCompressedFormat;
+
+	pvr::api::ConvertToGles::getOpenGLFormat(imageToClear->getResource()->getFormat().format,
+	    imageToClear->getResource()->getFormat().colorSpace, imageToClear->getResource()->getFormat().dataType, glInternalFormat, glFormat, glType, glTypeSize, isCompressedFormat);
+
+	glext::ClearTexSubImageIMG(imageToClear->getResource()->getNativeObject().handle,
+	                           baseMipLevel, 0, 0, baseArrayLayer, imageToClear->getResource()->getWidth(),
+	                           imageToClear->getResource()->getHeight(), layerCount, glFormat,
+	                           glType, glm::value_ptr(clearColor));
+}
+
+void ClearDepthStencilImage::execute_private(impl::CommandBufferBase_& cmdBuffer)
+{
+	pvr::uint32 glInternalFormat;
+	pvr::uint32 glFormat;
+	pvr::uint32 glType;
+	pvr::uint32 glTypeSize;
+	bool isCompressedFormat;
+
+	pvr::api::ConvertToGles::getOpenGLFormat(imageToClear->getResource()->getFormat().format,
+	    imageToClear->getResource()->getFormat().colorSpace, imageToClear->getResource()->getFormat().dataType, glInternalFormat, glFormat, glType, glTypeSize, isCompressedFormat);
+
+	if (glFormat == GL_DEPTH_COMPONENT)
+	{
+		glext::ClearTexSubImageIMG(imageToClear->getResource()->getNativeObject().handle,
+		                           baseMipLevel, 0, 0, baseArrayLayer, imageToClear->getResource()->getWidth(),
+		                           imageToClear->getResource()->getHeight(), layerCount, glFormat,
+		                           glType, &clearDepth);
+	}
+#if !defined(TARGET_OS_IPHONE)
+	else if (glFormat == GL_STENCIL_INDEX_OES)
+	{
+		glext::ClearTexSubImageIMG(imageToClear->getResource()->getNativeObject().handle,
+		                           baseMipLevel, 0, 0, baseArrayLayer, imageToClear->getResource()->getWidth(),
+		                           imageToClear->getResource()->getHeight(), layerCount, glFormat,
+		                           glType, &clearStencil);
+	}
+#endif
+	else if (glFormat == GL_DEPTH_STENCIL)
+	{
+		float data[2];
+		data[0] = (float32)clearDepth;
+		data[1] = (float32)clearStencil;
+
+		glext::ClearTexSubImageIMG(imageToClear->getResource()->getNativeObject().handle,
+		                           baseMipLevel, 0, 0, baseArrayLayer, imageToClear->getResource()->getWidth(),
+		                           imageToClear->getResource()->getHeight(), layerCount, glFormat,
+		                           glType, data);
 	}
 }
 
@@ -235,8 +280,7 @@ void ClearDepthStencilAttachment::execute_private(impl::CommandBufferBase_& cmdB
 void SetClearDepthVal::execute_private(impl::CommandBufferBase_&)
 {
 	gl::ClearDepthf(depthVal);
-};
-
+}
 
 void BeginRenderPass::execute_private(impl::CommandBufferBase_& cmdBuff)
 {
@@ -251,9 +295,10 @@ void BeginRenderPass::execute_private(impl::CommandBufferBase_& cmdBuff)
 void EndRenderPass::execute_private(impl::CommandBufferBase_& cmdBuff)
 {
 	// make sure they are begin/ end
-	assertion(static_cast<platform::ContextGles&>(*cmdBuff.getContext()).getBoundFbo().isValid());
+	platform::ContextGles& contextGles =  static_cast<platform::ContextGles&>(*cmdBuff.getContext());
+	assertion(contextGles.getBoundFbo().isValid(), "endRenderPass: Invalid context");
 	// bind our proxy fbo to let the driver that we have finish rednering to the currently bound fbo.
-	static_cast<const gles::RenderPassGles_&>(*static_cast<const gles::FboGles_&>(*cmdBuff.getContext()->getBoundFbo()).getRenderPass()).end(*cmdBuff.getContext());
+	static_cast<const gles::RenderPassGles_&>(*static_cast<const gles::FboGles_&>(*contextGles.getBoundFbo()).getRenderPass()).end(*cmdBuff.getContext());
 	// Unbind the framebuffer.
 	static_cast<platform::ContextGles&>(*cmdBuff.getContext()).getCurrentRenderStates().boundFbo.reset();
 }
@@ -383,62 +428,62 @@ Sync_::~Sync_() {}
 //impl::SyncImpl::SyncImpl() : maxSize(10) { }
 //impl::SyncImpl::~SyncImpl()
 //{
-//	discardLast(maxSize - (uint32)pimpl.size());
+//  discardLast(maxSize - (uint32)pimpl.size());
 //}
 //
 //void impl::SyncImpl::discardLast(int32 howMany)
 //{
-//	while (howMany-- > 0 && pimpl.size())
-//	{
-//		gl::DeleteSync((GLsync)pimpl.front());
-//		pimpl.pop_front();
-//	}
+//  while (howMany-- > 0 && pimpl.size())
+//  {
+//    gl::DeleteSync((GLsync)pimpl.front());
+//    pimpl.pop_front();
+//  }
 //}
 //
 //bool impl::SyncImpl::isSignaled(uint32 which)
 //{
-//	if (which >= pimpl.size()) { return false; }
-//	GLint retval;
-//	gl::GetSynciv((GLsync)pimpl[which], GL_SYNC_STATUS, sizeof(GLint), NULL, &retval);
-//	return retval == GL_SIGNALED;
+//  if (which >= pimpl.size()) { return false; }
+//  GLint retval;
+//  gl::GetSynciv((GLsync)pimpl[which], GL_SYNC_STATUS, sizeof(GLint), NULL, &retval);
+//  return retval == GL_SIGNALED;
 //}
 //
 //
-//SyncWaitResult::Enum impl::SyncImpl::clientWait(uint32 which, uint64 timeout)
+//SyncWaitResult impl::SyncImpl::clientWait(uint32 which, uint64 timeout)
 //{
-//	if (which >= pimpl.size()) { return SyncWaitResult::SyncPointNotCreatedYet; }
-//	uint64 tmp = (timeout ? timeout : 1000000);
-//	for (;;)
-//	{
-//		switch (gl::ClientWaitSync((GLsync)pimpl[which], GL_SYNC_FLUSH_COMMANDS_BIT, tmp))
-//		{
-//		//If a timeout is set, return the result of the command
-//		//If a timeout is NOT set, loop until you get a result OTHER than timeout.
-//		case GL_CONDITION_SATISFIED:
-//		case GL_ALREADY_SIGNALED:
-//			return SyncWaitResult::Ok;
-//		case GL_TIMEOUT_EXPIRED:
-//			if (timeout) { return SyncWaitResult::TimeoutExpired; }
-//			break;
-//		case GL_WAIT_FAILED:
-//		default:
-//			return SyncWaitResult::Failed;
-//		}
-//	}
+//  if (which >= pimpl.size()) { return SyncWaitResult::SyncPointNotCreatedYet; }
+//  uint64 tmp = (timeout ? timeout : 1000000);
+//  for (;;)
+//  {
+//    switch (gl::ClientWaitSync((GLsync)pimpl[which], GL_SYNC_FLUSH_COMMANDS_BIT, tmp))
+//    {
+//    //If a timeout is set, return the result of the command
+//    //If a timeout is NOT set, loop until you get a result OTHER than timeout.
+//    case GL_CONDITION_SATISFIED:
+//    case GL_ALREADY_SIGNALED:
+//      return SyncWaitResult::Ok;
+//    case GL_TIMEOUT_EXPIRED:
+//      if (timeout) { return SyncWaitResult::TimeoutExpired; }
+//      break;
+//    case GL_WAIT_FAILED:
+//    default:
+//      return SyncWaitResult::Failed;
+//    }
+//  }
 //}
 //void impl::SyncImpl::serverWait(uint32 which)
 //{
-//	if (which < pimpl.size())
-//	{
-//		gl::WaitSync((GLsync)pimpl[which], 0, GL_TIMEOUT_IGNORED);
-//	}
+//  if (which < pimpl.size())
+//  {
+//    gl::WaitSync((GLsync)pimpl[which], 0, GL_TIMEOUT_IGNORED);
+//  }
 //}
 //
 //void impl::CreateFenceSyncImpl::execute_private(impl::CommandBufferBase_& cmdBuffer)
 //{
-//	impl::SyncImpl& syncobj = *syncObject;
-//	syncobj.discardLast((uint32)syncobj.pimpl.size() - syncobj.maxSize + 1);
-//	syncobj.pimpl.push_front(gl::FenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0));
+//  impl::SyncImpl& syncobj = *syncObject;
+//  syncobj.discardLast((uint32)syncobj.pimpl.size() - syncobj.maxSize + 1);
+//  syncobj.pimpl.push_front(gl::FenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0));
 //}
 
 //////////////////////////////// UNIFORM COMMANDS ////////////////////////////////
@@ -653,9 +698,39 @@ void SetUniform<glm::mat2>::execute_private(impl::CommandBufferBase_&)
 	gl::UniformMatrix2fv(location, 1, false, glm::value_ptr(val));
 }
 
+void SetUniform<glm::mat2x3>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix2x3fv(location, 1, false, glm::value_ptr(val));
+}
+
+void SetUniform<glm::mat2x4>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix2x4fv(location, 1, false, glm::value_ptr(val));
+}
+
+void SetUniform<glm::mat3x2>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix3x2fv(location, 1, false, glm::value_ptr(val));
+}
+
 void SetUniform<glm::mat3>::execute_private(impl::CommandBufferBase_&)
 {
 	gl::UniformMatrix3fv(location, 1, false, glm::value_ptr(val));
+}
+
+void SetUniform<glm::mat3x4>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix3x4fv(location, 1, false, glm::value_ptr(val));
+}
+
+void SetUniform<glm::mat4x2>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix4x2fv(location, 1, false, glm::value_ptr(val));
+}
+
+void SetUniform<glm::mat4x3>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix4x3fv(location, 1, false, glm::value_ptr(val));
 }
 
 void SetUniform<glm::mat4>::execute_private(impl::CommandBufferBase_&)
@@ -691,11 +766,39 @@ void SetUniformPtr<glm::mat2>::execute_private(impl::CommandBufferBase_&)
 	gl::UniformMatrix2fv(location, count, false, glm::value_ptr(*val));
 }
 
+void SetUniformPtr<glm::mat2x3>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix2x3fv(location, count, false, glm::value_ptr(*val));
+}
+
+void SetUniformPtr<glm::mat2x4>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix2x4fv(location, count, false, glm::value_ptr(*val));
+}
+
+void SetUniformPtr<glm::mat3x2>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix3x2fv(location, count, false, glm::value_ptr(*val));
+}
+
 void SetUniformPtr<glm::mat3>::execute_private(impl::CommandBufferBase_&)
 {
 	gl::UniformMatrix3fv(location, count, false, glm::value_ptr(*val));
 }
 
+void SetUniformPtr<glm::mat3x4>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix3x4fv(location, count, false, glm::value_ptr(*val));
+}
+
+void SetUniformPtr<glm::mat4x2>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix4x2fv(location, count, false, glm::value_ptr(*val));
+}
+void SetUniformPtr<glm::mat4x3>::execute_private(impl::CommandBufferBase_&)
+{
+	gl::UniformMatrix4x3fv(location, count, false, glm::value_ptr(*val));
+}
 void SetUniformPtr<glm::mat4>::execute_private(impl::CommandBufferBase_&)
 {
 	gl::UniformMatrix4fv(location, count, false, glm::value_ptr(*val));
@@ -706,7 +809,7 @@ void BindVertexBuffer::execute_private(impl::CommandBufferBase_& cmdBuff)
 	platform::ContextGles& context = static_cast<platform::ContextGles&>(*cmdBuff.getContext());
 	for (pvr::uint16 i = 0, bindIndex = startBinding; i < (uint16)buffers.size(); ++i, ++bindIndex)
 	{
-		assertion((buffers[i]->getBufferUsage() & types::BufferBindingUse::VertexBuffer) != 0);
+		assertion(static_cast<pvr::uint32>(buffers[i]->getBufferUsage() & types::BufferBindingUse::VertexBuffer) != 0, "bindVertexBuffer: Invalid usage flags");
 		context.getCurrentRenderStates().vboBindings[bindIndex] = buffers[i];
 	}
 }

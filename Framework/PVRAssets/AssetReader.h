@@ -9,7 +9,7 @@
 #include "PVRCore/Stream.h"
 namespace pvr {
 namespace assets {
-    
+
 /*!*********************************************************************************************************************
 \brief    Base class for an AssetReader, a class that can read Assets from a provided Stream.
 \param    AssetType The typename (class) of assets that will be read from this AssetReader.
@@ -28,11 +28,46 @@ public:
 
 	/*!******************************************************************************************************************
 	\brief Asset reader which will take ownership of the provided Stream object and read Assets from it.
-    \param assetStream stream to read
+	  \param assetStream stream to read
 	********************************************************************************************************************/
 	AssetReader(Stream::ptr_type assetStream) : m_assetStream(assetStream), m_hasNewAssetStream(true) {}
 
+	typedef pvr::RefCountedResource<AssetType> AssetHandle;
 public:
+
+	/*!****************************************************************************************************************
+	\brief Open new asset stream.
+	\param assetStream stream to load
+	\return true
+	******************************************************************************************************************/
+	bool newAssetStream(Stream::ptr_type assetStream)
+	{
+		closeAssetStream();
+		m_assetStream = assetStream;
+
+		if (m_assetStream.get() && (*m_assetStream).isReadable())
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/*!****************************************************************************************************************
+	\brief Open the asset stream.
+	\return true if successful
+	******************************************************************************************************************/
+	bool openAssetStream()
+	{
+		closeAssetStream();
+
+		if (m_assetStream.get() && (*m_assetStream).isReadable())
+		{
+			return (*m_assetStream).open();
+		}
+
+		return false;
+	}
 
 	/*!****************************************************************************************************************
 	\brief Open new asset stream.
@@ -41,18 +76,10 @@ public:
 	******************************************************************************************************************/
 	bool openAssetStream(Stream::ptr_type assetStream)
 	{
-		if (m_assetStream.get())
+		if (newAssetStream(assetStream))
 		{
-			(*m_assetStream).close();
+			return openAssetStream();
 		}
-
-		m_assetStream = assetStream;
-
-		if (m_assetStream.get() && (*m_assetStream).isReadable())
-		{
-			return (*m_assetStream).open();
-		}
-
 		return false;
 	}
 
@@ -100,7 +127,7 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Return true if this AssetReader supports multiple assets. Implement this function in your AssetReader.
 	***********************************************************************************************************************/
-	virtual bool canHaveMultipleAssets() = 0;
+	virtual bool canHaveMultipleAssets() { return false; }
 
 	/*!*********************************************************************************************************************
 	\brief Return a list of supported file extensions. Implement this function in your AssetReader.
@@ -108,15 +135,9 @@ public:
 	virtual std::vector<std::string>  getSupportedFileExtensions() = 0;
 
 	/*!*********************************************************************************************************************
-	\brief Return the name of this reader. Implement this function in your AssetReader.
+	\brief Read the asset in a new Asset wrapped in a Framework smart handle.
 	***********************************************************************************************************************/
-	virtual std::string getReaderName() = 0;
-
-	/*!*********************************************************************************************************************
-	\brief Return the version of this reader. Implement this function in your AssetReader.
-	***********************************************************************************************************************/
-	virtual std::string getReaderVersion() = 0;
-
+	AssetHandle getAssetHandle() { return AssetType::createWithReader(*this); }
 protected:
 	Stream::ptr_type m_assetStream;
 	bool m_hasNewAssetStream;

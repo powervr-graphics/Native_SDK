@@ -100,10 +100,10 @@ public:
 ***********************************************************************************************************************/
 struct MemoryBarrier
 {
-	types::AccessFlags::Bits srcMask;
-	types::AccessFlags::Bits dstMask;
-	MemoryBarrier(): srcMask(0), dstMask(0) {}
-	MemoryBarrier(types::AccessFlags::Bits srcMask, types::AccessFlags::Bits dstMask): srcMask(srcMask), dstMask(dstMask) {}
+	types::AccessFlags srcMask;
+	types::AccessFlags dstMask;
+	MemoryBarrier(): srcMask(types::AccessFlags(0)), dstMask(types::AccessFlags(0)) {}
+	MemoryBarrier(types::AccessFlags srcMask, types::AccessFlags dstMask): srcMask(srcMask), dstMask(dstMask) {}
 };
 
 /*!*********************************************************************************************************************
@@ -112,11 +112,14 @@ struct MemoryBarrier
 ***********************************************************************************************************************/
 struct BufferRangeBarrier
 {
-	types::AccessFlags::Bits srcMask;
-	types::AccessFlags::Bits dstMask;
+	types::AccessFlags srcMask;
+	types::AccessFlags dstMask;
 	Buffer buffer;
 	uint32 offset;
 	uint32 range;
+	BufferRangeBarrier() : srcMask(types::AccessFlags(0)), dstMask(types::AccessFlags(0)) {}
+	BufferRangeBarrier(types::AccessFlags srcMask, types::AccessFlags dstMask, Buffer buffer, uint32 offset, uint32 range) :
+		srcMask(srcMask), dstMask(dstMask), buffer(buffer), offset(offset), range(range) {}
 };
 
 /*!*********************************************************************************************************************
@@ -126,12 +129,18 @@ struct BufferRangeBarrier
 ***********************************************************************************************************************/
 struct ImageAreaBarrier
 {
-	types::AccessFlags::Bits srcMask;
-	types::AccessFlags::Bits dstMask;
+	types::AccessFlags srcMask;
+	types::AccessFlags dstMask;
 	TextureStore texture;
 	types::ImageSubresourceRange area;
-	types::ImageLayout::Enum oldLayout;
-	types::ImageLayout::Enum newLayout;
+	types::ImageLayout oldLayout;
+	types::ImageLayout newLayout;
+	ImageAreaBarrier() {}
+	ImageAreaBarrier(types::AccessFlags srcMask, types::AccessFlags dstMask,
+	                 const TextureStore& texture, const types::ImageSubresourceRange& area,
+	                 types::ImageLayout oldLayout, types::ImageLayout newLayout) :
+		srcMask(srcMask), dstMask(dstMask), texture(texture), area(area), oldLayout(oldLayout), newLayout(newLayout)
+	{}
 };
 
 namespace impl {
@@ -156,6 +165,15 @@ public:
 	\brief dtor
 	***********************************************************************************************************************/
 	~MemoryBarrierSet();
+
+	MemoryBarrierSet& clearAllBarriers();
+
+	MemoryBarrierSet& clearAllMemoryBarriers();
+
+	MemoryBarrierSet& clearAllBufferRangeBarriers();
+
+	MemoryBarrierSet& clearAllImageAreaBarriers();
+
 	/*!*********************************************************************************************************************
 	\brief  A memory barrier into the command stream. Used to signify that some types of pending operations from
 	before the barrier must have finished before the commands after the barrier start executing.

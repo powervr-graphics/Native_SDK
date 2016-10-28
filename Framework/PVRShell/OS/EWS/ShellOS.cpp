@@ -2,7 +2,7 @@
 \file         PVRShell\OS\EWS\ShellOS.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Contains the implementation for the pvr::system::ShellOS class on Example Windowing System for Linux.
+\brief     	  Contains the implementation for the pvr::platform::ShellOS class on Example Windowing System for Linux.
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
@@ -20,7 +20,7 @@
 
 using namespace pvr::types;
 namespace pvr {
-namespace system{
+namespace platform {
 struct InternalOS
 {
 	bool isInitialized;
@@ -50,7 +50,7 @@ void ShellOS::updatePointingDeviceLocation()
 {
 }
 
-Result::Enum ShellOS::init(DisplayAttributes& data)
+Result ShellOS::init(DisplayAttributes& data)
 {
 	if (!m_OSImplementation)
 	{ return Result::OutOfMemory; }
@@ -74,7 +74,7 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 		if (res < 0)
 		{
 			Log(Log.Warning, "Readlink %s failed. The application name, read path and write path have not been set.\n",
-			                 exePath);
+			    exePath);
 			break;
 		}
 	}
@@ -98,7 +98,7 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	return Result::Success;
 }
 
-Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
+Result ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	EWS_COORD windowPosition;
 	EWS_SIZE windowSize;
@@ -179,7 +179,7 @@ OSWindow ShellOS::getWindow() const
 }
 
 
-static Keys::Enum mapEwsKeyToPvrKey(int key)
+static Keys mapEwsKeyToPvrKey(int key)
 {
 	switch (key)
 	{
@@ -195,7 +195,7 @@ static Keys::Enum mapEwsKeyToPvrKey(int key)
 	}
 }
 
-Result::Enum ShellOS::handleOSEvents()
+Result ShellOS::handleOSEvents()
 {
 	EWS_EVENT sEvent;
 	while (EWSNextEventIfAvailable(&sEvent))
@@ -218,7 +218,7 @@ bool ShellOS::isInitialized()
 	return m_OSImplementation && m_OSImplementation->window;
 }
 
-Result::Enum ShellOS::popUpMessage(const tchar* const title, const tchar* const message, ...) const
+Result ShellOS::popUpMessage(const tchar* const title, const tchar* const message, ...) const
 {
 	if (!message)
 	{ return Result::NoData; }

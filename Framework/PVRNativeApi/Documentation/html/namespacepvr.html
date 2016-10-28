@@ -103,10 +103,13 @@ Functions</h2></td></tr>
 <tr class="memitem:ab6a7e3339907f1c4be5003f7d98b7adf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ab6a7e3339907f1c4be5003f7d98b7adf">releaseNativeContext</a> (VkInstance instance, VkDevice device)</td></tr>
 <tr class="separator:ab6a7e3339907f1c4be5003f7d98b7adf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2f89e1e88d38887ab7b540a9578ca1a9"><td class="memItemLeft" align="right" valign="top">char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a2f89e1e88d38887ab7b540a9578ca1a9">vkErrorToStr</a> (VkResult errorCode)</td></tr>
+<tr class="memdesc:a2f89e1e88d38887ab7b540a9578ca1a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert Vulkan error code to string.  <a href="#a2f89e1e88d38887ab7b540a9578ca1a9">More...</a><br/></td></tr>
 <tr class="separator:a2f89e1e88d38887ab7b540a9578ca1a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71cb589e2188f82a83f28f416a8804fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a71cb589e2188f82a83f28f416a8804fd">vkIsSuccessful</a> (VkResult result, const char *msg)</td></tr>
+<tr class="memdesc:a71cb589e2188f82a83f28f416a8804fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the code is success, else log the error.  <a href="#a71cb589e2188f82a83f28f416a8804fd">More...</a><br/></td></tr>
 <tr class="separator:a71cb589e2188f82a83f28f416a8804fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95a4c9c3ddf71c5576ff7ef275d7f914"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a95a4c9c3ddf71c5576ff7ef275d7f914">vkThrowIfFailed</a> (VkResult result, const char *msg)</td></tr>
+<tr class="memdesc:a95a4c9c3ddf71c5576ff7ef275d7f914"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert Vulkan error code to string.  <a href="#a95a4c9c3ddf71c5576ff7ef275d7f914">More...</a><br/></td></tr>
 <tr class="separator:a95a4c9c3ddf71c5576ff7ef275d7f914"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
@@ -184,6 +187,16 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Convert Vulkan error code to string. </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result</td><td>Vulkan error </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error string </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a71cb589e2188f82a83f28f416a8804fd"></a>
@@ -218,6 +231,17 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Check if the code is success, else log the error. </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result</td><td>Vulkan error </td></tr>
+    <tr><td class="paramname">msg</td><td>Message to log if the error code is not success </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if no error </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a95a4c9c3ddf71c5576ff7ef275d7f914"></a>
@@ -251,6 +275,17 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Convert Vulkan error code to string. </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result</td><td>Vulkan error </td></tr>
+    <tr><td class="paramname">msg</td><td>Message to log if the error code is not success </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error string </dd></dl>
 
 </div>
 </div>

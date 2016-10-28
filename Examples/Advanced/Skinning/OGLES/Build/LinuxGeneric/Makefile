@@ -25,6 +25,7 @@ RESOURCES += \
            SkinnedFragShader_ES2.fsh\
            SkinnedVertShader_ES3.vsh\
            SkinnedFragShader_ES3.fsh\
+           Skinning_es.pfx\
 
 COMMON_RESOURCES += \
            Arm.pvr\

@@ -47,7 +47,7 @@ public:
 	/*!*********************************************************************************************************************
 	\brief     Get the directory separator used by the current platform.
 	***********************************************************************************************************************/
-	static const char8 getDirectorySeparator();
+    static tchar getDirectorySeparator();
 
 private:
 	static const char8 c_unixDirectorySeparator = '/';

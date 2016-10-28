@@ -92,6 +92,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9a2c364b6f890357c20fa84bb72c5c7c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_view.html#a9a2c364b6f890357c20fa84bb72c5c7c">StructuredMemoryView</a> ()</td></tr>
 <tr class="separator:a9a2c364b6f890357c20fa84bb72c5c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5390409f112319363cd1ca0faebb155"><td class="memTemplParams" colspan="2">template&lt;GpuDatatypes::Standard::Enum _standard_ = GpuDatatypes::Standard::std140&gt; </td></tr>
+<tr class="memitem:ab5390409f112319363cd1ca0faebb155"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_view.html#ab5390409f112319363cd1ca0faebb155">addEntriesPacked</a> (const std::pair&lt; StringHash, <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107c">GpuDatatypes::Enum</a> &gt; *const entries, pvr::uint32 numEntries)</td></tr>
+<tr class="separator:ab5390409f112319363cd1ca0faebb155"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57c6482e2a325047b3f53c0cf830d0ed"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1utils_1_1_structured_memory_view.html#a57c6482e2a325047b3f53c0cf830d0ed">addEntryAtOffset</a> (const StringHash &amp;name, <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107c">GpuDatatypes::Enum</a> type, uint32 offset)</td></tr>
 <tr class="memdesc:a57c6482e2a325047b3f53c0cf830d0ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a value to the structured buffer. The value is "memcopied" as-is to the specified offset of the buffer. The size is calculated by the size/width of the value, as and.  <a href="#a57c6482e2a325047b3f53c0cf830d0ed">More...</a><br/></td></tr>
 <tr class="separator:a57c6482e2a325047b3f53c0cf830d0ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,6 +205,42 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ab5390409f112319363cd1ca0faebb155"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;GpuDatatypes::Standard::Enum _standard_ = GpuDatatypes::Standard::std140&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::utils::StructuredMemoryView::addEntriesPacked </td>
+          <td>(</td>
+          <td class="paramtype">const std::pair&lt; StringHash, <a class="el" href="namespacepvr_1_1_gpu_datatypes.html#a1dd563f1d96658e16ebad8085988107c">GpuDatatypes::Enum</a> &gt; *const&#160;</td>
+          <td class="paramname"><em>entries</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pvr::uint32&#160;</td>
+          <td class="paramname"><em>numEntries</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a57c6482e2a325047b3f53c0cf830d0ed"></a>
 <div class="memitem">
 <div class="memproto">

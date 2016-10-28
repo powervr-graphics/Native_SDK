@@ -21,7 +21,7 @@ class SemanticLessThan
 	inline bool operator()(const Mesh::VertexAttributeData& lhs, const Mesh::VertexAttributeData rhs) { return lhs.getSemantic() < rhs.getSemantic(); }
 };
 
-void Mesh::VertexAttributeData::setDataType(DataType::Enum type)
+void Mesh::VertexAttributeData::setDataType(DataType type)
 {
 	m_layout.dataType = type;
 }
@@ -45,7 +45,7 @@ void Mesh::VertexAttributeData::setDataIndex(uint16 dataIndex)
 Mesh::FaceData::FaceData() : m_indexType(IndexType::IndexType16Bit)
 { }
 
-void Mesh::FaceData::setData(const uint8* data, uint32 size, const IndexType::Enum indexType)
+void Mesh::FaceData::setData(const uint8* data, uint32 size, const IndexType indexType)
 {
 	m_indexType = indexType;
 	m_data.resize(size);
@@ -137,7 +137,7 @@ int32 Mesh::addVertexAttribute(const VertexAttributeData& element, bool forceRep
 	}
 }
 
-int32 Mesh::addVertexAttribute(const StringHash& semanticName, const DataType::Enum& type, uint32 n, uint32 offset, uint32 dataIndex, bool forceReplace)
+int32 Mesh::addVertexAttribute(const StringHash& semanticName, const DataType& type, uint32 n, uint32 offset, uint32 dataIndex, bool forceReplace)
 {
 	int32 index = (int32)m_data.vertexAttributes.getIndex(semanticName);
 
@@ -159,7 +159,7 @@ int32 Mesh::addVertexAttribute(const StringHash& semanticName, const DataType::E
 	return index;
 }
 
-void Mesh::addFaces(const byte* data, uint32 size, IndexType::Enum indexType)
+void Mesh::addFaces(const byte* data, uint32 size, IndexType indexType)
 {
 	m_data.faces.setData(data, size, indexType);
 

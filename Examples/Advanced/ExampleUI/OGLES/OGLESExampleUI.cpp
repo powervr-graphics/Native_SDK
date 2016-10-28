@@ -80,40 +80,6 @@ enum Enum
 };
 }
 
-// Displayed pages
-namespace DisplayPage {
-enum Enum
-{
-	Clocks,
-	Weather,
-	Window,
-
-	Count,
-	Default = Clocks
-};
-}
-
-// Display option. Toggled with keyboard.
-namespace DisplayOption {
-enum Enum
-{
-	UI,
-	TexAtlas,
-	Count,
-	Default = UI
-};
-}
-
-// Display state
-namespace DisplayState {
-enum Enum
-{
-	Element,
-	Transition,
-	Default = Element
-};
-}
-
 const char* const SpritesFileNames[Sprites::Count + Ancillary::Count] =
 {
 	"clock-face.pvr",			// Clockface
@@ -157,6 +123,40 @@ const char* const SpritesFileNames[Sprites::Count + Ancillary::Count] =
 	"topbar.pvr",			// Topbar
 };
 
+// Displayed pages
+namespace DisplayPage {
+enum Enum
+{
+	Clocks,
+	Weather,
+	Window,
+
+	Count,
+	Default = Clocks
+};
+}
+
+// Display option. Toggled with keyboard.
+namespace DisplayOption {
+enum Enum
+{
+	UI,
+	TexAtlas,
+	Count,
+	Default = UI
+};
+}
+
+// Display state
+namespace DisplayState {
+enum Enum
+{
+	Element,
+	Transition,
+	Default = Element
+};
+}
+
 const char* const FragShaderFileName[ShaderNames::Count] =
 {
 	"TexColShaderF.fsh",		// ColorTexture
@@ -176,11 +176,6 @@ struct Pipeline
 	pvr::uint32 mvpLoc;
 	pvr::uint32 transMtxLoc;
 	pvr::uint32 rgbaLoc;
-
-	void setUniformRGBA(pvr::api::CommandBuffer& cmdBuffer, const glm::vec4& rgba)
-	{
-		cmdBuffer->setUniform<glm::vec4>(rgbaLoc, rgba);
-	}
 };
 
 struct DrawPass
@@ -218,8 +213,6 @@ struct SpriteContainer
 {
 	pvr::ui::PixelGroup group;
 	pvr::Rectangle<pvr::float32> size;
-	void init(const pvr::Rectangle<pvr::float32>& rect, pvr::uint32 windowWidth, pvr::uint32 windowHeight,
-	          pvr::ui::UIRenderer& uiRenderer);
 };
 
 struct PageClock
@@ -383,13 +376,13 @@ static const pvr::uint32 DimCentre = 0xABCE;
 static const pvr::float32 ByteToFloat = 1.0f / 255.0f;
 
 static const char* const TextLoremIpsum =
-    "Stencil Clipping\n\nLorem ipsum dolor sit amet, consectetuer adipiscing elit.\nDonec molestie. "
-    "Sed aliquam sem ut arcu.\nPhasellus sollicitudin. Vestibulum condimentum facilisis nulla.\nIn "
-    "hac habitasse platea dictumst. Nulla nonummy. Cras quis libero.\nCras venenatis. Aliquam posuere "
-    "lobortis pede. Nullam fringilla urna id leo.\nPraesent aliquet pretium erat. Praesent non odio. "
-    "Pellentesque a magna a\nmauris vulputate lacinia. Aenean viverra. Class aptent taciti sociosqu "
-    "ad litora\ntorquent per conubia nostra, per inceptos hymenaeos. Aliquam\nlacus. Mauris magna eros, "
-    "semper a, tempor et, rutrum et, tortor.";
+  "Stencil Clipping\n\nLorem ipsum dolor sit amet, consectetuer adipiscing elit.\nDonec molestie. "
+  "Sed aliquam sem ut arcu.\nPhasellus sollicitudin. Vestibulum condimentum facilisis nulla.\nIn "
+  "hac habitasse platea dictumst. Nulla nonummy. Cras quis libero.\nCras venenatis. Aliquam posuere "
+  "lobortis pede. Nullam fringilla urna id leo.\nPraesent aliquet pretium erat. Praesent non odio. "
+  "Pellentesque a magna a\nmauris vulputate lacinia. Aenean viverra. Class aptent taciti sociosqu "
+  "ad litora\ntorquent per conubia nostra, per inceptos hymenaeos. Aliquam\nlacus. Mauris magna eros, "
+  "semper a, tempor et, rutrum et, tortor.";
 
 class Area
 {
@@ -459,10 +452,25 @@ private:
 		pvr::api::SecondaryCommandBuffer cmdBufferWeatherpage;
 		pvr::api::SecondaryCommandBuffer cmdBufferWindow;
 		pvr::api::SecondaryCommandBuffer cmdBufferRenderUI;
+
+		pvr::api::Buffer					quadVbo;
+
+		SpriteDesc							spritesDesc[Sprites::Count + Ancillary::Count];
+		pvr::ui::Text						textLorem;
+		DrawPass							drawPassAtlas;
+		pvr::ui::Image						spriteAtlas;
+		pvr::ui::Image						sprites[Sprites::Count + Ancillary::Count];
+		pvr::ui::PixelGroup					groupBaseUI;
+
+		PageClock							pageClock;
+		PageWeather							pageWeather;
+		PageWindow							pageWindow;
+		SpriteContainer						containerTop;
+
+		pvr::api::AssetStore				assetManager;
+		pvr::ui::UIRenderer					uiRenderer;
 	};
 	std::auto_ptr<DeviceResource> deviceResource;
-	pvr::ui::UIRenderer	uiRenderer;
-	SpriteDesc	spritesDesc[Sprites::Count + Ancillary::Count];
 	bool		isAtlasGenerated;
 
 	// Transforms
@@ -470,13 +478,6 @@ private:
 	pvr::float32 wndRotate;
 	glm::mat4 transform;
 	glm::mat4 projMtx;
-	pvr::ui::Text textLorem;
-	DrawPass  drawPassAtlas;
-
-	pvr::ui::Image spriteAtlas;
-	pvr::ui::Image sprites[Sprites::Count + Ancillary::Count];
-
-	pvr::ui::PixelGroup groupBaseUI;
 
 	// Display options
 	pvr::int32			displayOption;
@@ -489,17 +490,11 @@ private:
 	// Data
 	pvr::int32			drawCallPerFrame;
 
-	PageClock			pageClock;
-	PageWeather			pageWeather;
-	PageWindow			pageWindow;
-	SpriteContainer     containerTop;
-
 	// Time
 	pvr::float32	wndRotPerc;
 	pvr::uint64		prevTransTime;
 	pvr::uint64  	prevTime;
 	bool			swipe;
-	pvr::api::AssetStore    assetManager;
 	pvr::GraphicsContext  context;
 	glm::vec2 screenScale;
 	void updateTitleAndDesc(DisplayOption::Enum displayOption)
@@ -507,26 +502,27 @@ private:
 		switch (displayOption)
 		{
 		case DisplayOption::UI:
-			uiRenderer.getDefaultDescription()->setText("Displaying Interface");
-			uiRenderer.getDefaultDescription()->commitUpdates();
+			deviceResource->uiRenderer.getDefaultDescription()->setText("Displaying Interface");
+			deviceResource->uiRenderer.getDefaultDescription()->commitUpdates();
 			break;
 		case DisplayOption::TexAtlas:
-			uiRenderer.getDefaultDescription()->setText("Displaying Texture Atlas");
-			uiRenderer.getDefaultDescription()->commitUpdates();
+			deviceResource->uiRenderer.getDefaultDescription()->setText("Displaying Texture Atlas");
+			deviceResource->uiRenderer.getDefaultDescription()->commitUpdates();
 			break;
 		}
 		deviceResource->cmdBufferTitleDesc->beginRecording(deviceResource->fboOnScreen, 0);
-		uiRenderer.beginRendering(deviceResource->cmdBufferTitleDesc);
-		uiRenderer.getDefaultTitle()->render();
-		uiRenderer.getDefaultDescription()->render();
-		uiRenderer.getSdkLogo()->render();
-		uiRenderer.endRendering();
+		deviceResource->uiRenderer.beginRendering(deviceResource->cmdBufferTitleDesc);
+		deviceResource->uiRenderer.getDefaultTitle()->render();
+		deviceResource->uiRenderer.getDefaultDescription()->render();
+		deviceResource->uiRenderer.getSdkLogo()->render();
+		deviceResource->uiRenderer.endRendering();
 		deviceResource->cmdBufferTitleDesc->endRecording();
 	}
 private:
-	void drawScreenAlignedQuad(const Pipeline& Shader, const pvr::Rectangle<pvr::float32>& DstRect, pvr::api::CommandBufferBase cmdBuffer, const pvr::Rectangle<pvr::float32>& SrcRect =
-	                               pvr::Rectangle<pvr::float32>(0, 0, 1, 1), const pvr::uint32 uiRGBA = 0xFFFFFFFF);
-	void renderBaseUI();
+	void drawScreenAlignedQuad(const Pipeline& Shader, const pvr::Rectangle<pvr::float32>& DstRect,
+	                           pvr::api::CommandBufferBase cmdBuffer, const pvr::Rectangle<pvr::float32>& SrcRect =
+	                             pvr::Rectangle<pvr::float32>(0, 0, 1, 1), const pvr::uint32 uiRGBA = 0xFFFFFFFF);
+
 	void renderUI();
 	void renderPage(DisplayPage::Enum Page, const glm::mat4& mTransform);
 	void renderAtlas();
@@ -540,7 +536,7 @@ private:
 	void createPageWindow();
 	void swipeLeft();
 	void swipeRight();
-	void eventMappedInput(pvr::SimplifiedInput::Enum action);
+	void eventMappedInput(pvr::SimplifiedInput action);
 
 
 	float getVirtualWidth() {return (float)(isRotated() ? this->getHeight() : this->getWidth());}
@@ -556,11 +552,11 @@ private:
 	void recordSecondaryCommandBuffers();
 public:
 	OGLESExampleUI();
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 };
 
 /*!*********************************************************************************************************************
@@ -578,20 +574,20 @@ OGLESExampleUI::OGLESExampleUI() :
 void OGLESExampleUI::createPageWindow()
 {
 	// create the window page
-	pageWindow.group = uiRenderer.createMatrixGroup();
-	textLorem = uiRenderer.createText(TextLoremIpsum);
-	textLorem->setAnchor(pvr::ui::Anchor::BottomLeft, glm::vec2(-1.0f, -1.0f));
-	pageWindow.proj = uiRenderer.getScreenRotation() * projMtx;
-	pageWindow.group->setViewProjection(pageWindow.proj);
-	pageWindow.clipArea = pvr::Rectanglei(0, -50, 390, 250);
-	pageWindow.clipArea.x = pvr::int32(pageWindow.clipArea.x * screenScale.x);
-	pageWindow.clipArea.y = pvr::int32(pageWindow.clipArea.y * screenScale.y);
-	pageWindow.clipArea.width = pvr::int32(pageWindow.clipArea.width * screenScale.x);
-	pageWindow.clipArea.height = pvr::int32(pageWindow.clipArea.height * screenScale.y);
-	textLorem->setScale(glm::vec2(.5f));
-	textLorem->setColor(0.0f, 0.0f, 0.0f, 1.0f);
-	sprites[Sprites::WindowSide]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
-	pageWindow.group->add(textLorem);
+	deviceResource->pageWindow.group = deviceResource->uiRenderer.createMatrixGroup();
+	deviceResource->textLorem = deviceResource->uiRenderer.createText(TextLoremIpsum);
+	deviceResource->textLorem->setAnchor(pvr::ui::Anchor::BottomLeft, glm::vec2(-1.0f, -1.0f));
+	deviceResource->pageWindow.proj = deviceResource->uiRenderer.getScreenRotation() * projMtx;
+	deviceResource->pageWindow.group->setViewProjection(deviceResource->pageWindow.proj);
+	deviceResource->pageWindow.clipArea = pvr::Rectanglei(0, -50, 390, 250);
+	deviceResource->pageWindow.clipArea.x = pvr::int32(deviceResource->pageWindow.clipArea.x * screenScale.x);
+	deviceResource->pageWindow.clipArea.y = pvr::int32(deviceResource->pageWindow.clipArea.y * screenScale.y);
+	deviceResource->pageWindow.clipArea.width = pvr::int32(deviceResource->pageWindow.clipArea.width * screenScale.x);
+	deviceResource->pageWindow.clipArea.height = pvr::int32(deviceResource->pageWindow.clipArea.height * screenScale.y);
+	deviceResource->textLorem->setScale(glm::vec2(.5f));
+	deviceResource->textLorem->setColor(0.0f, 0.0f, 0.0f, 1.0f);
+	deviceResource->sprites[Sprites::WindowSide]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
+	deviceResource->pageWindow.group->add(deviceResource->textLorem);
 }
 
 /*!*********************************************************************************************************************
@@ -602,60 +598,54 @@ void OGLESExampleUI::createPageWindow()
 \param[out] outContainer Returned Sprite container
 ***********************************************************************************************************************/
 void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& rect,
-        pvr::uint32 numSubContainer, pvr::float32 lowerContainerHeight, SpriteContainer& outContainer)
+    pvr::uint32 numSubContainer, pvr::float32 lowerContainerHeight, SpriteContainer& outContainer)
 {
 	outContainer.size = rect;
-	outContainer.group = uiRenderer.createPixelGroup();
-
-	pvr::float32 width = 1.f / uiRenderer.getRenderingDimX() * sprites[Sprites::ContainerCorner]->getWidth();
-	pvr::float32 height = 1.f / uiRenderer.getRenderingDimY() * sprites[Sprites::ContainerCorner]->getHeight();
+	outContainer.group = deviceResource->uiRenderer.createPixelGroup();
 
 	// calculate the border of the container
-	const pvr::float32 borderX = sprites[Sprites::ContainerHorizontal]->getWidth() /
-	                             uiRenderer.getRenderingDimX() * 2.f;
-	const pvr::float32 borderY = sprites[Sprites::ContainerCorner]->getHeight() /
-	                             uiRenderer.getRenderingDimY() * 2.f;
+	const pvr::float32 borderX = deviceResource->sprites[Sprites::ContainerHorizontal]->getWidth() /
+	                             deviceResource->uiRenderer.getRenderingDimX() * 2.f;
+	const pvr::float32 borderY = deviceResource->sprites[Sprites::ContainerCorner]->getHeight() /
+	                             deviceResource->uiRenderer.getRenderingDimY() * 2.f;
 
 	pvr::Rectangle<pvr::float32> rectVerticleLeft(rect.x, rect.y + borderY, rect.x + borderX, rect.height - borderY);
-
 	pvr::Rectangle<pvr::float32> rectVerticleRight(rect.width - borderX, rect.y + borderY, rect.width, rect.height - borderY);
-
 	pvr::Rectangle<pvr::float32> rectTopHorizontal(rect.x + borderX, rect.height - borderY, rect.width - borderX, rect.height);
-
 	pvr::Rectangle<pvr::float32> rectBottomHorizontal(rect.x  + borderX , rect.y, rect.width - borderX, rect.y + borderY);
 
 	// align the sprites to lower left so they will be aligned with their group
-	sprites[Sprites::ContainerCorner]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.0f);
-	sprites[Sprites::ContainerVertical]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.0f);
-	sprites[Sprites::ContainerHorizontal]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
+	deviceResource->sprites[Sprites::ContainerCorner]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.0f);
+	deviceResource->sprites[Sprites::ContainerVertical]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.0f);
+	deviceResource->sprites[Sprites::ContainerHorizontal]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
 
 	// add the filler
 	{
-		pvr::ui::PixelGroup filler = uiRenderer.createPixelGroup();
-		filler->add(sprites[Sprites::ContainerFiller]);
-		sprites[Sprites::ContainerFiller]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
+		pvr::ui::PixelGroup filler = deviceResource->uiRenderer.createPixelGroup();
+		filler->add(deviceResource->sprites[Sprites::ContainerFiller]);
+		deviceResource->sprites[Sprites::ContainerFiller]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
 		filler->setAnchor(pvr::ui::Anchor::TopLeft, rect.x + borderX, rect.height - borderY);
 		filler->setScale(glm::vec2(.5f * (rect.getDimension().x - borderX * 2 /*minus the left and right borders*/) *
-		                           uiRenderer.getRenderingDimX() / sprites[Sprites::ContainerFiller]->getWidth(),
-		                           .5f * (rect.getDimension().y - borderY * 2/*minus Top and Bottom borders*/) *
-		                           uiRenderer.getRenderingDimY() / sprites[Sprites::ContainerFiller]->getHeight()));
+		                           deviceResource->uiRenderer.getRenderingDimX() / deviceResource->sprites[Sprites::ContainerFiller]->getWidth(),
+		                           .501f * (rect.getDimension().y - borderY * 2/*minus Top and Bottom borders*/) *
+		                           deviceResource->uiRenderer.getRenderingDimY() / deviceResource->sprites[Sprites::ContainerFiller]->getHeight()));
 		outContainer.group->add(filler);
-		outContainer.group->setSize(glm::vec2(uiRenderer.getRenderingDimX(), uiRenderer.getRenderingDimY()));
+		outContainer.group->setSize(glm::vec2(deviceResource->uiRenderer.getRenderingDimX(), deviceResource->uiRenderer.getRenderingDimY()));
 	}
 
 	// Top Left Corner
 	{
-		pvr::ui::PixelGroup newGroup = uiRenderer.createPixelGroup();
+		pvr::ui::PixelGroup newGroup = deviceResource->uiRenderer.createPixelGroup();
 		// place the center at the
-		newGroup->add(sprites[Sprites::ContainerCorner]);
+		newGroup->add(deviceResource->sprites[Sprites::ContainerCorner]);
 		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectTopHorizontal.x, rectTopHorizontal.y);
 		outContainer.group->add(newGroup);
 	}
 
 	//Top Right Corner
 	{
-		pvr::ui::PixelGroup newGroup = uiRenderer.createPixelGroup();
-		newGroup->add(sprites[Sprites::ContainerCorner]);
+		pvr::ui::PixelGroup newGroup = deviceResource->uiRenderer.createPixelGroup();
+		newGroup->add(deviceResource->sprites[Sprites::ContainerCorner]);
 		// flip the x coordinate by negative scale
 		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectTopHorizontal.width,
 		                    rectTopHorizontal.y)->setScale(glm::vec2(-1.f, 1.0f));
@@ -664,8 +654,8 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 
 	//bottom left Corner
 	{
-		pvr::ui::PixelGroup newGroup = uiRenderer.createPixelGroup();
-		newGroup->add(sprites[Sprites::ContainerCorner]);
+		pvr::ui::PixelGroup newGroup = deviceResource->uiRenderer.createPixelGroup();
+		newGroup->add(deviceResource->sprites[Sprites::ContainerCorner]);
 		// flip the y coordinates
 		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectBottomHorizontal.x,
 		                    rectBottomHorizontal.height)->setScale(glm::vec2(1.f, -1.0f));
@@ -674,8 +664,8 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 
 	//Bottom right Corner
 	{
-		pvr::ui::PixelGroup newGroup = uiRenderer.createPixelGroup();
-		newGroup->add(sprites[Sprites::ContainerCorner]);
+		pvr::ui::PixelGroup newGroup = deviceResource->uiRenderer.createPixelGroup();
+		newGroup->add(deviceResource->sprites[Sprites::ContainerCorner]);
 		// flip the x and y coordinates
 		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectBottomHorizontal.width,
 		                    rectBottomHorizontal.height)->setScale(glm::vec2(-1.f, -1.0f));
@@ -685,10 +675,10 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 	// Horizontal Up
 	{
 		//calculate the width of the sprite
-		width = (rectTopHorizontal.getDimension().x * .5f * uiRenderer.getRenderingDimX() /
-		         sprites[Sprites::ContainerVertical]->getWidth());
-		pvr::ui::PixelGroup horizontal = uiRenderer.createPixelGroup();
-		horizontal->add(sprites[Sprites::ContainerVertical]);
+		pvr::float32 width = (rectTopHorizontal.getDimension().x * .5f * deviceResource->uiRenderer.getRenderingDimX() /
+		                      deviceResource->sprites[Sprites::ContainerVertical]->getWidth());
+		pvr::ui::PixelGroup horizontal = deviceResource->uiRenderer.createPixelGroup();
+		horizontal->add(deviceResource->sprites[Sprites::ContainerVertical]);
 		horizontal->setAnchor(pvr::ui::Anchor::BottomLeft, rectTopHorizontal.x, rectTopHorizontal.y);
 		horizontal->setScale(glm::vec2(width, 1.f));
 		outContainer.group->add(horizontal);
@@ -697,10 +687,10 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 	// Horizontal Down
 	{
 		//calculate the width of the sprite
-		width = (rectBottomHorizontal.getDimension().x * .5f * uiRenderer.getRenderingDimX() /
-		         sprites[Sprites::ContainerVertical]->getWidth());
-		pvr::ui::PixelGroup horizontal = uiRenderer.createPixelGroup();
-		horizontal->add(sprites[Sprites::ContainerVertical]);
+		pvr::float32 width = (rectBottomHorizontal.getDimension().x * .5f * deviceResource->uiRenderer.getRenderingDimX() /
+		                      deviceResource->sprites[Sprites::ContainerVertical]->getWidth());
+		pvr::ui::PixelGroup horizontal = deviceResource->uiRenderer.createPixelGroup();
+		horizontal->add(deviceResource->sprites[Sprites::ContainerVertical]);
 		horizontal->setAnchor(pvr::ui::Anchor::TopLeft, rectBottomHorizontal.x, rectBottomHorizontal.y);
 		horizontal->setScale(glm::vec2(width, -1.f));
 		outContainer.group->add(horizontal);
@@ -709,64 +699,63 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 	// Vertical Left
 	{
 		//calculate the height of the sprite
-		height = (rectVerticleLeft.getDimension().y  * .5f * uiRenderer.getRenderingDimY() /
-		          sprites[Sprites::ContainerHorizontal]->getHeight());
-		pvr::ui::PixelGroup verticle = uiRenderer.createPixelGroup();
-		verticle->add(sprites[Sprites::ContainerHorizontal]);
+		pvr::float32 height = (rectVerticleLeft.getDimension().y  * .501f * deviceResource->uiRenderer.getRenderingDimY() /
+		                       deviceResource->sprites[Sprites::ContainerHorizontal]->getHeight());
+		pvr::ui::PixelGroup verticle = deviceResource->uiRenderer.createPixelGroup();
+		verticle->add(deviceResource->sprites[Sprites::ContainerHorizontal]);
 		verticle->setScale(glm::vec2(1, height))->setAnchor(pvr::ui::Anchor::TopLeft, rectVerticleLeft.x,
-		        rectVerticleLeft.height)->setPixelOffset(0, 0);
+		    rectVerticleLeft.height)->setPixelOffset(0, 0);
 		outContainer.group->add(verticle);
 	}
 
 	// Vertical Right
 	{
 		//calculate the height of the sprite
-		height = (rectVerticleRight.getDimension().y * .5f * uiRenderer.getRenderingDimY() /
-		          sprites[Sprites::ContainerHorizontal]->getHeight());
-		pvr::ui::PixelGroup vertical = uiRenderer.createPixelGroup();
-		vertical->add(sprites[Sprites::ContainerHorizontal]);
+		pvr::float32 height = (rectVerticleRight.getDimension().y * .501f * deviceResource->uiRenderer.getRenderingDimY() /
+		                       deviceResource->sprites[Sprites::ContainerHorizontal]->getHeight());
+		pvr::ui::PixelGroup vertical = deviceResource->uiRenderer.createPixelGroup();
+		vertical->add(deviceResource->sprites[Sprites::ContainerHorizontal]);
 		vertical->setScale(glm::vec2(-1, height))->setAnchor(pvr::ui::Anchor::TopLeft,
-		        rectVerticleRight.width, rectVerticleRight.height);
+		    rectVerticleRight.width, rectVerticleRight.height);
 		outContainer.group->add(vertical);
 	}
 
-	width = 1.f / uiRenderer.getRenderingDimX() * sprites[Sprites::ContainerHorizontal]->getWidth();
-	height = (outContainer.size.height - outContainer.size.y) * .5f;
+	pvr::float32 width = 1.f / deviceResource->uiRenderer.getRenderingDimX() * deviceResource->sprites[Sprites::ContainerHorizontal]->getWidth();
+	pvr::float32 height = (outContainer.size.height - outContainer.size.y) * .5f;
 
 	// calculate the each container size
 	pvr::float32 containerWidth = (rect.width - rect.x) / numSubContainer;
-	pvr::float32 borderWidth = 1.f / uiRenderer.getRenderingDimX() * sprites[Sprites::VerticalBar]->getWidth();
+	pvr::float32 borderWidth = 1.f / deviceResource->uiRenderer.getRenderingDimX() * deviceResource->sprites[Sprites::VerticalBar]->getWidth();
 	pvr::Rectangle<pvr::float32> subRect(rect.x , rect.y, rect.x + containerWidth, rect.y + lowerContainerHeight);
-	height = .5f * (subRect.height - subRect.y) * uiRenderer.getRenderingDimY() /
-	         sprites[Sprites::VerticalBar]->getHeight();
+	height = .5f * (subRect.height - subRect.y) * deviceResource->uiRenderer.getRenderingDimY() /
+	         deviceResource->sprites[Sprites::VerticalBar]->getHeight();
 	// create the lower containers
 
-	// Horizontal Up
+	// Horizontal Split
 	{
 		// half it here because the scaling happen at the center
-		width = (rect.getDimension().x * .5f * uiRenderer.getRenderingDimX() /
-		         sprites[Sprites::VerticalBar]->getHeight());
+		width = (rect.getDimension().x * .5f * deviceResource->uiRenderer.getRenderingDimX() /
+		         deviceResource->sprites[Sprites::VerticalBar]->getHeight());
 		width -= .25;// reduce the width by quarter of a pixel so they fit well between the container
-		pvr::ui::PixelGroup horizontal = uiRenderer.createPixelGroup();
-		horizontal->add(sprites[Sprites::VerticalBar]);
+		pvr::ui::PixelGroup horizontal = deviceResource->uiRenderer.createPixelGroup();
+		horizontal->add(deviceResource->sprites[Sprites::VerticalBar]);
 		horizontal->setScale(glm::vec2(1.f, width))->setAnchor(pvr::ui::Anchor::BottomLeft,
-		        rect.x + (2 / uiRenderer.getRenderingDimX())/*offset it by 2 pixel*/, subRect.height);
+		    rect.x + (2 / deviceResource->uiRenderer.getRenderingDimX())/*offset it by 2 pixel*/, subRect.height);
 		horizontal->setRotation(glm::pi<pvr::float32>() * -.5f);// rotate y 90 degree
 		outContainer.group->add(horizontal);
 	}
 
 	for (pvr::uint32 i = 0; i < numSubContainer - 1; ++i)
 	{
-		pvr::ui::PixelGroup groupVertical = uiRenderer.createPixelGroup();
-		sprites[Sprites::VerticalBar]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
-		groupVertical->add(sprites[Sprites::VerticalBar]);
-		groupVertical->setAnchor(pvr::ui::Anchor::BottomLeft, subRect.width, subRect.y)
-		->setScale(glm::vec2(1, height));
+		pvr::ui::PixelGroup groupVertical = deviceResource->uiRenderer.createPixelGroup();
+		deviceResource->sprites[Sprites::VerticalBar]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
+		groupVertical->add(deviceResource->sprites[Sprites::VerticalBar]);
+		groupVertical->setAnchor(pvr::ui::Anchor::BottomLeft, subRect.width, subRect.y)->setScale(glm::vec2(1, height));
 		outContainer.group->add(groupVertical);
 		subRect.x = subRect.x + containerWidth - borderWidth;
 		subRect.width = subRect.width + containerWidth;
 	}
-	containerTop = outContainer;
+	deviceResource->containerTop = outContainer;
 }
 
 /*!*********************************************************************************************************************
@@ -775,9 +764,10 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 		If the rendering context is lost, InitApplication() will not be called again.
 \return Return pvr::Result::Success if no error occurred
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESExampleUI::initApplication()
+pvr::Result OGLESExampleUI::initApplication()
 {
-	assetManager.init(*this);
+	deviceResource.reset(new DeviceResource());
+	deviceResource->assetManager.init(*this);
 	setStencilBitsPerPixel(8);
 	return pvr::Result::Success;
 }
@@ -788,37 +778,37 @@ pvr::Result::Enum OGLESExampleUI::initApplication()
 void OGLESExampleUI::createPageWeather()
 {
 	// background
-	pvr::ui::PixelGroup backGround = uiRenderer.createPixelGroup();
-	backGround->add(sprites[Ancillary::Background]);
+	pvr::ui::PixelGroup backGround = deviceResource->uiRenderer.createPixelGroup();
+	backGround->add(deviceResource->sprites[Ancillary::Background]);
 
 	// create the weather page
 	SpriteContainer container;
-	createSpriteContainer(pageClock.container.size, 4, LowerContainerHight, container);
+	createSpriteContainer(deviceResource->pageClock.container.size, 4, LowerContainerHight, container);
 
-	pageWeather.containerTop = container;
-	pageWeather.group = uiRenderer.createMatrixGroup();
-	pageWeather.group->add(container.group);
+	deviceResource->pageWeather.containerTop = container;
+	deviceResource->pageWeather.group = deviceResource->uiRenderer.createMatrixGroup();
+	deviceResource->pageWeather.group->add(container.group);
 
-	pvr::ui::PixelGroup group = uiRenderer.createPixelGroup();
+	pvr::ui::PixelGroup group = deviceResource->uiRenderer.createPixelGroup();
 
 	// align the sprite with its parent group
-	sprites[Sprites::TextWeather]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
+	deviceResource->sprites[Sprites::TextWeather]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
 	group->setScale(screenScale);
-	group->add(sprites[Sprites::TextWeather]);
-	const glm::vec2& containerHalfSize = pageWeather.containerTop.size.getDimension() * .5f;
-	group->setAnchor(pvr::ui::Anchor::CenterLeft, pageWeather.containerTop.size.x,
-	                 pageWeather.containerTop.size.getCenter().y)->setPixelOffset(10, 40);
-	pageWeather.group->add(group);
+	group->add(deviceResource->sprites[Sprites::TextWeather]);
+	const glm::vec2& containerHalfSize = deviceResource->pageWeather.containerTop.size.getDimension() * .5f;
+	group->setAnchor(pvr::ui::Anchor::CenterLeft, deviceResource->pageWeather.containerTop.size.x,
+	                 deviceResource->pageWeather.containerTop.size.getCenter().y)->setPixelOffset(10, 40);
+	deviceResource->pageWeather.group->add(group);
 
 	// add the Weather
-	group = uiRenderer.createPixelGroup();
-	group->add(sprites[Sprites::WeatherSunCloudBig]);
+	group = deviceResource->uiRenderer.createPixelGroup();
+	group->add(deviceResource->sprites[Sprites::WeatherSunCloudBig]);
 	// align the sprite with its parent group
-	sprites[Sprites::WeatherSunCloudBig]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
-	group->setAnchor(pvr::ui::Anchor::Center, pageWeather.containerTop.size.x + containerHalfSize.x,
-	                 pageWeather.containerTop.size.y + containerHalfSize.y)->setPixelOffset(0, 40);
+	deviceResource->sprites[Sprites::WeatherSunCloudBig]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
+	group->setAnchor(pvr::ui::Anchor::Center, deviceResource->pageWeather.containerTop.size.x + containerHalfSize.x,
+	                 deviceResource->pageWeather.containerTop.size.y + containerHalfSize.y)->setPixelOffset(0, 40);
 	group->setScale(screenScale);
-	pageWeather.group->add(group);
+	deviceResource->pageWeather.group->add(group);
 
 	// create the bottom 4 groups
 	Sprites::Enum sprites[] =
@@ -829,31 +819,31 @@ void OGLESExampleUI::createPageWeather()
 		Sprites::WeatherStorm, Sprites::TextMonday
 	};
 
-	pvr::float32 width = (pageWeather.containerTop.size.width - pageWeather.containerTop.size.x) / 4.f;
-	pvr::float32 tempOffsetX = pageWeather.containerTop.size.x + (width * .5f);;
+	pvr::float32 width = (deviceResource->pageWeather.containerTop.size.width - deviceResource->pageWeather.containerTop.size.x) / 4.f;
+	pvr::float32 tempOffsetX = deviceResource->pageWeather.containerTop.size.x + (width * .5f);;
 	// pvr::float32 offsetYWeather =
 	for (pvr::uint32 i = 0; i < 8; i += 2)
 	{
 		Sprites::Enum weather = sprites[i];
 		Sprites::Enum text = sprites[i + 1];
 
-		group = uiRenderer.createPixelGroup();
+		group = deviceResource->uiRenderer.createPixelGroup();
 		// align the sprite with its parent group
-		this->sprites[weather]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
-		group->add(this->sprites[weather]);
-		group->setAnchor(pvr::ui::Anchor::BottomCenter, tempOffsetX, pageWeather.containerTop.size.y);
+		deviceResource->sprites[weather]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
+		group->add(deviceResource->sprites[weather]);
+		group->setAnchor(pvr::ui::Anchor::BottomCenter, tempOffsetX, deviceResource->pageWeather.containerTop.size.y);
 		group->setScale(screenScale);
-		pageWeather.group->add(group);
+		deviceResource->pageWeather.group->add(group);
 
 		//add the text
-		group = uiRenderer.createPixelGroup();
+		group = deviceResource->uiRenderer.createPixelGroup();
 		// align the text with its parent group
-		this->sprites[text]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
-		group->add(this->sprites[text]);
-		group->setAnchor(pvr::ui::Anchor::TopCenter, tempOffsetX, pageWeather.containerTop.size.y + LowerContainerHight)->setPixelOffset(0, -5);
+		deviceResource->sprites[text]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
+		group->add(deviceResource->sprites[text]);
+		group->setAnchor(pvr::ui::Anchor::TopCenter, tempOffsetX, deviceResource->pageWeather.containerTop.size.y + LowerContainerHight)->setPixelOffset(0, -5);
 		group->setScale(screenScale);
 
-		pageWeather.group->add(group);
+		deviceResource->pageWeather.group->add(group);
 		tempOffsetX = tempOffsetX + width;
 	}
 }
@@ -866,26 +856,27 @@ void OGLESExampleUI::createPageWeather()
 void OGLESExampleUI::createClockSprite(SpriteClock& outClock, Sprites::Enum sprite)
 {
 	// create a group of clock and hand so they can be transformed
-	outClock.group = uiRenderer.createPixelGroup();
-	outClock.clock = sprites[sprite];
-	outClock.hand = uiRenderer.createPixelGroup();
+	outClock.group = deviceResource->uiRenderer.createPixelGroup();
+	outClock.clock = deviceResource->sprites[sprite];
+	outClock.hand = deviceResource->uiRenderer.createPixelGroup();
 
 	// clock half size in ndc
-	glm::vec2 halfDim = outClock.clock->getDimensions() / uiRenderer.getRenderingDim();
+	glm::vec2 halfDim = outClock.clock->getDimensions() / deviceResource->uiRenderer.getRenderingDim();
 
-	// center the clock hand bottom center and offset it by few pixel so they can be rotated at that point
-	sprites[Sprites::Hand]->setAnchor(pvr::ui::Anchor::BottomCenter, glm::vec2(-1.0f, -1.f))->setPixelOffset(0, -10);
-	outClock.hand->add(sprites[Sprites::Hand]);
-	// center the pixel group so that it can be rotated at the center
-	outClock.hand->setSize(sprites[Sprites::Hand]->getDimensions())->setAnchor(pvr::ui::Anchor::Center, .0f, .0f);
-
-	// center the clock hand at center of the clock
-	outClock.hand->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f + halfDim.x, -1.0f + halfDim.y);
-	// center the clock's bottom left to lower left of the screen so it can be transformed by the parent group
-	outClock.clock->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.0f);
+	outClock.hand->add(deviceResource->sprites[Sprites::Hand]);
 	outClock.group->add(outClock.clock);
 	outClock.group->add(outClock.hand);
+
+	// set the size of the parent group
 	outClock.group->setSize(outClock.clock->getDimensions());
+
+	// center the clock's to the center of the parent group
+	outClock.clock->setAnchor(pvr::ui::Anchor::Center, 0.0f, 0.0f);
+
+	// center the hand group so that it can be rotated at the center of the clock
+	outClock.hand->setSize(deviceResource->sprites[Sprites::Hand]->getDimensions())->setAnchor(pvr::ui::Anchor::BottomCenter, .0f, .0f);
+	// center the clock hand bottom center and offset it by few pixel so they can be rotated at that point
+	deviceResource->sprites[Sprites::Hand]->setAnchor(pvr::ui::Anchor::BottomCenter, glm::vec2(0.0f, -1.f))->setPixelOffset(0, -10);
 }
 
 /*!*********************************************************************************************************************
@@ -895,23 +886,23 @@ void OGLESExampleUI::createPageClock()
 {
 	SpriteContainer container;
 	const pvr::uint32 numClocksInColumn = 5;
-	pvr::float32 containerHeight = sprites[Sprites::ClockfaceSmall]->getDimensions().y * numClocksInColumn / BaseDim.y;
+	pvr::float32 containerHeight = deviceResource->sprites[Sprites::ClockfaceSmall]->getDimensions().y * numClocksInColumn / BaseDim.y;
 	containerHeight += LowerContainerHight * .5f;// add the lower container height as well
-	pvr::float32 containerWidth = sprites[Sprites::ClockfaceSmall]->getDimensions().x * 4;
-	containerWidth += sprites[Sprites::Clockface]->getDimensions().x;
+	pvr::float32 containerWidth = deviceResource->sprites[Sprites::ClockfaceSmall]->getDimensions().x * 4;
+	containerWidth += deviceResource->sprites[Sprites::Clockface]->getDimensions().x;
 	containerWidth /= BaseDim.x;
 
 	pvr::Rectangle<pvr::float32> containerRect(-containerWidth, -containerHeight,
-	        containerWidth, containerHeight);
+	    containerWidth, containerHeight);
 	createSpriteContainer(pvr::Rectangle<pvr::float32>(containerRect), 2, LowerContainerHight, container);
-	pageClock.container = container;
+	deviceResource->pageClock.container = container;
 
-	pageClock.group = uiRenderer.createMatrixGroup();
-	pvr::ui::MatrixGroup groupBorder  = uiRenderer.createMatrixGroup();
-	groupBorder->add(sprites[Sprites::ContainerVertical]);
+	deviceResource->pageClock.group = deviceResource->uiRenderer.createMatrixGroup();
+	pvr::ui::MatrixGroup groupBorder  = deviceResource->uiRenderer.createMatrixGroup();
+	groupBorder->add(deviceResource->sprites[Sprites::ContainerVertical]);
 	groupBorder->setScaleRotateTranslate(glm::translate(glm::vec3(0.0f, -0.45f, 0.0f))
 	                                     * glm::scale(glm::vec3(.65f, .055f, .2f)));
-	pageClock.group->add(containerTop.group);
+	deviceResource->pageClock.group->add(deviceResource->containerTop.group);
 
 	for (pvr::uint32 i = 0; i < PageClock::numClocks; ++i)
 	{
@@ -920,8 +911,8 @@ void OGLESExampleUI::createPageClock()
 		clock.group->setScale(screenScale);
 		clock.scale = screenScale;
 		// add the clock group in to page group
-		pageClock.group->add(clock.group);
-		pageClock.clock.push_back(clock);// add the clock
+		deviceResource->pageClock.group->add(clock.group);
+		deviceResource->pageClock.clock.push_back(clock);// add the clock
 	}
 
 	// add the center clock
@@ -930,20 +921,21 @@ void OGLESExampleUI::createPageClock()
 	createClockSprite(clockCenter, Sprites::Clockface);
 	clockCenter.group->setScale(screenScale);
 
-	// clockCenter.group->setScale( uiRenderer.getRenderingDim() / BaseDim * scale);
-	pageClock.group->add(clockCenter.group);
-	pageClock.clock.push_back(clockCenter);
+	deviceResource->pageClock.group->add(clockCenter.group);
+	deviceResource->pageClock.clock.push_back(clockCenter);
 
-	pageClock.group->add(sprites[Sprites::Text1]);
-	sprites[Sprites::Text1]->setAnchor(pvr::ui::Anchor::BottomLeft,
-	                                   glm::vec2(pageClock.container.size.x, pageClock.container.size.y))->setPixelOffset(0, 10);
+	deviceResource->pageClock.group->add(deviceResource->sprites[Sprites::Text1]);
+	deviceResource->sprites[Sprites::Text1]->setAnchor(pvr::ui::Anchor::BottomLeft,
+	    glm::vec2(deviceResource->pageClock.container.size.x,
+	              deviceResource->pageClock.container.size.y))->setPixelOffset(0, 10);
 
-	sprites[Sprites::Text1]->setScale(screenScale);
-	pageClock.group->add(sprites[Sprites::Text2]);
+	deviceResource->sprites[Sprites::Text1]->setScale(screenScale);
+	deviceResource->pageClock.group->add(deviceResource->sprites[Sprites::Text2]);
 
-	sprites[Sprites::Text2]->setAnchor(pvr::ui::Anchor::BottomRight,
-	                                   glm::vec2(pageClock.container.size.width - 0.05f, pageClock.container.size.y))->setPixelOffset(0, 10);
-	sprites[Sprites::Text2]->setScale(screenScale);
+	deviceResource->sprites[Sprites::Text2]->setAnchor(pvr::ui::Anchor::BottomRight,
+	    glm::vec2(deviceResource->pageClock.container.size.width - 0.05f,
+	              deviceResource->pageClock.container.size.y))->setPixelOffset(0, 10);
+	deviceResource->sprites[Sprites::Text2]->setScale(screenScale);
 }
 
 /*!*********************************************************************************************************************
@@ -955,37 +947,45 @@ void OGLESExampleUI::createBaseUI()
 	pvr::float32 offset = 0.f;
 	pvr::int32 offsetPixel = 10;
 	// battery sprite
-	sprites[Sprites::Battery]->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(1.f, 1.0f));
-	offset -= sprites[Sprites::Battery]->getDimensions().x + offsetPixel;
+	deviceResource->sprites[Sprites::Battery]->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(1.f, 1.0f));
+	offset -= deviceResource->sprites[Sprites::Battery]->getDimensions().x + offsetPixel;
 
 	// web sprite
-	sprites[Sprites::Web]->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(1.f, 1.0))->setPixelOffset((pvr::int32)offset, 0);
-	offset -= sprites[Sprites::Web]->getDimensions().x + offsetPixel;
+	deviceResource->sprites[Sprites::Web]->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(1.f, 1.0))->setPixelOffset((pvr::int32)offset, 0);
+	offset -= deviceResource->sprites[Sprites::Web]->getDimensions().x + offsetPixel;
 
 	// new mail sprite
-	sprites[Sprites::Newmail]->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(1.f, 1.0f))->setPixelOffset((pvr::int32)offset, 0);
-	offset -= sprites[Sprites::Newmail]->getDimensions().x + offsetPixel;;
+	deviceResource->sprites[Sprites::Newmail]->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(1.f, 1.0f))->setPixelOffset((pvr::int32)offset, 0);
+	offset -= deviceResource->sprites[Sprites::Newmail]->getDimensions().x + offsetPixel;;
 
 	// network sprite
-	sprites[Sprites::Network]->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(1.f, 1.0f))->setPixelOffset((pvr::int32)offset, 0);
-	groupBaseUI = uiRenderer.createPixelGroup();
+	deviceResource->sprites[Sprites::Network]->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(1.f, 1.0f))->setPixelOffset((pvr::int32)offset, 0);
+	deviceResource->groupBaseUI = deviceResource->uiRenderer.createPixelGroup();
 
-	pvr::ui::PixelGroup horizontalTopBarGrop = uiRenderer.createPixelGroup();
-	sprites[Ancillary::Topbar]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
-	horizontalTopBarGrop->add(sprites[Ancillary::Topbar]);
+	pvr::ui::PixelGroup horizontalTopBarGrop = deviceResource->uiRenderer.createPixelGroup();
+	deviceResource->sprites[Ancillary::Topbar]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
+	horizontalTopBarGrop->add(deviceResource->sprites[Ancillary::Topbar]);
 	horizontalTopBarGrop->setAnchor(pvr::ui::Anchor::TopLeft, -1.f, 1.f);
-	horizontalTopBarGrop->setScale(glm::vec2(uiRenderer.getRenderingDimX() * .5f, 1.0f));
+	horizontalTopBarGrop->setScale(glm::vec2(deviceResource->uiRenderer.getRenderingDimX() * .5f, 1.0f));
 
-	groupBaseUI->add(sprites[Ancillary::Background])->add(horizontalTopBarGrop)->add(sprites[Sprites::Battery])->add(sprites[Sprites::Web])->add(sprites[Sprites::Newmail])->add(sprites[Sprites::Network]);
+	deviceResource->groupBaseUI
+	->add(deviceResource->sprites[Ancillary::Background])
+	->add(horizontalTopBarGrop)
+	->add(deviceResource->sprites[Sprites::Battery])
+	->add(deviceResource->sprites[Sprites::Web])
+	->add(deviceResource->sprites[Sprites::Newmail])
+	->add(deviceResource->sprites[Sprites::Network]);
 
-	glm::vec2 scale = glm::vec2(sprites[Ancillary::Background]->getWidth(), sprites[Ancillary::Background]->getHeight());
+	glm::vec2 scale = glm::vec2(deviceResource->sprites[Ancillary::Background]->getWidth(),
+	                            deviceResource->sprites[Ancillary::Background]->getHeight());
 	scale = 2.5f / scale;
 	scale *= glm::vec2(getWidth(), getHeight());
-	sprites[Ancillary::Background]->setAnchor(pvr::ui::Anchor::TopLeft, -1.f, 1.f)->setScale(scale);
+	deviceResource->sprites[Ancillary::Background]->setAnchor(pvr::ui::Anchor::TopLeft, -1.f, 1.f)->setScale(scale);
 
-	groupBaseUI->setSize(glm::vec2(uiRenderer.getRenderingDimX(), uiRenderer.getRenderingDimY()));
-	groupBaseUI->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(1.0f, 1.0f));
-	groupBaseUI->commitUpdates();// update once here
+	deviceResource->groupBaseUI->setSize(glm::vec2(deviceResource->uiRenderer.getRenderingDimX(),
+	                                     deviceResource->uiRenderer.getRenderingDimY()));
+	deviceResource->groupBaseUI->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(1.0f, 1.0f));
+	deviceResource->groupBaseUI->commitUpdates();// update once here
 }
 
 /*!*********************************************************************************************************************
@@ -993,21 +993,20 @@ void OGLESExampleUI::createBaseUI()
         Used to initialize variables that are Dependant on the rendering context (e.g. textures, vertex buffers, etc.)
 \return	Return true if no error occurred
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESExampleUI::initView()
+pvr::Result OGLESExampleUI::initView()
 {
 	context = getGraphicsContext();
-	deviceResource.reset(new DeviceResource());
 	deviceResource->fboOnScreen = context->createOnScreenFbo(0);
 	deviceResource->cmdBuffer = context->createCommandBufferOnDefaultPool();
 	deviceResource->cmdBufferTitleDesc = context->createSecondaryCommandBufferOnDefaultPool();
 
 	// Initialize uiRenderer
-	if (uiRenderer.init(context, deviceResource->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success)
+	if (deviceResource->uiRenderer.init(deviceResource->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize Print3D\n");
 		return pvr::Result::NotInitialized;
 	}
-	screenScale = uiRenderer.getRenderingDim() / BaseDim;
+	screenScale = deviceResource->uiRenderer.getRenderingDim() / BaseDim;
 	screenScale = glm::vec2(glm::min(screenScale.x, screenScale.y));
 
 	if (!createFbo())
@@ -1046,17 +1045,17 @@ pvr::Result::Enum OGLESExampleUI::initView()
 	}
 	swipe = false;
 	// set the default title
-	uiRenderer.getDefaultTitle()->setText("Example UI")/*.setScale(scaleDim *uiRenderer.getDefaultTitle()->getDimensions() )*/;
-	uiRenderer.getDefaultTitle()->commitUpdates();
+	deviceResource->uiRenderer.getDefaultTitle()->setText("Example UI");
+	deviceResource->uiRenderer.getDefaultTitle()->commitUpdates();
 
 	// create the base ui which will be the same for all the pages
 	createBaseUI();
 	createPageClock();
 	createPageWeather();
 	createPageWindow();
-	pageClock.group->setViewProjection(projMtx);
-	pageWeather.group->setViewProjection(projMtx);
-	pageWindow.group->setViewProjection(projMtx);
+	deviceResource->pageClock.group->setViewProjection(projMtx);
+	deviceResource->pageWeather.group->setViewProjection(projMtx);
+	deviceResource->pageWindow.group->setViewProjection(projMtx);
 
 	recordSecondaryCommandBuffers();
 	updateTitleAndDesc((DisplayOption::Enum)displayOption);
@@ -1075,40 +1074,43 @@ bool OGLESExampleUI::loadSprites()
 	samplerInfo.mipMappingFilter = SamplerFilter::None;
 	samplerInfo.wrapModeU = SamplerWrap::Clamp;
 	samplerInfo.wrapModeV = SamplerWrap::Clamp;
-	pvr::api::Sampler sampler = context->createSampler(samplerInfo);
+	pvr::api::Sampler samplerNearest = context->createSampler(samplerInfo);
 
+	samplerInfo.minificationFilter = samplerInfo.magnificationFilter = SamplerFilter::Linear;
 
 	pvr::assets::TextureHeader header;
 	// Load sprites and add to sprite array so that we can generate a texture atlas from them.
 	for (pvr::uint32 i = 0; i < Sprites::Count + Ancillary::Count; i++)
 	{
-		pvr::assets::Texture texture;
-		if (!assetManager.getTextureWithCaching(context, SpritesFileNames[i], &spritesDesc[i].tex, &header))
+		if (!deviceResource->assetManager.getTextureWithCaching(context, SpritesFileNames[i], &deviceResource->spritesDesc[i].tex, &header))
 		{
 			pvr::Log("Failed to load texture %s", SpritesFileNames[i]);
 			return false;
 		}
 		// Copy some useful data out of the texture header.
-		spritesDesc[i].uiWidth = header.getWidth();
-		spritesDesc[i].uiHeight = header.getHeight();
+		deviceResource->spritesDesc[i].uiWidth = header.getWidth();
+		deviceResource->spritesDesc[i].uiHeight = header.getHeight();
 
 		const pvr::uint8* pixelString = header.getPixelFormat().getPixelTypeChar();
 
-		if (header.getPixelFormat().getPixelTypeId() == pvr::CompressedPixelFormat::PVRTCI_2bpp_RGBA ||
-		        header.getPixelFormat().getPixelTypeId() == pvr::CompressedPixelFormat::PVRTCI_4bpp_RGBA ||
-		        pixelString[0] == 'a' || pixelString[1] == 'a' || pixelString[2] == 'a' || pixelString[3] == 'a')
+		if (header.getPixelFormat().getPixelTypeId() == (pvr::uint64)pvr::CompressedPixelFormat::PVRTCI_2bpp_RGBA ||
+		    header.getPixelFormat().getPixelTypeId() == (pvr::uint64)pvr::CompressedPixelFormat::PVRTCI_4bpp_RGBA ||
+		    pixelString[0] == 'a' || pixelString[1] == 'a' || pixelString[2] == 'a' || pixelString[3] == 'a')
 		{
-			spritesDesc[i].bHasAlpha = true;
+			deviceResource->spritesDesc[i].bHasAlpha = true;
 		}
 		else
 		{
-			spritesDesc[i].bHasAlpha = false;
+			deviceResource->spritesDesc[i].bHasAlpha = false;
 		}
 
-		sprites[i] = uiRenderer.createImage(spritesDesc[i].tex, header.getWidth(), header.getHeight());
+		deviceResource->sprites[i] = deviceResource->uiRenderer.createImage(deviceResource->spritesDesc[i].tex, header.getWidth(), header.getHeight());
+
+		deviceResource->sprites[i]->setSampler(samplerNearest);
+
 		if (i == Sprites::ContainerCorner || i == Sprites::ContainerVertical || i == Sprites::ContainerHorizontal || i == Sprites::ContainerFiller)
 		{
-			sprites[i]->setSampler(sampler);
+			deviceResource->sprites[i]->setSampler(samplerNearest);
 		}
 	}
 	return true;
@@ -1136,7 +1138,7 @@ bool OGLESExampleUI::createSamplersAndDescriptorSet()
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
 	descSetLayoutInfo.setBinding(0, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
 	// all pipeline are using the same pipelineLayout
-	pvr::api::DescriptorSetLayout descSetLayout = drawPassAtlas.pipe.pipe->getPipelineLayout()->getDescriptorSetLayout()[0];
+	pvr::api::DescriptorSetLayout descSetLayout = deviceResource->drawPassAtlas.pipe.pipe->getPipelineLayout()->getDescriptorSetLayout(0);
 
 	pvr::api::DescriptorSetUpdate descSetInfo;
 	pvr::api::DescriptorSet descSetTexAtlas;
@@ -1145,7 +1147,7 @@ bool OGLESExampleUI::createSamplersAndDescriptorSet()
 	descSetTexAtlas->update(descSetInfo);
 
 	// setup the draw pass atlas
-	drawPassAtlas.descSet = descSetTexAtlas;
+	deviceResource->drawPassAtlas.descSet = descSetTexAtlas;
 	return true;
 }
 
@@ -1169,11 +1171,13 @@ bool OGLESExampleUI::createPipelines()
 	{
 		shaderVersioning.populateValidVersions(VertShaderFileName[i], *this);
 		deviceResource->vertexShader[i] =
-		    context->createShader(*shaderVersioning.getBestStreamForApi(context->getApiType()), ShaderType::VertexShader, ShaderDefines[i], (ShaderDefines[i] ? ELEMENTS_IN_ARRAY(ShaderDefines[i]) : 0));
+		  context->createShader(*shaderVersioning.getBestStreamForApi(context->getApiType()), ShaderType::VertexShader,
+		                        ShaderDefines[i], (ShaderDefines[i] ? ELEMENTS_IN_ARRAY(ShaderDefines[i]) : 0));
 
 		shaderVersioning.populateValidVersions(FragShaderFileName[i], *this);
 		deviceResource->fragmentShader[i] =
-		    context->createShader(*shaderVersioning.getBestStreamForApi(context->getApiType()), ShaderType::FragmentShader, ShaderDefines[i], (ShaderDefines[i] ? ELEMENTS_IN_ARRAY(ShaderDefines[i]) : 0));
+		  context->createShader(*shaderVersioning.getBestStreamForApi(context->getApiType()), ShaderType::FragmentShader,
+		                        ShaderDefines[i], (ShaderDefines[i] ? ELEMENTS_IN_ARRAY(ShaderDefines[i]) : 0));
 
 		if (deviceResource->vertexShader[i].isNull() || deviceResource->fragmentShader[i].isNull())	{ return false; }
 	}
@@ -1189,33 +1193,33 @@ bool OGLESExampleUI::createPipelines()
 		addVertexAttribute(1, 0, pvr::assets::VertexAttributeLayout(DataType::Float32, 2, sizeof(glm::vec4)));
 
 		pipeInfo.vertexInput.setInputBinding(0, sizeof(Vertex));
-		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrips);
-		pipeInfo.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
+		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		pipeInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
 		pipeInfo.depthStencil.setDepthTestEnable(false).setDepthWrite(false);
-		drawPassAtlas.pipe.pipe = context->createParentableGraphicsPipeline(pipeInfo);
+		deviceResource->drawPassAtlas.pipe.pipe = context->createParentableGraphicsPipeline(pipeInfo);
 
-		if (drawPassAtlas.pipe.pipe.isNull())
+		if (deviceResource->drawPassAtlas.pipe.pipe.isNull())
 		{
 			pvr::Log("Failed to create TexColor pipeline");
 			return false;
 		}
 		// get uniform locations
-		drawPassAtlas.pipe.mvpLoc = drawPassAtlas.pipe.pipe->getUniformLocation("MVPMatrix");
-		drawPassAtlas.pipe.rgbaLoc = drawPassAtlas.pipe.pipe->getUniformLocation("vRGBA");
+		deviceResource->drawPassAtlas.pipe.mvpLoc = deviceResource->drawPassAtlas.pipe.pipe->getUniformLocation("MVPMatrix");
+		deviceResource->drawPassAtlas.pipe.rgbaLoc = deviceResource->drawPassAtlas.pipe.pipe->getUniformLocation("vRGBA");
 	}
 
 	// --- pre-clip pipeline
 	{
 		pvr::api::GraphicsPipelineCreateParam pipeInfo;
-        pvr::api::pipelineCreation::ColorBlendAttachmentState colorAttachment;
+		pvr::types::BlendingConfig colorAttachment;
 		pipeInfo.pipelineLayout = pipeLayout;
 		pipeInfo.vertexShader = deviceResource->vertexShader[ShaderNames::ColorShader];
 		pipeInfo.fragmentShader = deviceResource->fragmentShader[ShaderNames::ColorShader];
 		pipeInfo.vertexInput.addVertexAttribute(0, 0, pvr::assets::VertexAttributeLayout(DataType::Float32, 4, 0)).
 		addVertexAttribute(1, 0, pvr::assets::VertexAttributeLayout(DataType::Float32, 2, sizeof(glm::vec4)));
 		pipeInfo.vertexInput.setInputBinding(0, sizeof(Vertex));
-		pipeInfo.colorBlend.addAttachmentState(colorAttachment);
-		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrips);
+		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
+		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 		pipeInfo.depthStencil.setDepthTestEnable(false).setDepthWrite(false);
 		pipeInfo.rasterizer.setCullFace(Face::None);
 
@@ -1245,7 +1249,7 @@ bool OGLESExampleUI::createPipelines()
 
 	// --- post clip pipeline
 	{
-		pvr::api::pipelineCreation::ColorBlendAttachmentState colorAttachment;
+		pvr::types::BlendingConfig colorAttachment;
 		colorAttachment.blendEnable = true;
 		pvr::api::GraphicsPipelineCreateParam pipeInfo;
 		pipeInfo.depthStencil.setDepthTestEnable(false).setDepthWrite(false).setStencilTest(true);
@@ -1255,14 +1259,15 @@ bool OGLESExampleUI::createPipelines()
 		pipeInfo.depthStencil.setStencilFrontBack(stencilState);
 		colorAttachment.srcBlendColor = colorAttachment.srcBlendAlpha = pvr::types::BlendFactor::SrcAlpha;
 		colorAttachment.destBlendColor = colorAttachment.destBlendAlpha = pvr::types::BlendFactor::OneMinusSrcAlpha;
-		pipeInfo.colorBlend.addAttachmentState(colorAttachment);
-		deviceResource->pipePostClip.pipe = context->createGraphicsPipeline(pipeInfo, pvr::api::ParentableGraphicsPipeline(uiRenderer.getPipeline()));
+		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
+		deviceResource->pipePostClip.pipe = context->createGraphicsPipeline(pipeInfo,
+		                                    pvr::api::ParentableGraphicsPipeline(deviceResource->uiRenderer.getPipeline()));
 	}
 
 	// set the shader sampler location
 	deviceResource->cmdBuffer->beginRecording();
-	deviceResource->cmdBuffer->bindPipeline(drawPassAtlas.pipe.pipe);
-	deviceResource->cmdBuffer->setUniform<pvr::int32>(drawPassAtlas.pipe.pipe->getUniformLocation("Texture"), 0);
+	deviceResource->cmdBuffer->bindPipeline(deviceResource->drawPassAtlas.pipe.pipe);
+	deviceResource->cmdBuffer->setUniform<pvr::int32>(deviceResource->drawPassAtlas.pipe.pipe->getUniformLocation("Texture"), 0);
 	deviceResource->cmdBuffer->endRecording();
 	deviceResource->cmdBuffer->submit();
 	return true;
@@ -1278,11 +1283,11 @@ bool OGLESExampleUI::generateAtlas()
 
 	// Sort sprites such that largest is first
 	// Create an array of pointers to sprites so we can sort the pointers instead of the sprites themselves.
-	std::vector<SpriteDesc> sortedSprites(spritesDesc, spritesDesc + Sprites::Count);
+	std::vector<SpriteDesc> sortedSprites(deviceResource->spritesDesc, deviceResource->spritesDesc + Sprites::Count);
 	std::sort(sortedSprites.begin(), sortedSprites.end(), SpriteCompare());// sort the sprites
 
-	const pvr::api::DescriptorSetLayout descSetLayout = drawPassAtlas.pipe.pipe->getPipelineLayout()
-	        ->getDescriptorSetLayout()[0];
+	const pvr::api::DescriptorSetLayout descSetLayout = deviceResource->drawPassAtlas.pipe.pipe->getPipelineLayout()
+	    ->getDescriptorSetLayout(0);
 
 	glm::mat4 const& mMVP = glm::ortho(0.0f, (pvr::float32)AtlasWidth, (pvr::float32)AtlasWidth,
 	                                   .0f, -1.0f, 1.0f);
@@ -1292,8 +1297,8 @@ bool OGLESExampleUI::generateAtlas()
 	Area* head = new Area(AtlasWidth, AtlasHeight);
 	Area* pRtrn = NULL;
 
-	deviceResource->cmdBuffer->bindPipeline(drawPassAtlas.pipe.pipe);
-	deviceResource->cmdBuffer->setUniform<glm::mat4>(drawPassAtlas.pipe.mvpLoc, mMVP);
+	deviceResource->cmdBuffer->bindPipeline(deviceResource->drawPassAtlas.pipe.pipe);
+	deviceResource->cmdBuffer->setUniform<glm::mat4>(deviceResource->drawPassAtlas.pipe.mvpLoc, mMVP);
 	deviceResource->cmdBuffer->endRecording();
 	deviceResource->cmdBuffer->submit();
 	// Render some quads within the texture.
@@ -1305,7 +1310,7 @@ bool OGLESExampleUI::generateAtlas()
 	{
 		deviceResource->cmdBuffer->beginRecording();
 		deviceResource->cmdBuffer->beginRenderPass(deviceResource->fboAtlas,
-		        pvr::Rectanglei(0, 0, AtlasWidth, AtlasHeight), true);
+		    pvr::Rectanglei(0, 0, AtlasWidth, AtlasHeight), true);
 		// clear the color attachment on the first iteration
 		if (i == 0)
 		{
@@ -1329,10 +1334,10 @@ bool OGLESExampleUI::generateAtlas()
 		descSetInfo.setCombinedImageSampler(0, sortedSprites[i].tex, deviceResource->samplerNearest);
 		descSet->update(descSetInfo);
 		deviceResource->cmdBuffer->bindDescriptorSet(
-		    drawPassAtlas.pipe.pipe->getPipelineLayout(), 0, descSet, 0);
+		  deviceResource->drawPassAtlas.pipe.pipe->getPipelineLayout(), 0, descSet, 0);
 
 		// draw
-		drawScreenAlignedQuad(drawPassAtlas.pipe, pvr::Rectangle<pvr::float32>(fX, fY,
+		drawScreenAlignedQuad(deviceResource->drawPassAtlas.pipe, pvr::Rectangle<pvr::float32>(fX, fY,
 		                      (pvr::float32)sortedSprites[i].uiWidth, (pvr::float32)sortedSprites[i].uiHeight),
 		                      deviceResource->cmdBuffer);
 
@@ -1348,7 +1353,7 @@ bool OGLESExampleUI::generateAtlas()
 	// switching the bound texture, or changing shader program.
 	// We use 4x4 such that linear filtering will not produce an incorrect color.
 	deviceResource->cmdBuffer->beginRenderPass(deviceResource->fboAtlas,
-	        pvr::Rectanglei(0, 0, AtlasWidth, AtlasHeight), true);
+	    pvr::Rectanglei(0, 0, AtlasWidth, AtlasHeight), true);
 	deviceResource->cmdBuffer->bindPipeline(deviceResource->pipeColor.pipe);
 	deviceResource->cmdBuffer->setUniform<glm::mat4>(deviceResource->pipeColor.mvpLoc, mMVP);
 	{
@@ -1362,7 +1367,8 @@ bool OGLESExampleUI::generateAtlas()
 		}
 		fX = (pvr::float32)pRtrn->getX();
 		fY = (pvr::float32)pRtrn->getY();
-		drawScreenAlignedQuad(deviceResource->pipeColor, pvr::Rectangle<pvr::float32>(fX, fY, (pvr::float32)NullQuadPix, (pvr::float32)NullQuadPix), deviceResource->cmdBuffer);
+		drawScreenAlignedQuad(deviceResource->pipeColor, pvr::Rectangle<pvr::float32>(fX, fY, (pvr::float32)NullQuadPix,
+		                      (pvr::float32)NullQuadPix), deviceResource->cmdBuffer);
 	}
 	head->deleteArea();
 	delete head;
@@ -1380,8 +1386,8 @@ bool OGLESExampleUI::generateAtlas()
 		NOTE: This is not an optimized function and should not be called repeatedly to draw quads to the screen at render time.
 ***********************************************************************************************************************/
 void OGLESExampleUI::drawScreenAlignedQuad(const Pipeline& pipe,
-        const pvr::Rectangle<pvr::float32>& dstRect, pvr::api::CommandBufferBase cmdBuffer,
-        const pvr::Rectangle<pvr::float32>& srcRect, const pvr::uint32 uiRGBA)
+    const pvr::Rectangle<pvr::float32>& dstRect, pvr::api::CommandBufferBase cmdBuffer,
+    const pvr::Rectangle<pvr::float32>& srcRect, const pvr::uint32 uiRGBA)
 {
 	Vertex vVerts[4] =
 	{
@@ -1391,14 +1397,17 @@ void OGLESExampleUI::drawScreenAlignedQuad(const Pipeline& pipe,
 		{ glm::vec4(dstRect.x + dstRect.width, dstRect.y + dstRect.height, 0, 1), glm::vec2(srcRect.width, 1.0f - srcRect.height) }
 	};
 
-	static pvr::api::Buffer vbo = context->createBuffer(sizeof(vVerts), BufferBindingUse::VertexBuffer);
-	vbo->update(vVerts, 0, sizeof(vVerts));
+	if (!deviceResource->quadVbo.isValid())
+	{
+		deviceResource->quadVbo = context->createBuffer(sizeof(vVerts), BufferBindingUse::VertexBuffer);
+	}
+	deviceResource->quadVbo->update(vVerts, 0, sizeof(vVerts));
 	// Upload color data for all verts
 	glm::vec4 vRGBA(((uiRGBA >> 24) & 0xFF)*ByteToFloat, ((uiRGBA >> 16) & 0xFF)*ByteToFloat,
 	                ((uiRGBA >> 8) & 0xFF)*ByteToFloat, (uiRGBA & 0xFF)*ByteToFloat);
 
 	cmdBuffer->setUniform<glm::vec4>(pipe.rgbaLoc, glm::vec4(vRGBA));
-	cmdBuffer->bindVertexBuffer(vbo, 0, 0);
+	cmdBuffer->bindVertexBuffer(deviceResource->quadVbo, 0, 0);
 	cmdBuffer->drawArrays(0, 4, 0, 1);
 }
 
@@ -1406,15 +1415,9 @@ void OGLESExampleUI::drawScreenAlignedQuad(const Pipeline& pipe,
 \return	Return Result::Success if no error occurred
 \brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESExampleUI::releaseView()
+pvr::Result OGLESExampleUI::releaseView()
 {
 	// release all the textures and sprites
-	pvr::uint32 i = 0;
-	for (; i < Sprites::Count; ++i) { spritesDesc[i].release(); sprites[i].reset(); }
-	for (; i < Sprites::Count + Ancillary::Count; ++i) { sprites[i].reset(); }
-	uiRenderer.release();
-	spriteAtlas.reset();
-	assetManager.releaseAll();
 	deviceResource.reset();
 	return pvr::Result::Success;
 }
@@ -1424,7 +1427,7 @@ pvr::Result::Enum OGLESExampleUI::releaseView()
 		the program. If the rendering context is lost, quitApplication() will not be called.
 \return	Return pvr::Result::Success if no error occurred
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESExampleUI::quitApplication() { return pvr::Result::Success; }
+pvr::Result OGLESExampleUI::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \brief	Render the page
@@ -1436,15 +1439,15 @@ void OGLESExampleUI::renderPage(DisplayPage::Enum page, const glm::mat4& mTransf
 	switch (page)
 	{
 	case DisplayPage::Clocks:
-		pageClock.update(pvr::float32(getFrameTime()), mTransform);
+		deviceResource->pageClock.update(pvr::float32(getFrameTime()), mTransform);
 		deviceResource->cmdBuffer->enqueueSecondaryCmds(deviceResource->cmdBufferClockPage);
 		break;
 	case DisplayPage::Weather:
-		pageWeather.update(mTransform);
+		deviceResource->pageWeather.update(mTransform);
 		deviceResource->cmdBuffer->enqueueSecondaryCmds(deviceResource->cmdBufferWeatherpage);
 		break;
 	case DisplayPage::Window:
-		pageWindow.update(uiRenderer.getRenderingDimX(), uiRenderer.getRenderingDimY(), mTransform);
+		deviceResource->pageWindow.update(deviceResource->uiRenderer.getRenderingDimX(), deviceResource->uiRenderer.getRenderingDimY(), mTransform);
 		deviceResource->cmdBuffer->enqueueSecondaryCmds(deviceResource->cmdBufferWindow);
 		break;
 	}
@@ -1456,11 +1459,9 @@ void OGLESExampleUI::renderPage(DisplayPage::Enum page, const glm::mat4& mTransf
 void OGLESExampleUI::renderUI()
 {
 	deviceResource->cmdBuffer->beginRenderPass(deviceResource->fboOnScreen,
-	        pvr::Rectanglei(0, 0, getWidth(), getHeight()), false, glm::vec4(0.3f, .3f, 0.3f, 1.f));
+	    pvr::Rectanglei(0, 0, getWidth(), getHeight()), false, glm::vec4(0.3f, .3f, 0.3f, 1.f));
 	// render the baseUI
 	deviceResource->cmdBuffer->enqueueSecondaryCmds(deviceResource->cmdBufferBaseUI);
-	glm::vec2 baseDim(800, 600);
-	glm::vec2 scale = baseDim / uiRenderer.getRenderingDim();
 
 	if (state == DisplayState::Element)
 	{
@@ -1469,7 +1470,8 @@ void OGLESExampleUI::renderUI()
 		{
 			glm::mat4 vRot, vCentre, vInv;
 			vRot = glm::rotate(wndRotate, glm::vec3(0.0f, 0.0f, 1.0f));
-			vCentre = glm::translate(glm::vec3(-uiRenderer.getRenderingDimX() * .5f, -uiRenderer.getRenderingDimY() * .5f, 0.0f));
+			vCentre = glm::translate(glm::vec3(-deviceResource->uiRenderer.getRenderingDimX() * .5f,
+			                                   -deviceResource->uiRenderer.getRenderingDimY() * .5f, 0.0f));
 			vInv = glm::inverse(vCentre);
 			// align the group center to the center of the rotation, rotate and translate it back.
 			transform =  vInv * vRot * vCentre;
@@ -1484,14 +1486,14 @@ void OGLESExampleUI::renderUI()
 	else if (state == DisplayState::Transition)
 	{
 		//--- Render outward group
-		pvr::float32 fX = pvr::math::quadraticEaseIn(0.0f, -uiRenderer.getRenderingDimX() * cycleDir, transitionPerc);
+		pvr::float32 fX = pvr::math::quadraticEaseIn(0.0f, -deviceResource->uiRenderer.getRenderingDimX() * cycleDir, transitionPerc);
 		transform = glm::translate(glm::vec3(fX, 0.0f, 0.0f));
 
 		//	the last page page
 		renderPage(lastPage, transform);
 
 		// --- Render inward group
-		fX = pvr::math::quadraticEaseIn(uiRenderer.getRenderingDimX() *  cycleDir, 0.0f, transitionPerc);
+		fX = pvr::math::quadraticEaseIn(deviceResource->uiRenderer.getRenderingDimX() *  cycleDir, 0.0f, transitionPerc);
 		transform = glm::translate(glm::vec3(fX, 0.0f, 0.0f));
 
 		//Render page
@@ -1508,8 +1510,9 @@ void OGLESExampleUI::renderUI()
 void OGLESExampleUI::renderAtlas()
 {
 	deviceResource->cmdBuffer->beginRenderPass(deviceResource->fboOnScreen,
-	        pvr::Rectanglei(0, 0, (pvr::uint32)uiRenderer.getRenderingDimX(), (pvr::uint32)uiRenderer.getRenderingDimY()), false,
-	        glm::vec4(.3f, 0.3f, 0.3f, 1.0f));
+	    pvr::Rectanglei(0, 0, (pvr::uint32)deviceResource->uiRenderer.getRenderingDimX(),
+	                    (pvr::uint32)deviceResource->uiRenderer.getRenderingDimY()), false,
+	    glm::vec4(.3f, 0.3f, 0.3f, 1.0f));
 	// record draw title and description commands
 	deviceResource->cmdBuffer->enqueueSecondaryCmds(deviceResource->cmdBufferTexAtlas);
 	// record draw title and description commands
@@ -1541,7 +1544,7 @@ void OGLESExampleUI::swipeRight()
 \return	Return pvr::Result::Success	if no error occurred
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESExampleUI::renderFrame()
+pvr::Result OGLESExampleUI::renderFrame()
 {
 	// begin recording the command buffer
 	deviceResource->cmdBuffer->beginRecording();
@@ -1553,7 +1556,7 @@ pvr::Result::Enum OGLESExampleUI::renderFrame()
 	wndRotPerc += (1.0f / UiDisplayTime) * deltaTime;
 	wndRotate = pvr::math::quadraticEaseOut(0.0f, glm::pi<pvr::float32>() * 2.f, wndRotPerc);
 	// Check to see if we should transition to a new page (if we're not already)
-	if (currTime - prevTransTime > UiDisplayTimeInMs && state != DisplayState::Transition || swipe)
+	if ((currTime - prevTransTime > UiDisplayTimeInMs && state != DisplayState::Transition) || swipe)
 	{
 		// Switch to next page
 		state = DisplayState::Transition;
@@ -1610,7 +1613,7 @@ bool OGLESExampleUI::createFbo()
 
 		// create texture-atlas texture
 		pvr::api::ImageStorageFormat texAtlasFmt(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB,
-		        pvr::VariableType::UnsignedByteNorm);
+		    pvr::VariableType::UnsignedByteNorm);
 		pvr::api::TextureStore texAtlas = context->createTexture();
 		texAtlas->allocate2D(texAtlasFmt, AtlasWidth, AtlasHeight);
 		deviceResource->textureAtlas = context->createTextureView(texAtlas);
@@ -1618,19 +1621,19 @@ bool OGLESExampleUI::createFbo()
 
 		// Create texture atlas FBO and bind the previously created texture to it.
 		pvr::api::FboCreateParam fboInfo;
-		renderPassInfo.addColorInfo(0, pvr::api::RenderPassColorInfo(texAtlasFmt));
+		renderPassInfo.setColorInfo(0, pvr::api::RenderPassColorInfo(texAtlasFmt));
 
-		subPass.setColorAttachment(0);
-		renderPassInfo.addSubPass(0, subPass);
+		subPass.setColorAttachment(0, 0);
+		renderPassInfo.setSubPass(0, subPass);
 
-		fboInfo.addColor(0, deviceResource->textureAtlas).setRenderPass(context->createRenderPass(renderPassInfo));
+		fboInfo.setColor(0, deviceResource->textureAtlas).setRenderPass(context->createRenderPass(renderPassInfo));
 		deviceResource->fboAtlas = context->createFbo(fboInfo);
 	}
 
-	spriteAtlas = uiRenderer.createImage(deviceResource->textureAtlas, AtlasWidth, AtlasHeight);
+	deviceResource->spriteAtlas = deviceResource->uiRenderer.createImage(deviceResource->textureAtlas, AtlasWidth, AtlasHeight);
 	// scale it by half so they fit in to the screen
-	spriteAtlas->setAnchor(pvr::ui::Anchor::TopLeft, -1.0f, 1.0f)->setScale(glm::vec2(.5f));
-	spriteAtlas->commitUpdates();
+	deviceResource->spriteAtlas->setAnchor(pvr::ui::Anchor::TopLeft, -1.0f, 1.0f)->setScale(glm::vec2(.5f));
+	deviceResource->spriteAtlas->commitUpdates();
 
 	return (deviceResource->fboAtlas.isNull() ? false : true);
 }
@@ -1644,25 +1647,25 @@ void OGLESExampleUI::recordSecondaryCommandBuffers()
 	{
 		deviceResource->cmdBufferTexAtlas = context->createSecondaryCommandBufferOnDefaultPool();
 		deviceResource->cmdBufferTexAtlas->beginRecording(deviceResource->fboOnScreen, 0);
-		uiRenderer.beginRendering(deviceResource->cmdBufferTexAtlas);
-		spriteAtlas->render();
-		uiRenderer.endRendering();
+		deviceResource->uiRenderer.beginRendering(deviceResource->cmdBufferTexAtlas);
+		deviceResource->spriteAtlas->render();
+		deviceResource->uiRenderer.endRendering();
 		deviceResource->cmdBufferTexAtlas->endRecording();
 	}
 	{
 		deviceResource->cmdBufferBaseUI = context->createSecondaryCommandBufferOnDefaultPool();
-		uiRenderer.beginRendering(deviceResource->cmdBufferBaseUI);
-		groupBaseUI->render();//render the base GUI
-		uiRenderer.endRendering();
+		deviceResource->uiRenderer.beginRendering(deviceResource->cmdBufferBaseUI);
+		deviceResource->groupBaseUI->render();//render the base GUI
+		deviceResource->uiRenderer.endRendering();
 	}
 
 	// record DrawClock commands
 	{
 		deviceResource->cmdBufferClockPage = context->createSecondaryCommandBufferOnDefaultPool();
 		deviceResource->cmdBufferClockPage->beginRecording(deviceResource->fboOnScreen, 0);
-		uiRenderer.beginRendering(deviceResource->cmdBufferClockPage);
-		pageClock.group->render();
-		uiRenderer.endRendering();
+		deviceResource->uiRenderer.beginRendering(deviceResource->cmdBufferClockPage);
+		deviceResource->pageClock.group->render();
+		deviceResource->uiRenderer.endRendering();
 		deviceResource->cmdBufferClockPage->endRecording();
 	}
 
@@ -1670,9 +1673,9 @@ void OGLESExampleUI::recordSecondaryCommandBuffers()
 	{
 		deviceResource->cmdBufferWeatherpage = context->createSecondaryCommandBufferOnDefaultPool();
 		deviceResource->cmdBufferWeatherpage->beginRecording(deviceResource->fboOnScreen, 0);
-		uiRenderer.beginRendering(deviceResource->cmdBufferWeatherpage);
-		pageWeather.group->render();
-		uiRenderer.endRendering();
+		deviceResource->uiRenderer.beginRendering(deviceResource->cmdBufferWeatherpage);
+		deviceResource->pageWeather.group->render();
+		deviceResource->uiRenderer.endRendering();
 		deviceResource->cmdBufferWeatherpage->endRecording();
 	}
 
@@ -1683,21 +1686,23 @@ void OGLESExampleUI::recordSecondaryCommandBuffers()
 		// bind the pre-clipping pipeline
 		deviceResource->cmdBufferWindow->bindPipeline(deviceResource->pipePreClip.pipe);
 		// clear the stencil buffer to 0
-		deviceResource->cmdBufferWindow->clearStencilAttachment(pvr::Rectanglei(0, 0, (pvr::int32)uiRenderer.getRenderingDimX(), (pvr::int32)uiRenderer.getRenderingDimY()), 0);
+		deviceResource->cmdBufferWindow->clearStencilAttachment(pvr::Rectanglei(0, 0,
+		    (pvr::int32)deviceResource->uiRenderer.getRenderingDimX(),
+		    (pvr::int32)deviceResource->uiRenderer.getRenderingDimY()), 0);
 		deviceResource->cmdBufferWindow->setUniformPtr<glm::mat4>(deviceResource->pipePreClip.mvpLoc,
-		        1, (const glm::mat4*)&pageWindow.mvp);
+		    1, (const glm::mat4*)&deviceResource->pageWindow.mvp);
 
 		// draw a quad only in to the stencil buffer
-		drawScreenAlignedQuad(deviceResource->pipePreClip, pvr::Rectangle<pvr::float32>((pvr::float32)pageWindow.clipArea.x,
-		                      (pvr::float32)pageWindow.clipArea.y, (pvr::float32)pageWindow.clipArea.width, (pvr::float32)pageWindow.clipArea.height),
-		                      deviceResource->cmdBufferWindow);
+		drawScreenAlignedQuad(deviceResource->pipePreClip, pvr::Rectangle<pvr::float32>((pvr::float32)deviceResource->pageWindow.clipArea.x,
+		                      (pvr::float32)deviceResource->pageWindow.clipArea.y, (pvr::float32)deviceResource->pageWindow.clipArea.width,
+		                      (pvr::float32)deviceResource->pageWindow.clipArea.height), deviceResource->cmdBufferWindow);
 
 		// bind the post clip pipeline and render the text only where the stencil passes
-		uiRenderer.beginRendering(deviceResource->cmdBufferWindow, deviceResource->pipePostClip.pipe);
+		deviceResource->uiRenderer.beginRendering(deviceResource->cmdBufferWindow, deviceResource->pipePostClip.pipe);
 		deviceResource->cmdBufferWindow->setStencilReference(StencilFace::FrontBack, 1);
 		deviceResource->cmdBufferWindow->setStencilCompareMask(StencilFace::FrontBack, 0xFFFFFFFF);
-		pageWindow.group->render();
-		uiRenderer.endRendering();
+		deviceResource->pageWindow.group->render();
+		deviceResource->uiRenderer.endRendering();
 		deviceResource->cmdBufferWindow->endRecording();
 	}
 }
@@ -1706,7 +1711,7 @@ void OGLESExampleUI::recordSecondaryCommandBuffers()
 \brief Handle input events
 \param[in] action Input event to handle
 ***********************************************************************************************************************/
-void OGLESExampleUI::eventMappedInput(pvr::SimplifiedInput::Enum action)
+void OGLESExampleUI::eventMappedInput(pvr::SimplifiedInput action)
 {
 	switch (action)
 	{

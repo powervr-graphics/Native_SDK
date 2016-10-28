@@ -80,56 +80,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::apiutils::vulkan Namespace Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespacepvr_1_1apiutils_1_1vulkan_1_1detail"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan_1_1detail.html">detail</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html">DisplaySurface</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a77aaecac0d408bf04e476f8e869d1a8d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#a77aaecac0d408bf04e476f8e869d1a8d">allocateImageDeviceMemory</a> (VkDevice device, VkPhysicalDeviceMemoryProperties &amp;deviceMemProperty, VkMemoryPropertyFlagBits allocMemProperty, <a class="el" href="structpvr_1_1native_1_1_h_texture__.html">native::HTexture_</a> &amp;image, VkMemoryRequirements *outMemRequirements)</td></tr>
+<tr class="memdesc:a77aaecac0d408bf04e476f8e869d1a8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">allocate image's device memory  <a href="#a77aaecac0d408bf04e476f8e869d1a8d">More...</a><br/></td></tr>
 <tr class="separator:a77aaecac0d408bf04e476f8e869d1a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c6e19283c5f67944baf06efdc8caa96"><td class="memItemLeft" align="right" valign="top">VkDeviceMemory&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#a2c6e19283c5f67944baf06efdc8caa96">allocateMemory</a> (VkDevice device, VkPhysicalDeviceMemoryProperties &amp;deviceMemProps, const VkMemoryRequirements &amp;memoryRequirements, pvr::uint32 typeBits, VkMemoryPropertyFlagBits allocMemProperty)</td></tr>
 <tr class="separator:a2c6e19283c5f67944baf06efdc8caa96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a383844185d5be85249474fa66c3e0fa5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#a383844185d5be85249474fa66c3e0fa5">beginCommandBuffer</a> (VkCommandBuffer &amp;cmdBuffer)</td></tr>
 <tr class="separator:a383844185d5be85249474fa66c3e0fa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5afa83a3f9f488811feb3ddb86efa81e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#a5afa83a3f9f488811feb3ddb86efa81e">createOnScreenFbo</a> (const <a class="el" href="structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html">DisplaySurface</a> &amp;displaySurface)</td></tr>
-<tr class="separator:a5afa83a3f9f488811feb3ddb86efa81e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af18f8ad6376825f7b6fddd40160e531e"><td class="memItemLeft" align="right" valign="top">VkCommandPool &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#af18f8ad6376825f7b6fddd40160e531e">getCommandPool</a> ()</td></tr>
-<tr class="memdesc:af18f8ad6376825f7b6fddd40160e531e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Command Pool.  <a href="#af18f8ad6376825f7b6fddd40160e531e">More...</a><br/></td></tr>
-<tr class="separator:af18f8ad6376825f7b6fddd40160e531e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d5fb3eb291e0655c998786b8628ddb0"><td class="memItemLeft" align="right" valign="top">VkDescriptorPool &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#a6d5fb3eb291e0655c998786b8628ddb0">getDescriptorPool</a> ()</td></tr>
-<tr class="memdesc:a6d5fb3eb291e0655c998786b8628ddb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the descriptor pool.  <a href="#a6d5fb3eb291e0655c998786b8628ddb0">More...</a><br/></td></tr>
-<tr class="separator:a6d5fb3eb291e0655c998786b8628ddb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a264018cff2d478d60776ae0d97f3cb5b"><td class="memItemLeft" align="right" valign="top">VkDevice &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#a264018cff2d478d60776ae0d97f3cb5b">getDevice</a> ()</td></tr>
-<tr class="memdesc:a264018cff2d478d60776ae0d97f3cb5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the device.  <a href="#a264018cff2d478d60776ae0d97f3cb5b">More...</a><br/></td></tr>
-<tr class="separator:a264018cff2d478d60776ae0d97f3cb5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6621854e30b4a1a675db553a9828e4db"><td class="memItemLeft" align="right" valign="top">VkQueue &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#a6621854e30b4a1a675db553a9828e4db">getGraphicsQueue</a> ()</td></tr>
-<tr class="memdesc:a6621854e30b4a1a675db553a9828e4db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Graphics queue.  <a href="#a6621854e30b4a1a675db553a9828e4db">More...</a><br/></td></tr>
-<tr class="separator:a6621854e30b4a1a675db553a9828e4db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae528113b41303b1baa71b7d9db663d07"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#ae528113b41303b1baa71b7d9db663d07">getMemoryTypeIndex</a> (VkPhysicalDeviceMemoryProperties &amp;deviceMemProps, uint32 typeBits, VkMemoryPropertyFlagBits properties, uint32 &amp;outTypeIndex)</td></tr>
 <tr class="separator:ae528113b41303b1baa71b7d9db663d07"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41065002034bfbea9860740999edcc57"><td class="memItemLeft" align="right" valign="top">VkPhysicalDevice &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#a41065002034bfbea9860740999edcc57">getPhysicalDevice</a> ()</td></tr>
-<tr class="separator:a41065002034bfbea9860740999edcc57"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a300c582469c6d615fbed4abcb558bba7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#a300c582469c6d615fbed4abcb558bba7">init</a> ()</td></tr>
-<tr class="memdesc:a300c582469c6d615fbed4abcb558bba7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initilise the Vulkan Utils.  <a href="#a300c582469c6d615fbed4abcb558bba7">More...</a><br/></td></tr>
-<tr class="separator:a300c582469c6d615fbed4abcb558bba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42271290e725c19e90e8dd5582750664"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1apiutils_1_1vulkan.html#a42271290e725c19e90e8dd5582750664">release</a> ()</td></tr>
-<tr class="memdesc:a42271290e725c19e90e8dd5582750664"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release the vulkan utils.  <a href="#a42271290e725c19e90e8dd5582750664">More...</a><br/></td></tr>
-<tr class="separator:a42271290e725c19e90e8dd5582750664"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="a77aaecac0d408bf04e476f8e869d1a8d"></a>
@@ -173,6 +140,20 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>allocate image's device memory </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return true if the allocation success </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">device</td><td>Device used for allocation </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">deviceMemProperty</td><td>Physical device memory property </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">allocMemProperty</td><td>memory allocation flag (VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT etc ) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">image</td><td>The image the memory to be allocated for </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">outMemRequirements</td><td>Return memory requirements if not NULL </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -236,103 +217,6 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a5afa83a3f9f488811feb3ddb86efa81e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool pvr::apiutils::vulkan::createOnScreenFbo </td>
-          <td>(</td>
-          <td class="paramtype">const DisplaySurface &amp;&#160;</td>
-          <td class="paramname"><em>displaySurface</em>)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="af18f8ad6376825f7b6fddd40160e531e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">VkCommandPool&amp; pvr::apiutils::vulkan::getCommandPool </td>
-          <td>(</td>
-          <td class="paramname">)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get the Command Pool. </p>
-<ul>
-<li></li>
-</ul>
-
-</div>
-</div>
-<a class="anchor" id="a6d5fb3eb291e0655c998786b8628ddb0"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">VkDescriptorPool&amp; pvr::apiutils::vulkan::getDescriptorPool </td>
-          <td>(</td>
-          <td class="paramname">)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get the descriptor pool. </p>
-<ul>
-<li><dl class="section return"><dt>Returns</dt><dd>Return the descriptor pool. </dd></dl>
-</li>
-</ul>
-
-</div>
-</div>
-<a class="anchor" id="a264018cff2d478d60776ae0d97f3cb5b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">VkDevice&amp; pvr::apiutils::vulkan::getDevice </td>
-          <td>(</td>
-          <td class="paramname">)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get the device. </p>
-<ul>
-<li><dl class="section return"><dt>Returns</dt><dd>Return the device </dd></dl>
-</li>
-</ul>
-
-</div>
-</div>
-<a class="anchor" id="a6621854e30b4a1a675db553a9828e4db"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">VkQueue&amp; pvr::apiutils::vulkan::getGraphicsQueue </td>
-          <td>(</td>
-          <td class="paramname">)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get the Graphics queue. </p>
-<hr/>
- <dl class="section return"><dt>Returns</dt><dd>Return the graphics queue </dd></dl>
-
-</div>
-</div>
 <a class="anchor" id="ae528113b41303b1baa71b7d9db663d07"></a>
 <div class="memitem">
 <div class="memproto">
@@ -368,62 +252,6 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a41065002034bfbea9860740999edcc57"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">VkPhysicalDevice&amp; pvr::apiutils::vulkan::getPhysicalDevice </td>
-          <td>(</td>
-          <td class="paramname">)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a300c582469c6d615fbed4abcb558bba7"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::apiutils::vulkan::init </td>
-          <td>(</td>
-          <td class="paramname">)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Initilise the Vulkan Utils. </p>
-<ul>
-<li><dl class="section user"><dt>Description:</dt><dd>Initlises the vulkan aplication instance, device, and its resources such as commandpool, descriptorpool, graphics queue </dd></dl>
-</li>
-</ul>
-
-</div>
-</div>
-<a class="anchor" id="a42271290e725c19e90e8dd5582750664"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95">void</a> pvr::apiutils::vulkan::release </td>
-          <td>(</td>
-          <td class="paramname">)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Release the vulkan utils. </p>
-<ul>
-<li></li>
-</ul>
 
 </div>
 </div>

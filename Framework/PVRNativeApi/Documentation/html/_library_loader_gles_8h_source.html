@@ -84,7 +84,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <a href="_library_loader_gles_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">\file         PVRApi\OGLES\LibraryLoaderGles.h</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">\file         PVRNativeApi\OGLES\LibraryLoaderGles.h</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">\author       PowerVR by Imagination, Developer Technology Team</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">\copyright    Copyright (c) Imagination Technologies Limited.</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">\brief         This file contains OpenGL ES bindings with function pointers. The PowerVR Framework uses them to allow unified</span></div>
@@ -92,17 +92,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">              Function pointer loading is done with the initGl function which is normally called by the PVR Shell.</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_open_g_l_e_s_headers_8h.html">PVRNativeApi/OGLES/OpenGLESHeaders.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_open_g_l_e_s_headers_8h.html" title="Includes the headers for OpenGL ES. Prefer to directly include the OpenGLESBindings.h which will include the gl:: and glext:: class for you to use. ">PVRNativeApi/OGLES/OpenGLESHeaders.h</a>&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#if BUILD_API_MAX&gt;3</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_api_gles31_8h.html">ApiGles31.h</a>&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_api_gles31_8h.html" title="Contains function pointer declarations for all OpenGL ES 3.1 functions (minus ES 3/2 functions)...">ApiGles31.h</a>&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#elif (BUILD_API_MAX==3)</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_api_gles3_8h.html">ApiGles3.h</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_api_gles3_8h.html" title="Contains function pointer declarations for all OpenGL ES 3 functions (minus ES 2 functions). ">ApiGles3.h</a>&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#elif (BUILD_API_MAX==2)</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_api_gles2_8h.html">ApiGles2.h</a>&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_api_gles2_8h.html" title="Contains function pointer declarations for all OpenGL ES 2 functions. ">ApiGles2.h</a>&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;PVRCore/NativeLibrary.h&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_api_gles_ext_8h.html">PVRNativeApi/OGLES/ApiGlesExt.h</a>&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_api_gles_ext_8h.html" title="Contains function pointer declarations for all OpenGL ES 2+ extension functions. ">PVRNativeApi/OGLES/ApiGlesExt.h</a>&quot;</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#ifdef MemoryBarrier</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#undef MemoryBarrier</span></div>

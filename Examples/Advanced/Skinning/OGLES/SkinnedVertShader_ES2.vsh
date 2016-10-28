@@ -36,7 +36,6 @@ uniform mediump vec3 LightPos;
 uniform mediump	int	 BoneCount;
 uniform highp   mat4 BoneMatrixArray[MAX_BONE_COUNT];
 uniform highp   mat3 BoneMatrixArrayIT[MAX_BONE_COUNT];
-uniform bool	bUseDot3;
 
 varying mediump vec3 Light;
 varying mediump vec2 TexCoord;
@@ -78,13 +77,10 @@ void main()
 				position += boneMatrix * vec4(inVertex, 1.0) * boneWeights.x;
 				worldNormal += normalMatrix * inNormal * boneWeights.x;
 				
-				if(bUseDot3)
-				{
 					worldTangent += normalMatrix * inTangent * boneWeights.x;
 					worldBiNormal += normalMatrix * inBiNormal * boneWeights.x;
 				}
 			}
-		}		
 		gl_Position = ViewProjMatrix * position;
 		
 		// lighting

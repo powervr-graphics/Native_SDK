@@ -9,7 +9,7 @@
 #include <cstdarg>
 
 namespace pvr {
-namespace system {
+namespace platform {
 /*!*********************************************************************************************************************
 \brief    Abstract class defining a messaging interface. This class implements the printing/messaging capabilities used by the
          Logger class. A class implementing it needs to implement the outputMessage function.
@@ -30,18 +30,18 @@ public:
 
 	Messenger() : m_verbosityThreshold(
 #ifdef DEBUG
-		Verbose
+		  Verbose
 #else
-		Information
+		  Information
 #endif
 
 		) {}
 
-		virtual ~Messenger() {};
+	virtual ~Messenger() {};
 
 	/*!*********************************************************************************************************************
 	\brief    Abstract class defining a messaging interface. This class implements the printing/messaging capabilities used by the
-         Logger class. A class implementing it needs to implement the outputMessage function.
+	       Logger class. A class implementing it needs to implement the outputMessage function.
 	***********************************************************************************************************************/
 	virtual void output(Severity severity, const char8* formatString, va_list argumentList) const
 	{
@@ -53,15 +53,15 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief    Set the verbosity threshold below which messages will not be output.
-	\param minimumLevelToOutput  The minimum level to actually output. 
-	\description  Messages with a severity less than this will be silently discarded. For example, if using a "Warning" level, 
+	\param minimumLevelToOutput  The minimum level to actually output.
+	\description  Messages with a severity less than this will be silently discarded. For example, if using a "Warning" level,
 	         Critical, Error and Warning will be displayed, while Information, Verbose and Debug will be discarded.
 	***********************************************************************************************************************/
 	void setVerbosity(const Messenger::Severity minimumLevelToOutput) { m_verbosityThreshold = minimumLevelToOutput; }
 	/*!*********************************************************************************************************************
 	\brief    Get the verbosity threshold below which messages will not be output.
 	\return The minimum level that is currently output.
-	\description  Messages with a severity less than this will be silently discarded. For example, if using a "Warning" level, 
+	\description  Messages with a severity less than this will be silently discarded. For example, if using a "Warning" level,
 	         Critical, Error and Warning will be displayed, while Information, Verbose and Debug will be discarded.
 	***********************************************************************************************************************/
 	Severity getVerbosity() const { return m_verbosityThreshold; }

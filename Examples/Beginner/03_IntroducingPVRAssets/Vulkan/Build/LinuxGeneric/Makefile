@@ -17,6 +17,8 @@ OBJECTS +=	\
            Vulkan/VulkanIntroducingPVRAssets.o
 
 RESOURCES += \
+           FragShader_vk.fsh\
+           VertShader_vk.vsh\
            FragShader_vk.spv\
            VertShader_vk.spv\
 

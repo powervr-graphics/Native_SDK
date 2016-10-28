@@ -2,7 +2,7 @@
 \file         PVRApi\GpuCapabilities.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief		Contains enumerations that represent several kinds of queries for the GPU capabilities
+\brief		  Contains enumerations that represent several kinds of queries for the GPU capabilities
 ***********************************************************************************************************************/
 #pragma once
 #include "PVRCore/Types.h"
@@ -18,11 +18,7 @@ namespace gpuCapabilities {
 /*!****************************************************************************************************************
 \brief	Texture and Sampler query.
 *******************************************************************************************************************/
-namespace TextureAndSamplers {
-/*!****************************************************************************************************************
-\brief	Texture and Sampler query.
-*******************************************************************************************************************/
-enum Enum
+enum class TextureAndSamplers
 {
 	MaxTextureImageUnit,//< max texture binding supported
 	MaxSamples,//< max samples supported
@@ -33,80 +29,66 @@ enum Enum
 	MaxCubeMapTexSize,//< max cube map texture size supported
 	Count
 };
-}
 
 /*!****************************************************************************************************************
 \brief	Shader and Program query.
 *******************************************************************************************************************/
-namespace ShaderAndProgram {
-/*!****************************************************************************************************************
-\brief	Shader and Program query.
-*******************************************************************************************************************/
-enum Enum
+enum class ShaderAndProgram
 {
 	MaxProgramTexelOffset,//< max texel offset supported by the shader program
 	MinProgramTexelOffset,//< min texel offset supported by the shader program
         NumProgramBinaryFormats, //< number of program binary formats supported
-	NumCompressedTextureFormats,
+	NumCompressedTextureFormats,//< number of compressed texture formats supported
 	NumShaderBinaryFormats, //< number of shader binary format supported
 	Count
 };
-}
+
 
 /*!****************************************************************************************************************
 \brief	TransformFeedback query.
 *******************************************************************************************************************/
-namespace TransformFeedback {
-/*!****************************************************************************************************************
-\brief	TransformFeedback query.
-*******************************************************************************************************************/
-enum Enum
+enum class TransformFeedback
 {
 	MaxInterleavedComponent,//< max transform-feedback interleaved component supported
 	MaxSeparateAttribs,//< max transform feedback separate attribute supported
 	SeparateComponents,//< max transform feedback
 	Count
 };
-}
+
 
 /*!****************************************************************************************************************
 \brief	Uniform query.
 *******************************************************************************************************************/
-namespace Uniform {
-enum Enum
+enum class Uniform
 {
 	MaxUniformBlockSize,//< maximum size in basic machine units of a uniform block.
 	MaxUniformBufferBindings,//< maximum number of uniform buffer binding points
 	MaxCombinedUniformBlocks,//<maximum number of uniform blocks per program
-	MaxCombinedVertexUniformComponent,
+	MaxCombinedVertexUniformComponent,//< maximum number of vertex uniform supported
 	Count
 };
-}
+
 
 /*!****************************************************************************************************************
 \brief	Element query.
 *******************************************************************************************************************/
-namespace Element {
-enum Enum
+enum class Element
 {
 	MaxIndices,//< max indices supported
 	MaxVertices, //< max vertices supported
 	Count
 };
-}
+
 
 /*!****************************************************************************************************************
 \brief	Buffers query.
 *******************************************************************************************************************/
-namespace Buffers {
-enum Enum { MaxDrawBuffers, Count };
-}
+enum class Buffers  { MaxDrawBuffers, Count };
 
 /*!****************************************************************************************************************
 \brief	FragmentShader query.
 *******************************************************************************************************************/
-namespace FragmentShader {
-enum Enum
+enum class FragmentShader
 {
 	MaxFragmentInputComponents,//< max fragment input components  supported
 	MaxfragmentUniformBlocks,//< max fragment uniform blocks  supported
@@ -114,7 +96,6 @@ enum Enum
 	MaxFragmentUniformVectors,
 	Count
 };
-}
 
 /*!****************************************************************************************************************
 \brief  Query gpu's texture and sampler capabilities.
@@ -122,7 +103,7 @@ enum Enum
 \param	context The context whose capability is queried
 \param	query A TextureAndSamplers enum representing the capability to be queried
 *******************************************************************************************************************/
-int32 get(IGraphicsContext& context, TextureAndSamplers::Enum query);
+int32 get(IGraphicsContext& context, TextureAndSamplers query);
 
 
 /*!****************************************************************************************************************
@@ -131,7 +112,7 @@ int32 get(IGraphicsContext& context, TextureAndSamplers::Enum query);
 \param	context The context whose capability is queried
 \param	query A FragmentShader enum representing the capability to be queried
 *******************************************************************************************************************/
-int32 get(IGraphicsContext& context, FragmentShader::Enum query);
+int32 get(IGraphicsContext& context, FragmentShader query);
 
 /*!****************************************************************************************************************
 \brief	Query gpu's shader and program capabilities.
@@ -139,7 +120,7 @@ int32 get(IGraphicsContext& context, FragmentShader::Enum query);
 \param	context The context whose capability is queried
 \param	query A ShaderAndProgram enum representing the capability to be queried
 *******************************************************************************************************************/
-int32 get(IGraphicsContext& context, ShaderAndProgram::Enum query);
+int32 get(IGraphicsContext& context, ShaderAndProgram query);
 
 /*!****************************************************************************************************************
 \brief	Query gpu's Buffers capabilities.
@@ -147,7 +128,7 @@ int32 get(IGraphicsContext& context, ShaderAndProgram::Enum query);
 \param	context The context whose capability is queried
 \param	query A Buffers enum representing the capability to be queried
 *******************************************************************************************************************/
-int32 get(IGraphicsContext& context, Buffers::Enum query);
+int32 get(IGraphicsContext& context, Buffers query);
 
 /*!****************************************************************************************************************
 \brief	Query gpu's Element capabilities.
@@ -155,7 +136,7 @@ int32 get(IGraphicsContext& context, Buffers::Enum query);
 \param	context The context whose capability is queried
 \param	query A Element enum representing the capability to be queried
 *******************************************************************************************************************/
-int32 get(IGraphicsContext& context, Element::Enum query);
+int32 get(IGraphicsContext& context, Element query);
 
 /*!****************************************************************************************************************
 \brief	Query gpu's transformfeedback capabilities.
@@ -163,7 +144,7 @@ int32 get(IGraphicsContext& context, Element::Enum query);
 \param	context The context whose capability is queried
 \param	query A TransformFeedback enum representing the capability to be queried
 *******************************************************************************************************************/
-int32 get(IGraphicsContext& context, TransformFeedback::Enum query);
+int32 get(IGraphicsContext& context, TransformFeedback query);
 
 /*!****************************************************************************************************************
 \brief  Query gpu's Uniform capabilities.
@@ -171,7 +152,7 @@ int32 get(IGraphicsContext& context, TransformFeedback::Enum query);
 \param	context The context whose capability is queried
 \param	query A Uniform enum representing the capability to be queried
 *******************************************************************************************************************/
-int32 get(IGraphicsContext& context, Uniform::Enum query);
+int32 get(IGraphicsContext& context, Uniform query);
 
 }
 }

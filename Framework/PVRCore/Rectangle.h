@@ -5,7 +5,8 @@
 \brief     	  Contains A rectangle class.
 ***********************************************************************************************************************/
 #pragma once
-#include "Maths.h"
+#include "PVRCore/Types.h"
+#include "../External/glm/glm.hpp"
 namespace pvr {
 /*!*********************************************************************************************************************
 \brief  A class representing an axis-aligned rectangle. Internal representation TopLeft and size.
@@ -34,6 +35,16 @@ struct Rectangle
 		x(TX), y(TY), width(TWidth), height(THeight)
 	{
 	}
+
+	/*!*********************************************************************************************************************
+	\brief  Create a rectangle with initial values.
+	\param  bottomLeft The bottom-left corner of the rectangle (bottom, left)
+	\param  dimensions The dimensions(width, height)
+	***********************************************************************************************************************/
+	Rectangle(glm::detail::tvec2<TYPE, glm::precision::defaultp> bottomLeft, glm::detail::tvec2<TYPE, glm::precision::defaultp> dimensions) :
+		x(bottomLeft.x), y(bottomLeft.y), width(dimensions.x), height(dimensions.y)
+	{
+	}
 	bool operator==(const Rectangle& rhs)const
 	{
 		return (x == rhs.x) && (y == rhs.y) && (width == rhs.width) && (height == rhs.height);
@@ -60,6 +71,6 @@ struct Rectangle
 		return glm::detail::tvec2<TYPE, glm::precision::defaultp>(width - x, height - y);
 	}
 };
-
 typedef Rectangle<int32> Rectanglei;
+typedef Rectangle<float32> Rectanglef;
 }

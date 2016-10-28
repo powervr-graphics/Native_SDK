@@ -22,16 +22,28 @@ class BindDescriptorSets;
 ***********************************************************************************************************************/
 struct DescriptorSetLayoutCreateParam
 {
-public:
-	struct BindInfo
+	// Binding list for images, uniform buffers and storage buffers
+	typedef pvr::types::DescriptorBindingLayout ImagesList[pvr::types::DescriptorBindingDefaults::MaxImages];
+	typedef pvr::types::DescriptorBindingLayout UniformBuffersList[pvr::types::DescriptorBindingDefaults::MaxUniformBuffers];
+	typedef pvr::types::DescriptorBindingLayout StorageBuffersList[pvr::types::DescriptorBindingDefaults::MaxStorageBuffers];
+	struct Bindings
 	{
-		types::DescriptorType::Enum descType;
-		types::ShaderStageFlags::Enum shaderStage;
-		pvr::uint32 arraySize;
-		BindInfo() {}
-		BindInfo(types::DescriptorType::Enum descType, types::ShaderStageFlags::Enum shaderStage, pvr::uint32 arraySize) :
-			descType(descType), shaderStage(shaderStage), arraySize(arraySize) {}
+		ImagesList images;
+		UniformBuffersList uniformBuffers;
+		StorageBuffersList storageBuffers;
 	};
+private:
+	Bindings m_bindings;
+	pvr::uint8 numberOfImages;
+	pvr::uint8 numberOfUniformBuffers;
+	pvr::uint8 numberOfStorageBuffers;
+public:
+	/*!
+	   \brief Constructor
+	 */
+	DescriptorSetLayoutCreateParam() :  numberOfImages(0), numberOfUniformBuffers(0), numberOfStorageBuffers(0)
+	{}
+
 	/*!*********************************************************************************************************************
 	\brief Set the buffer binding of Descriptor Objects in the specified shader stages.
 	\param[in] bindIndex The index to which the binding will be added
@@ -40,48 +52,231 @@ public:
 	\param[in] stageFlags The shader stages for which the number of bindings is set to (count)
 	\return this (allow chaining)
 	***********************************************************************************************************************/
-	DescriptorSetLayoutCreateParam& setBinding(pvr::uint32 bindIndex, types::DescriptorType::Enum descType, pvr::uint32 arraySize = 1,
-	    types::ShaderStageFlags::Enum stageFlags = types::ShaderStageFlags::AllGraphicsStages)
+	DescriptorSetLayoutCreateParam& setBinding(pvr::uint8 bindIndex, types::DescriptorType descType, pvr::uint8 arraySize = 1,
+	    types::ShaderStageFlags stageFlags = types::ShaderStageFlags::AllGraphicsStages)
 	{
-		assertion(arraySize != 0, "Array size cannot be zero");
-		if (bindIndex >= m_bindings.size())
+		assertion(arraySize != 0, "DescriptorSetLayoutCreateParam::setBinding - Array size cannot be zero");
+
+		// fetch the generic descriptor type (image, storage buffer or uniform buffer)
+		pvr::types::DescriptorBindingType descriptorType = pvr::types::getDescriptorTypeBinding(descType);
+
+		// only increment the count for a new binding at a specific binding index
+		switch (descriptorType)
 		{
-			m_bindings.resize(bindIndex + 1);
+		case pvr::types::DescriptorBindingType::Image:
+			if (!m_bindings.images[bindIndex].isValid()) { ++numberOfImages; }
+			m_bindings.images[bindIndex] = pvr::types::DescriptorBindingLayout(arraySize, descType, stageFlags);
+			break;
+		case pvr::types::DescriptorBindingType::StorageBuffer:
+			if (!m_bindings.storageBuffers[bindIndex].isValid()) { ++numberOfStorageBuffers; }
+			m_bindings.storageBuffers[bindIndex] = pvr::types::DescriptorBindingLayout(arraySize, descType, stageFlags);
+			break;
+		case pvr::types::DescriptorBindingType::UniformBuffer:
+			if (!m_bindings.uniformBuffers[bindIndex].isValid()) { ++numberOfUniformBuffers; }
+			m_bindings.uniformBuffers[bindIndex] = pvr::types::DescriptorBindingLayout(arraySize, descType, stageFlags);
+			break;
+		default:
+			assertion(false, "Unsupported descriptor type");
+			Log(pvr::Logger::Severity::Error, "Unsupported descriptor type");
 		}
-		m_bindings[bindIndex] = BindInfo(descType, stageFlags, arraySize);
+
 		return *this;
 	}
 
-	void clear()
+	/*!
+	   \brief Clear all entries
+	   \return Return this for chaining
+	 */
+	DescriptorSetLayoutCreateParam& clear()
 	{
-		m_bindings.clear();
+		for (unsigned int i = 0; i < pvr::types::DescriptorBindingDefaults::MaxImages; i++)
+		{
+			m_bindings.images[i] = pvr::types::DescriptorBindingLayout();
+		}
+		for (unsigned int i = 0; i < pvr::types::DescriptorBindingDefaults::MaxStorageBuffers; i++)
+		{
+			m_bindings.storageBuffers[i] = pvr::types::DescriptorBindingLayout();
+		}
+		for (unsigned int i = 0; i < pvr::types::DescriptorBindingDefaults::MaxUniformBuffers; i++)
+		{
+			m_bindings.uniformBuffers[i] = pvr::types::DescriptorBindingLayout();
+		}
+
+		numberOfImages = 0;
+		numberOfUniformBuffers = 0;
+		numberOfStorageBuffers = 0;
+
+		return *this;
+	}
+
+	const types::DescriptorBindingLayout& getBindingImage(uint8 index)const
+	{
+		return m_bindings.images[index];
+	}
+
+	const types::DescriptorBindingLayout& getBindingUbo(uint8 index)const
+	{
+		return m_bindings.uniformBuffers[index];
+	}
+
+	const types::DescriptorBindingLayout& getBindingSsbo(uint8 index)const
+	{
+		return m_bindings.storageBuffers[index];
+	}
+
+	/*!********************************************************************************************************************
+	\brief get descriptor binding
+	\param index Binding Index
+	\param descType The descriptor type to get the layout for.
+	\return The binding layout object (DescriptorBindingLayout)
+	**********************************************************************************************************************/
+	const types::DescriptorBindingLayout& getBinding(uint8 index, pvr::types::DescriptorType descType)const
+	{
+		// fetch the generic descriptor type (image, storage buffer or uniform buffer)
+		pvr::types::DescriptorBindingType descriptorType = pvr::types::getDescriptorTypeBinding(descType);
+
+		const pvr::types::DescriptorBindingLayout* bindings[] =
+		{
+			&m_bindings.images[0],
+			&m_bindings.uniformBuffers[0],
+			&m_bindings.storageBuffers[0]
+		};
+		return bindings[(uint32)descriptorType][index];
+	}
+
+	/*!
+	\brief Return the number of images in this object
+	\return the number of images in this object
+	*/
+	uint8 getNumImages()const { return numberOfImages; }
+
+	/*!
+	\brief Return number of ubos in this object
+	\return The number of ubos in this object
+	*/
+	uint8 getNumUbos()const { return numberOfUniformBuffers; }
+
+	/*!
+	\brief Return number of ssbos in this object
+	\return The number of ssbos in this object
+	*/
+	uint8 getNumSsbos()const { return numberOfStorageBuffers; }
+
+	/*!*********************************************************************************************************************
+	\brief Get the total number of bindings (objects) in this object
+	\return The total number of bindings (objects) in this object
+	*********************************************************************************************************************/
+	uint32 getNumBindings()const { return (uint32)(numberOfImages + numberOfStorageBuffers + numberOfUniformBuffers); }
+
+	/*!
+	   \brief Equality operator. Does deep comparison of the contents.
+	   \param rhs The right-hand side argument of the operator.
+	   \return True if the layouts have identical bindings
+	 */
+	bool operator==(const DescriptorSetLayoutCreateParam& rhs)
+	{
+		if (getNumBindings() != rhs.getNumBindings()) { return false; }
+
+		for (unsigned int i = 0; i < pvr::types::DescriptorBindingDefaults::MaxImages; i++)
+		{
+			if (m_bindings.images[i].arraySize != rhs.m_bindings.images[i].arraySize ||
+			    m_bindings.images[i].descType != rhs.m_bindings.images[i].descType ||
+			    m_bindings.images[i].shaderStage != rhs.m_bindings.images[i].shaderStage ||
+			    !m_bindings.images[i].isValid() ||
+			    !rhs.m_bindings.images[i].isValid())
+			{
+				return false;
+			}
+		}
+		for (unsigned int i = 0; i < pvr::types::DescriptorBindingDefaults::MaxStorageBuffers; i++)
+		{
+			if (m_bindings.storageBuffers[i].arraySize != rhs.m_bindings.storageBuffers[i].arraySize ||
+			    m_bindings.storageBuffers[i].descType != rhs.m_bindings.storageBuffers[i].descType ||
+			    m_bindings.storageBuffers[i].shaderStage != rhs.m_bindings.storageBuffers[i].shaderStage ||
+			    !m_bindings.storageBuffers[i].isValid() ||
+			    !rhs.m_bindings.storageBuffers[i].isValid())
+			{
+				return false;
+			}
+		}
+		for (unsigned int i = 0; i < pvr::types::DescriptorBindingDefaults::MaxUniformBuffers; i++)
+		{
+			if (m_bindings.uniformBuffers[i].arraySize != rhs.m_bindings.uniformBuffers[i].arraySize ||
+			    m_bindings.uniformBuffers[i].descType != rhs.m_bindings.uniformBuffers[i].descType ||
+			    m_bindings.uniformBuffers[i].shaderStage != rhs.m_bindings.uniformBuffers[i].shaderStage ||
+			    !m_bindings.uniformBuffers[i].isValid() ||
+			    !rhs.m_bindings.uniformBuffers[i].isValid())
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 private:
-
 	friend class ::pvr::api::impl::DescriptorSetLayout_;
 	friend class ::pvr::api::BindDescriptorSets;
 	friend struct ::pvr::api::DescriptorSetUpdate;
-	std::vector<BindInfo> m_bindings;
 };
 
 namespace impl {
 /*!*********************************************************************************************************************
 \brief API DescriptorSetLayout. Use through the Reference Counted Framework Object pvr::api::DescriptorSetLayout. Create using
        the IGraphicsContext::createDescriptorSetLayout. A Descriptor Set Layout is required both to construct a descriptor
-	   set object, and a Pipeline compatible with this object.
+       set object, and a Pipeline compatible with this object.
 ***********************************************************************************************************************/
 class DescriptorSetLayout_
 {
 protected:
 	friend class ::pvr::api::BindDescriptorSets;
 	template<typename> friend struct ::pvr::RefCountEntryIntrusive;
-	bool init();
-	DescriptorSetLayout_& operator=(const DescriptorSetLayout_&);
-	std::vector<DescriptorSetLayoutCreateParam::BindInfo>& getDescriptorDescBindings() { return desc.m_bindings; }
 
+	/*!
+	   \brief operator =
+	   \return Return true if equal
+	 */
+	DescriptorSetLayout_& operator=(const DescriptorSetLayout_&);
+
+	/*!
+	   \brief Return the DescriptorLayout bindings
+	 */
+	const DescriptorSetLayoutCreateParam::Bindings& getDescriptorDescBindings()const { return desc.m_bindings; }
+
+	/*!
+	   \brief Constructor
+	   \param context Context who owns this resource
+	   \param desc Initialization info
+	 */
+	DescriptorSetLayout_(GraphicsContext& context, const DescriptorSetLayoutCreateParam& desc) : desc(desc), device(context)
+	{
+#ifdef DEBUG
+		if (getContext()->getApiType() > pvr::Api::OpenGLESMaxVersion)
+		{
+			for (pvr::uint8 i = 0; i < desc.getNumBindings(); i++)
+			{
+				if (desc.getBindingImage(i).isValid() ||
+				    desc.getBindingSsbo(i).isValid() ||
+				    desc.getBindingUbo(i).isValid())
+				{
+					if ((desc.getBindingImage(i).isValid() && desc.getBindingSsbo(i).isValid()) ||
+					    (desc.getBindingUbo(i).isValid() && desc.getBindingSsbo(i).isValid()) ||
+					    (desc.getBindingUbo(i).isValid() && desc.getBindingSsbo(i).isValid()))
+					{
+						debug_assertion(false,
+						                "Vulkan requires that descriptor set layout bindings have unique indices within a single set.");
+					}
+				}
+				else
+				{
+					debug_assertion(false,
+					                "Vulkan requires that descriptor set layouts have linear bindings starting at 0");
+				}
+			}
+		}
+#endif
+	}
 	DescriptorSetLayoutCreateParam desc;
 	GraphicsContext device;
-	DescriptorSetLayout_(GraphicsContext& context, const DescriptorSetLayoutCreateParam& desc) : desc(desc), device(context) {}
 public:
 
 	/*!*********************************************************************************************************************
@@ -96,13 +291,16 @@ public:
 	***********************************************************************************************************************/
 	GraphicsContext& getContext() { return device; }
 
+	/*!*********************************************************************************************************************
+	\brief Get the context that this layout belongs to. (const)
+	\return The context that this layout belongs to.
+	***********************************************************************************************************************/
 	const GraphicsContext& getContext()const { return device; }
 
+	/*!
+	   \brief destructor
+	 */
 	virtual ~DescriptorSetLayout_() { }
-
-	const native::HDescriptorSetLayout_& getNativeObject()const;
-
-	native::HDescriptorSetLayout_& getNativeObject();
 };
 }// impl
 
@@ -112,9 +310,13 @@ public:
 struct DescriptorPoolCreateParam
 {
 private:
-	std::map<types::DescriptorType::Enum, pvr::uint32> descriptorType;
+	std::map<types::DescriptorType, pvr::uint32> descriptorType;
 	pvr::uint32 maxSets;
 public:
+
+	/*!
+	   \brief Constructor
+	 */
 	DescriptorPoolCreateParam() : maxSets(200) {}
 
 	/*!*********************************************************************************************************************
@@ -123,7 +325,7 @@ public:
 	\param[in] count Maximum number of descriptors of (type)
 	\return this (allow chaining)
 	***********************************************************************************************************************/
-	DescriptorPoolCreateParam& addDescriptorInfo(types::DescriptorType::Enum descType, pvr::uint16 count)
+	DescriptorPoolCreateParam& addDescriptorInfo(types::DescriptorType descType, pvr::uint16 count)
 	{
 		descriptorType[descType] = count;
 		return *this;
@@ -139,12 +341,20 @@ public:
 		this->maxSets = maxSets; return *this;
 	}
 
-	pvr::uint32 getDescriptorTypeCount(types::DescriptorType::Enum descType) const
+	/*!
+	   \brief Get the number of allocations of a descriptor type is supported on this pool.
+	   \param descType DescriptorType
+	   \return Number of allocations.
+	 */
+	pvr::uint32 getDescriptorTypeCount(types::DescriptorType descType) const
 	{
-		std::map<types::DescriptorType::Enum, pvr::uint32>::const_iterator found = descriptorType.find(descType);
+		std::map<types::DescriptorType, pvr::uint32>::const_iterator found = descriptorType.find(descType);
 		return (found != descriptorType.end() ? found->second  : 0);
 	}
 
+	/*!
+	   \brief Get maximum sets supported on this pool.
+	 */
 	pvr::uint32 getMaxSets() const { return maxSets; }
 
 };
@@ -158,27 +368,43 @@ class DescriptorPool_
 protected:
 	friend class ::pvr::IGraphicsContext;
 	GraphicsContext m_context;
-	types::DescriptorPoolUsage::Enum m_usage;
 	DescriptorPool_& operator=(const DescriptorPool_&);
 public:
+	/*!
+	   \brief Return the context
+	 */
 	const GraphicsContext& getContext()const { return m_context; }
+
+	/*!
+	   \brief Return the context
+	 */
 	GraphicsContext& getContext() { return m_context; }
+
 	/*!*********************************************************************************************************************
 	\brief Constructor. Do not use directly.
-	\param[in] device
+	\param[in] device the device
 	***********************************************************************************************************************/
 	DescriptorPool_(const GraphicsContext& device) : m_context(device) {}
 
+	/*!
+	   \brief Allocate descriptor set
+	   \param layout Descriptor set layout
+	   \return Return DescritptorSet else null if fails.
+	 */
 	api::DescriptorSet allocateDescriptorSet(const DescriptorSetLayout& layout);
 
 	/*!*********************************************************************************************************************
-	\brief Get native descriptorpool handle.
-	\return native handle
+	\brief Get the underlying API object for this descriptor pool.
+	\return An API-specific native handle. Type will be different for each API.
 	***********************************************************************************************************************/
 	const native::HDescriptorPool_& getNativeObject()const;
+
+	/*!*********************************************************************************************************************
+	\brief Get the underlying API object for this descriptor pool.
+	\return An API-specific native handle. Type will be different for each API.
+	***********************************************************************************************************************/
 	native::HDescriptorPool_& getNativeObject();
 };
-
 }//namespace impl
 
 /*!*********************************************************************************************************************
@@ -187,246 +413,354 @@ public:
 ***********************************************************************************************************************/
 struct DescriptorSetUpdate
 {
-	template<class _Binding>
-	struct DescriptorBinding
+	/*!
+	\brief Internal class
+	*/
+	struct DescriptorSampler
 	{
-		_Binding    binding;
-		pvr::int16 bindingId;
-		pvr::uint16 arrayIndex;
-		types::DescriptorType::Enum type;
-        std::string shaderVariableName;
-        DescriptorBinding(pvr::uint16 bindingId, pvr::uint16 index, types::DescriptorType::Enum type,
-                          const _Binding& obj, const char* shaderVariableName = "") :
-            binding(obj), bindingId(bindingId), arrayIndex(index),type(type),shaderVariableName(shaderVariableName) {}
-		DescriptorBinding() : bindingId(-1) {}
-	};
-	typedef DescriptorBinding<pvr::api::BufferView> BufferViewBinding;
-	typedef std::pair<pvr::api::Sampler, pvr::api::TextureView/**/> CombinedImageSampler;
-	typedef DescriptorBinding<CombinedImageSampler> CombImageSamplerBinding;
-	typedef std::vector<BufferViewBinding> BufferBindingList;
-	typedef std::vector<CombImageSamplerBinding> CombImageSamplerBindingList;
-	struct Bindings
-	{
-		BufferBindingList buffers;
-		CombImageSamplerBindingList combinedSamplerImage;
+		pvr::api::Sampler sampler; //!<Internal object
+		bool useSampler; //!<Internal object
 	};
 
+	typedef pvr::types::DescriptorBinding<pvr::api::BufferView> BufferViewBinding;
+	typedef std::pair<DescriptorSampler, pvr::api::TextureView> Image;
+	typedef pvr::types::DescriptorBinding<Image> ImageBinding;
+	typedef BufferViewBinding StorageBufferBindingList[pvr::types::DescriptorBindingDefaults::MaxStorageBuffers];
+	typedef BufferViewBinding UniformBufferBindingList[pvr::types::DescriptorBindingDefaults::MaxUniformBuffers];
+	typedef ImageBinding ImageBindingList[pvr::types::DescriptorBindingDefaults::MaxImages];
+	/*!
+	\brief Internal class
+	*/
+	struct Bindings
+	{
+		StorageBufferBindingList storageBuffers; //!<Internal
+		StorageBufferBindingList uniformBuffers; //!<Internal
+		ImageBindingList images; //!<Internal
+	};
+private:
+	uint8 numberOfImages;
+	uint8 numberOfUniformBuffers;
+	uint8 numberOfStorageBuffers;
+public:
 	/*!*********************************************************************************************************************
 	\brief     Constructor.
 	***********************************************************************************************************************/
-	DescriptorSetUpdate(types::DescriptorSetUsage::Enum usage = types::DescriptorSetUsage::Static) :  m_usage(usage) {}
+	DescriptorSetUpdate(types::DescriptorSetUsage usage = types::DescriptorSetUsage::Static) :  m_usage(usage)
+	{
+		numberOfImages = 0;
+		numberOfUniformBuffers = 0;
+		numberOfStorageBuffers = 0;
+	}
+
+	/*!
+	   \brief Return number of images
+	 */
+	uint8 getNumImages()const { return numberOfImages; }
+
+	/*!
+	   \brief Return number of ubos
+	 */
+	uint8 getNumUbos()const { return numberOfUniformBuffers; }
+
+	/*!
+	   \brief Return number of ssbos
+	 */
+	uint8 getNumSsbos()const { return numberOfStorageBuffers; }
 
 	/*!*********************************************************************************************************************
-	\brief	Add a Ubo to the specified binding index.
-	\param	bindingId The index of the indexed binding point
-	\param	item The object to add
-	\return	this object (allow chaining)
+	\brief  Add a Ubo to the specified binding index.
+	\param  bindingId The index of the indexed binding point
+	\param  item The object to add
+	\return this object (allow chaining)
 	***********************************************************************************************************************/
-	DescriptorSetUpdate& setUbo(pvr::uint16 bindingId, const api::BufferView& item)
+	DescriptorSetUpdate& setUbo(pvr::uint8 bindingId, const api::BufferView& item)
 	{
+		assertion(static_cast<pvr::uint32>(item->getResource()->getBufferUsage() & pvr::types::BufferBindingUse::UniformBuffer) != 0,
+		          "DescriptorSetUpdate::setUbo - buffer doesn't support ubo binding");
 		return addBuffer(bindingId, 0, types::DescriptorType::UniformBuffer, item);
 	}
 
 	/*!*********************************************************************************************************************
-	\brief	Add a Ubo to the specified binding index. Supports array-indexing in the shader.
-	\param	bindingId The index of the indexed binding point
-	\param	arrayIndex If supported by the underlying API, add to which index of the array binding point.
-	\param	item The object to add
-	\return	this object (allow chaining)
+	\brief  Add a Ubo to the specified binding index. Supports array-indexing in the shader.
+	\param  bindingId The index of the indexed binding point
+	\param  arrayIndex If supported by the underlying API, add to which index of the array binding point.
+	\param  item The object to add
+	\return this object (allow chaining)
 	***********************************************************************************************************************/
-	DescriptorSetUpdate& setUboAtIndex(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const api::BufferView& item)
+	DescriptorSetUpdate& setUboAtIndex(pvr::uint8 bindingId, pvr::uint8 arrayIndex, const api::BufferView& item)
 	{
+		assertion(static_cast<pvr::uint32>(item->getResource()->getBufferUsage() & pvr::types::BufferBindingUse::UniformBuffer) != 0,
+		          "DescriptorSetUpdate::setUboAtIndex - buffer doesn't support ubo binding");
 		return addBuffer(bindingId, arrayIndex, types::DescriptorType::UniformBuffer, item);
 	}
 
 	/*!*********************************************************************************************************************
-		\brief	Add a Ubo to the specified binding index.
-		\param	bindingId The index of the indexed binding point
-		\param	item The object to add
-		\return	this object (allow chaining)
-		***********************************************************************************************************************/
-	DescriptorSetUpdate& setDynamicUbo(pvr::uint16 bindingId, const api::BufferView& item)
+	\brief  Add a Ubo to the specified binding index.
+	\param  bindingId The index of the indexed binding point
+	\param  item The object to add
+	\return this object (allow chaining)
+	***********************************************************************************************************************/
+	DescriptorSetUpdate& setDynamicUbo(pvr::uint8 bindingId, const api::BufferView& item)
 	{
+		assertion(static_cast<pvr::uint32>(item->getResource()->getBufferUsage() & pvr::types::BufferBindingUse::UniformBuffer) != 0,
+		          "DescriptorSetUpdate::setDynamicUbo - buffer doesn't support ubo binding");
 		return addBuffer(bindingId, 0, types::DescriptorType::UniformBufferDynamic, item);
 	}
 
 	/*!*********************************************************************************************************************
-		\brief	Add a Ubo to the specified binding index. Supports array-indexing in the shader.
-		\param	bindingId The index of the indexed binding point
-		\param	arrayIndex If supported by the underlying API, add to which index of the array binding point.
-		\param	item The object to add
-		\return	this object (allow chaining)
-		***********************************************************************************************************************/
-	DescriptorSetUpdate& setDynamicUboAtIndex(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const api::BufferView& item)
+	\brief  Add a Ubo to the specified binding index. Supports array-indexing in the shader.
+	\param  bindingId The index of the indexed binding point
+	\param  arrayIndex If supported by the underlying API, add to which index of the array binding point.
+	\param  item The object to add
+	\return this object (allow chaining)
+	***********************************************************************************************************************/
+	DescriptorSetUpdate& setDynamicUboAtIndex(pvr::uint8 bindingId, pvr::uint8 arrayIndex, const api::BufferView& item)
 	{
+		assertion(static_cast<pvr::uint32>(item->getResource()->getBufferUsage() & pvr::types::BufferBindingUse::UniformBuffer) != 0,
+		          "DescriptorSetUpdate::setDynamicUboAtIndex - buffer doesn't support ubo binding");
 		return addBuffer(bindingId, arrayIndex, types::DescriptorType::UniformBufferDynamic, item);
 	}
 
 	/*!*********************************************************************************************************************
-	\brief	Add a Ssbo to the specified binding index.
-	\param	bindingId The index of the indexed binding point
-	\param	item The object to add
-	\return	this object (allow chaining)
+	\brief  Add a Ssbo to the specified binding index.
+	\param  bindingId The index of the indexed binding point
+	\param  item The object to add
+	\return this object (allow chaining)
 	***********************************************************************************************************************/
-	DescriptorSetUpdate& setSsbo(pvr::uint16 bindingId, const api::BufferView& item)
+	DescriptorSetUpdate& setSsbo(pvr::uint8 bindingId, const api::BufferView& item)
 	{
+		assertion(static_cast<pvr::uint32>(item->getResource()->getBufferUsage() & pvr::types::BufferBindingUse::StorageBuffer) != 0,
+		          "DescriptorSetUpdate::setSsbo - buffer doesn't support ssbo binding");
 		return addBuffer(bindingId, 0, types::DescriptorType::StorageBuffer, item);
 	}
 
 	/*!*********************************************************************************************************************
-	\brief	Add an Ssbo to the specified binding index. Supports array-indexing in the shader.
-	\param	bindingId The index of the indexed binding point
-	\param	arrayIndex If supported by the underlying API, add to which index of the array binding point.
-	\param	item The object to add
-	\return	this object (allow chaining)
+	\brief  Add an Ssbo to the specified binding index. Supports array-indexing in the shader.
+	\param  bindingId The index of the indexed binding point
+	\param  arrayIndex If supported by the underlying API, add to which index of the array binding point.
+	\param  item The object to add
+	\return this object (allow chaining)
 	***********************************************************************************************************************/
-	DescriptorSetUpdate& setSsboAtIndex(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const api::BufferView& item)
+	DescriptorSetUpdate& setSsboAtIndex(pvr::uint8 bindingId, pvr::uint8 arrayIndex, const api::BufferView& item)
 	{
+		assertion(static_cast<pvr::uint32>(item->getResource()->getBufferUsage() & pvr::types::BufferBindingUse::StorageBuffer) != 0,
+		          "DescriptorSetUpdate::setSsboAtIndex - buffer doesn't support ssbo binding");
 		return addBuffer(bindingId, arrayIndex, types::DescriptorType::StorageBuffer, item);
 	}
 
 	/*!*********************************************************************************************************************
-	\brief	Add a Ssbo to the specified binding index.
-	\param	bindingId The index of the indexed binding point
-	\param	item The object to add
-	\return	this object (allow chaining)
+	\brief  Add a Ssbo to the specified binding index.
+	\param  bindingId The index of the indexed binding point
+	\param  item The object to add
+	\return this object (allow chaining)
 	***********************************************************************************************************************/
-	DescriptorSetUpdate& setDynamicSsbo(pvr::uint16 bindingId, const api::BufferView& item)
+	DescriptorSetUpdate& setDynamicSsbo(pvr::uint8 bindingId, const api::BufferView& item)
 	{
+		assertion(static_cast<pvr::uint32>(item->getResource()->getBufferUsage() & pvr::types::BufferBindingUse::StorageBuffer) != 0,
+		          "DescriptorSetUpdate::setDynamicSsbo - buffer doesn't support ssbo binding");
 		return addBuffer(bindingId, 0, types::DescriptorType::StorageBufferDynamic, item);
 	}
 
 	/*!*********************************************************************************************************************
-	\brief	Add an Ssbo to the specified binding index. Supports array-indexing in the shader.
-	\param	bindingId The index of the indexed binding point
-	\param	arrayIndex If supported by the underlying API, add to which index of the array binding point.
-	\param	item The object to add
-	\return	this object (allow chaining)
+	\brief  Add an Ssbo to the specified binding index. Supports array-indexing in the shader.
+	\param  bindingId The index of the indexed binding point
+	\param  arrayIndex If supported by the underlying API, add to which index of the array binding point.
+	\param  item The object to add
+	\return this object (allow chaining)
 	***********************************************************************************************************************/
-	DescriptorSetUpdate& setDynamicSsboAtIndex(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const api::BufferView& item)
+	DescriptorSetUpdate& setDynamicSsboAtIndex(pvr::uint8 bindingId, pvr::uint8 arrayIndex, const api::BufferView& item)
 	{
+		assertion(static_cast<pvr::uint32>(item->getResource()->getBufferUsage() & pvr::types::BufferBindingUse::StorageBuffer) != 0,
+		          "DescriptorSetUpdate::setUbo - buffer doesn't support ssbo binding");
 		return addBuffer(bindingId, arrayIndex, types::DescriptorType::StorageBufferDynamic, item);
 	}
 
 	/*!*********************************************************************************************************************
-	\brief	Create a CombinedImageSampler from the provided texture and sampler, and add it to the specified index.
-	\param	bindingId The index of the indexed binding point
-	\param	texture The texture to add
-	\param	sampler The sampler to add
-	\return	this object (allow chaining)
+	\brief  Create a CombinedImageSampler from the provided texture and sampler, and add it to the specified index.
+	\param  bindingId The index of the indexed binding point
+	\param  texture The texture to add
+	\param  sampler The sampler to add
+	\return this object (allow chaining)
 	***********************************************************************************************************************/
-    DescriptorSetUpdate& setCombinedImageSampler(pvr::uint16 bindingId, const pvr::api::TextureView& texture,
-                                                 const pvr::api::Sampler& sampler, const char* shaderTexSamplerName = "")
+	DescriptorSetUpdate& setCombinedImageSampler(pvr::uint8 bindingId, const pvr::api::TextureView& texture,
+	    const pvr::api::Sampler& sampler)
 	{
-        return addImageSampler(bindingId, 0, texture, sampler, types::DescriptorType::CombinedImageSampler,shaderTexSamplerName);
+		return addImageSampler(bindingId, 0, texture, sampler, types::DescriptorType::CombinedImageSampler);
 	}
 
 	/*!*********************************************************************************************************************
-	\brief	Create a CombinedImageSampler from the provided texture and sampler, and add it to the specified index. Supports
-	        array-indexing in the shader
-	\param	bindingId The index of the indexed binding point
-	\param	arrayIndex If supported by the underlying API, add to which index of the array binding point.
-	\param	texture The texture to add
-	\param	sampler The sampler to add
-	\return	this object (allow chaining)
+	\brief  Create a CombinedImageSampler from the provided texture and sampler, and add it to the specified index. Supports
+	                array-indexing in the shader
+	\param  bindingId The index of the indexed binding point
+	\param  arrayIndex If supported by the underlying API, add to which index of the array binding point.
+	\param  texture The texture to add
+	\param  sampler The sampler to add
+	\return this object (allow chaining)
 	***********************************************************************************************************************/
-	DescriptorSetUpdate& setCombinedImageSamplerAtIndex(pvr::uint16 bindingId, pvr::uint8 arrayIndex,
-	    const pvr::api::TextureView& texture, const pvr::api::Sampler& sampler,const char* shaderTexSamplerName = "")
-	{
-		return addImageSampler(bindingId, arrayIndex, texture, sampler, types::DescriptorType::CombinedImageSampler,shaderTexSamplerName);
-	}
-
-	/*!*********************************************************************************************************************
-	\brief	Create a Input Attachment from the provided texture and sampler, and add it to the specified index.
-	\param	bindingId The index of the indexed binding point
-	\param	texture The texture to add
-	\param	sampler The sampler to add
-	\return	this object (allow chaining)
-	***********************************************************************************************************************/
-	DescriptorSetUpdate& setInputImageAttachment(pvr::uint16 bindingId, const pvr::api::TextureView& texture, const pvr::api::Sampler& sampler)
-	{
-		return addImageSampler(bindingId, 0, texture, sampler, types::DescriptorType::InputAttachment);
-	}
-
-	/*!*********************************************************************************************************************
-	\brief	Create a Input Attachment from the provided texture and sampler, and add it to the specified index. Supports
-	array-indexing in the shader
-	\param	bindingId The index of the indexed binding point
-	\param	arrayIndex If supported by the underlying API, add to which index of the array binding point.
-	\param	texture The texture to add
-	\param	sampler The sampler to add
-	\return	this object (allow chaining)
-	***********************************************************************************************************************/
-	DescriptorSetUpdate& setInputImageAttachmentAtIndex(pvr::uint16 bindingId, pvr::uint8 arrayIndex,
+	DescriptorSetUpdate& setCombinedImageSamplerAtIndex(pvr::uint8 bindingId, pvr::uint8 arrayIndex,
 	    const pvr::api::TextureView& texture, const pvr::api::Sampler& sampler)
 	{
-		return addImageSampler(bindingId, arrayIndex, texture, sampler, types::DescriptorType::InputAttachment);
+		return addImageSampler(bindingId, arrayIndex, texture, sampler, types::DescriptorType::CombinedImageSampler);
 	}
 
+	/*!*********************************************************************************************************************
+	\brief  Create a Input Attachment from the provided texture and sampler, and add it to the specified index.
+	\param  bindingId The index of the indexed binding point
+	\param  texture The texture to add
+	\return this object (allow chaining)
+	***********************************************************************************************************************/
+	DescriptorSetUpdate& setInputImageAttachment(pvr::uint8 bindingId, const pvr::api::TextureView& texture)
+	{
+		return addInputAttachment(bindingId, 0, texture, types::DescriptorType::InputAttachment);
+	}
+
+	/*!*********************************************************************************************************************
+	\brief  Create a Input Attachment from the provided texture and sampler, and add it to the specified index. Supports
+	array-indexing in the shader
+	\param  bindingId The index of the indexed binding point
+	\param  arrayIndex If supported by the underlying API, add to which index of the array binding point.
+	\param  texture The texture to add
+	\return this object (allow chaining)
+	***********************************************************************************************************************/
+	DescriptorSetUpdate& setInputImageAttachmentAtIndex(pvr::uint8 bindingId, pvr::uint8 arrayIndex,
+	    const pvr::api::TextureView& texture)
+	{
+		return addInputAttachment(bindingId, arrayIndex, texture, types::DescriptorType::InputAttachment);
+	}
+
+	/*!
+	   \brief Return the binding list
+	 */
 	const DescriptorSetUpdate::Bindings& getBindingList() const { return m_bindings; }
 
-	void clear()
-    {
-        this->m_bindings.combinedSamplerImage.clear();
-        this->m_bindings.buffers.clear();
-    }
-    
-	template<class _Binding> static bool cmpDescriptorBinding(const _Binding& a, const _Binding& b)
+	/*!
+	   \brief Clear all entries
+	   \return Return this object for chaining
+	 */
+	DescriptorSetUpdate& clear()
 	{
-		if (a.bindingId < b.bindingId) { return true; }
-		if (a.bindingId == b.bindingId && a.arrayIndex < b.arrayIndex) { return true; }
-		return false;
+		for (uint32 i = 0; i < pvr::types::DescriptorBindingDefaults::MaxImages; ++i)
+		{
+			m_bindings.images[i] = ImageBinding();
+		}
+		for (uint32 i = 0; i < pvr::types::DescriptorBindingDefaults::MaxStorageBuffers; ++i)
+		{
+			m_bindings.storageBuffers[i] = BufferViewBinding();
+		}
+		for (uint32 i = 0; i < pvr::types::DescriptorBindingDefaults::MaxUniformBuffers; ++i)
+		{
+			m_bindings.storageBuffers[i] = BufferViewBinding();
+		}
+		numberOfImages = 0;
+		numberOfUniformBuffers = 0;
+		numberOfStorageBuffers = 0;
+		return *this;
 	}
+
 private:
 	friend class ::pvr::api::impl::DescriptorSet_;
 
-	DescriptorSetUpdate& addBuffer(pvr::uint16 bindingId, pvr::uint8 arrayIndex, types::DescriptorType::Enum type, const api::BufferView& item)
+	DescriptorSetUpdate& addBuffer(pvr::uint8 bindingId, pvr::uint8 arrayIndex, types::DescriptorType type, const api::BufferView& item)
 	{
-		assertion(item.isValid(), "Invalid Ubo Item");
-		if (bindingId >= m_bindings.buffers.size()) { m_bindings.buffers.resize(bindingId + 1); }
-		m_bindings.buffers[bindingId] = DescriptorBinding<pvr::api::BufferView>(bindingId, arrayIndex, type, item);
-		return *this;
-	}
+		assertion(item.isValid(), "Invalid Buffer Item");
 
-	inline DescriptorSetUpdate& addImage(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
-		const pvr::api::Sampler& sampler, const pvr::types::DescriptorType::Enum type, bool useSampler, const char* shaderTexSamplerName = "")
-	{
-		assertion(texture.isValid() && sampler.isValid(), "Invalid Combined-Image-Sampler Item");
-		if (bindingId >= m_bindings.combinedSamplerImage.size())
+		// fetch the generic descriptor type (image, storage buffer or uniform buffer)
+		pvr::types::DescriptorBindingType descriptorType = pvr::types::getDescriptorTypeBinding(type);
+
+		// only increment the count for a new binding at a specific binding index
+		switch (descriptorType)
 		{
-			m_bindings.combinedSamplerImage.resize(bindingId + 1);
+		case pvr::types::DescriptorBindingType::StorageBuffer:
+			if (m_bindings.storageBuffers[bindingId].bindingId == pvr::types::DescriptorBindingDefaults::BindingId)
+			{
+				++numberOfStorageBuffers;
+			}
+			m_bindings.storageBuffers[bindingId] = pvr::types::DescriptorBinding<pvr::api::BufferView>(bindingId, arrayIndex, type, item);
+			assertion(m_bindings.storageBuffers[bindingId].isValid(), "Added storage buffer is not valid");
+			break;
+		case pvr::types::DescriptorBindingType::UniformBuffer:
+			if (m_bindings.uniformBuffers[bindingId].bindingId == pvr::types::DescriptorBindingDefaults::BindingId)
+			{
+				++numberOfUniformBuffers;
+			}
+			m_bindings.uniformBuffers[bindingId] = pvr::types::DescriptorBinding<pvr::api::BufferView>(bindingId, arrayIndex, type, item);
+			assertion(m_bindings.uniformBuffers[bindingId].isValid(), "Added uniform buffer is not valid");
+			break;
+		default:
+			assertion(false, "Unsupported descriptor type");
+			Log(pvr::Logger::Severity::Error, "Unsupported descriptor type");
 		}
-		m_bindings.combinedSamplerImage[bindingId] = DescriptorBinding<CombinedImageSampler>(bindingId, arrayIndex, type,
-		    std::make_pair(sampler, texture),shaderTexSamplerName);
+
 		return *this;
 	}
 
-	DescriptorSetUpdate& addImageSampler(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
-	                                     const pvr::api::Sampler& sampler, const pvr::types::DescriptorType::Enum type,const char* shaderTexSamplerName = "")
+	inline DescriptorSetUpdate& addImage(
+	  pvr::uint8 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
+	  const pvr::api::Sampler& sampler, const pvr::types::DescriptorType type, bool useSampler)
 	{
-		return addImage(bindingId, arrayIndex, texture, sampler, type, true,shaderTexSamplerName);
+		if (!texture.isValid())
+		{
+			assertion(texture.isValid(), "Invalid Image Item");
+			Log("DescriptorSet update addImage invalid texture object");
+			return *this;
+		}
+		if (useSampler && !sampler.isValid())
+		{
+			assertion(sampler.isValid(), "Invalid Sampler Item");
+			Log("DescriptorSet update addImage invalid sampler object");
+			return *this;
+		}
+
+		DescriptorSampler descriptorSampler{ sampler, useSampler };
+
+		// fetch the generic descriptor type (image, storage buffer or uniform buffer)
+		pvr::types::DescriptorBindingType descriptorType = pvr::types::getDescriptorTypeBinding(type);
+
+		switch (descriptorType)
+		{
+		case pvr::types::DescriptorBindingType::Image:
+			if (m_bindings.images[bindingId].bindingId == pvr::types::DescriptorBindingDefaults::BindingId)
+			{
+				numberOfImages++;
+			}
+			m_bindings.images[bindingId] = pvr::types::DescriptorBinding<Image>(bindingId, arrayIndex, type,
+			                               std::make_pair(descriptorSampler, texture));
+			assertion(m_bindings.images[bindingId].isValid(), "Added image is not valid");
+			break;
+		default:
+			assertion(false, "Unsupported descriptor type");
+			Log(pvr::Logger::Severity::Error, "Unsupported descriptor type");
+		}
+
+		return *this;
 	}
 
-	DescriptorSetUpdate& addInputAttachment(pvr::uint16 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
-		const pvr::types::DescriptorType::Enum type)
+	DescriptorSetUpdate& addImageSampler(pvr::uint8 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
+	                                     const pvr::api::Sampler& sampler, const pvr::types::DescriptorType type)
+	{
+		return addImage(bindingId, arrayIndex, texture, sampler, type, true);
+	}
+
+	DescriptorSetUpdate& addInputAttachment(pvr::uint8 bindingId, pvr::uint8 arrayIndex, const pvr::api::TextureView& texture,
+	                                        const pvr::types::DescriptorType type)
 	{
 		return addImage(bindingId, arrayIndex, texture, pvr::api::Sampler(), type, false);
 	}
 
 	Bindings m_bindings;
-	types::DescriptorSetUsage::Enum m_usage;
+	types::DescriptorSetUsage m_usage;
 };
 
 namespace impl {
 /*!*********************************************************************************************************************
 \brief A descriptor set object. Carries all memory-related API object state like Textures (Images), Samplers, UBOs, Ssbos
        etc. Does NOT carry pipeline specific state such as Vertex/Index buffers, shader programs etc (these are part of the
-	   Pipeline objects).
+       Pipeline objects).
 ***********************************************************************************************************************/
 class DescriptorSet_
 {
 public:
-	typedef uint16 IndexType;
+	typedef uint8 IndexType;
 	/*!*********************************************************************************************************************
 	\brief  Create a DescriptorSet on a specific DescriptorPool.
 	\brief createParam DescriptorSet creation information.
@@ -446,19 +780,47 @@ public:
 	***********************************************************************************************************************/
 	const api::DescriptorSetLayout& getDescriptorSetLayout()const {return m_descSetLayout;}
 
+	/*!
+	   \brief Return a handle to the native object (const)
+	 */
 	const native::HDescriptorSet_& getNativeObject() const;
+
+	/*!
+	   \brief Return a handle to the native object
+	 */
 	native::HDescriptorSet_& getNativeObject();
 
+	/*!
+	   \brief Return the descriptor pool (const)
+	 */
 	const DescriptorPool& getDescriptorPool()const { return m_descPool; }
+
+	/*!
+	    \brief Return the descriptor pool
+	 */
 	DescriptorPool& getDescriptorPool() { return m_descPool; }
 
+	/*!
+	   \brief Return the graphics context (const)
+	 */
 	const GraphicsContext& getContext()const { return m_descPool->getContext(); }
+
+	/*!
+	   \brief \brief Return the graphics context (const)
+	 */
 	GraphicsContext& getContext() { return m_descPool->getContext(); }
 
+	/*!
+	   \brief Update this
+	   \param descSet Descriptor set update param. Note application should externally synchronize
+	          if this descriptor set maybe used by the gpu durring the update.
+	   \return Return true on success
+	 */
 	bool update(const DescriptorSetUpdate& descSet);
 protected:
 	DescriptorSetLayout m_descSetLayout;
 	DescriptorPool m_descPool;
+	DescriptorSetUpdate m_descParam;
 };
 }// namespace impl
 }// namspace api

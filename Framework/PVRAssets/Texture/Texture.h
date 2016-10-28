@@ -13,12 +13,9 @@ namespace assets {
 /*!**************************************************************************
 \brief Enumerates the formats directly supported by PVRAssets.
 ****************************************************************************/
-namespace TextureFileFormat {
-enum Enum
-{
+enum class TextureFileFormat {
 	UNKNOWN = 0, KTX, DDX, PVR, TGA, BMP, DDS
 };
-}
 
 /*!****************************************************************************************
 \brief A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only
@@ -85,9 +82,9 @@ public:
 
 	uint8 getPixelSize() const;
 
-	types::TextureDimension::Enum getDimension() const
+	types::ImageBaseType getDimension() const
 	{
-		return getDepth() > 1 ? types::TextureDimension::Texture3D : getHeight() > 1 ? types::TextureDimension::Texture2D : types::TextureDimension::Texture1D;
+		return getDepth() > 1 ? types::ImageBaseType::Image3D : getHeight() > 1 ? types::ImageBaseType::Image2D : types::ImageBaseType::Image1D;
 	}
 
 	types::ImageAreaSize getTotalDimensions() const
@@ -95,9 +92,9 @@ public:
 		return types::ImageAreaSize(getLayersSize(), getDimensions());
 	}
 
-	types::ImageExtents getDimensions() const
+	types::Extent3D getDimensions() const
 	{
-		return types::ImageExtents((uint16)getHeight(), (uint16)getWidth(), (uint16)getDepth());
+		return types::Extent3D((uint16)getWidth(), (uint16)getHeight(), (uint16)getDepth());
 	}
 
 	types::ImageLayersSize getLayersSize() const
@@ -105,9 +102,9 @@ public:
 		return types::ImageLayersSize((uint16)(getNumberOfArrayMembers() * getNumberOfFaces()), (uint8)getNumberOfMIPLevels());
 	}
 
-	types::ImageExtents getDimensions(uint32 miplevel) const
+	types::Extent3D getDimensions(uint32 miplevel) const
 	{
-		return types::ImageExtents((uint16)getWidth(miplevel), (uint16)getHeight(miplevel), (uint16)getDepth(miplevel));
+		return types::Extent3D((uint16)getWidth(miplevel), (uint16)getHeight(miplevel), (uint16)getDepth(miplevel));
 	}
 
 	/*!***********************************************************************
@@ -140,9 +137,9 @@ private:
 /*!***********************************************************************
 \brief      Infer the texture format from a filename.
 \param[in]  assetname		The name of the asset, containing the extension.
-\return		The TextureFileFormat::Enum if understood, otherwise TextureFileFormat::Unknown.
+\return		The TextureFileFormat if understood, otherwise TextureFileFormat::Unknown.
 *************************************************************************/
-TextureFileFormat::Enum getTextureFormatFromFilename(const char* assetname);
+TextureFileFormat getTextureFormatFromFilename(const char* assetname);
 
 /*!***********************************************************************
 \brief          Load a texture from a Stream to a texture file
@@ -151,6 +148,6 @@ TextureFileFormat::Enum getTextureFormatFromFilename(const char* assetname);
 \param[out]		outTex		The texture object where the texture will be stored.
 \return			The error code for the operation.
 *************************************************************************/
-Result::Enum textureLoad(Stream::ptr_type textureStream, TextureFileFormat::Enum type, Texture& outTex);
+Result textureLoad(Stream::ptr_type textureStream, TextureFileFormat type, Texture& outTex);
 }
 }

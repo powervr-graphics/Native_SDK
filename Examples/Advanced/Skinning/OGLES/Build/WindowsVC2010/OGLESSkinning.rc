@@ -70,7 +70,8 @@ SkinnedVertShader_ES2.vsh		RCDATA		"..\\..\\SkinnedVertShader_ES2.vsh"
 SkinnedFragShader_ES2.fsh		RCDATA		"..\\..\\SkinnedFragShader_ES2.fsh"
 SkinnedVertShader_ES3.vsh		RCDATA		"..\\..\\SkinnedVertShader_ES3.vsh"
 SkinnedFragShader_ES3.fsh		RCDATA		"..\\..\\SkinnedFragShader_ES3.fsh"
-
+// RCDATA: Effects
+Skinning_es.pfx		RCDATA		"..\\..\\Skinning_es.pfx"
 // RCDATA: Textures
 Tiles.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\Tiles.pvr"
 RobotDiffuse.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\RobotDiffuse.pvr"

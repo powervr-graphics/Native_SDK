@@ -43,8 +43,8 @@ enum Enum {	MVPMatrix, LightDir, NumUniforms };
  ***********************************************************************************************************************/
 
 // Source and binary shaders
-const char FragShaderSrcFile[]		= "FragShader_VK.fsh.spv";
-const char VertShaderSrcFile[]		= "VertShader_VK.vsh.spv";
+const char FragShaderSrcFile[]		= "FragShader.fsh";
+const char VertShaderSrcFile[]		= "VertShader.vsh";
 
 // PVR texture files
 const char StatueTexFile[]			= "Marble.pvr";
@@ -61,7 +61,7 @@ const char SceneFile[]				= "scene.pod";
 /*!*********************************************************************************************************************
  Class implementing the Shell functions.
  ***********************************************************************************************************************/
-class OGLESBumpMap : public Shell
+class VulkanBumpMap : public Shell
 {
 	struct UboPerMeshData
 	{
@@ -82,8 +82,6 @@ class OGLESBumpMap : public Shell
 	{
 		std::vector<api::Buffer> vbo;
 		std::vector<api::Buffer> ibo;
-		api::Sampler samplerMipBilinear;
-		api::Sampler samplerTrilinear;
 		api::DescriptorSetLayout texLayout;
 		api::DescriptorSetLayout uboLayoutDynamic;
 		api::PipelineLayout pipelayout;
@@ -91,9 +89,8 @@ class OGLESBumpMap : public Shell
 
 		api::GraphicsPipeline pipe;
 		std::vector<api::CommandBuffer> commandBuffer;// per swapchain
-		std::vector<api::SecondaryCommandBuffer> uiCmdBuffer;// per swapchain
-		Multi<api::Fbo> fboOnScreen;// per swapchain
-		std::vector<pvr::utils::StructuredMemoryView> ubo;//per swapchain
+		api::FboSet fboOnScreen;// per swapchain
+		pvr::utils::StructuredMemoryView ubo;//per swapchain
 		std::vector<api::DescriptorSet> uboDescSet;
 	};
 
@@ -103,12 +100,12 @@ class OGLESBumpMap : public Shell
 	float32 angleY;
 	std::auto_ptr<DeviceResources> deviceResource;
 public:
-	OGLESBumpMap() {}
-	virtual Result::Enum initApplication();
-	virtual Result::Enum initView();
-	virtual Result::Enum releaseView();
-	virtual Result::Enum quitApplication();
-	virtual Result::Enum renderFrame();
+	VulkanBumpMap() {}
+	virtual Result initApplication();
+	virtual Result initView();
+	virtual Result releaseView();
+	virtual Result quitApplication();
+	virtual Result renderFrame();
 
 	bool createImageSamplerDescriptor();
 	bool createUbo();
@@ -122,9 +119,8 @@ public:
 \return	return true if no error occurred
 \brief	Loads the textures required for this training course
 ***********************************************************************************************************************/
-bool OGLESBumpMap::createImageSamplerDescriptor()
+bool VulkanBumpMap::createImageSamplerDescriptor()
 {
-	// The asset manager will be keeping these objects alive automatically, hence they can be local.
 	api::TextureView texBase;
 	api::TextureView texNormalMap;
 
@@ -133,10 +129,10 @@ bool OGLESBumpMap::createImageSamplerDescriptor()
 	samplerInfo.magnificationFilter = SamplerFilter::Linear;
 	samplerInfo.minificationFilter = SamplerFilter::Linear;
 	samplerInfo.mipMappingFilter = SamplerFilter::Nearest;
-	deviceResource->samplerMipBilinear = context->createSampler(samplerInfo);
+	api::Sampler samplerMipBilinear = context->createSampler(samplerInfo);
 
 	samplerInfo.mipMappingFilter = SamplerFilter::Linear;
-	deviceResource->samplerTrilinear = context->createSampler(samplerInfo);
+	api::Sampler samplerTrilinear = context->createSampler(samplerInfo);
 
 	if (!assetManager.getTextureWithCaching(getGraphicsContext(), StatueTexFile,	&texBase, NULL) ||
 	    !assetManager.getTextureWithCaching(getGraphicsContext(), StatueNormalMapFile, &texNormalMap, NULL))
@@ -147,8 +143,8 @@ bool OGLESBumpMap::createImageSamplerDescriptor()
 	// create the descriptor set
 	api::DescriptorSetUpdate descSetCreateInfo;
 	descSetCreateInfo
-	.setCombinedImageSampler(0, texBase, deviceResource->samplerMipBilinear)
-	.setCombinedImageSampler(1, texNormalMap, deviceResource->samplerTrilinear);
+	.setCombinedImageSampler(0, texBase, samplerMipBilinear)
+	.setCombinedImageSampler(1, texNormalMap, samplerTrilinear);
 	deviceResource->texDescSet = context->createDescriptorSetOnDefaultPool(deviceResource->texLayout);
 	if (!deviceResource->texDescSet.isValid())
 	{
@@ -159,20 +155,19 @@ bool OGLESBumpMap::createImageSamplerDescriptor()
 	return true;
 }
 
-bool OGLESBumpMap::createUbo()
+bool VulkanBumpMap::createUbo()
 {
 	api::DescriptorSetUpdate descUpdate;
-	deviceResource->ubo.resize(getPlatformContext().getSwapChainLength());
 	deviceResource->uboDescSet.resize(getPlatformContext().getSwapChainLength());
 	for (pvr::uint32 i = 0; i < getPlatformContext().getSwapChainLength(); ++i)
 	{
-		deviceResource->ubo[i].addEntryPacked("MVPMatrix", pvr::GpuDatatypes::mat4x4);
-		deviceResource->ubo[i].addEntryPacked("LightDirModel", pvr::GpuDatatypes::vec3);
-		auto buffer = context->createBuffer(deviceResource->ubo[i].getAlignedTotalSize(), BufferBindingUse::UniformBuffer);
-		deviceResource->ubo[i].connectWithBuffer(context->createBufferView(buffer, 0, deviceResource->ubo[i].getAlignedElementSize()),
-		    pvr::BufferViewTypes::UniformBufferDynamic);
+		deviceResource->ubo.addEntryPacked("MVPMatrix", pvr::types::GpuDatatypes::mat4x4);
+		deviceResource->ubo.addEntryPacked("LightDirModel", pvr::types::GpuDatatypes::vec3);
+		auto buffer = context->createBuffer(deviceResource->ubo.getAlignedTotalSize(), BufferBindingUse::UniformBuffer, true);
+		deviceResource->ubo.connectWithBuffer(i, context->createBufferView(buffer, 0, deviceResource->ubo.getAlignedElementSize()),
+		                                      types::BufferViewTypes::UniformBufferDynamic);
 		deviceResource->uboDescSet[i] = context->createDescriptorSetOnDefaultPool(deviceResource->uboLayoutDynamic);
-		descUpdate.setDynamicUbo(0, deviceResource->ubo[i].getConnectedBuffer());
+		descUpdate.setDynamicUbo(0, deviceResource->ubo.getConnectedBuffer(i));
 		deviceResource->uboDescSet[i]->update(descUpdate);
 	}
 	return true;
@@ -182,11 +177,11 @@ bool OGLESBumpMap::createUbo()
 \return	 Return true if no error occurred
 \brief	Loads and compiles the shaders and create a pipeline
 ***********************************************************************************************************************/
-bool OGLESBumpMap::loadPipeline()
+bool VulkanBumpMap::loadPipeline()
 {
-	api::pipelineCreation::ColorBlendAttachmentState colorAttachemtState;
+	types::BlendingConfig colorAttachemtState;
 	api::GraphicsPipelineCreateParam pipeInfo;
-	colorAttachemtState.blendEnable = true;
+	colorAttachemtState.blendEnable = false;
 
 	//--- create the texture-sampler descriptor set layout
 	{
@@ -213,9 +208,18 @@ bool OGLESBumpMap::loadPipeline()
 		deviceResource->pipelayout = context->createPipelineLayout(pipeLayoutInfo);
 	}
 
-	pipeInfo.colorBlend.addAttachmentState(colorAttachemtState);
-	pipeInfo.vertexShader = context->createShader(*getAssetStream(VertShaderSrcFile), ShaderType::VertexShader);
-	pipeInfo.fragmentShader = context->createShader(*getAssetStream(FragShaderSrcFile), ShaderType::FragmentShader);
+	pipeInfo.rasterizer.setCullFace(pvr::types::Face::Back);
+
+	pipeInfo.colorBlend.setAttachmentState(0, colorAttachemtState);
+
+	pvr::assets::ShaderFile fileVersioner;
+	fileVersioner.populateValidVersions(VertShaderSrcFile, *this);
+	pipeInfo.vertexShader = context->createShader(*fileVersioner.getBestStreamForContext(context),
+	                        ShaderType::VertexShader);
+
+	fileVersioner.populateValidVersions(FragShaderSrcFile, *this);
+	pipeInfo.fragmentShader = context->createShader(*fileVersioner.getBestStreamForContext(context),
+	                          ShaderType::FragmentShader);
 
 	const assets::Mesh& mesh = scene->getMesh(0);
 	pipeInfo.inputAssembler.setPrimitiveTopology(mesh.getPrimitiveType());
@@ -224,8 +228,11 @@ bool OGLESBumpMap::loadPipeline()
 	pipeInfo.subPass = 0;
 	// Enable z-buffer test. We are using a projection matrix optimized for a floating point depth buffer,
 	// so the depth test and clear value need to be inverted (1 becomes near, 0 becomes far).
-	pipeInfo.depthStencil.setDepthTestEnable(true).setDepthCompareFunc(ComparisonMode::Less).setDepthWrite(true);
-	utils::createInputAssemblyFromMesh(mesh, VertexAttribBindings, sizeof(VertexAttribBindings) / sizeof(VertexAttribBindings[0]), pipeInfo);
+	pipeInfo.depthStencil.setDepthTestEnable(true);
+	pipeInfo.depthStencil.setDepthCompareFunc(ComparisonMode::Less);
+	pipeInfo.depthStencil.setDepthWrite(true);
+	utils::createInputAssemblyFromMesh(mesh, VertexAttribBindings, sizeof(VertexAttribBindings) /
+	                                   sizeof(VertexAttribBindings[0]), pipeInfo);
 	deviceResource->pipe = context->createGraphicsPipeline(pipeInfo);
 	return (deviceResource->pipe.isValid());
 }
@@ -236,7 +243,7 @@ bool OGLESBumpMap::loadPipeline()
 		Used to initialize variables that are not dependent on it	(e.g. external modules, loading meshes, etc.)
 		If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
-Result::Enum OGLESBumpMap::initApplication()
+Result VulkanBumpMap::initApplication()
 {
 	// Load the scene
 	assetManager.init(*this);
@@ -254,14 +261,14 @@ Result::Enum OGLESBumpMap::initApplication()
 \brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
 		If the rendering context is lost, quitApplication() will not be called.x
 ***********************************************************************************************************************/
-Result::Enum OGLESBumpMap::quitApplication() {	return Result::Success;}
+Result VulkanBumpMap::quitApplication() {	return Result::Success;}
 
 /*!*********************************************************************************************************************
 \return	Return Result::Success if no error occurred
 \brief	Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
 		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
-Result::Enum OGLESBumpMap::initView()
+Result VulkanBumpMap::initView()
 {
 	context = getGraphicsContext();
 	deviceResource.reset(new DeviceResources());
@@ -274,7 +281,7 @@ Result::Enum OGLESBumpMap::initView()
 	if (!createUbo()) { return Result::UnknownError; }
 
 	//	Initialize UIRenderer
-	if (uiRenderer.init(context, deviceResource->fboOnScreen[0]->getRenderPass(), 0) != Result::Success)
+	if (uiRenderer.init(deviceResource->fboOnScreen[0]->getRenderPass(), 0) != Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
 		return Result::UnknownError;
@@ -305,7 +312,7 @@ Result::Enum OGLESBumpMap::initView()
 \brief	Code in releaseView() will be called by PVRShell when theapplication quits or before a change in the rendering context.
 \return	Return Result::Success if no error occurred
 ***********************************************************************************************************************/
-Result::Enum OGLESBumpMap::releaseView()
+Result VulkanBumpMap::releaseView()
 {
 	deviceResource.reset();
 	uiRenderer.release();
@@ -318,7 +325,7 @@ Result::Enum OGLESBumpMap::releaseView()
 \return	Return Result::Success if no error occurred
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
-Result::Enum OGLESBumpMap::renderFrame()
+Result VulkanBumpMap::renderFrame()
 {
 	// Calculate the model matrix
 	glm::mat4 mModel = glm::rotate(angleY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::vec3(1.8f));
@@ -336,10 +343,10 @@ Result::Enum OGLESBumpMap::renderFrame()
 		UboPerMeshData srcWrite;
 		srcWrite.lightDirModel = glm::vec3(LightDir * mModel);
 		srcWrite.mvpMtx = viewProj * mModel * scene->getWorldMatrix(scene->getNode(0).getObjectId());
-		deviceResource->ubo[getPlatformContext().getSwapChainIndex()].map();
-		deviceResource->ubo[getPlatformContext().getSwapChainIndex()].setValue(0, srcWrite.mvpMtx);
-		deviceResource->ubo[getPlatformContext().getSwapChainIndex()].setValue(1, srcWrite.lightDirModel);
-		deviceResource->ubo[getPlatformContext().getSwapChainIndex()].unmap();
+		deviceResource->ubo.map(getSwapChainIndex());
+		deviceResource->ubo.setValue(0, srcWrite.mvpMtx);
+		deviceResource->ubo.setValue(1, srcWrite.lightDirModel);
+		deviceResource->ubo.unmap(getSwapChainIndex());
 	}
 	deviceResource->commandBuffer[getPlatformContext().getSwapChainIndex()]->submit();
 	return Result::Success;
@@ -349,7 +356,7 @@ Result::Enum OGLESBumpMap::renderFrame()
 \brief	Draws a assets::Mesh after the model view matrix has been set and	the material prepared.
 \param	nodeIndex	Node index of the mesh to draw
 ***********************************************************************************************************************/
-void OGLESBumpMap::drawMesh(api::CommandBuffer& cmdBuffer, int nodeIndex)
+void VulkanBumpMap::drawMesh(api::CommandBuffer& cmdBuffer, int nodeIndex)
 {
 	uint32 meshId = scene->getNode(nodeIndex).getObjectId();
 	const assets::Mesh& mesh = scene->getMesh(meshId);
@@ -401,18 +408,17 @@ void OGLESBumpMap::drawMesh(api::CommandBuffer& cmdBuffer, int nodeIndex)
 /*!*********************************************************************************************************************
 \brief	Pre record the commands
 ***********************************************************************************************************************/
-void OGLESBumpMap::recordCommandBuffer()
+void VulkanBumpMap::recordCommandBuffer()
 {
 	deviceResource->commandBuffer.resize(getPlatformContext().getSwapChainLength());
-	deviceResource->uiCmdBuffer.resize(getPlatformContext().getSwapChainLength());
 	for (pvr::uint32 i = 0; i < getPlatformContext().getSwapChainLength(); ++i)
 	{
 		deviceResource->commandBuffer[i] = context->createCommandBufferOnDefaultPool();
 		api::CommandBuffer cmdBuffer = deviceResource->commandBuffer[i];
 		cmdBuffer->beginRecording();
-		cmdBuffer->beginRenderPass(deviceResource->fboOnScreen[i], Rectanglei(0, 0, getWidth(), getHeight()), false,
+		cmdBuffer->beginRenderPass(deviceResource->fboOnScreen[i], Rectanglei(0, 0, getWidth(), getHeight()), true,
 		                           glm::vec4(0.00, 0.70, 0.67, 1.f));
-		pvr::uint32 dynamicOffset = deviceResource->ubo[i].getAlignedElementArrayOffset(0);
+		pvr::uint32 dynamicOffset = deviceResource->ubo.getAlignedElementArrayOffset(0);
 		// enqueue the static states which wont be changed through out the frame
 		cmdBuffer->bindPipeline(deviceResource->pipe);
 		cmdBuffer->bindDescriptorSet(deviceResource->pipelayout, 0, deviceResource->texDescSet, 0);
@@ -420,13 +426,10 @@ void OGLESBumpMap::recordCommandBuffer()
 		drawMesh(cmdBuffer, 0);
 
 		// record the uirenderer commands
-		api::SecondaryCommandBuffer uiCmdBuffer = context->createSecondaryCommandBufferOnDefaultPool();
-		deviceResource->uiCmdBuffer[i] = uiCmdBuffer;
-		uiRenderer.beginRendering(uiCmdBuffer);
+		uiRenderer.beginRendering(cmdBuffer);
 		uiRenderer.getDefaultTitle()->render();
 		uiRenderer.getSdkLogo()->render();
 		uiRenderer.endRendering();
-		cmdBuffer->enqueueSecondaryCmds(uiCmdBuffer);
 		cmdBuffer->endRenderPass();
 		cmdBuffer->endRecording();
 	}
@@ -437,4 +440,4 @@ void OGLESBumpMap::recordCommandBuffer()
 \brief	This function must be implemented by the user of the shell.	The user should return its
 		Shell object defining the behavior of the application.
 ***********************************************************************************************************************/
-std::auto_ptr<Shell> pvr::newDemo() {	return std::auto_ptr<Shell>(new OGLESBumpMap()); }
+std::auto_ptr<Shell> pvr::newDemo() {	return std::auto_ptr<Shell>(new VulkanBumpMap()); }

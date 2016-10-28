@@ -11,23 +11,39 @@ namespace pvr {
 template<typename T_, uint8 MAX_ITEMS = 4> class Multi
 {
 public: typedef T_ ElementType;
-typedef ElementType ContainerType[MAX_ITEMS];
+	typedef ElementType ContainerType[MAX_ITEMS];
 private:
 	ContainerType container;
 	uint32 numItems;
 public:
-	ElementType& operator[](uint32 idx) { return container[idx]; }
-	const ElementType& operator[](uint32 idx) const { return container[idx]; }
-	ContainerType& getContainer1() { return container; }
+	ElementType& operator[](uint32 idx)
+	{
+		if (idx >= numItems) { numItems = idx + 1; }
+		return container[idx];
+	}
+    const ElementType& operator[](uint32 idx) const { assertion(idx < MAX_ITEMS); return container[idx]; }
+	ContainerType& getContainer() { return container; }
 	ElementType& back() { return container[numItems - 1]; }
 	const ElementType& back() const { return container[numItems - 1]; }
 
-	size_t size() { return numItems; }
-	Multi(): numItems(0) {}
+    size_t size()const { return numItems; }
+	void resize(uint32 newsize)
+	{
+		for (uint32 i = newsize + 1; i < numItems; ++i)
+		{
+			container[i] = ElementType(); //clean up unused elements
+		}
+		numItems = (uint32)newsize;
+	}
+	void clear() { resize(0); }
+	Multi(): numItems(0) { }
 	Multi(const ElementType* elements, const uint32 count): numItems(count)
 	{
 		assertion(count < MAX_ITEMS, "Multi<T>: Index out of range");
-		container.assign(elements, elements + count);
+		for (size_t i = 0; i < count; ++i)
+		{
+			container[i] = elements[i];
+		}
 	}
 	void add(const ElementType& element)
 	{

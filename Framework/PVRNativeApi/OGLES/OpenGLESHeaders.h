@@ -46,7 +46,7 @@
 #endif
 #else
 
-#error OpenGL ES level under 2.0 (BUILD_API_MAX=20) not supported. 
+#error OpenGL ES level under 2.0 (BUILD_API_MAX=20) not supported.
 
 #endif
 

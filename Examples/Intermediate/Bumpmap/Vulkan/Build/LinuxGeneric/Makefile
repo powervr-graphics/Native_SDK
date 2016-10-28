@@ -17,10 +17,10 @@ OBJECTS +=	\
            Vulkan/VulkanBumpmap.o
 
 RESOURCES += \
-           FragShader_VK.fsh\
-           FragShader_VK.fsh.spv\
-           VertShader_VK.vsh\
-           VertShader_VK.vsh.spv\
+           FragShader_vk.fsh\
+           FragShader_vk.fsh.spv\
+           VertShader_vk.vsh\
+           VertShader_vk.vsh.spv\
 
 COMMON_RESOURCES += \
            MarbleNormalMap.pvr\

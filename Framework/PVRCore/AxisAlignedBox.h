@@ -222,33 +222,18 @@ public:
 	\param[in] m An affine transformation matrix. Skew will be ignored.
 	\param[out] outAABB The transformed AABB will be stored here. Previous contents ignored.
 	*******************************************************************************************************************/
-	void transform(const glm::mat4& m, AxisAlignedBox& outAABB)
+	inline void transform(const glm::mat4& m, AxisAlignedBox& outAABB)
 	{
-		transform(glm::mat3(m), glm::vec3(m[3][0], m[3][1], m[3][2]), outAABB);
-	}
+		outAABB.m_center = glm::vec3(m[3]) + (glm::mat3(m) * this->center());
 
-	/*!****************************************************************************************************************
-	\brief	Get the local bounding box transformed by a provided 3x3 matrix and translation vector.
-	\param	m Rotation and scale matrix.
-	\param	t Translation vector
-	\param[out] outAABB The transformed AABB will be stored here. Previous contents ignored.
-	*******************************************************************************************************************/
-	void transform(const glm::mat3& m, const glm::vec3& t, AxisAlignedBox& outAABB)
-	{
+		glm::mat3 absModelMatrix;
+
 		for (int i = 0; i < 3; i++)
 		{
-			outAABB.m_center[i] = t[i];
-			outAABB.m_halfExtent[i] = 0.0f;
-
-			outAABB.m_center[i] += m[i][0] * m_center[0];
-			outAABB.m_halfExtent[i] += fabs(m[i][0]) * m_halfExtent[0];
-
-			outAABB.m_center[i] += m[i][1] * m_center[1];
-			outAABB.m_halfExtent[i] += fabs(m[i][1]) * m_halfExtent[1];
-
-			outAABB.m_center[i] += m[i][2] * m_center[2];
-			outAABB.m_halfExtent[i] += fabs(m[i][2]) * m_halfExtent[2];
+			absModelMatrix[i] = glm::vec3(fabs(m[i][0]), fabs(m[i][1]), fabs(m[i][2]));
 		}
+		
+		outAABB.m_halfExtent = glm::vec3(absModelMatrix * this->getHalfExtent());
 	}
 
 	/*!****************************************************************************************************************

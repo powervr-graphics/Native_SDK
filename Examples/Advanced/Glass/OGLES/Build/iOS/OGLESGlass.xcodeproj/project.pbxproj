@@ -31,19 +31,19 @@
 		F8205A91130408E100253AE7 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A88130408E100253AE7 /* Icon.png */; };
 		F8205A92130408E100253AE7 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A89130408E100253AE7 /* Icon@2x.png */; };
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
-		F8F413E5B9D668161F9DD324 /* OGLESGlass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8C30F51CC5A10BC21F1BBF6 /* OGLESGlass.cpp */; };
-		F868C265AC9CB255630A4C04 /* Balloon.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8DC55FDD271C061BC4D20C6 /* Balloon.pod */; };
-		F80E639778A5DE2FA4B14675 /* scene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8BB9AB63F43C18BB129DE03 /* scene.pod */; };
-		F89AF3A62365ACB581909F04 /* BalloonTex.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81FD8A675403D4B8F4113A4 /* BalloonTex.pvr */; };
-		F804039729EBEA776AF7CBB3 /* BalloonTex2.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83708F86DA63206836EBBE7 /* BalloonTex2.pvr */; };
-		F8883D10E12A93CA0F65D776 /* SkyboxTex.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84776B8196F4CFE7314BC72 /* SkyboxTex.pvr */; };
-		F82C77D2C06DB311609342D9 /* DefaultVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8FB2610C2A3131EC9EE5CB1 /* DefaultVertShader_ES2.vsh */; };
-		F8AB1433A223B7FBB7BC1CAF /* DefaultFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F81443D2A678DD63BA09355A /* DefaultFragShader_ES2.fsh */; };
-		F8706A56292B9877E707A19F /* ParaboloidVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8C4FA9E5FF3EB73F02CD108 /* ParaboloidVertShader_ES2.vsh */; };
-		F8819033FA08417E665B6987 /* SkyboxVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8EAB9DB1A079531ED39EF7D /* SkyboxVertShader_ES2.vsh */; };
-		F8F9C3125F9BC05A3977BD8F /* SkyboxFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F83DAC3710BD0F5C73C3A823 /* SkyboxFragShader_ES2.fsh */; };
-		F81242C58F869C94B0731DCE /* EffectVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F817E2845782728B2914F984 /* EffectVertShader_ES2.vsh */; };
-		F8C43752E831ECADEE1C3369 /* EffectFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8D3DE2439F2BF4657490681 /* EffectFragShader_ES2.fsh */; };
+		F8F413E5B9D668161F9DD324 /* OGLESGlass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F885BB25EED53377174A8DC0 /* OGLESGlass.cpp */; };
+		F868C265AC9CB255630A4C04 /* Balloon.pod in Resources */ = {isa = PBXBuildFile; fileRef = F802BA70A09F43EB43E244D9 /* Balloon.pod */; };
+		F80E639778A5DE2FA4B14675 /* scene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8D31226EDA7FE33522B6749 /* scene.pod */; };
+		F89AF3A62365ACB581909F04 /* BalloonTex.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F889403702FB9636B36EA7BB /* BalloonTex.pvr */; };
+		F804039729EBEA776AF7CBB3 /* BalloonTex2.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F844351F85B347CB91CEA1D1 /* BalloonTex2.pvr */; };
+		F8883D10E12A93CA0F65D776 /* SkyboxTex.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F482D0504F4C7AC16F77AC /* SkyboxTex.pvr */; };
+		F82C77D2C06DB311609342D9 /* DefaultVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B250993E6B5BDE08457B77 /* DefaultVertShader_ES2.vsh */; };
+		F8AB1433A223B7FBB7BC1CAF /* DefaultFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F80FB52784B019DE89CD08D8 /* DefaultFragShader_ES2.fsh */; };
+		F8706A56292B9877E707A19F /* ParaboloidVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8516AA651A4270F435D60A2 /* ParaboloidVertShader_ES2.vsh */; };
+		F8819033FA08417E665B6987 /* SkyboxVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BDD4029EF78CD5EB79215B /* SkyboxVertShader_ES2.vsh */; };
+		F8F9C3125F9BC05A3977BD8F /* SkyboxFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8F4AD2C9215DA74F954056D /* SkyboxFragShader_ES2.fsh */; };
+		F81242C58F869C94B0731DCE /* EffectVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8CF0C0395DB83E8937FD841 /* EffectVertShader_ES2.vsh */; };
+		F8C43752E831ECADEE1C3369 /* EffectFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B17E6C32007EA92D81C046 /* EffectFragShader_ES2.fsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -208,19 +208,19 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F8C30F51CC5A10BC21F1BBF6 /* OGLESGlass.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESGlass.cpp; path = ../../OGLESGlass.cpp; sourceTree = SOURCE_ROOT; };
-		F8DC55FDD271C061BC4D20C6 /* Balloon.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Balloon.pod; path = ../../../ProcessedAssets/Balloon.pod; sourceTree = SOURCE_ROOT; };
-		F8BB9AB63F43C18BB129DE03 /* scene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = scene.pod; path = ../../../ProcessedAssets/scene.pod; sourceTree = SOURCE_ROOT; };
-		F81FD8A675403D4B8F4113A4 /* BalloonTex.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = BalloonTex.pvr; path = ../../../ProcessedAssets/BalloonTex.pvr; sourceTree = SOURCE_ROOT; };
-		F83708F86DA63206836EBBE7 /* BalloonTex2.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = BalloonTex2.pvr; path = ../../../ProcessedAssets/BalloonTex2.pvr; sourceTree = SOURCE_ROOT; };
-		F84776B8196F4CFE7314BC72 /* SkyboxTex.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = SkyboxTex.pvr; path = ../../../ProcessedAssets/SkyboxTex.pvr; sourceTree = SOURCE_ROOT; };
-		F8FB2610C2A3131EC9EE5CB1 /* DefaultVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultVertShader_ES2.vsh; path = ../../DefaultVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
-		F81443D2A678DD63BA09355A /* DefaultFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultFragShader_ES2.fsh; path = ../../DefaultFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
-		F8C4FA9E5FF3EB73F02CD108 /* ParaboloidVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ParaboloidVertShader_ES2.vsh; path = ../../ParaboloidVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
-		F8EAB9DB1A079531ED39EF7D /* SkyboxVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkyboxVertShader_ES2.vsh; path = ../../SkyboxVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
-		F83DAC3710BD0F5C73C3A823 /* SkyboxFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkyboxFragShader_ES2.fsh; path = ../../SkyboxFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
-		F817E2845782728B2914F984 /* EffectVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = EffectVertShader_ES2.vsh; path = ../../EffectVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
-		F8D3DE2439F2BF4657490681 /* EffectFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = EffectFragShader_ES2.fsh; path = ../../EffectFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
+		F885BB25EED53377174A8DC0 /* OGLESGlass.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESGlass.cpp; path = ../../OGLESGlass.cpp; sourceTree = SOURCE_ROOT; };
+		F802BA70A09F43EB43E244D9 /* Balloon.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Balloon.pod; path = ../../../ProcessedAssets/Balloon.pod; sourceTree = SOURCE_ROOT; };
+		F8D31226EDA7FE33522B6749 /* scene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = scene.pod; path = ../../../ProcessedAssets/scene.pod; sourceTree = SOURCE_ROOT; };
+		F889403702FB9636B36EA7BB /* BalloonTex.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = BalloonTex.pvr; path = ../../../ProcessedAssets/BalloonTex.pvr; sourceTree = SOURCE_ROOT; };
+		F844351F85B347CB91CEA1D1 /* BalloonTex2.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = BalloonTex2.pvr; path = ../../../ProcessedAssets/BalloonTex2.pvr; sourceTree = SOURCE_ROOT; };
+		F8F482D0504F4C7AC16F77AC /* SkyboxTex.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = SkyboxTex.pvr; path = ../../../ProcessedAssets/SkyboxTex.pvr; sourceTree = SOURCE_ROOT; };
+		F8B250993E6B5BDE08457B77 /* DefaultVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultVertShader_ES2.vsh; path = ../../DefaultVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
+		F80FB52784B019DE89CD08D8 /* DefaultFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultFragShader_ES2.fsh; path = ../../DefaultFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
+		F8516AA651A4270F435D60A2 /* ParaboloidVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ParaboloidVertShader_ES2.vsh; path = ../../ParaboloidVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
+		F8BDD4029EF78CD5EB79215B /* SkyboxVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkyboxVertShader_ES2.vsh; path = ../../SkyboxVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
+		F8F4AD2C9215DA74F954056D /* SkyboxFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkyboxFragShader_ES2.fsh; path = ../../SkyboxFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
+		F8CF0C0395DB83E8937FD841 /* EffectVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = EffectVertShader_ES2.vsh; path = ../../EffectVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
+		F8B17E6C32007EA92D81C046 /* EffectFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = EffectFragShader_ES2.fsh; path = ../../EffectFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -392,7 +392,7 @@
 		F85E2B260DD21E3F00CA9BEB /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				F8C30F51CC5A10BC21F1BBF6 /* OGLESGlass.cpp */,
+				F885BB25EED53377174A8DC0 /* OGLESGlass.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -400,8 +400,8 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F8DC55FDD271C061BC4D20C6 /* Balloon.pod */,
-				F8BB9AB63F43C18BB129DE03 /* scene.pod */,
+				F802BA70A09F43EB43E244D9 /* Balloon.pod */,
+				F8D31226EDA7FE33522B6749 /* scene.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -416,9 +416,9 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F81FD8A675403D4B8F4113A4 /* BalloonTex.pvr */,
-				F83708F86DA63206836EBBE7 /* BalloonTex2.pvr */,
-				F84776B8196F4CFE7314BC72 /* SkyboxTex.pvr */,
+				F889403702FB9636B36EA7BB /* BalloonTex.pvr */,
+				F844351F85B347CB91CEA1D1 /* BalloonTex2.pvr */,
+				F8F482D0504F4C7AC16F77AC /* SkyboxTex.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -426,13 +426,13 @@
 		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F8FB2610C2A3131EC9EE5CB1 /* DefaultVertShader_ES2.vsh */,
-				F81443D2A678DD63BA09355A /* DefaultFragShader_ES2.fsh */,
-				F8C4FA9E5FF3EB73F02CD108 /* ParaboloidVertShader_ES2.vsh */,
-				F8EAB9DB1A079531ED39EF7D /* SkyboxVertShader_ES2.vsh */,
-				F83DAC3710BD0F5C73C3A823 /* SkyboxFragShader_ES2.fsh */,
-				F817E2845782728B2914F984 /* EffectVertShader_ES2.vsh */,
-				F8D3DE2439F2BF4657490681 /* EffectFragShader_ES2.fsh */,
+				F8B250993E6B5BDE08457B77 /* DefaultVertShader_ES2.vsh */,
+				F80FB52784B019DE89CD08D8 /* DefaultFragShader_ES2.fsh */,
+				F8516AA651A4270F435D60A2 /* ParaboloidVertShader_ES2.vsh */,
+				F8BDD4029EF78CD5EB79215B /* SkyboxVertShader_ES2.vsh */,
+				F8F4AD2C9215DA74F954056D /* SkyboxFragShader_ES2.fsh */,
+				F8CF0C0395DB83E8937FD841 /* EffectVertShader_ES2.vsh */,
+				F8B17E6C32007EA92D81C046 /* EffectFragShader_ES2.fsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -748,7 +748,6 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info.plist;

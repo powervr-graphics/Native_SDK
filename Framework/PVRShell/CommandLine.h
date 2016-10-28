@@ -8,7 +8,7 @@
 #include "PVRShell/ShellIncludes.h"
 
 namespace pvr {
-namespace system {
+namespace platform {
 
 /*!*********************************************************************************************************************
 \brief        This class parses, abstracts, stores and handles command line options passed on application launch.
@@ -63,12 +63,12 @@ public:
 		\brief  Get an argument's value as a float value. Returns false and leaves the value unchanged if the value is not present,
 		allowing very easy use of default arguments.
 		\param[in]	name The command line argument (e.g. "-captureFrames")
-		\param[out]	outValue The value passed with the argument interpreted as a float. If the name was not present, it remains 
+		\param[out]	outValue The value passed with the argument interpreted as a float. If the name was not present, it remains
 		unchanged. If it was not representing a float, it silently returns zero (0.0).
 		\return	True if the argument "name" was present, false otherwise
 		***********************************************************************************************************************/
 		bool getFloatOption(const char* name, float32& outValue) const;
-		
+
 		/*!*********************************************************************************************************************
 		\brief  Get an argument's value as an integer value. Returns false and leaves the value unchanged if the value is not present,
 		allowing very easy use of default arguments.

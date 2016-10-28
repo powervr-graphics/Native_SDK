@@ -1,5 +1,5 @@
 /*!********************************************************************************************
-\File         OGLESBloom.cpp
+\File         OGLESPostProcessing.cpp
 \Title        Bloom
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
@@ -56,7 +56,7 @@ const char SceneFile[]					= "scene.pod";
 /*!********************************************************************************************
 Class implementing the pvr::Shell functions.
 ***********************************************************************************************/
-class OGLESBloom : public pvr::Shell
+class OGLESPostProcessing : public pvr::Shell
 {
 	struct FrameBuffer
 	{
@@ -94,6 +94,7 @@ class OGLESBloom : public pvr::Shell
 		pvr::api::CommandBuffer cmdBuffer;
 		pvr::api::SecondaryCommandBuffer cmdBufferUIRenderer;
 		pvr::api::DescriptorSetLayout texSamplerPipeLayout;
+		pvr::api::DescriptorSetLayout bloomTexSamplerPipeLayout;
 	};
 
 	std::auto_ptr<DeviceResources> deviceResource;
@@ -159,13 +160,13 @@ class OGLESBloom : public pvr::Shell
 	pvr::GraphicsContext context;
 	glm::mat4 world, view, proj;
 public:
-	OGLESBloom() : bloomIntensity(1.f) {}
+	OGLESPostProcessing() : bloomIntensity(1.f) {}
 
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 
 	bool createTextureDescriptor();
 	bool createPipeline();
@@ -187,7 +188,7 @@ public:
 	void drawAxisAlignedQuad(pvr::float32 scaleX, pvr::float32 scaleY, const pvr::int32& scaleMtxUniformLoc,
 	                         pvr::api::CommandBuffer& cmdBuffer);
 
-	void eventMappedInput(pvr::SimplifiedInput::Enum e);
+	void eventMappedInput(pvr::SimplifiedInput e);
 
 	void updateAnimation();
 	void recordCommandBuffer();
@@ -197,7 +198,7 @@ public:
 \return	Return true if no error occurred
 \brief	Loads the textures required for this training course
 ***********************************************************************************************/
-bool OGLESBloom::createTextureDescriptor()
+bool OGLESPostProcessing::createTextureDescriptor()
 {
 	// Load Textures
 	if (!assetManager.getTextureWithCaching(getGraphicsContext(), BaseTexFile, &deviceResource->baseTex, NULL))
@@ -249,7 +250,7 @@ bool OGLESBloom::createTextureDescriptor()
 
 	descCreateParam.setCombinedImageSampler(1, deviceResource->fbo[FboPass::BlurFbo0].renderTex, deviceResource->samplerClamp);
 
-	deviceResource->descSetPostBloom = context->createDescriptorSetOnDefaultPool(deviceResource->texSamplerPipeLayout);
+	deviceResource->descSetPostBloom = context->createDescriptorSetOnDefaultPool(deviceResource->bloomTexSamplerPipeLayout);
 	deviceResource->descSetPostBloom->update(descCreateParam);
 
 	return true;
@@ -259,16 +260,20 @@ bool OGLESBloom::createTextureDescriptor()
 \brief	Loads and compiles the shaders and links the shader programs
 \return	Return true if no error occurred required for this training course
 ***********************************************************************************************/
-bool OGLESBloom::createPipeline()
+bool OGLESPostProcessing::createPipeline()
 {
 	pvr::api::DescriptorSetLayoutCreateParam layoutDesc;
 	layoutDesc.setBinding(0, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
 	deviceResource->texSamplerPipeLayout = context->createDescriptorSetLayout(layoutDesc);
 
+	layoutDesc.setBinding(1, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
+	deviceResource->bloomTexSamplerPipeLayout = context->createDescriptorSetLayout(layoutDesc);
+
 	pvr::api::GraphicsPipelineCreateParam basePipe;
-	basePipe.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState(false));
+	basePipe.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig(false));
 	basePipe.depthStencil.setDepthTestEnable(true);
 	basePipe.depthStencil.setDepthWrite(true);
+	basePipe.rasterizer.setCullFace(pvr::types::Face::Back);
 	pvr::api::VertexAttributeInfo quadAttributes[2] =
 	{
 		pvr::api::VertexAttributeInfo(QuadAttribute::Position, DataType::Float32, 2, 0, "inVertex"),
@@ -338,8 +343,9 @@ bool OGLESBloom::createPipeline()
 	//   Blur Pipeline
 	{
 		GraphicsPipelineCreateParam blurPipeDesc;
-		blurPipeDesc.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState(false));
+		blurPipeDesc.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig(false));
 		blurPipeDesc.depthStencil.setDepthTestEnable(false).setDepthWrite(false);
+		blurPipeDesc.rasterizer.setCullFace(pvr::types::Face::Back);
 
 		shaderVersioning.populateValidVersions(BlurVertSrcFile, *this);
 		blurPipeDesc.vertexShader.setShader(context->createShader(*shaderVersioning.getBestStreamForApi(context->getApiType()), ShaderType::VertexShader));
@@ -367,8 +373,8 @@ bool OGLESBloom::createPipeline()
 	// create Post-Bloom Pipeline
 	{
 		GraphicsPipelineCreateParam postbloomPipeDesc;
-		pipelineCreation::ColorBlendAttachmentState attachmentState(false, BlendFactor::One, BlendFactor::One, BlendOp::Add);
-		postbloomPipeDesc.colorBlend.addAttachmentState(attachmentState);
+		pvr::types::BlendingConfig attachmentState(false, BlendFactor::One, BlendFactor::One, BlendOp::Add);
+		postbloomPipeDesc.colorBlend.setAttachmentState(0, attachmentState);
 		postbloomPipeDesc.rasterizer.setCullFace(Face::Back);
 		postbloomPipeDesc.depthStencil.setDepthTestEnable(false).setDepthWrite(false);
 
@@ -381,7 +387,7 @@ bool OGLESBloom::createPipeline()
 		postbloomPipeDesc.vertexInput.setInputBinding(0, 0, StepRate::Vertex).addVertexAttribute(0, quadAttributes[0]).addVertexAttribute(0, quadAttributes[1]);
 
 		pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
-		pipeLayoutInfo.addDescSetLayout(deviceResource->texSamplerPipeLayout);
+		pipeLayoutInfo.addDescSetLayout(deviceResource->bloomTexSamplerPipeLayout);
 		postbloomPipeDesc.pipelineLayout = context->createPipelineLayout(pipeLayoutInfo);
 		deviceResource->postBloomPipe = context->createGraphicsPipeline(postbloomPipeDesc);
 		postBloomProgUniform.mvpMtx = deviceResource->postBloomPipe->getUniformLocation("MVPMatrix");
@@ -421,7 +427,7 @@ bool OGLESBloom::createPipeline()
 /*!****************************************************************************
 \brief	Loads the mesh data required for this training course into vertex buffer objects
 ******************************************************************************/
-bool OGLESBloom::loadVbos()
+bool OGLESPostProcessing::loadVbos()
 {
 
 	// Load vertex data of all meshes in the scene into VBOs
@@ -450,10 +456,10 @@ bool OGLESBloom::loadVbos()
 
 	pvr::uint16 indices[] = { 1, 2, 0, 0, 2, 3 };
 	auto i  = sizeof(afVertexData);
-	deviceResource->quadVbo = context->createBuffer(sizeof(afVertexData), BufferBindingUse::VertexBuffer);
+	deviceResource->quadVbo = context->createBuffer(sizeof(afVertexData), BufferBindingUse::VertexBuffer, true);
 	deviceResource->quadVbo->update(afVertexData, 0, sizeof(afVertexData));
 
-	deviceResource->quadIbo = context->createBuffer(sizeof(indices), BufferBindingUse::IndexBuffer);
+	deviceResource->quadIbo = context->createBuffer(sizeof(indices), BufferBindingUse::IndexBuffer, true);
 
 	deviceResource->quadIbo->update(indices, 0, sizeof(indices));
 	std::string apiError;
@@ -473,7 +479,7 @@ bool OGLESBloom::loadVbos()
 		loading meshes, etc.)
 		If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************/
-pvr::Result::Enum OGLESBloom::initApplication()
+pvr::Result OGLESPostProcessing::initApplication()
 {
 	// Apply bloom per default
 	applyBloom = true;
@@ -506,7 +512,7 @@ pvr::Result::Enum OGLESBloom::initApplication()
 \brief	Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
 quitApplication() will not be called every time the rendering context is lost, only before application exit.
 ***********************************************************************************************/
-pvr::Result::Enum OGLESBloom::quitApplication()
+pvr::Result OGLESPostProcessing::quitApplication()
 {
 	//Instructs the Asset Manager to free all resources
 	assetManager.releaseAll();
@@ -519,7 +525,7 @@ pvr::Result::Enum OGLESBloom::quitApplication()
 		in the rendering context. Used to initialize variables that are dependent on the rendering
 		context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************/
-pvr::Result::Enum OGLESBloom::initView()
+pvr::Result OGLESPostProcessing::initView()
 {
 	context = getGraphicsContext();
 	deviceResource.reset(new DeviceResources());
@@ -540,18 +546,18 @@ pvr::Result::Enum OGLESBloom::initView()
 	//	Load textures
 	if (!createTextureDescriptor()) {  return pvr::Result::NotInitialized; }
 
-	if (uiRenderer.init(getGraphicsContext(), deviceResource->fbo->fbo->getRenderPass(), 0) != pvr::Result::Success)
+	if (uiRenderer.init(deviceResource->fbo->fbo->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		setExitMessage("Error: Failed to initialize the UIRenderer\n");
 		return pvr::Result::NotInitialized;
 	}
 
-	uiRenderer.getDefaultTitle()->setText("Bloom");
+	uiRenderer.getDefaultTitle()->setText("PostProcessing");
 	uiRenderer.getDefaultTitle()->commitUpdates();
 	uiRenderer.getDefaultControls()->setText(
-	    "Left / right: Rendering mode\n"
-	    "Up / down: Bloom intensity\n"
-	    "Action:     Pause\n"
+	  "Left / right: Rendering mode\n"
+	  "Up / down: Bloom intensity\n"
+	  "Action:     Pause\n"
 	);
 	uiRenderer.getDefaultControls()->commitUpdates();
 	updateSubtitleText();
@@ -569,7 +575,7 @@ pvr::Result::Enum OGLESBloom::initView()
 	else
 	{
 		proj = glm::perspectiveFov<glm::float32>(fov, (float)getWidth(), (float)getHeight(),
-		        scene->getCamera(0).getNear(), scene->getCamera(0).getFar());
+		       scene->getCamera(0).getNear(), scene->getCamera(0).getFar());
 	}
 	updateSubtitleText();
 	return pvr::Result::Success;
@@ -579,7 +585,7 @@ pvr::Result::Enum OGLESBloom::initView()
 \brief Create render fbo for rendering the scene
 \return	Return true if success
 ***********************************************************************************************/
-bool OGLESBloom::createRenderFbo()
+bool OGLESPostProcessing::createRenderFbo()
 {
 	pvr::api::ImageStorageFormat depthTexFormat(pvr::PixelFormat::Depth16, 1, ColorSpace::lRGB, pvr::VariableType::Float);
 	pvr::api::ImageStorageFormat colorTexFormat(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm);
@@ -602,16 +608,17 @@ bool OGLESBloom::createRenderFbo()
 	pvr::api::RenderPassDepthStencilInfo dsInfo(depthTexFormat, LoadOp::Clear, StoreOp::Store);
 
 	pvr::api::SubPass subPass;
-	subPass.setColorAttachment(0);// use the first color attachment
-	renderPassInfo.addSubPass(0, subPass);
+	subPass.setColorAttachment(0, 0); // use the first color attachment
+	renderPassInfo.setSubPass(0, subPass);
 	renderPassInfo.setDepthStencilInfo(dsInfo);
-	renderPassInfo.addColorInfo(0, colorInfo);
+	renderPassInfo.setColorInfo(0, colorInfo);
 
 	pvr::api::FboCreateParam fboInfo;
 	fboInfo.setRenderPass(context->createRenderPass(renderPassInfo));
 
-	fboInfo.addColor(0, colorTexView);
+	fboInfo.setColor(0, colorTexView);
 	fboInfo.setDepthStencil(depthTexView);
+	fboInfo.setDimension(getWidth(), getHeight());
 	deviceResource->fbo[FboPass::RenderScene].fbo = context->createFbo(fboInfo);
 	deviceResource->fbo[FboPass::RenderScene].renderTex = colorTexView;
 	deviceResource->fbo[FboPass::RenderScene].depthTex = depthTexView;
@@ -628,7 +635,7 @@ bool OGLESBloom::createRenderFbo()
 \brief	Create the blur fbo
 \return	Return  true on success
 ***********************************************************************************************/
-bool OGLESBloom::createBlurFbo()
+bool OGLESPostProcessing::createBlurFbo()
 {
 	pvr::api::ImageStorageFormat colorTexFormat(pvr::PixelFormat::RGB_888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm);
 
@@ -636,11 +643,10 @@ bool OGLESBloom::createBlurFbo()
 	pvr::api::RenderPassCreateParam blurRenderPassDesc;
 	pvr::api::RenderPassColorInfo colorInfo(colorTexFormat, LoadOp::Clear);
 	pvr::api::SubPass subPass;
-	subPass.setColorAttachment(0);// use the first color attachment
-	blurRenderPassDesc.addColorInfo(0, colorInfo);
-	blurRenderPassDesc.addSubPass(0, subPass);
+	subPass.setColorAttachment(0, 0); // use the first color attachment
+	blurRenderPassDesc.setColorInfo(0, colorInfo);
+	blurRenderPassDesc.setSubPass(0, subPass);
 	pvr::api::RenderPass blurRenderPass = context->createRenderPass(blurRenderPassDesc);
-
 	for (pvr::uint32 i = 0; i < FboPass::NumBlurFbo; i++)
 	{
 		pvr::api::TextureStore tex = context->createTexture();
@@ -648,8 +654,9 @@ bool OGLESBloom::createBlurFbo()
 		deviceResource->fbo[FboPass::BlurFbo0 + i].renderTex = context->createTextureView(tex);
 
 		pvr::api::FboCreateParam blurFboDesc;
+		blurFboDesc.setDimension(TexSize, TexSize);
 		blurFboDesc.setRenderPass(blurRenderPass);
-		blurFboDesc.addColor(0, deviceResource->fbo[FboPass::BlurFbo0 + i].renderTex);
+		blurFboDesc.setColor(0, deviceResource->fbo[FboPass::BlurFbo0 + i].renderTex);
 		// The first render target needs a depth buffer, as we have to draw "blooming" 3d objects into it
 		deviceResource->fbo[FboPass::BlurFbo0 + i].fbo = context->createFbo(blurFboDesc);
 		if (!deviceResource->fbo[FboPass::BlurFbo0 + i].fbo.isValid())
@@ -667,7 +674,7 @@ bool OGLESBloom::createBlurFbo()
 \brief	Code in releaseView() will be called by pvr::Shell when the application quits or before
 a change in the rendering context.
 ***********************************************************************************************/
-pvr::Result::Enum OGLESBloom::releaseView()
+pvr::Result OGLESPostProcessing::releaseView()
 {
 	uiRenderer.release();
 	scene.reset();
@@ -679,7 +686,7 @@ pvr::Result::Enum OGLESBloom::releaseView()
 /*!*********************************************************************************************************************
 \brief Update the animation
 ***********************************************************************************************************************/
-void OGLESBloom::updateAnimation()
+void OGLESPostProcessing::updateAnimation()
 {
 	// Calculate the mask and light rotation based on the passed time
 	pvr::float32 const twoPi = glm::pi<pvr::float32>() * 2.f;
@@ -698,7 +705,7 @@ void OGLESBloom::updateAnimation()
 	fov = scene->getCamera(0).getFOV(0);
 
 	glm::mat4x4 viewProj = proj * view;
-	// Simple rotating directional light in model-space);
+	// Simple rotating directional light in model-space)
 	passDrawMesh.lightPos = glm::vec3(glm::normalize(glm::inverse(world) * LightPos));
 	passDrawMesh.mvInv = glm::inverse(view * world * scene->getWorldMatrix(scene->getNode(0).getObjectId()));
 	passDrawMesh.mvp = viewProj * world * scene->getWorldMatrix(scene->getNode(0).getObjectId());
@@ -708,7 +715,7 @@ void OGLESBloom::updateAnimation()
 \return	Return Result::Suceess if no error occurred
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************/
-pvr::Result::Enum OGLESBloom::renderFrame()
+pvr::Result OGLESPostProcessing::renderFrame()
 {
 	updateAnimation();
 	deviceResource->cmdBuffer->submit();
@@ -718,7 +725,7 @@ pvr::Result::Enum OGLESBloom::renderFrame()
 /*!********************************************************************************************
 \brief	update the subtitle sprite
 ***********************************************************************************************/
-void OGLESBloom::updateSubtitleText()
+void OGLESPostProcessing::updateSubtitleText()
 {
 	if (applyBloom)
 	{
@@ -749,7 +756,7 @@ void OGLESBloom::updateSubtitleText()
 /*!********************************************************************************************
 \brief	Handles user input and updates live variables accordingly.
 ***********************************************************************************************/
-void OGLESBloom::eventMappedInput(pvr::SimplifiedInput::Enum e)
+void OGLESPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 {
 	static int mode = 0;
 	//Object+Bloom, object, bloom
@@ -795,7 +802,7 @@ void OGLESBloom::eventMappedInput(pvr::SimplifiedInput::Enum e)
 \param	nodeIndex	Node index of the mesh to draw
 \brief	Draws a pvr::Model::Mesh after the model view matrix has been set and the material prepared.
 ***********************************************************************************************/
-void OGLESBloom::drawMesh(int nodeIndex, pvr::api::CommandBuffer& cmdBuffer)
+void OGLESPostProcessing::drawMesh(int nodeIndex, pvr::api::CommandBuffer& cmdBuffer)
 {
 	int meshIndex = scene->getNode(nodeIndex).getObjectId();
 	const pvr::assets::Model::Mesh& mesh = scene->getMesh(meshIndex);
@@ -819,8 +826,8 @@ void OGLESBloom::drawMesh(int nodeIndex, pvr::api::CommandBuffer& cmdBuffer)
 /*!********************************************************************************************
 \brief	Add the draw commands for a full screen quad to a commandbuffer
 ***********************************************************************************************/
-void OGLESBloom::drawAxisAlignedQuad(pvr::float32 scaleX, pvr::float32 scaleY, const pvr::int32& matrixUniformLoc,
-                                     pvr::api::CommandBuffer& cmdBuffer)
+void OGLESPostProcessing::drawAxisAlignedQuad(pvr::float32 scaleX, pvr::float32 scaleY, const pvr::int32& matrixUniformLoc,
+    pvr::api::CommandBuffer& cmdBuffer)
 {
 	// construct the scale matrix
 	glm::mat4 scaleMtx = glm::scale(glm::vec3(scaleX, scaleY, 1.0f));
@@ -833,20 +840,20 @@ void OGLESBloom::drawAxisAlignedQuad(pvr::float32 scaleX, pvr::float32 scaleY, c
 /*!********************************************************************************************
 \brief	Record the command buffer
 ***********************************************************************************************/
-void OGLESBloom::recordCommandBuffer()
+void OGLESPostProcessing::recordCommandBuffer()
 {
 	// draw the scene
 	{
 		deviceResource->cmdBuffer->beginRecording();
 		// Simple rotating directional light in model-space
 		deviceResource->cmdBuffer->beginRenderPass(deviceResource->fbo[FboPass::RenderScene].fbo,
-		        deviceResource->fbo[FboPass::RenderScene].renderArea, true, glm::vec4(0.00, 0.70, 0.67, 0.f));
+		    deviceResource->fbo[FboPass::RenderScene].renderArea, true, glm::vec4(0.00, 0.70, 0.67, 0.f));
 
 		// Use simple shader program to render the mask
 		deviceResource->cmdBuffer->bindPipeline(deviceResource->basePipe);
 		// bind the albedo texture
 		deviceResource->cmdBuffer->bindDescriptorSet(
-		    deviceResource->basePipe->getPipelineLayout(), 0, deviceResource->descSetRenderPass, 0);
+		  deviceResource->basePipe->getPipelineLayout(), 0, deviceResource->descSetRenderPass, 0);
 
 		deviceResource->cmdBuffer->setUniform<pvr::float32>(basicProgUniform.shininess, .6f);
 		deviceResource->cmdBuffer->setUniformPtr<glm::vec3>(basicProgUniform.lightDirLoc, 1, &passDrawMesh.lightPos);
@@ -861,11 +868,11 @@ void OGLESBloom::recordCommandBuffer()
 	{
 		// Draw scene with bloom
 		deviceResource->cmdBuffer->beginRenderPass(deviceResource->fbo[FboPass::OnScreen].fbo,
-		        deviceResource->fbo[FboPass::OnScreen].renderArea, true, glm::vec4(0.0f));
+		    deviceResource->fbo[FboPass::OnScreen].renderArea, true, glm::vec4(0.0f));
 
 		// bind the blurred texture
 		deviceResource->cmdBuffer->bindDescriptorSet(
-		    deviceResource->postBloomPipe->getPipelineLayout(), 0, deviceResource->descSetFilterPass, 0);
+		  deviceResource->postBloomPipe->getPipelineLayout(), 0, deviceResource->descSetFilterPass, 0);
 
 		// The following section will draw a quad on the screen where the post processing pixel
 		// shader shall be executed.Try to minimize the area by only drawing where the actual
@@ -881,12 +888,12 @@ void OGLESBloom::recordCommandBuffer()
 		{
 			// filter the bright portion of the image
 			deviceResource->cmdBuffer->beginRenderPass(deviceResource->fbo[FboPass::BlurFbo0].fbo,
-			        deviceResource->fbo[FboPass::BlurFbo0].renderArea, true, glm::vec4(0.0f));
+			    deviceResource->fbo[FboPass::BlurFbo0].renderArea, true, glm::vec4(0.0f));
 			deviceResource->cmdBuffer->bindPipeline(deviceResource->preBloomPipe);
 
 			// bind the render texture
 			deviceResource->cmdBuffer->bindDescriptorSet(
-			    deviceResource->preBloomPipe->getPipelineLayout(), 0, deviceResource->descSetFilterPass, 0);
+			  deviceResource->preBloomPipe->getPipelineLayout(), 0, deviceResource->descSetFilterPass, 0);
 
 			deviceResource->cmdBuffer->setUniformPtr<pvr::float32>(preBloomProgUniform.bloomIntensity, 1, &bloomIntensity);
 			drawAxisAlignedQuad(1, 1, preBloomProgUniform.mvpLoc, deviceResource->cmdBuffer);
@@ -897,7 +904,7 @@ void OGLESBloom::recordCommandBuffer()
 			{
 				// Horizontal blur
 				deviceResource->cmdBuffer->beginRenderPass(deviceResource->fbo[FboPass::BlurFbo1].fbo, deviceResource->fbo[FboPass::BlurFbo1].renderArea,
-				        true, glm::vec4(0.0f));
+				    true, glm::vec4(0.0f));
 
 				deviceResource->cmdBuffer->bindPipeline(deviceResource->blurPipe);
 				deviceResource->cmdBuffer->bindDescriptorSet(deviceResource->blurPipe->getPipelineLayout(), 0, deviceResource->descSetBlurPass[1], 0);
@@ -921,7 +928,7 @@ void OGLESBloom::recordCommandBuffer()
 
 			// Draw scene with bloom
 			deviceResource->cmdBuffer->beginRenderPass(deviceResource->fbo[FboPass::OnScreen].fbo,
-			        deviceResource->fbo[FboPass::OnScreen].renderArea, true, glm::vec4(0.f, 0.0f, 0.0f, 0.0f));
+			    deviceResource->fbo[FboPass::OnScreen].renderArea, true, glm::vec4(0.f, 0.0f, 0.0f, 0.0f));
 
 			// bind the blurred texture
 			deviceResource->cmdBuffer->bindDescriptorSet(deviceResource->postBloomPipe->getPipelineLayout(), 0, deviceResource->descSetPostBloom, 0);
@@ -970,4 +977,4 @@ void OGLESBloom::recordCommandBuffer()
 \brief	This function must be implemented by the user of the shell.
 The user should return its pvr::Shell object defining the behaviour of the application.
 ***********************************************************************************************/
-std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new OGLESBloom()); }
+std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new OGLESPostProcessing()); }

@@ -5,9 +5,6 @@
 \brief         Contains implementation of functions required for the EGL wrapper library (namespace vkglue::).
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
-
-//TODO: This may not be required.
-
 #include "PVRPlatformGlue/Vulkan/NativeLibraryVulkanGlue.h"
 #include "PVRCore/NativeLibrary.h"
 #include <algorithm>
@@ -18,7 +15,7 @@ static const char* vkglueLibraryPath = "vulkan-1.dll";
 #elif defined(TARGET_OS_MAC)
 static const char* vkglueLibraryPath = "libvulkan.dylib";
 #else
-static const char* vkglueLibraryPath = "libvulkan.so";
+static const char* vkglueLibraryPath = "libvulkan.so.1;libvulkan.so";
 #endif
 
 #define PVR_VULKAN_FUNCTION_POINTER_DEFINITION(function_name) PFN_vk##function_name vkglue::function_name;
@@ -77,8 +74,15 @@ PVR_VULKAN_FUNCTION_POINTER_DEFINITION(CreateCommandPool);
 PVR_VULKAN_FUNCTION_POINTER_DEFINITION(DestroyCommandPool);
 PVR_VULKAN_FUNCTION_POINTER_DEFINITION(GetPhysicalDeviceProperties);
 PVR_VULKAN_FUNCTION_POINTER_DEFINITION(DestroySurfaceKHR);
+PVR_VULKAN_FUNCTION_POINTER_DEFINITION(GetPhysicalDeviceImageFormatProperties);
 
-#ifdef ANDROID
+#ifdef DEBUG
+PVR_VULKAN_FUNCTION_POINTER_DEFINITION(CreateDebugReportCallbackEXT);
+PVR_VULKAN_FUNCTION_POINTER_DEFINITION(DebugReportMessageEXT);
+PVR_VULKAN_FUNCTION_POINTER_DEFINITION(DestroyDebugReportCallbackEXT);
+#endif
+
+#if defined(ANDROID)
 PVR_VULKAN_FUNCTION_POINTER_DEFINITION(CreateAndroidSurfaceKHR)
 
 #elif defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -110,6 +114,11 @@ bool vkglue::initVulkanGlue()
 	CreateInstance = (PFN_vkCreateInstance)vkglueLib().getFunction("vkCreateInstance");
 	DestroyInstance = (PFN_vkDestroyInstance)vkglueLib().getFunction("vkDestroyInstance");
 
+	if (!GetInstanceProcAddr || !EnumerateInstanceExtensionProperties || !EnumerateInstanceLayerProperties || !CreateInstance || !DestroyInstance)
+	{
+		return false;
+	}
+
 	enumerateExtensions();
 	enumerateLayers();
 	return true;
@@ -132,6 +141,14 @@ bool vkglue::initVulkanGlueInstance(VkInstance instance)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetPhysicalDeviceFormatProperties);
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetPhysicalDeviceProperties);
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, DestroySurfaceKHR);
+	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetPhysicalDeviceImageFormatProperties);
+
+#ifdef DEBUG
+	PVR_VULKAN_GET_INSTANCE_POINTER(instance, CreateDebugReportCallbackEXT);
+	PVR_VULKAN_GET_INSTANCE_POINTER(instance, DebugReportMessageEXT);
+	PVR_VULKAN_GET_INSTANCE_POINTER(instance, DestroyDebugReportCallbackEXT);
+#endif
+
 #ifdef ANDROID
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, CreateAndroidSurfaceKHR);
 #elif defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -140,9 +157,9 @@ bool vkglue::initVulkanGlueInstance(VkInstance instance)
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, CreateXlibSurfaceKHR);
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, CreateXcbSurfaceKHR);
 #else
-	PVR_VULKAN_GET_INSTANCE_POINTER(NULL, GetPhysicalDeviceDisplayPropertiesKHR);//
-	PVR_VULKAN_GET_INSTANCE_POINTER(NULL, GetDisplayModePropertiesKHR);//
-	PVR_VULKAN_GET_INSTANCE_POINTER(NULL, CreateDisplayPlaneSurfaceKHR);//
+	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetPhysicalDeviceDisplayPropertiesKHR);
+	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetDisplayModePropertiesKHR);
+	PVR_VULKAN_GET_INSTANCE_POINTER(instance, CreateDisplayPlaneSurfaceKHR);
 #endif
 	return true;
 }
@@ -167,18 +184,19 @@ bool vkglue::initVulkanGlueDevice(VkDevice device)
 	PVR_VULKAN_GET_DEVICE_POINTER(device, AllocateCommandBuffers);
 	PVR_VULKAN_GET_DEVICE_POINTER(device, FreeCommandBuffers);
 	PVR_VULKAN_GET_DEVICE_POINTER(device, QueueSubmit);
-	PVR_VULKAN_GET_DEVICE_POINTER(device, CreateSwapchainKHR);//
-	PVR_VULKAN_GET_DEVICE_POINTER(device, GetSwapchainImagesKHR);//
-	PVR_VULKAN_GET_DEVICE_POINTER(device, AcquireNextImageKHR);//
-	PVR_VULKAN_GET_DEVICE_POINTER(device, QueuePresentKHR);//
-	PVR_VULKAN_GET_DEVICE_POINTER(device, DestroySwapchainKHR);//
-	PVR_VULKAN_GET_DEVICE_POINTER(device, DestroyImageView);//
-	PVR_VULKAN_GET_DEVICE_POINTER(device, DestroyDevice);//
-	PVR_VULKAN_GET_DEVICE_POINTER(device, CreateImageView);//
+	PVR_VULKAN_GET_DEVICE_POINTER(device, CreateSwapchainKHR);
+	PVR_VULKAN_GET_DEVICE_POINTER(device, GetSwapchainImagesKHR);
+	PVR_VULKAN_GET_DEVICE_POINTER(device, AcquireNextImageKHR);
+	PVR_VULKAN_GET_DEVICE_POINTER(device, QueuePresentKHR);
+	PVR_VULKAN_GET_DEVICE_POINTER(device, DestroySwapchainKHR);
+	PVR_VULKAN_GET_DEVICE_POINTER(device, DestroyImageView);
+	PVR_VULKAN_GET_DEVICE_POINTER(device, DestroyDevice);
+	PVR_VULKAN_GET_DEVICE_POINTER(device, CreateImageView);
 	PVR_VULKAN_GET_DEVICE_POINTER(device, GetDeviceQueue);
 	PVR_VULKAN_GET_DEVICE_POINTER(device, CreateFence);
 	PVR_VULKAN_GET_DEVICE_POINTER(device, CreateCommandPool);
 	PVR_VULKAN_GET_DEVICE_POINTER(device, DestroyCommandPool);
+
 	vkglue::CreateSemaphore = (PFN_vkCreateSemaphore)GetDeviceProcAddr(device, "vkCreateSemaphore");
 	return true;
 }

@@ -20,7 +20,7 @@
 @property (assign) CGFloat screenScale;
 @end
 namespace pvr{
-namespace system{
+namespace platform{
 struct InternalOS
 {
 	AppWindow* window;
@@ -33,10 +33,8 @@ struct InternalOS
 }
 pvr::int16 g_cursorX, g_cursorY;
 
-namespace pvr
-{
-namespace system
-{
+namespace pvr{
+namespace platform{
 // Setup the capabilities
 const ShellOS::Capabilities ShellOS::m_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
 
@@ -55,7 +53,7 @@ void ShellOS::updatePointingDeviceLocation()
     m_shell->updatePointerPosition(PointerLocation(g_cursorX, g_cursorY));
 }
 
-Result::Enum ShellOS::init(DisplayAttributes &data)
+Result ShellOS::init(DisplayAttributes &data)
 {
 	if(!m_OSImplementation)
 		return Result::OutOfMemory;
@@ -75,7 +73,7 @@ Result::Enum ShellOS::init(DisplayAttributes &data)
 	return Result::Success;
 }
 
-Result::Enum ShellOS::initializeWindow(DisplayAttributes &data)
+Result ShellOS::initializeWindow(DisplayAttributes &data)
 {
 	CGFloat scale = 1.0;
 	
@@ -134,7 +132,7 @@ OSWindow ShellOS::getWindow() const
 	return (__bridge OSWindow)m_OSImplementation->window;
 }
 
-Result::Enum ShellOS::handleOSEvents()
+Result ShellOS::handleOSEvents()
 {
 	// Nothing to do
 	return Result::Success;
@@ -145,7 +143,7 @@ bool ShellOS::isInitialized()
 	return m_OSImplementation && m_OSImplementation->window;
 }
 
-Result::Enum ShellOS::popUpMessage(const tchar * const title, const tchar * const message, ...) const
+Result ShellOS::popUpMessage(const tchar * const title, const tchar * const message, ...) const
 {
     if(title && message)
     {

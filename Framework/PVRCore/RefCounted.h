@@ -6,8 +6,11 @@
               make it more suitable for the PowerVR Framework.
 ***********************************************************************************************************************/
 #pragma once
-#include "PVRCore/CoreIncludes.h"
-
+#include "PVRCore/Types.h"
+#include "PVRCore/Log.h"
+#include <thread>
+#include <mutex>
+#include <atomic>
 #include <memory>
 #include <type_traits>
 
@@ -19,12 +22,80 @@ namespace pvr {
 ***********************************************************************************************************************/
 struct IRefCountEntry
 {
-	int32 count; //!< Number of total references for this object
-	int32 weakcount; //!< Number of weak references for this object
+private:
+	mutable volatile std::atomic<int32_t> count_; //!< Number of total references for this object
+	mutable volatile std::atomic<int32_t> weakcount_; //!< Number of weak references for this object
+	std::mutex mylock;
+public:
+
+	int32_t count() { return count_; } //!< Number of total references for this object
+	int32_t weakcount() { return weakcount_; } //!< Number of weak references for this object
+
+	void increment_count()
+	{
+		if (std::atomic_fetch_add(&count_, 1) == 0)
+		{
+			std::lock_guard<std::mutex> lockguard(mylock);
+			if (count_.load() == 0)
+			{
+				assertion(false, "RefCounted::increment_count:  Tried to increment the count of an object but it had already been destroyed!");
+			}
+		}
+	} //!< Number of total references for this object
+	void increment_weakcount()
+	{
+		if (std::atomic_fetch_add(&weakcount_, 1) == 0)
+		{
+			std::lock_guard<std::mutex> lockguard(mylock);
+			if (weakcount_.load() == 0)
+			{
+				assertion(false, "RefCounted::increment_weakcount:  Tried to increment the count of an object but it had already been destroyed!");
+			}
+		}
+	}  //!< Number of weak references for this object
+
+	void decrement_count()
+	{
+		bool deleter = false; //DO NOT DESTROY THE OBJECT WHILE THE LOCK IS HELD!
+		int32_t cnt = 0;
+		{
+			if ((cnt = std::atomic_fetch_add(&count_, -1)) == 1)
+			{
+				std::lock_guard<std::mutex> lockguard(mylock);
+				destroyObject();
+				if (weakcount() == 0)
+				{
+					deleter = true;
+				}
+			}
+		}
+		if (deleter)
+		{
+			deleteEntry();
+		}
+	}   //!< Number of total references for this object
+	void decrement_weakcount()
+	{
+		bool deleter = false; //DO NOT DESTROY THE OBJECT WHILE THE MUTEX IS USED!
+		if (((std::atomic_fetch_add(&weakcount_, -1)) == 1))
+		{
+			std::lock_guard<std::mutex> lockguard(mylock);
+			if (count_.load() == 0)
+			{
+				deleter = true;
+			}
+		}
+		if (deleter)
+		{
+			deleteEntry();
+		}
+	}   //!< Number of weak references for this object
+
+
 	virtual void deleteEntry() = 0; //!< Will be overriden with the actual code required to delete the bookkeeping entry
 	virtual void destroyObject() = 0; //!< Will be overriden with the actual code required to delete the object
 	virtual ~IRefCountEntry() {} //!< Will be overriden with the actual code required to delete the object
-	IRefCountEntry() : count(1), weakcount(0) {}
+	IRefCountEntry() : count_(1), weakcount_(0) {}
 };
 
 /*!*********************************************************************************************************************
@@ -34,8 +105,8 @@ struct IRefCountEntry
 \description  This class is used to store the generated object on the same block of memory as the reference counts bookkeeping
               giving much better memory coherency. It is created when the "construct" method is used to create a new object inside
               a smart pointer. This is a much better solution than creating the object yourself and then just wrapping the
-			  pointer you have with a RefCountEntry, as if you use the intrusive class you save one level of indirection.
-			  This class is used when the user does RefCountEntry<MyClass> entry; entry.construct(...);
+        pointer you have with a RefCountEntry, as if you use the intrusive class you save one level of indirection.
+        This class is used when the user does RefCountEntry<MyClass> entry; entry.construct(...);
 ***********************************************************************************************************************/
 template<typename MyClass_>
 struct RefCountEntryIntrusive : public IRefCountEntry
@@ -147,8 +218,8 @@ struct RefCountEntryIntrusive : public IRefCountEntry
 	/*!*****************************************************************************************************************
 	\brief       Destroys the RefcountEntryIntrusive object (entry and counters). Called when all references
 	             (count + weak count) are  0. It assumes the object has already been destroyed - so it will NOT destroy
-				 the object properly - only free its memory! destroyObject must be explicitly called otherwise
-				 undefined behaviour occurs by freeing the memory of a live object!
+	       the object properly - only free its memory! destroyObject must be explicitly called otherwise
+	       undefined behaviour occurs by freeing the memory of a live object!
 	******************************************************************************************************************/
 	void deleteEntry()
 	{
@@ -171,9 +242,9 @@ struct RefCountEntryIntrusive : public IRefCountEntry
 \tparam       MyClass_ The type of the pointer kept.
 \description  This class is used to store a user-provided pointer with the reference counts bookkeeping. This class is used when
               instead of calling "RefCountedResource::construct", the user provides a pointer to his object directly. This is
-			  worse than construct because it has worse memory coherency (the object lives "far" from the refcount information).
-			  The best solution is to use "construct", which creates a new object on a RefCountEntryIntrusive.
-			  On destruction, calls "delete" on the pointer.
+        worse than construct because it has worse memory coherency (the object lives "far" from the refcount information).
+        The best solution is to use "construct", which creates a new object on a RefCountEntryIntrusive.
+        On destruction, calls "delete" on the pointer.
 ***********************************************************************************************************************/
 template<typename MyClass_>
 struct RefCountEntry : public IRefCountEntry
@@ -202,25 +273,58 @@ protected:
 	}
 
 public:
-	MyClass_& operator*() { return *pointee; }
+	MyClass_& operator*()
+	{
+		debug_assertion(pointee != 0, "Dereferencing NULL pointer");
+		return *pointee;
+	}
 	const MyClass_& operator*() const
 	{
+		debug_assertion(pointee != 0, "Dereferencing NULL pointer");
 		return *pointee;
 	}
 
 	MyClass_* operator->()
 	{
-		assertion(pointee != 0 ,  "Dereferencing NULL pointer");
+		debug_assertion(pointee != 0, "Dereferencing NULL pointer");
 		return pointee;
 	}
 	const MyClass_* operator->() const
 	{
-		assertion(pointee != 0 ,  "Dereferencing NULL pointer");
+		debug_assertion(pointee != 0, "Dereferencing NULL pointer");
 		return pointee;
 	}
 
-};
+	/*!*********************************************************************************************************************
+	\brief       Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator==(const Dereferenceable& rhs) const { return pointee == rhs.pointee; }
 
+	/*!*********************************************************************************************************************
+	\brief       Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator!=(const Dereferenceable& rhs) const { return pointee != rhs.pointee; }
+
+	/*!*********************************************************************************************************************
+	\brief       Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator<(const Dereferenceable& rhs) const { return pointee < rhs.pointee; }
+
+	/*!*********************************************************************************************************************
+	\brief       Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator>(const Dereferenceable& rhs) const { return pointee > rhs.pointee; }
+
+	/*!*********************************************************************************************************************
+	\brief       Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator<=(const Dereferenceable& rhs) const { return pointee <= rhs.pointee; }
+
+	/*!*********************************************************************************************************************
+	\brief       Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator>=(const Dereferenceable& rhs) const { return pointee >= rhs.pointee; }
+};
 //!\cond NO_DOXYGEN
 template<>
 class Dereferenceable<void>
@@ -228,6 +332,36 @@ class Dereferenceable<void>
 protected:
 	Dereferenceable(void* pointee) : pointee(pointee) {}
 	void* pointee;
+public:
+	/*!*********************************************************************************************************************
+	\brief       Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator==(const Dereferenceable& rhs) const { return pointee == rhs.pointee; }
+
+	/*!*********************************************************************************************************************
+	\brief       Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator!=(const Dereferenceable& rhs) const { return pointee != rhs.pointee; }
+
+	/*!*********************************************************************************************************************
+	\brief       Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator<(const Dereferenceable& rhs) const { return pointee < rhs.pointee; }
+
+	/*!*********************************************************************************************************************
+	\brief       Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator>(const Dereferenceable& rhs) const { return pointee > rhs.pointee; }
+
+	/*!*********************************************************************************************************************
+	\brief       Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator<=(const Dereferenceable& rhs) const { return pointee <= rhs.pointee; }
+
+	/*!*********************************************************************************************************************
+	\brief       Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	***********************************************************************************************************************/
+	bool operator>=(const Dereferenceable& rhs) const { return pointee >= rhs.pointee; }
 };
 
 template<typename MyClass_>
@@ -298,19 +432,19 @@ template<typename MyClass_> class EmbeddedRefCount;
 
 /*!*********************************************************************************************************************
 \brief        "Embedded" subset of the Reference counted smart pointer. See RefCountedResource. It can be used very
-			  similarly to the C++11 shared_ptr, but with some differences, especially as far as conversions go.
-			  The EmbeddedRefCountedResource is used when the user must not have access to the .construct(...) functions
-			  of the RefCountedResource (especially, when a class is designed around reference counting and cannot stand
-			  widthout it). A RefCountedResource is-a EmbeddedRefCountedResource and is safe to "slice" to
-			  it as well (see details).
+        similarly to the C++11 shared_ptr, but with some differences, especially as far as conversions go.
+        The EmbeddedRefCountedResource is used when the user must not have access to the .construct(...) functions
+        of the RefCountedResource (especially, when a class is designed around reference counting and cannot stand
+        widthout it). A RefCountedResource is-a EmbeddedRefCountedResource and is safe to "slice" to
+        it as well (see details).
 \description  In order for objects of a class to be used as EmbeddedRefCountedResource, it will need to inherit from
-			  EmbeddedRefCounted<Class>, and then implement destroyObject (a function that conceptually "clears" an object
-			  by freeing its resources, without freeing the memory of the object itself - like a custom destructor),
-			  and MyClass::createNew() static function (or other factory function that forwards arguments to the correct
-			  EmbeddedRefCount::createNew overloads, one for each "constructor" that needs to be exposed).
-			  Also see RefCountedResource.
+        EmbeddedRefCounted<Class>, and then implement destroyObject (a function that conceptually "clears" an object
+        by freeing its resources, without freeing the memory of the object itself - like a custom destructor),
+        and MyClass::createNew() static function (or other factory function that forwards arguments to the correct
+        EmbeddedRefCount::createNew overloads, one for each "constructor" that needs to be exposed).
+        Also see RefCountedResource.
 \tparam       MyClass_ The type of object held. If a createNew function returning an EmbeddedRefCounted is called, this
-			  must be the type of the object that will be created.
+        must be the type of the object that will be created.
 ***********************************************************************************************************************/
 template<typename MyClass_>
 class EmbeddedRefCountedResource : public Dereferenceable<MyClass_>, public RefcountEntryHolder<MyClass_>
@@ -329,13 +463,13 @@ public:
 	\return True if this object contains a reference to a non-null object (is safely dereferenceable).
 	        Equivalent to !isNull().
 	***********************************************************************************************************************/
-	bool isValid() const { return RefcountEntryHolder<MyClass_>::refCountEntry != NULL && RefcountEntryHolder<MyClass_>::refCountEntry->count > 0; }
+	bool isValid() const { return RefcountEntryHolder<MyClass_>::refCountEntry != NULL && RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0; }
 
 	/*!*********************************************************************************************************************
 	\return True if this object does not contain a reference to a non-null object (is not safely dereferenceable).
 	        Equivalent to !isValid().
 	***********************************************************************************************************************/
-	bool isNull() const { return RefcountEntryHolder<MyClass_>::refCountEntry == NULL || RefcountEntryHolder<MyClass_>::refCountEntry->count == 0; }
+	bool isNull() const { return RefcountEntryHolder<MyClass_>::refCountEntry == NULL || RefcountEntryHolder<MyClass_>::refCountEntry->count() == 0; }
 
 	/*!*********************************************************************************************************************
 	\brief    Get a raw pointer to the pointed-to object.
@@ -374,7 +508,8 @@ public:
 	{
 		if (RefcountEntryHolder<MyClass_>::refCountEntry)
 		{
-			++(RefcountEntryHolder<MyClass_>::refCountEntry->count);
+			RefcountEntryHolder<MyClass_>::refCountEntry->increment_count();
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0 && RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0, "BUG - Count was negative.");
 		}
 	}
 
@@ -388,22 +523,30 @@ public:
 	template<typename MyPointer_>
 	explicit EmbeddedRefCountedResource(MyPointer_* ref) : Dereferenceable<MyClass_>(ref), RefcountEntryHolder<MyClass_>(new RefCountEntry<MyPointer_>(ref))
 	{
-		RefcountEntryHolder<MyClass_>::refCountEntry->count = 1;
+		RefcountEntryHolder<MyClass_>::refCountEntry->count_ = 1;
 	}
 
 	/*!*********************************************************************************************************************
 	\brief       Copy Assignment operator. Increments reference count.
 	\description "this" (the left-hand-side of the operator) object will be released (if not NULL, reference count will be
 	             decreased as normal and, if zero, the object will be deleted). Reference count of the right-hand-side object
-				 will be increased and this RefCountedResource will be pointing to it.
+	       will be increased and this RefCountedResource will be pointing to it.
 	***********************************************************************************************************************/
-	EmbeddedRefCountedResource& operator=(EmbeddedRefCountedResource rhs) { swap(rhs); return *this; }
+	EmbeddedRefCountedResource& operator=(EmbeddedRefCountedResource rhs)
+	{
+		swap(rhs);
+		debug_assertion(!RefcountEntryHolder<MyClass_>::refCountEntry ||
+		                (RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0 &&
+		                 RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0),
+		                "BUG - Count was negative.");
+		return *this;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief       Implicit Copy Conversion constructor.
-	\description 	A RefCountedResource is implicitly convertible to any type that its current ElementType is implicitly convertible
-				 to. For example, a pointer to a subclass is implicitly convertible to a pointer to superclass.
-				 Reference counting keeps working normally on the original object regardless of the type of the pointer.
+	\description  A RefCountedResource is implicitly convertible to any type that its current ElementType is implicitly convertible
+	       to. For example, a pointer to a subclass is implicitly convertible to a pointer to superclass.
+	       Reference counting keeps working normally on the original object regardless of the type of the pointer.
 	\param rhs   The object to convert
 	\description The last (unnamed) parameter of this function is required for template argument matching (SFINAE) and is not used.
 	***********************************************************************************************************************/
@@ -415,27 +558,37 @@ public:
 		//Compile-time check: are these types compatible?
 		OldType_* checkMe = static_cast<OldType_*>(Dereferenceable<MyClass_>::pointee);
 		(void)checkMe;
-		if (RefcountEntryHolder<MyClass_>::refCountEntry) { ++(RefcountEntryHolder<MyClass_>::refCountEntry->count); }
+		if (RefcountEntryHolder<MyClass_>::refCountEntry)
+		{
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0 && RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0, "BUG - Count was negative.");
+			RefcountEntryHolder<MyClass_>::refCountEntry->increment_count();
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0 && RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0, "BUG - Count was negative.");
+		}
 	}
 
 	/*!*********************************************************************************************************************
 	\brief       Explicit Copy Conversion constructor.
 	\description A RefCountedResource is explicitly convertible to any type that its current ElementType is explicitly convertible to.
 	             For example, a pointer to void is explicitly convertible to a pointer to any class.
-				 Conversion used is static_cast.
-				 Reference counting keeps working normally on the original object regardless of the type of the pointer.
+	       Conversion used is static_cast.
+	       Reference counting keeps working normally on the original object regardless of the type of the pointer.
 	\param rhs   The object to convert
 	\description The last (unnamed) parameter of this function is required for template argument matching (SFINAE) and is not used.
 	***********************************************************************************************************************/
 	template<class OldType_>
 	explicit EmbeddedRefCountedResource(const EmbeddedRefCountedResource<OldType_>& rhs,
 	                                    typename std::enable_if < !std::is_convertible<OldType_*, MyClass_*>::value, void* >::type* = 0)
-		: Dereferenceable<MyClass_>(static_cast<MyClass_* >(rhs.pointee)), RefcountEntryHolder<MyClass_>(rhs.refCountEntry)
+		: Dereferenceable<MyClass_>(static_cast<MyClass_*>(rhs.pointee)), RefcountEntryHolder<MyClass_>(rhs.refCountEntry)
 	{
 		//Compile-time check: are these types compatible?
 		OldType_* checkMe = static_cast<MyClass_*>(Dereferenceable<MyClass_>::pointee);
 		(void)checkMe;
-		if (RefcountEntryHolder<MyClass_>::refCountEntry) { ++(RefcountEntryHolder<MyClass_>::refCountEntry->count); }
+		if (RefcountEntryHolder<MyClass_>::refCountEntry)
+		{
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0 && RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0, "BUG - Count was negative.");
+			RefcountEntryHolder<MyClass_>::refCountEntry->increment_count();
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0 && RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0, "BUG - Count was negative.");
+		}
 	}
 
 	/*!*********************************************************************************************************************
@@ -444,17 +597,17 @@ public:
 	virtual ~EmbeddedRefCountedResource() { reset(); }
 
 	/*!*********************************************************************************************************************
-	\brief       Tests equality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
+	\brief       Tests inequality of the pointers of two compatible RefCountedResource. NULL tests equal to NULL.
 	***********************************************************************************************************************/
-	bool operator==(const EmbeddedRefCountedResource& rhs) const
+	bool operator!=(const EmbeddedRefCountedResource& rhs) const
 	{
-		return get() == rhs.get();
+		return get() != rhs.get();
 	}
 
 	/*!*********************************************************************************************************************
 	\brief       Decrements reference count. If it is the last pointer, destroys the pointed-to object. Else, abandons it. Then,
 	             wraps the provided pointer and points to it. Equivalent to destroying the original smart pointer and creating a
-				 new one.
+	       new one.
 	\tparam MyPointer_ The type of the new pointer to wrap. Must be implicitly convertible to MyClass_.
 	\param ref   The new pointer to wrap.
 	***********************************************************************************************************************/
@@ -477,11 +630,13 @@ public:
 protected:
 	template <typename OriginalType>
 	EmbeddedRefCountedResource(IRefCountEntry* entry, OriginalType* pointee)
-		: Dereferenceable<MyClass_>(static_cast<MyClass_* >(pointee)), RefcountEntryHolder<MyClass_>(entry)
+		: Dereferenceable<MyClass_>(static_cast<MyClass_*>(pointee)), RefcountEntryHolder<MyClass_>(entry)
 	{
 		if (RefcountEntryHolder<MyClass_>::refCountEntry)
 		{
-			++(RefcountEntryHolder<MyClass_>::refCountEntry->count);
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() >= 0 && RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0, "BUG - Count was negative.");
+			RefcountEntryHolder<MyClass_>::refCountEntry->increment_count();
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0 && RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0, "BUG - Count was negative.");
 		}
 	}
 
@@ -490,45 +645,10 @@ private:
 	{
 		if (RefcountEntryHolder<MyClass_>::refCountEntry)
 		{
-#ifdef DEBUG
-			if (RefcountEntryHolder<MyClass_>::refCountEntry->count == 0) //SANITY CHECK - should never happen!
-			{
-				assertion(0 ,  "POSSIBLE BUG - Refcount entry count is zero but a strong reference to it was still live");
-				if (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount == 0)
-				{
-					RefcountEntryHolder<MyClass_>::refCountEntry->deleteEntry();
-				}
-				RefcountEntryHolder<MyClass_>::refCountEntry = 0;
-				Dereferenceable<MyClass_>::pointee = 0;
-			}
-			else
-#endif
-			{
-				if (--(RefcountEntryHolder<MyClass_>::refCountEntry->count) == 0)
-				{
-					RefcountEntryHolder<MyClass_>::refCountEntry->destroyObject();
-					if (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount == 0)
-					{
-						IRefCountEntry* tmp = RefcountEntryHolder<MyClass_>::refCountEntry;
-						RefcountEntryHolder<MyClass_>::refCountEntry = 0;
-						Dereferenceable<MyClass_>::pointee = 0;
-						tmp->deleteEntry(); //EMBEDDED: deleteEntry() will call "delete this",
-						//so we shouldln't be writing stuff into it after deleting it.
-						//On the other had - what's the point in writing anything with
-						//a refcount of 0? Being too defensive here?
-					}
-					else
-					{
-						RefcountEntryHolder<MyClass_>::refCountEntry = 0;
-						Dereferenceable<MyClass_>::pointee = 0;
-					}
-				}
-				else
-				{
-					RefcountEntryHolder<MyClass_>::refCountEntry = 0;
-					Dereferenceable<MyClass_>::pointee = 0;
-				}
-			}
+			IRefCountEntry* tmp = RefcountEntryHolder<MyClass_>::refCountEntry;
+			RefcountEntryHolder<MyClass_>::refCountEntry = 0;
+			Dereferenceable<MyClass_>::pointee = 0;
+			tmp->decrement_count();
 		}
 	}
 };
@@ -542,8 +662,8 @@ with its ref-counting bookkeeping information. If this is not practical, you can
 pointer to it, as long as it is safe to call "delete" on it.
 Copy construction, move and assignment all work as expected and can freely be used.
 It can very easily be used polymorphically.
-			  It is intended that this class will mainly be used with the .construct() method. If .construct() is used
-			  to create the object held (as opposed to wrapping a pre-existing pointer)
+        It is intended that this class will mainly be used with the .construct() method. If .construct() is used
+        to create the object held (as opposed to wrapping a pre-existing pointer)
 \tparam       MyClass_ The type of object held. If .construct(...) is called, this is the type of the object that will be created.
 ***********************************************************************************************************************/
 template<typename MyClass_>
@@ -604,7 +724,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief       Implicit Copy Conversion constructor.
-	\description 	A RefCountedResource is implicitly convertible to any type that its current ElementType is implicitly convertible
+	\description  A RefCountedResource is implicitly convertible to any type that its current ElementType is implicitly convertible
 	to. For example, a pointer to a subclass is implicitly convertible to a pointer to superclass.
 	Reference counting keeps working normally on the original object regardless of the type of the pointer.
 	\param rhs   The object to convert
@@ -672,9 +792,9 @@ public:
 	            reference counting with it. ---   PARAMETERLESS CONSTRUCTOR OVERLOAD
 	\description Use this method or its overloads to create a new object in the most efficient way possible and wrap it in a
 	            RefCountedResource object. Use this whenever possible instead of wrapping a user-provided pointer in order to get
-				the best memory locality, as this method will create both the object and the necessary reference counters in one
-				block of memory.
-				If an object is already owned by this object, it will first be properly released before constructing the new one.
+	      the best memory locality, as this method will create both the object and the necessary reference counters in one
+	      block of memory.
+	      If an object is already owned by this object, it will first be properly released before constructing the new one.
 	***********************************************************************************************************************/
 	void construct()
 	{
@@ -687,9 +807,9 @@ public:
 	            reference counting with it. ---   ONE ARGUMENT CONSTRUCTOR OVERLOAD
 	\description Use this method or its overloads to create a new object in the most efficient way possible and wrap it in a
 	            RefCountedResource object. Use this whenever possible instead of wrapping a user-provided pointer in order to get
-				the best memory locality, as this method will create both the object and the necessary reference counters in one
-				block of memory.
-				If an object is already owned by this object, it will first be properly released before constructing the new one.
+	      the best memory locality, as this method will create both the object and the necessary reference counters in one
+	      block of memory.
+	      If an object is already owned by this object, it will first be properly released before constructing the new one.
 	\tparam     ParamType  The type of the argument accepted by MyClass_'s constructor
 	\param      param  The argument that will be forwarded to MyClass_'s constructor
 	***********************************************************************************************************************/
@@ -706,9 +826,9 @@ public:
 	            reference counting with it. ---   TWO-ARGUMENT CONSTRUCTOR OVERLOAD
 	\description Use this method or its overloads to create a new object in the most efficient way possible and wrap it in a
 	            RefCountedResource object. Use this whenever possible instead of wrapping a user-provided pointer in order to get
-				the best memory locality, as this method will create both the object and the necessary reference counters in one
-				block of memory.
-				If an object is already owned by this object, it will first be properly released before constructing the new one.
+	      the best memory locality, as this method will create both the object and the necessary reference counters in one
+	      block of memory.
+	      If an object is already owned by this object, it will first be properly released before constructing the new one.
 	\tparam     ParamType1  The type of the first argument accepted by MyClass_'s constructor
 	\param      param1  The argument that will be forwarded to MyClass_'s constructor as the first argument
 	\tparam     ParamType2  The type of the second argument accepted by MyClass_'s constructor
@@ -727,9 +847,9 @@ public:
 	            reference counting with it. ---   THREE-ARGUMENT CONSTRUCTOR OVERLOAD
 	\description Use this method or its overloads to create a new object in the most efficient way possible and wrap it in a
 	            RefCountedResource object. Use this whenever possible instead of wrapping a user-provided pointer in order to get
-				the best memory locality, as this method will create both the object and the necessary reference counters in one
-				block of memory.
-				If an object is already owned by this object, it will first be properly released before constructing the new one.
+	      the best memory locality, as this method will create both the object and the necessary reference counters in one
+	      block of memory.
+	      If an object is already owned by this object, it will first be properly released before constructing the new one.
 	\tparam     ParamType1  The type of the first argument accepted by MyClass_'s constructor
 	\param      param1  The argument that will be forwarded to MyClass_'s constructor as the first argument
 	\tparam     ParamType2  The type of the second argument accepted by MyClass_'s constructor
@@ -750,9 +870,9 @@ public:
 	            reference counting with it. ---   FOUR-ARGUMENT CONSTRUCTOR OVERLOAD
 	\descriptionUse this method or its overloads to create a new object in the most efficient way possible and wrap it in a
 	            RefCountedResource object. Use this whenever possible instead of wrapping a user-provided pointer in order to get
-				the best memory locality, as this method will create both the object and the necessary reference counters in one
-				block of memory.
-				If an object is already owned by this object, it will first be properly released before constructing the new one.
+	      the best memory locality, as this method will create both the object and the necessary reference counters in one
+	      block of memory.
+	      If an object is already owned by this object, it will first be properly released before constructing the new one.
 	\tparam     ParamType1  The type of the first argument accepted by MyClass_'s constructor
 	\param      param1  The argument that will be forwarded to MyClass_'s constructor as the first argument
 	\tparam     ParamType2  The type of the second argument accepted by MyClass_'s constructor
@@ -775,9 +895,9 @@ public:
 	            reference counting with it. ---   FIVE-ARGUMENT CONSTRUCTOR OVERLOAD
 	\descriptionUse this method or its overloads to create a new object in the most efficient way possible and wrap it in a
 	            RefCountedResource object. Use this whenever possible instead of wrapping a user-provided pointer in order to get
-				the best memory locality, as this method will create both the object and the necessary reference counters in one
-				block of memory.
-				If an object is already owned by this object, it will first be properly released before constructing the new one.
+	      the best memory locality, as this method will create both the object and the necessary reference counters in one
+	      block of memory.
+	      If an object is already owned by this object, it will first be properly released before constructing the new one.
 	\tparam     ParamType1  The type of the first argument accepted by MyClass_'s constructor
 	\param      param1  The argument that will be forwarded to MyClass_'s constructor as the first argument
 	\tparam     ParamType2  The type of the second argument accepted by MyClass_'s constructor
@@ -804,29 +924,19 @@ public:
 	that the reference count to the child object will keep the parent alive.
 	\description WARNING. This function does NOT cause lifetime dependencies, it only EXPRESSES them if they already exist.
 	i.e. The main purpose of this method is to allow the user to express hierarchical lifetime relationships
-	between objects. For example, if we had a RefCountedResource<std::vector<pvr::assets::Model> > (that is
-	never modified) wrapped in a , this method would allow us to get smart resources to the actual Mesh objects
-	it contained and not keep the original RefCountedResource at all, allowing the vector to be destroyed
+	between objects. For example, if we had a RefCountedResource<std::vector<pvr::assets::Model>> (that is
+	never modified), this method would allow us to get smart resources to the Mesh objects of the models, with shared
+	refcounting to the vector object, and not keep the original RefCountedResource at all, allowing the vector to be destroyed
 	automatically when no references to its Meshes exist anymore - the Meshes would all be destroyed together
-	as normal when the vector was destroyed.
+	as normal when the vector was destroyed, in turn deleting the Models, in turn deleting the Meshes.
 	WARNING: All that this method does is make sure that as long as pointers to children exist, the parent object
-	stays alive. If the parent objects are in fact unrelated (An std::vector<Mesh> trying to share a resource
-	with a Mesh it does NOT contain, will a) Not destroy the object when it is released, and b1) Result in a memory
-	leak if the object actually needed to be released or b2) Cause undefined behaviour when the object was released
+	stays alive. If the parent objects are in fact unrelated (For example, have a Mesh share refcounting to a std::vector<Mesh>
+	that does NOT contain it, then a) The object will not be properly destroyed when its reference is released, and b1) Potentially
+	result in a memory leak if the object actually needed to be released an/or b2) Cause undefined behaviour when the object was released
 	by its "normal" lifetime, since the shared resource was NOT really keeping it alive.
-	\tparam     OriginalType The type of the actual resource that is used to constrict
-	\param      param1  The argument that will be forwarded to MyClass_'s constructor as the first argument
-	\tparam     ParamType2  The type of the second argument accepted by MyClass_'s constructor
-	\param      param2  The argument that will be forwarded to MyClass_'s constructor as the second argument
-	\tparam     ParamType3  The type of the third argument accepted by MyClass_'s constructor
-	\param      param3  The argument that will be forwarded to MyClass_'s constructor as the third argument
-	\tparam     ParamType4  The type of the fourth argument accepted by MyClass_'s constructor
-	\param      param4  The argument that will be forwarded to MyClass_'s constructor as the fourth argument
-	\tparam     ParamType5  The type of the fifth argument accepted by MyClass_'s constructor
-	\param      param5  The argument that will be forwarded to MyClass_'s constructor as the fifth argument
 	***********************************************************************************************************************/
 	template<typename OriginalType>
-	void shareRefCountFrom(RefCountedResource<OriginalType>& resource, typename EmbeddedRefCountedResource<MyClass_>::ElementType* pointee)
+	void shareRefCountFrom(const RefCountedResource<OriginalType>& resource, typename EmbeddedRefCountedResource<MyClass_>::ElementType* pointee)
 	{
 		shareRefCountingFrom(RefcountEntryHolder<OriginalType>(resource).refCountEntry, pointee);
 	}
@@ -836,12 +946,13 @@ private:
 	{
 		EmbeddedRefCountedResource<MyClass_>::reset();
 		RefcountEntryHolder<ElementType>::refCountEntry = entry;
-		++entry->count;
+		entry->increment_count();
+		debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0 && RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() >= 0, "BUG - Count was negative.");
 		Dereferenceable<ElementType>::pointee = pointee;
 	}
 
 	template <typename OriginalType>
-	RefCountedResource(IRefCountEntry* entry, OriginalType* pointee)
+	RefCountedResource(const IRefCountEntry* entry, OriginalType* pointee)
 		: EmbeddedRefCountedResource<MyClass_>(entry, pointee) { }
 };
 
@@ -851,16 +962,16 @@ private:
 \brief      A RefCountedWeakReference is a "Weak Reference" to a Reference counted object.
 \description Weak references are the same as a normal RefCountedResource with a few key differences:
             1) They cannot keep the object alive. If an object only has weak references pointing to it, it is destroyed.
-			2) Weak reference can still be safely queried to see if their object is "alive" (i.e. has strong references pointing
-			to it)
-			3) You cannot .construct() an object on a weak reference, only strong references.
-			Weak references are used to avoid Cyclic Dependencies which would sometimes make objects undeleteable and hanging
-			even when no application references exist to them (If "A" holds a reference to "B" and "B" holds a reference to
-			"A" then even when the user abandons all references to A and B the objects will be dangling in memory, keeping each
-			other alive). In those cases one object must hold a weak reference to the other ("A" holds a reference to "B" but
-			"B" holds a weak reference to "A", then when the last reference to "A" is abandoned from the application, "A"
-			will be deleted, freeing the reference to "B" and allowing it to also be deleted.
-			Can only be created from an already existing RefCountedResource or another RefCountedWeakReference.
+      2) Weak reference can still be safely queried to see if their object is "alive" (i.e. has strong references pointing
+      to it)
+      3) You cannot .construct() an object on a weak reference, only strong references.
+      Weak references are used to avoid Cyclic Dependencies which would sometimes make objects undeleteable and hanging
+      even when no application references exist to them (If "A" holds a reference to "B" and "B" holds a reference to
+      "A" then even when the user abandons all references to A and B the objects will be dangling in memory, keeping each
+      other alive). In those cases one object must hold a weak reference to the other ("A" holds a reference to "B" but
+      "B" holds a weak reference to "A", then when the last reference to "A" is abandoned from the application, "A"
+      will be deleted, freeing the reference to "B" and allowing it to also be deleted.
+      Can only be created from an already existing RefCountedResource or another RefCountedWeakReference.
 \tparam     MyClass_  The type of the element that this RefCountedWeakReference points to. Can be polymorphic.
 ***********************************************************************************************************************/
 template<typename MyClass_>
@@ -880,7 +991,7 @@ public:
 	bool isValid() const
 	{
 		return RefcountEntryHolder<MyClass_>::refCountEntry != NULL &&
-		       RefcountEntryHolder<MyClass_>::refCountEntry->count > 0;
+		       RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0;
 	}
 
 	/*!*********************************************************************************************************************
@@ -890,7 +1001,7 @@ public:
 	bool isNull() const
 	{
 		return RefcountEntryHolder<MyClass_>::refCountEntry == NULL ||
-		       RefcountEntryHolder<MyClass_>::refCountEntry->count == 0;
+		       RefcountEntryHolder<MyClass_>::refCountEntry->count() == 0;
 	}
 
 	/*!*********************************************************************************************************************
@@ -925,7 +1036,12 @@ public:
 	***********************************************************************************************************************/
 	RefCountedWeakReference(const RefCountedWeakReference& rhs) : Dereferenceable<MyClass_>(rhs), RefcountEntryHolder<MyClass_>(rhs)
 	{
-		if (RefcountEntryHolder<MyClass_>::refCountEntry) { ++(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount); }
+		if (RefcountEntryHolder<MyClass_>::refCountEntry)
+		{
+			RefcountEntryHolder<MyClass_>::refCountEntry->increment_weakcount();
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() > 0, "BUG - Count was nonpositive.");
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0, "BUG - Count was nonpositive.");
+		}
 	}
 
 	/*!*********************************************************************************************************************
@@ -934,7 +1050,12 @@ public:
 	***********************************************************************************************************************/
 	RefCountedWeakReference(const EmbeddedRefCountedResource<MyClass_>& rhs) : Dereferenceable<MyClass_>(rhs), RefcountEntryHolder<MyClass_>(rhs)
 	{
-		if (RefcountEntryHolder<MyClass_>::refCountEntry) { ++(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount); }
+		if (RefcountEntryHolder<MyClass_>::refCountEntry)
+		{
+			RefcountEntryHolder<MyClass_>::refCountEntry->increment_weakcount();
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() > 0, "Reference count was not positive");
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0, "Reference count was not positive");
+		}
 	}
 
 	/*!*********************************************************************************************************************
@@ -957,7 +1078,12 @@ public:
 		//Compile-time check: are these types compatible?
 		OldType_* checkMe = static_cast<OldType_*>(Dereferenceable<MyClass_>::pointee);
 		(void)checkMe;
-		if (RefcountEntryHolder<MyClass_>::refCountEntry) { ++(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount); }
+		if (RefcountEntryHolder<MyClass_>::refCountEntry)
+		{
+			RefcountEntryHolder<MyClass_>::refCountEntry->increment_weakcount();
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() > 0, "Reference count was not positive");
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0, "Reference count was not positive");
+		}
 	}
 
 	/*!*********************************************************************************************************************
@@ -975,21 +1101,18 @@ public:
 		//Compile-time check: are these types compatible?
 		OldType_* checkMe = static_cast<MyClass_*>(Dereferenceable<MyClass_>::pointee);
 		(void)checkMe;
-		if (RefcountEntryHolder<MyClass_>::refCountEntry) { ++(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount); }
+		if (RefcountEntryHolder<MyClass_>::refCountEntry)
+		{
+			RefcountEntryHolder<MyClass_>::refCountEntry->increment_weakcount();
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() > 0, "Reference count was not positive");
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0, "Reference count was not positive");
+		}
 	}
 
 	/*!*********************************************************************************************************************
 	\brief   Destructor. Reduces weak references by one, freeing the bookkeeping block if total references reach 0.
 	***********************************************************************************************************************/
 	virtual ~RefCountedWeakReference() { release(); }
-
-	/*!*********************************************************************************************************************
-	\brief   Tests equality of pointers. NULL tests to NULL.
-	***********************************************************************************************************************/
-	bool operator==(const RefCountedWeakReference& rhs) const
-	{
-		return get() == rhs.get();
-	}
 
 	/*!*********************************************************************************************************************
 	\brief   Decrements weak reference count. If it is the last pointer, the object must have already been destroyed, but it
@@ -1014,56 +1137,48 @@ public:
 private:
 	void retainOne()
 	{
-		if (RefcountEntryHolder<MyClass_>::refCountEntry) { RefcountEntryHolder<MyClass_>::refCountEntry->weakcount++; }
+		if (RefcountEntryHolder<MyClass_>::refCountEntry)
+		{
+			RefcountEntryHolder<MyClass_>::refCountEntry->increment_weakcount();
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() > 0, "Reference count was not positive");
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0, "Reference count was not positive");
+		}
 	}
 
 	void releaseOne()
 	{
 		if (RefcountEntryHolder<MyClass_>::refCountEntry)
 		{
-#ifdef DEBUG
-			if ((RefcountEntryHolder<MyClass_>::refCountEntry->count == 0)
-			    && (RefcountEntryHolder<MyClass_>::refCountEntry->weakcount == 0)) //SANITY CHECK - should never happen!
-			{
-				assertion(0 ,  "POSSIBLE BUG - Refcount entry is zero but a weak reference to it still existed.");
-				RefcountEntryHolder<MyClass_>::refCountEntry->deleteEntry();
-				RefcountEntryHolder<MyClass_>::refCountEntry = 0;
-				Dereferenceable<MyClass_>::pointee = 0;
-			}
-			else
-#endif
-			{
-				if (--(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount) == 0
-				    && (RefcountEntryHolder<MyClass_>::refCountEntry->count == 0))
-				{
-					RefcountEntryHolder<MyClass_>::refCountEntry->deleteEntry();
-					RefcountEntryHolder<MyClass_>::refCountEntry = 0;
-					Dereferenceable<MyClass_>::pointee = 0;
-				}
-			}
+			IRefCountEntry* tmp = RefcountEntryHolder<MyClass_>::refCountEntry;
+			RefcountEntryHolder<MyClass_>::refCountEntry = 0;
+			Dereferenceable<MyClass_>::pointee = 0;
+			tmp->decrement_weakcount();
+
 		}
 	}
 
 	template <typename OriginalType>
 	RefCountedWeakReference(IRefCountEntry* entry, OriginalType* pointee)
-		: RefcountEntryHolder<MyClass_>(entry), Dereferenceable<MyClass_>(static_cast<MyClass_* >(pointee))
+		: Dereferenceable<MyClass_>(static_cast<MyClass_*>(pointee)), RefcountEntryHolder<MyClass_>(entry)
 	{
 		if (RefcountEntryHolder<MyClass_>::refCountEntry)
 		{
-			++(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount);
+			RefcountEntryHolder<MyClass_>::refCountEntry->increment_weakcount();
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->weakcount() > 0, "Reference count was not positive");
+			debug_assertion(RefcountEntryHolder<MyClass_>::refCountEntry->count() > 0, "Reference count was not positive");
 		}
 	}
 };
 
 /*!*********************************************************************************************************************
 \brief      EmbeddedRefCount is the class that must be inherited from in order to have a class that automatically has
-			refcounted members, with awareness and access to their ref counting by keeping their ref-counting bookkeeping
-			entries embedded in the main class
+      refcounted members, with awareness and access to their ref counting by keeping their ref-counting bookkeeping
+      entries embedded in the main class
 \tparam     MyClass_  The type of the class that this EmbeddedRefCount belongs to. CRTP parameter. MUST be the actual class
-			that inherits from EmbeddedRefCount (as in class MyClass: public EmbeddedRefCount<MyClass>{}, even if the
-			pointer returned to the user is ultimately of another kind.
+      that inherits from EmbeddedRefCount (as in class MyClass: public EmbeddedRefCount<MyClass>{}, even if the
+      pointer returned to the user is ultimately of another kind.
 \description EmbeddedRefCount has two uses:
-			First, it is a performance optimization, for all intents and purposes identical to using .construct
+      First, it is a performance optimization, for all intents and purposes identical to using .construct
 ***********************************************************************************************************************/
 template<typename MyClass_>
 class EmbeddedRefCount : public IRefCountEntry
@@ -1079,7 +1194,7 @@ protected:
 	{
 		MyClass_* item = new MyClass_();
 		StrongReferenceType ptr(item, item);
-		--item->count;
+		item->decrement_count();
 		return ptr;
 	}
 	template<typename T1>
@@ -1087,7 +1202,7 @@ protected:
 	{
 		MyClass_* item = new MyClass_(std::forward<T1>(t1));
 		StrongReferenceType ptr(item, item);
-		--item->count;
+		item->decrement_count();
 		return ptr;
 	}
 	template<typename T1, typename T2>
@@ -1095,7 +1210,7 @@ protected:
 	{
 		MyClass_* item = new MyClass_(std::forward<T1>(t1), std::forward<T2>(t2));
 		StrongReferenceType ptr(item, item);
-		--item->count;
+		item->decrement_count();
 		return ptr;
 	}
 	template<typename T1, typename T2, typename T3>
@@ -1103,7 +1218,7 @@ protected:
 	{
 		MyClass_* item = new MyClass_(std::forward<T1>(t1), std::forward<T2>(t2), std::forward<T3>(t3));
 		StrongReferenceType ptr(item, item);
-		--item->count;
+		item->decrement_count();
 		return ptr;
 	}
 	template<typename T1, typename T2, typename T3, typename T4>
@@ -1111,7 +1226,7 @@ protected:
 	{
 		MyClass_* item = new MyClass_(std::forward<T1>(t1), std::forward<T2>(t2), std::forward<T3>(t3), std::forward<T4>(t4));
 		StrongReferenceType ptr(item, item);
-		--item->count;
+		item->decrement_count();
 		return ptr;
 	}
 	template<typename T1, typename T2, typename T3, typename T4, typename T5>
@@ -1119,7 +1234,7 @@ protected:
 	{
 		MyClass_* item = new MyClass_(std::forward<T1>(t1), std::forward<T2>(t2), std::forward<T3>(t3), std::forward<T4>(t4), std::forward<T5>(t5));
 		StrongReferenceType ptr(item, item);
-		--item->count;
+		item->decrement_count();
 		return ptr;
 	}
 
@@ -1134,7 +1249,7 @@ template<typename T>
 struct IsRefCountedType
 {
 	template<typename U, void(U::*)()> struct SFINAE {};
-	template<typename U> static char Test(SFINAE<U, &U::construct >*);
+	template<typename U> static char Test(SFINAE<U, &U::construct>*);
 	template<typename U> static int Test(...);
 	enum { value = (sizeof(Test<T>(0)) == sizeof(char)) };
 };

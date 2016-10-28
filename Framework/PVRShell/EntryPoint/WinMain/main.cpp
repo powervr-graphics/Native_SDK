@@ -28,13 +28,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE , LPWSTR lpCmdLine, int nCmdSh
 		// Enable memory-leak reports
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_EVERY_16_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
 #endif
-		pvr::system::WindowsOSData data;
+		pvr::platform::WindowsOSData data;
 		data.cmdShow = nCmdShow;
 
-		pvr::system::CommandLineParser commandLine;
+		pvr::platform::CommandLineParser commandLine;
 		commandLine.set(lpCmdLine);
 
-		pvr::system::StateMachine stateMachine(hInstance, commandLine, &data);
+		pvr::platform::StateMachine stateMachine(hInstance, commandLine, &data);
 
 		stateMachine.init();
 

@@ -10,7 +10,7 @@
 
 namespace pvr {
 class IGraphicsContext;
-
+class Stream;
 /*!*********************************************************************************************************************
 \brief        The IAssetProvider interface marks a class that provides the getAssetStream and getGraphicsContext methods.
 ***********************************************************************************************************************/
@@ -29,11 +29,6 @@ public:
 			  to false to avoid cluttering the Log.
 	***********************************************************************************************************************/
 	virtual std::auto_ptr<Stream> getAssetStream(const string& filename, bool logErrorOnNotFound = true) = 0;
-	
-	/*!*********************************************************************************************************************
-	\brief    Return the main GraphicsContext of this AssetProvider
-	\return   The main GraphicsContext of this AssetProvider
-	***********************************************************************************************************************/
-	virtual GraphicsContext& getGraphicsContext() = 0;
+
 };
 }

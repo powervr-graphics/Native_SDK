@@ -21,7 +21,7 @@ var searchData=
   ['shaderutils_2ecpp',['ShaderUtils.cpp',['../_shader_utils_8cpp.html',1,'']]],
   ['shaderutils_2eh',['ShaderUtils.h',['../_shader_utils_8h.html',1,'']]],
   ['shaderutilsvk_2ecpp',['ShaderUtilsVk.cpp',['../_shader_utils_vk_8cpp.html',1,'']]],
-  ['size',['size',['../structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html#a106e0791363b3f22a9f5fcc9158c3614',1,'pvr::apiutils::vulkan::DisplaySurface::size()'],['../_api_gles2_8h.html#a3d1e3edfcf61ca2d831883e1afbad89e',1,'size():&#160;ApiGles2.h'],['../_api_gles3_8h.html#a79ef9eb3e59c4bb34c4b9fbeb8d28ff7',1,'size():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a3d1e3edfcf61ca2d831883e1afbad89e',1,'size():&#160;ApiGles31.h']]],
+  ['size',['size',['../_api_gles2_8h.html#a3d1e3edfcf61ca2d831883e1afbad89e',1,'size():&#160;ApiGles2.h'],['../_api_gles3_8h.html#a79ef9eb3e59c4bb34c4b9fbeb8d28ff7',1,'size():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a3d1e3edfcf61ca2d831883e1afbad89e',1,'size():&#160;ApiGles31.h']]],
   ['source',['source',['../_api_gles2_8h.html#a6ffd2192cbc75d017665e95207ee36a7',1,'ApiGles2.h']]],
   ['srcx1',['srcX1',['../_api_gles3_8h.html#ab31358d0f5e2a6f39f8a2dcfdb5e0820',1,'ApiGles3.h']]],
   ['srcy0',['srcY0',['../_api_gles3_8h.html#a274444303b2daeb586bf930200812d14',1,'ApiGles3.h']]],
@@ -40,7 +40,5 @@ var searchData=
   ['stride',['stride',['../_api_gles2_8h.html#adec60f1216ca1b900f8d776c5b6190e0',1,'stride():&#160;ApiGles2.h'],['../_api_gles3_8h.html#a9d21c1b0530d07b637b5b71b969d7921',1,'stride():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a6495eaf773c0d49a502b6afacfd4c08f',1,'stride():&#160;ApiGles31.h']]],
   ['string',['string',['../_api_gles2_8h.html#ac83513893df92266f79a515488701770',1,'ApiGles2.h']]],
   ['strings',['strings',['../_api_gles31_8h.html#a358800951ab289d05276c793070136b7',1,'ApiGles31.h']]],
-  ['succeeded',['succeeded',['../namespacepvr_1_1api.html#a6dd4eaf02b79f224b3e925702072f7b3',1,'pvr::api']]],
-  ['swapchain',['swapChain',['../structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html#a811bb01248df791a38ca01c793d8ea80',1,'pvr::apiutils::vulkan::DisplaySurface']]],
-  ['swapchainlength',['swapchainLength',['../structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html#a15489faef777207dc6c50f03eda08261',1,'pvr::apiutils::vulkan::DisplaySurface']]]
+  ['succeeded',['succeeded',['../namespacepvr_1_1api.html#a6dd4eaf02b79f224b3e925702072f7b3',1,'pvr::api']]]
 ];

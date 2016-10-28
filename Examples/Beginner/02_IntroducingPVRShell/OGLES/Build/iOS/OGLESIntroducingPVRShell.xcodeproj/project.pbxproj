@@ -27,7 +27,7 @@
 		F8205A91130408E100253AE7 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A88130408E100253AE7 /* Icon.png */; };
 		F8205A92130408E100253AE7 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A89130408E100253AE7 /* Icon@2x.png */; };
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
-		F80E5DA8E131F154CDB09509 /* OGLESIntroducingPVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F83A161D960BC26EBF0F6F2F /* OGLESIntroducingPVRShell.cpp */; };
+		F80E5DA8E131F154CDB09509 /* OGLESIntroducingPVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F86C5D5E260B0379EDFA904B /* OGLESIntroducingPVRShell.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,7 +132,7 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F83A161D960BC26EBF0F6F2F /* OGLESIntroducingPVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRShell.cpp; path = ../../OGLESIntroducingPVRShell.cpp; sourceTree = SOURCE_ROOT; };
+		F86C5D5E260B0379EDFA904B /* OGLESIntroducingPVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRShell.cpp; path = ../../OGLESIntroducingPVRShell.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -264,7 +264,7 @@
 		F85E2B260DD21E3F00CA9BEB /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				F83A161D960BC26EBF0F6F2F /* OGLESIntroducingPVRShell.cpp */,
+				F86C5D5E260B0379EDFA904B /* OGLESIntroducingPVRShell.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -528,7 +528,6 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info.plist;

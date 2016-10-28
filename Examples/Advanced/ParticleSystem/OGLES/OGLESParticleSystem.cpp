@@ -132,12 +132,12 @@ private:
 public:
 	OGLESParticleSystem();
 
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
-	virtual void eventMappedInput(pvr::SimplifiedInput::Enum key);
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
+	virtual void eventMappedInput(pvr::SimplifiedInput key);
 
 	bool createBuffers();
 	bool createPipelines();
@@ -160,7 +160,7 @@ public:
 \brief	Handles user input and updates live variables accordingly.
 \param key Input key to handle
 ***********************************************************************************************************************/
-void OGLESParticleSystem::eventMappedInput(pvr::SimplifiedInput::Enum key)
+void OGLESParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 {
 	switch (key)
 	{
@@ -203,7 +203,7 @@ void OGLESParticleSystem::respecifyParticleBuffer(pvr::uint32 numberOfParticles)
 	for (pvr::uint32 i = 0; i < NumBuffers; ++i)
 	{
 		apiObj->particleVbos[i] = apiObj->context->createBuffer(sizeof(Particle) * numberOfParticles,
-		                          BufferBindingUse::VertexBuffer | BufferBindingUse::StorageBuffer);
+		                          BufferBindingUse(BufferBindingUse::VertexBuffer | BufferBindingUse::StorageBuffer));
 	}
 	apiObj->particleSystemGPU.setParticleVboBuffers(apiObj->particleVbos);
 	apiObj->particleSystemGPU.setNumberOfParticles(numberOfParticles);
@@ -237,7 +237,7 @@ bool OGLESParticleSystem::createBuffers()
 	for (int i = 0; i < NumBuffers; ++i)
 	{
 		apiObj->particleVbos[i] = apiObj->context->createBuffer(sizeof(Particle) * Configuration::InitialNoParticles,
-		                          BufferBindingUse::VertexBuffer | BufferBindingUse::StorageBuffer);
+		                          BufferBindingUse(BufferBindingUse::VertexBuffer | BufferBindingUse::StorageBuffer));
 	}
 	return true;
 }
@@ -270,11 +270,12 @@ bool OGLESParticleSystem::createPipelines()
 		fileVersioning.populateValidVersions(Files::FragShaderSrcFile, *this);
 		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES31), ShaderType::FragmentShader));
 
-		pipeCreateInfo.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
+		pipeCreateInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
 
 		pipeCreateInfo.vertexInput.addVertexAttribute(0, attributes[0]).addVertexAttribute(0, attributes[1])
 		.setInputBinding(0, mesh.getStride(0));
 
+		pipeCreateInfo.rasterizer.setCullFace(pvr::types::Face::Back);
 		pipeCreateInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
 
 		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleList);
@@ -297,7 +298,10 @@ bool OGLESParticleSystem::createPipelines()
 		const char* floorPipeAttributes[] = { "inVertex", "inNormal" };
 		const unsigned int numFloorAttribs = sizeof(floorPipeAttributes) / sizeof(floorPipeAttributes[0]);
 		pvr::api::GraphicsPipelineCreateParam pipeCreateInfo;
-		pipeCreateInfo.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
+		pipeCreateInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
+
+		pipeCreateInfo.rasterizer.setCullFace(pvr::types::Face::Back);
+		pipeCreateInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
 
 		fileVersioning.populateValidVersions(Files::VertShaderSrcFile, *this);
 		pipeCreateInfo.vertexShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), ShaderType::VertexShader));
@@ -306,7 +310,7 @@ bool OGLESParticleSystem::createPipelines()
 		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), ShaderType::FragmentShader));
 		pipeCreateInfo.vertexInput.addVertexAttribute(0, attributes[0]).addVertexAttribute(0, attributes[1]).setInputBinding(0, 6 * sizeof(float));
 
-		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrips);
+		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 		pipeCreateInfo.pipelineLayout = pipeLayout;
 		apiObj->pipelineFloor.pipe = apiObj->context->createGraphicsPipeline(pipeCreateInfo);
 		apiObj->pipelineFloor.mvMatrixLoc = apiObj->pipelineFloor.pipe->getUniformLocation("uModelViewMatrix");
@@ -326,10 +330,10 @@ bool OGLESParticleSystem::createPipelines()
 		const unsigned int numParticleAttribs = sizeof(particleAttribs) / sizeof(particleAttribs[0]);
 		pvr::api::ImageDataFormat colorFmt;
 		pvr::api::GraphicsPipelineCreateParam pipeCreateInfo;
-		pipeCreateInfo.colorBlend.addAttachmentState(
-		  pvr::api::pipelineCreation::ColorBlendAttachmentState(
-		    true, BlendFactor::SrcAlpha, BlendFactor::One, BlendOp::Add));
-
+		pipeCreateInfo.colorBlend.setAttachmentState(0,
+		    pvr::types::BlendingConfig(
+		      true, BlendFactor::SrcAlpha, BlendFactor::One, BlendOp::Add));
+		pipeCreateInfo.rasterizer.setCullFace(pvr::types::Face::Back);
 		pipeCreateInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
 		fileVersioning.populateValidVersions(Files::ParticleShaderVertSrcFile, *this);
 
@@ -341,7 +345,7 @@ bool OGLESParticleSystem::createPipelines()
 		pipeCreateInfo.vertexInput.addVertexAttribute(0, attributes[0]).addVertexAttribute(0, attributes[1])
 		.setInputBinding(0, sizeof(Particle));
 
-		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::Points);
+		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::PointList);
 		pipeCreateInfo.pipelineLayout = pipeLayout;
 		apiObj->pipeParticle.pipe = apiObj->context->createGraphicsPipeline(pipeCreateInfo);
 		apiObj->pipeParticle.mvpMatrixLoc = apiObj->pipeParticle.pipe->getUniformLocation("uModelViewProjectionMatrix");
@@ -355,7 +359,7 @@ bool OGLESParticleSystem::createPipelines()
 		Used to initialize variables that are not dependent on it  (e.g. external modules, loading meshes, etc.)
 		If the rendering context is lost, InitApplication() will not be called again.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESParticleSystem::initApplication()
+pvr::Result OGLESParticleSystem::initApplication()
 {
 	setDeviceQueueTypesRequired(pvr::DeviceQueueType::Compute);
 	setMinApiType(pvr::Api::OpenGLES31);
@@ -369,7 +373,7 @@ pvr::Result::Enum OGLESParticleSystem::initApplication()
 		scene->getMesh(i).setVertexAttributeIndex("NORMAL0", Attributes::NormalArray);
 		scene->getMesh(i).setVertexAttributeIndex("UV0", Attributes::TexCoordArray);
 	}
-	srand((unsigned int)this->getTime());
+
 	return pvr::Result::Success;
 }
 
@@ -378,15 +382,17 @@ pvr::Result::Enum OGLESParticleSystem::initApplication()
 \brief	Code in quitApplication() will be called by the Shell once per run, just before exiting the program.
 	    If the rendering context is lost, QuitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESParticleSystem::quitApplication() { return pvr::Result::Success; }
+pvr::Result OGLESParticleSystem::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return	Return pvr::Result::Success if no error occurred
 \brief	Code in initView() will be called by the Shell upon initialization or after a change in the rendering context.
 		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESParticleSystem::initView()
+pvr::Result OGLESParticleSystem::initView()
 {
+	srand((unsigned int)this->getTime());
+
 	apiObj.reset(new ApiObjects(*this));
 	apiObj->context = getGraphicsContext();
 	for (pvr::uint8 i = 0; i < NumBuffers; ++i)	{	apiObj->commandBuffers[i] = apiObj->context->createCommandBufferOnDefaultPool();	}
@@ -394,7 +400,7 @@ pvr::Result::Enum OGLESParticleSystem::initView()
 	apiObj->onscreenFbo = apiObj->context->createOnScreenFbo(0);
 
 	// Initialize Print3D textures
-	if (apiObj->uiRenderer.init(apiObj->context, apiObj->onscreenFbo->getRenderPass(), 0))
+	if (apiObj->uiRenderer.init(apiObj->onscreenFbo->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		setExitMessage("Could not initialize UIRenderer");
 		return pvr::Result::UnknownError;
@@ -446,7 +452,7 @@ pvr::Result::Enum OGLESParticleSystem::initView()
 \return	Return pvr::Result::Success if no error occurred
 \brief	Code in releaseView() will be called by pvr::Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESParticleSystem::releaseView()
+pvr::Result OGLESParticleSystem::releaseView()
 {
 	apiObj.reset();
 	scene.reset();
@@ -457,7 +463,7 @@ pvr::Result::Enum OGLESParticleSystem::releaseView()
 \return	Return pvr::Result::Success if no error occurred
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESParticleSystem::renderFrame()
+pvr::Result OGLESParticleSystem::renderFrame()
 {
 	currentBufferIdx++;
 	if (currentBufferIdx >= NumBuffers) { currentBufferIdx = 0;}
@@ -575,7 +581,7 @@ void OGLESParticleSystem::recordCommandBuffer(pvr::uint8 idx)
 	pvr::api::MemoryBarrierSet memBarrierSet;
 	memBarrierSet.addBarrier(pvr::api::MemoryBarrier(pvr::types::AccessFlags::ShaderWrite, pvr::types::AccessFlags::VertexAttributeRead));
 
-	apiObj->commandBuffers[idx]->pipelineBarrier(pvr::types::ShaderStageFlags::Compute, pvr::types::ShaderStageFlags::Vertex, memBarrierSet);
+	apiObj->commandBuffers[idx]->pipelineBarrier(pvr::types::PipelineStageFlags::ComputeShader, pvr::types::PipelineStageFlags::VertexShader, memBarrierSet);
 	apiObj->commandBuffers[idx]->endRecording();
 }
 

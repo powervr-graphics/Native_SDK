@@ -2,7 +2,7 @@
 \file         PVRShell\OS\Android\ShellOS.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Contains the implementation for the pvr::system::ShellOS class on Android systems.
+\brief     	  Contains the implementation for the pvr::platform::ShellOS class on Android systems.
  ***********************************************************************************************************************/
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRCore/FilePath.h"
@@ -15,12 +15,12 @@
 #include <unistd.h>
 
 namespace pvr {
-namespace system {
+namespace platform {
 struct InternalOS
 {
 };
 
-static Keys::Enum keyboardKeyMap[]
+static Keys keyboardKeyMap[]
 {
 	Keys::Unknown, /* AKEYCODE_UNKNOWN */
 	Keys::Left, /* AKEYCODE_SOFT_LEFT */
@@ -268,13 +268,13 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event)
 			{
 			case AKEY_EVENT_ACTION_DOWN:
 			{
-				Keys::Enum key = keyboardKeyMap[AKeyEvent_getKeyCode(event)];
+			    Keys key = keyboardKeyMap[AKeyEvent_getKeyCode(event)];
 				theShell->onKeyDown(key);
 			}
 			break;
 			case AKEY_EVENT_ACTION_UP:
 			{
-				Keys::Enum key = keyboardKeyMap[AKeyEvent_getKeyCode(event)];
+			    Keys key = keyboardKeyMap[AKeyEvent_getKeyCode(event)];
 				theShell->onKeyUp(key);
 			}
 			break;
@@ -344,7 +344,7 @@ ShellOS::~ShellOS()
 	//delete m_OSImplementation;
 }
 
-Result::Enum ShellOS::init(DisplayAttributes& data)
+Result ShellOS::init(DisplayAttributes& data)
 {
 	if (!m_OSImplementation)
 	{
@@ -405,7 +405,7 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	if (!internalDataPath) // Due to a bug in Gingerbread this may be null.
 	{
 		Log(Log.Debug,
-		            "Warning: The internal data path returned from Android is null. Attempting to generate from the app name..\n");
+		    "Warning: The internal data path returned from Android is null. Attempting to generate from the app name..\n");
 
 		if (!m_AppName.empty())
 		{
@@ -440,7 +440,7 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	return Result::Success;
 }
 
-Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
+Result ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	android_app* instance = static_cast<android_app*>(m_instance);
 	if (!instance->window)
@@ -475,20 +475,20 @@ OSWindow ShellOS::getWindow() const
 	return static_cast<android_app*>(m_instance)->window;
 }
 
-Result::Enum ShellOS::handleOSEvents()
+Result ShellOS::handleOSEvents()
 {
 	// The OS events for Android are already handled externally.
 	return Result::Success;
 }
 
-Result::Enum ShellOS::popUpMessage(const tchar* title, const tchar* message, ...) const
+Result ShellOS::popUpMessage(const tchar* title, const tchar* message, ...) const
 {
 	if (!title && !message && m_instance)
 	{
 		return Result::NoData;
 	}
 
-	Result::Enum result = Result::UnknownError;
+	Result result = Result::UnknownError;
 
 	ANativeActivity* activity = static_cast<android_app*>(m_instance)->activity;
 

@@ -23,8 +23,8 @@
 
 #define EPSILON_PIXEL_SQUARE 100
 namespace pvr {
-namespace system {
-Shell::Shell() : m_data(0), m_dragging(false)
+namespace platform {
+Shell::Shell() : m_dragging(false),m_data(0)
 {
 }
 
@@ -33,7 +33,7 @@ Shell::~Shell()
 }
 
 
-void Shell::implSystemEvent(SystemEvent::Enum systemEvent)
+void Shell::implSystemEvent(SystemEvent systemEvent)
 {
 	switch (systemEvent)
 	{
@@ -48,16 +48,19 @@ void Shell::implSystemEvent(SystemEvent::Enum systemEvent)
 
 void Shell::implPointingDeviceUp(uint8 buttonIdx)
 {
-	if (!m_pointerState.isPressed(buttonIdx)) { return; }
+	if (!m_pointerState.isPressed(buttonIdx))
+	{
+		return;
+	}
 	m_pointerState.setButton(buttonIdx, false);
-    if (buttonIdx == 0) // NO buttons pressed - start drag
-    {
-        m_pointerState.endDragging();
-    }
+	if (buttonIdx == 0) // NO buttons pressed - start drag
+	{
+		m_pointerState.endDragging();
+	}
 
-    eventButtonUp(buttonIdx); //send the ButtonUp event
+	eventButtonUp(buttonIdx); //send the ButtonUp event
 
-    bool drag = (m_dragging && buttonIdx == 0); //Detecting drag for first button only pointer
+	bool drag = (m_dragging && buttonIdx == 0); //Detecting drag for first button only pointer
 	if (drag) // Drag button was release - Detect Drag!
 	{
 		m_dragging = false;
@@ -73,8 +76,8 @@ void Shell::implPointingDeviceUp(uint8 buttonIdx)
 		float dist = float(dx * dx + dy * dy);
 		if (dist > 10 * EPSILON_PIXEL_SQUARE) //SWIPE -- needs a slightly bigger gesture than drag, but otherwise it's the same...
 		{
-			SimplifiedInput::Enum act = (dy * dy > dx * dx) ? (dy < 0 ? SimplifiedInput::Up : SimplifiedInput::Down) :
-			                            (dx > 0 ? SimplifiedInput::Right : SimplifiedInput::Left);
+			SimplifiedInput act = (dy * dy > dx * dx) ? (dy < 0 ? SimplifiedInput::Up : SimplifiedInput::Down) :
+			                      (dx > 0 ? SimplifiedInput::Right : SimplifiedInput::Left);
 			eventMappedInput(act);
 		}
 	}
@@ -84,7 +87,7 @@ void Shell::implPointingDeviceUp(uint8 buttonIdx)
 
 		if (buttonIdx == 0) // First button, so map to other actions as well...
 		{
-			SimplifiedInput::Enum act =
+			SimplifiedInput act =
 			  getPointerNormalisedPosition().x < .25 ? SimplifiedInput::Action2 : // Left
 			  getPointerNormalisedPosition().x > .75 ? SimplifiedInput::Action3 : // Right
 			  SimplifiedInput::Action1; //Center
@@ -92,7 +95,7 @@ void Shell::implPointingDeviceUp(uint8 buttonIdx)
 		}
 		else //For mouses, map mouse actions to other actions as well
 		{
-			SimplifiedInput::Enum action = MapPointingDeviceButtonToSimpleInput(buttonIdx);
+			SimplifiedInput action = MapPointingDeviceButtonToSimpleInput(buttonIdx);
 			if (action != SimplifiedInput::NONE)
 			{
 				eventMappedInput(action);
@@ -126,27 +129,27 @@ void Shell::updatePointerPosition(PointerLocation location)
 		{
 			eventDragStart(0, m_pointerState.dragStartPosition());
 		}
-      
+
 	}
 }
 
-void Shell::implKeyDown(Keys::Enum key)
+void Shell::implKeyDown(Keys key)
 {
-	if (!m_keystate[key]) //Swallow event on repeat.
+	if (!m_keystate[(uint32)key]) //Swallow event on repeat.
 	{
-		m_keystate[key] = true;
+		m_keystate[(uint32)key] = true;
 		eventKeyDown(key);
 	}
 	eventKeyStroke(key);
 }
 
-void Shell::implKeyUp(Keys::Enum key)
+void Shell::implKeyUp(Keys key)
 {
-	if (m_keystate[key])
+	if (m_keystate[(uint32)key])
 	{
-		m_keystate[key] = false;
+		m_keystate[(uint32)key] = false;
 		eventKeyUp(key);
-		SimplifiedInput::Enum action = MapKeyToMainInput(key);
+		SimplifiedInput action = MapKeyToMainInput(key);
 		if (action != SimplifiedInput::NONE)
 		{
 			eventMappedInput(action);
@@ -154,7 +157,7 @@ void Shell::implKeyUp(Keys::Enum key)
 	}
 }
 
-Result::Enum Shell::shellInitApplication()
+Result Shell::shellInitApplication()
 {
 	assertion(m_data != NULL);
 
@@ -164,12 +167,12 @@ Result::Enum Shell::shellInitApplication()
 	return initApplication();
 }
 
-Result::Enum Shell::shellQuitApplication()
+Result Shell::shellQuitApplication()
 {
 	return quitApplication();
 }
 
-Result::Enum Shell::shellInitView()
+Result Shell::shellInitView()
 {
 	m_data->graphicsContextStore = createGraphicsContext();
 	if (m_data->graphicsContextStore.isValid())
@@ -177,36 +180,39 @@ Result::Enum Shell::shellInitView()
 		m_data->graphicsContext = m_data->graphicsContextStore;
 		m_data->graphicsContext->init(*this);
 	}
-	pvr::Result::Enum res = initView();
+	pvr::Result res = initView();
 	m_data->currentFrameTime = getTime() - 17; //Avoid first frame huge times
 	m_data->lastFrameTime = getTime() - 32;
 	return res;
 }
 
-Result::Enum Shell::shellReleaseView()
+Result Shell::shellReleaseView()
 {
 	if (m_data->graphicsContext.isValid())
 	{
 		m_data->graphicsContext->waitIdle();
 	}
-	pvr::Result::Enum retval = releaseView();
+	pvr::Result retval = releaseView();
 	return retval;
 }
 
-Result::Enum Shell::shellRenderFrame()
+Result Shell::shellRenderFrame()
 {
 	getOS().updatePointingDeviceLocation();
 	processShellEvents();
 	m_data->lastFrameTime = m_data->currentFrameTime;
 	m_data->currentFrameTime = getTime();
+	Result result;
 	if (!m_data->weAreDone)
 	{
-		return renderFrame();
+		result = renderFrame();
 	}
-	else
+	//m_data->weAreDone can very well be changed DURING renderFrame.
+	if (m_data->weAreDone)
 	{
-		return Result::ExitRenderFrame;
+		result = Result::ExitRenderFrame;
 	}
+	return result;
 }
 
 void Shell::processShellEvents()
@@ -217,12 +223,23 @@ void Shell::processShellEvents()
 		eventQueue.pop();
 		switch (event.type)
 		{
-		case ShellEvent::SystemEvent: implSystemEvent(event.systemEvent); break;
-		case ShellEvent::PointingDeviceDown: implPointingDeviceDown(event.buttonIdx); break;
-		case ShellEvent::PointingDeviceUp: implPointingDeviceUp(event.buttonIdx); break;
-		case ShellEvent::KeyDown: implKeyDown(event.key); break;
-		case ShellEvent::KeyUp: implKeyUp(event.key); break;
-		case ShellEvent::PointingDeviceMove: break;
+		case ShellEvent::SystemEvent:
+			implSystemEvent(event.systemEvent);
+			break;
+		case ShellEvent::PointingDeviceDown:
+			implPointingDeviceDown(event.buttonIdx);
+			break;
+		case ShellEvent::PointingDeviceUp:
+			implPointingDeviceUp(event.buttonIdx);
+			break;
+		case ShellEvent::KeyDown:
+			implKeyDown(event.key);
+			break;
+		case ShellEvent::KeyUp:
+			implKeyUp(event.key);
+			break;
+		case ShellEvent::PointingDeviceMove:
+			break;
 		}
 
 	}
@@ -250,7 +267,7 @@ uint64 Shell::getTimeAtInitApplication() const
 	return m_data->timeAtInitApplication;
 }
 
-Result::Enum Shell::init(struct ShellData* data)
+Result Shell::init(struct ShellData* data)
 {
 	if (!m_data)
 	{
@@ -261,7 +278,7 @@ Result::Enum Shell::init(struct ShellData* data)
 	return Result::AlreadyInitialized;
 }
 
-const system::CommandLineParser::ParsedCommandLine& Shell::getCommandLine() const
+const platform::CommandLineParser::ParsedCommandLine& Shell::getCommandLine() const
 {
 	return m_data->commandLine->getParsedCommandLine();
 }
@@ -279,7 +296,7 @@ bool Shell::isFullScreen() const
 	return m_data->attributes.fullscreen;
 }
 
-Result::Enum Shell::setDimensions(uint32 w, uint32 h)
+Result Shell::setDimensions(uint32 w, uint32 h)
 {
 	if (ShellOS::getCapabilities().resizable != types::Capability::Unsupported)
 	{
@@ -301,7 +318,7 @@ uint32 Shell::getHeight() const
 	return m_data->attributes.height;
 }
 
-Result::Enum Shell::setPosition(uint32 x, uint32 y)
+Result Shell::setPosition(uint32 x, uint32 y)
 {
 	if (ShellOS::getCapabilities().resizable != types::Capability::Unsupported)
 	{
@@ -333,7 +350,7 @@ float32 Shell::getQuitAfterTime() const
 	return m_data->dieAfterTime;
 }
 
-VsyncMode::Enum Shell::getVsyncMode() const
+VsyncMode Shell::getVsyncMode() const
 {
 	return m_data->attributes.vsyncMode;
 }
@@ -378,9 +395,14 @@ void Shell::setQuitAfterTime(float32 value)
 	m_data->dieAfterTime = value;
 }
 
-void Shell::setVsyncMode(VsyncMode::Enum value)
+void Shell::setVsyncMode(VsyncMode value)
 {
 	m_data->attributes.vsyncMode = value;
+}
+
+void Shell::setPreferredSwapChainLength(uint32 swapChainLength)
+{
+	m_data->attributes.swapLength = swapChainLength;
 }
 
 void Shell::forceReinitView()
@@ -390,7 +412,9 @@ void Shell::forceReinitView()
 
 void Shell::setAASamples(uint32 value)
 {
-	m_data->attributes.aaSamples = value; // Should this be passed to the api context instead just incase the API supports dynamic changing of the aa settings e.g. openVG
+	// Should this be passed to the api context instead just incase the API supports dynamic changing
+	// of the aa settings e.g. openVG
+	m_data->attributes.aaSamples = value;
 }
 
 void Shell::setColorBitsPerPixel(uint32 r, uint32 g, uint32 b, uint32 a)
@@ -401,12 +425,12 @@ void Shell::setColorBitsPerPixel(uint32 r, uint32 g, uint32 b, uint32 a)
 	m_data->attributes.alphaBits = a;
 }
 
-void Shell::setBackBufferColorspace(types::ColorSpace::Enum colorSpace)
+void Shell::setBackBufferColorspace(types::ColorSpace colorSpace)
 {
 	m_data->attributes.frameBufferSrgb = (colorSpace == types::ColorSpace::sRGB);
 }
 
-types::ColorSpace::Enum Shell::getBackBufferColorspace()
+types::ColorSpace Shell::getBackBufferColorspace()
 {
 	return m_data->attributes.frameBufferSrgb ? types::ColorSpace::sRGB : types::ColorSpace::lRGB;
 }
@@ -479,8 +503,19 @@ Stream::ptr_type Shell::getAssetStream(const string& filename, bool logFileNotFo
 {
 	// The shell will first attempt to open a file in your readpath with the same name.
 	// This allows you to override any built-in assets
-	const std::vector<string>& paths = getOS().getReadPaths();
 	Stream::ptr_type stream;
+	// Try absolute path first:
+	stream.reset(new FileStream(filename, "rb"));
+
+	if (stream->open())
+	{
+		return stream;
+	}
+
+	stream.reset(0);
+
+	// Then relative to the search paths:
+	const std::vector<string>& paths = getOS().getReadPaths();
 	for (size_t i = 0; i < paths.size(); ++i)
 	{
 		string filepath(paths[i]);
@@ -522,7 +557,7 @@ Stream::ptr_type Shell::getAssetStream(const string& filename, bool logFileNotFo
 
 	if (logFileNotFound)
 	{
-		Log(Log.Error, "Could not retrieve a stream for filename [%s] : File not found", filename.c_str());
+		Log(Log.Error, "pvr::Shell::getAssetStream: File Not Found; Could not retrieve a stream for filename [%s]", filename.c_str());
 	}
 	return Stream::ptr_type((Stream::ptr_type::element_type*)0);
 }
@@ -598,6 +633,11 @@ GraphicsContext& Shell::getGraphicsContext()
 	return m_data->graphicsContext;
 }
 
+const GraphicsContext& Shell::getGraphicsContext() const
+{
+	return m_data->graphicsContext;
+}
+
 void Shell::setPresentBackBuffer(const bool value)
 {
 	m_data->presentBackBuffer = value;
@@ -628,9 +668,9 @@ void Shell::showOutputInfo()
 
 	attributesInfo.append("Command-line:");
 
-	const system::CommandLineParser::ParsedCommandLine::Options& options = getCommandLine().getOptionsList();
+	const platform::CommandLineParser::ParsedCommandLine::Options& options = getCommandLine().getOptionsList();
 
-	for (unsigned int i = 0; i < options.size(); ++i)
+	for (uint32 i = 0; i < options.size(); ++i)
 	{
 		if (options[i].val)
 		{
@@ -708,6 +748,7 @@ void Shell::setShowFPS(const bool showFPS)
 
 bool Shell::isShowingFPS() const
 {
+	// Should this be passed to the api context instead just incase the API supports dynamic changing of the aa settings e.g. openVG
 	return m_data->showFPS;
 }
 
@@ -719,8 +760,8 @@ float Shell::getFPS() const
 void Shell::takeScreenshot() const
 {
 	byte* pBuffer = (byte*) calloc(1, m_data->attributes.width * m_data->attributes.height * 4);
-	if (m_data->graphicsContext->screenCaptureRegion(0, 0, m_data->attributes.width, m_data->attributes.height, pBuffer,
-	    IGraphicsContext::ImageFormatBGRA))
+	if (m_data->graphicsContext->screenCaptureRegion(0, 0, m_data->attributes.width, m_data->attributes.height,
+	    pBuffer, IGraphicsContext::ImageFormatBGRA))
 	{
 		string filename;
 
@@ -757,18 +798,22 @@ void Shell::takeScreenshot() const
 				file.close();
 			}
 		}
-		Log("Writing TGA screenshot, filename %s.", filename.c_str());
-		writeTGA(filename.c_str(), m_data->attributes.width, m_data->attributes.height, (unsigned char*)pBuffer, 4, m_data->captureFrameScale);
+		Log(pvr::Logger::Information, "Writing TGA screenshot, filename %s.", filename.c_str());
+		writeTGA(filename.c_str(), m_data->attributes.width, m_data->attributes.height, (unsigned char*)pBuffer,
+		         4, m_data->captureFrameScale);
 	}
 	free(pBuffer);
 }
 
 bool Shell::isScreenRotated()const
 {
-	return (m_data->attributes.height > m_data->attributes.width);
+	return m_data->attributes.isScreenRotated();
 }
 
-void Shell::exitShell() { m_data->weAreDone = true; }
+void Shell::exitShell()
+{
+	m_data->weAreDone = true;
+}
 
 DisplayAttributes& Shell::getDisplayAttributes()
 {
@@ -784,45 +829,46 @@ OSWindow Shell::getWindow()
 	return m_data->os->getWindow();
 }
 
-Api::Enum Shell::getApiTypeRequired()
+Api Shell::getApiTypeRequired()
 {
 	return m_data->contextType;
 }
-Api::Enum Shell::getApiType()
+Api Shell::getApiType()
 {
 	return getGraphicsContext()->getApiType();
 }
 
-void Shell::setApiTypeRequired(Api::Enum value)
+void Shell::setApiTypeRequired(Api value)
 {
+	m_data->minContextType = value;
 	m_data->contextType = value;
 }
 
-void Shell::setMinApiType(Api::Enum value)
+void Shell::setMinApiType(Api value)
 {
 	m_data->minContextType = value;
 }
-Api::Enum Shell::getMinApiTypeRequired()
+Api Shell::getMinApiTypeRequired()
 {
 	return m_data->minContextType;
 }
 
-Api::Enum Shell::getMaxApiLevel()
+Api Shell::getMaxApiLevel()
 {
 	return m_data->platformContext->getMaxApiVersion();
 }
 
-bool Shell::isApiSupported(Api::Enum api)
+bool Shell::isApiSupported(Api api)
 {
 	return m_data->platformContext->isApiSupported(api);
 }
 
 
-void Shell::setDeviceQueueTypesRequired(DeviceQueueType::Enum value)
+void Shell::setDeviceQueueTypesRequired(DeviceQueueType value)
 {
 	m_data->deviceQueueType = value;
 }
-DeviceQueueType::Enum Shell::getDeviceQueueTypesRequired()
+DeviceQueueType Shell::getDeviceQueueTypesRequired()
 {
 	return m_data->deviceQueueType;
 }

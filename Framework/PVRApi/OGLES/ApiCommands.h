@@ -1,10 +1,11 @@
 /*!*********************************************************************************************************************
-\file         PVRApi\ApiCommands.h
+\file         PVRApi\OGLES\ApiCommands.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Internal classes that are used by the CommandBuffer to represent user commands. Each class corresponds to a
               CommandBuffer command of the same name.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/OGLES/ApiCommand.h"
 #include "PVRAssets/Model/Mesh.h"
@@ -48,7 +49,7 @@ public:
 class BindDescriptorSets : public ApiCommand
 {
 public:
-	BindDescriptorSets(types::PipelineBindPoint::Enum bindingPoint, const api::PipelineLayout& pipelineLayout,
+	BindDescriptorSets(types::PipelineBindPoint bindingPoint, const api::PipelineLayout& pipelineLayout,
 	                   const DescriptorSet* set, uint32 numSet, const uint32* dynamicOffsets, uint32 numDynamicOffset) :
 		set(set, set + numSet), dynamicOffsets(dynamicOffsets, dynamicOffsets + numDynamicOffset) {}
 private:
@@ -68,16 +69,65 @@ private:
 	void execute_private(impl::CommandBufferBase_& cmdBuff);
 };
 
+class ClearColorImage : public ApiCommand
+{
+public:
+
+	ClearColorImage(pvr::api::TextureView& image, glm::vec4 clearColor, const pvr::uint32 baseMipLevel = 0u,
+	                const pvr::uint32 baseArrayLayer = 0u, const pvr::uint32 layerCount = 1u)
+		: imageToClear(image), clearColor(clearColor), baseMipLevel(baseMipLevel),
+		  baseArrayLayer(baseArrayLayer), layerCount(layerCount)
+	{}
+
+private:
+	pvr::api::TextureView& imageToClear;
+	glm::vec4 clearColor;
+	pvr::uint32 baseMipLevel;
+	pvr::uint32 baseArrayLayer;
+	pvr::uint32 layerCount;
+	void execute_private(impl::CommandBufferBase_& cmdBuff);
+};
+
+class ClearDepthStencilImage : public ApiCommand
+{
+public:
+
+	ClearDepthStencilImage(pvr::api::TextureView& image, float clearDepth, pvr::uint32 clearStencil, const pvr::uint32 baseMipLevel = 0u,
+	                       const pvr::uint32 baseArrayLayer = 0u, const pvr::uint32 layerCount = 1u)
+		: imageToClear(image), clearDepth(clearDepth), clearStencil(clearStencil),
+		  baseMipLevel(baseMipLevel),
+		  baseArrayLayer(baseArrayLayer), layerCount(layerCount)
+	{}
+
+private:
+	pvr::api::TextureView& imageToClear;
+	float clearDepth;
+	pvr::uint32 clearStencil;
+	pvr::uint32 baseMipLevel;
+	pvr::uint32 baseArrayLayer;
+	pvr::uint32 layerCount;
+	void execute_private(impl::CommandBufferBase_& cmdBuff);
+};
+
 class ClearColorAttachment : public ApiCommand
 {
 public:
 
-	ClearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 const& clearColor, pvr::Rectanglei const& clearRect)
-		: clearConst(attachmentCount, clearColor), clearRect(attachmentCount, clearRect)
+	ClearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 const& clearColor, pvr::uint32 rectCount, pvr::Rectanglei const& clearRect)
+		: clearConst(attachmentCount, clearColor), clearRect(rectCount, clearRect)
 	{}
 
-	ClearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 const* clearColor, pvr::Rectanglei const* clearRect)
-	{}
+	ClearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 const* clearColor, pvr::uint32 rectCount, pvr::Rectanglei const* clearRect)
+	{
+		for (unsigned int i = 0; i < attachmentCount; i++)
+		{
+			this->clearConst.push_back(clearColor[i]);
+		}
+		for (unsigned int i = 0; i < rectCount; i++)
+		{
+			this->clearRect.push_back(clearRect[i]);
+		}
+	}
 private:
 	std::vector<glm::vec4> clearConst;
 	std::vector<pvr::Rectanglei> clearRect;
@@ -163,14 +213,14 @@ private:
 class BindIndexBuffer : public ApiCommand
 {
 public:
-	BindIndexBuffer(const api::Buffer& buffer, uint32 offset, types::IndexType::Enum indexType)
+	BindIndexBuffer(const api::Buffer& buffer, uint32 offset, types::IndexType indexType)
 		: buffer(buffer), offset(offset), indexType(indexType) {}
 
 private:
 	void execute_private(impl::CommandBufferBase_&);
 	api::Buffer buffer;
 	uint32 offset;
-	types::IndexType::Enum indexType;
+	types::IndexType indexType;
 };
 
 class DrawArrays : public ApiCommand
@@ -190,8 +240,10 @@ private:
 class BeginRenderPass : public ApiCommand
 {
 public:
-	BeginRenderPass(api::Fbo& fbo, const Rectanglei& renderArea, const glm::vec4& clearColor
-	                = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), float32 clearDepth = 1.f, uint32 clearStencil = 0) :
+	BeginRenderPass(api::Fbo& fbo, const Rectanglei& renderArea,
+	                const glm::vec4& clearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+	                float32 clearDepth = types::PipelineDefaults::DepthStencilStates::DepthClearValue,
+	                uint32 clearStencil = types::PipelineDefaults::DepthStencilStates::StencilClearValue) :
 		m_fbo(fbo), m_renderArea(renderArea), m_clearDepth(clearDepth), m_clearStencil(clearStencil)
 	{
 		m_clearColor.push_back(clearColor);
@@ -257,28 +309,28 @@ public:
 
 class SetStencilCompareMask : public ApiCommand
 {
-	const types::StencilFace::Enum m_face;
+	const types::StencilFace m_face;
 	const pvr::uint32 m_mask;
 public:
-	SetStencilCompareMask(types::StencilFace::Enum face, pvr::uint32 mask) : m_face(face), m_mask(mask) {}
+	SetStencilCompareMask(types::StencilFace face, pvr::uint32 mask) : m_face(face), m_mask(mask) {}
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
 class SetStencilWriteMask : public ApiCommand
 {
-	const types::StencilFace::Enum m_face;
+	const types::StencilFace m_face;
 	const pvr::uint32 m_mask;
 public:
-	SetStencilWriteMask(types::StencilFace::Enum face, pvr::uint32 mask) : m_face(face), m_mask(mask) {}
+	SetStencilWriteMask(types::StencilFace face, pvr::uint32 mask) : m_face(face), m_mask(mask) {}
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
 class SetStencilReference : public ApiCommand
 {
-	const types::StencilFace::Enum m_face;
+	const types::StencilFace m_face;
 	const pvr::uint32 m_ref;
 public:
-	SetStencilReference(types::StencilFace::Enum face, pvr::uint32 ref) : m_face(face), m_ref(ref) {}
+	SetStencilReference(types::StencilFace face, pvr::uint32 ref) : m_face(face), m_ref(ref) {}
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
@@ -314,377 +366,63 @@ private:
 
 #ifndef PVR_NO_UNIFORM_SUPPORT
 
-#pragma region Uniforms
-
 template<typename _type> class SetUniformPtr;
 template<typename _type> class SetUniform;
 
 
-template<>
-class SetUniform<float32> : public ApiCommand
-{
-	int32 location;
-	float32 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, float32 val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
+#define SET_UNIFORM_CLASS_DEFINITION(type) \
+template<> class SetUniform<type> : public ApiCommand \
+{	int32 location;  type val; \
+	void execute_private(impl::CommandBufferBase_& cmdBuff); \
+public: \
+	SetUniform(int32 location, type val) : location(location), val(val) {} \
+	virtual ~SetUniform() {} }; \
+\
+template<> class SetUniformPtr<type> : public ApiCommand \
+{ 	const type* val; int32 location; int32 count; \
+	void execute_private(impl::CommandBufferBase_& cmdBuff); \
+public: \
+	SetUniformPtr(int32 location, uint32 count, const type* val) : val(val), location(location), count(count) {} \
+	virtual ~SetUniformPtr() {} \
+}; \
 
-template<>
-class SetUniform<int32> : public ApiCommand
-{
-	int32 location;
-	int32 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, int32 val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
+#define SET_UNIFORM_CLASS_DEFINITION_LARGE(type) \
+template<> class SetUniform<type> : public ApiCommand \
+{	int32 location;  type val; \
+	void execute_private(impl::CommandBufferBase_& cmdBuff); \
+public: \
+	SetUniform(int32 location, const type& val) : location(location), val(val) {} \
+	virtual ~SetUniform() {} }; \
+\
+template<> class SetUniformPtr<type> : public ApiCommand \
+{ 	const type* val; int32 location; int32 count; \
+	void execute_private(impl::CommandBufferBase_& cmdBuff); \
+public: \
+	SetUniformPtr(int32 location, uint32 count, const type* val) : val(val), location(location), count(count) {} \
+	virtual ~SetUniformPtr() {} \
+}; \
 
-template<>
-class SetUniform<uint32> : public ApiCommand
-{
-	int32 location;
-	uint32 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(uint32 location, uint32 val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniformPtr<float32> : public ApiCommand
-{
-	const float32* val;
-	int32 location;
-	int32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const float32* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<int32> : public ApiCommand
-{
-	const int32* val;
-	int32 location;
-	int32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-
-public:
-	SetUniformPtr(int32 location, int32 count, const int32* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<uint32> : public ApiCommand
-{
-	const uint32* val;
-	int32 location;
-	int32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(uint32 location, uint32 count, const uint32* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniform<glm::ivec2> : public ApiCommand
-{
-	int32 location;
-	glm::ivec2 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::ivec2& val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::uvec2> : public ApiCommand
-{
-	int32 location;
-	glm::uvec2 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::uvec2& val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::vec2> : public ApiCommand
-{
-	int32 location;
-	glm::vec2 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::vec2& val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniformPtr<glm::ivec2> : public ApiCommand
-{
-	int32 location;
-	int32 count;
-	const glm::ivec2* val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, int32 count, const glm::ivec2* val) : location(location), count(count), val(val) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::uvec2> : public ApiCommand
-{
-	const glm::uvec2* val;
-	int32 location;
-	int32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, int32 count, const glm::uvec2* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::vec2> : public ApiCommand
-{
-	const glm::vec2* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::vec2* val) : val(val), location(location), count(count) {}
-
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniform<glm::ivec3> : public ApiCommand
-{
-	int32 location;
-	glm::ivec3 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::ivec3& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, int32 x, int32 y, int32 z) : location(location), val(x, y, z) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::uvec3> : public ApiCommand
-{
-	int32 location;
-	glm::uvec3 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::uvec3& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, uint32 x, uint32 y, uint32 z) : location(location), val(x, y, z) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::vec3> : public ApiCommand
-{
-	int32 location;
-	glm::vec3 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::vec3& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, float32 x, float32 y, float32 z) : location(location), val(x, y, z) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniformPtr<glm::ivec3> : public ApiCommand
-{
-	const glm::ivec3* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::ivec3* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::uvec3> : public ApiCommand
-{
-	const glm::uvec3* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::uvec3* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::vec3> : public ApiCommand
-{
-	const glm::vec3* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::vec3* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniform<glm::ivec4> : public ApiCommand
-{
-	int32 location;
-	glm::ivec4 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::ivec4& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, int32 x, int32 y, int32 z, int32 w) :
-		location(location), val(x, y, z, w) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::uvec4> : public ApiCommand
-{
-	int32 location;
-	glm::uvec4 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::uvec4& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, uint32 x, uint32 y, uint32 z, uint32 w) :
-		location(location), val(x, y, z, w) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::vec4> : public ApiCommand
-{
-	int32 location;
-	glm::vec4 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::vec4& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, float32 x, float32 y, float32 z, float32 w) :
-		location(location), val(x, y, z, w) {}
-
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::mat2> : public ApiCommand
-{
-	glm::mat2 val;
-	int32 location;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::mat2& val) : val(val), location(location) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::mat3> : public ApiCommand
-{
-	glm::mat3 val;
-	int32 location;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::mat3& val) : val(val), location(location) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::mat4> : public ApiCommand
-{
-	glm::mat4 val;
-	int32 location;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::mat4& val) : val(val), location(location) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniformPtr<glm::ivec4> : public ApiCommand
-{
-	const glm::ivec4* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::ivec4* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::uvec4> : public ApiCommand
-{
-	const glm::uvec4* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::uvec4* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::vec4> : public ApiCommand
-{
-	const glm::vec4* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::vec4* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::mat2> : public ApiCommand
-{
-	const glm::mat2* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::mat2* val) : val(val),
-		location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::mat3> : public ApiCommand
-{
-	const glm::mat3* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::mat3* val) : val(val), location(location),
-		count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::mat4> : public ApiCommand
-{
-	const glm::mat4* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::mat4* val) : val(val), location(location), count(count) { }
-	virtual ~SetUniformPtr() {}
-};
-#pragma endregion
+SET_UNIFORM_CLASS_DEFINITION(float32)
+SET_UNIFORM_CLASS_DEFINITION(int32)
+SET_UNIFORM_CLASS_DEFINITION(uint32)
+SET_UNIFORM_CLASS_DEFINITION(glm::vec2)
+SET_UNIFORM_CLASS_DEFINITION(glm::ivec2)
+SET_UNIFORM_CLASS_DEFINITION(glm::uvec2)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::vec3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::ivec3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::uvec3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::vec4)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::ivec4)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::uvec4)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat2)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat2x3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat2x4)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat3x2)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat3x3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat3x4)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat4x2)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat4x3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat4x4)
 
 #endif
 
@@ -772,7 +510,7 @@ public:
 			* SyncResult::TimeoutExpired, if the Sync was NOT signalled, but the timeout expired.
 			* SyncResult::Failed, if the implementation failed to wait (for example, the sync was already destroyed)
 	***********************************************************************************************************************/
-	SyncWaitResult::Enum clientWait(uint32 which, uint64 timeout = 0);
+	SyncWaitResult clientWait(uint32 which, uint64 timeout = 0);
 };
 }
 
@@ -807,3 +545,4 @@ public:
 };
 }
 }
+//!\endcond

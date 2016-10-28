@@ -26,12 +26,13 @@ void main()
     yuv.x  = texture2D(SamplerY,  vTexCoord).r;
     yuv.yz = texture2D(SamplerUV, vTexCoord).ra - vec2(0.5, 0.5);
 
-    // BT.709
+    // BT.709 - Convert from yuv to rgb
     color = mat3(1.0,     1.0,      1.0,
 			 0.0,     -.18732,  1.8556,
 			 1.57481, -.46813,  0.0) * yuv;
 #endif
-//Any effect can be applied here - invert the colors...
-	gl_FragColor.xyz = vec3(1.) - color;
+//Any effect can be applied here - for example, a nightvision effect...
+	mediump float intensity = dot(vec3(0.30, 0.59, 0.11), color);
+	gl_FragColor.xyz = intensity * vec3(0.2, 1.0, .2);
     gl_FragColor.w = 1.0;
 }

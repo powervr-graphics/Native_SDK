@@ -5,5 +5,6 @@ var searchData=
   ['maparray',['mapArray',['../classpvr_1_1utils_1_1_structured_memory_view.html#aeb3626f286f4c728a7c09f75f7dfc616',1,'pvr::utils::StructuredMemoryView']]],
   ['maparrayindex',['mapArrayIndex',['../classpvr_1_1utils_1_1_structured_memory_view.html#a3847e8e243b02d1916e275a8bbf88268',1,'pvr::utils::StructuredMemoryView']]],
   ['mapmultiplearrayindices',['mapMultipleArrayIndices',['../classpvr_1_1utils_1_1_structured_memory_view.html#a6bfcfb075922f413081d89377900315c',1,'pvr::utils::StructuredMemoryView']]],
+  ['memorybarrier',['MemoryBarrier',['../structpvr_1_1api_1_1_memory_barrier.html#acfe1095896c204b325508bd70844dc22',1,'pvr::api::MemoryBarrier::MemoryBarrier()'],['../structpvr_1_1api_1_1_memory_barrier.html#a9bdb7ba0a77166d7f344f22d400816ac',1,'pvr::api::MemoryBarrier::MemoryBarrier(types::AccessFlags::Bits srcMask, types::AccessFlags::Bits dstMask)']]],
   ['memorybarrierset',['MemoryBarrierSet',['../classpvr_1_1api_1_1_memory_barrier_set.html#a0007378c04e6ceeda78049da922c3423',1,'pvr::api::MemoryBarrierSet']]]
 ];

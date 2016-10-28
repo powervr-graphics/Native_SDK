@@ -41,9 +41,7 @@ void DepthWriteState::commitState(pvr::IGraphicsContext& device, bool depthWrite
 	debugLogApiError("DepthWriteState::setDepthWrite exit");
 }
 
-void DepthWriteState::setDefault(pvr::IGraphicsContext& device) { commitState(device, true);}
-
-void PolygonFrontFaceState::commitState(pvr::IGraphicsContext& device, types::Face::Enum cullFace)
+void PolygonFrontFaceState::commitState(pvr::IGraphicsContext& device, types::Face cullFace)
 {
 	debugLogApiError("PolygonFrontFaceState::commitState enter");
 	platform::ContextGles& deviceEs = static_cast<platform::ContextGles&>(device);
@@ -62,9 +60,21 @@ void PolygonFrontFaceState::commitState(pvr::IGraphicsContext& device, types::Fa
 	debugLogApiError("PolygonFrontFaceState::commitState exit");
 }
 
-void PolygonFrontFaceState::setDefault(pvr::IGraphicsContext& device) {commitState(device, types::Face::Back);}
+void TessPatchControlPoints::commitState(IGraphicsContext &device, uint32 controlPoints)
+{
+	debugLogApiError("TessPatchControlPoints::commitState begin");
+	if(glext::PatchParameteriEXT == NULL)
+	{
+		Log(Logger::Debug, "Tesselation patch control points is not supported");
+		return ;
+	}
+#if defined(GL_PATCH_VERTICES_EXT)
+	glext::PatchParameteriEXT(GL_PATCH_VERTICES_EXT, controlPoints);
+#endif
+	debugLogApiError("TessPatchControlPoints::commitState exit");
+}
 
-void PolygonWindingOrderState::commitState(pvr::IGraphicsContext& device, types::PolygonWindingOrder::Enum windingOrder)
+void PolygonWindingOrderState::commitState(pvr::IGraphicsContext& device, types::PolygonWindingOrder windingOrder)
 {
 	debugLogApiError("PolygonWindingOrderState::commitState enter");
 	platform::ContextGles& deviceEs = static_cast<platform::ContextGles&>(device);
@@ -74,12 +84,7 @@ void PolygonWindingOrderState::commitState(pvr::IGraphicsContext& device, types:
 	debugLogApiError("PolygonWindingOrderState::commitState exit");
 }
 
-void PolygonWindingOrderState::setDefault(pvr::IGraphicsContext& device)
-{
-    commitState(device, types::PolygonWindingOrder::FrontFaceCCW);
-}
-
-void BlendOpState::commitState(pvr::IGraphicsContext& device, BlendOp::Enum rgbBlendOp, BlendOp::Enum alphaBlendOp)
+void BlendOpState::commitState(pvr::IGraphicsContext& device, BlendOp rgbBlendOp, BlendOp alphaBlendOp)
 {
 	debugLogApiError("BlendOpState::setBlendEq enter");
 	platform::ContextGles& deviceEs = static_cast<platform::ContextGles&>(device);
@@ -93,8 +98,8 @@ void BlendOpState::commitState(pvr::IGraphicsContext& device, BlendOp::Enum rgbB
 }
 
 
-void BlendFactorState::commitState(pvr::IGraphicsContext& device, uint8 srcRgbFactor,
-                                   uint8 dstRgbFactor, uint8 srcAlphaFactor,uint8 dstAlphaFactor)
+void BlendFactorState::commitState(pvr::IGraphicsContext& device, types::BlendFactor srcRgbFactor,
+                                   types::BlendFactor dstRgbFactor, types::BlendFactor srcAlphaFactor, types::BlendFactor dstAlphaFactor)
 {
 	debugLogApiError("BlendOpState::setBlendFactor enter");
 	platform::ContextGles::RenderStatesTracker& currentStates = static_cast<platform::ContextGles&>(device).getCurrentRenderStates();
@@ -105,24 +110,19 @@ void BlendFactorState::commitState(pvr::IGraphicsContext& device, uint8 srcRgbFa
 	{
 		return;
 	}
-    currentStates.srcRgbFactor = (BlendFactor::Enum)srcRgbFactor;
-    currentStates.srcAlphaFactor = (BlendFactor::Enum)srcAlphaFactor;
-    currentStates.destRgbFactor = (BlendFactor::Enum)dstRgbFactor;
-    currentStates.destAlphaFactor = (BlendFactor::Enum)dstAlphaFactor;
-	gl::BlendFuncSeparate(ConvertToGles::blendFactor((BlendFactor::Enum)srcRgbFactor),
-	                      ConvertToGles::blendFactor((BlendFactor::Enum)dstRgbFactor),
-	                      ConvertToGles::blendFactor((BlendFactor::Enum)srcAlphaFactor),
-	                      ConvertToGles::blendFactor((BlendFactor::Enum)dstAlphaFactor));
+	currentStates.srcRgbFactor = (BlendFactor)srcRgbFactor;
+	currentStates.srcAlphaFactor = (BlendFactor)srcAlphaFactor;
+	currentStates.destRgbFactor = (BlendFactor)dstRgbFactor;
+	currentStates.destAlphaFactor = (BlendFactor)dstAlphaFactor;
+	gl::BlendFuncSeparate(ConvertToGles::blendFactor((BlendFactor)srcRgbFactor),
+	                      ConvertToGles::blendFactor((BlendFactor)dstRgbFactor),
+	                      ConvertToGles::blendFactor((BlendFactor)srcAlphaFactor),
+	                      ConvertToGles::blendFactor((BlendFactor)dstAlphaFactor));
 	debugLogApiError("BlendOpState::setBlendFactor exit");
 }
 
-void BlendFactorState::setDefault(pvr::IGraphicsContext& device)
-{
-	commitState(device, BlendFactor::One, BlendFactor::Zero, BlendFactor::One, BlendFactor::Zero);
-}
-
-BlendFactorState::BlendFactorState(BlendFactor::Enum srcRgbFactor, BlendFactor::Enum dstRgbFactor,
-                                   BlendFactor::Enum srcAlphaFactor, BlendFactor::Enum dstAlphaFactor)
+BlendFactorState::BlendFactorState(BlendFactor srcRgbFactor, BlendFactor dstRgbFactor,
+                                   BlendFactor srcAlphaFactor, BlendFactor dstAlphaFactor)
 {
 	packData(srcRgbFactor, dstRgbFactor, srcAlphaFactor, dstAlphaFactor);
 }
@@ -139,8 +139,6 @@ void BlendingEnableState::commitState(pvr::IGraphicsContext& device, bool blendT
 	debugLogApiError("BlendingEnableState::setBlendTest exit");
 }
 
-void BlendingEnableState::setDefault(pvr::IGraphicsContext& device) {commitState(device, false);}
-
 void DepthClearState::commitState(float32 depth)
 {
 	debugLogApiError("DepthClearState::commitState enter");
@@ -148,19 +146,6 @@ void DepthClearState::commitState(float32 depth)
 	gl::Clear(GL_DEPTH_BUFFER_BIT);
 	debugLogApiError("DepthClearState::commitState exit");
 }
-
-void DepthClearState::setDefault(pvr::IGraphicsContext& device) {commitState(1.f);}
-
-//void MultisampleState::setDefault(bool modif)
-//{
-//	// todo
-//}
-//
-//void MultisampleState::setDefaultSampleMask(bool modify)
-//{
-//	if (modify) { m_sampleMask = 1.f; return; }
-//	gl::SampleCoverage(1.f, GL_FALSE);
-//}
 
 void ColorWriteMask::commitState(pvr::IGraphicsContext& device, const glm::bvec4 mask)
 {
@@ -174,7 +159,7 @@ void ColorWriteMask::commitState(pvr::IGraphicsContext& device, const glm::bvec4
 	debugLogApiError("SetColorWriteMask::execute exit");
 }
 
-void DepthFuncState::commitState(pvr::IGraphicsContext& device, ComparisonMode::Enum func)
+void DepthFuncState::commitState(pvr::IGraphicsContext& device, ComparisonMode func)
 {
 	debugLogApiError("FrameBufferWriteState::setDepthFunc enter");
 	if (static_cast<platform::ContextGles&>(device).getCurrentRenderStates().depthStencil.depthOp == func)
@@ -185,13 +170,6 @@ void DepthFuncState::commitState(pvr::IGraphicsContext& device, ComparisonMode::
 	gl::DepthFunc(ConvertToGles::comparisonMode(func));
 	debugLogApiError("FrameBufferWriteState::setDepthFunc exit");
 }
-
-void DepthFuncState::setDefault(pvr::IGraphicsContext& device)
-{
-	commitState(device, ComparisonMode::Less);
-}
-
-void StencilClearState::setDefault(pvr::IGraphicsContext& device) {	commitState(device, 0);}
 
 void StencilClearState::commitState(pvr::IGraphicsContext& device, int32 clearStencil)
 {
@@ -205,10 +183,6 @@ void StencilClearState::commitState(pvr::IGraphicsContext& device, int32 clearSt
 	debugLogApiError("StencilClearState::clearStencil exit");
 }
 
-void StencilTestState::setDefault(pvr::IGraphicsContext& device)
-{
-	commitState(device, false);
-}
 void StencilTestState::commitState(pvr::IGraphicsContext& device, bool flag)
 {
 	debugLogApiError("StencilClearState::setStencilTest enter");
@@ -221,13 +195,8 @@ void StencilTestState::commitState(pvr::IGraphicsContext& device, bool flag)
 	debugLogApiError("StencilClearState::setStencilTest exit");
 }
 
-void StencilOpFrontState::setDefault(pvr::IGraphicsContext& device)
-{
-	commitState(device, StencilOp::Keep, StencilOp::Keep, StencilOp::Keep);
-}
-
-void StencilOpFrontState::commitState(pvr::IGraphicsContext& device, StencilOp::Enum opStencilFail, StencilOp::Enum opDepthFail,
-                                      StencilOp::Enum opDepthStencilPass)
+void StencilOpFrontState::commitState(pvr::IGraphicsContext& device, StencilOp opStencilFail, StencilOp opDepthFail,
+                                      StencilOp opDepthStencilPass)
 {
 	debugLogApiError("StencilOpFrontState::commitState enter");
 	platform::ContextGles::RenderStatesTracker& currentStates = static_cast<platform::ContextGles&>(device).getCurrentRenderStates();
@@ -248,16 +217,12 @@ void StencilOpFrontState::commitState(pvr::IGraphicsContext& device, StencilOp::
 	debugLogApiError("StencilOpFrontState::commitState exit");
 }
 
-void StencilOpBackState::setDefault(pvr::IGraphicsContext& device)
-{
-	commitState(device, StencilOp::DefaultStencilFailBack, StencilOp::DefaultDepthFailBack, StencilOp::DefaultDepthStencilPassBack);
-}
-
-void StencilOpBackState::commitState(pvr::IGraphicsContext& device, StencilOp::Enum opStencilFail,
-                                     StencilOp::Enum opDepthFail, StencilOp::Enum opDepthStencilPass)
+void StencilOpBackState::commitState(pvr::IGraphicsContext& device, StencilOp opStencilFail,
+                                     StencilOp opDepthFail, StencilOp opDepthStencilPass)
 {
 	debugLogApiError("StencilOpBackState::commitState enter");
-	platform::ContextGles::RenderStatesTracker& currentStates =  static_cast<platform::ContextGles&>(device).getCurrentRenderStates();
+	platform::ContextGles::RenderStatesTracker& currentStates =
+	  static_cast<platform::ContextGles&>(device).getCurrentRenderStates();
 	if ((currentStates.depthStencil.stencilFailOpBack == opStencilFail) &&
 	        (currentStates.depthStencil.depthFailOpBack == opDepthFail) &&
 	        (currentStates.depthStencil.depthStencilPassOpBack == opDepthStencilPass))
@@ -284,12 +249,11 @@ void ScissorTestState::commitState(pvr::IGraphicsContext& device, bool enable)
 	debugLogApiError("StencilOpBackState::commitState exit");
 }
 
-void ScissorTestState::setDefault(pvr::IGraphicsContext& device) { commitState(device, false); }
-
-void StencilCompareOpFront::commitState(pvr::IGraphicsContext& device, pvr::ComparisonMode::Enum cmp)
+void StencilCompareOpFront::commitState(pvr::IGraphicsContext& device, pvr::ComparisonMode cmp)
 {
 	debugLogApiError("StencilComapreOpFront::commitState enter");
-	platform::ContextGles::RenderStatesTracker& recordedStates = static_cast<platform::ContextGles&>(device).getCurrentRenderStates();
+	platform::ContextGles::RenderStatesTracker& recordedStates =
+	  static_cast<platform::ContextGles&>(device).getCurrentRenderStates();
 	if (cmp != recordedStates.depthStencil.stencilOpFront)
 	{
 		gl::StencilFuncSeparate(GL_FRONT, ConvertToGles::comparisonMode(cmp), recordedStates.depthStencil.refFront,
@@ -299,10 +263,11 @@ void StencilCompareOpFront::commitState(pvr::IGraphicsContext& device, pvr::Comp
 	debugLogApiError("StencilComapreOpFront::commitState exit");
 }
 
-void StencilCompareOpBack::commitState(pvr::IGraphicsContext& device, pvr::ComparisonMode::Enum cmp)
+void StencilCompareOpBack::commitState(pvr::IGraphicsContext& device, pvr::ComparisonMode cmp)
 {
 	debugLogApiError("StencilCompareOpBack::commitState enter");
-	platform::ContextGles::RenderStatesTracker& recordedStates = static_cast<platform::ContextGles&>(device).getCurrentRenderStates();
+	platform::ContextGles::RenderStatesTracker& recordedStates =
+	  static_cast<platform::ContextGles&>(device).getCurrentRenderStates();
 	if (cmp != recordedStates.depthStencil.stencilOpBack)
 	{
 		gl::StencilFuncSeparate(GL_BACK, ConvertToGles::comparisonMode(cmp), recordedStates.depthStencil.refBack,

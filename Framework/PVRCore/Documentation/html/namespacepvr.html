@@ -177,6 +177,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an object capable of providing Logging functionality. This class is normally instantiated and configured, not inherited from. The components providing the Logging capability are contained in this class through interfaces, and as such can be replaced with custom components.  <a href="classpvr_1_1_logger.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html">Multi</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A small statically allocated array This class represents a small array of items. The array is statically allocated, and has at most 255 items, usually 8. It is not meant to (and cannot) be used to store large numbers of items (use a std::vector instead), rather it is meant to hold small tuples of items. The PowerVR framework utilizes this class to store tuples of one-per-swap-image items.  <a href="classpvr_1_1_multi.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_normalised_integer.html">NormalisedInteger</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of a Normalised Integer (an integer representing a fixed point value from 0..1). Contains functions to construct from Integer values, to convert to and from floating point values, arithmetic operators and similar.  <a href="classpvr_1_1_normalised_integer.html#details">More...</a><br/></td></tr>
@@ -239,10 +240,10 @@ Typedefs</h2></td></tr>
 pvr::RefCountedWeakReference<br class="typebreak"/>
 &lt; <a class="el" href="classpvr_1_1_i_graphics_context.html">IGraphicsContext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a2ccaf74f96ba78d1629ddd21a2a7d647">GraphicsContext</a></td></tr>
 <tr class="separator:a2ccaf74f96ba78d1629ddd21a2a7d647"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8357dfb6620753eebbadf407c650d8a7"><td class="memItemLeft" align="right" valign="top">typedef <br class="typebreak"/>
-pvr::RefCountedResource<br class="typebreak"/>
-&lt; <a class="el" href="classpvr_1_1_i_graphics_context.html">IGraphicsContext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a8357dfb6620753eebbadf407c650d8a7">GraphicsContextStrongReference</a></td></tr>
-<tr class="separator:a8357dfb6620753eebbadf407c650d8a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeed0e66b0e3f4fb5f378b808f2b9bd1e"><td class="memItemLeft" align="right" valign="top">typedef <br class="typebreak"/>
+pvr::EmbeddedRefCountedResource<br class="typebreak"/>
+&lt; <a class="el" href="classpvr_1_1_i_graphics_context.html">IGraphicsContext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#aeed0e66b0e3f4fb5f378b808f2b9bd1e">GraphicsContextStrongReference</a></td></tr>
+<tr class="separator:aeed0e66b0e3f4fb5f378b808f2b9bd1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05b4c61ffca81d2117a06c9c30d3b0ec"><td class="memItemLeft" align="right" valign="top">typedef signed short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a05b4c61ffca81d2117a06c9c30d3b0ec">int16</a></td></tr>
 <tr class="memdesc:a05b4c61ffca81d2117a06c9c30d3b0ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">16-bit signed integer.  <a href="#a05b4c61ffca81d2117a06c9c30d3b0ec">More...</a><br/></td></tr>
 <tr class="separator:a05b4c61ffca81d2117a06c9c30d3b0ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -300,7 +301,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a71a671de6d1864f79f68fbfc422cb0a8"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a71a671de6d1864f79f68fbfc422cb0a8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a71a671de6d1864f79f68fbfc422cb0a8">assertRefcountValid</a> (const T &amp;t)</td></tr>
 <tr class="separator:a71a671de6d1864f79f68fbfc422cb0a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07c4cf25476d241f3f3d531cbc71e11e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a8357dfb6620753eebbadf407c650d8a7">GraphicsContextStrongReference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a07c4cf25476d241f3f3d531cbc71e11e">createGraphicsContext</a> ()</td></tr>
+<tr class="memitem:a07c4cf25476d241f3f3d531cbc71e11e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#aeed0e66b0e3f4fb5f378b808f2b9bd1e">GraphicsContextStrongReference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a07c4cf25476d241f3f3d531cbc71e11e">createGraphicsContext</a> ()</td></tr>
 <tr class="memdesc:a07c4cf25476d241f3f3d531cbc71e11e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is implemented in PVRApi, in order to return a pointer to the actual Graphics Context.  <a href="#a07c4cf25476d241f3f3d531cbc71e11e">More...</a><br/></td></tr>
 <tr class="separator:a07c4cf25476d241f3f3d531cbc71e11e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a113afe98c97651ae7f74ffb3ddf1ebaf"><td class="memItemLeft" align="right" valign="top">std::auto_ptr&lt; <a class="el" href="classpvr_1_1_i_platform_context.html">IPlatformContext</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a113afe98c97651ae7f74ffb3ddf1ebaf">createNativePlatformContext</a> (<a class="el" href="classpvr_1_1_o_s_manager.html">OSManager</a> &amp;osManager)</td></tr>
@@ -316,6 +317,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a0e014591a7987f32c1ece4744260307c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function object hashing a number of bytes into a 32 bit unsigned integer.  <a href="#a0e014591a7987f32c1ece4744260307c">More...</a><br/></td></tr>
 <tr class="separator:a0e014591a7987f32c1ece4744260307c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e73b56533c028c46d6d5d55f1e70f00"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a7e73b56533c028c46d6d5d55f1e70f00">randomrange</a> (<a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> min, <a class="el" href="namespacepvr.html#a92032f9aacbe1cd5d742f1e11ec0b64e">float32</a> max)</td></tr>
+<tr class="memdesc:a7e73b56533c028c46d6d5d55f1e70f00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a random Number between min and max.  <a href="#a7e73b56533c028c46d6d5d55f1e70f00">More...</a><br/></td></tr>
 <tr class="separator:a7e73b56533c028c46d6d5d55f1e70f00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37496ce30d200726b9bef9242ba09067"><td class="memTemplParams" colspan="2">template&lt;typename T1_ &gt; </td></tr>
 <tr class="memitem:a37496ce30d200726b9bef9242ba09067"><td class="memTemplItemLeft" align="right" valign="top">std::array&lt; T1_, sizeof(T1_)&gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a37496ce30d200726b9bef9242ba09067">readBits</a> (const T1_ &amp;value)</td></tr>
@@ -457,12 +459,12 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a8357dfb6620753eebbadf407c650d8a7"></a>
+<a class="anchor" id="aeed0e66b0e3f4fb5f378b808f2b9bd1e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef pvr::RefCountedResource&lt;<a class="el" href="classpvr_1_1_i_graphics_context.html">IGraphicsContext</a>&gt; <a class="el" href="namespacepvr.html#a8357dfb6620753eebbadf407c650d8a7">pvr::GraphicsContextStrongReference</a></td>
+          <td class="memname">typedef pvr::EmbeddedRefCountedResource&lt;<a class="el" href="classpvr_1_1_i_graphics_context.html">IGraphicsContext</a>&gt; <a class="el" href="namespacepvr.html#aeed0e66b0e3f4fb5f378b808f2b9bd1e">pvr::GraphicsContextStrongReference</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -824,7 +826,7 @@ template&lt;typename T &gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr.html#a8357dfb6620753eebbadf407c650d8a7">GraphicsContextStrongReference</a> pvr::createGraphicsContext </td>
+          <td class="memname"><a class="el" href="namespacepvr.html#aeed0e66b0e3f4fb5f378b808f2b9bd1e">GraphicsContextStrongReference</a> pvr::createGraphicsContext </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>
@@ -999,6 +1001,10 @@ template&lt;typename T1_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Return a random Number between min and max. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Random number </dd></dl>
 
 </div>
 </div>

@@ -23,8 +23,8 @@ namespace impl {
 
 /*!*********************************************************************************************************************
 \brief Class containing the necessary information for a CommandBuffer::drawIndexedIndirect command. Should be filled and uploaded to
-		a buffer (or directly written to through a shader) and used for the DrawIndexedIndirect command. DrawIndexedIndirect
-		allows to draw primitives using an IndexBuffer to select vertices/
+		a buffer (or directly written to through a shader), and used for the DrawIndexedIndirect command. DrawIndexedIndirect
+		allows to draw primitives using an IndexBuffer to select vertices.
 ***********************************************************************************************************************/
 struct DrawIndexedIndirect
 {
@@ -37,7 +37,7 @@ struct DrawIndexedIndirect
 
 /*!*********************************************************************************************************************
 \brief Class containing the necessary information for a CommandBuffer::drawIndirect command. Should be filled and uploaded to
-		a buffer (or directly written to through a shader) and used for the DrawIndirect command. DrawIndirect sends the
+		a buffer (or directly written to through a shader), and used for the DrawIndirect command. DrawIndirect sends the
 		vertices directly in the order they appear, without indexing.
 ***********************************************************************************************************************/
 struct DrawIndirect
@@ -57,7 +57,7 @@ class Buffer_
 	Buffer_& operator=(Buffer_&);//deleted
 protected:
 	uint32 m_size;
-	types::BufferBindingUse::Bits m_usage;
+	types::BufferBindingUse m_usage;
 	GraphicsContext m_context;
 	Buffer_(GraphicsContext& context) : m_context(context) {}
 public:
@@ -67,26 +67,37 @@ public:
 	uint32 getSize() const { return m_size; }
 
 	/*!*********************************************************************************************************************
-	\return The context for the specified resource creator.
+    \return Return The context for the specified resource creator.
 	***********************************************************************************************************************/
 	const GraphicsContext& getContext() const { return m_context; }
 
+    /*!
+       \brief getContext
+       \return
+     */
 	GraphicsContext& getContext() { return m_context; }
 
 	/*!*********************************************************************************************************************
-	\return Get buffer usage.
+    \return Return The context for the specified resource creator (const).
 	***********************************************************************************************************************/
-	types::BufferBindingUse::Bits getBufferUsage()const { return m_usage; }
+	types::BufferBindingUse getBufferUsage()const { return m_usage; }
 
+    /*!
+       \brief dtor
+     */
 	virtual ~Buffer_() { }
 
-	/*!*********************************************************************************************************************
-	\brief Update the buffer.
-	\param[in] data
-	\param[in] offset in buffer
-	\param[in] length range to be updated in the buffer
-	***********************************************************************************************************************/
-	void update(const void* data, uint32 offset, uint32 length);
+    /*!
+       \brief Return true if this buffer is mappable
+       \return
+     */
+	bool isMappable() const;
+
+    /*!
+       \brief Return true if this buffer is already mapped
+       \return
+     */
+	bool isMapped() const;
 
 	/*!*********************************************************************************************************************
 	\brief Map this buffer.
@@ -94,22 +105,54 @@ public:
 	\param[in] offset in buffer
 	\param[in] length range to be mapped in the buffer
 	***********************************************************************************************************************/
-	void* map(types::MapBufferFlags::Enum flags, uint32 offset, uint32 length);
+	void* map(types::MapBufferFlags flags, uint32 offset, uint32 length = -1);
 
 	/*!*********************************************************************************************************************
 	\brief Unmap the buffer, @see map.
 	***********************************************************************************************************************/
 	void unmap();
 
+    /*!*********************************************************************************************************************
+    \brief Perform an update to the buffer via using map and unmap. (Performs Map, memcpy, Unmap).
+    \param[in] data A pointer to the data to copy to the buffer
+    \param[in] offset Offset (bytes) in buffer to copy start copying the data to
+    \param[in] length Length (bytes) of the data to be copied from \p data
+    ***********************************************************************************************************************/
+    virtual void update(const void* data, uint32 offset, uint32 length)
+    {
+        assertion(length + offset <= m_size);
+        void* mapData  = map(types::MapBufferFlags::Write, offset, length);
+        if (mapData)
+        {
+            memcpy(mapData, data, length);
+            unmap();
+        }
+        else
+        {
+            assertion(false, "Failed to map memory");
+        }
+    }
+
 	/*!*********************************************************************************************************************
 	\brief Allocate a new buffer on the \p context GraphicsContext
-	\param context The graphics context
-	\param size buffer size, in bytes
-	\param hint The expected use of the buffer (CPU Read, GPU write etc)
+	\param size The size of the buffer, in bytes
+	\param bufferUsage A bitfield of all allowed uses of this buffer. A buffer must not be used in a way that has not been defined.
+	\param isMappable Set to true to allow the buffer to be mapped to host-visible memory. Set to false is this function is
+	not required and the buffer will be populated through a buffer copy (or commandBuffer->updateBuffer()). In both of these
+	cases, add the TransferDst flag to the \p bufferUsage.
 	***********************************************************************************************************************/
-	bool allocate(uint32 size, types::BufferBindingUse::Bits bufferUsage, types::BufferUse::Flags hint = types::BufferUse::DEFAULT);
+	bool allocate(uint32 size, types::BufferBindingUse bufferUsage, bool isMappable);
 
+    /*!
+       \brief Return a handle to the api-specifc native object (GLenum, VkBuffer etc.) (const)
+     */
 	const native::HBuffer_& getNativeObject()const;
+
+
+    /*!
+       \brief Return a handle to the native api object (GLenum, VkBuffer etc.)
+       \return
+     */
 	native::HBuffer_& getNativeObject();
 };
 }//namespace impl
@@ -150,10 +193,12 @@ public:
 	\param[in] data Pointer to the data to update with
 	\param[in] offset in buffer to update
 	\param[in] length range in the buffer to be updated
+	\description No need for explicit function calls for map and unmap. Update buffer takes care of mapping and mapping,
 	***********************************************************************************************************************/
 	void update(const void* data, uint32 offset, uint32 length)
 	{
-		buffer->update(data, offset, length);
+        assertion(length + offset <= buffer->getSize(), "BufferView_::update - offset and length exceeds the buffer size");
+        buffer->update(data, offset, length);
 	}
 
 	/*!*********************************************************************************************************************
@@ -163,7 +208,7 @@ public:
 	\param[in] length Range of the buffer to map
 	\return		A pointer to the region of memory where the buffer is mapped.
 	***********************************************************************************************************************/
-	void* map(types::MapBufferFlags::Enum flags, uint32 offset, uint32 length)
+	void* map(types::MapBufferFlags flags, uint32 offset, uint32 length)
 	{
 		return buffer->map(flags, offset, length);
 	}
@@ -173,16 +218,47 @@ public:
 	***********************************************************************************************************************/
 	void unmap() { buffer->unmap(); }
 
+    /*!
+       \brief Return true if the buffer is already mapped.
+       \return
+     */
+	bool isMapped() const { return buffer->isMapped();  }
+
+    /*!
+       \brief Return the offset this buffer view pointing in to the buffer
+     */
 	uint32 getOffset() const { return offset; }
+
+    /*!
+       \brief Return the range of this buffer view
+     */
 	uint32 getRange() const { return range; }
+
+    /*!
+       \brief Return a handle to the native api object
+     */
 	const pvr::native::HBufferView_& getNativeObject()const;
+
+    /*!
+       \brief Return  a handle to the native object
+     */
 	pvr::native::HBufferView_& getNativeObject();
+
+    /*!
+       \brief Return the graphics context who owns this resource
+     */
 	GraphicsContext& getContext() { return getResource()->getContext(); }
+
+
+    /*!
+       \brief Return the graphics context who owns this resource (const)
+     */
 	const GraphicsContext& getContext()const { return getResource()->getContext(); }
 protected:
 	Buffer buffer;
 	uint32 offset;
 	uint32 range;
+
 	BufferView_(const Buffer& buffer, uint32 offset, uint32 range) : buffer(buffer),
 		offset(offset), range(range) { }
 };

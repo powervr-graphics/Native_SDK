@@ -90,14 +90,12 @@ typedef RefCountedResource<impl::Image_> Image;
 \brief An Enumeration of all the Anchor points that can be used to position a Sprite. An anchor point is the point
        to which all positioning will be relative to. Use this to facilitate the laying out of UIs.
 *******************************************************************************************************************/
-namespace Anchor {
-enum Enum
-{
+enum class Anchor {
 	TopLeft, TopCenter, TopRight,
 	CenterLeft, Center, CenterRight,
 	BottomLeft, BottomCenter, BottomRight
 };
-}
+
 
 /*!****************************************************************************************************************
 \brief Contains the implementation of the raw UIRenderer classes. In order to use the library, use the PowerVR
@@ -226,7 +224,7 @@ public:
 			that have been generated with PVRTexTool as Alpha textures.
 	\return	"true" if set to render as Alpha, false otherwise.
 	*******************************************************************************************************************/
-	const bool getAlphaRenderingMode()const { return m_alphaMode == 1; }
+	bool getAlphaRenderingMode()const { return m_alphaMode == 1; }
 
 	/*!****************************************************************************************************************
 	\brief	Get the sprite's own transformation matrix. Does not contain hierarchical transformations from groups etc.
@@ -254,13 +252,12 @@ public:
 				transformation matrix. Necessary to support instanced rendering of the same sprite from
 				different groups.
 	********************************************************************************************************/
-	virtual void onRender(api::SecondaryCommandBuffer& commands, pvr::uint64 parentId) const = 0;
-
-	const pvr::Rectanglei& getViewport()const { return m_viewport; }
-
-	void setViewport(const pvr::Rectanglei& viewport) { m_viewport = viewport; }
+	virtual void onRender(api::CommandBufferBase& commands, pvr::uint64 parentId) const = 0;
 
 	math::AxisAlignedBox const& getBoundingBox()const { return m_boundingRect; }
+
+	virtual glm::vec2 getScaledDimension()const = 0;
+
 protected:
 	friend class ::pvr::ui::UIRenderer;
 
@@ -270,7 +267,6 @@ protected:
 	mutable int32 m_alphaMode; //< Set the shader to render alpha-only
 	UIRenderer& m_uiRenderer; //< UIRenderer this sprite belongs to
 	mutable glm::mat4 m_cachedMatrix; //< Bounding rectangle of the sprite
-	pvr::Rectanglei m_viewport;
 	glm::mat4 m_viewProj;
 };
 
@@ -281,27 +277,35 @@ protected:
 class I2dComponent
 {
 protected:
-	mutable Anchor::Enum m_anchor; //!< The position in the sprite relative to which all positioning calculations are done
+	mutable Anchor m_anchor; //!< The position in the sprite relative to which all positioning calculations are done
 	mutable glm::vec2 m_position;  //!< Position of the sprite relative to its UIRenderer area.
 	mutable glm::vec2 m_scale;     //!< Scale of the sprite. A scale of 1 means natural size (1:1 mapping of sprite to screen pixels)
 	mutable float32 m_rotation;    //!< Rotation of the sprite, in radians
 	mutable bool m_isPositioningDirty;  //!< Used to avoid unnecessary expensive calculations if commitUpdate is called unnecessarily.
 	mutable glm::ivec2 m_pixelOffset;
+	mutable Rectanglef m_uv;
+	mutable bool m_isUVDirty;
 public:
-	I2dComponent() : m_anchor(Anchor::Center), m_position(0.f, 0.f), m_scale(1.f, 1.f), m_rotation(0.f), m_isPositioningDirty(true), m_pixelOffset(0, 0) {}
+	virtual ~I2dComponent() {}
+	I2dComponent() : m_anchor(Anchor::Center), m_position(0.f, 0.f), m_scale(1.f, 1.f),
+		m_rotation(0.f), m_isPositioningDirty(true), m_pixelOffset(0, 0),
+		m_uv(0.0f, 0.0f, 1.0, 1.0f), m_isUVDirty(false) {}
 
 
-	I2dComponent const* setAnchor(Anchor::Enum anchor, const glm::vec2& screenPos = glm::vec2(-1.f, -1.f))
+	/*!**********************************************************************************************
+
+	************************************************************************************************/
+	I2dComponent const* setAnchor(Anchor anchor, const glm::vec2& ndcPos = glm::vec2(-1.f, -1.f))
 	{
-		setAnchor(anchor, screenPos.x, screenPos.y);
+		setAnchor(anchor, ndcPos.x, ndcPos.y);
 		return this;
 	}
 
-	I2dComponent const* setAnchor(Anchor::Enum anchor, pvr::float32 screenPosX = -1.f, pvr::float32 screenPosY = -1.f)const
+	I2dComponent const* setAnchor(Anchor anchor, pvr::float32 ndcPosX = -1.f, pvr::float32 ndcPosY = -1.f)const
 	{
 		m_anchor = anchor;
-		m_position.x = screenPosX;
-		m_position.y = screenPosY;
+		m_position.x = ndcPosX;
+		m_position.y = ndcPosY;
 		m_isPositioningDirty = true;
 		return this;
 	}
@@ -334,8 +338,20 @@ public:
 		return this;
 	}
 
+protected:
+	friend class UIRenderer;
+	/*!*******************************************************************************************************************************
+	\brief	set the UV corrdinate
+	\return	Return
+	\param	uv
+	**********************************************************************************************************************************/
+	I2dComponent const* setUV(const pvr::Rectanglef& uv)const
+	{
+		m_uv = uv;
+		m_isUVDirty = true;
+		return this;
+	}
 };
-
 
 /*!****************************************************************************************************************
 \brief Use this class through the Refcounted Framework Object pvr::ui::Image. Represents a 2D Image (aka Texture).
@@ -369,7 +385,7 @@ public:
 	/*!****************************************************************************************************************
 	\brief	Function that will be automatically called by the uiRenderer. Do not call.
 	*******************************************************************************************************************/
-	void onRender(api::SecondaryCommandBuffer& commands, pvr::uint64 parentId) const;
+	void onRender(api::CommandBufferBase& commands, pvr::uint64 parentId) const;
 
 	/*!****************************************************************************************************************
 	\brief	Function that will be automatically called by the uiRenderer. Do not call.
@@ -410,29 +426,20 @@ public:
 		return m_texDescSet;
 	}
 
-	/*!****************************************************************************************************************
-	\brief	Set a matrix that will be used to transform TextureCoordinates. Use for texture atlases. Initially identity
-	\param uvMatrix A 3x3 matrix, containing an affine 2D transformation to apply to the texture coordinates. Caution,
-	       this is NOT a 3x3 3D matrix containing rotation and scale, this is a 2D matrix containing any affine 2D
-		   transformation (translation, scale, rotation, skew etc.)
-	*******************************************************************************************************************/
-	void setUVMatrix(const glm::mat3x3& uvMatrix) const { m_matrixUV = uvMatrix; }
+	glm::vec2 getScaledDimension()const { return getDimensions() * m_scale;}
+
+
 protected:
 	struct InstanceData
 	{
-		glm::mat4			mvp;		// model-view-projection
-		api::Buffer			buffer;		// ubo buffer
-		api::BufferView		bufferView; // ubo buffer view
-		api::DescriptorSet	uboDescSet; // ubo desciptor set
+		glm::mat4						mvp;		// model-view-projection
+		utils::StructuredMemoryView		bufferView; // ubo buffer view
+		api::DescriptorSet				uboDescSet;
 	};
 	typedef std::map<pvr::uint64, InstanceData> UboPool;
-	pvr::Result::Enum updateTextureDescriptorSet()const;
+	pvr::Result updateTextureDescriptorSet()const;
 	void writeUboDescriptorSet(pvr::uint64 parentId)const;
 	void updateUbo(pvr::uint64 parentIds)const;
-
-
-	mutable glm::mat3x3 m_matrixUV;
-
 	mutable api::DescriptorSet m_texDescSet; //!< The descriptor set containing the texture of this object
 	uint32 m_texW;						//!< Width of the image
 	uint32 m_texH;						//!< Height of the image
@@ -691,7 +698,7 @@ public:
 	/*!****************************************************************************************************************
 	\brief	Function that will be automatically called by the uiRenderer. Do not call.
 	*******************************************************************************************************************/
-	void onRender(api::SecondaryCommandBuffer& commands, pvr::uint64 parentId) const;
+	void onRender(api::CommandBufferBase& commands, pvr::uint64 parentId) const;
 
 	/*!****************************************************************************************************************
 	\brief	Function that will be automatically called by the uiRenderer. Do not call.
@@ -709,13 +716,18 @@ public:
 	}
 
 
+	glm::vec2 getScaledDimension()const
+	{
+		return getDimensions() * m_scale;
+	}
+
+
 private:
 	struct InstanceData
 	{
 		glm::mat4 mvp;				// model-view-projection
-		api::Buffer buffer;			// ubo buffer
-		api::BufferView bufferView;	// ubo buffer view
-		api::DescriptorSet descSet;	// ubo descriptor set
+		utils::StructuredMemoryView bufferView;	// ubo buffer view
+		api::DescriptorSet uboDescSet;
 	};
 	const api::DescriptorSet& getTexDescriptorSet() const {	return m_font->getTexDescriptorSet(); }
 	void regenerateText() const;
@@ -734,7 +746,6 @@ private:
 	mutable std::vector<uint32> m_utf32;
 	mutable std::vector<Vertex>	m_vertices;
 	mutable int32 m_numCachedVerts;
-
 	mutable std::map<pvr::uint64, InstanceData> m_mvpPools;
 };
 
@@ -813,13 +824,24 @@ public:
 	\internal
 	\brief  Internal function that UIRenderer calls to render. Do not call directly.
 	*******************************************************************************************************************/
-	virtual void onRender(api::SecondaryCommandBuffer& commandBuffer, pvr::uint64 parentId) const
+	virtual void onRender(api::CommandBufferBase& commandBuffer, pvr::uint64 parentId) const
 	{
 		for (ChildContainer::iterator it = m_children.begin(); it != m_children.end(); ++it)
 		{
 			(*it)->onRender(commandBuffer, packId(parentId, m_id));
 		}
 	}
+
+	glm::vec2 getScaledDimension()const
+	{
+		glm::vec2 dim(0);
+		for (uint32 i = 0; i < m_children.size(); ++i)
+		{
+			dim += m_children[i]->getScaledDimension();
+		}
+		return dim;
+	}
+
 protected:
 	pvr::uint64 packId(pvr::uint64 parentIds, pvr::uint64 id)const
 	{

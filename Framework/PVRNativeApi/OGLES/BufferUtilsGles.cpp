@@ -1,5 +1,5 @@
 /*!*********************************************************************************************************************
-\file         PVRApi\OGLES\ShaderUtils.cpp
+\file         PVRNativeApi\OGLES\ShaderUtils.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Implementations of the shader utility functions
@@ -10,7 +10,7 @@
 #include "PVRNativeApi/OGLES/OpenGLESBindings.h"
 namespace pvr {
 namespace apiUtils {
-bool createBuffer(IPlatformContext& context, types::BufferBindingUse::Bits usage,
+bool createBuffer(IPlatformContext& context, types::BufferBindingUse usage,
                   pvr::uint32 size, bool memHostVisible, native::HBuffer_& outBuffer)
 {
 	gl::GenBuffers(1, &outBuffer.handle);

@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:2.1.0'
     }
 }
 
@@ -20,13 +20,13 @@ apply plugin: 'com.android.application'
 File pvrSdkDir = file("${project.buildDir}/../../../../../../../")
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         applicationId "com.powervr.VulkanIntroducingPVRAssets"
         minSdkVersion 16
-        targetSdkVersion 21
+        targetSdkVersion 24
     }
     buildTypes {
         release {
@@ -70,6 +70,8 @@ FileCollection assetFiles = files(
 "${pvrSdkDir}/Examples/Beginner/03_IntroducingPVRAssets/ProcessedAssets/GnomeWood.pvr",
 "${pvrSdkDir}/Examples/Beginner/03_IntroducingPVRAssets/ProcessedAssets/DarkWood.pvr",
 "${pvrSdkDir}/Examples/Beginner/03_IntroducingPVRAssets/ProcessedAssets/ClearWood.pvr",
+"${pvrSdkDir}/Examples/Beginner/03_IntroducingPVRAssets/Vulkan/FragShader_vk.fsh",
+"${pvrSdkDir}/Examples/Beginner/03_IntroducingPVRAssets/Vulkan/VertShader_vk.vsh",
 "${pvrSdkDir}/Examples/Beginner/03_IntroducingPVRAssets/Vulkan/FragShader_vk.spv",
 "${pvrSdkDir}/Examples/Beginner/03_IntroducingPVRAssets/Vulkan/VertShader_vk.spv",
 "${pvrSdkDir}/Examples/Beginner/03_IntroducingPVRAssets/ProcessedAssets/GnomeToy.pod",

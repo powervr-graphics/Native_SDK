@@ -22,14 +22,14 @@
 		AC2A38671A0A6BD80093C884 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC2A38641A0A6BD80093C884 /* Info.plist */; };
 		AC2A386E1A0A6BE10093C884 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386B1A0A6BE10093C884 /* InfoPlist.strings */; };
 		AC2A38711A0A6BE70093C884 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386F1A0A6BE70093C884 /* MainMenu.xib */; };
-		F8349CAC2D333195BE3B02D9 /* OGLESIntroUIRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F867668291424DD9578EB8C6 /* OGLESIntroUIRenderer.cpp */; };
-		F837E184802096B7675AF089 /* arial_36.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F885DD6ADD814C9C3065CF18 /* arial_36.pvr */; };
-		F8AE2E9B066836294162D0DC /* starjout_60.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8982E3EDBD94614CCA374B1 /* starjout_60.pvr */; };
-		F88154A445EB0EA89342D5E9 /* title_36.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F843F7778B4A7107B043838C /* title_36.pvr */; };
-		F82E8257CEF1240246BB2C89 /* title_46.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81B21CE1999F35A77E41699 /* title_46.pvr */; };
-		F818EEF4E24C288A1375B78E /* title_56.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86405596BE0F4C9B55AAEEF /* title_56.pvr */; };
-		F814C5213BEC8A9A6058819A /* Text.txt in Resources */ = {isa = PBXBuildFile; fileRef = F8DFF2FB1C2E0B39C18F2A67 /* Text.txt */; };
-		F8EEA951F77B39694A548EC4 /* titletext.txt in Resources */ = {isa = PBXBuildFile; fileRef = F82FC556A9F87CF3856452F2 /* titletext.txt */; };
+		F802442E7B968AF8B714AADE /* OGLESIntroUIRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8B39969FF56A8A1FDCFBF73 /* OGLESIntroUIRenderer.cpp */; };
+		F837E184802096B7675AF089 /* arial_36.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F6FDD391B91D1D15827561 /* arial_36.pvr */; };
+		F8AE2E9B066836294162D0DC /* starjout_60.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F886280B718269BE7C1AA7C7 /* starjout_60.pvr */; };
+		F88154A445EB0EA89342D5E9 /* title_36.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B96E151EA5E52576D7388C /* title_36.pvr */; };
+		F82E8257CEF1240246BB2C89 /* title_46.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B2C62C33E94489256E7FC8 /* title_46.pvr */; };
+		F818EEF4E24C288A1375B78E /* title_56.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F814CBCA7004CACD466DBDFF /* title_56.pvr */; };
+		F814C5213BEC8A9A6058819A /* Text.txt in Resources */ = {isa = PBXBuildFile; fileRef = F838BC6688DF02C9CFC445BB /* Text.txt */; };
+		F8EEA951F77B39694A548EC4 /* titletext.txt in Resources */ = {isa = PBXBuildFile; fileRef = F8FC1673D7E4931800ECD2FD /* titletext.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -166,14 +166,14 @@
 		AC2A38661A0A6BD80093C884 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AC2A386C1A0A6BE10093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		AC2A38701A0A6BE70093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
-		F867668291424DD9578EB8C6 /* OGLESIntroUIRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroUIRenderer.cpp; path = ../../OGLESIntroUIRenderer.cpp; sourceTree = SOURCE_ROOT; };
-		F885DD6ADD814C9C3065CF18 /* arial_36.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = arial_36.pvr; path = ../../../ProcessedAssets/arial_36.pvr; sourceTree = SOURCE_ROOT; };
-		F8982E3EDBD94614CCA374B1 /* starjout_60.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = starjout_60.pvr; path = ../../../ProcessedAssets/starjout_60.pvr; sourceTree = SOURCE_ROOT; };
-		F843F7778B4A7107B043838C /* title_36.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = title_36.pvr; path = ../../../ProcessedAssets/title_36.pvr; sourceTree = SOURCE_ROOT; };
-		F81B21CE1999F35A77E41699 /* title_46.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = title_46.pvr; path = ../../../ProcessedAssets/title_46.pvr; sourceTree = SOURCE_ROOT; };
-		F86405596BE0F4C9B55AAEEF /* title_56.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = title_56.pvr; path = ../../../ProcessedAssets/title_56.pvr; sourceTree = SOURCE_ROOT; };
-		F8DFF2FB1C2E0B39C18F2A67 /* Text.txt */ = {isa = PBXFileReference; lastKnownFileType = file; name = Text.txt; path = ../../../ProcessedAssets/Text.txt; sourceTree = SOURCE_ROOT; };
-		F82FC556A9F87CF3856452F2 /* titletext.txt */ = {isa = PBXFileReference; lastKnownFileType = file; name = titletext.txt; path = ../../../ProcessedAssets/titletext.txt; sourceTree = SOURCE_ROOT; };
+		F8B39969FF56A8A1FDCFBF73 /* OGLESIntroUIRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroUIRenderer.cpp; path = ../../OGLESIntroUIRenderer.cpp; sourceTree = SOURCE_ROOT; };
+		F8F6FDD391B91D1D15827561 /* arial_36.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = arial_36.pvr; path = ../../../ProcessedAssets/arial_36.pvr; sourceTree = SOURCE_ROOT; };
+		F886280B718269BE7C1AA7C7 /* starjout_60.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = starjout_60.pvr; path = ../../../ProcessedAssets/starjout_60.pvr; sourceTree = SOURCE_ROOT; };
+		F8B96E151EA5E52576D7388C /* title_36.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = title_36.pvr; path = ../../../ProcessedAssets/title_36.pvr; sourceTree = SOURCE_ROOT; };
+		F8B2C62C33E94489256E7FC8 /* title_46.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = title_46.pvr; path = ../../../ProcessedAssets/title_46.pvr; sourceTree = SOURCE_ROOT; };
+		F814CBCA7004CACD466DBDFF /* title_56.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = title_56.pvr; path = ../../../ProcessedAssets/title_56.pvr; sourceTree = SOURCE_ROOT; };
+		F838BC6688DF02C9CFC445BB /* Text.txt */ = {isa = PBXFileReference; lastKnownFileType = file; name = Text.txt; path = ../../../ProcessedAssets/Text.txt; sourceTree = SOURCE_ROOT; };
+		F8FC1673D7E4931800ECD2FD /* titletext.txt */ = {isa = PBXFileReference; lastKnownFileType = file; name = titletext.txt; path = ../../../ProcessedAssets/titletext.txt; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -315,7 +315,7 @@
 		AC2A37F81A0A675B0093C884 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				F867668291424DD9578EB8C6 /* OGLESIntroUIRenderer.cpp */,
+				F8B39969FF56A8A1FDCFBF73 /* OGLESIntroUIRenderer.cpp */,
 			);
 			name = Sources;
 			path = OSX;
@@ -351,8 +351,8 @@
 		AC2A385B1A0A69780093C884 /* Generic */ = {
 			isa = PBXGroup;
 			children = (
-				F8DFF2FB1C2E0B39C18F2A67 /* Text.txt */,
-				F82FC556A9F87CF3856452F2 /* titletext.txt */,
+				F838BC6688DF02C9CFC445BB /* Text.txt */,
+				F8FC1673D7E4931800ECD2FD /* titletext.txt */,
 			);
 			name = Generic;
 			sourceTree = "<group>";
@@ -367,11 +367,11 @@
 		AC2A385D1A0A69850093C884 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F885DD6ADD814C9C3065CF18 /* arial_36.pvr */,
-				F8982E3EDBD94614CCA374B1 /* starjout_60.pvr */,
-				F843F7778B4A7107B043838C /* title_36.pvr */,
-				F81B21CE1999F35A77E41699 /* title_46.pvr */,
-				F86405596BE0F4C9B55AAEEF /* title_56.pvr */,
+				F8F6FDD391B91D1D15827561 /* arial_36.pvr */,
+				F886280B718269BE7C1AA7C7 /* starjout_60.pvr */,
+				F8B96E151EA5E52576D7388C /* title_36.pvr */,
+				F8B2C62C33E94489256E7FC8 /* title_46.pvr */,
+				F814CBCA7004CACD466DBDFF /* title_56.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -544,7 +544,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8349CAC2D333195BE3B02D9 /* OGLESIntroUIRenderer.cpp in Sources */,
+				F802442E7B968AF8B714AADE /* OGLESIntroUIRenderer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

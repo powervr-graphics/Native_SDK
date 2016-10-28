@@ -52,7 +52,7 @@ bool SamplerVk_::init(const api::SamplerCreateParam& samplerDesc)
 	samplerInfo.addressModeW = ConvertToVk::samplerWrap(samplerDesc.wrapModeW);
 	samplerInfo.borderColor = ConvertToVk::borderColor(samplerDesc.borderColor);
 	samplerInfo.compareEnable = (samplerDesc.compareMode != types::ComparisonMode::None);
-	samplerInfo.compareOp = ConvertToVk::compareMode(pvr::types::ComparisonMode::Enum(samplerDesc.compareMode % 8));
+	samplerInfo.compareOp = ConvertToVk::compareMode(pvr::types::ComparisonMode((uint32)samplerDesc.compareMode % 8));
 	samplerInfo.flags = 0;
 	samplerInfo.magFilter = ConvertToVk::samplerFilter(samplerDesc.magnificationFilter);
 	samplerInfo.minFilter = ConvertToVk::samplerFilter(samplerDesc.minificationFilter);

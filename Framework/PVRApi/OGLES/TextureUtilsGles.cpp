@@ -1,5 +1,5 @@
 /*!*********************************************************************************************************************
-\file         PVRNativeApi\OGLES\TextureUtilsGles.cpp
+\file         PVRApi\OGLES\TextureUtilsGles.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief         Contains function definitions for OpenGL ES Texture Utils.
@@ -30,16 +30,29 @@ namespace impl {
 PixelFormat unused::unused1;
 bool unused::unused2;
 }
-Result::Enum textureUpload(GraphicsContext& context, const assets::Texture& texture, api::TextureView& outTexture, bool allowDecompress/*=true*/,
-                           PixelFormat& outDeCompressedFormat /*= impl::unused::unused1*/, bool& isCompressed /*= impl::unused::unused2*/)
+Result textureUpload(GraphicsContext& context, const assets::Texture& texture, api::TextureView& outTexture, bool allowDecompress/*=true*/)
 {
 	native::HTexture_ htex;
-	types::ImageAreaSize texSize;
-	Result::Enum result = textureUpload(context->getPlatformContext(), texture, htex, texSize, outDeCompressedFormat, isCompressed, allowDecompress);
+	types::ImageArea imageArea;
+	bool isCompressed = false;
+	PixelFormat outDeCompressedFormat;
+	Result result = textureUpload(context->getPlatformContext(), texture, htex, imageArea, outDeCompressedFormat, isCompressed, allowDecompress);
 	if (result == Result::Success)
 	{
 		api::gles::TextureStoreGles texGles;
 		texGles.construct(context, htex);
+
+		api::ImageStorageFormat& fmt = texGles->getFormat();
+		fmt = outDeCompressedFormat;
+		fmt.colorSpace = texture.getColorSpace();
+		fmt.dataType = texture.getChannelType();
+		fmt.numSamples = 1;
+
+
+		texGles->setDimensions(imageArea);
+		texGles->setLayers(imageArea);
+		fmt.mipmapLevels = (uint8)texGles->getNumMipLevels();
+
 		outTexture.construct(texGles);
 		if (outTexture.isNull())
 		{

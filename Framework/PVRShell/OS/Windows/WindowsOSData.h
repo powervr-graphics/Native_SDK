@@ -8,7 +8,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 namespace pvr {
-namespace system {
+namespace platform {
 /*!**********************************************************************************************************
 \brief OS specific data for windows
 ************************************************************************************************************/

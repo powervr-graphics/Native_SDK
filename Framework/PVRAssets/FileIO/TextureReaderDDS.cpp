@@ -516,15 +516,6 @@ vector<string> TextureReaderDDS::getSupportedFileExtensions()
 	return vector<string>(extensions);
 }
 
-string TextureReaderDDS::getReaderName()
-{
-	return "PowerVR Direct Draw Surface Reader";
-}
-
-string TextureReaderDDS::getReaderVersion()
-{
-	return "1.0.0";
-}
 }
 }
 }

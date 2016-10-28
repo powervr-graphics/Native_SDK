@@ -15,7 +15,7 @@ SDKDIR  = ../../../..
 OUTNAME = libPVRAssets.a
 VPATH = ../..
 
-DIRECTORIES := FileIO/ Model/ Texture/ 
+DIRECTORIES := FileIO/ Model/ Texture/ ../../External/pugixml
 
 #This ... 
 COMPILE_ALL_CPP_IN_DIRECTORIES := 1

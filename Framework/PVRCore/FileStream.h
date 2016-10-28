@@ -17,7 +17,7 @@ public:
 	/*!*********************************************************************************************************************
 	\brief  Create a new filestream of a specified file.
 	\param  filePath The path of the file. Can be in any format the operating system understands (absolute, relative etc.)
-	\param  flags   fopen-style flags. 
+	\param  flags   fopen-style flags.
 	\description Possible flags: 'r':read,'w':truncate/write, 'a':append/write, r+: read/write, w+:truncate/read/write,
 	        a+:append/read/write
 	***********************************************************************************************************************/
@@ -38,7 +38,7 @@ public:
 	\brief    Main write function. Write into the stream the specified amount of items from a provided buffer.
 	\param[in]  elementSize  The size of each element that will be written.
 	\param[in]  elementCount  The number of elements to write.
-	\param[in]  buffer  The buffer from which to read the data. If the buffer is smaller than 
+	\param[in]  buffer  The buffer from which to read the data. If the buffer is smaller than
 	            elementSize * elementCount bytes, result is undefined.
 	\param[out]  dataWritten  After returning, will contain the number of items that were actually written. Will
 	            contain elementCount unless an error has occured.
@@ -60,7 +60,7 @@ public:
 	\return   Success if successful, error code otherwise.
 	**********************************************************************************************************/
 	virtual bool open()const;
-	
+
 	/*!********************************************************************************************************
 	\brief    Closes the stream.
 	**********************************************************************************************************/
@@ -77,15 +77,29 @@ public:
 	\return   The current position in the stream.
 	**********************************************************************************************************/
 	virtual size_t getPosition() const;
-	
+
 	/*!********************************************************************************************************
 	\brief		Query the total amount of data in the stream.
 	\return   The total amount of data in the stream.
 	**********************************************************************************************************/
 	virtual size_t getSize() const;
 
+	/*!
+	   \brief Create a new file stream
+	   \param file
+	   \param flag
+	   \return Return a valid file stream, else Return null if it fails
+	 */
+	static Stream::ptr_type createFileStream(const char* file, const char* flag)
+	{
+		Stream::ptr_type stream(new FileStream(file, flag));
+		if (!stream->open()) { stream.reset(); }
+		return stream;
+	}
+
 protected:
 	mutable FILE* m_file;
 	std::string m_flags;
 };
+
 }

@@ -43,7 +43,6 @@ protected:
 	/*!****************************************************************************************************************
 	\brief Create a new sampler object on device from the parameters.
 	\param device The device on which to create the sampler on
-	\param desc The parameters of the sampler
 	*******************************************************************************************************************/
 	Sampler_(GraphicsContext& device) : m_context(device){}
 protected:

@@ -316,4 +316,4 @@ pvr::api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& contex
     api::TextureView tex; tex.construct(texStore); return tex;
 }
 }
-//!\cond NO_DOXYGEN
+//!\endcond

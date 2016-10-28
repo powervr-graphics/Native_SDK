@@ -5,6 +5,7 @@
 \brief         Contains OpenGL ES specific implementation of the Buffer class. Use only if directly using OpenGL ES calls.
               Provides the definitions allowing to move from the Framework object Buffer to the underlying OpenGL ES Buffer.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/ApiIncludes.h"
 #include "PVRApi/ApiObjects/Buffer.h"
@@ -28,18 +29,25 @@ namespace gles {
 ***********************************************************************************************************************/
 class BufferGles_ : public native::HBuffer_ , public impl::Buffer_
 {
+
+	struct ES2MemoryMapping
+	{
+		std::vector<byte> mem;
+		uint32 offset;
+		uint32 length;
+		ES2MemoryMapping() : offset(0), length(0){}
+	};
+
 public:
 	GLenum m_lastUse;
 	GLenum m_hint;
+	ES2MemoryMapping m_es2MemoryMapping;
 	bool m_memMapped;
-	/*!*********************************************************************************************************************
-	\brief ctor, create buffer on device.
-	\param context The graphics context
-	\param size buffer size in bytes.
-	\param bufferUsage how this buffer will be used for. e.g VertexBuffer, IndexBuffer.
-	\param hints What kind of access will be done (GPU Read, GPU Write, CPU Write, Copy etc)
-	***********************************************************************************************************************/
+	bool m_isMappable;
+	//!\cond NO_DOXYGEN
+	// INTERNAL. Use GraphicsContext->createBuffer() instead.
 	BufferGles_(GraphicsContext& context) : Buffer_(context), m_memMapped(false) {}
+	//!\endcond
 
 	/*!*********************************************************************************************************************
 	\brief Update the buffer.
@@ -47,7 +55,7 @@ public:
 	\param offset offset in the buffer to update
 	\param length length of the buffer to update
 	***********************************************************************************************************************/
-	void update_(const void* data, uint32 offset, uint32 length);
+	void update(const void* data, uint32 offset, uint32 length);
 
 	/*!*********************************************************************************************************************
 	\brief Map the buffer.
@@ -55,7 +63,7 @@ public:
 	\param offset offset in the buffer to map
 	\param length length of the buffer to map
 	***********************************************************************************************************************/
-	void* map_(types::MapBufferFlags::Enum flags, uint32 offset, uint32 length);
+	void* map_(types::MapBufferFlags flags, uint32 offset, uint32 length);
 
 	/*!*********************************************************************************************************************
 	\brief Unmap the buffer
@@ -67,6 +75,9 @@ public:
 	***********************************************************************************************************************/
 	void destroy();
 
+	/*!*********************************************************************************************************************
+	\brief Destructor. Releases the resources held by this object
+	***********************************************************************************************************************/
 	~BufferGles_()
 	{
 		if (m_context.isValid())
@@ -80,13 +91,16 @@ public:
 	}
 
 	/*!*********************************************************************************************************************
-	\brief Allocate a new buffer on the \p context GraphicsContext
-	\param context The graphics context
+	\brief Allocate a new buffer
 	\param size buffer size, in bytes
-	\param hint The expected use of the buffer (CPU Read, GPU write etc)
+	\param bufferUsage A bitfield describing all allowed uses of the buffer
+	\param isMappable If set to true, the buffer will be mappable to host-visible memmory. Otherwise, using the map() or
+	the update() operation is undefined.
+	\details It is reasonable to say that the buffer must be either mappable (to be written to by the host with map/update),
+	have the use flag  TransferDst (so its data is written to by a copy buffer or cmdUpdateBuffer), or StorageBuffer so that
+	its data is written to by a shader. If none of these three conditions is met there is no way to populate it.
 	***********************************************************************************************************************/
-	bool allocate_(uint32 size, types::BufferBindingUse::Bits bufferUsage,
-	               types::BufferUse::Flags hint = types::BufferUse::DEFAULT);
+	bool allocate_(uint32 size, types::BufferBindingUse bufferUsage, bool isMappable);
 };
 
 class BufferViewGles_ : public impl::BufferView_, public native::HBufferView_
@@ -124,3 +138,4 @@ inline RefCountedResource<HBuffer_> createNativeHandle(const RefCountedResource<
 
 }
 }
+//!\endcond

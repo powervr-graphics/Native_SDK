@@ -175,10 +175,10 @@
     <None Include="..\..\..\ProcessedAssets\scene.pod"></None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\FragShader_VK.fsh"></None>
-    <None Include="..\..\FragShader_VK.fsh.spv"></None>
-    <None Include="..\..\VertShader_VK.vsh"></None>
-    <None Include="..\..\VertShader_VK.vsh.spv"></None>
+    <None Include="..\..\FragShader_vk.fsh"></None>
+    <None Include="..\..\FragShader_vk.fsh.spv"></None>
+    <None Include="..\..\VertShader_vk.vsh"></None>
+    <None Include="..\..\VertShader_vk.vsh.spv"></None>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\ProcessedAssets\Marble.pvr"></None>

@@ -20,8 +20,8 @@ pvr::Shell* eventQueue;
 }
 @property (assign) pvr::Shell * eventQueue;
 @end
-using namespace ::pvr::system;
-namespace pvr{namespace system{
+using namespace ::pvr::platform;
+namespace pvr{namespace platform{
 struct InternalOS
 {
 	AppWindow* window;
@@ -37,7 +37,7 @@ struct InternalOS
 pvr::int16 g_cursorX, g_cursorY;
 
 // Setup the capabilities
-const pvr::system::ShellOS::Capabilities pvr::system::ShellOS::m_capabilities = { pvr::types::Capability::Immutable, pvr::types::Capability::Immutable };
+const pvr::platform::ShellOS::Capabilities pvr::platform::ShellOS::m_capabilities = { pvr::types::Capability::Immutable, pvr::types::Capability::Immutable };
 
 ShellOS::ShellOS(/*NSObject<NSApplicationDelegate>*/void* hInstance, OSDATA osdata) : m_instance(hInstance)
 {
@@ -49,7 +49,7 @@ ShellOS::~ShellOS()
 	delete m_OSImplementation;
 }
 
-pvr::Result::Enum ShellOS::init(DisplayAttributes &data)
+pvr::Result ShellOS::init(DisplayAttributes &data)
 {
 	if(!m_OSImplementation)
 		return pvr::Result::OutOfMemory;
@@ -72,7 +72,7 @@ void ShellOS::updatePointingDeviceLocation()
     m_shell->updatePointerPosition(PointerLocation(g_cursorX, g_cursorY));
 }
 
-pvr::Result::Enum ShellOS::initializeWindow(pvr::system::DisplayAttributes &data)
+pvr::Result ShellOS::initializeWindow(pvr::platform::DisplayAttributes &data)
 {
 	 // Now create our window
     NSRect frame;
@@ -162,7 +162,7 @@ OSWindow ShellOS::getWindow() const
 	return (__bridge OSWindow)m_OSImplementation->view;
 }
 
-pvr::Result::Enum ShellOS::handleOSEvents()
+pvr::Result ShellOS::handleOSEvents()
 {
 	// Nothing to do
 	return pvr::Result::Success;
@@ -173,7 +173,7 @@ bool ShellOS::isInitialized()
 	return m_OSImplementation && m_OSImplementation->window;
 }
 
-pvr::Result::Enum ShellOS::popUpMessage(const pvr::tchar *const title, const pvr::tchar *const message, ...)const
+pvr::Result ShellOS::popUpMessage(const pvr::tchar *const title, const pvr::tchar *const message, ...)const
 {
     if(title && message)
     {
@@ -194,7 +194,7 @@ pvr::Result::Enum ShellOS::popUpMessage(const pvr::tchar *const title, const pvr
     return Result::Success;
 }
 
-static pvr::Keys::Enum mapNSKeyToPvrKey(unsigned short keyCode)
+static pvr::Keys mapNSKeyToPvrKey(unsigned short keyCode)
 {
     switch(keyCode){
     
@@ -242,7 +242,7 @@ static pvr::Keys::Enum mapNSKeyToPvrKey(unsigned short keyCode)
             }
             break;
     }
-    return pvr::Keys::Enum(0);
+    return pvr::Keys(0);
 }
 
 // CLASS IMPLEMENTATION

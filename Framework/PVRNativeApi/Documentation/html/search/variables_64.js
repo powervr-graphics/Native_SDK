@@ -15,7 +15,6 @@ var searchData=
   ['deletesyncapple',['DeleteSyncAPPLE',['../classglext.html#abeba8030d0bd7c81ed96ca3321eca9cb',1,'glext']]],
   ['deletetextures',['DeleteTextures',['../classgl.html#a5ed0668e53db9bfb2d2b8eba0f452686',1,'gl']]],
   ['deletevertexarraysoes',['DeleteVertexArraysOES',['../classglext.html#ae41cb545d37e7058f5b2bf14a0e33d59',1,'glext']]],
-  ['depthbuffer',['depthBuffer',['../structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html#a96970c72c5a9a8f650f251647d7099a8',1,'pvr::apiutils::vulkan::DisplaySurface']]],
   ['depthfunc',['DepthFunc',['../classgl.html#a6434cc7aec219d241b8330217caa8260',1,'gl']]],
   ['depthmask',['DepthMask',['../classgl.html#a4852fb169acd6865362b6850a043dfde',1,'gl']]],
   ['depthrangef',['DepthRangef',['../classgl.html#ada0bcfaabc9bae63eaab9c26426a72f3',1,'gl']]],

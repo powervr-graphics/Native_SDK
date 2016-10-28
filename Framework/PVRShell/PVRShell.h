@@ -83,7 +83,7 @@ To use PVRShell:
 \code
 //The five callbacks house the application
 void MyApplication::initApplication { setApiTypeRequired(pvr::api::OpenGLES3);}
-pvr::Result::Enum MyApplication::renderFrame() { float dt =this->getFrameTime(); ... }
+pvr::Result MyApplication::renderFrame() { float dt =this->getFrameTime(); ... }
 \endcode
 
 \code
@@ -96,7 +96,7 @@ switch (evt){case MappedInputEvent::Action1: pauseDemo();break;	case MappedInput
 \endcode
 
 \code
-void MyApplication::eventKeyUp(Keys::Enum key){} // Or, detailed keyboard/mouse/touch input
+void MyApplication::eventKeyUp(Keys key){} // Or, detailed keyboard/mouse/touch input
 \endcode
 
 \section cmd Command-Line Arguments

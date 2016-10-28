@@ -19,6 +19,8 @@ OBJECTS +=	\
 RESOURCES += \
            FragShader_vk.spv\
            VertShader_vk.spv\
+           FragShader_vk.fsh\
+           VertShader_vk.vsh\
 
 
 

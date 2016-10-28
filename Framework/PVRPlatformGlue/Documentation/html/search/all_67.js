@@ -21,7 +21,7 @@ var searchData=
   ['getosmanager',['getOsManager',['../classpvr_1_1system_1_1_platform_context.html#ac0becfcf2ddaf45de512e4e46f8b54cd',1,'pvr::system::PlatformContext::getOsManager()'],['../classpvr_1_1system_1_1_platform_context.html#a05c127e375d22e1cc5e7c6f9c34d24a0',1,'pvr::system::PlatformContext::getOsManager() const ']]],
   ['getprocaddress',['GetProcAddress',['../classegl.html#a2a4a6e7bb8c04ce1635105feffd93e38',1,'egl']]],
   ['getrenderbufferandroid',['GetRenderBufferANDROID',['../classeglext.html#a7527263be5bdad60f07f663b96f97f42',1,'eglext']]],
-  ['getswapchainlength',['getSwapChainLength',['../classpvr_1_1system_1_1_platform_context.html#a32595dfe3bd6520f17c451f3b62a76eb',1,'pvr::system::PlatformContext']]],
+  ['getswapchainlength',['getSwapChainLength',['../classpvr_1_1system_1_1_platform_context.html#aeecfca9aef6eee4dd55328913a59aa0c',1,'pvr::system::PlatformContext']]],
   ['getsyncattribkhr',['GetSyncAttribKHR',['../classeglext.html#a7abec9cea6dc8884dd26a569d2fc3a5c',1,'eglext']]],
   ['gluegetprocaddress',['glueGetProcAddress',['../namespacepvr_1_1native.html#ad154865c4ce8f85238228717714783da',1,'pvr::native']]],
   ['graphicsqueue',['graphicsQueue',['../structpvr_1_1system_1_1_native_platform_handles__.html#ac6117e51fe66b158cbfda5e646dbe412',1,'pvr::system::NativePlatformHandles_']]],

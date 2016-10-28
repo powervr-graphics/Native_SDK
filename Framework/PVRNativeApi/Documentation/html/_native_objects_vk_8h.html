@@ -90,14 +90,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>Contain Vulkan object wrappers and conversion from Framework object type to Vulkan.  
+<a href="#details">More...</a></p>
+
 <p><a href="_native_objects_vk_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1native_1_1_h_buffer__.html">pvr::native::HBuffer_</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle to an OpenGL ES buffer. Can be retrieved with the getNativeObject() method of a PVRApi Buffer.  <a href="structpvr_1_1native_1_1_h_buffer__.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A aggregated native wrapper for VkBuffer and VkDeviceMemory.  <a href="structpvr_1_1native_1_1_h_buffer__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1native_1_1_h_context__.html">pvr::native::HContext_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A aggregated native wrapper for VkPhysicalDevice, VkDevice and VkInstance.  <a href="structpvr_1_1native_1_1_h_context__.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1native_1_1_h_image_view__.html">pvr::native::HImageView_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkImageView.  <a href="structpvr_1_1native_1_1_h_image_view__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1native_1_1_h_texture__.html">pvr::native::HTexture_</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle to an OpenGL ES texture.  <a href="structpvr_1_1native_1_1_h_texture__.html#details">More...</a><br/></td></tr>
@@ -129,45 +136,66 @@ Macros</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a87a5af652a45719b4aae8622126c1fca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a87a5af652a45719b4aae8622126c1fca">pvr::native::DECLARE_NATIVE_TYPE</a> (HBufferView_, VkBufferView)</td></tr>
+<tr class="memdesc:a87a5af652a45719b4aae8622126c1fca"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkBufferView.  <a href="#a87a5af652a45719b4aae8622126c1fca">More...</a><br/></td></tr>
 <tr class="separator:a87a5af652a45719b4aae8622126c1fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93ab6654710809d887a511e7b64f4e00"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a93ab6654710809d887a511e7b64f4e00">pvr::native::DECLARE_NATIVE_TYPE</a> (HDepthStencilView_, VkImageView)</td></tr>
+<tr class="memdesc:a93ab6654710809d887a511e7b64f4e00"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkImageView.  <a href="#a93ab6654710809d887a511e7b64f4e00">More...</a><br/></td></tr>
 <tr class="separator:a93ab6654710809d887a511e7b64f4e00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9ae2339c3c017bb49233602da9485e7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#ab9ae2339c3c017bb49233602da9485e7">pvr::native::DECLARE_NATIVE_TYPE</a> (HDescriptorPool_, VkDescriptorPool)</td></tr>
+<tr class="memdesc:ab9ae2339c3c017bb49233602da9485e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkDescriptorPool.  <a href="#ab9ae2339c3c017bb49233602da9485e7">More...</a><br/></td></tr>
 <tr class="separator:ab9ae2339c3c017bb49233602da9485e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1f1e9deaad68a0c5af669b1de90c23f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#ae1f1e9deaad68a0c5af669b1de90c23f">pvr::native::DECLARE_NATIVE_TYPE</a> (<a class="el" href="struct_h_descriptor_set__.html">HDescriptorSet_</a>, VkDescriptorSet)</td></tr>
+<tr class="memdesc:ae1f1e9deaad68a0c5af669b1de90c23f"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkDescriptorSet.  <a href="#ae1f1e9deaad68a0c5af669b1de90c23f">More...</a><br/></td></tr>
 <tr class="separator:ae1f1e9deaad68a0c5af669b1de90c23f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aecad0649d4de0207fb94ad38af726eea"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#aecad0649d4de0207fb94ad38af726eea">pvr::native::DECLARE_NATIVE_TYPE</a> (HDescriptorSetLayout_, VkDescriptorSetLayout)</td></tr>
+<tr class="memdesc:aecad0649d4de0207fb94ad38af726eea"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkDescriptorSetLayout.  <a href="#aecad0649d4de0207fb94ad38af726eea">More...</a><br/></td></tr>
 <tr class="separator:aecad0649d4de0207fb94ad38af726eea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88659ccc054d1d0562bd0b3c95d923c3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a88659ccc054d1d0562bd0b3c95d923c3">pvr::native::DECLARE_NATIVE_TYPE</a> (<a class="el" href="struct_h_color_attachment_view__.html">HColorAttachmentView_</a>, VkImageView)</td></tr>
+<tr class="memdesc:a88659ccc054d1d0562bd0b3c95d923c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkImageView.  <a href="#a88659ccc054d1d0562bd0b3c95d923c3">More...</a><br/></td></tr>
 <tr class="separator:a88659ccc054d1d0562bd0b3c95d923c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab0be85ebb38f68e9f000100be05b5dc3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#ab0be85ebb38f68e9f000100be05b5dc3">pvr::native::DECLARE_NATIVE_TYPE</a> (HCommandBuffer_, VkCommandBuffer)</td></tr>
+<tr class="memdesc:ab0be85ebb38f68e9f000100be05b5dc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkCommandBuffer.  <a href="#ab0be85ebb38f68e9f000100be05b5dc3">More...</a><br/></td></tr>
 <tr class="separator:ab0be85ebb38f68e9f000100be05b5dc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa69f150066f7f340959f2988cb1810cd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#aa69f150066f7f340959f2988cb1810cd">pvr::native::DECLARE_NATIVE_TYPE</a> (HCommandPool_, VkCommandPool)</td></tr>
+<tr class="memdesc:aa69f150066f7f340959f2988cb1810cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkCommandPool.  <a href="#aa69f150066f7f340959f2988cb1810cd">More...</a><br/></td></tr>
 <tr class="separator:aa69f150066f7f340959f2988cb1810cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a954f3661dfdf9c8caa2084a17d3e43ce"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a954f3661dfdf9c8caa2084a17d3e43ce">pvr::native::DECLARE_NATIVE_TYPE</a> (<a class="el" href="struct_h_fbo__.html">HFbo_</a>, VkFramebuffer)</td></tr>
+<tr class="memdesc:a954f3661dfdf9c8caa2084a17d3e43ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkFramebuffer.  <a href="#a954f3661dfdf9c8caa2084a17d3e43ce">More...</a><br/></td></tr>
 <tr class="separator:a954f3661dfdf9c8caa2084a17d3e43ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9baa57fc1c8b574923ecea11296e4cb4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a9baa57fc1c8b574923ecea11296e4cb4">pvr::native::DECLARE_NATIVE_TYPE</a> (HImageView_, VkImageView)</td></tr>
-<tr class="separator:a9baa57fc1c8b574923ecea11296e4cb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7eb3f836769938059b351922e80ac294"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a7eb3f836769938059b351922e80ac294">pvr::native::DECLARE_NATIVE_TYPE</a> (<a class="el" href="struct_h_pipeline__.html">HPipeline_</a>, VkPipeline)</td></tr>
+<tr class="memdesc:a7eb3f836769938059b351922e80ac294"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkPipeline.  <a href="#a7eb3f836769938059b351922e80ac294">More...</a><br/></td></tr>
 <tr class="separator:a7eb3f836769938059b351922e80ac294"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a793152f4f144512c8763e76d0e54b556"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a793152f4f144512c8763e76d0e54b556">pvr::native::DECLARE_NATIVE_TYPE</a> (HPipelineLayout_, VkPipelineLayout)</td></tr>
+<tr class="memdesc:a793152f4f144512c8763e76d0e54b556"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkPipelineLayout.  <a href="#a793152f4f144512c8763e76d0e54b556">More...</a><br/></td></tr>
 <tr class="separator:a793152f4f144512c8763e76d0e54b556"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ee7bea82651b42b2cb579707dd85ce1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a4ee7bea82651b42b2cb579707dd85ce1">pvr::native::DECLARE_NATIVE_TYPE</a> (HRenderPass_, VkRenderPass)</td></tr>
+<tr class="memdesc:a4ee7bea82651b42b2cb579707dd85ce1"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkRenderPass.  <a href="#a4ee7bea82651b42b2cb579707dd85ce1">More...</a><br/></td></tr>
 <tr class="separator:a4ee7bea82651b42b2cb579707dd85ce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad513436accaea4c59b44726f13f1c129"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#ad513436accaea4c59b44726f13f1c129">pvr::native::DECLARE_NATIVE_TYPE</a> (<a class="el" href="struct_h_sampler__.html">HSampler_</a>, VkSampler)</td></tr>
+<tr class="memdesc:ad513436accaea4c59b44726f13f1c129"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkSampler.  <a href="#ad513436accaea4c59b44726f13f1c129">More...</a><br/></td></tr>
 <tr class="separator:ad513436accaea4c59b44726f13f1c129"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c36cd6745b8e5e5ccc8461819d31f00"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a5c36cd6745b8e5e5ccc8461819d31f00">pvr::native::DECLARE_NATIVE_TYPE</a> (<a class="el" href="struct_h_shader__.html">HShader_</a>, VkShaderModule)</td></tr>
+<tr class="memdesc:a5c36cd6745b8e5e5ccc8461819d31f00"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkShaderModule.  <a href="#a5c36cd6745b8e5e5ccc8461819d31f00">More...</a><br/></td></tr>
 <tr class="separator:a5c36cd6745b8e5e5ccc8461819d31f00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b180cde769e5dd22bb0a61a6000b929"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a8b180cde769e5dd22bb0a61a6000b929">pvr::native::DECLARE_NATIVE_TYPE</a> (HFence_, VkFence)</td></tr>
+<tr class="memdesc:a8b180cde769e5dd22bb0a61a6000b929"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkFence.  <a href="#a8b180cde769e5dd22bb0a61a6000b929">More...</a><br/></td></tr>
 <tr class="separator:a8b180cde769e5dd22bb0a61a6000b929"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33a9cb7ec1c8f90abe96b4198839ffd1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a33a9cb7ec1c8f90abe96b4198839ffd1">pvr::native::DECLARE_NATIVE_TYPE</a> (HSemaphore_, VkSemaphore)</td></tr>
+<tr class="memdesc:a33a9cb7ec1c8f90abe96b4198839ffd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkSemaphore.  <a href="#a33a9cb7ec1c8f90abe96b4198839ffd1">More...</a><br/></td></tr>
 <tr class="separator:a33a9cb7ec1c8f90abe96b4198839ffd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0be05ff7ea94c5f036322f077434116"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#ad0be05ff7ea94c5f036322f077434116">pvr::native::DECLARE_NATIVE_TYPE</a> (HEvent_, VkEvent)</td></tr>
+<tr class="memdesc:ad0be05ff7ea94c5f036322f077434116"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkEvent.  <a href="#ad0be05ff7ea94c5f036322f077434116">More...</a><br/></td></tr>
 <tr class="separator:ad0be05ff7ea94c5f036322f077434116"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f1afa134068524b421e3f89664b575a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a3f1afa134068524b421e3f89664b575a">pvr::native::DECLARE_NATIVE_TYPE</a> (HPipelineCache_, VkPipelineCache)</td></tr>
+<tr class="memdesc:a3f1afa134068524b421e3f89664b575a"><td class="mdescLeft">&#160;</td><td class="mdescRight">A native wrapper for VkPipelineCache.  <a href="#a3f1afa134068524b421e3f89664b575a">More...</a><br/></td></tr>
 <tr class="separator:a3f1afa134068524b421e3f89664b575a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Contain Vulkan object wrappers and conversion from Framework object type to Vulkan. </p>
+<hr/>
+<dl class="section author"><dt>Author</dt><dd>PowerVR by Imagination, Developer Technology Team </dd></dl>
+<dl class="section user"><dt>Copyright:</dt><dd>Copyright (c) Imagination Technologies Limited. </dd></dl>
+</div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="a85362f9acfd9c736da4afbd7361df670"></a>
 <div class="memitem">
 <div class="memproto">
@@ -223,7 +251,7 @@ Functions</h2></td></tr>
 <div class="line">inline <span class="keyword">const</span> vulkan::_naked_name_##Vk_* native_cast(<span class="keyword">const</span> pvr::api::_naked_name_&amp; <span class="keywordtype">object</span>) { <span class="keywordflow">return</span> &amp;native_cast(*<span class="keywordtype">object</span>); } \</div>
 <div class="line">inline <span class="keyword">const</span> vulkan::_naked_name_##Vk_* native_cast(<span class="keyword">const</span> pvr::api::impl::_naked_name_##_* <span class="keywordtype">object</span>) { <span class="keywordflow">return</span> &amp;native_cast(*<span class="keywordtype">object</span>); } \</div>
 <div class="line">inline vulkan::_naked_name_##Vk_&amp; native_cast(pvr::api::impl::_naked_name_##_&amp; <span class="keywordtype">object</span>) { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>pvr::api::vulkan::_naked_name_##Vk_&amp;<span class="keyword">&gt;</span>(object); } \</div>
-<div class="line">inline vulkan::_naked_name_##Vk_&amp; native_cast(pvr::api::_naked_name_&amp; <span class="keywordtype">object</span>) { <span class="keywordflow">return</span> native_cast(*<span class="keywordtype">object</span>); } \</div>
+<div class="line">inline vulkan::_naked_name_##Vk_* native_cast(pvr::api::_naked_name_&amp; <span class="keywordtype">object</span>) { <span class="keywordflow">return</span> &amp;native_cast(*<span class="keywordtype">object</span>); } \</div>
 <div class="line">inline vulkan::_naked_name_##Vk_* native_cast(pvr::api::impl::_naked_name_##_* <span class="keywordtype">object</span>) { <span class="keywordflow">return</span> &amp;native_cast(*<span class="keywordtype">object</span>); } \</div>
 <div class="line">} }</div>
 </div><!-- fragment -->

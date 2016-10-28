@@ -8,8 +8,8 @@
 #include "PVRApi/ApiObjects/CommandBuffer.h"
 #include "PVRCore/StackTrace.h"
 #include "PVRCore/ListOfInterfaces.h"
-#include "PVRApi/ApiObjects/ComputePipeline.h"
-#include "PVRApi/ApiObjects/GraphicsPipeline.h"
+#include "PVRApi/OGLES/ComputePipelineGles.h"
+#include "PVRApi/OGLES/GraphicsPipelineGles.h"
 #include "PVRApi/OGLES/ApiCommands.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
 #include "PVRApi/ApiObjects/CommandPool.h"
@@ -69,7 +69,7 @@ public:
 	}
 	void submit(CommandBufferBase_& cmdBuf)
 	{
-		assertion(context.isValid() , "No context has been set");
+		debug_assertion(context.isValid() , "No context has been set");
 		for (auto it = queue.begin(); it != queue.end(); ++it)
 		{
 			it->execute(cmdBuf);
@@ -89,6 +89,18 @@ public:
 	virtual ~PackagedBindable() { }
 };
 
+//Special internal class used by the CommandBuffer. It packages an API object that can be bound.
+template <>
+class PackagedBindable<GraphicsPipeline> : public ApiCommand
+{
+public:
+	GraphicsPipeline res;
+	PackagedBindable(const GraphicsPipeline& res) : res(res) {}
+
+	void execute_private(CommandBufferBase_& cmdBuf);
+	virtual ~PackagedBindable() { }
+};
+
 class SecondaryCommandBufferPackager : public ApiCommand
 {
 public:
@@ -99,7 +111,7 @@ public:
 	}
 	SecondaryCommandBufferPackager& operator=(const RefCountedResource<SecondaryCommandBuffer_>& me)
 	{
-        this->me = me; return *this;
+		this->me = me; return *this;
 	}
 	void execute_private(CommandBufferBase_& cmdBuf) {	me->pImpl->submit(cmdBuf);	}
 	virtual ~SecondaryCommandBufferPackager() { }
@@ -150,19 +162,14 @@ void CommandBufferBase_::endRecording()
 	pImpl->m_isRecording = false;
 }
 
-void CommandBufferBase_::bindPipeline(GraphicsPipeline& pipeline)
+void CommandBufferBase_::bindPipeline(GraphicsPipeline pipeline)
 {
-	pImpl->enqueue_internal<PackagedBindable<GraphicsPipeline> >(pipeline);
-}
-
-void CommandBufferBase_::bindPipeline(ParentableGraphicsPipeline& pipeline)
-{
-	pImpl->enqueue_internal<PackagedBindable<ParentableGraphicsPipeline> >(pipeline);
+	pImpl->enqueue_internal<PackagedBindable<GraphicsPipeline>>(pipeline);
 }
 
 void CommandBufferBase_::bindPipeline(ComputePipeline& pipeline)
 {
-	pImpl->enqueue_internal<PackagedBindable<ComputePipeline> >(pipeline);
+	pImpl->enqueue_internal<PackagedBindable<ComputePipeline>>(pipeline);
 }
 
 void CommandBufferBase_::bindDescriptorSet(const api::PipelineLayout& pipelineLayout, pvr::uint32 firstSet,
@@ -171,7 +178,7 @@ void CommandBufferBase_::bindDescriptorSet(const api::PipelineLayout& pipelineLa
 	bindDescriptorSets(types::PipelineBindPoint::Graphics, pipelineLayout, firstSet, &set, 1, dynamicOffsets, numDynamicOffset);
 }
 
-void CommandBufferBase_::bindDescriptorSets(types::PipelineBindPoint::Enum bindingPoint, const api::PipelineLayout& pipelineLayout,
+void CommandBufferBase_::bindDescriptorSets(types::PipelineBindPoint bindingPoint, const api::PipelineLayout& pipelineLayout,
     uint32 firstSet, const DescriptorSet* sets, uint32 numDescSets, const uint32* dynamicOffsets, uint32 numDynamicOffset)
 {
 	pImpl->enqueue_internal<BindDescriptorSets>(BindDescriptorSets(bindingPoint, pipelineLayout, sets, numDescSets, dynamicOffsets, numDynamicOffset));
@@ -183,14 +190,158 @@ void CommandBufferBase_::bindDescriptorSetCompute(const api::PipelineLayout& pip
 	pImpl->enqueue_internal<BindDescriptorSets>(BindDescriptorSets(types::PipelineBindPoint::Compute, pipelineLayout, &set, 1, dynamicOffsets, numDynamicOffset));
 }
 
-void CommandBufferBase_::clearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 const* clearColors, const pvr::Rectanglei* rects)
+void CommandBufferBase_::clearColorImage(pvr::api::TextureView& image, glm::vec4 clearColor, const pvr::uint32 baseMipLevel,
+    const pvr::uint32 levelCount, const pvr::uint32 baseArrayLayer, const pvr::uint32 layerCount,
+    pvr::types::ImageLayout layout)
 {
-	pImpl->enqueue_internal<ClearColorAttachment>(ClearColorAttachment(attachmentCount, clearColors, rects));
+	if (this->getContext()->hasApiCapabilityExtension(pvr::ApiCapabilities::ClearTexImage))
+	{
+		pImpl->enqueue_internal<ClearColorImage>(ClearColorImage(image, clearColor, baseMipLevel, baseArrayLayer, layerCount));
+	}
+	else
+	{
+		Log(Log.Critical, "Extension ClearTexImage not supported");
+	}
 }
 
-void CommandBufferBase_::clearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 clearColor, const pvr::Rectanglei rect)
+void CommandBufferBase_::clearColorImage(pvr::api::TextureView& image, glm::vec4 clearColor, const pvr::uint32* baseMipLevel,
+    const pvr::uint32* levelCount, const pvr::uint32* baseArrayLayers, const pvr::uint32* layerCount, pvr::uint32 rangeCount,
+    pvr::types::ImageLayout layout)
 {
-	pImpl->enqueue_internal<ClearColorAttachment>(ClearColorAttachment(attachmentCount, clearColor, rect));
+	if (this->getContext()->hasApiCapabilityExtension(pvr::ApiCapabilities::ClearTexImage))
+	{
+		for (unsigned int i = 0; i < rangeCount; i++)
+		{
+			for (unsigned int j = 0; j < levelCount[i]; j++)
+			{
+				pImpl->enqueue_internal<ClearColorImage>(ClearColorImage(image, clearColor, baseMipLevel[i] + j, baseArrayLayers[i], layerCount[i]));
+			}
+		}
+	}
+	else
+	{
+		Log(Log.Critical, "Extension ClearTexImage not supported");
+	}
+}
+
+void CommandBufferBase_::clearDepthImage(pvr::api::TextureView& image, float clearDepth, const pvr::uint32 baseMipLevel,
+    const pvr::uint32 levelCount, const pvr::uint32 baseArrayLayer, const pvr::uint32 layerCount,
+    pvr::types::ImageLayout layout)
+{
+	if (this->getContext()->hasApiCapabilityExtension(pvr::ApiCapabilities::ClearTexImage))
+	{
+		pImpl->enqueue_internal<ClearDepthStencilImage>(ClearDepthStencilImage(image, clearDepth, 0u, baseMipLevel, baseArrayLayer, layerCount));
+	}
+	else
+	{
+		Log(Log.Critical, "Extension ClearTexImage not supported");
+	}
+}
+
+void CommandBufferBase_::clearDepthImage(pvr::api::TextureView& image, float clearDepth, const pvr::uint32* baseMipLevel,
+    const pvr::uint32* levelCount, const pvr::uint32* baseArrayLayers, const pvr::uint32* layerCount,
+    pvr::uint32 rangeCount, pvr::types::ImageLayout layout)
+{
+	if (this->getContext()->hasApiCapabilityExtension(pvr::ApiCapabilities::ClearTexImage))
+	{
+		for (unsigned int i = 0; i < rangeCount; i++)
+		{
+			for (unsigned int j = 0; j < levelCount[i]; j++)
+			{
+				pImpl->enqueue_internal<ClearDepthStencilImage>(ClearDepthStencilImage(image, clearDepth, 0u, baseMipLevel[i] + j, baseArrayLayers[i], layerCount[i]));
+			}
+		}
+	}
+	else
+	{
+		Log(Log.Critical, "Extension ClearTexImage not supported");
+	}
+}
+
+void CommandBufferBase_::clearStencilImage(pvr::api::TextureView& image, pvr::uint32 clearStencil, const pvr::uint32 baseMipLevel,
+    const pvr::uint32 levelCount, const pvr::uint32 baseArrayLayer, const pvr::uint32 layerCount,
+    pvr::types::ImageLayout layout)
+{
+	if (this->getContext()->hasApiCapabilityExtension(pvr::ApiCapabilities::ClearTexImage))
+	{
+		pImpl->enqueue_internal<ClearDepthStencilImage>(ClearDepthStencilImage(image, 0.0f, clearStencil, baseMipLevel, baseArrayLayer, layerCount));
+	}
+	else
+	{
+		Log(Log.Critical, "Extension ClearTexImage not supported");
+	}
+}
+
+void CommandBufferBase_::clearStencilImage(pvr::api::TextureView& image, pvr::uint32 clearStencil, const pvr::uint32* baseMipLevel,
+    const pvr::uint32* levelCount, const pvr::uint32* baseArrayLayers, const pvr::uint32* layerCount, pvr::uint32 rangeCount,
+    pvr::types::ImageLayout layout)
+{
+	if (this->getContext()->hasApiCapabilityExtension(pvr::ApiCapabilities::ClearTexImage))
+	{
+		for (unsigned int i = 0; i < rangeCount; i++)
+		{
+			for (unsigned int j = 0; j < levelCount[i]; j++)
+			{
+				pImpl->enqueue_internal<ClearDepthStencilImage>(ClearDepthStencilImage(image, 0.0f, clearStencil, baseMipLevel[i] + j, baseArrayLayers[i], layerCount[i]));
+			}
+		}
+	}
+	else
+	{
+		Log(Log.Critical, "Extension ClearTexImage not supported");
+	}
+}
+
+void CommandBufferBase_::clearDepthStencilImage(pvr::api::TextureView& image, float clearDepth, pvr::uint32 clearStencil, const pvr::uint32 baseMipLevel,
+    const pvr::uint32 levelCount, const pvr::uint32 baseArrayLayer, const pvr::uint32 layerCount,
+    pvr::types::ImageLayout layout)
+{
+	if (this->getContext()->hasApiCapabilityExtension(pvr::ApiCapabilities::ClearTexImage))
+	{
+		pImpl->enqueue_internal<ClearDepthStencilImage>(ClearDepthStencilImage(image, clearDepth, clearStencil, baseMipLevel, baseArrayLayer, layerCount));
+	}
+	else
+	{
+		Log(Log.Critical, "Extension ClearTexImage not supported");
+	}
+}
+
+void CommandBufferBase_::clearDepthStencilImage(pvr::api::TextureView& image, float clearDepth, pvr::uint32 clearStencil, const pvr::uint32* baseMipLevel,
+    const pvr::uint32* levelCount, const pvr::uint32* baseArrayLayers, const pvr::uint32* layerCount, pvr::uint32 rangeCount,
+    pvr::types::ImageLayout layout)
+{
+	if (this->getContext()->hasApiCapabilityExtension(pvr::ApiCapabilities::ClearTexImage))
+	{
+		for (unsigned int i = 0; i < rangeCount; i++)
+		{
+			for (unsigned int j = 0; j < levelCount[i]; j++)
+			{
+				pImpl->enqueue_internal<ClearDepthStencilImage>(ClearDepthStencilImage(image, clearDepth, clearStencil, baseMipLevel[i] + j, baseArrayLayers[i], layerCount[i]));
+			}
+		}
+	}
+	else
+	{
+		Log(Log.Critical, "Extension ClearTexImage not supported");
+	}
+}
+
+void CommandBufferBase_::clearColorAttachment(pvr::uint32 const* attachmentIndices, glm::vec4 const* clearColors, pvr::uint32 attachmentCount,
+    const pvr::Rectanglei* rects, const pvr::uint32* baseArrayLayers, const pvr::uint32* layerCount, pvr::uint32 rectCount)
+{
+	pImpl->enqueue_internal<ClearColorAttachment>(ClearColorAttachment(attachmentCount, clearColors, rectCount, rects));
+}
+
+void CommandBufferBase_::clearColorAttachment(pvr::uint32 attachmentIndex, glm::vec4 clearColor,
+    const pvr::Rectanglei rect, const pvr::uint32 baseArrayLayer, const pvr::uint32 layerCount)
+{
+	pImpl->enqueue_internal<ClearColorAttachment>(ClearColorAttachment(1u, clearColor, 1u, rect));
+}
+
+void CommandBufferBase_::clearColorAttachment(pvr::api::Fbo fbo, glm::vec4 clearColor)
+{
+	pImpl->enqueue_internal<ClearColorAttachment>(ClearColorAttachment(fbo->getNumColorAttachments(), clearColor, 1u,
+	    pvr::Rectanglei(0u, 0u, fbo->getDimensions().x, fbo->getDimensions().y)));
 }
 
 void CommandBufferBase_::clearDepthAttachment(const pvr::Rectanglei& clearRect, float32 depth)
@@ -239,7 +390,7 @@ void CommandBufferBase_::bindVertexBuffer(Buffer const* buffers, uint32* offsets
 	pImpl->enqueue_internal<BindVertexBuffer>(BindVertexBuffer(buffers, offsets, numBuffers, startBinding, bindingCount));
 }
 
-void CommandBufferBase_::bindIndexBuffer(const api::Buffer& buffer, uint32 offset, types::IndexType::Enum indexType)
+void CommandBufferBase_::bindIndexBuffer(const api::Buffer& buffer, uint32 offset, types::IndexType indexType)
 {
 	pImpl->enqueue_internal<BindIndexBuffer>(BindIndexBuffer(buffer, offset, indexType));
 }
@@ -260,17 +411,17 @@ void CommandBufferBase_::setDepthBound(pvr::float32 min, pvr::float32 max)
 	//pImpl->enqueue_internal<SetDepthBound>(SetDepthBound(min, max));
 }
 
-void CommandBufferBase_::setStencilCompareMask(types::StencilFace::Enum face, pvr::uint32 compareMask)
+void CommandBufferBase_::setStencilCompareMask(types::StencilFace face, pvr::uint32 compareMask)
 {
 	pImpl->enqueue_internal<SetStencilCompareMask>(SetStencilCompareMask(face, compareMask));
 }
 
-void CommandBufferBase_::setStencilWriteMask(types::StencilFace::Enum face, pvr::uint32 writeMask)
+void CommandBufferBase_::setStencilWriteMask(types::StencilFace face, pvr::uint32 writeMask)
 {
 	pImpl->enqueue_internal<SetStencilWriteMask>(SetStencilWriteMask(face, writeMask));
 }
 
-void CommandBufferBase_::setStencilReference(types::StencilFace::Enum face, pvr::uint32 ref)
+void CommandBufferBase_::setStencilReference(types::StencilFace face, pvr::uint32 ref)
 {
 	pImpl->enqueue_internal<SetStencilReference>(SetStencilReference(face, ref));
 }
@@ -321,8 +472,14 @@ SET_UNIFORM_DEFINITION(glm::vec4);
 SET_UNIFORM_DEFINITION(glm::ivec4);
 SET_UNIFORM_DEFINITION(glm::uvec4);
 SET_UNIFORM_DEFINITION(glm::mat2);
+SET_UNIFORM_DEFINITION(glm::mat2x3);
+SET_UNIFORM_DEFINITION(glm::mat2x4);
+SET_UNIFORM_DEFINITION(glm::mat3x2);
 SET_UNIFORM_DEFINITION(glm::mat3);
-SET_UNIFORM_DEFINITION(glm::mat4);
+SET_UNIFORM_DEFINITION(glm::mat3x4);
+SET_UNIFORM_DEFINITION(glm::mat4x2);
+SET_UNIFORM_DEFINITION(glm::mat4x3);
+SET_UNIFORM_DEFINITION(glm::mat4x4);
 #undef SET_UNIFORM_DEFINITION
 
 void CommandBufferBase_::pushPipeline()
@@ -387,6 +544,41 @@ void CommandBuffer_::submit()
 	pImpl->submit(*this);
 }
 
+void CommandBuffer_::submit(const Semaphore& waitSemaphore, const Semaphore& signalSemaphore, const Fence& fence)
+{
+	submit();
+}
+
+void CommandBuffer_::submit(Fence& fence)
+{
+	submit();
+}
+
+void CommandBuffer_::submit(Semaphore& waitSemaphore, SemaphoreSet& signalSemaphores, const Fence& fence)
+{
+	submit();
+}
+
+void CommandBuffer_::submit(SemaphoreSet& waitSemaphores, Semaphore& signalSemaphore, const Fence& fence)
+{
+	submit();
+}
+
+void CommandBuffer_::submit(SemaphoreSet& waitSemaphores, SemaphoreSet& signalSemaphores, const Fence& fence)
+{
+	submit();
+}
+
+void CommandBuffer_::submitStartOfFrame(Semaphore& signalSemaphore, const Fence& fence)
+{
+	submit();
+}
+
+void CommandBuffer_::submitEndOfFrame(Semaphore& waitSemaphore)
+{
+	submit();
+}
+
 void CommandBuffer_::enqueueSecondaryCmds(SecondaryCommandBuffer& secondaryCmdBuffer)
 {
 	pImpl->enqueue_internal<SecondaryCommandBufferPackager>(secondaryCmdBuffer);
@@ -404,6 +596,16 @@ void CommandBuffer_::beginRenderPass(api::Fbo& fbo, const Rectanglei& renderArea
 	pImpl->enqueue_internal<BeginRenderPass>(BeginRenderPass(fbo, renderArea, clearColor, numClearColor, clearDepth, clearStencil));
 }
 
+
+void CommandBuffer_::beginRenderPass(api::Fbo& fbo, bool inlineFirstSubpass, const glm::vec4& clearColor, float32 clearDepth, uint32 clearStencil)
+{
+	beginRenderPass(fbo, Rectanglei(glm::ivec2(0, 0), fbo->getDimensions()), inlineFirstSubpass, clearColor, clearDepth, clearStencil);
+}
+
+void CommandBuffer_::beginRenderPass(api::Fbo& fbo, bool inlineFirstSubpass, const glm::vec4* clearColors, uint32 numClearColors, float32 clearDepth, uint32 clearStencil)
+{
+	beginRenderPass(fbo, Rectanglei(glm::ivec2(0, 0), fbo->getDimensions()), inlineFirstSubpass, clearColors, numClearColors, clearDepth, clearStencil);
+}
 
 void CommandBuffer_::endRenderPass()
 {
@@ -449,6 +651,21 @@ void PackagedBindable<Resource_>::execute_private(impl::CommandBufferBase_& cmdB
 	}
 }
 
+void PackagedBindable<GraphicsPipeline>::execute_private(impl::CommandBufferBase_& cmdBuf)
+{
+#ifdef DEBUG
+	if (res.isNull())
+	{
+		Log(Log.Warning, "API Command: Tried to bind NULL object");
+		assertion(false);
+	}
+	else
+#endif
+	{
+		static_cast<gles::GraphicsPipelineImplGles&>(res->getImpl()).bind();
+	}
+}
+
 bool CommandBufferBase_::isRecording() { return pImpl->m_isRecording; }
 
 void CommandBufferBase_::clear(bool releaseResources)
@@ -457,7 +674,7 @@ void CommandBufferBase_::clear(bool releaseResources)
 }
 
 void CommandBufferBase_::pipelineBarrier(
-  types::PipelineStageFlags::Bits srcStage, types::PipelineStageFlags::Bits dstStage,
+  types::PipelineStageFlags srcStage, types::PipelineStageFlags dstStage,
   const MemoryBarrierSet& barriers, bool dependencyByRegion /*= true*/)
 {
 	if (getContext()->getApiType() < Api::OpenGLES31) { return; }

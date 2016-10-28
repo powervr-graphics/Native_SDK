@@ -9,18 +9,23 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanSkinning
-DEPENDS =  PVRCore PVRAssets PVRVulkanGlue PVRVulkan PVRNativeVulkan PVRShell PVRUIRenderer
-LIBRARIES =  PVRUIRenderer PVRShell PVRNativeVulkan PVRVulkan PVRVulkanGlue PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRVulkanGlue PVRNativeVulkan PVRVulkan PVRShell PVRUIRenderer
+LIBRARIES =  PVRUIRenderer PVRShell PVRVulkan PVRNativeVulkan PVRVulkanGlue PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
            Vulkan/VulkanSkinning.o
 
 RESOURCES += \
+           DefaultFragShader_vk.fsh\
+           DefaultVertShader_vk.vsh\
+           SkinnedFragShader_vk.fsh\
+           SkinnedVertShader_vk.vsh\
            DefaultVertShader_vk.spv\
            DefaultFragShader_vk.spv\
            SkinnedVertShader_vk.spv\
            SkinnedFragShader_vk.spv\
+           Skinning_vk.pfx\
 
 COMMON_RESOURCES += \
            Arm.pvr\

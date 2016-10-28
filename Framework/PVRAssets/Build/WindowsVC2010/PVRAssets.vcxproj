@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -24,7 +24,9 @@
     <ClInclude Include="..\..\AssetWriter.h" />
     <ClInclude Include="..\..\BoundingBox.h" />
     <ClInclude Include="..\..\Effect.h" />
+    <ClInclude Include="..\..\Effect_2.h" />
     <ClInclude Include="..\..\FileIO\FileDefinesBMP.h" />
+    <ClInclude Include="..\..\FileIO\PFXParser.h" />
     <ClInclude Include="..\..\FileIO\PFXReader.h" />
     <ClInclude Include="..\..\FileIO\PODDefines.h" />
     <ClInclude Include="..\..\FileIO\PODReader.h" />
@@ -51,15 +53,14 @@
     <ClInclude Include="..\..\Model\Mesh.h" />
     <ClInclude Include="..\..\Model.h" />
     <ClInclude Include="..\..\AssetIncludes.h" />
+    <ClInclude Include="..\..\PixelFormat.h" />
     <ClInclude Include="..\..\PVRAssets.h" />
     <ClInclude Include="..\..\PVRShamanSemantics.h" />
-    <ClInclude Include="..\..\SamplerDescription.h" />
     <ClInclude Include="..\..\Shader.h" />
     <ClInclude Include="..\..\ShaderDescription.h" />
     <ClInclude Include="..\..\ShadowVolume.h" />
     <ClInclude Include="..\..\SkipGraph.h" />
     <ClInclude Include="..\..\Texture\MetaData.h" />
-    <ClInclude Include="..\..\Texture\PixelFormat.h" />
     <ClInclude Include="..\..\Texture\PVRTDecompress.h" />
     <ClInclude Include="..\..\Texture\Texture.h" />
     <ClInclude Include="..\..\Texture\TextureDefines.h" />
@@ -68,6 +69,7 @@
     <ClInclude Include="..\..\Texture\TextureHeaderWithMetaData.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\FileIO\PFXParser.cpp" />
     <ClCompile Include="..\..\FileIO\PFXReader.cpp" />
     <ClCompile Include="..\..\FileIO\PODReader.cpp" />
     <ClCompile Include="..\..\FileIO\TextureReaderBMP.cpp" />
@@ -86,9 +88,9 @@
     <ClCompile Include="..\..\Model\Light.cpp" />
     <ClCompile Include="..\..\Model\Mesh.cpp" />
     <ClCompile Include="..\..\Model\Model.cpp" />
+    <ClCompile Include="..\..\PixelFormat.cpp" />
     <ClCompile Include="..\..\ShadowVolume.cpp" />
     <ClCompile Include="..\..\Texture\MetaData.cpp" />
-    <ClCompile Include="..\..\Texture\PixelFormat.cpp" />
     <ClCompile Include="..\..\Texture\PVRTDecompress.cpp" />
     <ClCompile Include="..\..\Texture\Texture.cpp" />
     <ClCompile Include="..\..\Texture\TextureHeader.cpp" />
@@ -98,6 +100,7 @@
     <ProjectGuid>{5CAFF01D-B160-BAD0-C0DE-000000A55E75}</ProjectGuid>
     <RootNamespace>PVRAssets</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

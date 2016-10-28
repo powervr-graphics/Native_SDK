@@ -88,30 +88,44 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">pvr::api::StencilState Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Pipeline Stencil state.  
+ <a href="structpvr_1_1api_1_1_stencil_state.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:abce94f8dfac3fb6feea2de6b532f46c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_stencil_state.html#abce94f8dfac3fb6feea2de6b532f46c7">StencilState</a> (types::StencilOp::Enum depthPass=types::StencilOp::Keep, types::StencilOp::Enum depthFail=types::StencilOp::Keep, types::StencilOp::Enum stencilFail=types::StencilOp::Keep, types::ComparisonMode::Enum <a class="el" href="structpvr_1_1api_1_1_stencil_state.html#a09132ac81cd124bb46006e4b06703190">compareOp</a>=types::ComparisonMode::Default, uint32 <a class="el" href="structpvr_1_1api_1_1_stencil_state.html#a810191f655aa6ce474d15283de0ac8eb">compareMask</a>=0xff, uint32 writeMask=0xff, uint32 reference=0)</td></tr>
+<tr class="memdesc:abce94f8dfac3fb6feea2de6b532f46c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">ctor  <a href="#abce94f8dfac3fb6feea2de6b532f46c7">More...</a><br/></td></tr>
 <tr class="separator:abce94f8dfac3fb6feea2de6b532f46c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a810191f655aa6ce474d15283de0ac8eb"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_stencil_state.html#a810191f655aa6ce474d15283de0ac8eb">compareMask</a></td></tr>
+<tr class="memdesc:a810191f655aa6ce474d15283de0ac8eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects the bits of the unsigned integer stencil values during in the stencil test.  <a href="#a810191f655aa6ce474d15283de0ac8eb">More...</a><br/></td></tr>
 <tr class="separator:a810191f655aa6ce474d15283de0ac8eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09132ac81cd124bb46006e4b06703190"><td class="memItemLeft" align="right" valign="top">types::ComparisonMode::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_stencil_state.html#a09132ac81cd124bb46006e4b06703190">compareOp</a></td></tr>
+<tr class="memdesc:a09132ac81cd124bb46006e4b06703190"><td class="mdescLeft">&#160;</td><td class="mdescRight">Comparison operator used in the stencil test.  <a href="#a09132ac81cd124bb46006e4b06703190">More...</a><br/></td></tr>
 <tr class="separator:a09132ac81cd124bb46006e4b06703190"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbf505f65cbc6cefe6985343d36c2e93"><td class="memItemLeft" align="right" valign="top">types::StencilOp::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_stencil_state.html#afbf505f65cbc6cefe6985343d36c2e93">opDepthFail</a></td></tr>
+<tr class="memdesc:afbf505f65cbc6cefe6985343d36c2e93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Action performed on samples that pass the stencil test and fail the depth test.  <a href="#afbf505f65cbc6cefe6985343d36c2e93">More...</a><br/></td></tr>
 <tr class="separator:afbf505f65cbc6cefe6985343d36c2e93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af35e26755f5ef6a898687616587d4c79"><td class="memItemLeft" align="right" valign="top">types::StencilOp::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_stencil_state.html#af35e26755f5ef6a898687616587d4c79">opDepthPass</a></td></tr>
+<tr class="memdesc:af35e26755f5ef6a898687616587d4c79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Action performed on samples that pass both the depth and stencil tests.  <a href="#af35e26755f5ef6a898687616587d4c79">More...</a><br/></td></tr>
 <tr class="separator:af35e26755f5ef6a898687616587d4c79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88e1a53e9f5eea4e8af2b87b6e9f9607"><td class="memItemLeft" align="right" valign="top">types::StencilOp::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_stencil_state.html#a88e1a53e9f5eea4e8af2b87b6e9f9607">opStencilFail</a></td></tr>
+<tr class="memdesc:a88e1a53e9f5eea4e8af2b87b6e9f9607"><td class="mdescLeft">&#160;</td><td class="mdescRight">Action performed on samples that fail the stencil test.  <a href="#a88e1a53e9f5eea4e8af2b87b6e9f9607">More...</a><br/></td></tr>
 <tr class="separator:a88e1a53e9f5eea4e8af2b87b6e9f9607"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2de0367b8a69457152c551fce8efec0"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_stencil_state.html#ad2de0367b8a69457152c551fce8efec0">reference</a></td></tr>
+<tr class="memdesc:ad2de0367b8a69457152c551fce8efec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer reference value that is used in the unsigned stencil comparison.  <a href="#ad2de0367b8a69457152c551fce8efec0">More...</a><br/></td></tr>
 <tr class="separator:ad2de0367b8a69457152c551fce8efec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf0a9c8fee88f66ba79c91bd9d199ed3"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_stencil_state.html#aaf0a9c8fee88f66ba79c91bd9d199ed3">writeMask</a></td></tr>
+<tr class="memdesc:aaf0a9c8fee88f66ba79c91bd9d199ed3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects the bits of the unsigned integer stencil values updated by the stencil test in the stencil framebuffer attachment.  <a href="#aaf0a9c8fee88f66ba79c91bd9d199ed3">More...</a><br/></td></tr>
 <tr class="separator:aaf0a9c8fee88f66ba79c91bd9d199ed3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Pipeline Stencil state. </p>
+<hr/>
+ </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="abce94f8dfac3fb6feea2de6b532f46c7"></a>
 <div class="memitem">
 <div class="memproto">
@@ -174,6 +188,21 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>ctor </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">depthPass</td><td>Action performed on samples that pass both the depth and stencil tests. </td></tr>
+    <tr><td class="paramname">depthFail</td><td>Action performed on samples that pass the stencil test and fail the depth test. </td></tr>
+    <tr><td class="paramname">stencilFail</td><td>Action performed on samples that fail the stencil test. </td></tr>
+    <tr><td class="paramname">compareOp</td><td>Comparison operator used in the stencil test. </td></tr>
+    <tr><td class="paramname">compareMask</td><td>Selects the bits of the unsigned integer stencil values during in the stencil test. </td></tr>
+    <tr><td class="paramname">writeMask</td><td>Selects the bits of the unsigned integer stencil values updated by the stencil test in the stencil framebuffer attachment </td></tr>
+    <tr><td class="paramname">reference</td><td>Integer reference value that is used in the unsigned stencil comparison. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -187,6 +216,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Selects the bits of the unsigned integer stencil values during in the stencil test. </p>
+
 </div>
 </div>
 <a class="anchor" id="a09132ac81cd124bb46006e4b06703190"></a>
@@ -198,6 +229,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Comparison operator used in the stencil test. </p>
 
 </div>
 </div>
@@ -211,6 +244,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Action performed on samples that pass the stencil test and fail the depth test. </p>
+
 </div>
 </div>
 <a class="anchor" id="af35e26755f5ef6a898687616587d4c79"></a>
@@ -222,6 +257,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Action performed on samples that pass both the depth and stencil tests. </p>
 
 </div>
 </div>
@@ -235,6 +272,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Action performed on samples that fail the stencil test. </p>
+
 </div>
 </div>
 <a class="anchor" id="ad2de0367b8a69457152c551fce8efec0"></a>
@@ -247,6 +286,8 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Integer reference value that is used in the unsigned stencil comparison. </p>
+
 </div>
 </div>
 <a class="anchor" id="aaf0a9c8fee88f66ba79c91bd9d199ed3"></a>
@@ -258,6 +299,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Selects the bits of the unsigned integer stencil values updated by the stencil test in the stencil framebuffer attachment. </p>
 
 </div>
 </div>

@@ -74,11 +74,11 @@ class OGLESIntroducingPVRApi : public pvr::Shell
 	};
 	DrawPass drawPass;
 public:
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 
 	bool createDescriptorSet();
 	void recordCommandBuffer(pvr::assets::Effect& effectAsset);
@@ -98,14 +98,15 @@ struct DescripotSetComp
 		Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.). If the rendering
 		context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRApi::initApplication()
+pvr::Result OGLESIntroducingPVRApi::initApplication()
 {
 	// Load the scene
 	assetManager.init(*this);
+	pvr::Result rslt = pvr::Result::Success;
 	if ((scene = pvr::assets::Model::createWithReader(pvr::assets::PODReader(getAssetStream(SceneFileName)))).isNull())
 	{
 		this->setExitMessage("ERROR: Couldn't load the %s file\n", SceneFileName);
-		return pvr::Result::UnableToOpen;
+		return rslt;
 	}
 
 	// The cameras are stored in the file. We check it contains at least one.
@@ -119,7 +120,7 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initApplication()
 	for (unsigned int i = 0; i < scene->getNumMeshes(); ++i)
 	{
 		if (scene->getMesh(i).getPrimitiveType() != PrimitiveTopology::TriangleList
-		        || scene->getMesh(i).getFaces().getDataSize() == 0)
+		    || scene->getMesh(i).getFaces().getDataSize() == 0)
 		{
 			this->setExitMessage("ERROR: The meshes in the scene should use an indexed triangle list\n");
 			return pvr::Result::InvalidData;
@@ -135,14 +136,14 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initApplication()
 \brief	Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
         If the rendering context is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRApi::quitApplication() { return pvr::Result::Success; }
+pvr::Result OGLESIntroducingPVRApi::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return	Result::Success if no error occurred
 \brief	Code in initView() will be called by Shell upon initialization or after a change  in the rendering context.
         Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRApi::initView()
+pvr::Result OGLESIntroducingPVRApi::initView()
 {
 	deviceResource.reset(new DeviceResources());
 	deviceResource->context = getGraphicsContext();
@@ -151,7 +152,7 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initView()
 
 	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *scene, deviceResource->vbos, deviceResource->ibos);
 
-	if (uiRenderer.init(deviceResource->context, deviceResource->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success) { return pvr::Result::UnknownError; }
+	if (uiRenderer.init(deviceResource->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success) { return pvr::Result::UnknownError; }
 
 	uiRenderer.getDefaultTitle()->setText("IntroducingPVRApi");
 	uiRenderer.getDefaultTitle()->commitUpdates();
@@ -163,20 +164,19 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initView()
 		return pvr::Result::InvalidData;
 	}
 
-	pvr::api::ImageStorageFormat targetColorFormat;
-	getDisplayFormat(getDisplayAttributes(), &targetColorFormat, 0);
 	pvr::assets::Effect effectAsset("Effect");
 
 	pvr::api::GraphicsPipelineCreateParam pipeDesc;
-	pvr::api::pipelineCreation::ColorBlendAttachmentState colorBlendAttachment;
+	pvr::types::BlendingConfig colorBlendAttachment;
 	colorBlendAttachment.blendEnable = false;
 
-	pipeDesc.colorBlend.addAttachmentState(colorBlendAttachment);
+	pipeDesc.colorBlend.setAttachmentState(0, colorBlendAttachment);
 	pipeDesc.rasterizer.setCullFace(Face::Back).setFrontFaceWinding(PolygonWindingOrder::FrontFaceCCW);
 	pipeDesc.depthStencil.setDepthTestEnable(true);
 
 	// open the pfx
 	pvr::assets::PfxReader effectParser;
+
 	pvr::assets::ShaderFile fileVersioning;
 	fileVersioning.populateValidVersions(PfxFileName, *this);
 	if (!effectParser.openAssetStream(fileVersioning.getBestStreamForApi(deviceResource->context->getApiType())))
@@ -242,7 +242,7 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initView()
 \return	Result::Success if no error occurred
 \brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRApi::releaseView()
+pvr::Result OGLESIntroducingPVRApi::releaseView()
 {
 	assetManager.releaseAll();
 	uiRenderer.release();
@@ -254,8 +254,13 @@ pvr::Result::Enum OGLESIntroducingPVRApi::releaseView()
 \return Result::Success if no error occurred
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRApi::renderFrame()
+pvr::Result OGLESIntroducingPVRApi::renderFrame()
 {
+	static int done = 0;
+	if (++done == 1000)
+	{
+		exitShell();
+	}
 	//	Calculates the frame number to animate in a time-based manner.
 	//	get the time in milliseconds.
 	frame += (float)getFrameTime() / 30.f; // design-time target fps for animation
@@ -306,11 +311,11 @@ void OGLESIntroducingPVRApi::recordCommandBuffer(pvr::assets::Effect& effectAsse
 {
 	deviceResource->commandBuffer->beginRecording();
 	deviceResource->commandBuffer->beginRenderPass(deviceResource->fboOnScreen,
-	        pvr::Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(0.00, 0.70, 0.67, 1.0f));
+	    pvr::Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(0.00, 0.70, 0.67, 1.0f));
 
 	deviceResource->commandBuffer->bindPipeline(deviceResource->effect->getPipeline());
 	deviceResource->commandBuffer->setUniform<pvr::int32>(deviceResource->effect->getPipeline()->getUniformLocation(
-	            effectAsset.uniforms[uniformSemanticsTable[Semantics::Texture0]].variableName.c_str()), 0);
+	      effectAsset.uniforms[uniformSemanticsTable[Semantics::Texture0]].variableName.c_str()), 0);
 
 	// A scene is composed of nodes. There are 3 types of nodes:
 	// - MeshNodes :

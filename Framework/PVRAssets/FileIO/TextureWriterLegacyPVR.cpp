@@ -207,8 +207,8 @@ bool TextureWriterLegacyPVR::convertTextureHeader3To2(texture_legacy::HeaderV2& 
 
 	// Set the alpha flag for PVRTC1 data if appropriate
 	if (newHeader.getPixelFormat().getPart().High == 0 &&
-	    (newHeader.getPixelFormat().getPixelTypeId() == CompressedPixelFormat::PVRTCI_2bpp_RGBA ||
-	     newHeader.getPixelFormat().getPixelTypeId() == CompressedPixelFormat::PVRTCI_4bpp_RGBA))
+	    (newHeader.getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA ||
+	     newHeader.getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA))
 	{
 		legacyHeader.pixelFormatAndFlags |= texture_legacy::c_flagHasAlpha;
 		legacyHeader.alphaBitMask = 1;
@@ -236,8 +236,7 @@ bool TextureWriterLegacyPVR::convertTextureHeader3To2(texture_legacy::HeaderV2& 
 }
 
 bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelFormat& legacyPixelType, const PixelFormat pixelType,
-    const ColorSpace::Enum colorSpace, const VariableType::Enum channelType,
-    const bool isPremultiplied)
+    const ColorSpace colorSpace, const VariableType channelType, const bool isPremultiplied)
 {
 	//Default error value
 	legacyPixelType = texture_legacy::InvalidType;
@@ -246,8 +245,8 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 	{
 		switch (pixelType.getPart().Low)
 		{
-		case CompressedPixelFormat::PVRTCI_2bpp_RGB:
-		case CompressedPixelFormat::PVRTCI_2bpp_RGBA:
+		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGB:
+		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA:
 		{
 			switch (m_targetAPI)
 			{
@@ -263,8 +262,8 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			return true;
 		}
-		case CompressedPixelFormat::PVRTCI_4bpp_RGB:
-		case CompressedPixelFormat::PVRTCI_4bpp_RGBA:
+		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGB:
+		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA:
 		{
 			switch (m_targetAPI)
 			{
@@ -280,47 +279,47 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			return true;
 		}
-		case CompressedPixelFormat::PVRTCII_2bpp:
+		case (uint64)CompressedPixelFormat::PVRTCII_2bpp:
 		{
 			legacyPixelType = texture_legacy::GL_PVRTCII2;
 			return true;
 		}
-		case CompressedPixelFormat::PVRTCII_4bpp:
+		case (uint64)CompressedPixelFormat::PVRTCII_4bpp:
 		{
 			legacyPixelType = texture_legacy::GL_PVRTCII4;
 			return true;
 		}
-		case CompressedPixelFormat::ETC1:
+		case (uint64)CompressedPixelFormat::ETC1:
 		{
 			legacyPixelType = texture_legacy::e_etc_RGB_4BPP;
 			return true;
 		}
-		case CompressedPixelFormat::BW1bpp:
+		case (uint64)CompressedPixelFormat::BW1bpp:
 		{
 			legacyPixelType = texture_legacy::VG_BW_1;
 			return true;
 		}
-		case CompressedPixelFormat::YUY2:
+		case (uint64)CompressedPixelFormat::YUY2:
 		{
 			legacyPixelType = texture_legacy::D3D_YUY2;
 			return true;
 		}
-		case CompressedPixelFormat::UYVY:
+		case (uint64)CompressedPixelFormat::UYVY:
 		{
 			legacyPixelType = texture_legacy::D3D_UYVY;
 			return true;
 		}
-		case CompressedPixelFormat::RGBG8888:
+		case (uint64)CompressedPixelFormat::RGBG8888:
 		{
 			legacyPixelType = texture_legacy::DXGI_R8G8_B8G8_UNORM;
 			return true;
 		}
-		case CompressedPixelFormat::GRGB8888:
+		case (uint64)CompressedPixelFormat::GRGB8888:
 		{
 			legacyPixelType = texture_legacy::DXGI_G8R8_G8B8_UNORM;
 			return true;
 		}
-		case CompressedPixelFormat::DXT1:
+		case (uint64)CompressedPixelFormat::DXT1:
 		{
 			if (m_targetAPI == texture_legacy::ApiDX10)
 			{
@@ -342,12 +341,12 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			break;
 		}
-		case CompressedPixelFormat::DXT2:
+		case (uint64)CompressedPixelFormat::DXT2:
 		{
 			legacyPixelType = texture_legacy::D3D_DXT2;
 			return true;
 		}
-		case CompressedPixelFormat::DXT3:
+		case (uint64)CompressedPixelFormat::DXT3:
 		{
 			if (m_targetAPI == texture_legacy::ApiDX10)
 			{
@@ -369,12 +368,12 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			break;
 		}
-		case CompressedPixelFormat::DXT4:
+		case (uint64)CompressedPixelFormat::DXT4:
 		{
 			legacyPixelType = texture_legacy::D3D_DXT4;
 			return true;
 		}
-		case CompressedPixelFormat::DXT5:
+		case (uint64)CompressedPixelFormat::DXT5:
 		{
 			if (m_targetAPI == texture_legacy::ApiDX10)
 			{
@@ -396,7 +395,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			break;
 		}
-		case CompressedPixelFormat::BC4:
+		case (uint64)CompressedPixelFormat::BC4:
 		{
 			switch (channelType)
 			{
@@ -414,7 +413,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			break;
 		}
-		case CompressedPixelFormat::BC5:
+		case (uint64)CompressedPixelFormat::BC5:
 		{
 			switch (channelType)
 			{
@@ -671,7 +670,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 				}
 				return true;
 			}
-			default:break;
+			default: break;
 			}
 			break;
 		}

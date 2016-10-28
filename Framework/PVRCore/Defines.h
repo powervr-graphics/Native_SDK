@@ -77,6 +77,11 @@ inline void memCopy(T1& dst, const T2& src)
 	memcpy(&dst, &src, sizeof(T1));
 }
 
+/*!
+  \brief Copy from volatile memory
+  \param dst Copy destination
+  \param src Copy source
+ */
 template<typename T1, typename T2>
 inline void memCopyFromVolatile(T1& dst, const volatile T2& src)
 {

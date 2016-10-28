@@ -16,7 +16,7 @@
 namespace pvr {
 namespace api {
 namespace convert_api_type {
-GLbitfield mapBufferFlags(types::MapBufferFlags::Enum flags)
+GLbitfield mapBufferFlags(types::MapBufferFlags flags)
 {
 #ifdef GL_MAP_READ_BIT
 	static const GLenum mapFlags[] =
@@ -25,32 +25,32 @@ GLbitfield mapBufferFlags(types::MapBufferFlags::Enum flags)
 		GL_MAP_UNSYNCHRONIZED_BIT, GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_READ_BIT,
 		GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_WRITE_BIT, GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT,
 	};
-	return mapFlags[flags];
+	return mapFlags[uint32(flags)];
 #else
 	return 0;
 #endif
 }
 }
 namespace {
-inline GLenum getGlenumFromBufferUsage(types::BufferBindingUse::Bits usage)
+inline GLenum getGlenumFromBufferUsage(types::BufferBindingUse usage)
 {
-	if (usage & types::BufferBindingUse::VertexBuffer) { return GL_ARRAY_BUFFER; }
-	if (usage & types::BufferBindingUse::IndexBuffer) { return GL_ELEMENT_ARRAY_BUFFER; }
+	if (uint32(usage & types::BufferBindingUse::VertexBuffer) != 0) { return GL_ARRAY_BUFFER; }
+	if (uint32(usage & types::BufferBindingUse::IndexBuffer) != 0) { return GL_ELEMENT_ARRAY_BUFFER; }
 #if defined (GL_DRAW_INDIRECT_BUFFER)
-	if (usage & types::BufferBindingUse::IndirectBuffer) { return GL_DRAW_INDIRECT_BUFFER; }
+	if (uint32(usage & types::BufferBindingUse::IndirectBuffer) != 0) { return GL_DRAW_INDIRECT_BUFFER; }
 #endif
 #if defined(GL_SHADER_STORAGE_BUFFER)
-	if (usage & types::BufferBindingUse::StorageBuffer) { return GL_SHADER_STORAGE_BUFFER; }
+	if (uint32(usage & types::BufferBindingUse::StorageBuffer) != 0) { return GL_SHADER_STORAGE_BUFFER; }
 #endif
-	if (usage & types::BufferBindingUse::UniformBuffer) { return GL_UNIFORM_BUFFER; }
-	return types::BufferBindingUse::VertexBuffer;
+	if (uint32(usage & types::BufferBindingUse::UniformBuffer) != 0) { return GL_UNIFORM_BUFFER; }
+	return GL_ARRAY_BUFFER;
 }
 }
 namespace impl {
-void* Buffer_::map(types::MapBufferFlags::Enum flags, uint32 offset, uint32 length)
+void* Buffer_::map(types::MapBufferFlags flags, uint32 offset, uint32 length)
 {
 	//Safe downcast. We already KNOW that this is our class.
-	return static_cast<gles::BufferGles_*>(this)->map_(flags, offset, length);
+	return static_cast<gles::BufferGles_*>(this)->map_(flags, offset, length == uint32(-1) ? m_size : length);
 }
 
 void Buffer_::unmap()
@@ -59,17 +59,14 @@ void Buffer_::unmap()
 	static_cast<gles::BufferGles_*>(this)->unmap_();
 }
 
-void Buffer_::update(const void* data, uint32 offset, uint32 length)
+bool Buffer_::allocate(uint32 size, types::BufferBindingUse bufferUsage, bool isMappable)
 {
 	//Safe downcast. We already KNOW that this is our class.
-	return static_cast<gles::BufferGles_*>(this)->update_(data, offset, length);
+	return static_cast<gles::BufferGles_*>(this)->allocate_(size, bufferUsage, isMappable);
 }
 
-bool Buffer_::allocate(uint32 size, types::BufferBindingUse::Bits bufferUsage, types::BufferUse::Flags hint)
-{
-	//Safe downcast. We already KNOW that this is our class.
-	return static_cast<gles::BufferGles_*>(this)->allocate_(size, bufferUsage, hint);
-}
+bool Buffer_::isMappable()const { return static_cast<const gles::BufferGles_*>(this)->m_isMappable; }
+bool Buffer_::isMapped()const { return static_cast<const gles::BufferGles_*>(this)->m_memMapped; }
 
 /*!*********************************************************************************************************************
 \brief Get the OpenGL ES object underlying a PVRApi Buffer object.
@@ -119,8 +116,7 @@ void BufferGles_::destroy()
 
 void BufferViewGles_::destroy() { buffer.reset(); }
 
-
-inline void BufferGles_::update_(const void* data, uint32 offset, uint32 length)
+void BufferGles_::update(const void* data, uint32 offset, uint32 length)
 {
 	gl::BindBuffer(m_lastUse, handle);
 	if (offset == 0 && length == m_size)
@@ -136,25 +132,33 @@ inline void BufferGles_::update_(const void* data, uint32 offset, uint32 length)
 	debugLogApiError("Buffer_::update exit");
 }
 
-inline void* BufferGles_::map_(types::MapBufferFlags::Enum flags, uint32 offset, uint32 length)
+inline void* BufferGles_::map_(types::MapBufferFlags flags, uint32 offset, uint32 length)
 {
 	if (m_memMapped)
 	{
-		debugLogApiError("Buffer_::map trying to map memory twice");
+		Log("Buffer_::map trying to map memory twice");
 		return NULL;
 	}
-	m_memMapped = true;
-	if (m_context->hasApiCapability(ApiCapabilities::MapBuffer))
+	if (m_context->hasApiCapability(ApiCapabilities::MapBufferRange))
 	{
 		gl::BindBuffer(m_lastUse, handle);
 		void* retval = gl::MapBufferRange(m_lastUse, offset, length, convert_api_type::mapBufferFlags(flags));
 		debugLogApiError("Buffer_::map exit");
+		m_memMapped = true;
 		return retval;
+	}
+	else if (flags == types::MapBufferFlags::Write)
+	{
+		m_es2MemoryMapping.mem.resize(length);
+		m_memMapped = true;
+		m_es2MemoryMapping.offset = offset;
+		m_es2MemoryMapping.length = length;
+		return (void*)m_es2MemoryMapping.mem.data();
 	}
 	else
 	{
-		Log(Log.Error, "OGL ES2 context does not Support buffer mapping");
-		assertion(false, "OGL ES2 Does not Support buffer mapping");
+		Log(Log.Error, "BufferGles_::map_ - OGLES2 context does not Support buffer mapping");
+		assertion(false, "BufferGles_::map_ - OGLES2 Does not Support buffer mapping");
 		return NULL;
 	}
 }
@@ -163,15 +167,21 @@ inline void BufferGles_::unmap_()
 {
 	if (!m_memMapped)
 	{
-		debugLogApiError("Buffer_::unmap trying to un-map un-mapped memory");
+		Log("Buffer_::unmap trying to un-map un-mapped memory");
 		return;
 	}
-	m_memMapped = false;
-	if (m_context->hasApiCapability(ApiCapabilities::MapBuffer))
+	if (m_context->hasApiCapability(ApiCapabilities::MapBufferRange))
 	{
 		gl::BindBuffer(m_lastUse, handle);
 		gl::UnmapBuffer(m_lastUse);
 		debugLogApiError("Buffer_::unmap exit");
+		m_memMapped = false;
+	}
+	else if (m_es2MemoryMapping.length > 0)/* have we have given cpu memory for write operation ?*/
+	{
+		update(m_es2MemoryMapping.mem.data(), m_es2MemoryMapping.offset, m_es2MemoryMapping.length);
+		m_es2MemoryMapping.offset  = m_es2MemoryMapping.length = 0;// reset it
+        m_memMapped = false;
 	}
 	else
 	{
@@ -180,80 +190,20 @@ inline void BufferGles_::unmap_()
 	}
 }
 
-bool BufferGles_::allocate_(uint32 size, types::BufferBindingUse::Bits bufferUsage, types::BufferUse::Flags hint)
+bool BufferGles_::allocate_(uint32 size, types::BufferBindingUse bufferUsage, bool isMappable)
 {
 	m_size = size;
 	m_usage = bufferUsage;
-#ifdef GL_STATIC_DRAW
-	static const GLenum hint_es3[] =
-	{
-		0,
-		GL_DYNAMIC_READ,//CPU_READ
-		GL_STREAM_DRAW,	//CPU_WRITE
-		GL_DYNAMIC_READ,//CPU_READ|CPU_WRITE
-		GL_STATIC_DRAW,	//GPU_READ
-		GL_STATIC_DRAW,	//GPU_READ|CPU_READ
-		GL_STREAM_DRAW,	//GPU_READ|CPU_WRITE
-		GL_DYNAMIC_DRAW,//GPU_READ|CPU_WRITE|CPU_READ
-		GL_STATIC_READ,	//GPU_WRITE
-		GL_STATIC_READ,	//GPU_WRITE|CPU_READ
-		GL_DYNAMIC_COPY,//GPU_WRITE|CPU_WRITE
-		GL_STATIC_DRAW,	//GPU_WRITE|CPU_READ|CPU_WRITE
-		GL_STATIC_DRAW,	//GPU_WRITE|GPU_READ
-		GL_STATIC_COPY, //GPU_WRITE|GPU_READ|CPU_READ
-		GL_DYNAMIC_DRAW,//GPU_WRITE|GPU_READ|CPU_WRITE
-		GL_DYNAMIC_DRAW,//GPU_WRITE|GPU_READ|CPU_WRITE|CPU_READ
-	};
-	static const GLenum hint_es2[] =
-	{
-		0,
-		GL_DYNAMIC_DRAW, 	//CPU_READ
-		GL_DYNAMIC_DRAW, 	//CPU_WRITE
-		GL_DYNAMIC_DRAW, 	//CPU_READ|CPU_WRITE
-		GL_STATIC_DRAW,		//GPU_READ
-		GL_STATIC_DRAW,		//GPU_READ|CPU_READ
-		GL_DYNAMIC_DRAW,	//GPU_READ|CPU_WRITE
-		GL_DYNAMIC_DRAW,	//GPU_READ|CPU_WRITE|CPU_READ
-		GL_STATIC_DRAW,		//GPU_WRITE
-		GL_STATIC_DRAW,		//GPU_WRITE|CPU_READ
-		GL_STATIC_DRAW,		//GPU_WRITE|CPU_WRITE
-		GL_STATIC_DRAW,		//GPU_WRITE|CPU_READ|CPU_WRITE
-		GL_STATIC_DRAW,		//GPU_WRITE|GPU_READ
-		GL_DYNAMIC_DRAW,	//GPU_WRITE|GPU_READ|CPU_READ
-		GL_DYNAMIC_DRAW,	//GPU_WRITE|GPU_READ|CPU_WRITE
-		GL_DYNAMIC_DRAW,	//GPU_WRITE|GPU_READ|CPU_WRITE|CPU_READ
-	};
-	const GLenum* apiHints = m_context->getApiType() < Api::OpenGLES3 ? hint_es2 : hint_es3;
-#else
-	static const GLenum hint[] =
-	{
-		0,
-		GL_DYNAMIC_DRAW, 	//CPU_READ
-		GL_DYNAMIC_DRAW, 	//CPU_WRITE
-		GL_DYNAMIC_DRAW, 	//CPU_READ|CPU_WRITE
-		GL_STATIC_DRAW,		//GPU_READ
-		GL_STATIC_DRAW,		//GPU_READ|CPU_READ
-		GL_DYNAMIC_DRAW,	//GPU_READ|CPU_WRITE
-		GL_DYNAMIC_DRAW,	//GPU_READ|CPU_WRITE|CPU_READ
-		GL_STATIC_DRAW,		//GPU_WRITE
-		GL_STATIC_DRAW,		//GPU_WRITE|CPU_READ
-		GL_STATIC_DRAW,		//GPU_WRITE|CPU_WRITE
-		GL_STATIC_DRAW,		//GPU_WRITE|CPU_READ|CPU_WRITE
-		GL_STATIC_DRAW,		//GPU_WRITE|GPU_READ
-		GL_DYNAMIC_DRAW,		//GPU_WRITE|GPU_READ|CPU_READ
-		GL_DYNAMIC_DRAW,		//GPU_WRITE|GPU_READ|CPU_WRITE
-		GL_DYNAMIC_DRAW,		//GPU_WRITE|GPU_READ|CPU_WRITE|CPU_READ
-	};
-#endif
+	m_hint = isMappable ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
+	m_isMappable = isMappable;
 
 	//IMPLEMENT glBufferStorage
 	m_lastUse = getGlenumFromBufferUsage(m_usage);
 	gl::GenBuffers(1, &handle);
 	gl::BindBuffer(m_lastUse, handle);
-	gl::BufferData(m_lastUse, size, NULL, apiHints[hint]);
+	gl::BufferData(m_lastUse, size, NULL, m_hint);
 	gl::BindBuffer(m_lastUse, 0);
 	m_size = size;
-	m_hint = (uint32)apiHints[hint];
 	debugLogApiError("Buffer_::allocate exit");
 	return true;
 }

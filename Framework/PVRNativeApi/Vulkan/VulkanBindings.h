@@ -1,5 +1,5 @@
 /*!*********************************************************************************************************************
-\file         PVRApi\Vulkan\VulkanBindings.h
+\file         PVRNativeApi\Vulkan\VulkanBindings.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief        This file contains Vulkan bindings with function pointers. The PowerVR Framework uses them to allow unified
@@ -33,9 +33,6 @@ public:
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetInstanceProcAddr);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetDeviceProcAddr);
 
-	//PVR_VULKAN_FUNCTION_POINTER_DECLARATION(CreateInstance);
-	//PVR_VULKAN_FUNCTION_POINTER_DECLARATION(DestroyInstance);
-	//PVR_VULKAN_FUNCTION_POINTER_DECLARATION(EnumeratePhysicalDevices);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetPhysicalDeviceFeatures);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetPhysicalDeviceFormatProperties);
 	PVR_VULKAN_FUNCTION_POINTER_DECLARATION(GetPhysicalDeviceImageFormatProperties);

@@ -120,6 +120,7 @@ struct HBuffer_
 {
 	VkBuffer        buffer;
 	VkDeviceMemory  memory;
+	HBuffer_() : buffer(VK_NULL_HANDLE), memory(VK_NULL_HANDLE) {}
 };
 
 /*!
@@ -130,7 +131,7 @@ struct HTexture_
 	VkImage         image;
 	VkDeviceMemory  memory;
 	bool undeletable;
-	HTexture_() : undeletable(false) {}
+	HTexture_() : image(VK_NULL_HANDLE), memory(VK_NULL_HANDLE), undeletable(false) {}
 };
 
 /*!

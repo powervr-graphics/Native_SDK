@@ -18,7 +18,7 @@ namespace pvr {
 \param stride Size in bytes of each pixel
 \param PixelReplicate Upscale factor.
 ***************************************************************************************************************/
-static Result::Enum writeTGA(const char8* const filename, unsigned int w, unsigned int h, const unsigned char* const imageData, const unsigned char stride, unsigned int pixelReplicate = 1)
+static Result writeTGA(const char8* const filename, unsigned int w, unsigned int h, const unsigned char* const imageData, const unsigned char stride, unsigned int pixelReplicate = 1)
 {
 	if (pixelReplicate == 0 || w == 0 || h == 0)
 	{

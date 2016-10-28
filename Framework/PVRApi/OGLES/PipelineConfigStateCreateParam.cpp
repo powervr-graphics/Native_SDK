@@ -13,7 +13,9 @@ namespace pvr {
 namespace api {
 namespace pipelineCreation {
 
-void createStateObjects(const DepthStencilStateCreateParam& thisobject, gles::GraphicsStateContainer& storage, DepthStencilStateCreateParam* parent_param)
+void createStateObjects(const DepthStencilStateCreateParam& thisobject,
+                        gles::GraphicsStateContainer& storage,
+                        const DepthStencilStateCreateParam* parent_param)
 {
 	gles::GraphicsStateContainer& storageGles = static_cast<gles::GraphicsStateContainer&>(storage);
 
@@ -34,7 +36,7 @@ void createStateObjects(const DepthStencilStateCreateParam& thisobject, gles::Gr
 			 Don't add the state
 	*/
 	if ((!parent_param && thisobject.isDepthTestEnable()) || (parent_param && (parent_param->getDepthComapreOp() != thisobject.getDepthComapreOp() || !parent_param->isDepthTestEnable())
-	        && thisobject.isDepthTestEnable())) { storageGles.addState(new gles::DepthFuncState(thisobject.getDepthComapreOp())); }
+	    && thisobject.isDepthTestEnable())) { storageGles.addState(new gles::DepthFuncState(thisobject.getDepthComapreOp())); }
 
 	const pipelineCreation::DepthStencilStateCreateParam::StencilState& parentStencilFront = parent_param->getStencilFront();
 	const pipelineCreation::DepthStencilStateCreateParam::StencilState& parentStencilBack = parent_param->getStencilBack();
@@ -53,9 +55,9 @@ void createStateObjects(const DepthStencilStateCreateParam& thisobject, gles::Gr
 	}
 
 	if (!parent_param ||
-	        (parentStencilBack.opStencilFail != thisStencilBack.opStencilFail ||
-	         parentStencilBack.opDepthFail != thisStencilBack.opDepthFail ||
-	         parentStencilBack.opDepthPass != thisStencilBack.opDepthPass))
+	    (parentStencilBack.opStencilFail != thisStencilBack.opStencilFail ||
+	     parentStencilBack.opDepthFail != thisStencilBack.opDepthFail ||
+	     parentStencilBack.opDepthPass != thisStencilBack.opDepthPass))
 	{
 		storageGles.addState(new gles::StencilOpBackState(thisStencilBack.opStencilFail, thisStencilBack.opDepthFail, thisStencilBack.opDepthPass));
 	}
@@ -71,31 +73,31 @@ void createStateObjects(const DepthStencilStateCreateParam& thisobject, gles::Gr
 	}
 }
 
-void createStateObjects(const ColorBlendStateCreateParam& thisobject, gles::GraphicsStateContainer& storage, ColorBlendStateCreateParam* parent_param)
+void createStateObjects(const ColorBlendStateCreateParam& thisobject,
+                        gles::GraphicsStateContainer& storage,
+                        const ColorBlendStateCreateParam* parent_param)
 {
 	if (thisobject.getAttachmentStates().size())
 	{
 		if (!parent_param || parent_param->getAttachmentStates().size() == 0
-		        || parent_param->getAttachmentStates()[0].blendEnable != thisobject.getAttachmentStates()[0].blendEnable)
+		    || parent_param->getAttachmentStates()[0].blendEnable != thisobject.getAttachmentStates()[0].blendEnable)
 		{
 			storage.addState(new gles::BlendingEnableState(thisobject.getAttachmentStates()[0].blendEnable));
 		}
 		if (!parent_param || parent_param->getAttachmentStates().size() == 0 ||
-		        parent_param->getAttachmentStates()[0].srcBlendColor != thisobject.getAttachmentStates()[0].srcBlendColor ||
-		        parent_param->getAttachmentStates()[0].destBlendColor != thisobject.getAttachmentStates()[0].destBlendColor ||
-		        parent_param->getAttachmentStates()[0].srcBlendAlpha != thisobject.getAttachmentStates()[0].srcBlendAlpha ||
-		        parent_param->getAttachmentStates()[0].destBlendAlpha != thisobject.getAttachmentStates()[0].destBlendAlpha)
+		    parent_param->getAttachmentStates()[0].srcBlendColor != thisobject.getAttachmentStates()[0].srcBlendColor ||
+		    parent_param->getAttachmentStates()[0].destBlendColor != thisobject.getAttachmentStates()[0].destBlendColor ||
+		    parent_param->getAttachmentStates()[0].srcBlendAlpha != thisobject.getAttachmentStates()[0].srcBlendAlpha ||
+		    parent_param->getAttachmentStates()[0].destBlendAlpha != thisobject.getAttachmentStates()[0].destBlendAlpha)
 		{
 			storage.addState(new gles::BlendFactorState(thisobject.getAttachmentStates()[0].srcBlendColor,
 			                 thisobject.getAttachmentStates()[0].destBlendColor, thisobject.getAttachmentStates()[0].srcBlendAlpha,
 			                 thisobject.getAttachmentStates()[0].destBlendAlpha));
-			//storage.addState()
 		}
 		if (!parent_param || parent_param->getAttachmentStates().size() == 0 ||
-		        parent_param->getAttachmentStates()[0].channelWriteMask != thisobject.getAttachmentStates()[0].channelWriteMask)
+		    parent_param->getAttachmentStates()[0].channelWriteMask != thisobject.getAttachmentStates()[0].channelWriteMask)
 		{
 			storage.addState(new gles::ColorWriteMask(thisobject.getAttachmentStates()[0].channelWriteMask));
-			//storage.addState()
 		}
 	}
 
@@ -106,9 +108,13 @@ void createStateObjects(const ColorBlendStateCreateParam& thisobject, gles::Grap
 	}
 }
 
-void createStateObjects(const ViewportStateCreateParam& thisobject, gles::GraphicsStateContainer& storage, ViewportStateCreateParam* parent_param) {}
+void createStateObjects(const ViewportStateCreateParam& thisobject,
+                        gles::GraphicsStateContainer& storage,
+                        const ViewportStateCreateParam* parent_param) {}
 
-void createStateObjects(const RasterStateCreateParam& thisobject, gles::GraphicsStateContainer& storage, RasterStateCreateParam* parent_param)
+void createStateObjects(const RasterStateCreateParam& thisobject,
+                        gles::GraphicsStateContainer& storage,
+                        const RasterStateCreateParam* parent_param)
 {
 	if (!parent_param || parent_param->cullFace != thisobject.cullFace)
 	{
@@ -120,10 +126,10 @@ void createStateObjects(const RasterStateCreateParam& thisobject, gles::Graphics
 	}
 }
 
-void createStateObjects(const VertexInputCreateParam& thisobject, gles::GraphicsStateContainer& storage, VertexInputCreateParam* parent_param)
+void createStateObjects(const VertexInputCreateParam& thisobject,
+                        gles::GraphicsStateContainer& storage,
+                        const VertexInputCreateParam* parent_param)
 {
-//	assertion(inputBindings.size() || parent_param , "invalid vertex input state");
-//	assertion(attributes.size() || parent_param , "invalid vertex input state");
 	if (thisobject.getInputBindings().size())
 	{
 		storage.vertexInputBindings = thisobject.getInputBindings();
@@ -144,7 +150,9 @@ void createStateObjects(const VertexInputCreateParam& thisobject, gles::Graphics
 
 }
 
-void createStateObjects(const InputAssemblerStateCreateParam& thisobject, gles::GraphicsStateContainer& storage, InputAssemblerStateCreateParam* parent_param)
+void createStateObjects(const InputAssemblerStateCreateParam& thisobject,
+                        gles::GraphicsStateContainer& storage,
+                        const InputAssemblerStateCreateParam* parent_param)
 {
 	// - if the topology is explicitly set by the user
 	// - else if the parent is null then use the default
@@ -161,20 +169,42 @@ void createStateObjects(const InputAssemblerStateCreateParam& thisobject, gles::
 	else { thisobject.topology = storage.primitiveTopology = parent_param->topology; }
 }
 
-void createStateObjects(const VertexShaderStageCreateParam& thisobject, gles::GraphicsStateContainer& storage, VertexShaderStageCreateParam* parent_param)
+void createStateObjects(const VertexShaderStageCreateParam& thisobject,
+                        gles::GraphicsStateContainer& storage,
+                        const VertexShaderStageCreateParam* parent_param)
 {
 	storage.vertexShader = thisobject.getShader();
 }
 
-void createStateObjects(const FragmentShaderStageCreateParam& thisobject, gles::GraphicsStateContainer& storage, FragmentShaderStageCreateParam* parent_param)
+void createStateObjects(const FragmentShaderStageCreateParam& thisobject,
+                        gles::GraphicsStateContainer& storage,
+                        const FragmentShaderStageCreateParam* parent_param)
 {
 	storage.fragmentShader = thisobject.getShader();
 }
 
-void createStateObjects(const ComputeShaderStageCreateParam& thisobject, gles::ComputeStateContainer& storage)
+void createStateObjects(const GeometryShaderStageCreateParam& thisobject,
+                        gles::GraphicsStateContainer& storage,
+                        const GeometryShaderStageCreateParam* parent_param)
 {
-//	gles::GraphicsStateContainerGles& storageGles = static_cast<gles::GraphicsStateContainerGles&>(storage);
-//	storageGles.computeShader = m_shader;
+	storage.geometryShader = thisobject.getShader();
+}
+
+void createStateObjects(const TesselationStageCreateParam& thisobject,
+                        gles::GraphicsStateContainer& storage,
+                        const TesselationStageCreateParam* parent_param)
+{
+	storage.tessControlShader = thisobject.getControlShader();
+	storage.tessEvalShader = thisobject.getEvaluationShader();
+	if (storage.tessControlShader.isValid() || storage.tessEvalShader.isValid())
+	{
+		storage.addState(new gles::TessPatchControlPoints(thisobject.getNumPatchControlPoints()));
+	}
+}
+
+void createStateObjects(const ComputeShaderStageCreateParam& thisobject,
+                        gles::ComputeStateContainer& storage)
+{
 	storage.computeShader = thisobject.getShader();
 }
 
@@ -182,21 +212,3 @@ void createStateObjects(const ComputeShaderStageCreateParam& thisobject, gles::C
 }
 }
 //!\endcond
-
-
-
-//namespace pvr {
-//namespace api {
-//namespace pipelineCreation {
-//void createStateObjects(const DepthStencilStateCreateParam& thisobject, gles::GraphicsStateContainer& storage, DepthStencilStateCreateParam* parent_param);
-//void createStateObjects(const ColorBlendStateCreateParam& thisobject, gles::GraphicsStateContainer& storage, ColorBlendStateCreateParam* parent_param);
-//void createStateObjects(const ViewportStateCreateParam& thisobject, gles::GraphicsStateContainer& storage, ViewportStateCreateParam* parent_param);
-//void createStateObjects(const RasterStateCreateParam& thisobject, gles::GraphicsStateContainer& storage, RasterStateCreateParam* parent_param);
-//void createStateObjects(const VertexInputCreateParam& thisobject, gles::GraphicsStateContainer& storage, VertexInputCreateParam* parent_param);
-//void createStateObjects(const InputAssemblerStateCreateParam& thisobject, gles::GraphicsStateContainer& storage, InputAssemblerStateCreateParam* parent_param);
-//void createStateObjects(const VertexShaderStageCreateParam& thisobject, gles::GraphicsStateContainer& storage, VertexShaderStageCreateParam* parent_param);
-//void createStateObjects(const FragmentShaderStageCreateParam& thisobject, gles::GraphicsStateContainer& storage, FragmentShaderStageCreateParam* parent_param);
-//void createStateObjects(const ComputeShaderStageCreateParam& thisobject, ComputeStateContainer& storage);
-//}
-//}
-//}

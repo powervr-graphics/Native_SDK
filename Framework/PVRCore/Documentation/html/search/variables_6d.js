@@ -15,7 +15,6 @@ var searchData=
   ['m_5fiswritable',['m_isWritable',['../classpvr_1_1_stream.html#aeb5f2a1d5110a8a85d2b0c9c4146e220',1,'pvr::Stream']]],
   ['m_5foriginaldata',['m_originalData',['../classpvr_1_1_buffer_stream.html#a8f4be23ae976c85c5e1dc29e4f5d2dfd',1,'pvr::BufferStream']]],
   ['m_5fosmanager',['m_osManager',['../classpvr_1_1_i_graphics_context.html#a0a8c1dd0f0ab95ac18dd29263a50338e',1,'pvr::IGraphicsContext']]],
-  ['m_5fthis_5fshared',['m_this_shared',['../classpvr_1_1_i_graphics_context.html#a8c7fa7ef383465aa8e36cdb8caf93cab',1,'pvr::IGraphicsContext']]],
   ['m_5fverbositythreshold',['m_verbosityThreshold',['../classpvr_1_1system_1_1_messenger.html#ac6b59f90179d9f1c128efcf4a2cf9ebb',1,'pvr::system::Messenger']]],
   ['magnificationfilter',['magnificationFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#a5aa6f6b6fa1d1f29e78e799cab46d6b3',1,'pvr::types::SamplerCreateParam']]],
   ['minificationfilter',['minificationFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#a2a1b9e9c60b3108a20585c56f272046f',1,'pvr::types::SamplerCreateParam']]],

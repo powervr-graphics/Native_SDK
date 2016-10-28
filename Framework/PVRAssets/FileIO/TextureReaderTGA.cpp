@@ -83,16 +83,6 @@ vector<string> TextureReaderTGA::getSupportedFileExtensions()
 	return vector<string>(extensions);
 }
 
-string TextureReaderTGA::getReaderName()
-{
-	return "PowerVR Targa File Reader";
-}
-
-string TextureReaderTGA::getReaderVersion()
-{
-	return "1.0.0";
-}
-
 bool TextureReaderTGA::initializeFile()
 {
 	// Read the file header

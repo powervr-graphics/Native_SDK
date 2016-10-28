@@ -99,7 +99,7 @@ Inheritance diagram for pvr::api::impl::PipelineLayout_:</div>
 <div class="center"><img src="classpvr_1_1api_1_1impl_1_1_pipeline_layout____inherit__graph.png" border="0" usemap="#pvr_1_1api_1_1impl_1_1_pipeline_layout___inherit__map" alt="Inheritance graph"/></div>
 <map name="pvr_1_1api_1_1impl_1_1_pipeline_layout___inherit__map" id="pvr_1_1api_1_1impl_1_1_pipeline_layout___inherit__map">
 <area shape="rect" id="node2" href="classpvr_1_1api_1_1gles_1_1_pipeline_layout_gles__.html" title="pvr::api::gles::Pipeline\lLayoutGles_" alt="" coords="5,97,155,138"/>
-<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_pipeline_layout_vk__.html" title="pvr::api::vulkan::Pipeline\lLayoutVk_" alt="" coords="179,97,340,138"/>
+<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_pipeline_layout_vk__.html" title="Vulkan implementation of the PipelineLayout class. " alt="" coords="179,97,340,138"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -112,20 +112,27 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a290915b08f0cef332580b479b90abd7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">dtor  <a href="#a290915b08f0cef332580b479b90abd7e">More...</a><br/></td></tr>
 <tr class="separator:a290915b08f0cef332580b479b90abd7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d6a7499919976c83e3a943f78fe62e6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structpvr_1_1api_1_1_pipeline_layout_create_param.html">PipelineLayoutCreateParam</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html#a1d6a7499919976c83e3a943f78fe62e6">getCreateParam</a> () const </td></tr>
+<tr class="memdesc:a1d6a7499919976c83e3a943f78fe62e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return create param.  <a href="#a1d6a7499919976c83e3a943f78fe62e6">More...</a><br/></td></tr>
 <tr class="separator:a1d6a7499919976c83e3a943f78fe62e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22f749726ea99a9456d6283001585cfc"><td class="memItemLeft" align="right" valign="top">const std::vector<br class="typebreak"/>
 &lt; pvr::api::DescriptorSetLayout &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html#a22f749726ea99a9456d6283001585cfc">getDescriptorSetLayout</a> () const </td></tr>
 <tr class="memdesc:a22f749726ea99a9456d6283001585cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get list of descriptor set layout used by this.  <a href="#a22f749726ea99a9456d6283001585cfc">More...</a><br/></td></tr>
 <tr class="separator:a22f749726ea99a9456d6283001585cfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a674eb2d75b4c5a6bce571ff55ea66c39"><td class="memItemLeft" align="right" valign="top">const <br class="typebreak"/>
+pvr::api::DescriptorSetLayout &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html#a674eb2d75b4c5a6bce571ff55ea66c39">getDescriptorSetLayout</a> (pvr::uint32 index) const </td></tr>
+<tr class="memdesc:a674eb2d75b4c5a6bce571ff55ea66c39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a descriptor set layout used by this.  <a href="#a674eb2d75b4c5a6bce571ff55ea66c39">More...</a><br/></td></tr>
+<tr class="separator:a674eb2d75b4c5a6bce571ff55ea66c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e4e1b838f400be362d39febbdd8c42a"><td class="memItemLeft" align="right" valign="top">const native::HPipelineLayout_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html#a4e4e1b838f400be362d39febbdd8c42a">getNativeObject</a> () const </td></tr>
+<tr class="memdesc:a4e4e1b838f400be362d39febbdd8c42a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return const reference to the underlying api object.  <a href="#a4e4e1b838f400be362d39febbdd8c42a">More...</a><br/></td></tr>
 <tr class="separator:a4e4e1b838f400be362d39febbdd8c42a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a9f953574aaca2bd125d95466c95856"><td class="memItemLeft" align="right" valign="top">native::HPipelineLayout_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html#a7a9f953574aaca2bd125d95466c95856">getNativeObject</a> ()</td></tr>
+<tr class="memdesc:a7a9f953574aaca2bd125d95466c95856"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return reference to the underlying api object.  <a href="#a7a9f953574aaca2bd125d95466c95856">More...</a><br/></td></tr>
 <tr class="separator:a7a9f953574aaca2bd125d95466c95856"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad583a3db804a66985f73644ac735141a"><td class="memItemLeft" align="right" valign="top">pvr::uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html#ad583a3db804a66985f73644ac735141a">getNumDescritporSetLayout</a> () const </td></tr>
+<tr class="separator:ad583a3db804a66985f73644ac735141a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a20d206dca68d851f8e5279565160013f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html#a20d206dca68d851f8e5279565160013f">destroy</a> ()</td></tr>
-<tr class="separator:a20d206dca68d851f8e5279565160013f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a13ac969c4daa5968ff22e434ad9e23"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html#a2a13ac969c4daa5968ff22e434ad9e23">init</a> (const <a class="el" href="structpvr_1_1api_1_1_pipeline_layout_create_param.html">PipelineLayoutCreateParam</a> &amp;createParam)</td></tr>
 <tr class="separator:a2a13ac969c4daa5968ff22e434ad9e23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -205,29 +212,6 @@ Friends</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a20d206dca68d851f8e5279565160013f"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void pvr::api::impl::PipelineLayout_::destroy </td>
-          <td>(</td>
-          <td class="paramname">)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a class="anchor" id="a1d6a7499919976c83e3a943f78fe62e6"></a>
 <div class="memitem">
 <div class="memproto">
@@ -249,6 +233,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Return create param. </p>
+<hr/>
+ 
 </div>
 </div>
 <a class="anchor" id="a22f749726ea99a9456d6283001585cfc"></a>
@@ -278,6 +265,40 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a674eb2d75b4c5a6bce571ff55ea66c39"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const pvr::api::DescriptorSetLayout&amp; pvr::api::impl::PipelineLayout_::getDescriptorSetLayout </td>
+          <td>(</td>
+          <td class="paramtype">pvr::uint32&#160;</td>
+          <td class="paramname"><em>index</em>)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get a descriptor set layout used by this. </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Layout index </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;pvr::api::DescriptorSetLayout&gt;&amp; </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a4e4e1b838f400be362d39febbdd8c42a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -291,6 +312,9 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Return const reference to the underlying api object. </p>
+<hr/>
+ 
 </div>
 </div>
 <a class="anchor" id="a7a9f953574aaca2bd125d95466c95856"></a>
@@ -304,6 +328,32 @@ Friends</h2></td></tr>
           <td></td>
         </tr>
       </table>
+</div><div class="memdoc">
+
+<p>Return reference to the underlying api object. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="ad583a3db804a66985f73644ac735141a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::uint32 pvr::api::impl::PipelineLayout_::getNumDescritporSetLayout </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>

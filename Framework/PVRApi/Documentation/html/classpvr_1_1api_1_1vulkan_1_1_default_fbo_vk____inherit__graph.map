@@ -1,4 +1,4 @@
 <map id="pvr::api::vulkan::DefaultFboVk_" name="pvr::api::vulkan::DefaultFboVk_">
-<area shape="rect" id="node2" href="$classpvr_1_1api_1_1vulkan_1_1_fbo_vk__.html" title="pvr::api::vulkan::FboVk_" alt="" coords="5,80,165,107"/>
+<area shape="rect" id="node2" href="$classpvr_1_1api_1_1vulkan_1_1_fbo_vk__.html" title="Vulkan implementation of the Fbo (Framebuffer object) class. " alt="" coords="5,80,165,107"/>
 <area shape="rect" id="node3" href="$classpvr_1_1api_1_1impl_1_1_fbo__.html" title="A PVRApi FrameBufferObject implementation. Use through the Reference counted Framework object Fbo..." alt="" coords="19,5,151,32"/>
 </map>

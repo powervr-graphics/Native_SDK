@@ -4,6 +4,7 @@
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Vulkan implementation of the PVRApi CommandPool.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/ApiObjects/CommandPool.h"
 #include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
@@ -64,3 +65,5 @@ private:
 }// namespace api
 }// namespace pvr
 PVR_DECLARE_NATIVE_CAST(CommandPool);
+
+//!\endcond

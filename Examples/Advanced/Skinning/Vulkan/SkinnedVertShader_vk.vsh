@@ -53,9 +53,6 @@ layout(std140,set = 1, binding = 0) uniform Dynamics
     mat3x3 BoneMatrixArrayIT6;
     mat3x3 BoneMatrixArrayIT7;
     int	 BoneCount;
-    float     pad0;
-    float     pad1;
-    float     pad2;
 };
 
 // static throughout the lifetime
@@ -70,7 +67,7 @@ layout(location = 1) out mediump vec2 vTexCoord;
 
 void main()
 {
-	// On PowerVR SGX it is possible to index the components of a vector
+	// On PowerVR GPUs it is possible to index the components of a vector
 	// with the [] operator. However this can cause trouble with PC
 	// emulation on some hardware so we "rotate" the vectors instead.
 	mediump uvec4 boneIndex = uvec4(inBoneIndex);

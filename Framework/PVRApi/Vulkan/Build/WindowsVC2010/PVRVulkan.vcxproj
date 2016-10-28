@@ -40,6 +40,7 @@
     <ClInclude Include="..\..\..\AssetUtils.h" />
     <ClInclude Include="..\..\..\Doxygen_Typedefs.h" />
     <ClInclude Include="..\..\..\EffectApi.h" />
+    <ClInclude Include="..\..\..\RenderManager.h" />
     <ClInclude Include="..\..\..\GpuCapabilities.h" />
     <ClInclude Include="..\..\..\PVRApi.h" />
     <ClInclude Include="..\..\..\StructuredMemory.h" />
@@ -50,16 +51,17 @@
     <ClInclude Include="..\..\ContextVk.h" />
     <ClInclude Include="..\..\DescriptorSetVk.h" />
     <ClInclude Include="..\..\FboVk.h" />
-    <ClInclude Include="..\..\GraphicsStateContainerVk.h" />
+    <ClInclude Include="..\..\GraphicsPipelineVk.h" />
     <ClInclude Include="..\..\PipelineLayoutVk.h" />
     <ClInclude Include="..\..\RenderPassVk.h" />
     <ClInclude Include="..\..\SamplerVk.h" />
     <ClInclude Include="..\..\ShaderVk.h" />
     <ClInclude Include="..\..\SyncVk.h" />
     <ClInclude Include="..\..\TextureVk.h" />
-    <ClInclude Include="..\..\Vulkan.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\EffectApi_2.cpp" />
+    <ClCompile Include="..\..\..\RenderManager.cpp" />
     <ClCompile Include="..\..\AssetStore.cpp" />
     <ClCompile Include="..\..\BufferVk.cpp" />
     <ClCompile Include="..\..\CommandBufferVk.cpp" />
@@ -67,7 +69,6 @@
     <ClCompile Include="..\..\ComputePipelineVk.cpp" />
     <ClCompile Include="..\..\ContextVk.cpp" />
     <ClCompile Include="..\..\DescriptorSetVk.cpp" />
-    <ClCompile Include="..\..\EffectApi.cpp" />
     <ClCompile Include="..\..\FboVk.cpp" />
     <ClCompile Include="..\..\GpuCapabilities.cpp" />
     <ClCompile Include="..\..\GraphicsPipelineVk.cpp" />

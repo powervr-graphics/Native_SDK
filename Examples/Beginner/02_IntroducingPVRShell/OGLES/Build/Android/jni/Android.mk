@@ -43,6 +43,7 @@ LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework \
 
 
 LOCAL_LDLIBS := -lGLESv2 \
+                -latomic \
                 -llog \
                 -landroid
 

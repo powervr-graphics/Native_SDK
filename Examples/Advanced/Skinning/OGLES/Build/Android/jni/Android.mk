@@ -74,8 +74,9 @@ LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework \
 
 
 
-LOCAL_LDLIBS := -llog \
-                -landroid
+LOCAL_LDLIBS := -landroid \
+                -llog \
+                -latomic
 
 LOCAL_STATIC_LIBRARIES := PVRUIRenderer PVRGles PVRNativeGles PVREgl PVRAssets PVRCore android_native_app_glue
 

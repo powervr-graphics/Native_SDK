@@ -4,7 +4,7 @@
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief		Definition of the OpenGL ES implementation of the DescriptorSet and supporting classes
 ***********************************************************************************************************************/
-
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/ApiIncludes.h"
 #include "PVRNativeApi/ApiErrors.h"
@@ -43,10 +43,10 @@ inline void bindIndexedBuffer(const BufferView& view, IGraphicsContext& context,
 	if (context.hasApiCapability(ApiCapabilities::Ubo))
 	{
 		const platform::ContextGles::BufferRange& lastBound = static_cast<platform::ContextGles&>(context).getBoundProgramBufferUbo(index);
-		if (lastBound.buffer.isValid() && lastBound.offset == view->getOffset() + offset && lastBound.range == view->getRange() - offset && lastBound.buffer == buffer) { return; }
-		static_cast<pvr::platform::ContextGles&>(context).onBindUbo(index, buffer, view->getOffset() + offset, view->getRange() - offset);
+		if (lastBound.buffer.isValid() && lastBound.offset == view->getOffset() + offset && lastBound.range == view->getRange() && lastBound.buffer == buffer) { return; }
+		static_cast<pvr::platform::ContextGles&>(context).onBindUbo(index, buffer, view->getOffset() + offset, view->getRange());
 
-		gl::BindBufferRange(type, index, *buffer->getNativeObject(), view->getOffset() + offset, view->getRange() - offset);
+		gl::BindBufferRange(type, index, *buffer->getNativeObject(), view->getOffset() + offset, view->getRange());
 		debugLogApiError("UboView_::bind exit");
 	}
 	else
@@ -58,7 +58,7 @@ inline void bindIndexedBuffer(const BufferView& view, IGraphicsContext& context,
 }
 
 
-inline void bindTextureView(const TextureView& view, IGraphicsContext& context, uint16 bindIdx, const char* shaderVaribleName)
+inline void bindTextureView(const TextureView& view, IGraphicsContext& context, uint16 bindIdx)
 {
 	platform::ContextGles& contextEs = static_cast<platform::ContextGles&>(context);
 
@@ -80,7 +80,7 @@ inline void bindTextureView(const TextureView& view, IGraphicsContext& context, 
 	gl::BindTexture(resource->getNativeObject().target, resource->getNativeObject().handle);
 	debugLogApiError(strings::createFormatted("TextureView_::bind TARGET%x HANDLE%x",
 	                 resource->getNativeObject().target, resource->getNativeObject().handle).c_str());
-    contextEs.onBind(*view, bindIdx,shaderVaribleName);
+	contextEs.onBind(*view, bindIdx);
 }
 
 
@@ -96,48 +96,61 @@ public:
 	DescriptorSetGles_(const DescriptorSetLayout& descSetLayout, const DescriptorPool& pool) :
 		DescriptorSet_(descSetLayout, pool) {}
 
-	bool update_(const pvr::api::DescriptorSetUpdate& descSet)
-	{
-		m_descParam = descSet;
-		return true;
-	}
-	void bind(IGraphicsContext& device, pvr::uint32 dynamicOffset)const
+	bool update_(const pvr::api::DescriptorSetUpdate& descSet);
+	void bind(IGraphicsContext& device, pvr::uint32*& dynamicOffsets)const
 	{
 		platform::ContextGles& contextES = static_cast<platform::ContextGles&>(device);
-		// bind the ubos
-		for (pvr::uint16 j = 0; j < m_descParam.getBindingList().buffers.size(); ++j)
+		// bind the buffers
+		for (pvr::uint16 i = 0; i < pvr::types::DescriptorBindingDefaults::MaxStorageBuffers; ++i)
 		{
-			auto const& walk = m_descParam.getBindingList().buffers[j];
+			auto const& walk = m_descParam.getBindingList().storageBuffers[i];
 			if (walk.binding.isValid())
 			{
-				if (walk.type == types::DescriptorType::UniformBuffer || walk.type == types::DescriptorType::UniformBufferDynamic)
-				{
-					bindIndexedBuffer(walk.binding, device, walk.bindingId, dynamicOffset, GL_UNIFORM_BUFFER);
-				}
 #if defined(GL_SHADER_STORAGE_BUFFER)
-				else if (walk.type == types::DescriptorType::StorageBuffer || walk.type == types::DescriptorType::StorageBufferDynamic)
+				if (pvr::types::getDescriptorTypeBinding(walk.descType) == pvr::types::DescriptorBindingType::StorageBuffer)
 				{
+					uint32 dynamicOffset = 0;
+					if (walk.descType == types::DescriptorType::StorageBufferDynamic)
+					{
+						dynamicOffset = *dynamicOffsets++;
+					}
 					bindIndexedBuffer(walk.binding, device, walk.bindingId, dynamicOffset, GL_SHADER_STORAGE_BUFFER);
 				}
 #endif
 			}
 		}
-		// bind the combined texture and samplers
-		for (pvr::uint16 j = 0; j < m_descParam.getBindingList().combinedSamplerImage.size(); ++j)
+		for (pvr::uint16 i = 0; i < pvr::types::DescriptorBindingDefaults::MaxUniformBuffers; ++i)
 		{
-			auto const& walk = m_descParam.getBindingList().combinedSamplerImage[j];
+			auto const& walk = m_descParam.getBindingList().uniformBuffers[i];
+			if (walk.binding.isValid())
+			{
+				if (pvr::types::getDescriptorTypeBinding(walk.descType) == pvr::types::DescriptorBindingType::UniformBuffer)
+				{
+					uint32 dynamicOffset = 0;
+					if (walk.descType == types::DescriptorType::UniformBufferDynamic)
+					{
+						dynamicOffset = *dynamicOffsets++;
+					}
+					bindIndexedBuffer(walk.binding, device, walk.bindingId, dynamicOffset, GL_UNIFORM_BUFFER);
+				}
+			}
+		}
+		// bind the combined texture and samplers
+		for (pvr::uint16 i = 0; i < pvr::types::DescriptorBindingDefaults::MaxImages; ++i)
+		{
+			const DescriptorSetUpdate::ImageBinding& walk = m_descParam.getBindingList().images[i];
 
 			if (!walk.binding.second.isNull())
 			{
-				bindTextureView(walk.binding.second, device, walk.bindingId,walk.shaderVariableName.c_str());//bind the texture
-				if (walk.binding.first.isNull())
+				bindTextureView(walk.binding.second, device, walk.bindingId); //bind the texture
+				if (walk.binding.first.useSampler && walk.binding.first.sampler.isNull())// bind the default sampler if necessary
 				{
 					static_cast<SamplerGles_&>(*contextES.getDefaultSampler()).bind(device, walk.bindingId);
 				}
 			}
-			if (!walk.binding.first.isNull())
+			if (walk.binding.first.useSampler && !walk.binding.first.sampler.isNull())
 			{
-				static_cast<const SamplerGles_&>(*walk.binding.first).bind(device, walk.bindingId);// bind the sampler
+				static_cast<const SamplerGles_&>(*walk.binding.first.sampler).bind(device, walk.bindingId);// bind the sampler
 			}
 		}
 	}
@@ -158,7 +171,6 @@ public:
 	\brief dtor.
 	***********************************************************************************************************************/
 	~DescriptorSetGles_() {}
-	DescriptorSetUpdate m_descParam;
 };
 
 
@@ -182,3 +194,4 @@ typedef RefCountedResource<gles::DescriptorSetLayoutGles_> DescriptorSetLayoutGl
 
 }
 }
+//!\endcond

@@ -1,5 +1,5 @@
 /*!*********************************************************************************************************************
-\file         PVRUIRenderer\UIRendererShaders.h
+\file         PVRUIRenderer\UIRendererShaders_ES.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief        The shaders for UIRenderer as c-style strings, glsl200es and glsl300es versions.
@@ -12,13 +12,13 @@ static const char _print3DShader_glsles200_vsh[] =
 "attribute highp vec4 myVertex;\n"
 "attribute mediump vec2 myUV;\n"
 "uniform mat4 myMVPMatrix;\n"
-"uniform mat3 myUVMatrix;\n"
+"uniform mat4 myUVMatrix;\n"
 "varying mediump vec2 texCoord;\n"
 "\n"
 "void main()\n"
 "{\n"
 "\tgl_Position = myMVPMatrix * myVertex;\n"
-"\ttexCoord = (myUVMatrix * vec3(myUV.st,1.0)).xy;\n"
+"\ttexCoord = (myUVMatrix * vec4(myUV.st,1.0,1.0)).xy;\n"
 "}\n";
 static const int _print3DShader_glsles200_vsh_size = sizeof(_print3DShader_glsles200_vsh) / sizeof(_print3DShader_glsles200_vsh[0]);
 

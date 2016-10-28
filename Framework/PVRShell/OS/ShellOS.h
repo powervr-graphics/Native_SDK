@@ -10,7 +10,7 @@
 #include "PVRShell/ShellData.h"
 #include "PVRShell/Shell.h"
 namespace pvr {
-namespace system {
+namespace platform {
 //Forward declaration of internal implementation.
 struct InternalOS;
 
@@ -26,8 +26,8 @@ public:
 	*******************************************************************************************************************/
 	struct Capabilities
 	{
-		types::Capability::Enum resizable;
-		types::Capability::Enum movable;
+		types::Capability resizable;
+		types::Capability movable;
 	};
 
 	ShellData m_shellData;
@@ -35,8 +35,8 @@ public:
 
 	virtual ~ShellOS();
 
-	Result::Enum init(DisplayAttributes& data); // Accepts a data struct so it can overide default values
-	Result::Enum initializeWindow(DisplayAttributes& data);
+	Result init(DisplayAttributes& data); // Accepts a data struct so it can overide default values
+	Result initializeWindow(DisplayAttributes& data);
 	bool isInitialized();
 	void releaseWindow();
 
@@ -49,7 +49,7 @@ public:
 	const std::string& getWritePath() const;
 	const std::string& getApplicationName() const;
 	void setApplicationName(const std::string&);
-	Result::Enum handleOSEvents();
+	Result handleOSEvents();
 
 	static const Capabilities&	getCapabilities()
 	{
@@ -57,7 +57,7 @@ public:
 	}
 
 	Stream* getFileStream(const std::string filename);
-	Result::Enum popUpMessage(const tchar* const title, const tchar* const message, ...) const;
+	Result popUpMessage(const tchar* const title, const tchar* const message, ...) const;
 
 	Shell* getShell() { return m_shell.get(); }
 

@@ -1,197 +1,132 @@
 /*!*********************************************************************************************************************
-\file         PVRApi\OGLES\GraphicsPipelineGles.cpp
+\file         PVRApi/Vulkan/GraphicsPipelineVk.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains the OpenGL ES 2/3 implementation of the all-important pvr::api::GraphicsPipeline object.
+\brief		  Definition of the Vulkan implementation of the all important GraphicsPipeline class
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
-#include "PVRApi/ApiObjects/GraphicsPipeline.h"
-#include "PVRNativeApi/Vulkan/VulkanBindings.h"
-#include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
-#include "PVRNativeApi/ShaderUtils.h"
-#include "PVRApi/Vulkan/ShaderVk.h"
+#include "PVRApi/Vulkan/GraphicsPipelineVk.h"
 #include "PVRApi/Vulkan/ContextVk.h"
-#include "PVRNativeApi/Vulkan/PopulateVulkanCreateInfo.h"
-
 namespace pvr {
 namespace api {
-namespace impl {
-//!\cond NO_DOXYGEN
-class PushPipeline;
-class PopPipeline;
-class ResetPipeline;
-template<typename> class PackagedBindable;
-template<typename, typename> class PackagedBindableWithParam;
-class ParentableGraphicsPipeline_;
-//!\endcond
+namespace vulkan {
 
-//////IMPLEMENTATION INFO/////
-/*The desired class hierarchy was
----- OUTSIDE INTERFACE ----
-* ParentableGraphicsPipeline(PGP)			: GraphicsPipeline(GP)
--- Inside implementation --
-* ParentableGraphicsPipelineGles(PGPGles)	: GraphicsPipelineGles(GPGles)
-* GraphicsPipelineGles(GPGles)				: GraphicsPipeline(GP)
----------------------------
-This would cause a diamond inheritance, with PGPGles inheriting twice from GP, once through PGP and once through GPGles.
-To avoid this issue while maintaining the outside interface, the pImpl idiom is being used instead of the inheritance
-chains commonly used for all other PVRApi objects. The same idiom (for the same reasons) is found in the CommandBuffer.
-*/////////////////////////////
+GraphicsPipelineImplVk::~GraphicsPipelineImplVk() { destroy(); }
 
+GraphicsPipelineImplVk::GraphicsPipelineImplVk(GraphicsContext context) : m_context(context),
+	m_pipeCache(VK_NULL_HANDLE), m_parent(NULL) {}
 
-class GraphicsPipelineImplementationDetails : public native::HPipeline_
+bool GraphicsPipelineImplVk::init(const GraphicsPipelineCreateParam& desc, impl::ParentableGraphicsPipeline_ *parent)
 {
-public:
-	struct PipelineRelation
+	m_pipeInfo = desc;
+	m_pipeInfo.pipelineLayout =
+	  (desc.pipelineLayout.isValid() ? desc.pipelineLayout :
+	   (parent ? parent->getPipelineLayout() : PipelineLayout()));
+
+	if (!getPipelineLayout().isValid())
 	{
-		enum Enum
-		{
-			Unrelated,
-			Identity,
-			Null_Null,
-			Null_NotNull,
-			NotNull_Null,
-			Father_Child,
-			Child_Father,
-			Siblings
-		};
-	};
-
-	PipelineLayout pipelineLayout;
-
-	static PipelineRelation::Enum getRelation(GraphicsPipelineImplementationDetails* first, GraphicsPipelineImplementationDetails* second);
-
-	VertexInputBindingInfo const* getInputBindingInfo(uint16 bindingId)const;
-	VertexAttributeInfo const* getAttributesInfo(uint16 bindId)const;
-
-	GraphicsPipelineImplementationDetails(GraphicsContext& context) : m_context(context), m_initialized(false) { }
-	~GraphicsPipelineImplementationDetails() { destroy(); }
-
-	void destroy();
-	int32 getAttributeLocation(const char8* attribute);
-	uint8 getNumAttributes(uint16 bindingId);
-	ParentableGraphicsPipeline_* m_parent;
-	vulkan::ContextVkWeakRef m_context;
-	Result::Enum init(GraphicsPipelineCreateParam& desc, ParentableGraphicsPipeline_* parent = NULL);
-	bool m_initialized;
-	bool createPipeline();
-};
-
-GraphicsPipeline_::~GraphicsPipeline_()
-{
-	destroy();
-}
-
-inline GraphicsPipelineImplementationDetails::PipelineRelation::Enum GraphicsPipelineImplementationDetails::getRelation(GraphicsPipelineImplementationDetails* lhs,
-        GraphicsPipelineImplementationDetails* rhs)
-{
-	if (lhs)
-	{
-		if (rhs)
-		{
-			GraphicsPipelineImplementationDetails* first = lhs;
-			GraphicsPipelineImplementationDetails* firstFather = lhs->m_parent ? lhs->m_parent->pimpl.get() : NULL;
-			GraphicsPipelineImplementationDetails* second = rhs;
-			GraphicsPipelineImplementationDetails* secondFather = rhs->m_parent ? rhs->m_parent->pimpl.get() : NULL;
-			return first == second ? PipelineRelation::Identity :
-			       firstFather == second ? PipelineRelation::Child_Father :
-			       firstFather == secondFather ? firstFather == NULL ? PipelineRelation::Unrelated : PipelineRelation::Siblings :
-			       first == secondFather ? PipelineRelation::Father_Child :
-			       PipelineRelation::Unrelated;
-		}
-		else { return PipelineRelation::NotNull_Null; }
+		assertion(0, "Invalid PipelineLayout");
+		return false;
 	}
-	else { return rhs ? PipelineRelation::Null_NotNull : PipelineRelation::Null_Null; }
+	vulkan::GraphicsPipelineCreateInfoVulkan createInfoFactory(desc, m_context, parent);
+	createInfoFactory.createInfo.flags = (parent ? VK_PIPELINE_CREATE_DERIVATIVE_BIT : 0);
+	createInfoFactory.createInfo.flags |= VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
+
+	return pvr::vkIsSuccessful(vk::CreateGraphicsPipelines(pvr::api::native_cast(*m_context).getDevice(),
+	                           VK_NULL_HANDLE, 1, &createInfoFactory.createInfo,
+	                           NULL, &handle), "Create GraphicsPipeline");
 }
-inline void GraphicsPipelineImplementationDetails::destroy()
+
+const VertexInputBindingInfo* GraphicsPipelineImplVk::getInputBindingInfo(uint16) const
+{
+	return NULL;
+}
+
+const VertexAttributeInfoWithBinding* GraphicsPipelineImplVk::getAttributesInfo(uint16) const
+{
+	return NULL;
+}
+
+void GraphicsPipelineImplVk::destroy()
 {
 	if (m_context.isValid() && handle)
 	{
-		vk::DestroyPipeline(m_context->getDevice(), handle, NULL);
+		vk::DestroyPipeline(pvr::api::native_cast(*m_context).getDevice(), handle, NULL);
 		handle = VK_NULL_HANDLE;
+	}
+	if (m_pipeCache != VK_NULL_HANDLE)
+	{
+		vk::DestroyPipelineCache(pvr::api::native_cast(*m_context).getDevice(), m_pipeCache, NULL);
+		m_pipeCache = VK_NULL_HANDLE;
 	}
 	m_parent = 0;
 }
 
-const native::HPipeline_& GraphicsPipeline_::getNativeObject() const { return *pimpl; }
-
-native::HPipeline_& GraphicsPipeline_::getNativeObject() { return *pimpl; }
-
-void GraphicsPipeline_::destroy()
-{
-	return pimpl.reset();
-}
-
-GraphicsPipeline_::GraphicsPipeline_(GraphicsContext& context)
-{
-	pimpl.reset(new GraphicsPipelineImplementationDetails(context));
-}
-
-Result::Enum GraphicsPipeline_::init(const GraphicsPipelineCreateParam& desc, ParentableGraphicsPipeline_* parent)
-{
-	//pimpl->pipelineLayout = (desc.pipelineLayout.isValid() ? desc.pipelineLayout :
-	//						 (parent ? parent->getPipelineLayout() : PipelineLayout()));
-	pimpl->pipelineLayout = desc.pipelineLayout;
-	if (!getPipelineLayout().isValid())
-	{
-		assertion(0, "Invalid PipelineLayout");
-		return Result::UnknownError;
-	}
-	vulkan::GraphicsPipelineCreateInfoVulkan createInfoFactory(desc, pimpl->m_context, parent);
-	return pvr::vkIsSuccessful(vk::CreateGraphicsPipelines(pimpl->m_context->getDevice(), VK_NULL_HANDLE, 1, &createInfoFactory.createInfo, NULL, &pimpl->handle),
-	                           "Create GraphicsPipeline") ? Result::Success : Result::UnknownError;
-}
-
-int32 GraphicsPipeline_::getAttributeLocation(const char8* attribute)
-{
-	assertion(false, "VULKAN DOES NOT SUPPORT REFLECTION");
-	return 0;
-}
-
-int32 GraphicsPipeline_::getUniformLocation(const char8* uniform)
-{
-	assertion(false, "VULKAN DOES NOT SUPPORT REFLECTION");
-	return 0;
-}
-
-pvr::uint8 GraphicsPipeline_::getNumAttributes(pvr::uint16 bindingId)const
-{
-	assertion(false, "VULKAN DOES NOT SUPPORT SHADER/PIPELINE REFLECTION");
-	return 0;
-}
-
-VertexInputBindingInfo const* GraphicsPipeline_::getInputBindingInfo(pvr::uint16 bindingId) const
+void GraphicsPipelineImplVk::getUniformLocation(const char8**, uint32 , int32*) const
 {
 	assertion(false, "VULKAN DOES NOT SUPPORT SHADER REFLECTION");
-	return NULL;
 }
 
-VertexAttributeInfoWithBinding const* GraphicsPipeline_::getAttributesInfo(pvr::uint16 bindId)const
+int32 GraphicsPipelineImplVk::getUniformLocation(const char8*) const
 {
 	assertion(false, "VULKAN DOES NOT SUPPORT SHADER REFLECTION");
-	return NULL;
+	return -1;
 }
 
-const pvr::api::PipelineLayout& GraphicsPipeline_::getPipelineLayout() const
+int32 GraphicsPipelineImplVk::getAttributeLocation(const char8*) const
 {
-	return pimpl->pipelineLayout;
+	assertion(false, "VULKAN DOES NOT SUPPORT SHADER REFLECTION");
+	return -1;
 }
 
-Result::Enum ParentableGraphicsPipeline_::init(const GraphicsPipelineCreateParam& desc)
+void GraphicsPipelineImplVk::getAttributeLocation(const char8**, uint32 , int32*) const
 {
-	pimpl->pipelineLayout = desc.pipelineLayout;
-	if (!getPipelineLayout().isValid())
+	assertion(false, "VULKAN DOES NOT SUPPORT SHADER REFLECTION");
+}
+
+uint8 GraphicsPipelineImplVk::getNumAttributes(uint16) const
+{
+	assertion(false, "VULKAN DOES NOT SUPPORT SHADER REFLECTION");
+	return 0;
+}
+
+const PipelineLayout& GraphicsPipelineImplVk::getPipelineLayout() const { return m_pipeInfo.pipelineLayout; }
+
+const native::HPipeline_& GraphicsPipelineImplVk::getNativeObject() const { return *this; }
+
+native::HPipeline_& GraphicsPipelineImplVk::getNativeObject() { return *this; }
+
+void GraphicsPipelineImplVk::bind() {}
+
+const GraphicsPipelineCreateParam& GraphicsPipelineImplVk::getCreateParam() const { return m_pipeInfo; }
+
+ParentableGraphicsPipelineImplVk::ParentableGraphicsPipelineImplVk(GraphicsContext context) : GraphicsPipelineImplVk(context) {}
+
+bool ParentableGraphicsPipelineImplVk::init(const GraphicsPipelineCreateParam& desc)
+{
+	m_pipeInfo = desc;
+	if (!desc.pipelineLayout.isValid())
 	{
 		assertion(false, "Invalid PipelineLayout");
-		return Result::UnknownError;
+		return false;
 	}
-
-	vulkan::GraphicsPipelineCreateInfoVulkan createInfoFactory(desc, pimpl->m_context, NULL);
+	VkPipelineCacheCreateInfo cacheCreateInfo{};
+	cacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
+	if (vk::CreatePipelineCache(pvr::api::native_cast(m_context)->getDevice(), &cacheCreateInfo,
+	                            NULL, &m_pipeCache.handle) != VK_SUCCESS)
+	{
+		Log("Failed to create Pipeline Cache");
+		return false;
+	}
+	vulkan::GraphicsPipelineCreateInfoVulkan createInfoFactory(desc, m_context, NULL);
 	createInfoFactory.createInfo.flags = VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
-	return pvr::vkIsSuccessful(vk::CreateGraphicsPipelines(pimpl->m_context->getDevice(), VK_NULL_HANDLE, 1,
-	                           &createInfoFactory.createInfo, NULL, &pimpl->handle),
-	                           "Create GraphicsPipeline") ? Result::Success : Result::UnknownError;
+
+	return pvr::vkIsSuccessful(vk::CreateGraphicsPipelines(pvr::api::native_cast(m_context)->getDevice(),
+	                           m_pipeCache, 1, &createInfoFactory.createInfo, NULL, &handle), "Create Parentable GraphicsPipeline");
 }
+
+
+
 }
 }
 }

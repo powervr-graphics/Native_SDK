@@ -36,7 +36,6 @@
     <ClInclude Include="..\..\HeadersVk.h" />
     <ClInclude Include="..\..\ImageUtilsVk.h" />
     <ClInclude Include="..\..\NativeObjectsVk.h" />
-    <ClInclude Include="..\..\PopulateVulkanCreateInfo.h" />
     <ClInclude Include="..\..\VkErrors.h" />
     <ClInclude Include="..\..\VulkanBindings.h" />
   </ItemGroup>

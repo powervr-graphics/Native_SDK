@@ -7,33 +7,41 @@
 ***********************************************************************************************************************/
 #include "PVRUIRenderer/Sprite.h"
 #include "PVRUIRenderer/UIRenderer.h"
-
 using namespace glm;
 
 namespace pvr {
 namespace ui {
 namespace impl {
-
 struct UboData
 {
 	glm::mat4 mvp;
 	glm::mat4 uv;
 	glm::vec4 color;
 	bool	  alphaMode;
+
+	static const std::pair<StringHash, types::GpuDatatypes::Enum> EntryNames[4];
+	enum Entry { MVP, UV, Color, AlphaMode, Count };
+};
+
+const std::pair<StringHash, types::GpuDatatypes::Enum> UboData::EntryNames[] =
+{
+	std::pair<StringHash, types::GpuDatatypes::Enum>("mvp", types::GpuDatatypes::mat4x4),
+	std::pair<StringHash, types::GpuDatatypes::Enum>("uv", types::GpuDatatypes::mat4x4),
+	std::pair<StringHash, types::GpuDatatypes::Enum>("color", types::GpuDatatypes::vec4),
+	std::pair<StringHash, types::GpuDatatypes::Enum>("alphaMode", types::GpuDatatypes::integer),
 };
 
 Sprite_::Sprite_(UIRenderer& uiRenderer) :
 	m_color(1.f, 1.f, 1.f, 1.f),
 	m_alphaMode(false),
-	m_uiRenderer(uiRenderer),
-	m_viewport(pvr::Rectanglei(0, 0, (int32)uiRenderer.getRenderingDimX(), (int32)uiRenderer.getRenderingDimY()))
+	m_uiRenderer(uiRenderer)
 {
 	m_boundingRect.clear();
 }
 
 void Sprite_::commitUpdates()const
 {
-	calculateMvp(0, glm::mat4(1.f), m_uiRenderer.getScreenRotation() * m_uiRenderer.getProjection(), m_viewport);
+	calculateMvp(0, glm::mat4(1.f), m_uiRenderer.getScreenRotation() * m_uiRenderer.getProjection(), m_uiRenderer.getViewport());
 }
 
 void Sprite_::render() const
@@ -46,41 +54,47 @@ void Sprite_::render() const
 	onRender(m_uiRenderer.getActiveCommandBuffer(), 0);
 }
 
-void Image_::writeUboDescriptorSet(pvr::uint64 parentId)const
+void Image_::writeUboDescriptorSet(pvr::uint64 /*parentId*/)const
 {
 	// update the ubo descriptor set
-
 }
 
 void Image_::updateUbo(pvr::uint64 parentIds)const
 {
-	if ((m_uiRenderer.getContext().getApiType() > pvr::Api::OpenGLESMaxVersion))
+	if ((m_uiRenderer.getContext()->getApiType() > pvr::Api::OpenGLESMaxVersion))
 	{
-		if (m_mvpPools[parentIds].buffer.isNull())
+		if (m_mvpPools[parentIds].bufferView.getConnectedBuffer(0).isNull())
 		{
-			m_mvpPools[parentIds].buffer = m_uiRenderer.getContext().createBuffer(sizeof(UboData), pvr::types::BufferBindingUse::UniformBuffer);
-			m_mvpPools[parentIds].bufferView = m_uiRenderer.getContext().createBufferView(m_mvpPools[parentIds].buffer, 0, sizeof(UboData));
+			m_mvpPools[parentIds].bufferView.setupArray(m_uiRenderer.getContext(), 1, types::BufferViewTypes::UniformBuffer);
+			m_mvpPools[parentIds].bufferView.addEntriesPacked(UboData::EntryNames, UboData::Entry::Count);
+
+			m_mvpPools[parentIds].bufferView
+			.connectWithBuffer(0, m_uiRenderer.getContext()->createBufferAndView(m_mvpPools[parentIds].bufferView.getAlignedElementSize(),
+			                   pvr::types::BufferBindingUse::UniformBuffer, true),
+			                   pvr::types::BufferViewTypes::UniformBuffer);
 		}
+		// update the ubo
+
+		m_mvpPools[parentIds].bufferView.map(0, types::MapBufferFlags::Write, 0);
+		m_mvpPools[parentIds].bufferView
+		.setValue(UboData::MVP, m_mvpPools[parentIds].mvp)
+		.setValue(UboData::Color, m_color)
+		.setValue(UboData::AlphaMode, m_alphaMode);
+		glm::vec3 scale(m_uv.getDimension().x, m_uv.getDimension().y, 1.0f);
+		glm::mat4 uvTrans = glm::translate(glm::vec3(m_uv.x, m_uv.y, 0.0f)) *  glm::scale(scale);
+		m_mvpPools[parentIds].bufferView.setValue(UboData::UV, uvTrans);
+		m_mvpPools[parentIds].bufferView.unmap(0);
 
 		if (m_mvpPools[parentIds].uboDescSet.isNull())
 		{
-			pvr::api::DescriptorSetUpdate descSetCreateParam;
-			descSetCreateParam.setUbo(0, m_mvpPools[parentIds].bufferView);
-			m_mvpPools[parentIds].uboDescSet = m_uiRenderer.getContext().createDescriptorSetOnDefaultPool(m_uiRenderer.getUboDescSetLayout());
-			m_mvpPools[parentIds].uboDescSet->update(descSetCreateParam);
+			m_mvpPools[parentIds].uboDescSet =
+			  m_uiRenderer.getDescriptorPool()->allocateDescriptorSet(m_uiRenderer.getUboDescSetLayout());
+			m_mvpPools[parentIds].uboDescSet->update(api::DescriptorSetUpdate().setUbo(0, m_mvpPools[parentIds].bufferView.getConnectedBuffer(0)));
 		}
-
-		// update the ubo
-		UboData* uboData = (UboData*)m_mvpPools[parentIds].buffer->map(types::MapBufferFlags::Write, 0, sizeof(UboData));
-		uboData->mvp = m_mvpPools[parentIds].mvp;
-		uboData->uv = glm::mat4(1.f);
-		uboData->color = m_color;
-		uboData->alphaMode = (m_alphaMode != 0);
-		m_mvpPools[parentIds].buffer->unmap();
 	}
 }
 
-pvr::Result::Enum Image_::updateTextureDescriptorSet()const
+pvr::Result Image_::updateTextureDescriptorSet()const
 {
 	if (!m_texDescSet.isValid())
 	{
@@ -101,7 +115,6 @@ pvr::Result::Enum Image_::updateTextureDescriptorSet()const
 void Image_::calculateMvp(pvr::uint64 parentIds, glm::mat4 const& srt, const glm::mat4& viewProj,
                           pvr::Rectanglei const& viewport)const
 {
-	vec3 toScreenCoordinates(1.f / m_uiRenderer.getRenderingDimX(), 1.f / m_uiRenderer.getRenderingDimY(), 1.f);
 	if (m_isPositioningDirty)
 	{
 		vec2 offset(0.0f);// offset the default center anchor point.
@@ -127,16 +140,6 @@ void Image_::calculateMvp(pvr::uint64 parentIds, glm::mat4 const& srt, const glm
 		m_cachedMatrix[3][3] = 1.f;
 		//READ THIS BOTTOM TO TOP DUE TO THE WAY THE OPTIMISED GLM FUNCTIONS WORK
 
-		glm::vec2 tmpPos;
-		tmpPos.x = m_position.x * viewport.getDimension().x * .5f + viewport.getDimension().x * .5f;
-		tmpPos.y = m_position.y * viewport.getDimension().y * .5f + viewport.getDimension().y * .5f;
-		tmpPos.x += viewport.x;
-		tmpPos.y += viewport.y;
-
-		//5: Translate (screen coords)
-		m_cachedMatrix[3][0] = tmpPos.x + (m_pixelOffset.x);
-		m_cachedMatrix[3][1] = tmpPos.y + (m_pixelOffset.y);
-
 		//4: Transform to SCREEN coordinates...
 		//BECAUSE m_cachedMatrix IS A PURE ROTATION, WE CAN OPTIMISE THE 1st SCALING OP.
 		//THIS IS : m_matrix = scale(m_matrix, toScreenCoordinates);
@@ -152,36 +155,42 @@ void Image_::calculateMvp(pvr::uint64 parentIds, glm::mat4 const& srt, const glm
 		//1: Apply the offsetting (i.e. place the center at its correct spot. THIS IS NOT THE SCREEN POSITIONING, only the anchor.)
 		m_cachedMatrix = translate(m_cachedMatrix, vec3(-offset, 0.0f));
 	}
-	m_mvpPools[parentIds].mvp = viewProj  *  srt * m_cachedMatrix;
+
+	glm::vec2 tmpPos;
+	//5: Translate (screen coords)
+	tmpPos.x = m_position.x * viewport.getDimension().x * .5f + viewport.getDimension().x * .5f + viewport.x + m_pixelOffset.x;
+	tmpPos.y = m_position.y * viewport.getDimension().y * .5f + viewport.getDimension().y * .5f + viewport.y + m_pixelOffset.y;
+	m_mvpPools[parentIds].mvp = viewProj  *  srt * glm::translate(glm::vec3(tmpPos, 0.0f)) * m_cachedMatrix;
+
 	updateUbo(parentIds);
 }
 
-void Image_::onRender(api::SecondaryCommandBuffer& commandBuffer, pvr::uint64 parentId) const
+void Image_::onRender(api::CommandBufferBase& commandBuffer, pvr::uint64 parentId) const
 {
-	glm::mat4 mvp;
 	commandBuffer->bindDescriptorSet(m_uiRenderer.getPipelineLayout(), 0, getTexDescriptorSet(), NULL, 0);
-	if (m_uiRenderer.getContext().getApiType() <= pvr::Api::OpenGLESMaxVersion)
+	if (m_uiRenderer.getContext()->getApiType() <= pvr::Api::OpenGLESMaxVersion)
 	{
 		commandBuffer->setUniformPtr<mat4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformMVPmtx], 1, &m_mvpPools[parentId].mvp);
 		commandBuffer->setUniformPtr<vec4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformColor], 1, &m_color);
 		commandBuffer->setUniformPtr<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformAlphaMode], 1, &m_alphaMode);
-		commandBuffer->setUniform<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformFontTexture], 0);
-		commandBuffer->setUniformPtr<glm::mat3>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformUVmtx], 1, &m_matrixUV);
+		glm::vec3 scale(m_uv.getDimension().x, m_uv.getDimension().y, 1.0f);
+		glm::mat4 uvTrans = glm::translate(glm::vec3(m_uv.x, m_uv.y, 0.0f)) *  glm::scale(scale);
+		commandBuffer->setUniform<glm::mat4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformUVmtx], uvTrans);
 	}
 	else
 	{
 		commandBuffer->bindDescriptorSet(m_uiRenderer.getPipelineLayout(), 1, m_mvpPools[parentId].uboDescSet, NULL, 0);
 	}
 	commandBuffer->bindVertexBuffer(m_uiRenderer.getImageVbo(), 0, 0);
-	commandBuffer->drawArrays(0, 6, 0, 1);
+	commandBuffer->drawArrays(0, 6);
 }
 
 Image_::Image_(UIRenderer& uiRenderer, api::TextureView& tex, uint32 width, uint32 height) :
-	Sprite_(uiRenderer), m_matrixUV(1.f), m_texW(width), m_texH(height),  m_texture(tex),
+	Sprite_(uiRenderer), m_texW(width), m_texH(height),  m_texture(tex),
 	m_isTextureDirty(true)
 {
 	m_boundingRect.setMinMax(glm::vec3(width * -.5f, height * -.5f, 0.0f), glm::vec3(width * .5f, height * .5f, 0.0f));
-	m_texDescSet = uiRenderer.getContext().createDescriptorSetOnDefaultPool(uiRenderer.getTexDescriptorSetLayout());
+	m_texDescSet = uiRenderer.getDescriptorPool()->allocateDescriptorSet(uiRenderer.getTexDescriptorSetLayout());
 }
 
 bool Font_::loadFontData(const assets::Texture& texture)
@@ -306,9 +315,9 @@ int32 Font_::kerningCompFunc(const void* a, const void* b)
 uint32 Text_::updateVertices(float32 fZPos, float32 xPos, float32 yPos, const std::vector<uint32>& text,
                              Vertex* const pVertices) const
 {
+	if (pVertices == NULL || text.empty()) { return 0; }
 	m_boundingRect.clear();
 	/* Nothing to update */
-	if (text.size() == 0) { return 0; }
 
 	Font tmp = m_font; Font_& font = *tmp;
 
@@ -400,9 +409,9 @@ uint32 Text_::updateVertices(float32 fZPos, float32 xPos, float32 yPos, const st
 
 	if (m_vbo.isNull() || m_vbo->getSize() < sizeof(Vertex)* vertexCount)
 	{
-		m_vbo = m_uiRenderer.getContext().createBuffer(sizeof(Vertex) * vertexCount, types::BufferBindingUse::VertexBuffer);
+		m_vbo = m_uiRenderer.getContext()->createBuffer(sizeof(Vertex) * vertexCount, types::BufferBindingUse::VertexBuffer, true);
 	}
-	m_vbo->update(pVertices, 0, sizeof(Vertex)* vertexCount);
+	m_vbo->update(pVertices, 0, m_vbo->getSize());
 	return vertexCount;
 }
 
@@ -428,11 +437,7 @@ void Text_::regenerateText() const
 		}
 	}
 
-	//float32 xPos = 0.0;
-	//float32 yPos = 0.0f;
-	//float32 fPosX = (float32)((int32)(xPos * (640.0f / 100.0f)));
-	//float32 fPosY = -(float32)((int32)(yPos * (480.0f / 100.0f)));
-
+	m_vertices.clear();
 	if (m_vertices.size() < (m_utf32.size() * 4)) { m_vertices.resize(m_utf32.size() * 4); }
 
 	m_numCachedVerts = updateVertices(0.0f, 0.f, 0.f, m_utf32, m_vertices.size() ? &m_vertices[0] : 0);
@@ -449,6 +454,7 @@ void Text_::calculateMvp(pvr::uint64 parentIds, glm::mat4 const& srt, const glm:
 		regenerateText();
 		m_isPositioningDirty = true;
 	}
+
 	if (m_isPositioningDirty)
 	{
 		vec2 offset;
@@ -467,17 +473,10 @@ void Text_::calculateMvp(pvr::uint64 parentIds, glm::mat4 const& srt, const glm:
 		}
 
 		m_cachedMatrix = glm::mat4(1.f);
+
 		//m_matrix = translate(vec3(pos, 0.f));  //5: Finally, move it to its position
 		//ASSUMING IDENTITY MATRIX! - OPTIMIZE OUT THE OPS
-		glm::vec2 tmpPos;
-		tmpPos.x = m_position.x * viewport.getDimension().x * .5f + viewport.getDimension().x * .5f;
-		tmpPos.y = m_position.y * viewport.getDimension().y * .5f + viewport.getDimension().y * .5f;
 
-		tmpPos.x += viewport.x;
-		tmpPos.y += viewport.y;
-
-		m_cachedMatrix[3][0] = tmpPos.x + m_pixelOffset.x;  //5: Finally, move it to its position
-		m_cachedMatrix[3][1] = tmpPos.y + m_pixelOffset.y;  //5: Finally, move it to its position
 		//4: Bring to Pixel (screen) coordinates.
 		//BECAUSE m_matrix IS A PURE ROTATION, WE CAN OPTIMISE THE 1st SCALING OP.
 		//THIS IS : m_matrix = scale(m_matrix, toScreenCoordinates);
@@ -487,100 +486,63 @@ void Text_::calculateMvp(pvr::uint64 parentIds, glm::mat4 const& srt, const glm:
 		m_cachedMatrix = glm::translate(m_cachedMatrix, vec3(-offset, 0.f)); //1: Anchor the text properly
 		m_isPositioningDirty = false;
 	}
-	m_mvpPools[parentIds].mvp =  viewProj * srt * m_cachedMatrix;
+
+	glm::vec2 tmpPos;
+	tmpPos.x = m_position.x * viewport.getDimension().x * .5f + viewport.getDimension().x * .5f;
+	tmpPos.y = m_position.y * viewport.getDimension().y * .5f + viewport.getDimension().y * .5f;
+
+	tmpPos.x += viewport.x + m_pixelOffset.x;
+	tmpPos.y += viewport.y + m_pixelOffset.y;
+
+	m_mvpPools[parentIds].mvp =  viewProj * srt * glm::translate(glm::vec3(tmpPos, 0.0f)) * m_cachedMatrix;
 	updateUbo(parentIds);
-}
-
-void Text_::calculateMvp(const glm::mat4& matrix, pvr::uint64 parentIds) const
-{
-	if (m_isTextDirty)
-	{
-		regenerateText();
-		m_isPositioningDirty = true;
-	}
-	if (m_isPositioningDirty)
-	{
-		vec2 offset;
-
-		switch (m_anchor)
-		{
-		case Anchor::Center:		offset = vec2(m_boundingRect.center()); break;
-		case Anchor::TopLeft:		offset = vec2(m_boundingRect.topLeftNear()); break;
-		case Anchor::TopCenter:		offset = vec2(m_boundingRect.topCenterNear()); break;
-		case Anchor::TopRight:		offset = vec2(m_boundingRect.topRightNear()); break;
-		case Anchor::BottomLeft:	offset = vec2(m_boundingRect.bottomLeftNear()); break;
-		case Anchor::BottomCenter:	offset = vec2(m_boundingRect.bottomCenterNear()); break;
-		case Anchor::BottomRight:	offset = vec2(m_boundingRect.bottomRightNear()); break;
-		case Anchor::CenterLeft:	offset = vec2(m_boundingRect.centerLeftNear()); break;
-		case Anchor::CenterRight:	offset = vec2(m_boundingRect.centerRightNear()); break;
-		}
-
-		vec3 toScreenCoordinates(2.f / m_uiRenderer.getRenderingDimX(), 2.f / m_uiRenderer.getRenderingDimY(), 1.f);
-
-		m_cachedMatrix = glm::mat4();
-		//m_matrix = translate(vec3(pos, 0.f));  //5: Finally, move it to its position
-		//ASSUMING IDENTITY MATRIX! - OPTIMIZE OUT THE OPS
-		m_cachedMatrix[3][0] = m_position.x;  //5: Finally, move it to its position
-		m_cachedMatrix[3][1] = m_position.y;  //5: Finally, move it to its position
-
-		//4: Bring to Pixel (screen) coordinates.
-		//BECAUSE m_matrix IS A PURE ROTATION, WE CAN OPTIMISE THE 1st SCALING OP.
-		//THIS IS : m_matrix = scale(m_matrix, toScreenCoordinates);
-		m_cachedMatrix[0][0] *= toScreenCoordinates.x;
-		m_cachedMatrix[1][1] *= toScreenCoordinates.y;
-
-		m_cachedMatrix = glm::rotate(m_cachedMatrix, m_rotation, vec3(0.f, 0.f, 1.f)); //3: rotate it
-		m_cachedMatrix = glm::scale(m_cachedMatrix, vec3(m_scale, 1.f)); //2: Scale
-		m_cachedMatrix = glm::translate(m_cachedMatrix, vec3(-offset, 0.f)); //1: Anchor the text propely
-		m_isPositioningDirty = false;
-	}
-	m_mvpPools[parentIds].mvp = matrix * m_cachedMatrix;
 }
 
 void Text_::updateUbo(pvr::uint64 parentIds)const
 {
 	// update the descriptor set once
-	if (m_uiRenderer.getContext().getApiType() > Api::OpenGLESMaxVersion)
+	if (m_uiRenderer.getContext()->getApiType() > Api::OpenGLESMaxVersion)
 	{
-		if (m_mvpPools[parentIds].buffer.isNull())
+		utils::StructuredMemoryView& view = m_mvpPools[parentIds].bufferView;
+		if (view.getConnectedBuffer(0).isNull())
 		{
-			m_mvpPools[parentIds].buffer = m_uiRenderer.getContext().createBuffer(sizeof(UboData), types::BufferBindingUse::UniformBuffer);
-			m_mvpPools[parentIds].bufferView = m_uiRenderer.getContext().createBufferView(m_mvpPools[parentIds].buffer, 0, sizeof(UboData));
-		}
-		// update the ubo
-		UboData* uboData = (UboData*)m_mvpPools[parentIds].buffer->map(types::MapBufferFlags::Write, 0, sizeof(UboData));
-		uboData->mvp = m_mvpPools[parentIds].mvp;
-		uboData->uv = glm::mat4(1.f);
-		uboData->color = m_color;
-		uboData->alphaMode = (m_alphaMode != 0);
-		m_mvpPools[parentIds].buffer->unmap();
 
-		if (m_mvpPools[parentIds].descSet.isNull())
+			view.setupArray(m_uiRenderer.getContext(), 1, types::BufferViewTypes::UniformBuffer);
+			view.addEntriesPacked(UboData::EntryNames, UboData::Count);
+			view.connectWithBuffer(0, m_uiRenderer.getContext()->createBufferAndView(view.getAlignedElementSize(),
+			                       types::BufferBindingUse::UniformBuffer, true), types::BufferViewTypes::UniformBuffer);
+		}
+		view.map(0, types::MapBufferFlags::Write, 0);
+		view.setValue(UboData::MVP, m_mvpPools[parentIds].mvp);
+		view.setValue(UboData::Color, m_color);
+		view.setValue(UboData::AlphaMode, 1);
+		glm::mat4 uvTrans(1.f);
+		view.setValue(UboData::UV, uvTrans);
+		view.unmap(0);
+		if (m_mvpPools[parentIds].uboDescSet.isNull())
 		{
-			m_mvpPools[parentIds].descSet = m_uiRenderer.getContext().createDescriptorSetOnDefaultPool(m_uiRenderer.getUboDescSetLayout());
-			api::DescriptorSetUpdate descWrite;
-			descWrite.setUbo(0, m_mvpPools[parentIds].bufferView);
-			m_mvpPools[parentIds].descSet->update(descWrite);
+			m_mvpPools[parentIds].uboDescSet =
+			  m_uiRenderer.getDescriptorPool()->allocateDescriptorSet(m_uiRenderer.getUboDescSetLayout());
+			m_mvpPools[parentIds].uboDescSet->update(api::DescriptorSetUpdate().setUbo(0, m_mvpPools[parentIds].bufferView.getConnectedBuffer(0)));
 		}
 	}
 }
 
-void Text_::onRender(api::SecondaryCommandBuffer& commandBuffer, pvr::uint64 parentId) const
+void Text_::onRender(api::CommandBufferBase& commandBuffer, pvr::uint64 parentId) const
 {
 	if (!m_utf32.size()) { return; }
 	updateUbo(parentId);
 	commandBuffer->bindDescriptorSet(m_uiRenderer.getPipelineLayout(), 0, getTexDescriptorSet(), NULL, 0);
-	if (m_uiRenderer.getContext().getApiType() <= pvr::Api::OpenGLESMaxVersion)
+	if (m_uiRenderer.getContext()->getApiType() <= pvr::Api::OpenGLESMaxVersion)
 	{
 		commandBuffer->setUniformPtr<mat4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformMVPmtx], 1, &m_mvpPools[parentId].mvp);
 		commandBuffer->setUniformPtr<vec4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformColor], 1, &m_color);
 		commandBuffer->setUniformPtr<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformAlphaMode], 1, (int32*)&m_alphaMode);
-		commandBuffer->setUniform<int32>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformFontTexture], 0);
-		commandBuffer->setUniform<mat3>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformUVmtx], mat3(1.));
+		commandBuffer->setUniform<mat4>(m_uiRenderer.getProgramData().uniforms[UIRenderer::ProgramData::UniformUVmtx], mat4(1.));
 	}
 	else
 	{
-		commandBuffer->bindDescriptorSet(m_uiRenderer.getPipelineLayout(), 1, m_mvpPools[parentId].descSet);
+		commandBuffer->bindDescriptorSet(m_uiRenderer.getPipelineLayout(), 1, m_mvpPools[parentId].uboDescSet);
 	}
 	commandBuffer->bindVertexBuffer(m_vbo, 0, 0);
 	commandBuffer->bindIndexBuffer(m_uiRenderer.getFontIbo(), 0, types::IndexType::IndexType16Bit);
@@ -633,7 +595,7 @@ Text_& Text_::setText(const std::wstring& str)
 {
 	m_isTextDirty = true;
 	m_isUtf8 = false;
-
+	m_textStr.clear();
 	m_textWStr = str;
 	return *this;
 	// check if need reallocation
@@ -664,7 +626,7 @@ MatrixGroup_::MatrixGroup_(UIRenderer& uiRenderer, pvr::uint64 id) :
 
 void MatrixGroup_::commitUpdates() const
 {
-	calculateMvp(0, glm::mat4(1.f), m_uiRenderer.getScreenRotation() * m_viewProj, m_viewport);
+	calculateMvp(0, glm::mat4(1.f), m_uiRenderer.getScreenRotation() * m_viewProj, m_uiRenderer.getViewport());
 }
 
 void PixelGroup_::calculateMvp(pvr::uint64 parentIds, const glm::mat4& srt, const glm::mat4& viewProj,
@@ -685,28 +647,28 @@ void PixelGroup_::calculateMvp(pvr::uint64 parentIds, const glm::mat4& srt, cons
 	case Anchor::CenterRight:	offset = glm::vec2(m_boundingRect.centerRightNear());	break;
 	}
 
-	vec3 toScreenCoordinates(1.f / m_uiRenderer.getRenderingDimX(), 1.f / m_uiRenderer.getRenderingDimY(), 1.f);
-
 	memset(glm::value_ptr(m_cachedMatrix), 0, sizeof(m_cachedMatrix));
 	m_cachedMatrix[0][0] = 1.f;
 	m_cachedMatrix[1][1] = 1.f;
 	m_cachedMatrix[2][2] = 1.f; //Does not really matter - we don't have width...
 	m_cachedMatrix[3][3] = 1.f;
 
-	//READ THIS BOTTOM TO TOP DUE TO THE WAY THE OPTIMISED GLM FUNCTIONS WORK
+	//*** READ THIS BOTTOM TO TOP DUE TO THE WAY THE OPTIMISED GLM FUNCTIONS WORK
+	//- translate the anchor to the origin
+	//- do the scale and then the rotation around the anchor
+	//- do the final translation
 	glm::vec2 tmpPos;
-	tmpPos.x = m_position.x * viewport.getDimension().x * .5f + viewport.getDimension().x * .5f;
-	tmpPos.y = m_position.y * viewport.getDimension().y * .5f + viewport.getDimension().y * .5f;
-	tmpPos.x += m_pixelOffset.x + viewport.x;
-	tmpPos.y += m_pixelOffset.y + viewport.y;
+	// tranform from ndc to screen space
+	tmpPos.x = (float32)math::ndcToPixel(m_position.x, viewport.getDimension().x);
+	tmpPos.y = (float32)math::ndcToPixel(m_position.y, viewport.getDimension().y);
+	// add the final pixel offset
+	tmpPos.x += (float32)m_pixelOffset.x + (float32)viewport.x;
+	tmpPos.y += (float32)m_pixelOffset.y + (float32)viewport.y;
 
 	m_cachedMatrix[3][0] = tmpPos.x;
 	m_cachedMatrix[3][1] = tmpPos.y;
 
-	// rotate the offset as well.
 	m_cachedMatrix = rotate(m_cachedMatrix, m_rotation, glm::vec3(0.f, 0.f, 1.f));
-
-	//offset = glm::vec2(rotate(m_rotation, glm::vec3(0.f, 0.f, 1.f)) * glm::vec4(offset, 0.0f, 0.0f));
 	m_cachedMatrix = scale(m_cachedMatrix, glm::vec3(m_scale, 1.f));
 	m_cachedMatrix = translate(m_cachedMatrix, glm::vec3(-offset, 0.0f));
 
@@ -714,7 +676,7 @@ void PixelGroup_::calculateMvp(pvr::uint64 parentIds, const glm::mat4& srt, cons
 	//My cached matrix should always be up-to-date unless overridden. No effect.
 	for (ChildContainer::iterator it = m_children.begin(); it != m_children.end(); ++it)
 	{
-		(*it)->calculateMvp(packId(parentIds, m_id), tmpMatrix, viewProj, viewport);
+		(*it)->calculateMvp(packId(parentIds, m_id), tmpMatrix, viewProj, Rectanglei(0, 0, (int32)m_boundingRect.getSize().x, (int32)m_boundingRect.getSize().y));
 	}
 }
 

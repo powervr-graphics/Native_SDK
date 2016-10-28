@@ -16,7 +16,7 @@ namespace assetReaders {
 /*!*********************************************************************************************************************
 \brief Experimental XNB Texture reader
 ***********************************************************************************************************************/
-class TextureReaderXNB : public AssetReader < Texture >
+class TextureReaderXNB : public AssetReader <Texture>
 {
 public:
 	TextureReaderXNB();
@@ -25,19 +25,17 @@ public:
 
 	virtual bool isSupportedFile(Stream& assetStream);
 	virtual std::vector<string> getSupportedFileExtensions();
-	virtual std::string getReaderName();
-	virtual std::string getReaderVersion();
 private:
 	virtual bool readNextAsset(Texture& asset);
 
 	bool initializeFile();
-	uint64 getPVRFormatFromXNBFormat(uint32              xnbFormat);
-	VariableType::Enum getPVRTypeFromXNBFormat(uint32                   xnbFormat);
-	bool read7BitEncodedInt(int32&                     decodedInteger);
-	bool readFileHeader(texture_xnb::FileHeader&         xnbFileHeader);
-	bool readString(string&                            stringToRead);
-	bool read2DTexture(texture_xnb::Texture2DHeader&     assetHeader, Texture& asset);
-	bool read3DTexture(texture_xnb::Texture3DHeader&     assetHeader, Texture& asset);
+	uint64 getPVRFormatFromXNBFormat(uint32 xnbFormat);
+	VariableType getPVRTypeFromXNBFormat(uint32 xnbFormat);
+	bool read7BitEncodedInt(int32& decodedInteger);
+	bool readFileHeader(texture_xnb::FileHeader& xnbFileHeader);
+	bool readString(string& sstringToRead);
+	bool read2DTexture(texture_xnb::Texture2DHeader& assetHeader, Texture& asset);
+	bool read3DTexture(texture_xnb::Texture3DHeader& assetHeader, Texture& asset);
 	bool readCubeTexture(texture_xnb::TextureCubeHeader& assetHeader, Texture& asset);
 
 private:

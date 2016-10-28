@@ -10,7 +10,7 @@
 #include "PVRAssets/Asset.h"
 #include "PVRCore/IAssetProvider.h"
 #include "PVRCore/StringFunctions.h"
-
+#include "PVRCore/IGraphicsContext.h"
 namespace pvr {
 namespace assets {
 
@@ -23,19 +23,19 @@ class ShaderFile
 	//Use this with std::lower bound to get the first item that is Not Less than
 	struct ApiComparatorNotLessThan
 	{
-		Api::Enum api;
-		ApiComparatorNotLessThan(Api::Enum api) : api(api) {}
-		bool operator()(const std::pair<pvr::Api::Enum, std::string>& lhs) {	return lhs.first >= api; }
+		Api api;
+		ApiComparatorNotLessThan(Api api) : api(api) {}
+		bool operator()(const std::pair<pvr::Api, std::string>& lhs) {	return lhs.first >= api; }
 	};
 	//Use this with std::lower bound and reverse iterators to get the first item that is Not Greater than.
 	//Useful to get the "best match" file
 	struct ApiComparatorNotGreaterThan
 	{
-		Api::Enum api;
-		ApiComparatorNotGreaterThan(Api::Enum api) : api(api) {}
-		bool operator()(const std::pair<pvr::Api::Enum, std::string>& lhs) {	return lhs.first <= api; }
+		Api api;
+		ApiComparatorNotGreaterThan(Api api) : api(api) {}
+		bool operator()(const std::pair<pvr::Api, std::string>& lhs) {	return lhs.first <= api; }
 	};
-	std::vector<std::pair<pvr::Api::Enum, std::string>/**/> m_filenames;
+	std::vector<std::pair<pvr::Api, std::string>/**/> m_filenames;
 	IAssetProvider* m_assetProvider;
 public:
 	ShaderFile() : empty_string("") {}
@@ -50,7 +50,7 @@ public:
 	\return Return stream object of this shader, else NULL object if no valid shader is found for given api
 	\param	api Specific api requested for this shader file
 	**********************************************************************************************************************************/
-	Stream::ptr_type getStreamForSpecificApi(Api::Enum api)const
+	Stream::ptr_type getStreamForSpecificApi(Api api)const
 	{
 		auto it = std::find_if(m_filenames.begin(), m_filenames.end(), ApiComparatorNotLessThan(api));
 		if (it != m_filenames.end() && it->first != api) //Only want perfect match
@@ -65,7 +65,7 @@ public:
 	\return	Return a string of a file name for given api, else empty string if the shader is not supported for the given api
 	\param	api Specific api requested for this shader file
 	**********************************************************************************************************************************/
-	const std::string& getFilenameForSpecificApi(Api::Enum api)const
+	const std::string& getFilenameForSpecificApi(Api api)const
 	{
 		auto it = std::find_if(m_filenames.begin(), m_filenames.end(), ApiComparatorNotLessThan(api));
 		if (it != m_filenames.end() && it->first != api) {	return empty_string;	}
@@ -78,7 +78,7 @@ public:
 	\return	Return stream object of this shader, else NULL object if no valid shader is found for given api
 	\param	api Specific api requested for this shader file
 	**********************************************************************************************************************************/
-	Stream::ptr_type getBestStreamForApi(Api::Enum api = Api::OpenGLESMaxVersion)const
+	Stream::ptr_type getBestStreamForApi(Api api = Api::OpenGLESMaxVersion)const
 	{
 		auto it = std::find_if(m_filenames.rbegin(), m_filenames.rend(), ApiComparatorNotGreaterThan(api));
 		if (it != m_filenames.rend()) //Will find the first filename that is not more than supported
@@ -110,7 +110,7 @@ public:
 	\return	Return a string of a file name for given api, else empty string if the shader is not supported for the given api
 	\param	api Specific api requested for this shader file
 	**********************************************************************************************************************************/
-	const std::string& getBestFilenameForApi(Api::Enum api)const
+	const std::string& getBestFilenameForApi(Api api)const
 	{
 		auto it = std::find_if(m_filenames.rbegin(), m_filenames.rend(), ApiComparatorNotGreaterThan(api));
 		if (it != m_filenames.rend()) {	return it->second;	}
@@ -121,9 +121,9 @@ public:
 	\brief	Get list of api versions supported
 	\return	Return a list of supported version
 	**********************************************************************************************************************************/
-	std::vector<pvr::Api::Enum> getApiVersionsSupported() const
+	std::vector<pvr::Api> getApiVersionsSupported() const
 	{
-		std::vector<pvr::Api::Enum> retval;
+		std::vector<pvr::Api> retval;
 		for (auto it = m_filenames.begin(); it != m_filenames.end(); ++it)
 		{
 			retval.push_back(it->first);
@@ -135,14 +135,14 @@ public:
 	\brief	Get list of all supported api files for this shader
 	\return	Return list of all api shader files
 	**********************************************************************************************************************************/
-	std::vector<std::pair<pvr::Api::Enum, std::string>/**/>& getAllFiles() { return m_filenames; }
+	std::vector<std::pair<pvr::Api, std::string>/**/>& getAllFiles() { return m_filenames; }
 
 	/*!*******************************************************************************************************************************
 	\brief	Set the shader file for specific api
 	\param	filename shader file name
 	\param	api specific api
 	**********************************************************************************************************************************/
-	void setFileForApi(const std::string& filename, Api::Enum api)
+	void setFileForApi(const std::string& filename, Api api)
 	{
 		auto it = std::find_if(m_filenames.begin(), m_filenames.end(), ApiComparatorNotLessThan(api));
 		if (it != m_filenames.end() && it->first == api)
@@ -176,14 +176,14 @@ public:
 		//is found, stop. We won't bother with others.
 		std::string name, extension;
 		strings::getFileNameAndExtension(filename, name, extension);
-		for (int i = 1; i < Api::Count; ++i)
+		for (int i = 1; i < (int)Api::Count; ++i)
 		{
-			if (strings::endsWith(name, Api::getApiCode(Api::Enum(i))))
+			if (strings::endsWith(name, apiCode(Api(i))))
 			{
 				Stream::ptr_type str = m_assetProvider->getAssetStream(filename, false);
 				if (str.get())
 				{
-					setFileForApi(filename, Api::Enum(i));
+					setFileForApi(filename, Api(i));
 					return 1; //This file has a suffix, so it only has 1 api
 				}
 				return 0; //Filename has a suffix but was not found... Let's not go over the top here, assume this is failure.
@@ -193,22 +193,22 @@ public:
 
 		//Being here means that the filename did not have an API suffix. Which is the main case: Load everything you find.
 		//So now do the main work: Test all possible Apis...
-		for (int i = 1; i < Api::Count; ++i)
+		for (int i = 1; i < (int)Api::Count; ++i)
 		{
-			string file1 = name + "_" + Api::getApiCode(Api::Enum(i)) + (extension.size() ? "." + extension : "");
-
+			string file1 = name + "_" + apiCode(Api(i)) + (extension.size() ? "." + extension : "");
+			if (i == (int)Api::Vulkan) { file1 += ".spv"; }
 			Stream::ptr_type str = m_assetProvider->getAssetStream(file1, false);
 			if (str.get())
 			{
-				setFileForApi(file1, Api::Enum(i));
+				setFileForApi(file1, Api(i));
 				++count;
 				continue;
 			}
-			file1 = name + Api::getApiCode(Api::Enum(i)) + (extension.size() ? "." + extension : "");
+			file1 = name + apiCode(Api(i)) + (extension.size() ? "." + extension : "");
 			str = m_assetProvider->getAssetStream(file1, false);
 			if (str.get())
 			{
-				setFileForApi(file1, Api::Enum(i));
+				setFileForApi(file1, Api(i));
 				++count;
 			}
 		}

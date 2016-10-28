@@ -16,7 +16,8 @@ namespace pvr {
 using namespace types;
 namespace api {
 namespace gles {
-void RenderPassGles_::destroy() {
+void RenderPassGles_::destroy()
+{
 	m_desc.clear();
 }
 
@@ -68,8 +69,8 @@ void RenderPassGles_::begin(IGraphicsContext& device, const api::Fbo& fbo, const
 
 	if (device.getApiType() <= Api::OpenGLES2 && m_desc.getNumColorInfo())
 	{
-		const LoadOp::Enum& loadOpColor = m_desc.getColorInfo(0).loadOpColor;
-		const StoreOp::Enum& storeOpColor  = m_desc.getColorInfo(0).storeOpColor;
+		const LoadOp& loadOpColor = m_desc.getColorInfo(0).loadOpColor;
+		const StoreOp& storeOpColor  = m_desc.getColorInfo(0).storeOpColor;
 
 		for (uint32 i = 1; i < m_desc.getNumColorInfo(); ++i)
 		{
@@ -90,7 +91,7 @@ void RenderPassGles_::begin(IGraphicsContext& device, const api::Fbo& fbo, const
 	//Weird for condition is so that for <=GLES2, run only once
 	for (uint32 i = 0; i < m_desc.getNumColorInfo() && (i == 0 || device.getApiType() >= Api::OpenGLES3); ++i)
 	{
-		const LoadOp::Enum& loadOp = m_desc.getColorInfo(i).loadOpColor;
+		const LoadOp& loadOp = m_desc.getColorInfo(i).loadOpColor;
 		switch (loadOp)
 		{
 		case LoadOp::Ignore:
@@ -256,7 +257,7 @@ void RenderPassGles_::end(IGraphicsContext& context) const
 
 	if (context.getApiType() <= Api::OpenGLES2 && m_desc.getNumColorInfo())
 	{
-		const StoreOp::Enum& storeOpColor = m_desc.getColorInfo(0).storeOpColor;
+		const StoreOp& storeOpColor = m_desc.getColorInfo(0).storeOpColor;
 		for (uint32 i = 1; i < m_desc.getNumColorInfo(); ++i)
 		{
 			if (storeOpColor != m_desc.getColorInfo(i).storeOpColor)

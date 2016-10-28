@@ -176,15 +176,17 @@ GLM_FUNC_QUALIFIER glm::detail::tmat3x3<T, P> scale(glm::detail::tvec2<T, P> con
 */
 
 /*!********************************************************************************************
-\brief	Calculated a tilted projection matrix
-\param	fovy The field of vision in the y axis
-\param	aspect The aspect  of the viewport
-\param	near1 The near clipping plane distance
-\param	far1 The far clipping plane distance
-\param	rotate Angle of tilt (rotation around the z axis), in radians
+\brief Calculated a tilted projection matrix
+\param fovy The field of vision in the y axis
+\param aspect The aspect  of the viewport
+\param near1 The near clipping plane distance (name is not near to avoid clash with platform keywords)
+\param far1 The far clipping plane distance (name is not near to avoid clash with platform keywords)
+\param rotate Angle of tilt (rotation around the z axis), in radians
+\param api The graphics API for which this matrix will be created. It is used for things such
+as the Framebuffer coordinate conventions.
 \return	A projection matrix for the specified parameters, tilted by rotate
 ***********************************************************************************************/
-inline glm::mat4 perspective(pvr::Api::Enum api, float32 fovy, float32 aspect, float32 near1,
+inline glm::mat4 perspective(pvr::Api api, float32 fovy, float32 aspect, float32 near1,
                              float32 far1, pvr::float32 rotate = .0f)
 {
 	glm::mat4 mat = glm::perspective(fovy, aspect, near1, far1);
@@ -203,15 +205,17 @@ inline glm::mat4 perspective(pvr::Api::Enum api, float32 fovy, float32 aspect, f
 \param	near1 The near clipping plane distance
 \param	far1 The far clipping plane distance
 \param	rotate Angle of tilt (rotation around the z axis), in radians
+\param api The graphics API for which this matrix will be created. It is used for things such
+as the Framebuffer coordinate conventions.
 \return	A projection matrix for the specified parameters, tilted by rotate
 ***********************************************************************************************/
-inline glm::mat4 perspectiveFov(pvr::Api::Enum api, float32 fovy, float32 width, float32 height,
+inline glm::mat4 perspectiveFov(pvr::Api api, float32 fovy, float32 width, float32 height,
                                 float32 near1, float32 far1, pvr::float32 rotate = .0f)
 {
 	return perspective(api, fovy, width / height, near1, far1, rotate);
 }
 
-inline glm::mat4 ortho(pvr::Api::Enum api, float32 left, float32 right, float32 bottom,
+inline glm::mat4 ortho(pvr::Api api, float32 left, float32 right, float32 bottom,
                        float32 top, float32 rotate = 0.0f)
 {
 	if (api == pvr::Api::Vulkan)

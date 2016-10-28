@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['back',['back',['../classpvr_1_1_ring_buffer.html#a3b229191afebf6b8e59e374e469a6b15',1,'pvr::RingBuffer::back()'],['../classpvr_1_1_ring_buffer.html#a712316a069ae587cd1eb44e5224d3481',1,'pvr::RingBuffer::back() const ']]],
+  ['back',['back',['../classpvr_1_1_multi.html#ae0aad7120f2ddb6a72f4df862ecaf401',1,'pvr::Multi::back()'],['../classpvr_1_1_multi.html#a62eab96e0225ff37940e1471d257c7a3',1,'pvr::Multi::back() const '],['../classpvr_1_1_ring_buffer.html#a3b229191afebf6b8e59e374e469a6b15',1,'pvr::RingBuffer::back()'],['../classpvr_1_1_ring_buffer.html#a712316a069ae587cd1eb44e5224d3481',1,'pvr::RingBuffer::back() const ']]],
   ['begin',['begin',['../classpvr_1_1_indexed_array.html#aef0bfb2ab12222311071c4dc052e64dc',1,'pvr::IndexedArray::begin()'],['../classpvr_1_1_indexed_array.html#a0f4031ce181adc3a49e6e56465aff061',1,'pvr::IndexedArray::begin() const '],['../classpvr_1_1_list_of_interfaces.html#a5410e87a80fbdc552a6d9f2ad779a31b',1,'pvr::ListOfInterfaces::begin()'],['../classpvr_1_1_list_of_interfaces.html#a5d083fde38b02d9c7873451dd9da8971',1,'pvr::ListOfInterfaces::begin() const ']]],
   ['bottomcenterfar',['bottomCenterFar',['../classpvr_1_1math_1_1_axis_aligned_box.html#a405b93de6b08da8fda12e9cb621fb661',1,'pvr::math::AxisAlignedBox']]],
   ['bottomcenternear',['bottomCenterNear',['../classpvr_1_1math_1_1_axis_aligned_box.html#acbbc19e88748117da0b54a2c485c6b9c',1,'pvr::math::AxisAlignedBox']]],

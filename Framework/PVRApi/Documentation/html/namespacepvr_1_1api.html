@@ -127,6 +127,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference-counted handle to a <a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a>. Default constructor returns an empty handle that wraps a NULL object. Use the IGraphicsContext's createUbo to construct a <a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a>. As with all reference-counted handles, access with the arrow operator. For implementation details, see <a class="el" href="classpvr_1_1api_1_1impl_1_1_buffer__.html" title="Buffer Implementation. Access through the Refcounted Framework object Buffer. All buffer types contai...">pvr::api::impl::Buffer_</a>.  <a href="classpvr_1_1api_1_1_buffer.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_buffer_range_barrier.html">BufferRangeBarrier</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A <a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> memory barrier used only for memory accesses involving a specific range of the specified buffer object. It is also used to transfer ownership of an buffer range from one queue family to another.  <a href="structpvr_1_1api_1_1_buffer_range_barrier.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_compressed_image_data_format.html">CompressedImageDataFormat</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes a Compressed format. Compressed formats provide less information than the uncompressed format, as they can only be accessed "black box".  <a href="structpvr_1_1api_1_1_compressed_image_data_format.html#details">More...</a><br/></td></tr>
@@ -168,6 +169,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for index bindable. An index bindable can be bound to an indexed binding point : bind(IGraphicsContext, index).  <a href="classpvr_1_1api_1_1_i_index_bindable.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_image_area_barrier.html">ImageAreaBarrier</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A Image memory barrier used only for memory accesses involving a specific subresource range of the specified image object. It is also used to perform a layout transition for an image subresource range, or to transfer ownership of an image subresource range from one queue family to another.  <a href="structpvr_1_1api_1_1_image_area_barrier.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_image_data_format.html">ImageDataFormat</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an image format, including pixel format(channels/bits per channel), datatype and colorspace.  <a href="structpvr_1_1api_1_1_image_data_format.html#details">More...</a><br/></td></tr>
@@ -179,12 +181,16 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes a Compressed format. Compressed formats provide less information than the uncompressed format, as they can only be accessed "black box".  <a href="structpvr_1_1api_1_1_image_storage_format_compressed.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_memory_barrier.html">MemoryBarrier</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A Global memory barrier used for memory accesses for all memory objects.  <a href="structpvr_1_1api_1_1_memory_barrier.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_memory_barrier_set.html">MemoryBarrierSet</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A memory barrier into the command stream. Used to signify that some types of pending operations from before the barrier must have finished before the commands after the barrier start executing.  <a href="classpvr_1_1api_1_1_memory_barrier_set.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_on_screen_fbo_create_param.html">OnScreenFboCreateParam</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">on screen Fbo creation descriptor - provides limited additional functionality when creating an on screen FBO primarily the ability to add additional color attachments.  <a href="structpvr_1_1api_1_1_on_screen_fbo_create_param.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1_pipeline_barrier.html">PipelineBarrier</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A memory barrier into the command stream. Used to signify that some types of pending operations from before the barrier must have finished before the commands after the barrier start executing.  <a href="classpvr_1_1api_1_1_pipeline_barrier.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_pipeline_layout_create_param.html">PipelineLayoutCreateParam</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline Layout create information. The descriptor set layouts must be known to create a Pipeline layout.  <a href="structpvr_1_1api_1_1_pipeline_layout_create_param.html#details">More...</a><br/></td></tr>
@@ -202,6 +208,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference-counted handle to a Shader Storage <a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> object view of a <a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a>. Default constructor returns an empty handle that wraps a NULL object. Use the IGraphicsContext's createUbo to construct a <a class="el" href="classpvr_1_1api_1_1_ssbo_view.html" title="Reference-counted handle to a Shader Storage Buffer object view of a Buffer. Default constructor retu...">SsboView</a>. As with all reference-counted handles, access with the arrow operator. For implementation details, see pvr::api::impl::SsboView_.  <a href="classpvr_1_1api_1_1_ssbo_view.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_stencil_state.html">StencilState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline Stencil state.  <a href="structpvr_1_1api_1_1_stencil_state.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_sub_pass.html">SubPass</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Render pass subpass. Subpasses allow intermediate draws to be chained and communicating with techniques like Pixel Local Storage without outputting to the FrameBuffer until the end of the RenderPass.  <a href="structpvr_1_1api_1_1_sub_pass.html#details">More...</a><br/></td></tr>
@@ -237,6 +244,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information about a <a class="el" href="classpvr_1_1api_1_1_buffer.html" title="Reference-counted handle to a Buffer. Default constructor returns an empty handle that wraps a NULL o...">Buffer</a> binding: Binding index, stride, (instance) step rate.  <a href="structpvr_1_1api_1_1_vertex_input_binding_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1api_1_1_viewport.html">Viewport</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structpvr_1_1api_1_1_viewport.html" title="Viewport specifes the drawing region, min and max depth. ">Viewport</a> specifes the drawing region, min and max depth.  <a href="structpvr_1_1api_1_1_viewport.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -301,53 +309,77 @@ Functions</h2></td></tr>
 <tr class="memitem:a81a8d84c51eee8bb5bf9ee6a6aa361d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a81a8d84c51eee8bb5bf9ee6a6aa361d3">getDisplayFormat</a> (const system::DisplayAttributes &amp;attribute, <a class="el" href="structpvr_1_1api_1_1_image_data_format.html">api::ImageDataFormat</a> *outColorFmt, <a class="el" href="structpvr_1_1api_1_1_image_data_format.html">api::ImageDataFormat</a> *outDepthStencilFmt)</td></tr>
 <tr class="memdesc:a81a8d84c51eee8bb5bf9ee6a6aa361d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the display's color, depth and or stencil format from a DisplayAttributes object.  <a href="#a81a8d84c51eee8bb5bf9ee6a6aa361d3">More...</a><br/></td></tr>
 <tr class="separator:a81a8d84c51eee8bb5bf9ee6a6aa361d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70b709a7f70867d4f81b3751719d7e1c"><td class="memItemLeft" align="right" valign="top">native::HPipeline_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a70b709a7f70867d4f81b3751719d7e1c">native_cast</a> (<a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html">pvr::api::impl::ComputePipeline_</a> &amp;object)</td></tr>
-<tr class="separator:a70b709a7f70867d4f81b3751719d7e1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d346ecb8d34a5e991deb3934af1f06d"><td class="memItemLeft" align="right" valign="top">const native::HPipeline_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a3d346ecb8d34a5e991deb3934af1f06d">native_cast</a> (const <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html">pvr::api::impl::ComputePipeline_</a> &amp;object)</td></tr>
-<tr class="separator:a3d346ecb8d34a5e991deb3934af1f06d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a438ae98e9561f4cc02bd2ba346d19fb9"><td class="memItemLeft" align="right" valign="top">native::HPipeline_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a438ae98e9561f4cc02bd2ba346d19fb9">native_cast</a> (<a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html">pvr::api::impl::GraphicsPipeline_</a> &amp;object)</td></tr>
-<tr class="separator:a438ae98e9561f4cc02bd2ba346d19fb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af6119dea8ddec0fe158df3e3affc2b3d"><td class="memItemLeft" align="right" valign="top">const native::HPipeline_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#af6119dea8ddec0fe158df3e3affc2b3d">native_cast</a> (const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html">pvr::api::impl::GraphicsPipeline_</a> &amp;object)</td></tr>
-<tr class="separator:af6119dea8ddec0fe158df3e3affc2b3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6b54bba302b544cc361b00a591c94a6"><td class="memItemLeft" align="right" valign="top">native::HPipeline_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#ad6b54bba302b544cc361b00a591c94a6">native_cast</a> (<a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html">impl::ComputePipeline_</a> &amp;object)</td></tr>
+<tr class="memdesc:ad6b54bba302b544cc361b00a591c94a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html" title="A configuration of the Compute Pipeline which must be bound before launching a Compute operation...">impl::ComputePipeline_</a>&amp; to native::HPipeline_*.  <a href="#ad6b54bba302b544cc361b00a591c94a6">More...</a><br/></td></tr>
+<tr class="separator:ad6b54bba302b544cc361b00a591c94a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17fae5dd7a5c7bd805cd291361bf1ed1"><td class="memItemLeft" align="right" valign="top">const native::HPipeline_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a17fae5dd7a5c7bd805cd291361bf1ed1">native_cast</a> (const <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html">impl::ComputePipeline_</a> &amp;object)</td></tr>
+<tr class="memdesc:a17fae5dd7a5c7bd805cd291361bf1ed1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html" title="A configuration of the Compute Pipeline which must be bound before launching a Compute operation...">impl::ComputePipeline_</a>&amp; to const native::HPipeline_*.  <a href="#a17fae5dd7a5c7bd805cd291361bf1ed1">More...</a><br/></td></tr>
+<tr class="separator:a17fae5dd7a5c7bd805cd291361bf1ed1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa8002ddeeef7a122cf75d484dad4349"><td class="memItemLeft" align="right" valign="top">native::HPipeline_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#aaa8002ddeeef7a122cf75d484dad4349">native_cast</a> (<a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html">impl::GraphicsPipeline_</a> &amp;object)</td></tr>
+<tr class="memdesc:aaa8002ddeeef7a122cf75d484dad4349"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html" title="API graphics pipeline wrapper. A GraphicsPipeline represents the configuration of almost the entire R...">impl::GraphicsPipeline_</a>&amp; to const native::HPipeline_&amp;.  <a href="#aaa8002ddeeef7a122cf75d484dad4349">More...</a><br/></td></tr>
+<tr class="separator:aaa8002ddeeef7a122cf75d484dad4349"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09d2e4c0a39acce07a77faad46ad7fcf"><td class="memItemLeft" align="right" valign="top">const native::HPipeline_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a09d2e4c0a39acce07a77faad46ad7fcf">native_cast</a> (const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html">impl::GraphicsPipeline_</a> &amp;object)</td></tr>
+<tr class="memdesc:a09d2e4c0a39acce07a77faad46ad7fcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html" title="API graphics pipeline wrapper. A GraphicsPipeline represents the configuration of almost the entire R...">impl::GraphicsPipeline_</a>&amp; to const native::HPipeline_&amp;.  <a href="#a09d2e4c0a39acce07a77faad46ad7fcf">More...</a><br/></td></tr>
+<tr class="separator:a09d2e4c0a39acce07a77faad46ad7fcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf4a44e2f328add5ac6a0d54087cca06"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html">platform::ContextVk</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#aaf4a44e2f328add5ac6a0d54087cca06">native_cast</a> (const IGraphicsContext &amp;object)</td></tr>
+<tr class="memdesc:aaf4a44e2f328add5ac6a0d54087cca06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const IGraphicsContext&amp; to const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>&amp;.  <a href="#aaf4a44e2f328add5ac6a0d54087cca06">More...</a><br/></td></tr>
 <tr class="separator:aaf4a44e2f328add5ac6a0d54087cca06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f122c86e5606965c76dc59b83ddf9a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html">platform::ContextVk</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a5f122c86e5606965c76dc59b83ddf9a0">native_cast</a> (IGraphicsContext &amp;object)</td></tr>
+<tr class="memdesc:a5f122c86e5606965c76dc59b83ddf9a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from IGraphicsContext&amp; to <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>&amp;.  <a href="#a5f122c86e5606965c76dc59b83ddf9a0">More...</a><br/></td></tr>
 <tr class="separator:a5f122c86e5606965c76dc59b83ddf9a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae7f280271a9d1149d250968c45c22dde"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html">platform::ContextVk</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#ae7f280271a9d1149d250968c45c22dde">native_cast</a> (const GraphicsContext &amp;object)</td></tr>
+<tr class="memdesc:ae7f280271a9d1149d250968c45c22dde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const GraphicsContext&amp; to const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>*.  <a href="#ae7f280271a9d1149d250968c45c22dde">More...</a><br/></td></tr>
 <tr class="separator:ae7f280271a9d1149d250968c45c22dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2af638aadb34316b6f5b345c8283bd95"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html">platform::ContextVk</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a2af638aadb34316b6f5b345c8283bd95">native_cast</a> (const IGraphicsContext *object)</td></tr>
+<tr class="memdesc:a2af638aadb34316b6f5b345c8283bd95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const IGraphicsContext* to const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>*.  <a href="#a2af638aadb34316b6f5b345c8283bd95">More...</a><br/></td></tr>
 <tr class="separator:a2af638aadb34316b6f5b345c8283bd95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d3ad53c8d2ec74585b1e68446d48961"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html">platform::ContextVk</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a9d3ad53c8d2ec74585b1e68446d48961">native_cast</a> (GraphicsContext &amp;object)</td></tr>
+<tr class="memdesc:a9d3ad53c8d2ec74585b1e68446d48961"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from GraphicsContext&amp; to <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>*.  <a href="#a9d3ad53c8d2ec74585b1e68446d48961">More...</a><br/></td></tr>
 <tr class="separator:a9d3ad53c8d2ec74585b1e68446d48961"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04bdebbb9d9e4aa7c81c737b00cc9e0d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html">platform::ContextVk</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a04bdebbb9d9e4aa7c81c737b00cc9e0d">native_cast</a> (IGraphicsContext *object)</td></tr>
+<tr class="memdesc:a04bdebbb9d9e4aa7c81c737b00cc9e0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from IGraphicsContext* to <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>*.  <a href="#a04bdebbb9d9e4aa7c81c737b00cc9e0d">More...</a><br/></td></tr>
 <tr class="separator:a04bdebbb9d9e4aa7c81c737b00cc9e0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab18695281a65911c2cb9fdd6f5501dc3"><td class="memItemLeft" align="right" valign="top">const native::HPipeline_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#ab18695281a65911c2cb9fdd6f5501dc3">native_cast</a> (const GraphicsPipeline &amp;object)</td></tr>
+<tr class="memdesc:ab18695281a65911c2cb9fdd6f5501dc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const GraphicsPipeline&amp; to const native::HPipeline_*.  <a href="#ab18695281a65911c2cb9fdd6f5501dc3">More...</a><br/></td></tr>
 <tr class="separator:ab18695281a65911c2cb9fdd6f5501dc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc9d5a608a57584e2864b31013049a94"><td class="memItemLeft" align="right" valign="top">const native::HPipeline_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#adc9d5a608a57584e2864b31013049a94">native_cast</a> (const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html">impl::GraphicsPipeline_</a> *object)</td></tr>
+<tr class="memdesc:adc9d5a608a57584e2864b31013049a94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html" title="API graphics pipeline wrapper. A GraphicsPipeline represents the configuration of almost the entire R...">impl::GraphicsPipeline_</a>* to const native::HPipeline_*.  <a href="#adc9d5a608a57584e2864b31013049a94">More...</a><br/></td></tr>
 <tr class="separator:adc9d5a608a57584e2864b31013049a94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9c132fd40af4aa1579f64677a375765"><td class="memItemLeft" align="right" valign="top">native::HPipeline_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#ac9c132fd40af4aa1579f64677a375765">native_cast</a> (GraphicsPipeline &amp;object)</td></tr>
+<tr class="memdesc:ac9c132fd40af4aa1579f64677a375765"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const GraphicsPipeline&amp; to const native::HPipeline_*.  <a href="#ac9c132fd40af4aa1579f64677a375765">More...</a><br/></td></tr>
 <tr class="separator:ac9c132fd40af4aa1579f64677a375765"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab14a85e8df34b482d6f2ae4fc0f62e9a"><td class="memItemLeft" align="right" valign="top">native::HPipeline_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#ab14a85e8df34b482d6f2ae4fc0f62e9a">native_cast</a> (<a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html">impl::GraphicsPipeline_</a> *object)</td></tr>
+<tr class="memdesc:ab14a85e8df34b482d6f2ae4fc0f62e9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html" title="API graphics pipeline wrapper. A GraphicsPipeline represents the configuration of almost the entire R...">impl::GraphicsPipeline_</a>&amp; to const native::HPipeline_*.  <a href="#ab14a85e8df34b482d6f2ae4fc0f62e9a">More...</a><br/></td></tr>
 <tr class="separator:ab14a85e8df34b482d6f2ae4fc0f62e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a345c934e5398e01a411ea0cb1be0a1a7"><td class="memItemLeft" align="right" valign="top">const native::HPipeline_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a345c934e5398e01a411ea0cb1be0a1a7">native_cast</a> (const ComputePipeline &amp;object)</td></tr>
+<tr class="memdesc:a345c934e5398e01a411ea0cb1be0a1a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const ComputePipeline&amp; to const native::HPipeline_*.  <a href="#a345c934e5398e01a411ea0cb1be0a1a7">More...</a><br/></td></tr>
 <tr class="separator:a345c934e5398e01a411ea0cb1be0a1a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60eed6b6f665c8acc867c3f1a6c0b30e"><td class="memItemLeft" align="right" valign="top">const native::HPipeline_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a60eed6b6f665c8acc867c3f1a6c0b30e">native_cast</a> (const <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html">impl::ComputePipeline_</a> *object)</td></tr>
+<tr class="memdesc:a60eed6b6f665c8acc867c3f1a6c0b30e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html" title="A configuration of the Compute Pipeline which must be bound before launching a Compute operation...">impl::ComputePipeline_</a>&amp; to const native::HPipeline_*.  <a href="#a60eed6b6f665c8acc867c3f1a6c0b30e">More...</a><br/></td></tr>
 <tr class="separator:a60eed6b6f665c8acc867c3f1a6c0b30e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1acb8a7aa1be7e2c11a45b2a4a5edc1"><td class="memItemLeft" align="right" valign="top">native::HPipeline_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#af1acb8a7aa1be7e2c11a45b2a4a5edc1">native_cast</a> (ComputePipeline &amp;object)</td></tr>
+<tr class="memdesc:af1acb8a7aa1be7e2c11a45b2a4a5edc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const ComputePipeline&amp; to const native::HPipeline_*.  <a href="#af1acb8a7aa1be7e2c11a45b2a4a5edc1">More...</a><br/></td></tr>
 <tr class="separator:af1acb8a7aa1be7e2c11a45b2a4a5edc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4481e6e111f16ec47419b6dadfa7fa88"><td class="memItemLeft" align="right" valign="top">native::HPipeline_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a4481e6e111f16ec47419b6dadfa7fa88">native_cast</a> (<a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html">impl::ComputePipeline_</a> *object)</td></tr>
+<tr class="memdesc:a4481e6e111f16ec47419b6dadfa7fa88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html" title="A configuration of the Compute Pipeline which must be bound before launching a Compute operation...">impl::ComputePipeline_</a>&amp; to const native::HPipeline_*.  <a href="#a4481e6e111f16ec47419b6dadfa7fa88">More...</a><br/></td></tr>
 <tr class="separator:a4481e6e111f16ec47419b6dadfa7fa88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d1f20fccbb4330ebcb115a821d5ef66"><td class="memItemLeft" align="right" valign="top">native::HCommandBuffer_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a3d1f20fccbb4330ebcb115a821d5ef66">native_cast</a> (<a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html">impl::CommandBufferBase_</a> &amp;object)</td></tr>
+<tr class="memdesc:a3d1f20fccbb4330ebcb115a821d5ef66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>&amp; to native::HCommandBuffer_&amp;.  <a href="#a3d1f20fccbb4330ebcb115a821d5ef66">More...</a><br/></td></tr>
 <tr class="separator:a3d1f20fccbb4330ebcb115a821d5ef66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac7319dccc5e41b2b17db346a262e645e"><td class="memItemLeft" align="right" valign="top">const native::HCommandBuffer_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#ac7319dccc5e41b2b17db346a262e645e">native_cast</a> (const <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html">impl::CommandBufferBase_</a> &amp;object)</td></tr>
+<tr class="memdesc:ac7319dccc5e41b2b17db346a262e645e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>&amp; to const native::HCommandBuffer_&amp;.  <a href="#ac7319dccc5e41b2b17db346a262e645e">More...</a><br/></td></tr>
 <tr class="separator:ac7319dccc5e41b2b17db346a262e645e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa80449018612a05da48b3fea4e7226c1"><td class="memItemLeft" align="right" valign="top">const native::HCommandBuffer_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#aa80449018612a05da48b3fea4e7226c1">native_cast</a> (const CommandBufferBase &amp;object)</td></tr>
+<tr class="memdesc:aa80449018612a05da48b3fea4e7226c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const CommandBufferBase&amp; to const native::HCommandBuffer_*.  <a href="#aa80449018612a05da48b3fea4e7226c1">More...</a><br/></td></tr>
 <tr class="separator:aa80449018612a05da48b3fea4e7226c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a318e20237a67b4d2eeef35deb03bc65b"><td class="memItemLeft" align="right" valign="top">const native::HCommandBuffer_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a318e20237a67b4d2eeef35deb03bc65b">native_cast</a> (const <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html">impl::CommandBufferBase_</a> *object)</td></tr>
+<tr class="memdesc:a318e20237a67b4d2eeef35deb03bc65b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>* to const native::HCommandBuffer_*.  <a href="#a318e20237a67b4d2eeef35deb03bc65b">More...</a><br/></td></tr>
 <tr class="separator:a318e20237a67b4d2eeef35deb03bc65b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36b2932a5f266bb225c9dcbfbc056673"><td class="memItemLeft" align="right" valign="top">native::HCommandBuffer_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a36b2932a5f266bb225c9dcbfbc056673">native_cast</a> (CommandBufferBase &amp;object)</td></tr>
+<tr class="memdesc:a36b2932a5f266bb225c9dcbfbc056673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>&amp; to const native::HCommandBuffer_*.  <a href="#a36b2932a5f266bb225c9dcbfbc056673">More...</a><br/></td></tr>
 <tr class="separator:a36b2932a5f266bb225c9dcbfbc056673"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a002600c83a3e95e4c48c7828928387cb"><td class="memItemLeft" align="right" valign="top">native::HCommandBuffer_ *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#a002600c83a3e95e4c48c7828928387cb">native_cast</a> (<a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html">impl::CommandBufferBase_</a> *object)</td></tr>
+<tr class="memdesc:a002600c83a3e95e4c48c7828928387cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>&amp; to const native::HCommandBuffer_*.  <a href="#a002600c83a3e95e4c48c7828928387cb">More...</a><br/></td></tr>
 <tr class="separator:a002600c83a3e95e4c48c7828928387cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa3cc0d3bd00105d04bcee1c776771b1"><td class="memItemLeft" align="right" valign="top">native::HCommandBuffer_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api.html#afa3cc0d3bd00105d04bcee1c776771b1">native_cast</a> (<a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer__.html">pvr::api::impl::CommandBuffer_</a> &amp;object)</td></tr>
 <tr class="separator:afa3cc0d3bd00105d04bcee1c776771b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -677,7 +709,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a70b709a7f70867d4f81b3751719d7e1c"></a>
+<a class="anchor" id="ad6b54bba302b544cc361b00a591c94a6"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -687,7 +719,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">native::HPipeline_ &amp; pvr::api::native_cast </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html">pvr::api::impl::ComputePipeline_</a> &amp;&#160;</td>
+          <td class="paramtype">impl::ComputePipeline_ &amp;&#160;</td>
           <td class="paramname"><em>object</em>)</td><td></td>
           <td></td>
         </tr>
@@ -699,9 +731,13 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html" title="A configuration of the Compute Pipeline which must be bound before launching a Compute operation...">impl::ComputePipeline_</a>&amp; to native::HPipeline_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return native::HPipeline_&amp; </dd></dl>
+
 </div>
 </div>
-<a class="anchor" id="a3d346ecb8d34a5e991deb3934af1f06d"></a>
+<a class="anchor" id="a17fae5dd7a5c7bd805cd291361bf1ed1"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -711,7 +747,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">const native::HPipeline_ &amp; pvr::api::native_cast </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html">pvr::api::impl::ComputePipeline_</a> &amp;&#160;</td>
+          <td class="paramtype">const impl::ComputePipeline_ &amp;&#160;</td>
           <td class="paramname"><em>object</em>)</td><td></td>
           <td></td>
         </tr>
@@ -723,9 +759,13 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html" title="A configuration of the Compute Pipeline which must be bound before launching a Compute operation...">impl::ComputePipeline_</a>&amp; to const native::HPipeline_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HPipeline_&amp; </dd></dl>
+
 </div>
 </div>
-<a class="anchor" id="a438ae98e9561f4cc02bd2ba346d19fb9"></a>
+<a class="anchor" id="aaa8002ddeeef7a122cf75d484dad4349"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -735,7 +775,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">native::HPipeline_ &amp; pvr::api::native_cast </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html">pvr::api::impl::GraphicsPipeline_</a> &amp;&#160;</td>
+          <td class="paramtype">impl::GraphicsPipeline_ &amp;&#160;</td>
           <td class="paramname"><em>object</em>)</td><td></td>
           <td></td>
         </tr>
@@ -747,9 +787,13 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html" title="API graphics pipeline wrapper. A GraphicsPipeline represents the configuration of almost the entire R...">impl::GraphicsPipeline_</a>&amp; to const native::HPipeline_&amp;. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HPipeline_&amp; </dd></dl>
+
 </div>
 </div>
-<a class="anchor" id="af6119dea8ddec0fe158df3e3affc2b3d"></a>
+<a class="anchor" id="a09d2e4c0a39acce07a77faad46ad7fcf"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -759,7 +803,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">const native::HPipeline_ &amp; pvr::api::native_cast </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html">pvr::api::impl::GraphicsPipeline_</a> &amp;&#160;</td>
+          <td class="paramtype">const impl::GraphicsPipeline_ &amp;&#160;</td>
           <td class="paramname"><em>object</em>)</td><td></td>
           <td></td>
         </tr>
@@ -770,6 +814,10 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html" title="API graphics pipeline wrapper. A GraphicsPipeline represents the configuration of almost the entire R...">impl::GraphicsPipeline_</a>&amp; to const native::HPipeline_&amp;. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HPipeline_&amp; </dd></dl>
 
 </div>
 </div>
@@ -795,6 +843,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from const IGraphicsContext&amp; to const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>&amp;. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>&amp; </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a5f122c86e5606965c76dc59b83ddf9a0"></a>
@@ -818,6 +870,10 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Cast from IGraphicsContext&amp; to <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>&amp;. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>&amp; </dd></dl>
 
 </div>
 </div>
@@ -843,6 +899,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from const GraphicsContext&amp; to const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>* </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a2af638aadb34316b6f5b345c8283bd95"></a>
@@ -866,6 +926,10 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Cast from const IGraphicsContext* to const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>* </dd></dl>
 
 </div>
 </div>
@@ -891,6 +955,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from GraphicsContext&amp; to <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>* </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a04bdebbb9d9e4aa7c81c737b00cc9e0d"></a>
@@ -914,6 +982,10 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Cast from IGraphicsContext* to <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return <a class="el" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. ">platform::ContextVk</a>* </dd></dl>
 
 </div>
 </div>
@@ -939,6 +1011,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from const GraphicsPipeline&amp; to const native::HPipeline_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HPipeline_* </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="adc9d5a608a57584e2864b31013049a94"></a>
@@ -962,6 +1038,10 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html" title="API graphics pipeline wrapper. A GraphicsPipeline represents the configuration of almost the entire R...">impl::GraphicsPipeline_</a>* to const native::HPipeline_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HPipeline_* </dd></dl>
 
 </div>
 </div>
@@ -987,6 +1067,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from const GraphicsPipeline&amp; to const native::HPipeline_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HPipeline_* </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="ab14a85e8df34b482d6f2ae4fc0f62e9a"></a>
@@ -1010,6 +1094,10 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_graphics_pipeline__.html" title="API graphics pipeline wrapper. A GraphicsPipeline represents the configuration of almost the entire R...">impl::GraphicsPipeline_</a>&amp; to const native::HPipeline_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HPipeline_* </dd></dl>
 
 </div>
 </div>
@@ -1035,6 +1123,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from const ComputePipeline&amp; to const native::HPipeline_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HPipeline_* </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a60eed6b6f665c8acc867c3f1a6c0b30e"></a>
@@ -1058,6 +1150,10 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html" title="A configuration of the Compute Pipeline which must be bound before launching a Compute operation...">impl::ComputePipeline_</a>&amp; to const native::HPipeline_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HPipeline_* </dd></dl>
 
 </div>
 </div>
@@ -1083,6 +1179,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from const ComputePipeline&amp; to const native::HPipeline_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HPipeline_* </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a4481e6e111f16ec47419b6dadfa7fa88"></a>
@@ -1107,6 +1207,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_compute_pipeline__.html" title="A configuration of the Compute Pipeline which must be bound before launching a Compute operation...">impl::ComputePipeline_</a>&amp; to const native::HPipeline_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HPipeline_* </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a3d1f20fccbb4330ebcb115a821d5ef66"></a>
@@ -1123,6 +1227,10 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Cast from <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>&amp; to native::HCommandBuffer_&amp;. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return native::HCommandBuffer_&amp; </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="ac7319dccc5e41b2b17db346a262e645e"></a>
@@ -1138,6 +1246,10 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>&amp; to const native::HCommandBuffer_&amp;. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HCommandBuffer_&amp; </dd></dl>
 
 </div>
 </div>
@@ -1163,6 +1275,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from const CommandBufferBase&amp; to const native::HCommandBuffer_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HCommandBuffer_* </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a318e20237a67b4d2eeef35deb03bc65b"></a>
@@ -1186,6 +1302,10 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>* to const native::HCommandBuffer_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HCommandBuffer_* </dd></dl>
 
 </div>
 </div>
@@ -1211,6 +1331,10 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>&amp; to const native::HCommandBuffer_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HCommandBuffer_* </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a002600c83a3e95e4c48c7828928387cb"></a>
@@ -1234,6 +1358,10 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Cast from const <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>&amp; to const native::HCommandBuffer_*. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return const native::HCommandBuffer_* </dd></dl>
 
 </div>
 </div>

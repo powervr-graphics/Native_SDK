@@ -1,3 +1,10 @@
+/*!*********************************************************************************************************************
+\file         PVRApi\OGLES\PipelineLayoutGles.h
+\author       PowerVR by Imagination, Developer Technology Team
+\copyright    Copyright (c) Imagination Technologies Limited.
+\brief         Definitions of the OpenGL ES implementation of the RenderPass.
+***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/ApiObjects/PipelineLayout.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
@@ -19,3 +26,4 @@ typedef RefCountedResource<PipelineLayoutGles_> PipelineLayoutGles;
 }
 }
 }
+//!\endcond

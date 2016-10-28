@@ -18,7 +18,7 @@
 		AC2A38671A0A6BD80093C884 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC2A38641A0A6BD80093C884 /* Info.plist */; };
 		AC2A386E1A0A6BE10093C884 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386B1A0A6BE10093C884 /* InfoPlist.strings */; };
 		AC2A38711A0A6BE70093C884 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386F1A0A6BE70093C884 /* MainMenu.xib */; };
-		F80E5DA8E131F154CDB09509 /* OGLESIntroducingPVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F83A161D960BC26EBF0F6F2F /* OGLESIntroducingPVRShell.cpp */; };
+		F80E5DA8E131F154CDB09509 /* OGLESIntroducingPVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F86C5D5E260B0379EDFA904B /* OGLESIntroducingPVRShell.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,7 +95,7 @@
 		AC2A38661A0A6BD80093C884 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AC2A386C1A0A6BE10093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		AC2A38701A0A6BE70093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
-		F83A161D960BC26EBF0F6F2F /* OGLESIntroducingPVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRShell.cpp; path = ../../OGLESIntroducingPVRShell.cpp; sourceTree = SOURCE_ROOT; };
+		F86C5D5E260B0379EDFA904B /* OGLESIntroducingPVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRShell.cpp; path = ../../OGLESIntroducingPVRShell.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -197,7 +197,7 @@
 		AC2A37F81A0A675B0093C884 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				F83A161D960BC26EBF0F6F2F /* OGLESIntroducingPVRShell.cpp */,
+				F86C5D5E260B0379EDFA904B /* OGLESIntroducingPVRShell.cpp */,
 			);
 			name = Sources;
 			path = OSX;

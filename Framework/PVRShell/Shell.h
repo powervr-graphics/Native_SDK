@@ -38,12 +38,7 @@ public:
 \brief        Enumeration representing a simplified, unified input event designed to unify simple actions across different
 devices.
 ***********************************************************************************************************************/
-namespace SimplifiedInput {
-/*!*********************************************************************************************************************
-\brief        Enumeration representing a simplified, unified input event designed to unify simple actions across different
-devices.
-***********************************************************************************************************************/
-enum Enum
+enum class SimplifiedInput
 {
 	NONE = 0,
 	Left = 1,  //!<Left arrow, Swipe left
@@ -55,26 +50,21 @@ enum Enum
 	Action2 = 7,	//!<Key 1, Touch screen left side
 	Action3 = 8,	//!<Key 2, Touch screen right side
 };
-};
 
 /*!*********************************************************************************************************************
 \brief        Enumeration representing a System Event (quit, Gain focus, Lose focus).
 ***********************************************************************************************************************/
-namespace SystemEvent {
-enum Enum
+enum class SystemEvent
 {
 	SystemEvent_Quit, SystemEvent_LoseFocus, SystemEvent_GainFocus
 };
-}
 
 /*!*********************************************************************************************************************
 \brief        Enumeration representing a Keyboard Key.
 ***********************************************************************************************************************/
-namespace Keys {
-
-//Whenever possible, keys get ASCII values of their default (non-shifted) values of a default US keyboard.
-enum Enum : byte
+enum class Keys : byte
 {
+//Whenever possible, keys get ASCII values of their default (non-shifted) values of a default US keyboard.
 	Backspace = 0x08,
 	Tab = 0x09,
 	Return = 0x0D,
@@ -122,17 +112,13 @@ enum Enum : byte
 
 	MaxNumberOfKeyCodes,
 	Unknown = 0xFF
-
-
 };
-
-}
 
 class Stream;
 /*!*********************************************************************************************************************
 \brief       Contains system/platform related classes and namespaces. Main namespace for the PowerVR Shell.
 ***********************************************************************************************************************/
-namespace system {
+namespace platform {
 
 /*!****************************************************************************************************************
 \brief  Contains all data of a system event.
@@ -153,8 +139,8 @@ struct ShellEvent
 	{
 		PointerLocationStore location;
 		uint8 buttonIdx;
-		SystemEvent::Enum systemEvent;
-		Keys::Enum key;
+		pvr::SystemEvent systemEvent;
+		Keys key;
 	};
 };
 
@@ -170,7 +156,7 @@ class ShellOS;
 			  (keyboard, mouse, touch) as well as a unified simplified input interface provided such abstracted
 			  input events as "Left", "Right", "Action1", "Quit" across different platforms.
 *******************************************************************************************************************/
-class Shell : public OSManager, public IAssetProvider
+class Shell : public IPlatformProvider
 {
 	friend class ShellOS;
 	friend class StateMachine;
@@ -260,7 +246,7 @@ protected:
 	\return       When implementing, return a suitable error code to signify failure. If pvr::Result::Success is not
 	              returned , the Shell will detect that, clean up, and exit.
 	*******************************************************************************************************************/
-	virtual Result::Enum initApplication() = 0;
+	virtual Result initApplication() = 0;
 
 	/*!****************************************************************************************************************
 	\brief        IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents successful context aquisition.
@@ -274,7 +260,7 @@ protected:
 	\return       When implementing, return a suitable error code to signify failure. If pvr::Result::Success is not
 	              returned , the Shell will detect that, clean up, and exit.
 	*******************************************************************************************************************/
-	virtual Result::Enum initView() = 0;
+	virtual Result initView() = 0;
 
 	/*!****************************************************************************************************************
 	\brief        IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents every frame.
@@ -288,7 +274,7 @@ protected:
 				  Return pvr::Result::ExitRenderFrame to signify a clean, non-error exit for the application.
 				  Any other error code will be logged.
 	*******************************************************************************************************************/
-	virtual Result::Enum renderFrame() = 0;
+	virtual Result renderFrame() = 0;
 
 	/*!****************************************************************************************************************
 	\brief        IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents graphics context released.
@@ -304,7 +290,7 @@ protected:
 	              returned, the Shell will detect that, clean up, and exit. If the shell was exiting, this will happen
 				  anyway.
 	*******************************************************************************************************************/
-	virtual Result::Enum releaseView() = 0;
+	virtual Result releaseView() = 0;
 
 	/*!****************************************************************************************************************
 	\brief        IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents application exit.
@@ -316,7 +302,7 @@ protected:
 				  Do NOT use this to release API objects - these should already have been released during releaseView.
 	\return       When implementing, return a suitable error code to signify a failure that will be logged.
 	*******************************************************************************************************************/
-	virtual Result::Enum quitApplication() = 0;
+	virtual Result quitApplication() = 0;
 
 	/*!****************************************************************************************************************
 	\brief       Override in your class to handle the "Click" or "Touch" event of the main input device (mouse
@@ -363,7 +349,7 @@ protected:
 	\description This event will be fired on pressing any key.
 	\param key The key pressed
 	******************************************************************************************************************/
-	virtual void eventKeyDown(Keys::Enum key) { (void)key; }
+	virtual void eventKeyDown(Keys key) { (void)key; }
 
 	/*!****************************************************************************************************************
 	\brief Override in your class to handle a keystroke of the keyboard.
@@ -371,14 +357,14 @@ protected:
 	             of the operating system.
 	\param key The key pressed
 	******************************************************************************************************************/
-	virtual void eventKeyStroke(Keys::Enum key) { (void)key; }
+	virtual void eventKeyStroke(Keys key) { (void)key; }
 
 	/*!****************************************************************************************************************
 	\brief Override in your class to handle the release (up) of a key of of the keyboard.
 	\description This event will be fired once, when releasing a key.
 	\param key The key released
 	******************************************************************************************************************/
-	virtual void eventKeyUp(Keys::Enum key) { (void)key; }
+	virtual void eventKeyUp(Keys key) { (void)key; }
 
 	/*!****************************************************************************************************************
 	\brief       Override in your class to handle a unified interface for input across different platforms and devices.
@@ -393,7 +379,7 @@ protected:
 				 this behaviour should be mirrored (exitShell called on ActionClose).
 	\param key The Simplified Unified Event
 	******************************************************************************************************************/
-	virtual void eventMappedInput(SimplifiedInput::Enum key)
+	virtual void eventMappedInput(SimplifiedInput key)
 	{
 		switch (key)
 		{
@@ -408,7 +394,7 @@ public:
 	/*!****************************************************************************************************************
 	\brief       Used externally to signify events to the Shell. Do not use.
 	******************************************************************************************************************/
-	void onKeyDown(Keys::Enum key)
+	void onKeyDown(Keys key)
 	{
 		ShellEvent evt;
 		evt.type = ShellEvent::KeyDown;
@@ -419,7 +405,7 @@ public:
 	/*!****************************************************************************************************************
 	\brief       Used externally to signify events to the Shell. Do not use.
 	******************************************************************************************************************/
-	void onKeyUp(Keys::Enum key)
+	void onKeyUp(Keys key)
 	{
 		ShellEvent evt;
 		evt.type = ShellEvent::KeyUp;
@@ -452,7 +438,7 @@ public:
 	/*!****************************************************************************************************************
 	\brief       Used externally to signify events to the Shell. Do not use.
 	******************************************************************************************************************/
-	void onSystemEvent(SystemEvent::Enum systemEvent)
+	void onSystemEvent(SystemEvent systemEvent)
 	{
 		ShellEvent evt;
 		evt.type = ShellEvent::SystemEvent;
@@ -465,11 +451,11 @@ private:
 	\brief       Used externally to signify events to the Shell. Do not use.
 	******************************************************************************************************************/
 	void updatePointerPosition(PointerLocation location);
-	void implKeyDown(Keys::Enum key);
-	void implKeyUp(Keys::Enum key);
+	void implKeyDown(Keys key);
+	void implKeyUp(Keys key);
 	void implPointingDeviceDown(uint8 buttonIdx);
 	void implPointingDeviceUp(uint8 buttonIdx);
-	void implSystemEvent(SystemEvent::Enum systemEvent);
+	void implSystemEvent(SystemEvent systemEvent);
 
 	std::queue<ShellEvent> eventQueue;
 
@@ -485,7 +471,7 @@ public:
 	/*!****************************************************************************************************************
 	\brief       Called at the appropriate time by the state machine.
 	******************************************************************************************************************/
-	Result::Enum init(ShellData* data);
+	Result init(ShellData* data);
 
 	/*!****************************************************************************************************************
 	\brief       Destructor.
@@ -512,11 +498,11 @@ public:
 
 private:
 	/* called by our friend the State Machine */
-	Result::Enum shellInitApplication();
-	Result::Enum shellQuitApplication();
-	Result::Enum shellInitView();
-	Result::Enum shellReleaseView();
-	Result::Enum shellRenderFrame();
+	Result shellInitApplication();
+	Result shellQuitApplication();
+	Result shellInitView();
+	Result shellReleaseView();
+	Result shellRenderFrame();
 
 public:
 	/*!****************************************************************************************************************
@@ -524,7 +510,7 @@ public:
 	\param     key The key to check
 	\return    True if a keyboard exists and the key is pressed
 	******************************************************************************************************************/
-	bool isKeyPressed(Keys::Enum key) { return isKeyPressedVal(key); }
+	bool isKeyPressed(Keys key) { return isKeyPressedVal(key); }
 
 	/*!****************************************************************************************************************
 	\brief     Query if a key is pressed.
@@ -574,9 +560,9 @@ public:
 	uint64 getTimeAtInitApplication() const;
 
 	/*!****************************************************************************************************************
-	\return    A pvr::system::CommandLine::Options object containing the command line options passed at app launch.
+	\return    A pvr::platform::CommandLine::Options object containing the command line options passed at app launch.
 	******************************************************************************************************************/
-	const system::CommandLineParser::ParsedCommandLine& getCommandLine() const;
+	const platform::CommandLineParser::ParsedCommandLine& getCommandLine() const;
 
 	/*!****************************************************************************************************************
 	\brief    ONLY EFFECTIVE AT INIT APPLICATION. Set the application to run at full screen mode. Not all
@@ -603,7 +589,7 @@ public:
 	\param    h The height of the window
 	\return   pvr::Result::Success if successful. pvr::Result::UnsupportedRequest if unsuccessful.
 	******************************************************************************************************************/
-	Result::Enum setDimensions(uint32 w, uint32 h);
+	Result setDimensions(uint32 w, uint32 h);
 
 	/*!****************************************************************************************************************
 	\return   The window position X coordinate.
@@ -620,7 +606,7 @@ public:
 	          platforms.
 	\return   pvr::Result::Success if successful. pvr::Result::UnsupportedRequest if unsuccessful.
 	******************************************************************************************************************/
-	Result::Enum setPosition(uint32 x, uint32 y);
+	Result setPosition(uint32 x, uint32 y);
 
 	/*!****************************************************************************************************************
 	\return   The frame after which the application is set to quit.
@@ -643,7 +629,7 @@ public:
 	/*!****************************************************************************************************************
 	\return   The vertical synchronisation swap interval. 0 is immediate.
 	******************************************************************************************************************/
-	VsyncMode::Enum getVsyncMode() const;
+	VsyncMode getVsyncMode() const;
 
 	/*!****************************************************************************************************************
 	\return   The number of logical swap chain images. This number is always one greater than the max number returned by
@@ -659,9 +645,17 @@ public:
 
 	/*!****************************************************************************************************************
 	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the swap interval (vertical sync).
-	\param   value The swap interval. 0 is no interval (no vsync). 1 is default.
+	\param   mode The swap interval. 0 is no interval (no vsync). 1 is default.
 	******************************************************************************************************************/
-	void setVsyncMode(VsyncMode::Enum mode);
+	void setVsyncMode(VsyncMode mode);
+
+	/*!****************************************************************************************************************
+	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a desired number of swap images (number of framebuffers).
+	This number will be clamped between the minimum and the maximum number supported by the platform, so that if a small
+	(0-1) or large (8+) number is requested, the minimum/maximum of the platform will always be providedd
+	\param   swapChainLength The desired number of swap images. Default is 3.
+	******************************************************************************************************************/
+	void setPreferredSwapChainLength(uint32 swapChainLength);
 
 	/*!****************************************************************************************************************
 	\brief   EFFECTIVE IF CALLED during RenderFrame. Force the shell to ReleaseView and then InitView again after this
@@ -697,7 +691,7 @@ public:
 	/*!****************************************************************************************************************
 	\return   The Colorspace of the main window backbuffer (linear RGB or sRGB).
 	******************************************************************************************************************/
-    types::ColorSpace::Enum getBackBufferColorspace();
+	types::ColorSpace getBackBufferColorspace();
 
 	/*!****************************************************************************************************************
 	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Specify the colorspace of the backbuffer. Default is a
@@ -705,7 +699,7 @@ public:
 	colorspace is an extension in many implementations, if you use this function, you must call getBackBufferColorspace
 	after initApplication (in initView) to determine the actual backBuffer colorspace that was obtained.
 	******************************************************************************************************************/
-    void setBackBufferColorspace(types::ColorSpace::Enum colorSpace);
+	void setBackBufferColorspace(types::ColorSpace colorSpace);
 
 	/*!****************************************************************************************************************
 	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of color bits per pixel.
@@ -761,7 +755,7 @@ public:
 	wants to use. The context creation will fail if this precise version cannot be created.
 	\param   contextType The context type requested.
 	******************************************************************************************************************/
-	void setApiTypeRequired(Api::Enum contextType);
+	void setApiTypeRequired(Api contextType);
 
 	/*!****************************************************************************************************************
 	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Sets the minimum Graphics API type (version) that the user
@@ -769,49 +763,49 @@ public:
 	context version supported will be created.
 	\param   contextType The context type requested.
 	******************************************************************************************************************/
-	void setMinApiType(Api::Enum contextType);
+	void setMinApiType(Api contextType);
 
 	/*!****************************************************************************************************************
 	\brief  Gets the minimum Graphics API type (version) that the user has set. See setMinApiType.
 	\return  The api type and version that the user has set as the minimum acceptable.
 	******************************************************************************************************************/
-	Api::Enum getMinApiTypeRequired();
+	Api getMinApiTypeRequired();
 
 	/*!****************************************************************************************************************
 	\brief   Gets the maximum supported Graphics API type.
 	\return  The api type and maximum version that the implementation can provide.
 	******************************************************************************************************************/
-	Api::Enum getMaxApiLevel();
+	Api getMaxApiLevel();
 
 	/*!****************************************************************************************************************
 	\brief   Queries if a particular Graphics API type/version is supported.
 	\param   api The context type queried.
 	\return   True if api is supported
 	******************************************************************************************************************/
-	bool isApiSupported(Api::Enum api);
+	bool isApiSupported(Api api);
 
 	/*!****************************************************************************************************************
 	\return   The context type that will be requested from PVRApi.
 	******************************************************************************************************************/
-	Api::Enum  getApiTypeRequired();
+	Api  getApiTypeRequired();
 
 	/*!****************************************************************************************************************
 	\return   Return the actual API level of the existing Graphics Context. If called before initView, results are
 	          undefined.
 	******************************************************************************************************************/
-	Api::Enum  getApiType();
+	Api  getApiType();
 
 	/*!****************************************************************************************************************
 	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Sets the Device Queue types that the user may
 	         require (Graphics, Compute etc.).
 	\param   queueType The DeviceQueueType requested.
 	******************************************************************************************************************/
-	void setDeviceQueueTypesRequired(DeviceQueueType::Enum queueType);
+	void setDeviceQueueTypesRequired(DeviceQueueType queueType);
 
 	/*!****************************************************************************************************************
 	\return   The DeviceQueueTypes that have been set as required.
 	******************************************************************************************************************/
-	DeviceQueueType::Enum getDeviceQueueTypesRequired();
+	DeviceQueueType getDeviceQueueTypesRequired();
 
 	/*!****************************************************************************************************************
 	\brief   Prints out general information about this Shell (application name, sdk version, cmd line etc.
@@ -899,7 +893,7 @@ public:
 	/*!****************************************************************************************************************
 	\return  The current version of the PowerVR SDK.
 	******************************************************************************************************************/
-	static const char8* const getSDKVersion() { return PVRSDK_VERSION; }
+	static const char8* getSDKVersion() { return PVRSDK_VERSION; }
 
 	/*!****************************************************************************************************************
 	\brief  Set a message to be displayed on application exit. Normally used to display critical error messages that
@@ -974,6 +968,21 @@ public:
 	GraphicsContext& getGraphicsContext();
 
 	/*!****************************************************************************************************************
+	\return  Gets the ShellOS object owned by this shell.
+	******************************************************************************************************************/
+	const GraphicsContext& getGraphicsContext() const;
+
+	/*!****************************************************************************************************************
+	\return  Gets the ShellOS object owned by this shell.
+	******************************************************************************************************************/
+	GraphicsContext& context() { return getGraphicsContext(); }
+
+	/*!****************************************************************************************************************
+	\return  Gets the ShellOS object owned by this shell.
+	******************************************************************************************************************/
+	const GraphicsContext& context() const { return getGraphicsContext(); }
+
+	/*!****************************************************************************************************************
 	\return  Gets the Platform Context class used by this shell.
 	******************************************************************************************************************/
 	IPlatformContext& getPlatformContext();
@@ -994,7 +1003,7 @@ private:
 	PrivatePointerState m_pointerState;
 	ShellData* m_data;
 
-	SimplifiedInput::Enum MapKeyToMainInput(Keys::Enum key)
+	SimplifiedInput MapKeyToMainInput(Keys key)
 	{
 		switch (key)
 		{
@@ -1010,17 +1019,17 @@ private:
 		default: return SimplifiedInput::NONE;
 		}
 	}
-	bool setKeyPressedVal(Keys::Enum key, char val)
+	bool setKeyPressedVal(Keys key, char val)
 	{
-		bool temp = m_keystate[key];
-		m_keystate[key] = (val != 0);
+		bool temp = m_keystate[(uint32)key];
+		m_keystate[(uint32)key] = (val != 0);
 		return temp;
 	}
-	bool isKeyPressedVal(Keys::Enum key)
+	bool isKeyPressedVal(Keys key)
 	{
-		return m_keystate[key];
+		return m_keystate[(uint32)key];
 	}
-	SimplifiedInput::Enum MapPointingDeviceButtonToSimpleInput(int buttonIdx)
+	SimplifiedInput MapPointingDeviceButtonToSimpleInput(int buttonIdx)
 	{
 		switch (buttonIdx)
 		{
@@ -1034,7 +1043,7 @@ private:
 };
 
 }
-using pvr::system::Shell;
+using pvr::platform::Shell;
 /*!****************************************************************************************************************
 \brief         ---IMPLEMENT THIS FUNCTION IN YOUR MAIN CODE FILE TO POWER YOUR APPLICATION---
 \description   You must return an std::auto_ptr to pvr::Shell, that will be wrapping a pointer to an instance of

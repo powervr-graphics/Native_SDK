@@ -37,7 +37,7 @@ GLuint msaaColorBuffer = 0;
 GLuint msaaDepthBuffer = 0;
 
 //TODO: Lots of error checking.
-using namespace pvr::system;
+using namespace pvr::platform;
 
 pvr::uint32 PlatformContext::getSwapChainLength()const{ return 1; }
 
@@ -88,7 +88,7 @@ void PlatformContext::release()
 	 m_maxApiVersion = Api::Unspecified;
 }
 
-static inline pvr::Result::Enum preInitialize(OSManager& mgr, NativePlatformHandles& handles)
+static inline pvr::Result preInitialize(OSManager& mgr, NativePlatformHandles& handles)
 {
     if (!handles.get())
     {
@@ -102,7 +102,7 @@ static inline pvr::Result::Enum preInitialize(OSManager& mgr, NativePlatformHand
 void PlatformContext::populateMaxApiVersion()
 {
 	m_maxApiVersion = Api::Unspecified;
-	Api::Enum graphicsapi = Api::OpenGLESMaxVersion;
+	Api graphicsapi = Api::OpenGLESMaxVersion;
 	while (graphicsapi > Api::Unspecified)
 	{
 		const char* esversion = (graphicsapi == Api::OpenGLES31 ? "3.1" : graphicsapi == Api::OpenGLES3 ? "3.0" : graphicsapi == Api::OpenGLES2 ?
@@ -133,33 +133,33 @@ void PlatformContext::populateMaxApiVersion()
         {
             Log(Log.Verbose, "OpenGL ES %s NOT supported. Trying lower version...", esversion);
         }
-        graphicsapi = (Api::Enum)(graphicsapi - 1);
+        graphicsapi = Api((uint32)graphicsapi - 1);
 	}
 	Log(Log.Critical, "=== FATAL: COULD NOT FIND COMPATIBILITY WITH ANY OPENGL ES VERSION ===");
 
 }
 
-pvr::Api::Enum PlatformContext::getMaxApiVersion()
+pvr::Api PlatformContext::getMaxApiVersion()
 {
 	return m_maxApiVersion;
 }
 
-bool PlatformContext::isApiSupported(Api::Enum apiLevel)
+bool PlatformContext::isApiSupported(Api apiLevel)
 {
 	return apiLevel <= m_maxApiVersion;
 }
 
-static pvr::Result::Enum init(PlatformContext& platformContext,const NativeDisplay& nativeDisplay, const NativeWindow& nativeWindow, DisplayAttributes& attributes, const pvr::Api::Enum& apiContextType,
+static pvr::Result init(PlatformContext& platformContext,const NativeDisplay& nativeDisplay, const NativeWindow& nativeWindow, DisplayAttributes& attributes, const pvr::Api& apiContextType,
                               UIView** outView, EAGLContext** outContext)
 {
-    pvr::Result::Enum result = pvr::Result::Success;
-    pvr::Api::Enum apiRequest = apiContextType;
+    pvr::Result result = pvr::Result::Success;
+    pvr::Api apiRequest = apiContextType;
     if(apiContextType == pvr::Api::Unspecified || !platformContext.isApiSupported(apiContextType))
     {
         apiRequest = platformContext.getMaxApiVersion();\
         platformContext.getOsManager().setApiTypeRequired(apiRequest);
         pvr::Log(pvr::Log.Information, "Unspecified target API. Setting to max API level, which is %s",
-            pvr::Api::getApiName(apiRequest));
+            apiName(apiRequest));
     }
     
     if(!platformContext.isInitialized())
@@ -363,7 +363,7 @@ static pvr::Result::Enum init(PlatformContext& platformContext,const NativeDispl
     return result;
 }
 
-pvr::Result::Enum PlatformContext::init(){
+pvr::Result PlatformContext::init(){
     preInitialize(m_OSManager,m_platformContextHandles);
     populateMaxApiVersion();
     
@@ -371,21 +371,21 @@ pvr::Result::Enum PlatformContext::init(){
     {
         if (m_OSManager.getMinApiTypeRequired() == Api::Unspecified)
         {
-            Api::Enum version = getMaxApiVersion();
+            Api version = getMaxApiVersion();
             m_OSManager.setApiTypeRequired(version);
-            Log(Log.Information, "Unspecified target API -- Setting to max API level : %s", Api::getApiName(version));
+            Log(Log.Information, "Unspecified target API -- Setting to max API level : %s", apiName(version));
         }
         else
         {
-            Api::Enum version = std::max(m_OSManager.getMinApiTypeRequired(), getMaxApiVersion());
+            Api version = std::max(m_OSManager.getMinApiTypeRequired(), getMaxApiVersion());
             Log(Log.Information, "Requested minimum API level : %s. Will actually create %s since it is supported.",
-                Api::getApiName(m_OSManager.getMinApiTypeRequired()), Api::getApiName(getMaxApiVersion()));
+                apiName(m_OSManager.getMinApiTypeRequired()), apiName(getMaxApiVersion()));
             m_OSManager.setApiTypeRequired(version);
         }
     }
     else
     {
-        Log(Log.Information, "Forcing specific API level: %s", Api::getApiName(m_OSManager.getApiTypeRequired()));
+        Log(Log.Information, "Forcing specific API level: %s", apiName(m_OSManager.getApiTypeRequired()));
     }
     
     if (m_OSManager.getApiTypeRequired() > getMaxApiVersion())
@@ -394,7 +394,7 @@ pvr::Result::Enum PlatformContext::init(){
             "API level requested [%s] was not supported. Max supported API level on this device is [%s]\n"
             "**** APPLICATION WILL EXIT ****\n"
             "================================================================================",
-            Api::getApiName(m_OSManager.getApiTypeRequired()), Api::getApiName(getMaxApiVersion()));
+            apiName(m_OSManager.getApiTypeRequired()), apiName(getMaxApiVersion()));
         return Result::UnsupportedRequest;
     }
     EAGLContext* context;
@@ -585,6 +585,6 @@ pvr::string PlatformContext::getInfo()
 //Creates an instance of a graphics context
 std::auto_ptr<pvr::IPlatformContext> pvr::createNativePlatformContext(OSManager& mgr)
 {
-    return std::auto_ptr<pvr::IPlatformContext>(new pvr::system::PlatformContext(mgr));
+    return std::auto_ptr<pvr::IPlatformContext>(new pvr::platform::PlatformContext(mgr));
 }
 //!\endcond 

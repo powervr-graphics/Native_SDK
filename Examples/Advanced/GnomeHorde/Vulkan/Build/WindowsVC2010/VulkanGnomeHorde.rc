@@ -82,6 +82,11 @@ Shadow.vsh.spv		RCDATA		"..\\..\\Shadow.vsh.spv"
 Solid.fsh.spv		RCDATA		"..\\..\\Solid.fsh.spv"
 Shadow.fsh.spv		RCDATA		"..\\..\\Shadow.fsh.spv"
 Plant.fsh.spv		RCDATA		"..\\..\\Plant.fsh.spv"
+Object.vsh		RCDATA		"..\\..\\Object.vsh"
+Shadow.vsh		RCDATA		"..\\..\\Shadow.vsh"
+Solid.fsh		RCDATA		"..\\..\\Solid.fsh"
+Shadow.fsh		RCDATA		"..\\..\\Shadow.fsh"
+Plant.fsh		RCDATA		"..\\..\\Plant.fsh"
 
 // RCDATA: Textures
 bigMushroom_shadow.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\bigMushroom_shadow.pvr"

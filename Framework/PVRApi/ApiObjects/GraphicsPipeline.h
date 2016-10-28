@@ -14,34 +14,120 @@ namespace pvr {
 namespace api {
 /*!****************************************************************************************************************
 \brief This represents al the information needed to create a GraphicsPipeline. All items must have proper values
-	   for a pipeline to be successfully created, but all those for which it is possible  (except, for example,
-	   Shaders and Vertex Formats) will have defaults same as their default values OpenGL ES graphics API.
+       for a pipeline to be successfully created, but all those for which it is possible  (except, for example,
+       Shaders and Vertex Formats) will have defaults same as their default values OpenGL ES graphics API.
 *******************************************************************************************************************/
 struct GraphicsPipelineCreateParam
 {
 public:
-	pipelineCreation::DepthStencilStateCreateParam		depthStencil;	//!< Depth and stencil buffer creation info
-	pipelineCreation::ColorBlendStateCreateParam		colorBlend;	//!< Color blending and attachments info
-	pipelineCreation::ViewportStateCreateParam			viewport;		//!< Viewport creation info
-	pipelineCreation::RasterStateCreateParam			rasterizer;	//!< Rasterizer configuration creation info
-	pipelineCreation::VertexInputCreateParam			vertexInput;	//!< Vertex Input creation info
-	pipelineCreation::InputAssemblerStateCreateParam	inputAssembler;//!< Input Assembler creation info
-	pipelineCreation::VertexShaderStageCreateParam		vertexShader;	//!< Vertex shader information
-	pipelineCreation::FragmentShaderStageCreateParam	fragmentShader;//!< Fragment shader information
-	pipelineCreation::GeometryShaderStageCreateParam	geometryShader;
-	pipelineCreation::TessControlShaderStageCreateParam tessControlShader; //<! Tesselation Control Shader information
-	pipelineCreation::TessEvalShaderStageCreateParam	tessEvalShader; //<! Tesselation Evaluation Shader information
-	pipelineCreation::MultiSampleStateCreateParam		multiSample;	//!< Multisampling information
-	pipelineCreation::DynamicStatesCreateParam			dynamicStates;
-	pvr::api::PipelineLayout							pipelineLayout;//!< The pipeline layout
-	pvr::api::RenderPass								renderPass;	//!< The Renderpass
-	uint32												subPass;		//!< The subpass index
-
-	GraphicsPipelineCreateParam(): subPass(0) {}
+    pipelineCreation::DepthStencilStateCreateParam		depthStencil;		//!< Depth and stencil buffer creation info
+    pipelineCreation::ColorBlendStateCreateParam		colorBlend;			//!< Color blending and attachments info
+    pipelineCreation::ViewportStateCreateParam			viewport;			//!< Viewport creation info
+    pipelineCreation::RasterStateCreateParam			rasterizer;			//!< Rasterizer configuration creation info
+    pipelineCreation::VertexInputCreateParam			vertexInput;		//!< Vertex Input creation info
+    pipelineCreation::InputAssemblerStateCreateParam	inputAssembler;		//!< Input Assembler creation info
+    pipelineCreation::VertexShaderStageCreateParam		vertexShader;		//!< Vertex shader information
+    pipelineCreation::FragmentShaderStageCreateParam	fragmentShader;		//!< Fragment shader information
+    pipelineCreation::GeometryShaderStageCreateParam	geometryShader;     //!< Geometry shader information
+    pipelineCreation::TesselationStageCreateParam		tesselationStates;	//!< Tesselation Control and evaluation shader information
+    pipelineCreation::MultiSampleStateCreateParam		multiSample;		//!< Multisampling information
+    pipelineCreation::DynamicStatesCreateParam			dynamicStates;		//!< Dynamic state Information
+	pipelineCreation::OGLES2TextureUnitBindings			es2TextureBindings; //!< ES2 Shader Reflection. Use these 
+    PipelineLayout										pipelineLayout;		//!< The pipeline layout
+    RenderPass											renderPass;			//!< The Renderpass
+    uint32												subPass;			//!< The subpass index
+    GraphicsPipelineCreateParam(): subPass(0) {}
 };
 
 namespace impl {
-class GraphicsPipelineImplementationDetails;
+class GraphicsPipelineImplBase
+{
+    friend class GraphicsPipeline_;
+    friend class ParentableGraphicsPipeline_;
+public:
+	/*!
+	   \brief Destructor
+	 */
+    virtual ~GraphicsPipelineImplBase() {}
+
+	/*!
+	   \brief Get information about a specific input binding
+	   \param bindingId The binding id to return the info for.
+	   \return Return binding info, else return NULL if not found
+	 */
+    virtual VertexInputBindingInfo const* getInputBindingInfo(pvr::uint16 bindingId)const = 0;
+	/*!
+	   \brief Get information about the vertex attributes of a specific binding point.
+	   \param bindingId The binding id to return the info for.
+	   \return Return attribute binding info, else return NULL if not found.
+	 */
+	virtual VertexAttributeInfoWithBinding const* getAttributesInfo(pvr::uint16 bindingId)const = 0;
+
+	/*!
+	   \brief Get the location of multiple uniforms at once. The underlying API must support Shader Reflection (OGLES yes, Vulkan no).
+	   \param uniforms An array of \p numUniforms uniform variable names to retrieve the locations of
+	   \param numUniforms Number of uniforms in the array \p uniforms
+	   \param outLocation An array where the returned uniform locations will be stored. Location should contain enough memory for each uniform's location.
+	   Any uniforms not found in the shader, or inactive, will get the location -1.
+	 */
+    virtual void getUniformLocation(const char8** uniforms, uint32 numUniforms, int32* outLocation)const = 0;
+
+	/*!
+	   \brief Get the location of the specified uniform. The underlying API must support Shader Reflection (OGLES yes, Vulkan no).
+	   \param uniform The uniform variable name to retrieve the location of
+	   \return The location of the uniform with variable name \p uniform. If not found or inactive, returns -1.
+	 */
+    virtual int32 getUniformLocation(const char8* uniform)const = 0;
+
+	/*!
+	   \brief Get the location of the specified vertex attribute. The underlying API must support Shader Reflection (OGLES yes, Vulkan no).
+	   \param attribute The attribute variable name to retrieve the location of
+	   \return The location of the attribute with variable name \p uniform. If not found or inactive, returns -1.
+	 */
+    virtual int32 getAttributeLocation(const char8* attribute)const = 0;
+
+	/*!
+	\brief Get the location of multiple vertex attributes at once. The underlying API must support Shader Reflection (OGLES yes, Vulkan no).
+	\param attributes An array of \p numUAttributes vertex attribute variable names to retrieve the locations of
+	\param numAttributes Number of attributes in the array \p uniforms
+	\param outLocation An array where the returned attribute locations will be stored. Location should contain enough memory for each uniform's location.
+	Any attributes not found in the shader, or inactive, will get the location -1.
+	 */
+    virtual void getAttributeLocation(const char8** attributes, uint32 numAttributes, int32* outLocation)const = 0;
+
+	/*!
+	   \brief Return the number of attributes for the specified binding point (VBO binding point).
+	   \param bindingId A binding point
+	   \return The number of attributes using the specified binding point
+	 */
+    virtual pvr::uint8 getNumAttributes(pvr::uint16 bindingId)const = 0;
+
+	/*!
+	   \brief Return the pipeline layout object that this GraphicsPipeline was created with
+	   \return the pipeline layout object that this GraphicsPipeline was created with
+	 */
+    virtual const PipelineLayout& getPipelineLayout()const = 0;
+
+	/*!
+	   \brief Return the API-specific object (nothing for GLES, VkPipeline for Vulkan) underneath this GraphicsPipeline (if exists).
+	   \return The API-specific object underneath this GraphicsPipeline (if exists).
+	 */
+
+    virtual const native::HPipeline_& getNativeObject() const = 0;
+
+	/*!
+	   \brief Return the API-specific object (nothing for GLES, VkPipeline for Vulkan) underneath this GraphicsPipeline (if exists).
+	   \return The API-specific object underneath this GraphicsPipeline (if exists).
+	 */
+    virtual native::HPipeline_& getNativeObject() = 0;
+
+	/*!
+	   \brief Return the GraphicsPipelineCreateParam object that was used to create this graphics pipeline
+	   \return the GraphicsPipelineCreateParam object that was used to create this graphics pipeline
+	 */
+    virtual const GraphicsPipelineCreateParam& getCreateParam()const = 0;
+};
+
 /*!****************************************************************************************************************
 \brief API graphics pipeline wrapper. A GraphicsPipeline represents the configuration of almost the entire RenderState,
 including vertex description, primitive assembly, Shader configuration, rasterization, blending etc. Access through
@@ -49,97 +135,111 @@ the Framework managed object GraphicsPipeline.
 ******************************************************************************************************************/
 class GraphicsPipeline_
 {
-	friend class PopPipeline;
-	friend class CommandBufferBase_;
-	friend class GraphicsPipelineImplementationDetails;
-	template<typename> friend class PackagedBindable;
-	template<typename> friend struct ::pvr::RefCountEntryIntrusive;
-	friend class ::pvr::IGraphicsContext;
+    friend class PopPipeline;
+    friend class CommandBufferBase_;
+    template<typename> friend class PackagedBindable;
+    template<typename> friend struct ::pvr::RefCountEntryIntrusive;
+    friend class ::pvr::IGraphicsContext;
 public:
-	/*!****************************************************************************************************************
-	\brief Return pipeline vertex input binding info.
-	\return VertexInputBindingInfo
-	******************************************************************************************************************/
-	VertexInputBindingInfo const* getInputBindingInfo(pvr::uint16 bindingId)const;
+	virtual ~GraphicsPipeline_() { }
+
+    /*!****************************************************************************************************************
+    \brief Return pipeline vertex input binding info.
+    \return VertexInputBindingInfo
+    ******************************************************************************************************************/
+    VertexInputBindingInfo const* getInputBindingInfo(pvr::uint16 bindingId)const
+    {
+        return pimpl->getInputBindingInfo(bindingId);
+    }
+
+    /*!****************************************************************************************************************
+    \brief Return all the information on VertexAttributes of this pipeline.
+    \return The information on VertexAttributes of this pipeline as a const pointer to VertexAttributeInfo.
+    ******************************************************************************************************************/
+    VertexAttributeInfoWithBinding const* getAttributesInfo(pvr::uint16 bindId)const
+    {
+        return pimpl->getAttributesInfo(bindId);
+    }
+
+    /*!****************************************************************************************************************
+    \brief Get If uniforms are supported by the underlying API, get the shader locations of several uniform variables
+            at once. If a uniform does not exist or is inactive, returns -1
+    \param[in] uniforms An array of uniform variable names
+    \param[in] numUniforms The number of uniforms in the array
+    \param[out] outLocation An array where the locations will be saved. Writes -1 for inactive uniforms.
+    ******************************************************************************************************************/
+    void getUniformLocation(const char8** uniforms, uint32 numUniforms, int32* outLocation)
+    {
+        return pimpl->getUniformLocation(uniforms, numUniforms, outLocation);
+    }
+
+    /*!****************************************************************************************************************
+    \brief Get If uniforms are supported by the underlying API, get the shader location of a uniform variables. If a
+                uniform does not exist or is inactive, return -1
+    \param uniform The name of a shader uniform variable name
+    \return The location of the uniform, -1 if not found/inactive.
+    ******************************************************************************************************************/
+    int32 getUniformLocation(const char8* uniform) { return pimpl->getUniformLocation(uniform); }
+
+    /*!****************************************************************************************************************
+    \brief Get Get the shader locations of several uniform variables at once. If an attribute does not exist or is
+            inactive, returns -1
+    \brief attribute attributes name
+    \return The shader attribute index of an attribute, -1 if nonexistent.
+    ******************************************************************************************************************/
+    int32 getAttributeLocation(const char8* attribute) { return pimpl->getAttributeLocation(attribute); }
+
+    /*!****************************************************************************************************************
+    \brief Get multiple attribute locations at once. If an attribute is inactive or does not exist, the location is
+            set to -1
+    \param[in] attributes The array of attributes names to get locations
+    \param[in] numAttributes of attributes in the array
+    \param[out] outLocation An array of sufficient size to write the locations to
+    ******************************************************************************************************************/
+    void getAttributeLocation(const char8** attributes, uint32 numAttributes, int32* outLocation)
+    {
+        return pimpl->getAttributeLocation(attributes, numAttributes, outLocation);
+    }
+
+    /*!****************************************************************************************************************
+    \brief Get number of attributes of buffer binding.
+    \param bindingId buffer binding id
+    \return number of attributes
+    ******************************************************************************************************************/
+    pvr::uint8 getNumAttributes(pvr::uint16 bindingId)const { return pimpl->getNumAttributes(bindingId); }
+
+    /*!****************************************************************************************************************
+    \brief Return pipeline layout.
+    \return const PipelineLayout&
+    ******************************************************************************************************************/
+    const PipelineLayout& getPipelineLayout()const
+    {
+        return pimpl->getPipelineLayout();
+    }
+
+	/*!
+       \brief Return this native object handle (const)
+	 */
+    const native::HPipeline_& getNativeObject() const { return pimpl->getNativeObject(); }
+
+
+	/*!
+       \brief Return this native object handle
+	 */
+    native::HPipeline_& getNativeObject() { return pimpl->getNativeObject(); }
 
 	/*!****************************************************************************************************************
-	\brief Return all the information on VertexAttributes of this pipeline.
-	\return The information on VertexAttributes of this pipeline as a const pointer to VertexAttributeInfo.
-	******************************************************************************************************************/
-	VertexAttributeInfoWithBinding const* getAttributesInfo(pvr::uint16 bindId)const;
+	\brief	return pipeline create param used to create the child pipeline
+	\return	const GraphicsPipelineCreateParam&
+	*******************************************************************************************************************/
+	const GraphicsPipelineCreateParam& getCreateParam()const { return pimpl->getCreateParam(); }
 
-	/*!****************************************************************************************************************
-	\brief Destructor. Destroys all resources held by this pipeline.
-	******************************************************************************************************************/
-	virtual ~GraphicsPipeline_();
-
-	/*!****************************************************************************************************************
-	\brief Destroy this pipeline. Releases all resources held by the pipeline.
-	******************************************************************************************************************/
-	void destroy();
-
-	/*!****************************************************************************************************************
-	\brief Get If uniforms are supported by the underlying API, get the shader locations of several uniform variables
-			at once. If a uniform does not exist or is inactive, returns -1
-	\param[in] uniforms An array of uniform variable names
-	\param[in] numUniforms The number of uniforms in the array
-	\param[out] outLocation An array where the locations will be saved. Writes -1 for inactive uniforms.
-	******************************************************************************************************************/
-	void getUniformLocation(const char8** uniforms, uint32 numUniforms, int32* outLocation)
-	{
-		for (uint32 i = 0; i < numUniforms; ++i) { outLocation[i] = getUniformLocation(uniforms[i]); }
-	}
-
-	/*!****************************************************************************************************************
-	\brief Get If uniforms are supported by the underlying API, get the shader location of a uniform variables. If a
-				uniform does not exist or is inactive, return -1
-	\param uniform The name of a shader uniform variable name
-	\return The location of the uniform, -1 if not found/inactive.
-	******************************************************************************************************************/
-	int32 getUniformLocation(const char8* uniform);
-
-	/*!****************************************************************************************************************
-	\brief Get Get the shader locations of several uniform variables at once. If an attribute does not exist or is
-			inactive, returns -1
-	\brief attribute attributes name
-	\return The shader attribute index of an attribute, -1 if nonexistent.
-	******************************************************************************************************************/
-	int32 getAttributeLocation(const char8* attribute);
-
-	/*!****************************************************************************************************************
-	\brief Get multiple attribute locations at once. If an attribute is inactive or does not exist, the location is
-			set to -1
-	\param[in] attributes The array of attributes names to get locations
-	\param[in] numAttributes of attributes in the array
-	\param[out] outLocation An array of sufficient size to write the locations to
-	******************************************************************************************************************/
-	void getAttributeLocation(const char8** attributes, uint32 numAttributes, int32* outLocation)
-	{
-		for (uint32 i = 0; i < numAttributes; ++i) { outLocation[i] = getAttributeLocation(attributes[i]); }
-	}
-
-	/*!****************************************************************************************************************
-	\brief Get number of attributes of buffer binding.
-	\param bindingId buffer binding id
-	\return number of attributes
-	******************************************************************************************************************/
-	pvr::uint8 getNumAttributes(pvr::uint16 bindingId)const;
-
-	/*!****************************************************************************************************************
-	\brief Return pipeline layout.
-	\return const PipelineLayout&
-	******************************************************************************************************************/
-	const PipelineLayout& getPipelineLayout()const;
-
-	const native::HPipeline_& getNativeObject() const;
-	native::HPipeline_& getNativeObject();
+    // INTERNAL USE ONLY
+    const GraphicsPipelineImplBase& getImpl()const { return *pimpl; }
+    GraphicsPipelineImplBase& getImpl() { return *pimpl; }
 protected:
-	Result::Enum init(const GraphicsPipelineCreateParam& desc, ParentableGraphicsPipeline_* parent = NULL);
-
-	Result::Enum createProgram();
-	GraphicsPipeline_(GraphicsContext& device);
-	std::auto_ptr<GraphicsPipelineImplementationDetails> pimpl;
-	void bind(IGraphicsContext& context);
+    GraphicsPipeline_(std::auto_ptr<GraphicsPipelineImplBase>& pimpl) : pimpl(pimpl) {}
+    std::auto_ptr<GraphicsPipelineImplBase> pimpl;
 };
 
 /*!****************************************************************************************************************
@@ -154,39 +254,15 @@ a "diff" of the state between the Parentable pipeline and itself, making the tra
 ******************************************************************************************************************/
 class ParentableGraphicsPipeline_ : public GraphicsPipeline_
 {
-	friend class GraphicsPipeline_;
-	friend class ::pvr::IGraphicsContext;
-	std::auto_ptr<GraphicsPipelineCreateParam> m_createParams;
+    friend class GraphicsPipeline_;
+    friend class ::pvr::IGraphicsContext;
 public:
-	/*!****************************************************************************************************************
-	\brief  Construct this on device.
-	\param device
-	******************************************************************************************************************/
-	ParentableGraphicsPipeline_(GraphicsContext& device) :
-		GraphicsPipeline_(device) {}
-
-	/*!****************************************************************************************************************
-	\brief Initialize this with create param.
-	\param desc
-	******************************************************************************************************************/
-	Result::Enum init(const GraphicsPipelineCreateParam& desc);
-
-	/*!****************************************************************************************************************
-	\brief	return pipeline create param used to create the child pipeline
-	\return	const GraphicsPipelineCreateParam&
-	*******************************************************************************************************************/
-	const GraphicsPipelineCreateParam& getCreateParam()const { return *m_createParams.get(); }
-
-	/*!****************************************************************************************************************
-	\brief	return pipeline create param used to create the child pipeline
-	\return	The createParam used to create this pipeline
-	*******************************************************************************************************************/
-	GraphicsPipelineCreateParam getCreateParam() { return *m_createParams.get(); }
-
+    /*!****************************************************************************************************************
+	\brief  INTERNAL. Use context->createGraphicsPipeline().
+	\param pimpl INTERNAL
+    ******************************************************************************************************************/
+    ParentableGraphicsPipeline_(std::auto_ptr<GraphicsPipelineImplBase> pimpl) : GraphicsPipeline_(pimpl) {}
 };
-
 }
-inline native::HPipeline_& native_cast(pvr::api::impl::GraphicsPipeline_& object) { return object.getNativeObject(); }
-inline const native::HPipeline_& native_cast(const pvr::api::impl::GraphicsPipeline_& object) { return object.getNativeObject(); }
 }
 }

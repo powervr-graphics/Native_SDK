@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="generator" content="Doxygen 1.8.4"/>
-<title>PVRCore: pvr::Multi&lt; T_ &gt; Class Template Reference</title>
+<title>PVRCore: pvr::Multi&lt; T_, MAX_ITEMS &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -85,79 +85,74 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpvr_1_1_multi-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">pvr::Multi&lt; T_ &gt; Class Template Reference</div>  </div>
+<div class="title">pvr::Multi&lt; T_, MAX_ITEMS &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>A small statically allocated array This class represents a small array of items. The array is statically allocated, and has at most 255 items, usually 8. It is not meant to (and cannot) be used to store large numbers of items (use a std::vector instead), rather it is meant to hold small tuples of items. The PowerVR framework utilizes this class to store tuples of one-per-swap-image items.  
+ <a href="classpvr_1_1_multi.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a0748ba11984cfd9eb52fc0bc209e4e33"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a0748ba11984cfd9eb52fc0bc209e4e33">ContainerType</a></td></tr>
-<tr class="separator:a0748ba11984cfd9eb52fc0bc209e4e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3339549fbec8cac21854882ca136d1e"><td class="memItemLeft" align="right" valign="top">typedef T_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a></td></tr>
-<tr class="separator:ad3339549fbec8cac21854882ca136d1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02c69e9b119b60375d8356d970879426"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a02c69e9b119b60375d8356d970879426">ContainerType</a> [MAX_ITEMS]</td></tr>
+<tr class="separator:a02c69e9b119b60375d8356d970879426"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab99af96c2ba05abc0db8b9da127135c8"><td class="memItemLeft" align="right" valign="top">typedef T_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a></td></tr>
+<tr class="separator:ab99af96c2ba05abc0db8b9da127135c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9ffe51fe720c8befdcda62329e039141"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a9ffe51fe720c8befdcda62329e039141">Multi</a> ()</td></tr>
-<tr class="separator:a9ffe51fe720c8befdcda62329e039141"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22d8613dc5a249189b50423d5215b130"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a22d8613dc5a249189b50423d5215b130">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> *elements, const size_t count)</td></tr>
-<tr class="separator:a22d8613dc5a249189b50423d5215b130"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d680852855521f6d4cb37a514cccec6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a7d680852855521f6d4cb37a514cccec6">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element0)</td></tr>
-<tr class="separator:a7d680852855521f6d4cb37a514cccec6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63602ecafb335dc0edd669acf3219ad2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a63602ecafb335dc0edd669acf3219ad2">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element0, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element1)</td></tr>
-<tr class="separator:a63602ecafb335dc0edd669acf3219ad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56ad6e886a56a6bc479fea2afd255613"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a56ad6e886a56a6bc479fea2afd255613">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element0, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element1, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element2)</td></tr>
-<tr class="separator:a56ad6e886a56a6bc479fea2afd255613"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aefcdf671c8f7a2f7e521d22692433c5b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#aefcdf671c8f7a2f7e521d22692433c5b">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element0, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element1, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element2, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element3)</td></tr>
-<tr class="separator:aefcdf671c8f7a2f7e521d22692433c5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a102b7b6d3020229bcf7e0dc6e7d3e124"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a102b7b6d3020229bcf7e0dc6e7d3e124">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element0, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element1, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element2, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element3, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element4)</td></tr>
-<tr class="separator:a102b7b6d3020229bcf7e0dc6e7d3e124"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af3199d17355c727adf7751109cdc4154"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#af3199d17355c727adf7751109cdc4154">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element0, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element1, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element2, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element3, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element4, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element5)</td></tr>
-<tr class="separator:af3199d17355c727adf7751109cdc4154"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b920689978be6c7ea02d84e98b53cc8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a0b920689978be6c7ea02d84e98b53cc8">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element0, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element1, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element2, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element3, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element4, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element5, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element6)</td></tr>
-<tr class="separator:a0b920689978be6c7ea02d84e98b53cc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab50ff6c4cd135573d18ade104fff26de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#ab50ff6c4cd135573d18ade104fff26de">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element0, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element1, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element2, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element3, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element4, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element5, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element6, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element7)</td></tr>
-<tr class="separator:ab50ff6c4cd135573d18ade104fff26de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0dfe79bb3db4def7689228b2eac3b720"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a0dfe79bb3db4def7689228b2eac3b720">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element0, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element1, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element2, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element3, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element4, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element5, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element6, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element7, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element8)</td></tr>
-<tr class="separator:a0dfe79bb3db4def7689228b2eac3b720"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a065af7d6378f25a2998fb34cd2f2d249"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a065af7d6378f25a2998fb34cd2f2d249">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element0, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element1, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element2, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element3, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element4, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element5, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element6, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element7, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element8, const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element9)</td></tr>
-<tr class="separator:a065af7d6378f25a2998fb34cd2f2d249"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82eae3c3e448e219ee5afe45015ee0bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a82eae3c3e448e219ee5afe45015ee0bf">add</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;element)</td></tr>
-<tr class="separator:a82eae3c3e448e219ee5afe45015ee0bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c16614fc55dc9648c77852b1bc10aec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a5c16614fc55dc9648c77852b1bc10aec">add</a> (const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> *element, const size_t count)</td></tr>
-<tr class="separator:a5c16614fc55dc9648c77852b1bc10aec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e98145f4f2703f6e2be890be58ff20b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_multi.html#a0748ba11984cfd9eb52fc0bc209e4e33">ContainerType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a5e98145f4f2703f6e2be890be58ff20b">getContainer</a> ()</td></tr>
-<tr class="separator:a5e98145f4f2703f6e2be890be58ff20b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf7e51189447d04add29edf15c10b5cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#adf7e51189447d04add29edf15c10b5cf">operator[]</a> (size_t idx)</td></tr>
-<tr class="separator:adf7e51189447d04add29edf15c10b5cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0136658129f7141dc19629403bd8d53e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a0136658129f7141dc19629403bd8d53e">operator[]</a> (size_t idx) const </td></tr>
-<tr class="separator:a0136658129f7141dc19629403bd8d53e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14be5886674b17a495bce579f4f4ebbf"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a14be5886674b17a495bce579f4f4ebbf">size</a> ()</td></tr>
-<tr class="separator:a14be5886674b17a495bce579f4f4ebbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a384d36093b365a9904d34c4aba6dc5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a7a384d36093b365a9904d34c4aba6dc5">Multi</a> ()</td></tr>
+<tr class="separator:a7a384d36093b365a9904d34c4aba6dc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d5e9a5097296abec7f6636d58962de3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a6d5e9a5097296abec7f6636d58962de3">Multi</a> (const <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a> *elements, const <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> count)</td></tr>
+<tr class="separator:a6d5e9a5097296abec7f6636d58962de3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9c2a3258f033c2c2d89f15ba73ded3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#ab9c2a3258f033c2c2d89f15ba73ded3c">add</a> (const <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a> &amp;element)</td></tr>
+<tr class="separator:ab9c2a3258f033c2c2d89f15ba73ded3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad497f2a0c4043e0106dc58580a491265"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#ad497f2a0c4043e0106dc58580a491265">add</a> (const <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a> *element, const <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> count)</td></tr>
+<tr class="separator:ad497f2a0c4043e0106dc58580a491265"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0aad7120f2ddb6a72f4df862ecaf401"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#ae0aad7120f2ddb6a72f4df862ecaf401">back</a> ()</td></tr>
+<tr class="separator:ae0aad7120f2ddb6a72f4df862ecaf401"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62eab96e0225ff37940e1471d257c7a3"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a62eab96e0225ff37940e1471d257c7a3">back</a> () const </td></tr>
+<tr class="separator:a62eab96e0225ff37940e1471d257c7a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae01c94b4dde3801611dd1d0c677dafcc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_multi.html#a02c69e9b119b60375d8356d970879426">ContainerType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#ae01c94b4dde3801611dd1d0c677dafcc">getContainer1</a> ()</td></tr>
+<tr class="separator:ae01c94b4dde3801611dd1d0c677dafcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6900ebc693e90be28db08f53a69107cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a6900ebc693e90be28db08f53a69107cd">operator[]</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> idx)</td></tr>
+<tr class="separator:a6900ebc693e90be28db08f53a69107cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a431c85311f407608314bdf1eabacf695"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a431c85311f407608314bdf1eabacf695">operator[]</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> idx) const </td></tr>
+<tr class="separator:a431c85311f407608314bdf1eabacf695"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5441312827ed78eb526fe24d21fd0676"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_multi.html#a5441312827ed78eb526fe24d21fd0676">size</a> ()</td></tr>
+<tr class="separator:a5441312827ed78eb526fe24d21fd0676"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
-<a class="anchor" id="a0748ba11984cfd9eb52fc0bc209e4e33"></a>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T_, uint8 MAX_ITEMS = 4&gt;<br/>
+class pvr::Multi&lt; T_, MAX_ITEMS &gt;</h3>
+
+<p>A small statically allocated array This class represents a small array of items. The array is statically allocated, and has at most 255 items, usually 8. It is not meant to (and cannot) be used to store large numbers of items (use a std::vector instead), rather it is meant to hold small tuples of items. The PowerVR framework utilizes this class to store tuples of one-per-swap-image items. </p>
+<ul>
+<li></li>
+</ul>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="a02c69e9b119b60375d8356d970879426"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T_&gt; </div>
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::vector&lt;<a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a>&gt; <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html#a0748ba11984cfd9eb52fc0bc209e4e33">ContainerType</a></td>
+          <td class="memname">typedef <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a> <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::ContainerType[MAX_ITEMS]</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a class="anchor" id="ad3339549fbec8cac21854882ca136d1e"></a>
+<a class="anchor" id="ab99af96c2ba05abc0db8b9da127135c8"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T_&gt; </div>
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">typedef T_ <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a></td>
+          <td class="memname">typedef T_ <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::<a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -165,17 +160,17 @@ template&lt;typename T_&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a9ffe51fe720c8befdcda62329e039141"></a>
+<a class="anchor" id="a7a384d36093b365a9904d34c4aba6dc5"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T_&gt; </div>
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
+          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>
@@ -190,592 +185,26 @@ template&lt;typename T_&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a22d8613dc5a249189b50423d5215b130"></a>
+<a class="anchor" id="a6d5e9a5097296abec7f6636d58962de3"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T_&gt; </div>
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
+          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> *&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a> *&#160;</td>
           <td class="paramname"><em>elements</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
           <td class="paramname"><em>count</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a7d680852855521f6d4cb37a514cccec6"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T_&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element0</em>)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a63602ecafb335dc0edd669acf3219ad2"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T_&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element0</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element1</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a56ad6e886a56a6bc479fea2afd255613"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T_&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element0</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element2</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="aefcdf671c8f7a2f7e521d22692433c5b"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T_&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element0</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element3</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a102b7b6d3020229bcf7e0dc6e7d3e124"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T_&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element0</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element3</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element4</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="af3199d17355c727adf7751109cdc4154"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T_&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element0</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element3</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element4</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element5</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a0b920689978be6c7ea02d84e98b53cc8"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T_&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element0</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element3</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element4</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element5</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element6</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="ab50ff6c4cd135573d18ade104fff26de"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T_&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element0</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element3</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element4</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element5</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element6</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element7</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a0dfe79bb3db4def7689228b2eac3b720"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T_&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element0</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element3</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element4</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element5</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element6</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element7</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element8</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a065af7d6378f25a2998fb34cd2f2d249"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename T_&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::<a class="el" href="classpvr_1_1_multi.html">Multi</a> </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element0</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element3</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element4</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element5</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element6</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element7</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element8</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
-          <td class="paramname"><em>element9</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -793,19 +222,19 @@ template&lt;typename T_&gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a82eae3c3e448e219ee5afe45015ee0bf"></a>
+<a class="anchor" id="ab9c2a3258f033c2c2d89f15ba73ded3c"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T_&gt; </div>
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::add </td>
+          <td class="memname">void <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::add </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a> &amp;&#160;</td>
           <td class="paramname"><em>element</em>)</td><td></td>
           <td></td>
         </tr>
@@ -819,25 +248,25 @@ template&lt;typename T_&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a5c16614fc55dc9648c77852b1bc10aec"></a>
+<a class="anchor" id="ad497f2a0c4043e0106dc58580a491265"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T_&gt; </div>
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::add </td>
+          <td class="memname">void <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::add </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a> *&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a> *&#160;</td>
           <td class="paramname"><em>element</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
           <td class="paramname"><em>count</em>&#160;</td>
         </tr>
         <tr>
@@ -855,17 +284,17 @@ template&lt;typename T_&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a5e98145f4f2703f6e2be890be58ff20b"></a>
+<a class="anchor" id="ae0aad7120f2ddb6a72f4df862ecaf401"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T_&gt; </div>
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html#a0748ba11984cfd9eb52fc0bc209e4e33">ContainerType</a>&amp; <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::getContainer </td>
+          <td class="memname"><a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a>&amp; <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::back </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>
@@ -880,19 +309,69 @@ template&lt;typename T_&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="adf7e51189447d04add29edf15c10b5cf"></a>
+<a class="anchor" id="a62eab96e0225ff37940e1471d257c7a3"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T_&gt; </div>
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a>&amp; <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::operator[] </td>
+          <td class="memname">const <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a>&amp; <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::back </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ae01c94b4dde3801611dd1d0c677dafcc"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpvr_1_1_multi.html#a02c69e9b119b60375d8356d970879426">ContainerType</a>&amp; <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::getContainer1 </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a6900ebc693e90be28db08f53a69107cd"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a>&amp; <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
           <td class="paramname"><em>idx</em>)</td><td></td>
           <td></td>
         </tr>
@@ -906,19 +385,19 @@ template&lt;typename T_&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a0136658129f7141dc19629403bd8d53e"></a>
+<a class="anchor" id="a431c85311f407608314bdf1eabacf695"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T_&gt; </div>
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="classpvr_1_1_multi.html#ad3339549fbec8cac21854882ca136d1e">ElementType</a>&amp; <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::operator[] </td>
+          <td class="memname">const <a class="el" href="classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8">ElementType</a>&amp; <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::operator[] </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
           <td class="paramname"><em>idx</em>)</td><td></td>
           <td> const</td>
         </tr>
@@ -932,17 +411,17 @@ template&lt;typename T_&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a14be5886674b17a495bce579f4f4ebbf"></a>
+<a class="anchor" id="a5441312827ed78eb526fe24d21fd0676"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename T_&gt; </div>
+template&lt;typename T_, uint8 MAX_ITEMS = 4&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_ &gt;::size </td>
+          <td class="memname">size_t <a class="el" href="classpvr_1_1_multi.html">pvr::Multi</a>&lt; T_, MAX_ITEMS &gt;::size </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>

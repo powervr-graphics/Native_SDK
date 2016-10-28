@@ -33,7 +33,7 @@ public:
 
 		std::vector<float32> positions;	/*!< 3 floats per frame of animation. */
 		std::vector<float32> rotations;	/*!< 4 floats per frame of animation. */
-		std::vector<float32> scales;		/*!< 7 floats per frame of animation. */
+		std::vector<float32> scales;	/*!< 7 floats per frame of animation. */
 		std::vector<float32> matrices;	/*!< 16 floats per frame of animation. */
 
 		// Indices: If you will have loads of repeated values

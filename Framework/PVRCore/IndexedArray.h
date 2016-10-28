@@ -70,27 +70,39 @@ public:
 		size_t size; // required for out-of-bounds checks when skipping empty...
 		iterator(StorageItem_* start, size_t size, size_t current = 0) : start(start), current(current), size(size){ }
 	public:
-		iterator(const const_iterator& rhs) : start(rhs.start), size(rhs.size), current(rhs.current)
-		{
-		}
+		iterator(const const_iterator& rhs) : start(rhs.start), size(rhs.size), current(rhs.current){ }
 
-		DictionaryEntry& operator*()
-		{
-			return *(start + current);
-		}
-		DictionaryEntry* operator->()
-		{
-			return (start + current);
-		}
-		size_t getItemIndex()
-		{
-			return current;
-		}
+		/*!
+		   \brief operator *
+		   \return Return this
+		 */
+		DictionaryEntry& operator*() { return *(start + current); }
+
+		/*!
+		   \brief operator ->
+		   \return  Return this
+		 */
+		DictionaryEntry* operator->(){ return (start + current); }
+
+		/*!
+		   \brief Get current index
+		 */
+		size_t getItemIndex() { return current; }
+
+		/*!
+		   \brief operator ++
+		   \return
+		 */
 		iterator& operator++()
 		{
 			while ((start + (++current))->isUnused && current != size) {} //skip empty values
 			return *this;
 		}
+
+		/*!
+		   \brief operator ++
+		   \return
+		 */
 		iterator operator++(int)
 		{
 			iterator ret = *this;
@@ -98,22 +110,44 @@ public:
 			++(*this);
 			return ret;
 		}
+
+		/*!
+		   \brief operator --
+		   \return
+		 */
 		iterator& operator--()
 		{
 			while ((start + (--current))->isUnused
 			       && current != static_cast<size_t>(-1)) {} //CAREFUL! this is a size_t, which means it WILL eventually overflow.
 			return *this;
 		}
+
+		/*!
+		   \brief operator --
+		   \return
+		 */
 		iterator operator--(int)
 		{
 			iterator ret = *this;
 			--(*this);
 			return ret;
 		}
+
+		/*!
+		   \brief operator !=
+		   \param rhs
+		   \return
+		 */
 		bool operator!=(const iterator& rhs)
 		{
 			return this->current != rhs.current;
 		}
+
+		/*!
+		   \brief operator ==
+		   \param rhs
+		   \return
+		 */
 		bool operator==(const iterator& rhs)
 		{
 			return !((*this) != rhs);

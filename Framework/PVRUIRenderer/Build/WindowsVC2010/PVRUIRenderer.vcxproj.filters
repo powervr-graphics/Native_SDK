@@ -26,13 +26,13 @@
     <ClInclude Include="..\..\PVRUIRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\UIRendererFragShader_VK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UIRendererVertShader_VK.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\UIRendererShaders_ES.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UIRendererShader_vk.fsh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UIRendererShader_vk.vsh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,8 +9,7 @@
 #include "PVRCore/ReinterpretBits.h"
 #include <string>
 #include <cwchar>
-namespace pvr
-{
+namespace pvr {
 /*!*********************************************************************************************************************
 \brief      Function object hashing to 32 bit values into a 32 bit unsigned integer.
 \tparam     T1_  The type of the value to hash.
@@ -30,7 +29,6 @@ inline uint32 hash32_32(const T1_& t)
 	return a;
 }
 
-
 /*!*********************************************************************************************************************
 \brief     Function object hashing a number of bytes into a 32 bit unsigned integer.
 \param     bytes Pointer to a block of memory.
@@ -39,6 +37,11 @@ inline uint32 hash32_32(const T1_& t)
 ***********************************************************************************************************************/
 inline uint32 hash32_bytes(const void* bytes, size_t count)
 {
+	/////////////// WARNING // WARNING // WARNING // WARNING // WARNING // WARNING // /////////////
+	// IF THIS ALGORITHM IS CHANGED, THE ALGORITHM IN THE BOTTOM OF THE PAGE MUST BE CHANGED
+	// AS IT IS AN INDEPENDENT COMPILE TIME IMPLEMENTATION OF TTHIS ALGORITHM.
+	/////////////// WARNING // WARNING // WARNING // WARNING // WARNING // WARNING // /////////////
+
 	uint32 hashValue = 2166136261U;
 	const unsigned char* current = static_cast<const unsigned char*>(bytes);
 	const unsigned char* end = current + count;
@@ -90,5 +93,29 @@ struct hash<std::basic_string<T> >
 		return hash32_bytes(t.data(), sizeof(T) * t.size());
 	}
 };
+
+#pragma warning(push)
+#pragma warning(disable:4307)
+// COMPILE TIME HASHING //
+// WARNING - MUST GIVE THE SAME RESULTS AS THE HASH32BYTES ALGORITHM OTHERWISE
+// MANY CLASSES AROUND THE FRAMEWORK WILL BREAK. IT IS USED TO OPTIMISE COMPILE-TIME
+// SWITCH STATEMENTS.
+template<uint32_t hashvalue, unsigned char... dummy> class hasher_helper;
+
+template<uint32_t hashvalue, unsigned char first> class hasher_helper<hashvalue, first>
+{
+public: static const uint32_t value = hashvalue * 16777619U ^ first;
+};
+template<uint32_t hashvalue, unsigned char first, unsigned char... dummy> class hasher_helper<hashvalue, first, dummy...>
+{
+public: static const uint32_t value = hasher_helper<hashvalue * 16777619U ^ first, dummy...>::value;
+};
+
+template<unsigned char... chars> class HashCompileTime
+{
+public: static const uint32_t value = hasher_helper<2166136261U, chars...>::value;
+};
+#pragma warning(pop)
+
 //!\endcond
 }

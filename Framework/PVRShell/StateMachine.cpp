@@ -21,18 +21,18 @@
 using std::string;
 
 namespace pvr {
-namespace system {
+namespace platform {
 
-StateMachine::StateMachine(OSApplication instance, system::CommandLineParser& commandLine, OSDATA osdata) : ShellOS(instance, osdata), m_currentState(StateNotInitialized),
+StateMachine::StateMachine(OSApplication instance, platform::CommandLineParser& commandLine, OSDATA osdata) : ShellOS(instance, osdata), m_currentState(StateNotInitialized),
 	m_pause(false)
 {
 	m_shellData.os = this;
 	m_shellData.commandLine = &commandLine;
 }
 
-Result::Enum StateMachine::init()
+Result StateMachine::init()
 {
-	Result::Enum result = ShellOS::init(m_shellData.attributes);
+	Result result = ShellOS::init(m_shellData.attributes);
 
 	if (result == Result::Success)
 	{
@@ -44,7 +44,7 @@ Result::Enum StateMachine::init()
 			filepath = ShellOS::getReadPaths()[i] + PVRSHELL_COMMANDLINE_TXT_FILE;
 			FileStream file(filepath.c_str(), "r");
 
-			if (file.open() == Result::Success)
+			if (file.open() == true)
 			{
 				m_shellData.commandLine->prefix(&file);
 				std::string info = "Command-line options have been loaded from file " + filepath;
@@ -69,7 +69,7 @@ Result::Enum StateMachine::init()
 void StateMachine::applyCommandLine()
 {
 	const char* arg, *val;
-	const system::CommandLineParser::ParsedCommandLine& options = m_shellData.commandLine->getParsedCommandLine();
+	const platform::CommandLineParser::ParsedCommandLine& options = m_shellData.commandLine->getParsedCommandLine();
 
 #define WARNING_UNSUPPORTED_OPTION(x) { Log(Log.Warning, "PVRShell recognised command-line option '" x "' is unsupported in this application and has been ignored."); }
 
@@ -120,30 +120,40 @@ void StateMachine::applyCommandLine()
 					WARNING_UNSUPPORTED_OPTION("posy")
 				}
 			}
+			else if (strcasecmp(arg, "-swaplength") == 0 || strcasecmp(arg, "-preferredswaplength") == 0)
+			{
+				m_shell->setPreferredSwapChainLength(atoi(val));
+			}
 			else if (strcasecmp(arg, "-vsync") == 0)
 			{
 				if (!strcasecmp(val, "on"))
 				{
 					m_shell->setVsyncMode(VsyncMode::On);
+					Log("On");
 				}
 				else if (!strcasecmp(val, "off"))
 				{
 					m_shell->setVsyncMode(VsyncMode::Off);
+					Log("Off");
 				}
 				else if (!strcasecmp(val, "relaxed"))
 				{
 					m_shell->setVsyncMode(VsyncMode::Relaxed);
+					Log("Relaxed");
 				}
 				else if (!strcasecmp(val, "mailbox"))
 				{
 					m_shell->setVsyncMode(VsyncMode::Mailbox);
+					Log("Mailbox");
 				}
 				else if (!strcasecmp(val, "half"))
 				{
 					m_shell->setVsyncMode(VsyncMode::Half);
+					Log("Half");
 				}
 				else
 				{
+					Log("Trying number");
 					char* converted;
 					int value = strtol(val, &converted, 0);
 					if (!*converted)
@@ -158,6 +168,42 @@ void StateMachine::applyCommandLine()
 						default: break;
 						}
 					}
+				}
+				Log("%d", m_shell->getVsyncMode());
+			}
+			else if (strcasecmp(arg, "-loglevel") == 0)
+			{
+				if (!strcasecmp(val, "critical"))
+				{
+					Log.setVerbosity(Log.Critical);
+				}
+				else if (!strcasecmp(val, "error"))
+				{
+					Log.setVerbosity(Log.Error);
+				}
+				else if (!strcasecmp(val, "warning"))
+				{
+					Log.setVerbosity(Log.Warning);
+				}
+				else if (!strcasecmp(val, "information"))
+				{
+					Log.setVerbosity(Log.Information);
+				}
+				else if (!strcasecmp(val, "info"))
+				{
+					Log.setVerbosity(Log.Information);
+				}
+				else if (!strcasecmp(val, "verbose"))
+				{
+					Log.setVerbosity(Log.Verbose);
+				}
+				else if (!strcasecmp(val, "debug"))
+				{
+					Log.setVerbosity(Log.Debug);
+				}
+				else
+				{
+					Log(Log.Warning, "Unrecognized threshold '%s' for '-loglevel' command line parameter. Accepted values: [critical, error, warning, information(default for release build), debug(default for debug build), verbose");
 				}
 			}
 			else if (strcasecmp(arg, "-colorbpp") == 0 || strcasecmp(arg, "-colourbpp") == 0
@@ -247,24 +293,25 @@ void StateMachine::applyCommandLine()
 #undef WARNING_UNSUPPORTED_OPTION
 }
 
-Result::Enum StateMachine::execute()
+Result StateMachine::execute()
 {
-	Result::Enum result;
+	Result result;
 
 	for (;;)
 	{
 		result = executeOnce();
 		if (result != Result::Success)
 		{
+			if (result == Result::ExitRenderFrame) { result = Result::Success; }
 			while (m_currentState != StateExit) { executeOnce(); }// Loop to tidy up
 		}
 		if (m_currentState == StateExit) { return result; }
 	}
 }
 
-Result::Enum StateMachine::executeUpTo(const State state)
+Result StateMachine::executeUpTo(const State state)
 {
-	Result::Enum result = m_currentState > state ? Result::InvalidArgument : Result::Success;
+	Result result = m_currentState > state ? Result::InvalidArgument : Result::Success;
 	while (result == Result::Success && m_currentState < state)
 	{
 		if (m_currentState == StateRenderScene && state > StateRenderScene)
@@ -276,16 +323,16 @@ Result::Enum StateMachine::executeUpTo(const State state)
 	return result;
 }
 
-Result::Enum StateMachine::executeOnce(const State state)
+Result StateMachine::executeOnce(const State state)
 {
 	m_currentState = state;
 	return executeOnce();
 }
 
-Result::Enum StateMachine::executeOnce()
+Result StateMachine::executeOnce()
 {
 	// don't handle the events while paused
-	Result::Enum result(Result::Success);
+	Result result(Result::Success);
 	if (m_pause) {  return result;   }
 
 	// Handle our state
@@ -357,7 +404,7 @@ Result::Enum StateMachine::executeOnce()
 			{
 				if (m_shell->getApiTypeRequired() != Api::Unspecified)
 				{
-					m_shell->setExitMessage("Requested Graphics context type %s was unsupported on this device.", Api::getApiName(m_shell->getApiTypeRequired()));
+					m_shell->setExitMessage("Requested Graphics context type %s was unsupported on this device.", apiName(m_shell->getApiTypeRequired()));
 				}
 				else
 				{
@@ -403,21 +450,19 @@ Result::Enum StateMachine::executeOnce()
 
 		if (result == Result::Success)
 		{
+			// Read from backbuffer before swapping - take screenshot if frame capture is enabled
+			if ((static_cast<int32>(m_shellData.frameNo) >= m_shellData.captureFrameStart
+			     && static_cast<int32>(m_shellData.frameNo) <= m_shellData.captureFrameStop))
+			{
+				m_shell->takeScreenshot();
+			}
+
 			// Swap buffers
 			result = (m_shellData.presentBackBuffer && m_shellData.platformContext->presentBackbuffer()) ? Result::Success : Result::UnknownError;
 
 			if (result != Result::Success)
 			{
 				m_currentState = StateReleaseView;
-			}
-			else
-			{
-				// Everything was successful, take screenshot if frame capture is enabled
-				if ((static_cast<int32>(m_shellData.frameNo) >= m_shellData.captureFrameStart
-				     && static_cast<int32>(m_shellData.frameNo) <= m_shellData.captureFrameStop))
-				{
-					m_shell->takeScreenshot();
-				}
 			}
 		}
 		else
@@ -444,12 +489,10 @@ Result::Enum StateMachine::executeOnce()
 				FPSFrameCount = 0;
 				prevTime = time;
 
-#if defined(PVRSHELL_ENABLE_FPS_OUTPUT)
 				if (m_shellData.showFPS)
 				{
 					Log(Log.Information, "Frame %i, FPS %.2f", m_shellData.frameNo, m_shellData.FPS);
 				}
-#endif
 			}
 		}
 

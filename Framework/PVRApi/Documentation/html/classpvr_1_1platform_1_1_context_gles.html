@@ -84,6 +84,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classpvr_1_1platform_1_1_context_gles-members.html">List of all members</a>  </div>
@@ -95,7 +96,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>IGraphicsContext implementation that supports all OpenGL ES 2 and above versions.  
  <a href="classpvr_1_1platform_1_1_context_gles.html#details">More...</a></p>
 
-<p>Inherits IGraphicsContext.</p>
+<p>Inherits IGraphicsContext, and EmbeddedRefCount&lt; ContextGles &gt;.</p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -170,9 +171,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1aa12e9215f50435c523bbbcd099adff"><td class="memItemLeft" align="right" valign="top">IPlatformContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_gles.html#a1aa12e9215f50435c523bbbcd099adff">getPlatformContext</a> () const </td></tr>
 <tr class="memdesc:a1aa12e9215f50435c523bbbcd099adff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of IGraphicsContext. Return the platform context that powers this graphics context.  <a href="#a1aa12e9215f50435c523bbbcd099adff">More...</a><br/></td></tr>
 <tr class="separator:a1aa12e9215f50435c523bbbcd099adff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a450a552ad48cbb358b3c39e67a9b14a4"><td class="memItemLeft" align="right" valign="top">Result::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_gles.html#a450a552ad48cbb358b3c39e67a9b14a4">init</a> (OSManager &amp;osManager, GraphicsContext &amp;my_wrapper)</td></tr>
-<tr class="memdesc:a450a552ad48cbb358b3c39e67a9b14a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of IGraphicsContext. Initializes this class using an OS manager.  <a href="#a450a552ad48cbb358b3c39e67a9b14a4">More...</a><br/></td></tr>
-<tr class="separator:a450a552ad48cbb358b3c39e67a9b14a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20e685fd7d08ca58e6a4f71670b4998b"><td class="memItemLeft" align="right" valign="top">Result::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_gles.html#a20e685fd7d08ca58e6a4f71670b4998b">init</a> (OSManager &amp;osManager)</td></tr>
+<tr class="memdesc:a20e685fd7d08ca58e6a4f71670b4998b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of IGraphicsContext. Initializes this class using an OS manager.  <a href="#a20e685fd7d08ca58e6a4f71670b4998b">More...</a><br/></td></tr>
+<tr class="separator:a20e685fd7d08ca58e6a4f71670b4998b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c1f0a0c637a02db9adae446e7571f18"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_gles.html#a4c1f0a0c637a02db9adae446e7571f18">isExtensionSupported</a> (const char8 *extension) const </td></tr>
 <tr class="memdesc:a4c1f0a0c637a02db9adae446e7571f18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of IGraphicsContext. Query if a specific extension is supported.  <a href="#a4c1f0a0c637a02db9adae446e7571f18">More...</a><br/></td></tr>
 <tr class="separator:a4c1f0a0c637a02db9adae446e7571f18"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -211,6 +212,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3550fa7c8b4d4c857e1aafcc6c9e72e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4812fb990479e56ad23ee9eca25dc99"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_gles.html#af4812fb990479e56ad23ee9eca25dc99">waitIdle</a> ()</td></tr>
 <tr class="separator:af4812fb990479e56ad23ee9eca25dc99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ab21d227d49d452cdcadb049bd20a9853"><td class="memItemLeft" align="right" valign="top">static StrongReferenceType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_gles.html#ab21d227d49d452cdcadb049bd20a9853">createNew</a> ()</td></tr>
+<tr class="separator:ab21d227d49d452cdcadb049bd20a9853"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -394,6 +400,29 @@ Protected Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ab21d227d49d452cdcadb049bd20a9853"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static StrongReferenceType pvr::platform::ContextGles::createNew </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -823,7 +852,7 @@ Protected Attributes</h2></td></tr>
  
 </div>
 </div>
-<a class="anchor" id="a450a552ad48cbb358b3c39e67a9b14a4"></a>
+<a class="anchor" id="a20e685fd7d08ca58e6a4f71670b4998b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -831,18 +860,8 @@ Protected Attributes</h2></td></tr>
           <td class="memname">Result::Enum pvr::platform::ContextGles::init </td>
           <td>(</td>
           <td class="paramtype">OSManager &amp;&#160;</td>
-          <td class="paramname"><em>osManager</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>osManager</em>)</td><td></td>
           <td></td>
-          <td class="paramtype">GraphicsContext &amp;&#160;</td>
-          <td class="paramname"><em>my_wrapper</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">

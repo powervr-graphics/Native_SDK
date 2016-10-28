@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['m_5falphamode',['m_alphaMode',['../classpvr_1_1ui_1_1impl_1_1_sprite__.html#a7b3ea158f213aab21701b4fcaed6c796',1,'pvr::ui::impl::Sprite_']]],
+  ['m_5falphamode',['m_alphaMode',['../classpvr_1_1ui_1_1impl_1_1_sprite__.html#a776743083962a38f8be22bf8470c7e22',1,'pvr::ui::impl::Sprite_']]],
   ['m_5fanchor',['m_anchor',['../classpvr_1_1ui_1_1impl_1_1_i2d_component.html#aa6fd5ac533a64ad105fe2ab31ce350ee',1,'pvr::ui::impl::I2dComponent']]],
   ['m_5fboundingrect',['m_boundingRect',['../classpvr_1_1ui_1_1impl_1_1_sprite__.html#a9baf63132775a0799371deab157da275',1,'pvr::ui::impl::Sprite_']]],
   ['m_5fcachedmatrix',['m_cachedMatrix',['../classpvr_1_1ui_1_1impl_1_1_sprite__.html#a296c43dfa1439e7f506c0702663eb631',1,'pvr::ui::impl::Sprite_']]],

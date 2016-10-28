@@ -35,8 +35,8 @@ const pvr::uint32 IntroTime = 4000;
 const pvr::uint32 IntroFadeTime = 1000;
 const pvr::uint32 TitleTime = 4000;
 const pvr::uint32 TitleFadeTime = 1000;
-const pvr::uint32 TextFadeStart = 300.0f;
-const pvr::uint32 TextFadeEnd = 500.0f;
+const pvr::uint32 TextFadeStart = 300;
+const pvr::uint32 TextFadeEnd = 500;
 
 namespace Language {
 enum Enum
@@ -60,18 +60,9 @@ const wchar_t* Titles[Language::Count] =
 /*!******************************************************************************************************************
 Class implementing the pvr::Shell functions.
 *********************************************************************************************************************/
-class OGLES3IntroducingUIRenderer : public pvr::Shell
+class VulkanIntroducingUIRenderer : public pvr::Shell
 {
 	// UIRenderer class used to display text
-	pvr::ui::UIRenderer uiRenderer;
-	pvr::ui::MatrixGroup centralTextGroup;
-	pvr::ui::Text centralTitleLine1;
-	pvr::ui::Text centralTitleLine2;
-	pvr::ui::Text titleText1;
-	pvr::ui::Text titleText2;
-	std::vector<pvr::ui::Text> centralTextLines;
-	pvr::ui::Image background;
-	pvr::api::AssetStore assetStore;
 
 	glm::mat4 mvp;
 
@@ -84,20 +75,29 @@ class OGLES3IntroducingUIRenderer : public pvr::Shell
 
 	struct ApiObject
 	{
+		pvr::ui::Image background;
+		pvr::ui::MatrixGroup centralTextGroup;
+		std::vector<pvr::ui::Text> centralTextLines;
+		pvr::ui::Text centralTitleLine1;
+		pvr::ui::Text centralTitleLine2;
+		pvr::ui::Text titleText1;
+		pvr::ui::Text titleText2;
+		pvr::ui::UIRenderer uiRenderer;
 		pvr::Multi<pvr::api::Fbo> onScreenFbo;
 		std::vector<pvr::api::SecondaryCommandBuffer> commandBufferWithIntro;
 		std::vector<pvr::api::SecondaryCommandBuffer> commandBufferWithText;
 		std::vector<pvr::api::SecondaryCommandBuffer> commandBufferSubtitle;
 		std::vector<pvr::api::CommandBuffer> primaryCommandBuffer;
+		pvr::api::AssetStore assetStore;
 	};
 	pvr::RefCountedResource<ApiObject> apiObj;
 
 public:
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 
 	void generateBackgroundTexture(pvr::uint32 screenWidth, pvr::uint32 screenHeight);
 
@@ -110,7 +110,7 @@ public:
 /*!******************************************************************************************************************
 \brief	Record the rendering commands
 *********************************************************************************************************************/
-void OGLES3IntroducingUIRenderer::recordCommandBuffers()
+void VulkanIntroducingUIRenderer::recordCommandBuffers()
 {
 	apiObj->commandBufferWithIntro.resize(apiObj->onScreenFbo.size());
 	apiObj->commandBufferWithText.resize(apiObj->onScreenFbo.size());
@@ -125,27 +125,27 @@ void OGLES3IntroducingUIRenderer::recordCommandBuffers()
 
 		// commandbuffer intro
 		{
-			apiObj->commandBufferWithIntro[i]->beginRecording(apiObj->onScreenFbo[0], 0);
-			uiRenderer.beginRendering(apiObj->commandBufferWithIntro[i]);
-			background->render();
+			apiObj->commandBufferWithIntro[i]->beginRecording(apiObj->onScreenFbo[i], 0);
+			apiObj->uiRenderer.beginRendering(apiObj->commandBufferWithIntro[i]);
+			apiObj->background->render();
 			//This is the difference
-			centralTitleLine1->render();
-			centralTitleLine2->render();
-			uiRenderer.getSdkLogo()->render();
+			apiObj->centralTitleLine1->render();
+			apiObj->centralTitleLine2->render();
+			apiObj->uiRenderer.getSdkLogo()->render();
 			// Tells uiRenderer to do all the pending text rendering now
-			uiRenderer.endRendering();
+			apiObj->uiRenderer.endRendering();
 			apiObj->commandBufferWithIntro[i]->endRecording();
 		}
 
 		// commandbuffer scrolling text
 		{
-			apiObj->commandBufferWithText[i]->beginRecording(apiObj->onScreenFbo[0], 0);
-			uiRenderer.beginRendering(apiObj->commandBufferWithText[i]);
-			background->render();
-			centralTextGroup->render();
-			uiRenderer.getSdkLogo()->render();
+			apiObj->commandBufferWithText[i]->beginRecording(apiObj->onScreenFbo[i], 0);
+			apiObj->uiRenderer.beginRendering(apiObj->commandBufferWithText[i]);
+			apiObj->background->render();
+			apiObj->centralTextGroup->render();
+			apiObj->uiRenderer.getSdkLogo()->render();
 			//// Tells uiRenderer to do all the pending text rendering now
-			uiRenderer.endRendering();
+			apiObj->uiRenderer.endRendering();
 			apiObj->commandBufferWithText[i]->endRecording();
 		}
 	}
@@ -157,7 +157,7 @@ void OGLES3IntroducingUIRenderer::recordCommandBuffers()
 		Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
 		If the rendering context is lost, initApplication() will not be called again.
 *********************************************************************************************************************/
-pvr::Result::Enum OGLES3IntroducingUIRenderer::initApplication()
+pvr::Result VulkanIntroducingUIRenderer::initApplication()
 {
 	// Because the C++ standard states that only ASCII characters are valid in compiled code,
 	// we are instead using an external resource file which contains all of the text to be
@@ -197,20 +197,20 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::initApplication()
 \brief		Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
 			If the rendering context is lost, quitApplication() will not be called.
 *********************************************************************************************************************/
-pvr::Result::Enum OGLES3IntroducingUIRenderer::quitApplication() {	return pvr::Result::Success; }
+pvr::Result VulkanIntroducingUIRenderer::quitApplication() {	return pvr::Result::Success; }
 
 /*!******************************************************************************************************************
 \brief	Generates a simple background texture procedurally.
 \param[in]	screenWidth screen dimension's width
 \param[in]	screenHeight screen dimension's height
 *********************************************************************************************************************/
-void OGLES3IntroducingUIRenderer::generateBackgroundTexture(pvr::uint32 screenWidth, pvr::uint32 screenHeight)
+void VulkanIntroducingUIRenderer::generateBackgroundTexture(pvr::uint32 screenWidth, pvr::uint32 screenHeight)
 {
 	// Generate star texture
 	pvr::uint32 width = pvr::math::makePowerOfTwoHigh(screenWidth);
 	pvr::uint32 height = pvr::math::makePowerOfTwoHigh(screenHeight);
 
-	pvr::assets::TextureHeader::Header hd(true);
+	pvr::assets::TextureHeader::Header hd;
 	hd.channelType = pvr::VariableType::UnsignedByteNorm;
 	hd.pixelFormat = pvr::assets::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID;
 	hd.colorSpace = pvr::types::ColorSpace::lRGB;
@@ -233,7 +233,7 @@ void OGLES3IntroducingUIRenderer::generateBackgroundTexture(pvr::uint32 screenWi
 			}
 		}
 	}
-	background = uiRenderer.createImage(myTexture);
+	apiObj->background = apiObj->uiRenderer.createImage(myTexture);
 }
 
 
@@ -245,13 +245,13 @@ void OGLES3IntroducingUIRenderer::generateBackgroundTexture(pvr::uint32 screenWi
 \param[out] font returned font
 \return Return pvr::Result::Success if no error occurred.
 *********************************************************************************************************************/
-inline pvr::Result::Enum loadFontFromResources(pvr::Shell& streamManager, const char* filename,
+inline pvr::Result loadFontFromResources(pvr::Shell& streamManager, const char* filename,
     pvr::ui::UIRenderer& uirenderer, pvr::ui::Font& font)
 {
 	// the AssetStore is unsuitable for loading the font, because it does not keep the actual texture data that we need.
 	// The assetStore immediately releases the texture data as soon as it creates the API objects and the texture header.
 	// Hence we use texture load.
-	pvr::Result::Enum res;
+	pvr::Result res;
 	pvr::Stream::ptr_type fontFile = streamManager.getAssetStream(filename);
 	if (!fontFile.get() || !fontFile->isReadable())	{	return pvr::Result::NotFound;  	}
 	pvr::assets::Texture tmpTexture;
@@ -268,24 +268,24 @@ inline pvr::Result::Enum loadFontFromResources(pvr::Shell& streamManager, const 
 \brief	Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
 		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 *********************************************************************************************************************/
-pvr::Result::Enum OGLES3IntroducingUIRenderer::initView()
+pvr::Result VulkanIntroducingUIRenderer::initView()
 {
-	assetStore.init(*this);
+	apiObj->assetStore.init(*this);
 	apiObj->onScreenFbo = getGraphicsContext()->createOnScreenFboSet();
-	uiRenderer.init(getGraphicsContext(), apiObj->onScreenFbo[0]->getRenderPass(), 0);
+	apiObj->uiRenderer.init(apiObj->onScreenFbo[0]->getRenderPass(), 0);
 
 	// The fonts are loaded here using a PVRTool's ResourceFile wrapper. However,
 	// it is possible to load the textures in any way that provides access to a pointer
 	// to memory, and the size of the file.
 	pvr::ui::Font subTitleFont, centralTitleFont, centralTextFont;
 	{
-		pvr::Result::Enum res;
-		if ((res = loadFontFromResources(*this, CentralTitleFontFile, uiRenderer, centralTitleFont)) != pvr::Result::Success)
+		pvr::Result res;
+		if ((res = loadFontFromResources(*this, CentralTitleFontFile, apiObj->uiRenderer, centralTitleFont)) != pvr::Result::Success)
 		{
 			this->setExitMessage("ERROR: Failed to create font from file %s", CentralTitleFontFile);
 			return res;
 		}
-		if ((res = loadFontFromResources(*this, CentralTextFontFile, uiRenderer, centralTextFont)) != pvr::Result::Success)
+		if ((res = loadFontFromResources(*this, CentralTextFontFile, apiObj->uiRenderer, centralTextFont)) != pvr::Result::Success)
 		{
 			this->setExitMessage("ERROR: Failed to create font from file %s", CentralTextFontFile);
 			return res;
@@ -307,42 +307,46 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::initView()
 			titleFontFileName = SubTitleFontFiles[FontSize::n_36];
 		}
 
-		if ((res = loadFontFromResources(*this, titleFontFileName, uiRenderer, subTitleFont)) != pvr::Result::Success)
+		if ((res = loadFontFromResources(*this, titleFontFileName, apiObj->uiRenderer, subTitleFont)) != pvr::Result::Success)
 		{
 			this->setExitMessage("ERROR: Failed to create font from file %s", CentralTitleFontFile);
 			return res;
 		}
 	}
 
-	centralTextGroup = uiRenderer.createMatrixGroup();
-	titleText1 = uiRenderer.createText(subTitleFont);
-	titleText2 = uiRenderer.createText(subTitleFont);
-	titleText1->setAnchor(pvr::ui::Anchor::TopLeft, -.98f, .98f);
-	titleText2->setAnchor(pvr::ui::Anchor::TopLeft, -.98f, .98f);
-	uiRenderer.getSdkLogo()->commitUpdates();
+	apiObj->centralTextGroup = apiObj->uiRenderer.createMatrixGroup();
+	apiObj->titleText1 = apiObj->uiRenderer.createText(subTitleFont);
+	apiObj->titleText2 = apiObj->uiRenderer.createText(subTitleFont);
+	apiObj->titleText1->setAnchor(pvr::ui::Anchor::TopLeft, -.98f, .98f);
+	apiObj->titleText2->setAnchor(pvr::ui::Anchor::TopLeft, -.98f, .98f);
+	apiObj->uiRenderer.getSdkLogo()->commitUpdates();
 
-	centralTextLines.push_back(uiRenderer.createText(textLines[0], centralTextFont));
-	lineSpacingNDC = 1.6f * centralTextLines[0]->getFont()->getFontLineSpacing() / (pvr::float32)uiRenderer.getRenderingDimY();
-	for (pvr::uint32 i = 1; i < textLines.size(); ++i)
+	apiObj->centralTextLines.push_back(apiObj->uiRenderer.createText(textLines[0], centralTextFont));
+	lineSpacingNDC = 1.6f * apiObj->centralTextLines[0]->getFont()->getFontLineSpacing() / (pvr::float32)apiObj->uiRenderer.getRenderingDimY();
+	for (pvr::uint32 i = 0; i < textLines.size(); ++i)
 	{
-		centralTextLines.push_back(uiRenderer.createText(textLines[i], centralTextFont));
-		centralTextLines.back()->setAnchor(pvr::ui::Anchor::Center, glm::vec2(0.f, -(i * lineSpacingNDC)));
-		centralTextGroup->add(centralTextLines.back());
+		apiObj->centralTextLines.push_back(apiObj->uiRenderer.createText(textLines[i], centralTextFont));
+		apiObj->centralTextLines.back()->setAnchor(pvr::ui::Anchor::Center, glm::vec2(0.f, -(i * lineSpacingNDC)));
+		apiObj->centralTextGroup->add(apiObj->centralTextLines.back());
 	}
 
-	centralTitleLine1 = uiRenderer.createText("introducing", centralTitleFont);
-	centralTitleLine2 = uiRenderer.createText("uirenderer", centralTitleFont);
+	apiObj->centralTitleLine1 = apiObj->uiRenderer.createText("introducing", centralTitleFont);
+	apiObj->centralTitleLine2 = apiObj->uiRenderer.createText("uirenderer", centralTitleFont);
 
-	centralTitleLine1->setAnchor(pvr::ui::Anchor::BottomCenter, glm::vec2(.0f, .0f));
-	centralTitleLine2->setAnchor(pvr::ui::Anchor::TopCenter, glm::vec2(.0f, .0f));
+	apiObj->centralTitleLine1->setAnchor(pvr::ui::Anchor::BottomCenter, glm::vec2(.0f, .0f));
+	apiObj->centralTitleLine2->setAnchor(pvr::ui::Anchor::TopCenter, glm::vec2(.0f, .0f));
 
 	// Generate background texture
 	generateBackgroundTexture(getWidth(), getHeight());
-	background->commitUpdates();
-	textStartY = -uiRenderer.getRenderingDimY() - centralTextGroup->getDimensions().y;
+	apiObj->background->commitUpdates();
+	textStartY = static_cast<pvr::int32>(-apiObj->uiRenderer.getRenderingDimY() -
+	                                     apiObj->centralTextGroup->getDimensions().y);
 
-	textEndY = uiRenderer.getRenderingDimY() + centralTextGroup->getDimensions().y + lineSpacingNDC * (pvr::float32)uiRenderer.getRenderingDimY();
-	textOffset = textStartY;
+	textEndY = static_cast<pvr::int32>(apiObj->uiRenderer.getRenderingDimY() +
+	                                   apiObj->centralTextGroup->getDimensions().y +
+	                                   lineSpacingNDC *
+	                                   (pvr::float32)apiObj->uiRenderer.getRenderingDimY());
+	textOffset = static_cast<pvr::float32>(textStartY);
 	recordCommandBuffers();
 	return pvr::Result::Success;
 }
@@ -351,18 +355,9 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::initView()
 \return	Result::Success if no error occurred
 \brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 *********************************************************************************************************************/
-pvr::Result::Enum OGLES3IntroducingUIRenderer::releaseView()
+pvr::Result VulkanIntroducingUIRenderer::releaseView()
 {
 	// Release uiRenderer Textures
-	uiRenderer.release();
-	centralTextLines.clear();
-	centralTitleLine1.reset();
-	centralTitleLine2.reset();
-	titleText1.reset();
-	titleText2.reset();
-	assetStore.releaseAll();
-	centralTextGroup.reset();
-	background.reset();
 	apiObj.reset();
 	return pvr::Result::Success;
 }
@@ -371,7 +366,7 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::releaseView()
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 \return	Result::Success if no error occurred
 *********************************************************************************************************************/
-pvr::Result::Enum OGLES3IntroducingUIRenderer::renderFrame()
+pvr::Result VulkanIntroducingUIRenderer::renderFrame()
 {
 	// Clears the color and depth buffer
 	pvr::uint64 currentTime = this->getTime() - this->getTimeAtInitApplication();
@@ -381,7 +376,8 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::renderFrame()
 	pvr::uint32 swapChainIndex = getGraphicsContext()->getPlatformContext().getSwapChainIndex();
 	// record the primary commandbuffer
 	apiObj->primaryCommandBuffer[swapChainIndex]->beginRecording();
-	apiObj->primaryCommandBuffer[swapChainIndex]->beginRenderPass(apiObj->onScreenFbo[swapChainIndex], pvr::Rectanglei(0, 0, getWidth(), getHeight()), false);
+	apiObj->primaryCommandBuffer[swapChainIndex]->beginRenderPass(apiObj->onScreenFbo[swapChainIndex],
+	    pvr::Rectanglei(0, 0, getWidth(), getHeight()), false);
 	// Render the 'Introducing uiRenderer' title for the first n seconds.
 	if (currentTime < IntroTime)
 	{
@@ -394,11 +390,11 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::renderFrame()
 		updateCentralText(currentTime);
 		apiObj->primaryCommandBuffer[swapChainIndex]->enqueueSecondaryCmds(apiObj->commandBufferWithText[swapChainIndex]);
 	}
-	apiObj->commandBufferSubtitle[swapChainIndex]->beginRecording(apiObj->onScreenFbo[0]->getRenderPass(), 0);
-	uiRenderer.beginRendering(apiObj->commandBufferSubtitle[swapChainIndex]);
-	titleText1->render();
-	titleText2->render();
-	uiRenderer.endRendering();
+	apiObj->commandBufferSubtitle[swapChainIndex]->beginRecording(apiObj->onScreenFbo[swapChainIndex], 0);
+	apiObj->uiRenderer.beginRendering(apiObj->commandBufferSubtitle[swapChainIndex]);
+	apiObj->titleText1->render();
+	apiObj->titleText2->render();
+	apiObj->uiRenderer.endRendering();
 	apiObj->commandBufferSubtitle[swapChainIndex]->endRecording();
 
 	apiObj->primaryCommandBuffer[swapChainIndex]->enqueueSecondaryCmds(apiObj->commandBufferSubtitle[swapChainIndex]);
@@ -412,7 +408,7 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::renderFrame()
 \brief	Update the description sprite
 \param	currentTime Current Time
 *********************************************************************************************************************/
-void OGLES3IntroducingUIRenderer::updateSubTitle(pvr::uint64 currentTime)
+void VulkanIntroducingUIRenderer::updateSubTitle(pvr::uint64 currentTime)
 {
 	// Fade effect
 	static int prevLang = (int) - 1;
@@ -436,21 +432,21 @@ void OGLES3IntroducingUIRenderer::updateSubTitle(pvr::uint64 currentTime)
 	// matrix is used.
 	if (titleLang != prevLang)
 	{
-		titleText1->setText(Titles[titleLang]);
-		titleText2->setText(Titles[nextLang]);
+		apiObj->titleText1->setText(Titles[titleLang]);
+		apiObj->titleText2->setText(Titles[nextLang]);
 		prevLang = titleLang;
 	}
-	titleText1->setColor(titleCol);
-	titleText2->setColor(nextCol);
-	titleText1->commitUpdates();
-	titleText2->commitUpdates();
+	apiObj->titleText1->setColor(titleCol);
+	apiObj->titleText2->setColor(nextCol);
+	apiObj->titleText1->commitUpdates();
+	apiObj->titleText2->commitUpdates();
 }
 
 /*!******************************************************************************************************************
 \brief	Draws the title text.
 \param[in]	fadeAmount
 *********************************************************************************************************************/
-void OGLES3IntroducingUIRenderer::updateCentralTitle(pvr::uint64 currentTime)
+void VulkanIntroducingUIRenderer::updateCentralTitle(pvr::uint64 currentTime)
 {
 
 	// Using the MeasureText() method provided by uiRenderer, we can determine the bounding-box
@@ -469,21 +465,21 @@ void OGLES3IntroducingUIRenderer::updateCentralTitle(pvr::uint64 currentTime)
 		fadeAmount = 1.0f - ((currentTime - (IntroTime - IntroFadeTime)) / (float)IntroFadeTime);
 	}
 	//Editing the text's alpha based on the fade amount.
-	centralTitleLine1->setColor(1.f, 1.f, 0.f, fadeAmount);
-	centralTitleLine2->setColor(1.f, 1.f, 0.f, fadeAmount);
-	centralTitleLine1->commitUpdates();
-	centralTitleLine2->commitUpdates();
+	apiObj->centralTitleLine1->setColor(1.f, 1.f, 0.f, fadeAmount);
+	apiObj->centralTitleLine2->setColor(1.f, 1.f, 0.f, fadeAmount);
+	apiObj->centralTitleLine1->commitUpdates();
+	apiObj->centralTitleLine2->commitUpdates();
 }
 
 /*!******************************************************************************************************************
 \brief	Draws the 3D text and scrolls in to the screen.
 *********************************************************************************************************************/
-void OGLES3IntroducingUIRenderer::updateCentralText(pvr::uint64 currentTime)
+void VulkanIntroducingUIRenderer::updateCentralText(pvr::uint64 currentTime)
 {
-	const glm::mat4 mProjection = pvr::math::perspective(pvr::Api::Vulkan, 0.7f, float(uiRenderer.getRenderingDimX()) / float(uiRenderer.getRenderingDimY()), 1.0f, 2000.0f);
+	const glm::mat4 mProjection = pvr::math::perspective(pvr::Api::Vulkan, 0.7f, float(apiObj->uiRenderer.getRenderingDimX()) / float(apiObj->uiRenderer.getRenderingDimY()), 1.0f, 2000.0f);
 
-	const glm::mat4 mCamera = glm::lookAt(glm::vec3(uiRenderer.getRenderingDimX() * .5f, -uiRenderer.getRenderingDimY(), 700.0f),
-	                                      glm::vec3(uiRenderer.getRenderingDimX() * .5f, 0, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	const glm::mat4 mCamera = glm::lookAt(glm::vec3(apiObj->uiRenderer.getRenderingDimX() * .5f, -apiObj->uiRenderer.getRenderingDimY(), 700.0f),
+	                                      glm::vec3(apiObj->uiRenderer.getRenderingDimX() * .5f, 0, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	mvp = mProjection * mCamera;
 
 	// Calculate the FPS scale.
@@ -493,7 +489,7 @@ void OGLES3IntroducingUIRenderer::updateCentralText(pvr::uint64 currentTime)
 	float fSpeedInc = 0.0f;
 	if (textOffset > 0.0f) { fSpeedInc = textOffset / textEndY; }
 	textOffset += (0.75f + (1.0f * fSpeedInc)) * fFPSScale;
-	if (textOffset > textEndY) { textOffset = textStartY; }
+	if (textOffset > textEndY) { textOffset = static_cast<pvr::float32>(textStartY); }
 	glm::mat4 trans = glm::translate(glm::vec3(0.0f, textOffset, 0.0f));
 
 	// uiRenderer can optionally be provided with user-defined projection and model-view matrices
@@ -502,8 +498,8 @@ void OGLES3IntroducingUIRenderer::updateCentralText(pvr::uint64 currentTime)
 	// provide the 3D effect. The model-view matrix positions the the text in world space
 	// providing the 'camera' position and the scrolling of the text.
 
-	centralTextGroup->setScaleRotateTranslate(trans);
-	centralTextGroup->setViewProjection(mvp);
+	apiObj->centralTextGroup->setScaleRotateTranslate(trans);
+	apiObj->centralTextGroup->setViewProjection(mvp);
 
 	// The previous method (renderTitle()) explains the following functions in more detail
 	// however put simply, we are looping the entire array of loaded text which is encoded
@@ -522,11 +518,11 @@ void OGLES3IntroducingUIRenderer::updateCentralText(pvr::uint64 currentTime)
 
 		uiCol = (((pvr::uint32)(fade * 255)) << 24) | 0x00FFFF;
 
-		centralTextLines[uiIndex]->setColor(uiCol);
+		apiObj->centralTextLines[uiIndex]->setColor(uiCol);
 	}
-	centralTextGroup->commitUpdates();
-	centralTextLines[0]->setAlphaRenderingMode(true);
-	centralTextLines[0]->commitUpdates();
+	apiObj->centralTextGroup->commitUpdates();
+	apiObj->centralTextLines[0]->setAlphaRenderingMode(true);
+	apiObj->centralTextLines[0]->commitUpdates();
 }
 
 /*!******************************************************************************************************************
@@ -534,4 +530,4 @@ void OGLES3IntroducingUIRenderer::updateCentralText(pvr::uint64 currentTime)
 		The user should return its pvr::Shell object defining the behaviour of the application.
 \return	Return auto ptr to the demo supplied by the user
 *********************************************************************************************************************/
-std::auto_ptr<pvr::Shell> pvr::newDemo() {	return std::auto_ptr<pvr::Shell>(new OGLES3IntroducingUIRenderer()); }
+std::auto_ptr<pvr::Shell> pvr::newDemo() {	return std::auto_ptr<pvr::Shell>(new VulkanIntroducingUIRenderer()); }

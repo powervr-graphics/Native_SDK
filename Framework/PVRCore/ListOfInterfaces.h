@@ -29,7 +29,8 @@ inline void alignValue(size_t& value, uint16 alignment_pot)
 }
 inline void alignValue(void*& value, uint16 alignment_pot)
 {
-	value = reinterpret_cast<void*>(reinterpret_cast<size_t>(value) + getOffset(reinterpret_cast<size_t&>(value), alignment_pot));
+	value = reinterpret_cast<void*>(reinterpret_cast<size_t>(value) +
+	                                getOffset(reinterpret_cast<size_t&>(value), alignment_pot));
 }
 
 template<typename T> T* aligned_construct(char*& buffer, int& size)

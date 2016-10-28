@@ -60,6 +60,12 @@
   <None Include="..\..\..\ProcessedAssets\DarkWood.pvr">
       <Filter>Content Files\Textures</Filter>
   </None>
+  <None Include="..\..\FragShader_vk.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\VertShader_vk.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
   <None Include="..\..\FragShader_vk.spv">
       <Filter>Content Files\Shaders</Filter>
   </None>

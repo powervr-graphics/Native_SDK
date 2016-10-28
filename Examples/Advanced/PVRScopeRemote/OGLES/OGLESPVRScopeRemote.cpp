@@ -3,7 +3,7 @@
 \Title        PVRScopeRemote
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Shows how to use our example PVRScope graph code.
+\brief      Shows how to use our example PVRScope graph code.
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
@@ -37,7 +37,7 @@ class OGLESPVRScopeRemote : public pvr::Shell
 		pvr::api::GraphicsPipeline pipeline;
 		pvr::api::TextureView texture;
 		std::vector<pvr::api::Buffer> vbos;
-		std::vector<pvr::api::Buffer > ibos;
+		std::vector<pvr::api::Buffer> ibos;
 		pvr::api::DescriptorSet  descriptorSet;
 		pvr::api::DescriptorSetLayout descriptorSetLayout;
 		pvr::api::CommandBuffer commandBuffer;
@@ -60,7 +60,6 @@ class OGLESPVRScopeRemote : public pvr::Shell
 	struct
 	{
 		pvr::int32 mvpMtx;
-		//pvr::int32 mvMtx; //We will not need modelview as we don't use point lights in this demo.
 		pvr::int32 mvITMtx;
 		pvr::int32 lightDirView;
 		pvr::int32 albedo;
@@ -88,7 +87,7 @@ class OGLESPVRScopeRemote : public pvr::Shell
 
 	// Data connection to PVRPerfServer
 	bool hasCommunicationError;
-	SSPSCommsData*	spsCommsData;
+	SSPSCommsData*  spsCommsData;
 	SSPSCommsLibraryTypeFloat commsLibSpecularExponent;
 	SSPSCommsLibraryTypeFloat commsLibMetallicity;
 	SSPSCommsLibraryTypeFloat commsLibReflectivity;
@@ -97,17 +96,17 @@ class OGLESPVRScopeRemote : public pvr::Shell
 	SSPSCommsLibraryTypeFloat commsLibAlbedoB;
 
 
-	std::vector<char>	vertShaderSrc;
-	std::vector<char>	fragShaderSrc;
+	std::vector<char> vertShaderSrc;
+	std::vector<char> fragShaderSrc;
 	pvr::uint32 frameCounter;
 	pvr::uint32 frame10Counter;
 	pvr::uint32 counterReadings[CounterDefs::NumCounter];
 public:
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 	void recordCommandBuffer();
 	bool createTexSamplerDescriptorSet();
 	bool createPipeline(const char* const pszFrag, const char* const pszVert);
@@ -116,8 +115,8 @@ public:
 };
 
 /*!*********************************************************************************************************************
-\return	Return true if no error occurred
-\brief	Loads the textures required for this training course
+\return Return true if no error occurred
+\brief  Loads the textures required for this training course
 ***********************************************************************************************************************/
 bool OGLESPVRScopeRemote::createTexSamplerDescriptorSet()
 {
@@ -136,7 +135,7 @@ bool OGLESPVRScopeRemote::createTexSamplerDescriptorSet()
 	pvr::api::Sampler bilinearSampler = m_context->createSampler(samplerDesc);
 
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
-	descSetLayoutInfo.setBinding(0, types::DescriptorType::CombinedImageSampler, types::ShaderStageFlags::Fragment);
+	descSetLayoutInfo.setBinding(0, types::DescriptorType::CombinedImageSampler, 1, types::ShaderStageFlags::Fragment);
 	m_deviceResource->descriptorSetLayout = m_context->createDescriptorSetLayout(descSetLayoutInfo);
 
 	pvr::api::DescriptorSetUpdate descriptorSetUpdate;
@@ -147,8 +146,8 @@ bool OGLESPVRScopeRemote::createTexSamplerDescriptorSet()
 }
 
 /*!*********************************************************************************************************************
-\return	Return true if no error occurred
-\brief	Loads and compiles the shaders and links the shader programs required for this training course
+\return Return true if no error occurred
+\brief  Loads and compiles the shaders and links the shader programs required for this training course
 ***********************************************************************************************************************/
 bool OGLESPVRScopeRemote::createPipeline(const char* const fragShaderSource, const char* const vertShaderSource)
 {
@@ -170,11 +169,12 @@ bool OGLESPVRScopeRemote::createPipeline(const char* const fragShaderSource, con
 	/* Load and compile the shaders from files. */
 	pvr::BufferStream vertexShaderStream("", vertShaderSource, strlen(vertShaderSource));
 	pvr::BufferStream fragShaderStream("", fragShaderSource, strlen(fragShaderSource));
-
+	pipeDesc.rasterizer.setCullFace(pvr::types::Face::Back).setFrontFaceWinding(pvr::types::PolygonWindingOrder::FrontFaceCCW);
+	pipeDesc.depthStencil.setDepthTestEnable(true);
 	pipeDesc.vertexShader.setShader(m_context->createShader(vertexShaderStream, types::ShaderType::VertexShader));
 	pipeDesc.fragmentShader.setShader(m_context->createShader(fragShaderStream, types::ShaderType::FragmentShader));
 	pipeDesc.pipelineLayout = m_context->createPipelineLayout(pipeLayoutInfo);
-	pipeDesc.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
+	pipeDesc.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
 	pvr::utils::createInputAssemblyFromMesh(scene->getMesh(0), vertexBindings, 3, pipeDesc);
 
 	pvr::api::GraphicsPipeline tmpPipeline = m_context->createGraphicsPipeline(pipeDesc);
@@ -193,7 +193,6 @@ bool OGLESPVRScopeRemote::createPipeline(const char* const fragShaderSource, con
 	m_deviceResource->commandBuffer->submit();
 	// Store the location of uniforms for later use
 	uniformLocations.mvpMtx = m_deviceResource->pipeline->getUniformLocation("MVPMatrix");
-	//uniformLocations.mvMtx = m_deviceResource->pipeline->getUniformLocation("MVMatrix");
 	uniformLocations.mvITMtx = m_deviceResource->pipeline->getUniformLocation("MVITMatrix");
 	uniformLocations.lightDirView = m_deviceResource->pipeline->getUniformLocation("ViewLightDirection");
 
@@ -205,28 +204,28 @@ bool OGLESPVRScopeRemote::createPipeline(const char* const fragShaderSource, con
 }
 
 /*!*********************************************************************************************************************
-\brief	Loads the mesh data required for this training course into vertex buffer objects
+\brief  Loads the mesh data required for this training course into vertex buffer objects
 ***********************************************************************************************************************/
 void OGLESPVRScopeRemote::loadVbos()
 {
 	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__,
-	        static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
+	    static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
 
-	//	Load vertex data of all meshes in the scene into VBOs
-	//	The meshes have been exported with the "Interleave Vectors" option,
-	//	so all data is interleaved in the buffer at pMesh->pInterleaved.
-	//	Interleaving data improves the memory access pattern and cache efficiency,
-	//	thus it can be read faster by the hardware.
+	//  Load vertex data of all meshes in the scene into VBOs
+	//  The meshes have been exported with the "Interleave Vectors" option,
+	//  so all data is interleaved in the buffer at pMesh->pInterleaved.
+	//  Interleaving data improves the memory access pattern and cache efficiency,
+	//  thus it can be read faster by the hardware.
 	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *scene, m_deviceResource->vbos, m_deviceResource->ibos);
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-		Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-		If the rendering context is lost, initApplication() will not be called again.
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+    Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
+    If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESPVRScopeRemote::initApplication()
+pvr::Result OGLESPVRScopeRemote::initApplication()
 {
 	assetStore.init(*this);
 	// Load the scene
@@ -272,12 +271,12 @@ pvr::Result::Enum OGLESPVRScopeRemote::initApplication()
 	// set angle of rotation
 	angleY = 0.0f;
 
-	//	Remotely editable library items
+	//  Remotely editable library items
 	if (spsCommsData)
 	{
 		std::vector<SSPSCommsLibraryItem> communicableItems;
 		size_t dataRead;
-		//	Editable shaders
+		//  Editable shaders
 		pvr::assets::ShaderFile fileVersioning;
 		fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
 		pvr::Stream::ptr_type FragShaderFile = fileVersioning.getBestStreamForApi(getMaxApiLevel());
@@ -379,7 +378,7 @@ pvr::Result::Enum OGLESPVRScopeRemote::initApplication()
 		communicableItems.back().nDataLength = sizeof(commsLibAlbedoB);
 
 		// Ok, submit our library
-		if (!pplLibraryCreate(spsCommsData, communicableItems.data(), communicableItems.size()))
+		if (!pplLibraryCreate(spsCommsData, communicableItems.data(), (unsigned int)communicableItems.size()))
 		{
 			pvr::Log(pvr::Log.Debug, "PVRScopeRemote: pplLibraryCreate() failed\n");
 		}
@@ -404,11 +403,11 @@ pvr::Result::Enum OGLESPVRScopeRemote::initApplication()
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in quitApplication() will be called by Shell once per run, just before exiting the program.
-		If the rendering context is lost, QuitApplication() will not be called.
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in quitApplication() will be called by Shell once per run, just before exiting the program.
+    If the rendering context is lost, QuitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESPVRScopeRemote::quitApplication()
+pvr::Result OGLESPVRScopeRemote::quitApplication()
 {
 	if (spsCommsData)
 	{
@@ -428,21 +427,21 @@ pvr::Result::Enum OGLESPVRScopeRemote::quitApplication()
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+    Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESPVRScopeRemote::initView()
+pvr::Result OGLESPVRScopeRemote::initView()
 {
 	m_context = getGraphicsContext();
 	m_deviceResource.reset(new DeviceResources());
 	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
 	m_deviceResource->onScreenFbo = m_context->createOnScreenFbo(0);
 	m_deviceResource->commandBuffer = m_context->createCommandBufferOnDefaultPool();
-	//	Initialize VBO data
+	//  Initialize VBO data
 	loadVbos();
 
-	//	Load textures
+	//  Load textures
 	if (!createTexSamplerDescriptorSet())
 	{
 		setExitMessage("ERROR:Failed to create DescriptorSets.");
@@ -473,8 +472,8 @@ pvr::Result::Enum OGLESPVRScopeRemote::initView()
 		return pvr::Result::NotInitialized;
 	}
 
-	//	Initialize the UI Renderer
-	if (uiRenderer.init(getGraphicsContext(), m_deviceResource->onScreenFbo->getRenderPass(), 0) != pvr::Result::Success)
+	//  Initialize the UI Renderer
+	if (uiRenderer.init(m_deviceResource->onScreenFbo->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
 		return pvr::Result::NotInitialized;
@@ -506,10 +505,10 @@ pvr::Result::Enum OGLESPVRScopeRemote::initView()
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESPVRScopeRemote::releaseView()
+pvr::Result OGLESPVRScopeRemote::releaseView()
 {
 	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
 	// Release UIRenderer
@@ -520,10 +519,10 @@ pvr::Result::Enum OGLESPVRScopeRemote::releaseView()
 }
 
 /*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
+\return Return Result::Success if no error occurred
 \brief Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESPVRScopeRemote::renderFrame()
+pvr::Result OGLESPVRScopeRemote::renderFrame()
 {
 	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
 	bool currCommunicationErr = hasCommunicationError;
@@ -654,7 +653,7 @@ pvr::Result::Enum OGLESPVRScopeRemote::renderFrame()
 	if (hasCommunicationError)
 	{
 		uiRenderer.getDefaultControls()->setText("Communication Error:\nPVRScopeComms failed\n"
-		        "Is PVRPerfServer connected?");
+		    "Is PVRPerfServer connected?");
 		uiRenderer.getDefaultControls()->setColor(glm::vec4(.8f, .3f, .3f, 1.0f));
 		uiRenderer.getDefaultControls()->commitUpdates();
 		recordCommandBuffer();
@@ -683,8 +682,8 @@ pvr::Result::Enum OGLESPVRScopeRemote::renderFrame()
 }
 
 /*!*********************************************************************************************************************
-\brief	Draws a pvr::assets::Mesh after the model view matrix has been set and the material prepared.
-\param	nodeIndex Node index of the mesh to draw
+\brief  Draws a pvr::assets::Mesh after the model view matrix has been set and the material prepared.
+\param  nodeIndex Node index of the mesh to draw
 ***********************************************************************************************************************/
 void OGLESPVRScopeRemote::drawMesh(int nodeIndex)
 {
@@ -696,11 +695,11 @@ void OGLESPVRScopeRemote::drawMesh(int nodeIndex)
 	m_deviceResource->commandBuffer->bindVertexBuffer(m_deviceResource->vbos[meshIndex], 0, 0);
 
 
-	//	The geometry can be exported in 4 ways:
-	//	- Indexed Triangle list
-	//	- Non-Indexed Triangle list
-	//	- Indexed Triangle strips
-	//	- Non-Indexed Triangle strips
+	//  The geometry can be exported in 4 ways:
+	//  - Indexed Triangle list
+	//  - Non-Indexed Triangle list
+	//  - Indexed Triangle strips
+	//  - Non-Indexed Triangle strips
 	if (mesh.getNumStrips() == 0)
 	{
 		if (m_deviceResource->ibos[meshIndex].isValid())
@@ -738,7 +737,7 @@ void OGLESPVRScopeRemote::drawMesh(int nodeIndex)
 }
 
 /*!*********************************************************************************************************************
-\brief	pre-record the rendering the commands
+\brief  pre-record the rendering the commands
 ***********************************************************************************************************************/
 void OGLESPVRScopeRemote::recordCommandBuffer()
 {
@@ -754,7 +753,6 @@ void OGLESPVRScopeRemote::recordCommandBuffer()
 
 	m_deviceResource->commandBuffer->setUniformPtr<glm::vec3>(uniformLocations.lightDirView, 1, &progUniforms.lightDirView);
 	m_deviceResource->commandBuffer->setUniformPtr<glm::mat4>(uniformLocations.mvpMtx, 1, &progUniforms.mvpMatrix);
-	//m_deviceResource->commandBuffer->setUniformPtr<glm::mat4>(uniformLocations.mvMtx, 1, &progUniforms.mvMatrix);
 	m_deviceResource->commandBuffer->setUniformPtr<glm::mat3>(uniformLocations.mvITMtx, 1, &progUniforms.mvITMatrix);
 	m_deviceResource->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.specularExponent, 1, &progUniforms.specularExponent);
 	m_deviceResource->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.metallicity, 1, &progUniforms.metallicity);
@@ -778,7 +776,7 @@ void OGLESPVRScopeRemote::recordCommandBuffer()
 }
 
 /*!*********************************************************************************************************************
-\return	Return auto ptr to the demo supplied by the user
-\brief	This function must be implemented by the user of the shell. The user should return its Shell object defining the behavior of the application.
+\return Return auto ptr to the demo supplied by the user
+\brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the behavior of the application.
 ***********************************************************************************************************************/
 std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new OGLESPVRScopeRemote()); }

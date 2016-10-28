@@ -1,22 +1,22 @@
 /*!*********************************************************************************************************************
-\file         PVRApi\OGLES\ComputePipelineVk.cpp
+\file         PVRApi\Vulkan\ComputePipelineVk.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief         Contains the OpenGL ES 2/3 implementation of the all-important pvr::api::GraphicsPipeline object.
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
-#include "PVRApi/ApiObjects/ComputePipeline.h"
+#include "PVRApi/Vulkan/ComputePipelineVk.h"
 #include "PVRNativeApi/Vulkan/VulkanBindings.h"
 #include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
 #include "PVRNativeApi/ShaderUtils.h"
 #include "PVRApi/Vulkan/ShaderVk.h"
 #include "PVRApi/Vulkan/ContextVk.h"
-#include "PVRNativeApi/Vulkan/PopulateVulkanCreateInfo.h"
+#include "PVRApi/Vulkan/PopulateVulkanCreateInfo.h"
+//!\cond NO_DOXYGEN
 
 namespace pvr {
 namespace api {
-namespace impl {
-//!\cond NO_DOXYGEN
+namespace vulkan {
 class PushPipeline;
 class PopPipeline;
 class ResetPipeline;
@@ -24,8 +24,6 @@ template<typename> class PackagedBindable;
 template<typename, typename> class PackagedBindableWithParam;
 
 class ParentableComputePipeline_;
-//!\endcond
-
 //////IMPLEMENTATION INFO/////
 /*The desired class hierarchy was
 ---- OUTSIDE INTERFACE ----
@@ -35,58 +33,29 @@ class ParentableComputePipeline_;
 * GraphicsPipelineGles(GPGles)				: GraphicsPipeline(GP)
 ---------------------------
 This would cause a diamond inheritance, with PGPGles inheriting twice from GP, once through PGP and once through GPGles.
-To avoid this issue while maintaining the outside interface, the pImpl idiom is being used instead of the inheritance
-chains commonly used for all other PVRApi objects. The same idiom (for the same reasons) is found in the CommandBuffer.
+To avoid this issue while maintaining the outside interface, the bridge pattern is used instead of the inheritance
+chains commonly used for all other PVRApi objects. The same idiom is found in the CommandBuffer (for the same 
+reasons: double inheritance between the CommandBuffer, SecondaryCommandBuffer, CommandBufferVk, SecondaryCommandBufferVk etc.) .
 */////////////////////////////
 
 
-class ComputePipelineImplementationDetails : public native::HPipeline_
+void ComputePipelineImplVk::destroy()
 {
-public:
-	ComputePipelineImplementationDetails(GraphicsContext& context) : m_context(context), m_initialized(false) { }
-	~ComputePipelineImplementationDetails() { destroy(); }
-
-	void destroy();
-	PipelineLayout pipelineLayout;
-	ParentableComputePipeline_* m_parent;
-	vulkan::ContextVkWeakRef m_context;
-	Result::Enum init(ComputePipelineCreateParam& desc, ParentableComputePipeline_* parent = NULL);
-	bool m_initialized;
-	bool createPipeline();
-};
-
-ComputePipeline_::~ComputePipeline_() { destroy(); }
-
-
-inline void ComputePipelineImplementationDetails::destroy()
-{
-	vk::DestroyPipeline(m_context->getDevice(), handle, NULL);
-	m_parent = 0;
+	if (m_context.isValid() && handle)
+	{
+		vk::DestroyPipeline(m_context->getDevice(), handle, NULL);
+	}
+	handle = VK_NULL_HANDLE;
 }
 
-const native::HPipeline_& ComputePipeline_::getNativeObject() const { return *pimpl; }
 
-native::HPipeline_& ComputePipeline_::getNativeObject() { return *pimpl; }
-
-void ComputePipeline_::destroy() { return pimpl->destroy(); }
-
-ComputePipeline_::ComputePipeline_(GraphicsContext& context)
+bool ComputePipelineImplVk::init(const ComputePipelineCreateParam& desc)
 {
-	pimpl.reset(new ComputePipelineImplementationDetails(context));
+	vulkan::ComputePipelineCreateInfoVulkan createInfoFactory(desc, m_context);
+	m_desc = desc;
+	return (vk::CreateComputePipelines(m_context->getDevice(), VK_NULL_HANDLE, 1, &createInfoFactory.createInfo, NULL, &handle) == VK_SUCCESS);
 }
 
-Result::Enum ComputePipeline_::init(const ComputePipelineCreateParam& desc)
-{
-	vulkan::ComputePipelineCreateInfoVulkan createInfoFactory(desc, pimpl->m_context);
-	pimpl->pipelineLayout = desc.pipelineLayout;
-	vk::CreateComputePipelines(pimpl->m_context->getDevice(), VK_NULL_HANDLE, 1, &createInfoFactory.createInfo, NULL, &pimpl->handle);
-	return Result::Success;
-}
-
-const pvr::api::PipelineLayout& ComputePipeline_::getPipelineLayout() const
-{
-	return pimpl->pipelineLayout;
-}
 }
 }
 }

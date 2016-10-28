@@ -18,16 +18,20 @@ namespace api {
 *******************************************************************************************************************/
 struct VertexAttributeInfo
 {
-	pvr::uint16 index;			//!< Attribute index
-	types::DataType::Enum format;	//!< Data type of each element of the attribute
-	pvr::uint8 width;			//!< Number of elements in attribute, e.g 1,2,3,4
-	pvr::uint32 offsetInBytes;	//!< Offset of the first element in the buffer
+	uint16 index;			//!< Attribute index
+	types::DataType format;	//!< Data type of each element of the attribute
+	uint8 width;			//!< Number of elements in attribute, e.g 1,2,3,4
+	uint32 offsetInBytes;	//!< Offset of the first element in the buffer
 	std::string attribName;		//!< Optional: Name(in the shader) of the attribute
 
 	/*!*********************************************************************************************************
 	\brief Default  constructor. Uninitialized values, except for AttributeName.
 	************************************************************************************************************/
-	VertexAttributeInfo(): index(0), format(types::DataType::None), width(0), offsetInBytes(0), attribName("") {}
+	VertexAttributeInfo(): index(types::PipelineDefaults::VertexAttributeInfo::Index),
+		format(types::PipelineDefaults::VertexAttributeInfo::Format),
+		width(types::PipelineDefaults::VertexAttributeInfo::Width),
+		offsetInBytes(types::PipelineDefaults::VertexAttributeInfo::OffsetInBytes),
+		attribName(types::PipelineDefaults::VertexAttributeInfo::AttribName) {}
 
 	/*!*********************************************************************************************************
 	\brief Create a new VertexAttributeInfo object.
@@ -37,23 +41,24 @@ struct VertexAttributeInfo
 	\param offsetInBytes Interleaved: offset of the attribute from the start of data of each vertex
 	\param attribName Name of the attribute in the shader.
 	************************************************************************************************************/
-	VertexAttributeInfo(pvr::uint16 index, types::DataType::Enum format, pvr::uint8 width,
-	                    pvr::uint32 offsetInBytes, const char* attribName = "") :
+	VertexAttributeInfo(uint16 index, types::DataType format, uint8 width,
+	                    uint32 offsetInBytes,
+	                    const char* attribName = types::PipelineDefaults::VertexAttributeInfo::AttribName.c_str()) :
 		index(index), format(format), width(width), offsetInBytes(offsetInBytes), attribName(attribName) {}
 
 	/*!*********************************************************************************************************************
-    \brief Return true if the right hand object is equal to this
-    ***********************************************************************************************************************/
+	\brief Return true if the right hand object is equal to this
+	***********************************************************************************************************************/
 	bool operator==(VertexAttributeInfo const& rhs)const
 	{
 		return ((index == rhs.index) && (format == rhs.format) &&
 		        (width == rhs.width) && (offsetInBytes == rhs.offsetInBytes));
 	}
-	
+
 	/*!*********************************************************************************************************************
-    \brief Return true if the right hand object is not equal to this
-    ***********************************************************************************************************************/
-	bool operator!=(VertexAttributeInfo const& rhs)const {	return !((*this) == rhs);  }
+	\brief Return true if the right hand object is not equal to this
+	***********************************************************************************************************************/
+	bool operator!=(VertexAttributeInfo const& rhs)const { return !((*this) == rhs); }
 
 };
 
@@ -62,9 +67,9 @@ struct VertexAttributeInfo
 *******************************************************************************************************************/
 struct VertexInputBindingInfo
 {
-	pvr::uint16 bindingId;//< buffer binding index
-	pvr::uint32 strideInBytes; //< buffer stride in bytes
-	types::StepRate::Enum stepRate;//< buffer step rate
+	uint16 bindingId;//< buffer binding index
+	uint32 strideInBytes; //< buffer stride in bytes
+	types::StepRate stepRate;//< buffer step rate
 
 	/*!*********************************************************************************************************
 	\brief Construct with Uninitialized values.
@@ -77,7 +82,7 @@ struct VertexInputBindingInfo
 	\param[in] strideInBytes Buffer stride of each vertex attribute to the next
 	\param[in] stepRate Vertex Attribute Step Rate
 	************************************************************************************************************/
-	VertexInputBindingInfo(pvr::uint16 bindId, pvr::uint32 strideInBytes, types::StepRate::Enum stepRate = types::StepRate::Vertex) :
+	VertexInputBindingInfo(uint16 bindId, uint32 strideInBytes,  types::StepRate stepRate = types::StepRate::Default) :
 		bindingId(bindId), strideInBytes(strideInBytes), stepRate(stepRate) {}
 };
 
@@ -85,9 +90,14 @@ struct VertexAttributeInfoWithBinding : public VertexAttributeInfo
 {
 	uint16 binding;
 	VertexAttributeInfoWithBinding() {}
-	VertexAttributeInfoWithBinding(const VertexAttributeInfo& nfo, uint16 binding) : VertexAttributeInfo(nfo), binding(binding) {}
-	VertexAttributeInfoWithBinding(pvr::uint16 index, types::DataType::Enum format, pvr::uint8 width, pvr::uint32 offsetInBytes, uint16 binding, const char* attribName = "") :
-		VertexAttributeInfo(index, format, width, offsetInBytes, attribName), binding(binding) {}
+
+	VertexAttributeInfoWithBinding(const VertexAttributeInfo& nfo, uint16 binding) :
+		VertexAttributeInfo(nfo), binding(binding) {}
+
+	VertexAttributeInfoWithBinding(
+	  uint16 index, types::DataType format, uint8 width, uint32 offsetInBytes, uint16 binding,
+	  const char* attribName = types::PipelineDefaults::VertexAttributeInfo::AttribName.c_str())
+		: VertexAttributeInfo(index, format, width, offsetInBytes, attribName), binding(binding) {}
 };
 
 struct VertexAttributeInfoPred_IndexEquals
@@ -107,6 +117,7 @@ struct VertexAttributeInfoCmp_IndexLess
 		return lhs.index < rhs.index;
 	}
 };
+
 struct VertexAttributeInfoCmp_BindingLess_IndexLess
 {
 	bool operator()(const VertexAttributeInfoWithBinding& lhs, const VertexAttributeInfoWithBinding& rhs) const
@@ -132,6 +143,7 @@ struct VertexBindingInfoCmp_BindingLess
 		return lhs.bindingId < rhs.bindingId;
 	}
 };
+
 struct VertexBindingInfoPred_BindingLess
 {
 	bool operator()(uint16 lhs, const VertexInputBindingInfo& rhs) const
@@ -151,7 +163,7 @@ struct VertexBindingInfoPred_BindingEqual
 };
 
 /*!*********************************************************************************************************************
-\brief Viewport specifes the drawing region, min and  max depth 
+\brief Viewport specifes the drawing region, min and  max depth
 ***********************************************************************************************************************/
 struct Viewport
 {
@@ -161,7 +173,7 @@ struct Viewport
 	float32 height;//!< region height
 	float32 minDepth;//!< min depth
 	float32 maxDepth;//!< max depth
-	
+
 	/*!*********************************************************************************************************************
 	\brief ctor
 	\param x	viewport x
@@ -171,8 +183,12 @@ struct Viewport
 	\param minDepth depth min
 	\param maxDepth depth max
 	***********************************************************************************************************************/
-	Viewport(pvr::float32 x = 0, pvr::float32 y = 0, pvr::float32 width = 0, pvr::float32 height = 0, pvr::float32 minDepth = 0.0f,
-			 pvr::float32 maxDepth = 1.f) :
+	Viewport(float32 x = types::PipelineDefaults::ViewportScissor::OffsetX,
+	         float32 y = types::PipelineDefaults::ViewportScissor::OffsetY,
+	         float32 width = types::PipelineDefaults::ViewportScissor::Width,
+	         float32 height = types::PipelineDefaults::ViewportScissor::Height,
+	         float32 minDepth = types::PipelineDefaults::ViewportScissor::MinDepth,
+	         float32 maxDepth = types::PipelineDefaults::ViewportScissor::MaxDepth) :
 		x(x), y(y), width(width), height(height), minDepth(minDepth), maxDepth(maxDepth) {}
 
 	/*!*********************************************************************************************************************
@@ -181,122 +197,136 @@ struct Viewport
 	\param minDepth depth min
 	\param maxDepth depth max
 	***********************************************************************************************************************/
-	Viewport(const Rectanglei& rect, pvr::float32 minDepth = 0.0f, pvr::float32 maxDepth = 1.f) :
-		x((float32)rect.x), y((float32)rect.y), width((float32)rect.width), height((float32)rect.height), minDepth(minDepth), maxDepth(maxDepth) {}
+	Viewport(const Rectanglei& rect, float32 minDepth = types::PipelineDefaults::ViewportScissor::MinDepth,
+	         float32 maxDepth = types::PipelineDefaults::ViewportScissor::MaxDepth) :
+		x((float32)rect.x), y((float32)rect.y), width((float32)rect.width), height((float32)rect.height),
+		minDepth(minDepth), maxDepth(maxDepth) {}
 };
 
 typedef std::vector<VertexInputBindingInfo> VertexInputBindingMap;// map buffer binding -> VertexAttributes
 typedef std::vector<VertexAttributeInfoWithBinding>	VertexAttributeMap;
-
-/*!*********************************************************************************************************************
-\brief Pipeline Stencil state
-***********************************************************************************************************************/
-struct StencilState
-{
-	types::StencilOp::Enum opDepthPass;//!< Action performed on samples that pass both the depth and stencil tests.
-	types::StencilOp::Enum opDepthFail;//!< Action performed on samples that pass the stencil test and fail the depth test.
-	types::StencilOp::Enum opStencilFail;//!< Action performed on samples that fail the stencil test.
-	uint32 compareMask;//!< Selects the bits of the unsigned integer stencil values during in the stencil test.
-	uint32 writeMask;//!<  Selects the bits of the unsigned integer stencil values updated by the stencil test in the stencil framebuffer attachment.
-	uint32 reference;//!< Integer reference value that is used in the unsigned stencil comparison.
-	types::ComparisonMode::Enum compareOp;//!<  Comparison operator used in the stencil test.
-	
-	/*!*********************************************************************************************************************
-	\brief ctor
-	\param depthPass Action performed on samples that pass both the depth and stencil tests.
-	\param depthFail Action performed on samples that pass the stencil test and fail the depth test.
-	\param stencilFail Action performed on samples that fail the stencil test.
-	\param compareOp Comparison operator used in the stencil test.
-	\param compareMask Selects the bits of the unsigned integer stencil values during in the stencil test.
-	\param 	writeMask Selects the bits of the unsigned integer stencil values updated by the stencil test in the stencil framebuffer attachment
-	\param 	reference Integer reference value that is used in the unsigned stencil comparison.
-	***********************************************************************************************************************/
-	StencilState(types::StencilOp::Enum depthPass = types::StencilOp::Keep,
-	             types::StencilOp::Enum depthFail = types::StencilOp::Keep,
-	             types::StencilOp::Enum stencilFail = types::StencilOp::Keep,
-	             types::ComparisonMode::Enum compareOp = types::ComparisonMode::Default,
-	             uint32 compareMask = 0xff, uint32 writeMask = 0xff, uint32 reference = 0)
-		: opDepthPass(depthPass), opDepthFail(depthFail),
-		  opStencilFail(stencilFail), compareMask(compareMask),
-		  writeMask(writeMask), reference(reference), compareOp(compareOp) {}
-};
+typedef types::StencilState StencilState;
 
 namespace pipelineCreation {
 /*!********************************************************************************************
 \brief  Contains parameters needed to set depth stencil states to a pipeline create params.
         This object can be added to a PipelineCreateParam to set a depth-stencil state to
 		values other than their defaults.
-\description --- Defaults: ---
+\details --- Defaults: ---
         depthWrite:enabled,    depthTest:enabled,    DepthComparison:Less,
         Stencil Text: disabled,    All stencil ops:Keep,
 ***********************************************************************************************/
 struct DepthStencilStateCreateParam
 {
 public:
-	typedef ::pvr::api::StencilState StencilState;
+	typedef api::StencilState StencilState;
 private:
 	// stencil
 	bool depthTest;  //!< Enable/disable depth test. Default false
 	bool depthWrite; //!< Enable/ disable depth write
 	bool stencilTestEnable; //!< Enable/disable stencil test. Default false
 	bool depthBoundTest;//!< Enable/ disable depth bound test
+	bool enableDepthStencilState;//!< Enable/ Disable this state
 	float32 minDepth;//!< Depth minimum
 	float32 maxDepth;//!< Depth maximum
 
 	StencilState stencilFront;//!< Stencil state front
 	StencilState stencilBack;//!< Stencil state back
 
-	types::ComparisonMode::Enum depthCmpOp; //!< Depth compare operation. Default LESS
+	types::ComparisonMode depthCmpOp; //!< Depth compare operation. Default LESS
 public:
 	/*!*********************************************************************************************************************
 	\brief  Set all Depth and Stencil parameters.
 	***********************************************************************************************************************/
-	DepthStencilStateCreateParam(bool depthWrite = true, bool depthTest = true,
-	                             types::ComparisonMode::Enum depthCompareFunc = types::ComparisonMode::Less,
-	                             bool stencilTest = false, bool depthBoundTest = false,
+	DepthStencilStateCreateParam(bool depthWrite = types::PipelineDefaults::DepthStencilStates::DepthWriteEnabled,
+	                             bool depthTest = types::PipelineDefaults::DepthStencilStates::DepthTestEnabled,
+	                             types::ComparisonMode depthCompareFunc = types::ComparisonMode::DefaultDepthFunc,
+	                             bool stencilTest = types::PipelineDefaults::DepthStencilStates::StencilTestEnabled,
+	                             bool depthBoundTest = types::PipelineDefaults::DepthStencilStates::DepthBoundTestEnabled,
 	                             const StencilState& stencilFront = StencilState(),
 	                             const StencilState& stencilBack = StencilState(),
-	                             float32 minDepth = 0.0f,
-	                             float32 maxDepth = 1.0f) :
+	                             float32 minDepth = types::PipelineDefaults::DepthStencilStates::DepthMin,
+	                             float32 maxDepth = types::PipelineDefaults::DepthStencilStates::DepthMax)
+		:
 		depthTest(depthTest), depthWrite(depthWrite), stencilTestEnable(stencilTest),
-		depthBoundTest(depthBoundTest), minDepth(minDepth), maxDepth(maxDepth),
-		stencilFront(stencilFront), stencilBack(stencilBack), depthCmpOp(depthCompareFunc) {}
+		depthBoundTest(depthBoundTest), enableDepthStencilState(types::PipelineDefaults::DepthStencilStates::UseDepthStencil),
+		minDepth(minDepth), maxDepth(maxDepth), stencilFront(stencilFront), stencilBack(stencilBack), depthCmpOp(depthCompareFunc) {}
 
 	/*!*********************************************************************************************************************
 	\brief  Return true if depth test is enable
-	***********************************************************************************************************************/	
-	bool isDepthTestEnable()const { return depthTest; }
-	
+	***********************************************************************************************************************/
+	bool isDepthTestEnable()const
+	{
+		return depthTest;
+	}
+
 	/*!*********************************************************************************************************************
 	\brief  Return true if depth write is enable
 	***********************************************************************************************************************/
-	bool isDepthWriteEnable()const { return depthWrite; }
-	
+	bool isDepthWriteEnable()const
+	{
+		return depthWrite;
+	}
+
 	/*!*********************************************************************************************************************
 	\brief  Return true if depth bound is enable
 	***********************************************************************************************************************/
-	bool isDepthBoundTestEnable()const { return depthBoundTest; }
-	
+	bool isDepthBoundTestEnable()const
+	{
+		return depthBoundTest;
+	}
+
 	/*!*********************************************************************************************************************
 	\brief  Return true if stencil test is enable
 	***********************************************************************************************************************/
-	bool isStencilTestEnable()const { return stencilTestEnable; }
-	
+	bool isStencilTestEnable()const
+	{
+		return stencilTestEnable;
+	}
+
 	/*!*********************************************************************************************************************
 	\brief  Return minimum depth value
 	***********************************************************************************************************************/
-	float32 getMinDepth()const { return minDepth; }
-	
+	float32 getMinDepth()const
+	{
+		return minDepth;
+	}
+
 	/*!*********************************************************************************************************************
 	\brief  Return maximum depth value
 	***********************************************************************************************************************/
-	float32 getMaxDepth()const { return maxDepth; }
-	
+	float32 getMaxDepth()const
+	{
+		return maxDepth;
+	}
+
 	/*!*********************************************************************************************************************
 	\brief  Return depth comparison operator
 	***********************************************************************************************************************/
-	types::ComparisonMode::Enum getDepthComapreOp()const { return depthCmpOp; }
-	
+	types::ComparisonMode getDepthComapreOp()const
+	{
+		return depthCmpOp;
+	}
+
+	/*!*********************************************************************************************************************
+	\brief  Return true if this state is enabled.
+	***********************************************************************************************************************/
+	bool isStateEnable()const
+	{
+		return enableDepthStencilState;
+	}
+
+	/*!*********************************************************************************************************************
+	\brief  Enable/ Disale this state
+	\param flag True:enable, False:disable
+	\return this object (allows chained calls)
+	***********************************************************************************************************************/
+	DepthStencilStateCreateParam& enableState(bool flag)
+	{
+		enableDepthStencilState = flag;
+		return *this;
+	}
+
 	/*!*********************************************************************************************************************
 	\brief Enable/disable writing into the Depth Buffer.
 	\param depthWrite True:enable, False:disable
@@ -324,7 +354,7 @@ public:
 	\param compareFunc A ComparisonMode (Less, Greater, Less etc.)
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	DepthStencilStateCreateParam& setDepthCompareFunc(types::ComparisonMode::Enum compareFunc)
+	DepthStencilStateCreateParam& setDepthCompareFunc(types::ComparisonMode compareFunc)
 	{
 		this->depthCmpOp = compareFunc;
 		return *this;
@@ -335,21 +365,33 @@ public:
 	\param stencilTest True:enable, False:disable
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	DepthStencilStateCreateParam& setStencilTest(bool stencilTest){	this->stencilTestEnable = stencilTest;	return *this; }
+	DepthStencilStateCreateParam& setStencilTest(bool stencilTest)
+	{
+		this->stencilTestEnable = stencilTest;
+		return *this;
+	}
 
 	/*!****************************************************************************************************************
 	\brief	Set the stencil front state
 	\return this object (allows chained calls)
 	\param	stencil Stencil state
 	*******************************************************************************************************************/
-	DepthStencilStateCreateParam& setStencilFront(StencilState& stencil){	stencilFront = stencil;	return *this;	}
+	DepthStencilStateCreateParam& setStencilFront(const StencilState& stencil)
+	{
+		stencilFront = stencil;
+		return *this;
+	}
 
 	/*!****************************************************************************************************************
 	\brief	Set the stencil back state
 	\return this object (allows chained calls)
 	\param	stencil Stencil state
 	*******************************************************************************************************************/
-	DepthStencilStateCreateParam& setStencilBack(StencilState& stencil){	stencilBack = stencil;	return *this;	}
+	DepthStencilStateCreateParam& setStencilBack(const StencilState& stencil)
+	{
+		stencilBack = stencil;
+		return *this;
+	}
 
 	/*!****************************************************************************************************************
 	\brief	Set the stencil front and back state
@@ -358,18 +400,25 @@ public:
 	*******************************************************************************************************************/
 	DepthStencilStateCreateParam& setStencilFrontBack(StencilState& stencil)
 	{
-		stencilFront = stencil, stencilBack = stencil;	return *this;
+		stencilFront = stencil, stencilBack = stencil;
+		return *this;
 	}
 
 	/*!****************************************************************************************************************
 	\brief	Return stencil front state
 	*******************************************************************************************************************/
-	const StencilState& getStencilFront()const	{ return stencilFront; }
+	const StencilState& getStencilFront()const
+	{
+		return stencilFront;
+	}
 
 	/*!****************************************************************************************************************
 	\brief	Return stencil back state
 	*******************************************************************************************************************/
-	const StencilState& getStencilBack()const{	return stencilBack;	}
+	const StencilState& getStencilBack()const
+	{
+		return stencilBack;
+	}
 };
 
 /*!********************************************************************************************************************
@@ -390,18 +439,29 @@ public:
 	/*!********************************************************************************************************************
 	\brief Return the input bindings
 	**********************************************************************************************************************/
-	const VertexInputBindingMap& getInputBindings() const { return inputBindings; }
-	
+	const VertexInputBindingMap& getInputBindings() const
+	{
+		return inputBindings;
+	}
+
 	/*!********************************************************************************************************************
 	\brief Return the vertex attributes
 	**********************************************************************************************************************/
-	const VertexAttributeMap& getAttributes() const { return attributes; }
+	const VertexAttributeMap& getAttributes() const
+	{
+		return attributes;
+	}
 
 	/*!********************************************************************************************************************
 	\brief Clear this object.
 	\return this object (allows chained calls)
 	**********************************************************************************************************************/
-	VertexInputCreateParam& clear(){	inputBindings.clear();	attributes.clear();	return *this;	}
+	VertexInputCreateParam& clear()
+	{
+		inputBindings.clear();
+		attributes.clear();
+		return *this;
+	}
 
 	/*!****************************************************************************************************************
 	\brief	Set the vertex input buffer bindings.
@@ -412,12 +472,28 @@ public:
 			The initial value is 0.
 	\param	stepRate The rate at which this binding is incremented (used for Instancing).
 	*******************************************************************************************************************/
-	VertexInputCreateParam& setInputBinding(pvr::uint16 bufferBinding, pvr::uint16 strideInBytes = 0,
-	                                        types::StepRate::Enum stepRate = types::StepRate::Vertex)
+	VertexInputCreateParam& setInputBinding(
+	  uint16 bufferBinding, uint16 strideInBytes = types::PipelineDefaults::VertexInput::StrideInBytes,
+	  types::StepRate stepRate = types::StepRate::Default)
 	{
-		pvr::utils::insertSorted_overwrite(inputBindings, VertexInputBindingInfo(bufferBinding, strideInBytes, stepRate), VertexBindingInfoCmp_BindingLess());
+		utils::insertSorted_overwrite(inputBindings, VertexInputBindingInfo(bufferBinding, strideInBytes,
+		                              stepRate), VertexBindingInfoCmp_BindingLess());
 		return *this;
 	}
+
+	/*!
+	   \brief Return a VertexBindingInfo for a buffer binding index, else return NULL if not found
+	   \param bufferBinding Buffer binding index
+	 */
+	const VertexInputBindingInfo* getInputBinding(uint32 bufferBinding)
+	{
+		for (const VertexInputBindingInfo& it : inputBindings)
+		{
+			if (it.bindingId == bufferBinding) { return &it; }
+		}
+		return NULL;
+	}
+
 
 	/*!****************************************************************************************************************
 	\brief Add vertex layout information to a buffer binding index using a VertexAttributeInfo object.
@@ -425,9 +501,28 @@ public:
 	\param attrib Vertex Attribute information object.
 	\return this object (allows chained calls)
 	*******************************************************************************************************************/
-	VertexInputCreateParam& addVertexAttribute(pvr::uint16 bufferBinding, const VertexAttributeInfo& attrib)
+	VertexInputCreateParam& addVertexAttribute(uint16 bufferBinding, const VertexAttributeInfo& attrib)
 	{
-		pvr::utils::insertSorted_overwrite(attributes, VertexAttributeInfoWithBinding(attrib, bufferBinding), VertexAttributeInfoCmp_BindingLess_IndexLess());
+		utils::insertSorted_overwrite(attributes, VertexAttributeInfoWithBinding(attrib, bufferBinding),
+		                              VertexAttributeInfoCmp_BindingLess_IndexLess());
+		return *this;
+	}
+
+	/*!
+	   \brief Add vertex layout information to a buffer binding index using an array of VertexAttributeInfo object.
+	   \param bufferBinding The binding index to add the vertex attribute information.
+	   \param attrib Attribute information object.
+	   \param numAttributes Number of attributues in the array
+	   \return this object (allows chained calls)
+	 */
+	VertexInputCreateParam& addVertexAttributes(uint16 bufferBinding, const VertexAttributeInfo* attrib,
+	    uint32 numAttributes)
+	{
+		for (uint32 i = 0; i < numAttributes; ++i)
+		{
+			utils::insertSorted_overwrite(attributes, VertexAttributeInfoWithBinding(attrib[i], bufferBinding),
+			                              VertexAttributeInfoCmp_BindingLess_IndexLess());
+		}
 		return *this;
 	}
 
@@ -440,19 +535,20 @@ public:
 	       binding and not Explicit binding of attributes to indexes in shader code.
 	\return this object (allows chained calls)
 	*******************************************************************************************************************/
-	VertexInputCreateParam& addVertexAttribute(pvr::uint16 index, pvr::uint16 bufferBinding,
-	        const assets::VertexAttributeLayout& layout, const char* attributeName = "")
+	VertexInputCreateParam& addVertexAttribute(
+	  uint16 index, uint16 bufferBinding, const assets::VertexAttributeLayout& layout,
+	  const char* attributeName = types::PipelineDefaults::VertexInput::AttribName.c_str())
 	{
-		pvr::utils::insertSorted_overwrite(attributes,
-		                                   VertexAttributeInfoWithBinding(index, layout.dataType, layout.width, layout.offset, bufferBinding, attributeName),
-		                                   VertexAttributeInfoCmp_BindingLess_IndexLess());
+		utils::insertSorted_overwrite(attributes, VertexAttributeInfoWithBinding(index, layout.dataType,
+		                              layout.width, layout.offset, bufferBinding, attributeName),
+		                              VertexAttributeInfoCmp_BindingLess_IndexLess());
 		return *this;
 	}
 };
 
 /*!*********************************************************************************************************************
 \brief Add Input Assembler configuration to this buffer object (primitive topology, vertex restart, vertex reuse etc).
-\description --- Default settings ---
+\details --- Default settings ---
              Primitive Topology: TriangleList,   Primitive Restart: False, Vertex Reuse: Disabled,
 			 Primitive Restart Index: 0xFFFFFFFF
 ***********************************************************************************************************************/
@@ -460,10 +556,10 @@ struct InputAssemblerStateCreateParam
 {
 public:
 	friend class ::pvr::api::impl::GraphicsPipeline_;
-	mutable types::PrimitiveTopology::Enum topology;
-	bool							  disableVertexReuse;
-	bool							  primitiveRestartEnable;
-
+	mutable types::PrimitiveTopology topology;
+	bool	disableVertexReuse;
+	bool	primitiveRestartEnable;
+	uint32 primitiveRestartIndex;
 	/*!*********************************************************************************************************************
 	\brief Create and configure an InputAssembler configuration.
 	\param topology Primitive Topology (default: TriangleList)
@@ -472,9 +568,12 @@ public:
 	\param primitiveRestartIndex Primitive Restart Index. Default  0xFFFFFFFF
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	InputAssemblerStateCreateParam(types::PrimitiveTopology::Enum topology = types::PrimitiveTopology::TriangleList,
-	                               bool disableVertexReuse = true, bool primitiveRestartEnable = false, pvr::uint32 primitiveRestartIndex = 0xFFFFFFFF) :
-		topology(topology), disableVertexReuse(disableVertexReuse), primitiveRestartEnable(primitiveRestartEnable) {}
+	InputAssemblerStateCreateParam(types::PrimitiveTopology topology = types::PipelineDefaults::InputAssembler::Topology,
+	                               bool disableVertexReuse = types::PipelineDefaults::InputAssembler::DisableVertexReuse,
+	                               bool primitiveRestartEnable = types::PipelineDefaults::InputAssembler::PrimitiveRestartEnabled,
+	                               uint32 primitiveRestartIndex = types::PipelineDefaults::InputAssembler::PrimitiveRestartIndex):
+		topology(topology), disableVertexReuse(disableVertexReuse), primitiveRestartEnable(primitiveRestartEnable),
+		primitiveRestartIndex(primitiveRestartIndex) {}
 
 	/*!*********************************************************************************************************************
 	\brief Enable/ disable primitive restart.
@@ -483,7 +582,8 @@ public:
 	***********************************************************************************************************************/
 	InputAssemblerStateCreateParam& setPrimitiveRestartEnable(bool enable)
 	{
-		primitiveRestartEnable = enable; return *this;
+		primitiveRestartEnable = enable;
+		return *this;
 	}
 
 	/*!*********************************************************************************************************************
@@ -493,7 +593,8 @@ public:
 	***********************************************************************************************************************/
 	InputAssemblerStateCreateParam& setVertexReuseDisable(bool disable)
 	{
-		disableVertexReuse = disable; return *this;
+		disableVertexReuse = disable;
+		return *this;
 	}
 
 	/*!*********************************************************************************************************************
@@ -501,116 +602,81 @@ public:
 	\param topology The primitive topology to interpret the vertices as (TriangleList, Lines etc)
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	InputAssemblerStateCreateParam& setPrimitiveTopology(types::PrimitiveTopology::Enum topology)
+	InputAssemblerStateCreateParam& setPrimitiveTopology(types::PrimitiveTopology topology)
 	{
-		this->topology = topology; return *this;
+		this->topology = topology;
+		return *this;
 	}
-};
-
-
-/*!*********************************************************************************************************************
-\brief Add blending configuration for a color attachment. Some API's only support one blending state for all attachments,
-       in which case the 1st such configuration will be used for all.
-\description --- Defaults ---
-	Blend Enabled:false,    Source blend Color factor: false,    Destination blend Color factor: Zero,
-	Source blend Alpha factor: Zero,    Destination blending Alpha factor :Zero,
-	Blending operation color: Add,    Blending operation alpha: Add,     Channel writing mask: All
-***********************************************************************************************************************/
-struct ColorBlendAttachmentState
-{
-	bool				blendEnable; 	//!< Enable blending
-	types::BlendFactor::Enum	srcBlendColor;	//!< Source Blending color factor
-	types::BlendFactor::Enum	destBlendColor;	//!< Destination blending color factor
-	types::BlendFactor::Enum	srcBlendAlpha;	//!< Source blending alpha factor
-	types::BlendFactor::Enum	destBlendAlpha;	//!< Destination blending alpha factor
-	types::BlendOp::Enum		blendOpColor;	//!< Blending operation color
-	types::BlendOp::Enum		blendOpAlpha;	//!< Blending operation alpha
-	types::ColorChannel::Bits	channelWriteMask;//!<Channel writing mask
-
-	/*!*********************************************************************************************************************
-	\brief Create a blending state. Separate color/alpha factors.
-	\param blendEnable Enable blending (default false)
-	\param srcBlendColor Source Blending color factor (default:Zero)
-	\param destBlendColor Destination blending color factor (default:Zero)
-	\param srcBlendAlpha Source blending alpha factor (default:Zero)
-	\param destBlendAlpha Destination blending alpha factor (default:Zero)
-	\param blendOpColor Blending operation color (default:Add)
-	\param blendOpAlpha Blending operation alpha (default:Add)
-	\param channelWriteMask  Channel writing mask (default:All)
-	***********************************************************************************************************************/
-	ColorBlendAttachmentState(bool blendEnable = false, types::BlendFactor::Enum srcBlendColor = types::BlendFactor::One,
-	                          types::BlendFactor::Enum destBlendColor = types::BlendFactor::Zero, types::BlendFactor::Enum srcBlendAlpha = types::BlendFactor::One,
-	                          types::BlendFactor::Enum destBlendAlpha = types::BlendFactor::Zero, types::BlendOp::Enum blendOpColor = types::BlendOp::Add,
-	                          types::BlendOp::Enum blendOpAlpha = types::BlendOp::Add, pvr::uint32 channelWriteMask = types::ColorChannel::All) :
-		blendEnable(blendEnable), srcBlendColor(srcBlendColor), destBlendColor(destBlendColor),
-		srcBlendAlpha(srcBlendAlpha), destBlendAlpha(destBlendAlpha), blendOpColor(blendOpColor),
-		blendOpAlpha(blendOpAlpha), channelWriteMask(channelWriteMask) {}
-
-	/*!*********************************************************************************************************************
-	\brief Create a blending state. Color and alpha factors together.
-	\param blendEnable Enable blending (default false)
-	\param srcBlendColorAlpha Source Blending color & alpha factor (default:Zero)
-	\param dstBlendColorAlpha Destination blending color & alpha factor (default:Zero)
-	\param blendOpColorAlpha Blending operation color & alpha (default:Add)
-	\param channelWriteMask  Channel writing mask (default:All)
-	***********************************************************************************************************************/
-	ColorBlendAttachmentState(bool blendEnable, types::BlendFactor::Enum srcBlendColorAlpha, types::BlendFactor::Enum dstBlendColorAlpha,
-	                          types::BlendOp::Enum blendOpColorAlpha, pvr::uint32 channelWriteMask = types::ColorChannel::All) :
-		blendEnable(blendEnable), srcBlendColor(srcBlendColorAlpha), destBlendColor(dstBlendColorAlpha),
-		srcBlendAlpha(srcBlendColorAlpha), destBlendAlpha(dstBlendColorAlpha),
-		blendOpColor(blendOpColorAlpha), blendOpAlpha(blendOpColorAlpha), channelWriteMask(channelWriteMask) {}
 };
 
 /*!****************************************************************************************************************
 \brief  Pipeline Color blending state configuration (alphaToCoverage, logicOp).
-\description --- Defaults ---
-        Enable alpha to coverage:false,  Enable logic op: false,  Logic Op: Set,	Attachments: 0
+\details Defaults: Enable alpha to coverage:false,  Enable logic op: false,  Logic Op: Set,	Attachments: 0
 *******************************************************************************************************************/
 struct ColorBlendStateCreateParam
 {
-	std::vector<ColorBlendAttachmentState> attachmentStates;
+	std::vector<types::BlendingConfig> attachmentStates;
 	friend class ::pvr::api::impl::GraphicsPipeline_;
 	bool alphaToCoverageEnable;
 	bool logicOpEnable;
-	types::LogicOp::Enum logicOp;
+	types::LogicOp logicOp;
 	glm::vec4 colorBlendConstants;
-	const std::vector<ColorBlendAttachmentState>& getAttachmentStates() const { return attachmentStates; }
+	const std::vector<types::BlendingConfig>& getAttachmentStates() const
+	{
+		return attachmentStates;
+	}
 public:
 	/*!*********************************************************************************************************************
 	\brief Create a Color Blend state object.
 	\param alphaToCoverageEnable enable/ disable alpa to coverage (default:disable)
+	\param colorBlendConstants Blending constants
 	\param logicOpEnable enable/disable logicOp (default:disable)
 	\param logicOp Select logic operation (default:Set)
 	\param attachmentStates An array of color blend attachment states (default: NULL)
 	\param numAttachmentStates Number of color attachment states in array (default: 0)
 	***********************************************************************************************************************/
-	ColorBlendStateCreateParam(bool alphaToCoverageEnable,
-	                           bool logicOpEnable,
-	                           types::LogicOp::Enum logicOp,
-	                           glm::vec4 colorBlendConstants,
-	                           ColorBlendAttachmentState* attachmentStates,
-	                           pvr::uint32 numAttachmentStates) :
+	ColorBlendStateCreateParam(bool alphaToCoverageEnable, bool logicOpEnable, types::LogicOp logicOp,
+	                           glm::vec4 colorBlendConstants, types::BlendingConfig* attachmentStates, uint32 numAttachmentStates) :
 		alphaToCoverageEnable(alphaToCoverageEnable), logicOpEnable(logicOpEnable), logicOp(logicOp),
 		colorBlendConstants(colorBlendConstants)
 	{
 		this->attachmentStates.assign(attachmentStates, attachmentStates + numAttachmentStates);
 	}
 
-	ColorBlendStateCreateParam(bool alphaToCoverageEnable = false,
-	                           bool logicOpEnable = false,
-	                           types::LogicOp::Enum logicOp = types::LogicOp::Set,
-	                           glm::vec4 colorBlendConstants = glm::vec4(0.0f)) :
+	/*!
+	   \brief Create a Color Blend state object.
+	   \param alphaToCoverageEnable enable/ disable alpa to coverage (default:disable
+	   \param logicOpEnable enable/disable logicOp (default:disable)
+	   \param logicOp Select logic operation (default:Set)
+	   \param colorBlendConstants Set color blend constants. Default (0,0,0,0)
+	 */
+	ColorBlendStateCreateParam(bool alphaToCoverageEnable = types::PipelineDefaults::ColorBlend::AlphaCoverageEnable,
+	                           bool logicOpEnable = types::PipelineDefaults::ColorBlend::LogicOpEnable,
+	                           types::LogicOp logicOp = types::PipelineDefaults::ColorBlend::LogicOp,
+	                           glm::vec4 colorBlendConstants = types::PipelineDefaults::ColorBlend::BlendConstantRGBA) :
 		alphaToCoverageEnable(alphaToCoverageEnable), logicOpEnable(logicOpEnable),
 		logicOp(logicOp), colorBlendConstants(colorBlendConstants)
 	{}
 
-	ColorBlendStateCreateParam& setColorBlend(glm::vec4& blendConst)
+	/*!
+	   \brief Set color blend constant
+	   \param blendConst
+	   \return Return this object (allows chained calls)
+	 */
+	ColorBlendStateCreateParam& setColorBlendConst(glm::vec4& blendConst)
 	{
 		colorBlendConstants = blendConst;
 		return *this;
 	}
 
-	const glm::vec4& getColorBlendConst() {	return colorBlendConstants;	}
+	/*!
+	   \brief Get color blend const
+	   \return Blend constants
+	 */
+	const glm::vec4& getColorBlendConst()
+	{
+		return colorBlendConstants;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Enable/ disable alpha to coverage.
@@ -636,7 +702,7 @@ public:
 	\brief  Set the logic op.
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	ColorBlendStateCreateParam& setLogicOp(types::LogicOp::Enum logicOp)
+	ColorBlendStateCreateParam& setLogicOp(types::LogicOp logicOp)
 	{
 		this->logicOp = logicOp;
 		return *this;
@@ -653,24 +719,17 @@ public:
 	}
 
 	/*!*********************************************************************************************************************
-	\brief Append a color attachment blend configuration (appended to the end of the attachments list).
-	\return this object (allows chained calls)
-	***********************************************************************************************************************/
-	ColorBlendStateCreateParam& addAttachmentState(const ColorBlendAttachmentState& state)
-	{
-		attachmentStates.push_back(state);
-		return *this;
-	}
-
-	/*!*********************************************************************************************************************
 	\brief Add a color attachment state blend configuration to a specified index.
 	\param index Which index this color attachment will be
 	\param state The color attachment state to add
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	ColorBlendStateCreateParam& setAttachmentState(pvr::uint32 index, const ColorBlendAttachmentState& state)
+	ColorBlendStateCreateParam& setAttachmentState(uint32 index, const types::BlendingConfig& state)
 	{
-		if (index >= attachmentStates.size()) {	attachmentStates.resize(index + 1);	}
+		if (index >= attachmentStates.size())
+		{
+			attachmentStates.resize(index + 1);
+		}
 		attachmentStates[index] = state;
 		return *this;
 	}
@@ -681,7 +740,7 @@ public:
 	\param count The number of color attachment states in (state)
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	ColorBlendStateCreateParam& addAttachmentState(pvr::uint32 count, ColorBlendAttachmentState const* state)
+	ColorBlendStateCreateParam& setAttachmentStates(uint32 count, types::BlendingConfig const* state)
 	{
 		attachmentStates.assign(state, state + count);
 		return *this;
@@ -690,8 +749,7 @@ public:
 
 /*!****************************************************************************************************************
 \brief  Pipeline Viewport state descriptor. Sets the base configuration of all viewports.
-\description --- Defaults ---
-        Number of Viewports:1, Clip Origin: lower lef, Depth range: 0..1
+\details Defaults:  Number of Viewports:1, Clip Origin: lower lef, Depth range: 0..1
 *******************************************************************************************************************/
 struct ViewportStateCreateParam
 {
@@ -700,265 +758,343 @@ public:
 
 	std::vector<std::pair<Rectanglei, Viewport>/**/> scissorViewport;
 	/*!*********************************************************************************************************************
-	\brief Constructs a Viewport State object.
-	\param numViewport The total number of viewports (default 1)
-	\param clipOrigin The Clip Origin of all viewports (default LowerLeft)
-	\param depthMode  The depth mode of all viewports (default 0..1)
+	\brief Constructor.
 	***********************************************************************************************************************/
 	ViewportStateCreateParam() {}
 
-
-	ViewportStateCreateParam& addViewportScissor(const Viewport& viewport,
-	        const Rectanglei& scissor)
+	/*!
+	   \brief Set viewport and scissor
+	   \param index View port and scissor index
+	   \param viewport Viewport
+	   \param scissor Scissor
+	   \return return this object (allows chained calls)
+	 */
+	ViewportStateCreateParam& setViewportAndScissor(uint32 index, const Viewport& viewport,
+	    const Rectanglei& scissor)
 	{
-		scissorViewport.push_back(std::make_pair(scissor, viewport));
-		return *this;
-	}
-
-	ViewportStateCreateParam& setViewportScissor(pvr::uint32 index, Viewport& viewport,
-	        const Rectanglei& scissor)
-	{
-		if (index >= scissorViewport.size()) { scissorViewport.resize(index + 1); }
+		if (index >= scissorViewport.size())
+		{
+			scissorViewport.resize(index + 1);
+		}
 		scissorViewport[index].first = scissor;
 		scissorViewport[index].second = viewport;
 		return *this;
 	}
 
-	Rectanglei& getScissor(pvr::uint32 index)
+	/*!
+	   \brief Return scissor
+	   \param index
+	 */
+	Rectanglei& getScissor(uint32 index)
 	{
 		assertion(index < scissorViewport.size(), "Array index out of bound");
 		return scissorViewport[index].first;
 	}
 
-	const Rectanglei& getScissor(pvr::uint32 index)const
+	/*!
+	   \brief Return scissor (const)
+	   \param index
+	 */
+	const Rectanglei& getScissor(uint32 index)const
 	{
 		assertion(index < scissorViewport.size(), "Array index out of bound");
 		return scissorViewport[index].first;
 	}
 
-	Viewport& getViewport(pvr::uint32 index)
+	/*!
+	   \brief Return viewport
+	   \param index
+	 */
+	Viewport& getViewport(uint32 index)
 	{
 		assertion(index < scissorViewport.size(),  "Array index out of bound");
 		return scissorViewport[index].second;
 	}
 
-	const Viewport& getViewport(pvr::uint32 index)const
+	/*!
+	   \brief Return viewport (const)
+	   \param index
+	 */
+	const Viewport& getViewport(uint32 index)const
 	{
 		assertion(index < scissorViewport.size(),  "Array index out of bound");
 		return scissorViewport[index].second;
 	}
 
-	uint32 getNumViewportScissor() const { return (uint32)scissorViewport.size(); }
-
+	/*!
+	   \brief Return number of viewport and scissor
+	 */
+	uint32 getNumViewportScissor() const
+	{
+		return (uint32)scissorViewport.size();
+	}
 };
 
 /*!*********************************************************************************************************************
 \brief  Pipeline Rasterisation, clipping and culling state configuration. Culling, winding order, depth clipping, raster discard,
         point size, fill mode, provoking vertex.
-\description ---  Defaults  ---
-        Cull face: back, Front face: CounterClockWise, Depth Clipping: true, Rasterizer Discard: false, Program Point Size: false,
+\details Defaults: Cull face: back, Front face: CounterClockWise, Depth Clipping: true, Rasterizer Discard: false, Program Point Size: false,
 		Point Origin: Lower left,  Fill Mode: Front&Back,  Provoking Vertex: First
 ***********************************************************************************************************************/
 struct RasterStateCreateParam
 {
-	types::Face::Enum cullFace;
-	types::PolygonWindingOrder::Enum frontFaceWinding;
+	types::Face cullFace;
+	types::PolygonWindingOrder frontFaceWinding;
 	bool enableDepthClip;
 	bool enableRasterizerDiscard;
 	bool enableProgramPointSize;
 	bool enableDepthBias;
 	bool enableDepthBiasClamp;
 
-	types::FillMode::Enum fillMode;
-	types::ProvokingVertex::Enum provokingVertex;
+	types::FillMode fillMode;
+	types::ProvokingVertex provokingVertex;
 	float32 lineWidth;
 	friend class ::pvr::api::impl::GraphicsPipeline_;
 public:
-
 	/*!*********************************************************************************************************************
 	\brief Create a rasterization and polygon state configuration.
 	\param cullFace Face culling (default: Back)
-	\param windingOrder The polygon winding order (default: Front face is counterclockwise)
+	\param frontFaceWinding The polygon winding order (default: Front face is counterclockwise)
 	\param enableDepthClip Enable depth clipping (default: true)
 	\param enableRasterizerDiscard Enable rasterizer discard (default:false)
 	\param enableProgramPointSize Enable program point size (default:true)
-	\param pointOrigin Point Origin (default: Lower left corner)
 	\param fillMode Polygon fill mode (default: Front and Back)
 	\param provokingVertex Provoking Vertex (default: First)
+	\param lineWidth Width of rendered lines (default: One)
+	\param enableDepthBias Enable depth bias (default: false)
+	\param enableDepthBiasClamp Enable depth bias clamp (default: false)
 	***********************************************************************************************************************/
-	RasterStateCreateParam(types::Face::Enum cullFace = types::Face::Back,
-	                       types::PolygonWindingOrder::Enum frontFaceWinding = types::PolygonWindingOrder::FrontFaceCCW,
-	                       bool enableDepthClip = true,
-	                       bool enableRasterizerDiscard = false,
-	                       bool enableProgramPointSize = false,
-	                       types::FillMode::Enum fillMode = types::FillMode::Fill,
-	                       types::ProvokingVertex::Enum provokingVertex = types::ProvokingVertex::First,
-	                       float32 lineWidth = 1.f,
-	                       bool enableDepthBias = false,
-	                       bool enableDepthBiasClamp = false) :
-		cullFace(cullFace),
-		frontFaceWinding(frontFaceWinding),
-		enableDepthClip(enableDepthClip),
-		enableRasterizerDiscard(enableRasterizerDiscard),
-		enableProgramPointSize(enableProgramPointSize),
-		enableDepthBias(enableDepthBias),
-		enableDepthBiasClamp(enableDepthBiasClamp),
-		fillMode(fillMode),
-		provokingVertex(provokingVertex),
-		lineWidth(lineWidth) {}
+	RasterStateCreateParam(types::Face cullFace = types::PipelineDefaults::Rasterizer::CullFace,
+	                       types::PolygonWindingOrder frontFaceWinding = types::PipelineDefaults::Rasterizer::WindingOrder,
+	                       bool enableDepthClip = types::PipelineDefaults::Rasterizer::DepthClipEnabled,
+	                       bool enableRasterizerDiscard = types::PipelineDefaults::Rasterizer::RasterizerDiscardEnabled,
+	                       bool enableProgramPointSize = types::PipelineDefaults::Rasterizer::ProgramPointSizeEnabled,
+	                       types::FillMode fillMode = types::PipelineDefaults::Rasterizer::FillMode,
+	                       types::ProvokingVertex provokingVertex = types::PipelineDefaults::Rasterizer::ProvokingVertex,
+	                       float32 lineWidth = types::PipelineDefaults::Rasterizer::LineWidth,
+	                       bool enableDepthBias = types::PipelineDefaults::Rasterizer::DepthBiasEnabled,
+	                       bool enableDepthBiasClamp = types::PipelineDefaults::Rasterizer::DepthBiasClampEnabled) :
+		cullFace(cullFace), frontFaceWinding(frontFaceWinding), enableDepthClip(enableDepthClip),
+		enableRasterizerDiscard(enableRasterizerDiscard), enableProgramPointSize(enableProgramPointSize),
+		enableDepthBias(enableDepthBias), enableDepthBiasClamp(enableDepthBiasClamp), fillMode(fillMode),
+		provokingVertex(provokingVertex), lineWidth(lineWidth) {}
 
-	bool isDepthBiasClampEnable()const { return enableDepthBiasClamp; }
+	/*!
+	   \brief Return true if depth bias clamp is enabled
+	 */
+	bool isDepthBiasClampEnable()const
+	{
+		return enableDepthBiasClamp;
+	}
 
-	bool isDepthBiasEnable()const { return enableDepthBias;  }
+	/*!
+	   \brief Return true if depth bias is enabled
+	 */
+	bool isDepthBiasEnable()const
+	{
+		return enableDepthBias;
+	}
 
-	float32 getLineWidth()const { return lineWidth; }
+	/*!
+	   \brief Return the line width
+	 */
+	float32 getLineWidth()const
+	{
+		return lineWidth;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Set the face that will be culled (front/back/both/none).
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	RasterStateCreateParam& setCullFace(types::Face::Enum face)
+	RasterStateCreateParam& setCullFace(types::Face face)
 	{
-		this->cullFace = face; return *this;
+		this->cullFace = face;
+		return *this;
 	}
 
+	/*!
+	   \brief Set line width
+	   \param lineWidth
+	   \return Return this object (allows chained calls)
+	 */
 	RasterStateCreateParam& setLineWidth(float32 lineWidth)
 	{
-		this->lineWidth = lineWidth; return *this;
+		this->lineWidth = lineWidth;
+		return *this;
 	}
 
-	RasterStateCreateParam& setDepthClipEnable(bool enableDepthClip)
+	/*!
+	   \brief Set depth clip
+	   \param enableDepthClip
+	   \return Return this object (allows chained calls)
+	 */
+	RasterStateCreateParam& setDepthClip(bool enableDepthClip)
 	{
-		this->enableDepthClip = enableDepthClip; return *this;
+		this->enableDepthClip = enableDepthClip;
+		return *this;
 	}
 
-	RasterStateCreateParam& setDepthBiasEnable(bool enableDepthBias)
+	/*!
+	   \brief Set depth bias
+	   \param enableDepthBias
+	   \return Return this object (allows chained calls)
+	 */
+	RasterStateCreateParam& setDepthBias(bool enableDepthBias)
 	{
-		this->enableDepthBias = enableDepthBias; return *this;
+		this->enableDepthBias = enableDepthBias;
+		return *this;
 	}
 
-	RasterStateCreateParam& setDepthBiasClampEnable(bool enableDepthBiasClamp)
+	/*!
+	   \brief Set depth bias clamp
+	   \param enableDepthBiasClamp
+	   \return Return this object (allows chained calls)
+	 */
+	RasterStateCreateParam& setDepthBiasClamp(bool enableDepthBiasClamp)
 	{
-		this->enableDepthBiasClamp = enableDepthBiasClamp; return *this;
+		this->enableDepthBiasClamp = enableDepthBiasClamp;
+		return *this;
 	}
 
 	/*!*********************************************************************************************************************
 	\brief Set polygon winding order.
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	RasterStateCreateParam& setFrontFaceWinding(types::PolygonWindingOrder::Enum frontFaceWinding)
+	RasterStateCreateParam& setFrontFaceWinding(types::PolygonWindingOrder frontFaceWinding)
 	{
-		this->frontFaceWinding = frontFaceWinding; return *this;
-	}
-
-	/*!*********************************************************************************************************************
-	\brief Enable/ disable depth clip.
-	\return this object (allows chained calls)
-	***********************************************************************************************************************/
-	RasterStateCreateParam& setDepthclipEnable(bool enable)
-	{
-		this->enableDepthClip = enable; return *this;
+		this->frontFaceWinding = frontFaceWinding;
+		return *this;
 	}
 
 	/*!*********************************************************************************************************************
 	\brief Enable/disable rasterizer discard.
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	RasterStateCreateParam& setRasterizerDiscardEnanle(bool enable)
+	RasterStateCreateParam& setRasterizerDiscard(bool enable)
 	{
-		this->enableRasterizerDiscard = enable; return *this;
+		this->enableRasterizerDiscard = enable;
+		return *this;
 	}
 
 	/*!*********************************************************************************************************************
 	\brief Enable/disable Program Point Size.
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	RasterStateCreateParam& setProgramPointSizeEnable(bool enable)
+	RasterStateCreateParam& setProgramPointSize(bool enable)
 	{
-		enableProgramPointSize = enable; return *this;
+		enableProgramPointSize = enable;
+		return *this;
 	}
 
 	/*!*********************************************************************************************************************
 	\brief Set polygon fill mode.
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	RasterStateCreateParam& setFillMode(types::FillMode::Enum mode)
+	RasterStateCreateParam& setFillMode(types::FillMode mode)
 	{
-		fillMode = mode; return *this;
+		fillMode = mode;
+		return *this;
 	}
 
 	/*!*********************************************************************************************************************
 	\brief Set the Provoking Vertex.
 	\return this object (allows chained calls)
 	***********************************************************************************************************************/
-	RasterStateCreateParam& setProvokingVertex(types::ProvokingVertex::Enum provokingVertex)
+	RasterStateCreateParam& setProvokingVertex(types::ProvokingVertex provokingVertex)
 	{
-		this->provokingVertex = provokingVertex; return *this;
+		this->provokingVertex = provokingVertex;
+		return *this;
 	}
 };
-//!\cond NO_DOXYGEN
+
 struct MultiSampleStateCreateParam
 {
 private:
 	friend class ::pvr::api::impl::GraphicsPipeline_;
-	bool multisampleEnable;
+	bool stateEnabled;
 	bool sampleShadingEnable;
 	bool alphaToCoverageEnable;
-	bool alphaToOnEnable;
-	pvr::uint32 rasterizationSamples;
-	pvr::float32 minSampleShading;
-	pvr::uint32 sampleMask;
+	bool alphaToOneEnable;
+	types::SampleCount rasterizationSamples;
+	float32 minSampleShading;
+	uint32 sampleMask;
 
 public:
 	/*!*********************************************************************************************************************
 	\brief Constructor. Create a multisampling configuration.
-	\param multisampleEnable Enable/disable multisampling (default false)
+	\param stateEnabled Enable/disable multisampling (default false)
 	\param sampleShadingEnable Enable/disable sample shading (defalt false)
-	\param numSamples The number of (multisampling) samples (default 1)
+	\param alphaToCoverageEnable Enable/disable alpha-to-coverage
+	\param alphaToOneEnable Enable/disable alpha-to-one
+	\param rasterizationSamples The number of rasterization samples (default 1)
 	\param minSampleShading The minimum sample Shading (default 0)
 	\param sampleMask sampleMask (default 0)
 	***********************************************************************************************************************/
-	MultiSampleStateCreateParam(bool multisampleEnable = false, bool sampleShadingEnable = false,
-	                            bool alphaToCoverageEnable = false, bool alphaToOnEnable = false,
-	                            pvr::uint32 rasterizationSamples = 1,  pvr::float32 minSampleShading = 0.0f,
-	                            pvr::uint32 sampleMask = 0xffffffff) :
-		multisampleEnable(multisampleEnable), sampleShadingEnable(sampleShadingEnable),
-		alphaToCoverageEnable(alphaToCoverageEnable), alphaToOnEnable(alphaToOnEnable),
+	MultiSampleStateCreateParam(bool stateEnabled = types::PipelineDefaults::MultiSample::Enabled,
+	                            bool sampleShadingEnable = types::PipelineDefaults::MultiSample::SampleShading,
+	                            bool alphaToCoverageEnable = types::PipelineDefaults::MultiSample::AlphaToCoverageEnable,
+	                            bool alphaToOneEnable = types::PipelineDefaults::MultiSample::AlphaToOnEnable,
+	                            types::SampleCount rasterizationSamples = types::PipelineDefaults::MultiSample::RasterizationSamples,
+	                            float32 minSampleShading = types::PipelineDefaults::MultiSample::MinSampleShading,
+	                            uint32 sampleMask = types::PipelineDefaults::MultiSample::SampleMask) :
+		stateEnabled(stateEnabled), sampleShadingEnable(sampleShadingEnable),
+		alphaToCoverageEnable(alphaToCoverageEnable), alphaToOneEnable(alphaToOneEnable),
 		rasterizationSamples(rasterizationSamples),	minSampleShading(minSampleShading),	sampleMask(sampleMask) {}
 
 	/*!*********************************************************************************************************************
 	\brief Enable/disable multisampling
-	\param enable true enable, false disable
+	\param active true enable, false disable if the pipeline has rasterization disabled.
 	\return this (allow chaining)
 	***********************************************************************************************************************/
-	MultiSampleStateCreateParam& setMultiSampleEnable(bool enable)
+	MultiSampleStateCreateParam& enableState(bool active)
 	{
-		multisampleEnable = enable; return *this;
+		stateEnabled = active;
+		return *this;
 	}
 
-	MultiSampleStateCreateParam& setAlphaToCoverageEnable(bool enable)
+	/*!
+	   \brief Enable/ Disable alpha to coverage
+	   \param enable
+	   \return Return this object (allows chained calls)
+	 */
+	MultiSampleStateCreateParam& setAlphaToCoverage(bool enable)
 	{
-		alphaToCoverageEnable = enable; return *this;
+		alphaToCoverageEnable = enable;
+		return *this;
 	}
 
 	/*!*********************************************************************************************************************
 	\brief Enable/ disable sampler shading.
 	\param enable true enable, false disable
 	\return this (allow chaining)
-	*************************************************************************************************/
-	MultiSampleStateCreateParam& setSampleShadingEnabe(bool enable)
+	************************************************************************************************************************/
+	MultiSampleStateCreateParam& setSampleShading(bool enable)
 	{
-		sampleShadingEnable = enable; return *this;
+		sampleShadingEnable = enable;
+		return *this;
 	}
 
 	/*!*********************************************************************************************************************
-	\brief Set number of samples.
+	\brief Controls whether the alpha component of the fragment’s first color output is replaced with one
+	\param enable true enable.false disable
+	\return this (allow chaining)
+	************************************************************************************************************************/
+	MultiSampleStateCreateParam& setAlphaToOne(bool enable)
+	{
+		alphaToOneEnable = enable;
+		return *this;
+	}
+
+	/*!*********************************************************************************************************************
+	\brief  Set the number of samples per pixel used in rasterization
 	\param numSamples The number of samples.
 	\return this (allow chaining)
 	***********************************************************************************************************************/
-	MultiSampleStateCreateParam& setNumRasterizationSamples(pvr::uint32 numSamples)
+	MultiSampleStateCreateParam& setNumRasterizationSamples(types::SampleCount numSamples)
 	{
-		this->rasterizationSamples = numSamples; return *this;
+		this->rasterizationSamples = numSamples;
+		return *this;
 	}
 
 	/*!*********************************************************************************************************************
@@ -966,9 +1102,10 @@ public:
 	\param minSampleShading The number of minimum samples to shade
 	\return this (allow chaining)
 	***********************************************************************************************************************/
-	MultiSampleStateCreateParam& setMinSampleShading(pvr::float32 minSampleShading)
+	MultiSampleStateCreateParam& setMinSampleShading(float32 minSampleShading)
 	{
-		this->minSampleShading = minSampleShading; return *this;
+		this->minSampleShading = minSampleShading;
+		return *this;
 	}
 
 	/*!*********************************************************************************************************************
@@ -976,56 +1113,158 @@ public:
 	\param mask The sample mask.
 	\return this (allow chaining)
 	***********************************************************************************************************************/
-	MultiSampleStateCreateParam& setSampleMask(pvr::uint32 mask)
+	MultiSampleStateCreateParam& setSampleMask(uint32 mask)
 	{
-		sampleMask = mask; return *this;
+		sampleMask = mask;
+		return *this;
 	}
-	uint32 getNumRasterizationSamples()const {	return rasterizationSamples;  }
-	bool isSampleShadingEnabled()const { return sampleShadingEnable; }
-	float32 getMinSanpleShading()const { return minSampleShading; }
-	bool isAlphaToCoverageEnabled()const { return alphaToCoverageEnable; }
-	bool isAlphaToOneEnabled()const { return alphaToOnEnable; }
+
+	/*!
+	   \brief Return sample mask
+	 */
 	uint32 getSampleMask()const { return sampleMask; }
+
+	/*!
+	   \brief Return number of rasterization samples
+	 */
+	uint32 getNumRasterizationSamples()const {	return (uint32)rasterizationSamples;  }
+
+	/*!
+	   \brief Return min sample shading
+	 */
+	float32 getMinSampleShading()const { return minSampleShading; }
+
+	/*!
+	   \brief Return true if sample shading enabled
+	 */
+	bool isSampleShadingEnabled()const { return sampleShadingEnable; }
+
+	/*!
+	   \brief Return true if alpha to coverage is enabled.
+	 */
+	bool isAlphaToCoverageEnabled()const { return alphaToCoverageEnable; }
+
+	/*!
+	   \brief Return true if alpha to one is enabled.
+	 */
+	bool isAlphaToOneEnabled()const { return alphaToOneEnable; }
+
+	/*!
+	   \brief Return true if this state is enabled
+	 */
+	bool isStateEnabled()const { return stateEnabled; }
 };
-//!\endcond
 
-
+/*!
+   \brief Pipeline Dynamic states.
+ */
 struct DynamicStatesCreateParam
 {
 private:
-	int32 dynamicStates[types::DynamicState::Count];
+	types::DynamicState dynamicStates[(uint32)types::DynamicState::Count];
 public:
+	/*!
+	   \brief DynamicStatesCreateParam
+	 */
 	DynamicStatesCreateParam() { memset(dynamicStates, -1, sizeof(dynamicStates)); }
-	bool isDynamicStateEnabled(types::DynamicState::Enum state)const { return (dynamicStates[state] == state); }
-	DynamicStatesCreateParam& setDynamicState(types::DynamicState::Enum state)
+
+	/*!
+	   \brief Return true if a dynamic static is enabled.
+	   \param state
+	 */
+	bool isDynamicStateEnabled(types::DynamicState state)const { return (dynamicStates[(uint32)state] == state); }
+
+	/*!
+	   \brief Set dynamic state
+	   \param state
+	   \return Return this object(allows chained calls)
+	 */
+	DynamicStatesCreateParam& setDynamicState(types::DynamicState state)
 	{
-		dynamicStates[state] = state; return *this;
+		dynamicStates[(uint32)state] = state;
+		return *this;
+	}
+};
+
+struct ShaderConstantInfo
+{
+	uint32 constantId;
+	byte   data[16];// max can hold 4x4 matrix
+	types::GpuDatatypes::Enum gpuDataType;
+	uint32 sizeInBytes;
+	ShaderConstantInfo() {}
+
+	ShaderConstantInfo(uint32 constantId, int32 data) : constantId(constantId),
+		gpuDataType(types::GpuDatatypes::integer), sizeInBytes(sizeof(data))
+	{
+		memcpy(this->data, &data, sizeof(data));
+	}
+
+	ShaderConstantInfo(uint32 constantId, float32 data) : constantId(constantId),
+		gpuDataType(types::GpuDatatypes::float32), sizeInBytes(sizeof(data))
+	{
+		memcpy(this->data, &data, sizeof(data));
+	}
+
+	ShaderConstantInfo(uint32 constantId, const glm::vec3& data) : constantId(constantId),
+		gpuDataType(types::GpuDatatypes::vec3), sizeInBytes(sizeof(data))
+	{
+		memcpy(this->data, &data, sizeof(data));
+	}
+
+	ShaderConstantInfo(uint32 constantId, const glm::vec4& data) : constantId(constantId),
+		gpuDataType(types::GpuDatatypes::vec4), sizeInBytes(sizeof(data))
+	{
+		memcpy(this->data, &data, sizeof(data));
+	}
+
+	ShaderConstantInfo(uint32 constantId, const glm::mat4x4& data) : constantId(constantId),
+		gpuDataType(types::GpuDatatypes::mat4x4), sizeInBytes(sizeof(data))
+	{
+		memcpy(this->data, &data, sizeof(data));
+	}
+
+	ShaderConstantInfo(uint32 constantId, const glm::mat3x3& data) : constantId(constantId),
+		gpuDataType(types::GpuDatatypes::mat3x3), sizeInBytes(sizeof(data))
+	{
+		memcpy(this->data, &data, sizeof(data));
 	}
 };
 
 /*!*********************************************************************************************************************
 \brief Pipeline vertex Shader stage create param.
 ***********************************************************************************************************************/
-struct VertexShaderStageCreateParam
+struct ShaderStageCreateParam
 {
 	friend class ::pvr::api::impl::GraphicsPipeline_;
 private:
 	api::Shader shader;
+	std::vector<ShaderConstantInfo> shaderConsts;
+	std::string entryPoint;
 public:
-	const api::Shader& getShader() const { return shader; }
-
-	bool isActive()const { return shader.isValid(); }
 
 	/*!*********************************************************************************************************************
 	\brief Constructor.
 	***********************************************************************************************************************/
-	VertexShaderStageCreateParam() {}
+	ShaderStageCreateParam() : entryPoint(types::PipelineDefaults::ShaderStage::EntryPoint) {}
 
 	/*!*********************************************************************************************************************
-	\brief Construct from a pvr::api::Shader object
+	\brief Construct from a api::Shader object
 	\param shader A vertex shader
 	***********************************************************************************************************************/
-	VertexShaderStageCreateParam(const api::Shader& shader) : shader(shader) {}
+	ShaderStageCreateParam(const api::Shader& shader) : shader(shader),
+		entryPoint(types::PipelineDefaults::ShaderStage::EntryPoint) {}
+
+	/*!
+	   \brief Return the shader
+	 */
+	const api::Shader& getShader() const { return shader; }
+
+	/*!
+	   \brief Return true if this state is active
+	 */
+	bool isActive()const { return shader.isValid(); }
+
 
 	/*!*********************************************************************************************************************
 	\brief Set vertex shader.
@@ -1033,189 +1272,363 @@ public:
 	***********************************************************************************************************************/
 	void setShader(const api::Shader& shader) { this->shader = shader; }
 
-	VertexShaderStageCreateParam& operator=(const api::Shader& shader) { setShader(shader); return *this; }
-};
+	/*!
+	   \brief Set shader entry point (default: main)
+	   \param entryPoint
+	 */
+	void setEntryPoint(const char* entryPoint) { this->entryPoint = entryPoint; }
 
-/*!*********************************************************************************************************************
-\brief Pipeline Fragement shader stage create param.
-***********************************************************************************************************************/
-struct FragmentShaderStageCreateParam
-{
-	friend class ::pvr::api::impl::GraphicsPipeline_;
-private:
-	api::Shader shader;
+	/*!
+	   \brief Return shader entry point
+	 */
+	const char* getEntryPoint()const { return entryPoint.c_str(); }
 
-	/*!*********************************************************************************************************************
-	\brief Create pipeline state object.
-	***********************************************************************************************************************/
-public:
-	const api::Shader& getShader() const { return shader; }
+	/*!
+	   \brief operator =
+	   \param shader
+	   \return Return true if equal
+	 */
+	ShaderStageCreateParam& operator=(const api::Shader& shader) { setShader(shader); return *this; }
 
-	bool isActive()const { return shader.isValid(); }
-
-	/*!*********************************************************************************************************************
-	\brief
-	\return
-	***********************************************************************************************************************/
-	FragmentShaderStageCreateParam() {}
-
-	/*!*********************************************************************************************************************
-	\brief  ctor
-	***********************************************************************************************************************/
-	FragmentShaderStageCreateParam(const api::Shader& shader) : shader(shader) {}
-
-	/*!*********************************************************************************************************************
-	\brief Set fragment shader.
-	***********************************************************************************************************************/
-	void setShader(const api::Shader& shader) { this->shader = shader; }
-
-	FragmentShaderStageCreateParam& operator=(const api::Shader& shader) { setShader(shader); return *this; }
-};
-
-
-/*!*********************************************************************************************************************
-\brief Pipeline Geometry shader stage create param.
-***********************************************************************************************************************/
-struct GeometryShaderStageCreateParam
-{
-	friend class ::pvr::api::impl::GraphicsPipeline_;
-private:
-	api::Shader shader;
-
-	/*!*********************************************************************************************************************
-	\brief Create pipeline state object.
-	***********************************************************************************************************************/
-public:
-	const api::Shader& getShader() const { return shader; }
-
-	bool isActive()const { return shader.isValid(); }
-
-	/*!*********************************************************************************************************************
-	\brief
-	\return
-	***********************************************************************************************************************/
-	GeometryShaderStageCreateParam() {}
-
-	/*!*********************************************************************************************************************
-	\brief  ctor
-	***********************************************************************************************************************/
-	GeometryShaderStageCreateParam(const api::Shader& shader) : shader(shader) {}
-
-	/*!*********************************************************************************************************************
-	\brief Set fragment shader.
-	***********************************************************************************************************************/
-	void setShader(const api::Shader& shader) { this->shader = shader; }
-
-	GeometryShaderStageCreateParam& operator=(const api::Shader& shader) { setShader(shader); return *this; }
-};
-
-
-
-/*!*********************************************************************************************************************
-\brief Pipeline Tesselation Control shader stage create param.
-***********************************************************************************************************************/
-struct TessControlShaderStageCreateParam
-{
-	friend class ::pvr::api::impl::GraphicsPipeline_;
-private:
-	api::Shader shader;
-
-	/*!*********************************************************************************************************************
-	\brief Create pipeline state object.
-	***********************************************************************************************************************/
-public:
-	const api::Shader& getShader() const { return shader; }
-
-	bool isActive()const { return shader.isValid(); }
-
-	/*!*********************************************************************************************************************
-	\brief
-	\return
-	***********************************************************************************************************************/
-	TessControlShaderStageCreateParam() {}
-
-	/*!*********************************************************************************************************************
-	\brief  ctor
-	***********************************************************************************************************************/
-	TessControlShaderStageCreateParam(const api::Shader& shader) : shader(shader) {}
-
-	/*!*********************************************************************************************************************
-	\brief Set fragment shader.
-	***********************************************************************************************************************/
-	void setShader(const api::Shader& shader) { this->shader = shader; }
-
-	TessControlShaderStageCreateParam& operator=(const api::Shader& shader) { setShader(shader); return *this; }
-};
-
-
-/*!*********************************************************************************************************************
-\brief Pipeline Tesselation Evaluation shader stage create param.
-***********************************************************************************************************************/
-struct TessEvalShaderStageCreateParam
-{
-	friend class ::pvr::api::impl::GraphicsPipeline_;
-private:
-	api::Shader shader;
-
-	/*!*********************************************************************************************************************
-	\brief Create pipeline state object.
-	***********************************************************************************************************************/
-public:
-	const api::Shader& getShader() const { return shader; }
-
-	bool isActive()const { return shader.isValid(); }
-
-	/*!*********************************************************************************************************************
-	\brief
-	\return
-	***********************************************************************************************************************/
-	TessEvalShaderStageCreateParam() {}
-
-	/*!*********************************************************************************************************************
-	\brief  ctor
-	***********************************************************************************************************************/
-	TessEvalShaderStageCreateParam(const api::Shader& shader) : shader(shader) {}
-
-	/*!*********************************************************************************************************************
-	\brief Set fragment shader.
-	***********************************************************************************************************************/
-	void setShader(const api::Shader& shader) { this->shader = shader; }
-
-	TessEvalShaderStageCreateParam& operator=(const api::Shader& shader) { setShader(shader); return *this; }
-};
-
-
-/*!*********************************************************************************************************************
-\brief Computer shader stage creator.
-***********************************************************************************************************************/
-struct ComputeShaderStageCreateParam
-{
-public:
-	/*!*********************************************************************************************************************
-	\brief Set the compute shader object
-	\param[in] shader The compute shader object.
-	***********************************************************************************************************************/
-	void setShader(const pvr::api::Shader& shader) { m_shader = shader; }
-
-	bool isActive()const { return m_shader.isValid(); }
-
-	/*!*********************************************************************************************************************
-	\brief Return if it has valid compute shader.
-	\return true If the compute shader exists, false otherwise.
-	***********************************************************************************************************************/
-	bool hasComputeShader() { return m_shader.isValid(); }
-
-	const pvr::api::Shader& getShader() const { return m_shader; }
-	void setShaderEntrypoint(const char* entryPoint)
+	/*!*
+	\brief Set shader constants
+	\param index
+	\param shaderConst
+	\return Return this for chaining
+	 */
+	ShaderStageCreateParam& setShaderConstant(uint32 index, const ShaderConstantInfo& shaderConst)
 	{
-		this->entryPoint.assign(entryPoint);
+		if (shaderConsts.size() <= index)
+		{
+			shaderConsts.resize(index + 1);
+		}
+		shaderConsts[index] = shaderConst;
+		return *this;
 	}
-	ComputeShaderStageCreateParam() : entryPoint("main") {}
-	const char* getShaderEntrypoint() { return entryPoint.c_str(); }
-	ComputeShaderStageCreateParam& operator=(const api::Shader& shader) { setShader(shader); return *this; }
+
+	/*!*
+	\brief Set all the shader constants.
+	\details Uses better memory reservation than the setShaderConstant counterpart.
+	\param shaderConsts A c-style array containing the shader constants
+	\param numConstants The number of shader constants in \p shaderConsts
+	\return Return this (allow chaining)
+	*/
+	ShaderStageCreateParam& setShaderConstants(const ShaderConstantInfo* shaderConsts, uint32 numConstants)
+	{
+		this->shaderConsts.insert(this->shaderConsts.begin(), shaderConsts, shaderConsts + numConstants);
+		return *this;
+	}
+
+	/*!*
+	\brief Retrieve a ShaderConstant
+	\param index The index of the ShaderConstant to retrieve
+	\return The shader constant
+	 */
+	const ShaderConstantInfo& getShaderConstant(uint32 index)const
+	{
+		assertion(index < shaderConsts.size());
+		return shaderConsts[index];
+	}
+
+	/*!*
+	\brief Get all shader constants
+	\return Return an array of shader of constants
+	 */
+	const ShaderConstantInfo* getAllShaderConstants()const
+	{
+		return shaderConsts.data();
+	}
+
+	/*!*
+	\brief Get number of shader constants
+	\return Number of shader constants
+	 */
+	uint32 getNumShaderConsts()const
+	{
+		return (uint32)shaderConsts.size();
+	}
+};
+
+/*!
+   \brief The VertexShaderStageCreateParam struct
+ */
+struct VertexShaderStageCreateParam : public ShaderStageCreateParam
+{
+	ShaderStageCreateParam& operator=(const api::Shader& shader)
+	{
+		setShader(shader);
+		return *this;
+	}
+};
+
+/*!
+   \brief The FragmentShaderStageCreateParam struct
+ */
+struct FragmentShaderStageCreateParam : public ShaderStageCreateParam
+{
+	ShaderStageCreateParam& operator=(const api::Shader& shader)
+	{
+		setShader(shader);
+		return *this;
+	}
+};
+
+/*!
+   \brief The GeometryShaderStageCreateParam struct
+ */
+struct GeometryShaderStageCreateParam : public ShaderStageCreateParam
+{
+	ShaderStageCreateParam& operator=(const api::Shader& shader)
+	{
+		setShader(shader);
+		return *this;
+	}
+};
+
+/*!
+   \brief The ComputeShaderStageCreateParam struct
+ */
+struct ComputeShaderStageCreateParam : public ShaderStageCreateParam
+{
+	ShaderStageCreateParam& operator=(const api::Shader& shader)
+	{
+		setShader(shader);
+		return *this;
+	}
+};
+
+/*!*********************************************************************************************************************
+\brief: Pipeline Tesselation Control shader stage create param.
+***********************************************************************************************************************/
+struct TesselationStageCreateParam
+{
+	friend class ::pvr::api::impl::GraphicsPipeline_;
 private:
-	pvr::api::Shader m_shader;
-	std::string entryPoint;
+	api::Shader controlShader, evalShader;
+	uint32 patchControlPoints;
+	std::vector<ShaderConstantInfo> shaderConstsTessCtrl, shaderConstTessEval;
+
+	/*!*********************************************************************************************************************
+	\brief: Create pipeline state object.
+	***********************************************************************************************************************/
+public:
+	/*!
+	   \brief Return control shader
+	 */
+	const api::Shader& getControlShader() const { return controlShader; }
+
+	/*!
+	   \brief Return evaluation shader
+	 */
+	const api::Shader& getEvaluationShader()const { return evalShader; }
+
+	/*!
+	   \brief Return true if the control shader is active
+	 */
+	bool isControlShaderActive()const { return controlShader.isValid(); }
+
+	/*!
+	   \brief Return true if the evaluation shader is active
+	 */
+	bool isEvaluationShaderActive()const { return evalShader.isValid();}
+
+	/*!
+	   \brief Constructor
+	 */
+	TesselationStageCreateParam() : patchControlPoints(types::PipelineDefaults::Tesselation::NumControlPoints) {}
+
+	/*!*********************************************************************************************************************
+	\brief: Set control shader.
+	***********************************************************************************************************************/
+	TesselationStageCreateParam& setControlShader(const api::Shader& shader)
+	{
+		controlShader = shader;
+		return *this;
+	}
+
+	/*!*
+	\brief Set evaluation shader
+	\param shader The shader
+	\return this for chaining
+	 */
+	TesselationStageCreateParam& setEvaluationShader(const api::Shader& shader)
+	{
+		evalShader = shader;
+		return *this;
+	}
+
+	/*!*
+	\brief Set number of control points
+	\param controlPoints
+	\return this for chaining
+	 */
+	TesselationStageCreateParam& setNumPatchControlPoints(uint32 controlPoints)
+	{
+		patchControlPoints = controlPoints;
+		return *this;
+	}
+
+	/*!*
+	\brief Get number of control points
+	\return The number of patch control points
+	 */
+	uint32 getNumPatchControlPoints()const { return patchControlPoints; }
+
+	/*!*
+	\brief Set control shader constans
+	\param index
+	\param shaderConst
+	\return Return this for chaining
+	 */
+	TesselationStageCreateParam& setControlShaderConstant(uint32 index, const ShaderConstantInfo& shaderConst)
+	{
+		if (shaderConstsTessCtrl.size() <= index)
+		{
+			shaderConstsTessCtrl.resize(index + 1);
+		}
+		shaderConstsTessCtrl[index] = shaderConst;
+		return *this;
+	}
+
+
+	/*!*
+	\brief Set all the shader constants.
+	\details Uses better memory reservation than the setShaderConstant counterpart.
+	\param shaderConsts A c-style array containing the shader constants
+	\param numConstants The number of shader constants in \p shaderConsts
+	\return Return this (allow chaining)
+	*/
+	TesselationStageCreateParam& setControlShaderConstants(const ShaderConstantInfo* shaderConsts, uint32 numConstants)
+	{
+		this->shaderConstsTessCtrl.insert(this->shaderConstsTessCtrl.begin(), shaderConsts, shaderConsts + numConstants);
+		return *this;
+	}
+
+	/*!*
+	\brief Get Control shader constant
+	\param index
+	\return ShaderConstantInfo
+	 */
+	const ShaderConstantInfo& getControlShaderConstant(uint32 index)const
+	{
+		assertion(index < shaderConstsTessCtrl.size());
+		return shaderConstsTessCtrl[index];
+	}
+
+	/*!
+	   \brief Return all control shader constants
+	   \return C-style array of all shader constants
+	 */
+	const ShaderConstantInfo* getAllControlShaderConstants()const { return shaderConstsTessCtrl.data(); }
+
+	/*!
+	   \brief Return number of control shader constants
+	 */
+	uint32 getNumControlShaderConstants()const { return (uint32)shaderConstsTessCtrl.size(); }
+
+	/*!*
+	\brief Set evaluation shader constants
+	\param index
+	\param shaderConst
+	\return Return this for chaining
+	 */
+	void setEvaluationShaderConstant(uint32 index, const ShaderConstantInfo& shaderConst)
+	{
+		if (shaderConstTessEval.size() <= index)
+		{
+			shaderConstTessEval.resize(index + 1);
+		}
+		shaderConstTessEval[index] = shaderConst;
+	}
+
+	/*!*
+	\brief Set all the shader constants.
+	\details Uses better memory reservation than the setShaderConstant counterpart.
+	\param shaderConsts A c-style array containing the shader constants
+	\param numConstants The number of shader constants in \p shaderConsts
+	\return Return this (allow chaining)
+	*/
+	TesselationStageCreateParam& setEvaluationShaderConstants(const ShaderConstantInfo* shaderConsts, uint32 numConstants)
+	{
+		this->shaderConstTessEval.insert(this->shaderConstTessEval.begin(), shaderConsts, shaderConsts + numConstants);
+		return *this;
+	}
+
+	/*!*
+	\brief Get Evaluation shader constants
+	\param index The
+	\return ShaderConstantInfo
+	 */
+	const ShaderConstantInfo& getEvaluationlShaderConstant(uint32 index)const
+	{
+		assertion(index < shaderConstTessEval.size());
+		return shaderConstTessEval[index];
+	}
+
+	/*!
+	   \brief Return all evaluationshader constants
+	 */
+	const ShaderConstantInfo* getAllEvaluationShaderConstants()const { return shaderConstTessEval.data(); }
+
+	/*!
+	   \brief Return number of evaluatinon shader constants
+	 */
+	uint32 getNumEvaluatinonShaderConstants()const { return (uint32)shaderConstTessEval.size(); }
+};
+
+/*!************************************************************************************************************
+\brief	OGLES2TextureUnitBindings struct.
+		This struct does the shader's texture unit reflection as the shader does not support layout qualifiers.
+		ONLY takes effect for OPENGLES.
+**************************************************************************************************************/
+struct OGLES2TextureUnitBindings
+{
+private:
+	std::vector<std::string> texUnit;
+public:
+	/*!*******************************************************************************************************
+	\brief Set texture unit.
+	\param unit Texture binding unit. Unit must be consecutive
+	\param name Texture binding name
+	\return This object
+	**********************************************************************************************************/
+	OGLES2TextureUnitBindings& setTextureUnit(uint32 unit, const char* name)
+	{
+		if (unit >= texUnit.size())
+		{
+			texUnit.resize(unit + 1);
+		}
+		texUnit[unit] = name;
+		return *this;
+	}
+
+	/*!*******************************************************************************************************
+	\brief Return texture unit binding name
+	\param unit Texture unit
+	**********************************************************************************************************/
+	const char* getTextureUnitName(uint32 unit)const
+	{
+		assertion(unit < texUnit.size(), "Invalid binding id");
+		return texUnit[unit].c_str();
+	}
+
+	/*!*******************************************************************************************************
+	\brief Return texture unit binding id
+	\param name Texture binding name
+	**********************************************************************************************************/
+	int32 getTextureUnitId(const char* name)const
+	{
+		std::vector<std::string>::const_iterator found = std::find(texUnit.cbegin(), texUnit.cend(), string(name));
+		return (int32)(found != texUnit.end() ? texUnit.end() - found : -1);
+	}
+
+	/*!*******************************************************************************************************
+	\brief Return number of bindings
+	**********************************************************************************************************/
+	uint32 getNumBindings()const
+	{
+		return (uint32)texUnit.size();
+	}
 };
 }
 }

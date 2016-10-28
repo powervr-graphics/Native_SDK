@@ -5,6 +5,8 @@
 \brief        Contains Vulkan specific implementation of the PipelineLayout class. Use only if directly using Vulkan calls.
 			  Provides the definitions allowing to move from the Framework object PipelineLayout to the underlying Vulkan PipelineLayout.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
+
 #pragma once
 #include "PVRApi/ApiObjects/PipelineLayout.h"
 #include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
@@ -38,8 +40,12 @@ public:
 	***********************************************************************************************************************/
 	inline void destroy();
 
+	/*!
+	\brief destructor
+	*/
 	~PipelineLayoutVk_()
 	{
+#ifdef DEBUG
 		if (m_context.isValid())
 		{
 			destroy();
@@ -48,6 +54,9 @@ public:
 		{
 			Log(Log.Warning, "PipelineLayout attempted to destroy after corresponding context destruction.");
 		}
+#else
+		destroy();
+#endif
 	}
 
 };
@@ -71,3 +80,5 @@ inline void pvr::api::vulkan::PipelineLayoutVk_::destroy()
 	handle = VK_NULL_HANDLE;
 }
 
+
+//!\endcond

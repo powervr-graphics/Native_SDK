@@ -98,7 +98,7 @@ Inheritance diagram for pvr::api::impl::RenderPass_:</div>
 <div class="center"><img src="classpvr_1_1api_1_1impl_1_1_render_pass____inherit__graph.png" border="0" usemap="#pvr_1_1api_1_1impl_1_1_render_pass___inherit__map" alt="Inheritance graph"/></div>
 <map name="pvr_1_1api_1_1impl_1_1_render_pass___inherit__map" id="pvr_1_1api_1_1impl_1_1_render_pass___inherit__map">
 <area shape="rect" id="node2" href="classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html" title="pvr::api::gles::RenderPass\lGles_" alt="" coords="5,81,179,122"/>
-<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_render_pass_vk__.html" title="pvr::api::vulkan::Render\lPassVk_" alt="" coords="203,81,359,122"/>
+<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_render_pass_vk__.html" title="Vulkan implementation of the RenderPass class. " alt="" coords="203,81,359,122"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -107,12 +107,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1d95fe7d90291d2ebc2ec1df5e6689f2"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_render_pass__.html#a1d95fe7d90291d2ebc2ec1df5e6689f2">~RenderPass_</a> ()</td></tr>
 <tr class="separator:a1d95fe7d90291d2ebc2ec1df5e6689f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b5a79748828e8e932cf615a45761bef"><td class="memItemLeft" align="right" valign="top">const GraphicsContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_render_pass__.html#a9b5a79748828e8e932cf615a45761bef">getContext</a> () const </td></tr>
+<tr class="memdesc:a9b5a79748828e8e932cf615a45761bef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return const reference to the context which own this object.  <a href="#a9b5a79748828e8e932cf615a45761bef">More...</a><br/></td></tr>
 <tr class="separator:a9b5a79748828e8e932cf615a45761bef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb0b13a6f03e67ca89d4a0b65ceb615a"><td class="memItemLeft" align="right" valign="top">GraphicsContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_render_pass__.html#abb0b13a6f03e67ca89d4a0b65ceb615a">getContext</a> ()</td></tr>
+<tr class="memdesc:abb0b13a6f03e67ca89d4a0b65ceb615a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return reference to the context which own this object.  <a href="#abb0b13a6f03e67ca89d4a0b65ceb615a">More...</a><br/></td></tr>
 <tr class="separator:abb0b13a6f03e67ca89d4a0b65ceb615a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeee61c95d7626d6cc4a7bc934544cfdd"><td class="memItemLeft" align="right" valign="top">const native::HRenderPass_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_render_pass__.html#aeee61c95d7626d6cc4a7bc934544cfdd">getNativeObject</a> () const </td></tr>
+<tr class="memdesc:aeee61c95d7626d6cc4a7bc934544cfdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return const reference to the underlying native object.  <a href="#aeee61c95d7626d6cc4a7bc934544cfdd">More...</a><br/></td></tr>
 <tr class="separator:aeee61c95d7626d6cc4a7bc934544cfdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b5b12a17739ca1b212e818f4fb04dc1"><td class="memItemLeft" align="right" valign="top">native::HRenderPass_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_render_pass__.html#a2b5b12a17739ca1b212e818f4fb04dc1">getNativeObject</a> ()</td></tr>
+<tr class="memdesc:a2b5b12a17739ca1b212e818f4fb04dc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return reference to the underlying native object.  <a href="#a2b5b12a17739ca1b212e818f4fb04dc1">More...</a><br/></td></tr>
 <tr class="separator:a2b5b12a17739ca1b212e818f4fb04dc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
@@ -120,8 +124,6 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a5f868a79f5ec53172dce54fae86b2cad"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_render_pass__.html#a5f868a79f5ec53172dce54fae86b2cad">RenderPass_</a> (GraphicsContext &amp;device)</td></tr>
 <tr class="memdesc:a5f868a79f5ec53172dce54fae86b2cad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new RenderPass object. Use through the IGraphicsContext::createRenderPass.  <a href="#a5f868a79f5ec53172dce54fae86b2cad">More...</a><br/></td></tr>
 <tr class="separator:a5f868a79f5ec53172dce54fae86b2cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace94c927b884b367c81f2e878459031b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_render_pass__.html#ace94c927b884b367c81f2e878459031b">destroy</a> ()</td></tr>
-<tr class="separator:ace94c927b884b367c81f2e878459031b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -183,29 +185,6 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ace94c927b884b367c81f2e878459031b"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void pvr::api::impl::RenderPass_::destroy </td>
-          <td>(</td>
-          <td class="paramname">)</td><td></td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a class="anchor" id="a9b5a79748828e8e932cf615a45761bef"></a>
 <div class="memitem">
 <div class="memproto">
@@ -227,6 +206,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Return const reference to the context which own this object. </p>
+<hr/>
+ 
 </div>
 </div>
 <a class="anchor" id="abb0b13a6f03e67ca89d4a0b65ceb615a"></a>
@@ -250,6 +232,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Return reference to the context which own this object. </p>
+<hr/>
+ 
 </div>
 </div>
 <a class="anchor" id="aeee61c95d7626d6cc4a7bc934544cfdd"></a>
@@ -265,6 +250,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Return const reference to the underlying native object. </p>
+<hr/>
+ 
 </div>
 </div>
 <a class="anchor" id="a2b5b12a17739ca1b212e818f4fb04dc1"></a>
@@ -280,6 +268,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Return reference to the underlying native object. </p>
+<hr/>
+ 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>

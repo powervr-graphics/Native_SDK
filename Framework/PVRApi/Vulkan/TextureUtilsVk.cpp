@@ -1,5 +1,5 @@
 /*!*********************************************************************************************************************
-\file         PVRNativeApi\Vulkan\TextureUtilsVk.cpp
+\file         PVRApi\Vulkan\TextureUtilsVk.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief         Contains function definitions for OpenGL ES Texture Utils.
@@ -33,21 +33,17 @@ bool impl::unused::unused2;
 using namespace ::pvr::types;
 using namespace ::pvr::api;
 
-//Result::Enum textureUpload(GraphicsContext& context, const assets::Texture& texture, api::TextureView& outTextureView)
-//{
-//	textureUpload(context, texture, outTextureView, false);
-//}
-
-Result::Enum textureUpload(GraphicsContext& context, const assets::Texture& texture, api::TextureView& outTextureView, bool allowDecompress,
-                           PixelFormat& outDeCompressedFormat, bool& isCompressed)
+Result textureUpload(GraphicsContext& context, const assets::Texture& texture, api::TextureView& outTextureView, bool allowDecompress)
 {
 	ImageArea imageArea;
 	native::HTexture_ htex;
-	Result::Enum result = textureUpload(context->getPlatformContext(), texture, htex, imageArea, outDeCompressedFormat, isCompressed, true);
+	PixelFormat outDeCompressedFormat;
+	bool isCompressed = false;
+	Result result = textureUpload(context->getPlatformContext(), texture, htex, imageArea, outDeCompressedFormat, isCompressed, allowDecompress);
 	if (result == Result::Success)
 	{
 		api::vulkan::TextureStoreVk tex;
-		tex.construct(context, htex, texture.getDimension());
+		tex.construct(context, htex, texture.getDimension(), texture.getNumberOfFaces() > 1);
 		api::ImageStorageFormat& fmt = tex->getFormat();
 		fmt = outDeCompressedFormat;
 		fmt.colorSpace = texture.getColorSpace();
@@ -77,7 +73,7 @@ Result::Enum textureUpload(GraphicsContext& context, const assets::Texture& text
 
 		tex->setDimensions(imageArea);
 		tex->setLayers(imageArea);
-		fmt.mipmapLevels = (uint8)tex->layersSize.numMipLevels;
+		fmt.mipmapLevels = (uint8)tex->getNumMipLevels();
 		outTextureView = context->createTextureView(tex, imageArea, swizzle);
 		if (outTextureView.isNull())
 		{

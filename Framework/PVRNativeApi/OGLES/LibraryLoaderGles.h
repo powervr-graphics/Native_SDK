@@ -2,9 +2,9 @@
 \file         PVRNativeApi\OGLES\LibraryLoaderGles.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief         This file contains OpenGL ES bindings with function pointers. The PowerVR Framework uses them to allow unified
+\brief        This file contains OpenGL ES bindings with function pointers. The PowerVR Framework uses them to allow unified
               access to OpenGL ES 2 and OpenGL ES 3 context throught the same functions.
-			  Function pointer loading is done with the initGl function which is normally called by the PVR Shell.
+              Function pointer loading is done with the initGl function which is normally called by the PVR Shell.
 ***********************************************************************************************************************/
 #pragma once
 #include "PVRNativeApi/OGLES/OpenGLESHeaders.h"
@@ -25,7 +25,7 @@
 /*!*********************************************************************************************************************
 \brief This class contains function pointers to all OpenGL ES 2,3 and 3.1 functions. These function pointers will be populated
        on the initGl call, but should only be used when compatible OpenGL ES contexts are current. Use normally, using the gl
-	   class as a namespace. For example gl::BindBuffer(GL_UNIFORM_BUFFER, myBuffer);
+     class as a namespace. For example gl::BindBuffer(GL_UNIFORM_BUFFER, myBuffer);
 ***********************************************************************************************************************/
 class gl
 {

@@ -15,7 +15,7 @@ namespace pvr {
 \param[in] count Number of vertices to read
 \param[out] out Array of vertex read
 ***********************************************************************************************************************/
-inline void VertexRead(const byte* const data, const types::DataType::Enum type, uint32 count, float32* out)
+inline void VertexRead(const byte* const data, const types::DataType type, uint32 count, float32* out)
 {
 	uint32	i;
 
@@ -218,7 +218,7 @@ inline void VertexRead(const byte* const data, const types::DataType::Enum type,
 \param[in] type Index type to read
 \param[out] out of index data read
 ***********************************************************************************************************************/
-inline void VertexIndexRead(const byte* const data, const types::IndexType::Enum type, uint32* const out)
+inline void VertexIndexRead(const byte* const data, const types::IndexType type, uint32* const out)
 {
 	switch (type)
 	{

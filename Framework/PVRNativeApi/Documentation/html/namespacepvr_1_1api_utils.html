@@ -80,7 +80,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::apiUtils Namespace Reference</div>  </div>
 </div><!--header-->
@@ -90,7 +91,72 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacepvr_1_1api_utils_1_1vulkan"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_utils_1_1vulkan.html">vulkan</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:afe401055b84ae85ce54cef7f93d1807b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_utils.html#afe401055b84ae85ce54cef7f93d1807b">createBuffer</a> (IPlatformContext &amp;context, types::BufferBindingUse::Bits <a class="el" href="_api_gles2_8h.html#afb85c5d9b1bce96aa3b530d581194d1a">usage</a>, pvr::uint32 <a class="el" href="_api_gles2_8h.html#a3d1e3edfcf61ca2d831883e1afbad89e">size</a>, bool memHostVisible, <a class="el" href="structpvr_1_1native_1_1_h_buffer__.html">native::HBuffer_</a> &amp;outBuffer)</td></tr>
+<tr class="memdesc:afe401055b84ae85ce54cef7f93d1807b"><td class="mdescLeft">&#160;</td><td class="mdescRight">create buffer  <a href="#afe401055b84ae85ce54cef7f93d1807b">More...</a><br/></td></tr>
+<tr class="separator:afe401055b84ae85ce54cef7f93d1807b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="afe401055b84ae85ce54cef7f93d1807b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::apiUtils::createBuffer </td>
+          <td>(</td>
+          <td class="paramtype">IPlatformContext &amp;&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">types::BufferBindingUse::Bits&#160;</td>
+          <td class="paramname"><em>usage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pvr::uint32&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>memHostVisible</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">native::HBuffer_ &amp;&#160;</td>
+          <td class="paramname"><em>outBuffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>create buffer </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return true if success </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">context</td><td>PlatformContext used for allocation </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">usage</td><td>Buffer binding use </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Buffer size </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">memHostVisible</td><td>Allow Buffer memory to be host visible for map and un-map operation </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">outBuffer</td><td>The buffer used for memory allocation </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

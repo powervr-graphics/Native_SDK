@@ -31,6 +31,7 @@ private:
 	struct TextureData { assets::TextureHeader textureHeader; api::TextureView texture; };
 
 	IAssetProvider* assetProvider;
+	OSManager* contextProvider;
 
 	std::map<StringHash, TextureData> textureMap;
 	std::map<StringHash, assets::ModelHandle> modelMap;
@@ -71,13 +72,27 @@ public:
 	{ }
 
 	/*!****************************************************************************************************************
-	\brief Initialize.
+	\brief Initialize with the application class (the Shell, hence the Application, is-a IPlatformProvider
 	\param theShell The IAssetProvider that this AssetStore will use to load the requested assets from disk. pvr::Shell
 	       implements the AssetStore interface, so normally the instance of the Application Class will be passed here.
 	*******************************************************************************************************************/
-	void init(IAssetProvider& theShell)
+	void init(pvr::IPlatformProvider& theShell)
 	{
 		assetProvider = &theShell;
+		contextProvider = &theShell;
+		initialized = true;
+	}
+
+	/*!****************************************************************************************************************
+	\brief Initialize with separate Context and Asset providers. Prefer the other overload if you want to just pass the application.
+	\param assetProvider The IAssetProvider that this AssetStore will use to load the requested assets from disk. pvr::Shell
+	implements the AssetStore interface, so normally the instance of the Application Class will be passed here.
+	\param contextProvider The ContextProvider that this AssetStore will use to get a graphics context when required.
+	*******************************************************************************************************************/
+	void init(IAssetProvider& assetProvider, OSManager& contextProvider)
+	{
+		this->assetProvider = &assetProvider;
+		this->contextProvider = &contextProvider;
 		initialized = true;
 	}
 
@@ -107,7 +122,7 @@ public:
 	is already loaded, return the cached information without loading from disc.
 	\param[in] context The context on which the Texture object will be created.
 	\param[in] filename texture file name
-	\param[in] format A assets::TextureFileFormat::Enum symbolising the file format.
+	\param[in] format A assets::TextureFileFormat symbolising the file format.
 	\param[out] outTexture Optional (set NULL to ignore) : A api::Texture2D object into which the texture object
 	is returned
 	\param[out] outDescriptor Optional (set NULL to ignore) : A TextureHeader object into which the texture metadata
@@ -118,7 +133,7 @@ public:
 	platform specific asset store (android asset, windows resource, filesystem etc.). Errors are logged in the
 	AssetManager logger.
 	*******************************************************************************************************************/
-	bool getTextureWithCaching(GraphicsContext& context, const StringHash& filename, assets::TextureFileFormat::Enum format,
+	bool getTextureWithCaching(GraphicsContext& context, const StringHash& filename, assets::TextureFileFormat format,
 	                           api::TextureView* outTexture, assets::TextureHeader* outDescriptor)
 	{
 		std::map<StringHash, TextureData>::iterator found = textureMap.find(filename);
@@ -146,15 +161,14 @@ public:
 	 returned instead of reloaded)
 	\param[in] context The context on which the Texture object will be created.
 	\param[in] filename texture file name
-	\param[in] format A assets::TextureFileFormat::Enum symbolising the file format.
+	\param[in] format A assets::TextureFileFormat symbolising the file format.
 	\return Returns true if successful, false if any error occurs.
 	\description This function will look for a previously loaded texture with the specified filename. Texture format is
 	explicit. If the texture is found in the cache, it will be returned from there, otherwise it will be loaded from the
 	platform specific asset store (android asset, windows resource, filesystem etc.). Errors are logged in the
 	AssetManager logger.
 	*******************************************************************************************************************/
-	bool forceLoadTexture(GraphicsContext& context, const StringHash& filename,
-	                      assets::TextureFileFormat::Enum format)
+	bool forceLoadTexture(GraphicsContext& context, const StringHash& filename, assets::TextureFileFormat format)
 	{
 		return loadTexture(context, filename, format, true, NULL, NULL);
 	}
@@ -175,10 +189,13 @@ public:
 	{
 		return forceLoadTexture(context, filename, assets::getTextureFormatFromFilename(filename.c_str()));
 	}
+
+	bool generateTextureAtlas(GraphicsContext& context, const StringHash* fileNames, Rectanglef* outUVs, uint32 numTextures,
+	                          api::TextureView* outTexture, assets::TextureHeader* outDescriptor);
+
 private:
 	bool loadTexture(GraphicsContext& context, const StringHash& filename,
-	                 assets::TextureFileFormat::Enum format,
-	                 bool forceLoad = false,
+	                 assets::TextureFileFormat format, bool forceLoad = false,
 	                 api::TextureView* outTexture = NULL, assets::TextureHeader* outDescriptor = NULL);
 
 public:
@@ -285,8 +302,7 @@ public:
 };
 
 
-inline bool AssetStore::loadPfx(const char* fileName, EffectApi& outPfx,
-                                bool forceLoad)
+inline bool AssetStore::loadPfx(const char* /*fileName*/, EffectApi& /*outPfx*/, bool /*forceLoad*/)
 {
 	assertion(0 ,  "UNSUPPORTED REQUEST");
 	return false;

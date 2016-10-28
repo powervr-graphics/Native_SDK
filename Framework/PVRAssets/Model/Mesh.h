@@ -18,6 +18,27 @@ namespace assets {
 class Mesh
 {
 public:
+	const FreeValue* getMeshSemantic(const StringHash& semantic) const
+	{
+		auto it = m_data.semantics.find(semantic);
+		if (it == m_data.semantics.end())
+		{
+			return NULL;
+		}
+		return &it->second;
+	}
+	const RefCountedResource<void>& getUserDataPtr() const
+	{
+		return this->m_data.userDataPtr;
+	}
+	RefCountedResource<void> getUserDataPtr()
+	{
+		return this->m_data.userDataPtr;
+	}
+	void setUserDataPtr(const RefCountedResource<void>& ptr)
+	{
+		m_data.userDataPtr = ptr;
+	}
 	/*!*********************************************************************************************************************
 	\brief	Definition of a single VertexAttribute.
 	***********************************************************************************************************************/
@@ -41,7 +62,7 @@ public:
 		\param	offset The offset from the begining of its Buffer that this attribute begins
 		\param	dataIndex The index of this attribute
 		***********************************************************************************************************************/
-		VertexAttributeData(const StringHash& semantic, types::DataType::Enum type, uint8 n, uint16 offset, uint16 dataIndex)
+		VertexAttributeData(const StringHash& semantic, types::DataType type, uint8 n, uint16 offset, uint16 dataIndex)
 			: m_semantic(semantic), m_layout(type, n, offset), m_dataIndex(dataIndex) { }
 
 		/*!*********************************************************************************************************************
@@ -79,7 +100,7 @@ public:
 		/*!*********************************************************************************************************************
 		\brief	Set the DataType of this vertex attribute.
 		***********************************************************************************************************************/
-		void setDataType(types::DataType::Enum type);
+		void setDataType(types::DataType type);
 
 		/*!*********************************************************************************************************************
 		\brief	Set the Offset of this vertex attribute.
@@ -106,7 +127,7 @@ public:
 	class FaceData
 	{
 	protected:
-		types::IndexType::Enum m_indexType;
+		types::IndexType m_indexType;
 		UCharBuffer m_data;
 
 	public:
@@ -115,7 +136,7 @@ public:
 		/*!*********************************************************************************************************************
 		\brief	Get the data type of the face data (16-bit or 32 bit integer).
 		***********************************************************************************************************************/
-		types::IndexType::Enum getDataType() const { return m_indexType; }
+		types::IndexType getDataType() const { return m_indexType; }
 
 		/*!*********************************************************************************************************************
 		\brief	Get a pointer to the actual face data.
@@ -135,7 +156,7 @@ public:
 		/*!*********************************************************************************************************************
 		\brief	Set the data type of this instance.
 		***********************************************************************************************************************/
-		void setData(const byte* data, uint32 size, const types::IndexType::Enum indexType = types::IndexType::IndexType16Bit);
+		void setData(const byte* data, uint32 size, const types::IndexType indexType = types::IndexType::IndexType16Bit);
 	};
 
 	/*!*********************************************************************************************************************
@@ -176,7 +197,7 @@ public:
 		uint32 numControlPointsPerPatch;  //!< Number of Control points per patch
 
 		float32 units;                    //!< Scaling of the units
-		types::PrimitiveTopology::Enum primitiveType; //!< Type of primitive in this Mesh
+		types::PrimitiveTopology primitiveType; //!< Type of primitive in this Mesh
 		bool isIndexed;                   //!< Contains indexes (as opposed to being a flat list of vertices)
 		bool isSkinned;                   //!< Contains indexes (as opposed to being a flat list of vertices)
 
@@ -192,14 +213,16 @@ public:
 	***************************************************************************************************************/
 	struct InternalData
 	{
-		VertexAttributeContainer vertexAttributes;       //!<Contains information on the vertices, such as semantic names, strides etc.
+		ContiguousMap<StringHash, FreeValue> semantics;
+		VertexAttributeContainer vertexAttributes;            //!<Contains information on the vertices, such as semantic names, strides etc.
 		std::vector<StridedBuffer> vertexAttributeDataBlocks; //!<Contains the actual raw data (as in, the bytes of information), plus
+		uint32 boneCount;          //!< Faces information
 
-		FaceData faces;       //!< Faces information
-		MeshInfo primitiveData;   //!< Primitive data information
-		BoneBatches boneBatches; //!< Faces information
-		glm::mat4x4 unpackMatrix; //!< This matrix is used to move from an int16 representation to a float
-
+		FaceData faces;            //!< Faces information
+		MeshInfo primitiveData;    //!< Primitive data information
+		BoneBatches boneBatches;   //!< Faces information
+		glm::mat4x4 unpackMatrix;  //!< This matrix is used to move from an int16 representation to a float
+		RefCountedResource<void> userDataPtr; //!< This is a pointer that is in complete control of the user, used for per-mesh data.
 	};
 
 private:
@@ -303,7 +326,7 @@ public:
 	\param size The size, in bytes, of the face data
 	\param indexType The actual datatype contained in (data). (16 or 32 bit)
 	***********************************************************************************************************************/
-	void addFaces(const byte* data, uint32 size, const types::IndexType::Enum indexType);
+	void addFaces(const byte* data, uint32 size, const types::IndexType indexType);
 
 	/*!*********************************************************************************************************************
 	\brief	Add a vertex attribute to the mesh.
@@ -323,7 +346,7 @@ public:
 	\param forceReplace force replace the attribute
 	\return The index where the element was added (or where the already existing item was)
 	***********************************************************************************************************************/
-	int32 addVertexAttribute(const StringHash& semanticName, const types::DataType::Enum& type, uint32 width,
+	int32 addVertexAttribute(const StringHash& semanticName, const types::DataType& type, uint32 width,
 	                         uint32 offset, uint32 dataIndex, bool forceReplace = false);
 
 	/*!*********************************************************************************************************************
@@ -427,7 +450,7 @@ public:
 	\brief	Get the primitive topology that the data in this Mesh represent.
 	\return The primitive topology that the data in this Mesh represent (Triangles, TriangleStrips, TriangleFans, Patch etc.)
 	***********************************************************************************************************************/
-	types::PrimitiveTopology::Enum getPrimitiveType() const
+	types::PrimitiveTopology getPrimitiveType() const
 	{
 		return m_data.primitiveData.primitiveType;
 	}
@@ -436,7 +459,7 @@ public:
 	\brief	Set the primitive topology that the data in this Mesh represent.
 	\param type The primitive topology that the data in this Mesh will represent (Triangles, TriangleStrips, TriangleFans, Patch etc.)
 	***********************************************************************************************************************/
-	void setPrimitiveType(const types::PrimitiveTopology::Enum& type)
+	void setPrimitiveType(const types::PrimitiveTopology& type)
 	{
 		m_data.primitiveData.primitiveType = type;
 	}
@@ -478,13 +501,28 @@ public:
 	/*!****************************************************************************************************************
 	\brief	Get all face data of this mesh.
 	*******************************************************************************************************************/
-	const FaceData& getFaces() const {	return m_data.faces;	}
+	const FaceData& getFaces() const { return m_data.faces; }
+
+	/*!****************************************************************************************************************
+	\brief	Get all face data of this mesh.
+	*******************************************************************************************************************/
+	FaceData& getFaces() { return m_data.faces; }
 
 	/*!****************************************************************************************************************
 	\brief	Get the information of a VertexAttribute by its SemanticName.
 	\return	A VertexAttributeData object with information on this attribute. (layout, index etc.) Null if failed
 	\description This method does lookup in O(logN) time. Prefer to call the getVertexAttributeID and then use the
-	             constant-time O(1) getVertexAttribute(int32) method
+	constant-time O(1) getVertexAttribute(int32) method
+	*******************************************************************************************************************/
+	uint32 getBoneCount() const
+	{
+		return m_data.boneCount;
+	}
+	/*!****************************************************************************************************************
+	\brief	Get the information of a VertexAttribute by its SemanticName.
+	\return	A VertexAttributeData object with information on this attribute. (layout, index etc.) Null if failed
+	\description This method does lookup in O(logN) time. Prefer to call the getVertexAttributeID and then use the
+	constant-time O(1) getVertexAttribute(int32) method
 	*******************************************************************************************************************/
 	const VertexAttributeData* getVertexAttributeByName(const StringHash& semanticName) const
 	{
