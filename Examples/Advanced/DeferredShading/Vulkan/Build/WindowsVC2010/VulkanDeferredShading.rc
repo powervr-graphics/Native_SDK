@@ -1,0 +1,96 @@
+//Microsoft eMbedded Visual C++ generated resource script.
+//
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        118
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+	"\r\n"
+	"\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+/////////////////////////////////////////////////////////////////////////////
+// RCDATA: Scenes
+scene.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\scene.pod"
+pointlight.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\pointlight.pod"
+
+// RCDATA: Shaders
+AttributelessVertexShader.vsh.spv		RCDATA		"..\\..\\AttributelessVertexShader.vsh.spv"
+GBufferFragmentShader.fsh.spv		RCDATA		"..\\..\\GBufferFragmentShader.fsh.spv"
+GBufferVertexShader.vsh.spv		RCDATA		"..\\..\\GBufferVertexShader.vsh.spv"
+GBufferFloorFragmentShader.fsh.spv		RCDATA		"..\\..\\GBufferFloorFragmentShader.fsh.spv"
+GBufferFloorVertexShader.vsh.spv		RCDATA		"..\\..\\GBufferFloorVertexShader.vsh.spv"
+DirectionalLightFragmentShader.fsh.spv		RCDATA		"..\\..\\DirectionalLightFragmentShader.fsh.spv"
+PointLightPass1FragmentShader.fsh.spv		RCDATA		"..\\..\\PointLightPass1FragmentShader.fsh.spv"
+PointLightPass1VertexShader.vsh.spv		RCDATA		"..\\..\\PointLightPass1VertexShader.vsh.spv"
+PointLightPass2FragmentShader.fsh.spv		RCDATA		"..\\..\\PointLightPass2FragmentShader.fsh.spv"
+PointLightPass2VertexShader.vsh.spv		RCDATA		"..\\..\\PointLightPass2VertexShader.vsh.spv"
+PointLightPass3FragmentShader.fsh.spv		RCDATA		"..\\..\\PointLightPass3FragmentShader.fsh.spv"
+PointLightPass3VertexShader.vsh.spv		RCDATA		"..\\..\\PointLightPass3VertexShader.vsh.spv"
+
+// RCDATA: Textures
+Table.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\Table.pvr"
+Marble.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\Marble.pvr"
+MarbleNormalMap.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\MarbleNormalMap.pvr"
+
+#endif    // English (United Kingdom) resources
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

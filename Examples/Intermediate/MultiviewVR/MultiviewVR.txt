@@ -1,0 +1,14 @@
+:Title:
+IntroducingOVR
+
+:ShortDescription:
+Load a scene in POD format using the PVRAssets library, and render it using OVR_multi_view extension.
+
+:FullDescription:
+This training course introduces the OVR_multi_view extension, and shows how to use the extension to render the scene from two different eye locations. 
+
+:APIS:
+ES 3.0
+
+:Controls:
+	-	Quit	-	Close the application
