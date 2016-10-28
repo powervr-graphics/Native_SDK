@@ -11,7 +11,8 @@ var searchData=
   ['getboundfbo',['getBoundFbo',['../classpvr_1_1_i_graphics_context.html#a05790bfbb1fc68c1aa8af24bc34bd220',1,'pvr::IGraphicsContext']]],
   ['getcenter',['getCenter',['../structpvr_1_1_rectangle.html#a41f864d0d40b8876ed1e0e31bbfb034d',1,'pvr::Rectangle']]],
   ['getconsumertoken',['getConsumerToken',['../classpvr_1_1_locked_queue.html#ac860110478a94bc851e44f79751f29db',1,'pvr::LockedQueue']]],
-  ['getcontainer',['getContainer',['../classpvr_1_1_multi.html#a5e98145f4f2703f6e2be890be58ff20b',1,'pvr::Multi']]],
+  ['getcontainer1',['getContainer1',['../classpvr_1_1_multi.html#ae01c94b4dde3801611dd1d0c677dafcc',1,'pvr::Multi']]],
+  ['getcurrentswapchain',['getCurrentSwapChain',['../classpvr_1_1_i_graphics_context.html#a911296bb4d47bb2bda31dbb3d8fb19dc',1,'pvr::IGraphicsContext']]],
   ['getcurrenttimehours',['getCurrentTimeHours',['../classpvr_1_1_time.html#aafbf2d1fdee8537ee069c207012df2a4',1,'pvr::Time']]],
   ['getcurrenttimemicrosecs',['getCurrentTimeMicroSecs',['../classpvr_1_1_time.html#af39797a85d9941fe912221ecf88390b6',1,'pvr::Time']]],
   ['getcurrenttimemillisecs',['getCurrentTimeMilliSecs',['../classpvr_1_1_time.html#a2a8b5710f7b861ded177554e30874ab5',1,'pvr::Time']]],
@@ -69,8 +70,9 @@ var searchData=
   ['getresultcodestring',['getResultCodeString',['../classpvr_1_1_logger.html#a62182481c93beadfb196a3e44fc55395',1,'pvr::Logger']]],
   ['getsize',['getSize',['../classpvr_1_1_android_asset_stream.html#a511299b45cdb5f16ee7c070cbc0259e7',1,'pvr::AndroidAssetStream::getSize()'],['../classpvr_1_1math_1_1_axis_aligned_box.html#a710f83b51306ddfc577dfac175dae617',1,'pvr::math::AxisAlignedBox::getSize()'],['../classpvr_1_1_buffer_stream.html#a468a82e13e3167396f90066b9036e1d1',1,'pvr::BufferStream::getSize()'],['../classpvr_1_1_file_stream.html#aad5aa051f4cbc0c4e38db063a8340755',1,'pvr::FileStream::getSize()'],['../classpvr_1_1_sized_pointer.html#abeb05f1ba11eb6ee7a03e3d9d33d1f1d',1,'pvr::SizedPointer::getSize()'],['../classpvr_1_1_stream.html#a3991f8b372ea62c75396228aa9a0cf9b',1,'pvr::Stream::getSize()']]],
   ['getstacktraceinfo',['getStackTraceInfo',['../namespacepvr.html#a8e81520ef363fa90bb0d7e341ebe4f9a',1,'pvr']]],
-  ['getswapchainindex',['getSwapChainIndex',['../classpvr_1_1_i_platform_context.html#a9e7d5c21a9ccf9599f9ee276aed69a2c',1,'pvr::IPlatformContext']]],
-  ['getswapchainlength',['getSwapChainLength',['../classpvr_1_1_i_platform_context.html#ad705dfe1a95e7991712f0b51cf57da8b',1,'pvr::IPlatformContext']]],
+  ['getswapchainindex',['getSwapChainIndex',['../classpvr_1_1_i_platform_context.html#a3dc421371b2be222e2d1f31d2984dc14',1,'pvr::IPlatformContext']]],
+  ['getswapchainlength',['getSwapChainLength',['../classpvr_1_1_i_graphics_context.html#aea9eff125221c7878cc5e5cd87193008',1,'pvr::IGraphicsContext::getSwapChainLength()'],['../classpvr_1_1_i_platform_context.html#a7a042510850436ac2cf1008a3a186e59',1,'pvr::IPlatformContext::getSwapChainLength()']]],
   ['getverbosity',['getVerbosity',['../classpvr_1_1_logger.html#ad30249db37a015014a39d96eb1214df2',1,'pvr::Logger::getVerbosity()'],['../classpvr_1_1system_1_1_messenger.html#a014cedab893a47460a44f2e2d42c1473',1,'pvr::system::Messenger::getVerbosity()']]],
+  ['getweakref',['getWeakRef',['../classpvr_1_1_i_graphics_context.html#a0e79c6a5c76ed65326115af6fc7b04dd',1,'pvr::IGraphicsContext']]],
   ['getwindow',['getWindow',['../classpvr_1_1_o_s_manager.html#ae831fcb0a354044b35304a17b14b47dd',1,'pvr::OSManager']]]
 ];

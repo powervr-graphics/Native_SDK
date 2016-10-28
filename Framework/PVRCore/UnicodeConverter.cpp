@@ -133,9 +133,9 @@ uint32 UnicodeConverter::unicodeCount(const utf32* unicodeString)
 	return characterCount;
 }
 
-Result::Enum UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, vector<utf8>& unicodeString)
+Result UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, vector<utf8>& unicodeString)
 {
-	Result::Enum result = Result::Success;
+	Result result = Result::Success;
 	uint32 stringLength = static_cast<uint32>(strlen(asciiString));
 
 	if (isAsciiChar(asciiString) == true)
@@ -158,9 +158,9 @@ Result::Enum UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, v
 	return result;
 }
 
-Result::Enum UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, vector<utf16>& unicodeString)
+Result UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, vector<utf16>& unicodeString)
 {
-	Result::Enum result = Result::Success;
+	Result result = Result::Success;
 
 	if (isAsciiChar(asciiString))
 	{
@@ -174,9 +174,9 @@ Result::Enum UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, v
 	return result;
 }
 
-Result::Enum UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, vector<utf32>& unicodeString)
+Result UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, vector<utf32>& unicodeString)
 {
-	Result::Enum result = Result::Success;
+	Result result = Result::Success;
 
 	if (isAsciiChar(asciiString))
 	{
@@ -190,15 +190,15 @@ Result::Enum UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, v
 	return result;
 }
 
-Result::Enum UnicodeConverter::convertUTF8ToUTF16(const utf8* unicodeString, vector<utf16>& unicodeStringOut)
+Result UnicodeConverter::convertUTF8ToUTF16(const utf8* /*unicodeString*/, vector<utf16>& /*unicodeStringOut*/)
 {
 	assertion(false ,  "UTF8 to UTF16 conversion not implmented");
 	return Result::UnknownError;
 }
 
-Result::Enum UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<utf32>& unicodeStringOut)
+Result UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<utf32>& unicodeStringOut)
 {
-	Result::Enum result = Result::Success;
+	Result result = Result::Success;
 
 	uint32 stringLength = static_cast<uint32>(strlen((const char*)unicodeString));
 	const utf8* currentCharacter = unicodeString;
@@ -276,15 +276,15 @@ Result::Enum UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vec
 	return result;
 }
 
-Result::Enum UnicodeConverter::convertUTF16ToUTF8(const utf16* unicodeString, vector<utf8>& unicodeStringOut)
+Result UnicodeConverter::convertUTF16ToUTF8(const utf16* /*unicodeString*/, vector<utf8>& /*unicodeStringOut*/)
 {
 	assertion(false ,  "UTF16 to UTF8 conversion not implmented");
 	return Result::UnknownError;
 }
 
-Result::Enum UnicodeConverter::convertUTF16ToUTF32(const utf16* unicodeString, vector<utf32>& unicodeStringOut)
+Result UnicodeConverter::convertUTF16ToUTF32(const utf16* unicodeString, vector<utf32>& unicodeStringOut)
 {
-	Result::Enum result = Result::Success;
+	Result result = Result::Success;
 
 	const uint16* currentCharacter = unicodeString;
 
@@ -341,13 +341,13 @@ Result::Enum UnicodeConverter::convertUTF16ToUTF32(const utf16* unicodeString, v
 	return result;
 }
 
-Result::Enum UnicodeConverter::convertUTF32ToUTF8(const utf32* unicodeString, vector<utf8>& unicodeStringOut)
+Result UnicodeConverter::convertUTF32ToUTF8(const utf32* /*unicodeString*/, vector<utf8>& /*unicodeStringOut*/)
 {
 	assertion(false ,  "UTF32 to UTF8 conversion not implmented");
 	return Result::UnknownError;
 }
 
-Result::Enum UnicodeConverter::convertUTF32ToUTF16(const utf32* unicodeString, vector<utf16>& unicodeStringOut)
+Result UnicodeConverter::convertUTF32ToUTF16(const utf32* /*unicodeString*/, vector<utf16>& /*unicodeStringOut*/)
 {
 	assertion(false ,  "UTF32 to UTF16 conversion not implmented");
 	return Result::UnknownError;
@@ -508,7 +508,7 @@ bool UnicodeConverter::isValidUnicode(const utf32* unicodeString)
 	return true;
 }
 
-bool UnicodeConverter::isValidCodePoint(utf32 codePoint)
+ bool UnicodeConverter::isValidCodePoint(utf32 codePoint)
 {
 	// Check that this value isn't a UTF16 surrogate mask.
 	if (codePoint >= UTF16_SURG_H_MARK && codePoint <= UTF16_SURG_L_END)

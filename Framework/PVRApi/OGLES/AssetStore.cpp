@@ -37,10 +37,10 @@ inline bool getPvrFilename(const StringHash& filename, StringHash& outNewName)
 
 bool AssetStore::effectOnLoadTexture(const string& textureName, api::TextureView& outTex2d)
 {
-	return getTextureWithCaching(assetProvider->getGraphicsContext(), textureName, &outTex2d, NULL);
+	return getTextureWithCaching(contextProvider->getGraphicsContext(), textureName, &outTex2d, NULL);
 }
 
-bool AssetStore::loadTexture(GraphicsContext& context, const StringHash& filename, assets::TextureFileFormat::Enum format,
+bool AssetStore::loadTexture(GraphicsContext& context, const StringHash& filename, assets::TextureFileFormat format,
                              bool forceLoad, api::TextureView* outTexture, assets::TextureHeader* outDescriptor)
 {
 	assets::Texture tempTexture;
@@ -87,10 +87,10 @@ bool AssetStore::loadTexture(GraphicsContext& context, const StringHash& filenam
 		}
 	}
 
-	pvr::Result::Enum result = assets::textureLoad(assetStream, format, tempTexture);
+	pvr::Result result = assets::textureLoad(assetStream, format, tempTexture);
 	if (result == Result::Success)
 	{
-		result = pvr::utils::textureUpload(assetProvider->getGraphicsContext(), tempTexture, tex);
+		result = pvr::utils::textureUpload(contextProvider->getGraphicsContext(), tempTexture, tex);
 	}
 	if (result != Result::Success)
 	{

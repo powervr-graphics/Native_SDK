@@ -89,28 +89,37 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">pvr::api::impl::Fence_ Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Fence can be used by the host to determine completion of execution of subimmisions to queues. The host can be polled for the fence signal.  
+ <a href="classpvr_1_1api_1_1impl_1_1_fence__.html#details">More...</a></p>
 <div class="dynheader">
 Inheritance diagram for pvr::api::impl::Fence_:</div>
 <div class="dyncontent">
 <div class="center"><img src="classpvr_1_1api_1_1impl_1_1_fence____inherit__graph.png" border="0" usemap="#pvr_1_1api_1_1impl_1_1_fence___inherit__map" alt="Inheritance graph"/></div>
 <map name="pvr_1_1api_1_1impl_1_1_fence___inherit__map" id="pvr_1_1api_1_1impl_1_1_fence___inherit__map">
-<area shape="rect" id="node2" href="classpvr_1_1api_1_1vulkan_1_1_fence_vk__.html" title="pvr::api::vulkan::FenceVk_" alt="" coords="5,80,179,107"/>
+<area shape="rect" id="node2" href="classpvr_1_1api_1_1vulkan_1_1_fence_vk__.html" title="Vulkan implementation of the Fence class. " alt="" coords="5,80,179,107"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab477303228ed8a99df5eaa8e2790c0ad"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_fence__.html#ab477303228ed8a99df5eaa8e2790c0ad">~Fence_</a> ()</td></tr>
+<tr class="memdesc:ab477303228ed8a99df5eaa8e2790c0ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">dtor  <a href="#ab477303228ed8a99df5eaa8e2790c0ad">More...</a><br/></td></tr>
 <tr class="separator:ab477303228ed8a99df5eaa8e2790c0ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a837c6394f463a7b4111dbcc5d3a5d704"><td class="memItemLeft" align="right" valign="top">const GraphicsContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_fence__.html#a837c6394f463a7b4111dbcc5d3a5d704">getContext</a> () const </td></tr>
+<tr class="memdesc:a837c6394f463a7b4111dbcc5d3a5d704"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns const reference to the graphics context who own this resource.  <a href="#a837c6394f463a7b4111dbcc5d3a5d704">More...</a><br/></td></tr>
 <tr class="separator:a837c6394f463a7b4111dbcc5d3a5d704"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8a0c7652fcebe21ddb50ede601b6db3"><td class="memItemLeft" align="right" valign="top">GraphicsContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_fence__.html#ad8a0c7652fcebe21ddb50ede601b6db3">getContext</a> ()</td></tr>
+<tr class="memdesc:ad8a0c7652fcebe21ddb50ede601b6db3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns reference to the graphics context who own this resource.  <a href="#ad8a0c7652fcebe21ddb50ede601b6db3">More...</a><br/></td></tr>
 <tr class="separator:ad8a0c7652fcebe21ddb50ede601b6db3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37a8f2be7a513c408543c0f55b1c6bfd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_fence__.html#a37a8f2be7a513c408543c0f55b1c6bfd">isSignalled</a> ()</td></tr>
+<tr class="memdesc:a37a8f2be7a513c408543c0f55b1c6bfd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if this fence is signaled.  <a href="#a37a8f2be7a513c408543c0f55b1c6bfd">More...</a><br/></td></tr>
 <tr class="separator:a37a8f2be7a513c408543c0f55b1c6bfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a988a70eaf8cf5b55eeeb084f841874a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_fence__.html#a988a70eaf8cf5b55eeeb084f841874a6">reset</a> ()</td></tr>
+<tr class="memdesc:a988a70eaf8cf5b55eeeb084f841874a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset this fence.  <a href="#a988a70eaf8cf5b55eeeb084f841874a6">More...</a><br/></td></tr>
 <tr class="separator:a988a70eaf8cf5b55eeeb084f841874a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2cfd346f4f624ef7561d06919f1a07f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_fence__.html#ac2cfd346f4f624ef7561d06919f1a07f">wait</a> (uint64 timeoutNanos=uint64(-1))</td></tr>
+<tr class="memdesc:ac2cfd346f4f624ef7561d06919f1a07f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host to wait for this fence to be signaled.  <a href="#ac2cfd346f4f624ef7561d06919f1a07f">More...</a><br/></td></tr>
 <tr class="separator:ac2cfd346f4f624ef7561d06919f1a07f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
@@ -123,7 +132,10 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:ae4ff7dde32b94fcdd16fbde5c66c0b26"><td class="memItemLeft" align="right" valign="top">GraphicsContext&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_fence__.html#ae4ff7dde32b94fcdd16fbde5c66c0b26">context</a></td></tr>
 <tr class="separator:ae4ff7dde32b94fcdd16fbde5c66c0b26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Fence can be used by the host to determine completion of execution of subimmisions to queues. The host can be polled for the fence signal. </p>
+<hr/>
+ </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a371388b842eea4cd4e8ecaa462aaad36"></a>
 <div class="memitem">
 <div class="memproto">
@@ -169,6 +181,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>dtor </p>
+<hr/>
+ 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -193,6 +208,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns const reference to the graphics context who own this resource. </p>
+<hr/>
+ 
 </div>
 </div>
 <a class="anchor" id="ad8a0c7652fcebe21ddb50ede601b6db3"></a>
@@ -216,6 +234,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns reference to the graphics context who own this resource. </p>
+<hr/>
+ 
 </div>
 </div>
 <a class="anchor" id="a37a8f2be7a513c408543c0f55b1c6bfd"></a>
@@ -231,6 +252,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Return true if this fence is signaled. </p>
+<hr/>
+ 
 </div>
 </div>
 <a class="anchor" id="a988a70eaf8cf5b55eeeb084f841874a6"></a>
@@ -246,6 +270,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Reset this fence. </p>
+<hr/>
+ 
 </div>
 </div>
 <a class="anchor" id="ac2cfd346f4f624ef7561d06919f1a07f"></a>
@@ -261,6 +288,15 @@ Protected Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Host to wait for this fence to be signaled. </p>
+<hr/>
+ <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">timeoutNanos</td><td>Time out period in nanoseconds </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

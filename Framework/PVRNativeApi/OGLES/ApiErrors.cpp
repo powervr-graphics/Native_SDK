@@ -1,8 +1,8 @@
 /*!*********************************************************************************************************************
-\file         PVRApi\OGLES\ApiErrors.cpp
+\file         PVRNativeApi\OGLES\ApiErrors.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief		Contains implementation for the ApiErrors utilities
+\brief    Contains implementation for the ApiErrors utilities
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
 #include "PVRNativeApi/ApiErrors.h"
@@ -63,7 +63,7 @@ bool logApiError(const char* note, Logger::Severity severity)
 	return false;
 }
 
-bool succeeded(Result::Enum res)
+bool succeeded(Result res)
 {
 	if (res == Result::Success)
 	{

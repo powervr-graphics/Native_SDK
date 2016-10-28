@@ -27,8 +27,6 @@ public:
 
 	virtual bool isSupportedFile(Stream& assetStream);
 	virtual std::vector<string> getSupportedFileExtensions();
-	virtual std::string getReaderName();
-	virtual std::string getReaderVersion();
 private:
 	virtual bool readNextAsset(Texture& asset);
 	bool m_texturesToLoad;

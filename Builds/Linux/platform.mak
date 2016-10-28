@@ -128,8 +128,8 @@ PVRNativeVulkan:
 	$(MAKE) -C $(SDKDIR)/Framework/PVRNativeApi/Vulkan/Build/LinuxGeneric/
 PVRVulkanGlue:
 	$(MAKE) -C $(SDKDIR)/Framework/PVRPlatformGlue/Vulkan/Build/LinuxGeneric/
-PVRNativeGlesRayTracing:
-	$(MAKE) -C $(SDKDIR)/Framework/PVRNativeApi/OGLESRayTracing/Build/LinuxGeneric/
+PVRNativeGlesRT:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRNativeApi/OGLESRT/Build/LinuxGeneric/
 PVRNativeGles:
 	$(MAKE) -C $(SDKDIR)/Framework/PVRNativeApi/OGLES/Build/LinuxGeneric/
 PVREgl:
@@ -153,8 +153,8 @@ CLEAN_PVRNativeVulkan:
 	$(MAKE) clean -C $(SDKDIR)/Framework/PVRNativeApi/Vulkan/Build/LinuxGeneric/
 CLEAN_PVRVulkanGlue:
 	$(MAKE) clean -C $(SDKDIR)/Framework/PVRPlatformGlue/Vulkan/Build/LinuxGeneric/
-CLEAN_PVRNativeGlesRayTracing:
-	$(MAKE) clean -C $(SDKDIR)/Framework/PVRNativeApi/OGLESRayTracing/Build/LinuxGeneric/
+CLEAN_PVRNativeGlesRT:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRNativeApi/OGLESRT/Build/LinuxGeneric/
 CLEAN_PVRNativeGles:
 	$(MAKE) clean -C $(SDKDIR)/Framework/PVRNativeApi/OGLES/Build/LinuxGeneric/
 CLEAN_PVREgl:

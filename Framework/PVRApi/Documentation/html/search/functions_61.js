@@ -7,6 +7,7 @@ var searchData=
   ['addcolorinfo',['addColorInfo',['../structpvr_1_1api_1_1_render_pass_create_param.html#a19f3270e2eb5cc311c2ccf018d9269ea',1,'pvr::api::RenderPassCreateParam']]],
   ['adddescriptorinfo',['addDescriptorInfo',['../structpvr_1_1api_1_1_descriptor_pool_create_param.html#ae49a21f5942cb6753786f9101cb55234',1,'pvr::api::DescriptorPoolCreateParam']]],
   ['adddescsetlayout',['addDescSetLayout',['../structpvr_1_1api_1_1_pipeline_layout_create_param.html#a0e211368323b4a10128bed2ce2407b6a',1,'pvr::api::PipelineLayoutCreateParam']]],
+  ['addentriespacked',['addEntriesPacked',['../classpvr_1_1utils_1_1_structured_memory_view.html#ab5390409f112319363cd1ca0faebb155',1,'pvr::utils::StructuredMemoryView']]],
   ['addentryatoffset',['addEntryAtOffset',['../classpvr_1_1utils_1_1_structured_memory_view.html#a57c6482e2a325047b3f53c0cf830d0ed',1,'pvr::utils::StructuredMemoryView']]],
   ['addentrypacked',['addEntryPacked',['../classpvr_1_1utils_1_1_structured_memory_view.html#a0f701c7ed4b957d23a0648f811b6616e',1,'pvr::utils::StructuredMemoryView']]],
   ['addstate',['addState',['../structpvr_1_1api_1_1gles_1_1_graphics_state_container.html#a407d33a1132731c1b1d41784268a035a',1,'pvr::api::gles::GraphicsStateContainer']]],

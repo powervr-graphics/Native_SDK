@@ -13,7 +13,7 @@
 
 namespace pvr {
 //Set the default message handler creation to be the basic CPVRMessenger class.
-system::ConsoleMessenger Logger::m_defaultMessageHandler = system::ConsoleMessenger();
+platform::ConsoleMessenger Logger::m_defaultMessageHandler = platform::ConsoleMessenger();
 
 Logger Log;
 

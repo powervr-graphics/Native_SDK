@@ -11,7 +11,7 @@
 #include "PVRAssets/Texture/TextureHeader.h"
 #include "PVRAssets/Texture/TextureFormats.h"
 #include "PVRAssets/FileIO/FileDefinesDDS.h"
-#include "PVRAssets/Texture/PixelFormat.h"
+#include "PVRAssets/PixelFormat.h"
 
 using std::string;
 using std::map;
@@ -55,7 +55,7 @@ TextureHeaderWithMetaData::TextureHeaderWithMetaData(Header fileHeader, uint32 m
 	}
 }
 
-const TextureMetaData::AxisOrientation TextureHeaderWithMetaData::getOrientation(TextureMetaData::Axis axis) const
+TextureMetaData::AxisOrientation TextureHeaderWithMetaData::getOrientation(TextureMetaData::Axis axis) const
 {
 	//Make sure the meta block exists
 	MetaDataMapType::const_iterator foundIdentifer = m_metaDataMap.find(Header::PVRv3);
@@ -72,7 +72,7 @@ const TextureMetaData::AxisOrientation TextureHeaderWithMetaData::getOrientation
 	return (TextureMetaData::AxisOrientation)0; //Default is the flag values.
 }
 
-const bool TextureHeaderWithMetaData::isBumpMap() const
+bool TextureHeaderWithMetaData::isBumpMap() const
 {
 	//Make sure the meta block exists
 	MetaDataMapType::const_iterator found = m_metaDataMap.find(Header::PVRv3);
@@ -238,7 +238,7 @@ bool TextureHeaderWithMetaData::hasMetaData(uint32 fourCC, uint32 key) const
 	return false;
 }
 
-const map<uint32, map<uint32, TextureMetaData> >* const TextureHeaderWithMetaData::getMetaDataMap() const
+const map<uint32, map<uint32, TextureMetaData>/**/>* TextureHeaderWithMetaData::getMetaDataMap() const
 {
 	return &m_metaDataMap;
 }
@@ -305,14 +305,14 @@ void TextureHeaderWithMetaData::setOrientation(TextureMetaData::AxisOrientation 
 
 void TextureHeaderWithMetaData::setBumpMap(float bumpScale, string bumpOrder)
 {
-    if(bumpOrder.find_first_not_of("xyzh") != std::string::npos)
-    {
-        pvr::Log("Invalid bumpmap order string");
-        assertion(false ,  "Invalid bumpmap order string");
-        return;
-    }
+	if (bumpOrder.find_first_not_of("xyzh") != std::string::npos)
+	{
+		pvr::Log("Invalid bumpmap order string");
+		assertion(false ,  "Invalid bumpmap order string");
+		return;
+	}
 
-    //Get a reference to the meta data block.
+	//Get a reference to the meta data block.
 	TextureMetaData& bumpMetaData = m_metaDataMap[Header::PVRv3][TextureMetaData::IdentifierBumpData];
 
 	//Check if it's already been set or not.
@@ -356,12 +356,12 @@ void TextureHeaderWithMetaData::setTextureAtlas(const float32* const textureAtla
 void TextureHeaderWithMetaData::setCubeMapOrder(string cubeMapOrder)
 {
 	//Get a reference to the meta data block.
-    if(cubeMapOrder.find_first_not_of("xXyYzZ") != std::string::npos)
-    {
-        pvr::Log("Invalid cubemap order string");
-        
-        return;
-    }
+	if (cubeMapOrder.find_first_not_of("xXyYzZ") != std::string::npos)
+	{
+		pvr::Log("Invalid cubemap order string");
+
+		return;
+	}
 	TextureMetaData& cubeOrderMetaData = m_metaDataMap[Header::PVRv3][TextureMetaData::IdentifierCubeMapOrder];
 
 	//Check if it's already been set or not.
@@ -371,7 +371,7 @@ void TextureHeaderWithMetaData::setCubeMapOrder(string cubeMapOrder)
 	}
 
 	cubeOrderMetaData = TextureMetaData(Header::PVRv3, TextureMetaData::IdentifierCubeMapOrder,
-                                        (std::min)((uint32)cubeMapOrder.length(), 6u), reinterpret_cast<const byte*>(cubeMapOrder.data()));
+	                                    (std::min)((uint32)cubeMapOrder.length(), 6u), reinterpret_cast<const byte*>(cubeMapOrder.data()));
 
 	//Increment the meta data size.
 	m_header.metaDataSize += cubeOrderMetaData.getTotalSizeInMemory();

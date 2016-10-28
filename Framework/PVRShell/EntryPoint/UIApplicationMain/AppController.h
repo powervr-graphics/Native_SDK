@@ -15,8 +15,8 @@
 @interface AppController : NSObject <UIApplicationDelegate>
 {
 	NSTimer*            mainLoopTimer;	//!< timer for the main loop
-    pvr::system::StateMachine*  stateMachine; //!< The StateMachine powering the pvr::Shell
-	pvr::system::CommandLineParser    commandLine; //!< The command line options passed on app launch
+	pvr::platform::StateMachine*  stateMachine; //!< The StateMachine powering the pvr::Shell
+	pvr::platform::CommandLineParser    commandLine; //!< The command line options passed on app launch
 }
 
 @end

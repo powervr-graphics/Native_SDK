@@ -1,3 +1,10 @@
+/*!*********************************************************************************************************************
+\file         PVRApi\OGLES\SamplerGles.h
+\author       PowerVR by Imagination, Developer Technology Team
+\copyright    Copyright (c) Imagination Technologies Limited.
+\brief         OpenGL ES 2+ implementation of the Sampler class.
+***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/ApiObjects/Sampler.h"
 #include "PVRApi/OGLES/ContextGles.h"
@@ -31,3 +38,4 @@ typedef RefCountedResource<gles::SamplerGles_> SamplerGles;
 }
 }
 }
+//!\endcond

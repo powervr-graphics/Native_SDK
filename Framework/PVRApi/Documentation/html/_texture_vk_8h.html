@@ -91,13 +91,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>Contains Vulkan specific implementation of the Texture class. Use only if directly using Vulkan calls. Provides the definitions allowing to move from the Framework object Texture2D to the underlying Vulkan Texture.  
+<a href="#details">More...</a></p>
+
 <p><a href="_texture_vk_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1vulkan_1_1_texture_store_vk__.html">pvr::api::vulkan::TextureStoreVk_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1vulkan_1_1_texture_store_vk__.html" title="TextureStoreVk_ implementation that wraps the Vulkan Texture object. ">TextureStoreVk_</a> implementation that wraps the Vulkan Texture object.  <a href="classpvr_1_1api_1_1vulkan_1_1_texture_store_vk__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1vulkan_1_1_texture_view_vk__.html">pvr::api::vulkan::TextureViewVk_</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1api_1_1vulkan_1_1_texture_view_vk__.html" title="TextureViewVk_ implementation that wraps the Vulkan Texture View object. ">TextureViewVk_</a> implementation that wraps the Vulkan Texture View object.  <a href="classpvr_1_1api_1_1vulkan_1_1_texture_view_vk__.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -142,14 +147,19 @@ Typedefs</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a20f98e3db063005ca492439e2f43decf"><td class="memItemLeft" align="right" valign="top">HTexture&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html#a20f98e3db063005ca492439e2f43decf">pvr::native::createNativeHandle</a> (const api::TextureStore &amp;texture)</td></tr>
-<tr class="memdesc:a20f98e3db063005ca492439e2f43decf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the OpenGL ES texture object underlying a PVRApi Texture object.  <a href="#a20f98e3db063005ca492439e2f43decf">More...</a><br/></td></tr>
+<tr class="memdesc:a20f98e3db063005ca492439e2f43decf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Vulkan texture object underlying a PVRApi Texture object.  <a href="#a20f98e3db063005ca492439e2f43decf">More...</a><br/></td></tr>
 <tr class="separator:a20f98e3db063005ca492439e2f43decf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add1dd01bc7d38278c725e1cce1853a2d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_texture_vk_8h.html#add1dd01bc7d38278c725e1cce1853a2d">PVR_DECLARE_NATIVE_CAST</a> (TextureStore)</td></tr>
 <tr class="separator:add1dd01bc7d38278c725e1cce1853a2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c510d29d427e141f772de166cc26157"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_texture_vk_8h.html#a8c510d29d427e141f772de166cc26157">PVR_DECLARE_NATIVE_CAST</a> (TextureView)</td></tr>
 <tr class="separator:a8c510d29d427e141f772de166cc26157"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Contains Vulkan specific implementation of the Texture class. Use only if directly using Vulkan calls. Provides the definitions allowing to move from the Framework object Texture2D to the underlying Vulkan Texture. </p>
+<hr/>
+<dl class="section author"><dt>Author</dt><dd>PowerVR by Imagination, Developer Technology Team </dd></dl>
+<dl class="section user"><dt>Copyright:</dt><dd>Copyright (c) Imagination Technologies Limited. </dd></dl>
+</div><h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="add1dd01bc7d38278c725e1cce1853a2d"></a>
 <div class="memitem">
 <div class="memproto">

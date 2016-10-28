@@ -55,6 +55,11 @@ $(PLAT_FRAMEWORKLIBPATH)/$(OUTNAME): $(PLAT_OBJPATH)/$(OUTNAME)
 $(PLAT_OBJPATH)/$(OUTNAME): $(OBJECTS)
 	$(PLAT_AR) -r $@ $(OBJECTS)
 
+$(PLAT_OBJPATH)/BuildTemp/External/%.o: ../../../../External/%.cpp
+	@mkdir -p $(@D)
+	$(PLAT_CPP) $(PLAT_CPPFLAGS) $(PLAT_CFLAGS) $(INCLUDES) -MF"$(@:.o=.d)" -MG -MM -MP -MT"$(@:.o=.d)" -MT"$@" "$<"
+	$(PLAT_CPP) -c $(PLAT_CPPFLAGS) $(PLAT_CFLAGS) $(INCLUDES)  $< -o$@
+
 $(PLAT_OBJPATH)/BuildTemp/%.o: %.cpp
 	@mkdir -p $(@D)
 	$(PLAT_CPP) $(PLAT_CPPFLAGS) $(PLAT_CFLAGS) $(INCLUDES) -MF"$(@:.o=.d)" -MG -MM -MP -MT"$(@:.o=.d)" -MT"$@" "$<"

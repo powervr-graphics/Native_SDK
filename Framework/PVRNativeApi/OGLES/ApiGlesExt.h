@@ -9,9 +9,9 @@
 
 // GL_EXT_multi_draw_arrays
 typedef void (PVR_APIENTRY* PROC_EXT_glMultiDrawElementsEXT)(GLenum mode, const GLsizei* count, GLenum type,
-        const GLvoid** indices, GLsizei primcount);
+    const GLvoid** indices, GLsizei primcount);
 typedef void (PVR_APIENTRY* PROC_EXT_glMultiDrawArraysEXT)(GLenum mode, const GLint* first, const GLsizei* count,
-        GLsizei primcount);
+    GLsizei primcount);
 
 // GL_EXT_discard_framebuffer
 typedef void (PVR_APIENTRY* PROC_EXT_glDiscardFramebufferEXT)(GLenum target, GLsizei numAttachments, const GLenum* attachments);
@@ -48,32 +48,32 @@ typedef void (PVR_APIENTRY* PROC_EXT_glFramebufferTexture2DMultisampleIMG)(GLenu
 // AMD_performance_monitor
 typedef void (PVR_APIENTRY* PROC_EXT_glGetPerfMonitorGroupsAMD)(GLint* numGroups, GLsizei groupsSize, GLuint* groups);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetPerfMonitorCountersAMD)(GLuint group, GLint* numCounters, GLint* maxActiveCounters,
-        GLsizei counterSize, GLuint* counters);
+    GLsizei counterSize, GLuint* counters);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetPerfMonitorGroupStringAMD)(GLuint group, GLsizei bufSize, GLsizei* length,
-        char* groupString);
+    char* groupString);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetPerfMonitorCounterStringAMD)(GLuint group, GLuint counter, GLsizei bufSize,
-        GLsizei* length, char* counterString);
+    GLsizei* length, char* counterString);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetPerfMonitorCounterInfoAMD)(GLuint group, GLuint counter, GLenum pname, GLvoid* data);
 typedef void (PVR_APIENTRY* PROC_EXT_glGenPerfMonitorsAMD)(GLsizei n, GLuint* monitors);
 typedef void (PVR_APIENTRY* PROC_EXT_glDeletePerfMonitorsAMD)(GLsizei n, GLuint* monitors);
 typedef void (PVR_APIENTRY* PROC_EXT_glSelectPerfMonitorCountersAMD)(GLuint monitor, GLboolean enable, GLuint group,
-        GLint numCounters, GLuint* countersList);
+    GLint numCounters, GLuint* countersList);
 typedef void (PVR_APIENTRY* PROC_EXT_glBeginPerfMonitorAMD)(GLuint monitor);
 typedef void (PVR_APIENTRY* PROC_EXT_glEndPerfMonitorAMD)(GLuint monitor);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetPerfMonitorCounterDataAMD)(GLuint monitor, GLenum pname, GLsizei dataSize, GLuint* data,
-        GLint* bytesWritten);
+    GLint* bytesWritten);
 
 // GL_ANGLE_framebuffer_blit
 typedef void (PVR_APIENTRY* PROC_EXT_glBlitFramebufferANGLE)(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0,
-        GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+    GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
 
 // GL_ANGLE_framebuffer_multisample
 typedef void (PVR_APIENTRY* PROC_EXT_glRenderbufferStorageMultisampleANGLE)(GLenum target, GLsizei samples, GLenum internalformat,
-        GLsizei width, GLsizei height);
+    GLsizei width, GLsizei height);
 
 // GL_APPLE_framebuffer_multisample
 typedef void (PVR_APIENTRY* PROC_EXT_glRenderbufferStorageMultisampleAPPLE)(GLenum target, GLsizei samples, GLenum internalformat,
-        GLsizei width, GLsizei height);
+    GLsizei width, GLsizei height);
 typedef void (PVR_APIENTRY* PROC_EXT_glResolveMultisampleFramebufferAPPLE)(void);
 
 // GL_NV_coverage_sample
@@ -83,7 +83,7 @@ typedef void (PVR_APIENTRY* PROC_EXT_glCoverageOperationNV)(GLenum operation);
 // GL_QCOM_driver_control
 typedef void (PVR_APIENTRY* PROC_EXT_glGetDriverControlsQCOM)(GLint* num, GLsizei size, GLuint* driverControls);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetDriverControlStringQCOM)(GLuint driverControl, GLsizei bufSize, GLsizei* length,
-        char* driverControlString);
+    char* driverControlString);
 typedef void (PVR_APIENTRY* PROC_EXT_glEnableDriverControlQCOM)(GLuint driverControl);
 typedef void (PVR_APIENTRY* PROC_EXT_glDisableDriverControlQCOM)(GLuint driverControl);
 
@@ -91,14 +91,14 @@ typedef void (PVR_APIENTRY* PROC_EXT_glDisableDriverControlQCOM)(GLuint driverCo
 typedef void (PVR_APIENTRY* PROC_EXT_glExtGetTexturesQCOM)(GLuint* textures, GLint maxTextures, GLint* numTextures);
 typedef void (PVR_APIENTRY* PROC_EXT_glExtGetBuffersQCOM)(GLuint* buffers, GLint maxBuffers, GLint* numBuffers);
 typedef void (PVR_APIENTRY* PROC_EXT_glExtGetRenderbuffersQCOM)(GLuint* renderbuffers, GLint maxRenderbuffers,
-        GLint* numRenderbuffers);
+    GLint* numRenderbuffers);
 typedef void (PVR_APIENTRY* PROC_EXT_glExtGetFramebuffersQCOM)(GLuint* framebuffers, GLint maxFramebuffers,
-        GLint* numFramebuffers);
+    GLint* numFramebuffers);
 typedef void (PVR_APIENTRY* PROC_EXT_glExtGetTexLevelParameterivQCOM)(GLuint texture, GLenum face, GLint level, GLenum pname,
-        GLint* params);
+    GLint* params);
 typedef void (PVR_APIENTRY* PROC_EXT_glExtTexObjectStateOverrideiQCOM)(GLenum target, GLenum pname, GLint param);
 typedef void (PVR_APIENTRY* PROC_EXT_glExtGetTexSubImageQCOM)(GLenum target, GLint level, GLint xoffset, GLint yoffset,
-        GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid* texels);
+    GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid* texels);
 typedef void (PVR_APIENTRY* PROC_EXT_glExtGetBufferPointervQCOM)(GLenum target, GLvoid** params);
 
 // GL_QCOM_extended_get2
@@ -106,7 +106,7 @@ typedef void (PVR_APIENTRY* PROC_EXT_glExtGetShadersQCOM)(GLuint* shaders, GLint
 typedef void (PVR_APIENTRY* PROC_EXT_glExtGetProgramsQCOM)(GLuint* programs, GLint maxPrograms, GLint* numPrograms);
 typedef GLboolean(PVR_APIENTRY* PROC_EXT_glExtIsProgramBinaryQCOM)(GLuint program);
 typedef void (PVR_APIENTRY* PROC_EXT_glExtGetProgramBinarySourceQCOM)(GLuint program, GLenum shadertype, char* source,
-        GLint* length);
+    GLint* length);
 
 // GL_QCOM_tiled_rendering
 typedef void (PVR_APIENTRY* PROC_EXT_glStartTilingQCOM)(GLuint x, GLuint y, GLuint width, GLuint height, GLbitfield preserveMask);
@@ -114,22 +114,22 @@ typedef void (PVR_APIENTRY* PROC_EXT_glEndTilingQCOM)(GLbitfield preserveMask);
 
 // GL_OES_get_program_binary
 typedef void (PVR_APIENTRY* PROC_EXT_glGetProgramBinaryOES)(GLuint program, GLsizei bufSize, GLsizei* length,
-        GLenum* binaryFormat, GLvoid* binary);
+    GLenum* binaryFormat, GLvoid* binary);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramBinaryOES)(GLuint program, GLenum binaryFormat, const GLvoid* binary, GLint length);
 
 // GL_OES_texture_3D
 typedef void (PVR_APIENTRY* PROC_EXT_glTexImage3DOES)(GLenum target, GLint level, GLenum internalformat, GLsizei width,
-        GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
+    GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
 typedef void (PVR_APIENTRY* PROC_EXT_glTexSubImage3DOES)(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset,
-        GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid* pixels);
+    GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const GLvoid* pixels);
 typedef void (PVR_APIENTRY* PROC_EXT_glCopyTexSubImage3DOES)(GLenum target, GLint level, GLint xoffset, GLint yoffset,
-        GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height);
+    GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height);
 typedef void (PVR_APIENTRY* PROC_EXT_glCompressedTexImage3DOES)(GLenum target, GLint level, GLenum internalformat, GLsizei width,
-        GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, const GLvoid* data);
+    GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, const GLvoid* data);
 typedef void (PVR_APIENTRY* PROC_EXT_glCompressedTexSubImage3DOES)(GLenum target, GLint level, GLint xoffset, GLint yoffset,
-        GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const GLvoid* data);
+    GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const GLvoid* data);
 typedef void (PVR_APIENTRY* PROC_EXT_glFramebufferTexture3DOES)(GLenum target, GLenum attachment, GLenum textarget,
-        GLuint texture, GLint level, GLint zoffset);
+    GLuint texture, GLint level, GLint zoffset);
 
 // GL_OES_blend_equation_separate
 typedef void (PVR_APIENTRY* PROC_EXT_glBlendEquationSeparateOES)(GLenum modeRGB, GLenum modeAlpha);
@@ -145,12 +145,12 @@ typedef GLbitfield(PVR_APIENTRY* PROC_EXT_glQueryMatrixxOES)(GLfixed mantissa[16
 
 // GL_APPLE_copy_texture_levels
 typedef void (PVR_APIENTRY* PROC_EXT_glCopyTextureLevelsAPPLE)(GLuint destinationTexture, GLuint sourceTexture,
-        GLint sourceBaseLevel, GLsizei sourceLevelCount);
+    GLint sourceBaseLevel, GLsizei sourceLevelCount);
 
 
 // GL_APPLE_framebuffer_multisample
 typedef void (PVR_APIENTRY* PROC_EXT_glRenderbufferStorageMultisampleAPPLE)(GLenum target, GLsizei samples, GLenum internalformat,
-        GLsizei width, GLsizei height);
+    GLsizei width, GLsizei height);
 typedef void (PVR_APIENTRY* PROC_EXT_glResolveMultisampleFramebufferAPPLE)(void);
 
 // GL_APPLE_sync
@@ -161,7 +161,7 @@ typedef GLenum(PVR_APIENTRY* PROC_EXT_glClientWaitSyncAPPLE)(GLsync sync, GLbitf
 typedef void (PVR_APIENTRY* PROC_EXT_glWaitSyncAPPLE)(GLsync sync, GLbitfield flags, GLuint64 timeout);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetInteger64vAPPLE)(GLenum pname, GLint64* params);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetSyncivAPPLE)(GLsync sync, GLenum pname, GLsizei bufSize, GLsizei* length,
-        GLint* values);
+    GLint* values);
 
 // GL_EXT_map_buffer_range
 typedef void* (PVR_APIENTRY* PROC_EXT_glMapBufferRangeEXT)(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
@@ -169,54 +169,54 @@ typedef void (PVR_APIENTRY* PROC_EXT_glFlushMappedBufferRangeEXT)(GLenum target,
 
 // GL_EXT_multisampled_render_to_texture
 typedef void (PVR_APIENTRY* PROC_EXT_glRenderbufferStorageMultisampleEXT)(GLenum target, GLsizei samples, GLenum internalformat,
-        GLsizei width, GLsizei height);
+    GLsizei width, GLsizei height);
 typedef void (PVR_APIENTRY* PROC_EXT_glFramebufferTexture2DMultisampleEXT)(GLenum target, GLenum attachment, GLenum textarget,
-        GLuint texture, GLint level, GLsizei samples);
+    GLuint texture, GLint level, GLsizei samples);
 
 // GL_EXT_robustness
 typedef GLenum(PVR_APIENTRY* PROC_EXT_glGetGraphicsResetStatusEXT)(void);
 typedef void (PVR_APIENTRY* PROC_EXT_glReadnPixelsEXT)(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format,
-        GLenum type, GLsizei bufSize, void* data);
+    GLenum type, GLsizei bufSize, void* data);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetnUniformfvEXT)(GLuint program, GLint location, GLsizei bufSize, float* params);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetnUniformivEXT)(GLuint program, GLint location, GLsizei bufSize, GLint* params);
 
 // GL_EXT_texture_storage
 typedef void (PVR_APIENTRY* PROC_EXT_glTexStorage1DEXT)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width);
 typedef void (PVR_APIENTRY* PROC_EXT_glTexStorage2DEXT)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width,
-        GLsizei height);
+    GLsizei height);
 typedef void (PVR_APIENTRY* PROC_EXT_glTexStorage3DEXT)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width,
-        GLsizei height, GLsizei depth);
+    GLsizei height, GLsizei depth);
 typedef void (PVR_APIENTRY* PROC_EXT_glTextureStorage1DEXT)(GLuint texture, GLenum target, GLsizei levels, GLenum internalformat,
-        GLsizei width);
+    GLsizei width);
 typedef void (PVR_APIENTRY* PROC_EXT_glTextureStorage2DEXT)(GLuint texture, GLenum target, GLsizei levels, GLenum internalformat,
-        GLsizei width, GLsizei height);
+    GLsizei width, GLsizei height);
 typedef void (PVR_APIENTRY* PROC_EXT_glTextureStorage3DEXT)(GLuint texture, GLenum target, GLsizei levels, GLenum internalformat,
-        GLsizei width, GLsizei height, GLsizei depth);
+    GLsizei width, GLsizei height, GLsizei depth);
 
 // GL_IMG_multisampled_render_to_texture
 typedef void (PVR_APIENTRY* PROC_EXT_glRenderbufferStorageMultisampleIMG)(GLenum target, GLsizei samples, GLenum internalformat,
-        GLsizei width, GLsizei height);
+    GLsizei width, GLsizei height);
 typedef void (PVR_APIENTRY* PROC_EXT_glFramebufferTexture2DMultisampleIMG)(GLenum target, GLenum attachment, GLenum textarget,
-        GLuint texture, GLint level, GLsizei samples);
+    GLuint texture, GLint level, GLsizei samples);
 
 // GL_KHR_debug
 #if !defined(GL_KHR_debug)
 typedef void (GL_APIENTRYP GLDEBUGPROCKHR)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
-        const GLchar* message, const void* userParam);
+    const GLchar* message, const void* userParam);
 #endif
 
 typedef void (PVR_APIENTRY* PROC_EXT_glDebugMessageControlKHR)(GLenum source, GLenum type, GLenum severity, GLsizei count,
-        const GLuint* ids, GLboolean enabled);
+    const GLuint* ids, GLboolean enabled);
 typedef void (PVR_APIENTRY* PROC_EXT_glDebugMessageInsertKHR)(GLenum source, GLenum type, GLuint id, GLenum severity,
-        GLsizei length, const GLchar* buf);
+    GLsizei length, const GLchar* buf);
 typedef void (PVR_APIENTRY* PROC_EXT_glDebugMessageCallbackKHR)(GLDEBUGPROCKHR callback, const void* userParam);
 typedef GLuint(PVR_APIENTRY* PROC_EXT_glGetDebugMessageLogKHR)(GLuint count, GLsizei bufsize, GLenum* sources, GLenum* types,
-        GLuint* ids, GLenum* severities, GLsizei* lengths, GLchar* messageLog);
+    GLuint* ids, GLenum* severities, GLsizei* lengths, GLchar* messageLog);
 typedef void (PVR_APIENTRY* PROC_EXT_glPushDebugGroupKHR)(GLenum source, GLuint id, GLsizei length, const GLchar* message);
 typedef void (PVR_APIENTRY* PROC_EXT_glPopDebugGroupKHR)(void);
 typedef void (PVR_APIENTRY* PROC_EXT_glObjectLabelKHR)(GLenum identifier, GLuint name, GLsizei length, const GLchar* label);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetObjectLabelKHR)(GLenum identifier, GLuint name, GLsizei bufSize, GLsizei* length,
-        GLchar* label);
+    GLchar* label);
 typedef void (PVR_APIENTRY* PROC_EXT_glObjectPtrLabelKHR)(const void* ptr, GLsizei length, const GLchar* label);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetObjectPtrLabelKHR)(const void* ptr, GLsizei bufSize, GLsizei* length, GLchar* label);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetPointervKHR)(GLenum pname, void** params);
@@ -224,21 +224,21 @@ typedef void (PVR_APIENTRY* PROC_EXT_glGetPointervKHR)(GLenum pname, void** para
 // GL_ANGLE_instanced_arrays
 typedef void (PVR_APIENTRY* PROC_EXT_glDrawArraysInstancedANGLE)(GLenum mode, GLint first, GLsizei count, GLsizei primcount);
 typedef void (PVR_APIENTRY* PROC_EXT_glDrawElementsInstancedANGLE)(GLenum mode, GLsizei count, GLenum type, const void* indices,
-        GLsizei primcount);
+    GLsizei primcount);
 typedef void (PVR_APIENTRY* PROC_EXT_glVertexAttribDivisorANGLE)(GLuint index, GLuint divisor);
 
 // GL_ANGLE_texture_usage
 typedef void (PVR_APIENTRY* PROC_EXT_glGetTranslatedShaderSourceANGLE)(GLuint shader, GLsizei bufsize, GLsizei* length,
-        GLchar* source);
+    GLchar* source);
 
 // GL_APPLE_copy_texture_levels
 typedef void (PVR_APIENTRY* PROC_EXT_glCopyTextureLevelsAPPLE)(GLuint destinationTexture, GLuint sourceTexture,
-        GLint sourceBaseLevel, GLsizei sourceLevelCount);
+    GLint sourceBaseLevel, GLsizei sourceLevelCount);
 
 // GL_EXT_debug_label
 typedef void (PVR_APIENTRY* PROC_EXT_glLabelObjectEXT)(GLenum type, GLuint object, GLsizei length, const GLchar* label);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetObjectLabelEXT)(GLenum type, GLuint object, GLsizei bufSize, GLsizei* length,
-        GLchar* label);
+    GLchar* label);
 
 // GL_EXT_debug_marker
 typedef void (PVR_APIENTRY* PROC_EXT_glInsertEventMarkerEXT)(GLsizei length, const GLchar* marker);
@@ -272,7 +272,7 @@ typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform1fEXT)(GLuint program, GLin
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform2fEXT)(GLuint program, GLint location, GLfloat x, GLfloat y);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform3fEXT)(GLuint program, GLint location, GLfloat x, GLfloat y, GLfloat z);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform4fEXT)(GLuint program, GLint location, GLfloat x, GLfloat y, GLfloat z,
-        GLfloat w);
+    GLfloat w);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform1ivEXT)(GLuint program, GLint location, GLsizei count, const GLint* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform2ivEXT)(GLuint program, GLint location, GLsizei count, const GLint* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform3ivEXT)(GLuint program, GLint location, GLsizei count, const GLint* value);
@@ -282,35 +282,35 @@ typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform2fvEXT)(GLuint program, GLi
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform3fvEXT)(GLuint program, GLint location, GLsizei count, const GLfloat* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform4fvEXT)(GLuint program, GLint location, GLsizei count, const GLfloat* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniformMatrix2fvEXT)(GLuint program, GLint location, GLsizei count,
-        GLboolean transpose, const GLfloat* value);
+    GLboolean transpose, const GLfloat* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniformMatrix3fvEXT)(GLuint program, GLint location, GLsizei count,
-        GLboolean transpose, const GLfloat* value);
+    GLboolean transpose, const GLfloat* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniformMatrix4fvEXT)(GLuint program, GLint location, GLsizei count,
-        GLboolean transpose, const GLfloat* value);
+    GLboolean transpose, const GLfloat* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glValidateProgramPipelineEXT)(GLuint pipeline);
 typedef void (PVR_APIENTRY* PROC_EXT_glGetProgramPipelineInfoLogEXT)(GLuint pipeline, GLsizei bufSize, GLsizei* length,
-        GLchar* infoLog);
+    GLchar* infoLog);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform1uiEXT)(GLuint program, GLint location, GLuint v0);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform2uiEXT)(GLuint program, GLint location, GLuint v0, GLuint v1);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform3uiEXT)(GLuint program, GLint location, GLuint v0, GLuint v1, GLuint v2);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform4uiEXT)(GLuint program, GLint location, GLuint v0, GLuint v1, GLuint v2,
-        GLuint v3);
+    GLuint v3);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform1uivEXT)(GLuint program, GLint location, GLsizei count, const GLuint* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform2uivEXT)(GLuint program, GLint location, GLsizei count, const GLuint* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform3uivEXT)(GLuint program, GLint location, GLsizei count, const GLuint* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniform4uivEXT)(GLuint program, GLint location, GLsizei count, const GLuint* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniformMatrix2x3fvEXT)(GLuint program, GLint location, GLsizei count,
-        GLboolean transpose, const GLfloat* value);
+    GLboolean transpose, const GLfloat* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniformMatrix3x2fvEXT)(GLuint program, GLint location, GLsizei count,
-        GLboolean transpose, const GLfloat* value);
+    GLboolean transpose, const GLfloat* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniformMatrix2x4fvEXT)(GLuint program, GLint location, GLsizei count,
-        GLboolean transpose, const GLfloat* value);
+    GLboolean transpose, const GLfloat* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniformMatrix4x2fvEXT)(GLuint program, GLint location, GLsizei count,
-        GLboolean transpose, const GLfloat* value);
+    GLboolean transpose, const GLfloat* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniformMatrix3x4fvEXT)(GLuint program, GLint location, GLsizei count,
-        GLboolean transpose, const GLfloat* value);
+    GLboolean transpose, const GLfloat* value);
 typedef void (PVR_APIENTRY* PROC_EXT_glProgramUniformMatrix4x3fvEXT)(GLuint program, GLint location, GLsizei count,
-        GLboolean transpose, const GLfloat* value);
+    GLboolean transpose, const GLfloat* value);
 
 // GL_QCOM_alpha_test
 typedef void (PVR_APIENTRY* PROC_EXT_glAlphaFuncQCOM)(GLenum func, GLclampf ref);
@@ -337,4 +337,32 @@ typedef void (PVR_APIENTRY* PROC_EXT_glBlendBarrierKHR)(void);
 
 // GL_OES_texture_storage_multisample_2d_array
 typedef void (GL_APIENTRYP PROC_EXT_glTexStorage3DMultisampleOES)(GLenum target, GLsizei samples, GLenum internalformat,
-        GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations);
+    GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations);
+
+// GL_OVR_multiview
+typedef void(GL_APIENTRYP PROC_EXT_glFramebufferTextureMultiviewOVR)(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint baseViewIndex, GLsizei numViews);
+
+/* PLS2 */
+typedef void (PVR_APIENTRY* PROC_EXT_glFramebufferPixelLocalStorageSize)(GLuint target, GLsizei storageSize);
+typedef void (PVR_APIENTRY* PROC_EXT_glClearPixelLocalStorageui)(GLsizei offset, GLsizei n, const GLuint* values);
+typedef void (PVR_APIENTRY* PROC_EXT_glGetFramebufferPixelLocalStorageSize)(GLuint target);
+
+/* Buffer Storage EXT */
+typedef void (PVR_APIENTRY* PROC_EXT_glBufferStorageEXT)(GLenum target, GLsizei size, const void* data, GLbitfield flags);
+
+/* GL_IMG_clear_texture */
+typedef void (PVR_APIENTRY* PROC_EXT_glClearTexImageIMG)(GLuint texture, GLint level,
+    GLenum format, GLenum type,
+    const GLvoid* data);
+typedef void (PVR_APIENTRY* PROC_EXT_glClearTexSubImageIMG)(GLuint texture, GLint level,
+    GLint xoffset, GLint yoffset, GLint zoffset,
+    GLsizei width, GLsizei height, GLsizei depth,
+    GLenum format, GLenum type,
+    const GLvoid* data);
+
+/* GL_IMG_framebuffer_downsample */
+typedef void (PVR_APIENTRY* PROC_EXT_glFramebufferTexture2DDownsampleIMG)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLuint xscale, GLuint yscale);
+typedef void (PVR_APIENTRY* PROC_EXT_glFramebufferTextureLayerDownsampleIMG)(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer, GLuint xscale, GLuint yscale);
+
+/*GL_EXT_tessellation_shader*/
+typedef void (PVR_APIENTRY* PROC_EXT_glPatchParameteriEXT)(GLenum pname, GLint val);

@@ -1,4 +1,4 @@
 <map id="pvr::api::impl::Buffer_" name="pvr::api::impl::Buffer_">
 <area shape="rect" id="node2" href="$classpvr_1_1api_1_1gles_1_1_buffer_gles__.html" title="OpenGL ES implementation of the Buffer. " alt="" coords="5,80,176,107"/>
-<area shape="rect" id="node3" href="$classpvr_1_1api_1_1vulkan_1_1_buffer_vk__.html" title="OpenGL ES implementation of the Buffer. " alt="" coords="200,80,371,107"/>
+<area shape="rect" id="node3" href="$classpvr_1_1api_1_1vulkan_1_1_buffer_vk__.html" title="Vulkan implementation of the Buffer. " alt="" coords="200,80,371,107"/>
 </map>

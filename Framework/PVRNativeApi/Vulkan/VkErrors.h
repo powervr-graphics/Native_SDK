@@ -1,5 +1,5 @@
 /*!*********************************************************************************************************************
-\file         PVRNativeApi\Vulkan\BufferUtils.h
+\file         PVRNativeApi\Vulkan\VkErrors.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Contain functions for logging vulkan errors.
@@ -11,7 +11,7 @@ namespace pvr {
 
 /*!******************************************************************************************************************************
 \brief Convert Vulkan error code to string
-\param result Vulkan error
+\param errorCode Vulkan error
 \return Error string
 ********************************************************************************************************************************/
 inline char const* vkErrorToStr(VkResult errorCode)
@@ -43,8 +43,8 @@ inline char const* vkErrorToStr(VkResult errorCode)
 
 	// suppress the warning
 	case VK_ERROR_VALIDATION_FAILED_EXT: return "VK_ERROR_VALIDATION_FAILED_EXT";
-	case VK_RESULT_RANGE_SIZE: "VK_RESULT_RANGE_SIZE";
-	case VK_RESULT_MAX_ENUM: "VK_RESULT_MAX_ENUM";
+    case VK_RESULT_RANGE_SIZE: return "VK_RESULT_RANGE_SIZE";
+    case VK_RESULT_MAX_ENUM: return "VK_RESULT_MAX_ENUM";
 	default: return ("-- ? UNKNOWN ERROR ?--");
 		break;
 	}

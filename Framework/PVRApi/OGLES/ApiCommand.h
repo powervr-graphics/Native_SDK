@@ -1,9 +1,10 @@
 /*!*********************************************************************************************************************
-\file         PVRApi\ApiCommand.h
+\file         PVRApi\OGLES\ApiCommand.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Contains the ApiCommand interface used by commands that can be enqueued in a CommandBuffer.
+\brief        Contains the ApiCommand interface used by the OpenGL ES classes representing commands that can be enqueued in a CommandBuffer.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRCore/IGraphicsContext.h"
 #include "PVRNativeApi/ApiErrors.h"
@@ -27,7 +28,7 @@ public:
 	{
 		execute_private(commandBuffer);
 #ifdef DEBUG
-		debugLogApiError(("Error logged for API command. Stacktrace:\n" + debug_commandCallSiteStackTrace).c_str());
+		debugLogApiError(debug_commandCallSiteStackTrace.c_str());
 #endif
 	}
 private:
@@ -35,3 +36,4 @@ private:
 };
 }
 }
+//!\endcond

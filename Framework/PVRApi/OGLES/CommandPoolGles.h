@@ -1,3 +1,10 @@
+/*!*********************************************************************************************************************
+\file         PVRApi/OGLES/CommandPoolGles.cpp
+\author       PowerVR by Imagination, Developer Technology Team
+\copyright    Copyright (c) Imagination Technologies Limited.
+\brief        OpenGL ES Implementation of the CommandPool class.
+***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/ApiObjects/CommandPool.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
@@ -30,3 +37,4 @@ private:
 }
 }
 }
+//!\endcond

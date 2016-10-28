@@ -69,7 +69,7 @@ inline static std::vector<VertexBindings_Name> getVertexBindingsFromEffect(const
 			  GraphicsPipelineCreateParam must be set normally.
 *******************************************************************************************************************/
 inline void createInputAssemblyFromMeshAndEffect(const assets::Mesh& mesh, assets::Effect effect,
-        api::GraphicsPipelineCreateParam& inoutDesc, uint16* outNumBuffers = NULL)
+    api::GraphicsPipelineCreateParam& inoutDesc, uint16* outNumBuffers = NULL)
 {
 	std::vector<VertexBindings_Name> bindingMap = getVertexBindingsFromEffect(effect);
 	if (outNumBuffers) { *outNumBuffers = 0; }
@@ -169,6 +169,7 @@ inline void createInputAssemblyFromMesh(const assets::Mesh& mesh, const VertexBi
 	if (outNumBuffers) { *outNumBuffers = 0; }
 	int16 current = 0;
 	//In this scenario, we will be using our own indexes instead of user provided ones, correlating them by names.
+	inoutDesc.vertexInput.clear();
 	while (current < numBindings)
 	{
 		auto attr = mesh.getVertexAttributeByName(bindingMap[current].semantic);
@@ -213,7 +214,7 @@ inline void createSingleBuffersFromMesh(GraphicsContext& context, const assets::
 		total += mesh.getDataSize(i);
 	}
 
-	outVbo = context->createBuffer((uint32)mesh.getDataSize(0), types::BufferBindingUse::VertexBuffer, types::BufferUse::DEFAULT);
+	outVbo = context->createBuffer((uint32)mesh.getDataSize(0), types::BufferBindingUse::VertexBuffer, true);
 
 	size_t current = 0;
 	for (uint32 i = 0; i < mesh.getNumDataElements(); ++i)
@@ -224,9 +225,10 @@ inline void createSingleBuffersFromMesh(GraphicsContext& context, const assets::
 
 	if (mesh.getNumFaces())
 	{
-		outIbo = context->createBuffer((uint32)mesh.getFaces().getDataSize(), types::BufferBindingUse::IndexBuffer, types::BufferUse::DEFAULT);
+		outIbo = context->createBuffer((uint32)mesh.getFaces().getDataSize(), types::BufferBindingUse::IndexBuffer, true);
 		outIbo->update((void*)mesh.getFaces().getData(), 0, mesh.getFaces().getDataSize());
 	}
+
 	else
 	{
 		outIbo.reset();
@@ -245,16 +247,16 @@ inline void createSingleBuffersFromMesh(GraphicsContext& context, const assets::
 		multiple sets of interleaved data (for example, a VBO with static and a VBO with streaming data).
 *******************************************************************************************************************/
 inline void createMultipleBuffersFromMesh(GraphicsContext& context, const assets::Mesh& mesh, std::vector<api::Buffer>& outVbos,
-        api::Buffer& outIbo)
+    api::Buffer& outIbo)
 {
 	for (uint32 i = 0; i < mesh.getNumDataElements(); ++i)
 	{
-		outVbos.push_back(context->createBuffer((uint32)mesh.getDataSize(i), types::BufferBindingUse::VertexBuffer, types::BufferUse::DEFAULT));
+		outVbos.push_back(context->createBuffer((uint32)mesh.getDataSize(i), types::BufferBindingUse::VertexBuffer, true));
 		outVbos.back()->update((void*)mesh.getData(i), 0, (uint32)mesh.getDataSize(0));
 	}
 	if (mesh.getNumFaces())
 	{
-		outIbo = context->createBuffer(mesh.getFaces().getDataSize(), types::BufferBindingUse::IndexBuffer, types::BufferUse::DEFAULT);
+		outIbo = context->createBuffer(mesh.getFaces().getDataSize(), types::BufferBindingUse::IndexBuffer, true);
 		outIbo->update((void*)mesh.getFaces().getData(), 0, mesh.getFaces().getDataSize());
 	}
 }
@@ -366,10 +368,10 @@ inline void createMultipleBuffersFromMesh(GraphicsContext& context, const assets
 *******************************************************************************************************************/
 template<typename MeshIterator_, typename VboInsertIterator_, typename IboInsertIterator_>
 inline void createSingleBuffersFromMeshes(
-    GraphicsContext& context,
-    MeshIterator_ meshIter, MeshIterator_ meshIterEnd,
-    VboInsertIterator_ outVbos,
-    IboInsertIterator_ outIbos)
+  GraphicsContext& context,
+  MeshIterator_ meshIter, MeshIterator_ meshIterEnd,
+  VboInsertIterator_ outVbos,
+  IboInsertIterator_ outIbos)
 {
 	int i = 0;
 	while (meshIter != meshIterEnd)
@@ -380,19 +382,20 @@ inline void createSingleBuffersFromMeshes(
 			total += meshIter->getDataSize(ii);
 		}
 
-		api::Buffer vbo = context->createBuffer((uint32)total, types::BufferBindingUse::VertexBuffer, types::BufferUse::DEFAULT);
+		api::Buffer vbo = context->createBuffer((uint32)total, types::BufferBindingUse::VertexBuffer, true);
 		size_t current = 0;
 		for (size_t ii = 0; ii < meshIter->getNumDataElements(); ++ii)
 		{
-			vbo->update((const void*)meshIter->getData(uint32(ii)), (uint32)current, (uint32)meshIter->getDataSize(uint32(ii)));
+			vbo->update((const void*)meshIter->getData(uint32(ii)), (uint32)current,
+			               (uint32)meshIter->getDataSize(uint32(ii)));
 			current += meshIter->getDataSize((uint32)ii);
 		}
 
 		outVbos = vbo;
 		if (meshIter->getNumFaces())
 		{
-			api::Buffer ibo = context->createBuffer(meshIter->getFaces().getDataSize(), types::BufferBindingUse::IndexBuffer, types::BufferUse::DEFAULT);
-			ibo->update((void*)meshIter->getFaces().getData(), 0, meshIter->getFaces().getDataSize());
+			api::Buffer ibo = context->createBuffer(meshIter->getFaces().getDataSize(), types::BufferBindingUse::IndexBuffer, true);
+			ibo->update((void*)meshIter->getFaces().getData(), 0,  meshIter->getFaces().getDataSize());
 			outIbos = ibo;
 		}
 		else
@@ -426,10 +429,10 @@ inline void createSingleBuffersFromMeshes(
 *******************************************************************************************************************/
 template<typename MeshIterator_, typename VboContainer_, typename IboContainer_>
 inline void createSingleBuffersFromMeshes(
-    GraphicsContext& context,
-    MeshIterator_ meshIter, MeshIterator_ meshIterEnd,
-    VboContainer_& outVbos, typename VboContainer_::iterator vbos_where,
-    IboContainer_& outIbos, typename IboContainer_::iterator ibos_where)
+  GraphicsContext& context,
+  MeshIterator_ meshIter, MeshIterator_ meshIterEnd,
+  VboContainer_& outVbos, typename VboContainer_::iterator vbos_where,
+  IboContainer_& outIbos, typename IboContainer_::iterator ibos_where)
 {
 	createSingleBuffersFromMeshes(context, meshIter, meshIterEnd,
 	                              std::inserter(outVbos, vbos_where), std::inserter(outIbos, ibos_where));
@@ -451,7 +454,7 @@ inline void createSingleBuffersFromMeshes(
 *******************************************************************************************************************/
 template<typename VboInsertIterator_, typename IboInsertIterator_>
 inline void createSingleBuffersFromModel(
-    GraphicsContext& context, const assets::Model& model, VboInsertIterator_ vbos, IboInsertIterator_ ibos)
+  GraphicsContext& context, const assets::Model& model, VboInsertIterator_ vbos, IboInsertIterator_ ibos)
 {
 	createSingleBuffersFromMeshes(context, model.beginMeshes(), model.endMeshes(), vbos, ibos);
 }
@@ -469,7 +472,7 @@ inline void createSingleBuffersFromModel(
 *******************************************************************************************************************/
 template<typename VboContainer_, typename IboContainer_>
 inline void appendSingleBuffersFromModel(
-    GraphicsContext& context, const assets::Model& model, VboContainer_& vbos, IboContainer_& ibos)
+  GraphicsContext& context, const assets::Model& model, VboContainer_& vbos, IboContainer_& ibos)
 {
 	createSingleBuffersFromMeshes(context, model.beginMeshes(), model.endMeshes(),
 	                              std::inserter(vbos, vbos.end()), std::inserter(ibos, ibos.end()));

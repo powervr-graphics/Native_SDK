@@ -4,6 +4,7 @@
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief         OpenGL ES implementation of the PVRApi Default Fbo (Frame Buffer Object).
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/ApiObjects/Fbo.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
@@ -15,20 +16,18 @@ class FboGles_ : public impl::Fbo_, public  native::HFbo_
 {
 public:
 	FboGles_(GraphicsContext& context);
-	virtual void bind(IGraphicsContext& m_context, types::FboBindingTarget::Enum types)const;
+	virtual void bind(IGraphicsContext& m_context, types::FboBindingTarget types)const;
 	void destroy();
 	const native::HFbo_&  getNativeObject() const;
 	native::HFbo_& getNativeObject();
 	bool init(const FboCreateParam& desc);
 	bool checkFboStatus();
-	const RenderPass& getRenderPass()const { return m_renderPass; }
-	RenderPass& getRenderPass() { return m_renderPass; }
+	const RenderPass& getRenderPass()const { return m_desc.renderPass; }
+	RenderPass& getRenderPass() { return m_desc.renderPass; }
 
 	virtual ~FboGles_() {}
 
-
-	api::RenderPass m_renderPass;
-	mutable types::FboBindingTarget::Enum m_target;
+	mutable types::FboBindingTarget m_target;
 	std::vector<TextureView> m_colorAttachments;
 	std::vector<TextureView> m_depthStencilAttachment;
 };
@@ -52,7 +51,7 @@ public:
 	***********************************************************************************************************************/
 	bool init(const FboCreateParam& desc)
 	{
-		m_renderPass = desc.getRenderPass();
+		m_desc = desc;
 		handle = 0;
 		return true;
 	}
@@ -63,7 +62,7 @@ public:
 	//\brief INTERNAL OGLES: Bind this fbo.
 	//\param context Bind on this context
 	//\param target Bind on this target
-	void bind(IGraphicsContext& context, types::FboBindingTarget::Enum target)const;
+	void bind(IGraphicsContext& context, types::FboBindingTarget target)const;
 
 	//\brief INTERNALCheck the status of this fbo.
 	//\return return true on success
@@ -75,3 +74,4 @@ typedef RefCountedResource<FboGles_> FboGles;
 }
 }
 }
+//!\endcond

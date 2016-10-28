@@ -19,7 +19,7 @@
 #endif
 
 namespace pvr {
-namespace system {
+namespace platform {
 class ShellOS;
 
 /*!****************************************************************************************************************
@@ -39,7 +39,7 @@ struct ShellData
 	std::auto_ptr<IPlatformContext> platformContext;
 	DisplayAttributes attributes;
 
-	system::CommandLineParser* commandLine;
+	platform::CommandLineParser* commandLine;
 
 	int32 captureFrameStart;
 	int32 captureFrameStop;
@@ -66,9 +66,9 @@ struct ShellData
 	float FPS;
 	bool showFPS;
 
-	Api::Enum contextType;
-	Api::Enum minContextType;
-	DeviceQueueType::Enum deviceQueueType;
+	Api contextType;
+	Api minContextType;
+	DeviceQueueType deviceQueueType;
 
 	ShellData() :	os(0),
 		commandLine(0),

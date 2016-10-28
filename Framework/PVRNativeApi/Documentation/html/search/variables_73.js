@@ -7,14 +7,11 @@ var searchData=
   ['setfencenv',['SetFenceNV',['../classglext.html#a03bd1945e602ce578577c3f259b93054',1,'glext']]],
   ['shaderbinary',['ShaderBinary',['../classgl.html#ad86b40c6ee173fbf0ac5bf0bf6c5fb9e',1,'gl']]],
   ['shadersource',['ShaderSource',['../classgl.html#a611d8d5b8b8b96f177d695540e09837c',1,'gl']]],
-  ['size',['size',['../structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html#a106e0791363b3f22a9f5fcc9158c3614',1,'pvr::apiutils::vulkan::DisplaySurface']]],
   ['starttilingqcom',['StartTilingQCOM',['../classglext.html#a3518b69b825b641c42b991d7912bb252',1,'glext']]],
   ['stencilfunc',['StencilFunc',['../classgl.html#af08a8f6f847d3f7ff6d64fdc7a2d9bca',1,'gl']]],
   ['stencilfuncseparate',['StencilFuncSeparate',['../classgl.html#ae867f0309b1b732308fd4c6a41f7575b',1,'gl']]],
   ['stencilmask',['StencilMask',['../classgl.html#a3d9b9d24d134883419a621272eb6ae99',1,'gl']]],
   ['stencilmaskseparate',['StencilMaskSeparate',['../classgl.html#ac315b241226c607bfeddff19be9f386c',1,'gl']]],
   ['stencilop',['StencilOp',['../classgl.html#a91592eb8fb52dc46e0eaaa79b3114c9e',1,'gl']]],
-  ['stencilopseparate',['StencilOpSeparate',['../classgl.html#aaa75b9eb9c38250ace6d76b4a016e519',1,'gl']]],
-  ['swapchain',['swapChain',['../structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html#a811bb01248df791a38ca01c793d8ea80',1,'pvr::apiutils::vulkan::DisplaySurface']]],
-  ['swapchainlength',['swapchainLength',['../structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html#a15489faef777207dc6c50f03eda08261',1,'pvr::apiutils::vulkan::DisplaySurface']]]
+  ['stencilopseparate',['StencilOpSeparate',['../classgl.html#aaa75b9eb9c38250ace6d76b4a016e519',1,'gl']]]
 ];

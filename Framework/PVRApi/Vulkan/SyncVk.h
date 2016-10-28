@@ -5,6 +5,7 @@
 \brief        Contains Vulkan specific implementation of the Fence class. Use only if directly using Vulkan calls.
 			  Provides the definitions allowing to move from the Framework object Fence to the underlying Vulkan Fence.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/ApiObjects/Sync.h"
 #include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
@@ -56,6 +57,7 @@ public:
 ***********************************************************************************************************************/
 class SemaphoreVk_ : public impl::Semaphore_, public native::HSemaphore_
 {
+public:
 	/*!*********************************************************************************************************************
 	\brief ctor. Construct this object
 	\param context The Context to be construct from
@@ -129,4 +131,4 @@ typedef RefCountedResource<FenceVk_> FenceVk;
 PVR_DECLARE_NATIVE_CAST(Event);
 PVR_DECLARE_NATIVE_CAST(Fence);
 PVR_DECLARE_NATIVE_CAST(Semaphore);
-
+//!\endcond

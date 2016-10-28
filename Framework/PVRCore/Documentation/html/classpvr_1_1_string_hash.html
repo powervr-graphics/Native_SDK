@@ -98,6 +98,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2af6ce7321e423ed31859aa94e1561ed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a2af6ce7321e423ed31859aa94e1561ed">StringHash</a> (const std::string &amp;right)</td></tr>
 <tr class="separator:a2af6ce7321e423ed31859aa94e1561ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2105b5962d5c2fcd1b4bfe1ae37e3ebe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a2105b5962d5c2fcd1b4bfe1ae37e3ebe">StringHash</a> ()</td></tr>
+<tr class="memdesc:a2105b5962d5c2fcd1b4bfe1ae37e3ebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">ctor. Default constructor  <a href="#a2105b5962d5c2fcd1b4bfe1ae37e3ebe">More...</a><br/></td></tr>
 <tr class="separator:a2105b5962d5c2fcd1b4bfe1ae37e3ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43e16f06ee8664202b7dd718fc20e0a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a43e16f06ee8664202b7dd718fc20e0a4">append</a> (const char *ptr)</td></tr>
 <tr class="memdesc:a43e16f06ee8664202b7dd718fc20e0a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a string to the end of this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares. ">StringHash</a>, recalculates hash.  <a href="#a43e16f06ee8664202b7dd718fc20e0a4">More...</a><br/></td></tr>
@@ -116,8 +117,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a715327ad92efaca955f5635f9a55d20f"><td class="memItemLeft" align="right" valign="top">const std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a715327ad92efaca955f5635f9a55d20f">getHash</a> () const </td></tr>
 <tr class="separator:a715327ad92efaca955f5635f9a55d20f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32d343d415346fbda328d08f6b4ff24e"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a32d343d415346fbda328d08f6b4ff24e">length</a> () const </td></tr>
+<tr class="memdesc:a32d343d415346fbda328d08f6b4ff24e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the length of this string hash.  <a href="#a32d343d415346fbda328d08f6b4ff24e">More...</a><br/></td></tr>
 <tr class="separator:a32d343d415346fbda328d08f6b4ff24e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbd60ca7719e38e99580a55b6b3c2b87"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#adbd60ca7719e38e99580a55b6b3c2b87">operator const std::string &amp;</a> () const </td></tr>
+<tr class="memdesc:adbd60ca7719e38e99580a55b6b3c2b87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert to string.  <a href="#adbd60ca7719e38e99580a55b6b3c2b87">More...</a><br/></td></tr>
 <tr class="separator:adbd60ca7719e38e99580a55b6b3c2b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60b94edc791b56326474ee694a527291"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a60b94edc791b56326474ee694a527291">operator!=</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a>) const </td></tr>
 <tr class="memdesc:a60b94edc791b56326474ee694a527291"><td class="mdescLeft">&#160;</td><td class="mdescRight">!= Operator. Compares hash values.  <a href="#a60b94edc791b56326474ee694a527291">More...</a><br/></td></tr>
@@ -134,6 +137,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a8fd534a38871a952542cc386412f7190"><td class="mdescLeft">&#160;</td><td class="mdescRight">== Operator. This function performs a strcmp() as it's more efficient to strcmp than to hash the string for every comparison.  <a href="#a8fd534a38871a952542cc386412f7190">More...</a><br/></td></tr>
 <tr class="separator:a8fd534a38871a952542cc386412f7190"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb6de3ef007116291a04caa802ab436f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#afb6de3ef007116291a04caa802ab436f">size</a> () const </td></tr>
+<tr class="memdesc:afb6de3ef007116291a04caa802ab436f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the length of this string hash.  <a href="#afb6de3ef007116291a04caa802ab436f">More...</a><br/></td></tr>
 <tr class="separator:afb6de3ef007116291a04caa802ab436f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16211981b40fff2b4955f2da11b7e36d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a> () const </td></tr>
 <tr class="separator:a16211981b40fff2b4955f2da11b7e36d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -226,6 +230,9 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>ctor. Default constructor </p>
+<hr/>
+ 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -436,6 +443,10 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Return the length of this string hash. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Length of this string hash </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="adbd60ca7719e38e99580a55b6b3c2b87"></a>
@@ -458,6 +469,10 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Convert to string. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>A string representatation of this hash </dd></dl>
 
 </div>
 </div>
@@ -641,6 +656,10 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Return the length of this string hash. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Length of this string hash </dd></dl>
 
 </div>
 </div>

@@ -7,7 +7,7 @@
 //!\cond NO_DOXYGEN
 #include "PVRAssets/FileIO/PFXReader.h"
 #include "PVRCore/StringFunctions.h"
-#include "PVRAssets/Texture/PixelFormat.h"
+#include "PVRAssets/PixelFormat.h"
 #include "PVRCore/FileStream.h"
 #include "PVRCore/Assert_.h"
 #include <cstring>
@@ -31,13 +31,13 @@ const uint32 g_PfxTexDepth = uint32(1 << 31);
 
 
 
-const char8* Filters[SamplerFilter::Size] =
+const char8* Filters[(uint32)SamplerFilter::Size] =
 {
 	g_NearestStr,		// eFilter_Nearest
 	g_LinearStr,		// FilterLinear
 	g_NoneStr,			// FilterNone
 };
-const char8* Wraps[SamplerWrap::Size] =
+const char8* Wraps[(uint32)SamplerWrap::Size] =
 {
 	g_RepeatStr,
 	g_MirrorRepeatStr,
@@ -53,7 +53,7 @@ const uint32 g_DfltViewPortHeight = 480;
 #define DELIM_TOKENS " \t"
 
 bool getSemanticDataFromString(assets::EffectSemanticData& pDataItem, const char8* const pszArgumentString,
-                               types::SemanticDataType::Enum eType, std::string& errorOut)
+                               types::SemanticDataType eType, std::string& errorOut)
 {
 	char8* pszString = (char8*)pszArgumentString;
 	char8* pszTmp;
@@ -140,7 +140,7 @@ bool getSemanticDataFromString(assets::EffectSemanticData& pDataItem, const char
 		}
 
 		pszTmp = pszString;
-		switch (sDfltType.internalType)
+		switch (types::EffectDefaultDataInternalType(sDfltType.internalType))
 		{
 		case types::EffectDefaultDataInternalType::Float:
 			pDataItem.dataF32[i] = (float)strtod(pszString, &pszTmp);
@@ -697,10 +697,8 @@ bool PfxReader::getEndTag(const char8* pszTagName, int32 nStartLine, int32* pnEn
 	strcpy(pszEndTag, "[/");
 	strcat(pszEndTag, pszTagName);
 	strcat(pszEndTag, "]");
-	char* bb = NULL;
 	for (uint32 i = nStartLine; i < m_context->nNumLines; i++)
 	{
-		bb = (char*)m_context->ppszEffectFile[i].c_str();
 		if (strcmp(pszEndTag, m_context->ppszEffectFile[i].c_str()) == 0)
 		{
 			*pnEndLine = i;
@@ -904,7 +902,7 @@ static bool parseTextureFlags(const char8* c_pszRemainingLine, EnumType** ppFlag
                               const char8** c_ppszFlagNames, uint32 uiNumFlagNames,
                               string& returnError, int32 iLineNum, PFXParserReadContext* m_context)
 {
-	const EnumType INVALID_TYPE = static_cast<EnumType>(0xAC1DBEEF);
+	const EnumType INVALID_TYPE = EnumType(0xAC1DBEEF);
 	uint32 uiIndex;
 	const char8* c_pszCursor;
 	const char8* c_pszResult;
@@ -1063,7 +1061,7 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 		if (Cmd == GenericSurfCommands[eCmds_Min] || Cmd == GenericSurfCommands[eCmds_Mag] || Cmd == GenericSurfCommands[eCmds_Mip])
 		{
 			ppParams    = Filters;
-			uiNumParams = SamplerFilter::Size;
+			uiNumParams = (uint32)SamplerFilter::Size;
 			bKnown      = true;
 		}
 		// --- Verbose wrapping flags
@@ -1071,7 +1069,7 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 		         || Cmd == GenericSurfCommands[eCmds_WrapR])
 		{
 			ppParams    = Wraps;
-			uiNumParams = SamplerWrap::Size;
+			uiNumParams = (uint32)SamplerWrap::Size;
 			bKnown      = true;
 		}
 		// --- Inline filtering flags
@@ -1085,14 +1083,14 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 				return false;
 			}
 
-			SamplerFilter::Enum* pFlags[3] =
+			SamplerFilter* pFlags[3] =
 			{
 				&Params.minFilter,
 				&Params.magFilter,
 				&Params.mipFilter,
 			};
 
-			if (!parseTextureFlags<SamplerFilter::Enum>(pszRemaining, pFlags, 3, Filters, SamplerFilter::Size, pReturnError, i, m_context)) { return false; }
+			if (!parseTextureFlags<SamplerFilter>(pszRemaining, pFlags, 3, Filters, (uint32)SamplerFilter::Size, pReturnError, i, m_context)) { return false; }
 			bKnown     = true;
 		}
 		// --- Inline wrapping flags
@@ -1106,14 +1104,14 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 				return false;
 			}
 
-			SamplerWrap::Enum* pFlags[3] =
+			SamplerWrap* pFlags[3] =
 			{
 				&Params.wrapS,
 				&Params.wrapT,
 				&Params.wrapR,
 			};
 
-			if (!parseTextureFlags<SamplerWrap::Enum>(pszRemaining, pFlags, 3, Wraps, SamplerWrap::Size, pReturnError, i, m_context)) { return false; }
+			if (!parseTextureFlags<SamplerWrap>(pszRemaining, pFlags, 3, Wraps, (uint32)SamplerWrap::Size, pReturnError, i, m_context)) { return false; }
 			bKnown     = true;
 		}
 		// --- Resolution
@@ -1202,12 +1200,12 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 				return false;
 			}
 
-			if (Cmd == GenericSurfCommands[eCmds_Min]) { Params.minFilter = static_cast<SamplerFilter::Enum>(Type); }
-			else if (Cmd == GenericSurfCommands[eCmds_Mag]) { Params.magFilter = static_cast<SamplerFilter::Enum>(Type); }
-			else if (Cmd == GenericSurfCommands[eCmds_Mip]) { Params.mipFilter = static_cast<SamplerFilter::Enum>(Type); }
-			else if (Cmd == GenericSurfCommands[eCmds_WrapR]) { Params.wrapR = static_cast<SamplerWrap::Enum>(Type); }
-			else if (Cmd == GenericSurfCommands[eCmds_WrapS]) { Params.wrapS = static_cast<SamplerWrap::Enum>(Type); }
-			else if (Cmd == GenericSurfCommands[eCmds_WrapT]) { Params.wrapT = static_cast<SamplerWrap::Enum>(Type); }
+			if (Cmd == GenericSurfCommands[eCmds_Min]) { Params.minFilter = static_cast<SamplerFilter>(Type); }
+			else if (Cmd == GenericSurfCommands[eCmds_Mag]) { Params.magFilter = static_cast<SamplerFilter>(Type); }
+			else if (Cmd == GenericSurfCommands[eCmds_Mip]) { Params.mipFilter = static_cast<SamplerFilter>(Type); }
+			else if (Cmd == GenericSurfCommands[eCmds_WrapR]) { Params.wrapR = static_cast<SamplerWrap>(Type); }
+			else if (Cmd == GenericSurfCommands[eCmds_WrapS]) { Params.wrapS = static_cast<SamplerWrap>(Type); }
+			else if (Cmd == GenericSurfCommands[eCmds_WrapT]) { Params.wrapT = static_cast<SamplerWrap>(Type); }
 		}
 
 		if (bKnown)
@@ -1538,8 +1536,8 @@ bool PfxReader::parseTextures(int32 nStartLine, int32 nEndLine, string& pReturnE
 		if (str != NULL)
 		{
 			// Set defaults
-			SamplerFilter::Enum	uiMin(SamplerFilter::Default), uiMag(SamplerFilter::Default), uiMip(SamplerFilter::MipDefault);
-			SamplerWrap::Enum uiWrapS(SamplerWrap::Default), uiWrapT(SamplerWrap::Default), uiWrapR(SamplerWrap::Default);
+			SamplerFilter	uiMin(SamplerFilter::Default), uiMag(SamplerFilter::Default), uiMip(SamplerFilter::MipDefault);
+			SamplerWrap uiWrapS(SamplerWrap::Default), uiWrapT(SamplerWrap::Default), uiWrapR(SamplerWrap::Default);
 			uint32	flags = 0;
 
 			uint32 width = PfxReader::ViewportSize;
@@ -1618,26 +1616,26 @@ bool PfxReader::parseTextures(int32 nStartLine, int32 nEndLine, string& pReturnE
 			{
 				// --- Filter flags
 				{
-					SamplerFilter::Enum* pFlags[3] =
+					SamplerFilter* pFlags[3] =
 					{
 						&uiMin,
 						&uiMag,
 						&uiMip,
 					};
 
-					if (!parseTextureFlags<SamplerFilter::Enum>(pszRemaining, pFlags, 3, Filters, SamplerFilter::Size, pReturnError, i, m_context)) { return false; }
+					if (!parseTextureFlags<SamplerFilter>(pszRemaining, pFlags, 3, Filters, (uint32)SamplerFilter::Size, pReturnError, i, m_context)) { return false; }
 				}
 
 				// --- Wrap flags
 				{
-					SamplerWrap::Enum* pFlags[3] =
+					SamplerWrap* pFlags[3] =
 					{
 						&uiWrapS,
 						&uiWrapT,
 						&uiWrapR,
 					};
 
-					if (!parseTextureFlags<SamplerWrap::Enum>(pszRemaining, pFlags, 3, Wraps, SamplerWrap::Size, pReturnError, i, m_context)) { return false; }
+					if (!parseTextureFlags<SamplerWrap>(pszRemaining, pFlags, 3, Wraps, (uint32)SamplerWrap::Size, pReturnError, i, m_context)) { return false; }
 				}
 
 				PFXParserTexture* pTex = new PFXParserTexture();
@@ -1963,10 +1961,10 @@ bool PfxReader::parseSemantic(EffectSemantic& semantic, int32 nStartLine, string
 
 		// default value
 		int32 i;
-		for (i = 0; i < SemanticDataType::Count; i++)
+		for (i = 0; i < (uint32)SemanticDataType::Count; i++)
 		{
 			const EffectSemanticDefaultDataTypeInfo& sDfltType =
-			  EffectSemanticDefaultDataTypeInfo::getSemanticDefaultTypeInfo(static_cast<SemanticDataType::Enum>(SemanticDataType::Enum(i)));
+			  EffectSemanticDefaultDataTypeInfo::getSemanticDefaultTypeInfo(SemanticDataType(i));
 			if (strncmp(pszString, sDfltType.name, strlen(sDfltType.name)) == 0)
 			{
 				if (!getSemanticDataFromString(semantic.sDefaultValue, &pszString[strlen(sDfltType.name)], sDfltType.type, returnError))
@@ -1980,7 +1978,7 @@ bool PfxReader::parseSemantic(EffectSemantic& semantic, int32 nStartLine, string
 		}
 
 		// invalid data type
-		if (i == SemanticDataType::Count)
+		if (i == (uint32)SemanticDataType::Count)
 		{
 			returnError = strings::createFormatted("'%s' unknown on line %d.\n", pszString, m_context->fileLineNumbers[nStartLine]);
 			return false;
@@ -2499,7 +2497,7 @@ void pfxCreateStringCopy(char8** ppDst, const char8* pSrc)
 }
 
 const EffectSemanticDefaultDataTypeInfo& EffectSemanticDefaultDataTypeInfo::getSemanticDefaultTypeInfo(
-  SemanticDataType::Enum semanticDfltType)
+  SemanticDataType semanticDfltType)
 {
 	assertion(semanticDfltType < SemanticDataType::Count, "Invalid Semantic Data Type");
 	const static EffectSemanticDefaultDataTypeInfo g_semanticDefaultDataTypeInfo[] =
@@ -2520,7 +2518,7 @@ const EffectSemanticDefaultDataTypeInfo& EffectSemanticDefaultDataTypeInfo::getS
 		{ SemanticDataType::Int1, "int32", 1, EffectDefaultDataInternalType::Integer },
 		{ SemanticDataType::Bool1, "bool", 1, EffectDefaultDataInternalType::Boolean },
 	};
-	return g_semanticDefaultDataTypeInfo[semanticDfltType];
+	return g_semanticDefaultDataTypeInfo[(uint32)semanticDfltType];
 }
 
 }

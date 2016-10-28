@@ -35,9 +35,9 @@
 		1DCD7605D3C3838259CD9279 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D3EF92050C9F3F72BD3C874 /* CoreMedia.framework */; };
 		1D28F2E00FBE9BCE66A5FFF8 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D43CF858E9FAC3D7985E776 /* AVFoundation.framework */; };
 		1DE73C2E7924546DC93E546E /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D16DF95B5F87DA6C7ACD1A4 /* CoreVideo.framework */; };
-		F80A6EDD272184B6FC0B12C5 /* OGLESIntroducingPVRCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8CD6F4D90A292778B4A595D /* OGLESIntroducingPVRCamera.cpp */; };
-		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81AE783867359F7612A30AC /* VertShader.vsh */; };
-		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */; };
+		F80A6EDD272184B6FC0B12C5 /* OGLESIntroducingPVRCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8B601864B95FF770B4B7AA6 /* OGLESIntroducingPVRCamera.cpp */; };
+		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */; };
+		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F895137C16F9AE9B63DD3558 /* FragShader.fsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -220,9 +220,9 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F8CD6F4D90A292778B4A595D /* OGLESIntroducingPVRCamera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRCamera.cpp; path = ../../OGLESIntroducingPVRCamera.cpp; sourceTree = SOURCE_ROOT; };
-		F81AE783867359F7612A30AC /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
-		F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F8B601864B95FF770B4B7AA6 /* OGLESIntroducingPVRCamera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRCamera.cpp; path = ../../OGLESIntroducingPVRCamera.cpp; sourceTree = SOURCE_ROOT; };
+		F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F895137C16F9AE9B63DD3558 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -410,7 +410,7 @@
 		F85E2B260DD21E3F00CA9BEB /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				F8CD6F4D90A292778B4A595D /* OGLESIntroducingPVRCamera.cpp */,
+				F8B601864B95FF770B4B7AA6 /* OGLESIntroducingPVRCamera.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -439,8 +439,8 @@
 		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F81AE783867359F7612A30AC /* VertShader.vsh */,
-				F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */,
+				F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */,
+				F895137C16F9AE9B63DD3558 /* FragShader.fsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -763,7 +763,6 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info.plist;

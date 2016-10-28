@@ -2,7 +2,7 @@
 \file         PVRShell\OS\Windows\ShellOS.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains an implementation of pvr::system::ShellOS for Microsoft Windows systems.
+\brief         Contains an implementation of pvr::platform::ShellOS for Microsoft Windows systems.
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
@@ -14,7 +14,7 @@
 #define WINDOW_CLASS "PVRShellOS"
 using std::string;
 namespace pvr {
-namespace system {
+namespace platform {
 struct InternalOS
 {
 	OSDATA osdata;
@@ -67,9 +67,9 @@ void ShellOS::updatePointingDeviceLocation()
 	}
 }
 
-static Keys::Enum mapKeyWparamToPvrKey(WPARAM wParam)
+static Keys mapKeyWparamToPvrKey(WPARAM wParam)
 {
-	return static_cast<Keys::Enum>(wParam);
+	return static_cast<Keys>(wParam);
 }
 
 
@@ -208,7 +208,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	return RegisterClass(&wc);
 }
 
-Result::Enum ShellOS::init(DisplayAttributes& /*data*/)
+Result ShellOS::init(DisplayAttributes& /*data*/)
 {
 	if (!m_OSImplementation)
 	{
@@ -239,7 +239,7 @@ Result::Enum ShellOS::init(DisplayAttributes& /*data*/)
 	return Result::Success;
 }
 
-Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
+Result ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	HWND		hWnd;
 	POINT		p;
@@ -356,7 +356,7 @@ OSWindow ShellOS::getWindow() const
 	return m_OSImplementation->hWnd;
 }
 
-Result::Enum ShellOS::handleOSEvents()
+Result ShellOS::handleOSEvents()
 {
 	MSG	msg;
 
@@ -375,7 +375,7 @@ bool ShellOS::isInitialized()
 	return m_OSImplementation && m_OSImplementation->hDC;
 }
 
-Result::Enum ShellOS::popUpMessage(const tchar* const title, const tchar* const message, ...) const
+Result ShellOS::popUpMessage(const tchar* const title, const tchar* const message, ...) const
 {
 	if (!title && !message)
 	{

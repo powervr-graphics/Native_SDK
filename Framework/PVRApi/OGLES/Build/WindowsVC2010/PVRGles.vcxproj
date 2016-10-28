@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\EffectApi_2.cpp" />
+    <ClCompile Include="..\..\..\RenderManager.cpp" />
     <ClCompile Include="..\..\ApiCommandsGles.cpp" />
     <ClCompile Include="..\..\CommandBufferGles.cpp" />
     <ClCompile Include="..\..\AssetStore.cpp" />
@@ -61,15 +63,20 @@
     <ClInclude Include="..\..\..\AssetStore.h" />
     <ClInclude Include="..\..\..\AssetUtils.h" />
     <ClInclude Include="..\..\..\EffectApi.h" />
+    <ClInclude Include="..\..\..\EffectApi_2.h" />
+    <ClInclude Include="..\..\..\RenderManager.h" />
     <ClInclude Include="..\..\..\GpuCapabilities.h" />
     <ClInclude Include="..\..\..\PVRApi.h" />
+    <ClInclude Include="..\..\..\StructuredMemory.h" />
     <ClInclude Include="..\..\ApiCommand.h" />
     <ClInclude Include="..\..\ApiCommands.h" />
+    <ClInclude Include="..\..\Bindables.h" />
     <ClInclude Include="..\..\BufferGles.h" />
     <ClInclude Include="..\..\CommandPoolGles.h" />
     <ClInclude Include="..\..\ContextGles.h" />
     <ClInclude Include="..\..\DescriptorSetGles.h" />
     <ClInclude Include="..\..\FboGles.h" />
+    <ClInclude Include="..\..\GraphicsPipelineGles.h" />
     <ClInclude Include="..\..\StateContainerGles.h" />
     <ClInclude Include="..\..\PipelineConfigStatesGles.h" />
     <ClInclude Include="..\..\PipelineLayoutGles.h" />

@@ -16,8 +16,8 @@
 #include "PVRApi/OGLES/FboGles.h"
 #include "PVRApi/OGLES/RenderPassGles.h"
 #include "PVRApi/OGLES/DescriptorSetGles.h"
-#include "PVRApi/ApiObjects/GraphicsPipeline.h"
-#include "PVRApi/ApiObjects/ComputePipeline.h"
+#include "PVRApi/OGLES/GraphicsPipelineGles.h"
+#include "PVRApi/OGLES/ComputePipelineGles.h"
 #include "PVRApi/OGLES/PipelineLayoutGles.h"
 #include "PVRApi/OGLES/CommandPoolGles.h"
 #include "PVRApi/ApiObjects/Sync.h"
@@ -31,10 +31,8 @@ GraphicsContextStrongReference createGraphicsContext()
 {
 	GraphicsContextStrongReference ctx = platform::ContextGles::createNew();
 	//DEFAULT CONTEXT PER PLATFORM. CAN(WILL) BE OVERRIDEN BY PVRShell
-	ctx->m_apiType = Api::OpenGLESMaxVersion;
 	return ctx;
 }
-
 
 inline GraphicsContext IGraphicsContext::getWeakRef()
 {
@@ -54,9 +52,9 @@ well as if it is supported natively or through an extension.
 struct ExtensionEntry
 {
 	ApiCapabilities::Enum capability;
-	const char* extensionString;
-	Api::Enum minExtensionLevel;
-	Api::Enum minCoreLevel;
+	const char* extensionString; //<! If minExtensionLevel is not "unspecified", this is the name of the extension that will be queried.
+	Api minExtensionLevel; //<! Minimum API level that an extension may support this capability. If not "unspecified", implies there is an extension for it
+	Api minCoreLevel;//<! Minimum API level that this capability is core. If "unspecified", no version supports it as core
 };
 
 /*!**********************************************************************************************************
@@ -65,23 +63,32 @@ struct ExtensionEntry
 static ExtensionEntry extensionMap[] =
 {
 	//Common to all OpenGL ES versions - but other APIS might not support them...
-	//Extensions for OpenGL ES 2+
+
+	//Always extensions, OpenGL ES 2+
 	{ ApiCapabilities::DebugCallback, "GL_KHR_debug", Api::OpenGLES2, Api::Unspecified },
 	{ ApiCapabilities::AnisotropicFiltering, "GL_EXT_texture_filter_anisotropic", Api::OpenGLES2, Api::Unspecified },
-	//Extensions for any OpenGL ES2+, core later
+	{ ApiCapabilities::BicubicFiltering, "GL_IMG_texture_filter_cubic", Api::OpenGLES2, Api::OpenGLESMaxVersion },
+
+	//Always extensions, for OpenGL ES3+
+	{ ApiCapabilities::ShaderPixelLocalStorage, "GL_EXT_shader_pixel_local_storage", Api::OpenGLES3, Api::Unspecified },
+	{ ApiCapabilities::Tessellation, "GL_EXT_tessellation_shader", Api::OpenGLES31, Api::Unspecified },
+	{ ApiCapabilities::ClearTexImage, "GL_IMG_clear_texture", Api::OpenGLES31, Api::Unspecified },
+	{ ApiCapabilities::ShaderPixelLocalStorage2, "GL_EXT_shader_pixel_local_storage2", Api::OpenGLES3, Api::Unspecified },
+	{ ApiCapabilities::GeometryShader, "GL_EXT_geometry_shader", Api::OpenGLES31, Api::Unspecified },
+
+	//Extensions for any OpenGL ES2+, core at later versions
 	{ ApiCapabilities::Texture3D, "GL_OES_texture_3D", Api::OpenGLES2, Api::OpenGLES3 },
 	{ ApiCapabilities::ShadowSamplers, "GL_EXT_shadow_samplers", Api::OpenGLES2, Api::OpenGLES3 },
 	{ ApiCapabilities::MapBuffer, "GL_OES_mapbuffer", Api::OpenGLES2, Api::OpenGLES3 },
+	{ ApiCapabilities::MapBufferRange, "GL_EXT_map_buffer_range", Api::OpenGLES2, Api::OpenGLES3 },
 	{ ApiCapabilities::TexureStorage, "GL_EXT_texture_storage_DISABLED", Api::OpenGLES2, Api::OpenGLES3 },
 	{ ApiCapabilities::Instancing, "GL_EXT_draw_instanced", Api::OpenGLES2, Api::OpenGLES3 },
 	{ ApiCapabilities::InvalidateFrameBuffer, "GL_EXT_discard_framebuffer", Api::OpenGLES2, Api::OpenGLES3 },
-	//Extensions for OpenGL ES3+
-	{ ApiCapabilities::ShaderPixelLocalStorage, "GL_EXT_shader_pixel_local_storage", Api::OpenGLES3, Api::Unspecified },
 
-	//Core Only
+	//Core Only (all ES versions support them - but Vulkan does not!)
 	{ ApiCapabilities::Uniforms, NULL, Api::Unspecified, Api::OpenGLES2 },
 	{ ApiCapabilities::ShaderAttributeReflection, NULL, Api::Unspecified, Api::OpenGLES2 },
-
+	//Core Only (ES 3)
 	{ ApiCapabilities::Sampler, NULL, Api::Unspecified, Api::OpenGLES3 },
 	{ ApiCapabilities::TextureSwizzling, NULL, Api::Unspecified, Api::OpenGLES3 },
 	{ ApiCapabilities::Texture2DArray, NULL, Api::Unspecified, Api::OpenGLES3 },
@@ -89,16 +96,23 @@ static ExtensionEntry extensionMap[] =
 	{ ApiCapabilities::UintUniforms, NULL, Api::Unspecified, Api::OpenGLES3 },
 	{ ApiCapabilities::ShaderAttributeExplicitBind, NULL, Api::Unspecified, Api::OpenGLES3 },
 	{ ApiCapabilities::ClearBuffer, NULL, Api::Unspecified, Api::OpenGLES3 },
-
+	{ ApiCapabilities::FramebufferTextureLayer, NULL, Api::Unspecified, Api::OpenGLES3},
+	//Core Only (ES 3.1)
 	{ ApiCapabilities::ComputeShader, NULL, Api::Unspecified, Api::OpenGLES31 },
 	{ ApiCapabilities::ImageStore, NULL, Api::Unspecified, Api::OpenGLES31 },
 	{ ApiCapabilities::Ssbo, NULL, Api::Unspecified, Api::OpenGLES31 },
 	{ ApiCapabilities::AtomicBuffer, NULL, Api::Unspecified, Api::OpenGLES31 },
+	{ ApiCapabilities::Texture2DMS, NULL, Api::Unspecified, Api::OpenGLES31},
+
+
+	{ ApiCapabilities::Texture2DArrayMS, NULL, Api::Unspecified, Api::Unspecified}
+
 };
 }
 
 
-ContextGles::ContextGles(size_t implementationID) : m_ContextImplementationID(implementationID)
+ContextGles::ContextGles(size_t implementationID)   : IGraphicsContext(Api::OpenGLESMaxVersion),
+	m_ContextImplementationID(implementationID)
 { }
 
 void ContextGles::waitIdle()
@@ -106,7 +120,7 @@ void ContextGles::waitIdle()
 	gl::Finish();
 }
 
-Result::Enum ContextGles::init(OSManager& osManager)
+Result ContextGles::init(OSManager& osManager)
 {
 	if (m_osManager)
 	{
@@ -119,10 +133,10 @@ Result::Enum ContextGles::init(OSManager& osManager)
 
 	m_apiType = osManager.getApiTypeRequired(); //PlatformContext should have already made sure that this is actually possible.
 
-	if (m_apiType < Api::OpenGLES31 && ((osManager.getDeviceQueueTypesRequired() & DeviceQueueType::Compute) != 0))
+	if (m_apiType < Api::OpenGLES31 && (uint32(osManager.getDeviceQueueTypesRequired() & DeviceQueueType::Compute) != 0))
 	{
 		Log(Log.Error, "Compute queues are not supported in OpenGL ES versions less than 3.1 -- Requested api was %s",
-		    Api::getApiName(m_apiType));
+		    apiName(m_apiType));
 		return Result::UnsupportedRequest;
 	}
 
@@ -153,7 +167,7 @@ Result::Enum ContextGles::init(OSManager& osManager)
 	m_defaultSampler = createSampler(defaultSamplerInfo);
 
 	m_renderStatesTracker.viewport =
-	    Rectanglei(0, 0, getDisplayAttributes().width, getDisplayAttributes().height);
+	  Rectanglei(0, 0, getDisplayAttributes().width, getDisplayAttributes().height);
 	m_renderStatesTracker.scissor = m_renderStatesTracker.viewport;
 	return Result::Success;
 }
@@ -162,10 +176,23 @@ void ContextGles::setUpCapabilities()
 {
 	ApiCapabilitiesPrivate& caps = (ApiCapabilitiesPrivate&)m_apiCapabilities;
 	caps.maxglslesversion = (m_apiType >= Api::OpenGLES31 ? 310 : m_apiType >= Api::OpenGLES3 ? 300 : 200);
+	if (m_apiType >= Api::OpenGLES3)
+	{
+		GLint tmp;
+#ifdef GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT
+		gl::GetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &tmp);
+		caps.uboOffsetAlignment = tmp;
+#ifdef GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT
+		gl::GetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &tmp);
+		caps.ssboOffsetAlignment = tmp;
+#endif
+	}
+#endif
+
 
 	// EXTENSIONS -- SEE TOP OF THIS FILE.
 	// For each extension, make sure that the we properly determine native or extension support.
-	for (int i = 0; i < sizeof(extensionMap) / sizeof(extensionMap[0]); ++i)
+	for (uint32 i = 0; i < sizeof(extensionMap) / sizeof(extensionMap[0]); ++i)
 	{
 		if (extensionMap[i].minCoreLevel != Api::Unspecified && m_apiType >= extensionMap[i].minCoreLevel)
 		{
@@ -185,10 +212,13 @@ ContextGles::~ContextGles()
 
 void ContextGles::popPipeline()
 {
-	if (m_pushedPipelines.size() && m_pushedPipelines.back().second)
+	if (m_pushedPipelines.size())
 	{
-		m_pushedPipelines.back().first(m_pushedPipelines.back().second, *this);
-		m_pushedPipelines.pop_back();
+		if (m_pushedPipelines.back().second)
+		{
+			m_pushedPipelines.back().first(m_pushedPipelines.back().second, *this);
+		}
+		m_pushedPipelines.pop_back();// pop the pipeline (including the null pipeline)
 	}
 	else
 	{
@@ -202,6 +232,49 @@ void ContextGles::pushPipeline(fnBindPipeline bindPipePtr, void* pipe)
 	m_pushedPipelines.push_back(std::make_pair(bindPipePtr, pipe));
 }
 
+api::GraphicsPipeline ContextGles::createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc)
+{
+	return createGraphicsPipeline(desc, api::ParentableGraphicsPipeline());
+}
+
+api::GraphicsPipeline ContextGles::createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc,
+    api::ParentableGraphicsPipeline parent)
+{
+	std::auto_ptr<api::impl::GraphicsPipelineImplBase>impl(new api::gles::GraphicsPipelineImplGles(getWeakRef()));
+	api::GraphicsPipeline gp; gp.construct(impl);
+	if (!static_cast<api::gles::GraphicsPipelineImplGles&>(gp->getImpl()).init(desc, parent.get(), gp.get()))
+	{
+		gp.reset();
+		Log(Log.Error, "Failed to create graphics pipeline");
+	}
+	return gp;
+}
+
+api::ParentableGraphicsPipeline ContextGles::createParentableGraphicsPipeline(const api::GraphicsPipelineCreateParam& desc)
+{
+	std::auto_ptr<api::impl::GraphicsPipelineImplBase> impl(new api::gles::GraphicsPipelineImplGles(getWeakRef()));
+	api::ParentableGraphicsPipeline gp; gp.construct(impl);
+	if (!static_cast<api::gles::GraphicsPipelineImplGles&>(gp->getImpl()).init(desc, NULL, gp.get()))
+	{
+		Log(Log.Error, "Failed to create parentable graphics pipeline");
+		gp.reset();
+	}
+	return gp;
+}
+
+api::ComputePipeline ContextGles::createComputePipeline(const api::ComputePipelineCreateParam& createParam)
+{
+	std::auto_ptr<api::impl::ComputePipelineImplBase> impl(new api::gles::ComputePipelineImplGles(getWeakRef()));
+	api::ComputePipeline cp; cp.construct(impl);
+
+	if (!static_cast<api::gles::ComputePipelineImplGles&>(cp->getImpl()).init(createParam, cp.get()))
+	{
+		Log(Log.Error, "Failed to create compute pipeline");
+		cp.reset();
+	}
+	return cp;
+}
+
 bool ContextGles::screenCaptureRegion(uint32 x, uint32 y, uint32 w, uint32 h, byte* pBuffer,
                                       ImageFormat requestedImageFormat)
 {
@@ -212,8 +285,7 @@ bool ContextGles::screenCaptureRegion(uint32 x, uint32 y, uint32 w, uint32 h, by
 	}
 
 	gl::ReadPixels(static_cast<GLint>(x), static_cast<GLint>(y), static_cast<GLint>(w),
-	               static_cast<GLint>(h), GL_RGBA,
-	               GL_UNSIGNED_BYTE, pBuffer);
+	               static_cast<GLint>(h), GL_RGBA, GL_UNSIGNED_BYTE, pBuffer);
 
 	GLenum err = gl::GetError();
 
@@ -289,43 +361,30 @@ bool ContextGles::isExtensionSupported(const char8* extension) const
 	}
 	return m_extensions.find(extension) != m_extensions.npos;
 }
-}
 
 
-api::EffectApi IGraphicsContext::createEffectApi(assets::Effect& effectDesc, api::GraphicsPipelineCreateParam& pipeDesc,
-        api::AssetLoadingDelegate& effectDelegate)
-{
-	api::EffectApi effect;
-	effect.construct(getWeakRef(), effectDelegate);
-	if (effect->init(effectDesc, pipeDesc) != Result::Success)
-	{
-		effect.reset();
-	}
-	return effect;
-}
-
-api::TextureStore IGraphicsContext::createTexture()
+api::TextureStore ContextGles::createTexture()
 {
 	api::gles::TextureStoreGles tex;
 	tex.construct(getWeakRef());
 	return tex;
 }
 
-api::TextureView IGraphicsContext::createTextureView(const api::TextureStore& texture, types::SwizzleChannels swizzle /* = types::SwizzleChannels() */)
+api::TextureView ContextGles::createTextureView(const api::TextureStore& texture, types::SwizzleChannels swizzle /* = types::SwizzleChannels() */)
 {
 	api::gles::TextureViewGles tex;
 	tex.construct(static_cast<const api::gles::TextureStoreGles>(texture), types::ImageSubresourceRange(), swizzle);
 	return tex;
 }
 
-api::TextureView IGraphicsContext::createTextureView(const api::TextureStore& texture, types::ImageSubresourceRange range, types::SwizzleChannels swizzle /* = types::SwizzleChannels() */)
+api::TextureView ContextGles::createTextureView(const api::TextureStore& texture, types::ImageSubresourceRange range, types::SwizzleChannels swizzle /* = types::SwizzleChannels() */)
 {
 	api::gles::TextureViewGles tex;
 	tex.construct(static_cast<const api::gles::TextureStoreGles>(texture), range, swizzle);
 	return tex;
 }
 
-api::DescriptorSet IGraphicsContext::createDescriptorSetOnDefaultPool(const api::DescriptorSetLayout& layout)
+api::DescriptorSet ContextGles::createDescriptorSetOnDefaultPool(const api::DescriptorSetLayout& layout)
 {
 	//For OpenGL ES, DescriptorPool is dummy, so this is the only implementation and all sets
 	//will appear to have the same pool, regardless of which one was used to create them.
@@ -338,91 +397,38 @@ api::DescriptorSet IGraphicsContext::createDescriptorSetOnDefaultPool(const api:
 	return set;
 }
 
-api::CommandBuffer IGraphicsContext::createCommandBufferOnDefaultPool()
+api::CommandBuffer ContextGles::createCommandBufferOnDefaultPool()
 {
 	return getDefaultCommandPool()->allocateCommandBuffer();
 }
 
-api::SecondaryCommandBuffer IGraphicsContext::createSecondaryCommandBufferOnDefaultPool()
+api::SecondaryCommandBuffer ContextGles::createSecondaryCommandBufferOnDefaultPool()
 {
 	return getDefaultCommandPool()->allocateSecondaryCommandBuffer();
 }
 
-api::DescriptorPool& IGraphicsContext::getDefaultDescriptorPool()
+api::EffectApi ContextGles::createEffectApi(assets::Effect& effectDesc, api::GraphicsPipelineCreateParam& pipeDesc,
+    api::AssetLoadingDelegate& effectDelegate)
 {
-	return static_cast<platform::ContextGles*>(this)->getDefaultDescriptorPool();
+	api::EffectApi effect;
+	effect.construct(getWeakRef(), effectDelegate);
+	if (effect->init(effectDesc, pipeDesc) != Result::Success)
+	{
+		effect.reset();
+	}
+	return effect;
 }
 
-api::CommandPool& IGraphicsContext::getDefaultCommandPool()
-{
-	return static_cast<platform::ContextGles&>(*this).getDefaultCommandPool();
-}
-
-api::Buffer IGraphicsContext::createBuffer(uint32 size, types::BufferBindingUse::Bits bufferUsage,
-        types::BufferUse::Flags hint)
+api::Buffer ContextGles::createBuffer(uint32 size, types::BufferBindingUse bufferUsage,
+                                      bool isMappable)
 {
 	api::gles::BufferGles buffer;
 	buffer.construct(getWeakRef());
-	if (!buffer->allocate(size, bufferUsage, hint)) { buffer.reset();	}
+	if (!buffer->allocate(size, bufferUsage, isMappable)) { buffer.reset(); }
 	return buffer;
 }
 
-api::GraphicsPipeline IGraphicsContext::createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc)
-{
-	api::GraphicsPipeline gp;
-	gp.construct(getWeakRef());
-	Result::Enum result = gp->init(desc);
-	if (result != Result::Success)
-	{
-		gp.reset();
-		Log(Log.Error, "Failed to create graphics pipeline. Error value was: %s", Log.getResultCodeString(result));
-	}
-	return gp;
-}
-
-api::GraphicsPipeline IGraphicsContext::createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc,
-        api::ParentableGraphicsPipeline parent)
-{
-	api::GraphicsPipeline gp;
-	gp.construct(getWeakRef());
-	Result::Enum result = gp->init(desc, parent.get());
-	if (result != Result::Success)
-	{
-		gp.reset();
-		Log(Log.Error, "Failed to create graphics pipeline. Error value was: %s", Log.getResultCodeString(result));
-	}
-	return gp;
-}
-
-api::ComputePipeline IGraphicsContext::createComputePipeline(const api::ComputePipelineCreateParam& desc)
-{
-	api::ComputePipeline cp;
-	cp.construct(getWeakRef());
-	Result::Enum result = cp->init(desc);
-	if (result != Result::Success)
-	{
-		Log(Log.Error, "Failed to create graphics pipeline. Error value was: %s",
-		    Log.getResultCodeString(result));
-		cp.reset();
-	}
-	return cp;
-}
-
-api::ParentableGraphicsPipeline IGraphicsContext::createParentableGraphicsPipeline(const api::GraphicsPipelineCreateParam& desc)
-{
-	api::ParentableGraphicsPipeline gp;
-	gp.construct(getWeakRef());
-	Result::Enum result = gp->init(desc);
-	if (result != Result::Success)
-	{
-		Log(Log.Error, "Failed to create parentable graphics pipeline. Error value was: %s", Log.getResultCodeString(result));
-		gp.reset();
-	}
-	return gp;
-}
-
-
-api::RenderPass IGraphicsContext::createRenderPass(const api::RenderPassCreateParam& renderPass)
+api::RenderPass ContextGles::createRenderPass(const api::RenderPassCreateParam& renderPass)
 {
 	api::RenderPassGles rp;
 	rp.construct(getWeakRef());
@@ -433,7 +439,7 @@ api::RenderPass IGraphicsContext::createRenderPass(const api::RenderPassCreatePa
 	return rp;
 }
 
-api::Sampler IGraphicsContext::createSampler(const assets::SamplerCreateParam& desc)
+api::Sampler ContextGles::createSampler(const assets::SamplerCreateParam& desc)
 {
 	api::gles::SamplerGles sampler;
 	sampler.construct(getWeakRef());
@@ -444,7 +450,7 @@ api::Sampler IGraphicsContext::createSampler(const assets::SamplerCreateParam& d
 	return sampler;
 }
 
-api::Shader IGraphicsContext::createShader(const Stream& shaderSrc, types::ShaderType::Enum type, const char* const* defines, uint32 numDefines)
+api::Shader ContextGles::createShader(const Stream& shaderSrc, types::ShaderType type, const char* const* defines, uint32 numDefines)
 {
 	api::gles::ShaderGles vs;
 	vs.construct(getWeakRef(), 0);
@@ -456,7 +462,7 @@ api::Shader IGraphicsContext::createShader(const Stream& shaderSrc, types::Shade
 	return vs;
 }
 
-api::Shader IGraphicsContext::createShader(Stream& shaderData, types::ShaderType::Enum type, types::ShaderBinaryFormat::Enum binaryFormat)
+api::Shader ContextGles::createShader(Stream& shaderData, types::ShaderType type, types::ShaderBinaryFormat binaryFormat)
 {
 	api::gles::ShaderGles vs;
 	vs.construct(getWeakRef(), 0);
@@ -468,12 +474,41 @@ api::Shader IGraphicsContext::createShader(Stream& shaderData, types::ShaderType
 	return vs;
 }
 
-api::BufferView IGraphicsContext::createBufferView(const pvr::api::Buffer& buffer, pvr::uint32 offset, pvr::uint32 range)
+api::Fbo ContextGles::createOnScreenFboWithRenderPass(uint32 swapIndex, const api::RenderPass& renderPass,
+    const api::OnScreenFboCreateParam& onScreenFboCreateParam)
+{
+	if (!renderPass.isValid())
+	{
+		assertion(renderPass.isValid(), "Invalid Renderpass object");
+		Log("Invalid Renderpass object");
+		return api::Fbo();
+	}
+	pvr::api::FboCreateParam fboInfo;
+	fboInfo.width = getDisplayAttributes().width;
+	fboInfo.height = getDisplayAttributes().height;
+	fboInfo.setRenderPass(renderPass);
+	fboInfo.setRenderPass(renderPass);
+	pvr::api::gles::DefaultFboGles fbo;
+	fbo.construct(getWeakRef());
+	if (fbo->init(fboInfo))
+	{
+		fbo->bind(*this, types::FboBindingTarget::ReadWrite);
+	}
+	else
+	{
+		fbo.reset();
+	}
+	return fbo;
+}
+
+api::BufferView ContextGles::createBufferView(const pvr::api::Buffer& buffer, pvr::uint32 offset, pvr::uint32 range)
 {
 	api::gles::BufferViewGles ubo;
 	if (hasApiCapability(ApiCapabilities::Ubo)) // If it has SSBOS/atomics, it will definitely have Ubos...
 	{
-		assertion(buffer->getBufferUsage() & types::BufferBindingUse::UniformBuffer || buffer->getBufferUsage() & types::BufferBindingUse::StorageBuffer || buffer->getBufferUsage());
+		assertion(static_cast<pvr::uint32>(buffer->getBufferUsage() & types::BufferBindingUse::UniformBuffer) != 0
+		          || static_cast<pvr::uint32>(buffer->getBufferUsage() & types::BufferBindingUse::StorageBuffer) != 0
+		          || static_cast<pvr::uint32>(buffer->getBufferUsage()) != 0);
 		ubo.construct(buffer, offset, std::min(range, buffer->getSize() - offset));
 		assertion(range == 0xFFFFFFFFu || (range <= buffer->getSize() - offset));
 	}
@@ -484,13 +519,14 @@ api::BufferView IGraphicsContext::createBufferView(const pvr::api::Buffer& buffe
 	return ubo;
 }
 
-api::BufferView IGraphicsContext::createBufferAndView(uint32 size, types::BufferBindingUse::Bits bufferUsage, types::BufferUse::Flags hint)
+api::BufferView ContextGles::createBufferAndView(uint32 size, types::BufferBindingUse bufferUsage, bool isMappable)
 {
 	api::gles::BufferViewGles ubo;
 	if (hasApiCapability(ApiCapabilities::Ubo)) // If it has SSBOS/atomics, it will definitely have Ubos...
 	{
-		assertion(bufferUsage & types::BufferBindingUse::UniformBuffer || bufferUsage & types::BufferBindingUse::StorageBuffer);
-		ubo.construct(createBuffer(size, bufferUsage, hint), 0, size);
+		assertion(static_cast<pvr::uint32>(bufferUsage & types::BufferBindingUse::UniformBuffer) != 0 ||
+		          static_cast<pvr::uint32>(bufferUsage & types::BufferBindingUse::StorageBuffer) != 0);
+		ubo.construct(createBuffer(size, bufferUsage, isMappable), 0, size);
 	}
 	else
 	{
@@ -499,8 +535,7 @@ api::BufferView IGraphicsContext::createBufferAndView(uint32 size, types::Buffer
 	return ubo;
 }
 
-
-api::PipelineLayout IGraphicsContext::createPipelineLayout(const api::PipelineLayoutCreateParam& desc)
+api::PipelineLayout ContextGles::createPipelineLayout(const api::PipelineLayoutCreateParam& desc)
 {
 	pvr::api::gles::PipelineLayoutGles pipelayout;
 	pipelayout.construct(getWeakRef());
@@ -511,7 +546,7 @@ api::PipelineLayout IGraphicsContext::createPipelineLayout(const api::PipelineLa
 	return pipelayout;
 }
 
-api::Fbo IGraphicsContext::createOnScreenFboWithRenderPass(uint32 swapIndex, const api::RenderPass& renderPass)
+api::Fbo ContextGles::createOnScreenFboWithRenderPass(uint32 swapIndex, const api::RenderPass& renderPass)
 {
 	pvr::api::FboCreateParam fboInfo;
 	fboInfo.setRenderPass(renderPass);
@@ -531,40 +566,36 @@ api::Fbo IGraphicsContext::createOnScreenFboWithRenderPass(uint32 swapIndex, con
 	return fbo;
 }
 
-api::Fbo IGraphicsContext::createOnScreenFbo(uint32 swapIndex,
-        types::LoadOp::Enum colorLoadOp, types::StoreOp::Enum colorStoreOp,
-        types::LoadOp::Enum depthLoadOp, types::StoreOp::Enum depthStoreOp,
-        types::LoadOp::Enum stencilLoadOp, types::StoreOp::Enum stencilStoreOp,
-        uint32 numColorSamples, uint32 numDepthStencilSamples)
+api::Fbo ContextGles::createOnScreenFbo(uint32 swapIndex, types::LoadOp colorLoadOp, types::StoreOp colorStoreOp,
+                                        types::LoadOp depthLoadOp, types::StoreOp depthStoreOp, types::LoadOp stencilLoadOp,
+                                        types::StoreOp stencilStoreOp)
 {
 	// create the default fbo
 	api::RenderPassColorInfo colorInfo;
 	api::RenderPassDepthStencilInfo dsInfo;
-	api::getDisplayFormat(getDisplayAttributes(), &colorInfo.format, &dsInfo.format);
+	colorInfo.format = getPresentationImageFormat();
+	dsInfo.format = getDepthStencilImageFormat();
 	colorInfo.loadOpColor = colorLoadOp;
 	colorInfo.storeOpColor = colorStoreOp;
-	colorInfo.numSamples = numColorSamples;
 
 	dsInfo.loadOpDepth = depthLoadOp;
 	dsInfo.storeOpDepth = depthStoreOp;
 	dsInfo.loadOpStencil = stencilLoadOp;
 	dsInfo.storeOpStencil = stencilStoreOp;
-	dsInfo.numSamples = numDepthStencilSamples;
 
 	pvr::api::RenderPassCreateParam renderPassDesc;
-	renderPassDesc.addColorInfo(0, colorInfo);
+	renderPassDesc.setColorInfo(0, colorInfo);
 	renderPassDesc.setDepthStencilInfo(dsInfo);
 
 	// Require at least one sub pass
 	pvr::api::SubPass subPass;
-	subPass.setColorAttachment(0);// use color attachment 0
-	renderPassDesc.addSubPass(0, subPass);
+	subPass.setColorAttachment(0, 0); // use color attachment 0
+	renderPassDesc.setSubPass(0, subPass);
 
 	return createOnScreenFboWithRenderPass(0, createRenderPass(renderPassDesc));
 }
 
-
-api::DescriptorPool IGraphicsContext::createDescriptorPool(const api::DescriptorPoolCreateParam& createParam)
+api::DescriptorPool ContextGles::createDescriptorPool(const api::DescriptorPoolCreateParam& createParam)
 {
 	api::gles::DescriptorPoolGles descPool;
 	descPool.construct(getWeakRef());
@@ -575,14 +606,14 @@ api::DescriptorPool IGraphicsContext::createDescriptorPool(const api::Descriptor
 	return descPool;
 }
 
-api::CommandPool IGraphicsContext::createCommandPool()
+api::CommandPool ContextGles::createCommandPool()
 {
 	api::gles::CommandPoolGles cmdpool = api::gles::CommandPoolGles_::createNew(getWeakRef());
 	if (!cmdpool->init()) { cmdpool.reset(); }
 	return cmdpool;
 }
 
-api::Fbo IGraphicsContext::createFbo(const api::FboCreateParam& desc)
+api::Fbo ContextGles::createFbo(const api::FboCreateParam& desc)
 {
 	api::gles::FboGles fbo;
 	// create fbo
@@ -594,8 +625,15 @@ api::Fbo IGraphicsContext::createFbo(const api::FboCreateParam& desc)
 	return fbo;
 }
 
+api::FboSet ContextGles::createFboSet(const Multi<api::FboCreateParam>& fboInfo)
+{
+	api::FboSet fbo;
+	for (uint32 i = 0; i < fboInfo.size(); ++i) {  fbo[i] = createFbo(fboInfo[i]);   }
+	return fbo;
+}
 
-api::DescriptorSetLayout IGraphicsContext::createDescriptorSetLayout(const api::DescriptorSetLayoutCreateParam& desc)
+
+api::DescriptorSetLayout ContextGles::createDescriptorSetLayout(const api::DescriptorSetLayoutCreateParam& desc)
 {
 	api::gles::DescriptorSetLayoutGles layout;
 	layout.construct(getWeakRef(), desc);
@@ -603,25 +641,31 @@ api::DescriptorSetLayout IGraphicsContext::createDescriptorSetLayout(const api::
 }
 
 
-Multi<api::Fbo> IGraphicsContext::createOnScreenFboSet(types::LoadOp::Enum colorLoadOp, types::StoreOp::Enum colorStoreOp, types::LoadOp::Enum depthLoadOp, types::StoreOp::Enum depthStoreOp,
-        types::LoadOp::Enum stencilLoadOp, types::StoreOp::Enum stencilStoreOp, uint32 numcolorSamples, uint32 numDepthStencilSamples)
+api::FboSet ContextGles::createOnScreenFboSet(types::LoadOp colorLoadOp, types::StoreOp colorStoreOp, types::LoadOp depthLoadOp, types::StoreOp depthStoreOp,
+    types::LoadOp stencilLoadOp, types::StoreOp stencilStoreOp)
 {
-	Multi<api::Fbo> fbos;
-	fbos.add(createOnScreenFbo(0, colorLoadOp, colorStoreOp, depthLoadOp, depthStoreOp,
-	                           stencilLoadOp, stencilStoreOp, numcolorSamples, numDepthStencilSamples));
+	api::FboSet fbos;
+	fbos.add(createOnScreenFbo(0, colorLoadOp, colorStoreOp, depthLoadOp, depthStoreOp, stencilLoadOp, stencilStoreOp));
 	return fbos;
 }
 
-Multi<api::Fbo> IGraphicsContext::createOnScreenFboSetWithRenderPass(const api::RenderPass& renderPass)
+api::FboSet ContextGles::createOnScreenFboSetWithRenderPass(const api::RenderPass& renderPass)
 {
-	Multi<api::Fbo> fbos;
+	api::FboSet fbos;
 	fbos.add(createOnScreenFboWithRenderPass(0, renderPass));
 	return fbos;
 }
 
-uint32 IGraphicsContext::getSwapChainLength()const { return 1;}
-
-uint32 IGraphicsContext::getCurrentSwapChain()const { return 0; }
-
+api::FboSet ContextGles::createOnScreenFboSetWithRenderPass(const api::RenderPass& renderPass,
+    pvr::Multi<api::OnScreenFboCreateParam>& onScreenFboCreateParams)
+{
+	api::FboSet fbos;
+	for (uint32 i = 0; i < (uint32)FrameworkCaps::MaxSwapChains; ++i)
+	{
+		fbos[i] = createOnScreenFboWithRenderPass(i, renderPass, onScreenFboCreateParams[i]);
+	}
+	return fbos;
+}
+}
 }
 //!\endcond

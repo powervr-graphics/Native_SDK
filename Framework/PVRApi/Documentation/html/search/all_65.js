@@ -35,10 +35,11 @@ var searchData=
   ['event_5f',['Event_',['../classpvr_1_1api_1_1impl_1_1_event__.html#ad8ced4eda8a802424f397b72f7cb9877',1,'pvr::api::impl::Event_']]],
   ['event_5f',['Event_',['../classpvr_1_1api_1_1impl_1_1_event__.html',1,'pvr::api::impl']]],
   ['eventset',['EventSet',['../namespacepvr_1_1api.html#a77222d822e151cc90506accaae8f4d0c',1,'pvr::api']]],
-  ['eventset_5f',['EventSet_',['../classpvr_1_1api_1_1impl_1_1_event_set__.html',1,'pvr::api::impl']]],
   ['eventset_5f',['EventSet_',['../classpvr_1_1api_1_1impl_1_1_event_set__.html#a4482116781910929ab3f82e9cdcea829',1,'pvr::api::impl::EventSet_::EventSet_()'],['../classpvr_1_1api_1_1impl_1_1_event_set__.html#a55dd8cdc693b11640e0618a735441c91',1,'pvr::api::impl::EventSet_::EventSet_(Event *events, uint32 numEvents)']]],
+  ['eventset_5f',['EventSet_',['../classpvr_1_1api_1_1impl_1_1_event_set__.html',1,'pvr::api::impl']]],
   ['eventvk',['EventVk',['../namespacepvr_1_1api_1_1vulkan.html#a87d0ad72ebe33d75ca1113efeef51ea8',1,'pvr::api::vulkan']]],
   ['eventvk_5f',['EventVk_',['../classpvr_1_1api_1_1vulkan_1_1_event_vk__.html',1,'pvr::api::vulkan']]],
   ['execute',['execute',['../classpvr_1_1api_1_1_api_command.html#a063415069e7c9a3f53e7f780fad7c1f5',1,'pvr::api::ApiCommand::execute()'],['../classgles_1_1_color_write_mask.html#a8877c4c4fef0b4581ab99c27895a8d31',1,'gles::ColorWriteMask::execute()']]],
+  ['execute_5fprivate',['execute_private',['../classpvr_1_1api_1_1_pipeline_barrier.html#a35059c7da4483365b6490029eb04ccd4',1,'pvr::api::PipelineBarrier']]],
   ['extents',['extents',['../classpvr_1_1api_1_1vulkan_1_1_texture_store_vk__.html#afbe3e62b73068302b57c04ecf93fb0db',1,'pvr::api::vulkan::TextureStoreVk_']]]
 ];

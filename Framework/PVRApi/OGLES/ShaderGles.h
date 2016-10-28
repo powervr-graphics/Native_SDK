@@ -5,7 +5,7 @@
 \brief         Contains OpenGL ES specific implementation of the Shader class. Use only if directly using OpenGL ES calls.
               Provides the definitions allowing to move from the Framework object Texture2D to the underlying OpenGL ES Shader.
 ***********************************************************************************************************************/
-
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/ApiObjects/Shader.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
@@ -68,3 +68,4 @@ bool createShaderProgram(native::HShader_ pShaders[], uint32 count, const char**
                          string* infolog, const ApiCapabilities* contextCapabilities = 0);
 }
 }
+//!\endcond

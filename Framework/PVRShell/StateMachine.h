@@ -8,7 +8,7 @@
 #include "PVRShell/ShellData.h"
 #include "PVRShell/OS/ShellOS.h"
 namespace pvr {
-namespace system {
+namespace platform {
 class Shell;
 
 /*!****************************************************************************************************************
@@ -37,32 +37,32 @@ public:
 	/*!****************************************************************************************************************
 	\brief Constructor. Called by the application's entry point (main).
 	*******************************************************************************************************************/
-	StateMachine(OSApplication instance, system::CommandLineParser& commandLine, OSDATA osdata);
+	StateMachine(OSApplication instance, platform::CommandLineParser& commandLine, OSDATA osdata);
 
 	/*!****************************************************************************************************************
 	\brief Called by the application's entry point (main).
 	*******************************************************************************************************************/
-	Result::Enum init();
+	Result init();
 
 	/*!****************************************************************************************************************
 	\brief Called by the application's entry point (main).
 	*******************************************************************************************************************/
-	Result::Enum execute();
-	
-	/*!****************************************************************************************************************
-	\brief Called internally by the state machine.
-	*******************************************************************************************************************/
-	Result::Enum executeOnce();
+	Result execute();
 
 	/*!****************************************************************************************************************
 	\brief Called internally by the state machine.
 	*******************************************************************************************************************/
-	Result::Enum executeOnce(const State state);
+	Result executeOnce();
 
 	/*!****************************************************************************************************************
 	\brief Called internally by the state machine.
 	*******************************************************************************************************************/
-	Result::Enum executeUpTo(const State state);
+	Result executeOnce(const State state);
+
+	/*!****************************************************************************************************************
+	\brief Called internally by the state machine.
+	*******************************************************************************************************************/
+	Result executeUpTo(const State state);
 
 	/*!****************************************************************************************************************
 	\return The current state of the StateMachine.
@@ -84,7 +84,7 @@ public:
 	*******************************************************************************************************************/
 	void resume() { m_pause = false; }
 
-	State getCurrentState()const{ return m_currentState; }
+	State getCurrentState()const { return m_currentState; }
 private:
 	void applyCommandLine();
 

@@ -2,7 +2,7 @@
 \file         PVRShell\OS\X11\ShellOS.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains an implementation of pvr::system::ShellOS for Linux X11 systems.
+\brief         Contains an implementation of pvr::platform::ShellOS for Linux X11 systems.
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
@@ -24,7 +24,7 @@
 #include <cstring>
 
 namespace pvr {
-namespace system {
+namespace platform {
 /****************************************************************************
 	Defines
 	*****************************************************************************/
@@ -35,23 +35,13 @@ struct InternalOS
 	XVisualInfo* visual;
 	Colormap     colorMap;
 	Window       window;
-
-//#if defined(BUILDING_FOR_DESKTOP_GL)
-//	XF86VidModeModeLine originalMode;  // modeline that was active at the starting point of this aplication
-//	int         originalModeDotClock;
-//#endif
-
 	InternalOS() : display(0), screen(0), visual(0), window(0)
-// #if defined(BUILDING_FOR_DESKTOP_GL)
-		// , originalModeDotClock(0)
-// #endif
-	{
-
-	}
+	{}
 };
 
 
-static Keys::Enum X11_To_Keycode[255] ={
+static Keys X11_To_Keycode[255] =
+{
 	Keys::Unknown,
 	Keys::Unknown,
 	Keys::Unknown,
@@ -210,9 +200,10 @@ static Keys::Enum X11_To_Keycode[255] ={
 	Keys::Unknown,
 	Keys::Unknown,
 };
-static Keys::Enum getKeyFromX11Code(int keycode)
+static Keys getKeyFromX11Code(uint32 keycode)
 {
-	Keys::Enum key = X11_To_Keycode[keycode];
+	if (keycode >= sizeof(X11_To_Keycode) / sizeof(X11_To_Keycode[0])) { return Keys::Unknown; }
+	Keys key = X11_To_Keycode[keycode];
 	return key;
 }
 
@@ -240,8 +231,9 @@ ShellOS::~ShellOS()
 	delete m_OSImplementation;
 }
 
-Result::Enum ShellOS::init(DisplayAttributes& data)
+Result ShellOS::init(DisplayAttributes& data)
 {
+	(void)data;
 	if (!m_OSImplementation)
 	{
 		return Result::OutOfMemory;
@@ -288,12 +280,12 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	return Result::Success;
 }
 
-static Bool waitForMapNotify(Display* d, XEvent* e, char* arg)
+static Bool waitForMapNotify(Display* /*d*/, XEvent* e, char* arg)
 {
 	return (e->type == MapNotify) && (e->xmap.window == (Window)arg);
 }
 
-Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
+Result ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	Display* display = XOpenDisplay(NULL);
 
@@ -319,26 +311,20 @@ Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 	if (!data.fullscreen)
 	{
 		// Resize if the width and height if they're out of bounds
-		if (data.width > display_width)
+		if (data.width > (uint32)display_width)
 		{
 			data.width = display_width;
 		}
 
-		if (data.height > display_height)
+		if (data.height > (uint32)display_height)
 		{
 			data.height = display_height;
 		}
 	}
 
-	if (data.x == DisplayAttributes::PosDefault)
-	{
-		data.x = 0;
-	}
+	if (data.x == (uint32)DisplayAttributes::PosDefault) { data.x = 0; }
+	if (data.y == (uint32)DisplayAttributes::PosDefault) { data.y = 0; }
 
-	if (data.y == DisplayAttributes::PosDefault)
-	{
-		data.y = 0;
-	}
 	// Create the window
 	XSetWindowAttributes	WinAttibutes;
 	XSizeHints				sh;
@@ -528,7 +514,7 @@ OSWindow ShellOS::getWindow() const
 	return  reinterpret_cast<void*>(m_OSImplementation->window);
 }
 
-Result::Enum ShellOS::handleOSEvents()
+Result ShellOS::handleOSEvents()
 {
 	XEvent	event;
 	char*		atoms;
@@ -596,8 +582,8 @@ Result::Enum ShellOS::handleOSEvents()
 		{
 			XKeyEvent* key_event = ((XKeyEvent*)&event);
 			Log(Log.Debug, "%d", key_event->keycode);
-if (getKeyFromX11Code(key_event->keycode)==Keys::Escape) {Log(Log.Debug, "Escape");} 
-else {Log(Log.Debug, "???");}
+			if (getKeyFromX11Code(key_event->keycode) == Keys::Escape) {Log(Log.Debug, "Escape");}
+			else {Log(Log.Debug, "???");}
 			m_shell->onKeyDown(getKeyFromX11Code(key_event->keycode));
 		}
 		break;
@@ -622,7 +608,7 @@ bool ShellOS::isInitialized()
 	return m_OSImplementation && m_OSImplementation->window;
 }
 
-Result::Enum ShellOS::popUpMessage(const char* title, const char* message, ...) const
+Result ShellOS::popUpMessage(const char* title, const char* message, ...) const
 {
 	if (!title && !message)
 	{

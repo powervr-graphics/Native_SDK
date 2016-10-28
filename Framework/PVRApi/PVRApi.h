@@ -16,8 +16,8 @@
 /*! \mainpage PVRApi
 ******************************************************************************
 
-\tableofcontents 
- 
+\tableofcontents
+
 \section overview Overview
 *****************************
 
@@ -45,7 +45,7 @@ To use PVRApi:
 <li>Also link against the PowerVR Framework dependencies of PVRApi: (PVRCore, PVRAssets, PVRPlatformGlue, PVRShell)</li>
 <li>Use the library!</li>
 </ul>
-	
+
 \section code Code Examples
 *****************************
 

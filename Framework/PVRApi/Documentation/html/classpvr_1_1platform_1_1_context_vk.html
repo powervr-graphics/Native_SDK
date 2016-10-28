@@ -84,7 +84,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classpvr_1_1platform_1_1_context_vk-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -92,10 +94,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>IGraphicsContext implementation that supports all OpenGL ES 2 and above versions.  
+<p>IGraphicsContext implementation that supports Vulkan.  
  <a href="classpvr_1_1platform_1_1_context_vk.html#details">More...</a></p>
 
-<p>Inherits IGraphicsContext.</p>
+<p>Inherits IGraphicsContext, and EmbeddedRefCount&lt; ContextVk &gt;.</p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -160,6 +162,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:acc7be8560fb176dc2b4e3bd0e314b6df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of IGraphicsContext. Return the default renderpass.  <a href="#acc7be8560fb176dc2b4e3bd0e314b6df">More...</a><br/></td></tr>
 <tr class="separator:acc7be8560fb176dc2b4e3bd0e314b6df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3efb44a3cd5697f98106aaee9b797c62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#a2cd1fd0d95a3694ae3e9c84b693f2626">api::Sampler</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#a3efb44a3cd5697f98106aaee9b797c62">getDefaultSampler</a> () const </td></tr>
+<tr class="memdesc:a3efb44a3cd5697f98106aaee9b797c62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the default sampler object.  <a href="#a3efb44a3cd5697f98106aaee9b797c62">More...</a><br/></td></tr>
 <tr class="separator:a3efb44a3cd5697f98106aaee9b797c62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a079a30fb69250788a91a30f33ac9b700"><td class="memItemLeft" align="right" valign="top">VkDevice &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#a079a30fb69250788a91a30f33ac9b700">getDevice</a> ()</td></tr>
 <tr class="memdesc:a079a30fb69250788a91a30f33ac9b700"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the vulkan device.  <a href="#a079a30fb69250788a91a30f33ac9b700">More...</a><br/></td></tr>
@@ -180,22 +183,26 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a73097281465f42c89b70e3780c6b7151"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of IGraphicsContext. Return the platform context that powers this graphics context.  <a href="#a73097281465f42c89b70e3780c6b7151">More...</a><br/></td></tr>
 <tr class="separator:a73097281465f42c89b70e3780c6b7151"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76c54282ddbb25ef7ca384a998436c1e"><td class="memItemLeft" align="right" valign="top">VkQueue &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#a76c54282ddbb25ef7ca384a998436c1e">getQueue</a> ()</td></tr>
+<tr class="memdesc:a76c54282ddbb25ef7ca384a998436c1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the reference to the device queue.  <a href="#a76c54282ddbb25ef7ca384a998436c1e">More...</a><br/></td></tr>
 <tr class="separator:a76c54282ddbb25ef7ca384a998436c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e47cdfdc5ffc81b7d663e3313aedc47"><td class="memItemLeft" align="right" valign="top">const VkQueue &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#a9e47cdfdc5ffc81b7d663e3313aedc47">getQueue</a> () const </td></tr>
+<tr class="memdesc:a9e47cdfdc5ffc81b7d663e3313aedc47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the const reference to the device queue.  <a href="#a9e47cdfdc5ffc81b7d663e3313aedc47">More...</a><br/></td></tr>
 <tr class="separator:a9e47cdfdc5ffc81b7d663e3313aedc47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa16dc2b9b21395f1598e471faf55607e"><td class="memItemLeft" align="right" valign="top">pvr::uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#aa16dc2b9b21395f1598e471faf55607e">getQueueFamilyId</a> () const </td></tr>
+<tr class="memdesc:aa16dc2b9b21395f1598e471faf55607e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the queue family id.  <a href="#aa16dc2b9b21395f1598e471faf55607e">More...</a><br/></td></tr>
 <tr class="separator:aa16dc2b9b21395f1598e471faf55607e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add06ba5dc0bccbb74f9264b3a13be274"><td class="memItemLeft" align="right" valign="top">native::HCommandBuffer_ &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#add06ba5dc0bccbb74f9264b3a13be274">getTextureUploadCommandBuffer</a> ()</td></tr>
+<tr class="memdesc:add06ba5dc0bccbb74f9264b3a13be274"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the texture upload commandbuffer.  <a href="#add06ba5dc0bccbb74f9264b3a13be274">More...</a><br/></td></tr>
 <tr class="separator:add06ba5dc0bccbb74f9264b3a13be274"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af838eebf448c364c1cba45ac57992202"><td class="memItemLeft" align="right" valign="top">const VkInstance&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#af838eebf448c364c1cba45ac57992202">getVkInstance</a> () const </td></tr>
-<tr class="memdesc:af838eebf448c364c1cba45ac57992202"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Vulkan instance.  <a href="#af838eebf448c364c1cba45ac57992202">More...</a><br/></td></tr>
+<tr class="memdesc:af838eebf448c364c1cba45ac57992202"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the const Vulkan instance.  <a href="#af838eebf448c364c1cba45ac57992202">More...</a><br/></td></tr>
 <tr class="separator:af838eebf448c364c1cba45ac57992202"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ab47fa5cb64927411733441513b8794"><td class="memItemLeft" align="right" valign="top">VkInstance&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#a6ab47fa5cb64927411733441513b8794">getVkInstance</a> ()</td></tr>
 <tr class="memdesc:a6ab47fa5cb64927411733441513b8794"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the const Vulkan instance.  <a href="#a6ab47fa5cb64927411733441513b8794">More...</a><br/></td></tr>
 <tr class="separator:a6ab47fa5cb64927411733441513b8794"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae220fd2c3a97e2ef8d50f562b8e4b437"><td class="memItemLeft" align="right" valign="top">Result::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#ae220fd2c3a97e2ef8d50f562b8e4b437">init</a> (OSManager &amp;osManager, GraphicsContext &amp;my_wrapper)</td></tr>
-<tr class="memdesc:ae220fd2c3a97e2ef8d50f562b8e4b437"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of IGraphicsContext. Initializes this class using an OS manager.  <a href="#ae220fd2c3a97e2ef8d50f562b8e4b437">More...</a><br/></td></tr>
-<tr class="separator:ae220fd2c3a97e2ef8d50f562b8e4b437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ec7341ec4fc0061cd5125c6cb1ac6ab"><td class="memItemLeft" align="right" valign="top">Result::Enum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#a9ec7341ec4fc0061cd5125c6cb1ac6ab">init</a> (OSManager &amp;osManager)</td></tr>
+<tr class="memdesc:a9ec7341ec4fc0061cd5125c6cb1ac6ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of IGraphicsContext. Initializes this class using an OS manager.  <a href="#a9ec7341ec4fc0061cd5125c6cb1ac6ab">More...</a><br/></td></tr>
+<tr class="separator:a9ec7341ec4fc0061cd5125c6cb1ac6ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03b37810ee6ceaf4f4a6452b16a0392a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#a03b37810ee6ceaf4f4a6452b16a0392a">isExtensionSupported</a> (const char8 *extension) const </td></tr>
 <tr class="memdesc:a03b37810ee6ceaf4f4a6452b16a0392a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of IGraphicsContext. Query if a specific extension is supported.  <a href="#a03b37810ee6ceaf4f4a6452b16a0392a">More...</a><br/></td></tr>
 <tr class="separator:a03b37810ee6ceaf4f4a6452b16a0392a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -217,6 +224,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aacd56296c359611e862c69f460f7bbe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait until all pending operations are completed.  <a href="#aacd56296c359611e862c69f460f7bbe2">More...</a><br/></td></tr>
 <tr class="separator:aacd56296c359611e862c69f460f7bbe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a20f5e2529855459b00ad45e747ecdbdc"><td class="memItemLeft" align="right" valign="top">static StrongReferenceType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#a20f5e2529855459b00ad45e747ecdbdc">createNew</a> ()</td></tr>
+<tr class="separator:a20f5e2529855459b00ad45e747ecdbdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:affed52921d7e82a0d99018ecafdbb874"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916">api::RenderPass</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#affed52921d7e82a0d99018ecafdbb874">m_defaultRenderPass</a></td></tr>
@@ -225,6 +237,11 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a65a4e02bbc06f63c91743a47f0e27ced"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00eb3bc4194e0693228118e511124e18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1platform_1_1_context_vk_1_1_render_states_tracker.html">RenderStatesTracker</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#a00eb3bc4194e0693228118e511124e18">m_renderStatesTracker</a></td></tr>
 <tr class="separator:a00eb3bc4194e0693228118e511124e18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:acf3d5cfe648917cc93b3887cc790fa6d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_context_vk.html#acf3d5cfe648917cc93b3887cc790fa6d">destroyObject</a> ()</td></tr>
+<tr class="separator:acf3d5cfe648917cc93b3887cc790fa6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -248,7 +265,7 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:acca29cb27512da372649d4484a24d35a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>IGraphicsContext implementation that supports all OpenGL ES 2 and above versions. </p>
+<div class="textblock"><p>IGraphicsContext implementation that supports Vulkan. </p>
 <hr/>
  </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a class="anchor" id="a0682f76c9cf5f4347d743a5b25cde8e6"></a>
@@ -351,6 +368,29 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a20f5e2529855459b00ad45e747ecdbdc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static StrongReferenceType pvr::platform::ContextVk::createNew </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a5136bb7bc59ad5c48c82f8a7d1b7354b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -385,6 +425,29 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Result::Success on success </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="acf3d5cfe648917cc93b3887cc790fa6d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::platform::ContextVk::destroyObject </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -671,6 +734,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Get the default sampler object. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return the default sampler </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a079a30fb69250788a91a30f33ac9b700"></a>
@@ -846,6 +913,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Get the reference to the device queue. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return the reference to the device queue </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="a9e47cdfdc5ffc81b7d663e3313aedc47"></a>
@@ -868,6 +939,10 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Get the const reference to the device queue. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return the const reference to the device queue </dd></dl>
 
 </div>
 </div>
@@ -892,6 +967,10 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Get the queue family id. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return the queue famil id </dd></dl>
+
 </div>
 </div>
 <a class="anchor" id="add06ba5dc0bccbb74f9264b3a13be274"></a>
@@ -914,6 +993,10 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Get the texture upload commandbuffer. </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return the Texture upload commandbuffer </dd></dl>
 
 </div>
 </div>
@@ -938,9 +1021,9 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the Vulkan instance. </p>
+<p>Get the const Vulkan instance. </p>
 <hr/>
- <dl class="section return"><dt>Returns</dt><dd>Return the Vulkan instance </dd></dl>
+ <dl class="section return"><dt>Returns</dt><dd>Return the const Vulkan instance </dd></dl>
 
 </div>
 </div>
@@ -971,7 +1054,7 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ae220fd2c3a97e2ef8d50f562b8e4b437"></a>
+<a class="anchor" id="a9ec7341ec4fc0061cd5125c6cb1ac6ab"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -979,18 +1062,8 @@ Protected Attributes</h2></td></tr>
           <td class="memname">Result::Enum pvr::platform::ContextVk::init </td>
           <td>(</td>
           <td class="paramtype">OSManager &amp;&#160;</td>
-          <td class="paramname"><em>osManager</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>osManager</em>)</td><td></td>
           <td></td>
-          <td class="paramtype">GraphicsContext &amp;&#160;</td>
-          <td class="paramname"><em>my_wrapper</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">

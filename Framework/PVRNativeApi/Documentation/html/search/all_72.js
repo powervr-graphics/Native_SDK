@@ -8,7 +8,6 @@ var searchData=
   ['readpixels',['ReadPixels',['../classgl.html#a763528f0f08e868ca43ccc72fd51c327',1,'gl']]],
   ['ref',['ref',['../_api_gles2_8h.html#a083de4c8e32ad3d9059245f26be721de',1,'ApiGles2.h']]],
   ['relativeoffset',['relativeoffset',['../_api_gles31_8h.html#a1308a9b156ad88334a001afd681f85bd',1,'ApiGles31.h']]],
-  ['release',['release',['../namespacepvr_1_1apiutils_1_1vulkan.html#a42271290e725c19e90e8dd5582750664',1,'pvr::apiutils::vulkan']]],
   ['releasegl',['releaseGl',['../classgl.html#ae92624db194926f3ea9c56469f33bf53',1,'gl']]],
   ['releasenativecontext',['releaseNativeContext',['../namespacepvr.html#ab6a7e3339907f1c4be5003f7d98b7adf',1,'pvr']]],
   ['releaseshadercompiler',['ReleaseShaderCompiler',['../classgl.html#a50f24e5bd6e020d14a2dcfde9c1024d8',1,'gl']]],

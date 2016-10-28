@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['undeletable',['undeletable',['../structpvr_1_1native_1_1_h_texture__.html#a99793ae5ec699bce64f47e60d5cad2bd',1,'pvr::native::HTexture_::undeletable()'],['../structpvr_1_1native_1_1_h_image_view__.html#a5bcf178ed869e85380a919ae8769bef8',1,'pvr::native::HImageView_::undeletable()']]],
   ['uniform1f',['Uniform1f',['../classgl.html#adfcdeb3cd32091d9fc7e5d894b0b1cd8',1,'gl']]],
   ['uniform1fv',['Uniform1fv',['../classgl.html#aad084c957c842dfb98331e7c020a2125',1,'gl']]],
   ['uniform1i',['Uniform1i',['../classgl.html#ab1d02c4e2ce5d24e91a09943a4755f33',1,'gl']]],

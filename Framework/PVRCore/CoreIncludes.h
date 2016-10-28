@@ -8,7 +8,12 @@
 #include "PVRCore/Defines.h"
 #include "PVRCore/Maths.h"
 #include "PVRCore/Log.h"
+#include "PVRCore/RefCounted.h"
 #include "PVRCore/MultiObject.h"
+#include "PVRCore/SortedArray.h"
+#include "PVRCore/IndexedArray.h"
+#include "PVRCore/ContiguousMap.h"
+#include "PVRCore/FreeValue.h"
 #include "../Builds/Include/sdkver.h"
 
 namespace pvr {

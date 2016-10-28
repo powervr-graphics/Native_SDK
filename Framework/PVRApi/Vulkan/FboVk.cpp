@@ -52,12 +52,12 @@ FboVk_::~FboVk_()
 }
 void FboVk_::destroy()
 {
-	if (m_context.isValid())
+	if (m_context.isValid() && native_cast(*this) != VK_NULL_HANDLE)
 	{
 		vk::DestroyFramebuffer(native_cast(*m_context).getDevice(), native_cast(*this), NULL);
 		debugLogApiError("Fbo_::destroy exit");
+		handle = VK_NULL_HANDLE;
 	}
-	handle = VK_NULL_HANDLE;
 	m_desc.clear();
 }
 
@@ -70,6 +70,7 @@ bool FboVk_::init(const FboCreateParam& desc)
 	// validate the dimension.
 	if (desc.width == 0 || desc.height == 0)
 	{
+		assertion(false, "Framebuffer with and height must be valid size");
 		Log("Invalid Framebuffer Dimension width:%d height:%d", desc.width, desc.height);
 		return false;
 	}
@@ -103,7 +104,7 @@ bool FboVk_::init(const FboCreateParam& desc)
 	return (vk::CreateFramebuffer(contextVk.getDevice(), &fboCreateInfo, NULL, &handle) == VK_SUCCESS);
 }
 
-FboVk_::FboVk_(GraphicsContext& context) : Fbo_(context) {}
+FboVk_::FboVk_(GraphicsContext& context) : Fbo_(context) {handle = VK_NULL_HANDLE;}
 
 }// namespace vulkan
 }// namespace api

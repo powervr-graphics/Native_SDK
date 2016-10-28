@@ -20,13 +20,13 @@
 		AC2A38671A0A6BD80093C884 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC2A38641A0A6BD80093C884 /* Info.plist */; };
 		AC2A386E1A0A6BE10093C884 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386B1A0A6BE10093C884 /* InfoPlist.strings */; };
 		AC2A38711A0A6BE70093C884 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386F1A0A6BE70093C884 /* MainMenu.xib */; };
-		F8E1CF4948A2C89818A3B691 /* OGLESIntroducingPVRAssets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F87FADB385CA6BEED66B16DD /* OGLESIntroducingPVRAssets.cpp */; };
-		F865BD586B1E437C21BD059D /* GnomeToy.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8A548544F0FD7393BAF3890 /* GnomeToy.pod */; };
-		F80F85B31A82D95240C7FC18 /* GnomeWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83987E258B3C65E6C071245 /* GnomeWood.pvr */; };
-		F8EE4D05F9CB49F44068B9D2 /* DarkWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8826308A580B4D8F1B0870D /* DarkWood.pvr */; };
-		F88DCB8438E405666A2192F7 /* ClearWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C4D699C2E947AE6615C20E /* ClearWood.pvr */; };
-		F80349FDD3732CE0B2F99430 /* FragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8927435D6227FAC26A6B75D /* FragShader_ES2.fsh */; };
-		F83EA4C919E336C9F1D708CC /* VertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F807CECC74AAE2FFA3EDD236 /* VertShader_ES2.vsh */; };
+		F8E1CF4948A2C89818A3B691 /* OGLESIntroducingPVRAssets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F83EF3574689388E106C8AEE /* OGLESIntroducingPVRAssets.cpp */; };
+		F865BD586B1E437C21BD059D /* GnomeToy.pod in Resources */ = {isa = PBXBuildFile; fileRef = F88B3A25819F6070B6F52E27 /* GnomeToy.pod */; };
+		F80F85B31A82D95240C7FC18 /* GnomeWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */; };
+		F8EE4D05F9CB49F44068B9D2 /* DarkWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */; };
+		F88DCB8438E405666A2192F7 /* ClearWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EB813261D4F268F63A078F /* ClearWood.pvr */; };
+		F80349FDD3732CE0B2F99430 /* FragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8EAC636AED3997E7F6C6051 /* FragShader_ES2.fsh */; };
+		F83EA4C919E336C9F1D708CC /* VertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8972EC8877C4D3A9E983285 /* VertShader_ES2.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -133,13 +133,13 @@
 		AC2A38661A0A6BD80093C884 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AC2A386C1A0A6BE10093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		AC2A38701A0A6BE70093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
-		F87FADB385CA6BEED66B16DD /* OGLESIntroducingPVRAssets.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRAssets.cpp; path = ../../OGLESIntroducingPVRAssets.cpp; sourceTree = SOURCE_ROOT; };
-		F8A548544F0FD7393BAF3890 /* GnomeToy.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeToy.pod; path = ../../../ProcessedAssets/GnomeToy.pod; sourceTree = SOURCE_ROOT; };
-		F83987E258B3C65E6C071245 /* GnomeWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeWood.pvr; path = ../../../ProcessedAssets/GnomeWood.pvr; sourceTree = SOURCE_ROOT; };
-		F8826308A580B4D8F1B0870D /* DarkWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = DarkWood.pvr; path = ../../../ProcessedAssets/DarkWood.pvr; sourceTree = SOURCE_ROOT; };
-		F8C4D699C2E947AE6615C20E /* ClearWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = ClearWood.pvr; path = ../../../ProcessedAssets/ClearWood.pvr; sourceTree = SOURCE_ROOT; };
-		F8927435D6227FAC26A6B75D /* FragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES2.fsh; path = ../../FragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
-		F807CECC74AAE2FFA3EDD236 /* VertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES2.vsh; path = ../../VertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
+		F83EF3574689388E106C8AEE /* OGLESIntroducingPVRAssets.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRAssets.cpp; path = ../../OGLESIntroducingPVRAssets.cpp; sourceTree = SOURCE_ROOT; };
+		F88B3A25819F6070B6F52E27 /* GnomeToy.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeToy.pod; path = ../../../ProcessedAssets/GnomeToy.pod; sourceTree = SOURCE_ROOT; };
+		F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeWood.pvr; path = ../../../ProcessedAssets/GnomeWood.pvr; sourceTree = SOURCE_ROOT; };
+		F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = DarkWood.pvr; path = ../../../ProcessedAssets/DarkWood.pvr; sourceTree = SOURCE_ROOT; };
+		F8EB813261D4F268F63A078F /* ClearWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = ClearWood.pvr; path = ../../../ProcessedAssets/ClearWood.pvr; sourceTree = SOURCE_ROOT; };
+		F8EAC636AED3997E7F6C6051 /* FragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES2.fsh; path = ../../FragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
+		F8972EC8877C4D3A9E983285 /* VertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES2.vsh; path = ../../VertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -261,7 +261,7 @@
 		AC2A37F81A0A675B0093C884 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				F87FADB385CA6BEED66B16DD /* OGLESIntroducingPVRAssets.cpp */,
+				F83EF3574689388E106C8AEE /* OGLESIntroducingPVRAssets.cpp */,
 			);
 			name = Sources;
 			path = OSX;
@@ -304,7 +304,7 @@
 		AC2A385C1A0A697E0093C884 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F8A548544F0FD7393BAF3890 /* GnomeToy.pod */,
+				F88B3A25819F6070B6F52E27 /* GnomeToy.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -312,9 +312,9 @@
 		AC2A385D1A0A69850093C884 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F83987E258B3C65E6C071245 /* GnomeWood.pvr */,
-				F8826308A580B4D8F1B0870D /* DarkWood.pvr */,
-				F8C4D699C2E947AE6615C20E /* ClearWood.pvr */,
+				F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */,
+				F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */,
+				F8EB813261D4F268F63A078F /* ClearWood.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -322,8 +322,8 @@
 		AC2A385E1A0A698B0093C884 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F8927435D6227FAC26A6B75D /* FragShader_ES2.fsh */,
-				F807CECC74AAE2FFA3EDD236 /* VertShader_ES2.vsh */,
+				F8EAC636AED3997E7F6C6051 /* FragShader_ES2.fsh */,
+				F8972EC8877C4D3A9E983285 /* VertShader_ES2.vsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";

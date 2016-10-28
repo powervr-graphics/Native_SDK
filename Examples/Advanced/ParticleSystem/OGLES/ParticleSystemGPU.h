@@ -58,7 +58,7 @@ struct ParticleConfig
 class ParticleSystemGPU
 {
 public:
-	ParticleSystemGPU(pvr::IAssetProvider& assetLoader);
+	ParticleSystemGPU(pvr::Shell& assetLoader);
 	virtual ~ParticleSystemGPU();
 
 	bool init(std::string& ErrorStr);

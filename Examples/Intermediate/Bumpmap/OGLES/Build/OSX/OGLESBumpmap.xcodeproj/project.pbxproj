@@ -22,14 +22,14 @@
 		AC2A38671A0A6BD80093C884 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC2A38641A0A6BD80093C884 /* Info.plist */; };
 		AC2A386E1A0A6BE10093C884 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386B1A0A6BE10093C884 /* InfoPlist.strings */; };
 		AC2A38711A0A6BE70093C884 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386F1A0A6BE70093C884 /* MainMenu.xib */; };
-		F81AD8D32D501AFBC38D2B47 /* OGLESBumpmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F885A643B5574EABDFADD25E /* OGLESBumpmap.cpp */; };
-		F80E639778A5DE2FA4B14675 /* scene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8BB9AB63F43C18BB129DE03 /* scene.pod */; };
-		F83A93119BD23CD25E822273 /* MarbleNormalMap.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F806B9CE8C751258A65F2ADF /* MarbleNormalMap.pvr */; };
-		F83A3E639C13CDBACC378654 /* Marble.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81CF1AEC4CD863A92A7AFE4 /* Marble.pvr */; };
-		F80349FDD3732CE0B2F99430 /* FragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8927435D6227FAC26A6B75D /* FragShader_ES2.fsh */; };
-		F8275C81FB76017154924E92 /* FragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8E7D1E37A98B91558A902F8 /* FragShader_ES3.fsh */; };
-		F83EA4C919E336C9F1D708CC /* VertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F807CECC74AAE2FFA3EDD236 /* VertShader_ES2.vsh */; };
-		F8C99D4319A45CC4793F62F7 /* VertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B497A9C452E44B18F68260 /* VertShader_ES3.vsh */; };
+		F81AD8D32D501AFBC38D2B47 /* OGLESBumpmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8B2FD9705A253AED9D3CD8C /* OGLESBumpmap.cpp */; };
+		F80E639778A5DE2FA4B14675 /* scene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8D31226EDA7FE33522B6749 /* scene.pod */; };
+		F83A93119BD23CD25E822273 /* MarbleNormalMap.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8CA3AA71E168D941AFC4DC1 /* MarbleNormalMap.pvr */; };
+		F83A3E639C13CDBACC378654 /* Marble.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8FC36E60F2F3D66EE5242CC /* Marble.pvr */; };
+		F80349FDD3732CE0B2F99430 /* FragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8EAC636AED3997E7F6C6051 /* FragShader_ES2.fsh */; };
+		F8275C81FB76017154924E92 /* FragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */; };
+		F83EA4C919E336C9F1D708CC /* VertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8972EC8877C4D3A9E983285 /* VertShader_ES2.vsh */; };
+		F8C99D4319A45CC4793F62F7 /* VertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -166,14 +166,14 @@
 		AC2A38661A0A6BD80093C884 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AC2A386C1A0A6BE10093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		AC2A38701A0A6BE70093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
-		F885A643B5574EABDFADD25E /* OGLESBumpmap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESBumpmap.cpp; path = ../../OGLESBumpmap.cpp; sourceTree = SOURCE_ROOT; };
-		F8BB9AB63F43C18BB129DE03 /* scene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = scene.pod; path = ../../../ProcessedAssets/scene.pod; sourceTree = SOURCE_ROOT; };
-		F806B9CE8C751258A65F2ADF /* MarbleNormalMap.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = MarbleNormalMap.pvr; path = ../../../ProcessedAssets/MarbleNormalMap.pvr; sourceTree = SOURCE_ROOT; };
-		F81CF1AEC4CD863A92A7AFE4 /* Marble.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Marble.pvr; path = ../../../ProcessedAssets/Marble.pvr; sourceTree = SOURCE_ROOT; };
-		F8927435D6227FAC26A6B75D /* FragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES2.fsh; path = ../../FragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
-		F8E7D1E37A98B91558A902F8 /* FragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES3.fsh; path = ../../FragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
-		F807CECC74AAE2FFA3EDD236 /* VertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES2.vsh; path = ../../VertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
-		F8B497A9C452E44B18F68260 /* VertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES3.vsh; path = ../../VertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
+		F8B2FD9705A253AED9D3CD8C /* OGLESBumpmap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESBumpmap.cpp; path = ../../OGLESBumpmap.cpp; sourceTree = SOURCE_ROOT; };
+		F8D31226EDA7FE33522B6749 /* scene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = scene.pod; path = ../../../ProcessedAssets/scene.pod; sourceTree = SOURCE_ROOT; };
+		F8CA3AA71E168D941AFC4DC1 /* MarbleNormalMap.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = MarbleNormalMap.pvr; path = ../../../ProcessedAssets/MarbleNormalMap.pvr; sourceTree = SOURCE_ROOT; };
+		F8FC36E60F2F3D66EE5242CC /* Marble.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Marble.pvr; path = ../../../ProcessedAssets/Marble.pvr; sourceTree = SOURCE_ROOT; };
+		F8EAC636AED3997E7F6C6051 /* FragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES2.fsh; path = ../../FragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
+		F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES3.fsh; path = ../../FragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8972EC8877C4D3A9E983285 /* VertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES2.vsh; path = ../../VertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
+		F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES3.vsh; path = ../../VertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -315,7 +315,7 @@
 		AC2A37F81A0A675B0093C884 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				F885A643B5574EABDFADD25E /* OGLESBumpmap.cpp */,
+				F8B2FD9705A253AED9D3CD8C /* OGLESBumpmap.cpp */,
 			);
 			name = Sources;
 			path = OSX;
@@ -358,7 +358,7 @@
 		AC2A385C1A0A697E0093C884 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F8BB9AB63F43C18BB129DE03 /* scene.pod */,
+				F8D31226EDA7FE33522B6749 /* scene.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -366,8 +366,8 @@
 		AC2A385D1A0A69850093C884 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F806B9CE8C751258A65F2ADF /* MarbleNormalMap.pvr */,
-				F81CF1AEC4CD863A92A7AFE4 /* Marble.pvr */,
+				F8CA3AA71E168D941AFC4DC1 /* MarbleNormalMap.pvr */,
+				F8FC36E60F2F3D66EE5242CC /* Marble.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -375,10 +375,10 @@
 		AC2A385E1A0A698B0093C884 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F8927435D6227FAC26A6B75D /* FragShader_ES2.fsh */,
-				F8E7D1E37A98B91558A902F8 /* FragShader_ES3.fsh */,
-				F807CECC74AAE2FFA3EDD236 /* VertShader_ES2.vsh */,
-				F8B497A9C452E44B18F68260 /* VertShader_ES3.vsh */,
+				F8EAC636AED3997E7F6C6051 /* FragShader_ES2.fsh */,
+				F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */,
+				F8972EC8877C4D3A9E983285 /* VertShader_ES2.vsh */,
+				F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";

@@ -1,10 +1,12 @@
 /*!*********************************************************************************************************************
-\file         PVRApi/Vulkan/BufferVulkan.h
+\file         PVRApi/Vulkan/BufferVk.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Contains Vulkan specific implementation of the Buffer class. Use only if directly using Vulkan calls.
               Provides the definitions allowing to move from the Framework object Buffer to the underlying Vulkan Buffer.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
+
 #pragma once
 #include "PVRApi/ApiObjects/Buffer.h"
 #include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
@@ -46,23 +48,17 @@ public:
 	virtual ~BufferVk_();
 
 	/*!*********************************************************************************************************************
-	\brief Update the buffer.
-	\param data Pointer to the data that will be copied to the buffer
-	\param offset offset in the buffer to update
-	\param length length of the buffer to update
-	***********************************************************************************************************************/
-	void update(const void* data, uint32 offset, uint32 length);
-
-	/*!*********************************************************************************************************************
 	\brief Map the buffer.
 	\param flags
 	\param offset offset in the buffer to map
 	\param length length of the buffer to map
+	\description Only buffer created for host access can be mapped/ un-mapped. A buffer that created on device local memory cannot be mapped/ un-mapped.
 	***********************************************************************************************************************/
-	void* map(types::MapBufferFlags::Enum flags, uint32 offset, uint32 length);
+	void* map(types::MapBufferFlags flags, uint32 offset, uint32 length);
 
 	/*!*********************************************************************************************************************
 	\brief Unmap the buffer
+	\description Only buffer created for host access can be mapped/ un-mapped. A buffer that created on device local memory cannot be mapped/ un-mapped.
 	***********************************************************************************************************************/
 	void unmap();
 
@@ -72,7 +68,7 @@ public:
 	\param size buffer size, in bytes
 	\param hint The expected use of the buffer (CPU Read, GPU write etc)
 	***********************************************************************************************************************/
-	bool allocate(uint32 size, types::BufferBindingUse::Enum usage, types::BufferUse::Flags hint = types::BufferUse::DEFAULT);
+	bool allocate(uint32 size, types::BufferBindingUse usage, bool isMappable);
 
 	/*!*********************************************************************************************************************
 	\brief Check whether the buffer has been allocated.
@@ -80,15 +76,31 @@ public:
 	***********************************************************************************************************************/
 	bool isAllocated() { return buffer != VK_NULL_HANDLE; }
 
+    /*!
+       \brief Return true if this buffer object is mappable by the host.
+     */
+	bool isMappable() const { return m_isMappable; }
+
+    /*!
+       \brief Return true if this buffer object memory is mapped.
+     */
+	bool isMapped() const { return m_mappedRange != 0; }
+
 	/*!*********************************************************************************************************************
 	\brief Destroy this buffer.
 	***********************************************************************************************************************/
 	void destroy();
-	uint32 m_mappedRange;
+
+    uint32 m_mappedRange;
 	uint32 m_mappedOffset;
-	types::MapBufferFlags::Enum m_mappedFlags;
+	types::MapBufferFlags m_mappedFlags;
+	bool m_isMappable;
 };
 
+
+/*!*********************************************************************************************************************
+\brief Vulkan implementation of the Buffer.
+***********************************************************************************************************************/
 class BufferViewVk_ : public impl::BufferView_
 {
 public:
@@ -104,10 +116,6 @@ public:
 typedef RefCountedResource<BufferViewVk_> BufferViewVk;
 typedef RefCountedResource<BufferVk_> BufferVk;
 }// namespace vulkan
-
-/*!*********************************************************************************************************************
-\brief Vulkan implementation of the Buffer.
-***********************************************************************************************************************/
 }
 
 /*!*********************************************************************************************************************
@@ -167,3 +175,5 @@ inline HBuffer_& native_cast(api::Buffer& buffer)
 
 PVR_DECLARE_NATIVE_CAST(Buffer)
 PVR_DECLARE_NATIVE_CAST(BufferView)
+
+//!\endcond

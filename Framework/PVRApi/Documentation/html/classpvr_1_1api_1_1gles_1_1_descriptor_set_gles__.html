@@ -110,6 +110,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a293d5db7a63ee7b98a0a220597fa5c1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16d9ff4112b6204a910393449bab80bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1gles_1_1_descriptor_set_gles__.html#a16d9ff4112b6204a910393449bab80bc">bind</a> (IGraphicsContext &amp;device, pvr::uint32 dynamicOffset) const </td></tr>
 <tr class="separator:a16d9ff4112b6204a910393449bab80bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e31b0babfe997dda74b75e7f4e34f01"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1gles_1_1_descriptor_set_gles__.html#a5e31b0babfe997dda74b75e7f4e34f01">destroy</a> ()</td></tr>
+<tr class="separator:a5e31b0babfe997dda74b75e7f4e34f01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8c72543edb9f32719c90d9c0765db1d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1gles_1_1_descriptor_set_gles__.html#af8c72543edb9f32719c90d9c0765db1d">init</a> ()</td></tr>
 <tr class="separator:af8c72543edb9f32719c90d9c0765db1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a219d7b56e54e9d6268932cdd4ebaaa3e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1gles_1_1_descriptor_set_gles__.html#a219d7b56e54e9d6268932cdd4ebaaa3e">update_</a> (const <a class="el" href="structpvr_1_1api_1_1_descriptor_set_update.html">pvr::api::DescriptorSetUpdate</a> &amp;descSet)</td></tr>
@@ -149,9 +151,6 @@ Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_classpvr_1_1api_1_1impl_1_1_descriptor_set__"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classpvr_1_1api_1_1impl_1_1_descriptor_set__')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classpvr_1_1api_1_1impl_1_1_descriptor_set__.html">pvr::api::impl::DescriptorSet_</a></td></tr>
 <tr class="memitem:a31ed207d796972b0021259af4945ad84 inherit pub_types_classpvr_1_1api_1_1impl_1_1_descriptor_set__"><td class="memItemLeft" align="right" valign="top">typedef uint16&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_descriptor_set__.html#a31ed207d796972b0021259af4945ad84">IndexType</a></td></tr>
 <tr class="separator:a31ed207d796972b0021259af4945ad84 inherit pub_types_classpvr_1_1api_1_1impl_1_1_descriptor_set__"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_classpvr_1_1api_1_1impl_1_1_descriptor_set__"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classpvr_1_1api_1_1impl_1_1_descriptor_set__')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classpvr_1_1api_1_1impl_1_1_descriptor_set__.html">pvr::api::impl::DescriptorSet_</a></td></tr>
-<tr class="memitem:aacd8b545e549c240f5e8a51c44699aad inherit pro_methods_classpvr_1_1api_1_1impl_1_1_descriptor_set__"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_descriptor_set__.html#aacd8b545e549c240f5e8a51c44699aad">destroy</a> ()</td></tr>
-<tr class="separator:aacd8b545e549c240f5e8a51c44699aad inherit pro_methods_classpvr_1_1api_1_1impl_1_1_descriptor_set__"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classpvr_1_1api_1_1impl_1_1_descriptor_set__"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpvr_1_1api_1_1impl_1_1_descriptor_set__')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpvr_1_1api_1_1impl_1_1_descriptor_set__.html">pvr::api::impl::DescriptorSet_</a></td></tr>
 <tr class="memitem:ab02d84dada15df12934d74d08130a218 inherit pro_attribs_classpvr_1_1api_1_1impl_1_1_descriptor_set__"><td class="memItemLeft" align="right" valign="top">DescriptorPool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_descriptor_set__.html#ab02d84dada15df12934d74d08130a218">m_descPool</a></td></tr>
 <tr class="separator:ab02d84dada15df12934d74d08130a218 inherit pro_attribs_classpvr_1_1api_1_1impl_1_1_descriptor_set__"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -249,6 +248,29 @@ Additional Inherited Members</h2></td></tr>
           <td></td>
           <td>)</td>
           <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a5e31b0babfe997dda74b75e7f4e34f01"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::api::gles::DescriptorSetGles_::destroy </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
         </tr>
       </table>
   </td>

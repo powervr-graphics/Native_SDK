@@ -8,10 +8,9 @@
 #include "PVRCore/FilePath.h"
 using std::basic_string;
 
-namespace pvr
-{
+namespace pvr {
 
-FilePath::FilePath() : string() 
+FilePath::FilePath() : string()
 {
 }
 
@@ -25,7 +24,7 @@ string FilePath::getFileExtension() const
 
 	if (index != string::npos)
 	{
-		return substr( (index + 1), length() - (index + 1) );
+		return substr((index + 1), length() - (index + 1));
 	}
 
 	return string();
@@ -33,39 +32,39 @@ string FilePath::getFileExtension() const
 
 string FilePath::getDirectory() const
 {
-	const uint32 c_objectNotFound = 0xffffffffu;
+	const string::size_type c_objectNotFound = std::numeric_limits<std::string::size_type>::max();
 
-	uint32 index = (uint32)find_last_of(c_unixDirectorySeparator, length());
+	string::size_type index = (string::size_type)find_last_of(c_unixDirectorySeparator, length());
 
 #if defined(_WIN32)
-	if(index == string::npos)
+	if (index == string::npos)
 	{
-		index = (uint32)find_last_of(c_windowsDirectorySeparator, length());
+		index = (string::size_type)find_last_of(c_windowsDirectorySeparator, length());
 	}
 #endif
 
-	if(index != c_objectNotFound)
+	if (index != c_objectNotFound)
 	{
-		return substr(0,index);
+		return substr(0, index);
 	}
-	
+
 	return string();
 }
 
 string FilePath::getFilename() const
 {
-	string::size_type  index = (string::size_type )find_last_of(c_unixDirectorySeparator, length());
+	string::size_type  index = (string::size_type)find_last_of(c_unixDirectorySeparator, length());
 
 #if defined(_WIN32)
 	if (index == string::npos)
 	{
-		index = (uint32)find_last_of(c_windowsDirectorySeparator, length());
+		index = (string::size_type)find_last_of(c_windowsDirectorySeparator, length());
 	}
 #endif
-    
-	if(index != string::npos)
+
+	if (index != string::npos)
 	{
-		return substr( (index+1), length() - (index+1) );
+		return substr((index + 1), length() - (index + 1));
 	}
 
 	return *this;
@@ -73,17 +72,17 @@ string FilePath::getFilename() const
 
 string FilePath::getFilenameNoExtension() const
 {
-	string::size_type extensionIndex = (string::size_type )find_last_of(c_extensionSeparator, length());
+	string::size_type extensionIndex = (string::size_type)find_last_of(c_extensionSeparator, length());
 
-	if(extensionIndex != string::npos)
+	if (extensionIndex != string::npos)
 	{
-		return getFilename().substr(0,extensionIndex);
+		return getFilename().substr(0, extensionIndex);
 	}
 
 	return getFilename();
 }
 
-const tchar FilePath::getDirectorySeparator()
+tchar FilePath::getDirectorySeparator()
 {
 #if defined(WIN32) || defined(_WIN32)
 	return c_windowsDirectorySeparator;

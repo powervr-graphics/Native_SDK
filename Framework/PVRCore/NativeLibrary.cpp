@@ -217,11 +217,12 @@ NativeLibrary::NativeLibrary(const std::string& LibPath) : m_disableErrorPrint(f
 	if (!m_hHostLib)
 	{
 		Log(Log.Critical, "Could not load host library '%s'", LibPath.c_str());
-
 		this->m_bError = true;
-
 	}
-	Log(Log.Debug, "Host library '%s' loaded", LibPath.c_str());
+	else
+	{
+		Log(Log.Debug, "Host library '%s' loaded", LibPath.c_str());
+	}
 }
 
 NativeLibrary::~NativeLibrary()

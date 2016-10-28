@@ -93,7 +93,7 @@ bool TextureReaderBMP::isSupportedFile(Stream& assetStream)
 
 	// Reset the file
 	assetStream.close();
-	
+
 	// Check that the identifier matches
 	if (magic != texture_bmp::Identifier)
 	{
@@ -108,16 +108,6 @@ vector<string> TextureReaderBMP::getSupportedFileExtensions()
 	vector<string> extensions;
 	extensions.push_back("bmp");
 	return vector<string>(extensions);
-}
-
-string TextureReaderBMP::getReaderName()
-{
-	return "PowerVR Windows Bitmap Reader";
-}
-
-string TextureReaderBMP::getReaderVersion()
-{
-	return "1.0.0";
 }
 
 bool TextureReaderBMP::initializeFile()
@@ -424,14 +414,14 @@ bool TextureReaderBMP::translateInfoHeader(const texture_bmp::InfoHeader5& infoH
 	if (infoHeader.compressionType == texture_bmp::CompressionMethod::Bitfields &&
 	    infoHeader.headerSize >= texture_bmp::HeaderSize::Info2)
 	{
-        assertion(false ,  "Check for gaps in the bitfields, these are invalid. A single gap at the end is ok - shove in an X channel.");
+		assertion(false ,  "Check for gaps in the bitfields, these are invalid. A single gap at the end is ok - shove in an X channel.");
 	}
 	else if (infoHeader.compressionType == texture_bmp::CompressionMethod::AlphaBitfields &&
 	         infoHeader.headerSize >= texture_bmp::HeaderSize::Info3)
 	{
-        assertion(false ,  " Check for gaps in the bitfields, and that the scheme can be represented by PVRTexTool. An X channel can't be put in at the end as above if there's already 4 channels.");
-    }
-    else
+		assertion(false ,  " Check for gaps in the bitfields, and that the scheme can be represented by PVRTexTool. An X channel can't be put in at the end as above if there's already 4 channels.");
+	}
+	else
 	{
 		switch (infoHeader.bitsPerPixel)
 		{
@@ -494,7 +484,7 @@ bool TextureReaderBMP::translateInfoHeader(const texture_bmp::InfoHeader5& infoH
 		case texture_bmp::ColorSpace::sRGB:
 		case texture_bmp::ColorSpace::Windows:
 		{
-            header.setColorSpace(types::ColorSpace::lRGB);
+			header.setColorSpace(types::ColorSpace::lRGB);
 			break;
 		}
 		case texture_bmp::ColorSpace::ProfileLinked:
@@ -527,7 +517,7 @@ bool TextureReaderBMP::readImageCoreHeader(const texture_bmp::CoreHeader& coreHe
 	// Create the texture header
 	TextureHeader header;
 	result = translateCoreHeader(coreHeader, header);
-    if(!result){return result;}
+	if (!result) {return result;}
 	// Create the texture from the header
 	texture = Texture(header);
 
@@ -568,7 +558,7 @@ bool TextureReaderBMP::readImageInfoHeader(const texture_bmp::InfoHeader5& infoH
 	// Create the texture header
 	TextureHeader header;
 	result = translateInfoHeader(infoHeader, header);
-    if(!result){return result;}
+	if (!result) {return result;}
 	// Create the texture from the header
 	texture = Texture(header);
 
@@ -581,7 +571,7 @@ bool TextureReaderBMP::readImageInfoHeader(const texture_bmp::InfoHeader5& infoH
 	if (infoHeader.compressionType == texture_bmp::CompressionMethod::RunLength4 ||
 	    infoHeader.compressionType == texture_bmp::CompressionMethod::RunLength8)
 	{
-        assertion(false);
+		assertion(false);
 		return false;
 	}
 	else if (infoHeader.compressionType == texture_bmp::CompressionMethod::None ||
@@ -663,7 +653,7 @@ bool TextureReaderBMP::loadRowAligned(Texture& asset, uint32 bytesPerDataEntry, 
 }
 
 bool TextureReaderBMP::loadIndexed(Texture& asset, uint32 bytesPerPaletteEntry, uint32 bitsPerDataEntry,
-    uint32 numberOfPaletteEntries, uint32 rowAlignment)
+                                   uint32 numberOfPaletteEntries, uint32 rowAlignment)
 {
 	bool result = true;
 	size_t dataRead = 0;
@@ -699,7 +689,7 @@ bool TextureReaderBMP::loadIndexed(Texture& asset, uint32 bytesPerPaletteEntry, 
 
 	// Calculate the number of bytes to skip in each row
 	uint32 bytesPerScanline = (asset.getWidth() + (indicesPerByte - 1)) / indicesPerByte;
-    uint32 scanlinePadding = (((-1 * bytesPerScanline) % rowAlignment) * 8) / 8;
+	uint32 scanlinePadding = (((-1 * bytesPerScanline) % rowAlignment) * 8) / 8;
 
 	// Work out the bit mask of the index value
 	uint8 indexMask = 0xffu >> (8 - bitsPerDataEntry);

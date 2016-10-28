@@ -43,7 +43,7 @@ public:
 			 use it to create a "light" and cleaned up version of the mesh that will be then used to calculate
 			 extruded volumes as required.
 	****************************************************************************************************************/
-	Result::Enum init(const assets::Mesh& mesh);
+	Result init(const assets::Mesh& mesh);
 
 	/*!**************************************************************************************************************
 	\brief    Initialize a shadow volume from raw data.
@@ -60,9 +60,9 @@ public:
 			 data and use it to create a "light", cleaned up version of the mesh that will be henceforth be used to
 			 calculate extruded shadow volumes as required.
 	****************************************************************************************************************/
-	Result::Enum init(const byte* const data, uint32 numVertices, uint32 verticesStride,
-                      types::DataType::Enum vertexType, const byte* const faceData, uint32 numFaces,
-                      types::IndexType::Enum indexType);
+	Result init(const byte* const data, uint32 numVertices, uint32 verticesStride,
+	            types::DataType vertexType, const byte* const faceData, uint32 numFaces,
+	            types::IndexType indexType);
 
 
 	/*!**************************************************************************************************************
@@ -74,7 +74,7 @@ public:
 	/*!**************************************************************************************************************
 	\brief    Delete the Shadow Volume with the provided ID.
 	****************************************************************************************************************/
-	Result::Enum releaseVolume(uint32 volumeID);
+	Result releaseVolume(uint32 volumeID);
 
 	/*!**************************************************************************************************************
 	\brief    Return the size of each vertex attribute in bytes. Is 2 * numVertices * stride.
@@ -149,8 +149,8 @@ public:
 	\param isPointLight Pass true for point (or spot) light, false for directional
 	\param externalIndexBuffer An external buffer that contains custom, user provided index data.
 	****************************************************************************************************************/
-	Result::Enum projectSilhouette(uint32 volumeID, uint32 flags, const glm::vec3& lightModel, bool isPointLight,
-	                               byte** externalIndexBuffer = NULL);
+	Result projectSilhouette(uint32 volumeID, uint32 flags, const glm::vec3& lightModel, bool isPointLight,
+	                         byte** externalIndexBuffer = NULL);
 
 private:
 	void initializeVertexData(byte** externalBuffer = NULL);
@@ -218,8 +218,8 @@ private:
 
 	//Extrude
 	template<typename INDEXTYPE>
-	Result::Enum project(uint32 volumeID, uint32 flags, const glm::vec3& lightModel, bool isPointLight,
-	                     INDEXTYPE** externalIndexBuffer);
+	Result project(uint32 volumeID, uint32 flags, const glm::vec3& lightModel, bool isPointLight,
+	               INDEXTYPE** externalIndexBuffer);
 
 
 	typedef std::map<uint32, ShadowVolumeData> ShadowVolumeMapType;

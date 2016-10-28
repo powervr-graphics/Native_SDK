@@ -11,7 +11,7 @@ namespace pvr {
 /*!*********************************************************************************************************************
 \brief       Contains functionality for the interaction of the Framework with the system it runs on (Console etc).
 ***********************************************************************************************************************/
-namespace system {
+namespace platform {
 /*!*********************************************************************************************************************
 \brief       The ConsoleMessenger is an implementation of Messenger that outputs to the Console window.
 \description  The ConsoleMessenger is an implementation of Messenger that outputs to the Console window.

@@ -12,7 +12,7 @@ using namespace pvr::types;
 /*!*********************************************************************************************************************
 \brief ctor
 ***********************************************************************************************************************/
-ParticleSystemGPU::ParticleSystemGPU(pvr::IAssetProvider& assetLoader)	:
+ParticleSystemGPU::ParticleSystemGPU(pvr::Shell& assetLoader)	:
 	context(assetLoader.getGraphicsContext()), assetProvider(assetLoader),
 	computeShaderSrcFile("ParticleSolver.csh"), workgroupSize(32),
 	/*SIMULATION DATA*/
@@ -52,7 +52,7 @@ bool ParticleSystemGPU::init(pvr::string& errorStr)
 	particleConfigUbo->update(&particleConfigData, 0, sizeof(ParticleConfig));
 	for (pvr::uint8 i = 0; i < NumBuffers; ++i)
 	{
-		descSets[i] = context->createDescriptorSetOnDefaultPool(pipe->getPipelineLayout()->getDescriptorSetLayout()[0]);
+		descSets[i] = context->createDescriptorSetOnDefaultPool(pipe->getPipelineLayout()->getDescriptorSetLayout(0));
 	}
 	return true;
 }
@@ -69,7 +69,8 @@ bool ParticleSystemGPU::createComputePipeline(pvr::string& errorStr)
 	descSetLayoutInfo
 	.setBinding(1, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Compute)
 	.setBinding(2, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Compute)
-	.setBinding(3, DescriptorType::StorageBuffer, 1, ShaderStageFlags::Compute);
+	.setBinding(3, DescriptorType::StorageBuffer, 1, ShaderStageFlags::Compute)
+	.setBinding(4, DescriptorType::StorageBuffer, 1, ShaderStageFlags::Compute);
 	pipeLayoutInfo.setDescSetLayout(0, context->createDescriptorSetLayout(descSetLayoutInfo));
 
 	pvr::api::debugLogApiError("ComputeShaderProgramState::generate enter");

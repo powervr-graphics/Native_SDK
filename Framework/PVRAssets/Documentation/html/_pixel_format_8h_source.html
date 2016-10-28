@@ -157,7 +157,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">    *************************************************************************************************************/</span></div>
 <div class="line"><a name="l00072"></a><span class="lineno"><a class="code" href="classpvr_1_1_pixel_format.html#af85ced046acc13ec4b33ee76697cc12c">   72</a></span>&#160;    uint8 <a class="code" href="classpvr_1_1_pixel_format.html#af85ced046acc13ec4b33ee76697cc12c" title="Get the width of the specified channel. ">getChannelBits</a>(uint8 channel)</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordflow">if</span> (channel &gt; 4) { <span class="keywordflow">return</span> 0; }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordflow">if</span> (channel &gt;= 4) { <span class="keywordflow">return</span> 0; }</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordflow">return</span> m_format.m_pixelTypeChar[channel + 4];</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
@@ -318,133 +318,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;};</div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;}</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;<span class="comment">//namespace pvr {</span></div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="comment">//struct DataFormat</span></div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="comment">//{</span></div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="comment">//public:</span></div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="comment">//  enum InterpretationType</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="comment">//      SFLOAT = 0, UFLOAT = 1, SINT = 2, UINT = 3, SSCALED = 4, USCALED = 5, UNUSED = 6, SPECIAL1 = 7</span></div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="comment">//  };</span></div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<span class="comment">//  //IF ALL HIGH BITS (&gt;=32) ARE ZERO: //Special compressed type. Low bits an enumeration.</span></div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="comment">//  //IF SOME HIGH BITS (&gt;=32) ARE NOT ZERO</span></div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="comment">//  // 0 -  4 : Channel 0 type (character a-z packed into 5 bits. 0 means not present)</span></div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;<span class="comment">//  // 5 -  9 : Channel 1 type (character a-z packed into 5 bits. 0 means not present)</span></div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="comment">//  //10 - 14 : Channel 2 type (character a-z packed into 5 bits. 0 means not present)</span></div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="comment">//  //15 - 19 : Channel 3 type (character a-z packed into 5 bits. 0 means not present)</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="comment">//  //20 - 23 : InterpretationType</span></div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="comment">//  //24 - 32 : RESERVED. must be 0.</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="comment">//  //32 - 39 : Channel 0 width (0-255)</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="comment">//  //40 - 47 : Channel 1 width (0-255)</span></div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="comment">//  //48 - 55 : Channel 2 width (0-255)</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="comment">//  //56 - 63 : Channel 3 width (0-255)</span></div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="comment">//  uint64 dataFormat; // 0-4:C1, 5-9:C2, 10-14:C3, 15-19: C5, 20-23: Scaling, 25-31:NONE, 32-63: Channel width</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="comment">//  //LOW_5_BITS_SET = 31, bits 6-7 set: 96</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="comment">//  bool isSpecialFormat() { return !(dataFormat &amp; 0xFFFFFFFF00000000ull); }</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="comment">//  uint8 getChannelType0() { return (dataFormat &amp; 31) | 96 ; } //Unpacks an english character without case, from 5 bits into an ASCII character</span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="comment">//  uint8 getChannelType1() { return ((dataFormat &gt;&gt; 5) &amp; 31) | 96 ; }</span></div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="comment">//  uint8 getChannelType2() { return ((dataFormat &gt;&gt; 10) &amp; 31) | 96; }</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="comment">//  uint8 getChannelType3() { return ((dataFormat &gt;&gt; 15) &amp; 31) | 96; }</span></div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="comment">//  uint8 getChannelType(uint8 index) { return ((dataFormat &gt;&gt; (index * 5)) &amp; 31) | 96; }</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="comment">//  uint8 getChannelWidth0() { return (dataFormat &gt;&gt; 32) &amp; 0xFF; }</span></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="comment">//  uint8 getChannelWidth1() { return (dataFormat &gt;&gt; 40) &amp; 0xFF; }</span></div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<span class="comment">//  uint8 getChannelWidth2() { return (dataFormat &gt;&gt; 48) &amp; 0xFF; }</span></div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="comment">//  uint8 getChannelWidth3() { return (dataFormat &gt;&gt; 56) &amp; 0xFF; }</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="comment">//  uint8 getChannelWidth(uint8 index) { return (dataFormat &gt;&gt; (32 + index * 8)) &amp; 0xFF; }</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;<span class="comment">//  InterpretationType getInterpretation() { return (InterpretationType)((dataFormat &gt;&gt; 20) &amp; 7); }</span></div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;<span class="comment">//  bool isUniform() { return (InterpretationType)((dataFormat &gt;&gt; 24) &amp; 1); }</span></div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;<span class="comment">//  uint8 getUniformWidth() {}</span></div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;<span class="comment">//  void setChannelType0(uint8 channelType)</span></div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="comment">//      dataFormat &amp;= 0xFFFFFFFFFFFFFFE0ull; //~31</span></div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="comment">//      dataFormat |= packChannelType(channelType);</span></div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="comment">//  void setChannelType1(uint8 channelType)</span></div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="comment">//      dataFormat &amp;= 0xFFFFFFFFFFFFFC1Full; //~(31&lt;&lt;5)</span></div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="comment">//      dataFormat |= (packChannelType(channelType) &lt;&lt; 5);</span></div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="comment">//  void setChannelType2(uint8 channelType)</span></div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="comment">//      dataFormat &amp;= 0xFFFFFFFFFFFF83FFull; //~31(31&lt;&lt;10)</span></div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="comment">//      dataFormat |= (packChannelType(channelType) &lt;&lt; 10);</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="comment">//  void setChannelType3(uint8 channelType)</span></div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;<span class="comment">//      dataFormat &amp;= 0xFFFFFFFFFFF07FFFull; //~31(31&lt;&lt;15)</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;<span class="comment">//      dataFormat |= (packChannelType(channelType) &lt;&lt; 15);</span></div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="comment">//  void setChannelType(uint8 channelIndex, uint8 channelType)</span></div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="comment">//      dataFormat &amp;= ~(31ull &lt;&lt; (channelIndex * 5));</span></div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="comment">//      dataFormat |= (packChannelType(channelType) &lt;&lt; (channelIndex * 5));</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="comment">//  void setChannelWidth0(uint8 channelWidth)</span></div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="comment">//      dataFormat &amp;= 0xFFFFFF00FFFFFFFFull; //~31</span></div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;<span class="comment">//      dataFormat |= (uint64(channelWidth) &lt;&lt; 32);</span></div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;<span class="comment">//  void setChannelWidth1(uint8 channelWidth)</span></div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;<span class="comment">//      dataFormat &amp;= 0xFFFF00FFFFFFFFFFull; //~(31&lt;&lt;5)</span></div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="comment">//      dataFormat |= (uint64(channelWidth) &lt;&lt; 40);</span></div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;<span class="comment">//  void setChannelWidth2(uint8 channelWidth)</span></div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;<span class="comment">//      dataFormat &amp;= 0xFF00FFFFFFFFFFFFull; //~31(31&lt;&lt;10)</span></div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="comment">//      dataFormat |= (uint64(channelWidth) &lt;&lt; 48);</span></div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;<span class="comment">//  void setChannelWidth3(uint8 channelWidth)</span></div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;<span class="comment">//      dataFormat &amp;= 0x00FFFFFFFFFFFFFFull; //~31(31&lt;&lt;15)</span></div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<span class="comment">//      dataFormat |= (uint64(channelWidth) &lt;&lt; 56);</span></div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;<span class="comment">//  void setChannelWidth(uint8 channelIndex, uint8 channelWidth)</span></div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;<span class="comment">//      dataFormat &amp;= ~(0xFFull &lt;&lt; (32 + channelIndex * 8));</span></div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;<span class="comment">//      dataFormat |= (uint64(channelWidth) &lt;&lt; (32 + channelIndex * 8));</span></div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;<span class="comment">//  uint8 getNumberOfChannels()</span></div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="comment">//      return dataFormat &gt;&gt; 32 ? dataFormat &gt;&gt; 40 ? dataFormat &gt;&gt; 48 ? dataFormat &gt;&gt; 56 ? 4 : 3 : 2 : 1 : 0;</span></div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;<span class="comment">//  DataFormat(InterpretationType type, uint8 c0type, uint8 c0width)</span></div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<span class="comment">//      dataFormat = packChannelType(c0type) | (uint64(c0width) &lt;&lt; 32) | type &lt;&lt; 20;</span></div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;<span class="comment">//  DataFormat(uint8 c0type, uint8 c0width, uint8 c1type, uint8 c1width, InterpretationType type)</span></div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;<span class="comment">//      dataFormat = packChannelType(c0type) | (uint64(c0width) &lt;&lt; 32) |</span></div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;<span class="comment">//                   (packChannelType(c1type) &lt;&lt; 5) | (uint64(c1width) &lt;&lt; 40) | type &lt;&lt; 20;</span></div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;<span class="comment">//  DataFormat(InterpretationType type, uint8 c0type, uint8 c0width, uint8 c1type, uint8 c1width, uint8 c2type, uint8 c2width)</span></div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;<span class="comment">//      dataFormat = packChannelType(c0type) | (uint64(c0width) &lt;&lt; 32) | (packChannelType(c1type) &lt;&lt; 5) | (uint64(c1width) &lt;&lt; 40) |</span></div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;<span class="comment">//                   (packChannelType(c2type) &lt;&lt; 10) | (uint64(c2width) &lt;&lt; 48) | type &lt;&lt; 20;</span></div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;<span class="comment">//  DataFormat(InterpretationType type, uint8 c0type, uint8 c0width, uint8 c1type, uint8 c1width, uint8 c2type, uint8 c2width, uint8 c3type, uint8 c3width)</span></div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;<span class="comment">//  {</span></div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;<span class="comment">//      dataFormat = packChannelType(c0type) | (uint64(c0width) &lt;&lt; 32) | (packChannelType(c1type) &lt;&lt; 5) | (uint64(c1width) &lt;&lt; 40) |</span></div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;<span class="comment">//                   (packChannelType(c2type) &lt;&lt; 10) | (uint64(c2width) &lt;&lt; 48) | (packChannelType(c3type) &lt;&lt; 15) | (uint64(c2width) &lt;&lt; 56) | type &lt;&lt; 20;</span></div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;<span class="comment">//  }</span></div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;<span class="comment">//  private:</span></div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;<span class="comment">//      uint32 packChannelType(uint8 channelType)</span></div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;<span class="comment">//      {</span></div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;<span class="comment">//          return channelType &amp; 31;</span></div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;<span class="comment">//      }</span></div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;<span class="comment">//};</span></div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;<span class="comment">//}</span></div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;<span class="comment">//</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

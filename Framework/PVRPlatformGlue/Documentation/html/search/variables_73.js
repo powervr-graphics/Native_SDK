@@ -7,6 +7,7 @@ var searchData=
   ['setblobcachefuncsandroid',['SetBlobCacheFuncsANDROID',['../classeglext.html#abcf7508211cbc9ea99173ff00f1d4d73',1,'eglext']]],
   ['setswaprectangleandroid',['SetSwapRectangleANDROID',['../classeglext.html#a8ca34a052c9c7c4e5bdfbd768a47555e',1,'eglext']]],
   ['signalsynckhr',['SignalSyncKHR',['../classeglext.html#acc4267577ef837d87a94363398c58764',1,'eglext']]],
+  ['supportpvrtcimage',['supportPvrtcImage',['../structpvr_1_1system_1_1_native_platform_handles__.html#a0aad290565d72334de37f1d92efe0d67',1,'pvr::system::NativePlatformHandles_']]],
   ['supports_5fegl_5fandroid_5fblob_5fcache',['supports_EGL_ANDROID_blob_cache',['../classpvr_1_1native_1_1_egl_extensions.html#a4c559f07ddb08962f6c103d072d6cac1',1,'pvr::native::EglExtensions']]],
   ['supports_5fegl_5fandroid_5fframebuffer_5ftarget',['supports_EGL_ANDROID_framebuffer_target',['../classpvr_1_1native_1_1_egl_extensions.html#a28eb9dc67a60428572375121ff007986',1,'pvr::native::EglExtensions']]],
   ['supports_5fegl_5fandroid_5fget_5frender_5fbuffer',['supports_EGL_ANDROID_get_render_buffer',['../classpvr_1_1native_1_1_egl_extensions.html#a2232817810216bb74914993a25c7b9cb',1,'pvr::native::EglExtensions']]],

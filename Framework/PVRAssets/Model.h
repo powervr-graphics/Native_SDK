@@ -37,22 +37,44 @@ typedef RefCountedResource<Light> LightHandle;
                 kinds of data to be stored in the Nodes.
                 The class contains a tree-like structure of Nodes. Each Node can be a Mesh node (containing a Mesh), Camera
                 node or Light node. The tree-structure assumes transformational hierarchy (as usual).
-				Transformations are expressed through Animation objects (a static transform is an animation with a single frame)
-				There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and
-				Light nodes.
+                Transformations are expressed through Animation objects (a static transform is an animation with a single frame)
+                There is an implicit order in the nodes - First in the array the Mesh nodes will be laid out, then Camera and
+                Light nodes.
 ***********************************************************************************************************************/
 class Model : public Asset<Model>
 {
 public:
+
+	const FreeValue* getModelSemantic(const StringHash& semantic) const
+	{
+		auto it = m_data.semantics.find(semantic);
+		if (it == m_data.semantics.end())
+		{
+			return NULL;
+		}
+		return &it->second;
+	}
+	const RefCountedResource<void>& getUserDataPtr() const
+	{
+		return this->m_data.userDataPtr;
+	}
+	RefCountedResource<void> getUserDataPtr()
+	{
+		return this->m_data.userDataPtr;
+	}
+	void setUserDataPtr(const RefCountedResource<void>& ptr)
+	{
+		m_data.userDataPtr = ptr;
+	}
 	typedef assets::Mesh Mesh;
 	/*!*********************************************************************************************************************
 	\brief 			The Node represents a Mesh, Camera or Light.
 	                  A Node has its own parenting, material, animation and custom user data. The tree-structure assumes
 	                transformational hierarchy (as usual), so parent transformations should be applied to children.
-					Transformations are expressed through Animation objects (a static transform is an animation with a single
-					frame).
-					Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense)
-					because Meshes are always laid out first in the internal list of Nodes.
+	                Transformations are expressed through Animation objects (a static transform is an animation with a single
+	                frame).
+	                Note: Node ID and MeshID can sometimes be confusing: They will always be the same (when a MeshID makes sense)
+	                because Meshes are always laid out first in the internal list of Nodes.
 	***********************************************************************************************************************/
 	class Node
 	{
@@ -63,7 +85,7 @@ public:
 		struct InternalData
 		{
 			StringHash name;		//!< Name of object
-			int32 objectIndex;	//!< Index into mesh, light or camera array, depending on which object list contains this Node
+			int32 objectIndex;		//!< Index into mesh, light or camera array, depending on which object list contains this Node
 			int32 materialIndex;	//!< Index of material used on this mesh
 			int32 parentIndex;		//!< Index into Node array; recursively apply ancestor's transforms after this instance's.
 			Animation animation;
@@ -113,7 +135,7 @@ public:
 		\brief Get the size of this Node's user data.
 		\return Return The size in bytes of the user data of this Node
 		*****************************************************************************************************************/
-		const uint32 getUserDataSize() const { return (uint32)m_data.userData.size(); }
+		uint32 getUserDataSize() const { return (uint32)m_data.userData.size(); }
 
 		/*!***************************************************************************************************************
 		\brief Set mesh id. Must correlate with the actual position of this node in the data.
@@ -224,7 +246,7 @@ public:
 
 		enum BlendOperation
 		{
-			BlendOpAdd = 0x8006,            //!< Blend Operation (Add)
+			BlendOpAdd = 0x8006,			//!< Blend Operation (Add)
 			BlendOpMin,                     //!< Blend Operation (Min)
 			BlendOpMax,                     //!< Blend Operation (Max)
 			BlendOpSubtract = 0x800A,       //!< Blend Operation (Subtract)
@@ -286,6 +308,21 @@ public:
 		};
 
 	public:
+		/*!***************************************************************************************************************
+		        \brief Get material attribute.
+		        \return Material attribute
+		*****************************************************************************************************************/
+		bool hasSemantic(const StringHash& semantic) const
+		{
+			static bool first_run_warning = true;
+			if (first_run_warning)
+			{
+				Log(Log.Warning, "pvr::assets::Model::Material::hasSemantic : Only Texture semantic is supported. If other semantics are tested,"
+				    "it will always return false. This may cause issues with Pipeline Creation in the render manager.");
+				first_run_warning = false;
+			}
+			return getTextureIndex(semantic) != -1;
+		}
 
 		/*!***************************************************************************************************************
 		\brief Get material ambient.
@@ -323,11 +360,43 @@ public:
 		*****************************************************************************************************************/
 		void setEffectFile(const StringHash& name) { m_data.effectFile = name; }
 
+
 		/*!***************************************************************************************************************
 		\brief Get the diffuse color texture's index in the scene.
-		    \return Return the diffuse texture index
+		\return Return the diffuse texture index
+		*****************************************************************************************************************/
+		int32 getTextureIndex(const StringHash& semantic) const
+		{
+
+			switch (semantic.getHash())
+			{
+			case HashCompileTime<'D', 'I', 'F', 'F', 'U', 'S', 'E', 'M', 'A', 'P'>::value: return getDiffuseTextureIndex();
+			case HashCompileTime<'D', 'I', 'F', 'F', 'U', 'S', 'E', 'T', 'E', 'X'>::value: return getDiffuseTextureIndex();
+			case HashCompileTime<'D', 'I', 'F', 'F', 'U', 'S', 'E', 'T', 'E', 'X', 'T', 'U', 'R', 'E'>::value: return getDiffuseTextureIndex();
+			case HashCompileTime<'N', 'O', 'R', 'M', 'A', 'L', 'M', 'A', 'P'>::value: return getBumpMapTextureIndex();
+			case HashCompileTime<'N', 'O', 'R', 'M', 'A', 'L', 'T', 'E', 'X'>::value: return getBumpMapTextureIndex();
+			case HashCompileTime<'N', 'O', 'R', 'M', 'A', 'L', 'T', 'E', 'X', 'T', 'U', 'R', 'E'>::value: return getBumpMapTextureIndex();
+			case HashCompileTime<'S', 'P', 'E', 'C', 'U', 'L', 'A', 'R', 'C', 'O', 'L', 'O', 'R', 'M', 'A', 'P'>::value: return getSpecularColorTextureIndex();
+			case HashCompileTime<'S', 'P', 'E', 'C', 'U', 'L', 'A', 'R', 'C', 'O', 'L', 'O', 'R', 'T', 'E', 'X'>::value: return getSpecularColorTextureIndex();
+			case HashCompileTime<'S', 'P', 'E', 'C', 'U', 'L', 'A', 'R', 'C', 'O', 'L', 'O', 'R', 'T', 'E', 'X', 'T', 'U', 'R', 'E'>::value: return getSpecularColorTextureIndex();
+			case HashCompileTime<'S', 'P', 'E', 'C', 'U', 'L', 'A', 'R', 'L', 'E', 'V', 'E', 'L', 'M', 'A', 'P'>::value: return getSpecularColorTextureIndex();
+			case HashCompileTime<'S', 'P', 'E', 'C', 'U', 'L', 'A', 'R', 'L', 'E', 'V', 'E', 'L', 'T', 'E', 'X'>::value: return getSpecularColorTextureIndex();
+			case HashCompileTime<'S', 'P', 'E', 'C', 'U', 'L', 'A', 'R', 'L', 'E', 'V', 'E', 'L', 'T', 'U', 'R', 'E'>::value: return getSpecularColorTextureIndex();
+			case HashCompileTime<'E', 'M', 'I', 'S', 'S', 'I', 'V', 'E', 'M', 'A', 'P'>::value: return getSpecularColorTextureIndex();
+			case HashCompileTime<'G', 'L', 'O', 'S', 'S', 'I', 'N', 'E', 'S', 'S', 'M', 'A', 'P'>::value: return getSpecularColorTextureIndex();
+			case HashCompileTime<'O', 'P', 'A', 'C', 'I', 'T', 'Y', 'M', 'A', 'P'>::value: return getSpecularColorTextureIndex();
+			case HashCompileTime<'R', 'E', 'F', 'L', 'E', 'C', 'T', 'I', 'O', 'N', 'M', 'A', 'P'>::value: return getSpecularColorTextureIndex();
+			case HashCompileTime<'R', 'E', 'F', 'R', 'A', 'C', 'T', 'I', 'O', 'N', 'M', 'A', 'P'>::value: return getSpecularColorTextureIndex();
+			}
+			return -1;
+		}
+
+		/*!***************************************************************************************************************
+		\brief Get the diffuse color texture's index in the scene.
+		\return Return the diffuse texture index
 		*****************************************************************************************************************/
 		int32 getDiffuseTextureIndex() const { return m_data.diffuseTextureIndex; }
+
 
 		/*!***************************************************************************************************************
 		\brief Return the ambient color texture's index in the scene.
@@ -473,21 +542,21 @@ public:
 	***********************************************************************************************************************/
 	struct InternalData
 	{
+		pvr::ContiguousMap<StringHash, FreeValue> semantics; //
+
 		float32	clearColor[3];			//!< Background color
 		float32	ambientColor[3];		//!< Ambient color
 
 		std::vector<Mesh> meshes;		//!< Mesh array. Any given mesh can be referenced by multiple Nodes.
 		std::vector<Camera> cameras;	//!< Camera array. Any given mesh can be referenced by multiple Nodes.
 		std::vector<Light> lights;		//!< Light array. Any given mesh can be referenced by multiple Nodes.
-
+		std::vector<Texture> textures;	//!< Textures in this Model
+		std::vector<Material> materials;//!< Materials in this Model
 		std::vector<Node> nodes;		//!< Nodes array. The nodes are sorted thus: First Mesh Nodes, then Light Nodes, then Camera nodes.
 
 		uint32 numMeshNodes;			//!< Number of items in the nodes array which are Meshes
 		uint32 numLightNodes;			//!< Number of items in the nodes array which are Meshes
 		uint32 numCameraNodes;			//!< Number of items in the nodes array which are Meshes
-
-		std::vector<Texture> textures;	//!< Textures in this Model
-		std::vector<Material> materials;//!< Materials in this Model
 
 		uint32 numFrames;				//!< Number of frames of animation
 		float32 currentFrame;			//!< Current frame in the animation
@@ -497,6 +566,7 @@ public:
 
 		float32	units;					//!< Unit scaling
 		uint32 flags;					//!< Flags
+		RefCountedResource<void> userDataPtr; //!< Can be used to store any kind of data that the user wraps in a refcounted resource
 
 		/*!***************************************************************************************************************
 		\brief ctor.
@@ -508,12 +578,36 @@ public:
 		}
 	};
 public:
+	void releaseVertexData()
+	{
+		for (uint32 i = 0; i < getNumMeshes(); ++i)
+		{
+			releaseVertexData(i);
+		}
+	}
+
+	void releaseVertexData(uint32 meshId)
+	{
+		Mesh& mesh = getMesh(meshId);
+		for (pvr::uint32 i = 0; i < mesh.getNumDataElements(); ++i)
+		{
+			mesh.removeData(i);
+		}
+		mesh.getFaces().setData(0, 0);
+	}
+
+	/*!*********************************************************************************************************************
+	\brief Return the world-space position of a light. Corresponds to the Model's current frame of animation.
+	\param lightId The node for which to return the world matrix.
+	\return Return The world matrix of (nodeId).
+	***********************************************************************************************************************/
+	glm::vec3 getLightPosition(uint32 lightId) const;
 
 	/*!*********************************************************************************************************************
 	\brief Return the model-to-world matrix of a node. Corresponds to the Model's current frame of animation.
 	         This version will store a copy of the matrix in an internal cache so that repeated calls for it will use the cached
 	       copy of it. Will also store the cached versions of all parents of this node, or use cached versions of them if they
-		   exist. Use this if you have long hierarchies and/or repeated calls per frame.
+	       exist. Use this if you have long hierarchies and/or repeated calls per frame.
 	\param nodeId The node for which to return the world matrix.
 	\return Return The world matrix of (nodeId).
 	***********************************************************************************************************************/
@@ -789,10 +883,17 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Get the material with the specified index.
-	  \param[in] index The index of material to get
-	  \return Return a material from this scene
+	\param[in] index The index of material to get
+	\return Return a material from this scene
 	***********************************************************************************************************************/
 	const Material& getMaterial(uint32 index) const { return m_data.materials[index]; }
+
+	/*!*********************************************************************************************************************
+	\brief Get the material with the specified index.
+	\param[in] index The index of material to get
+	\return Return a material from this scene
+	***********************************************************************************************************************/
+	Material& getMaterial(uint32 index) { return m_data.materials[index]; }
 
 	/*!*********************************************************************************************************************
 	\brief Get the total number of frames in the scene.
@@ -891,7 +992,7 @@ public:
 	\param[out] direction The direction of the light.
 	\description If lightIdx >= number of lights, an error will be logged and this function will have no effect.
 	***********************************************************************************************************************/
-	void getLightDirection(int32 lightIdx, glm::vec3& direction);
+	void getLightDirection(int32 lightIdx, glm::vec3& direction) const;
 
 	/*!*********************************************************************************************************************
 	\brief Get the position of a point or spot light.
@@ -900,7 +1001,7 @@ public:
 	\return False if \p lightIdx does not exist
 	\description If lightIdx >= number of lights, an error will be logged and this function will have no effect.
 	***********************************************************************************************************************/
-	void getLightPosition(int32 lightIdx, glm::vec3& position);
+	void getLightPosition(int32 lightIdx, glm::vec3& position) const;
 
 	/*!*********************************************************************************************************************
 	\brief Get the position of a point or spot light.
@@ -908,7 +1009,7 @@ public:
 	\param[out] position The position of the light.
 	\description If lightIdx >= number of lights, an error will be logged and this function will have no effect.
 	***********************************************************************************************************************/
-	void getLightPosition(int32 lightIdx, glm::vec4& position);
+	void getLightPosition(int32 lightIdx, glm::vec4& position) const;
 
 	/*!*********************************************************************************************************************
 	\brief Free the resources of this model.
@@ -921,7 +1022,6 @@ public:
 private:
 	InternalData m_data;
 
-	//-------------------------------How does the cache work?
 	struct Cache
 	{
 		float32 frameFraction;
@@ -954,25 +1054,31 @@ typedef Model::Mesh::VertexAttributeData VertexAttributeData;
 typedef RefCountedResource<Node> NodeHandle;
 typedef RefCountedResource<Material> MaterialHandle;
 
-inline MeshHandle getMeshHandle(ModelHandle& model, int meshId)
+inline MeshHandle getMeshHandle(ModelHandle model, int meshId)
 {
 	MeshHandle handle;
 	handle.shareRefCountFrom(model, &model->getMesh(meshId));
 	return handle;
 }
-inline LightHandle getLightHandle(ModelHandle& model, int lightId)
+inline MaterialHandle getMaterialHandle(ModelHandle model, int materialId)
+{
+	MaterialHandle handle;
+	handle.shareRefCountFrom(model, &model->getMaterial(materialId));
+	return handle;
+}
+inline LightHandle getLightHandle(ModelHandle model, int lightId)
 {
 	LightHandle handle;
 	handle.shareRefCountFrom(model, &model->getLight(lightId));
 	return handle;
 }
-inline CameraHandle getCameraHandle(ModelHandle& model, int cameraId)
+inline CameraHandle getCameraHandle(ModelHandle model, int cameraId)
 {
 	CameraHandle handle;
 	handle.shareRefCountFrom(model, &model->getCamera(cameraId));
 	return handle;
 }
-inline NodeHandle getNodeHandle(ModelHandle& model, int nodeId)
+inline NodeHandle getNodeHandle(ModelHandle model, int nodeId)
 {
 	NodeHandle handle;
 	handle.shareRefCountFrom(model, &model->getNode(nodeId));

@@ -35,8 +35,8 @@ const pvr::uint32 IntroTime = 4000;
 const pvr::uint32 IntroFadeTime = 1000;
 const pvr::uint32 TitleTime = 4000;
 const pvr::uint32 TitleFadeTime = 1000;
-const pvr::uint32 TextFadeStart = 300.0f;
-const pvr::uint32 TextFadeEnd = 500.0f;
+const pvr::uint32 TextFadeStart = 300;
+const pvr::uint32 TextFadeEnd = 500;
 
 namespace Language {
 enum Enum
@@ -87,11 +87,11 @@ class OGLES3IntroducingUIRenderer : public pvr::Shell
 	pvr::api::CommandBuffer primaryCommandBuffer;
 
 public:
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 
 	void generateBackgroundTexture(pvr::uint32 screenWidth, pvr::uint32 screenHeight);
 
@@ -138,7 +138,7 @@ void OGLES3IntroducingUIRenderer::recordCommandBuffers()
 		Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
 		If the rendering context is lost, initApplication() will not be called again.
 *********************************************************************************************************************/
-pvr::Result::Enum OGLES3IntroducingUIRenderer::initApplication()
+pvr::Result OGLES3IntroducingUIRenderer::initApplication()
 {
 	// Because the C++ standard states that only ASCII characters are valid in compiled code,
 	// we are instead using an external resource file which contains all of the text to be
@@ -177,7 +177,7 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::initApplication()
 \brief		Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
 			If the rendering context is lost, quitApplication() will not be called.
 *********************************************************************************************************************/
-pvr::Result::Enum OGLES3IntroducingUIRenderer::quitApplication() {	return pvr::Result::Success; }
+pvr::Result OGLES3IntroducingUIRenderer::quitApplication() {	return pvr::Result::Success; }
 
 /*!******************************************************************************************************************
 \brief	Generates a simple background texture procedurally.
@@ -190,7 +190,7 @@ void OGLES3IntroducingUIRenderer::generateBackgroundTexture(pvr::uint32 screenWi
 	pvr::uint32 width = pvr::math::makePowerOfTwoHigh(screenWidth);
 	pvr::uint32 height = pvr::math::makePowerOfTwoHigh(screenHeight);
 
-	pvr::assets::TextureHeader::Header hd(true);
+	pvr::assets::TextureHeader::Header hd;
 	hd.channelType = pvr::VariableType::UnsignedByteNorm;
 	hd.pixelFormat = pvr::assets::GeneratePixelType1<'l', 8>::ID;
 	hd.colorSpace = pvr::types::ColorSpace::lRGB;
@@ -222,13 +222,13 @@ void OGLES3IntroducingUIRenderer::generateBackgroundTexture(pvr::uint32 screenWi
 \param[out] font returned font
 \return Return pvr::Result::Success if no error occurred.
 *********************************************************************************************************************/
-inline pvr::Result::Enum loadFontFromResources(pvr::Shell& streamManager, const char* filename,
-        pvr::ui::UIRenderer& uirenderer, pvr::ui::Font& font)
+inline pvr::Result loadFontFromResources(pvr::Shell& streamManager, const char* filename,
+    pvr::ui::UIRenderer& uirenderer, pvr::ui::Font& font)
 {
 	// the AssetStore is unsuitable for loading the font, because it does not keep the actual texture data that we need.
 	// The assetStore immediately releases the texture data as soon as it creates the API objects and the texture header.
 	// Hence we use texture load.
-	pvr::Result::Enum res;
+	pvr::Result res;
 	pvr::Stream::ptr_type fontFile = streamManager.getAssetStream(filename);
 	if (!fontFile.get() || !fontFile->isReadable())	{	return pvr::Result::NotFound;  	}
 	pvr::assets::Texture tmpTexture;
@@ -245,11 +245,11 @@ inline pvr::Result::Enum loadFontFromResources(pvr::Shell& streamManager, const 
 \brief	Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
 		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 *********************************************************************************************************************/
-pvr::Result::Enum OGLES3IntroducingUIRenderer::initView()
+pvr::Result OGLES3IntroducingUIRenderer::initView()
 {
 	assetStore.init(*this);
 	onScreenFbo = getGraphicsContext()->createOnScreenFbo(0);
-	uiRenderer.init(getGraphicsContext(), onScreenFbo->getRenderPass(), 0);
+	uiRenderer.init(onScreenFbo->getRenderPass(), 0);
 
 	commandBufferWithIntro = getGraphicsContext()->createSecondaryCommandBufferOnDefaultPool();
 	commandBufferWithText = getGraphicsContext()->createSecondaryCommandBufferOnDefaultPool();
@@ -263,7 +263,7 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::initView()
 	// to memory, and the size of the file.
 	pvr::ui::Font subTitleFont, centralTitleFont, centralTextFont;
 	{
-		pvr::Result::Enum res;
+		pvr::Result res;
 		if ((res = loadFontFromResources(*this, CentralTitleFontFile, uiRenderer, centralTitleFont)) != pvr::Result::Success)
 		{
 			this->setExitMessage("ERROR: Failed to create font from file %s", CentralTitleFontFile);
@@ -318,10 +318,10 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::initView()
 
 	// Generate background texture
 	generateBackgroundTexture(getWidth(), getHeight());
-	textStartY = -uiRenderer.getRenderingDimY() - centralTextGroup->getDimensions().y;
-	pvr::uint32 linesSize = centralTextLines.size() * centralTextLines[0]->getDimensions().y;
-	textEndY = uiRenderer.getRenderingDimY() + linesSize * .5f;
-	textOffset = textStartY;
+	textStartY = (pvr::int32)(-uiRenderer.getRenderingDimY() - centralTextGroup->getDimensions().y);
+	pvr::float32 linesSize = centralTextLines.size() * centralTextLines[0]->getDimensions().y;
+	textEndY = (pvr::int32)(uiRenderer.getRenderingDimY() + linesSize * .5f);
+	textOffset = (pvr::float32)textStartY;
 	recordCommandBuffers();
 	return pvr::Result::Success;
 }
@@ -330,7 +330,7 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::initView()
 \return	Result::Success if no error occurred
 \brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 *********************************************************************************************************************/
-pvr::Result::Enum OGLES3IntroducingUIRenderer::releaseView()
+pvr::Result OGLES3IntroducingUIRenderer::releaseView()
 {
 	// Release uiRenderer Textures
 	uiRenderer.release();
@@ -355,7 +355,7 @@ pvr::Result::Enum OGLES3IntroducingUIRenderer::releaseView()
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 \return	Result::Success if no error occurred
 *********************************************************************************************************************/
-pvr::Result::Enum OGLES3IntroducingUIRenderer::renderFrame()
+pvr::Result OGLES3IntroducingUIRenderer::renderFrame()
 {
 	// Clears the color and depth buffer
 	pvr::uint64 currentTime = this->getTime() - this->getTimeAtInitApplication();
@@ -478,7 +478,7 @@ void OGLES3IntroducingUIRenderer::updateCentralText(pvr::uint64 currentTime)
 	float fSpeedInc = 0.0f;
 	if (textOffset > 0.0f) { fSpeedInc = textOffset / textEndY; }
 	textOffset += (0.75f + (1.0f * fSpeedInc)) * fFPSScale;
-	if (textOffset > textEndY) { textOffset = textStartY; }
+	if (textOffset > (pvr::float32)textEndY) { textOffset = (pvr::float32)textStartY; }
 
 	glm::mat4 trans = glm::translate(glm::vec3(0.0f, textOffset, 0.0f));
 

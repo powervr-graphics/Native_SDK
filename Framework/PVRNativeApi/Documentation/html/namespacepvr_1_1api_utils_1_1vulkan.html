@@ -92,6 +92,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a184c0e0748b50d2aaa3463f61c86b16c"><td class="mdescLeft">&#160;</td><td class="mdescRight">allocate buffer's device memory  <a href="#a184c0e0748b50d2aaa3463f61c86b16c">More...</a><br/></td></tr>
 <tr class="separator:a184c0e0748b50d2aaa3463f61c86b16c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b983bb0e2a074c17a22ff1f1546e63c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_utils_1_1vulkan.html#a7b983bb0e2a074c17a22ff1f1546e63c">createBuffer</a> (VkDevice device, VkPhysicalDeviceMemoryProperties &amp;deviceMemProperty, VkMemoryPropertyFlagBits allocMemProperty, types::BufferBindingUse::Bits <a class="el" href="_api_gles2_8h.html#afb85c5d9b1bce96aa3b530d581194d1a">usage</a>, pvr::uint32 <a class="el" href="_api_gles2_8h.html#a3d1e3edfcf61ca2d831883e1afbad89e">size</a>, <a class="el" href="structpvr_1_1native_1_1_h_buffer__.html">native::HBuffer_</a> &amp;outBuffer, VkMemoryRequirements *outMemRequirements)</td></tr>
+<tr class="memdesc:a7b983bb0e2a074c17a22ff1f1546e63c"><td class="mdescLeft">&#160;</td><td class="mdescRight">create Buffer  <a href="#a7b983bb0e2a074c17a22ff1f1546e63c">More...</a><br/></td></tr>
 <tr class="separator:a7b983bb0e2a074c17a22ff1f1546e63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d3d68b4fae148081527f641f3cb0631"><td class="memItemLeft" align="right" valign="top">pvr::uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1api_utils_1_1vulkan.html#a8d3d68b4fae148081527f641f3cb0631">getVkBufferUsage</a> (types::BufferBindingUse::Bits <a class="el" href="_api_gles2_8h.html#afb85c5d9b1bce96aa3b530d581194d1a">usage</a>)</td></tr>
 <tr class="separator:a8d3d68b4fae148081527f641f3cb0631"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -206,6 +207,22 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>create Buffer </p>
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Return true if succceed </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">device</td><td>Device used for allocation </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">deviceMemProperty</td><td>Physical device memory property </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">allocMemProperty</td><td>memory allocation flag (VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT etc ) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">usage</td><td>Buffer usage </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Buffer size </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">outBuffer</td><td>The buffer to be created </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">outMemRequirements</td><td>Return memory requirements if not NULL </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

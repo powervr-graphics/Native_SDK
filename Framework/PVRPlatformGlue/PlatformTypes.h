@@ -9,7 +9,7 @@
 #include "PVRCore/RefCounted.h"
 
 namespace pvr {
-namespace system {
+namespace platform {
 /*!*********************************************************************************************************************
 \brief         Wrapper struct containing all platform-specific handles used by a graphics context. Forward declaration.
 ***********************************************************************************************************************/

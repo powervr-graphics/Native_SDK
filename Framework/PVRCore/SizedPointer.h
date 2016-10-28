@@ -40,7 +40,7 @@ public:
 	/*!**************************************************************************************************************
 	\brief return the size of the object
 	****************************************************************************************************************/
-	const size_t getSize() const{	return m_size;	}
+    size_t getSize() const{	return m_size;	}
 
 private:
 	TYPE* m_pointer;

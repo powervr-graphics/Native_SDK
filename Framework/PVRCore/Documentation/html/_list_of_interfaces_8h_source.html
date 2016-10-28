@@ -228,7 +228,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        {</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;            <span class="keywordflow">while</span> (list.<a class="code" href="classpvr_1_1_ring_buffer.html#adf5890cc29f5033ac4198ce3c22df442">size</a>())</div>
 <div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;            {</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                <span class="keyword">delete</span>(list.<a class="code" href="classpvr_1_1_ring_buffer.html#ae4d491c1a0d62c5ac7a669a9007c2fa8">front</a>());</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                free(list.<a class="code" href="classpvr_1_1_ring_buffer.html#ae4d491c1a0d62c5ac7a669a9007c2fa8">front</a>());</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;                list.<a class="code" href="classpvr_1_1_ring_buffer.html#a8c0d6336be4b296c38930730eabffec6" title="Delete the item at the front of the buffer. Undefined if the buffer is empty. ">pop_front</a>();</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;            }</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        }</div>

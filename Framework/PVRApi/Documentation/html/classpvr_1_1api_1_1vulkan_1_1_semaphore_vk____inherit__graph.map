@@ -1,3 +1,3 @@
 <map id="pvr::api::vulkan::SemaphoreVk_" name="pvr::api::vulkan::SemaphoreVk_">
-<area shape="rect" id="node2" href="$classpvr_1_1api_1_1impl_1_1_semaphore__.html" title="pvr::api::impl::Semaphore_" alt="" coords="19,5,195,32"/>
+<area shape="rect" id="node2" href="$classpvr_1_1api_1_1impl_1_1_semaphore__.html" title="Use to &quot;serialize&quot; access between CommandBuffer submissions and /Queues. " alt="" coords="19,5,195,32"/>
 </map>

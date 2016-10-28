@@ -8,6 +8,7 @@
 #include "PVRCore/CoreIncludes.h"
 #include "PVRCore/RefCounted.h"
 #include "PVRCore/IndexedArray.h"
+#include "PVRCore/ContiguousMap.h"
 #include "PVRCore/StringHash.h"
 #include "PVRCore/Stream.h"
 #include <functional>

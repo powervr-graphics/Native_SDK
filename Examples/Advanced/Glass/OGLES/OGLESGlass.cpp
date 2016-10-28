@@ -9,6 +9,7 @@
 #include "PVRApi/PVRApi.h"
 #include "PVRUIRenderer/PVRUIRenderer.h"
 #include "PVRAssets/Shader.h"
+#include "PVRCore/Maths.h"
 #include <limits.h>
 
 // Vertex attributes
@@ -51,7 +52,11 @@ const char ParaboloidVertShaderSrcFile[]		= "ParaboloidVertShader.vsh";
 
 const char* EffectShaderDefines[NumEffects][NumShaderDefines] =
 {
-	{ "REFLECT", "REFRACT", "CHROMATIC" }, { "REFLECT", "REFRACT", 0 }, { "REFLECT", "_UNUSED1_", 0 }, { "REFRACT", "CHROMATIC", 0 }, { "REFRACT", 0, 0 }
+	{ "REFLECT", "REFRACT", "CHROMATIC" },
+	{ "REFLECT", "REFRACT", 0 },
+	{ "REFLECT", "_UNUSED1_", 0 },
+	{ "REFRACT", "CHROMATIC", 0 },
+	{ "REFRACT", 0, 0 }
 };
 
 const int NumEffectShaderDefines[NumEffects] = { 3, 2, 1, 2, 1 };
@@ -113,7 +118,7 @@ class OGLESGlass : public pvr::Shell
 			};
 			std::vector<UniformData> uniformData;
 			std::vector<pvr::api::DescriptorSet> imageSamplerDescSets;
-		} passSkyBox, passBalloon, passDrawBall;
+		} passSkyBox, passBalloon, passDrawBust;
 
 		struct ParaboloidPass
 		{
@@ -160,11 +165,11 @@ class OGLESGlass : public pvr::Shell
 
 public:
 	OGLESGlass() : numBalloons(2), tilt(0), currentTilt(0) {}
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 
 private:
 	bool createImageSampler();
@@ -173,10 +178,12 @@ private:
 	bool createFbo();
 	void drawMesh(pvr::api::SecondaryCommandBuffer& cmdBuffer, int i32NodeIndex, ApiObjects::Model& model);
 
-	void eventMappedInput(pvr::SimplifiedInput::Enum action);
+	void eventMappedInput(pvr::SimplifiedInput action);
 
 
-	void updateBalloons(ApiObjects::Pipeline& pipeline, const glm::mat4& mProjection, const glm::mat4& mView, ApiObjects::Pass& passBalloon);
+	void updateBalloons(ApiObjects::Pipeline& pipeline, const glm::mat4& mProjection,
+	                    const glm::mat4& mView, ApiObjects::Pass& passBalloon);
+
 	void UpdateScene();
 	void updateSkybox();
 	void updateStatue();
@@ -184,12 +191,14 @@ private:
 	void recordPerFrameCommandBuffer();
 
 	void recordSecondaryCommands();
-	void recordCmdDrawBalloons(pvr::api::SecondaryCommandBuffer& cmd, ApiObjects::Pipeline& pipeline, pvr::uint32 numBalloon, ApiObjects::Pass& passBallon);
+	void recordCmdDrawBalloons(pvr::api::SecondaryCommandBuffer& cmd, ApiObjects::Pipeline& pipeline,
+	                           pvr::uint32 numBalloon, ApiObjects::Pass& passBallon);
+
 	void recordCmdDrawGlassObject(pvr::api::SecondaryCommandBuffer& cmd);
 	void recordCmdDrawSkyBox(pvr::api::SecondaryCommandBuffer& cmd);
 };
 
-void OGLESGlass::eventMappedInput(pvr::SimplifiedInput::Enum action)
+void OGLESGlass::eventMappedInput(pvr::SimplifiedInput action)
 {
 	switch (action)
 	{
@@ -224,11 +233,11 @@ void OGLESGlass::eventMappedInput(pvr::SimplifiedInput::Enum action)
 bool OGLESGlass::createImageSampler()
 {
 	if (!assetManager.getTextureWithCaching(apiObj->device, CubeTexFile, &apiObj->texCube, NULL) ||
-	        !assetManager.getTextureWithCaching(apiObj->device, BalloonTexFile[0], &apiObj->texBalloon[0], NULL) ||
-	        !assetManager.getTextureWithCaching(apiObj->device, BalloonTexFile[1], &apiObj->texBalloon[1], NULL))
+	    !assetManager.getTextureWithCaching(apiObj->device, BalloonTexFile[0], &apiObj->texBalloon[0], NULL) ||
+	    !assetManager.getTextureWithCaching(apiObj->device, BalloonTexFile[1], &apiObj->texBalloon[1], NULL))
 	{
 		setExitMessage("Failed to load the textures");
-		return pvr::Result::Success;
+		return false;
 	}
 	pvr::assets::SamplerCreateParam samplerInfo;
 
@@ -276,18 +285,16 @@ bool OGLESGlass::createImageSampler()
 		apiObj->passSkyBox.uniformData.resize(1);
 	}
 
-	// Drawball Pass
+	// DrawBust Pass
 	{
 		pvr::api::DescriptorSetUpdate descSetInfo;
 		descSetInfo.setCombinedImageSampler(0, apiObj->fboParaboloid.rtColorImage, samplerTrilinear).
 		setCombinedImageSampler(1, apiObj->texCube, samplerTrilinear);
 		pvr::api::DescriptorSet descSet = apiObj->device->createDescriptorSetOnDefaultPool(apiObj->pipeEffects[0].descSetLayout);
 		descSet->update(descSetInfo);
-		apiObj->passDrawBall.imageSamplerDescSets.push_back(descSet);
-		apiObj->passDrawBall.uniformData.resize(apiObj->statue.handle->getNumMeshNodes());
-
+		apiObj->passDrawBust.imageSamplerDescSets.push_back(descSet);
+		apiObj->passDrawBust.uniformData.resize(apiObj->statue.handle->getNumMeshNodes());
 	}
-
 	return true;
 }
 
@@ -298,66 +305,75 @@ bool OGLESGlass::createImageSampler()
 bool OGLESGlass::createPipelines()
 {
 	apiObj->primaryCommandBuffer->beginRecording(); //used to set one-shot uniforms
-
 	pvr::api::GraphicsPipelineCreateParam basePipeInfo;
 	basePipeInfo.depthStencil.setDepthTestEnable(true).setDepthWrite(true);
-	pvr::api::ImageStorageFormat onScreenColorFmt, onScreenDSfmt;
-	getDisplayFormat(getDisplayAttributes(), &onScreenColorFmt, &onScreenDSfmt);
-	pvr::api::pipelineCreation::ColorBlendAttachmentState colorAttachmentState;
+	basePipeInfo.rasterizer.setCullFace(pvr::types::Face::Back);
 
 	pvr::assets::ShaderFile fileVersioning;
 	fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
 
-	pvr::api::Shader fragShaderDefault = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::types::ShaderType::FragmentShader);
-	pvr::api::pipelineCreation::ColorBlendAttachmentState colorBlend;
+	pvr::api::Shader fragShaderDefault =
+	  apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()),
+	                               pvr::types::ShaderType::FragmentShader);
+
+	pvr::types::BlendingConfig colorBlend;
 
 	// create the single image sampler pipeline layout pipelines
 	{
 		pvr::api::DescriptorSetLayoutCreateParam descsetLayoutInfo;
 		pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
-		descsetLayoutInfo.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
+		descsetLayoutInfo.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1,
+		                             pvr::types::ShaderStageFlags::Fragment);
 
-		apiObj->pipeDefault.descSetLayout = apiObj->pipeSkyBox.descSetLayout =
-		                                        apiObj->pipeparaboloid[0].descSetLayout = apiObj->pipeparaboloid[1].descSetLayout =
-		                                                apiObj->device->createDescriptorSetLayout(descsetLayoutInfo);
+		apiObj->pipeDefault.descSetLayout =
+		  apiObj->pipeSkyBox.descSetLayout =
+		    apiObj->pipeparaboloid[0].descSetLayout = apiObj->pipeparaboloid[1].descSetLayout =
+		          apiObj->device->createDescriptorSetLayout(descsetLayoutInfo);
 
 		pipeLayoutInfo.setDescSetLayout(0, apiObj->pipeDefault.descSetLayout);
 		//---------------------------------
 		//load the default pipeline
 		pvr::api::GraphicsPipelineCreateParam pipeInfo;
 		fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
-		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::types::ShaderType::VertexShader);
+		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()),
+		                        pvr::types::ShaderType::VertexShader);
 		pipeInfo.fragmentShader = fragShaderDefault;
 		pipeInfo.pipelineLayout = apiObj->device->createPipelineLayout(pipeLayoutInfo);
 		pipeInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
+		pipeInfo.rasterizer.setCullFace(pvr::types::Face::Back);
 
-		pipeInfo.colorBlend.addAttachmentState(colorBlend);
+		pipeInfo.colorBlend.setAttachmentState(0, colorBlend);
 		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::TriangleList);
+		pipeInfo.es2TextureBindings.setTextureUnit(0, "s2DMap");
+
 		pvr::utils::createInputAssemblyFromMesh(apiObj->balloon.handle->getMesh(0),
 		                                        VertexBindings, sizeof(VertexBindings) / sizeof(VertexBindings[0]), pipeInfo);
 
 		apiObj->pipeSkyBox.pipe = apiObj->device->createGraphicsPipeline(pipeInfo);
 		apiObj->pipeDefault.pipe = apiObj->device->createGraphicsPipeline(pipeInfo);
 		// Store the location of uniforms for later use
-		apiObj->pipeDefault.pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms, apiObj->pipeDefault.uniformLoc);
-
-		//set image sampler locations.
-		apiObj->primaryCommandBuffer->bindPipeline(apiObj->pipeDefault.pipe);
-		apiObj->primaryCommandBuffer->setUniform<pvr::int32>(apiObj->pipeDefault.pipe->getUniformLocation("s2DMap"), 0);
+		apiObj->pipeDefault.pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms,
+		    apiObj->pipeDefault.uniformLoc);
 
 		//--------------------------------
 		// load the paraboloid pipeline
 		// pipeline1 parent pipeline
 		fileVersioning.populateValidVersions(ParaboloidVertShaderSrcFile, *this);
-		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::types::ShaderType::VertexShader);
+
+		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()),
+		                        pvr::types::ShaderType::VertexShader);
+
 		pipeInfo.fragmentShader = fragShaderDefault;
 
 		pipeInfo.rasterizer.setCullFace(pvr::types::Face::Front);
+		pipeInfo.colorBlend.setAttachmentState(0, colorBlend);
 		apiObj->pipeparaboloid[0].pipe = apiObj->device->createParentableGraphicsPipeline(pipeInfo);
-		apiObj->pipeparaboloid[0].pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms, apiObj->pipeparaboloid[0].uniformLoc);
+
+		apiObj->pipeparaboloid[0].pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms,
+		    apiObj->pipeparaboloid[0].uniformLoc);
+
 		apiObj->primaryCommandBuffer->bindPipeline(apiObj->pipeparaboloid[0].pipe);
 
-		apiObj->primaryCommandBuffer->setUniform<pvr::int32>(apiObj->pipeparaboloid[0].pipe->getUniformLocation("s2DMap"), 0);
 
 		// create the child pipeline which has cullface as front
 		pipeInfo.rasterizer.setCullFace(pvr::types::Face::Back);
@@ -368,26 +384,33 @@ bool OGLESGlass::createPipelines()
 		apiObj->pipeparaboloid[1].pipe = apiObj->device->createGraphicsPipeline(pipeInfo,
 		                                 pvr::api::ParentableGraphicsPipeline(apiObj->pipeparaboloid[0].pipe));
 		apiObj->primaryCommandBuffer->bindPipeline(apiObj->pipeparaboloid[1].pipe);
-		apiObj->pipeparaboloid[1].pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms, apiObj->pipeparaboloid[1].uniformLoc);
+
+		apiObj->pipeparaboloid[1].pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms,
+		    apiObj->pipeparaboloid[1].uniformLoc);
 
 		//--------------------------------
 		//load the skybox pipeline
 		fileVersioning.populateValidVersions(SkyboxVertShaderSrcFile, *this);
-		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()), pvr::types::ShaderType::VertexShader);
+		pipeInfo.vertexShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()),
+		                        pvr::types::ShaderType::VertexShader);
+
 		fileVersioning.populateValidVersions(SkyboxFragShaderSrcFile, *this);
 		pipeInfo.fragmentShader = apiObj->device->createShader(*fileVersioning.getBestStreamForApi(getApiType()),
 		                          pvr::types::ShaderType::FragmentShader);
 
-		//pipeInfo.depthStencil.setDepthTestEnable(false).setDepthWrite(false);
 		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::TriangleList);
 		pipeInfo.vertexInput.clear();
 		pipeInfo.vertexInput.setInputBinding(0, sizeof(float) * 3, pvr::types::StepRate::Vertex);
+
 		pipeInfo.vertexInput.addVertexAttribute(0, 0, pvr::assets::VertexAttributeLayout(pvr::types::DataType::Float32, 3, 0),
 		                                        VertexBindings[0].variableName.c_str());
+        pipeInfo.es2TextureBindings.setTextureUnit(0,"sSkybox");
 		apiObj->pipeSkyBox.pipe = apiObj->device->createGraphicsPipeline(pipeInfo);
-		apiObj->pipeSkyBox.pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms, apiObj->pipeSkyBox.uniformLoc);
+
+		apiObj->pipeSkyBox.pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms,
+		    apiObj->pipeSkyBox.uniformLoc);
+
 		apiObj->primaryCommandBuffer->bindPipeline(apiObj->pipeSkyBox.pipe);
-		apiObj->primaryCommandBuffer->setUniform<pvr::int32>(apiObj->pipeSkyBox.pipe->getUniformLocation("sSkybox"), 0);
 	}
 
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
@@ -395,12 +418,17 @@ bool OGLESGlass::createPipelines()
 	{
 		pvr::api::PipelineLayoutCreateParam effectPipeLayout;
 		pvr::api::DescriptorSetLayout descLayout;
-		descSetLayoutInfo.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment)
+		descSetLayoutInfo
+		.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment)
 		.setBinding(1, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
+
 		descLayout = apiObj->device->createDescriptorSetLayout(descSetLayoutInfo);
 		effectPipeLayout.addDescSetLayout(descLayout);
 		pvr::api::GraphicsPipelineCreateParam pipeInfo;
-		pipeInfo.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
+		pipeInfo.es2TextureBindings.setTextureUnit(0, "sParaboloids").setTextureUnit(1, "sSkybox");
+		pipeInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
+		pipeInfo.depthStencil.setDepthTestEnable(true).setDepthWrite(true);
+		pipeInfo.rasterizer.setCullFace(pvr::types::Face::Back);
 		pipeInfo.pipelineLayout = apiObj->device->createPipelineLayout(effectPipeLayout);
 		pvr::utils::createInputAssemblyFromMesh(apiObj->statue.handle->getMesh(0), VertexBindings, 2, pipeInfo);
 
@@ -409,20 +437,21 @@ bool OGLESGlass::createPipelines()
 
 		fileVersioning.populateValidVersions(ReflectionFragShaderSrcFile, *this);
 		pvr::Stream::ptr_type effectFragShader = fileVersioning.getBestStreamForApi(getApiType());
-
+		pipeInfo.es2TextureBindings.setTextureUnit(0,"sParaboloids").setTextureUnit(1,"sSkybox");
 		for (pvr::uint32 i = 0; i < NumEffects; ++i)
 		{
-			pipeInfo.vertexShader.setShader(apiObj->device->createShader(*effectVertShader, pvr::types::ShaderType::VertexShader,
-			                                EffectShaderDefines[i], NumEffectShaderDefines[i]));
-			pipeInfo.fragmentShader.setShader(apiObj->device->createShader(*effectFragShader, pvr::types::ShaderType::FragmentShader,
-			                                  EffectShaderDefines[i], NumEffectShaderDefines[i]));
+			pipeInfo.vertexShader.setShader(apiObj->device->createShader(*effectVertShader,
+			                                pvr::types::ShaderType::VertexShader, EffectShaderDefines[i], NumEffectShaderDefines[i]));
+
+			pipeInfo.fragmentShader.setShader(apiObj->device->createShader(*effectFragShader,
+			                                  pvr::types::ShaderType::FragmentShader, EffectShaderDefines[i], NumEffectShaderDefines[i]));
 			// Store the location of uniforms for later use
 			apiObj->pipeEffects[i].pipe = apiObj->device->createGraphicsPipeline(pipeInfo);
-			apiObj->pipeEffects[i].pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms, apiObj->pipeEffects[i].uniformLoc);
+			apiObj->pipeEffects[i].pipe->getUniformLocation(ShaderUniforms::names, ShaderUniforms::NumUniforms,
+			    apiObj->pipeEffects[i].uniformLoc);
+
 			apiObj->pipeEffects[i].descSetLayout = descLayout;
 			apiObj->primaryCommandBuffer->bindPipeline(apiObj->pipeEffects[i].pipe);
-			apiObj->primaryCommandBuffer->setUniform<pvr::int32>(apiObj->pipeEffects[i].pipe->getUniformLocation("sParaboloids"), 0);
-			apiObj->primaryCommandBuffer->setUniform<pvr::int32>(apiObj->pipeEffects[i].pipe->getUniformLocation("sSkybox"), 1);
 			effectVertShader->seek(0, pvr::Stream::SeekOriginFromStart);
 			effectFragShader->seek(0, pvr::Stream::SeekOriginFromStart);
 		}
@@ -443,8 +472,11 @@ void OGLESGlass::loadVbos()
 	//	so all data is interleaved in the buffer at pMesh->pInterleaved.
 	//	Interleaving data improves the memory access pattern and cache efficiency,
 	//	thus it can be read faster by the hardware.
-	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *apiObj->statue.handle, apiObj->statue.vbos, apiObj->statue.ibos);
-	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *apiObj->balloon.handle, apiObj->balloon.vbos, apiObj->balloon.ibos);
+	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *apiObj->statue.handle, apiObj->statue.vbos,
+	    apiObj->statue.ibos);
+
+	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *apiObj->balloon.handle, apiObj->balloon.vbos,
+	    apiObj->balloon.ibos);
 
 	static pvr::float32 quadVertices[] =
 	{
@@ -467,13 +499,15 @@ bool OGLESGlass::createFbo()
 {
 	apiObj->fboOnScreen = apiObj->device->createOnScreenFbo(0);
 	pvr::api::SubPass subPass(pvr::types::PipelineBindPoint::Graphics);
-	subPass.setColorAttachment(0); // use the first color attachment
+	subPass.setColorAttachment(0, 0); // use the first color attachment
 
 	// create paraboloid fbo
 	{
-		pvr::api::ImageStorageFormat rtDsFmt(pvr::PixelFormat::Depth16, 1, pvr::types::ColorSpace::lRGB, pvr::VariableType::UnsignedShort);
-		apiObj->fboParaboloid.rtColorFmt = pvr::api::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, pvr::types::ColorSpace::lRGB,
-		                                   pvr::VariableType::UnsignedByteNorm);
+		pvr::api::ImageStorageFormat rtDsFmt(pvr::PixelFormat::Depth16, 1, pvr::types::ColorSpace::lRGB,
+		                                     pvr::VariableType::UnsignedShort);
+
+		apiObj->fboParaboloid.rtColorFmt = pvr::api::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1,
+		                                   pvr::types::ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm);
 
 		apiObj->fboParaboloid.rtDsFmt = pvr::api::ImageStorageFormat(pvr::PixelFormat::Depth16, 1,
 		                                pvr::types::ColorSpace::lRGB, pvr::VariableType::UnsignedShort);
@@ -484,9 +518,9 @@ bool OGLESGlass::createFbo()
 		//create the renderpass
 		pvr::api::RenderPassCreateParam renderPassInfo;
 		renderPassInfo
-		.addColorInfo(0, pvr::api::RenderPassColorInfo(apiObj->fboParaboloid.rtColorFmt, pvr::types::LoadOp::Clear))
+		.setColorInfo(0, pvr::api::RenderPassColorInfo(apiObj->fboParaboloid.rtColorFmt, pvr::types::LoadOp::Clear))
 		.setDepthStencilInfo(pvr::api::RenderPassDepthStencilInfo(rtDsFmt, pvr::types::LoadOp::Clear))
-		.addSubPass(0, subPass);
+		.setSubPass(0, subPass);
 
 		// create the render-target color texture
 		pvr::api::TextureStore rtColorTex = apiObj->device->createTexture();
@@ -501,7 +535,7 @@ bool OGLESGlass::createFbo()
 		// create the fbo
 		pvr::api::FboCreateParam fboInfo;
 		fboInfo.setRenderPass(apiObj->device->createRenderPass(renderPassInfo))
-		.addColor(0, apiObj->fboParaboloid.rtColorImage)
+		.setColor(0, apiObj->fboParaboloid.rtColorImage)
 		.setDepthStencil(apiObj->fboParaboloid.rtDsImage);
 		apiObj->fboParaboloid.fbo = apiObj->device->createFbo(fboInfo);
 		if (!apiObj->fboParaboloid.fbo.isValid())
@@ -519,10 +553,9 @@ bool OGLESGlass::createFbo()
 		Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
 		If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESGlass::initApplication()
+pvr::Result OGLESGlass::initApplication()
 {
 	assetManager.init(*this);
-
 	cameraAngle =  glm::pi<glm::float32>() - .6f;
 	balloons.resize(numBalloons);
 	for (int i = 0; i < numBalloons; ++i) {	balloons[i].angle = glm::pi<glm::float32>() * i / 5.f;	}
@@ -535,14 +568,14 @@ pvr::Result::Enum OGLESGlass::initApplication()
 \brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.If the rendering context
 		is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESGlass::quitApplication() { return pvr::Result::Success; }
+pvr::Result OGLESGlass::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return	Return Result::Success if no error occurred
 \brief	Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
 		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESGlass::initView()
+pvr::Result OGLESGlass::initView()
 {
 	apiObj.reset(new ApiObjects);
 
@@ -571,7 +604,7 @@ pvr::Result::Enum OGLESGlass::initView()
 	if (!createImageSampler())	{ return pvr::Result::UnknownError;	}
 
 	//Initialize UIRenderer
-	if (apiObj->uiRenderer.init(apiObj->device, apiObj->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success)
+	if (apiObj->uiRenderer.init(apiObj->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
 		return pvr::Result::UnknownError;
@@ -591,10 +624,15 @@ pvr::Result::Enum OGLESGlass::initView()
 	apiObj->primaryCommandBuffer->endRecording();
 	apiObj->primaryCommandBuffer->submit();
 	//Calculate the projection and view matrices
-	projMtx = glm::perspectiveFov(CamFov, (float)this->getWidth(), (float)this->getHeight(), CamNear, CamFar);
+	
 	if (isScreenRotated())
 	{
-		projMtx = projMtx * glm::rotate(glm::pi<pvr::float32>() * .5f , glm::vec3(.0f, .0f, 1.f));
+       projMtx = pvr::math::perspectiveFov(getApiType(),CamFov, (float)this->getHeight(), (float)this->getWidth(), CamNear, CamFar,
+                                          glm::pi<pvr::float32>() * .5f);
+	}
+    else
+    {
+        projMtx = pvr::math::perspectiveFov(getApiType(),CamFov, (float)this->getWidth(), (float)this->getHeight(), CamNear, CamFar);
 	}
 	recordSecondaryCommands();
 	return pvr::Result::Success;
@@ -604,7 +642,7 @@ pvr::Result::Enum OGLESGlass::initView()
 \return	Result::Success if no error occurred
 \brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESGlass::releaseView()
+pvr::Result OGLESGlass::releaseView()
 {
 	apiObj.reset();
 	assetManager.releaseAll();
@@ -615,7 +653,7 @@ pvr::Result::Enum OGLESGlass::releaseView()
 \return	Return Result::Success if no error occurred
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESGlass::renderFrame()
+pvr::Result OGLESGlass::renderFrame()
 {
 	UpdateScene();
 	updateParaboloids(glm::vec3(0, 0, 0));
@@ -641,11 +679,11 @@ pvr::Result::Enum OGLESGlass::renderFrame()
 \param	numBalloon Number of ballons to draw
 \param	passBallon Balloon pass to use
 ***********************************************************************************************************************/
-void OGLESGlass::recordCmdDrawBalloons(pvr::api::SecondaryCommandBuffer& cmdBuffer, ApiObjects::Pipeline& pipeline, pvr::uint32 numBalloon, ApiObjects::Pass& passBallon)
+void OGLESGlass::recordCmdDrawBalloons(pvr::api::SecondaryCommandBuffer& cmdBuffer,
+                                       ApiObjects::Pipeline& pipeline, pvr::uint32 numBalloon, ApiObjects::Pass& passBallon)
 {
 	// Use shader program
 	cmdBuffer->bindPipeline(pipeline.pipe);
-	glm::mat4 mModelView, mMVP;
 	for (pvr::uint32 i = 0; i < numBalloon; ++i)
 	{
 		cmdBuffer->bindDescriptorSet(pipeline.pipe->getPipelineLayout(), 0,
@@ -671,11 +709,17 @@ void OGLESGlass::recordCmdDrawGlassObject(pvr::api::SecondaryCommandBuffer& cmdB
 
 	// bind the texture and samplers
 	cmdBuffer->bindDescriptorSet(apiObj->pipeEffects[currentEffect].pipe->getPipelineLayout(),
-	                             0, apiObj->passDrawBall.imageSamplerDescSets[0], 0);
+	                             0, apiObj->passDrawBust.imageSamplerDescSets[0], 0);
 
-	cmdBuffer->setUniformPtr<glm::vec3>(apiObj->pipeEffects[currentEffect].uniformLoc[ShaderUniforms::EyePos], 1, &apiObj->passDrawBall.uniformData[0].eyePos);
-	cmdBuffer->setUniformPtr<glm::mat4>(apiObj->pipeEffects[currentEffect].uniformLoc[ShaderUniforms::MVPMatrix], 1, &apiObj->passDrawBall.uniformData[0].modelViewProj);
-	cmdBuffer->setUniformPtr<glm::mat3>(apiObj->pipeEffects[currentEffect].uniformLoc[ShaderUniforms::MMatrix], 1, &apiObj->passDrawBall.uniformData[0].model3x3);
+	cmdBuffer->setUniformPtr<glm::vec3>(apiObj->pipeEffects[currentEffect].uniformLoc[ShaderUniforms::EyePos], 1,
+	                                    &apiObj->passDrawBust.uniformData[0].eyePos);
+
+	cmdBuffer->setUniformPtr<glm::mat4>(apiObj->pipeEffects[currentEffect].uniformLoc[ShaderUniforms::MVPMatrix], 1,
+	                                    &apiObj->passDrawBust.uniformData[0].modelViewProj);
+
+	cmdBuffer->setUniformPtr<glm::mat3>(apiObj->pipeEffects[currentEffect].uniformLoc[ShaderUniforms::MMatrix], 1,
+	                                    &apiObj->passDrawBust.uniformData[0].model3x3);
+
 	// Now that the uniforms are set, call another function to actually draw the mesh
 	drawMesh(cmdBuffer, 0, apiObj->statue);
 }
@@ -687,12 +731,18 @@ void OGLESGlass::recordCmdDrawGlassObject(pvr::api::SecondaryCommandBuffer& cmdB
 void OGLESGlass::recordCmdDrawSkyBox(pvr::api::SecondaryCommandBuffer& cmdBuffer)
 {
 	cmdBuffer->bindPipeline(apiObj->pipeSkyBox.pipe);
-	cmdBuffer->setUniformPtr<glm::mat4>(apiObj->pipeSkyBox.uniformLoc[ShaderUniforms::InvVPMatrix], 1, &apiObj->passSkyBox.uniformData[0].invViewProj);
 
-	cmdBuffer->setUniformPtr<glm::vec3>(apiObj->pipeSkyBox.uniformLoc[ShaderUniforms::EyePos], 1, &apiObj->passSkyBox.uniformData[0].eyePos);
+	cmdBuffer->setUniformPtr<glm::mat4>(apiObj->pipeSkyBox.uniformLoc[ShaderUniforms::InvVPMatrix], 1,
+	                                    &apiObj->passSkyBox.uniformData[0].invViewProj);
+
+	cmdBuffer->setUniformPtr<glm::vec3>(apiObj->pipeSkyBox.uniformLoc[ShaderUniforms::EyePos], 1,
+	                                    &apiObj->passSkyBox.uniformData[0].eyePos);
+
 	cmdBuffer->bindVertexBuffer(apiObj->vboSquare, 0, 0);
 
-	cmdBuffer->bindDescriptorSet(apiObj->pipeSkyBox.pipe->getPipelineLayout(), 0, apiObj->passSkyBox.imageSamplerDescSets[0], 0);
+	cmdBuffer->bindDescriptorSet(apiObj->pipeSkyBox.pipe->getPipelineLayout(), 0,
+	                             apiObj->passSkyBox.imageSamplerDescSets[0], 0);
+
 	cmdBuffer->drawArrays(0, 6, 0, 1);
 }
 
@@ -705,7 +755,10 @@ void OGLESGlass::UpdateScene()
 	pvr::uint64 timeDifference = getFrameTime();
 	// Store the current time for the next frame
 	cameraAngle += timeDifference * 0.00005f;
-	for (pvr::int32 i = 0; i < numBalloons; ++i) { balloons[i].angle += timeDifference * 0.0002f * (pvr::float32(i) * .5f + 1.f); }
+	for (pvr::int32 i = 0; i < numBalloons; ++i)
+	{
+		balloons[i].angle += timeDifference * 0.0002f * (pvr::float32(i) * .5f + 1.f);
+	}
 
 	static const glm::vec3 rotateAxis(0.0f, 1.0f, 0.0f);
 	pvr::float32 diff = fabs(tilt - currentTilt);
@@ -757,7 +810,8 @@ void OGLESGlass::drawMesh(pvr::api::SecondaryCommandBuffer& cmdBuffer, int nodeI
 \param	viewMtx View matrix
 \param	passBalloon Balloon draw pass
 ***********************************************************************************************************************/
-void OGLESGlass::updateBalloons(ApiObjects::Pipeline& pipeline, const glm::mat4& projMtx, const glm::mat4& viewMtx, ApiObjects::Pass& passBalloon)
+void OGLESGlass::updateBalloons(ApiObjects::Pipeline& pipeline, const glm::mat4& projMtx,
+                                const glm::mat4& viewMtx, ApiObjects::Pass& passBalloon)
 {
 	for (pvr::int32 i = 0; i < numBalloons; ++i)
 	{
@@ -765,10 +819,12 @@ void OGLESGlass::updateBalloons(ApiObjects::Pipeline& pipeline, const glm::mat4&
 		passBalloon.uniformData[i].modelViewProj = projMtx * passBalloon.uniformData[i].modelView;
 
 		// Calculate and set the model space light direction
-		passBalloon.uniformData[i].lightDir = glm::vec3(glm::normalize(glm::inverse(balloons[i].modelMtx) * glm::vec4(19, 22, -50, 0)));
+		passBalloon.uniformData[i].lightDir = glm::vec3(glm::normalize(glm::inverse(balloons[i].modelMtx) *
+		                                      glm::vec4(19, 22, -50, 0)));
 
 		// Calculate and set the model space eye position
-		passBalloon.uniformData[i].eyePos = glm::vec3(glm::inverse(passBalloon.uniformData[i].modelView) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		passBalloon.uniformData[i].eyePos = glm::vec3(glm::inverse(passBalloon.uniformData[i].modelView) *
+		                                    glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	}
 }
 
@@ -795,15 +851,15 @@ void OGLESGlass::updateStatue()
 	static const glm::vec3 offset = glm::vec3(0.f, -2.f, 0.f);
 	static const glm::mat4 local_transform = glm::translate(offset) * glm::scale(scale);
 	// Set model view projection matrix
-	for (size_t i = 0; i < apiObj->statue.handle->getNumMeshNodes(); ++i)
+	for (pvr::uint32 i = 0; i < apiObj->statue.handle->getNumMeshNodes(); ++i)
 	{
 		glm::mat4 modelMatrix = local_transform * apiObj->statue.handle->getWorldMatrix(i);
 		glm::mat4 modelView = viewMtx * modelMatrix;
-		apiObj->passDrawBall.uniformData[i].modelViewProj = projMtx * modelView;
-		apiObj->passDrawBall.uniformData[i].model3x3 = glm::mat3(modelMatrix);
+		apiObj->passDrawBust.uniformData[i].modelViewProj = projMtx * modelView;
+		apiObj->passDrawBust.uniformData[i].model3x3 = glm::mat3(modelMatrix);
 
 		// Set eye position in model space
-		apiObj->passDrawBall.uniformData[i].eyePos = glm::vec3(glm::inverse(modelView) * glm::vec4(0, 0, 0, 1));
+		apiObj->passDrawBust.uniformData[i].eyePos = glm::vec3(glm::inverse(modelView) * glm::vec4(0, 0, 0, 1));
 	}
 }
 
@@ -830,7 +886,10 @@ void OGLESGlass::updateParaboloids(const glm::vec3& position)
 ***********************************************************************************************************************/
 void OGLESGlass::recordSecondaryCommands()
 {
+    if(!apiObj->paraboloidCmdBuffer.isValid())
+    {
 	apiObj->paraboloidCmdBuffer = apiObj->device->createSecondaryCommandBufferOnDefaultPool();
+    }
 	apiObj->paraboloidCmdBuffer->beginRecording(apiObj->fboParaboloid.fbo, 0);
 	// Switch to front face culling pipeline due to flipped winding order
 	apiObj->paraboloidCmdBuffer->bindPipeline(apiObj->pipeparaboloid[0].pipe);
@@ -878,13 +937,17 @@ void OGLESGlass::recordPerFrameCommandBuffer()
 	{
 		// Bind and clear the paraboloid framebuffer , Use a nice bright blue as clear color
 		// Set the renderArea to the left
-		apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboParaboloid.fbo, pvr::Rectanglei(0, 0, 2 * ParaboloidTexSize, ParaboloidTexSize), false, ClearSkyColor);
+		apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboParaboloid.fbo,
+		    pvr::Rectanglei(0, 0, 2 * ParaboloidTexSize, ParaboloidTexSize), false, ClearSkyColor);
+
 		apiObj->primaryCommandBuffer->enqueueSecondaryCmds(apiObj->paraboloidCmdBuffer);
 		apiObj->primaryCommandBuffer->endRenderPass();
 	}
 
 	// Bind back the original frame buffer and reset the viewport
-	apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboOnScreen, pvr::Rectanglei(0, 0, getWidth(), getHeight()), false, ClearSkyColor);
+	apiObj->primaryCommandBuffer->beginRenderPass(apiObj->fboOnScreen,
+	    pvr::Rectanglei(0, 0, getWidth(), getHeight()), false, ClearSkyColor);
+
 	apiObj->primaryCommandBuffer->enqueueSecondaryCmds(apiObj->sceneCmdBuffer);
 	apiObj->primaryCommandBuffer->enqueueSecondaryCmds(apiObj->uiRendererCmdBuffer);
 	apiObj->primaryCommandBuffer->endRenderPass();

@@ -208,7 +208,7 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 
 		// Compressed images are written without scan line padding.
 		if (asset.getPixelFormat().getPart().High == 0
-		    && asset.getPixelFormat().getPixelTypeId() != CompressedPixelFormat::SharedExponentR9G9B9E5)
+		    && asset.getPixelFormat().getPixelTypeId() != (uint64)CompressedPixelFormat::SharedExponentR9G9B9E5)
 		{
 			for (uint32 iSurface = 0; iSurface < asset.getNumberOfArrayMembers(); ++iSurface)
 			{
@@ -216,7 +216,7 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 				{
 					// Read in the texture data.
 					if (!m_assetStream->read(asset.getDataSize(mipMapLevel, false, false), 1,
-						asset.getDataPointer(mipMapLevel, iSurface, iFace), dataRead) || dataRead != 1) { return false; }
+					                         asset.getDataPointer(mipMapLevel, iSurface, iFace), dataRead) || dataRead != 1) { return false; }
 
 					// Advance past the cube face padding
 					if (cubePadding && asset.getNumberOfFaces() == 6 && asset.getNumberOfArrayMembers() == 1)
@@ -242,7 +242,7 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 							                         (asset.getBitsPerPixel() / 8));
 							// Read in the texture data for the current scan line.
 							if (!m_assetStream->read((asset.getBitsPerPixel() / 8) * asset.getWidth(mipMapLevel), 1,
-								asset.getDataPointer(mipMapLevel, iSurface, iFace) + scanLineOffset, dataRead) || dataRead != 1) { return false; }
+							                         asset.getDataPointer(mipMapLevel, iSurface, iFace) + scanLineOffset, dataRead) || dataRead != 1) { return false; }
 
 							// Work out the amount of scan line padding.
 							uint32 scanLinePadding = (static_cast<uint32>(-1) * ((asset.getBitsPerPixel() / 8) *
@@ -312,7 +312,7 @@ bool TextureReaderKTX::isSupportedFile(Stream& assetStream)
 
 	// Reset the file
 	assetStream.close();
-	
+
 	// Check that the identifier matches
 	if (memcmp(magic, texture_ktx::c_identifier, sizeof(magic)) != 0)
 	{
@@ -329,15 +329,6 @@ vector<string> TextureReaderKTX::getSupportedFileExtensions()
 	return vector<string>(extensions);
 }
 
-string TextureReaderKTX::getReaderName()
-{
-	return "PowerVR Khronos Texture Reader";
-}
-
-string TextureReaderKTX::getReaderVersion()
-{
-	return "1.0.0";
-}
 }
 }
 }

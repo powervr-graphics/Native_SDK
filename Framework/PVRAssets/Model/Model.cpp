@@ -101,6 +101,12 @@ glm::mat4x4 Model::getWorldMatrix(uint32 id) const
 	return m_cache.worldMatrixFrameN[id];
 }
 
+glm::vec3 Model::getLightPosition(uint32 lightNodeId) const
+{
+	return glm::vec3(getWorldMatrix(getNodeIdFromLightNodeId(0))[3]);
+}
+
+
 glm::mat4x4 Model::getWorldMatrixNoCache(uint32 id) const
 {
 	const Node& node = m_data.nodes[id];
@@ -183,7 +189,6 @@ bool Model::setCurrentFrame(float32 frame)
 	return true;
 }
 
-
 void Model::setUserData(uint32 size, const byte* const data)
 {
 	m_data.userData.resize(data ? size : 0);
@@ -220,7 +225,7 @@ void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm:
 	up.x = -matrix[2][0];
 	up.y = -matrix[2][1];
 	up.z = -matrix[2][2];
-	glm::normalize(up);
+	up = glm::normalize(up);
 	const Camera& camera = getCamera(index);
 
 	// TODO: Check the below code as it is experimental but should allow us to calculate the up vector if this camera follows a target
@@ -252,17 +257,17 @@ void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm:
 	fov = camera.getFOV(m_cache.frame, m_cache.frameFraction);
 }
 
-void Model::getLightDirection(int32 index, glm::vec3& direction)
+void Model::getLightDirection(int32 lightNodeId, glm::vec3& direction) const
 {
-	if (static_cast<uint32>(index) >= m_data.lights.size())
+	if (static_cast<size_t>(lightNodeId) >= getNumLightNodes())
 	{
 		assertion(0, "Model::getLightDirection out of bounds");
-		Log(Log.Error, "Model::getLightDirection out of bounds [%d]", index);
+		Log(Log.Error, "Model::getLightDirection out of bounds [%d]", lightNodeId);
 		assertion(0);
 		return;
 	}
-	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + index);
-	const Light& light = getLight(index);
+	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + lightNodeId);
+	const Light& light = getLight(lightNodeId);
 	int32 targetIndex = light.getTargetIdx();
 	if (targetIndex != -1)
 	{
@@ -280,30 +285,30 @@ void Model::getLightDirection(int32 index, glm::vec3& direction)
 	}
 }
 
-void Model::getLightPosition(int32 index, glm::vec3& position)
+void Model::getLightPosition(int32 lightNodeId, glm::vec3& position) const
 {
-	if (static_cast<uint32>(index) >= m_data.lights.size())
+	if (static_cast<uint32>(lightNodeId) >= getNumLightNodes())
 	{
 		assertion(0, "Model::getLightPosition out of bounds");
-		Log(Log.Error, "Model::getLightPosition out of bounds [%d]", index);
+		Log(Log.Error, "Model::getLightPosition out of bounds [%d]", lightNodeId);
 		return;
 	}
-	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + index);
+	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + lightNodeId);
 	position.x = matrix[3][0];
 	position.y = matrix[3][1];
 	position.z = matrix[3][2];
 }
 
-void Model::getLightPosition(int32 index, glm::vec4& position)
+void Model::getLightPosition(int32 lightNodeId, glm::vec4& position) const
 {
-	if (static_cast<uint32>(index) >= m_data.lights.size())
+	if (static_cast<uint32>(lightNodeId) >= m_data.lights.size())
 	{
 		assertion(0, "Model::getLightPosition out of bounds");
-		Log(Log.Error, "Model::getLightPosition out of bounds [%d]", index);
+		Log(Log.Error, "Model::getLightPosition out of bounds [%d]", lightNodeId);
 		assertion(0);
 		return;
 	}
-	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + index);
+	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + lightNodeId);
 	position.x = matrix[3][0];
 	position.y = matrix[3][1];
 	position.z = matrix[3][2];

@@ -6,6 +6,7 @@
 ***********************************************************************************************************************/
 #pragma once
 #include "PVRCore/CoreIncludes.h"
+#include "PVRCore/StringHash.h"
 #include "PVRCore/Stream.h"
 #include "PVRCore/IGraphicsContext.h"
 #include "PVRCore/IAssetProvider.h"
@@ -14,4 +15,5 @@
 #include "PVRCore/RefCounted.h"
 #include "PVRCore/StringFunctions.h"
 #include "PVRCore/ForwardDecApiObjects.h"
+#include <map>
 #include <set>

@@ -289,11 +289,11 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a715b6f5100ebe63143e02d3bfe5d9fc8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer__.html#a715b6f5100ebe63143e02d3bfe5d9fc8">CommandBuffer_</a> (GraphicsContext &amp;context, CommandPool &amp;pool)</td></tr>
-<tr class="separator:a715b6f5100ebe63143e02d3bfe5d9fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad305cf027523e3eebb42af0dfdbb0fed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer__.html#ad305cf027523e3eebb42af0dfdbb0fed">CommandBuffer_</a> (GraphicsContext &amp;context, CommandPool &amp;pool, native::HCommandBuffer_ &amp;hCmdBuff)</td></tr>
+<tr class="separator:ad305cf027523e3eebb42af0dfdbb0fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classpvr_1_1api_1_1impl_1_1_command_buffer_base__"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classpvr_1_1api_1_1impl_1_1_command_buffer_base__')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html">pvr::api::impl::CommandBufferBase_</a></td></tr>
-<tr class="memitem:a02d8be2dd6dbac6d326328cb5195fb8d inherit pro_methods_classpvr_1_1api_1_1impl_1_1_command_buffer_base__"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#a02d8be2dd6dbac6d326328cb5195fb8d">CommandBufferBase_</a> (GraphicsContext &amp;context, CommandPool &amp;pool, bool isPrimary)</td></tr>
-<tr class="separator:a02d8be2dd6dbac6d326328cb5195fb8d inherit pro_methods_classpvr_1_1api_1_1impl_1_1_command_buffer_base__"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac94d396664896aa6a6d06e4495ee5678 inherit pro_methods_classpvr_1_1api_1_1impl_1_1_command_buffer_base__"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#ac94d396664896aa6a6d06e4495ee5678">CommandBufferBase_</a> (GraphicsContext &amp;context, CommandPool &amp;pool, native::HCommandBuffer_ &amp;myHandle)</td></tr>
+<tr class="separator:ac94d396664896aa6a6d06e4495ee5678 inherit pro_methods_classpvr_1_1api_1_1impl_1_1_command_buffer_base__"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -307,7 +307,7 @@ Additional Inherited Members</h2></td></tr>
 <hr/>
  <dl class="section user"><dt>Description:</dt><dd>Primary command buffers can contain RenderPasses, and can be submitted to the GPU. SecondaryCommandBuffers can be submitted to the primaryCommandBuffer -It is invalid to submit commands to a command buffer while it is not being recorded. -It is invalid to reset a command buffer while it is being recorded. -It is invalid to submit a command buffer more than once if it is one time submit command buffer -Draw commands must be between a BeginRenderpass and an EndRenderpass command </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a715b6f5100ebe63143e02d3bfe5d9fc8"></a>
+<a class="anchor" id="ad305cf027523e3eebb42af0dfdbb0fed"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -324,7 +324,13 @@ Additional Inherited Members</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">CommandPool &amp;&#160;</td>
-          <td class="paramname"><em>pool</em>&#160;</td>
+          <td class="paramname"><em>pool</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">native::HCommandBuffer_ &amp;&#160;</td>
+          <td class="paramname"><em>hCmdBuff</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

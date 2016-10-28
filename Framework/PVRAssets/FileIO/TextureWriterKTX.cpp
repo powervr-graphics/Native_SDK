@@ -10,12 +10,14 @@
 using std::vector;
 namespace pvr {
 using namespace types;
-namespace utils {
+namespace api {
+namespace ConvertToGles {
 //CAUTION: This is a "hidden" dependency on PVRApi. If someone wants to use TextureWriterKTX without PVRApi, he would need to implement
 //and link in this function, otherwise there will be linker errors. The implementation can be found (and possibly copied from) PVRApi/TextureUtils.h
-bool getOpenGLFormat(PixelFormat pixelFormat, ColorSpace::Enum colorSpace, VariableType::Enum dataType,
-                     uint32& glInternalFormat, uint32& glFormat,
-                     uint32& glType, uint32& glTypeSize, bool& isCompressedFormat);
+bool getOpenGLFormat(PixelFormat pixelFormat, ColorSpace colorSpace, VariableType dataType,
+                     uint32& glInternalFormat, uint32& glFormat, uint32& glType, uint32& glTypeSize,
+                     bool& isCompressedFormat);
+}
 }
 namespace assets {
 namespace assetWriters {
@@ -52,10 +54,10 @@ bool TextureWriterKTX::writeAllAssets()
 
 	bool isCompressed;
 	// Set the pixel format information
-	utils::getOpenGLFormat(m_assetsToWrite[0]->getPixelFormat(), m_assetsToWrite[0]->getColorSpace(),
-	                m_assetsToWrite[0]->getChannelType(),
-	                ktxFileHeader.glInternalFormat, ktxFileHeader.glFormat, ktxFileHeader.glType,
-	                ktxFileHeader.glTypeSize, isCompressed);
+	api::ConvertToGles::getOpenGLFormat(m_assetsToWrite[0]->getPixelFormat(), m_assetsToWrite[0]->getColorSpace(),
+	                                    m_assetsToWrite[0]->getChannelType(),
+	                                    ktxFileHeader.glInternalFormat, ktxFileHeader.glFormat, ktxFileHeader.glType,
+	                                    ktxFileHeader.glTypeSize, isCompressed);
 
 	// Set the dimensions
 	ktxFileHeader.pixelWidth = m_assetsToWrite[0]->getWidth();
@@ -199,7 +201,7 @@ bool TextureWriterKTX::writeAllAssets()
 
 		// Compressed images are written without scan line padding, because there aren't necessarily any scan lines.
 		if (m_assetsToWrite[0]->getPixelFormat().getPart().High == 0 &&
-		    m_assetsToWrite[0]->getPixelFormat().getPixelTypeId() != CompressedPixelFormat::SharedExponentR9G9B9E5)
+		    m_assetsToWrite[0]->getPixelFormat().getPixelTypeId() != (uint64)CompressedPixelFormat::SharedExponentR9G9B9E5)
 		{
 			for (uint32 iSurface = 0; iSurface < m_assetsToWrite[0]->getNumberOfArrayMembers(); ++iSurface)
 			{
@@ -294,9 +296,8 @@ bool TextureWriterKTX::canWriteAsset(const Texture& asset)
 	texture_ktx::FileHeader ktxFileHeader; bool isCompressed;
 
 	// Check if the pixel format is supported
-	return utils::getOpenGLFormat(asset.getPixelFormat(), asset.getColorSpace(), asset.getChannelType(), ktxFileHeader.glInternalFormat,
-	                       ktxFileHeader.glFormat,
-	                       ktxFileHeader.glType, ktxFileHeader.glTypeSize, isCompressed);
+	return api::ConvertToGles::getOpenGLFormat(asset.getPixelFormat(), asset.getColorSpace(), asset.getChannelType(), ktxFileHeader.glInternalFormat,
+	       ktxFileHeader.glFormat, ktxFileHeader.glType, ktxFileHeader.glTypeSize, isCompressed);
 }
 
 vector<string> TextureWriterKTX::getSupportedFileExtensions()

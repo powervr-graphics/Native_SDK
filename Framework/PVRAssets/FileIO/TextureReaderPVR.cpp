@@ -247,23 +247,13 @@ vector<string> TextureReaderPVR::getSupportedFileExtensions()
 	return vector<string>(extensions);
 }
 
-string TextureReaderPVR::getReaderName()
-{
-	return "PowerVR Texture Reader";
-}
-
-string TextureReaderPVR::getReaderVersion()
-{
-	return "1.0.0";
-}
-
 bool TextureReaderPVR::convertTextureHeader2To3(const texture_legacy::HeaderV2& legacyHeader, TextureHeader& newHeader)
 {
 	// Pixel type variables to obtain from the old header's information
 	bool isPremultiplied;
 	PixelFormat pixelType;
-    types::ColorSpace::Enum colorSpace;
-	VariableType::Enum channelType;
+	types::ColorSpace colorSpace;
+	VariableType channelType;
 
 	// Map the old enum to the new format.
 	if (!mapLegacyEnumToNewFormat((texture_legacy::PixelFormat)(legacyHeader.pixelFormatAndFlags & 0xff),
@@ -335,7 +325,7 @@ bool TextureReaderPVR::convertTextureHeader2To3(const texture_legacy::HeaderV2& 
 }
 
 bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelFormat legacyPixelType, PixelFormat& pixelType,
-    ColorSpace::Enum& colorSpace, VariableType::Enum& channelType, bool& isPremultiplied)
+    ColorSpace& colorSpace, VariableType& channelType, bool& isPremultiplied)
 {
 	//Default value.
 	isPremultiplied = false;
@@ -345,7 +335,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 	case texture_legacy::MGL_ARGB_4444:
 	{
 		pixelType = GeneratePixelType4<'a', 'r', 'g', 'b', 4, 4, 4, 4>::ID;
-        colorSpace = types::ColorSpace::lRGB;
+		colorSpace = types::ColorSpace::lRGB;
 		channelType = VariableType::UnsignedShortNorm;
 		break;
 	}
@@ -353,7 +343,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 	case texture_legacy::MGL_ARGB_1555:
 	{
 		pixelType = GeneratePixelType4<'a', 'r', 'g', 'b', 1, 5, 5, 5>::ID;
-        colorSpace = ColorSpace::lRGB;
+		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedShortNorm;
 		break;
 	}
@@ -361,7 +351,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 	case texture_legacy::MGL_RGB_565:
 	{
 		pixelType = GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID;
-        colorSpace = ColorSpace::lRGB;
+		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedShortNorm;
 		break;
 	}
@@ -369,7 +359,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 	case texture_legacy::MGL_RGB_555:
 	{
 		pixelType = GeneratePixelType4<'x', 'r', 'g', 'b', 1, 5, 5, 5>::ID;
-        colorSpace = ColorSpace::lRGB;
+		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedShortNorm;
 		break;
 	}
@@ -416,7 +406,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::MGL_1_BPP:
 	{
-		pixelType = CompressedPixelFormat::BW1bpp;
+		pixelType = (uint64)CompressedPixelFormat::BW1bpp;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -424,7 +414,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::MGL_VY1UY0:
 	{
-		pixelType = CompressedPixelFormat::YUY2;
+		pixelType = (uint64)CompressedPixelFormat::YUY2;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -432,7 +422,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::MGL_Y1VY0U:
 	{
-		pixelType = CompressedPixelFormat::UYVY;
+		pixelType = (uint64)CompressedPixelFormat::UYVY;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -440,7 +430,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::MGL_PVRTC2:
 	{
-		pixelType = CompressedPixelFormat::PVRTCI_2bpp_RGBA;
+		pixelType = (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -448,7 +438,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::MGL_PVRTC4:
 	{
-		pixelType = CompressedPixelFormat::PVRTCI_4bpp_RGBA;
+		pixelType = (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -520,7 +510,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::GL_PVRTC2:
 	{
-		pixelType = CompressedPixelFormat::PVRTCI_2bpp_RGBA;
+		pixelType = (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -528,7 +518,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::GL_PVRTC4:
 	{
-		pixelType = CompressedPixelFormat::PVRTCI_4bpp_RGBA;
+		pixelType = (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -552,7 +542,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::GL_PVRTCII4:
 	{
-		pixelType = CompressedPixelFormat::PVRTCII_4bpp;
+		pixelType = (uint64)CompressedPixelFormat::PVRTCII_4bpp;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -560,7 +550,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::GL_PVRTCII2:
 	{
-		pixelType = CompressedPixelFormat::PVRTCII_2bpp;
+		pixelType = (uint64)CompressedPixelFormat::PVRTCII_2bpp;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -568,7 +558,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_DXT1:
 	{
-		pixelType = CompressedPixelFormat::DXT1;
+		pixelType = (uint64)CompressedPixelFormat::DXT1;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -576,7 +566,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_DXT2:
 	{
-		pixelType = CompressedPixelFormat::DXT2;
+		pixelType = (uint64)CompressedPixelFormat::DXT2;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		isPremultiplied = true;
@@ -593,7 +583,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_DXT4:
 	{
-		pixelType = CompressedPixelFormat::DXT4;
+		pixelType = (uint64)CompressedPixelFormat::DXT4;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		isPremultiplied = true;
@@ -602,7 +592,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_DXT5:
 	{
-		pixelType = CompressedPixelFormat::DXT5;
+		pixelType = (uint64)CompressedPixelFormat::DXT5;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -794,7 +784,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_UYVY:
 	{
-		pixelType = CompressedPixelFormat::UYVY;
+		pixelType = (uint64)CompressedPixelFormat::UYVY;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -802,7 +792,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_YUY2:
 	{
-		pixelType = CompressedPixelFormat::YUY2;
+		pixelType = (uint64)CompressedPixelFormat::YUY2;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -1162,7 +1152,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_R1_UNORM:
 	{
-		pixelType = CompressedPixelFormat::BW1bpp;
+		pixelType = (uint64)CompressedPixelFormat::BW1bpp;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -1170,7 +1160,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_R9G9B9E5_SHAREDEXP:
 	{
-		pixelType = CompressedPixelFormat::SharedExponentR9G9B9E5;
+		pixelType = (uint64)CompressedPixelFormat::SharedExponentR9G9B9E5;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::SignedFloat;
 		break;
@@ -1178,21 +1168,21 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_R8G8_B8G8_UNORM:
 	{
-		pixelType = CompressedPixelFormat::RGBG8888;
+		pixelType = (uint64)CompressedPixelFormat::RGBG8888;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
 	}
 	case texture_legacy::DXGI_G8R8_G8B8_UNORM:
 	{
-		pixelType = CompressedPixelFormat::GRGB8888;
+		pixelType = (uint64)CompressedPixelFormat::GRGB8888;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
 	}
 	case texture_legacy::DXGI_BC1_UNORM:
 	{
-		pixelType = CompressedPixelFormat::DXT1;
+		pixelType = (uint64)CompressedPixelFormat::DXT1;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedIntegerNorm;
 		break;
@@ -1200,7 +1190,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_BC1_UNORM_SRGB:
 	{
-		pixelType = CompressedPixelFormat::DXT1;
+		pixelType = (uint64)CompressedPixelFormat::DXT1;
 		colorSpace = ColorSpace::sRGB;
 		channelType = VariableType::UnsignedIntegerNorm;
 		break;
@@ -1208,7 +1198,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_BC2_UNORM:
 	{
-		pixelType = CompressedPixelFormat::DXT3;
+		pixelType = (uint64)CompressedPixelFormat::DXT3;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedIntegerNorm;
 		break;
@@ -1216,7 +1206,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_BC2_UNORM_SRGB:
 	{
-		pixelType = CompressedPixelFormat::DXT1;
+		pixelType = (uint64)CompressedPixelFormat::DXT1;
 		colorSpace = ColorSpace::sRGB;
 		channelType = VariableType::UnsignedIntegerNorm;
 		break;
@@ -1224,7 +1214,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_BC3_UNORM:
 	{
-		pixelType = CompressedPixelFormat::DXT5;
+		pixelType =(uint64) CompressedPixelFormat::DXT5;
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedIntegerNorm;
 		break;

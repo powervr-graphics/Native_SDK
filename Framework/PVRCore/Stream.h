@@ -32,7 +32,7 @@ public:
 		SeekOriginFromEnd
 	};
 
-	virtual ~Stream() {};
+	virtual ~Stream() {}
 
 	/*!********************************************************************************************************
 	\return   True if this stream can be read from.
@@ -64,7 +64,7 @@ public:
 	\brief    Main write function. Write into the stream the specified amount of items from a provided buffer.
 	\param[in]  elementSize  The size of each element that will be written.
 	\param[in]  elementCount  The number of elements to write.
-	\param[in]  buffer  The buffer from which to read the data. If the buffer is smaller than 
+	\param[in]  buffer  The buffer from which to read the data. If the buffer is smaller than
 	            elementSize * elementCount bytes, result is undefined.
 	\param[out]  dataWritten  After returning, will contain the number of items that were actually written. Will
 	            contain elementCount unless an error has occured.
@@ -118,7 +118,7 @@ public:
 	template<typename Type_> std::vector<Type_> readToEnd() const
 	{
 		std::vector<Type_> ret;
-		size_t mySize = getSize();
+		size_t mySize = getSize() - getPosition();
 		size_t myElements = mySize / sizeof(Type_);
 		ret.resize(mySize);
 		size_t actuallyRead;
@@ -151,11 +151,13 @@ public:
 	bool readIntoBuffer(std::vector<T_>& outString) const
 	{
 		if (!isopen()) { return false; }
-		assertion(getSize() < (std::numeric_limits<size_t>::max)());
-		outString.resize(getSize());
+		size_t sz = getSize();
+		assertion(sz < (std::numeric_limits<size_t>::max)());
+		size_t initial_size = outString.size();
+		outString.resize(initial_size + getSize());
 
 		size_t dataRead;
-		return read(sizeof(T_), getSize(), outString.data(), dataRead);
+		return read(sizeof(T_), getSize(), outString.data() + initial_size, dataRead);
 	}
 
 	/*!********************************************************************************************************

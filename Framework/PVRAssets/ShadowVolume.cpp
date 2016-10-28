@@ -207,7 +207,7 @@ void ShadowVolume::findOrCreateTriangle(const glm::vec3& v0, const glm::vec3& v1
 	return;
 }
 
-Result::Enum ShadowVolume::init(const assets::Mesh& mesh)
+Result ShadowVolume::init(const assets::Mesh& mesh)
 {
 	const assets::Mesh::VertexAttributeData* positions = mesh.getVertexAttributeByName("POSITION");
 
@@ -223,9 +223,9 @@ Result::Enum ShadowVolume::init(const assets::Mesh& mesh)
 	            positions->getVertexLayout().dataType, faceData.getData(), mesh.getNumFaces(), faceData.getDataType());
 }
 
-Result::Enum ShadowVolume::init(const byte* const data, uint32 numVertices,
-                                uint32 verticesStride, DataType::Enum vertexType, const byte* const faceData,
-                                uint32 numFaces, IndexType::Enum indexType)
+Result ShadowVolume::init(const byte* const data, uint32 numVertices,
+                          uint32 verticesStride, DataType vertexType, const byte* const faceData,
+                          uint32 numFaces, IndexType indexType)
 {
 	delete [] m_shadowMesh.vertices;
 	m_shadowMesh.numVertices = 0;
@@ -243,7 +243,7 @@ Result::Enum ShadowVolume::init(const byte* const data, uint32 numVertices,
 		m_shadowMesh.edges = new ShadowVolumeEdge[3 * numFaces];
 		m_shadowMesh.triangles = new ShadowVolumeTriangle[3 * numFaces];
 
-		uint32 indexStride = IndexType::size(indexType);
+		uint32 indexStride = indexTypeSizeInBytes(indexType);
 
 		byte* facePtr = (byte*) faceData;
 
@@ -385,7 +385,7 @@ void ShadowVolume::alllocateShadowVolume(uint32 volumeID)
 	m_shadowVolumes.insert(pair<uint32, ShadowVolumeData>(volumeID, volume));
 }
 
-Result::Enum ShadowVolume::releaseVolume(uint32 volumeID)
+Result ShadowVolume::releaseVolume(uint32 volumeID)
 {
 	std::map<uint32, ShadowVolumeData>::iterator found = m_shadowVolumes.find(volumeID);
 	assertion(found != m_shadowVolumes.end());
@@ -477,8 +477,8 @@ byte* ShadowVolume::getIndices(uint32 volumeID)
 	return found->second.indexData;
 }
 
-Result::Enum ShadowVolume::projectSilhouette(uint32 volumeID, uint32 flags, const glm::vec3& lightModel, bool isPointLight,
-    byte** externalIndexBuffer)
+Result ShadowVolume::projectSilhouette(uint32 volumeID, uint32 flags, const glm::vec3& lightModel, bool isPointLight,
+                                       byte** externalIndexBuffer)
 {
 	if (m_shadowMesh.needs32BitIndices)
 	{
@@ -491,8 +491,8 @@ Result::Enum ShadowVolume::projectSilhouette(uint32 volumeID, uint32 flags, cons
 }
 
 template<typename INDEXTYPE>
-Result::Enum ShadowVolume::project(uint32 volumeID, uint32 flags, const glm::vec3& lightModel, bool isPointLight,
-                                   INDEXTYPE** externalIndexBuffer)
+Result ShadowVolume::project(uint32 volumeID, uint32 flags, const glm::vec3& lightModel, bool isPointLight,
+                             INDEXTYPE** externalIndexBuffer)
 {
 	ShadowVolumeMapType::iterator found = m_shadowVolumes.find(volumeID);
 	assertion(found != m_shadowVolumes.end());

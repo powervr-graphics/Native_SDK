@@ -117,16 +117,6 @@ vector<string> TextureReaderXNB::getSupportedFileExtensions()
 	return vector<string>(extensions);
 }
 
-string TextureReaderXNB::getReaderName()
-{
-	return "PowerVR XNA Binary Texture Reader";
-}
-
-string TextureReaderXNB::getReaderVersion()
-{
-	return "1.0.0";
-}
-
 bool TextureReaderXNB::initializeFile()
 {
 	const uint32 c_objectNotFound = 0xffffffffu;
@@ -218,9 +208,9 @@ uint64 TextureReaderXNB::getPVRFormatFromXNBFormat(uint32 xnbFormat)
 		GeneratePixelType3<'b', 'g', 'r', 5, 6, 5>::ID,
 		GeneratePixelType4<'b', 'g', 'r', 'a', 5, 5, 5, 1>::ID,
 		GeneratePixelType4<'b', 'g', 'r', 'a', 4, 4, 4, 4>::ID,
-		CompressedPixelFormat::DXT1,
-		CompressedPixelFormat::DXT3,
-		CompressedPixelFormat::DXT5,
+		(uint64)CompressedPixelFormat::DXT1,
+		(uint64)CompressedPixelFormat::DXT3,
+		(uint64)CompressedPixelFormat::DXT5,
 		GeneratePixelType2<'r', 'g', 8, 8>::ID, //???
 		GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID, //???
 		GeneratePixelType4<'r', 'g', 'b', 'a', 10, 10, 10, 2>::ID,
@@ -243,9 +233,9 @@ uint64 TextureReaderXNB::getPVRFormatFromXNBFormat(uint32 xnbFormat)
 	return mappedFormats[xnbFormat];
 }
 
-VariableType::Enum TextureReaderXNB::getPVRTypeFromXNBFormat(uint32 xnbFormat)
+VariableType TextureReaderXNB::getPVRTypeFromXNBFormat(uint32 xnbFormat)
 {
-	const VariableType::Enum mappedTypes[] =
+	const VariableType mappedTypes[] =
 	{
 		VariableType::UnsignedByteNorm,
 		VariableType::UnsignedShortNorm,

@@ -4,6 +4,7 @@
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief		  Definition of the Vulkan implementation of the DescriptorSet and supporting classes
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/ApiObjects/DescriptorSet.h"
 #include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
@@ -37,6 +38,11 @@ public:
 	\brief Free all the resources held by this object
 	***********************************************************************************************************************/
 	void destroy();
+
+    /*!
+       \brief Destructor
+     */
+	virtual ~DescriptorSetLayoutVk_();
 };
 
 /*!*********************************************************************************************************************
@@ -75,7 +81,6 @@ public:
 	\brief dtor.
 	***********************************************************************************************************************/
 	virtual ~DescriptorSetVk_();
-private:
 };
 
 class DescriptorPoolVk_;
@@ -108,7 +113,7 @@ public:
 	\param ctx The GraphicsContext this commandpool will be created on.
 	\return Return a new Commandpool
 	***********************************************************************************************************************/
-	static DescriptorPoolVk createNew(const GraphicsContext& ctx){ return EmbeddedRefCount<DescriptorPoolVk_>::createNew(ctx); }
+	static DescriptorPoolVk createNew(const GraphicsContext& ctx) { return EmbeddedRefCount<DescriptorPoolVk_>::createNew(ctx); }
 private:
 
 	/*!*********************************************************************************************************************
@@ -139,11 +144,13 @@ inline bool DescriptorSetVk_::init()
 	VkDescriptorSetAllocateInfo allocInfo;
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	allocInfo.pNext = NULL;
-	allocInfo.pSetLayouts = &native_cast(*getDescriptorSetLayout()).handle;
+	allocInfo.pSetLayouts = &pvr::api::native_cast(*getDescriptorSetLayout()).handle;
 	allocInfo.descriptorSetCount = 1;
-	allocInfo.descriptorPool = native_cast(*getDescriptorPool()).handle;
-	return (vk::AllocateDescriptorSets(native_cast(*m_descSetLayout->getContext()).getDevice(), &allocInfo, &native_cast(this)->handle) == VK_SUCCESS);
+	allocInfo.descriptorPool = pvr::api::native_cast(*getDescriptorPool()).handle;
+	return (vk::AllocateDescriptorSets(pvr::api::native_cast(*m_descSetLayout->getContext()).getDevice(),
+	                                   &allocInfo, &pvr::api::native_cast(this)->handle) == VK_SUCCESS);
 }
 }
 }
 }
+//!\endcond

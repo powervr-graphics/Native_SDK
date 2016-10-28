@@ -875,9 +875,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;    CreateFenceSync_() { syncObject.construct(); }</div>
 <div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;};</div>
 <div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;}</div>
-<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;</div>
-<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;}</div>
-<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;}</div>
+<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
+<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;<span class="comment">\brief  A memory barrier into the command stream. Used to signify that some types of pending operations from</span></div>
+<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;<span class="comment">before the barrier must have finished before the commands after the barrier start executing.</span></div>
+<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;<span class="comment">***********************************************************************************************************************/</span></div>
+<div class="line"><a name="l00802"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1_pipeline_barrier.html">  802</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1api_1_1_pipeline_barrier.html" title="A memory barrier into the command stream. Used to signify that some types of pending operations from ...">PipelineBarrier</a> : <span class="keyword">public</span> <a class="code" href="classpvr_1_1api_1_1_api_command.html" title="Interface for Dynamic commands which can be queued into a CommandBuffer. In specific implementations...">ApiCommand</a></div>
+<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;{</div>
+<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00805"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1_pipeline_barrier.html#a26362f4c042b34842eafe7c2d88aaced">  805</a></span>&#160;    uint32 <a class="code" href="classpvr_1_1api_1_1_pipeline_barrier.html#a26362f4c042b34842eafe7c2d88aaced">barrier</a>;</div>
+<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1api_1_1_pipeline_barrier.html#a35059c7da4483365b6490029eb04ccd4">execute_private</a>(<a class="code" href="classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline...">impl::CommandBufferBase_</a>&amp; cmdBuffer);</div>
+<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;};</div>
+<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;}</div>
+<div class="line"><a name="l00809"></a><span class="lineno">  809</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

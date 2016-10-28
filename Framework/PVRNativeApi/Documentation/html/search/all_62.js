@@ -35,6 +35,8 @@ var searchData=
   ['buffers',['buffers',['../_api_gles2_8h.html#acaf3212fc88caa23745613e709a3e869',1,'ApiGles2.h']]],
   ['buffersubdata',['BufferSubData',['../classgl.html#afe0365758f2adb60a2f1bb35da594d94',1,'gl']]],
   ['bufferusage',['bufferUsage',['../namespacepvr_1_1api_1_1_convert_to_vk.html#a2291012061cb6dda05d02cdfb3567e8e',1,'pvr::api::ConvertToVk']]],
+  ['bufferutils_2eh',['BufferUtils.h',['../_buffer_utils_8h.html',1,'']]],
+  ['bufferutilsgles_2ecpp',['BufferUtilsGles.cpp',['../_buffer_utils_gles_8cpp.html',1,'']]],
   ['bufferutilsvk_2ecpp',['BufferUtilsVk.cpp',['../_buffer_utils_vk_8cpp.html',1,'']]],
   ['bufferutilsvk_2eh',['BufferUtilsVk.h',['../_buffer_utils_vk_8h.html',1,'']]],
   ['bufs',['bufs',['../_api_gles3_8h.html#abd460bd7a6c3013f5b44a791038b6754',1,'ApiGles3.h']]],

@@ -3,8 +3,9 @@
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Contains Vulkan specific implementation of the Texture class. Use only if directly using Vulkan calls.
-			  Provides the definitions allowing to move from the Framework object Texture2D to the underlying Vulkan Texture.
+              Provides the definitions allowing to move from the Framework object Texture2D to the underlying Vulkan Texture.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRApi/ApiObjects/Texture.h"
 #include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
@@ -18,45 +19,67 @@ namespace vulkan {
 class TextureStoreVk_ : public native::HTexture_, public impl::TextureStore_
 {
 public:
-	types::TextureDimension::Enum dimension;
-	types::ImageExtents extents;
-	types::ImageLayersSize layersSize;
-
-	/*!*******************************************************************************************
-	\brief Return the basic dimensioning of the texture (1D/2D/3D).
-	\return The TextureDimension
-	**********************************************************************************************/
-	types::TextureDimension::Enum getDimension() const { return dimension; }
 
 	/*!*******************************************************************************************
 	\brief Return a reference to the format of the texture
 	\return The reference to the ImageStorageFormat
 	**********************************************************************************************/
 	ImageStorageFormat&  getFormat() { return format; }
-	
-	/*!*******************************************************************************************
-	\brief Return a const reference to the format of the texture
-	\return The const reference to the ImageStorageFormat
-	**********************************************************************************************/
-	const ImageStorageFormat&  getFormat() const { return format; }
+
+	/*!
+	   \brief Set this texture format
+	   \param format Texture format
+	 */
+	void setFormat(const ImageStorageFormat& format) { this->format = format; }
 
 	/*!*******************************************************************************************
 	\brief Set the dimension of this texture
 	\param extents Texture dimension
 	**********************************************************************************************/
-	void setDimensions(types::ImageExtents extents) { this->extents = extents; }
-	
+	void setDimensions(types::Extent3D extents)
+	{
+		assertion(extents.width > 0 && extents.height > 0 && extents.depth > 0);
+		if (extents.height > 1 && extents.depth > 1) { imageBaseType = types::ImageBaseType::Image3D; }
+		else if (extents.height > 1) { imageBaseType = types::ImageBaseType::Image2D; }
+		else { imageBaseType = types::ImageBaseType::Image1D; }
+		this->extents = extents;
+	}
+
 	/*!*******************************************************************************************
 	\brief Set this texture layer
 	\return layerSize Texture layer size
 	**********************************************************************************************/
-	void setLayers(types::ImageLayersSize layersSize) { this->layersSize = layersSize; }
+	void setLayers(types::ImageLayersSize layersSize)
+	{
+		this->layersSize = layersSize;
+	}
+	/*!*******************************************************************************************
+	\brief Set this texture layer
+	\return layerSize Texture layer size
+	**********************************************************************************************/
+	const types::ImageLayersSize& getLayers() const { return layersSize; }
+
+	/*!
+	   \brief Set number of samples
+	   \param samplesCount
+	 */
+	void setNumSamples(types::SampleCount samplesCount) { this->samplesCount = samplesCount; }
+
+	/*!
+	   \brief Return number of samples
+	 */
+	types::SampleCount getNumSamples()const { return samplesCount; }
 
 	/*!*******************************************************************************************
 	\brief Check if this texture is allocated.
 	\return true if the texture is allocated. Otherwise, the texture is empty and must be constructed.
 	**********************************************************************************************/
 	bool isAllocated() const { return (image != VK_NULL_HANDLE) && (memory != VK_NULL_HANDLE); }
+
+	/*!
+	   \brief Default constructor
+	 */
+	TextureStoreVk_() : TextureStore_() {}
 
 	/*!*******************************************************************************************
 	\brief Constructor.
@@ -72,10 +95,11 @@ public:
 	semantics are required, use the overload accepting a smart pointer object.
 	\description NOTE: This object will take ownership of the passed texture object, destroying it in its destructor.
 	**********************************************************************************************/
-	TextureStoreVk_(GraphicsContext& context, const native::HTexture_& texture, types::TextureDimension::Enum textureDim) :
-		HTexture_(texture), TextureStore_(context), dimension(textureDim) {}
+	TextureStoreVk_(GraphicsContext& context, const native::HTexture_& texture,
+	                types::ImageBaseType imageBaseType, bool isCubeMap = false) :
+		HTexture_(texture), TextureStore_(context, isCubeMap, imageBaseType)  {}
 
-	/*!*******************************************************************************************
+    /*!*******************************************************************************************
 	\brief Destructor. Will properly release all resources held by this object.
 	**********************************************************************************************/
 	~TextureStoreVk_() {}
@@ -93,7 +117,7 @@ namespace api {
 namespace vulkan {
 /*!*********************************************************************************************************************
 \brief TextureViewVk_ implementation that wraps the Vulkan Texture View object
-***********************************************************************************************************************/	
+***********************************************************************************************************************/
 class TextureViewVk_ : public native::HImageView_, public impl::TextureView_
 {
 public:
@@ -102,33 +126,32 @@ public:
 	\brief ctor.
 	\param texture	Texture to create this view on.
 	\param range	This view range
-	\param swizzleChannels Channels to be swizzled 
-	***********************************************************************************************************************/	
+	\param swizzleChannels Channels to be swizzled
+	***********************************************************************************************************************/
 	TextureViewVk_(const TextureStoreVk& texture, const types::ImageSubresourceRange& range = types::ImageSubresourceRange(),
-				   types::SwizzleChannels swizzleChannels = types::SwizzleChannels());
-		
+	               types::SwizzleChannels swizzleChannels = types::SwizzleChannels());
+
 	/*!*********************************************************************************************************************
 	\brief ctor.
 	\param texture	Texture to create this view on.
 	\param view	Native texture view object to be wrapped
-	***********************************************************************************************************************/			
+	***********************************************************************************************************************/
 	TextureViewVk_(const TextureStoreVk& texture, const native::HImageView_& view) : TextureView_(texture, view) {}
-	
+
 	/*!*********************************************************************************************************************
 	\brief dtor
-	***********************************************************************************************************************/	
-	~TextureViewVk_(){	destroy();	}
-	
+	***********************************************************************************************************************/
+	~TextureViewVk_() {	destroy();	}
+
 	/*!*********************************************************************************************************************
 	\brief Destroy this textrue view object
-	***********************************************************************************************************************/	
+	***********************************************************************************************************************/
 	void destroy();
 };
 
 typedef RefCountedResource<TextureViewVk_> TextureViewVk;
-}
-
-}
+}// namespace vulkan
+}//namespace api
 
 namespace native {
 /*!*********************************************************************************************************************
@@ -144,3 +167,4 @@ inline HTexture createNativeHandle(const api::TextureStore& texture)
 }//namespace native
 }
 PVR_DECLARE_NATIVE_CAST(TextureView);
+//!\endcond

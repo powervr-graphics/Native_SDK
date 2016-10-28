@@ -21,7 +21,7 @@ namespace strings {
 inline string vaFormatString(const char* format, va_list argumentList)
 {
 	using namespace std;
-	Result::Enum result = Result::Success;
+	Result result = Result::Success;
 
 #if defined(_WIN32)
 	int newStringSize = _vscprintf(format, argumentList);
@@ -42,8 +42,8 @@ inline string vaFormatString(const char* format, va_list argumentList)
 #ifdef _WIN32
 		if (_vsnprintf_s(const_cast<char*>(newString.c_str()), newStringSize + 1, newStringSize, format, argumentList) != newStringSize)
 #else
-        pvr::int32 n = vsnprintf(const_cast<char*>(newString.data()), newStringSize + 1, format, argumentList);
-		if ( (n < 0) || (n >= newStringSize + 1) )
+		pvr::int32 n = vsnprintf(const_cast<char*>(newString.data()), newStringSize + 1, format, argumentList);
+		if ((n < 0) || (n >= newStringSize + 1))
 #endif
 		{
 			result = Result::UnknownError;
@@ -65,7 +65,7 @@ inline string vaFormatString(const char* format, va_list argumentList)
 *****************************************************************************************************************/
 inline std::basic_string<wchar> vaFormatString(const wchar* const format, va_list argumentList)
 {
-	Result::Enum result = Result::Success;
+	Result result = Result::Success;
 
 #if defined(_WIN32)
 	int newStringSize = _vscwprintf(format, argumentList);

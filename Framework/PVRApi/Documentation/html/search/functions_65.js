@@ -15,5 +15,6 @@ var searchData=
   ['enqueuesecondarycmds_5fsubmitmultiple',['enqueueSecondaryCmds_SubmitMultiple',['../classpvr_1_1api_1_1impl_1_1_command_buffer__.html#acf4b4806a8865bc921a048a1fad2d5dd',1,'pvr::api::impl::CommandBuffer_']]],
   ['event_5f',['Event_',['../classpvr_1_1api_1_1impl_1_1_event__.html#ad8ced4eda8a802424f397b72f7cb9877',1,'pvr::api::impl::Event_']]],
   ['eventset_5f',['EventSet_',['../classpvr_1_1api_1_1impl_1_1_event_set__.html#a4482116781910929ab3f82e9cdcea829',1,'pvr::api::impl::EventSet_::EventSet_()'],['../classpvr_1_1api_1_1impl_1_1_event_set__.html#a55dd8cdc693b11640e0618a735441c91',1,'pvr::api::impl::EventSet_::EventSet_(Event *events, uint32 numEvents)']]],
-  ['execute',['execute',['../classpvr_1_1api_1_1_api_command.html#a063415069e7c9a3f53e7f780fad7c1f5',1,'pvr::api::ApiCommand::execute()'],['../classgles_1_1_color_write_mask.html#a8877c4c4fef0b4581ab99c27895a8d31',1,'gles::ColorWriteMask::execute()']]]
+  ['execute',['execute',['../classpvr_1_1api_1_1_api_command.html#a063415069e7c9a3f53e7f780fad7c1f5',1,'pvr::api::ApiCommand::execute()'],['../classgles_1_1_color_write_mask.html#a8877c4c4fef0b4581ab99c27895a8d31',1,'gles::ColorWriteMask::execute()']]],
+  ['execute_5fprivate',['execute_private',['../classpvr_1_1api_1_1_pipeline_barrier.html#a35059c7da4483365b6490029eb04ccd4',1,'pvr::api::PipelineBarrier']]]
 ];

@@ -62,10 +62,10 @@ END
 scene.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\scene.pod"
 
 // RCDATA: Shaders
-FragShader_VK.fsh		RCDATA		"..\\..\\FragShader_VK.fsh"
-FragShader_VK.fsh.spv		RCDATA		"..\\..\\FragShader_VK.fsh.spv"
-VertShader_VK.vsh		RCDATA		"..\\..\\VertShader_VK.vsh"
-VertShader_VK.vsh.spv		RCDATA		"..\\..\\VertShader_VK.vsh.spv"
+FragShader_vk.fsh		RCDATA		"..\\..\\FragShader_vk.fsh"
+FragShader_vk.fsh.spv		RCDATA		"..\\..\\FragShader_vk.fsh.spv"
+VertShader_vk.vsh		RCDATA		"..\\..\\VertShader_vk.vsh"
+VertShader_vk.vsh.spv		RCDATA		"..\\..\\VertShader_vk.vsh.spv"
 
 // RCDATA: Textures
 Marble.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\Marble.pvr"

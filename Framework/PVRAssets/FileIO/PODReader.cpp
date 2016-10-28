@@ -143,7 +143,7 @@ bool readVertexIndexData(Stream& stream, assets::Mesh& mesh)
 	bool result;
 	uint32 identifier, dataLength, size(0);
 	std::vector<byte> data;
-	IndexType::Enum type(IndexType::IndexType16Bit);
+	IndexType type(IndexType::IndexType16Bit);
 	while ((result = readTag(stream, identifier, dataLength)))
 	{
 		if (identifier == (pod::e_meshVertexIndexList | pod::c_endTagMask))
@@ -157,7 +157,7 @@ bool readVertexIndexData(Stream& stream, assets::Mesh& mesh)
 		{
 			uint32 tmp;
 			if (!read4Bytes(stream, tmp)) { return false; }
-			switch (static_cast<DataType::Enum >(tmp))
+			switch (static_cast<DataType >(tmp))
 			{
 			case DataType::UInt32:
 				type = IndexType::IndexType32Bit;
@@ -204,7 +204,7 @@ bool readVertexData(Stream& stream, assets::Mesh& mesh, const char8* const seman
 {
 	existed = false;
 	uint32 identifier, dataLength, numComponents(0), stride(0), offset(0);
-	DataType::Enum type(DataType::None);
+	DataType type(DataType::None);
 	while (readTag(stream, identifier, dataLength))
 	{
 		if (identifier == (blockIdentifier | pod::c_endTagMask))
@@ -227,7 +227,7 @@ bool readVertexData(Stream& stream, assets::Mesh& mesh, const char8* const seman
 		{
 			uint32 tmp;
 			if (!read4Bytes(stream, tmp)) { return false; }
-			type = static_cast<DataType::Enum>(tmp);
+			type = static_cast<DataType>(tmp);
 			continue;
 		}
 		case pod::e_blockNumComponents:
@@ -240,7 +240,7 @@ bool readVertexData(Stream& stream, assets::Mesh& mesh, const char8* const seman
 			if (dataIndex == -1)   // This POD file isn't using interleaved data so this data block must be valid vertex data
 			{
 				std::vector<byte> data;
-				switch (DataType::size(type))
+				switch (dataTypeSize(type))
 				{
 				case 1:
 				{
@@ -720,7 +720,7 @@ static void fixInterleavedEndiannessUsingVertexData(StridedBuffer& interleaved, 
 	{
 		return;
 	}
-	size_t ui32TypeSize = DataType::size(data.getVertexLayout().dataType);
+	size_t ui32TypeSize = dataTypeSize(data.getVertexLayout().dataType);
 	unsigned char ub[4];
 	unsigned char* pData = interleaved.data() + static_cast<size_t>(data.getOffset());
 	switch (ui32TypeSize)
@@ -789,6 +789,7 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 	uint32 identifier, dataLength, numUVWs(0), podUVWs(0), boneBatchesCount(0);
 	int32 interleavedDataIndex(-1);
 	assets::Mesh::InternalData& meshInternalData = mesh.getInternalData();
+	meshInternalData.boneCount = 0;
 	while ((result = readTag(stream, identifier, dataLength)) == true)
 	{
 		switch (identifier)
@@ -798,7 +799,7 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 			meshInternalData.primitiveData.isIndexed = (meshInternalData.faces.getDataSize() != 0);
 			if (meshInternalData.primitiveData.stripLengths.size())
 			{
-				meshInternalData.primitiveData.primitiveType = PrimitiveTopology::TriangleStrips;
+				meshInternalData.primitiveData.primitiveType = PrimitiveTopology::TriangleStrip;
 			}
 			else
 			{
@@ -886,7 +887,7 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 		case pod::e_meshUVWList | pod::c_startTagMask:
 		{
 			char8 semantic[256];
-            sprintf(semantic, "UV%i", numUVWs++);
+			sprintf(semantic, "UV%i", numUVWs++);
 			result = readVertexData(stream, mesh, semantic, identifier, interleavedDataIndex, exists);
 			break;
 		}
@@ -899,7 +900,11 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 			break;
 		case pod::e_meshBoneWeightList | pod::c_startTagMask:
 			result = readVertexData(stream, mesh, "BONEWEIGHT", identifier, interleavedDataIndex, exists);
-			if (exists) { meshInternalData.primitiveData.isSkinned = true; }
+			if (exists)
+			{
+				meshInternalData.primitiveData.isSkinned = true;
+				meshInternalData.boneCount = mesh.getVertexAttributeByName("BONEWEIGHT")->getN();
+			}
 			break;
 		default:
 		{
@@ -1221,16 +1226,6 @@ vector<string> PODReader::getSupportedFileExtensions()
 	vector<string> extensions;
 	extensions.push_back("pvr");
 	return vector<string>(extensions);
-}
-
-string PODReader::getReaderName()
-{
-	return "PowerVR assets::Model Reader";
-}
-
-string PODReader::getReaderVersion()
-{
-	return "1.0.0";
 }
 
 }

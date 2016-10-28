@@ -46,8 +46,7 @@ public:
 				fontFaces[i * 6 + 5] = 2 + i * 4;
 			}
 
-			m_fontIbo = getContext().createBuffer(sizeof(fontFaces[0]) * impl::Font_::FontElement, types::BufferBindingUse::IndexBuffer,
-			                                      types::BufferUse::DEFAULT);
+			m_fontIbo = getContext()->createBuffer(sizeof(fontFaces[0]) * impl::Font_::FontElement, types::BufferBindingUse::IndexBuffer, true);
 			m_fontIbo->update(&fontFaces[0], 0, (uint32)(sizeof(fontFaces[0]) * fontFaces.size()));
 		}
 		return m_fontIbo;
@@ -60,15 +59,15 @@ public:
 			// create the image vbo
 			const float32 verts[] =
 			{
-				/*		Position	          texCoord*/
-				-1.f, 1.f, 0.f, 1.f, 0.0f, 1.0f,
-				-1.f, -1.f, 0.f, 1.f, 0.0f, 0.0f,
-				1.f, 1.f, 0.f, 1.f, 1.0f, 1.0f,
-				-1.f, -1.f, 0.f, 1.f, 0.0f, 0.0f,
-				1.f, -1.f, 0.f, 1.f, 1.0f, 0.0f,
-				1.f, 1.f, 0.f, 1.f, 1.0f, 1.0f,
+				/*		Position	*/
+				-1.f, 1.f, 0.f, 1.0f, 0.0f, 1.0f, // upper left
+				-1.f, -1.f, 0.f, 1.0f, 0.f, 0.0f, // lower left
+				1.f, 1.f, 0.f, 1.0f, 1.f, 1.f, // upper right
+				-1.f, -1.f, 0.f, 1.0f, 0.f, 0.0f, // lower left
+				1.f, -1.f, 0.f, 1.0f, 1.f, 0.0f, // lower right
+				1.f, 1.f, 0.f, 1.0f, 1.f, 1.f, // upper right
 			};
-			m_imageVbo = getContext().createBuffer(sizeof(verts), types::BufferBindingUse::VertexBuffer, types::BufferUse::DEFAULT);
+			m_imageVbo = getContext()->createBuffer(sizeof(verts), types::BufferBindingUse::VertexBuffer, true);
 			m_imageVbo->update((void*)verts, 0, sizeof(verts));
 		}
 		return m_imageVbo;
@@ -84,13 +83,12 @@ public:
 	\brief Return the graphics context the UIRenderer was initialized with. If the UIrenderer was not initialized,
 	       behaviour is undefined.
 	***************************************************************************************************************/
-
-	IGraphicsContext& getContext() { return *m_context; }
+	GraphicsContext& getContext() { return m_context; }
 	/*!************************************************************************************************************
 	\brief Return the graphics context the UIRenderer was initialized with. If the UIrenderer was not initialized,
 	       behaviour is undefined.
 	***************************************************************************************************************/
-	const IGraphicsContext& getContext()const { return *m_context; }
+	const GraphicsContext& getContext()const { return m_context; }
 
 	/*!************************************************************************************************************
 	\brief Returns the ProgramData used by this UIRenderer.
@@ -100,7 +98,7 @@ public:
 	/*!************************************************************************************************************
 	\brief Returns the pvr::api::GraphicsPipeline object used by this UIRenderer.
 	***************************************************************************************************************/
-	api::ParentableGraphicsPipeline& getPipeline() { return m_pipeline; }
+	api::ParentableGraphicsPipeline getPipeline() { return m_pipeline; }
 
 	/*!************************************************************************************************************
 	\brief Check that we have called beginRendering() and not called endRendering. See the beginRendering() method.
@@ -111,23 +109,21 @@ public:
 	\brief Initialize the UIRenderer with a graphics context. MUST BE called exactly once before use, after a valid
 	       graphics context is available (usually, during initView).
 	***************************************************************************************************************/
-	Result::Enum init(GraphicsContext& context, const api::RenderPass& renderpass,
-	                  uint32 subpass)
+	Result init(const api::RenderPass& renderpass, uint32 subpass)
 	{
 		release();
 		m_mustEndCommandBuffer = false;
-		m_context = context;
-		m_screenDimensions = glm::vec2(context->getDisplayAttributes().width, context->getDisplayAttributes().height);
+		m_context = renderpass->getContext();
+		m_screenDimensions = glm::vec2(m_context->getDisplayAttributes().width, m_context->getDisplayAttributes().height);
 		m_renderpass = renderpass;
 		m_subpass = subpass;
 		// screen rotated?
-		if (m_screenDimensions.y > m_screenDimensions.x && context->getDisplayAttributes().fullscreen)
+		if (m_screenDimensions.y > m_screenDimensions.x && m_context->getDisplayAttributes().fullscreen)
 		{
 			rotateScreen90degreeCCW();
 		}
 
-
-		Result::Enum res;
+		Result res;
 		if (((res = init_CreateDescriptorSetLayout()) == Result::Success) &&
 		    ((res = init_CreatePipelineAndRenderPass()) == Result::Success))
 		{
@@ -145,6 +141,7 @@ public:
 	***************************************************************************************************************/
 	void release()
 	{
+		this->m_renderpass.reset();
 		this->m_defaultFont.reset();
 		this->m_defaultTitle.reset();
 		this->m_defaultDescription.reset();
@@ -157,9 +154,12 @@ public:
 		this->m_texDescLayout.reset();
 		this->m_uboDescLayout.reset();
 		this->m_samplerBilinear.reset();
+		this->m_samplerTrilinear.reset();
 		this->m_activeCommandBuffer.reset();
 		this->m_fontIbo.reset();
 		this->m_imageVbo.reset();
+		this->m_descPool.reset();
+
 		this->m_context.reset();
 	}
 
@@ -235,12 +235,13 @@ public:
 	*******************************************************************************************************************/
 	float32 getRenderingDimY()const { return m_screenDimensions.y; }
 
+	Rectanglei getViewport()const { return Rectanglei(0, 0, (int32)getRenderingDimX(), (int32)getRenderingDimY()); }
+
 	/*!****************************************************************************************************************
 	\brief Set the Y dimension of the rectangle the UIRenderer is rendering to in order to scale UI elements. Initial
 	value is the Screen Height.
 	*******************************************************************************************************************/
 	void setRenderingDimY(uint32 value) { m_screenDimensions.y = (pvr::float32)value; }
-
 
 	/*!****************************************************************************************************************
 	\brief Create a font from a given texture (use PVRTexTool to create the font texture from a font file).
@@ -272,7 +273,7 @@ public:
 	\param width  The width of the texture.
 	\return A new Image object of the specified texture. Null object if failed.
 	*******************************************************************************************************************/
-	Image createImage(api::TextureView& apiTex, int32 height, int32 width);
+	Image createImage(api::TextureView& apiTex, int32 width, int32 height);
 
 	/*!****************************************************************************************************************
 	\brief Create a pvr::ui::Image from a Texture asset.
@@ -280,6 +281,8 @@ public:
 	\return A new Image object of the specified texture. Null object if failed.
 	*******************************************************************************************************************/
 	Image createImage(const assets::Texture& texture);
+
+	Image createImageFromAtlas(api::TextureView& tex, const Rectanglef& uv, uint32 width, uint32 height);
 
 	/*!****************************************************************************************************************
 	\brief Create a pvr::ui::MatrixGroup.
@@ -301,11 +304,23 @@ public:
 	             UIRenderer. The sequence must always be beginRendering, render ..., endRendering. Always try to group
 				 as many rendering commands as possible between begin and end, to avoid needless state changes.
 	*******************************************************************************************************************/
-	void beginRendering(api::SecondaryCommandBuffer cb)
+	void beginRendering(api::SecondaryCommandBuffer& cb)
+	{
+		beginRendering(cb, pvr::api::Fbo(), true);
+	}
+
+	void beginRendering(api::SecondaryCommandBuffer& cb, const pvr::api::Fbo& fbo, bool useRenderpass = false)
 	{
 		if (!cb->isRecording())
 		{
-			cb->beginRecording(m_renderpass, m_subpass);
+			if (useRenderpass)
+			{
+				cb->beginRecording(m_renderpass, m_subpass);
+			}
+			else
+			{
+				cb->beginRecording(fbo, m_subpass);
+			}
 			m_mustEndCommandBuffer = true;
 		}
 		else { m_mustEndCommandBuffer = false; }
@@ -314,23 +329,63 @@ public:
 		m_activeCommandBuffer = cb;
 	}
 
+	void beginRendering(api::CommandBuffer& cb)
+	{
+		debug_assertion(cb->isRecording(), "UIRenderer: If a Primary command buffer is passed to the UIRenderer, it must be in the Recording state");
+		m_mustEndCommandBuffer = false;
+		cb->pushPipeline();// store the currently bound pipeline
+		cb->bindPipeline(getPipeline());// bind the uirenderer pipeline
+		m_activeCommandBuffer = cb;
+	}
+
+
 	/*!****************************************************************************************************************
 	\brief Begin rendering to a specific CommandBuffer, with a custom user-provided pvr::api::GraphicsPipeline.
 	\param cb The pvr::api::CommandBuffer object where all the rendering commands will be put into.
 	\param pipe The pvr::api::GraphicsPipeline to use for rendering.
 	\description THIS METHOD OR ITS OVERLOAD MUST BE CALLED BEFORE RENDERING ANY SPRITES THAT BELONG TO A SPECIFIC
-	             UIRenderer. The sequence must always be beginRendering, render ..., endRendering. Always try to group
-				 as many rendering commands as possible between beginRendering and endRendering, to avoid needless
-				 state changes. Use this overload to render with a custom GraphicsPipeline.
+	UIRenderer. The sequence must always be beginRendering, render ..., endRendering. Always try to group
+	as many rendering commands as possible between beginRendering and endRendering, to avoid needless
+	state changes. Use this overload to render with a custom GraphicsPipeline.
 	*******************************************************************************************************************/
 	void beginRendering(api::SecondaryCommandBuffer cb, pvr::api::GraphicsPipeline& pipe)
 	{
+		beginRendering(cb, pipe, pvr::api::Fbo(), true);
+	}
+
+	void beginRendering(api::SecondaryCommandBuffer cb, pvr::api::GraphicsPipeline& pipe, const pvr::api::Fbo& fbo, bool useRenderpass = false)
+	{
 		if (!cb->isRecording())
 		{
-			cb->beginRecording(m_renderpass, m_subpass);
+			if (useRenderpass)
+			{
+				cb->beginRecording(m_renderpass, m_subpass);
+			}
+			else
+			{
+				cb->beginRecording(fbo, m_subpass);
+			}
 			m_mustEndCommandBuffer = true;
 		}
 		else { m_mustEndCommandBuffer = false; }
+		cb->pushPipeline();
+		cb->bindPipeline(pipe);
+		m_activeCommandBuffer = cb;
+	}
+
+	/*!****************************************************************************************************************
+	\brief Begin rendering to a specific CommandBuffer, with a custom user-provided pvr::api::GraphicsPipeline.
+	\param cb The pvr::api::CommandBuffer object where all the rendering commands will be put into.
+	\param pipe The pvr::api::GraphicsPipeline to use for rendering.
+	\description THIS METHOD OR ITS OVERLOAD MUST BE CALLED BEFORE RENDERING ANY SPRITES THAT BELONG TO A SPECIFIC
+	UIRenderer. The sequence must always be beginRendering, render ..., endRendering. Always try to group
+	as many rendering commands as possible between beginRendering and endRendering, to avoid needless
+	state changes. Use this overload to render with a custom GraphicsPipeline.
+	*******************************************************************************************************************/
+	void beginRendering(api::CommandBuffer cb, pvr::api::GraphicsPipeline& pipe)
+	{
+		debug_assertion(cb->isRecording(), "UIRenderer: If a Primary command buffer is passed to the UIRenderer, it must be in the Recording state");
+		m_mustEndCommandBuffer = false;
 		cb->pushPipeline();
 		cb->bindPipeline(pipe);
 		m_activeCommandBuffer = cb;
@@ -360,7 +415,7 @@ public:
 	\brief	Get the pvr::api::CommandBuffer that is being used to currently render.
 	\return	If between a beginRendering and endRendering, the CommandBuffer used at beginRendering. Otherwise, null.
 	*******************************************************************************************************************/
-	api::SecondaryCommandBuffer& getActiveCommandBuffer() { return m_activeCommandBuffer; }
+	api::CommandBufferBase& getActiveCommandBuffer() { return m_activeCommandBuffer; }
 
 	/*!****************************************************************************************************************
 	\return	The version of the UIRenderer.
@@ -486,6 +541,8 @@ public:
 		return m_uboDescLayout;
 	}
 
+	api::DescriptorPool& getDescriptorPool() { return m_descPool; }
+
 	api::RenderPass m_renderpass;
 	uint32 m_subpass;
 private:
@@ -494,8 +551,8 @@ private:
 	bool init_CreateDefaultSampler();
 	bool init_CreateDefaultSdkLogo();
 	bool init_CreateDefaultTitle();
-	Result::Enum init_CreatePipelineAndRenderPass();
-	Result::Enum init_CreateDescriptorSetLayout();
+	Result init_CreatePipelineAndRenderPass();
+	Result init_CreateDescriptorSetLayout();
 	pvr::uint64 generateGroupId();
 
 	ProgramData m_programData;
@@ -512,7 +569,8 @@ private:
 	api::DescriptorSetLayout m_texDescLayout;
 	api::DescriptorSetLayout m_uboDescLayout;
 	api::Sampler m_samplerBilinear, m_samplerTrilinear;
-	api::SecondaryCommandBuffer m_activeCommandBuffer;
+	api::DescriptorPool m_descPool;
+	api::CommandBufferBase m_activeCommandBuffer;
 	bool m_mustEndCommandBuffer;
 	api::Buffer m_fontIbo;
 	api::Buffer m_imageVbo;

@@ -4,6 +4,8 @@
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Vulkan implementation of the PVRApi Fbo (Frame Buffer Object).
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
+
 #pragma once
 #include "PVRApi/ApiObjects/Fbo.h"
 #include "PVRApi/Vulkan/TextureVk.h"
@@ -23,15 +25,23 @@ public:
 	***********************************************************************************************************************/
 	FboVk_(GraphicsContext& context);
 
-	/*!*********************************************************************************************************************
+    /*!*
+        \brief Destructor.
+     */
+    ~FboVk_();
+
+    /*!*********************************************************************************************************************
 	\brief Initialize this FBO with the provided create param
 	\param desc Fbo create param
 	\return Return true on success
 	***********************************************************************************************************************/
 	bool init(const FboCreateParam& desc);
 
+	/*!*
+	\brief Destroy this object, release its resources.
+	 */
 	void destroy();
-	~FboVk_();
+
 };
 
 /*!*********************************************************************************************************************
@@ -59,3 +69,4 @@ typedef RefCountedResource<FboVk_> FboVk;
 }// namespace pvr
 
 PVR_DECLARE_NATIVE_CAST(Fbo);
+//!\endcond

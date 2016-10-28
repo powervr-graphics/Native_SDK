@@ -1,3 +1,10 @@
+/*!*********************************************************************************************************************
+\file         PVRApi/Vulkan/CommandPoolVk.cpp
+\author       PowerVR by Imagination, Developer Technology Team
+\copyright    Copyright (c) Imagination Technologies Limited.
+\brief        Vulkan Implementation details CommandPool class.
+***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #include "PVRApi/Vulkan/CommandPoolVk.h"
 #include "PVRApi/Vulkan/ContextVk.h"
 namespace pvr {
@@ -40,7 +47,6 @@ CommandBuffer CommandPool_::allocateCommandBuffer()
 	api::CommandBuffer commandBuffer;
 	CommandPool this_ref = static_cast<vulkan::CommandPoolVk_*>(this)->getReference();
 
-	VkDevice device = native_cast(*m_context).getDevice();
 	native::HCommandBuffer_ buffer;
 
 	VkCommandBufferAllocateInfo nfo;
@@ -65,7 +71,6 @@ SecondaryCommandBuffer CommandPool_::allocateSecondaryCommandBuffer()
 	api::SecondaryCommandBuffer commandBuffer;
 	CommandPool this_ref = static_cast<vulkan::CommandPoolVk_*>(this)->getReference();
 	native::HCommandBuffer_ buffer;
-	VkDevice device = native_cast(*m_context).getDevice();
 
 	VkCommandBufferAllocateInfo nfo;
 	nfo.commandBufferCount = 1;
@@ -97,3 +102,5 @@ native::HCommandPool_& impl::CommandPool_::getNativeObject()
 }
 }
 }
+
+//!\endcond

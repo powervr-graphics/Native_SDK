@@ -1,5 +1,5 @@
 /*!*********************************************************************************************************************
-\file         PVRNativeApi\Vulkan\ConvertToApiTypes.h
+\file         PVRNativeApi\Vulkan\ConvertToVkTypes.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Contains conversions of pvr Enumerations to Vulkan types.
@@ -9,10 +9,14 @@
 #include "PVRApi/GpuCapabilities.h"
 #include "PVRApi/ApiObjects/Texture.h"
 #include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
+
 namespace pvr {
+
+extern bool use_old_pvrtc_vulkan_enums;
+
 namespace api {
 /*!****************************************************************************************************************
-\brief	Contain functions to convert several PowerVR Framework types to their Native, Vulkan representations,
+\brief  Contain functions to convert several PowerVR Framework types to their Native, Vulkan representations,
 usually, from an enumeration to a vulkan type.
 *******************************************************************************************************************/
 namespace ConvertToVk {
@@ -22,27 +26,27 @@ namespace ConvertToVk {
 \param bufferUse Buffer binding use
 \return A VkBufferUsageFlagBits (VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_BUFFER_USAGE_INDEX_BUFFER_BIT etc)
 *******************************************************************************************************************/
-inline VkBufferUsageFlagBits bufferBindingUse(types::BufferBindingUse::Bits bufferUse) { return (VkBufferUsageFlagBits)bufferUse; }
+inline VkBufferUsageFlagBits bufferBindingUse(types::BufferBindingUse bufferUse) { return (VkBufferUsageFlagBits)bufferUse; }
 
 /*!****************************************************************************************************************
 \brief Convert to vulkan image type
-\param textureDim Texture dimension
+\param textureDimension Texture dimension
 \return A VkImageType (VK_IMAGE_TYPE_1D, VK_IMAGE_TYPE_2D, VK_IMAGE_TYPE_3D)
 *******************************************************************************************************************/
-inline VkImageType textureDimensionImageType(types::TextureDimension::Enum textureDim)
+inline VkImageType textureViewTypeToImageBaseType(types::ImageViewType textureDimension)
 {
-	switch (textureDim)
+	switch (textureDimension)
 	{
-	case types::TextureDimension::Texture1D:
+	case types::ImageViewType::ImageView1D:
 		return VK_IMAGE_TYPE_1D;
 
-	case types::TextureDimension::Texture2D:
-	case types::TextureDimension::Texture2DCube:
-	case types::TextureDimension::Texture2DArray:
+	case types::ImageViewType::ImageView2D:
+	case types::ImageViewType::ImageView2DCube:
+	case types::ImageViewType::ImageView2DArray:
 		return VK_IMAGE_TYPE_2D;
 
-	case types::TextureDimension::Texture3D:
-	case types::TextureDimension::Texture3DArray:
+	case types::ImageViewType::ImageView3D:
+	case types::ImageViewType::ImageView3DArray:
 		return VK_IMAGE_TYPE_3D;
 
 	default:
@@ -51,25 +55,64 @@ inline VkImageType textureDimensionImageType(types::TextureDimension::Enum textu
 	}
 }
 
+inline VkImageViewType imageBaseTypeToTexViewType(types::ImageBaseType baseType, uint32 numArrayLayers,
+    bool isCubeMap)
+{
+	// if it is a cube map it has to be 2D Texture base
+	if (isCubeMap && baseType != types::ImageBaseType::Image2D)
+	{
+		assertion(baseType == types::ImageBaseType::Image2D, "Cubemap texture must be 2D");
+		return VK_IMAGE_VIEW_TYPE_MAX_ENUM;
+	}
+	// array must be atleast 1
+	if (!numArrayLayers)
+	{
+		assertion(false, "Number of array layers must be greater than equal to 0");
+		return VK_IMAGE_VIEW_TYPE_MAX_ENUM;
+	}
+	// if it is array it must be 1D or 2D texture base
+	if (numArrayLayers && baseType > types::ImageBaseType::Image2D)
+	{
+		assertion(false, "1D and 2D image type supports array texture");
+		return VK_IMAGE_VIEW_TYPE_MAX_ENUM;
+	}
+
+	VkImageViewType vkType[] =
+	{
+		VK_IMAGE_VIEW_TYPE_1D,
+		VK_IMAGE_VIEW_TYPE_1D_ARRAY,
+		VK_IMAGE_VIEW_TYPE_2D,
+		VK_IMAGE_VIEW_TYPE_2D_ARRAY,
+		VK_IMAGE_VIEW_TYPE_3D ,
+		VK_IMAGE_VIEW_TYPE_CUBE,
+		VK_IMAGE_VIEW_TYPE_CUBE_ARRAY
+	};
+	if (isCubeMap)
+	{
+		numArrayLayers = (numArrayLayers > 6) * 6;
+	}
+	return vkType[((uint32)baseType * 2) + (isCubeMap ? 3 : 0) + (numArrayLayers > 1 ? 1 : 0)];
+}
+
 /*!****************************************************************************************************************
 \brief Convert to vulkan image view type
-\param textureDim Texture dimension
+\param texDimemsion Texture dimension
 \return A VkImageViewType (VK_IMAGE_VIEW_TYPE_1D, VK_IMAGE_VIEW_TYPE_2D etc)
 *******************************************************************************************************************/
-inline VkImageViewType textureDimensionImageView(types::TextureDimension::Enum textureDim)
+inline VkImageViewType textureViewType(types::ImageViewType texDimemsion)
 {
-	switch (textureDim)
+	switch (texDimemsion)
 	{
-	case types::TextureDimension::Texture1D:
+	case types::ImageViewType::ImageView1D:
 		return VK_IMAGE_VIEW_TYPE_1D;
 
-	case types::TextureDimension::Texture2D:
+	case types::ImageViewType::ImageView2D:
 		return VK_IMAGE_VIEW_TYPE_2D;
-	case types::TextureDimension::Texture2DCube:
+	case types::ImageViewType::ImageView2DCube:
 		return VK_IMAGE_VIEW_TYPE_CUBE;
-	case types::TextureDimension::Texture2DArray:
+	case types::ImageViewType::ImageView2DArray:
 		return VK_IMAGE_VIEW_TYPE_2D_ARRAY;
-	case types::TextureDimension::Texture3D:
+	case types::ImageViewType::ImageView3D:
 		return VK_IMAGE_VIEW_TYPE_3D;
 	default:
 		assertion(false ,  "Invalid texture dimension");
@@ -78,11 +121,11 @@ inline VkImageViewType textureDimensionImageView(types::TextureDimension::Enum t
 }
 
 /*!****************************************************************************************************************
-\brief Convert to vulkan primitive topology 
+\brief Convert to vulkan primitive topology
 \param primitiveTopology Primitive topology
 \return A VkPrimitiveTopology (VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP etc)
 *******************************************************************************************************************/
-inline VkPrimitiveTopology primitiveTopology(types::PrimitiveTopology::Enum primitiveTopology)
+inline VkPrimitiveTopology primitiveTopology(types::PrimitiveTopology primitiveTopology)
 {
 
 	static const VkPrimitiveTopology map [] = { VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
@@ -92,10 +135,15 @@ inline VkPrimitiveTopology primitiveTopology(types::PrimitiveTopology::Enum prim
 	                                            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
 	                                            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
 	                                            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,
+	                                            VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY,
+	                                            VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY,
+	                                            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY,
+	                                            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY,
 	                                            VK_PRIMITIVE_TOPOLOGY_PATCH_LIST,
 	                                            VK_PRIMITIVE_TOPOLOGY_PATCH_LIST,
+	                                            VK_PRIMITIVE_TOPOLOGY_MAX_ENUM
 	                                          };
-	return map[primitiveTopology];
+	return map[(uint32)primitiveTopology];
 
 }
 
@@ -105,7 +153,7 @@ inline VkPrimitiveTopology primitiveTopology(types::PrimitiveTopology::Enum prim
 \param width The Width of the data type
 \return A VkFormat (VK_FORMAT_R32_SFLOAT, VK_FORMAT_R32G32_SFLOAT etc)
 *******************************************************************************************************************/
-inline VkFormat dataFormat(types::DataType::Enum dataType, uint8 width)
+inline VkFormat dataFormat(types::DataType dataType, uint8 width)
 {
 	static const VkFormat Float32[] = { VK_FORMAT_R32_SFLOAT, VK_FORMAT_R32G32_SFLOAT, VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32B32A32_SFLOAT };
 	static const VkFormat Int32[] = { VK_FORMAT_R32_SINT, VK_FORMAT_R32G32_SINT, VK_FORMAT_R32G32B32_SINT, VK_FORMAT_R32G32B32A32_SINT };
@@ -150,7 +198,7 @@ inline VkFormat dataFormat(types::DataType::Enum dataType, uint8 width)
 \param stepRate The step rate of the vertex input(Vertex, Instance)
 \return A VkVertexInputRate (VK_VERTEX_INPUT_RATE_VERTEX, VK_VERTEX_INPUT_RATE_INSTANCE)
 *******************************************************************************************************************/
-inline VkVertexInputRate stepRate(types::StepRate::Enum stepRate)
+inline VkVertexInputRate stepRate(types::StepRate stepRate)
 {
 	return (stepRate == types::StepRate::Vertex ? VK_VERTEX_INPUT_RATE_VERTEX : VK_VERTEX_INPUT_RATE_INSTANCE);
 }
@@ -173,69 +221,137 @@ inline VkSampleCountFlagBits aaSamples(uint8 numSamples)
 \param use Buffer usage flag bits
 \return A bits of VkBufferUsageFlagBits (VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, etc)
 *******************************************************************************************************************/
-inline VkBufferUsageFlagBits bufferUsage(types::BufferBindingUse::Bits use)
+inline VkBufferUsageFlagBits bufferUsage(types::BufferBindingUse use)
 {
 	return (VkBufferUsageFlagBits)use;
 }
+
+//inline VkMemoryPropertyFlagBits bufferUse(types::BufferUse::Bits use)
+//{
+//	VkMemoryPropertyFlagBits vkFlagBits[] =
+//	{
+//		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+//		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+//		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+//		VK_MEMORY_PROPERTY_HOST_CACHED_BIT,
+//		VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT
+//	};
+//
+//	VkMemoryPropertyFlags returnVkBits = 0;
+//	if (use == types::BufferUse::DEFAULT)
+//	{
+//		returnVkBits |= VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+//	}
+//	if (use == types::BufferUse::DYNAMIC)
+//	{
+//		returnVkBits |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+//	}
+//	if (use == types::BufferUse::STAGING)
+//	{
+//		returnVkBits |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+//	}
+//	if ((use & types::BufferUse::CPU_READ) || (use & types::BufferUse::CPU_WRITE))
+//	{
+//		returnVkBits |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+//	}
+//	return (VkMemoryPropertyFlagBits)returnVkBits;
+//}
+
+
 
 /*!****************************************************************************************************************
 \brief Convert to vulkan sampler mip-map mode
 \param filter Mip map sampler filter
 \return A VkSamplerMipmapMode (VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_MIPMAP_MODE_LINEAR)
 *******************************************************************************************************************/
-inline VkSamplerMipmapMode mipmapFilter(types::SamplerFilter::Enum filter)
+inline VkSamplerMipmapMode mipmapFilter(types::SamplerFilter filter)
 {
-	return VkSamplerMipmapMode(filter == 2 ? 0 : filter);
+	return VkSamplerMipmapMode((uint32)filter & 1); //Nearest = Nearest, Linear = Linear, None = Nearest, Cubic = linear
 }
 
 /*!****************************************************************************************************************
 \brief Convert to vulkan pixel format
 \param format Pixel format
 \param colorSpace Color space of the format (lRGB, sRGB)
-\param dataType TYpe of the data (SignedByte, SignedInteger etc)
+\param dataType Type of the data (SignedByte, SignedInteger etc)
 \return A VkFormat representing the pixel format
 *******************************************************************************************************************/
-inline VkFormat pixelFormat(PixelFormat format, types::ColorSpace::Enum colorSpace, VariableType::Enum dataType)
+inline VkFormat pixelFormat(PixelFormat format, types::ColorSpace colorSpace, VariableType dataType)
 {
 
-	bool isSrgb = (colorSpace == types::ColorSpace::sRGB);
-	bool isSigned = VariableType::isSigned(dataType);
-	if (format.getPart().High == 0)
-	{
+#ifndef VK_FORMAT_RGB_PVRTC1_4BPP_BLOCK_IMG_BETA
+#define VK_FORMAT_RGB_PVRTC1_4BPP_BLOCK_IMG_BETA -0x40000001
+#define VK_FORMAT_RGBA_PVRTC1_4BPP_BLOCK_IMG_BETA -0x40000002
+#endif
 
+	bool isSrgb = (colorSpace == types::ColorSpace::sRGB);
+	bool isSigned = isVariableTypeSigned(dataType);
+	if (format.getPart().High == 0) // IS COMPRESSED FORMAT!
+	{
 		//Format and type == 0 for compressed textures.
 		switch (format.getPixelTypeId())
 		{
-		case CompressedPixelFormat::PVRTCI_2bpp_RGB:
-		case CompressedPixelFormat::PVRTCI_2bpp_RGBA:
-		case CompressedPixelFormat::PVRTCII_2bpp:
-		case CompressedPixelFormat::PVRTCII_4bpp:
-		case CompressedPixelFormat::ETC1:
-		case CompressedPixelFormat::DXT2:
-		case CompressedPixelFormat::DXT4:
-			return VK_FORMAT_UNDEFINED;
-		case CompressedPixelFormat::PVRTCI_4bpp_RGBA: return VK_FORMAT_RGBA_PVRTC1_4BPP_BLOCK;
-		case CompressedPixelFormat::PVRTCI_4bpp_RGB: return VK_FORMAT_RGB_PVRTC1_4BPP_BLOCK;
-		case CompressedPixelFormat::SharedExponentR9G9B9E5: return VK_FORMAT_E5B9G9R9_UFLOAT_PACK32;
-		case CompressedPixelFormat::ETC2_RGB: return (isSrgb ? VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK : VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK);
-		case CompressedPixelFormat::ETC2_RGBA: return (isSrgb ? VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK : VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK);
-		case CompressedPixelFormat::ETC2_RGB_A1: return (isSrgb ? VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK : VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK);
-		case CompressedPixelFormat::EAC_R11: return (isSigned ? VK_FORMAT_EAC_R11_SNORM_BLOCK : VK_FORMAT_EAC_R11_UNORM_BLOCK);
-		case CompressedPixelFormat::EAC_RG11: return (isSigned ? VK_FORMAT_EAC_R11G11_SNORM_BLOCK : VK_FORMAT_EAC_R11G11_UNORM_BLOCK);
+		//PVRTC
+
+		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGB: //fall through
+		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA: return (isSrgb ? VK_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG : VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG);
+		case (uint64)CompressedPixelFormat::PVRTCII_2bpp: return (isSrgb ? VK_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG : VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG);
+		case (uint64)CompressedPixelFormat::PVRTCII_4bpp: return (isSrgb ? VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG : VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG);
+
+		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGB: return use_old_pvrtc_vulkan_enums ? (VkFormat)VK_FORMAT_RGB_PVRTC1_4BPP_BLOCK_IMG_BETA : isSrgb ? VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG : VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG;
+		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA: return use_old_pvrtc_vulkan_enums ? (VkFormat)VK_FORMAT_RGBA_PVRTC1_4BPP_BLOCK_IMG_BETA : isSrgb ? VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG : VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG;
+
+		//OTHER COMPRESSED
+		case (uint64)CompressedPixelFormat::SharedExponentR9G9B9E5: return VK_FORMAT_E5B9G9R9_UFLOAT_PACK32;
+		case (uint64)CompressedPixelFormat::ETC2_RGB: return (isSrgb ? VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK : VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ETC2_RGBA: return (isSrgb ? VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK : VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ETC2_RGB_A1: return (isSrgb ? VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK : VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::EAC_R11: return (isSigned ? VK_FORMAT_EAC_R11_SNORM_BLOCK : VK_FORMAT_EAC_R11_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::EAC_RG11: return (isSigned ? VK_FORMAT_EAC_R11G11_SNORM_BLOCK : VK_FORMAT_EAC_R11G11_UNORM_BLOCK);
 		//Formats not supported by opengl/opengles
-		case CompressedPixelFormat::BC2: return (isSrgb ? VK_FORMAT_BC2_SRGB_BLOCK : VK_FORMAT_BC2_UNORM_BLOCK);
-		case CompressedPixelFormat::BC3: return (isSrgb ? VK_FORMAT_BC3_SRGB_BLOCK : VK_FORMAT_BC3_UNORM_BLOCK);
-		case CompressedPixelFormat::BC4: return (isSigned ? VK_FORMAT_BC4_SNORM_BLOCK : VK_FORMAT_BC4_UNORM_BLOCK);
-		case CompressedPixelFormat::BC5: return (isSigned ? VK_FORMAT_BC5_SNORM_BLOCK : VK_FORMAT_BC5_UNORM_BLOCK);
-		case CompressedPixelFormat::BC6: return (isSigned ? VK_FORMAT_BC6H_SFLOAT_BLOCK : VK_FORMAT_BC6H_UFLOAT_BLOCK);
-		case CompressedPixelFormat::BC7: return (isSrgb ? VK_FORMAT_BC7_SRGB_BLOCK : VK_FORMAT_BC7_UNORM_BLOCK);
-		case CompressedPixelFormat::BC1:
-		case CompressedPixelFormat::RGBG8888:
-		case CompressedPixelFormat::GRGB8888:
-		case CompressedPixelFormat::UYVY:
-		case CompressedPixelFormat::YUY2:
-		case CompressedPixelFormat::BW1bpp:
-			return VK_FORMAT_UNDEFINED;
+		case (uint64)CompressedPixelFormat::BC2: return (isSrgb ? VK_FORMAT_BC2_SRGB_BLOCK : VK_FORMAT_BC2_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::BC3: return (isSrgb ? VK_FORMAT_BC3_SRGB_BLOCK : VK_FORMAT_BC3_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::BC4: return (isSigned ? VK_FORMAT_BC4_SNORM_BLOCK : VK_FORMAT_BC4_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::BC5: return (isSigned ? VK_FORMAT_BC5_SNORM_BLOCK : VK_FORMAT_BC5_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::BC6: return (isSigned ? VK_FORMAT_BC6H_SFLOAT_BLOCK : VK_FORMAT_BC6H_UFLOAT_BLOCK);
+		case (uint64)CompressedPixelFormat::BC7: return (isSrgb ? VK_FORMAT_BC7_SRGB_BLOCK : VK_FORMAT_BC7_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_10x10: return (isSrgb ? VK_FORMAT_ASTC_10x10_SRGB_BLOCK : VK_FORMAT_ASTC_10x10_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_10x5: return (isSrgb ? VK_FORMAT_ASTC_10x5_SRGB_BLOCK : VK_FORMAT_ASTC_10x5_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_10x6: return (isSrgb ? VK_FORMAT_ASTC_10x6_SRGB_BLOCK : VK_FORMAT_ASTC_10x6_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_10x8: return (isSrgb ? VK_FORMAT_ASTC_10x8_SRGB_BLOCK : VK_FORMAT_ASTC_10x8_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_12x10: return (isSrgb ? VK_FORMAT_ASTC_12x10_SRGB_BLOCK : VK_FORMAT_ASTC_12x10_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_12x12: return (isSrgb ? VK_FORMAT_ASTC_12x12_SRGB_BLOCK : VK_FORMAT_ASTC_12x12_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_4x4: return (isSrgb ? VK_FORMAT_ASTC_4x4_SRGB_BLOCK : VK_FORMAT_ASTC_4x4_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_5x4: return (isSrgb ? VK_FORMAT_ASTC_5x4_SRGB_BLOCK : VK_FORMAT_ASTC_5x4_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_5x5: return (isSrgb ? VK_FORMAT_ASTC_5x5_SRGB_BLOCK : VK_FORMAT_ASTC_5x5_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_6x5: return (isSrgb ? VK_FORMAT_ASTC_6x5_SRGB_BLOCK : VK_FORMAT_ASTC_6x5_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_8x5: return (isSrgb ? VK_FORMAT_ASTC_8x5_SRGB_BLOCK : VK_FORMAT_ASTC_8x5_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_8x6: return (isSrgb ? VK_FORMAT_ASTC_8x6_SRGB_BLOCK : VK_FORMAT_ASTC_8x6_UNORM_BLOCK);
+		case (uint64)CompressedPixelFormat::ASTC_8x8: return (isSrgb ? VK_FORMAT_ASTC_8x8_SRGB_BLOCK : VK_FORMAT_ASTC_8x8_UNORM_BLOCK);
+
+#define UNSUPPORTED_FORMAT(fmt) case (uint64)CompressedPixelFormat::fmt: return VK_FORMAT_UNDEFINED;
+
+			///////// UNSUPPORTED FORMATS
+			UNSUPPORTED_FORMAT(ETC1);
+			UNSUPPORTED_FORMAT(DXT2)
+			UNSUPPORTED_FORMAT(DXT4)
+			UNSUPPORTED_FORMAT(BC1)
+			UNSUPPORTED_FORMAT(RGBG8888)
+			UNSUPPORTED_FORMAT(GRGB8888)
+			UNSUPPORTED_FORMAT(UYVY)
+			UNSUPPORTED_FORMAT(YUY2)
+			UNSUPPORTED_FORMAT(BW1bpp)
+			UNSUPPORTED_FORMAT(ASTC_3x3x3)
+			UNSUPPORTED_FORMAT(ASTC_4x3x3)
+			UNSUPPORTED_FORMAT(ASTC_4x4x3)
+			UNSUPPORTED_FORMAT(ASTC_4x4x4)
+			UNSUPPORTED_FORMAT(ASTC_5x4x4)
+			UNSUPPORTED_FORMAT(ASTC_5x5x4)
+			UNSUPPORTED_FORMAT(ASTC_5x5x5)
+			UNSUPPORTED_FORMAT(ASTC_6x5x5)
+			UNSUPPORTED_FORMAT(ASTC_6x6x5)
+			UNSUPPORTED_FORMAT(ASTC_6x6x6)
+#undef UNSUPPORTED_FORMAT
 		}
 	}
 	else
@@ -247,8 +363,8 @@ inline VkFormat pixelFormat(PixelFormat format, types::ColorSpace::Enum colorSpa
 			{
 			case assets::GeneratePixelType1<'d', 32>::ID: return VK_FORMAT_D32_SFLOAT;
 			case assets::GeneratePixelType1<'d', 24>::ID:
-			case assets::GeneratePixelType2<'x', 8, 'd', 24 >::ID:
-			case assets::GeneratePixelType2<'d', 24, 'x', 8 >::ID: return VK_FORMAT_D32_SFLOAT;
+			case assets::GeneratePixelType2<'x', 8, 'd', 24>::ID:
+			case assets::GeneratePixelType2<'d', 24, 'x', 8>::ID: return VK_FORMAT_D32_SFLOAT;
 			case assets::GeneratePixelType1<'d', 16>::ID: return VK_FORMAT_D16_UNORM;
 			case assets::GeneratePixelType2<'d', 's', 32, 8>::ID: return VK_FORMAT_D32_SFLOAT_S8_UINT;
 			case assets::GeneratePixelType2<'d', 's', 24, 8>::ID: return VK_FORMAT_D24_UNORM_S8_UINT;
@@ -433,6 +549,18 @@ inline VkFormat pixelFormat(PixelFormat format, types::ColorSpace::Enum colorSpa
 	return VK_FORMAT_UNDEFINED;
 }
 
+
+/*!****************************************************************************************************************
+\brief Convert to vulkan pixel format
+\param format Image Data format
+\return A VkFormat representing the pixel format
+*******************************************************************************************************************/
+inline VkFormat pixelFormat(const ImageDataFormat& format)
+{
+	return pixelFormat(format.format, format.colorSpace, format.dataType);
+}
+
+
 /*!****************************************************************************************************************
 \brief Convert to vulkan pixel format
 \param format Pixel format
@@ -441,38 +569,39 @@ inline VkFormat pixelFormat(PixelFormat format, types::ColorSpace::Enum colorSpa
 \param[out] outIsCompressedFormat Return if its a compressed format
 \return A VkFormat representing the pixel format
 *******************************************************************************************************************/
-inline VkFormat pixelFormat(PixelFormat format, types::ColorSpace::Enum colorSpace, VariableType::Enum dataType, bool& outIsCompressedFormat)
+inline VkFormat pixelFormat(PixelFormat format, types::ColorSpace colorSpace, VariableType dataType, bool& outIsCompressedFormat)
 {
-	outIsCompressedFormat = (format.getPart().High == 0) && (format.getPixelTypeId() != CompressedPixelFormat::SharedExponentR9G9B9E5);
+	outIsCompressedFormat = (format.getPart().High == 0) && (format.getPixelTypeId() != (uint64)CompressedPixelFormat::SharedExponentR9G9B9E5);
 	return pixelFormat(format, colorSpace, dataType);
 }
 
 #define PVR_DECLARE_DIRECT_MAPPING(_vktype_, _frameworktype_, _name_) inline _vktype_ _name_(_frameworktype_ item){ return (_vktype_)item; }
 
-PVR_DECLARE_DIRECT_MAPPING(VkAttachmentLoadOp, types::LoadOp::Enum, loadOp);
-PVR_DECLARE_DIRECT_MAPPING(VkAttachmentStoreOp, types::StoreOp::Enum, storeOp);
-PVR_DECLARE_DIRECT_MAPPING(VkLogicOp, types::LogicOp::Enum, logicOp);
-PVR_DECLARE_DIRECT_MAPPING(VkBlendOp, types::BlendOp::Enum, blendOp);
-PVR_DECLARE_DIRECT_MAPPING(VkBlendFactor, types::BlendFactor::Enum, blendFactor);
-PVR_DECLARE_DIRECT_MAPPING(VkColorComponentFlags, types::ColorChannel::Bits, colorChannel);
-PVR_DECLARE_DIRECT_MAPPING(VkCompareOp, types::ComparisonMode::Enum, compareMode);
-PVR_DECLARE_DIRECT_MAPPING(VkStencilOp, types::StencilOp::Enum, stencilOp);
-PVR_DECLARE_DIRECT_MAPPING(VkPolygonMode, types::FillMode::Enum, polygonMode);
-PVR_DECLARE_DIRECT_MAPPING(VkCullModeFlags, types::Face::Enum, cullMode);
-PVR_DECLARE_DIRECT_MAPPING(VkFrontFace, types::PolygonWindingOrder::Enum, frontFaceWinding);
-PVR_DECLARE_DIRECT_MAPPING(VkSamplerAddressMode, types::SamplerWrap::Enum, samplerWrap);
-PVR_DECLARE_DIRECT_MAPPING(VkFilter, types::SamplerFilter::Enum, samplerFilter)
-PVR_DECLARE_DIRECT_MAPPING(VkBorderColor, types::BorderColor::Enum, borderColor)
-PVR_DECLARE_DIRECT_MAPPING(VkComponentSwizzle, types::Swizzle::Enum, swizzle)
-PVR_DECLARE_DIRECT_MAPPING(VkComponentSwizzle, uint8, swizzle)
-PVR_DECLARE_DIRECT_MAPPING(VkImageLayout, types::ImageLayout::Enum, imageLayout)
-PVR_DECLARE_DIRECT_MAPPING(VkAccessFlags, types::AccessFlags::Bits, accessFlags)
-PVR_DECLARE_DIRECT_MAPPING(VkDescriptorType, types::DescriptorType::Enum, descriptorType);
-PVR_DECLARE_DIRECT_MAPPING(VkShaderStageFlagBits, types::ShaderStageFlags::Bits, shaderStage);
-PVR_DECLARE_DIRECT_MAPPING(VkPipelineStageFlagBits, types::PipelineStageFlags::Bits, pipelineStage);
-PVR_DECLARE_DIRECT_MAPPING(VkImageAspectFlagBits, types::ImageAspect::Bits, imageAspect);
-PVR_DECLARE_DIRECT_MAPPING(VkPipelineBindPoint, types::PipelineBindPoint::Enum, pipelineBindPoint);
-
+PVR_DECLARE_DIRECT_MAPPING(VkAttachmentLoadOp, types::LoadOp, loadOp);
+PVR_DECLARE_DIRECT_MAPPING(VkAttachmentStoreOp, types::StoreOp, storeOp);
+PVR_DECLARE_DIRECT_MAPPING(VkLogicOp, types::LogicOp, logicOp);
+PVR_DECLARE_DIRECT_MAPPING(VkBlendOp, types::BlendOp, blendOp);
+PVR_DECLARE_DIRECT_MAPPING(VkBlendFactor, types::BlendFactor, blendFactor);
+PVR_DECLARE_DIRECT_MAPPING(VkColorComponentFlags, types::ColorChannel, colorChannel);
+PVR_DECLARE_DIRECT_MAPPING(VkCompareOp, types::ComparisonMode, compareMode);
+PVR_DECLARE_DIRECT_MAPPING(VkStencilOp, types::StencilOp, stencilOp);
+PVR_DECLARE_DIRECT_MAPPING(VkPolygonMode, types::FillMode, polygonMode);
+PVR_DECLARE_DIRECT_MAPPING(VkCullModeFlags, types::Face, cullMode);
+PVR_DECLARE_DIRECT_MAPPING(VkFrontFace, types::PolygonWindingOrder, frontFaceWinding);
+PVR_DECLARE_DIRECT_MAPPING(VkSamplerAddressMode, types::SamplerWrap, samplerWrap);
+PVR_DECLARE_DIRECT_MAPPING(VkFilter, types::SamplerFilter, samplerFilter);
+PVR_DECLARE_DIRECT_MAPPING(VkBorderColor, types::BorderColor, borderColor);
+PVR_DECLARE_DIRECT_MAPPING(VkComponentSwizzle, types::Swizzle, swizzle);
+PVR_DECLARE_DIRECT_MAPPING(VkComponentSwizzle, uint8, swizzle);
+PVR_DECLARE_DIRECT_MAPPING(VkImageLayout, types::ImageLayout, imageLayout);
+PVR_DECLARE_DIRECT_MAPPING(VkAccessFlags, types::AccessFlags, accessFlags);
+PVR_DECLARE_DIRECT_MAPPING(VkDescriptorType, types::DescriptorType, descriptorType);
+PVR_DECLARE_DIRECT_MAPPING(VkShaderStageFlagBits, types::ShaderStageFlags, shaderStage);
+PVR_DECLARE_DIRECT_MAPPING(VkPipelineStageFlagBits, types::PipelineStageFlags, pipelineStage);
+PVR_DECLARE_DIRECT_MAPPING(VkImageAspectFlagBits, types::ImageAspect, imageAspect);
+PVR_DECLARE_DIRECT_MAPPING(VkPipelineBindPoint, types::PipelineBindPoint, pipelineBindPoint);
+PVR_DECLARE_DIRECT_MAPPING(VkImageUsageFlagBits, types::ImageUsageFlags, imageUsageFlags);
+PVR_DECLARE_DIRECT_MAPPING(VkSampleCountFlagBits, types::SampleCount, sampleCount);
 /*!****************************************************************************************************************
 \brief Convert to vulkan image sub-resource range
 \param area Image sub-resource range
@@ -480,14 +609,61 @@ PVR_DECLARE_DIRECT_MAPPING(VkPipelineBindPoint, types::PipelineBindPoint::Enum, 
 *******************************************************************************************************************/
 inline VkImageSubresourceRange imageSubResourceRange(const types::ImageSubresourceRange& area)
 {
-	VkImageSubresourceRange retval;
-	retval.aspectMask = imageAspect(area.aspect);
-	retval.baseArrayLayer = area.arrayLayerOffset;
-	retval.baseMipLevel = area.mipLevelOffset;
-	retval.layerCount = area.numArrayLevels;
-	retval.levelCount = area.numMipLevels;
-	return retval;
+	return VkImageSubresourceRange
+	{
+		(VkImageAspectFlags)imageAspect(area.aspect),
+		area.mipLevelOffset,
+		area.numArrayLevels,
+		area.arrayLayerOffset,
+		area.numMipLevels
+	};
 }
+
+inline VkImageSubresourceLayers imageSubresourceLayers(const types::ImageSubResourceLayers& imageLayers)
+{
+	return VkImageSubresourceLayers
+	{
+		(VkImageAspectFlags)ConvertToVk::imageAspect(imageLayers.aspect),
+		imageLayers.mipLevelOffset,
+		imageLayers.arrayLayerOffset,
+		imageLayers.numArrayLayers,
+	};
+}
+
+
+inline VkImageBlit imageBlit(const types::ImageBlitRange& range)
+{
+	return VkImageBlit
+	{
+		ConvertToVk::imageSubresourceLayers(range.srcSubResource),
+		// srcOffsets
+		{
+			VkOffset3D{range.srcOffset[0].offsetX, range.srcOffset[0].offsetY, range.srcOffset[0].offsetZ},
+			VkOffset3D{range.srcOffset[1].offsetX, range.srcOffset[1].offsetY, range.srcOffset[1].offsetZ}
+		},
+		ConvertToVk::imageSubresourceLayers(range.dstSubResource),
+		// dstOffsets
+		{
+			VkOffset3D{range.dstOffset[0].offsetX, range.dstOffset[0].offsetY, range.dstOffset[0].offsetZ },
+			VkOffset3D{range.dstOffset[1].offsetX, range.dstOffset[1].offsetY, range.dstOffset[1].offsetZ }
+		}
+	};
+}
+
+inline VkBufferImageCopy bufferImageCopy(const types::BufferImageCopy& region)
+{
+	return VkBufferImageCopy
+	{
+		region.bufferOffset,
+		region.bufferRowLength,
+		region.bufferImageHeight,
+		imageSubresourceLayers(region.imageSubResource),
+		VkOffset3D{ int32_t(region.imageOffset.x), int32_t(region.imageOffset.y), int32_t(region.imageOffset.z) },
+		VkExtent3D{ uint32_t(region.imageExtent.x), uint32_t(region.imageExtent.y), uint32_t(region.imageExtent.z) },
+	};
+}
+
+
 }// ConvertToVulkan
 
 namespace ConvertFromVulkan {
@@ -513,15 +689,15 @@ inline ImageDataFormat imageDataFormat(VkFormat format)
 		break;
 	case VK_FORMAT_D16_UNORM: fmt.colorSpace = types::ColorSpace::lRGB; fmt.dataType = VariableType::UnsignedShortNorm; fmt.format = assets::GeneratePixelType1<'d', 16>::ID;
 		break;
-	case VK_FORMAT_D16_UNORM_S8_UINT: fmt.colorSpace = types::ColorSpace::lRGB; fmt.dataType = VariableType::UnsignedIntegerNorm; fmt.format = assets::GeneratePixelType2<'d', 's', 16, 8>::ID;
+	case VK_FORMAT_D16_UNORM_S8_UINT: fmt.colorSpace = types::ColorSpace::lRGB; fmt.dataType = VariableType::UnsignedIntegerNorm; fmt.format = PixelFormat::Depth16Stencil8;
 		break;
-	case VK_FORMAT_D24_UNORM_S8_UINT: fmt.colorSpace = types::ColorSpace::lRGB; fmt.dataType = VariableType::UnsignedIntegerNorm; fmt.format = assets::GeneratePixelType2<'d', 's', 24, 8>::ID;
+	case VK_FORMAT_D24_UNORM_S8_UINT: fmt.colorSpace = types::ColorSpace::lRGB; fmt.dataType = VariableType::UnsignedIntegerNorm; fmt.format = PixelFormat::Depth24Stencil8;
 		break;
-	case VK_FORMAT_D32_SFLOAT: fmt.colorSpace = types::ColorSpace::lRGB; fmt.dataType = VariableType::UnsignedFloat; fmt.format = assets::GeneratePixelType1<'d', 32>::ID;
+	case VK_FORMAT_D32_SFLOAT: fmt.colorSpace = types::ColorSpace::lRGB; fmt.dataType = VariableType::UnsignedFloat; fmt.format = PixelFormat::Depth32;
 		break;
-	case VK_FORMAT_D32_SFLOAT_S8_UINT: fmt.colorSpace = types::ColorSpace::lRGB; fmt.dataType = VariableType::UnsignedFloat; fmt.format = assets::GeneratePixelType2<'d', 32, 's', 8>::ID;
+	case VK_FORMAT_D32_SFLOAT_S8_UINT: fmt.colorSpace = types::ColorSpace::lRGB; fmt.dataType = VariableType::UnsignedFloat; fmt.format = PixelFormat::Depth32Stencil8;
 		break;
-	case VK_FORMAT_X8_D24_UNORM_PACK32: fmt.colorSpace = types::ColorSpace::lRGB; fmt.dataType = VariableType::UnsignedFloat; fmt.format = assets::GeneratePixelType1<'d', 24>::ID;
+	case VK_FORMAT_X8_D24_UNORM_PACK32: fmt.colorSpace = types::ColorSpace::lRGB; fmt.dataType = VariableType::UnsignedFloat; fmt.format = PixelFormat::Depth24;
 		break;
 
 	default: assertion(0, "UNIMPLEMENTED FORMAT - JUST ADD SPECIFIED ENTRY");

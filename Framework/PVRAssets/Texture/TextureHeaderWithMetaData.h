@@ -18,7 +18,7 @@ namespace assets {
 class TextureHeaderWithMetaData : public TextureHeader
 {
 public:
-	typedef std::map<uint32, std::map<uint32, TextureMetaData> > MetaDataMapType; //!< The type of the metadata container
+	typedef std::map<uint32, std::map<uint32, TextureMetaData>/**/> MetaDataMapType; //!< The type of the metadata container
 
 	/*!********************************************************************************************************************
 	\brief    Default Constructor, Empty TextureHeaderWithMetadata.
@@ -56,20 +56,19 @@ public:
 	\return		Return the orientation of the axis.
 	\brief	Get the data orientation for this texture.
 	*************************************************************************/
-	const TextureMetaData::AxisOrientation getOrientation(TextureMetaData::Axis axis) const;
+	TextureMetaData::AxisOrientation getOrientation(TextureMetaData::Axis axis) const;
 
 	/*!***********************************************************************
 	\return	Return true if it is a bump map.
 	\brief Check whether the texture is a bump map or not.
 	*************************************************************************/
-	const bool isBumpMap() const;
+	bool isBumpMap() const;
 
 	/*!***********************************************************************
 	\return	Returns the bump map scale.
 	\brief	Gets the bump map scaling value for this texture.
-	\description If the texture is not a bump map, 0.0f is returned. If the
-				texture is a bump map but no meta data is stored to
-				specify its scale, then 1.0f is returned.
+	\description If the texture is not a bump map, 0.0f is returned. If the  texture is a bump map but no
+	               meta data is stored to specify its scale, then 1.0f is returned.
 	*************************************************************************/
 	float getBumpMapScale() const;
 
@@ -77,22 +76,22 @@ public:
 	\brief			Get the bump map order relative to rgba.
 	\return			Returns bump map order relative to rgba.
 	\description	Gets the bump map channel order relative to rgba. For
-					example, an RGB texture with bumps mapped to XYZ returns
-					'xyz'. A BGR texture with bumps in the order ZYX will also
-					return 'xyz' as the mapping is the same: R=X, G=Y, B=Z.
-					If the letter 'h' is present in the string, it means that
-					the height map has been stored here.
-					Other characters are possible if the bump map was created
-					manually, but PVRTexLib will ignore these characters. They
-					are returned simply for completeness.
+		example, an RGB texture with bumps mapped to XYZ returns
+		'xyz'. A BGR texture with bumps in the order ZYX will also
+		return 'xyz' as the mapping is the same: R=X, G=Y, B=Z.
+		If the letter 'h' is present in the string, it means that
+		the height map has been stored here.
+		Other characters are possible if the bump map was created
+		manually, but PVRTexLib will ignore these characters. They
+		are returned simply for completeness.
 	*************************************************************************/
 	const std::string getBumpMapOrder() const;
 
 	/*!***********************************************************************
 	\return	Returns number of sub textures defined by meta data.
 	\brief	Get the number of possible texture atlas members in
-			the texture based on the w/h/d and the data size.
-	*************************************************************************/
+	the texture based on the w/h/d and the data size.
+		*************************************************************************/
 	int getNumberOfTextureAtlasMembers() const;
 
 	/*!***********************************************************************
@@ -104,7 +103,7 @@ public:
 	/*!***********************************************************************
 	\return	Returns a string which contains cube map order.
 	\brief	Get the cube map face order. Returned string will be in
-			the form "ZzXxYy" with capitals representing positive and
+		the form "ZzXxYy" with capitals representing positive and
 			small letters representing negative. I.e. Z=Z-Positive, z=Z-Negative.
 	*************************************************************************/
 	const std::string getCubeMapOrder() const;
@@ -122,7 +121,7 @@ public:
 	\param[in]	key Meta data's key
 	\return	Return a copy of the meta data from the texture.
 	\brief Get a block of meta data from the texture.
-		   If the meta data doesn't exist, a block with data size 0 will be returned.
+		If the meta data doesn't exist, a block with data size 0 will be returned.
 	*************************************************************************/
 	const TextureMetaData getMetaData(uint32 fourCC, uint32 key) const;
 
@@ -131,7 +130,7 @@ public:
 	\param[in]	key The ley of the meta data
 	\return	Return a whether or not the meta data bock specified exists
 	\brief	Check whether or not the specified meta data exists as
-			part of this texture header.
+	part of this texture header.
 	*************************************************************************/
 	bool hasMetaData(uint32 fourCC, uint32 key) const;
 
@@ -139,31 +138,31 @@ public:
 	\return Return a direct pointer to the MetaData map.
 	\brief	Get a pointer directly to the Meta Data Map, to allow users to read out data.
 	*************************************************************************/
-	const std::map<uint32, std::map<uint32, TextureMetaData> >* const getMetaDataMap() const;
+	const std::map<uint32, std::map<uint32, TextureMetaData>/**/>* getMetaDataMap() const;
 
 
 	/*!***********************************************************************
 	\param[in]	axisOrientation Enum specifying axis and orientation.
 	\brief	Sets the data orientation for a given axis in this texture.
-	*************************************************************************/
+		*************************************************************************/
 	void setOrientation(TextureMetaData::AxisOrientation axisOrientation);
 
 	/*!***********************************************************************
 	\param[in]	bumpScale	Floating point "height" value to scale the bump map.
 	\param[in]	bumpOrder	Up to 4 character string, with values x,y,z,h in
-				some combination. Not all values need to be present.
-				Denotes channel order; x,y,z refer to the
-				corresponding axes, h indicates presence of the
-				original height map. It is possible to have only some
-				of these values rather than all. For example if 'h'
-				is present alone it will be considered a height map.
-				The values should be presented in RGBA order, regardless
-				of the texture format, so a zyxh order in a bgra texture
-				should still be passed as 'xyzh'. Capitals are allowed.
-				Any character stored here that is not one of x,y,z,h
-				or a NULL character	will be ignored when PVRTexLib
-				reads the data,	but will be preserved. This is useful
-				if you wish to define a custom data channel for instance.
+		some combination. Not all values need to be present.
+		Denotes channel order; x,y,z refer to the
+		corresponding axes, h indicates presence of the
+		original height map. It is possible to have only some
+		of these values rather than all. For example if 'h'
+		is present alone it will be considered a height map.
+		The values should be presented in RGBA order, regardless
+		of the texture format, so a zyxh order in a bgra texture
+		should still be passed as 'xyzh'. Capitals are allowed.
+		Any character stored here that is not one of x,y,z,h
+		or a NULL character	will be ignored when PVRTexLib
+		reads the data,	but will be preserved. This is useful
+		if you wish to define a custom data channel for instance.
 				In these instances PVRTexLib will assume it is simply color data.
 	\brief	Sets a texture's bump map data.
 	*************************************************************************/
@@ -173,25 +172,25 @@ public:
 	\param[in]	textureAtlasData	Pointer to an array of atlas data.
 	\param[in]	dataSize	Number of floats that the data pointer contains.
 	\brief	Sets the texture atlas coordinate meta data for later display.
-	It is up to the user to make sure that this texture atlas
-	data actually makes sense in the context of the header. It is
-	suggested that the "generateTextureAtlas" method in the tools
-	is used to create a texture atlas, manually Setting one up is
-	possible but should be done with care.
+		It is up to the user to make sure that this texture atlas
+		data actually makes sense in the context of the header. It is
+		suggested that the "generateTextureAtlas" method in the tools
+		is used to create a texture atlas, manually Setting one up is
+		possible but should be done with care.
 	*************************************************************************/
 	void setTextureAtlas(const float32* const textureAtlasData, uint32 dataSize);
 
 	/*!***********************************************************************
 	\param[in]	cubeMapOrder	Up to 6 character string, with values
-				x,X,y,Y,z,Z in some combination. Not all
-				values need to be present. Denotes face
-				order; Capitals refer to positive axis
-				positions and small letters refer to
-				negative axis positions. E.g. x=X-Negative,
-				X=X-Positive. It is possible to have only
-				some of these values rather than all, as
-				long as they are NULL terminated.
-				NB: Values past the 6th character are not read.
+		x,X,y,Y,z,Z in some combination. Not all
+		values need to be present. Denotes face
+		order; Capitals refer to positive axis
+		positions and small letters refer to
+		negative axis positions. E.g. x=X-Negative,
+		X=X-Positive. It is possible to have only
+		some of these values rather than all, as
+		long as they are NULL terminated.
+		NB: Values past the 6th character are not read.
 	\brief	Sets a texture's bump map data.
 	*************************************************************************/
 	void setCubeMapOrder(std::string cubeMapOrder);
@@ -201,8 +200,8 @@ public:
 	\param[in] borderHeight Border height
 	\param[in] borderDepth Border depth
 	\brief	Sets a texture's border size data. This value is subtracted
-			from the current texture height/width/depth to Get the valid
-			texture data.
+		from the current texture height/width/depth to Get the valid
+		texture data.
 	*************************************************************************/
 	void setBorder(uint32 borderWidth, uint32 borderHeight, uint32 borderDepth);
 

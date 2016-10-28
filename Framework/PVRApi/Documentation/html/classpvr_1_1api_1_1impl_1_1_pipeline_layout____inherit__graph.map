@@ -1,4 +1,4 @@
 <map id="pvr::api::impl::PipelineLayout_" name="pvr::api::impl::PipelineLayout_">
 <area shape="rect" id="node2" href="$classpvr_1_1api_1_1gles_1_1_pipeline_layout_gles__.html" title="pvr::api::gles::Pipeline\lLayoutGles_" alt="" coords="5,97,155,138"/>
-<area shape="rect" id="node3" href="$classpvr_1_1api_1_1vulkan_1_1_pipeline_layout_vk__.html" title="pvr::api::vulkan::Pipeline\lLayoutVk_" alt="" coords="179,97,340,138"/>
+<area shape="rect" id="node3" href="$classpvr_1_1api_1_1vulkan_1_1_pipeline_layout_vk__.html" title="Vulkan implementation of the PipelineLayout class. " alt="" coords="179,97,340,138"/>
 </map>

@@ -1,7 +1,7 @@
 /*!****************************************************************************************************************
 \file         PVRApi/EffectApi.h
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Main Interface for all PFXEffect.
+\brief        Main Interface for all LEGACY PFXEffect.
 *******************************************************************************************************************/
 #pragma once
 #include "PVRApi/ApiIncludes.h"
@@ -14,7 +14,7 @@
 
 namespace pvr {
 class IGraphicsContext;
-namespace api {
+namespace legacyPfx {
 
 /*!*****************************************************************************************************************
 \brief        A struct containing GL uniform data.
@@ -50,18 +50,18 @@ public:
 	/*!****************************************************************************************************************
 	\brief Get texture type.
 	*******************************************************************************************************************/
-    types::TextureDimension::Enum getTextureType() const
+	types::ImageViewType getTextureViewType() const
 	{
-		return texture->getTextureType();
+		return texture->getViewType();
 	}
 
 	/*!****************************************************************************************************************
 	\brief Initialize this.
 	\param[in] effectDelegate effect's asset provider
 	*******************************************************************************************************************/
-	Result::Enum init(api::AssetLoadingDelegate& effectDelegate)
+	Result init(api::AssetLoadingDelegate& effectDelegate)
 	{
-		return  effectDelegate.effectOnLoadTexture(fileName, texture) ? Result::Success: Result::NotFound;
+		return  effectDelegate.effectOnLoadTexture(fileName, texture) ? Result::Success : Result::NotFound;
 	}
 	virtual ~EffectApiTextureSampler() {}
 };
@@ -83,14 +83,14 @@ struct EffectApiProgram
 struct EffectApiShader
 {
 	BufferStream::ptr_type data; //< data stream
-    types::ShaderType::Enum	type; //< shader type, e.g VertexShader, FragmentShader
+	types::ShaderType	type; //< shader type, e.g VertexShader, FragmentShader
 	bool isBinary;//< is shader binary format
-    types::ShaderBinaryFormat::Enum	binaryFormat; //< shader binary format
+	types::ShaderBinaryFormat	binaryFormat; //< shader binary format
 
 	/*!****************************************************************************************************************
 	\brief ctor.
 	*******************************************************************************************************************/
-    EffectApiShader() : isBinary(false), binaryFormat(types::ShaderBinaryFormat::Unknown) {}
+	EffectApiShader() : isBinary(false), binaryFormat(types::ShaderBinaryFormat::Unknown) {}
 };
 
 namespace impl {
@@ -105,7 +105,7 @@ public:
 	\param[in] context The context that API objects by this effect will be created on
 	\param[in] effectDelegate A class that will be used to load assets required by this effect
 	*******************************************************************************************************************/
-	EffectApi_(GraphicsContext& context, AssetLoadingDelegate& effectDelegate);
+    EffectApi_(GraphicsContext& context, api::AssetLoadingDelegate& effectDelegate);
 
 	/*!****************************************************************************************************************
 	\brief Initialize effect Api with effect and PipelineCreateParam.
@@ -113,7 +113,7 @@ public:
 	\param[in] pipeDesc
 	\return return pvr::Result::Success on success
 	*******************************************************************************************************************/
-	Result::Enum init(const assets::Effect& effect, api::GraphicsPipelineCreateParam& pipeDesc);
+	Result init(const assets::Effect& effect, api::GraphicsPipelineCreateParam& pipeDesc);
 
 	/*!*****************************************************************************************************************
 	\brief Destructor.
@@ -211,7 +211,7 @@ public:
 	\param[in]	uiSemanticID The semanticId to remove
 	\return		pvr::Result::Success on success
 	*******************************************************************************************************************/
-	Result::Enum removeUniformSemantic(uint32 uiSemanticID);
+	Result removeUniformSemantic(uint32 uiSemanticID);
 
 	/*!****************************************************************************************************************
 	\brief Return the name of the effect name.
@@ -235,15 +235,15 @@ public:
 	\brief Get the DescriptorSet used by the effect
 	\return The DescriptorSet used by the effect
 	*******************************************************************************************************************/
-	const DescriptorSet& getDescriptorSet() const { return m_descriptorSet; }
+    const api::DescriptorSet& getDescriptorSet() const { return m_descriptorSet; }
 
 	const assets::Effect& getEffectAsset()const {return m_assetEffect;}
 private:
-	Result::Enum loadShadersForEffect(api::Shader& vertexShader, api::Shader& fragmentShader);
-	Result::Enum loadTexturesForEffect();
+	Result loadShadersForEffect(api::Shader& vertexShader, api::Shader& fragmentShader);
+	Result loadTexturesForEffect();
 	//Build the uniform table from a list of known semantics.
-	Result::Enum buildSemanticTables(uint32& uiUnknownSemantics);
-	Result::Enum createDescriptors();
+	Result buildSemanticTables(uint32& uiUnknownSemantics);
+	Result createDescriptors();
 
 protected:
 	bool m_isLoaded;
@@ -253,19 +253,19 @@ protected:
 	IndexedArray<EffectApiSemantic, StringHash> m_uniforms; // Array of found uniforms
 	IndexedArray<EffectApiSemantic, StringHash> m_attributes; // Array of found attributes
 	api::ParentableGraphicsPipeline m_pipe;
-	AssetLoadingDelegate* m_delegate;
+    api::AssetLoadingDelegate* m_delegate;
 	uint32 m_numUnknownUniforms;
 	GraphicsContext m_context;
-	DescriptorSetLayout m_descriptorSetLayout;
-	DescriptorSet m_descriptorSet;
+    api::DescriptorSetLayout m_descriptorSetLayout;
+    api::DescriptorSet m_descriptorSet;
 
 private:
-	Result::Enum apiOnLoadTexture(const char* fileName, uint32 flags, native::HTexture* outTexHandle);
+	Result apiOnLoadTexture(const char* fileName, uint32 flags, native::HTexture* outTexHandle);
 	EffectApiProgram& operator=(const EffectApiProgram&);
 
 	uint32 loadSemantics(const IGraphicsContext* context, bool isAttribute);
 };
 }// impl
 typedef RefCountedResource< impl::EffectApi_> EffectApi;
-}// api
+}// legacyPfx
 }// pvr

@@ -102,14 +102,18 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html#aa315b28351793280471b59b7c2cdff9e">end</a>(IGraphicsContext&amp; context)<span class="keyword">const</span>;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html#a4fa91be53d5bc30a419a6a76174ee8b4">   19</a></span>&#160;    <span class="keyword">const</span> <a class="code" href="structpvr_1_1api_1_1_render_pass_create_param.html" title="RenderPass creation parameters. Fill this object and then use it to create a RenderPass through you I...">RenderPassCreateParam</a>&amp; <a class="code" href="classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html#a4fa91be53d5bc30a419a6a76174ee8b4">getCreateParam</a>()<span class="keyword">const</span>{ <span class="keywordflow">return</span> m_desc; }</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <a class="code" href="structpvr_1_1api_1_1_render_pass_create_param.html" title="RenderPass creation parameters. Fill this object and then use it to create a RenderPass through you I...">RenderPassCreateParam</a> m_desc;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;};</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;}</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="code" href="namespacepvr_1_1api.html#ada0fef935f21b48e0fb77165bd2b6970">   24</a></span>&#160;<span class="keyword">typedef</span> RefCountedResource&lt;gles::RenderPassGles_&gt; <a class="code" href="namespacepvr_1_1api.html#ada0fef935f21b48e0fb77165bd2b6970">RenderPassGles</a>;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;}</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;}</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html#a0b988369378ee869211a8ceef3490589">destroy</a>();</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html#a4005208ceb46da684c8a331b6128b9e8">   21</a></span>&#160;    <a class="code" href="classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html#a4005208ceb46da684c8a331b6128b9e8">~RenderPassGles_</a>() { <a class="code" href="classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html#a0b988369378ee869211a8ceef3490589">destroy</a>(); }</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    </div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="code" href="classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html#a4fa91be53d5bc30a419a6a76174ee8b4">   23</a></span>&#160;    <span class="keyword">const</span> <a class="code" href="structpvr_1_1api_1_1_render_pass_create_param.html" title="RenderPass creation parameters. Fill this object and then use it to create a RenderPass through you I...">RenderPassCreateParam</a>&amp; <a class="code" href="classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html#a4fa91be53d5bc30a419a6a76174ee8b4">getCreateParam</a>()<span class="keyword">const</span>{ <span class="keywordflow">return</span> m_desc; }</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="structpvr_1_1api_1_1_render_pass_create_param.html" title="RenderPass creation parameters. Fill this object and then use it to create a RenderPass through you I...">RenderPassCreateParam</a> m_desc;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;};</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="code" href="namespacepvr_1_1api.html#ada0fef935f21b48e0fb77165bd2b6970">   28</a></span>&#160;<span class="keyword">typedef</span> RefCountedResource&lt;gles::RenderPassGles_&gt; <a class="code" href="namespacepvr_1_1api.html#ada0fef935f21b48e0fb77165bd2b6970">RenderPassGles</a>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

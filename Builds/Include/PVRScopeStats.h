@@ -56,7 +56,6 @@ extern "C" {
 /****************************************************************************
 ** Includes
 ****************************************************************************/
-#include "64bit.h"
 
 /****************************************************************************
 ** Enums
@@ -158,7 +157,7 @@ struct SPVRScopeGetInfo
 struct SPVRScopeTimingPacket
 {
 	enum EPVRScopeEvent eEventType;  ///< Event type
-	IMG_UINT64          ui64TimeUS;  ///< Event time (microseconds)
+	double              dTime;       ///< Event time (seconds)
 	unsigned int        nPID;        ///< Event PID
 };
 

@@ -38,6 +38,7 @@
 		F86079025DD5097F6520E7FD /* SkinnedFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F801A70516ED0F952A4AD114 /* SkinnedFragShader_ES2.fsh */; };
 		F8131EA1E3CA10C86E05A364 /* SkinnedVertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8CDF0C56E20F72298ED088C /* SkinnedVertShader_ES3.vsh */; };
 		F82B1A495471BBD43D601F1C /* SkinnedFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F81C55FD0F89A73578DCB019 /* SkinnedFragShader_ES3.fsh */; };
+		F85337B7FAD1325D3FA4FF60 /* Skinning_es.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F8B6DD501E45F3CAC95932CF /* Skinning_es.pfx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -190,6 +191,7 @@
 		F801A70516ED0F952A4AD114 /* SkinnedFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedFragShader_ES2.fsh; path = ../../SkinnedFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
 		F8CDF0C56E20F72298ED088C /* SkinnedVertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedVertShader_ES3.vsh; path = ../../SkinnedVertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
 		F81C55FD0F89A73578DCB019 /* SkinnedFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedFragShader_ES3.fsh; path = ../../SkinnedFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8B6DD501E45F3CAC95932CF /* Skinning_es.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = Skinning_es.pfx; path = ../../Skinning_es.pfx; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -403,6 +405,7 @@
 				F801A70516ED0F952A4AD114 /* SkinnedFragShader_ES2.fsh */,
 				F8CDF0C56E20F72298ED088C /* SkinnedVertShader_ES3.vsh */,
 				F81C55FD0F89A73578DCB019 /* SkinnedFragShader_ES3.fsh */,
+				F8B6DD501E45F3CAC95932CF /* Skinning_es.pfx */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -566,6 +569,7 @@
 				F86079025DD5097F6520E7FD /* SkinnedFragShader_ES2.fsh in Resources */,
 				F8131EA1E3CA10C86E05A364 /* SkinnedVertShader_ES3.vsh in Resources */,
 				F82B1A495471BBD43D601F1C /* SkinnedFragShader_ES3.fsh in Resources */,
+				F85337B7FAD1325D3FA4FF60 /* Skinning_es.pfx in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

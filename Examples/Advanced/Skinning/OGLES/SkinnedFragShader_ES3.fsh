@@ -3,8 +3,8 @@
 uniform sampler2D sTexture;
 uniform sampler2D sNormalMap;
 
-in mediump vec2 vTexCoord;
 in mediump vec3 vLight;
+in mediump vec2 vTexCoord;
 
 layout (location = 0) out lowp vec4 oColor;
 
@@ -18,7 +18,7 @@ void main()
 	*/
 
 	mediump vec3 fNormal = texture(sNormalMap, vTexCoord).rgb;
-	mediump float fNDotL = dot((fNormal - 0.5) * 2.0, vLight);
+	mediump float fNDotL = clamp(dot((fNormal - 0.5) * 2.0, normalize(vLight)) + .2, 0., 1.);
 	
 	oColor = texture(sTexture, vTexCoord) * fNDotL;
     oColor.a = 1.0;

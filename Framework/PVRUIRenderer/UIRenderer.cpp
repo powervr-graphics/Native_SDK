@@ -10,21 +10,26 @@
 #include "PVRUIRenderer/ArialBoldFont.h"
 #include "PVRUIRenderer/PowerVRLogo.h"
 #include "PVRUIRenderer/UIRendererShaders_ES.h"
-#include "PVRUIRenderer/UIRendererVertShader_VK.h"
-#include "PVRUIRenderer/UIRendererFragShader_VK.h"
+#include "PVRUIRenderer/UIRendererShader_vk.vsh.h"
+#include "PVRUIRenderer/UIRendererShader_vk.fsh.h"
 using std::map;
 using std::vector;
+const pvr::uint32 MaxDescUbo = 200;
+const pvr::uint32 MaxCombinedImageSampler = 200;
 namespace pvr {
 using namespace types;
 namespace ui {
 const glm::vec2 BaseScreenDim(640, 480);
-Result::Enum UIRenderer::init_CreatePipelineAndRenderPass()
+Result UIRenderer::init_CreatePipelineAndRenderPass()
 {
 	assertion(m_context.isValid() ,  "NULL Context");
 	api::GraphicsPipelineCreateParam pipelineDesc;
 	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
 	pipeLayoutInfo.addDescSetLayout(m_texDescLayout);
-	if (!m_uboDescLayout.isNull()) {	pipeLayoutInfo.addDescSetLayout(m_uboDescLayout);   }
+	if (!m_uboDescLayout.isNull())
+	{
+		pipeLayoutInfo.addDescSetLayout(m_uboDescLayout);
+	}
 	m_pipelineLayout = m_context->createPipelineLayout(pipeLayoutInfo);
 	if (!m_pipelineLayout.isValid())
 	{
@@ -35,7 +40,7 @@ Result::Enum UIRenderer::init_CreatePipelineAndRenderPass()
 	// Text_ pipe
 	api::Shader vs;
 	api::Shader fs;
-	switch (getContext().getApiType())
+	switch (getContext()->getApiType())
 	{
 	case pvr::Api::OpenGLES2:
 	case pvr::Api::OpenGLES3:
@@ -47,10 +52,10 @@ Result::Enum UIRenderer::init_CreatePipelineAndRenderPass()
 		                             ShaderType::FragmentShader);
 		break;
 	case pvr::Api::Vulkan:
-		vs = m_context->createShader(BufferStream("", spv_UIRendererVertShader_vert, sizeof(spv_UIRendererVertShader_vert)),
+		vs = m_context->createShader(BufferStream("", spv_UIRendererShader_vk_vsh, sizeof(spv_UIRendererShader_vk_vsh)),
 		                             ShaderType::VertexShader);
 
-		fs = m_context->createShader(BufferStream("", spv_UIRendererFragShader_frag, sizeof(spv_UIRendererFragShader_frag)),
+		fs = m_context->createShader(BufferStream("", spv_UIRendererShader_vk_fsh, sizeof(spv_UIRendererShader_vk_fsh)),
 		                             ShaderType::FragmentShader);
 		break;
 	// Suppress the warning
@@ -66,16 +71,16 @@ Result::Enum UIRenderer::init_CreatePipelineAndRenderPass()
 	}
 	pipelineDesc.vertexShader.setShader(vs);
 	pipelineDesc.fragmentShader.setShader(fs);
+	pipelineDesc.es2TextureBindings.setTextureUnit(0, "fontTexture");
+	api::VertexAttributeInfo posAttrib(0, DataType::Float32, 4, 0, "myVertex");
+	api::VertexAttributeInfo texAttrib(1, DataType::Float32, 2, sizeof(float32) * 4, "myUV");
+	pipelineDesc.vertexInput
+	.setInputBinding(0, sizeof(float32) * 6, StepRate::Vertex)
+	.addVertexAttribute(0, posAttrib)
+	.addVertexAttribute(0, texAttrib);
 
-	api::VertexAttributeInfo posAttrib(0, DataType::Float32, 3, 0, "myVertex");
-	api::VertexAttributeInfo texCoordAttrib(1, DataType::Float32, 2, sizeof(float32) * 4, "myUV");
-
-	pipelineDesc.vertexInput.setInputBinding(0, sizeof(float32) * 6, StepRate::Vertex)
-	.addVertexAttribute(0, posAttrib).addVertexAttribute(0, texCoordAttrib);
-
-
-	api::pipelineCreation::ColorBlendAttachmentState attachmentState(true, BlendFactor::SrcAlpha,
-	        BlendFactor::OneMinusSrcAlpha, BlendOp::Add, ColorChannel::All);
+	types::BlendingConfig attachmentState(true, BlendFactor::SrcAlpha,
+	                                      BlendFactor::OneMinusSrcAlpha, BlendOp::Add, ColorChannel::All);
 	pipelineDesc.colorBlend.setAttachmentState(0, attachmentState);
 	pipelineDesc.depthStencil.setDepthTestEnable(false).setDepthWrite(false);
 	pipelineDesc.rasterizer.setCullFace(Face::None);
@@ -88,7 +93,7 @@ Result::Enum UIRenderer::init_CreatePipelineAndRenderPass()
 		Log(Log.Critical, "UIRenderer pipeline not be created.");
 		return Result::UnknownError;
 	}
-	if (getContext().getApiType() <= pvr::Api::OpenGLESMaxVersion)
+	if (getContext()->getApiType() <= pvr::Api::OpenGLESMaxVersion)
 	{
 		const char8* attributes[] = { "myVertex", "myUV" };
 		if (api::logApiError("UIRenderer::createPipelineAndRenderPass createGraphicsPipeline"))
@@ -111,16 +116,29 @@ Result::Enum UIRenderer::init_CreatePipelineAndRenderPass()
 	return Result::Success;
 }
 
-pvr::Result::Enum UIRenderer::init_CreateDescriptorSetLayout()
+pvr::Result UIRenderer::init_CreateDescriptorSetLayout()
 {
 	assertion(m_context.isValid() ,  "NULL GRAPHICS CONTEXT");
+
+	m_descPool = getContext()->createDescriptorPool(api::DescriptorPoolCreateParam()
+	             .addDescriptorInfo(types::DescriptorType::UniformBuffer, MaxDescUbo)
+	             .addDescriptorInfo(types::DescriptorType::CombinedImageSampler, MaxCombinedImageSampler)
+	             .setMaxDescriptorSets(MaxDescUbo + MaxCombinedImageSampler));
+
+	if (!m_descPool.isValid())
+	{
+		Log("Failed to create UIRenderer Descriptorpool");
+		return pvr::Result::UnknownError;
+	}
+
 	api::DescriptorSetLayoutCreateParam defaultDesc;
 	defaultDesc.setBinding(0, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
 	m_texDescLayout = m_context->createDescriptorSetLayout(defaultDesc);
 	if (m_context->getApiType() > Api::OpenGLESMaxVersion)// use uniform buffer
 	{
-		defaultDesc.setBinding(0, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Vertex | ShaderStageFlags::Fragment);
-		m_uboDescLayout = m_context->createDescriptorSetLayout(defaultDesc);
+		api::DescriptorSetLayoutCreateParam uboDesc;
+		uboDesc.setBinding(0, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Vertex | ShaderStageFlags::Fragment);
+		m_uboDescLayout = m_context->createDescriptorSetLayout(uboDesc);
 		if (m_uboDescLayout.isNull()) { return Result::UnknownError; }
 	}
 	if (m_texDescLayout.isNull()) { return Result::UnknownError; }
@@ -183,6 +201,23 @@ Image UIRenderer::createImage(api::TextureView& tex, int32 width, int32 height)
 	return image;
 }
 
+pvr::ui::Image UIRenderer::createImageFromAtlas(api::TextureView& tex, const Rectanglef& uv,
+    uint32 atlasWidth, uint32 atlasHeight)
+{
+	Image image;
+	image.construct(*this, tex, atlasWidth, atlasHeight);
+	image->setSampler(tex->getResource()->getFormat().mipmapLevels > 1 ? m_samplerTrilinear : m_samplerBilinear);
+
+
+	// construct the scaling matrix
+	// calculate the scale factor
+	// convert from texel to normalize coord
+	image->setUV(uv);
+	image->commitUpdates();
+	return image;
+}
+
+
 Text UIRenderer::createText(const std::wstring& text, const Font& font)
 {
 	Text spriteText;
@@ -232,7 +267,7 @@ bool UIRenderer::init_CreateDefaultSdkLogo()
 {
 	Stream::ptr_type sdkLogo = Stream::ptr_type(new BufferStream("", _PowerVR_512x256_RG_pvr, _PowerVR_512x256_RG_pvr_size));
 	assets::Texture sdkTex;
-	if (textureLoad(sdkLogo, assets::TextureFileFormat::PVR, sdkTex))
+	if (textureLoad(sdkLogo, assets::TextureFileFormat::PVR, sdkTex) != Result::Success)
 	{
 		Log(Log.Warning, "UIRenderer: Could not create the PowerVR SDK Logo.");
 		return false;

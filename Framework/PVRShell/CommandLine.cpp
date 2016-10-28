@@ -18,7 +18,7 @@
 #endif
 using std::vector;
 namespace pvr {
-namespace system {
+namespace platform {
 
 CommandLineParser::CommandLineParser() : m_data(0)
 {
@@ -310,9 +310,9 @@ void CommandLineParser::append(const CommandLineParser& commandLine)
 	for (unsigned int i = 0; i < commandLine.m_commandLine.m_options.size(); ++i)
 	{
 		newOptions[m_commandLine.m_options.size() + i].arg = (const char*)((size_t)commandLine.m_commandLine.m_options[i].arg - (size_t)commandLine.m_data.data()) +
-		                                       (size_t)newData.data() + m_data.size();
+		    (size_t)newData.data() + m_data.size();
 		newOptions[m_commandLine.m_options.size() + i].val = (const char*)((size_t)commandLine.m_commandLine.m_options[i].val - (size_t)commandLine.m_data.data()) +
-		                                       (size_t)newData.data() + m_data.size();
+		    (size_t)newData.data() + m_data.size();
 	}
 
 	// Set the variables
@@ -502,7 +502,7 @@ bool CommandLineParser::ParsedCommandLine::hasOption(const char* name) const
 bool CommandLineParser::ParsedCommandLine::getStringOption(const char* name, std::string& outValue) const
 {
 	auto it = std::find(m_options.begin(), m_options.end(), name);
-	if (it == m_options.end()) return false;
+	if (it == m_options.end()) { return false; }
 	outValue = it->val;
 	return true;
 }
@@ -510,28 +510,28 @@ bool CommandLineParser::ParsedCommandLine::getStringOption(const char* name, std
 bool CommandLineParser::ParsedCommandLine::getFloatOption(const char* name, float32& outValue) const
 {
 	auto it = std::find(m_options.begin(), m_options.end(), name);
-	if (it == m_options.end()) return false;
+	if (it == m_options.end()) { return false; }
 	outValue = (float32)atof(it->val);
 	return true;
 }
 bool CommandLineParser::ParsedCommandLine::getIntOption(const char* name, int32& outValue) const
 {
 	auto it = std::find(m_options.begin(), m_options.end(), name);
-	if (it == m_options.end()) return false;
+	if (it == m_options.end()) { return false; }
 	outValue = atoi(it->val);
 	return true;
 }
 bool CommandLineParser::ParsedCommandLine::getBoolOptionSetTrueIfPresent(const char* name, bool& outValue) const
 {
 	auto it = std::find(m_options.begin(), m_options.end(), name);
-	if (it == m_options.end()) return false;
+	if (it == m_options.end()) { return false; }
 	outValue = true;
 	return true;
 }
 bool CommandLineParser::ParsedCommandLine::getBoolOptionSetFalseIfPresent(const char* name, bool& outValue) const
 {
 	auto it = std::find(m_options.begin(), m_options.end(), name);
-	if (it == m_options.end()) return false;
+	if (it == m_options.end()) { return false; }
 	outValue = false;
 	return true;
 }

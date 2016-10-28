@@ -56,9 +56,6 @@
     <ClInclude Include="..\..\NativeObjectsVk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\PopulateVulkanCreateInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\ShaderUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>

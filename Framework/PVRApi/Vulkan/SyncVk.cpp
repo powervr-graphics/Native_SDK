@@ -1,3 +1,10 @@
+/*!*********************************************************************************************************************
+\file         PVRApi\Vulkan\SyncVk.cpp
+\author       PowerVR by Imagination, Developer Technology Team
+\copyright    Copyright (c) Imagination Technologies Limited.
+\brief        Contains the definitions for the Vulkan  implementation of all Synchronization objects (Fence, Semaphore, MemoryBarrier, Event)
+***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #include "PVRApi/Vulkan/SyncVk.h"
 #include "PVRApi/Vulkan/BufferVk.h"
 #include "PVRApi/Vulkan/TextureVk.h"
@@ -341,6 +348,30 @@ public:
 }
 MemoryBarrierSet::MemoryBarrierSet() : pimpl(new impl::MemoryBarrierSetImpl()) { }
 MemoryBarrierSet::~MemoryBarrierSet() {}
+
+MemoryBarrierSet& MemoryBarrierSet::clearAllBarriers()
+{
+	pimpl->memBarriers.clear();
+	pimpl->imgBarriers.clear();
+	pimpl->bufBarriers.clear();
+	return *this;
+}
+
+MemoryBarrierSet& MemoryBarrierSet::clearAllImageAreaBarriers()
+{
+	pimpl->imgBarriers.clear(); return *this;
+}
+
+MemoryBarrierSet& MemoryBarrierSet::clearAllBufferRangeBarriers()
+{
+	pimpl->bufBarriers.clear(); return *this;
+}
+
+MemoryBarrierSet& MemoryBarrierSet::clearAllMemoryBarriers()
+{
+	pimpl->memBarriers.clear();	return *this;
+}
+
 MemoryBarrierSet& MemoryBarrierSet::addBarrier(MemoryBarrier memBarrier)
 {
 	VkMemoryBarrier barrier;
@@ -359,8 +390,8 @@ MemoryBarrierSet& MemoryBarrierSet::addBarrier(const BufferRangeBarrier& buffBar
 	barrier.srcAccessMask = ConvertToVk::accessFlags(buffBarrier.srcMask);
 	barrier.dstAccessMask = ConvertToVk::accessFlags(buffBarrier.dstMask);
 
-	barrier.dstQueueFamilyIndex = 0;
-	barrier.srcQueueFamilyIndex = 0;
+	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 
 	barrier.buffer = native_cast(*buffBarrier.buffer).buffer;
 	barrier.offset = buffBarrier.offset;
@@ -396,3 +427,4 @@ const void* MemoryBarrierSet::getNativeBufferBarriers() const { return pimpl->bu
 
 }
 }
+//!\endcond

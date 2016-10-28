@@ -77,6 +77,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/. \
 
 
 LOCAL_LDLIBS := -llog \
+                -latomic \
                 -landroid
 
 LOCAL_STATIC_LIBRARIES := PVRUIRenderer PVRGles PVRNativeGles PVREgl PVRAssets PVRCore android_native_app_glue

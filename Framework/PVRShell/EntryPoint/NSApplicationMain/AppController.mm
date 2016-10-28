@@ -38,7 +38,7 @@ const int kFPS = 60.0;
 	commandLine.set([cl UTF8String]);
 	//[cl release];
 	
-	stateMachine = new pvr::system::StateMachine((__bridge pvr::system::OSApplication)self, commandLine, NULL);
+	stateMachine = new pvr::platform::StateMachine((__bridge pvr::platform::OSApplication)self, commandLine, NULL);
 
 	if(!stateMachine)
 	{
@@ -60,9 +60,9 @@ const int kFPS = 60.0;
     [mainLoopTimer invalidate];
     mainLoopTimer = nil;
     
-    if( stateMachine->getCurrentState() == pvr::system::StateMachine::StateRenderScene)
+    if( stateMachine->getCurrentState() == pvr::platform::StateMachine::StateRenderScene)
     {
-        stateMachine->executeOnce(pvr::system::StateMachine::StateReleaseView);
+        stateMachine->executeOnce(pvr::platform::StateMachine::StateReleaseView);
         //[self terminateApp];
     }
     stateMachine->execute();

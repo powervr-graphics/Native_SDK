@@ -15,7 +15,6 @@
 		0E3AE6991C69F03F006FE386 /* ComputePipelineGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE67A1C69F03F006FE386 /* ComputePipelineGles.cpp */; settings = {ASSET_TAGS = (); }; };
 		0E3AE69A1C69F03F006FE386 /* ContextGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE67B1C69F03F006FE386 /* ContextGles.cpp */; settings = {ASSET_TAGS = (); }; };
 		0E3AE69B1C69F03F006FE386 /* DescriptorSetGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE67D1C69F03F006FE386 /* DescriptorSetGles.cpp */; settings = {ASSET_TAGS = (); }; };
-		0E3AE69C1C69F03F006FE386 /* EffectApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE67F1C69F03F006FE386 /* EffectApi.cpp */; settings = {ASSET_TAGS = (); }; };
 		0E3AE69D1C69F03F006FE386 /* FboGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6801C69F03F006FE386 /* FboGles.cpp */; settings = {ASSET_TAGS = (); }; };
 		0E3AE69E1C69F03F006FE386 /* GpuCapabilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6821C69F03F006FE386 /* GpuCapabilities.cpp */; settings = {ASSET_TAGS = (); }; };
 		0E3AE69F1C69F03F006FE386 /* GraphicsPipelineGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6831C69F03F006FE386 /* GraphicsPipelineGles.cpp */; settings = {ASSET_TAGS = (); }; };
@@ -28,6 +27,9 @@
 		0E3AE6A61C69F03F006FE386 /* Sync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6901C69F03F006FE386 /* Sync.cpp */; settings = {ASSET_TAGS = (); }; };
 		0E3AE6A71C69F03F006FE386 /* TextureGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6911C69F03F006FE386 /* TextureGles.cpp */; settings = {ASSET_TAGS = (); }; };
 		0E3AE6A81C69F03F006FE386 /* TextureUtilsGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3AE6931C69F03F006FE386 /* TextureUtilsGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E88C5071D54B515004028CA /* EffectApi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E88C5061D54B515004028CA /* EffectApi.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E88C50E1D54B535004028CA /* EffectApi_2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E88C50A1D54B535004028CA /* EffectApi_2.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E88C50F1D54B535004028CA /* RenderManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E88C50C1D54B535004028CA /* RenderManager.cpp */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -58,7 +60,6 @@
 		0E3AE67C1C69F03F006FE386 /* ContextGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContextGles.h; path = ../../ContextGles.h; sourceTree = "<group>"; };
 		0E3AE67D1C69F03F006FE386 /* DescriptorSetGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DescriptorSetGles.cpp; path = ../../DescriptorSetGles.cpp; sourceTree = "<group>"; };
 		0E3AE67E1C69F03F006FE386 /* DescriptorSetGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DescriptorSetGles.h; path = ../../DescriptorSetGles.h; sourceTree = "<group>"; };
-		0E3AE67F1C69F03F006FE386 /* EffectApi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EffectApi.cpp; path = ../../EffectApi.cpp; sourceTree = "<group>"; };
 		0E3AE6801C69F03F006FE386 /* FboGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FboGles.cpp; path = ../../FboGles.cpp; sourceTree = "<group>"; };
 		0E3AE6811C69F03F006FE386 /* FboGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FboGles.h; path = ../../FboGles.h; sourceTree = "<group>"; };
 		0E3AE6821C69F03F006FE386 /* GpuCapabilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GpuCapabilities.cpp; path = ../../GpuCapabilities.cpp; sourceTree = "<group>"; };
@@ -104,6 +105,13 @@
 		0E3AE6C01C69F05F006FE386 /* Texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Texture.h; path = ../../../ApiObjects/Texture.h; sourceTree = "<group>"; };
 		0E47C6FC1AC03C1C0021937F /* libPVRGles.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVRGles.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E5543551C916986007DFD73 /* StructuredMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StructuredMemory.h; path = ../../../StructuredMemory.h; sourceTree = "<group>"; };
+		0E88C5061D54B515004028CA /* EffectApi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EffectApi.cpp; path = ../../EffectApi.cpp; sourceTree = "<group>"; };
+		0E88C5081D54B524004028CA /* ComputePipelineGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ComputePipelineGles.h; path = ../../ComputePipelineGles.h; sourceTree = "<group>"; };
+		0E88C5091D54B524004028CA /* GraphicsPipelineGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GraphicsPipelineGles.h; path = ../../GraphicsPipelineGles.h; sourceTree = "<group>"; };
+		0E88C50A1D54B535004028CA /* EffectApi_2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EffectApi_2.cpp; path = ../../../EffectApi_2.cpp; sourceTree = "<group>"; };
+		0E88C50B1D54B535004028CA /* EffectApi_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EffectApi_2.h; path = ../../../EffectApi_2.h; sourceTree = "<group>"; };
+		0E88C50C1D54B535004028CA /* RenderManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderManager.cpp; path = ../../../RenderManager.cpp; sourceTree = "<group>"; };
+		0E88C50D1D54B535004028CA /* RenderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderManager.h; path = ../../../RenderManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +128,13 @@
 		0E45AA6F1AC95E6900EDDE96 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				0E88C50A1D54B535004028CA /* EffectApi_2.cpp */,
+				0E88C50B1D54B535004028CA /* EffectApi_2.h */,
+				0E88C50C1D54B535004028CA /* RenderManager.cpp */,
+				0E88C50D1D54B535004028CA /* RenderManager.h */,
+				0E88C5081D54B524004028CA /* ComputePipelineGles.h */,
+				0E88C5091D54B524004028CA /* GraphicsPipelineGles.h */,
+				0E88C5061D54B515004028CA /* EffectApi.cpp */,
 				0E5543551C916986007DFD73 /* StructuredMemory.h */,
 				0E3AE6B21C69F05F006FE386 /* Buffer.h */,
 				0E3AE6B31C69F05F006FE386 /* CommandBuffer.h */,
@@ -159,7 +174,6 @@
 				0E3AE67C1C69F03F006FE386 /* ContextGles.h */,
 				0E3AE67D1C69F03F006FE386 /* DescriptorSetGles.cpp */,
 				0E3AE67E1C69F03F006FE386 /* DescriptorSetGles.h */,
-				0E3AE67F1C69F03F006FE386 /* EffectApi.cpp */,
 				0E3AE6801C69F03F006FE386 /* FboGles.cpp */,
 				0E3AE6811C69F03F006FE386 /* FboGles.h */,
 				0E3AE6821C69F03F006FE386 /* GpuCapabilities.cpp */,
@@ -258,7 +272,7 @@
 			files = (
 				0E3AE6991C69F03F006FE386 /* ComputePipelineGles.cpp in Sources */,
 				0E3AE6A51C69F03F006FE386 /* ShaderGles.cpp in Sources */,
-				0E3AE69C1C69F03F006FE386 /* EffectApi.cpp in Sources */,
+				0E88C50E1D54B535004028CA /* EffectApi_2.cpp in Sources */,
 				0E3AE6951C69F03F006FE386 /* AssetStore.cpp in Sources */,
 				0E3AE6981C69F03F006FE386 /* CommandPoolGles.cpp in Sources */,
 				0E3AE69A1C69F03F006FE386 /* ContextGles.cpp in Sources */,
@@ -268,8 +282,10 @@
 				0E3AE6A41C69F03F006FE386 /* SamplerGles.cpp in Sources */,
 				0E3AE69B1C69F03F006FE386 /* DescriptorSetGles.cpp in Sources */,
 				0E3AE6A81C69F03F006FE386 /* TextureUtilsGles.cpp in Sources */,
+				0E88C50F1D54B535004028CA /* RenderManager.cpp in Sources */,
 				0E3AE6A61C69F03F006FE386 /* Sync.cpp in Sources */,
 				0E3AE6A11C69F03F006FE386 /* PipelineConfigStates.cpp in Sources */,
+				0E88C5071D54B515004028CA /* EffectApi.cpp in Sources */,
 				0E3AE6961C69F03F006FE386 /* BufferGles.cpp in Sources */,
 				0E3AE6971C69F03F006FE386 /* CommandBufferGles.cpp in Sources */,
 				0E3AE69D1C69F03F006FE386 /* FboGles.cpp in Sources */,

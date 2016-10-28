@@ -86,7 +86,7 @@ static Pixel32 getColorB(uint32 u32ColorData)
 }
 
 static void interpolateColors(Pixel32 P, Pixel32 Q, Pixel32 R, Pixel32 S,
-                               Pixel128S* pPixel, uint8 ui8Bpp)
+                              Pixel128S* pPixel, uint8 ui8Bpp)
 {
 	uint32 ui32WordWidth = 4;
 	uint32 ui32WordHeight = 4;
@@ -400,11 +400,11 @@ static void pvrtcGetDecompressedPixels(const PVRTCWord& P, const PVRTCWord& Q,
 
 	// Bilinear upscale image data from 2x2 -> 4x4
 	interpolateColors(getColorA(P.u32ColorData), getColorA(Q.u32ColorData),
-	                   getColorA(R.u32ColorData), getColorA(S.u32ColorData),
-	                   upscaledColorA, ui8Bpp);
+	                  getColorA(R.u32ColorData), getColorA(S.u32ColorData),
+	                  upscaledColorA, ui8Bpp);
 	interpolateColors(getColorB(P.u32ColorData), getColorB(Q.u32ColorData),
-	                   getColorB(R.u32ColorData), getColorB(S.u32ColorData),
-	                   upscaledColorB, ui8Bpp);
+	                  getColorB(R.u32ColorData), getColorB(S.u32ColorData),
+	                  upscaledColorB, ui8Bpp);
 
 	for (unsigned int y = 0; y < ui32WordHeight; y++)
 	{
@@ -426,7 +426,7 @@ static void pvrtcGetDecompressedPixels(const PVRTCWord& P, const PVRTCWord& Q,
 			if (punchthroughAlpha) { result.alpha = 0; }
 			else { result.alpha = (upscaledColorA[y * ui32WordWidth + x].alpha * (8 - mod) + upscaledColorB[y * ui32WordWidth + x].alpha * mod) / 8; }
 
-			//Convert the 32bit precision Result::Enum to 8 bit per channel color.
+			//Convert the 32bit precision Result to 8 bit per channel color.
 			if (ui8Bpp == 2)
 			{
 				pColorData[y * ui32WordWidth + x].red = (uint8)result.red;

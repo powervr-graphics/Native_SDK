@@ -10,6 +10,7 @@
 		0E787AB11ABAD95000BF9C85 /* PFXReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E787AAD1ABAD95000BF9C85 /* PFXReader.cpp */; };
 		0E787AB21ABAD95000BF9C85 /* PODReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E787AAF1ABAD95000BF9C85 /* PODReader.cpp */; };
 		0E787AB41ABAD95E00BF9C85 /* PixelFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E787AB31ABAD95E00BF9C85 /* PixelFormat.cpp */; };
+		0E88C5051D54B4C8004028CA /* PFXParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E88C5031D54B4C8004028CA /* PFXParser.cpp */; settings = {ASSET_TAGS = (); }; };
 		3E6C070A19C6F72F00D712E5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E6C070919C6F72F00D712E5 /* Foundation.framework */; };
 		3E6C076319C6F7C600D712E5 /* MetaData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3E6C075519C6F7C600D712E5 /* MetaData.cpp */; };
 		3E6C076519C6F7C600D712E5 /* PVRTDecompress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3E6C075919C6F7C600D712E5 /* PVRTDecompress.cpp */; };
@@ -57,7 +58,9 @@
 		0E787AAE1ABAD95000BF9C85 /* PFXReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PFXReader.h; path = ../../FileIO/PFXReader.h; sourceTree = "<group>"; };
 		0E787AAF1ABAD95000BF9C85 /* PODReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PODReader.cpp; path = ../../FileIO/PODReader.cpp; sourceTree = "<group>"; };
 		0E787AB01ABAD95000BF9C85 /* PODReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PODReader.h; path = ../../FileIO/PODReader.h; sourceTree = "<group>"; };
-		0E787AB31ABAD95E00BF9C85 /* PixelFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PixelFormat.cpp; path = ../../Texture/PixelFormat.cpp; sourceTree = "<group>"; };
+		0E787AB31ABAD95E00BF9C85 /* PixelFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PixelFormat.cpp; path = ../../PixelFormat.cpp; sourceTree = "<group>"; };
+		0E88C5031D54B4C8004028CA /* PFXParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PFXParser.cpp; path = ../../FileIO/PFXParser.cpp; sourceTree = "<group>"; };
+		0E88C5041D54B4C8004028CA /* PFXParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PFXParser.h; path = ../../FileIO/PFXParser.h; sourceTree = "<group>"; };
 		0EE12A891B8F538A006ACAEB /* Asset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Asset.h; path = ../../Asset.h; sourceTree = "<group>"; };
 		0EE12A8A1B8F538A006ACAEB /* BoundingBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoundingBox.h; path = ../../BoundingBox.h; sourceTree = "<group>"; };
 		0EE12A8B1B8F538A006ACAEB /* PVRShamanSemantics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRShamanSemantics.h; path = ../../PVRShamanSemantics.h; sourceTree = "<group>"; };
@@ -68,7 +71,7 @@
 		3E6C071A19C6F72F00D712E5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		3E6C075519C6F7C600D712E5 /* MetaData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetaData.cpp; path = ../../Texture/MetaData.cpp; sourceTree = "<group>"; };
 		3E6C075619C6F7C600D712E5 /* MetaData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetaData.h; path = ../../Texture/MetaData.h; sourceTree = "<group>"; };
-		3E6C075819C6F7C600D712E5 /* PixelFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PixelFormat.h; path = ../../Texture/PixelFormat.h; sourceTree = "<group>"; };
+		3E6C075819C6F7C600D712E5 /* PixelFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PixelFormat.h; path = ../../PixelFormat.h; sourceTree = "<group>"; };
 		3E6C075919C6F7C600D712E5 /* PVRTDecompress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PVRTDecompress.cpp; path = ../../Texture/PVRTDecompress.cpp; sourceTree = "<group>"; };
 		3E6C075A19C6F7C600D712E5 /* PVRTDecompress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRTDecompress.h; path = ../../Texture/PVRTDecompress.h; sourceTree = "<group>"; };
 		3E6C075B19C6F7C600D712E5 /* Texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Texture.cpp; path = ../../Texture/Texture.cpp; sourceTree = "<group>"; };
@@ -170,6 +173,8 @@
 		3E6C075319C6F79D00D712E5 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				0E88C5031D54B4C8004028CA /* PFXParser.cpp */,
+				0E88C5041D54B4C8004028CA /* PFXParser.h */,
 				3E6C075519C6F7C600D712E5 /* MetaData.cpp */,
 				3E6C075619C6F7C600D712E5 /* MetaData.h */,
 				3E6C075819C6F7C600D712E5 /* PixelFormat.h */,
@@ -321,6 +326,7 @@
 				0E787AB11ABAD95000BF9C85 /* PFXReader.cpp in Sources */,
 				0E787AB41ABAD95E00BF9C85 /* PixelFormat.cpp in Sources */,
 				ACFC1D4919F6669B00B860D2 /* TextureReaderTGA.cpp in Sources */,
+				0E88C5051D54B4C8004028CA /* PFXParser.cpp in Sources */,
 				3E6C076719C6F7C600D712E5 /* TextureHeader.cpp in Sources */,
 				ACFC1D4C19F6669B00B860D2 /* TextureWriterKTX.cpp in Sources */,
 				3E6C076819C6F7C600D712E5 /* TextureHeaderWithMetaData.cpp in Sources */,

@@ -17,7 +17,7 @@
 namespace pvr {
 namespace assets {
 
-TextureFileFormat::Enum getTextureFormatFromFilename(const char* assetname)
+TextureFileFormat getTextureFormatFromFilename(const char* assetname)
 {
 	std::string file(assetname);
 
@@ -36,15 +36,15 @@ TextureFileFormat::Enum getTextureFormatFromFilename(const char* assetname)
 	return TextureFileFormat::UNKNOWN;
 }
 
-Result::Enum textureLoad(Stream::ptr_type textureStream, TextureFileFormat::Enum type, Texture& outTex)
+Result textureLoad(Stream::ptr_type textureStream, TextureFileFormat type, Texture& outTex)
 {
 	if (!textureStream.get() || !textureStream->open())
 	{
 		return Result::UnableToOpen;
 	}
-	Result::Enum rslt = Result::Success;
+	Result rslt = Result::Success;
 
-	std::auto_ptr<AssetReader<Texture> > assetRd;
+	std::auto_ptr<AssetReader<Texture>> assetRd;
 	switch (type)
 	{
 	case TextureFileFormat::KTX: assetRd.reset(new assetReaders::TextureReaderKTX(textureStream)); break;

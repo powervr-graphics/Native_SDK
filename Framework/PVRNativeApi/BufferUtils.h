@@ -7,8 +7,9 @@
 #pragma once
 #include "PVRCore/ForwardDecApiObjects.h"
 #include "PVRCore/IPlatformContext.h"
+
 namespace pvr {
-namespace apiUtils {
+namespace utils {
 
 /*!******************************************************************************************************************************
 \brief create buffer
@@ -19,7 +20,7 @@ namespace apiUtils {
 \param[in] memHostVisible Allow Buffer memory to be host visible for map and un-map operation
 \param[in] outBuffer The buffer used for memory allocation
 ********************************************************************************************************************************/
-bool createBuffer(IPlatformContext& context, types::BufferBindingUse::Bits usage,
+bool createBuffer(IPlatformContext& context, types::BufferBindingUse usage,
                   pvr::uint32 size, bool memHostVisible, native::HBuffer_& outBuffer);
 
 }

@@ -24,12 +24,14 @@
     <ClInclude Include="..\..\BufferStream.h" />
     <ClInclude Include="..\..\ComplexTypes.h" />
     <ClInclude Include="..\..\ConsoleMessenger.h" />
+    <ClInclude Include="..\..\ContiguousMap.h" />
     <ClInclude Include="..\..\Defines.h" />
     <ClInclude Include="..\..\FilePath.h" />
     <ClInclude Include="..\..\FileStream.h" />
     <ClInclude Include="..\..\FileWrapStream.h" />
     <ClInclude Include="..\..\Fixed.h" />
     <ClInclude Include="..\..\ForwardDecApiObjects.h" />
+    <ClInclude Include="..\..\FreeValue.h" />
     <ClInclude Include="..\..\HalfFloat.h" />
     <ClInclude Include="..\..\Hash_.h" />
     <ClInclude Include="..\..\IAssetProvider.h" />
@@ -64,6 +66,7 @@
     <ClInclude Include="..\..\UnicodeConverter.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\External\pugixml\pugixml.cpp" />
     <ClCompile Include="..\..\BufferStream.cpp" />
     <ClCompile Include="..\..\ConsoleMessenger.cpp" />
     <ClCompile Include="..\..\FilePath.cpp" />

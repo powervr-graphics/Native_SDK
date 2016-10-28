@@ -1,3 +1,9 @@
+/*!*********************************************************************************************************************
+\file         PVRNativeApi\Vulkan\VulkanBindings.cpp
+\author       PowerVR by Imagination, Developer Technology Team
+\copyright    Copyright (c) Imagination Technologies Limited.
+\brief        Contains function definitions for the Vulkan library bindings (vk:: namespace)
+***********************************************************************************************************************/
 #include "PVRNativeApi/Vulkan/VulkanBindings.h"
 
 #ifdef _WIN32
@@ -5,7 +11,7 @@ static const char* libName = "vulkan-1.dll";
 #elif defined(TARGET_OS_MAC)
 static const char* libName = "libvulkan.dylib";
 #else
-static const char* libName = "libvulkan.so";
+static const char* libName = "libvulkan.so.1;libvulkan.so";
 #endif
 #ifndef TARGET_OS_IPHONE
 static pvr::native::NativeLibrary& vkLibrary()
@@ -36,9 +42,6 @@ void releaseNativeContext(VkInstance instance, VkDevice device)
 PVR_VULKAN_FUNCTION_POINTER_DEFINITION(GetInstanceProcAddr);
 PVR_VULKAN_FUNCTION_POINTER_DEFINITION(GetDeviceProcAddr);
 
-//PVR_VULKAN_FUNCTION_POINTER_DEFINITION(CreateInstance);
-//PVR_VULKAN_FUNCTION_POINTER_DEFINITION(DestroyInstance);
-//PVR_VULKAN_FUNCTION_POINTER_DEFINITION(EnumeratePhysicalDevices);
 PVR_VULKAN_FUNCTION_POINTER_DEFINITION(GetPhysicalDeviceFeatures);
 PVR_VULKAN_FUNCTION_POINTER_DEFINITION(GetPhysicalDeviceFormatProperties);
 PVR_VULKAN_FUNCTION_POINTER_DEFINITION(GetPhysicalDeviceImageFormatProperties);
@@ -180,9 +183,6 @@ void vk::initVk(VkInstance instance, VkDevice device)
 	EnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)vkLibrary().getFunction("vkEnumerateInstanceExtensionProperties");
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetDeviceProcAddr);
 
-	//PVR_VULKAN_GET_DEVICE_POINTER(device, CreateInstance);
-	//PVR_VULKAN_GET_DEVICE_POINTER(device, DestroyInstance);
-	//PVR_VULKAN_GET_DEVICE_POINTER(device, EnumeratePhysicalDevices);
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetPhysicalDeviceFeatures);
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetPhysicalDeviceFormatProperties);
 	PVR_VULKAN_GET_INSTANCE_POINTER(instance, GetPhysicalDeviceImageFormatProperties);

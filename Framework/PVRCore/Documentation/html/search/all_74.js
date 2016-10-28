@@ -3,6 +3,7 @@ var searchData=
   ['tchar',['tchar',['../namespacepvr.html#a23bd8513098ae295f48822fc5fc73e49',1,'pvr']]],
   ['tesselationcontrol',['TesselationControl',['../namespacepvr_1_1types_1_1_shader_stage_flags.html#a63ec35e2788783573214ceb23ef0b0cba9ba4c891cde209b524fc12a2266a1dea',1,'pvr::types::ShaderStageFlags']]],
   ['tesselationevaluation',['TesselationEvaluation',['../namespacepvr_1_1types_1_1_shader_stage_flags.html#a63ec35e2788783573214ceb23ef0b0cbad9924dc853fe8c5d8c95194252eb1fa5',1,'pvr::types::ShaderStageFlags']]],
+  ['tesselationshader',['TesselationShader',['../namespacepvr_1_1types_1_1_shader_type.html#a54457467baf7029937631daab072bbdaa0c7cf361aa53958c1297876e1c58420a',1,'pvr::types::ShaderType']]],
   ['tessellationcontrol',['TessellationControl',['../namespacepvr_1_1types_1_1_pipeline_stage_flags.html#a8144c078d22ccb2769e878fbe6fd0f3eaa6b509ec5c22d4509160339242dcc2db',1,'pvr::types::PipelineStageFlags']]],
   ['tessellationevaluation',['TessellationEvaluation',['../namespacepvr_1_1types_1_1_pipeline_stage_flags.html#a8144c078d22ccb2769e878fbe6fd0f3ea776d944804ea618e2f6eca886d05c2a6',1,'pvr::types::PipelineStageFlags']]],
   ['texbo',['TexBO',['../namespacepvr_1_1types_1_1_api_object_type.html#a2ec622aa992afe2381f553e98752fcb1a1eb20a4288d0035c29b442ebd4b3a3a5',1,'pvr::types::ApiObjectType']]],

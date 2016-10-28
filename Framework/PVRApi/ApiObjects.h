@@ -10,7 +10,11 @@
 #include "PVRApi/ApiObjects/Buffer.h"
 #include "PVRApi/ApiObjects/Sampler.h"
 #include "PVRApi/ApiObjects/GraphicsPipeline.h"
+#include "PVRApi/ApiObjects/DescriptorSet.h"
 #include "PVRApi/ApiObjects/CommandPool.h"
+#include "PVRApi/ApiObjects/RenderPass.h"
+#include "PVRApi/ApiIncludes.h"
+
 
 namespace pvr {
 namespace api {

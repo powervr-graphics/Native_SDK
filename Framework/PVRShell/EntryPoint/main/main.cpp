@@ -8,13 +8,13 @@
 #include "PVRShell/StateMachine.h"
 #include "PVRShell/CommandLine.h"
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-	pvr::system::CommandLineParser commandLine;
-	commandLine.set((argc-1), &argv[1]);
+	pvr::platform::CommandLineParser commandLine;
+	commandLine.set((argc - 1), &argv[1]);
 
-	pvr::system::StateMachine stateMachine(NULL, commandLine, NULL);
-	
+	pvr::platform::StateMachine stateMachine(NULL, commandLine, NULL);
+
 	stateMachine.init();
 
 	// Main loop of the application.

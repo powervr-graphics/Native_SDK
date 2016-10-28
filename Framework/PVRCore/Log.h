@@ -17,8 +17,8 @@ namespace pvr {
 class Logger
 {
 private:
-	static system::ConsoleMessenger m_defaultMessageHandler;
-	system::Messenger* m_messageHandler;
+	static platform::ConsoleMessenger m_defaultMessageHandler;
+	platform::Messenger* m_messageHandler;
 
 public:
 	/*!****************************************************************************************************************
@@ -26,12 +26,12 @@ public:
 	*******************************************************************************************************************/
 	enum Severity
 	{
-		Debug = system::Messenger::Debug,
-		Verbose = system::Messenger::Verbose,
-		Information = system::Messenger::Information,
-		Warning = system::Messenger::Warning,
-		Error = system::Messenger::Error,
-		Critical = system::Messenger::Critical,
+		Debug = platform::Messenger::Debug,
+		Verbose = platform::Messenger::Verbose,
+		Information = platform::Messenger::Information,
+		Warning = platform::Messenger::Warning,
+		Error = platform::Messenger::Error,
+		Critical = platform::Messenger::Critical,
 	};
 
 	/*!****************************************************************************************************************
@@ -107,7 +107,7 @@ public:
 	{
 		if (m_messageHandler)
 		{
-			m_messageHandler->output(static_cast<system::Messenger::Severity>(severity), formatString, argumentList);
+			m_messageHandler->output(static_cast<platform::Messenger::Severity>(severity), formatString, argumentList);
 		}
 	}
 
@@ -116,13 +116,13 @@ public:
 	*******************************************************************************************************************/
 	static void static_vaOutput(Severity severity, const char8* const formatString, va_list argumentList)
 	{
-		m_defaultMessageHandler.output(static_cast<system::Messenger::Severity>(severity), formatString, argumentList);
+		m_defaultMessageHandler.output(static_cast<platform::Messenger::Severity>(severity), formatString, argumentList);
 	}
 
 	/*!****************************************************************************************************************
 	\return     The Messenger object that acts as this Logger's message handler.
 	*******************************************************************************************************************/
-	const system::Messenger* getMessageHandler()
+	const platform::Messenger* getMessageHandler()
 	{
 		return m_messageHandler;
 	}
@@ -131,7 +131,7 @@ public:
 	\brief     Sets the Messenger object that acts as this Logger's message handler.
 	\param     messageHandler The Messenger object that is to act as this Logger's message handler.
 	*******************************************************************************************************************/
-	void setMessageHandler(system::Messenger* messageHandler)
+	void setMessageHandler(platform::Messenger* messageHandler)
 	{
 		Logger::m_messageHandler = messageHandler;
 	}
@@ -150,14 +150,14 @@ public:
 	*******************************************************************************************************************/
 	void setVerbosity(const Severity verbosity)
 	{
-		m_messageHandler->setVerbosity((system::Messenger::Severity)verbosity);
+		m_messageHandler->setVerbosity((platform::Messenger::Severity)verbosity);
 	}
 
 	/*!****************************************************************************************************************
 	\brief      Use this function to convert a Result into a string that is suitable for outputting.
 	\return     A string suitable for writing out that represents this Result
 	*******************************************************************************************************************/
-	static const char* getResultCodeString(Result::Enum result)
+	static const char* getResultCodeString(Result result)
 	{
 		switch (result)
 		{
@@ -206,6 +206,15 @@ inline void assertion(bool condition, const std::string& message)
 		PVR_ASSERTION(0);
 	}
 }
+
+#define SLASH(s) /##s
+#define COMMENT SLASH(/)
+
+#ifdef DEBUG
+#define debug_assertion(condition, message) assertion(condition, message)
+#else
+#define debug_assertion(condition, message) ((void)0)
+#endif
 inline void assertion(bool condition, const char* msg)
 {
 	if (!condition)

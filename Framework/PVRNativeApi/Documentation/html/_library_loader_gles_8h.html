@@ -86,6 +86,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>This file contains OpenGL ES bindings with function pointers. The PowerVR Framework uses them to allow unified access to OpenGL ES 2 and OpenGL ES 3 context throught the same functions. Function pointer loading is done with the initGl function which is normally called by the PVR Shell.  
+<a href="#details">More...</a></p>
+
 <p><a href="_library_loader_gles_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -94,7 +97,12 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class contains function pointers to all OpenGL ES 2,3 and 3.1 functions. These function pointers will be populated on the initGl call, but should only be used when compatible OpenGL ES contexts are current. Use normally, using the gl class as a namespace. For example gl::BindBuffer(GL_UNIFORM_BUFFER, myBuffer);.  <a href="classgl.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-</div><!-- contents -->
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This file contains OpenGL ES bindings with function pointers. The PowerVR Framework uses them to allow unified access to OpenGL ES 2 and OpenGL ES 3 context throught the same functions. Function pointer loading is done with the initGl function which is normally called by the PVR Shell. </p>
+<hr/>
+<dl class="section author"><dt>Author</dt><dd>PowerVR by Imagination, Developer Technology Team </dd></dl>
+<dl class="section user"><dt>Copyright:</dt><dd>Copyright (c) Imagination Technologies Limited. </dd></dl>
+</div></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->
 <!--BEGIN GENERATE_TREEVIEW-->

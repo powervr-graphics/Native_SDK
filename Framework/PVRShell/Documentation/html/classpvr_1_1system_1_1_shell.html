@@ -181,6 +181,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a77613afb9e0da81c7791ee043a90e5dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bed331c60e6442e7b39ee20f9e1e71f"><td class="memItemLeft" align="right" valign="top">IPlatformContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a5bed331c60e6442e7b39ee20f9e1e71f">getPlatformContext</a> ()</td></tr>
 <tr class="separator:a5bed331c60e6442e7b39ee20f9e1e71f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72224a0edac5e37ab918bbc538c34e75"><td class="memItemLeft" align="right" valign="top">const IPlatformContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a72224a0edac5e37ab918bbc538c34e75">getPlatformContext</a> () const </td></tr>
+<tr class="separator:a72224a0edac5e37ab918bbc538c34e75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aacdd27ae113175cb60b6817c4b4b66e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_pointer_location.html">PointerLocation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#aacdd27ae113175cb60b6817c4b4b66e1">getPointerAbsolutePosition</a> ()</td></tr>
 <tr class="memdesc:aacdd27ae113175cb60b6817c4b4b66e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query the pointer location in pixels.  <a href="#aacdd27ae113175cb60b6817c4b4b66e1">More...</a><br/></td></tr>
 <tr class="separator:aacdd27ae113175cb60b6817c4b4b66e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,6 +204,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a285e767a6782d187823159bf7e715c9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74b7dd0600baf337c75a2de9748f2e53"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a74b7dd0600baf337c75a2de9748f2e53">getStencilBitsPerPixel</a> () const </td></tr>
 <tr class="separator:a74b7dd0600baf337c75a2de9748f2e53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06af3c67f1a32c94ea2ab383a6c1bd80"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a06af3c67f1a32c94ea2ab383a6c1bd80">getSwapChainIndex</a> () const </td></tr>
+<tr class="separator:a06af3c67f1a32c94ea2ab383a6c1bd80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e9d645292f26d9b8ca71c63f1fe2cdb"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a0e9d645292f26d9b8ca71c63f1fe2cdb">getSwapChainLength</a> () const </td></tr>
+<tr class="separator:a0e9d645292f26d9b8ca71c63f1fe2cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac06dc6a175eabc5dd86c6c9cd075456e"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#ac06dc6a175eabc5dd86c6c9cd075456e">getSwapInterval</a> () const </td></tr>
 <tr class="separator:ac06dc6a175eabc5dd86c6c9cd075456e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e4c7c90aba3652c6328228dc10ad657"><td class="memItemLeft" align="right" valign="top">uint64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1system_1_1_shell.html#a1e4c7c90aba3652c6328228dc10ad657">getTime</a> ()</td></tr>
@@ -1277,6 +1283,23 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a72224a0edac5e37ab918bbc538c34e75"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const IPlatformContext&amp; pvr::system::Shell::getPlatformContext </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>Gets the Platform Context class used by this shell. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="aacdd27ae113175cb60b6817c4b4b66e1"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1482,6 +1505,40 @@ Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <hr/>
  <dl class="section return"><dt>Returns</dt><dd>The number of stencil bits per pixel. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a06af3c67f1a32c94ea2ab383a6c1bd80"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32 pvr::system::Shell::getSwapChainIndex </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>The logical backbuffer image that the application currently owns and should render to. It is undefined to use an Off Screen FBO that points to any swap image other than the one with index this number. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a0e9d645292f26d9b8ca71c63f1fe2cdb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32 pvr::system::Shell::getSwapChainLength </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<hr/>
+ <dl class="section return"><dt>Returns</dt><dd>The number of logical swap chain images. This number is always one greater than the max number returned by <a class="el" href="classpvr_1_1system_1_1_shell.html#a06af3c67f1a32c94ea2ab383a6c1bd80">getSwapChainIndex()</a>. </dd></dl>
 
 </div>
 </div>

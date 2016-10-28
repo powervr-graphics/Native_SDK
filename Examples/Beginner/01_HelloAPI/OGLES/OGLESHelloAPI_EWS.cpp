@@ -433,7 +433,7 @@ bool RenderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
     //	glClear with the color bit will clear the frame buffer to this value.
     //	The functions glClearDepth and glClearStencil allow an application to do the same with depth and stencil values respectively.
 
-	glClearColor(0.6f, 0.8f, 1.0f, 1.0f);
+	glClearColor(0.00f, 0.70f, 0.67f, 1.0f);
 
     //	Clears the color buffer.
     //	glClear is used here with the Color Buffer to clear the color. It can also be used to clear the depth or stencil buffer using
@@ -555,8 +555,8 @@ void ReleaseWindowAndDisplay(EWS_WINDOW nativeWindow, EWS_DISPLAY nativeDisplay)
 int main(int /*argc*/, char** /*argv*/)
 {
 	// Windows variables
-	EWS_WINDOW				nativeWindow = NULL;
-	EWS_DISPLAY				nativeDisplay = NULL;
+	EWS_WINDOW				nativeWindow = 0;
+	EWS_DISPLAY				nativeDisplay = 0;
 
 	// EGL variables
 	EGLDisplay			eglDisplay = NULL;

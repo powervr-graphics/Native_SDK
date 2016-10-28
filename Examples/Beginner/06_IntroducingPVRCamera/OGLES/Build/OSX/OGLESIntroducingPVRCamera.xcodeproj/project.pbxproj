@@ -23,9 +23,9 @@
 		AC2A38671A0A6BD80093C884 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC2A38641A0A6BD80093C884 /* Info.plist */; };
 		AC2A386E1A0A6BE10093C884 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386B1A0A6BE10093C884 /* InfoPlist.strings */; };
 		AC2A38711A0A6BE70093C884 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386F1A0A6BE70093C884 /* MainMenu.xib */; };
-		F80A6EDD272184B6FC0B12C5 /* OGLESIntroducingPVRCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8CD6F4D90A292778B4A595D /* OGLESIntroducingPVRCamera.cpp */; };
-		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81AE783867359F7612A30AC /* VertShader.vsh */; };
-		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */; };
+		F80A6EDD272184B6FC0B12C5 /* OGLESIntroducingPVRCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8B601864B95FF770B4B7AA6 /* OGLESIntroducingPVRCamera.cpp */; };
+		F85F986B3B1E3DC98D9FAA9A /* VertShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */; };
+		F870BBA9895779E0AE68561F /* FragShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F895137C16F9AE9B63DD3558 /* FragShader.fsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,9 +177,9 @@
 		AC2A38661A0A6BD80093C884 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AC2A386C1A0A6BE10093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		AC2A38701A0A6BE70093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
-		F8CD6F4D90A292778B4A595D /* OGLESIntroducingPVRCamera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRCamera.cpp; path = ../../OGLESIntroducingPVRCamera.cpp; sourceTree = SOURCE_ROOT; };
-		F81AE783867359F7612A30AC /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
-		F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
+		F8B601864B95FF770B4B7AA6 /* OGLESIntroducingPVRCamera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRCamera.cpp; path = ../../OGLESIntroducingPVRCamera.cpp; sourceTree = SOURCE_ROOT; };
+		F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader.vsh; path = ../../VertShader.vsh; sourceTree = SOURCE_ROOT; };
+		F895137C16F9AE9B63DD3558 /* FragShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader.fsh; path = ../../FragShader.fsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -331,7 +331,7 @@
 		AC2A37F81A0A675B0093C884 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				F8CD6F4D90A292778B4A595D /* OGLESIntroducingPVRCamera.cpp */,
+				F8B601864B95FF770B4B7AA6 /* OGLESIntroducingPVRCamera.cpp */,
 			);
 			name = Sources;
 			path = OSX;
@@ -388,8 +388,8 @@
 		AC2A385E1A0A698B0093C884 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F81AE783867359F7612A30AC /* VertShader.vsh */,
-				F8BC47DBA0EE0506BBE06EC4 /* FragShader.fsh */,
+				F81BCA31C4499C36ACCE89C4 /* VertShader.vsh */,
+				F895137C16F9AE9B63DD3558 /* FragShader.fsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";

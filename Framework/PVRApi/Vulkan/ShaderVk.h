@@ -5,6 +5,7 @@
 \brief        Contains Vulkan specific implementation of the Shader class. Use only if directly using Vulkan calls.
 			  Provides the definitions allowing to move from the Framework object Texture2D to the underlying Vulkan Shader.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 
 #pragma once
 #include "PVRApi/ApiObjects/Shader.h"
@@ -75,3 +76,5 @@ inline void pvr::api::vulkan::ShaderVk_::destroy()
 }
 }
 }
+
+//!\endcond

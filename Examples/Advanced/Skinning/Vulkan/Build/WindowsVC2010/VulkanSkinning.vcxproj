@@ -73,7 +73,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\Framework\Bin\WindowsVC2010\$(Configuration)_$(PlatformArchitecture);</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PVRCore.lib;PVRAssets.lib;PVRVulkanGlue.lib;PVRVulkan.lib;PVRNativeVulkan.lib;PVRShell.lib;PVRUIRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PVRCore.lib;PVRAssets.lib;PVRVulkanGlue.lib;PVRNativeVulkan.lib;PVRVulkan.lib;PVRShell.lib;PVRUIRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -98,7 +98,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\Framework\Bin\WindowsVC2010\$(Configuration)_$(PlatformArchitecture);</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PVRCore.lib;PVRAssets.lib;PVRVulkanGlue.lib;PVRVulkan.lib;PVRNativeVulkan.lib;PVRShell.lib;PVRUIRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PVRCore.lib;PVRAssets.lib;PVRVulkanGlue.lib;PVRNativeVulkan.lib;PVRVulkan.lib;PVRShell.lib;PVRUIRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -128,7 +128,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\Framework\Bin\WindowsVC2010\$(Configuration)_$(PlatformArchitecture);</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PVRCore.lib;PVRAssets.lib;PVRVulkanGlue.lib;PVRVulkan.lib;PVRNativeVulkan.lib;PVRShell.lib;PVRUIRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PVRCore.lib;PVRAssets.lib;PVRVulkanGlue.lib;PVRNativeVulkan.lib;PVRVulkan.lib;PVRShell.lib;PVRUIRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -158,7 +158,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\Framework\Bin\WindowsVC2010\$(Configuration)_$(PlatformArchitecture);</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PVRCore.lib;PVRAssets.lib;PVRVulkanGlue.lib;PVRVulkan.lib;PVRNativeVulkan.lib;PVRShell.lib;PVRUIRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PVRCore.lib;PVRAssets.lib;PVRVulkanGlue.lib;PVRNativeVulkan.lib;PVRVulkan.lib;PVRShell.lib;PVRUIRenderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -175,10 +175,15 @@
     <None Include="..\..\..\ProcessedAssets\Robot.pod"></None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\DefaultFragShader_vk.fsh"></None>
+    <None Include="..\..\DefaultVertShader_vk.vsh"></None>
+    <None Include="..\..\SkinnedFragShader_vk.fsh"></None>
+    <None Include="..\..\SkinnedVertShader_vk.vsh"></None>
     <None Include="..\..\DefaultVertShader_vk.spv"></None>
     <None Include="..\..\DefaultFragShader_vk.spv"></None>
     <None Include="..\..\SkinnedVertShader_vk.spv"></None>
     <None Include="..\..\SkinnedFragShader_vk.spv"></None>
+    <None Include="..\..\Skinning_vk.pfx"></None>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\ProcessedAssets\Tiles.pvr"></None>

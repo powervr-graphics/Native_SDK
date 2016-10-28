@@ -84,7 +84,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <a href="_convert_to_api_types_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*!*********************************************************************************************************************</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">\file         PVRApi\OGLES\ConvertToApiTypes.h</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">\file         PVRNativeApi\OGLES\ConvertToApiTypes.h</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">\author       PowerVR by Imagination, Developer Technology Team</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">\copyright    Copyright (c) Imagination Technologies Limited.</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">\brief         Contains conversions of pvr Enumerations to OpenGL ES types.</span></div>
@@ -92,7 +92,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;PVRCore/PVRCore.h&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;PVRApi/GpuCapabilities.h&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_native_objects_gles_8h.html">PVRNativeApi/OGLES/NativeObjectsGles.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_native_objects_gles_8h.html" title="This file contains the OpenGL ES definitions of the (normally only forward-declared in app code) nati...">PVRNativeApi/OGLES/NativeObjectsGles.h</a>&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>pvr {</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>api {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">/*!****************************************************************************************************************</span></div>
@@ -243,38 +243,32 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="comment">*******************************************************************************************************************/</span></div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<a class="code" href="_api_gles2_8h.html#a8c9fed4ef34d7b649243e47ab734596e">GLenum</a> <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#ab0ef71f7e254187354bc990b83f480a1" title="Convert to opengl memory barrier write flag. ">memBarrierFlagOut</a>(uint32 <a class="code" href="_api_gles2_8h.html#a582594109983c43d7023a28318a0bb3c">mask</a>);</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;<span class="comment">/*!****************************************************************************************************************</span></div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="comment">\brief  Convert to opengl memory barrier input.</span></div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="comment">\return A GLenum representing a Memory Barrier Input type (GL_SHADER_STORAGE_BARRIER_BIT, GL_VERTEX_ATTRIB_ARRAY_BIT etc.)</span></div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="comment">\param  mask A mask of ORed MemoryBarierFlagIn enums</span></div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="comment">*******************************************************************************************************************/</span></div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<a class="code" href="_api_gles2_8h.html#a8c9fed4ef34d7b649243e47ab734596e">GLenum</a> <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a771bc8ae80909f9149e58727ee5a373b" title="Convert to opengl memory barrier input. ">memBarrierFlagIn</a>(uint32 mask);</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="comment">/*!****************************************************************************************************************</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="comment">\brief  Convert to opengl stencil op output.</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="comment">\return A GLenum representing a Stencil Operation (GL_INC_WRAP, GL_ZERO etc)</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="comment">\param  stencilOp A StencilOp enum</span></div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="comment">*******************************************************************************************************************/</span></div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<a class="code" href="_api_gles2_8h.html#a8c9fed4ef34d7b649243e47ab734596e">GLenum</a> <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a700338dbdbd19e681e94d5fcac1b2ca8" title="Convert to opengl stencil op output. ">stencilOp</a>(types::StencilOp::Enum <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a700338dbdbd19e681e94d5fcac1b2ca8" title="Convert to opengl stencil op output. ">stencilOp</a>);</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="comment">/*!****************************************************************************************************************</span></div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="comment">\brief  Convert to opengl blend op output.</span></div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="comment">\return A GLenum representing a Blend Operation (GL_FUNC_ADD, GL_MIN etc)</span></div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="comment">\param  blendOp Α BlendOp enum</span></div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="comment">*******************************************************************************************************************/</span></div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<a class="code" href="_api_gles2_8h.html#a8c9fed4ef34d7b649243e47ab734596e">GLenum</a> <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a56c4d14bea0800836f6153217491dacb" title="Convert to opengl blend op output. ">blendEq</a>(types::BlendOp::Enum blendOp);</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment">/*!****************************************************************************************************************</span></div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment">\brief  Convert to opengl blend factor output.</span></div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="comment">\return A GLenum representing a BlendFactor (GL_ZERO, GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA etc)</span></div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="comment">\param  blendFactor A BlendFactor enum</span></div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment">*******************************************************************************************************************/</span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<a class="code" href="_api_gles2_8h.html#a8c9fed4ef34d7b649243e47ab734596e">GLenum</a> <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#acc3baf3ca2149517bfe5179d24712fa5" title="Convert to opengl blend factor output. ">blendFactor</a>(types::BlendFactor::Enum <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#acc3baf3ca2149517bfe5179d24712fa5" title="Convert to opengl blend factor output. ">blendFactor</a>);</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;}</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;}<span class="comment">// namespace api</span></div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;}<span class="comment">//namespace pvr</span></div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;<span class="comment">/*!****************************************************************************************************************</span></div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="comment">\brief  Convert to opengl stencil op output.</span></div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="comment">\return A GLenum representing a Stencil Operation (GL_INC_WRAP, GL_ZERO etc)</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="comment">\param  stencilOp A StencilOp enum</span></div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="comment">*******************************************************************************************************************/</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<a class="code" href="_api_gles2_8h.html#a8c9fed4ef34d7b649243e47ab734596e">GLenum</a> <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a700338dbdbd19e681e94d5fcac1b2ca8" title="Convert to opengl stencil op output. ">stencilOp</a>(types::StencilOp::Enum <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a700338dbdbd19e681e94d5fcac1b2ca8" title="Convert to opengl stencil op output. ">stencilOp</a>);</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="comment">/*!****************************************************************************************************************</span></div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="comment">\brief  Convert to opengl blend op output.</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="comment">\return A GLenum representing a Blend Operation (GL_FUNC_ADD, GL_MIN etc)</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="comment">\param  blendOp Α BlendOp enum</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="comment">*******************************************************************************************************************/</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<a class="code" href="_api_gles2_8h.html#a8c9fed4ef34d7b649243e47ab734596e">GLenum</a> <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#a56c4d14bea0800836f6153217491dacb" title="Convert to opengl blend op output. ">blendEq</a>(types::BlendOp::Enum blendOp);</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="comment">/*!****************************************************************************************************************</span></div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="comment">\brief  Convert to opengl blend factor output.</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="comment">\return A GLenum representing a BlendFactor (GL_ZERO, GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA etc)</span></div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="comment">\param  blendFactor A BlendFactor enum</span></div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="comment">*******************************************************************************************************************/</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<a class="code" href="_api_gles2_8h.html#a8c9fed4ef34d7b649243e47ab734596e">GLenum</a> <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#acc3baf3ca2149517bfe5179d24712fa5" title="Convert to opengl blend factor output. ">blendFactor</a>(types::BlendFactor::Enum <a class="code" href="namespacepvr_1_1api_1_1_convert_to_gles.html#acc3baf3ca2149517bfe5179d24712fa5" title="Convert to opengl blend factor output. ">blendFactor</a>);</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;}</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;}<span class="comment">// namespace api</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;}<span class="comment">//namespace pvr</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

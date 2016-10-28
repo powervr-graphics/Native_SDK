@@ -5,24 +5,35 @@
 \brief         Interface for the class actually performing the low-level operations.
 ***********************************************************************************************************************/
 #pragma once
+#include <algorithm>
 namespace pvr {
 
 /*!*********************************************************************************************************************
 \brief         Enumeration of all types of DeviceQueue.
 ***********************************************************************************************************************/
-namespace DeviceQueueType {
-enum Enum
+enum class DeviceQueueType
 {
 	Graphics = 0x01,//<graphics operations
 	Compute = 0x02,//< compute operations
 	Dma = 0x04,//< DMA operations
+	Extended    = 0x08, //< extended operations
 	MemoryManagement,//< memory management operations
-	Extended = 0x08, //< extended operations
 	Count
 };
-};
 
-namespace system {
+inline DeviceQueueType operator&(DeviceQueueType a, DeviceQueueType b)
+{
+	return DeviceQueueType(std::underlying_type<DeviceQueueType>::type(a) &
+	                       std::underlying_type<DeviceQueueType>::type(b));
+}
+
+inline DeviceQueueType operator|(DeviceQueueType a, DeviceQueueType b)
+{
+	return DeviceQueueType(std::underlying_type<DeviceQueueType>::type(a) |
+	                       std::underlying_type<DeviceQueueType>::type(b));
+}
+
+namespace platform {
 struct NativePlatformHandles_; struct NativeDisplayHandle_;
 }
 
@@ -38,7 +49,7 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Swap the front and back buffers (called at the end of each frame to show the rendering).
 	***********************************************************************************************************************/
-	virtual Result::Enum init() = 0;
+	virtual Result init() = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Swap the front and back buffers (called at the end of each frame to show the rendering).
@@ -73,37 +84,37 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Get the maximum API version supported by this context.
 	***********************************************************************************************************************/
-	virtual Api::Enum getMaxApiVersion() = 0;
+	virtual Api getMaxApiVersion() = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Get the maximum API version supported by this context.
 	***********************************************************************************************************************/
-	Api::Enum getApiType() { return apiType; }
+	Api getApiType() { return apiType; }
 
 	/*!*********************************************************************************************************************
 	\brief Query if the specified Api is supported by this context.
 	***********************************************************************************************************************/
-	virtual bool isApiSupported(Api::Enum api) = 0;
+	virtual bool isApiSupported(Api api) = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Get the NativePlatformHandles wrapped by this context.
 	***********************************************************************************************************************/
-	virtual const system::NativePlatformHandles_& getNativePlatformHandles() const = 0;
+	virtual const platform::NativePlatformHandles_& getNativePlatformHandles() const = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Get the NativePlatformHandles wrapped by this context.
 	***********************************************************************************************************************/
-	virtual system::NativePlatformHandles_& getNativePlatformHandles() = 0;
+	virtual platform::NativePlatformHandles_& getNativePlatformHandles() = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Get the NativePlatformHandles wrapped by this context.
 	***********************************************************************************************************************/
-	virtual const system::NativeDisplayHandle_& getNativeDisplayHandle() const = 0;
+	virtual const platform::NativeDisplayHandle_& getNativeDisplayHandle() const = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Get the NativePlatformHandles wrapped by this context.
 	***********************************************************************************************************************/
-	virtual system::NativeDisplayHandle_& getNativeDisplayHandle() = 0;
+	virtual platform::NativeDisplayHandle_& getNativeDisplayHandle() = 0;
 
 	/*!*********************************************************************************************************************
 	\brief Get the NativePlatformHandles wrapped by this context.
@@ -115,12 +126,15 @@ public:
 	***********************************************************************************************************************/
 	uint32 getSwapChainIndex() const { return swapIndex; }
 
+	uint32 getLastSwapChainIndex()const { return lastPresentedSwapIndex; }
+
 	IPlatformContext() : swapIndex(0), lastPresentedSwapIndex(0), apiType(Api::Unspecified) {}
+
 	virtual ~IPlatformContext() { }
 //protected:
-	uint32 swapIndex;
-	uint32 lastPresentedSwapIndex;
-	Api::Enum apiType;
+	uint32      swapIndex;
+	uint32      lastPresentedSwapIndex;
+	Api   apiType;
 };
 
 /*!*********************************************************************************************************************

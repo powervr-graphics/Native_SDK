@@ -12,7 +12,5 @@ var searchData=
   ['vertexattrib4fv',['VertexAttrib4fv',['../classgl.html#abdf04e329526f1ff937233e9aba3f0a7',1,'gl']]],
   ['vertexattribdivisorangle',['VertexAttribDivisorANGLE',['../classglext.html#a3b3ded922ecea5316167f5897f50b79e',1,'glext']]],
   ['vertexattribpointer',['VertexAttribPointer',['../classgl.html#a2dbd7cae03bea26f20bfd2015a6c50f2',1,'gl']]],
-  ['view',['view',['../structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html#ab5530fa8aafd965a21b97bb13520674f',1,'pvr::apiutils::vulkan::DisplaySurface']]],
-  ['viewport',['viewport',['../structpvr_1_1api_1_1vulkan_1_1_graphics_pipeline_create_info_vulkan.html#a0511448fffa37fd5745b5fe3fb23990a',1,'pvr::api::vulkan::GraphicsPipelineCreateInfoVulkan::viewport()'],['../classgl.html#a119b499a65a9a04b12d1a167a8255e51',1,'gl::Viewport()']]],
-  ['views',['views',['../structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html#ae46f4bbf21ec90581ad3023a9d42f55c',1,'pvr::apiutils::vulkan::DisplaySurface']]]
+  ['viewport',['viewport',['../structpvr_1_1api_1_1vulkan_1_1_graphics_pipeline_create_info_vulkan.html#a0511448fffa37fd5745b5fe3fb23990a',1,'pvr::api::vulkan::GraphicsPipelineCreateInfoVulkan::viewport()'],['../classgl.html#a119b499a65a9a04b12d1a167a8255e51',1,'gl::Viewport()']]]
 ];

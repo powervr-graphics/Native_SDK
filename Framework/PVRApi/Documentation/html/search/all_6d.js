@@ -106,6 +106,7 @@ var searchData=
   ['maxuniformblocksize',['MaxUniformBlockSize',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_uniform.html#a6833c9d831d8f6091c010bedb298c8b6abf033cf49f3d7b193fadbe725000b405',1,'pvr::api::gpuCapabilities::Uniform']]],
   ['maxuniformbufferbindings',['MaxUniformBufferBindings',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_uniform.html#a6833c9d831d8f6091c010bedb298c8b6a74203fdbe20f9bcc530b6663dce891cd',1,'pvr::api::gpuCapabilities::Uniform']]],
   ['maxvertices',['MaxVertices',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_element.html#a38e1ceb0201ed17c20594b3e60cc2e47acd4071ff341cb7ae9064a7ae0416136b',1,'pvr::api::gpuCapabilities::Element']]],
+  ['memorybarrier',['MemoryBarrier',['../structpvr_1_1api_1_1_memory_barrier.html#acfe1095896c204b325508bd70844dc22',1,'pvr::api::MemoryBarrier::MemoryBarrier()'],['../structpvr_1_1api_1_1_memory_barrier.html#a9bdb7ba0a77166d7f344f22d400816ac',1,'pvr::api::MemoryBarrier::MemoryBarrier(types::AccessFlags::Bits srcMask, types::AccessFlags::Bits dstMask)']]],
   ['memorybarrier',['MemoryBarrier',['../structpvr_1_1api_1_1_memory_barrier.html',1,'pvr::api']]],
   ['memorybarrierset',['MemoryBarrierSet',['../classpvr_1_1api_1_1_memory_barrier_set.html#a0007378c04e6ceeda78049da922c3423',1,'pvr::api::MemoryBarrierSet']]],
   ['memorybarrierset',['MemoryBarrierSet',['../classpvr_1_1api_1_1_memory_barrier_set.html',1,'pvr::api']]],

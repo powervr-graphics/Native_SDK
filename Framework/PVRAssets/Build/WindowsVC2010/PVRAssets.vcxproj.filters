@@ -35,9 +35,6 @@
     <ClInclude Include="..\..\Texture\MetaData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Texture\PixelFormat.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Texture\PVRTDecompress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -122,9 +119,6 @@
     <ClInclude Include="..\..\FileIO\PODDefines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SamplerDescription.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\ShaderDescription.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -150,6 +144,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\PVRAssets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\PixelFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\PFXParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Effect_2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -226,7 +229,10 @@
     <ClCompile Include="..\..\FileIO\PFXReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Texture\PixelFormat.cpp">
+    <ClCompile Include="..\..\PixelFormat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FileIO\PFXParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

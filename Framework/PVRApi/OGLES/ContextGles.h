@@ -2,8 +2,9 @@
 \file         PVRApi\OGLES\ContextGles.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief		Definition of the OpenGL ES implementation of the GraphicsContext (pvr::platform::ContextGles)
+\brief		Definition of the OpenGL ES implementation of the GraphicsContext (platform::ContextGles)
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRCore/IGraphicsContext.h"
 #include "PVRCore/IPlatformContext.h"
@@ -70,7 +71,7 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Create a new, empty, uninitialized context.
 	***********************************************************************************************************************/
-	ContextGles() {}
+	ContextGles() : IGraphicsContext(Api::OpenGLESMaxVersion) {}
 
 	/*!*********************************************************************************************************************
 	\brief Virtual destructor.
@@ -88,7 +89,7 @@ public:
 	\description This function must be called before using the Context. Will use the OS manager to make this Context
 	ready to use.
 	***********************************************************************************************************************/
-	Result::Enum init(OSManager& osManager);
+	Result init(OSManager& osManager);
 
 	void setUpCapabilities();
 
@@ -101,7 +102,6 @@ public:
 		{
 			m_osManager = 0;
 			memset(&(ApiCapabilitiesPrivate&)m_apiCapabilities, 0, sizeof(ApiCapabilitiesPrivate));
-			m_defaultRenderPass.reset();
 			m_extensions.clear();
 			m_defaultCmdPool.reset();
 			m_defaultDescPool.reset();
@@ -119,6 +119,7 @@ public:
 	*******************************************************************************************************************/
 	bool screenCaptureRegion(uint32 x, uint32 y, uint32 w, uint32 h, byte* buffer,
 	                         ImageFormat requestedImageFormat);
+
 	/*!*********************************************************************************************************************
 	\brief Implementation of IGraphicsContext. Query if a specific extension is supported.
 	\param extension A c-style string representing the extension
@@ -128,39 +129,154 @@ public:
 
 	api::Fbo createFbo(const api::FboCreateParam& desc);
 
-	/*!*********************************************************************************************************************
-	\brief  Implementation of IGraphicsContext. Print information about this IGraphicsContext.
-	***********************************************************************************************************************/
+	api::FboSet createFboSet(const Multi<api::FboCreateParam>& fboInfo);
+
+
+	/*!****************************************************************************************************************
+	\brief	Get the ImageDataFormat associated with the presentation image for this GraphicsContext.
+	*******************************************************************************************************************/
+	const api::ImageDataFormat getPresentationImageFormat()const
+	{
+		api::ImageDataFormat presentationFormat;
+		presentationFormat.format = PixelFormat(getDisplayAttributes().redBits ? 'r' : 0, getDisplayAttributes().greenBits ? 'g' : 0,
+		                                        getDisplayAttributes().blueBits ? 'b' : 0, getDisplayAttributes().alphaBits ? 'a' : 0,
+		                                        (uint8)getDisplayAttributes().redBits, (uint8)getDisplayAttributes().greenBits,
+		                                        (uint8)getDisplayAttributes().blueBits, (uint8)getDisplayAttributes().alphaBits);
+		presentationFormat.colorSpace = getDisplayAttributes().frameBufferSrgb ? types::ColorSpace::sRGB : types::ColorSpace::lRGB;;
+		presentationFormat.dataType = VariableType::UnsignedByteNorm;
+		return presentationFormat;
+	}
+
+	/*!****************************************************************************************************************
+	\brief	Get the ImageDataFormat associated with the depth stencil image for this GraphicsContext.
+	*******************************************************************************************************************/
+	const api::ImageDataFormat getDepthStencilImageFormat()const
+	{
+		api::ImageDataFormat depthStencilFormat;
+		depthStencilFormat.format = PixelFormat('d', (getDisplayAttributes().stencilBPP ? 's' : 0), (uint8)0, (uint8)0,
+		                                        (uint8)getDisplayAttributes().depthBPP, (uint8)getDisplayAttributes().stencilBPP, (uint8)0, (uint8)0);
+		depthStencilFormat.colorSpace = types::ColorSpace::lRGB;
+		depthStencilFormat.dataType = (uint8)getDisplayAttributes().depthBPP == 16 ?
+		                              VariableType::UnsignedShortNorm : (uint8)getDisplayAttributes().depthBPP == 24 ?
+		                              VariableType::UnsignedInteger : VariableType::Float;
+		return depthStencilFormat;
+	}
+
 	std::string getInfo()const;
+
+	api::ParentableGraphicsPipeline  createParentableGraphicsPipeline(const api::GraphicsPipelineCreateParam& createParam);
+
+	api::ComputePipeline createComputePipeline(const api::ComputePipelineCreateParam& createParam);
+
+	api::GraphicsPipeline createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc);
+
+	api::GraphicsPipeline createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc,
+	    api::ParentableGraphicsPipeline parent);
+
+
+	api::Sampler createSampler(const api::SamplerCreateParam& createParam);
+
+    api::EffectApi createEffectApi(assets::Effect& effectDesc, api::GraphicsPipelineCreateParam& pipeDesc,
+	                               api::AssetLoadingDelegate& effectDelegate);
+
+	api::TextureStore createTexture();
+
+	api::TextureView createTextureView(const api::TextureStore& texture, types::ImageSubresourceRange range, types::SwizzleChannels);
+
+	api::TextureView createTextureView(const api::TextureStore& texture, types::SwizzleChannels);
+
+	api::BufferView createBufferView(const api::Buffer& buffer, uint32 offset, uint32 range);
+
+	api::BufferView createBufferAndView(uint32 size, types::BufferBindingUse bufferUsage, bool isMappable);
+
+	api::Buffer createBuffer(uint32 size, types::BufferBindingUse bufferUsage, bool isMappable);
+
+	api::CommandBuffer createCommandBufferOnDefaultPool();
+
+	api::SecondaryCommandBuffer createSecondaryCommandBufferOnDefaultPool();
+
+	api::Shader createShader(const Stream& shaderSrc, types::ShaderType shaderType,
+	                         const char* const* defines, uint32 numDefines);
+
+	api::Shader createShader(Stream& shaderData, types::ShaderType shaderType,
+	                         types::ShaderBinaryFormat binaryFormat);
+
+	api::Fbo createOnScreenFboWithRenderPass(uint32 swapIndex, const api::RenderPass& renderPass,
+	    const api::OnScreenFboCreateParam& onScreenFboCreateParam);
+
+	api::FboSet createOnScreenFboSetWithRenderPass(const api::RenderPass& renderPass);
+
+
+	api::FboSet createOnScreenFboSetWithRenderPass(const api::RenderPass& renderPass,
+        Multi<api::OnScreenFboCreateParam>& onScreenFboCreateParams);
+
+	api::Fbo createOnScreenFboWithRenderPass(uint32 swapIndex, const api::RenderPass& renderPass);
+
+
+    api::FboSet createOnScreenFboSet(types::LoadOp colorLoadOp, types::StoreOp colorStoreOp,
+                                     types::LoadOp depthLoadOp, types::StoreOp depthStoreOp,
+                                     types::LoadOp stencilLoadOp, types::StoreOp stencilStoreOp);
+
+
+    api::Fbo createOnScreenFbo(uint32 swapIndex, types::LoadOp colorLoadOp,
+                               types::StoreOp colorStoreOp, types::LoadOp depthLoadOp,
+                               types::StoreOp depthStoreOp, types::LoadOp stencilLoadOp,
+                               types::StoreOp stencilStoreOp);
+
+	api::RenderPass createRenderPass(const api::RenderPassCreateParam& renderPassDesc);
+
+	api::DescriptorPool createDescriptorPool(const api::DescriptorPoolCreateParam& createParam);
+
+	api::DescriptorSet createDescriptorSetOnDefaultPool(const api::DescriptorSetLayout& layout);
+
+	api::DescriptorSetLayout createDescriptorSetLayout(const api::DescriptorSetLayoutCreateParam& createParam);
+
+	api::PipelineLayout createPipelineLayout(const api::PipelineLayoutCreateParam& createParam);
+
+	api::CommandPool createCommandPool();
+
+	api::Fence createFence(bool createSignaled) { return api::Fence(); }
+
+	api::Semaphore createSemaphore() { return api::Semaphore(); }
+
+	uint32 getSwapChainLength()const { return 1;}
+
+	uint32 getSwapChainIndex()const { return 0; }
 
 	/*!*********************************************************************************************************************
 	\brief	return true if last bound pipeline was graphics
 	\return	bool
 	***********************************************************************************************************************/
-	bool isLastBoundPipelineGraphics()const	{ return m_renderStatesTracker.lastBoundPipe == RenderStatesTracker::PipelineGraphics; }
+	bool isLastBoundPipelineGraphics()const
+	{
+        return m_renderStatesTracker.lastBoundPipe == RenderStatesTracker::LastBoundPipeline::PipelineGraphics;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief	return true if last bound pipeline was compute
 	\return	bool
 	***********************************************************************************************************************/
-	bool isLastBoundPipelineCompute()const { return m_renderStatesTracker.lastBoundPipe == RenderStatesTracker::PipelineCompute; }
-
-	void onBind(pvr::api::impl::GraphicsPipeline_* pipeline)
+	bool isLastBoundPipelineCompute()const
 	{
-		m_renderStatesTracker.lastBoundPipe = RenderStatesTracker::PipelineGraphics;
+        return m_renderStatesTracker.lastBoundPipe == RenderStatesTracker::LastBoundPipeline::PipelineCompute;
+	}
+
+    void onBind(api::impl::GraphicsPipeline_* pipeline)
+	{
+        m_renderStatesTracker.lastBoundPipe = RenderStatesTracker::LastBoundPipeline::PipelineGraphics;
 		setBoundGraphicsPipeline(pipeline);
 	}
 
-	void onBind(pvr::api::impl::ComputePipeline_* pipeline)
+    void onBind(api::impl::ComputePipeline_* pipeline)
 	{
-		m_renderStatesTracker.lastBoundPipe = RenderStatesTracker::PipelineCompute;
+        m_renderStatesTracker.lastBoundPipe = RenderStatesTracker::LastBoundPipeline::PipelineCompute;
 		setBoundComputePipeline(pipeline);
 	}
 
 	/*!*********************************************************************************************************************
 	\brief Internal use. State tracking. Outside code calls this to notify the context that a new texture has been bound to a texture unit.
 	***********************************************************************************************************************/
-    void onBind(const api::impl::TextureView_& texture, uint16 bindIndex, const char* shaderVaribleName)
+	void onBind(const api::impl::TextureView_& texture, uint16 bindIndex)
 	{
 		if (m_renderStatesTracker.texSamplerBindings.size() <= bindIndex)
 		{
@@ -169,7 +285,7 @@ public:
 		}
 		m_renderStatesTracker.lastBoundTexBindIndex = bindIndex;
 		m_renderStatesTracker.texSamplerBindings[bindIndex].toBindTex = &texture;
-        m_renderStatesTracker.texUnits.push_back(std::pair<string, uint32>(shaderVaribleName, bindIndex));
+		//m_renderStatesTracker.texUnits.push_back(std::pair<string, uint32>(shaderVaribleName, bindIndex));
 	}
 
 	void onBind(const api::impl::Sampler_& sampler, uint16 bindIndex)
@@ -197,6 +313,7 @@ public:
 			m_renderStatesTracker.uboBufferBindings.push_back(std::make_pair(bindIndex, BufferRange(buffer, offset, range)));
 		}
 	}
+
 	void onBindSsbo(uint16 bindIndex, const api::Buffer& buffer, uint32 offset, uint32 range)
 	{
 		std::vector<std::pair<uint16, BufferRange>/**/>::iterator it =
@@ -212,6 +329,7 @@ public:
 			m_renderStatesTracker.ssboBufferBindings.push_back(std::make_pair(bindIndex, BufferRange(buffer, offset, range)));
 		}
 	}
+
 	void onBindAtomicBuffer(uint16 bindIndex, const api::Buffer& buffer, uint32 offset, uint32 range)
 	{
 		std::vector<std::pair<uint16, BufferRange>/**/>::iterator it =
@@ -234,12 +352,14 @@ public:
 		  std::find_if(m_renderStatesTracker.uboBufferBindings.begin(), m_renderStatesTracker.uboBufferBindings.end(), BufferBindingComp(bindIndex));
 		return (it != m_renderStatesTracker.uboBufferBindings.end() ? it->second : BufferRange());
 	}
+
 	BufferRange getBoundProgramBufferSsbo(uint16 bindIndex)
 	{
 		std::vector<std::pair<uint16, BufferRange>/**/>::iterator it =
 		  std::find_if(m_renderStatesTracker.ssboBufferBindings.begin(), m_renderStatesTracker.ssboBufferBindings.end(), BufferBindingComp(bindIndex));
 		return (it != m_renderStatesTracker.ssboBufferBindings.end() ? it->second : BufferRange());
 	}
+
 	BufferRange getBoundProgramBufferAtomicBuffer(uint16 bindIndex)
 	{
 		std::vector<std::pair<uint16, BufferRange>/**/>::iterator it =
@@ -251,12 +371,6 @@ public:
 	{
 		return m_renderStatesTracker.boundFbo;
 	}
-
-	/*!*********************************************************************************************************************
-	\brief  Implementation of IGraphicsContext. Return the  default renderpass.
-	\return The default renderpass
-	***********************************************************************************************************************/
-	const api::RenderPass& getDefaultRenderPass()const { return m_defaultRenderPass; }
 
 	/*!*********************************************************************************************************************
 	\brief  Implementation of IGraphicsContext. Return the  platform context that powers this graphics context.
@@ -324,8 +438,7 @@ public:
 	*******************************************************************************************************************/
 	struct RenderStatesTracker
 	{
-		enum LastBoundPipe { PipelineGraphics, PipelineCompute, PipelineNone };
-		friend class ::pvr::platform::ContextGles;
+        friend class pvr::platform::ContextGles;
 		// Stencil
 		struct DepthStencilState
 		{
@@ -334,18 +447,18 @@ public:
 			uint32 stencilWriteMask;
 			bool enableStencilTest;
 			int32 clearStencilValue;
-			types::ComparisonMode::Enum depthOp;
+			types::ComparisonMode depthOp;
 			// Front
-			types::StencilOp::Enum stencilFailOpFront;
-			types::StencilOp::Enum depthStencilPassOpFront;
-			types::StencilOp::Enum depthFailOpFront;
-			types::ComparisonMode::Enum stencilOpFront;
+			types::StencilOp stencilFailOpFront;
+			types::StencilOp depthStencilPassOpFront;
+			types::StencilOp depthFailOpFront;
+			types::ComparisonMode stencilOpFront;
 
 			// Back
-			types::StencilOp::Enum stencilFailOpBack;
-			types::StencilOp::Enum depthStencilPassOpBack;
-			types::StencilOp::Enum depthFailOpBack;
-			types::ComparisonMode::Enum stencilOpBack;
+			types::StencilOp stencilFailOpBack;
+			types::StencilOp depthStencilPassOpBack;
+			types::StencilOp depthFailOpBack;
+			types::ComparisonMode stencilOpBack;
 
 			int32 refFront, refBack;
 
@@ -353,9 +466,12 @@ public:
 
 			glm::bvec4 m_colorWriteMask;
 
-			DepthStencilState() : depthTest(false), depthWrite(true),
-				stencilWriteMask(0xFFFFFFFF), enableStencilTest(false), clearStencilValue(0),
-				depthOp(types::ComparisonMode::Less),
+            DepthStencilState() : depthTest(types::PipelineDefaults::DepthStencilStates::DepthTestEnabled),
+                depthWrite(types::PipelineDefaults::DepthStencilStates::DepthWriteEnabled),
+                stencilWriteMask(types::PipelineDefaults::DepthStencilStates::StencilWriteMask),
+                enableStencilTest(types::PipelineDefaults::DepthStencilStates::StencilTestEnabled),
+                clearStencilValue(types::PipelineDefaults::DepthStencilStates::StencilClearValue),
+				depthOp(types::ComparisonMode::DefaultDepthFunc),
 				stencilFailOpFront(types::StencilOp::DefaultStencilFailFront),
 				depthStencilPassOpFront(types::StencilOp::DefaultDepthStencilPassFront),
 				depthFailOpFront(types::StencilOp::DefaultDepthFailFront),
@@ -366,14 +482,19 @@ public:
 				depthFailOpBack(types::StencilOp::DefaultDepthFailBack),
 				stencilOpBack(types::ComparisonMode::DefaultStencilOpBack),
 
-				refFront(0), refBack(0), readMaskFront(0xff), readMaskBack(0xff), writeMaskFront(0xff), writeMaskBack(0xff)
+                refFront(types::PipelineDefaults::DepthStencilStates::StencilReference),
+                refBack(types::PipelineDefaults::DepthStencilStates::StencilReference),
+                readMaskFront(types::PipelineDefaults::DepthStencilStates::StencilReadMask),
+                readMaskBack(types::PipelineDefaults::DepthStencilStates::StencilReadMask),
+                writeMaskFront(types::PipelineDefaults::DepthStencilStates::StencilWriteMask),
+                writeMaskBack(types::PipelineDefaults::DepthStencilStates::StencilWriteMask)
 			{}
 		};
 		struct IndexBufferState
 		{
 			api::Buffer buffer;
 			uint32 offset;
-			types::IndexType::Enum indexArrayFormat;
+			types::IndexType indexArrayFormat;
 			IndexBufferState() : offset(0) {}
 		};
 
@@ -384,41 +505,69 @@ public:
 		uint32 lastBoundTexBindIndex;
 		DepthStencilState depthStencil;
 		api::Fbo boundFbo;
-		types::PrimitiveTopology::Enum primitiveTopology;
+		types::PrimitiveTopology primitiveTopology;
 		glm::bvec4 colorWriteMask;
-		types::Face::Enum cullFace;
-		types::PolygonWindingOrder::Enum polyWindingOrder;
+		types::Face cullFace;
+		types::PolygonWindingOrder polyWindingOrder;
 		ProgBufferBingingList uboBufferBindings;
 		ProgBufferBingingList ssboBufferBindings;
 		ProgBufferBingingList atomicBufferBindings;
-		types::BlendOp::Enum rgbBlendOp;
-		types::BlendOp::Enum alphaBlendOp;
-		types::BlendFactor::Enum srcRgbFactor, srcAlphaFactor, destRgbFactor, destAlphaFactor;
+		types::BlendOp rgbBlendOp;
+		types::BlendOp alphaBlendOp;
+		types::BlendFactor srcRgbFactor, srcAlphaFactor, destRgbFactor, destAlphaFactor;
 		bool enabledScissorTest;
 		bool enabledBlend;
 
 		Rectanglei viewport;
 		Rectanglei scissor;
 
-        std::vector<std::pair<string, uint32>/**/> texUnits;
+		std::vector<std::pair<string, uint32>/**/> texUnits;
 	private:
 		void releaseAll() {	*this = RenderStatesTracker();	}
 		uint32 attributesToEnableBitfield;
 		uint32 attributesEnabledBitfield;
 		uint16 attributesMaxToEnable;
 		uint16 attributesMaxEnabled;
-		LastBoundPipe lastBoundPipe;
+
+        enum class LastBoundPipeline
+        {
+            PipelineGraphics,
+            PipelineCompute,
+            PipelineNone,
+            Default = PipelineNone
+        };
+
+        LastBoundPipeline lastBoundPipe;
 	public:
-		RenderStatesTracker() : lastBoundTexBindIndex(0), colorWriteMask(true),
-			cullFace(types::Face::Back),
-			polyWindingOrder(types::PolygonWindingOrder::FrontFaceCCW),
-			rgbBlendOp(types::BlendOp::Add), alphaBlendOp(types::BlendOp::Add),
-			srcRgbFactor(types::BlendFactor::One), srcAlphaFactor(types::BlendFactor::One),
-			destRgbFactor(types::BlendFactor::Zero), destAlphaFactor(types::BlendFactor::Zero),
-			enabledScissorTest(false), enabledBlend(false), viewport(0, 0, 0, 0), scissor(0, 0, 0, 0),
-			attributesToEnableBitfield(0), attributesEnabledBitfield(0), attributesMaxToEnable(0),
-			attributesMaxEnabled(0), lastBoundPipe(PipelineNone) {}
-		~RenderStatesTracker() {}
+		RenderStatesTracker() :
+            lastBoundTexBindIndex(0),
+            colorWriteMask(types::PipelineDefaults::ColorWrite::ColorMaskR, types::PipelineDefaults::ColorWrite::ColorMaskG,
+                           types::PipelineDefaults::ColorWrite::ColorMaskB, types::PipelineDefaults::ColorWrite::ColorMaskA),
+			cullFace(types::Face::DefaultCullFace),
+			polyWindingOrder(types::PolygonWindingOrder::Default),
+            rgbBlendOp(types::BlendOp::Default),
+            alphaBlendOp(types::BlendOp::Default),
+            srcRgbFactor(types::BlendFactor::DefaultSrcRgba),
+            srcAlphaFactor(types::BlendFactor::DefaultSrcRgba),
+            destRgbFactor(types::BlendFactor::DefaultDestRgba),
+            destAlphaFactor(types::BlendFactor::DefaultDestRgba),
+            enabledScissorTest(types::PipelineDefaults::ViewportScissor::ScissorTestEnabled),
+            enabledBlend(types::PipelineDefaults::ColorBlend::BlendEnabled),
+            viewport(types::PipelineDefaults::ViewportScissor::OffsetX,
+                     types::PipelineDefaults::ViewportScissor::OffsetY,
+                     types::PipelineDefaults::ViewportScissor::Width,
+                     types::PipelineDefaults::ViewportScissor::Height),
+            scissor(types::PipelineDefaults::ViewportScissor::OffsetX,
+                    types::PipelineDefaults::ViewportScissor::OffsetY,
+                    types::PipelineDefaults::ViewportScissor::Width,
+                    types::PipelineDefaults::ViewportScissor::Height),
+            attributesToEnableBitfield(0),
+            attributesEnabledBitfield(0),
+            attributesMaxToEnable(0),
+            attributesMaxEnabled(0),
+            lastBoundPipe(LastBoundPipeline::Default) {}
+
+        ~RenderStatesTracker() {}
 	};
 	RenderStatesTracker& getCurrentRenderStates() { return m_renderStatesTracker; }
 	RenderStatesTracker const& getCurrentRenderStates()const { return m_renderStatesTracker; }
@@ -450,7 +599,7 @@ protected:
 	\param outSourceData Reference to an std::string where the source data will be read to.
 	\return Result::Success on success
 	***********************************************************************************************************************/
-	Result::Enum createShader(const Stream& stream, string& outSourceData);
+	Result createShader(const Stream& stream, string& outSourceData);
 
 	/*!*********************************************************************************************************************
 	\brief Internal use. State tracking. Notify fbo unbind.
@@ -459,7 +608,6 @@ protected:
 
 	api::CommandPool m_defaultCmdPool;
 	api::DescriptorPool m_defaultDescPool;
-	api::RenderPass m_defaultRenderPass;
 	size_t m_ContextImplementationID;
 	IPlatformContext* m_platformContext;
 	mutable std::string m_extensions;
@@ -467,8 +615,8 @@ protected:
 	std::vector<std::pair<fnBindPipeline, void*>/**/> m_pushedPipelines;
 
 private:
-	virtual void destroyObject() { release(); }
+	void destroyObject() { release(); }
 };
 }
-namespace native { struct HContext_ {}; }
 }
+//!\endcond

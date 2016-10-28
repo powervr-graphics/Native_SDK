@@ -1,15 +1,8 @@
 var searchData=
 [
-  ['getcommandpool',['getCommandPool',['../namespacepvr_1_1apiutils_1_1vulkan.html#af18f8ad6376825f7b6fddd40160e531e',1,'pvr::apiutils::vulkan']]],
-  ['getdescriptorpool',['getDescriptorPool',['../namespacepvr_1_1apiutils_1_1vulkan.html#a6d5fb3eb291e0655c998786b8628ddb0',1,'pvr::apiutils::vulkan']]],
-  ['getdevice',['getDevice',['../namespacepvr_1_1apiutils_1_1vulkan.html#a264018cff2d478d60776ae0d97f3cb5b',1,'pvr::apiutils::vulkan']]],
-  ['getgraphicsqueue',['getGraphicsQueue',['../namespacepvr_1_1apiutils_1_1vulkan.html#a6621854e30b4a1a675db553a9828e4db',1,'pvr::apiutils::vulkan']]],
   ['getmemorytypeindex',['getMemoryTypeIndex',['../namespacepvr_1_1apiutils_1_1vulkan.html#ae528113b41303b1baa71b7d9db663d07',1,'pvr::apiutils::vulkan']]],
   ['getopenglformat',['getOpenGLFormat',['../namespacepvr_1_1utils.html#a581c3ffd458926b76ce9188c18e78abc',1,'pvr::utils']]],
   ['getopenglstorageformat',['getOpenGLStorageFormat',['../namespacepvr_1_1utils.html#ade8dbaf76ac43ae68dbfd9ffba474ed6',1,'pvr::utils']]],
-  ['getphysicaldevice',['getPhysicalDevice',['../namespacepvr_1_1apiutils_1_1vulkan.html#a41065002034bfbea9860740999edcc57',1,'pvr::apiutils::vulkan']]],
-  ['gettextureuploadcmdbuffer',['getTextureUploadCmdBuffer',['../namespacepvr_1_1apiutils_1_1vulkan_1_1detail.html#a62698e448a64f7c0f126801bd66d57e5',1,'pvr::apiutils::vulkan::detail']]],
-  ['gettextureuploadfence',['getTextureUploadFence',['../namespacepvr_1_1apiutils_1_1vulkan_1_1detail.html#a702f1e34960090e4db1a338819ab2c5b',1,'pvr::apiutils::vulkan::detail']]],
   ['getvkbufferusage',['getVkBufferUsage',['../namespacepvr_1_1api_utils_1_1vulkan.html#a8d3d68b4fae148081527f641f3cb0631',1,'pvr::apiUtils::vulkan']]],
   ['glboolean',['GLboolean',['../_api_gles2_8h.html#a62d34cd37f8e40e37b1757925ec4d928',1,'GLboolean(PVR_APIENTRY *PROC_ES2_glIsBuffer)(GLuint buffer):&#160;ApiGles2.h'],['../_api_gles3_8h.html#aaddc005d8c08cd92efa451274576b6de',1,'GLboolean(PVR_APIENTRY *PROC_ES3_glIsQuery)(GLuint id):&#160;ApiGles3.h'],['../_api_gles31_8h.html#a1201e8c4a287e45a7f14ad6436b3492a',1,'GLboolean(PVR_APIENTRY *PROC_ES31_glIsProgramPipeline)(GLuint pipeline):&#160;ApiGles31.h']]],
   ['glenum',['GLenum',['../_api_gles2_8h.html#a8c9fed4ef34d7b649243e47ab734596e',1,'GLenum(PVR_APIENTRY *PROC_ES2_glCheckFramebufferStatus)(GLenum target):&#160;ApiGles2.h'],['../_api_gles3_8h.html#add822650c9007f81c71fd30bfc9fc3b9',1,'GLenum(PVR_APIENTRY *PROC_ES3_glClientWaitSync)(GLsync sync:&#160;ApiGles3.h']]],

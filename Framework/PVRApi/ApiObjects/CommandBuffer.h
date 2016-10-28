@@ -58,13 +58,7 @@ public:
 	\brief	Bind a graphics pipeline.
 	\param	pipeline The GraphicsPipeline to bind.
 	*******************************************************************************************************************/
-	void bindPipeline(GraphicsPipeline& pipeline);
-
-	/*!****************************************************************************************************************
-	\brief	Bind a parentable graphics pipeline
-	\param	pipeline The ParentableGraphicsPipeline to bind
-	*******************************************************************************************************************/
-	void bindPipeline(ParentableGraphicsPipeline& pipeline);
+	void bindPipeline(GraphicsPipeline pipeline);
 
 	/*!****************************************************************************************************************
 	\brief	Bind a compute pipeline
@@ -74,54 +68,84 @@ public:
 
 	/*!****************************************************************************************************************
 	\brief	Bind a single DescriptorSet to the Graphics Pipeline binding point
-	\param	bindingPoint The index of the descriptor set to bind to
 	\param	pipelineLayout The pipelineLayout that the GraphicsPipeline will have
 	\param	index The index to which to bind the descriptor set
 	\param	set The descriptorSet to bind to the binding point bindingPoint
-	\param	dynamicOffset The Offset that will be used when binding items of this descriptor set
+	\param	dynamicOffsets A c-style array of unsigned integers, each of which is consecutively applied as a Dynamic
+	Offset to a Dynamic buffer (uniform/storage) of this descriptor set, in order.
+	\param	numDynamicOffsets The number of dynamic offsets in \p dynamicOffsets. Must exactly much the number of Dynamic
+	        objects in the \p set.
 	*******************************************************************************************************************/
-	void bindDescriptorSet(const api::PipelineLayout& pipelineLayout,
-	                       uint32 index, const DescriptorSet& set, const uint32* dynamicOffsets = NULL, uint32 numDynamicOffset = 0);
+	void bindDescriptorSet(const api::PipelineLayout& pipelineLayout, uint32 index, const DescriptorSet& set,
+	                       const uint32* dynamicOffsets = NULL, uint32 numDynamicOffsets = 0);
 
 	/*!****************************************************************************************************************
 	\brief	Bind a single DescriptorSet to the Compute Pipeline binding point
-	\param	bindingPoint The index of the descriptor set to bind to
 	\param	pipelineLayout The pipelineLayout that the ComputePipeline will have
 	\param	index The index to which to bind the descriptor set
 	\param	set The descriptorSet to bind to the binding point bindingPoint
-	\param	dynamicOffset The Offset that will be used when binding items of this descriptor set
+	\param	dynamicOffsets A c-style array of unsigned integers, each of which is consecutively applied as a Dynamic
+	Offset to a Dynamic buffer (uniform/storage) of this descriptor set, in order.
+	\param	numDynamicOffsets The number of dynamic offsets in \p dynamicOffsets. Must exactly much the number of Dynamic
+	objects in the \p set.
 	*******************************************************************************************************************/
-	void bindDescriptorSetCompute(const api::PipelineLayout& pipelineLayout,
-	                              uint32 index, const DescriptorSet& set, const uint32* dynamicOffsets = NULL, uint32 numDynamicOffset = 0);
+	void bindDescriptorSetCompute(const api::PipelineLayout& pipelineLayout, uint32 index, const DescriptorSet& set,
+	                              const uint32* dynamicOffsets = NULL, uint32 numDynamicOffsets = 0);
 
 	/*!****************************************************************************************************************
 	\brief	Bind multiple DescriptorSets
 	\param	bindingPoint The index where the first descriptor set will bind to. The rest will be bound successively.
 	\param	pipelineLayout The pipelineLayout that the GraphicsPipeline will have
-	\param	sets The array of descriptorSets to bind to the binding points
+	\param	firstSet The first index to start binding descriptor sets to.
+	\param	sets The array of descriptorSets. The first item in the array will be bound to binding point \p firstSet and 
+			each one after to the next binding point
 	\param	dynamicOffsets An array of Offsets that will be used when binding items of this descriptor set respectively
-	\param	count The number of descriptor sets in the array
+	\param	numDescSets The number of descriptor sets in the array
+	\param	dynamicOffsets A c-style array of unsigned integers, each of which is consecutively applied as a Dynamic
+	Offset to a Dynamic buffer (uniform/storage) of this descriptor set, in order.
+	\param	numDynamicOffsets The number of dynamic offsets in \p dynamicOffsets. Must exactly much the number of Dynamic
+	objects in the \p set.
 	*******************************************************************************************************************/
-	void bindDescriptorSets(types::PipelineBindPoint::Enum bindingPoint, const api::PipelineLayout& pipelineLayout,
-	                        uint32 firstSet, const DescriptorSet* sets, uint32 numDescSets, const uint32* dynamicOffsets = NULL, uint32 numDynamicOffset = 0);
+	void bindDescriptorSets(types::PipelineBindPoint bindingPoint, const api::PipelineLayout& pipelineLayout,
+	                        uint32 firstSet, const DescriptorSet* sets, uint32 numDescSets, const uint32* dynamicOffsets = NULL,
+	                        uint32 numDynamicOffsets = 0);
 
 	/*!****************************************************************************************************************
 	\brief	Clear multiple attachments with separate clear colors and clear rectangle for each.
-	\param	attachmentCount Number of attachments to clear
+	\param	attachmentIndices Attachments indices to clear
 	\param	clearColors An array of colors to clear to, each corresponding to an attachment
+	\param	attachmentCount Number of attachments to clear
 	\param  rects An array of rectangles, each corresponding to the clear area of an attachment
+	\param  baseArrayLayers An array of base array layers corresponding to the first layer to be cleared for the attachment
+	\param  layerCounts An array of layer counts corresponding to number of layers to clear for the attachment
+	\param  rectCount The number of rectangles to clear (the number of rectangles in \p rects)
 	*******************************************************************************************************************/
-	void clearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 const* clearColors, const pvr::Rectanglei* rects);
+	void clearColorAttachment(pvr::uint32 const* attachmentIndices, glm::vec4 const* clearColors, pvr::uint32 attachmentCount,
+	                          const pvr::Rectanglei* rects, const pvr::uint32* baseArrayLayers, const pvr::uint32* layerCounts, pvr::uint32 rectCount);
 
 	/*!****************************************************************************************************************
-	\brief	Clear multiple attachment with a single clear color and a single rectangle
-	\param	attachmentCount The number of attachments
+	\param	attachmentIndex The index for the attachment to clear
 	\param	clearColor The clear area
 	\param	rect The rectangle to clear
+	\param  baseArrayLayer The base array layer corresponding to the first layer to be cleared for the attachment
+	\param  layerCount The number of layers to clear for the attachment
 	*******************************************************************************************************************/
-	void clearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 clearColor, const pvr::Rectanglei rect);
+	void clearColorAttachment(pvr::uint32 attachmentIndex, glm::vec4 clearColor, const pvr::Rectanglei rect,
+	                          const pvr::uint32 baseArrayLayer = 0u, const pvr::uint32 layerCount = 1u);
 
 	/*!****************************************************************************************************************
+	\brief	Clear all attachment for a single fbo with a single clear color.
+			NOTE: This clear operation must be called inside the render pass
+	\param	fbo The fbo to clear attachments
+	\param	clearColor The clear area
+	*******************************************************************************************************************/
+	void clearColorAttachment(pvr::api::Fbo fbo, glm::vec4 clearColor);
+
+	/*!****************************************************************************************************************
+	\brief	Clear the depth attachment of an fbo.
+			This clear operation must be called inside the render pass
+	\brief	Clear the depth attachment of an fbo.
+			NOTE: This clear operation must be called inside the render pass
 	\brief	Clear the depth attachment of an fbo
 	\param	clearRect The clear area
 	\param	depth The clear value
@@ -129,7 +153,8 @@ public:
 	void clearDepthAttachment(const pvr::Rectanglei& clearRect, float32 depth = 1.f);
 
 	/*!****************************************************************************************************************
-	\brief	Clear the stencil attachment of an fbo
+	\brief	Clear the stencil attachment of an fbo.
+			NOTE: This clear operation must be called inside the render pass
 	\param	clearRect The clear area
 	\param	stencil The clear value
 	*******************************************************************************************************************/
@@ -142,6 +167,134 @@ public:
 	\param	stencil The stencil clear value
 	*******************************************************************************************************************/
 	void clearDepthStencilAttachment(const pvr::Rectanglei& clearRect, float32 depth = 1.f, pvr::int32 stencil = 0);
+
+	/*!****************************************************************************************************************
+	\brief	Clears the specified color image using the clear color specified.
+			This clear operation must be called outside the render pass
+	\param	image the image to clear
+	\param	layout The layout of the image
+	\param	clearColor The clear color to use for the clear
+	\param	baseMipLevel base mip levels
+	\param	levelCount level counts
+	\param	baseArrayLayer base array layers
+	\param	layerCount number of layers to clear
+	*******************************************************************************************************************/
+	void clearColorImage(pvr::api::TextureView& image, glm::vec4 clearColor, const pvr::uint32 baseMipLevel = 0u,
+	                     const pvr::uint32 levelCount = 1u, const pvr::uint32 baseArrayLayer = 0u,
+	                     const pvr::uint32 layerCount = 1u, pvr::types::ImageLayout layout = pvr::types::ImageLayout::General);
+
+	/*!****************************************************************************************************************
+	\brief	Clears rangeCount sub resource ranges of the specified color image using the clear color specified.
+			This clear operation must be called outside the render pass
+	\param	image the image to clear
+	\param	layout The layout of the image
+	\param	clearColor The clear color to use for the clear
+	\param	baseMipLevel rangeCount base mip levels
+	\param	levelCount rangeCount level counts
+	\param	baseArrayLayers rangeCount base array layers
+	\param	layerCount rangeCount number of layers to clear
+	\param	rangeCount The number of sub resource ranges to clear
+	*******************************************************************************************************************/
+	void clearColorImage(pvr::api::TextureView& image, glm::vec4 clearColor, const pvr::uint32* baseMipLevel,
+	                     const pvr::uint32* levelCount, const pvr::uint32* baseArrayLayers, const pvr::uint32* layerCount,
+	                     pvr::uint32 rangeCount, pvr::types::ImageLayout layout = pvr::types::ImageLayout::General);
+
+	/*!****************************************************************************************************************
+	\brief	Clears the specified depth image using the clear depth color specified.
+			This clear operation must be called outside the render pass
+	\param	image the image to clear
+	\param	layout The layout of the image
+	\param	clearDepth The clear color to use for the clear
+	\param	baseMipLevel base mip levels
+	\param	levelCount level counts
+	\param	baseArrayLayer base array layer
+	\param	layerCount number of layers to clear
+	*******************************************************************************************************************/
+	void clearDepthImage(pvr::api::TextureView& image, float clearDepth, const pvr::uint32 baseMipLevel = 0u,
+	                     const pvr::uint32 levelCount = 1u, const pvr::uint32 baseArrayLayer = 0u,
+	                     const pvr::uint32 layerCount = 1u, pvr::types::ImageLayout layout = pvr::types::ImageLayout::General);
+
+	/*!****************************************************************************************************************
+	\brief	Clears rangeCount sub resource ranges of the specified depth image using the clear depth color specified.
+			This clear operation must be called outside the render pass
+	\param	image the image to clear
+	\param	layout The layout of the image
+	\param	clearDepth The clear color to use for the clear
+	\param	baseMipLevel rangeCount base mip levels
+	\param	levelCount rangeCount level counts
+	\param	baseArrayLayers rangeCount base array layers
+	\param	layerCount rangeCount number of layers to clear
+	\param	rangeCount The number of sub resource ranges to clear
+	*******************************************************************************************************************/
+	void clearDepthImage(pvr::api::TextureView& image, float clearDepth, const pvr::uint32* baseMipLevel, const pvr::uint32* levelCount,
+	                     const pvr::uint32* baseArrayLayers, const pvr::uint32* layerCount, pvr::uint32 rangeCount,
+	                     pvr::types::ImageLayout layout = pvr::types::ImageLayout::General);
+
+	/*!****************************************************************************************************************
+	\brief	Clears the specified stencil image using the clear stencil color specified.
+			This clear operation must be called outside the render pass
+	\param	image the image to clear
+	\param	layout The layout of the image
+	\param	clearStencil The clear color to use for the clear
+	\param	baseMipLevel base mip levels
+	\param	levelCount level counts
+	\param	baseArrayLayers base array layers
+	\param	layerCount number of layers to clear
+	*******************************************************************************************************************/
+	void clearStencilImage(pvr::api::TextureView& image, pvr::uint32 clearStencil, const pvr::uint32 baseMipLevel = 0u,
+	                       const pvr::uint32 levelCount = 1u, const pvr::uint32 baseArrayLayers = 0u, const pvr::uint32 layerCount = 1u,
+	                       pvr::types::ImageLayout layout = pvr::types::ImageLayout::General);
+
+	/*!****************************************************************************************************************
+	\brief	Clears rangeCount sub resource ranges of the specified stencil image using the clear stencil color specified.
+			This clear operation must be called outside the render pass
+	\param	image the image to clear
+	\param	layout The layout of the image
+	\param	clearStencil The clear color to use for the clear
+	\param	baseMipLevel rangeCount base mip levels
+	\param	levelCount rangeCount level counts
+	\param	baseArrayLayers rangeCount base array layers
+	\param	layerCount rangeCount number of layers to clear
+	\param	rangeCount The number of sub resource ranges to clear
+	*******************************************************************************************************************/
+	void clearStencilImage(pvr::api::TextureView& image, pvr::uint32 clearStencil, const pvr::uint32* baseMipLevel,
+	                       const pvr::uint32* levelCount, const pvr::uint32* baseArrayLayers, const pvr::uint32* layerCount,
+	                       pvr::uint32 rangeCount, pvr::types::ImageLayout layout = pvr::types::ImageLayout::General);
+
+	/*!****************************************************************************************************************
+	\brief	Clears the specified depth stencil image using the clear depth and stencil color specified.
+			This clear operation must be called outside the render pass
+	\param	image the image to clear
+	\param	layout The layout of the image
+	\param	clearDepth The clear depth color to use for the clear
+	\param	clearStencil The clear color to use for the clear
+	\param	baseMipLevel base mip levels
+	\param	levelCount level counts
+	\param	baseArrayLayers base array layers
+	\param	layerCount number of layers to clear
+	*******************************************************************************************************************/
+	void clearDepthStencilImage(pvr::api::TextureView& image, float clearDepth, pvr::uint32 clearStencil,
+	                            const pvr::uint32 baseMipLevel = 0u, const pvr::uint32 levelCount = 1u,
+	                            const pvr::uint32 baseArrayLayers = 0u, const pvr::uint32 layerCount = 1u,
+	                            pvr::types::ImageLayout layout = pvr::types::ImageLayout::General);
+
+	/*!****************************************************************************************************************
+	\brief	Clears rangeCount sub resource ranges of the specified depth stencil image using the clear depth and stencil color specified.
+			This clear operation must be called outside the render pass
+	\param	image the image to clear
+	\param	layout The layout of the image
+	\param	clearDepth The clear depth color to use for the clear
+	\param	clearStencil The clear color to use for the clear
+	\param	baseMipLevel rangeCount base mip levels
+	\param	levelCount rangeCount level counts
+	\param	baseArrayLayers rangeCount base array layers
+	\param	layerCount rangeCount number of layers to clear
+	\param	rangeCount The number of sub resource ranges to clear
+	*******************************************************************************************************************/
+	void clearDepthStencilImage(pvr::api::TextureView& image, float clearDepth, pvr::uint32 clearStencil,
+	                            const pvr::uint32* baseMipLevel, const pvr::uint32* levelCount, const pvr::uint32* baseArrayLayers,
+	                            const pvr::uint32* layerCount, pvr::uint32 rangeCount,
+	                            pvr::types::ImageLayout layout = pvr::types::ImageLayout::General);
 
 	/*!****************************************************************************************************************
 	\brief	Draw command. Use the current state in the command buffer (pipelines, buffers, descriptor sets) to execute
@@ -164,6 +317,17 @@ public:
 	\param	instanceCount The number of instances to draw
 	*******************************************************************************************************************/
 	void drawArrays(uint32 firstVertex, uint32 vertexCount, uint32 firstInstance = 0, uint32 instanceCount = 1);
+
+	/*!*****************************************************************************************************************
+	\brief drawArraysIndirect
+	\param buffer Buffer containing draw parameters. The parameters of each draw must be encoded in an array of
+		   DrawIndirectCmd structures
+	\param offset Offset in bytes in the buffer where draw parameters begin
+	\param drawCount Number of draws to execute, can be zero. If the the drawCount is greater than 1 then the
+		   stride must be multiple of 4.
+	\param stride Stride in byte between sets of draw parameters
+	********************************************************************************************************************/
+	void drawArraysIndirect(api::Buffer& buffer, uint32 offset, uint32 drawCount, uint32 stride);
 
 	/*!****************************************************************************************************************
 	\brief	Indirect Draw command. Use buffer to obtain the draw call parameters.
@@ -206,7 +370,7 @@ public:
 	\param	offset The offset into the Index buffer to bind
 	\param	indexType the type of indices the buffer contains
 	*******************************************************************************************************************/
-	void bindIndexBuffer(const api::Buffer& buffer, uint32 offset, types::IndexType::Enum indexType);
+	void bindIndexBuffer(const api::Buffer& buffer, uint32 offset, types::IndexType indexType);
 
 	/*!****************************************************************************************************************
 	\brief	Set the viewport rectangle
@@ -232,27 +396,35 @@ public:
 	\param	face The face/faces for which to set the stencil mask
 	\param	compareMask A uint32 which will mask both the values and the reference before stencil comparisons
 	*******************************************************************************************************************/
-	void setStencilCompareMask(types::StencilFace::Enum face, pvr::uint32 compareMask);
+	void setStencilCompareMask(types::StencilFace face, pvr::uint32 compareMask);
 
 	/*!****************************************************************************************************************
 	\brief	Set the stencil write mask
 	\param	face The face/faces for which to set the stencil write mask
 	\param	writeMask A uint32 which will mask the values when writing the stencil
 	*******************************************************************************************************************/
-	void setStencilWriteMask(types::StencilFace::Enum face, pvr::uint32 writeMask);
+	void setStencilWriteMask(types::StencilFace face, pvr::uint32 writeMask);
 
 	/*!****************************************************************************************************************
 	\brief	Set stencil reference value
 	\param	face The face/faces for which to set the stencil reference value
 	\param	ref The stencil reference value
 	*******************************************************************************************************************/
-	void setStencilReference(types::StencilFace::Enum face, pvr::uint32 ref);
+	void setStencilReference(types::StencilFace face, pvr::uint32 ref);
 
-	void setDepthBias(pvr::float32 depthBias, pvr::float32 depthBiasClamp, pvr::float32 slopeScaledDepthBias);
+	/*!****************************************************************************************************************
+	\brief	This is a dynamic command which controll the offset of depth values of all fragments generated by the rasterization of a polygon.
+			NOTE: If depthBiasEnable is set to false in pipelineCreation::RasterStateCreateParam then no depth bias
+			is applied and the fragment's depth values are unchanged.
+	\param	depthBiasConstantFactor Scalar factor controlling the constant depth value added to each fragment.
+	\param	depthBiasClamp  Maximum or minimum depth bias of a fragment
+	\param	depthBiasSlopeFactor Scalar factor applied to a fragment's slope in depth bias calculations
+	*******************************************************************************************************************/
+	void setDepthBias(pvr::float32 depthBiasConstantFactor, pvr::float32 depthBiasClamp, pvr::float32 depthBiasSlopeFactor);
 
 	/*!****************************************************************************************************************
 	\brief	Set blend constants for blend operation using constant colors
-	\param	rgba Red blend constant
+	\param	rgba Red Green Blue Alpha blend constant
 	*******************************************************************************************************************/
 	void setBlendConstants(glm::vec4 rgba);
 
@@ -263,7 +435,46 @@ public:
 	void setLineWidth(float32 lineWidth);
 
 	/*!****************************************************************************************************************
-	\brief	Draw indirect.
+	\brief	Copy buffer
+	\param src Source buffer to copy from
+	\param dest Destination buffer to copy in to
+	\param srcOffset Source buffer offset
+	\param destOffset Destination buffer offset
+	\param sizeInBytes Data size in bytes
+	*******************************************************************************************************************/
+	void copyBuffer(pvr::api::Buffer src, pvr::api::Buffer dest, pvr::uint32 srcOffset, pvr::uint32 destOffset, pvr::uint32 sizeInBytes);
+
+	/*!****************************************************************************************************************
+	\brief	Blit Image
+	\param src Source image to blit from
+	\param dest Destination image to blit in to
+	\param srcLayout layout of the source image subresources for the blit
+	\param dstLayout Layout of the destination image subresources for the blit
+	\param regions An array of regions to blit
+	\param numRegions Number of regions
+	\param filter Sampler Filter to apply if the blits require scaling
+	*******************************************************************************************************************/
+	void blitImage(api::TextureStore& src, api::TextureStore& dest, types::ImageLayout srcLayout, types::ImageLayout dstLayout,
+	               types::ImageBlitRange* regions, uint32 numRegions, types::SamplerFilter filter);
+
+	/*!****************************************************************************************************************
+	\brief Copy image to a buffer
+	\param srcImage Source image to copy from
+	\param srcImageLayout Layout of the source image subresources for the copy
+	\param dstBuffer Buffer to copy into
+	\param regions An array of regions to copy
+	\param numRegions Number of regions in the array
+
+	*******************************************************************************************************************/
+	void copyImageToBuffer(api::TextureStore& srcImage, types::ImageLayout srcImageLayout,
+	                       api::Buffer& dstBuffer, types::BufferImageCopy* regions, uint32 numRegions);
+
+	/*!****************************************************************************************************************
+	\brief	This draw command behaves similarly to drawArray except that the parameters are read by the device from a buffer during execution.
+	\param buffer Buffer which contains the parameters.
+	\param offset Offset in to the buffer where parameters begin
+	\param count Number of draws to execute, and can be zero
+	\param stride Byte stride between successive sets of draw parameters
 	*******************************************************************************************************************/
 	void drawIndirect(Buffer& buffer, pvr::uint32 offset, pvr::uint32 count, pvr::uint32 stride);
 
@@ -288,8 +499,6 @@ public:
 			is limited. See setUniformPtr.
 	*******************************************************************************************************************/
 	template<typename _type> void setUniform(int32 location, const _type& val);
-
-
 
 	/*!****************************************************************************************************************
 	\brief	This is the function of choice for updating uniforms (if supported by the underlying API). This function
@@ -327,12 +536,13 @@ public:
 	\brief	Add a memory barrier to the command stream, forcing preceeding commands to be written before succeeding
 	commands are executed.
 	*******************************************************************************************************************/
-	void pipelineBarrier(types::PipelineStageFlags::Bits srcStage, types::PipelineStageFlags::Bits dstStage, const MemoryBarrierSet& barriers, bool dependencyByRegion = true);
+	void pipelineBarrier(types::PipelineStageFlags srcStage, types::PipelineStageFlags dstStage,
+	                     const MemoryBarrierSet& barriers, bool dependencyByRegion = true);
 
-	void waitForEvent(const Event& evt, types::PipelineStageFlags::Bits srcStage, types::PipelineStageFlags::Bits dstStage, const MemoryBarrierSet& barriers);
-	void waitForEvents(const EventSet& evts, types::PipelineStageFlags::Bits srcStage, types::PipelineStageFlags::Bits dstStage, const MemoryBarrierSet& barriers);
-	void setEvent(Event& evt, types::PipelineStageFlags::Bits pipelineFlags = types::PipelineStageFlags::AllCommands);
-	void resetEvent(Event& evt, types::PipelineStageFlags::Bits pipelineFlags = types::PipelineStageFlags::AllCommands);
+	void waitForEvent(const Event& evt, types::PipelineStageFlags srcStage, types::PipelineStageFlags dstStage, const MemoryBarrierSet& barriers);
+	void waitForEvents(const EventSet& evts, types::PipelineStageFlags srcStage, types::PipelineStageFlags dstStage, const MemoryBarrierSet& barriers);
+	void setEvent(Event& evt, types::PipelineStageFlags pipelineFlags = types::PipelineStageFlags::AllCommands);
+	void resetEvent(Event& evt, types::PipelineStageFlags pipelineFlags = types::PipelineStageFlags::AllCommands);
 
 	/*!*********************************************************************************************************************
 	\brief Clear the command queue. It is invalid to clear the command buffer while it is being recorded.
@@ -364,8 +574,14 @@ SET_UNIFORM_DECLARATION(glm::vec4);
 SET_UNIFORM_DECLARATION(glm::ivec4);
 SET_UNIFORM_DECLARATION(glm::uvec4);
 SET_UNIFORM_DECLARATION(glm::mat2);
+SET_UNIFORM_DECLARATION(glm::mat2x3);
+SET_UNIFORM_DECLARATION(glm::mat2x4);
+SET_UNIFORM_DECLARATION(glm::mat3x2);
 SET_UNIFORM_DECLARATION(glm::mat3);
-SET_UNIFORM_DECLARATION(glm::mat4);
+SET_UNIFORM_DECLARATION(glm::mat3x4);
+SET_UNIFORM_DECLARATION(glm::mat4x2);
+SET_UNIFORM_DECLARATION(glm::mat4x3);
+SET_UNIFORM_DECLARATION(glm::mat4x4);
 
 
 /*!*********************************************************************************************************************
@@ -431,7 +647,7 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Submit this command buffer to the GPU
 	***********************************************************************************************************************/
-	void submit(Semaphore& waitSemaphore, Semaphore& signalSemaphore, const Fence& fence = Fence());
+	void submit(const Semaphore& waitSemaphore, const Semaphore& signalSemaphore, const Fence& fence = Fence());
 
 	/*!*********************************************************************************************************************
 	\brief Submit this command buffer to the GPU
@@ -459,16 +675,27 @@ public:
 	void submit();
 
 	/*!*********************************************************************************************************************
+	\brief Submit this command buffer to the GPU
+	***********************************************************************************************************************/
+	void submitEndOfFrame(Semaphore& waitSemaphore);
+
+	/*!*********************************************************************************************************************
+	\brief Submit this command buffer to the GPU
+	***********************************************************************************************************************/
+	void submitStartOfFrame(Semaphore& signalSemaphore, const Fence& fence = Fence());
+
+	/*!*********************************************************************************************************************
 	\brief Record commands from the secondary command buffer.
 	\param secondaryCmdBuffer Record all commands from a secondary command buffer
 	***********************************************************************************************************************/
 	void enqueueSecondaryCmds(SecondaryCommandBuffer& secondaryCmdBuffer);
 
 	/*!*********************************************************************************************************************
-	\brief Record commands from an  secondary command buffer
-	\param secondaryCmdBuffer Record all commands from a secondary command buffer
+	\brief Record commands from an array of secondary command buffer
+	\param secondaryCmdBuffers A c-style array of SecondaryCommandBuffers
+	\param numCmdBuffers The number of SecondaryCommandBuffers in secondaryCmdBuffers
 	***********************************************************************************************************************/
-	void enqueueSecondaryCmds(SecondaryCommandBuffer* secondaryCmdBuffer, uint32 numCmdBuffers);
+	void enqueueSecondaryCmds(SecondaryCommandBuffer* secondaryCmdBuffers, uint32 numCmdBuffers);
 
 	/*!*********************************************************************************************************************
 	\brief Record commands from an  secondary command buffer. Multiple enqueueing mode.
@@ -481,7 +708,7 @@ public:
 
 	/*!*********************************************************************************************************************
 	\brief Collect commands for the multiple enqueueing mode. Must be called after enqueueSecondaryCmds_BeginMultiple.
-	\param secondaryCmdBuffer An array of secondaryCmdBuffers
+	\param secondaryCmdBuffers A c-style array of secondaryCmdBuffer
 	\param numCmdBuffers The number of command buffers
 	***********************************************************************************************************************/
 	void enqueueSecondaryCmds_EnqueueMultiple(SecondaryCommandBuffer* secondaryCmdBuffers, uint32 numCmdBuffers);
@@ -496,15 +723,127 @@ public:
 	\brief Begin a RenderPass, i.e. binding an FBO and preparing to draw into it. Executes the LoadOp.
 	\param fbo The FramebufferObject to draw to. All draw commands will write into this FBO.
 	\param renderArea The area of the FBO to write to
+	\param inlineFirstSubpass Set to 'true' if the commands of the first subpass will be provided Inline. Set to 'false' if
+	the commands of the first subpass will be submitted through a SecondaryCommandBuffer
 	\param clearColor If the Color attachment LoadOp is Clear, the color to clear to
 	\param clearDepth If the Depth attachment LoadOp is Clear, the depth value to clear to
 	\param clearStencil If the Stencil attachment LoadOp is Clear, the stencil value to clear to
 	***********************************************************************************************************************/
-	void beginRenderPass(api::Fbo& fbo, const Rectanglei& renderArea, bool inlineFirstSubpass, const glm::vec4& clearColor
-	                     = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), float32 clearDepth = 1.f, uint32 clearStencil = 0);
+	void beginRenderPass(
+	  api::Fbo& fbo, const Rectanglei& renderArea, bool inlineFirstSubpass,
+	  const glm::vec4& clearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+	  float32 clearDepth = types::PipelineDefaults::DepthStencilStates::DepthClearValue,
+	  uint32 clearStencil = types::PipelineDefaults::DepthStencilStates::StencilClearValue);
 
-	void beginRenderPass(api::Fbo& fbo, const Rectanglei& renderArea, bool inlineFirstSubpass, const glm::vec4* clearColor
-	                     , uint32 numClearColor, float32 clearDepth = 1.f, uint32 clearStencil = 0);
+	/*!*********************************************************************************************************************
+	\brief Begin a RenderPass, i.e. binding an FBO and preparing to draw into it. Executes the LoadOp.
+	\param fbo The FramebufferObject to draw to. All draw commands will write into this FBO.
+	\param renderArea The area of the FBO to write to
+	\param inlineFirstSubpass Set to 'true' if the commands of the first subpass will be provided Inline. Set to 'false' if
+	the commands of the first subpass will be submitted through a SecondaryCommandBuffer
+	\param clearColors If the Color attachment LoadOp is Clear, the color to clear to each attachment
+	\param numClearColors Number of colour attachments
+	\param clearDepth If the Depth attachment LoadOp is Clear, the depth value to clear to
+	\param clearStencil If the Stencil attachment LoadOp is Clear, the stencil value to clear to
+	***********************************************************************************************************************/
+	void beginRenderPass(
+	  api::Fbo& fbo, const Rectanglei& renderArea, bool inlineFirstSubpass, const glm::vec4* clearColors,
+	  uint32 numClearColors, float32 clearDepth = types::PipelineDefaults::DepthStencilStates::DepthClearValue,
+	  uint32 clearStencil = types::PipelineDefaults::DepthStencilStates::StencilClearValue);
+
+	/*!
+	   \brief Begin a renderPass i.e. binding an FBO and preparing to draw into it. Executes the LoadOp.
+	   \param fbo The FramebufferObject to draw to. All draw commands will write into this FBO.
+	   \param inlineFirstSubpass Begin the first subpass commands inline in this commandbuffer if true.
+	   \param clearColor If the Color attachment LoadOp is Clear, the color to clear to each attachment
+	   \param clearDepth  If the Depth attachment LoadOp is Clear, the depth value to clear to
+	   \param clearStencil If the Stencil attachment LoadOp is Clear, the stencil value to clear to
+	 */
+	void beginRenderPass(
+	  api::Fbo& fbo, bool inlineFirstSubpass,
+	  const glm::vec4& clearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+	  float32 clearDepth = types::PipelineDefaults::DepthStencilStates::DepthClearValue,
+	  uint32 clearStencil = types::PipelineDefaults::DepthStencilStates::StencilClearValue);
+
+	/*!
+	   \brief Begin a renderPass i.e. binding an FBO and preparing to draw into it. Executes the LoadOp.
+	   \param fbo The FramebufferObject to draw to. All draw commands will write into this FBO.
+	   \param inlineFirstSubpass Begin the first subpass commands inline in this commandbuffer if true.
+	   \param clearColor If the Color attachment LoadOp is Clear, the color to clear to each attachment
+	   \param numClearColor Number of clear colors. The colors are one to one mapped with the fbo attachments
+	   \param clearDepth  f the Depth attachment LoadOp is Clear, the depth value to clear to
+	   \param clearStencil If the Stencil attachment LoadOp is Clear, the stencil value to clear to
+	 */
+	void beginRenderPass(
+	  api::Fbo& fbo, bool inlineFirstSubpass, const glm::vec4* clearColor,
+	  uint32 numClearColor,
+	  float32 clearDepth = types::PipelineDefaults::DepthStencilStates::DepthClearValue,
+	  uint32 clearStencil = types::PipelineDefaults::DepthStencilStates::StencilClearValue);
+
+
+	/*!*
+	\brief beginRenderPass
+	\param fbo The FramebufferObject to draw to. All draw commands will write into this FBO.
+	\param renderPass The render pass object. Renderpass must be compatible with the one the fbo created with
+	\param renderArea The area of the FBO to write to
+	\param inlineFirstSubpass True if the first supass commands will be in this commandbuffer, false
+		   if the commands will be in the secondary commandbuffer
+	\param clearColor Color initial clear values. Takes effect only if the renderpass's color load op is clear
+	\param clearDepth Depth intial clear value. Takes effect only if the renderpass's depth load op is clear
+	\param clearStencil Stencil intial clear value. Takes effect only if the renderpass's stencil load op is clear
+	 */
+	void beginRenderPass(
+	  api::Fbo& fbo, const RenderPass& renderPass, const Rectanglei& renderArea,
+	  bool inlineFirstSubpass, const glm::vec4& clearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+	  float32 clearDepth = types::PipelineDefaults::DepthStencilStates::DepthClearValue,
+	  uint32 clearStencil = types::PipelineDefaults::DepthStencilStates::StencilClearValue);
+
+	/*!*
+	\brief beginRenderPass
+	\param fbo
+	\param renderPass
+	\param renderArea
+	\param inlineFirstSubpass
+	\param clearColors
+	\param numClearColors
+	\param clearDepth
+	\param clearStencil
+	 */
+	void beginRenderPass(
+	  api::Fbo& fbo, const api::RenderPass& renderPass, const Rectanglei& renderArea,
+	  bool inlineFirstSubpass, const glm::vec4* clearColors, uint32 numClearColors,
+	  float32 clearDepth = types::PipelineDefaults::DepthStencilStates::DepthClearValue,
+	  uint32 clearStencil = types::PipelineDefaults::DepthStencilStates::StencilClearValue);
+
+	/*!*
+	\brief beginRenderPass
+	\param fbo
+	\param renderPass
+	\param inlineFirstSubpass
+	\param clearColor
+	\param clearDepth
+	\param clearStencil
+	 */
+	void beginRenderPass(
+	  api::Fbo& fbo, const api::RenderPass& renderPass, bool inlineFirstSubpass,
+	  const glm::vec4& clearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+	  float32 clearDepth = types::PipelineDefaults::DepthStencilStates::DepthClearValue,
+	  uint32 clearStencil = types::PipelineDefaults::DepthStencilStates::StencilClearValue);
+
+	/*!*
+	\brief beginRenderPass
+	\param fbo
+	\param renderPass
+	\param inlineFirstSubpass
+	\param clearColor
+	\param numClearColor
+	\param clearDepth
+	\param clearStencil
+	 */
+	void beginRenderPass(
+	  api::Fbo& fbo, const api::RenderPass& renderPass, bool inlineFirstSubpass, const glm::vec4* clearColor,
+	  uint32 numClearColor, float32 clearDepth = types::PipelineDefaults::DepthStencilStates::DepthClearValue,
+	  uint32 clearStencil = types::PipelineDefaults::DepthStencilStates::StencilClearValue);
 
 	/*!*********************************************************************************************************************
 	\brief Finish the a renderpass (executes the StoreOp).
@@ -524,8 +863,14 @@ public:
 };
 
 }//impl
-inline native::HCommandBuffer_& native_cast(pvr::api::impl::CommandBuffer_& object) { return object.getNativeObject(); }
-inline const native::HCommandBuffer_& native_cast(const pvr::api::impl::CommandBuffer_& object) { return object.getNativeObject(); }
+inline native::HCommandBuffer_& native_cast(pvr::api::impl::CommandBuffer_& object)
+{
+	return object.getNativeObject();
+}
+inline const native::HCommandBuffer_& native_cast(const pvr::api::impl::CommandBuffer_& object)
+{
+	return object.getNativeObject();
+}
 }//api
 }//pvr
 #undef SET_UNIFORM_DECLARATION

@@ -2,7 +2,7 @@
 \file         PVRAssets/FileIO/TextureReaderPVR.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief         An AssetReader that reads pvr::asset::Texture objects from a PVR stream(file). Used extensively in the PowerVR 
+\brief         An AssetReader that reads pvr::asset::Texture objects from a PVR stream(file). Used extensively in the PowerVR
               Framework and examples.
 ***********************************************************************************************************************/
 #pragma once
@@ -15,7 +15,7 @@ namespace pvr {
 namespace assets {
 namespace assetReaders {
 /*!*********************************************************************************************************************
-\brief    This class creates pvr::assets::Texture object from Streams of PVR texture data. Use the readAsset method to 
+\brief    This class creates pvr::assets::Texture object from Streams of PVR texture data. Use the readAsset method to
          create Texture objects from the data in your stream
 ***********************************************************************************************************************/
 class TextureReaderPVR : public AssetReader<Texture>
@@ -55,16 +55,6 @@ public:
 	virtual std::vector<std::string> getSupportedFileExtensions();
 
 	/*!******************************************************************************************************************
-	\brief    Get an identifying name for this reader
-	********************************************************************************************************************/
-	virtual std::string getReaderName();
-	
-	/*!******************************************************************************************************************
-	\brief    Get an identifying version string for this reader
-	********************************************************************************************************************/
-	virtual std::string getReaderVersion();
-
-	/*!******************************************************************************************************************
 	\brief    Convert a PVR Version 2 header to a PVR Version 3 header
 	********************************************************************************************************************/
 	static bool convertTextureHeader2To3(const texture_legacy::HeaderV2& legacyHeader, TextureHeader& newHeader);
@@ -73,7 +63,7 @@ public:
 	\brief    Convert a legacy PixelFormat into a new PixelFormat
 	********************************************************************************************************************/
 	static bool mapLegacyEnumToNewFormat(const texture_legacy::PixelFormat legacyPixelType, PixelFormat& newPixelType,
-                                         types::ColorSpace::Enum& newColorSpace, VariableType::Enum& newChannelType,
+	                                     types::ColorSpace& newColorSpace, VariableType& newChannelType,
 	                                     bool& isPremultiplied);
 private:
 	virtual bool readNextAsset(Texture& asset);

@@ -5,6 +5,8 @@
 \brief        Contains Vulkan specific implementation of the Sampler class. Use only if directly using Vulkan calls.
 			  Provides the definitions allowing to move from the Framework object Sampler to the underlying Vulkan Sampler.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
+
 #pragma once
 #include "PVRApi/ApiObjects/Sampler.h"
 #include "PVRApi/Vulkan/ContextVk.h"
@@ -36,8 +38,12 @@ public:
 	***********************************************************************************************************************/
 	void destroy();
 
+	/*!
+		\brief destructor
+	*/
 	~SamplerVk_()
 	{
+#ifdef DEBUG
 		if (this->m_context.isValid())
 		{
 			destroy();
@@ -46,6 +52,9 @@ public:
 		{
 			reportDestroyedAfterContext("Sampler");
 		}
+#else
+		destroy();
+#endif
 	}
 };
 typedef RefCountedResource<SamplerVk_> SamplerVk;
@@ -53,3 +62,5 @@ typedef RefCountedResource<SamplerVk_> SamplerVk;
 }
 }
 PVR_DECLARE_NATIVE_CAST(Sampler);
+
+//!\endcond

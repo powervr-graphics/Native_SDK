@@ -16,10 +16,10 @@ struct PVRGraphCounter
 	std::vector<pvr::float32> valueCB;	// Circular buffer of counter values
 	pvr::uint32   writePosCB;	// Current write position of circular buffer
 	bool showGraph; // Show the graph
-	glm::vec4 color;
+	pvr::uint32 colorLutIdx;// color lookup table index
 	pvr::float32 maximum;
 
-	PVRGraphCounter() : writePosCB(0), showGraph(true), color(1.f, 0.0f, 0.0f, 1.0f), maximum(0.0f) {}
+	PVRGraphCounter() : writePosCB(0), showGraph(true), maximum(0.0f) {}
 };
 
 namespace Configuration {
@@ -27,6 +27,7 @@ enum
 {
 	VertexArrayBinding = 0,
 	NumVerticesGraphBorder = 6,
+	MaxSwapChains = 8
 };
 }
 
@@ -76,21 +77,23 @@ protected:
 	pvr::api::GraphicsPipeline m_pipeDrawLineStrip;
 	pvr::api::Buffer m_vertexBufferGraphBorder;
 	pvr::api::Buffer m_indexBuffer;
-
-	pvr::uint32 colorId;
-	pvr::GraphicsContext m_device;
-	pvr::IAssetProvider& m_assetProvider;
-	pvr::ui::UIRenderer& m_uiRenderer;
-
+	pvr::utils::StructuredMemoryView m_uboColor;
+	pvr::api::DescriptorSet	 m_uboColorDescriptor;
+	pvr::ui::UIRenderer* m_uiRenderer;
+	pvr::IAssetProvider* m_assetProvider;
+	pvr::GraphicsContext m_context;
+	pvr::uint32	m_esShaderColorId;
+	bool m_isInitialzed;
 public:
-	PVRScopeGraph(pvr::GraphicsContext& device, pvr::IAssetProvider& assetProvider, pvr::ui::UIRenderer& uiRenderer);
+	PVRScopeGraph();
+
 	~PVRScopeGraph();
 
 	// Disallow copying
 	PVRScopeGraph(const PVRScopeGraph&); // deleted
 	PVRScopeGraph& operator=(const PVRScopeGraph&);// deleted
 
-	void recordCommandBuffer(pvr::api::CommandBufferBase cmdBuffer);
+	void recordCommandBuffer(pvr::api::SecondaryCommandBuffer &cmdBuffer, pvr::uint32 swapChain);
 	void recordUIElements();
 	void ping(pvr::float32 dt_millis);
 
@@ -129,11 +132,13 @@ public:
 	void position(const pvr::uint32 nViewportW, const pvr::uint32 nViewportH, pvr::Rectanglei const& graph);
 
 	void setUpdateInterval(const pvr::uint32 nUpdateInverval);
+	bool isInitialized()const{ return m_isInitialzed; }
 
+	bool init(pvr::GraphicsContext &device, pvr::IAssetProvider& assetProvider, pvr::ui::UIRenderer& uiRenderer,
+			  const pvr::api::RenderPass& renderPass, std::string& outMsg);
 protected:
-	bool init();
 	void updateBufferLines();
 	void update(pvr::float32 dt_millis);
 	void filter();
-
+	bool createPipeline(pvr::Api api, const pvr::api::RenderPass &renderPass, std::string &errorStr);
 };

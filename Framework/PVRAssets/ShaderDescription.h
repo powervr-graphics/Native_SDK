@@ -15,7 +15,7 @@ namespace assets {
 \param     shaderName A filename(with extension) of a shader
 \return    Return The ShaderType of this shader
 ***********************************************************************************************************************/
-inline ShaderType::Enum getShaderTypeFromFilename(const char* shaderName)
+inline ShaderType getShaderTypeFromFilename(const char* shaderName)
 {
 	std::string file(shaderName);
 

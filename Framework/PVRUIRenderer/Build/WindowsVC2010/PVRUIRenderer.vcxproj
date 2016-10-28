@@ -24,9 +24,9 @@
     <ClInclude Include="..\..\PVRUIRenderer.h" />
     <ClInclude Include="..\..\Sprite.h" />
     <ClInclude Include="..\..\UIRenderer.h" />
-    <ClInclude Include="..\..\UIRendererFragShader_VK.h" />
     <ClInclude Include="..\..\UIRendererShaders_ES.h" />
-    <ClInclude Include="..\..\UIRendererVertShader_VK.h" />
+    <ClInclude Include="..\..\UIRendererShader_vk.fsh.h" />
+    <ClInclude Include="..\..\UIRendererShader_vk.vsh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sprite.cpp" />

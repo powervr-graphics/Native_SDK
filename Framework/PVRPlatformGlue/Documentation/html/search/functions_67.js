@@ -12,6 +12,6 @@ var searchData=
   ['getnumextensions',['getNumExtensions',['../classvkglue.html#aa19e09c7f23469cde5da339d03115631',1,'vkglue']]],
   ['getnumlayers',['getNumLayers',['../classvkglue.html#a0a6fbf9c801c10068c0cf6534ceea7ff',1,'vkglue']]],
   ['getosmanager',['getOsManager',['../classpvr_1_1system_1_1_platform_context.html#ac0becfcf2ddaf45de512e4e46f8b54cd',1,'pvr::system::PlatformContext::getOsManager()'],['../classpvr_1_1system_1_1_platform_context.html#a05c127e375d22e1cc5e7c6f9c34d24a0',1,'pvr::system::PlatformContext::getOsManager() const ']]],
-  ['getswapchainlength',['getSwapChainLength',['../classpvr_1_1system_1_1_platform_context.html#a32595dfe3bd6520f17c451f3b62a76eb',1,'pvr::system::PlatformContext']]],
+  ['getswapchainlength',['getSwapChainLength',['../classpvr_1_1system_1_1_platform_context.html#aeecfca9aef6eee4dd55328913a59aa0c',1,'pvr::system::PlatformContext']]],
   ['gluegetprocaddress',['glueGetProcAddress',['../namespacepvr_1_1native.html#ad154865c4ce8f85238228717714783da',1,'pvr::native']]]
 ];

@@ -121,6 +121,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td><img src="inherit_graph_3.png" border="0" alt="" usemap="#pvr_1_1api_1_1_api_command"/>
 <map name="pvr_1_1api_1_1_api_command" id="pvr_1_1api_1_1_api_command">
 <area shape="rect" id="node1" href="classpvr_1_1api_1_1_api_command.html" title="Interface for Dynamic commands which can be queued into a CommandBuffer. In specific implementations..." alt="" coords="5,5,155,32"/>
+<area shape="rect" id="node2" href="classpvr_1_1api_1_1_pipeline_barrier.html" title="A memory barrier into the command stream. Used to signify that some types of pending operations from ..." alt="" coords="203,5,357,32"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_4.png" border="0" alt="" usemap="#pvr_1_1api_1_1_asset_loading_delegate"/>
@@ -141,7 +142,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </td></tr>
 <tr><td><img src="inherit_graph_7.png" border="0" alt="" usemap="#pvr_1_1api_1_1_buffer_range_barrier"/>
 <map name="pvr_1_1api_1_1_buffer_range_barrier" id="pvr_1_1api_1_1_buffer_range_barrier">
-<area shape="rect" id="node1" href="structpvr_1_1api_1_1_buffer_range_barrier.html" title="pvr::api::BufferRangeBarrier" alt="" coords="5,5,184,32"/>
+<area shape="rect" id="node1" href="structpvr_1_1api_1_1_buffer_range_barrier.html" title="A Buffer memory barrier used only for memory accesses involving a specific range of the specified buf..." alt="" coords="5,5,184,32"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_8.png" border="0" alt="" usemap="#pvr_1_1api_1_1_compressed_image_data_format"/>
@@ -237,7 +238,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </td></tr>
 <tr><td><img src="inherit_graph_26.png" border="0" alt="" usemap="#pvr_1_1api_1_1_image_area_barrier"/>
 <map name="pvr_1_1api_1_1_image_area_barrier" id="pvr_1_1api_1_1_image_area_barrier">
-<area shape="rect" id="node1" href="structpvr_1_1api_1_1_image_area_barrier.html" title="pvr::api::ImageAreaBarrier" alt="" coords="5,5,176,32"/>
+<area shape="rect" id="node1" href="structpvr_1_1api_1_1_image_area_barrier.html" title="A Image memory barrier used only for memory accesses involving a specific subresource range of the sp..." alt="" coords="5,5,176,32"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_27.png" border="0" alt="" usemap="#pvr_1_1api_1_1_image_data_format"/>
@@ -249,7 +250,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td><img src="inherit_graph_28.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_buffer__"/>
 <map name="pvr_1_1api_1_1impl_1_1_buffer__" id="pvr_1_1api_1_1impl_1_1_buffer__">
 <area shape="rect" id="node2" href="classpvr_1_1api_1_1gles_1_1_buffer_gles__.html" title="OpenGL ES implementation of the Buffer. " alt="" coords="197,5,368,32"/>
-<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_buffer_vk__.html" title="OpenGL ES implementation of the Buffer. " alt="" coords="197,56,368,83"/>
+<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_buffer_vk__.html" title="Vulkan implementation of the Buffer. " alt="" coords="197,56,368,83"/>
 <area shape="rect" id="node4" href="classpvr_1_1api_1_1impl_1_1_buffer__.html" title="Buffer Implementation. Access through the Refcounted Framework object Buffer. All buffer types contai..." alt="" coords="6,56,149,83"/>
 </map>
 </td></tr>
@@ -274,12 +275,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </td></tr>
 <tr><td><img src="inherit_graph_32.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_descriptor_pool__"/>
 <map name="pvr_1_1api_1_1impl_1_1_descriptor_pool__" id="pvr_1_1api_1_1impl_1_1_descriptor_pool__">
-<area shape="rect" id="node2" href="classpvr_1_1api_1_1gles_1_1_command_pool_gles__.html" title="pvr::api::gles::CommandPool\lGles_" alt="" coords="249,10,437,51"/>
-<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_command_pool_vk__.html" title="Vulkan implementation of the Command Pool class. " alt="" coords="255,75,430,117"/>
-<area shape="rect" id="node4" href="classpvr_1_1api_1_1vulkan_1_1_descriptor_pool_vk__.html" title="pvr::api::vulkan::Descriptor\lPoolVk_" alt="" coords="255,151,430,193"/>
-<area shape="rect" id="node7" href="classpvr_1_1api_1_1gles_1_1_descriptor_pool_gles__.html" title="pvr::api::gles::Descriptor\lPoolGles_" alt="" coords="261,217,424,258"/>
-<area shape="rect" id="node8" href="classpvr_1_1api_1_1impl_1_1_command_pool__.html" title="pvr::api::impl::CommandPool_" alt="" coords="5,5,200,32"/>
-<area shape="rect" id="node9" href="classpvr_1_1api_1_1impl_1_1_descriptor_pool__.html" title="API DescriptorPool Object wrapper. Access through the framework&#45;managed DescriptorPool object..." alt="" coords="21,158,184,199"/>
+<area shape="rect" id="node2" href="classpvr_1_1api_1_1gles_1_1_command_pool_gles__.html" title="pvr::api::gles::CommandPool\lGles_" alt="" coords="249,5,437,46"/>
+<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_command_pool_vk__.html" title="Vulkan implementation of the Command Pool class. " alt="" coords="255,70,430,111"/>
+<area shape="rect" id="node4" href="classpvr_1_1api_1_1vulkan_1_1_descriptor_pool_vk__.html" title="pvr::api::vulkan::Descriptor\lPoolVk_" alt="" coords="255,238,430,279"/>
+<area shape="rect" id="node5" href="classpvr_1_1platform_1_1_context_gles.html" title="IGraphicsContext implementation that supports all OpenGL ES 2 and above versions. ..." alt="" coords="257,136,429,163"/>
+<area shape="rect" id="node6" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports Vulkan. " alt="" coords="262,187,423,213"/>
+<area shape="rect" id="node10" href="classpvr_1_1api_1_1gles_1_1_descriptor_pool_gles__.html" title="pvr::api::gles::Descriptor\lPoolGles_" alt="" coords="261,303,424,345"/>
+<area shape="rect" id="node11" href="classpvr_1_1api_1_1impl_1_1_command_pool__.html" title="pvr::api::impl::CommandPool_" alt="" coords="5,73,200,100"/>
+<area shape="rect" id="node12" href="classpvr_1_1api_1_1impl_1_1_descriptor_pool__.html" title="API DescriptorPool Object wrapper. Access through the framework&#45;managed DescriptorPool object..." alt="" coords="21,241,184,282"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_33.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_descriptor_set__"/>
@@ -313,7 +316,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </td></tr>
 <tr><td><img src="inherit_graph_38.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_event__"/>
 <map name="pvr_1_1api_1_1impl_1_1_event__" id="pvr_1_1api_1_1impl_1_1_event__">
-<area shape="rect" id="node2" href="classpvr_1_1api_1_1vulkan_1_1_event_vk__.html" title="pvr::api::vulkan::EventVk_" alt="" coords="197,31,368,57"/>
+<area shape="rect" id="node2" href="classpvr_1_1api_1_1vulkan_1_1_event_vk__.html" title="Vulkan implementation of the Event class. " alt="" coords="197,31,368,57"/>
 <area shape="rect" id="node3" href="classpvr_1_1api_1_1impl_1_1_event__.html" title="pvr::api::impl::Event_" alt="" coords="6,56,149,83"/>
 </map>
 </td></tr>
@@ -325,7 +328,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td><img src="inherit_graph_40.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_fbo__"/>
 <map name="pvr_1_1api_1_1impl_1_1_fbo__" id="pvr_1_1api_1_1impl_1_1_fbo__">
 <area shape="rect" id="node2" href="classpvr_1_1api_1_1gles_1_1_fbo_gles__.html" title="pvr::api::gles::FboGles_" alt="" coords="187,20,346,47"/>
-<area shape="rect" id="node4" href="classpvr_1_1api_1_1vulkan_1_1_fbo_vk__.html" title="pvr::api::vulkan::FboVk_" alt="" coords="187,71,347,97"/>
+<area shape="rect" id="node4" href="classpvr_1_1api_1_1vulkan_1_1_fbo_vk__.html" title="Vulkan implementation of the Fbo (Framebuffer object) class. " alt="" coords="187,71,347,97"/>
 <area shape="rect" id="node3" href="classpvr_1_1api_1_1gles_1_1_default_fbo_gles__.html" title="OpenGL ES Default FBO (FBO pointing to the Back Buffer). This object is necessary for rendering anyth..." alt="" coords="395,5,560,46"/>
 <area shape="rect" id="node5" href="classpvr_1_1api_1_1vulkan_1_1_default_fbo_vk__.html" title="Vulkan Default FBO (FBO pointing to the Back Buffer). This object is necessary for rendering anything..." alt="" coords="400,70,555,111"/>
 <area shape="rect" id="node6" href="classpvr_1_1api_1_1impl_1_1_fbo__.html" title="A PVRApi FrameBufferObject implementation. Use through the Reference counted Framework object Fbo..." alt="" coords="6,71,138,97"/>
@@ -333,8 +336,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </td></tr>
 <tr><td><img src="inherit_graph_41.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_fence__"/>
 <map name="pvr_1_1api_1_1impl_1_1_fence__" id="pvr_1_1api_1_1impl_1_1_fence__">
-<area shape="rect" id="node2" href="classpvr_1_1api_1_1vulkan_1_1_fence_vk__.html" title="pvr::api::vulkan::FenceVk_" alt="" coords="201,31,375,57"/>
-<area shape="rect" id="node3" href="classpvr_1_1api_1_1impl_1_1_fence__.html" title="pvr::api::impl::Fence_" alt="" coords="5,56,152,83"/>
+<area shape="rect" id="node2" href="classpvr_1_1api_1_1vulkan_1_1_fence_vk__.html" title="Vulkan implementation of the Fence class. " alt="" coords="201,31,375,57"/>
+<area shape="rect" id="node3" href="classpvr_1_1api_1_1impl_1_1_fence__.html" title="Fence can be used by the host to determine completion of execution of subimmisions to queues..." alt="" coords="5,56,152,83"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_42.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_fence_set__"/>
@@ -351,13 +354,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td><img src="inherit_graph_44.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_pipeline_layout__"/>
 <map name="pvr_1_1api_1_1impl_1_1_pipeline_layout__" id="pvr_1_1api_1_1impl_1_1_pipeline_layout__">
 <area shape="rect" id="node2" href="classpvr_1_1api_1_1gles_1_1_pipeline_layout_gles__.html" title="pvr::api::gles::Pipeline\lLayoutGles_" alt="" coords="209,5,359,46"/>
-<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_pipeline_layout_vk__.html" title="pvr::api::vulkan::Pipeline\lLayoutVk_" alt="" coords="203,70,365,111"/>
+<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_pipeline_layout_vk__.html" title="Vulkan implementation of the PipelineLayout class. " alt="" coords="203,70,365,111"/>
 <area shape="rect" id="node4" href="classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html" title="Implementation of a PipelineLayout object. A Pipeline Layout API PipelineLayout wrapper. " alt="" coords="5,67,155,109"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_45.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_render_pass__"/>
 <map name="pvr_1_1api_1_1impl_1_1_render_pass__" id="pvr_1_1api_1_1impl_1_1_render_pass__">
-<area shape="rect" id="node2" href="classpvr_1_1api_1_1vulkan_1_1_render_pass_vk__.html" title="pvr::api::vulkan::Render\lPassVk_" alt="" coords="245,5,401,46"/>
+<area shape="rect" id="node2" href="classpvr_1_1api_1_1vulkan_1_1_render_pass_vk__.html" title="Vulkan implementation of the RenderPass class. " alt="" coords="245,5,401,46"/>
 <area shape="rect" id="node3" href="classpvr_1_1api_1_1impl_1_1_render_pass__.html" title="The implementation of the RenderPass. Use through the Reference counted framework object pvr::api::Re..." alt="" coords="5,71,187,97"/>
 <area shape="rect" id="node4" href="classpvr_1_1api_1_1gles_1_1_render_pass_gles__.html" title="pvr::api::gles::RenderPass\lGles_" alt="" coords="235,70,410,111"/>
 </map>
@@ -365,14 +368,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td><img src="inherit_graph_46.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_sampler__"/>
 <map name="pvr_1_1api_1_1impl_1_1_sampler__" id="pvr_1_1api_1_1impl_1_1_sampler__">
 <area shape="rect" id="node2" href="classpvr_1_1api_1_1gles_1_1_sampler_gles__.html" title="pvr::api::gles::SamplerGles_" alt="" coords="214,5,399,32"/>
-<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_sampler_vk__.html" title="pvr::api::vulkan::SamplerVk_" alt="" coords="213,56,400,83"/>
+<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_sampler_vk__.html" title="SamplerVk_ implementation that wraps the vulkan sampler. " alt="" coords="213,56,400,83"/>
 <area shape="rect" id="node4" href="classpvr_1_1api_1_1impl_1_1_sampler__.html" title="The Sampler Framework API object. Wrapped in the pvr::api::Sampler as a Reference counted Framework o..." alt="" coords="6,56,165,83"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_47.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_semaphore__"/>
 <map name="pvr_1_1api_1_1impl_1_1_semaphore__" id="pvr_1_1api_1_1impl_1_1_semaphore__">
-<area shape="rect" id="node2" href="classpvr_1_1api_1_1vulkan_1_1_semaphore_vk__.html" title="pvr::api::vulkan::SemaphoreVk_" alt="" coords="230,31,434,57"/>
-<area shape="rect" id="node3" href="classpvr_1_1api_1_1impl_1_1_semaphore__.html" title="pvr::api::impl::Semaphore_" alt="" coords="5,56,181,83"/>
+<area shape="rect" id="node2" href="classpvr_1_1api_1_1vulkan_1_1_semaphore_vk__.html" title="Vulkan implementation of the Semaphore class. " alt="" coords="230,31,434,57"/>
+<area shape="rect" id="node3" href="classpvr_1_1api_1_1impl_1_1_semaphore__.html" title="Use to &quot;serialize&quot; access between CommandBuffer submissions and /Queues. " alt="" coords="5,56,181,83"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_48.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_semaphore_set__"/>
@@ -400,20 +403,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td><img src="inherit_graph_52.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_texture_store__"/>
 <map name="pvr_1_1api_1_1impl_1_1_texture_store__" id="pvr_1_1api_1_1impl_1_1_texture_store__">
 <area shape="rect" id="node2" href="classpvr_1_1api_1_1gles_1_1_texture_store_gles__.html" title="pvr::api::gles::TextureStore\lGles_" alt="" coords="238,5,415,46"/>
-<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_texture_store_vk__.html" title="pvr::api::vulkan::Texture\lStoreVk_" alt="" coords="247,70,406,111"/>
+<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_texture_store_vk__.html" title="TextureStoreVk_ implementation that wraps the Vulkan Texture object. " alt="" coords="247,70,406,111"/>
 <area shape="rect" id="node4" href="classpvr_1_1api_1_1impl_1_1_texture_store__.html" title="The class powering any texture. Wraps the underlying API Texture object and represents the storage bi..." alt="" coords="5,71,189,97"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_53.png" border="0" alt="" usemap="#pvr_1_1api_1_1impl_1_1_texture_view__"/>
 <map name="pvr_1_1api_1_1impl_1_1_texture_view__" id="pvr_1_1api_1_1impl_1_1_texture_view__">
 <area shape="rect" id="node2" href="classpvr_1_1api_1_1gles_1_1_texture_view_gles__.html" title="pvr::api::gles::TextureView\lGles_" alt="" coords="235,5,410,46"/>
-<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_texture_view_vk__.html" title="pvr::api::vulkan::Texture\lViewVk_" alt="" coords="243,70,402,111"/>
+<area shape="rect" id="node3" href="classpvr_1_1api_1_1vulkan_1_1_texture_view_vk__.html" title="TextureViewVk_ implementation that wraps the Vulkan Texture View object. " alt="" coords="243,70,402,111"/>
 <area shape="rect" id="node4" href="classpvr_1_1api_1_1impl_1_1_texture_view__.html" title="Base texture view class. " alt="" coords="5,71,187,97"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_54.png" border="0" alt="" usemap="#pvr_1_1api_1_1_memory_barrier"/>
 <map name="pvr_1_1api_1_1_memory_barrier" id="pvr_1_1api_1_1_memory_barrier">
-<area shape="rect" id="node1" href="structpvr_1_1api_1_1_memory_barrier.html" title="pvr::api::MemoryBarrier" alt="" coords="6,5,162,32"/>
+<area shape="rect" id="node1" href="structpvr_1_1api_1_1_memory_barrier.html" title="A Global memory barrier used for memory accesses for all memory objects. " alt="" coords="6,5,162,32"/>
 </map>
 </td></tr>
 <tr><td><img src="inherit_graph_55.png" border="0" alt="" usemap="#pvr_1_1api_1_1_memory_barrier_set"/>
@@ -456,204 +459,213 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1pipeline_creation_1_1_fragment_shader_stage_create_param.html" title="Pipeline Fragement shader stage create param. " alt="" coords="6,5,242,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_63.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param"/>
+<tr><td><img src="inherit_graph_63.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_geometry_shader_stage_create_param"/>
+<map name="pvr_1_1api_1_1pipeline_creation_1_1_geometry_shader_stage_create_param" id="pvr_1_1api_1_1pipeline_creation_1_1_geometry_shader_stage_create_param">
+<area shape="rect" id="node1" href="structpvr_1_1api_1_1pipeline_creation_1_1_geometry_shader_stage_create_param.html" title="Pipeline Geometry shader stage create param. " alt="" coords="6,5,245,46"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_64.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param"/>
 <map name="pvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param" id="pvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param.html" title="Add Input Assembler configuration to this buffer object (primitive topology, vertex restart..." alt="" coords="5,5,232,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_64.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param"/>
+<tr><td><img src="inherit_graph_65.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param"/>
 <map name="pvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param" id="pvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html" title="Pipeline Rasterisation, clipping and culling state configuration. Culling, winding order..." alt="" coords="6,5,181,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_65.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_vertex_input_create_param"/>
+<tr><td><img src="inherit_graph_66.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_tess_control_shader_stage_create_param"/>
+<map name="pvr_1_1api_1_1pipeline_creation_1_1_tess_control_shader_stage_create_param" id="pvr_1_1api_1_1pipeline_creation_1_1_tess_control_shader_stage_create_param">
+<area shape="rect" id="node1" href="structpvr_1_1api_1_1pipeline_creation_1_1_tess_control_shader_stage_create_param.html" title="Pipeline Tesselation Control shader stage create param. " alt="" coords="5,5,256,46"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_67.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_tess_eval_shader_stage_create_param"/>
+<map name="pvr_1_1api_1_1pipeline_creation_1_1_tess_eval_shader_stage_create_param" id="pvr_1_1api_1_1pipeline_creation_1_1_tess_eval_shader_stage_create_param">
+<area shape="rect" id="node1" href="structpvr_1_1api_1_1pipeline_creation_1_1_tess_eval_shader_stage_create_param.html" title="Pipeline Tesselation Evaluation shader stage create param. " alt="" coords="6,5,239,46"/>
+</map>
+</td></tr>
+<tr><td><img src="inherit_graph_68.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_vertex_input_create_param"/>
 <map name="pvr_1_1api_1_1pipeline_creation_1_1_vertex_input_create_param" id="pvr_1_1api_1_1pipeline_creation_1_1_vertex_input_create_param">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1pipeline_creation_1_1_vertex_input_create_param.html" title="Contains parameters needed to configure the Vertex Input for a pipeline object. (vertex attrubutes..." alt="" coords="6,5,178,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_66.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_vertex_shader_stage_create_param"/>
+<tr><td><img src="inherit_graph_69.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_vertex_shader_stage_create_param"/>
 <map name="pvr_1_1api_1_1pipeline_creation_1_1_vertex_shader_stage_create_param" id="pvr_1_1api_1_1pipeline_creation_1_1_vertex_shader_stage_create_param">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1pipeline_creation_1_1_vertex_shader_stage_create_param.html" title="Pipeline vertex Shader stage create param. " alt="" coords="5,5,224,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_67.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_viewport_state_create_param"/>
+<tr><td><img src="inherit_graph_70.png" border="0" alt="" usemap="#pvr_1_1api_1_1pipeline_creation_1_1_viewport_state_create_param"/>
 <map name="pvr_1_1api_1_1pipeline_creation_1_1_viewport_state_create_param" id="pvr_1_1api_1_1pipeline_creation_1_1_viewport_state_create_param">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1pipeline_creation_1_1_viewport_state_create_param.html" title="Pipeline Viewport state descriptor. Sets the base configuration of all viewports. ..." alt="" coords="5,5,192,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_68.png" border="0" alt="" usemap="#pvr_1_1api_1_1_pipeline_layout_create_param"/>
+<tr><td><img src="inherit_graph_71.png" border="0" alt="" usemap="#pvr_1_1api_1_1_pipeline_layout_create_param"/>
 <map name="pvr_1_1api_1_1_pipeline_layout_create_param" id="pvr_1_1api_1_1_pipeline_layout_create_param">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_pipeline_layout_create_param.html" title="Pipeline Layout create information. The descriptor set layouts must be known to create a Pipeline lay..." alt="" coords="6,5,162,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_69.png" border="0" alt="" usemap="#pvr_1_1api_1_1_render_pass_color_info"/>
+<tr><td><img src="inherit_graph_72.png" border="0" alt="" usemap="#pvr_1_1api_1_1_render_pass_color_info"/>
 <map name="pvr_1_1api_1_1_render_pass_color_info" id="pvr_1_1api_1_1_render_pass_color_info">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_render_pass_color_info.html" title="Contains information on the Color configuration of a renderpass (format, loadop, storeop, samples). " alt="" coords="5,5,197,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_70.png" border="0" alt="" usemap="#pvr_1_1api_1_1_render_pass_create_param"/>
+<tr><td><img src="inherit_graph_73.png" border="0" alt="" usemap="#pvr_1_1api_1_1_render_pass_create_param"/>
 <map name="pvr_1_1api_1_1_render_pass_create_param" id="pvr_1_1api_1_1_render_pass_create_param">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_render_pass_create_param.html" title="RenderPass creation parameters. Fill this object and then use it to create a RenderPass through you I..." alt="" coords="6,5,186,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_71.png" border="0" alt="" usemap="#pvr_1_1api_1_1_render_pass_depth_stencil_info"/>
+<tr><td><img src="inherit_graph_74.png" border="0" alt="" usemap="#pvr_1_1api_1_1_render_pass_depth_stencil_info"/>
 <map name="pvr_1_1api_1_1_render_pass_depth_stencil_info" id="pvr_1_1api_1_1_render_pass_depth_stencil_info">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_render_pass_depth_stencil_info.html" title="Contains information on the Depth/Stencil configuration of a renderpass (format, loadops, storeops, samples). " alt="" coords="5,5,181,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_72.png" border="0" alt="" usemap="#pvr_1_1api_1_1_ssbo_view"/>
+<tr><td><img src="inherit_graph_75.png" border="0" alt="" usemap="#pvr_1_1api_1_1_ssbo_view"/>
 <map name="pvr_1_1api_1_1_ssbo_view" id="pvr_1_1api_1_1_ssbo_view">
 <area shape="rect" id="node1" href="classpvr_1_1api_1_1_ssbo_view.html" title="Reference&#45;counted handle to a Shader Storage Buffer object view of a Buffer. Default constructor retu..." alt="" coords="6,5,135,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_73.png" border="0" alt="" usemap="#pvr_1_1api_1_1_stencil_state"/>
+<tr><td><img src="inherit_graph_76.png" border="0" alt="" usemap="#pvr_1_1api_1_1_stencil_state"/>
 <map name="pvr_1_1api_1_1_stencil_state" id="pvr_1_1api_1_1_stencil_state">
-<area shape="rect" id="node1" href="structpvr_1_1api_1_1_stencil_state.html" title="pvr::api::StencilState" alt="" coords="6,5,149,32"/>
+<area shape="rect" id="node1" href="structpvr_1_1api_1_1_stencil_state.html" title="Pipeline Stencil state. " alt="" coords="6,5,149,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_74.png" border="0" alt="" usemap="#pvr_1_1api_1_1_sub_pass"/>
+<tr><td><img src="inherit_graph_77.png" border="0" alt="" usemap="#pvr_1_1api_1_1_sub_pass"/>
 <map name="pvr_1_1api_1_1_sub_pass" id="pvr_1_1api_1_1_sub_pass">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_sub_pass.html" title="Render pass subpass. Subpasses allow intermediate draws to be chained and communicating with techniqu..." alt="" coords="6,5,130,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_75.png" border="0" alt="" usemap="#pvr_1_1api_1_1_sub_pass_dependency"/>
+<tr><td><img src="inherit_graph_78.png" border="0" alt="" usemap="#pvr_1_1api_1_1_sub_pass_dependency"/>
 <map name="pvr_1_1api_1_1_sub_pass_dependency" id="pvr_1_1api_1_1_sub_pass_dependency">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_sub_pass_dependency.html" title="pvr::api::SubPassDependency" alt="" coords="6,5,202,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_76.png" border="0" alt="" usemap="#pvr_1_1api_1_1_texture_area"/>
+<tr><td><img src="inherit_graph_79.png" border="0" alt="" usemap="#pvr_1_1api_1_1_texture_area"/>
 <map name="pvr_1_1api_1_1_texture_area" id="pvr_1_1api_1_1_texture_area">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_texture_area.html" title="Class used by texture update functions. Represents an area of the texture to be updated. Default value: width=1, height=1, (depth=1), offsetx=0,offsety=0,offsetz=0, arrayslice=0, cubeface=0, miplevel=0. " alt="" coords="5,5,147,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_77.png" border="0" alt="" usemap="#pvr_1_1api_1_1_ubo_view"/>
+<tr><td><img src="inherit_graph_80.png" border="0" alt="" usemap="#pvr_1_1api_1_1_ubo_view"/>
 <map name="pvr_1_1api_1_1_ubo_view" id="pvr_1_1api_1_1_ubo_view">
 <area shape="rect" id="node1" href="classpvr_1_1api_1_1_ubo_view.html" title="Reference&#45;counted handle to a Uniform Buffer object view of a Buffer. Default constructor returns an ..." alt="" coords="5,5,128,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_78.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_attribute_info"/>
+<tr><td><img src="inherit_graph_81.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_attribute_info"/>
 <map name="pvr_1_1api_1_1_vertex_attribute_info" id="pvr_1_1api_1_1_vertex_attribute_info">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_vertex_attribute_info.html" title="Contains a full description of a Vertex Attribute: Index, format, number of elements, offset in the buffer, optionally name. All values (except attributeName) must be set explicitly. " alt="" coords="5,12,184,39"/>
 <area shape="rect" id="node2" href="structpvr_1_1api_1_1_vertex_attribute_info_with_binding.html" title="pvr::api::VertexAttribute\lInfoWithBinding" alt="" coords="233,5,391,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_79.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_attribute_info_cmp___binding_less___index_less"/>
+<tr><td><img src="inherit_graph_82.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_attribute_info_cmp___binding_less___index_less"/>
 <map name="pvr_1_1api_1_1_vertex_attribute_info_cmp___binding_less___index_less" id="pvr_1_1api_1_1_vertex_attribute_info_cmp___binding_less___index_less">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_vertex_attribute_info_cmp___binding_less___index_less.html" title="pvr::api::VertexAttribute\lInfoCmp_BindingLess_IndexLess" alt="" coords="5,5,219,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_80.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_attribute_info_cmp___index_less"/>
+<tr><td><img src="inherit_graph_83.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_attribute_info_cmp___index_less"/>
 <map name="pvr_1_1api_1_1_vertex_attribute_info_cmp___index_less" id="pvr_1_1api_1_1_vertex_attribute_info_cmp___index_less">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_vertex_attribute_info_cmp___index_less.html" title="pvr::api::VertexAttribute\lInfoCmp_IndexLess" alt="" coords="6,5,165,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_81.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_attribute_info_pred___binding_equals"/>
+<tr><td><img src="inherit_graph_84.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_attribute_info_pred___binding_equals"/>
 <map name="pvr_1_1api_1_1_vertex_attribute_info_pred___binding_equals" id="pvr_1_1api_1_1_vertex_attribute_info_pred___binding_equals">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_vertex_attribute_info_pred___binding_equals.html" title="pvr::api::VertexAttribute\lInfoPred_BindingEquals" alt="" coords="6,5,165,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_82.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_attribute_info_pred___index_equals"/>
+<tr><td><img src="inherit_graph_85.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_attribute_info_pred___index_equals"/>
 <map name="pvr_1_1api_1_1_vertex_attribute_info_pred___index_equals" id="pvr_1_1api_1_1_vertex_attribute_info_pred___index_equals">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_vertex_attribute_info_pred___index_equals.html" title="pvr::api::VertexAttribute\lInfoPred_IndexEquals" alt="" coords="6,5,165,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_83.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_binding_info_cmp___binding_less"/>
+<tr><td><img src="inherit_graph_86.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_binding_info_cmp___binding_less"/>
 <map name="pvr_1_1api_1_1_vertex_binding_info_cmp___binding_less" id="pvr_1_1api_1_1_vertex_binding_info_cmp___binding_less">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_vertex_binding_info_cmp___binding_less.html" title="pvr::api::VertexBindingInfo\lCmp_BindingLess" alt="" coords="6,5,178,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_84.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_binding_info_pred___binding_equal"/>
+<tr><td><img src="inherit_graph_87.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_binding_info_pred___binding_equal"/>
 <map name="pvr_1_1api_1_1_vertex_binding_info_pred___binding_equal" id="pvr_1_1api_1_1_vertex_binding_info_pred___binding_equal">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_vertex_binding_info_pred___binding_equal.html" title="pvr::api::VertexBindingInfo\lPred_BindingEqual" alt="" coords="6,5,178,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_85.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_binding_info_pred___binding_less"/>
+<tr><td><img src="inherit_graph_88.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_binding_info_pred___binding_less"/>
 <map name="pvr_1_1api_1_1_vertex_binding_info_pred___binding_less" id="pvr_1_1api_1_1_vertex_binding_info_pred___binding_less">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_vertex_binding_info_pred___binding_less.html" title="pvr::api::VertexBindingInfo\lPred_BindingLess" alt="" coords="6,5,178,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_86.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_input_binding_info"/>
+<tr><td><img src="inherit_graph_89.png" border="0" alt="" usemap="#pvr_1_1api_1_1_vertex_input_binding_info"/>
 <map name="pvr_1_1api_1_1_vertex_input_binding_info" id="pvr_1_1api_1_1_vertex_input_binding_info">
 <area shape="rect" id="node1" href="structpvr_1_1api_1_1_vertex_input_binding_info.html" title="Information about a Buffer binding: Binding index, stride, (instance) step rate. " alt="" coords="5,5,205,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_87.png" border="0" alt="" usemap="#pvr_1_1api_1_1_viewport"/>
+<tr><td><img src="inherit_graph_90.png" border="0" alt="" usemap="#pvr_1_1api_1_1_viewport"/>
 <map name="pvr_1_1api_1_1_viewport" id="pvr_1_1api_1_1_viewport">
-<area shape="rect" id="node1" href="structpvr_1_1api_1_1_viewport.html" title="pvr::api::Viewport" alt="" coords="6,5,127,32"/>
+<area shape="rect" id="node1" href="structpvr_1_1api_1_1_viewport.html" title="Viewport specifes the drawing region, min and max depth. " alt="" coords="6,5,127,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_88.png" border="0" alt="" usemap="#pvr_1_1native_1_1_h_context__"/>
+<tr><td><img src="inherit_graph_91.png" border="0" alt="" usemap="#pvr_1_1native_1_1_h_context__"/>
 <map name="pvr_1_1native_1_1_h_context__" id="pvr_1_1native_1_1_h_context__">
 <area shape="rect" id="node1" href="structpvr_1_1native_1_1_h_context__.html" title="pvr::native::HContext_" alt="" coords="6,5,154,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_89.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_gles"/>
-<map name="pvr_1_1platform_1_1_context_gles" id="pvr_1_1platform_1_1_context_gles">
-<area shape="rect" id="node2" href="classpvr_1_1platform_1_1_context_gles.html" title="IGraphicsContext implementation that supports all OpenGL ES 2 and above versions. ..." alt="" coords="177,5,349,32"/>
-<area shape="rect" id="node3" href="classpvr_1_1platform_1_1_context_vk.html" title="IGraphicsContext implementation that supports all OpenGL ES 2 and above versions. ..." alt="" coords="182,56,343,83"/>
-</map>
-</td></tr>
-<tr><td><img src="inherit_graph_90.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_gles_1_1_buffer_range"/>
+<tr><td><img src="inherit_graph_92.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_gles_1_1_buffer_range"/>
 <map name="pvr_1_1platform_1_1_context_gles_1_1_buffer_range" id="pvr_1_1platform_1_1_context_gles_1_1_buffer_range">
 <area shape="rect" id="node1" href="structpvr_1_1platform_1_1_context_gles_1_1_buffer_range.html" title="pvr::platform::ContextGles\l::BufferRange" alt="" coords="6,5,178,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_91.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker"/>
+<tr><td><img src="inherit_graph_93.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker"/>
 <map name="pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker" id="pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker">
 <area shape="rect" id="node1" href="structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker.html" title="internal state tracker for OpenGLES " alt="" coords="6,5,178,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_92.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_depth_stencil_state"/>
+<tr><td><img src="inherit_graph_94.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_depth_stencil_state"/>
 <map name="pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_depth_stencil_state" id="pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_depth_stencil_state">
 <area shape="rect" id="node1" href="structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_depth_stencil_state.html" title="pvr::platform::ContextGles\l::RenderStatesTracker::DepthStencilState" alt="" coords="6,5,271,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_93.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_index_buffer_state"/>
+<tr><td><img src="inherit_graph_95.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_index_buffer_state"/>
 <map name="pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_index_buffer_state" id="pvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_index_buffer_state">
 <area shape="rect" id="node1" href="structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_index_buffer_state.html" title="pvr::platform::ContextGles\l::RenderStatesTracker::IndexBufferState" alt="" coords="6,5,261,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_94.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_gles_1_1_texture_binding"/>
+<tr><td><img src="inherit_graph_96.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_gles_1_1_texture_binding"/>
 <map name="pvr_1_1platform_1_1_context_gles_1_1_texture_binding" id="pvr_1_1platform_1_1_context_gles_1_1_texture_binding">
 <area shape="rect" id="node1" href="structpvr_1_1platform_1_1_context_gles_1_1_texture_binding.html" title="pvr::platform::ContextGles\l::TextureBinding" alt="" coords="6,5,178,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_95.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_vk_1_1_buffer_range"/>
+<tr><td><img src="inherit_graph_97.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_vk_1_1_buffer_range"/>
 <map name="pvr_1_1platform_1_1_context_vk_1_1_buffer_range" id="pvr_1_1platform_1_1_context_vk_1_1_buffer_range">
 <area shape="rect" id="node1" href="structpvr_1_1platform_1_1_context_vk_1_1_buffer_range.html" title="pvr::platform::ContextVk\l::BufferRange" alt="" coords="6,5,167,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_96.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_vk_1_1_render_states_tracker"/>
+<tr><td><img src="inherit_graph_98.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_vk_1_1_render_states_tracker"/>
 <map name="pvr_1_1platform_1_1_context_vk_1_1_render_states_tracker" id="pvr_1_1platform_1_1_context_vk_1_1_render_states_tracker">
 <area shape="rect" id="node1" href="structpvr_1_1platform_1_1_context_vk_1_1_render_states_tracker.html" title="internal state tracker for Vulkan " alt="" coords="6,5,167,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_97.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_vk_1_1_texture_binding"/>
+<tr><td><img src="inherit_graph_99.png" border="0" alt="" usemap="#pvr_1_1platform_1_1_context_vk_1_1_texture_binding"/>
 <map name="pvr_1_1platform_1_1_context_vk_1_1_texture_binding" id="pvr_1_1platform_1_1_context_vk_1_1_texture_binding">
 <area shape="rect" id="node1" href="structpvr_1_1platform_1_1_context_vk_1_1_texture_binding.html" title="pvr::platform::ContextVk\l::TextureBinding" alt="" coords="6,5,167,46"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_98.png" border="0" alt="" usemap="#pvr_1_1utils_1_1impl_1_1unused"/>
+<tr><td><img src="inherit_graph_100.png" border="0" alt="" usemap="#pvr_1_1utils_1_1impl_1_1unused"/>
 <map name="pvr_1_1utils_1_1impl_1_1unused" id="pvr_1_1utils_1_1impl_1_1unused">
 <area shape="rect" id="node1" href="structpvr_1_1utils_1_1impl_1_1unused.html" title="pvr::utils::impl::unused" alt="" coords="5,5,157,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_99.png" border="0" alt="" usemap="#pvr_1_1utils_1_1_structured_memory_view"/>
+<tr><td><img src="inherit_graph_101.png" border="0" alt="" usemap="#pvr_1_1utils_1_1_structured_memory_view"/>
 <map name="pvr_1_1utils_1_1_structured_memory_view" id="pvr_1_1utils_1_1_structured_memory_view">
 <area shape="rect" id="node1" href="classpvr_1_1utils_1_1_structured_memory_view.html" title="pvr::utils::StructuredMemoryView" alt="" coords="5,5,219,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_100.png" border="0" alt="" usemap="#pvr_1_1utils_1_1_structured_memory_view_1_1_structured_memory_table_entry_1_1_is_equal"/>
+<tr><td><img src="inherit_graph_102.png" border="0" alt="" usemap="#pvr_1_1utils_1_1_structured_memory_view_1_1_structured_memory_table_entry_1_1_is_equal"/>
 <map name="pvr_1_1utils_1_1_structured_memory_view_1_1_structured_memory_table_entry_1_1_is_equal" id="pvr_1_1utils_1_1_structured_memory_view_1_1_structured_memory_table_entry_1_1_is_equal">
 <area shape="rect" id="node1" href="structpvr_1_1utils_1_1_structured_memory_view_1_1_structured_memory_table_entry_1_1_is_equal.html" title="pvr::utils::StructuredMemory\lView::StructuredMemoryTableEntry\l::IsEqual" alt="" coords="5,5,232,61"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_101.png" border="0" alt="" usemap="#pvr_1_1utils_1_1_vertex_bindings"/>
+<tr><td><img src="inherit_graph_103.png" border="0" alt="" usemap="#pvr_1_1utils_1_1_vertex_bindings"/>
 <map name="pvr_1_1utils_1_1_vertex_bindings" id="pvr_1_1utils_1_1_vertex_bindings">
 <area shape="rect" id="node1" href="structpvr_1_1utils_1_1_vertex_bindings.html" title="Represents a shader Explicit binding, tying a Semantic name to an Attribute Index. " alt="" coords="6,5,173,32"/>
 </map>
 </td></tr>
-<tr><td><img src="inherit_graph_102.png" border="0" alt="" usemap="#pvr_1_1utils_1_1_vertex_bindings___name"/>
+<tr><td><img src="inherit_graph_104.png" border="0" alt="" usemap="#pvr_1_1utils_1_1_vertex_bindings___name"/>
 <map name="pvr_1_1utils_1_1_vertex_bindings___name" id="pvr_1_1utils_1_1_vertex_bindings___name">
 <area shape="rect" id="node1" href="structpvr_1_1utils_1_1_vertex_bindings___name.html" title="Represents a shader Reflective binding, tying a Semantic name to an Attribute variable name..." alt="" coords="6,5,213,32"/>
 </map>

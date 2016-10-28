@@ -150,14 +150,12 @@ public:
 	LockedQueue() : m_sf(0) {}
 	void produce(const T& item)
 	{
-#pragma warning TODO_MAKE_PROPER_REGISTER_PRODUCERS
 		std::unique_lock<std::mutex> lock(m_mutex);
 		m_store.push_back(item);
 		m_sf.signal();
 	}
 	bool consume(T& item)
 	{
-#pragma warning TODO_MAKE_PROPER_REGISTER_CONSUMERS
 		m_sf.wait();
 		std::unique_lock<std::mutex> lock(m_mutex);
 		if (m_store.empty()) { return false; }
@@ -177,7 +175,6 @@ public:
 	}
 	void drain()
 	{
-#pragma warning TODO_MAKE_PROPER_REGISTER_PRODUCERS_AND_CONSUMERS
 		std::unique_lock<std::mutex> lock(m_mutex);
 		for (int i = 0; i < 1000; ++i)
 		{

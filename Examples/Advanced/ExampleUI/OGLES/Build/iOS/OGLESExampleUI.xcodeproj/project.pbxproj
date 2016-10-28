@@ -31,49 +31,49 @@
 		F8205A91130408E100253AE7 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A88130408E100253AE7 /* Icon.png */; };
 		F8205A92130408E100253AE7 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A89130408E100253AE7 /* Icon@2x.png */; };
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
-		F8ED21FD4ACFDDCE89B5075C /* OGLESExampleUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8BCCF715F074C424D9C3A42 /* OGLESExampleUI.cpp */; };
-		F8E24673365C0181DC71ACEC /* container-corner.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BCD440A1D275CF0DA2E461 /* container-corner.pvr */; };
-		F8DB25E9518A287CED2FCA2E /* container-filler.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D42F3B730F5A8720240EB8 /* container-filler.pvr */; };
-		F864A267B61CF521B384449E /* container-vertical.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BA3F77240EDCD5A7394829 /* container-vertical.pvr */; };
-		F8B3BEF3B1F4BD49B4B3EA44 /* container-horizontal.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81D2DDCEBF053B879CECAE9 /* container-horizontal.pvr */; };
-		F8279E6A28FC7C83AA6E4CBB /* topbar.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81D96098979021387500F5F /* topbar.pvr */; };
-		F81AC49331E17F883417212A /* background.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EE4F659AE39900065DD4E8 /* background.pvr */; };
-		F85AF1BBAF1BAADFF6BFFFCE /* clock-face.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8DAC97DAE72142C3933E6BA /* clock-face.pvr */; };
-		F8A3187599D3B4505C1A96D3 /* clock-face-small.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F85751D9CB131A2A54D79EC1 /* clock-face-small.pvr */; };
-		F8FCF6D3FCA8287A2E2E2D04 /* hand.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86CF6054ABA1CD3222B7CCF /* hand.pvr */; };
-		F8D5AF2DFF0BB82B842928DD /* hand-small.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83627D9FF69747FFAAC8967 /* hand-small.pvr */; };
-		F8F7923BDEC7765E445A37DC /* battery.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F4EBD176BA59D4B8B650CB /* battery.pvr */; };
-		F8FA134AB32B8B2636DFF777 /* internet-web-browser.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F827E7E8332B79406FA1B328 /* internet-web-browser.pvr */; };
-		F8CDEF23980A2E1498ED3DF7 /* mail-message-new.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D14DBAFA3AC1C8985AEC62 /* mail-message-new.pvr */; };
-		F8EBD38DF66278BEBF240AAD /* network-wireless.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83D78BF4FBA04E5D2C56DEC /* network-wireless.pvr */; };
-		F8BC8D66F79418D4E036C6E1 /* office-calendar.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A55B83D2201E3D7EC08FCB /* office-calendar.pvr */; };
-		F8F20F8D39FAF2EC17613B70 /* weather-sun-cloud.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F0154C0B88E22B7A2C1FE8 /* weather-sun-cloud.pvr */; };
-		F8969C40AAEC0A8890659A79 /* weather-storm.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F814A0B46AAB4383A677ACA3 /* weather-storm.pvr */; };
-		F88A88CB786ACAB3607BE18F /* weather-rain.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8168733F5D9650E53E4FE21 /* weather-rain.pvr */; };
-		F8CC2BC37578D78F4D11DA05 /* text1.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F89F555D4668CF155D31FF8C /* text1.pvr */; };
-		F837B56A01D98FDF9DBAE89C /* text2.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8BB6D4DCC990DE1D33042C9 /* text2.pvr */; };
-		F84195EFF412058B84A28379 /* text-weather.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F893D619201C6C214BBA5A17 /* text-weather.pvr */; };
-		F8B31C58D129935CFC29DE97 /* text-fri.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D383742BCB44A80369A615 /* text-fri.pvr */; };
-		F841A4909F77B8709D75BA28 /* text-sat.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8CB6EC2FDC34425BA02939C /* text-sat.pvr */; };
-		F8524D1AE9D977777B3562A0 /* text-sun.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F861CA0728A3381B4FF1990B /* text-sun.pvr */; };
-		F89AEE770BF9A44B3D072F94 /* text-mon.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F88ADAA91D7ED63A4FB55703 /* text-mon.pvr */; };
-		F86A83AD277B91A5EB5611EB /* weather-sun-cloud-big.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F833B26E735F1EAF52AFF248 /* weather-sun-cloud-big.pvr */; };
-		F81010204D200FDC3D613F9B /* window-bottom.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81701F3E27F591223EFB185 /* window-bottom.pvr */; };
-		F83162606C994D64BAE53B7F /* window-bottomcorner.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8814073C3F3B9935DD66D3D /* window-bottomcorner.pvr */; };
-		F83573655FCA0F00D6522D83 /* window-side.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82E3D99DD986A5FE6779875 /* window-side.pvr */; };
-		F8FF9D737938DDDE6ACB35D2 /* window-top.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F85B3BAD9B53ADABB095D7CF /* window-top.pvr */; };
-		F857E41EF5EFC7A415B0EE36 /* window-topleft.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8AC950CD0BF306BE457DD2D /* window-topleft.pvr */; };
-		F80F9DDCE08A413E2AC0CC5B /* window-topright.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F855877CC8DCB4E0624851ED /* window-topright.pvr */; };
-		F86BA40FB5D34947FBE7C345 /* loremipsum.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F899EBC26ADC5668ABCE2CFD /* loremipsum.pvr */; };
-		F85725DF80043693ED86B37D /* vertical-bar.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A74A747B2C5D841FB16982 /* vertical-bar.pvr */; };
-		F8C72F77F59DEB0E86D66B7A /* TexColShaderF_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F83EC685A47E8ECF35074FD7 /* TexColShaderF_ES2.fsh */; };
-		F8FFB443987F8A27D7690E94 /* TexColShaderF_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8212A2570756BF98D915192 /* TexColShaderF_ES3.fsh */; };
-		F8E10518F95FE7634139CB9C /* TexColShaderV_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F81235C6904F6C99016BBFC7 /* TexColShaderV_ES2.vsh */; };
-		F87219DA1E84F406DE56708E /* TexColShaderV_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F828742A2F12E52BBC135CCC /* TexColShaderV_ES3.vsh */; };
-		F81CA3A52F6EF5FA3ABDCF84 /* ColShaderF_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F89B6070F3EE37D64BCA1AAA /* ColShaderF_ES2.fsh */; };
-		F8D30B57D66B886951B407EC /* ColShaderF_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B957DAC550979EE444896B /* ColShaderF_ES3.fsh */; };
-		F883EDDF4A47C83995AAC5E7 /* ColShaderV_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F88588D75729BB1CAAE14B8C /* ColShaderV_ES2.vsh */; };
-		F8812B077BD88A30165C72BA /* ColShaderV_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8102E8D974BBC6D4723F9C7 /* ColShaderV_ES3.vsh */; };
+		F8ED21FD4ACFDDCE89B5075C /* OGLESExampleUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F800F73E3935AF61D76224D8 /* OGLESExampleUI.cpp */; };
+		F8E24673365C0181DC71ACEC /* container-corner.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F819067E7096587B22752376 /* container-corner.pvr */; };
+		F8DB25E9518A287CED2FCA2E /* container-filler.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B20DF372ADA2FF2E509F42 /* container-filler.pvr */; };
+		F864A267B61CF521B384449E /* container-vertical.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F849C2556AAD4D59E382AAA0 /* container-vertical.pvr */; };
+		F8B3BEF3B1F4BD49B4B3EA44 /* container-horizontal.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F03EE19B298740F46B9F87 /* container-horizontal.pvr */; };
+		F8279E6A28FC7C83AA6E4CBB /* topbar.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84B4AA98D0C51661A50BA52 /* topbar.pvr */; };
+		F81AC49331E17F883417212A /* background.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81B168222DFDDEB24DB70F8 /* background.pvr */; };
+		F85AF1BBAF1BAADFF6BFFFCE /* clock-face.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87BEF0D1ACFC695DD363381 /* clock-face.pvr */; };
+		F8A3187599D3B4505C1A96D3 /* clock-face-small.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81D8AD0314608E07675E7C4 /* clock-face-small.pvr */; };
+		F8FCF6D3FCA8287A2E2E2D04 /* hand.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87791FF0A60DB022A769316 /* hand.pvr */; };
+		F8D5AF2DFF0BB82B842928DD /* hand-small.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8AEBB0BC87C9C1AF3AB4D94 /* hand-small.pvr */; };
+		F8F7923BDEC7765E445A37DC /* battery.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84A23F1353E36CDCF690E18 /* battery.pvr */; };
+		F8FA134AB32B8B2636DFF777 /* internet-web-browser.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87F1041C3239694A0AF942E /* internet-web-browser.pvr */; };
+		F8CDEF23980A2E1498ED3DF7 /* mail-message-new.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8752D84508AE2F08554C06E /* mail-message-new.pvr */; };
+		F8EBD38DF66278BEBF240AAD /* network-wireless.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F884F6067A7AC920F2682127 /* network-wireless.pvr */; };
+		F8BC8D66F79418D4E036C6E1 /* office-calendar.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84718D1BE4F348F8353D92C /* office-calendar.pvr */; };
+		F8F20F8D39FAF2EC17613B70 /* weather-sun-cloud.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B04D1E62A75C06985F0CD3 /* weather-sun-cloud.pvr */; };
+		F8969C40AAEC0A8890659A79 /* weather-storm.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F840AF337DEACDE349A67BE7 /* weather-storm.pvr */; };
+		F88A88CB786ACAB3607BE18F /* weather-rain.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8888F461241AF5FD9B60184 /* weather-rain.pvr */; };
+		F8CC2BC37578D78F4D11DA05 /* text1.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F800AC75EE73A17D503D0F8A /* text1.pvr */; };
+		F837B56A01D98FDF9DBAE89C /* text2.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8DCA19FD84AAE976E7CF160 /* text2.pvr */; };
+		F84195EFF412058B84A28379 /* text-weather.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81AB99413BE4FE2BF2EC2AB /* text-weather.pvr */; };
+		F8B31C58D129935CFC29DE97 /* text-fri.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8805BA04AF5BBC8CBC2D5D3 /* text-fri.pvr */; };
+		F841A4909F77B8709D75BA28 /* text-sat.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8F7B5168583828EB4C04C27 /* text-sat.pvr */; };
+		F8524D1AE9D977777B3562A0 /* text-sun.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D4DF15465C2ED95E4415AE /* text-sun.pvr */; };
+		F89AEE770BF9A44B3D072F94 /* text-mon.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F86F42ECF0B86DC7038319DE /* text-mon.pvr */; };
+		F86A83AD277B91A5EB5611EB /* weather-sun-cloud-big.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8968618A822AC5B2831630F /* weather-sun-cloud-big.pvr */; };
+		F81010204D200FDC3D613F9B /* window-bottom.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F82F699F06363864D3B947A2 /* window-bottom.pvr */; };
+		F83162606C994D64BAE53B7F /* window-bottomcorner.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8781A79BDE1EEB0E91D296A /* window-bottomcorner.pvr */; };
+		F83573655FCA0F00D6522D83 /* window-side.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8386807F9FEC1220C75EF1E /* window-side.pvr */; };
+		F8FF9D737938DDDE6ACB35D2 /* window-top.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D98984008F23A9D0C95672 /* window-top.pvr */; };
+		F857E41EF5EFC7A415B0EE36 /* window-topleft.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F806EB35E4E0973AEE4A6639 /* window-topleft.pvr */; };
+		F80F9DDCE08A413E2AC0CC5B /* window-topright.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8A334F5D187FE860E38A6D2 /* window-topright.pvr */; };
+		F86BA40FB5D34947FBE7C345 /* loremipsum.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8AA6BA49961DA56AE7D5CAD /* loremipsum.pvr */; };
+		F85725DF80043693ED86B37D /* vertical-bar.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87F34E99E96C55C2D5A665E /* vertical-bar.pvr */; };
+		F8C72F77F59DEB0E86D66B7A /* TexColShaderF_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8249B481BF6DAC9CC9CEECB /* TexColShaderF_ES2.fsh */; };
+		F8FFB443987F8A27D7690E94 /* TexColShaderF_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8E7E48122C0AAEB96E9F882 /* TexColShaderF_ES3.fsh */; };
+		F8E10518F95FE7634139CB9C /* TexColShaderV_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B8422D90CAEF13BEBE7680 /* TexColShaderV_ES2.vsh */; };
+		F87219DA1E84F406DE56708E /* TexColShaderV_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BCCD02BD83A1C61A315254 /* TexColShaderV_ES3.vsh */; };
+		F81CA3A52F6EF5FA3ABDCF84 /* ColShaderF_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F83F869189F330A08B57C50C /* ColShaderF_ES2.fsh */; };
+		F8D30B57D66B886951B407EC /* ColShaderF_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8BD240526BE55CEA3888B01 /* ColShaderF_ES3.fsh */; };
+		F883EDDF4A47C83995AAC5E7 /* ColShaderV_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8A4F953993D96ED24A7F12D /* ColShaderV_ES2.vsh */; };
+		F8812B077BD88A30165C72BA /* ColShaderV_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F807B707018234082FDC1905 /* ColShaderV_ES3.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -238,49 +238,49 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F8BCCF715F074C424D9C3A42 /* OGLESExampleUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESExampleUI.cpp; path = ../../OGLESExampleUI.cpp; sourceTree = SOURCE_ROOT; };
-		F8BCD440A1D275CF0DA2E461 /* container-corner.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = container-corner.pvr; path = ../../../ProcessedAssets/container-corner.pvr; sourceTree = SOURCE_ROOT; };
-		F8D42F3B730F5A8720240EB8 /* container-filler.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = container-filler.pvr; path = ../../../ProcessedAssets/container-filler.pvr; sourceTree = SOURCE_ROOT; };
-		F8BA3F77240EDCD5A7394829 /* container-vertical.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = container-vertical.pvr; path = ../../../ProcessedAssets/container-vertical.pvr; sourceTree = SOURCE_ROOT; };
-		F81D2DDCEBF053B879CECAE9 /* container-horizontal.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = container-horizontal.pvr; path = ../../../ProcessedAssets/container-horizontal.pvr; sourceTree = SOURCE_ROOT; };
-		F81D96098979021387500F5F /* topbar.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = topbar.pvr; path = ../../../ProcessedAssets/topbar.pvr; sourceTree = SOURCE_ROOT; };
-		F8EE4F659AE39900065DD4E8 /* background.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = background.pvr; path = ../../../ProcessedAssets/background.pvr; sourceTree = SOURCE_ROOT; };
-		F8DAC97DAE72142C3933E6BA /* clock-face.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = clock-face.pvr; path = ../../../ProcessedAssets/clock-face.pvr; sourceTree = SOURCE_ROOT; };
-		F85751D9CB131A2A54D79EC1 /* clock-face-small.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = clock-face-small.pvr; path = ../../../ProcessedAssets/clock-face-small.pvr; sourceTree = SOURCE_ROOT; };
-		F86CF6054ABA1CD3222B7CCF /* hand.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = hand.pvr; path = ../../../ProcessedAssets/hand.pvr; sourceTree = SOURCE_ROOT; };
-		F83627D9FF69747FFAAC8967 /* hand-small.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = hand-small.pvr; path = ../../../ProcessedAssets/hand-small.pvr; sourceTree = SOURCE_ROOT; };
-		F8F4EBD176BA59D4B8B650CB /* battery.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = battery.pvr; path = ../../../ProcessedAssets/battery.pvr; sourceTree = SOURCE_ROOT; };
-		F827E7E8332B79406FA1B328 /* internet-web-browser.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = internet-web-browser.pvr; path = ../../../ProcessedAssets/internet-web-browser.pvr; sourceTree = SOURCE_ROOT; };
-		F8D14DBAFA3AC1C8985AEC62 /* mail-message-new.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = mail-message-new.pvr; path = ../../../ProcessedAssets/mail-message-new.pvr; sourceTree = SOURCE_ROOT; };
-		F83D78BF4FBA04E5D2C56DEC /* network-wireless.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = network-wireless.pvr; path = ../../../ProcessedAssets/network-wireless.pvr; sourceTree = SOURCE_ROOT; };
-		F8A55B83D2201E3D7EC08FCB /* office-calendar.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = office-calendar.pvr; path = ../../../ProcessedAssets/office-calendar.pvr; sourceTree = SOURCE_ROOT; };
-		F8F0154C0B88E22B7A2C1FE8 /* weather-sun-cloud.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-sun-cloud.pvr; path = ../../../ProcessedAssets/weather-sun-cloud.pvr; sourceTree = SOURCE_ROOT; };
-		F814A0B46AAB4383A677ACA3 /* weather-storm.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-storm.pvr; path = ../../../ProcessedAssets/weather-storm.pvr; sourceTree = SOURCE_ROOT; };
-		F8168733F5D9650E53E4FE21 /* weather-rain.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-rain.pvr; path = ../../../ProcessedAssets/weather-rain.pvr; sourceTree = SOURCE_ROOT; };
-		F89F555D4668CF155D31FF8C /* text1.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text1.pvr; path = ../../../ProcessedAssets/text1.pvr; sourceTree = SOURCE_ROOT; };
-		F8BB6D4DCC990DE1D33042C9 /* text2.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text2.pvr; path = ../../../ProcessedAssets/text2.pvr; sourceTree = SOURCE_ROOT; };
-		F893D619201C6C214BBA5A17 /* text-weather.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-weather.pvr; path = ../../../ProcessedAssets/text-weather.pvr; sourceTree = SOURCE_ROOT; };
-		F8D383742BCB44A80369A615 /* text-fri.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-fri.pvr; path = ../../../ProcessedAssets/text-fri.pvr; sourceTree = SOURCE_ROOT; };
-		F8CB6EC2FDC34425BA02939C /* text-sat.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-sat.pvr; path = ../../../ProcessedAssets/text-sat.pvr; sourceTree = SOURCE_ROOT; };
-		F861CA0728A3381B4FF1990B /* text-sun.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-sun.pvr; path = ../../../ProcessedAssets/text-sun.pvr; sourceTree = SOURCE_ROOT; };
-		F88ADAA91D7ED63A4FB55703 /* text-mon.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-mon.pvr; path = ../../../ProcessedAssets/text-mon.pvr; sourceTree = SOURCE_ROOT; };
-		F833B26E735F1EAF52AFF248 /* weather-sun-cloud-big.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-sun-cloud-big.pvr; path = ../../../ProcessedAssets/weather-sun-cloud-big.pvr; sourceTree = SOURCE_ROOT; };
-		F81701F3E27F591223EFB185 /* window-bottom.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-bottom.pvr; path = ../../../ProcessedAssets/window-bottom.pvr; sourceTree = SOURCE_ROOT; };
-		F8814073C3F3B9935DD66D3D /* window-bottomcorner.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-bottomcorner.pvr; path = ../../../ProcessedAssets/window-bottomcorner.pvr; sourceTree = SOURCE_ROOT; };
-		F82E3D99DD986A5FE6779875 /* window-side.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-side.pvr; path = ../../../ProcessedAssets/window-side.pvr; sourceTree = SOURCE_ROOT; };
-		F85B3BAD9B53ADABB095D7CF /* window-top.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-top.pvr; path = ../../../ProcessedAssets/window-top.pvr; sourceTree = SOURCE_ROOT; };
-		F8AC950CD0BF306BE457DD2D /* window-topleft.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-topleft.pvr; path = ../../../ProcessedAssets/window-topleft.pvr; sourceTree = SOURCE_ROOT; };
-		F855877CC8DCB4E0624851ED /* window-topright.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-topright.pvr; path = ../../../ProcessedAssets/window-topright.pvr; sourceTree = SOURCE_ROOT; };
-		F899EBC26ADC5668ABCE2CFD /* loremipsum.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = loremipsum.pvr; path = ../../../ProcessedAssets/loremipsum.pvr; sourceTree = SOURCE_ROOT; };
-		F8A74A747B2C5D841FB16982 /* vertical-bar.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = vertical-bar.pvr; path = ../../../ProcessedAssets/vertical-bar.pvr; sourceTree = SOURCE_ROOT; };
-		F83EC685A47E8ECF35074FD7 /* TexColShaderF_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexColShaderF_ES2.fsh; path = ../../TexColShaderF_ES2.fsh; sourceTree = SOURCE_ROOT; };
-		F8212A2570756BF98D915192 /* TexColShaderF_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexColShaderF_ES3.fsh; path = ../../TexColShaderF_ES3.fsh; sourceTree = SOURCE_ROOT; };
-		F81235C6904F6C99016BBFC7 /* TexColShaderV_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexColShaderV_ES2.vsh; path = ../../TexColShaderV_ES2.vsh; sourceTree = SOURCE_ROOT; };
-		F828742A2F12E52BBC135CCC /* TexColShaderV_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexColShaderV_ES3.vsh; path = ../../TexColShaderV_ES3.vsh; sourceTree = SOURCE_ROOT; };
-		F89B6070F3EE37D64BCA1AAA /* ColShaderF_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ColShaderF_ES2.fsh; path = ../../ColShaderF_ES2.fsh; sourceTree = SOURCE_ROOT; };
-		F8B957DAC550979EE444896B /* ColShaderF_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ColShaderF_ES3.fsh; path = ../../ColShaderF_ES3.fsh; sourceTree = SOURCE_ROOT; };
-		F88588D75729BB1CAAE14B8C /* ColShaderV_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ColShaderV_ES2.vsh; path = ../../ColShaderV_ES2.vsh; sourceTree = SOURCE_ROOT; };
-		F8102E8D974BBC6D4723F9C7 /* ColShaderV_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ColShaderV_ES3.vsh; path = ../../ColShaderV_ES3.vsh; sourceTree = SOURCE_ROOT; };
+		F800F73E3935AF61D76224D8 /* OGLESExampleUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESExampleUI.cpp; path = ../../OGLESExampleUI.cpp; sourceTree = SOURCE_ROOT; };
+		F819067E7096587B22752376 /* container-corner.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = container-corner.pvr; path = ../../../ProcessedAssets/container-corner.pvr; sourceTree = SOURCE_ROOT; };
+		F8B20DF372ADA2FF2E509F42 /* container-filler.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = container-filler.pvr; path = ../../../ProcessedAssets/container-filler.pvr; sourceTree = SOURCE_ROOT; };
+		F849C2556AAD4D59E382AAA0 /* container-vertical.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = container-vertical.pvr; path = ../../../ProcessedAssets/container-vertical.pvr; sourceTree = SOURCE_ROOT; };
+		F8F03EE19B298740F46B9F87 /* container-horizontal.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = container-horizontal.pvr; path = ../../../ProcessedAssets/container-horizontal.pvr; sourceTree = SOURCE_ROOT; };
+		F84B4AA98D0C51661A50BA52 /* topbar.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = topbar.pvr; path = ../../../ProcessedAssets/topbar.pvr; sourceTree = SOURCE_ROOT; };
+		F81B168222DFDDEB24DB70F8 /* background.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = background.pvr; path = ../../../ProcessedAssets/background.pvr; sourceTree = SOURCE_ROOT; };
+		F87BEF0D1ACFC695DD363381 /* clock-face.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = clock-face.pvr; path = ../../../ProcessedAssets/clock-face.pvr; sourceTree = SOURCE_ROOT; };
+		F81D8AD0314608E07675E7C4 /* clock-face-small.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = clock-face-small.pvr; path = ../../../ProcessedAssets/clock-face-small.pvr; sourceTree = SOURCE_ROOT; };
+		F87791FF0A60DB022A769316 /* hand.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = hand.pvr; path = ../../../ProcessedAssets/hand.pvr; sourceTree = SOURCE_ROOT; };
+		F8AEBB0BC87C9C1AF3AB4D94 /* hand-small.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = hand-small.pvr; path = ../../../ProcessedAssets/hand-small.pvr; sourceTree = SOURCE_ROOT; };
+		F84A23F1353E36CDCF690E18 /* battery.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = battery.pvr; path = ../../../ProcessedAssets/battery.pvr; sourceTree = SOURCE_ROOT; };
+		F87F1041C3239694A0AF942E /* internet-web-browser.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = internet-web-browser.pvr; path = ../../../ProcessedAssets/internet-web-browser.pvr; sourceTree = SOURCE_ROOT; };
+		F8752D84508AE2F08554C06E /* mail-message-new.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = mail-message-new.pvr; path = ../../../ProcessedAssets/mail-message-new.pvr; sourceTree = SOURCE_ROOT; };
+		F884F6067A7AC920F2682127 /* network-wireless.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = network-wireless.pvr; path = ../../../ProcessedAssets/network-wireless.pvr; sourceTree = SOURCE_ROOT; };
+		F84718D1BE4F348F8353D92C /* office-calendar.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = office-calendar.pvr; path = ../../../ProcessedAssets/office-calendar.pvr; sourceTree = SOURCE_ROOT; };
+		F8B04D1E62A75C06985F0CD3 /* weather-sun-cloud.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-sun-cloud.pvr; path = ../../../ProcessedAssets/weather-sun-cloud.pvr; sourceTree = SOURCE_ROOT; };
+		F840AF337DEACDE349A67BE7 /* weather-storm.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-storm.pvr; path = ../../../ProcessedAssets/weather-storm.pvr; sourceTree = SOURCE_ROOT; };
+		F8888F461241AF5FD9B60184 /* weather-rain.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-rain.pvr; path = ../../../ProcessedAssets/weather-rain.pvr; sourceTree = SOURCE_ROOT; };
+		F800AC75EE73A17D503D0F8A /* text1.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text1.pvr; path = ../../../ProcessedAssets/text1.pvr; sourceTree = SOURCE_ROOT; };
+		F8DCA19FD84AAE976E7CF160 /* text2.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text2.pvr; path = ../../../ProcessedAssets/text2.pvr; sourceTree = SOURCE_ROOT; };
+		F81AB99413BE4FE2BF2EC2AB /* text-weather.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-weather.pvr; path = ../../../ProcessedAssets/text-weather.pvr; sourceTree = SOURCE_ROOT; };
+		F8805BA04AF5BBC8CBC2D5D3 /* text-fri.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-fri.pvr; path = ../../../ProcessedAssets/text-fri.pvr; sourceTree = SOURCE_ROOT; };
+		F8F7B5168583828EB4C04C27 /* text-sat.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-sat.pvr; path = ../../../ProcessedAssets/text-sat.pvr; sourceTree = SOURCE_ROOT; };
+		F8D4DF15465C2ED95E4415AE /* text-sun.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-sun.pvr; path = ../../../ProcessedAssets/text-sun.pvr; sourceTree = SOURCE_ROOT; };
+		F86F42ECF0B86DC7038319DE /* text-mon.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = text-mon.pvr; path = ../../../ProcessedAssets/text-mon.pvr; sourceTree = SOURCE_ROOT; };
+		F8968618A822AC5B2831630F /* weather-sun-cloud-big.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = weather-sun-cloud-big.pvr; path = ../../../ProcessedAssets/weather-sun-cloud-big.pvr; sourceTree = SOURCE_ROOT; };
+		F82F699F06363864D3B947A2 /* window-bottom.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-bottom.pvr; path = ../../../ProcessedAssets/window-bottom.pvr; sourceTree = SOURCE_ROOT; };
+		F8781A79BDE1EEB0E91D296A /* window-bottomcorner.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-bottomcorner.pvr; path = ../../../ProcessedAssets/window-bottomcorner.pvr; sourceTree = SOURCE_ROOT; };
+		F8386807F9FEC1220C75EF1E /* window-side.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-side.pvr; path = ../../../ProcessedAssets/window-side.pvr; sourceTree = SOURCE_ROOT; };
+		F8D98984008F23A9D0C95672 /* window-top.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-top.pvr; path = ../../../ProcessedAssets/window-top.pvr; sourceTree = SOURCE_ROOT; };
+		F806EB35E4E0973AEE4A6639 /* window-topleft.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-topleft.pvr; path = ../../../ProcessedAssets/window-topleft.pvr; sourceTree = SOURCE_ROOT; };
+		F8A334F5D187FE860E38A6D2 /* window-topright.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = window-topright.pvr; path = ../../../ProcessedAssets/window-topright.pvr; sourceTree = SOURCE_ROOT; };
+		F8AA6BA49961DA56AE7D5CAD /* loremipsum.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = loremipsum.pvr; path = ../../../ProcessedAssets/loremipsum.pvr; sourceTree = SOURCE_ROOT; };
+		F87F34E99E96C55C2D5A665E /* vertical-bar.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = vertical-bar.pvr; path = ../../../ProcessedAssets/vertical-bar.pvr; sourceTree = SOURCE_ROOT; };
+		F8249B481BF6DAC9CC9CEECB /* TexColShaderF_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexColShaderF_ES2.fsh; path = ../../TexColShaderF_ES2.fsh; sourceTree = SOURCE_ROOT; };
+		F8E7E48122C0AAEB96E9F882 /* TexColShaderF_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexColShaderF_ES3.fsh; path = ../../TexColShaderF_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8B8422D90CAEF13BEBE7680 /* TexColShaderV_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexColShaderV_ES2.vsh; path = ../../TexColShaderV_ES2.vsh; sourceTree = SOURCE_ROOT; };
+		F8BCCD02BD83A1C61A315254 /* TexColShaderV_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexColShaderV_ES3.vsh; path = ../../TexColShaderV_ES3.vsh; sourceTree = SOURCE_ROOT; };
+		F83F869189F330A08B57C50C /* ColShaderF_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ColShaderF_ES2.fsh; path = ../../ColShaderF_ES2.fsh; sourceTree = SOURCE_ROOT; };
+		F8BD240526BE55CEA3888B01 /* ColShaderF_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ColShaderF_ES3.fsh; path = ../../ColShaderF_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8A4F953993D96ED24A7F12D /* ColShaderV_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ColShaderV_ES2.vsh; path = ../../ColShaderV_ES2.vsh; sourceTree = SOURCE_ROOT; };
+		F807B707018234082FDC1905 /* ColShaderV_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = ColShaderV_ES3.vsh; path = ../../ColShaderV_ES3.vsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -452,7 +452,7 @@
 		F85E2B260DD21E3F00CA9BEB /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				F8BCCF715F074C424D9C3A42 /* OGLESExampleUI.cpp */,
+				F800F73E3935AF61D76224D8 /* OGLESExampleUI.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -474,40 +474,40 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F8BCD440A1D275CF0DA2E461 /* container-corner.pvr */,
-				F8D42F3B730F5A8720240EB8 /* container-filler.pvr */,
-				F8BA3F77240EDCD5A7394829 /* container-vertical.pvr */,
-				F81D2DDCEBF053B879CECAE9 /* container-horizontal.pvr */,
-				F81D96098979021387500F5F /* topbar.pvr */,
-				F8EE4F659AE39900065DD4E8 /* background.pvr */,
-				F8DAC97DAE72142C3933E6BA /* clock-face.pvr */,
-				F85751D9CB131A2A54D79EC1 /* clock-face-small.pvr */,
-				F86CF6054ABA1CD3222B7CCF /* hand.pvr */,
-				F83627D9FF69747FFAAC8967 /* hand-small.pvr */,
-				F8F4EBD176BA59D4B8B650CB /* battery.pvr */,
-				F827E7E8332B79406FA1B328 /* internet-web-browser.pvr */,
-				F8D14DBAFA3AC1C8985AEC62 /* mail-message-new.pvr */,
-				F83D78BF4FBA04E5D2C56DEC /* network-wireless.pvr */,
-				F8A55B83D2201E3D7EC08FCB /* office-calendar.pvr */,
-				F8F0154C0B88E22B7A2C1FE8 /* weather-sun-cloud.pvr */,
-				F814A0B46AAB4383A677ACA3 /* weather-storm.pvr */,
-				F8168733F5D9650E53E4FE21 /* weather-rain.pvr */,
-				F89F555D4668CF155D31FF8C /* text1.pvr */,
-				F8BB6D4DCC990DE1D33042C9 /* text2.pvr */,
-				F893D619201C6C214BBA5A17 /* text-weather.pvr */,
-				F8D383742BCB44A80369A615 /* text-fri.pvr */,
-				F8CB6EC2FDC34425BA02939C /* text-sat.pvr */,
-				F861CA0728A3381B4FF1990B /* text-sun.pvr */,
-				F88ADAA91D7ED63A4FB55703 /* text-mon.pvr */,
-				F833B26E735F1EAF52AFF248 /* weather-sun-cloud-big.pvr */,
-				F81701F3E27F591223EFB185 /* window-bottom.pvr */,
-				F8814073C3F3B9935DD66D3D /* window-bottomcorner.pvr */,
-				F82E3D99DD986A5FE6779875 /* window-side.pvr */,
-				F85B3BAD9B53ADABB095D7CF /* window-top.pvr */,
-				F8AC950CD0BF306BE457DD2D /* window-topleft.pvr */,
-				F855877CC8DCB4E0624851ED /* window-topright.pvr */,
-				F899EBC26ADC5668ABCE2CFD /* loremipsum.pvr */,
-				F8A74A747B2C5D841FB16982 /* vertical-bar.pvr */,
+				F819067E7096587B22752376 /* container-corner.pvr */,
+				F8B20DF372ADA2FF2E509F42 /* container-filler.pvr */,
+				F849C2556AAD4D59E382AAA0 /* container-vertical.pvr */,
+				F8F03EE19B298740F46B9F87 /* container-horizontal.pvr */,
+				F84B4AA98D0C51661A50BA52 /* topbar.pvr */,
+				F81B168222DFDDEB24DB70F8 /* background.pvr */,
+				F87BEF0D1ACFC695DD363381 /* clock-face.pvr */,
+				F81D8AD0314608E07675E7C4 /* clock-face-small.pvr */,
+				F87791FF0A60DB022A769316 /* hand.pvr */,
+				F8AEBB0BC87C9C1AF3AB4D94 /* hand-small.pvr */,
+				F84A23F1353E36CDCF690E18 /* battery.pvr */,
+				F87F1041C3239694A0AF942E /* internet-web-browser.pvr */,
+				F8752D84508AE2F08554C06E /* mail-message-new.pvr */,
+				F884F6067A7AC920F2682127 /* network-wireless.pvr */,
+				F84718D1BE4F348F8353D92C /* office-calendar.pvr */,
+				F8B04D1E62A75C06985F0CD3 /* weather-sun-cloud.pvr */,
+				F840AF337DEACDE349A67BE7 /* weather-storm.pvr */,
+				F8888F461241AF5FD9B60184 /* weather-rain.pvr */,
+				F800AC75EE73A17D503D0F8A /* text1.pvr */,
+				F8DCA19FD84AAE976E7CF160 /* text2.pvr */,
+				F81AB99413BE4FE2BF2EC2AB /* text-weather.pvr */,
+				F8805BA04AF5BBC8CBC2D5D3 /* text-fri.pvr */,
+				F8F7B5168583828EB4C04C27 /* text-sat.pvr */,
+				F8D4DF15465C2ED95E4415AE /* text-sun.pvr */,
+				F86F42ECF0B86DC7038319DE /* text-mon.pvr */,
+				F8968618A822AC5B2831630F /* weather-sun-cloud-big.pvr */,
+				F82F699F06363864D3B947A2 /* window-bottom.pvr */,
+				F8781A79BDE1EEB0E91D296A /* window-bottomcorner.pvr */,
+				F8386807F9FEC1220C75EF1E /* window-side.pvr */,
+				F8D98984008F23A9D0C95672 /* window-top.pvr */,
+				F806EB35E4E0973AEE4A6639 /* window-topleft.pvr */,
+				F8A334F5D187FE860E38A6D2 /* window-topright.pvr */,
+				F8AA6BA49961DA56AE7D5CAD /* loremipsum.pvr */,
+				F87F34E99E96C55C2D5A665E /* vertical-bar.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -515,14 +515,14 @@
 		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F83EC685A47E8ECF35074FD7 /* TexColShaderF_ES2.fsh */,
-				F8212A2570756BF98D915192 /* TexColShaderF_ES3.fsh */,
-				F81235C6904F6C99016BBFC7 /* TexColShaderV_ES2.vsh */,
-				F828742A2F12E52BBC135CCC /* TexColShaderV_ES3.vsh */,
-				F89B6070F3EE37D64BCA1AAA /* ColShaderF_ES2.fsh */,
-				F8B957DAC550979EE444896B /* ColShaderF_ES3.fsh */,
-				F88588D75729BB1CAAE14B8C /* ColShaderV_ES2.vsh */,
-				F8102E8D974BBC6D4723F9C7 /* ColShaderV_ES3.vsh */,
+				F8249B481BF6DAC9CC9CEECB /* TexColShaderF_ES2.fsh */,
+				F8E7E48122C0AAEB96E9F882 /* TexColShaderF_ES3.fsh */,
+				F8B8422D90CAEF13BEBE7680 /* TexColShaderV_ES2.vsh */,
+				F8BCCD02BD83A1C61A315254 /* TexColShaderV_ES3.vsh */,
+				F83F869189F330A08B57C50C /* ColShaderF_ES2.fsh */,
+				F8BD240526BE55CEA3888B01 /* ColShaderF_ES3.fsh */,
+				F8A4F953993D96ED24A7F12D /* ColShaderV_ES2.vsh */,
+				F807B707018234082FDC1905 /* ColShaderV_ES3.vsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -868,7 +868,6 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info.plist;

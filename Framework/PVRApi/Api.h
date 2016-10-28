@@ -2,7 +2,7 @@
 \file         PVRApi\Api.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Include this file to get the common functionality of PVRApi. Does not include the common helpers.
+\brief         Include this file to get the basic functionality of PVRApi. Does not include the common helpers.
               (Include PVRApi.h to get the full functionality)
 ***********************************************************************************************************************/
 #pragma once

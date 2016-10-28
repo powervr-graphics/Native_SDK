@@ -60,7 +60,7 @@ static const pvr::char8* messageTypes[] =
 }
 #endif
 namespace pvr {
-namespace system {
+namespace platform {
 ConsoleMessenger::ConsoleMessenger()
 {
 }

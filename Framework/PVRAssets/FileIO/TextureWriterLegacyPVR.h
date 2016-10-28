@@ -15,8 +15,8 @@ namespace assetWriters {
 
 /*!********************************************************************************************************************
 \brief  An experimentat Writer that writes pvr::asset::Texture objects into a legacy (v2) PVR file.
-***********************************************************************************************************************/ 
-class TextureWriterLegacyPVR : public AssetWriter < Texture >
+***********************************************************************************************************************/
+class TextureWriterLegacyPVR : public AssetWriter <Texture>
 {
 public:
 	TextureWriterLegacyPVR();
@@ -37,7 +37,7 @@ private:
 	virtual bool addAssetToWrite(const Texture& asset);
 	bool convertTextureHeader3To2(texture_legacy::HeaderV2& legacyHeader, const TextureHeader& newHeader);
 	bool mapNewFormatToLegacyEnum(texture_legacy::PixelFormat& legacyPixelType, const PixelFormat pixelType,
-        const types::ColorSpace::Enum colorSpace, const VariableType::Enum channelType,const bool isPremultiplied);
+	                              const types::ColorSpace colorSpace, const VariableType channelType, const bool isPremultiplied);
 
 private:
 	texture_legacy::API m_targetAPI;

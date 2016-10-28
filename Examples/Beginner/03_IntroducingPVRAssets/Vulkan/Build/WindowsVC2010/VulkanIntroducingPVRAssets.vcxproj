@@ -175,6 +175,8 @@
     <None Include="..\..\..\ProcessedAssets\GnomeToy.pod"></None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\FragShader_vk.fsh"></None>
+    <None Include="..\..\VertShader_vk.vsh"></None>
     <None Include="..\..\FragShader_vk.spv"></None>
     <None Include="..\..\VertShader_vk.spv"></None>
   </ItemGroup>

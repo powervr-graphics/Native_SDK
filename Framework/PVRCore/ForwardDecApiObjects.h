@@ -13,7 +13,26 @@ namespace pvr {
 class IGraphicsContext;
 class IPlatformContext;
 
-namespace api {
+enum class FrameworkCaps
+{
+	MaxColorAttachments      = 8, //!< Max Color attachment supported by the fbo
+    MaxDepthStencilAttachments = 8,
+	MaxInputAttachments      = 8,
+	MaxResolveAttachments    = 8,
+	MaxPreserveAttachments	 = 8,
+	MaxDescriptorSetBindings = 4,
+	MaxSwapChains			 = 4,
+};
+
+
+namespace legacyPfx {
+namespace impl {
+class EffectApi_;
+}
+}
+
+
+namespace api{
 
 //!\cond NO_DOXYGEN
 namespace impl {
@@ -25,7 +44,6 @@ class TextureStore_;
 class Fbo_;
 class Buffer_;
 class Sampler_;
-class EffectApi_;
 class TextureView_;
 class BufferView_;
 class Shader_;
@@ -61,11 +79,17 @@ struct DescriptorPoolCreateParam;
 struct DescriptorSetUpdate;
 struct PipelineLayoutCreateParam;
 struct OnScreenFboCreateParam;
+struct ImageDataFormat;
 
 /*!********************************************************************************************************************
 \brief        Framebuffer Object.
 ***********************************************************************************************************************/
 typedef RefCountedResource<impl::Fbo_> Fbo;
+
+/*!********************************************************************************************************************
+\brief        Framebuffer Object Set.
+***********************************************************************************************************************/
+typedef Multi<Fbo, (uint32)FrameworkCaps::MaxSwapChains> FboSet;
 
 /*!********************************************************************************************************************
 \brief        Buffer Object.
@@ -95,7 +119,7 @@ typedef RefCountedResource<impl::Sampler_> Sampler;
 /*!********************************************************************************************************************
 \brief        An Effect that has been cooked to render with with a specified API.
 ***********************************************************************************************************************/
-typedef RefCountedResource<impl::EffectApi_> EffectApi;
+typedef RefCountedResource<legacyPfx::impl::EffectApi_> EffectApi;
 
 /*!********************************************************************************************************************
 \brief  A generic Buffer. Can be directly bound as a VBO /IBO or wrapped with a BufferView(SsboView, UboView) to

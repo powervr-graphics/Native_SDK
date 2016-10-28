@@ -31,14 +31,14 @@
 		F8205A91130408E100253AE7 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A88130408E100253AE7 /* Icon.png */; };
 		F8205A92130408E100253AE7 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A89130408E100253AE7 /* Icon@2x.png */; };
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
-		F8621FB79C5AE2E20E616214 /* OGLESDeferredShading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F801568971C25FC73F734BC3 /* OGLESDeferredShading.cpp */; };
-		F80E639778A5DE2FA4B14675 /* scene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8BB9AB63F43C18BB129DE03 /* scene.pod */; };
-		F86DBFAF14250A04A5451452 /* pointlight.pod in Resources */ = {isa = PBXBuildFile; fileRef = F88EE04C088669F06F9DC409 /* pointlight.pod */; };
-		F83A3E639C13CDBACC378654 /* Marble.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81CF1AEC4CD863A92A7AFE4 /* Marble.pvr */; };
-		F83A93119BD23CD25E822273 /* MarbleNormalMap.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F806B9CE8C751258A65F2ADF /* MarbleNormalMap.pvr */; };
-		F8CD4C090724A60C5F5FAD52 /* Table.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F866F95B9A4D77BC9289F7DE /* Table.pvr */; };
-		F85B21C55B57C517D21FCBAC /* effect_MRT.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F8D3A9247EAB9E84FB4F7681 /* effect_MRT.pfx */; };
-		F87A76E9BEBE3C11F3F3604D /* effect_PLS.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F8A8BC9EC5886CE3C65F1529 /* effect_PLS.pfx */; };
+		F8621FB79C5AE2E20E616214 /* OGLESDeferredShading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8F6EBA0D1AAB5CBF70E63C0 /* OGLESDeferredShading.cpp */; };
+		F80E639778A5DE2FA4B14675 /* scene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8D31226EDA7FE33522B6749 /* scene.pod */; };
+		F86DBFAF14250A04A5451452 /* pointlight.pod in Resources */ = {isa = PBXBuildFile; fileRef = F80563E3C08A4E8C21257667 /* pointlight.pod */; };
+		F83A3E639C13CDBACC378654 /* Marble.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8FC36E60F2F3D66EE5242CC /* Marble.pvr */; };
+		F83A93119BD23CD25E822273 /* MarbleNormalMap.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8CA3AA71E168D941AFC4DC1 /* MarbleNormalMap.pvr */; };
+		F8CD4C090724A60C5F5FAD52 /* Table.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E04CB8ABB1A264F5AA6D7D /* Table.pvr */; };
+		F85B21C55B57C517D21FCBAC /* effect_MRT.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F88979CE908353AABA0A2F07 /* effect_MRT.pfx */; };
+		F87A76E9BEBE3C11F3F3604D /* effect_PLS.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F80D12DA2B27B8E8E6B326B9 /* effect_PLS.pfx */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -203,14 +203,14 @@
 		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
-		F801568971C25FC73F734BC3 /* OGLESDeferredShading.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESDeferredShading.cpp; path = ../../OGLESDeferredShading.cpp; sourceTree = SOURCE_ROOT; };
-		F8BB9AB63F43C18BB129DE03 /* scene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = scene.pod; path = ../../../ProcessedAssets/scene.pod; sourceTree = SOURCE_ROOT; };
-		F88EE04C088669F06F9DC409 /* pointlight.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = pointlight.pod; path = ../../../ProcessedAssets/pointlight.pod; sourceTree = SOURCE_ROOT; };
-		F81CF1AEC4CD863A92A7AFE4 /* Marble.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Marble.pvr; path = ../../../ProcessedAssets/Marble.pvr; sourceTree = SOURCE_ROOT; };
-		F806B9CE8C751258A65F2ADF /* MarbleNormalMap.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = MarbleNormalMap.pvr; path = ../../../ProcessedAssets/MarbleNormalMap.pvr; sourceTree = SOURCE_ROOT; };
-		F866F95B9A4D77BC9289F7DE /* Table.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Table.pvr; path = ../../../ProcessedAssets/Table.pvr; sourceTree = SOURCE_ROOT; };
-		F8D3A9247EAB9E84FB4F7681 /* effect_MRT.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = effect_MRT.pfx; path = ../../effect_MRT.pfx; sourceTree = SOURCE_ROOT; };
-		F8A8BC9EC5886CE3C65F1529 /* effect_PLS.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = effect_PLS.pfx; path = ../../effect_PLS.pfx; sourceTree = SOURCE_ROOT; };
+		F8F6EBA0D1AAB5CBF70E63C0 /* OGLESDeferredShading.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESDeferredShading.cpp; path = ../../OGLESDeferredShading.cpp; sourceTree = SOURCE_ROOT; };
+		F8D31226EDA7FE33522B6749 /* scene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = scene.pod; path = ../../../ProcessedAssets/scene.pod; sourceTree = SOURCE_ROOT; };
+		F80563E3C08A4E8C21257667 /* pointlight.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = pointlight.pod; path = ../../../ProcessedAssets/pointlight.pod; sourceTree = SOURCE_ROOT; };
+		F8FC36E60F2F3D66EE5242CC /* Marble.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Marble.pvr; path = ../../../ProcessedAssets/Marble.pvr; sourceTree = SOURCE_ROOT; };
+		F8CA3AA71E168D941AFC4DC1 /* MarbleNormalMap.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = MarbleNormalMap.pvr; path = ../../../ProcessedAssets/MarbleNormalMap.pvr; sourceTree = SOURCE_ROOT; };
+		F8E04CB8ABB1A264F5AA6D7D /* Table.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Table.pvr; path = ../../../ProcessedAssets/Table.pvr; sourceTree = SOURCE_ROOT; };
+		F88979CE908353AABA0A2F07 /* effect_MRT.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = effect_MRT.pfx; path = ../../effect_MRT.pfx; sourceTree = SOURCE_ROOT; };
+		F80D12DA2B27B8E8E6B326B9 /* effect_PLS.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = effect_PLS.pfx; path = ../../effect_PLS.pfx; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -375,8 +375,8 @@
 		F82C4A6F10298C9800FF3CC6 /* Effects */ = {
 			isa = PBXGroup;
 			children = (
-				F8D3A9247EAB9E84FB4F7681 /* effect_MRT.pfx */,
-				F8A8BC9EC5886CE3C65F1529 /* effect_PLS.pfx */,
+				F88979CE908353AABA0A2F07 /* effect_MRT.pfx */,
+				F80D12DA2B27B8E8E6B326B9 /* effect_PLS.pfx */,
 			);
 			name = Effects;
 			sourceTree = "<group>";
@@ -384,7 +384,7 @@
 		F85E2B260DD21E3F00CA9BEB /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				F801568971C25FC73F734BC3 /* OGLESDeferredShading.cpp */,
+				F8F6EBA0D1AAB5CBF70E63C0 /* OGLESDeferredShading.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -392,8 +392,8 @@
 		F8E27FF51004EDB10006BBB4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F8BB9AB63F43C18BB129DE03 /* scene.pod */,
-				F88EE04C088669F06F9DC409 /* pointlight.pod */,
+				F8D31226EDA7FE33522B6749 /* scene.pod */,
+				F80563E3C08A4E8C21257667 /* pointlight.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -408,9 +408,9 @@
 		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F81CF1AEC4CD863A92A7AFE4 /* Marble.pvr */,
-				F806B9CE8C751258A65F2ADF /* MarbleNormalMap.pvr */,
-				F866F95B9A4D77BC9289F7DE /* Table.pvr */,
+				F8FC36E60F2F3D66EE5242CC /* Marble.pvr */,
+				F8CA3AA71E168D941AFC4DC1 /* MarbleNormalMap.pvr */,
+				F8E04CB8ABB1A264F5AA6D7D /* Table.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -728,7 +728,6 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Info.plist;

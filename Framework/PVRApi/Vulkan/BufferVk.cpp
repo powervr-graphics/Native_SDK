@@ -20,16 +20,10 @@ namespace impl {
 //Future consideration: If it becomes allowed to make this a run-time choice (As opposed to a link-time choice),
 //this will need to be re-virtualized and pass through an interface.
 
-void Buffer_::update(const void* data, uint32 offset, uint32 length)
+void* Buffer_::map(types::MapBufferFlags flags, uint32 offset, uint32 length)
 {
 	//Safe downcast. We already KNOW that this is our class.
-	static_cast<vulkan::BufferVk_*>(this)->update(data, offset, length);
-}
-
-void* Buffer_::map(types::MapBufferFlags::Enum flags, uint32 offset, uint32 length)
-{
-	//Safe downcast. We already KNOW that this is our class.
-	return static_cast<vulkan::BufferVk_*>(this)->map(flags, offset, length);
+	return static_cast<vulkan::BufferVk_*>(this)->map(flags, offset, length == -1 ? m_size : length);
 }
 
 void Buffer_::unmap()
@@ -38,11 +32,14 @@ void Buffer_::unmap()
 	static_cast<vulkan::BufferVk_*>(this)->unmap();
 }
 
-bool Buffer_::allocate(uint32 size, types::BufferBindingUse::Bits bufferUsage, types::BufferUse::Flags hint)
+bool Buffer_::allocate(uint32 size, types::BufferBindingUse bufferUsage, bool isMappable)
 {
 	//Safe downcast. We already KNOW that this is our actual type.
-	return native_cast(this)->allocate(size, types::BufferBindingUse::Enum(bufferUsage), hint);
+	return native_cast(this)->allocate(size, types::BufferBindingUse(bufferUsage), isMappable);
 }
+
+bool Buffer_::isMappable()const { return static_cast<const vulkan::BufferVk_*>(this)->isMappable(); }
+bool Buffer_::isMapped()const { return static_cast<const vulkan::BufferVk_*>(this)->isMapped(); }
 
 const native::HBuffer_& Buffer_::getNativeObject()const { return native_cast(*this); }
 
@@ -54,7 +51,7 @@ native::HBuffer_& Buffer_::getNativeObject() {	return native_cast(*this); }
 // pointer (declared type Buffer_*), gets cast into a BufferVulkanImpl* and the calls are done direct (in fact,
 // inline) through this pointer.
 namespace vulkan {
-BufferVk_::BufferVk_(GraphicsContext& context) : Buffer_(context), m_mappedOffset(0), m_mappedRange(0)
+BufferVk_::BufferVk_(GraphicsContext& context) : Buffer_(context), m_mappedRange(0), m_mappedOffset(0)
 {
 	buffer = VK_NULL_HANDLE; memory = VK_NULL_HANDLE;
 }
@@ -63,7 +60,7 @@ void BufferVk_::destroy()
 {
 	if (m_context.isValid())
 	{
-		VkDevice& deviceVk =  native_cast(*m_context).getDevice();
+		VkDevice deviceVk =  native_cast(*m_context).getDevice();
 		if (buffer != VK_NULL_HANDLE)
 		{
 			vk::DestroyBuffer(deviceVk, buffer, NULL);
@@ -98,22 +95,7 @@ BufferVk_::~BufferVk_()
 	}
 }
 
-void BufferVk_::update(const void* data, uint32 offset, uint32 length)
-{
-	assertion(length + offset <= m_size);
-	void* mapData  = map(types::MapBufferFlags::Write, offset, length);
-	if (mapData)
-	{
-		memcpy(mapData, data, length);
-		unmap();
-	}
-	else
-	{
-		assertion(false, "Failed to map memory");
-	}
-}
-
-void* BufferVk_::map(types::MapBufferFlags::Enum flags, uint32 offset, uint32 length)
+void* BufferVk_::map(types::MapBufferFlags flags, uint32 offset, uint32 length)
 {
 	void* mapped;
 	if (m_mappedRange)
@@ -149,34 +131,36 @@ void BufferVk_::unmap()
 	range.memory = memory;
 	range.offset = m_mappedOffset;
 	range.size = m_mappedRange;
-	if (m_mappedFlags & types::MapBufferFlags::Write)
+	if ((m_mappedFlags & types::MapBufferFlags::Write) != types::MapBufferFlags(0))
 	{
 		vk::FlushMappedMemoryRanges(contextVk.getDevice(), 1, &range);
 	}
-	if (m_mappedFlags & types::MapBufferFlags::Read)
+	if ((m_mappedFlags & types::MapBufferFlags::Read) != types::MapBufferFlags(0))
 	{
 		vk::InvalidateMappedMemoryRanges(contextVk.getDevice(), 1, &range);
 	}
 	vk::UnmapMemory(contextVk.getDevice(), memory);
 	m_mappedRange = 0;
 	m_mappedOffset = 0;
-	m_mappedFlags = types::MapBufferFlags::Enum(0);
+	m_mappedFlags = types::MapBufferFlags(0);
 }
 
-
-bool BufferVk_::allocate(uint32 size, types::BufferBindingUse::Enum usage, types::BufferUse::Flags hint)
+bool BufferVk_::allocate(uint32 size, types::BufferBindingUse usage, bool isMappable)
 {
 	platform::ContextVk& contextVk = native_cast(*m_context);
 	if (isAllocated())// re-allocate if neccessary
 	{
-		Log(Log.Debug, "BufferVulkanImpl::allocate: Vulkan buffer %d was already allocated, deleting it. This should normally NOT happen - allocate is private.", buffer);
+		Log(Log.Debug, "BufferVulkanImpl::allocate: Vulkan buffer %d was already allocated, deleting it. "
+		    "This should normally NOT happen - allocate is private.", buffer);
 		destroy();
 	}
 	m_size = size;
 	m_usage = usage;
-	if (!pvr::apiUtils::vulkan::createBuffer(contextVk.getDevice(),
+	m_isMappable = isMappable;
+	if (!pvr::utils::vulkan::createBufferAndMemory(contextVk.getDevice(),
 	    contextVk.getPlatformContext().getNativePlatformHandles().deviceMemProperties,
-	    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, usage, size, getNativeObject(), NULL))
+	    (isMappable ? VK_MEMORY_PROPERTY_HOST_COHERENT_BIT : VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT),
+	    usage, size, getNativeObject(), NULL))
 	{
 		return false;
 	}

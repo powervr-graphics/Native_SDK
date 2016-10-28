@@ -15,7 +15,7 @@
 namespace pvr {
 namespace api {
 
-inline static uint32 fboBindTargetToGlesName(types::FboBindingTarget::Enum target)
+inline static uint32 fboBindTargetToGlesName(types::FboBindingTarget target)
 {
 //#if BUILD_API_MAX<30
 //	GLenum glTarget[] = { GL_NONE, GL_FRAMEBUFFER, GL_FRAMEBUFFER, GL_FRAMEBUFFER };
@@ -52,7 +52,7 @@ bool DefaultFboGles_::checkFboStatus() {	return (handle == 0 ? true : false); }
 DefaultFboGles_::DefaultFboGles_(GraphicsContext& context) :	FboGles_(context) {}
 
 void DefaultFboGles_::bind(IGraphicsContext& context,
-                           types::FboBindingTarget::Enum target)const
+                           types::FboBindingTarget target)const
 {
 	m_target = target;
 #if defined(TARGET_OS_IPHONE)
@@ -65,7 +65,7 @@ void DefaultFboGles_::bind(IGraphicsContext& context,
 	debugLogApiError("DefaultFboGles_::bind exit;");
 }
 
-void FboGles_::bind(IGraphicsContext& context, types::FboBindingTarget::Enum target) const
+void FboGles_::bind(IGraphicsContext& context, types::FboBindingTarget target) const
 {
 	m_target = target;
 	gl::BindFramebuffer(fboBindTargetToGlesName(m_target), handle);
@@ -77,7 +77,6 @@ bool FboGles_::init(const FboCreateParam& desc)
 	// validate
 	m_desc = desc;
 	assertion(desc.getRenderPass().isValid() , "Invalid RenderPass");
-	m_renderPass = desc.getRenderPass();
 	m_target = types::FboBindingTarget::ReadWrite;
 	gl::GenFramebuffers(1, &handle);
 	gl::BindFramebuffer(GL_FRAMEBUFFER, handle);
@@ -85,42 +84,45 @@ bool FboGles_::init(const FboCreateParam& desc)
 #if defined (GL_FRAMEBUFFER_DEFAULT_WIDTH) && defined(GL_FRAMEBUFFER_DEFAULT_HEIGHT)
 	if (m_context->getApiType() >= pvr::Api::OpenGLES31)
 	{
-		gl::FramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, desc.getDimension().x);
-		gl::FramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, desc.getDimension().y);
+		gl::FramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, desc.getDimensions().x);
+		gl::FramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, desc.getDimensions().y);
 	}
 #endif
 	std::vector<GLenum> drawBuffers;
 	if (desc.getDepthStencilAttachment().isValid())
 	{
 		auto& texViewEs = static_cast<gles::TextureViewGles_&>(*m_desc.getDepthStencilAttachment());
-		types::ImageAspect::Enum attachment;
+		types::ImageAspect attachment = types::ImageAspect(0);
 		if (texViewEs.getResource()->getFormat().format == PixelFormat::Depth16 ||
 		    texViewEs.getResource()->getFormat().format == PixelFormat::Depth24 ||
 		    texViewEs.getResource()->getFormat().format == PixelFormat::Depth32)
 		{
-			attachment = pvr::types::ImageAspect::Depth;
+			attachment = types::ImageAspect::Depth;
 		}
 
 		else if (texViewEs.getResource()->getFormat().format == PixelFormat::Depth24Stencil8 ||
 		         texViewEs.getResource()->getFormat().format == PixelFormat::Depth32Stencil8)
 		{
-			attachment = pvr::types::ImageAspect::DepthAndStencil;
+			attachment = types::ImageAspect::DepthAndStencil;
+		}
+		if ((uint32)attachment)
+		{
+			m_depthStencilAttachment.push_back(desc.getDepthStencilAttachment());
+			if (m_desc.getDepthStencilAttachment()->getViewType() == types::ImageViewType::ImageView2DCube)
+			{
+				gl::FramebufferTexture2D(GL_FRAMEBUFFER, api::ConvertToGles::imageAspect(attachment),
+				                         GL_TEXTURE_CUBE_MAP_POSITIVE_X + texViewEs.getSubResourceRange().arrayLayerOffset,
+				                         texViewEs.getResource()->getNativeObject().handle, texViewEs.getSubResourceRange().mipLevelOffset);
+			}
+			else
+			{
+				gl::FramebufferTexture2D(GL_FRAMEBUFFER, api::ConvertToGles::imageAspect(attachment), GL_TEXTURE_2D,
+				                         texViewEs.getResource()->getNativeObject().handle, texViewEs.getSubResourceRange().mipLevelOffset);
+			}
 		}
 		else
 		{
-			pvr::assertion(0, "Invalid Fbo attachment type");
-		}
-		m_depthStencilAttachment.push_back(desc.getDepthStencilAttachment());
-		if (m_desc.getDepthStencilAttachment()->getTextureType() == types::TextureDimension::Texture2DCube)
-		{
-			gl::FramebufferTexture2D(GL_FRAMEBUFFER, api::ConvertToGles::imageAspect(attachment),
-			                         GL_TEXTURE_CUBE_MAP_POSITIVE_X + texViewEs.getSubResourceRange().arrayLayerOffset,
-			                         texViewEs.getResource()->getNativeObject().handle, texViewEs.getSubResourceRange().mipLevelOffset);
-		}
-		else
-		{
-			gl::FramebufferTexture2D(GL_FRAMEBUFFER, api::ConvertToGles::imageAspect(attachment), GL_TEXTURE_2D,
-			                         texViewEs.getResource()->getNativeObject().handle, texViewEs.getSubResourceRange().mipLevelOffset);
+			Log("Invalid Fbo attachment type");
 		}
 	}
 
@@ -143,8 +145,24 @@ bool FboGles_::init(const FboCreateParam& desc)
 			return false;
 		}
 		m_colorAttachments.push_back(desc.getColorAttachment(i));
-		gl::FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D,
-		                         texViewEs.getResource()->getNativeObject().handle, texViewEs.getSubResourceRange().mipLevelOffset);
+
+		if (texViewEs.getResource()->getDepth() > 1 && m_context->hasApiCapability(ApiCapabilities::FramebufferTextureLayer))
+		{
+			gl::FramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
+			                            texViewEs.getResource()->getNativeObject().handle,
+			                            texViewEs.getSubResourceRange().mipLevelOffset, texViewEs.getSubResourceRange().arrayLayerOffset);
+		}
+		else if (texViewEs.getResource()->getDepth() > 1 && !m_context->hasApiCapability(ApiCapabilities::FramebufferTextureLayer))
+		{
+			pvr::Log("The texture provided has an unsupported format.");
+			assertion(false, "The texture provided has an unsupported format.");
+			return false;
+		}
+		else
+		{
+			gl::FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D,
+			                         texViewEs.getResource()->getNativeObject().handle, texViewEs.getSubResourceRange().mipLevelOffset);
+		}
 		drawBuffers.push_back(GL_COLOR_ATTACHMENT0 + (GLenum)i);
 	}
 

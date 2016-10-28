@@ -2,7 +2,7 @@
 \file         PVRShell\OS\NullWS\ShellOS.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Contains the implementation for the pvr::system::ShellOS class on Null Windowing System platforms (Linux & Neutrino).
+\brief     	  Contains the implementation for the pvr::platform::ShellOS class on Null Windowing System platforms (Linux & Neutrino).
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
@@ -35,7 +35,7 @@
 #endif
 using namespace pvr::types;
 namespace pvr {
-namespace system {
+namespace platform {
 struct InternalOS
 {
 	bool isInitialized;
@@ -67,7 +67,7 @@ struct InternalOS
 	}
 
 #if defined(__linux__)
-	Keys::Enum getSpecialKey(Keys::Enum firstCharacter) const;
+	Keys getSpecialKey(Keys firstCharacter) const;
 #endif
 
 };
@@ -95,7 +95,7 @@ void ShellOS::updatePointingDeviceLocation()
 	}
 }
 
-Result::Enum ShellOS::init(DisplayAttributes& data)
+Result ShellOS::init(DisplayAttributes& data)
 {
 	if (!m_OSImplementation)
 	{
@@ -152,7 +152,7 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	char devFilePath[20] = "/dev/input/";
 	char temp[9];
 	memset(temp, 0, sizeof(temp));
-	if (fgets(temp, 9, pipe));
+	if(fgets(temp, 9, pipe));
 	pclose(pipe);
 
 	static char* keyboardDeviceFileName = strdup(strcat(devFilePath, temp));
@@ -205,11 +205,11 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	 Get rid of the blinking cursor on a screen.
 
 	 It's an equivalent of:
-	 echo -n -e "\033[?25l" > /dev/tty0
+		echo -n -e "\033[?25l" > /dev/tty0
 
 	 if you do the above command then you can undo it with:
-	 echo -n -e "\033[?25h" > /dev/tty0
-	 */
+		echo -n -e "\033[?25h" > /dev/tty0
+	*/
 	FILE* tty = 0;
 	tty = fopen("/dev/tty0", "w");
 	if (tty != 0)
@@ -230,12 +230,12 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	return Result::Success;
 }
 
-Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
+Result ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	m_OSImplementation->isInitialized = true;
 	data.fullscreen = true;
 	data.x = data.y = 0;
-    data.width = data.height = 0; //no way of getting the monitor resolution.
+	data.width = data.height = 0; //no way of getting the monitor resolution.
 	return Result::Success;
 }
 
@@ -262,7 +262,7 @@ OSWindow ShellOS::getWindow() const
 	return NULL;
 }
 
-static Keys::Enum terminalStandardKeyMap[128] =
+static Keys terminalStandardKeyMap[128] =
 {
 	Keys::Unknown, Keys::Unknown, Keys::Unknown, Keys::Unknown, Keys::Unknown,                /* 0   */
 	Keys::Unknown, Keys::Unknown, Keys::Unknown, Keys::Backspace, Keys::Tab,                  /* 5   */
@@ -295,7 +295,7 @@ static Keys::Enum terminalStandardKeyMap[128] =
 struct SpecialKeyCode
 {
 	const char* str;
-	Keys::Enum key;
+	Keys key;
 };
 
 // Some codes for F-keys can differ, depending on whether we are reading a
@@ -333,7 +333,7 @@ SpecialKeyCode terminalSpecialKeyMap[] =
 	{ "OH", Keys::Home },
 	{ "[2~", Keys::Insert },
 	{ "[3~", Keys::Delete },
-	{ "[4~", Keys::End },
+	{ "[4~", Keys::End},
 	{ "OF", Keys::End },
 	{ "[5~", Keys::PageUp },
 	{ "[6~", Keys::PageDown },
@@ -345,7 +345,7 @@ static const char* keyboardEventTypes[] =
 	"released", "pressed", "held"
 };
 
-static Keys::Enum keyboardKeyMap[] =
+static Keys keyboardKeyMap[] =
 {
 	Keys::Unknown, Keys::Escape,
 	Keys::Key1, Keys::Key2, Keys::Key3, Keys::Key4, Keys::Key5, Keys::Key6, Keys::Key7, Keys::Key8, Keys::Key9, Keys::Key0, Keys::Minus, Keys::Equals,
@@ -374,7 +374,7 @@ static Keys::Enum keyboardKeyMap[] =
 	Keys::PageDown, Keys::Insert, Keys::Delete
 };
 
-static Keys::Enum keyboardShiftedKeyMap[] =
+static Keys keyboardShiftedKeyMap[] =
 {
 	Keys::Unknown, Keys::Escape,
 	Keys::Key1, Keys::Key2, Keys::Backslash, Keys::Key4, Keys::Key5, Keys::Key6, Keys::Key7, Keys::Key8, Keys::Key9, Keys::Key0, Keys::Minus, Keys::Equals,
@@ -403,7 +403,7 @@ static Keys::Enum keyboardShiftedKeyMap[] =
 	Keys::PageDown, Keys::Insert, Keys::Delete
 };
 
-Keys::Enum InternalOS::getSpecialKey(Keys::Enum firstCharacter) const
+Keys InternalOS::getSpecialKey(Keys firstCharacter) const
 {
 	int len = 0, pos = 0;
 	unsigned char key, buf[6];
@@ -437,7 +437,7 @@ Keys::Enum InternalOS::getSpecialKey(Keys::Enum firstCharacter) const
 	}
 }
 
-Result::Enum ShellOS::handleOSEvents()
+Result ShellOS::handleOSEvents()
 {
 	// Check user input from the available input devices.
 
@@ -447,7 +447,7 @@ Result::Enum ShellOS::handleOSEvents()
 	{
 		unsigned char initialKey;
 		int bytesRead = read(m_OSImplementation->devfd, &initialKey, 1);
-		Keys::Enum key = Keys::Unknown;
+		Keys key = Keys::Unknown;
 		if ((bytesRead > 0) && initialKey)
 		{
 			// Check for special multi-character key - (first character is Escape or F7).
@@ -486,7 +486,7 @@ Result::Enum ShellOS::handleOSEvents()
 			}
 
 			// Select standard or shifted key map.
-			Keys::Enum* keyMap = m_OSImplementation->keyboardShiftHeld ? keyboardShiftedKeyMap : keyboardKeyMap;
+			Keys* keyMap = m_OSImplementation->keyboardShiftHeld ? keyboardShiftedKeyMap : keyboardKeyMap;
 
 			if (keyinfo.value == 0)
 			{
@@ -514,7 +514,7 @@ Result::Enum ShellOS::handleOSEvents()
 
 		if (bytes == sizeof(struct input_event) && keyinfo.type == 0x01)
 		{
-			Keys::Enum key;
+		    Keys key;
 			switch (keyinfo.code)
 			{
 			case 22: case 64: case 107: key = Keys::Escape; break;// End call button on Zoom2
@@ -549,18 +549,18 @@ Result::Enum ShellOS::handleOSEvents()
 
 	static const SKeyCodeMap testKeys[] =
 	{
-		{ 'q', -1 },
-		{ 'Q', -1 },
+		{ 'q',		-1 },
+		{ 'Q',		-1 },
 		{ VK_ESCAPE, -1 },
-		{ 's', -2 },
-		{ 'S', -2 },
-		{ '1', Key1 },
-		{ '2', Key2 },
-		{ VK_SPACE, KeySpace },
-		{ VK_UP, KeyUp },
-		{ VK_DOWN, KeyDown },
-		{ VK_LEFT, KeyLeft },
-		{ VK_RIGHT, KeyRight }
+		{ 's',		-2 },
+		{ 'S',		-2 },
+		{ '1',		Key1 },
+		{ '2',		Key2 },
+		{ VK_SPACE, KeySpace  },
+		{ VK_UP, 	KeyUp	  },
+		{ VK_DOWN, 	KeyDown	  },
+		{ VK_LEFT, 	KeyLeft	  },
+		{ VK_RIGHT, KeyRight  }
 	};
 
 	static const size_t nSizeTestKeys = sizeof(testKeys) / sizeof(SKeyCodeMap);
@@ -617,7 +617,7 @@ bool ShellOS::isInitialized()
 	return m_OSImplementation && m_OSImplementation->isInitialized;
 }
 
-Result::Enum ShellOS::popUpMessage(const tchar* title, const tchar* message, ...) const
+Result ShellOS::popUpMessage(const tchar* title, const tchar* message, ...) const
 {
 	if (!message)
 	{

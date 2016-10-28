@@ -6,12 +6,11 @@
 ***********************************************************************************************************************/
 #pragma once
 #include "PVRApi/ApiIncludes.h"
-#include "PVRApi/ApiObjects/Fbo.h"
 #include "PVRApi/ApiObjects/Texture.h"
 
-namespace pvr {
-namespace api {
-namespace impl { class RenderPass_; }
+namespace pvr{
+namespace api{
+namespace impl{ class RenderPass_;}
 
 /*!*********************************************************************************************************************
 \brief    Contains information on the Color configuration of a renderpass (format, loadop, storeop, samples).
@@ -20,29 +19,39 @@ struct RenderPassColorInfo
 {
 	friend class ::pvr::api::impl::RenderPass_;
 
-	ImageDataFormat format;//!< Color buffer attachment format
-	types::LoadOp::Enum         loadOpColor;//!< Color attachment load operation
-	types::StoreOp::Enum        storeOpColor;//!< Color attachment store operation
-	pvr::uint32          numSamples;//!< Number of samples
+	ImageDataFormat	format;//!< Color buffer attachment format
+	types::LoadOp	loadOpColor;//!< Color attachment load operation
+	types::StoreOp	storeOpColor;//!< Color attachment store operation
+	pvr::uint32	numSamples;//!< Number of samples
+	pvr::types::ImageLayout	initialLayout;  //!< initial image layout
+	pvr::types::ImageLayout	finalLayout;    //!< final image layout
 
 	/*!****************************************************************************************************************
 	\brief ctor
 	*******************************************************************************************************************/
-	RenderPassColorInfo() : loadOpColor(types::LoadOp::Load), storeOpColor(types::StoreOp::Store), numSamples(1)
+	RenderPassColorInfo() :
+		loadOpColor(types::LoadOp::Load), storeOpColor(types::StoreOp::Store), numSamples(1),
+		initialLayout(pvr::types::ImageLayout::ColorAttachmentOptimal),
+		finalLayout(pvr::types::ImageLayout::ColorAttachmentOptimal)
 	{
 		format.format = PixelFormat::Unknown;
 	}
 
 	/*!****************************************************************************************************************
-	\brief ctor
+	\brief Constructor
 	\param format Color format
-	\param loadOpColor Color load operator
-	\param storeOpColor Color Store operator
-	\param numSamples Number of samples
+	\param loadOpColor Color load operation. Default is Load. For performance, prefer Ignore if possible for your application.
+	\param storeOpColor Color Store operator. Default is Store. For performance, prefer Ignore if possible for your application.
+	\param numSamples Number of samples. Default is 1.
+	\param initialLayout The initial layout that the output image will be on. Must match the actual layout of the Image. Default is ColorAttachmentOptimal.
+	\param finalLayout A layout to transition the image to at the end of this renderpass. Default is ColorAttachmentOptimal.
 	*******************************************************************************************************************/
-	RenderPassColorInfo(const api::ImageDataFormat& format, types::LoadOp::Enum  loadOpColor = types::LoadOp::Load,
-	                    types::StoreOp::Enum  storeOpColor = types::StoreOp::Store, pvr::uint32  numSamples = 0) :
-		format(format),	loadOpColor(loadOpColor), storeOpColor(storeOpColor), numSamples(numSamples)
+	RenderPassColorInfo(const api::ImageDataFormat& format, types::LoadOp  loadOpColor = types::LoadOp::Load,
+	                    types::StoreOp  storeOpColor = types::StoreOp::Store, pvr::uint32  numSamples = 1u,
+	                    pvr::types::ImageLayout initialLayout = pvr::types::ImageLayout::ColorAttachmentOptimal,
+		pvr::types::ImageLayout finalLayout = pvr::types::ImageLayout::ColorAttachmentOptimal) :
+		format(format), loadOpColor(loadOpColor), storeOpColor(storeOpColor),
+		numSamples(numSamples), initialLayout(initialLayout), finalLayout(finalLayout)
 	{}
 };
 /*!*********************************************************************************************************************
@@ -52,13 +61,18 @@ struct RenderPassDepthStencilInfo
 {
 public:
 	api::ImageDataFormat format;//!< Depth stencil buffer format
-	types::LoadOp::Enum         loadOpDepth;//!< Depth attachment load operations
-	types::StoreOp::Enum        storeOpDepth;//!< Depth attachment store operation
-	types::LoadOp::Enum         loadOpStencil;//!< Stencil attachment load operation
-	types::StoreOp::Enum        storeOpStencil;//!< Stencil attachment store operation
-	pvr::uint32          numSamples;//!< number of samples
-	RenderPassDepthStencilInfo() : loadOpDepth(types::LoadOp::Load), storeOpDepth(types::StoreOp::Store),
-		loadOpStencil(types::LoadOp::Load), storeOpStencil(types::StoreOp::Store), numSamples(1) {}
+	types::LoadOp	loadOpDepth;//!< Depth attachment load operations
+	types::StoreOp	storeOpDepth;//!< Depth attachment store operation
+	types::LoadOp	loadOpStencil;//!< Stencil attachment load operation
+	types::StoreOp	storeOpStencil;//!< Stencil attachment store operation
+	pvr::uint32	numSamples;//!< number of samples
+
+	/*!
+	   \brief RenderPassDepthStencilInfo
+	 */
+	RenderPassDepthStencilInfo() : format(PixelFormat::Unknown), loadOpDepth(types::LoadOp::Load),
+		storeOpDepth(types::StoreOp::Store), loadOpStencil(types::LoadOp::Load),
+		storeOpStencil(types::StoreOp::Store), numSamples(1) {}
 
 	/*!****************************************************************************************************************
 	\brief ctor
@@ -69,9 +83,9 @@ public:
 	\param storeOpStencil Stencil Store operator
 	\param numSamples Number of samples
 	*******************************************************************************************************************/
-	RenderPassDepthStencilInfo(const api::ImageDataFormat& format, types::LoadOp::Enum  loadOpDepth = types::LoadOp::Load,
-	                           types::StoreOp::Enum  storeOpDepth = types::StoreOp::Store, types::LoadOp::Enum  loadOpStencil = types::LoadOp::Load,
-	                           types::StoreOp::Enum storeOpStencil = types::StoreOp::Store, pvr::uint32 numSamples = 1) :
+	RenderPassDepthStencilInfo(const api::ImageDataFormat& format, types::LoadOp  loadOpDepth = types::LoadOp::Load,
+							   types::StoreOp  storeOpDepth = types::StoreOp::Store, types::LoadOp  loadOpStencil = types::LoadOp::Load,
+						       types::StoreOp storeOpStencil = types::StoreOp::Store, pvr::uint32 numSamples = 1) :
 		format(format), loadOpDepth(loadOpDepth), storeOpDepth(storeOpDepth), loadOpStencil(loadOpStencil),
 		storeOpStencil(storeOpStencil), numSamples(numSamples) {}
 };
@@ -83,68 +97,133 @@ public:
 struct SubPass
 {
 public:
-	SubPass(types::PipelineBindPoint::Enum pipeBindPoint = types::PipelineBindPoint::Graphics)
-		: pipelineBindPoint(pipeBindPoint),
-		  numColorAttachment(0), numInputAttachment(0), numPreserveAttachment(0), numResolveAttachment(0) { }
+	/*!
+	   \brief SubPass
+	   \param pipeBindPoint
+	 */
+	SubPass(types::PipelineBindPoint pipeBindPoint = types::PipelineBindPoint::Graphics)
+		: pipelineBindPoint(pipeBindPoint), numInputAttachment(0), numColorAttachment(0),
+		  numResolveAttachment(0), numPreserveAttachment(0)
+	{
+		this->useDepthStencil = true;
+		memset(inputAttachment, -1, sizeof(inputAttachment));
+		memset(colorAttachment, -1, sizeof(colorAttachment));
+		memset(resolveAttachment, -1, sizeof(resolveAttachment));
+		memset(preserveAttachment, -1, sizeof(preserveAttachment));
+	}
 
 	/*!****************************************************************************************************************
 	\brief	Activate the specified color output attachment of the fbo.
+	\param  bindingIndex Corresponding fragment shader output location. The Index must start from 0 and must be consective.
 	\return	Reference to this(allows chaining)
 	\param	attachmentIndex Attachment to activate as output
 	*******************************************************************************************************************/
-	SubPass& setColorAttachment(pvr::uint8 attachmentIndex) { colorAttachment[numColorAttachment++] = attachmentIndex; return *this; }
+	SubPass& setColorAttachment(uint32 bindingIndex, pvr::uint8 attachmentIndex)
+	{
+		numColorAttachment += (uint8)setAttachment(bindingIndex, attachmentIndex, colorAttachment,
+							  (uint32)FrameworkCaps::MaxColorAttachments);
+		return *this;
+	}
 
 	/*!****************************************************************************************************************
 	\brief	Set the specified color attachment as input.
 	\return	Reference to this(allows chaining)
 	\param	attachmentIndex Attachment to set as input
+	\param  bindingIndex Corresponding fragment shader input location. The Index must start from 0 and must be consective.
 	*******************************************************************************************************************/
-	SubPass& setInputAttachment(pvr::uint8 attachmentIndex) { inputAttachment[numInputAttachment++] = attachmentIndex; return *this; }
+	SubPass& setInputAttachment(uint32 bindingIndex, pvr::uint8 attachmentIndex)
+	{
+		numInputAttachment += (uint8)setAttachment(bindingIndex, attachmentIndex, inputAttachment,
+							  (uint32)FrameworkCaps::MaxInputAttachments);
+		return *this;
+	}
 
 	/*!****************************************************************************************************************
 	\brief	Activate the specified Resolve attachment of the fbo.
-	\return	Reference to this(allows chaining)
 	\param	attachmentIndex Attachment to set as resolve
+	\param  bindingIndex Corresponding fragment shader input location. The Index must start from 0 and must be consective.
+	\return this (allow chaining)
 	*******************************************************************************************************************/
-	SubPass& setResolveAttachment(pvr::uint8 attachmentIndex) { resolveAttachment[numResolveAttachment++] = attachmentIndex; return *this; }
+	SubPass& setResolveAttachment(uint32 bindingIndex, pvr::uint8 attachmentIndex)
+	{
+		numResolveAttachment += (uint8)setAttachment(bindingIndex, attachmentIndex, resolveAttachment,
+								(uint32)FrameworkCaps::MaxResolveAttachments);
+		return *this;
+	}
 
 	/*!****************************************************************************************************************
 	\brief	Set preserve attachment from the fbo.
 	\return	Reference to this(allows chaining)
 	\param	attachmentIndex  Attachment to set as preserve
+	\param bindingIndex The Index must start from 0 and must be consective.
+	\return this (allow chaining)
 	*******************************************************************************************************************/
-	SubPass& setPreserveAttachment(pvr::uint8 attachmentIndex) { preserveAttachment[numPreserveAttachment++] = attachmentIndex; return *this; }
+	SubPass& setPreserveAttachment(uint32 bindingIndex, pvr::uint8 attachmentIndex)
+	{
+		numPreserveAttachment += (uint8)setAttachment(bindingIndex, attachmentIndex, preserveAttachment,
+								 (uint32)FrameworkCaps::MaxPreserveAttachments);
+		return *this;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Set the pipeline binding point.
 	\return	Reference to this(allows chaining)
 	***********************************************************************************************************************/
-	SubPass& setPipelineBindPoint(types::PipelineBindPoint::Enum bindingPoint) { pipelineBindPoint = bindingPoint; return *this;}
+	SubPass& setPipelineBindPoint(types::PipelineBindPoint bindingPoint)
+	{
+		pipelineBindPoint = bindingPoint;
+		return *this;
+	}
+
+	/*!*********************************************************************************************************************
+	\brief Sets that the subpass uses the depth stencil image.
+	\return	Reference to this(allows chaining)
+	***********************************************************************************************************************/
+	SubPass& setDepthStencilAttachment(bool useDepthStencil)
+	{
+		this->useDepthStencil = useDepthStencil;
+		return *this;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Return number of color attachments
 	***********************************************************************************************************************/
-	uint8 getNumColorAttachment()const { return numColorAttachment; }
+	uint8 getNumColorAttachment()const
+	{
+		return numColorAttachment;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Return number of input attachments
 	***********************************************************************************************************************/
-	uint8 getNumInputAttachment()const { return numInputAttachment; }
+	uint8 getNumInputAttachment()const
+	{
+		return numInputAttachment;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Return number of resolve attachments
 	***********************************************************************************************************************/
-	uint8 getNumResolveAttachment()const { return numResolveAttachment; }
+	uint8 getNumResolveAttachment()const
+	{
+		return numResolveAttachment;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Return number of preserve attachments
 	***********************************************************************************************************************/
-	uint8 getNumPreserveAttachment()const { return numPreserveAttachment; }
+	uint8 getNumPreserveAttachment()const
+	{
+		return numPreserveAttachment;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Return pipeline binding point
 	***********************************************************************************************************************/
-	types::PipelineBindPoint::Enum getPipelineBindPoint()const { return pipelineBindPoint; }
+	types::PipelineBindPoint getPipelineBindPoint()const
+	{
+		return pipelineBindPoint;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Get input attachment id
@@ -156,6 +235,11 @@ public:
 		assertion(index < numInputAttachment,  "Invalid index");
 		return inputAttachment[index];
 	}
+
+	/*!
+	   \brief Return true if this subpass uses depth stencil attachment.
+	 */
+	bool usesDepthStencilAttachment() const { return this->useDepthStencil; }
 
 	/*!*********************************************************************************************************************
 	\brief Get color attachment id
@@ -189,29 +273,78 @@ public:
 		assertion(index < numPreserveAttachment,  "Invalid index");
 		return preserveAttachment[index];
 	}
+
+	/*!
+	   \brief clear all entries
+	   \return
+	 */
+	SubPass& clear()
+	{
+		numInputAttachment = numResolveAttachment = numPreserveAttachment = numColorAttachment = 0;
+		memset(inputAttachment, 0,sizeof(inputAttachment[0]) * (uint32)FrameworkCaps::MaxInputAttachments);
+		memset(colorAttachment, 0,sizeof(colorAttachment[0]) * (uint32)FrameworkCaps::MaxColorAttachments);
+		memset(resolveAttachment, 0,sizeof(resolveAttachment[0]) *(uint32) FrameworkCaps::MaxResolveAttachments);
+		memset(preserveAttachment, 0,sizeof(preserveAttachment[0]) * (uint32)FrameworkCaps::MaxPreserveAttachments);
+		return *this;
+	}
 private:
-	types::PipelineBindPoint::Enum  pipelineBindPoint;
-	uint8 inputAttachment[8];
-	uint8 colorAttachment[8];
-	uint8 resolveAttachment[8];
-	uint8 preserveAttachment[8];
+	uint32 setAttachment(uint32 bindingId, uint32 attachmentId, int8* attachment, uint32 maxAttachment)
+	{
+		assertion(bindingId < maxAttachment, "Binding Id exceeds the max limit");
+		int8 oldId = attachment[bindingId];
+		attachment[bindingId] = (uint8)attachmentId;
+		return (oldId >= 0 ? 0 : 1);
+	}
+
+	types::PipelineBindPoint  pipelineBindPoint;
+	int8 inputAttachment[(uint32)FrameworkCaps::MaxInputAttachments];
+	int8 colorAttachment[(uint32)FrameworkCaps::MaxColorAttachments];
+	int8 resolveAttachment[(uint32)FrameworkCaps::MaxResolveAttachments];
+	int8 preserveAttachment[(uint32)FrameworkCaps::MaxPreserveAttachments];
 	uint8 numInputAttachment;
 	uint8 numColorAttachment;
 	uint8 numResolveAttachment;
 	uint8 numPreserveAttachment;
+	bool useDepthStencil;
 };
 
+/*!***************************************************************************************************************
+\brief The SubPassDependency struct
+	   Describes the dependecy between pair of sub passes.
+******************************************************************************************************************/
 struct SubPassDependency
 {
-	uint32 srcSubPass;
-	uint32 dstSubPass;
-	types::ShaderStageFlags::Enum srcStageMask;
-	types::ShaderStageFlags::Enum dstStageMask;
-	types::AccessFlags::Enum srcAccessMask;
-	types::AccessFlags::Enum dstAccessMask;
+	uint32 srcSubPass;//!< Producer sub pass index
+	uint32 dstSubPass;//!< Consumer sub pass index
+	types::ShaderStageFlags   srcStageMask;//!<
+	types::ShaderStageFlags dstStageMask;
+	types::AccessFlags srcAccessMask;
+	types::AccessFlags dstAccessMask;
 	bool dependencyByRegion;
-};
 
+	/*!
+	   \brief SubPassDependency
+	 */
+	SubPassDependency() {}
+
+	/*!***********************************************************************************************************
+	\brief ctor
+	\param srcSubPass
+	\param dstSubPass
+	\param srcStageMask
+	\param dstStageMask
+	\param srcAccessMask
+	\param dstAccessMask
+	\param dependencyByRegion
+	 ************************************************************************************************************/
+	SubPassDependency(uint32 srcSubPass, uint32 dstSubPass, types::ShaderStageFlags   srcStageMask,
+	                  types::ShaderStageFlags dstStageMask, types::AccessFlags srcAccessMask,
+		types::AccessFlags dstAccessMask, bool dependencyByRegion) :
+		srcSubPass(srcSubPass), dstSubPass(dstSubPass), srcStageMask(srcStageMask), dstStageMask(dstStageMask),
+		srcAccessMask(srcAccessMask), dstAccessMask(dstAccessMask), dependencyByRegion(dependencyByRegion)
+	{}
+
+};
 
 /*!*********************************************************************************************************************
 \brief  RenderPass creation parameters. Fill this object and then use it to create a RenderPass through you IGraphicsContext.
@@ -219,24 +352,35 @@ struct SubPassDependency
 struct RenderPassCreateParam
 {
 private:
+	enum { MaxColorAttachments = 8};
 	friend class impl::RenderPass_;
+	RenderPassDepthStencilInfo	depthStencil;
+	RenderPassColorInfo		color[MaxColorAttachments];
+	std::vector<SubPass>	subPass;
+	std::vector<SubPassDependency>	subPassDependency;
+	uint32 numColorInfo;
 public:
+	/*!
+	   \brief RenderPassCreateParam
+	 */
+	RenderPassCreateParam() : numColorInfo(0) {}
+
+	/*!
+	   \brief Clear all entries
+	 */
 	void clear()
 	{
-		color.clear();
 		subPass.clear();
 		subPassDependency.clear();
 	}
 
-	RenderPassDepthStencilInfo        depthStencil;
-	std::vector<RenderPassColorInfo>  color;
-	std::vector<SubPass>			  subPass;
-	std::vector<SubPassDependency>	  subPassDependency;
-
 	/*!*********************************************************************************************************************
 	\brief Return number of subpasses
 	***********************************************************************************************************************/
-	pvr::uint32 getNumSubPass()const { return (uint32) subPass.size(); }
+	pvr::uint32 getNumSubPass()const
+	{
+		return (uint32) subPass.size();
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Get subpass
@@ -245,14 +389,17 @@ public:
 	***********************************************************************************************************************/
 	const SubPass& getSubPass(pvr::uint32 index)const
 	{
-		assertion(index < getNumSubPass() ,  "Invalid subpass index");
+		debug_assertion(index < getNumSubPass() ,  "Invalid subpass index");
 		return subPass[index];
 	}
 
 	/*!*********************************************************************************************************************
 	\brief Get number of subpass dependency
 	***********************************************************************************************************************/
-	pvr::uint32 getNumSubPassDependencies()const { return (pvr::uint32)subPassDependency.size(); }
+	pvr::uint32 getNumSubPassDependencies()const
+	{
+		return (pvr::uint32)subPassDependency.size();
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Get subpass dependency
@@ -261,14 +408,17 @@ public:
 	***********************************************************************************************************************/
 	const SubPassDependency& getSubPassDependency(pvr::uint32 index)const
 	{
-		assertion(index < getNumSubPassDependencies(), "Invalid subpass dependency index");
+		debug_assertion(index < getNumSubPassDependencies(), "Invalid subpass dependency index");
 		return subPassDependency[index];
 	}
 
 	/*!*********************************************************************************************************************
 	\brief Return number of color info
 	***********************************************************************************************************************/
-	pvr::uint32 getNumColorInfo()const { return (pvr::uint32)color.size(); }
+	pvr::uint32 getNumColorInfo()const
+	{
+		return numColorInfo;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Get render pass color info
@@ -277,26 +427,33 @@ public:
 	***********************************************************************************************************************/
 	const RenderPassColorInfo& getColorInfo(pvr::uint32 index)const
 	{
-		assertion(index < getNumColorInfo() ,  "Invalid color info index");
+		debug_assertion(index < getNumColorInfo() ,  "Invalid color info index");
 		return color[index];
 	}
 
 	/*!*********************************************************************************************************************
 	\brief Get render pass depth stencil info
-	\param index Depth stencil info index
 	\return RenderPassDepthStencilInfo
 	***********************************************************************************************************************/
-	const RenderPassDepthStencilInfo& getDepthStencilInfo()const { return depthStencil; }
+	const RenderPassDepthStencilInfo& getDepthStencilInfo()const
+	{
+		return depthStencil;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Add color info to the specified color attachment point.
-	\param index The color attachment point to add the color info
+	\param index The color attachment point to add the color info, index must be consecutive
 	\param color The color info to add to the attachment point
 	\return Reference to this object. (allow chaining)
 	***********************************************************************************************************************/
-	RenderPassCreateParam& addColorInfo(pvr::uint32 index, const RenderPassColorInfo& color)
+	RenderPassCreateParam& setColorInfo(pvr::uint32 index, const RenderPassColorInfo& color)
 	{
-		if (index >= this->color.size()) { this->color.resize(index + 1); }
+		if (index >= MaxColorAttachments)
+		{
+			debug_assertion(false, "Color attachment exceeds the max color attachment limit");
+			Log("Color attachment exceeds the max color attachment limit %d", MaxColorAttachments);
+		}
+		numColorInfo += (uint32)(this->color[index].format.format == PixelFormat::Unknown);
 		this->color[index] = color;
 		return *this;
 	}
@@ -306,45 +463,77 @@ public:
 	\param dsInfo The depth/stencil info to add
 	\return Reference to this object. (allow chaining)
 	***********************************************************************************************************************/
-	RenderPassCreateParam& setDepthStencilInfo(const RenderPassDepthStencilInfo& dsInfo) { depthStencil = dsInfo; return *this; }
+	RenderPassCreateParam& setDepthStencilInfo(const RenderPassDepthStencilInfo& dsInfo)
+	{
+		depthStencil = dsInfo;
+		return *this;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Add a subpass to this renderpass
-	\param index Index where to add the subpass
+	\param index Index where to add the subpass, the index must be consective
 	\param subPass The SubPass to add
 	\return Reference to this object. (allow chaining)
 	***********************************************************************************************************************/
-	RenderPassCreateParam& addSubPass(pvr::uint32 index, const SubPass& subPass)
+	RenderPassCreateParam& setSubPass(pvr::uint32 index, const SubPass& subPass)
 	{
-		if (index >= this->subPass.size()) { this->subPass.resize(index + 1); }
+		if (index >= this->subPass.size())
+		{
+			this->subPass.resize(index + 1);
+		}
 		this->subPass[index] = subPass;
 		return *this;
 	}
 
 	/*!*********************************************************************************************************************
 	\brief Add a subpass dependecy to this renderpass
-	\param index Index where to add the subpass dependency
 	\param subPassDependency The SubPass dependency to add
 	\return Reference to this object. (allow chaining)
 	***********************************************************************************************************************/
 	RenderPassCreateParam& addSubPassDependency(const SubPassDependency& subPassDependency)
 	{
-		assertion(subPassDependency.srcSubPass <= subPassDependency.dstSubPass, " Source Sub pass must be less than or equal to destination Sub pass");
+		if(subPassDependency.srcSubPass > subPassDependency.dstSubPass)
+		{
+			debug_assertion(false, " Source Sub pass must be less than or equal to destination Sub pass");
+		}
 		this->subPassDependency.push_back(subPassDependency);
 		return *this;
 	}
 };
 
 
-namespace impl {
+
+
+namespace impl{
 class BeginRenderPass;
 class EndRenderPass;
 /*!********************************************************************************************************************
 \brief The implementation of the RenderPass. Use through the Reference counted framework object pvr::api::RenderPass.
+
+RenderPass Compatibility: Framebuffers and graphics pipelines are created based on a specific render pass object.
+They must only be used with that render pass object, or one compatible with it.
+
+Two attachment references are compatible if they have matching format and sample count,
+
+Two arrays of attachment references are compatible if all corresponding pairs of attachments are compatible.
+If the arrays are of different lengths, attachment references not present in the smaller array are treated as unused.
+
+Two render passes that contain only a single subpass are compatible if their corresponding color, input,
+resolve, and depth/stencil attachment references are compatible.
+
+If two render passes contain more than one subpass, they are compatible if they are identical except for:
+	- Initial and final image layout in attachment descriptions
+	- Load and store operations in attachment descriptions
+	- Image layout in attachment references
+
+A framebuffer is compatible with a render pass if it was created using the same render pass or a compatible render pass.
 **********************************************************************************************************************/
 class RenderPass_
 {
 public:
+	/*!
+	   \brief ~RenderPass_
+	 */
 	virtual ~RenderPass_() { }
 
 	/*!*********************************************************************************************************************
@@ -360,12 +549,18 @@ public:
 	/*!*********************************************************************************************************************
 	\brief Return const reference to the context which own this object
 	***********************************************************************************************************************/
-	const GraphicsContext& getContext()const { return m_context; }
+	const GraphicsContext& getContext()const
+	{
+		return m_context;
+	}
 
 	/*!*********************************************************************************************************************
 	\brief Return reference to the context which own this object
 	***********************************************************************************************************************/
-	GraphicsContext& getContext() { return m_context; }
+	GraphicsContext& getContext()
+	{
+		return m_context;
+	}
 protected:
 	/*!******************************************************************************************************************
 	\brief Creates a new RenderPass object. Use through the IGraphicsContext::createRenderPass.
@@ -377,5 +572,3 @@ protected:
 typedef RefCountedResource<impl::RenderPass_>	RenderPass;
 }//	namespace api
 }//	namespace pvr
-
-

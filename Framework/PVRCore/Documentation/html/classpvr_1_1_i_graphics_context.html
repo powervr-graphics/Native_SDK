@@ -83,6 +83,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="classpvr_1_1_i_graphics_context-members.html">List of all members</a>  </div>
@@ -211,6 +212,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab254dd4ac88a0ff741a85af5156a90df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05790bfbb1fc68c1aa8af24bc34bd220"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="namespacepvr_1_1api.html#a27b9833ef0620323502da3c3bbc9137e">pvr::api::Fbo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a05790bfbb1fc68c1aa8af24bc34bd220">getBoundFbo</a> () const =0</td></tr>
 <tr class="separator:a05790bfbb1fc68c1aa8af24bc34bd220"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a911296bb4d47bb2bda31dbb3d8fb19dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a911296bb4d47bb2bda31dbb3d8fb19dc">getCurrentSwapChain</a> () const </td></tr>
+<tr class="memdesc:a911296bb4d47bb2bda31dbb3d8fb19dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current swapchain index.  <a href="#a911296bb4d47bb2bda31dbb3d8fb19dc">More...</a><br/></td></tr>
+<tr class="separator:a911296bb4d47bb2bda31dbb3d8fb19dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6aeab1283c362deb08881e606f3aa00a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr_1_1api.html#a7885487134a0e2a4b8e86d11c820a2c2">api::CommandPool</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a6aeab1283c362deb08881e606f3aa00a">getDefaultCommandPool</a> () const </td></tr>
 <tr class="memdesc:a6aeab1283c362deb08881e606f3aa00a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the default, automatically generated CommandPool.  <a href="#a6aeab1283c362deb08881e606f3aa00a">More...</a><br/></td></tr>
 <tr class="separator:a6aeab1283c362deb08881e606f3aa00a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -235,6 +239,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac6ba74fc8ec6284074c9a3bc976a585b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classpvr_1_1_i_platform_context.html">IPlatformContext</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ac6ba74fc8ec6284074c9a3bc976a585b">getPlatformContext</a> () const =0</td></tr>
 <tr class="memdesc:ac6ba74fc8ec6284074c9a3bc976a585b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the <a class="el" href="classpvr_1_1_i_platform_context.html" title="Interface for the Platform context. Contains the necessary operations needed to get the context requi...">IPlatformContext</a> object powering this GraphicsContext.  <a href="#ac6ba74fc8ec6284074c9a3bc976a585b">More...</a><br/></td></tr>
 <tr class="separator:ac6ba74fc8ec6284074c9a3bc976a585b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea9eff125221c7878cc5e5cd87193008"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#aea9eff125221c7878cc5e5cd87193008">getSwapChainLength</a> () const </td></tr>
+<tr class="memdesc:aea9eff125221c7878cc5e5cd87193008"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of <a class="el" href="classpvr_1_1_multi.html" title="A small statically allocated array This class represents a small array of items. The array is statica...">Multi</a> buffer supported.  <a href="#aea9eff125221c7878cc5e5cd87193008">More...</a><br/></td></tr>
+<tr class="separator:aea9eff125221c7878cc5e5cd87193008"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab15994854eb809ceb39451fece16d95c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ab15994854eb809ceb39451fece16d95c">hasApiCapability</a> (<a class="el" href="structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2">ApiCapabilities::Enum</a> capability) const </td></tr>
 <tr class="memdesc:ab15994854eb809ceb39451fece16d95c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <a class="el" href="structpvr_1_1_api_capabilities.html" title="Struct containing the API capabilities of a specified configuration. ">ApiCapabilities</a> object representing the capabilities of this GraphicsContext.  <a href="#ab15994854eb809ceb39451fece16d95c">More...</a><br/></td></tr>
 <tr class="separator:ab15994854eb809ceb39451fece16d95c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -244,9 +251,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa5ffdcce60d4ad8706e84c41b986339c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#aa5ffdcce60d4ad8706e84c41b986339c">hasApiCapabilityNatively</a> (<a class="el" href="structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2">ApiCapabilities::Enum</a> capability) const </td></tr>
 <tr class="memdesc:aa5ffdcce60d4ad8706e84c41b986339c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <a class="el" href="structpvr_1_1_api_capabilities.html" title="Struct containing the API capabilities of a specified configuration. ">ApiCapabilities</a> object representing the capabilities of this GraphicsContext.  <a href="#aa5ffdcce60d4ad8706e84c41b986339c">More...</a><br/></td></tr>
 <tr class="separator:aa5ffdcce60d4ad8706e84c41b986339c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8e284ced370eef4149cff9c301120fa"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bb">Result::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#ac8e284ced370eef4149cff9c301120fa">init</a> (<a class="el" href="classpvr_1_1_o_s_manager.html">OSManager</a> &amp;osManager, <a class="el" href="namespacepvr.html#a2ccaf74f96ba78d1629ddd21a2a7d647">GraphicsContext</a> &amp;this_ref)=0</td></tr>
-<tr class="memdesc:ac8e284ced370eef4149cff9c301120fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call this function to initialize the Context using the information of a specific <a class="el" href="classpvr_1_1_o_s_manager.html" title="This interface abstracts the part of the Shell that will provide the Display and the Window so that t...">OSManager</a> (usually, the Shell instance).  <a href="#ac8e284ced370eef4149cff9c301120fa">More...</a><br/></td></tr>
-<tr class="separator:ac8e284ced370eef4149cff9c301120fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77ba462367af71990bebbb9463bc0eb3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bb">Result::Enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a77ba462367af71990bebbb9463bc0eb3">init</a> (<a class="el" href="classpvr_1_1_o_s_manager.html">OSManager</a> &amp;osManager)=0</td></tr>
+<tr class="memdesc:a77ba462367af71990bebbb9463bc0eb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call this function to initialize the Context using the information of a specific <a class="el" href="classpvr_1_1_o_s_manager.html" title="This interface abstracts the part of the Shell that will provide the Display and the Window so that t...">OSManager</a> (usually, the Shell instance).  <a href="#a77ba462367af71990bebbb9463bc0eb3">More...</a><br/></td></tr>
+<tr class="separator:a77ba462367af71990bebbb9463bc0eb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbe93a0a76e18d5de06876d1b6c9ecc2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#abbe93a0a76e18d5de06876d1b6c9ecc2">isExtensionSupported</a> (const <a class="el" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a> *extension) const =0</td></tr>
 <tr class="memdesc:abbe93a0a76e18d5de06876d1b6c9ecc2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if a specific extension is supported.  <a href="#abbe93a0a76e18d5de06876d1b6c9ecc2">More...</a><br/></td></tr>
 <tr class="separator:abbe93a0a76e18d5de06876d1b6c9ecc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -263,6 +270,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a90844cc56ec06a167335b3e31140fe69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wait until all pending operations are done.  <a href="#a90844cc56ec06a167335b3e31140fe69">More...</a><br/></td></tr>
 <tr class="separator:a90844cc56ec06a167335b3e31140fe69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a0e79c6a5c76ed65326115af6fc7b04dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a2ccaf74f96ba78d1629ddd21a2a7d647">GraphicsContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a0e79c6a5c76ed65326115af6fc7b04dd">getWeakRef</a> ()</td></tr>
+<tr class="separator:a0e79c6a5c76ed65326115af6fc7b04dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a2ddc0c15ec67fb95d0debd0fab071544"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1_api_capabilities.html">ApiCapabilities</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a2ddc0c15ec67fb95d0debd0fab071544">m_apiCapabilities</a></td></tr>
@@ -271,12 +283,10 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a7db8b24e9d7f03962dc837736829ac10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a8c1dd0f0ab95ac18dd29263a50338e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_o_s_manager.html">OSManager</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a0a8c1dd0f0ab95ac18dd29263a50338e">m_osManager</a></td></tr>
 <tr class="separator:a0a8c1dd0f0ab95ac18dd29263a50338e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c7fa7ef383465aa8e36cdb8caf93cab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a2ccaf74f96ba78d1629ddd21a2a7d647">GraphicsContext</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a8c7fa7ef383465aa8e36cdb8caf93cab">m_this_shared</a></td></tr>
-<tr class="separator:a8c7fa7ef383465aa8e36cdb8caf93cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:a0ca4549023f46c98cf92cc872200cb65"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a8357dfb6620753eebbadf407c650d8a7">GraphicsContextStrongReference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a0ca4549023f46c98cf92cc872200cb65">createGraphicsContext</a> ()</td></tr>
+<tr class="memitem:a0ca4549023f46c98cf92cc872200cb65"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#aeed0e66b0e3f4fb5f378b808f2b9bd1e">GraphicsContextStrongReference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_i_graphics_context.html#a0ca4549023f46c98cf92cc872200cb65">createGraphicsContext</a> ()</td></tr>
 <tr class="memdesc:a0ca4549023f46c98cf92cc872200cb65"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function is implemented in PVRApi, in order to return a pointer to the actual Graphics Context.  <a href="#a0ca4549023f46c98cf92cc872200cb65">More...</a><br/></td></tr>
 <tr class="separator:a0ca4549023f46c98cf92cc872200cb65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -1492,6 +1502,24 @@ Friends</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a911296bb4d47bb2bda31dbb3d8fb19dc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pvr::IGraphicsContext::getCurrentSwapChain </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the current swapchain index. </p>
+<hr/>
+ 
+</div>
+</div>
 <a class="anchor" id="a6aeab1283c362deb08881e606f3aa00a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1668,6 +1696,47 @@ Friends</h2></td></tr>
  
 </div>
 </div>
+<a class="anchor" id="aea9eff125221c7878cc5e5cd87193008"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pvr::IGraphicsContext::getSwapChainLength </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the number of <a class="el" href="classpvr_1_1_multi.html" title="A small statically allocated array This class represents a small array of items. The array is statica...">Multi</a> buffer supported. </p>
+<hr/>
+ 
+</div>
+</div>
+<a class="anchor" id="a0e79c6a5c76ed65326115af6fc7b04dd"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr.html#a2ccaf74f96ba78d1629ddd21a2a7d647">GraphicsContext</a> pvr::IGraphicsContext::getWeakRef </td>
+          <td>(</td>
+          <td class="paramname">)</td><td></td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="ab15994854eb809ceb39451fece16d95c"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1749,7 +1818,7 @@ Friends</h2></td></tr>
  
 </div>
 </div>
-<a class="anchor" id="ac8e284ced370eef4149cff9c301120fa"></a>
+<a class="anchor" id="a77ba462367af71990bebbb9463bc0eb3"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1760,18 +1829,8 @@ Friends</h2></td></tr>
           <td class="memname">virtual <a class="el" href="namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bb">Result::Enum</a> pvr::IGraphicsContext::init </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classpvr_1_1_o_s_manager.html">OSManager</a> &amp;&#160;</td>
-          <td class="paramname"><em>osManager</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>osManager</em>)</td><td></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a2ccaf74f96ba78d1629ddd21a2a7d647">GraphicsContext</a> &amp;&#160;</td>
-          <td class="paramname"><em>this_ref</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -1976,7 +2035,7 @@ Friends</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr.html#a8357dfb6620753eebbadf407c650d8a7">GraphicsContextStrongReference</a> createGraphicsContext </td>
+          <td class="memname"><a class="el" href="namespacepvr.html#aeed0e66b0e3f4fb5f378b808f2b9bd1e">GraphicsContextStrongReference</a> createGraphicsContext </td>
           <td>(</td>
           <td class="paramname">)</td><td></td>
           <td></td>
@@ -2045,26 +2104,6 @@ Friends</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="classpvr_1_1_o_s_manager.html">OSManager</a>* pvr::IGraphicsContext::m_osManager</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a8c7fa7ef383465aa8e36cdb8caf93cab"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacepvr.html#a2ccaf74f96ba78d1629ddd21a2a7d647">GraphicsContext</a> pvr::IGraphicsContext::m_this_shared</td>
         </tr>
       </table>
   </td>

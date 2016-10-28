@@ -21,9 +21,7 @@ var searchData=
   ['vertexattrib4fv',['VertexAttrib4fv',['../classgl.html#abdf04e329526f1ff937233e9aba3f0a7',1,'gl']]],
   ['vertexattribdivisorangle',['VertexAttribDivisorANGLE',['../classglext.html#a3b3ded922ecea5316167f5897f50b79e',1,'glext']]],
   ['vertexattribpointer',['VertexAttribPointer',['../classgl.html#a2dbd7cae03bea26f20bfd2015a6c50f2',1,'gl']]],
-  ['view',['view',['../structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html#ab5530fa8aafd965a21b97bb13520674f',1,'pvr::apiutils::vulkan::DisplaySurface']]],
   ['viewport',['viewport',['../structpvr_1_1api_1_1vulkan_1_1_graphics_pipeline_create_info_vulkan.html#a0511448fffa37fd5745b5fe3fb23990a',1,'pvr::api::vulkan::GraphicsPipelineCreateInfoVulkan::viewport()'],['../classgl.html#a119b499a65a9a04b12d1a167a8255e51',1,'gl::Viewport()']]],
-  ['views',['views',['../structpvr_1_1apiutils_1_1vulkan_1_1_display_surface.html#ae46f4bbf21ec90581ad3023a9d42f55c',1,'pvr::apiutils::vulkan::DisplaySurface']]],
   ['vk',['vk',['../classvk.html',1,'']]],
   ['vkdummy',['VKdummy',['../structpvr_1_1native_1_1_v_kdummy.html',1,'pvr::native']]],
   ['vkerrors_2eh',['VkErrors.h',['../_vk_errors_8h.html',1,'']]],
@@ -32,6 +30,5 @@ var searchData=
   ['vkthrowiffailed',['vkThrowIfFailed',['../namespacepvr.html#a95a4c9c3ddf71c5576ff7ef275d7f914',1,'pvr']]],
   ['void',['void',['../_api_gles2_8h.html#a464f1c9ac53c893b2922c7c94977ddee',1,'void(PVR_APIENTRY *PROC_ES2_glActiveTexture)(GLenum texture):&#160;ApiGles2.h'],['../_api_gles3_8h.html#a1966bca2ae2a1105f5b03eb61112abd6',1,'void(PVR_APIENTRY *PROC_ES3_glReadBuffer)(GLenum src):&#160;ApiGles3.h'],['../_api_gles31_8h.html#a5a6b5046c1cbd18277ddc42f7fafa725',1,'void(PVR_APIENTRY *PROC_ES31_glDispatchCompute)(GLuint num_groups_x:&#160;ApiGles31.h'],['../_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95',1,'void(GL_APIENTRYP GLDEBUGPROCKHR)(GLenum source:&#160;ApiGlesExt.h']]],
   ['vulkanbindings_2ecpp',['VulkanBindings.cpp',['../_vulkan_bindings_8cpp.html',1,'']]],
-  ['vulkanbindings_2eh',['VulkanBindings.h',['../_vulkan_bindings_8h.html',1,'']]],
-  ['vulkanutils_2eh',['VulkanUtils.h',['../_vulkan_utils_8h.html',1,'']]]
+  ['vulkanbindings_2eh',['VulkanBindings.h',['../_vulkan_bindings_8h.html',1,'']]]
 ];

@@ -11,7 +11,7 @@
 #include "PVRAssets/Texture/TextureHeader.h"
 #include "PVRAssets/Texture/TextureFormats.h"
 #include "PVRAssets/FileIO/FileDefinesDDS.h"
-#include "PVRAssets/Texture/PixelFormat.h"
+#include "PVRAssets/PixelFormat.h"
 #include "PVRCore/Log.h"
 #include <algorithm>
 using std::string;
@@ -24,7 +24,7 @@ TextureHeader::TextureHeader()
 {
 	m_header.flags            = 0;
 	m_header.pixelFormat      = CompressedPixelFormat::NumCompressedPFs;
-    m_header.colorSpace       = ColorSpace::lRGB;
+	m_header.colorSpace       = ColorSpace::lRGB;
 	m_header.channelType      = VariableType::UnsignedByteNorm;
 	m_header.height           = 1;
 	m_header.width            = 1;
@@ -35,14 +35,9 @@ TextureHeader::TextureHeader()
 	m_header.metaDataSize     = 0;
 }
 
-TextureHeader::TextureHeader(const TextureHeader& rhs)
-{
-	//Copy the header over.
-	m_header = rhs.m_header;
-	m_metaDataMap = rhs.m_metaDataMap;
-}
 
-TextureHeader::TextureHeader(TextureHeader::Header& header) : m_header(header){}
+
+TextureHeader::TextureHeader(TextureHeader::Header& header) : m_header(header) {}
 
 TextureHeader::TextureHeader(Header fileHeader, uint32 metaDataCount, TextureMetaData* metaData)
 	: m_header(fileHeader)
@@ -57,8 +52,8 @@ TextureHeader::TextureHeader(Header fileHeader, uint32 metaDataCount, TextureMet
 }
 
 TextureHeader::TextureHeader(PixelFormat pixelFormat, uint32 width, uint32 height, uint32 depth, uint32 mipMapCount,
-	types::ColorSpace::Enum colorSpace, VariableType::Enum channelType,uint32 numberOfSurfaces, uint32 numberOfFaces,
-	uint32 flags, TextureMetaData* metaData, uint32 metaDataSize)
+                             types::ColorSpace colorSpace, VariableType channelType, uint32 numberOfSurfaces, uint32 numberOfFaces,
+                             uint32 flags, TextureMetaData* metaData, uint32 metaDataSize)
 {
 	m_header.pixelFormat = pixelFormat;
 	m_header.width = width, m_header.height = height, m_header.depth = depth;
@@ -75,34 +70,6 @@ TextureHeader::TextureHeader(PixelFormat pixelFormat, uint32 width, uint32 heigh
 			addMetaData(metaData[i]);
 		}
 	}
-}
-
-
-
-TextureHeader& TextureHeader::operator=(const TextureHeader& rhs)
-{
-	//If it equals itself, return early.
-	if (&rhs == this)
-	{
-		return *this;
-	}
-
-	//Copy the header over.
-	m_header = rhs.m_header;
-	m_metaDataMap = rhs.m_metaDataMap;
-
-	//Return
-	return *this;
-}
-
-TextureHeader::Header TextureHeader::getFileHeader() const
-{
-	return m_header;
-}
-
-TextureHeader::Header& TextureHeader::getFileHeaderAccess()
-{
-	return m_header;
 }
 
 
@@ -139,11 +106,7 @@ const string TextureHeader::getCubeMapOrder() const
 }
 
 
-PixelFormat TextureHeader::getPixelFormat() const
-{
-	PixelFormat pt(m_header.pixelFormat);
-	return pt;
-}
+
 
 uint32 TextureHeader::getBitsPerPixel() const
 {
@@ -156,38 +119,38 @@ uint32 TextureHeader::getBitsPerPixel() const
 	{
 		switch (getPixelFormat().getPixelTypeId())
 		{
-		case CompressedPixelFormat::BW1bpp:
+		case (uint64)CompressedPixelFormat::BW1bpp:
 			return 1;
-		case CompressedPixelFormat::PVRTCI_2bpp_RGB:
-		case CompressedPixelFormat::PVRTCI_2bpp_RGBA:
-		case CompressedPixelFormat::PVRTCII_2bpp:
+		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGB:
+		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA:
+		case (uint64)CompressedPixelFormat::PVRTCII_2bpp:
 			return 2;
-		case CompressedPixelFormat::PVRTCI_4bpp_RGB:
-		case CompressedPixelFormat::PVRTCI_4bpp_RGBA:
-		case CompressedPixelFormat::PVRTCII_4bpp:
-		case CompressedPixelFormat::ETC1:
-		case CompressedPixelFormat::EAC_R11:
-		case CompressedPixelFormat::ETC2_RGB:
-		case CompressedPixelFormat::ETC2_RGB_A1:
-		case CompressedPixelFormat::DXT1:
-		case CompressedPixelFormat::BC4:
+		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGB:
+		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA:
+		case (uint64)CompressedPixelFormat::PVRTCII_4bpp:
+		case (uint64)CompressedPixelFormat::ETC1:
+		case (uint64)CompressedPixelFormat::EAC_R11:
+		case (uint64)CompressedPixelFormat::ETC2_RGB:
+		case (uint64)CompressedPixelFormat::ETC2_RGB_A1:
+		case (uint64)CompressedPixelFormat::DXT1:
+		case (uint64)CompressedPixelFormat::BC4:
 			return 4;
-		case CompressedPixelFormat::DXT2:
-		case CompressedPixelFormat::DXT3:
-		case CompressedPixelFormat::DXT4:
-		case CompressedPixelFormat::DXT5:
-		case CompressedPixelFormat::BC5:
-		case CompressedPixelFormat::EAC_RG11:
-		case CompressedPixelFormat::ETC2_RGBA:
+		case (uint64)CompressedPixelFormat::DXT2:
+		case (uint64)CompressedPixelFormat::DXT3:
+		case (uint64)CompressedPixelFormat::DXT4:
+		case (uint64)CompressedPixelFormat::DXT5:
+		case (uint64)CompressedPixelFormat::BC5:
+		case (uint64)CompressedPixelFormat::EAC_RG11:
+		case (uint64)CompressedPixelFormat::ETC2_RGBA:
 			return 8;
-		case CompressedPixelFormat::YUY2:
-		case CompressedPixelFormat::UYVY:
-		case CompressedPixelFormat::RGBG8888:
-		case CompressedPixelFormat::GRGB8888:
+		case (uint64)CompressedPixelFormat::YUY2:
+		case (uint64)CompressedPixelFormat::UYVY:
+		case (uint64)CompressedPixelFormat::RGBG8888:
+		case (uint64)CompressedPixelFormat::GRGB8888:
 			return 16;
-		case CompressedPixelFormat::SharedExponentR9G9B9E5:
+		case (uint64)CompressedPixelFormat::SharedExponentR9G9B9E5:
 			return 32;
-		case CompressedPixelFormat::NumCompressedPFs:
+		case (uint64)CompressedPixelFormat::NumCompressedPFs:
 			return 0;
 		}
 	}
@@ -208,85 +171,74 @@ void TextureHeader::getMinDimensionsForFormat(uint32& minX, uint32& minY, uint32
 
 		switch (getPixelFormat().getPixelTypeId())
 		{
-		case CompressedPixelFormat::DXT1:
-		case CompressedPixelFormat::DXT2:
-		case CompressedPixelFormat::DXT3:
-		case CompressedPixelFormat::DXT4:
-		case CompressedPixelFormat::DXT5:
-		case CompressedPixelFormat::BC4:
-		case CompressedPixelFormat::BC5:
-		case CompressedPixelFormat::ETC1:
-		case CompressedPixelFormat::ETC2_RGB:
-		case CompressedPixelFormat::ETC2_RGBA:
-		case CompressedPixelFormat::ETC2_RGB_A1:
-		case CompressedPixelFormat::EAC_R11:
-		case CompressedPixelFormat::EAC_RG11:
+		case (uint64)CompressedPixelFormat::DXT1:
+		case (uint64)CompressedPixelFormat::DXT2:
+		case (uint64)CompressedPixelFormat::DXT3:
+		case (uint64)CompressedPixelFormat::DXT4:
+		case (uint64)CompressedPixelFormat::DXT5:
+		case (uint64)CompressedPixelFormat::BC4:
+		case (uint64)CompressedPixelFormat::BC5:
+		case (uint64)CompressedPixelFormat::ETC1:
+		case (uint64)CompressedPixelFormat::ETC2_RGB:
+		case (uint64)CompressedPixelFormat::ETC2_RGBA:
+		case (uint64)CompressedPixelFormat::ETC2_RGB_A1:
+		case (uint64)CompressedPixelFormat::EAC_R11:
+		case (uint64)CompressedPixelFormat::EAC_RG11:
 			minX = 4;
 			minY = 4;
 			minZ = 1;
 			break;
-		case CompressedPixelFormat::PVRTCI_4bpp_RGB:
-		case CompressedPixelFormat::PVRTCI_4bpp_RGBA:
+		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGB:
+		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA:
 			minX = 8;
 			minY = 8;
 			minZ = 1;
 			break;
-		case CompressedPixelFormat::PVRTCI_2bpp_RGB:
-		case CompressedPixelFormat::PVRTCI_2bpp_RGBA:
+		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGB:
+		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA:
 			minX = 16;
 			minY = 8;
 			minZ = 1;
 			break;
-		case CompressedPixelFormat::PVRTCII_4bpp:
+		case (uint64)CompressedPixelFormat::PVRTCII_4bpp:
 			minX = 4;
 			minY = 4;
 			minZ = 1;
 			break;
-		case CompressedPixelFormat::PVRTCII_2bpp:
+		case (uint64)CompressedPixelFormat::PVRTCII_2bpp:
 			minX = 8;
 			minY = 4;
 			minZ = 1;
 			break;
-		case CompressedPixelFormat::UYVY:
-		case CompressedPixelFormat::YUY2:
-		case CompressedPixelFormat::RGBG8888:
-		case CompressedPixelFormat::GRGB8888:
+		case (uint64)CompressedPixelFormat::UYVY:
+		case (uint64)CompressedPixelFormat::YUY2:
+		case (uint64)CompressedPixelFormat::RGBG8888:
+		case (uint64)CompressedPixelFormat::GRGB8888:
 			minX = 2;
 			minY = 1;
 			minZ = 1;
 			break;
-		case CompressedPixelFormat::BW1bpp:
+		case (uint64)CompressedPixelFormat::BW1bpp:
 			minX = 8;
 			minY = 1;
 			minZ = 1;
 			break;
 		//Error
-		case CompressedPixelFormat::NumCompressedPFs:
+		case (uint64)CompressedPixelFormat::NumCompressedPFs:
 			break;
 		}
 	}
 }
 
-ColorSpace::Enum TextureHeader::getColorSpace() const
-{
-	return static_cast<ColorSpace::Enum>(m_header.colorSpace);
-}
-
-VariableType::Enum TextureHeader::getChannelType() const
-{
-	return static_cast<VariableType::Enum>(m_header.channelType);
-}
-
-
 void TextureHeader::setBumpMap(float bumpScale, string bumpOrder)
 {
-    if(bumpOrder.find_first_not_of("xyzh") != std::string::npos)
-    {
-        assertion(false ,  "Invalid Bumpmap order string");
-        pvr::Log("Invalid Bumpmap order string");
-        return;
-    }
-    //Get a reference to the meta data block.
+	if (bumpOrder.find_first_not_of("xyzh") != std::string::npos)
+	{
+		assertion(false ,  "Invalid Bumpmap order string");
+		pvr::Log("Invalid Bumpmap order string");
+		return;
+	}
+	//Get a reference to the meta data block.
 	TextureMetaData& bumpMetaData = m_metaDataMap[Header::PVRv3][TextureMetaData::IdentifierBumpData];
 
 	//Check if it's already been set or not.
@@ -308,7 +260,7 @@ void TextureHeader::setBumpMap(float bumpScale, string bumpOrder)
 	m_header.metaDataSize += bumpMetaData.getTotalSizeInMemory();
 }
 
-const TextureMetaData::AxisOrientation TextureHeader::getOrientation(TextureMetaData::Axis axis) const
+TextureMetaData::AxisOrientation TextureHeader::getOrientation(TextureMetaData::Axis axis) const
 {
 	//Make sure the meta block exists
 
@@ -335,17 +287,17 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 	notAlpha = false;
 	if (getPixelFormat().getPart().High == 0)
 	{
-		if (getPixelFormat().getPixelTypeId() == CompressedPixelFormat::RGBG8888)
+		if (getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::RGBG8888)
 		{
 			dxgiFormat = texture_dds::DXGI_FORMAT_R8G8_B8G8_UNORM;
 			return true;
 		}
-		if (getPixelFormat().getPixelTypeId() == CompressedPixelFormat::GRGB8888)
+		if (getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::GRGB8888)
 		{
 			dxgiFormat = texture_dds::DXGI_FORMAT_G8R8_G8B8_UNORM;
 			return true;
 		}
-		if (getPixelFormat().getPixelTypeId() == CompressedPixelFormat::BW1bpp)
+		if (getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::BW1bpp)
 		{
 			dxgiFormat = texture_dds::DXGI_FORMAT_R1_UNORM;
 			return true;
@@ -355,7 +307,7 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 		{
 			switch (getPixelFormat().getPixelTypeId())
 			{
-			case CompressedPixelFormat::BC1:
+			case (uint64)CompressedPixelFormat::BC1:
 				if (getColorSpace() == ColorSpace::sRGB)
 				{
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC1_UNORM_SRGB;
@@ -366,7 +318,7 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC1_UNORM;
 					return true;
 				}
-			case CompressedPixelFormat::BC2:
+			case (uint64)CompressedPixelFormat::BC2:
 				if (getColorSpace() == ColorSpace::sRGB)
 				{
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC2_UNORM_SRGB;
@@ -377,7 +329,7 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC2_UNORM;
 					return true;
 				}
-			case CompressedPixelFormat::BC3:
+			case (uint64)CompressedPixelFormat::BC3:
 				if (getColorSpace() == ColorSpace::sRGB)
 				{
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC3_UNORM_SRGB;
@@ -388,10 +340,10 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC3_UNORM;
 					return true;
 				}
-			case CompressedPixelFormat::BC4:
+			case (uint64)CompressedPixelFormat::BC4:
 				dxgiFormat = texture_dds::DXGI_FORMAT_BC4_UNORM;
 				return true;
-			case CompressedPixelFormat::BC5:
+			case (uint64)CompressedPixelFormat::BC5:
 				dxgiFormat = texture_dds::DXGI_FORMAT_BC5_UNORM;
 				return true;
 			}
@@ -399,12 +351,12 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 		else if (getChannelType() == VariableType::SignedIntegerNorm || getChannelType() == VariableType::SignedShortNorm ||
 		         getChannelType() == VariableType::SignedByteNorm)
 		{
-			if (getPixelFormat().getPixelTypeId() == CompressedPixelFormat::BC4)
+			if (getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::BC4)
 			{
 				dxgiFormat = texture_dds::DXGI_FORMAT_BC4_SNORM;
 				return true;
 			}
-			if (getPixelFormat().getPixelTypeId() == CompressedPixelFormat::BC5)
+			if (getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::BC5)
 			{
 				dxgiFormat = texture_dds::DXGI_FORMAT_BC5_SNORM;
 				return true;
@@ -732,39 +684,39 @@ bool TextureHeader::getDirect3DFormat(uint32& d3dFormat) const
 	{
 		switch (getPixelFormat().getPixelTypeId())
 		{
-		case CompressedPixelFormat::DXT1:
+		case (uint64)CompressedPixelFormat::DXT1:
 			d3dFormat = texture_dds::D3DFMT_DXT1;
 			return true;
-		case CompressedPixelFormat::DXT2:
+		case (uint64)CompressedPixelFormat::DXT2:
 			d3dFormat = texture_dds::D3DFMT_DXT2;
 			return true;
-		case CompressedPixelFormat::DXT3:
+		case (uint64)CompressedPixelFormat::DXT3:
 			d3dFormat = texture_dds::D3DFMT_DXT3;
 			return true;
-		case CompressedPixelFormat::DXT4:
+		case (uint64)CompressedPixelFormat::DXT4:
 			d3dFormat = texture_dds::D3DFMT_DXT4;
 			return true;
-		case CompressedPixelFormat::DXT5:
+		case (uint64)CompressedPixelFormat::DXT5:
 			d3dFormat = texture_dds::D3DFMT_DXT5;
 			return true;
-		case CompressedPixelFormat::PVRTCI_2bpp_RGB:
-		case CompressedPixelFormat::PVRTCI_2bpp_RGBA:
+		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGB:
+		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA:
 			d3dFormat = texture_dds::D3DFMT_PVRTC2;
 			return true;
-		case CompressedPixelFormat::PVRTCI_4bpp_RGB:
-		case CompressedPixelFormat::PVRTCI_4bpp_RGBA:
+		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGB:
+		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA:
 			d3dFormat = texture_dds::D3DFMT_PVRTC4;
 			return true;
-		case CompressedPixelFormat::YUY2:
+		case (uint64)CompressedPixelFormat::YUY2:
 			d3dFormat = texture_dds::D3DFMT_YUY2;
 			return true;
-		case CompressedPixelFormat::UYVY:
+		case (uint64)CompressedPixelFormat::UYVY:
 			d3dFormat = texture_dds::D3DFMT_UYVY;
 			return true;
-		case CompressedPixelFormat::RGBG8888:
+		case (uint64)CompressedPixelFormat::RGBG8888:
 			d3dFormat = texture_dds::D3DFMT_R8G8_B8G8;
 			return true;
-		case CompressedPixelFormat::GRGB8888:
+		case (uint64)CompressedPixelFormat::GRGB8888:
 			d3dFormat = texture_dds::D3DFMT_G8R8_G8B8;
 			return true;
 		}
@@ -955,42 +907,6 @@ bool TextureHeader::getDirect3DFormat(uint32& d3dFormat) const
 	return false;
 }
 
-uint32 TextureHeader::getWidth(uint32 uiMipLevel) const
-{
-	//If MipLevel does not exist, return no uiDataSize.
-	if (uiMipLevel > m_header.mipMapCount)
-	{
-		return 0;
-	}
-	return std::max<uint32>(m_header.width >> uiMipLevel, 1);
-}
-
-uint32 TextureHeader::getHeight(uint32 uiMipLevel) const
-{
-	//If MipLevel does not exist, return no uiDataSize.
-	if (uiMipLevel > m_header.mipMapCount)
-	{
-		return 0;
-	}
-	return std::max<uint32>(m_header.height >> uiMipLevel, 1);
-}
-
-uint32 TextureHeader::getDepth(uint32 uiMipLevel) const
-{
-	//If MipLevel does not exist, return no uiDataSize.
-	if (uiMipLevel > m_header.mipMapCount)
-	{
-		return 0;
-	}
-	return std::max<uint32>(m_header.depth >> uiMipLevel, 1);
-}
-
-uint32 TextureHeader::getTextureSize(int32 iMipLevel, bool bAllSurfaces, bool bAllFaces) const
-{
-	return (uint32)(((uint64)8 * (uint64)getDataSize(iMipLevel, bAllSurfaces,
-	                      bAllFaces)) / (uint64)getBitsPerPixel());
-}
-
 uint32 TextureHeader::getDataSize(int32 iMipLevel, bool bAllSurfaces, bool bAllFaces) const
 {
 	//The smallest divisible sizes for a pixel format
@@ -1054,8 +970,7 @@ uint32 TextureHeader::getDataSize(int32 iMipLevel, bool bAllSurfaces, bool bAllF
 	return (uint32)(uiDataSize / 8) * numsurfs * numfaces;
 }
 
-ptrdiff_t TextureHeader::getDataOffset(uint32 mipMapLevel/*= 0*/, uint32 arrayMember/*= 0*/,
-                                       uint32 face/*= 0*/) const
+ptrdiff_t TextureHeader::getDataOffset(uint32 mipMapLevel/*= 0*/, uint32 arrayMember/*= 0*/, uint32 face/*= 0*/) const
 {
 	//Initialize the offSet value.
 	uint32 uiOffSet = 0;
@@ -1097,57 +1012,6 @@ ptrdiff_t TextureHeader::getDataOffset(uint32 mipMapLevel/*= 0*/, uint32 arrayMe
 
 	//Return the data pointer plus whatever offSet has been specified.
 	return uiOffSet;
-}
-
-uint32 TextureHeader::getNumberOfArrayMembers() const
-{
-	return m_header.numberOfSurfaces;
-}
-
-uint32 TextureHeader::getNumberOfMIPLevels() const
-{
-	return m_header.mipMapCount;
-}
-
-uint32 TextureHeader::getNumberOfFaces() const
-{
-	return m_header.numberOfFaces;
-}
-
-const map<uint32, map<uint32, TextureMetaData> >* const TextureHeader::getMetaDataMap() const
-{
-	return &m_metaDataMap;
-}
-
-
-bool TextureHeader::isFileCompressed() const
-{
-	return (m_header.flags & Header::CompressedFlag) != 0;
-}
-
-bool TextureHeader::isPreMultiplied() const
-{
-	return (m_header.flags & Header::PremultipliedFlag) != 0;
-}
-
-uint32 TextureHeader::getMetaDataSize() const
-{
-	return m_header.metaDataSize;
-}
-
-void TextureHeader::setPixelFormat(PixelFormat pixelFormat)
-{
-	m_header.pixelFormat = pixelFormat.getPixelTypeId();
-}
-
-void TextureHeader::setColorSpace(ColorSpace::Enum colorSpace)
-{
-	m_header.colorSpace = colorSpace;
-}
-
-void TextureHeader::setChannelType(VariableType::Enum varType)
-{
-	m_header.channelType = varType;
 }
 
 bool TextureHeader::setopenGLFormat(uint32 glInternalFormat, uint32, uint32 glType)
@@ -3092,7 +2956,6 @@ bool TextureHeader::setDirectXGIFormat(uint32 dxgiFormat)
 	return false;
 }
 
-
 void TextureHeader::setOrientation(TextureMetaData::AxisOrientation eAxisOrientation)
 {
 	//Get a reference to the meta data block.
@@ -3153,17 +3016,16 @@ void TextureHeader::setOrientation(TextureMetaData::AxisOrientation eAxisOrienta
 	}
 }
 
-
 void TextureHeader::setCubeMapOrder(string cubeMapOrder)
 {
-    if(cubeMapOrder.find_first_not_of("xXyYzZ") != std::string::npos)
-    {
-        assertion(false , "Invalid cubemap order string");
-        pvr::Log("Invalid cubemap order string");
-        return;
-    }
+	if (cubeMapOrder.find_first_not_of("xXyYzZ") != std::string::npos)
+	{
+		assertion(false , "Invalid cubemap order string");
+		pvr::Log("Invalid cubemap order string");
+		return;
+	}
 
-    //Get a reference to the meta data block.
+	//Get a reference to the meta data block.
 	TextureMetaData& cubeOrderMetaData = m_metaDataMap[Header::PVRv3][TextureMetaData::IdentifierCubeMapOrder];
 
 	//Check if it's already been set or not.
@@ -3173,64 +3035,10 @@ void TextureHeader::setCubeMapOrder(string cubeMapOrder)
 	}
 
 	cubeOrderMetaData = TextureMetaData(Header::PVRv3, TextureMetaData::IdentifierCubeMapOrder,
-                          (std::min)((uint32)cubeMapOrder.length(), 6u),reinterpret_cast<const byte*>(cubeMapOrder.data()));
+	                                    (std::min)((uint32)cubeMapOrder.length(), 6u), reinterpret_cast<const byte*>(cubeMapOrder.data()));
 
 	//Increment the meta data size.
 	m_header.metaDataSize += cubeOrderMetaData.getTotalSizeInMemory();
-}
-
-void TextureHeader::setWidth(uint32 newWidth)
-{
-	m_header.width = newWidth;
-}
-
-void TextureHeader::setHeight(uint32 newHeight)
-{
-	m_header.height = newHeight;
-}
-
-void TextureHeader::setDepth(uint32 newDepth)
-{
-	m_header.depth = newDepth;
-}
-
-void TextureHeader::setNumberOfArrayMembers(uint32 newNumMembers)
-{
-	m_header.numberOfSurfaces = newNumMembers;
-}
-
-void TextureHeader::setNumberOfMIPLevels(uint32 newNumMIPLevels)
-{
-	m_header.mipMapCount = newNumMIPLevels;
-}
-
-void TextureHeader::setNumberOfFaces(uint32 newNumFaces)
-{
-	m_header.numberOfFaces = newNumFaces;
-}
-
-void TextureHeader::setIsFileCompressed(bool isFileCompressed)
-{
-	if (isFileCompressed)
-	{
-		m_header.flags |= Header::CompressedFlag;
-	}
-	else
-	{
-		m_header.flags &= !Header::CompressedFlag;
-	}
-}
-
-void TextureHeader::setIsPreMultiplied(bool isPreMultiplied)
-{
-	if (isPreMultiplied)
-	{
-		m_header.flags |= Header::PremultipliedFlag;
-	}
-	else
-	{
-		m_header.flags &= !Header::PremultipliedFlag;
-	}
 }
 
 void TextureHeader::addMetaData(const TextureMetaData& metaData)

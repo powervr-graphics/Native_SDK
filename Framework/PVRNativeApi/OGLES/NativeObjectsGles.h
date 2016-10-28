@@ -19,14 +19,14 @@ struct GLdummy { };
 #define DECLARE_NATIVE_TYPE(_framework_type_, _native_type_) \
 struct _framework_type_\
 {\
-	typedef _native_type_ NativeType;\
-	NativeType handle;\
-	_framework_type_() : handle(_native_type_()) {} \
-	_framework_type_(NativeType handle) : handle(handle) {} \
-	operator const NativeType&() const { return handle; }\
-	operator NativeType&() { return handle; }\
-	const NativeType& operator*() const { return handle; }\
-	NativeType& operator*() { return handle; }\
+  typedef _native_type_ NativeType;\
+  NativeType handle;\
+  _framework_type_() : handle(_native_type_()) {} \
+  _framework_type_(NativeType handle) : handle(handle) {} \
+  operator const NativeType&() const { return handle; }\
+  operator NativeType&() { return handle; }\
+  const NativeType& operator*() const { return handle; }\
+  NativeType& operator*() { return handle; }\
 };
 #define DECLARE_DUMMY_TYPE(_framework_type_) struct _framework_type_{ typedef void NativeType; };
 
@@ -36,6 +36,7 @@ DECLARE_NATIVE_TYPE(HBuffer_, GLuint);
 DECLARE_NATIVE_TYPE(HShader_, GLuint);
 DECLARE_NATIVE_TYPE(HPipeline_, GLuint);
 
+DECLARE_DUMMY_TYPE(HContext_);
 DECLARE_DUMMY_TYPE(HCommandPool_);
 DECLARE_DUMMY_TYPE(HCommandBuffer_);
 DECLARE_DUMMY_TYPE(HDescriptorSet_);
@@ -97,7 +98,7 @@ struct HTexture_
 /*!*********************************************************************************************************************
 \struct HColorAttachmentView_
 \brief Handle to a Descriptor Set Layout. Dummy class, as the OpenGL ES API does not have an
-		explicit Color Attachment View object.
+    explicit Color Attachment View object.
 ***********************************************************************************************************************/
 /*!*********************************************************************************************************************
 \struct HDescriptorSet_

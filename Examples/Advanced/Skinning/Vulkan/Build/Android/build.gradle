@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:2.1.0'
     }
 }
 
@@ -20,13 +20,13 @@ apply plugin: 'com.android.application'
 File pvrSdkDir = file("${project.buildDir}/../../../../../../../")
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         applicationId "com.powervr.VulkanSkinning"
         minSdkVersion 16
-        targetSdkVersion 21
+        targetSdkVersion 24
     }
     buildTypes {
         release {
@@ -73,11 +73,16 @@ FileCollection assetFiles = files(
 "${pvrSdkDir}/Examples/Advanced/Skinning/ProcessedAssets/RobotDiffuse.pvr",
 "${pvrSdkDir}/Examples/Advanced/Skinning/ProcessedAssets/RobotNormal.pvr",
 "${pvrSdkDir}/Examples/Advanced/Skinning/ProcessedAssets/Tiles.pvr",
+"${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/DefaultFragShader_vk.fsh",
+"${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/DefaultVertShader_vk.vsh",
+"${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/SkinnedFragShader_vk.fsh",
+"${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/SkinnedVertShader_vk.vsh",
 "${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/DefaultVertShader_vk.spv",
 "${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/DefaultFragShader_vk.spv",
 "${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/SkinnedVertShader_vk.spv",
 "${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/SkinnedFragShader_vk.spv",
 "${pvrSdkDir}/Examples/Advanced/Skinning/ProcessedAssets/Robot.pod",
+"${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/Skinning_vk.pfx",
 
 )
 

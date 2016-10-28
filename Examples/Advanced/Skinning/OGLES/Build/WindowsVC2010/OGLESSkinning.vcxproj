@@ -183,6 +183,7 @@
     <None Include="..\..\SkinnedFragShader_ES2.fsh"></None>
     <None Include="..\..\SkinnedVertShader_ES3.vsh"></None>
     <None Include="..\..\SkinnedFragShader_ES3.fsh"></None>
+    <None Include="..\..\Skinning_es.pfx"></None>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\ProcessedAssets\Tiles.pvr"></None>

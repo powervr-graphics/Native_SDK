@@ -7,6 +7,7 @@
 #pragma once
 #include "PVRCore/CoreIncludes.h"
 #include "PVRCore/Hash_.h"
+#include "PVRCore/StringFunctions.h"
 #include <functional>
 
 namespace pvr {
@@ -94,12 +95,23 @@ public:
 	\return 			Length of this string hash
 	************************************************************************************************/
 	size_t size() const { return m_String.size(); }
-	
+
 	/*!**********************************************************************************************
 	\brief      		Return the length of this string hash
 	\return 			Length of this string hash
 	************************************************************************************************/
 	size_t length() const { return m_String.length(); }
+
+	/*!**********************************************************************************************
+	\brief      		Return if the string is empty
+	\return 			true if the string is emtpy (length=0), false otherwise
+	************************************************************************************************/
+	bool empty() const { return m_String.empty(); }
+
+    /*!
+       \brief Clear this string hash
+     */
+	void clear() { assign(string());  }
 
 	/*!**********************************************************************************************
 	\brief      	== Operator. This function compares the hash values of the StringHashes.
@@ -118,7 +130,7 @@ public:
 		}
 #endif
 
-#ifdef PVR_STRING_HASH_STRONG_COMPARISONS
+#ifndef PVR_STRING_HASH_STRONG_COMPARISONS
 		return (m_Hash == str.getHash());
 #else
 		return (m_Hash == str.getHash()) && m_String == str.m_String;
@@ -131,7 +143,7 @@ public:
 	\param[in]		str 	A string to compare with
 	\return 		True if they match
 	************************************************************************************************/
-	bool operator==(const char* str) const{	return (m_String.compare(str) == 0); }
+	bool operator==(const char* str) const {	return (m_String.compare(str) == 0); }
 
 	/*!**********************************************************************************************
 	\brief      	== Operator. This function performs a strcmp()
@@ -140,45 +152,74 @@ public:
 	\param[in]		str 	A string to compare with
 	\return 		True if they match
 	************************************************************************************************/
-	bool operator==(const std::string& str) const{	return m_String == str;	}
+	bool operator==(const std::string& str) const {	return m_String == str;	}
 
 	/*!***********************************************************************
 	\brief      	!= Operator. Compares hash values.
 	\param[in]		str 	A StringHash to compare with
 	\return 		True if they don't match
 	*************************************************************************/
-	bool operator!=(const StringHash& str) const{ return !(*this == str);	}
+	bool operator!=(const StringHash& str) const { return !(*this == str);	}
 
 	bool operator<(const StringHash& str)const
 	{
 #ifndef DEBUG //Collision detection
-		assertion(m_Hash != str.getHash() || m_String == str.m_String);
+        if(m_Hash == str.getHash() && m_String != str.m_String)
+        {
+            assertion(false, strings::createFormatted("HASH COLLISION DETECTED with %s and %s",m_String.c_str(),str.m_String.c_str()).c_str());
+        }
+
 #endif
-#ifndef PVR_STRING_HASH_STRONG_COMPARISONS
-		return m_Hash < str.getHash();
-#else
 		return m_Hash < str.getHash() || (m_Hash == str.getHash() && m_String < str.m_String);
-#endif
+	}
+
+    /*!
+       \brief operator >
+       \param str String hash to compare
+       \return Return true if this hash is greater
+     */
+	bool operator>(const StringHash& str)const
+	{
+		return str < *this;
+	}
+
+    /*!
+       \brief operator <=
+       \param str String hash to compare
+       \return Return true if this hash lessthan or equalto
+     */
+	bool operator<=(const StringHash& str)const
+	{
+		return !(str > *this);
+	}
+
+    /*!
+       \brief operator >=
+       \param str String hash to compare
+       \return Return true if this hash greaterthan or equalto
+     */
+	bool operator>=(const StringHash& str)const
+	{
+		return !(str < *this);
 	}
 
 	/*!***********************************************************************
 	\return 		The base string object contained.
 	*************************************************************************/
-	const string& str() const{	return m_String;	}
+	const string& str() const {	return m_String;	}
 
 	/*!***********************************************************************
 	\return 		The hash value of this StringHash.
 	*************************************************************************/
-	const std::size_t getHash() const{	return m_Hash;	}
+    std::size_t getHash() const {	return m_Hash;	}
 
 	/*!***************************************************************************
 	\return			A c-string of the contained string.
 	*****************************************************************************/
-	const char* c_str() const{	return m_String.c_str(); }
+	const char* c_str() const {	return m_String.c_str(); }
 
 private:
 	std::string m_String;
 	std::size_t m_Hash;
 };
 }
-

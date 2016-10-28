@@ -5,6 +5,8 @@
 \brief        Contains Vulkan specific implementation of the RenderPass class. Use only if directly using Vulkan calls.
 			  Provides the definitions allowing to move from the Framework object RenderPass to the underlying Vulkan RenderPass.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
+
 #pragma once
 #include "PVRApi/ApiObjects/RenderPass.h"
 #include "PVRApi/Vulkan/ContextVk.h"
@@ -40,6 +42,9 @@ public:
 	***********************************************************************************************************************/
 	void destroy();
 
+	/*!
+		\brief destructor
+	*/
 	~RenderPassVk_();
 };
 
@@ -49,3 +54,4 @@ typedef RefCountedResource<RenderPassVk_> RenderPassVk;
 }// namespace pvr
 
 PVR_DECLARE_NATIVE_CAST(RenderPass);
+//!\endcond

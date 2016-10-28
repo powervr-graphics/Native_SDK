@@ -21,12 +21,11 @@
 
 using std::vector;
 namespace pvr {
-namespace api {
+using namespace api;
+namespace legacyPfx {
 namespace impl {
 
-uint32 EffectApi_::loadSemantics(
-  const IGraphicsContext*,
-  bool isAttribute)
+uint32 EffectApi_::loadSemantics(const IGraphicsContext*, bool isAttribute)
 {
 	uint32 semanticIdx, nCount, nCountUnused;
 	int32 nLocation;
@@ -94,7 +93,7 @@ void EffectApi_::setTexture(uint32 nIdx, const api::TextureView& tex)
 		// Get the texture details from the PFX Parser. This contains details such as mipmapping and filter modes.
 		//const StringHash& TexName = m_parser->getEffect(m_effect).textures[nIdx].name;
 		//int32 iTexIdx = m_parser->findTextureByName(TexName);
-		if (types::TextureDimension::Texture2D != m_effectTexSamplers[nIdx].getTextureType()) { return; }
+		if (types::ImageBaseType::Image2D != types::imageViewTypeToImageBaseType(m_effectTexSamplers[nIdx].getTextureViewType())) { return; }
 		m_effectTexSamplers[nIdx].texture = tex;
 	}
 }
@@ -162,7 +161,7 @@ void EffectApi_::setDefaultUniformValue(const char8* const pszName, const assets
 	}
 }
 
-Result::Enum EffectApi_::buildSemanticTables(uint32& uiUnknownSemantics)
+Result EffectApi_::buildSemanticTables(uint32& uiUnknownSemantics)
 {
 	loadSemantics(NULL, false);
 	loadSemantics(NULL, true);
@@ -174,11 +173,11 @@ Result::Enum EffectApi_::buildSemanticTables(uint32& uiUnknownSemantics)
 EffectApi_::EffectApi_(GraphicsContext& context, AssetLoadingDelegate& effectDelegate) :
 	m_isLoaded(false), m_delegate(&effectDelegate), m_context(context) {}
 
-Result::Enum EffectApi_::init(const assets::Effect& effect, api::GraphicsPipelineCreateParam& pipeDesc)
+Result EffectApi_::init(const assets::Effect& effect, api::GraphicsPipelineCreateParam& pipeDesc)
 {
 	uint32	 i;
 	m_assetEffect = effect;
-	Result::Enum pvrRslt;
+	Result pvrRslt;
 
 	//--- Initialize each Texture
 	for (i = 0; i < effect.textures.size(); ++i)
@@ -219,7 +218,7 @@ Result::Enum EffectApi_::init(const assets::Effect& effect, api::GraphicsPipelin
 	{
 		//--- create the descriptor set layout and pipeline layout
 		pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
-		for (pvr::uint32 ii = 0; ii < (pvr::uint32)m_effectTexSamplers.size(); ++ii)
+		for (pvr::uint8 ii = 0; ii < static_cast<pvr::uint8>(m_effectTexSamplers.size()); ++ii)
 		{
 			descSetLayoutInfo.setBinding(ii,  types::DescriptorType::CombinedImageSampler,
 			                             0, types::ShaderStageFlags::Fragment);
@@ -232,9 +231,10 @@ Result::Enum EffectApi_::init(const assets::Effect& effect, api::GraphicsPipelin
 
 	//--- create the descriptor set
 	pvr::api::DescriptorSetUpdate descriptorSetInfo;
-	for (pvr::uint16 ii = 0; ii < m_effectTexSamplers.size(); ++ii)
+	for (pvr::uint8 ii = 0; ii < static_cast<pvr::uint8>(m_effectTexSamplers.size()); ++ii)
 	{
-		descriptorSetInfo.setCombinedImageSamplerAtIndex(ii, m_effectTexSamplers[ii].unit, m_effectTexSamplers[ii].texture, m_effectTexSamplers[ii].sampler);
+		descriptorSetInfo.setCombinedImageSamplerAtIndex(ii, m_effectTexSamplers[ii].unit,
+		    m_effectTexSamplers[ii].texture, m_effectTexSamplers[ii].sampler);
 	}
 	if (m_effectTexSamplers.size())
 	{
@@ -267,9 +267,9 @@ Result::Enum EffectApi_::init(const assets::Effect& effect, api::GraphicsPipelin
 	return pvrRslt;
 }
 
-Result::Enum EffectApi_::loadTexturesForEffect()
+Result EffectApi_::loadTexturesForEffect()
 {
-	Result::Enum pvrRslt = Result::Success;
+	Result pvrRslt = Result::Success;
 
 	for (IndexedArray<EffectApiTextureSampler>::iterator it = m_effectTexSamplers.begin(); it != m_effectTexSamplers.end(); ++it)
 	{
@@ -285,7 +285,7 @@ void EffectApi_::destroy()
 	m_isLoaded = false;
 }
 
-Result::Enum EffectApi_::loadShadersForEffect(api::Shader& vertexShader, api::Shader& fragmentShader)
+Result EffectApi_::loadShadersForEffect(api::Shader& vertexShader, api::Shader& fragmentShader)
 {
 	using namespace assets;
 	// initialize attributes to default values
@@ -295,8 +295,8 @@ Result::Enum EffectApi_::loadShadersForEffect(api::Shader& vertexShader, api::Sh
 	bool isVertShaderBinary = m_assetEffect.vertexShader.glslBinFile.length() != 0;
 	bool isFragShaderBinary = m_assetEffect.fragmentShader.glslBinFile.length() != 0;
 
-	types::ShaderBinaryFormat::Enum vertShaderBinFmt =  types::ShaderBinaryFormat::None;
-	types::ShaderBinaryFormat::Enum fragShaderBinFmt =  types::ShaderBinaryFormat::None;
+	types::ShaderBinaryFormat vertShaderBinFmt =  types::ShaderBinaryFormat::None;
+	types::ShaderBinaryFormat fragShaderBinFmt =  types::ShaderBinaryFormat::None;
 
 	// create vertex shader stream from source/ binary.
 	BufferStream vertexShaderData(

@@ -6,7 +6,7 @@
 ***********************************************************************************************************************/
 #pragma once
 #include "PVRApi/ApiIncludes.h"
-#include "PVRAssets/Texture/PixelFormat.h"
+#include "PVRAssets/PixelFormat.h"
 namespace pvr {
 namespace api {
 
@@ -16,8 +16,8 @@ namespace api {
 struct ImageDataFormat
 {
 	PixelFormat format;//!< pixel format
-	VariableType::Enum dataType;//!< datatype
-	types::ColorSpace::Enum colorSpace;//!< colorspace, e.g lRGB
+	VariableType dataType;//!< datatype
+	types::ColorSpace colorSpace;//!< colorspace, e.g lRGB
 
 	/*!*******************************************************************************************
 	\param format The Pixel format
@@ -25,8 +25,8 @@ struct ImageDataFormat
 	\param colorSpace The colorspace e.g lRGB/sRGB
 	**********************************************************************************************/
 	ImageDataFormat(const PixelFormat& format = PixelFormat::RGBA_8888,
-	                VariableType::Enum dataType = VariableType::UnsignedByteNorm,
-	                types::ColorSpace::Enum colorSpace = types::ColorSpace::lRGB) :
+	                VariableType dataType = VariableType::UnsignedByteNorm,
+	                types::ColorSpace colorSpace = types::ColorSpace::lRGB) :
 		format(format), dataType(dataType), colorSpace(colorSpace) { }
 
 	/*!*******************************************************************************************
@@ -41,7 +41,10 @@ struct ImageDataFormat
 	/*!*******************************************************************************************
 	\return true if the right hand object is not same as this
 	**********************************************************************************************/
-	bool operator !=(const ImageDataFormat& rhs)const { return !(*this == rhs); }
+	bool operator !=(const ImageDataFormat& rhs)const
+	{
+		return !(*this == rhs);
+	}
 };
 
 /*!*******************************************************************************************
@@ -61,8 +64,8 @@ struct ImageStorageFormat : public ImageDataFormat
 	\param numSamples number of samples
 	**********************************************************************************************/
 	ImageStorageFormat(const PixelFormat& format = PixelFormat::RGBA_8888, int8 mipmapLevels = 1,
-	                   types::ColorSpace::Enum colorSpace = types::ColorSpace::lRGB,
-	                   VariableType::Enum dataType = VariableType::UnsignedByteNorm, pvr::uint8 numSamples = 1)
+	                   types::ColorSpace colorSpace = types::ColorSpace::lRGB,
+	                   VariableType dataType = VariableType::UnsignedByteNorm, pvr::uint8 numSamples = 1)
 		: ImageDataFormat(format, dataType, colorSpace),
 		  mipmapLevels(mipmapLevels), numSamples(numSamples) {}
 };
@@ -116,7 +119,10 @@ struct TextureArea
 	\brief Sets the size of a compressed texture. For a compressed texture, the dimensions cannot be used directly.
 	\param compressedSize The size, in bytes, of the texture.
 	***************************************************************************************************************/
-	void setCompressedSize(uint32 compressedSize) { this->compressedSize = compressedSize; }
+	void setCompressedSize(uint32 compressedSize)
+	{
+		this->compressedSize = compressedSize;
+	}
 
 	/*!************************************************************************************************************
 	\brief Set the basic dimensions of the texture area (width/x,height/y,depth/z) in texels
@@ -124,14 +130,24 @@ struct TextureArea
 	\param height The size of the textureArea along the y-direction, in texels
 	\param depth The size of the textureArea along the z-direction (default 1),in texels
 	***************************************************************************************************************/
-	void setDimensions(uint32 width, uint32 height, uint32 depth = 1) { this->width = width; this->height = height; this->depth = depth; }
+	void setDimensions(uint32 width, uint32 height, uint32 depth = 1)
+	{
+		this->width = width;
+		this->height = height;
+		this->depth = depth;
+	}
 
 	/*!************************************************************************************************************
 	\brief Set the basic dimensions of the texture area, in pixels (width/x,height/y,depth/z)
 	\param size A 3d unsigned int vector containing the size of the area in each dimension, in texels
 	(x=width, y=height, z=depth)
 	***************************************************************************************************************/
-	void setDimensions(const glm::uvec3& size = glm::uvec3(1, 1, 1)) { this->width = size.x; this->height = size.y; this->depth = size.z; }
+	void setDimensions(const glm::uvec3& size = glm::uvec3(1, 1, 1))
+	{
+		this->width = size.x;
+		this->height = size.y;
+		this->depth = size.z;
+	}
 
 	/*!************************************************************************************************************
 	\brief Set the offset of the texture area is the distance along each direction from (0,0,0), in texels
@@ -139,32 +155,51 @@ struct TextureArea
 	\param offsety The distance along the y-axis of the topmost extent of the area from the top
 	\param offsetz The distance along the z-axis of the foremost extent of the area from the front
 	***************************************************************************************************************/
-	void setOffset(uint32 offsetx, uint32 offsety, uint32 offsetz = 0) { this->offsetx = offsetx; this->offsety = offsety; this->offsetz = offsetz; }
+	void setOffset(uint32 offsetx, uint32 offsety, uint32 offsetz = 0)
+	{
+		this->offsetx = offsetx;
+		this->offsety = offsety;
+		this->offsetz = offsetz;
+	}
 
 	/*!************************************************************************************************************
 	\brief Set the offset of the texture area is the distance along each direction from (0,0,0), in texels.
 	Initial value (initial value 0,0,0)
 	\param offset The offset of the area from the start described as a vector of unsigned integers
 	***************************************************************************************************************/
-	void setOffset(const glm::uvec3& offset = glm::uvec3(0, 0, 0)) { this->width = offset.x; this->height = offset.y; this->depth = offset.z; }
+	void setOffset(const glm::uvec3& offset = glm::uvec3(0, 0, 0))
+	{
+		this->width = offset.x;
+		this->height = offset.y;
+		this->depth = offset.z;
+	}
 
 	/*!************************************************************************************************************
 	\brief Set the mipmap level that the area represents (initial value 0)
 	\param mipLevel The mipmap level that the area represents
 	***************************************************************************************************************/
-	void setMipLevel(uint32 mipLevel) { this->mipLevel = (uint8)mipLevel; }
+	void setMipLevel(uint32 mipLevel)
+	{
+		this->mipLevel = (uint8)mipLevel;
+	}
 
 	/*!************************************************************************************************************
 	\brief Set the array slice of an array texture that the TextureArea represents (initial value 0)
 	\param arrayIndex The array slice that the area represents
 	***************************************************************************************************************/
-	void setArraySlice(uint32 arrayIndex) { this->arrayIndex = (uint16)arrayIndex; }
+	void setArraySlice(uint32 arrayIndex)
+	{
+		this->arrayIndex = (uint16)arrayIndex;
+	}
 
 	/*!************************************************************************************************************
 	\brief Set the Cube face of a Cube Texture that the area represents (initial value CubeFacePositiveX)
 	\param cubeFace The cube face that the area represents
 	***************************************************************************************************************/
-	void setCubeFace(types::CubeFace::Enum cubeFace) { this->cubeFace = (uint8)cubeFace; }
+	void setCubeFace(types::CubeFace cubeFace)
+	{
+		this->cubeFace = (uint8)cubeFace;
+	}
 };
 /*!*******************************************************************************************
 \brief Describes a Compressed format. Compressed formats provide less information than the
@@ -172,7 +207,7 @@ uncompressed format, as they can only be accessed "black box".
 **********************************************************************************************/
 struct CompressedImageDataFormat
 {
-	CompressedPixelFormat::Enum format;//!< compressed format
+	CompressedPixelFormat format;//!< compressed format
 };
 
 /*!*******************************************************************************************
@@ -205,17 +240,61 @@ public:
 	/*!*******************************************************************************************
 	\return Texture width
 	**********************************************************************************************/
-	uint16 getWidth();
-	
+	uint16 getWidth() const
+	{
+		return (uint16)extents.width;
+	}
+
+
 	/*!*******************************************************************************************
 	\return Texture height
 	**********************************************************************************************/
-	uint16 getHeight();
-	
+	uint16 getHeight() const
+	{
+		return (uint16)extents.height;
+	}
+
 	/*!*******************************************************************************************
 	\return Texture depth
 	**********************************************************************************************/
-	uint16 getDepth();
+	uint16 getDepth() const
+	{
+		return (uint16)extents.depth;
+	}
+
+	/*!*******************************************************************************************
+	\return The number of array layers of this texture
+	**********************************************************************************************/
+	uint16 getNumArrayLayers() const
+	{
+		return layersSize.numArrayLevels;
+	}
+
+	/*!*******************************************************************************************
+	\return The number of array layers of this texture
+	**********************************************************************************************/
+	uint16 getNumMipLevels() const
+	{
+		return layersSize.numMipLevels;
+	}
+
+	/*!*******************************************************************************************
+	\brief Return the basic dimensioning of the texture (1D/2D/3D).
+	\return The TextureDimension
+	**********************************************************************************************/
+	types::ImageBaseType getImageBaseType() const
+	{
+		return imageBaseType;
+	}
+
+	/*!*******************************************************************************************
+	\brief Return a const reference to the format of the texture
+	\return The const reference to the ImageStorageFormat
+	**********************************************************************************************/
+	const ImageStorageFormat&  getFormat() const
+	{
+		return format;
+	}
 
 	/*!*******************************************************************************************
 	\brief Returns a native handle to the texture. Calling this function will require including
@@ -232,52 +311,88 @@ public:
 	const native::HTexture_& getNativeObject() const;
 
 	/*!*******************************************************************************************
-	\brief Return the basic dimensioning of the texture (1D/2D/3D).
-	\return The TextureDimension
-	**********************************************************************************************/
-	types::TextureDimension::Enum getDimensions() const;
-
-	/*!*******************************************************************************************
 	\brief Check if this texture is allocated.
 	\return true if the texture is allocated. Otherwise, the texture is empty and must be constructed.
 	**********************************************************************************************/
 	bool isAllocated() const;
 
 	/*!*******************************************************************************************
-	\brief Get the storage format of this texture.
-	\return The storage format of this texture.
-	**********************************************************************************************/
-	const ImageStorageFormat& getFormat() const { return format; }
-
-	/*!*******************************************************************************************
 	\brief Destructor. Will properly release all resources held by this object.
 	**********************************************************************************************/
 	virtual ~TextureStore_();
 
-	/*!************************************************************************************************************
-	\brief Initialize the texture with the specified parameters. Only valid once.
-	***************************************************************************************************************/
-	void allocate2D(const ImageStorageFormat& format, uint32 width, uint32 height);
+	/*!
+	   \brief Allocate 2D texture. Only valid once.
+	   \param format Image format
+	   \param width Width
+	   \param height Height
+	   \param usage Image usage
+	   \param newLayout New layout the image to be transformed in to. Default: Preintialized.
+	 */
+	void allocate2D(const ImageStorageFormat& format, uint32 width, uint32 height,
+	                types::ImageUsageFlags usage = types::ImageUsageFlags::Sampled,
+	                types::ImageLayout newLayout = types::ImageLayout::Preinitialized);
+
+	/*!
+	   \brief Allocate 2D multisample texture. Only valid once.
+	   \param format Texture format
+	   \param width width
+	   \param height height
+	   \param samples Number of samples
+	   \param usage Image usage
+	   \param newLayout New layout the image to be transformed in to. Default: Preintialized.
+	 */
+	void allocate2DMS(
+	  const ImageStorageFormat& format, uint32 width, uint32 height, types::SampleCount samples,
+	  types::ImageUsageFlags usage = types::ImageUsageFlags::Sampled,
+	  types::ImageLayout newLayout = types::ImageLayout::Preinitialized);
+
+	/*!
+	   \brief Allocate 2DArray multisample texture. Only valid once.
+	   \param format Texture format
+	   \param width width
+	   \param height height
+	   \param arraySize Array size
+	   \param samples Number of samples
+	   \param usage Image usage
+	   \param newLayout New layout the image to be transformed in to. Default: Preintialized.
+	 */
+	void allocate2DArrayMS(
+	  const ImageStorageFormat& format, uint32 width, uint32 height, uint32 arraySize, types::SampleCount samples,
+	  types::ImageUsageFlags usage = types::ImageUsageFlags::Sampled,
+	  types::ImageLayout newLayout = types::ImageLayout::Preinitialized);
+
 
 	/*!************************************************************************************************************
-	\brief Initialize a transient texture with the specified parameters. Only valid once.
+	\brief Initialize a transient texture 2D with the specified parameters. Only valid once.
 	***************************************************************************************************************/
 	void allocateTransient(const ImageStorageFormat& format, uint32 width, uint32 height);
 
 	/*!************************************************************************************************************
-	\brief Initialize the texture with the specified parameters. Only valid once.
+	\brief Initialize a storage texture 2D with the specified parameters. Only valid once.
 	***************************************************************************************************************/
-	void allocate2DCube(const ImageStorageFormat& format, uint32 width, uint32 height);
+	void allocateStorage(const ImageStorageFormat& format, uint32 width, uint32 height);
 
 	/*!************************************************************************************************************
 	\brief Initialize the texture with the specified parameters. Only valid once.
 	***************************************************************************************************************/
-	void allocate2DArray(const ImageStorageFormat& format, uint32 width, uint32 height, uint32 arraySize);
+	void allocate2DCube(const ImageStorageFormat& format, uint32 width, uint32 height,
+	                    types::ImageUsageFlags usage = types::ImageUsageFlags::Sampled,
+	                    types::ImageLayout newLayout = types::ImageLayout::Preinitialized);
 
 	/*!************************************************************************************************************
 	\brief Initialize the texture with the specified parameters. Only valid once.
 	***************************************************************************************************************/
-	void allocate3D(const ImageStorageFormat& format, uint32 width, uint32 height, uint32 depth);
+	void allocate2DArray(const ImageStorageFormat& format, uint32 width, uint32 height, uint32 arraySize,
+	                     types::ImageUsageFlags usage = types::ImageUsageFlags::Sampled,
+	                     types::ImageLayout newLayout = types::ImageLayout::Preinitialized);
+
+	/*!************************************************************************************************************
+	\brief Initialize the texture with the specified parameters. Only valid once.
+	***************************************************************************************************************/
+	void allocate3D(const ImageStorageFormat& format, uint32 width, uint32 height, uint32 depth,
+	                types::ImageUsageFlags usage = types::ImageUsageFlags::Sampled,
+	                types::ImageLayout newLayout = types::ImageLayout::Preinitialized);
 
 	/*!************************************************************************************************************
 	\brief Update the data of the texture. DOES NOT WORK WITH COMPRESSED TEXTURES.
@@ -290,24 +405,36 @@ public:
 	/*!*******************************************************************************************
 	\return The reference to the context which owns this texture
 	**********************************************************************************************/
-	IGraphicsContext& getContext() { return *context; }
+	IGraphicsContext& getContext()
+	{
+		return *context;
+	}
 
 	/*!*******************************************************************************************
 	\return The const reference to the context which owns this texture
 	**********************************************************************************************/
-	const IGraphicsContext& getContext()const { return *context; }
+	const IGraphicsContext& getContext()const
+	{
+		return *context;
+	}
 
+	bool is2DCubeMap()const
+	{
+		return isCubeMap;
+	}
 protected:
-	/*!*******************************************************************************************
-	\brief Constructor.
-	\param context The GraphicsContext where this Texture will belong
-	**********************************************************************************************/
-	TextureStore_(GraphicsContext& context): context(context) {}
+	TextureStore_(GraphicsContext& context, bool isCubeMap = false, types::ImageBaseType imageBaseType = types::ImageBaseType::Unallocated):
+		context(context), isCubeMap(isCubeMap), imageBaseType(imageBaseType) {}
 
-	TextureStore_() {}
+	TextureStore_() : isCubeMap(false) {}
 
-	GraphicsContext context;
-	ImageStorageFormat format;
+	GraphicsContext       context;
+	ImageStorageFormat      format;
+	bool            isCubeMap;
+	types::Extent3D       extents;
+	types::ImageLayersSize      layersSize;
+	types::ImageBaseType  imageBaseType;
+	types::SampleCount  samplesCount;
 };
 
 
@@ -319,7 +446,8 @@ class TextureView_
 	friend class ::pvr::api::impl::DescriptorSet_;
 	friend class ::pvr::api::impl::Sampler_;
 protected:
-	TextureStore resource;//!<Texture view implementations access the underlying texture through this
+	types::ImageViewType    viewtype;
+	TextureStore          resource;//!<Texture view implementations access the underlying texture through this
 	/*!************************************************************************************************************
 	\brief DescriptorSets use this function to bind the texture to a texture unit.
 	***************************************************************************************************************/
@@ -327,7 +455,10 @@ public:
 	/*!************************************************************************************************************
 	\brief Get the dimensionality of this texture.
 	***************************************************************************************************************/
-	types::TextureDimension::Enum getTextureType()const { return resource->getDimensions(); }
+	types::ImageViewType getViewType()const
+	{
+		return viewtype;
+	}
 
 	/*!*******************************************************************************************
 	\return dtor.
@@ -338,111 +469,64 @@ public:
 	\return The reference to the native textrue view object
 	**********************************************************************************************/
 	const native::HImageView_& getNativeObject()const;
-	
+
 	/*!*******************************************************************************************
 	\return The const reference to the native texture view object
 	**********************************************************************************************/
 	native::HImageView_& getNativeObject();
 
 	/*!************************************************************************************************************
-	\brief Create a TextureView by wrapping an existing API texture and taking ownership of it.
-	\param context The GraphicsContext on which to create the Texture
-	\param texture An already created Native Texture object. The object constructed will take ownership of it.
+	\brief INTERNAL. Use context->createTextureView or utils::textureUpload
+	\param texture
+	\param view
 	***************************************************************************************************************/
 	TextureView_(const TextureStore& texture, const native::HImageView_& view);
 
 	/*!************************************************************************************************************
-	\brief Create a new TextureView object. It will be unallocated and contain no actual underlying Texture until
-	allocated.
+	\brief INTERNAL. Use context->createTextureView or utils::textureUpload
 	***************************************************************************************************************/
-	TextureView_(const TextureStore& texture);
+	TextureView_(const TextureStore& texture = TextureStore());
 
 	/*!************************************************************************************************************
 	\brief Get the underlying TextureStore object.
 	***************************************************************************************************************/
-	const TextureStore& getResource() const { return resource; }
+	const TextureStore& getResource() const
+	{
+		return resource;
+	}
 	/*!************************************************************************************************************
 	\brief Get the underlying TextureStore object.
 	***************************************************************************************************************/
-	TextureStore& getResource() { return resource; }
+	TextureStore& getResource()
+	{
+		return resource;
+	}
 
 	/*!************************************************************************************************************
 	\brief Query if this object contains a valid reference to an actual Texture.
 	***************************************************************************************************************/
-	bool isAllocated()	{ return (resource.isValid() && resource->isAllocated()); }
+	bool isAllocated()
+	{
+		return (resource.isValid() && resource->isAllocated());
+	}
 
 	/*!*******************************************************************************************
 	\return The reference to the context which owns this object
 	**********************************************************************************************/
-	IGraphicsContext& getContext() { return getResource()->getContext(); }
+	IGraphicsContext& getContext()
+	{
+		return getResource()->getContext();
+	}
 
 	/*!*******************************************************************************************
 	\return The const reference to the context which owns this object
 	**********************************************************************************************/
-	const IGraphicsContext& getContext()const { return getResource()->getContext(); }
+	const IGraphicsContext& getContext()const
+	{
+		return getResource()->getContext();
+	}
 
 };
 }//namespace impl
-
-
-/*!****************************************************************************************************************
-\brief	Get the display's color, depth and or stencil format from a DisplayAttributes object.
-\param[in]	attribute The DisplayAttributes to query. Normally from shell.getDisplayAttributes()
-\param[out]	outColorFmt The Color Format that this DisplayAttributes object has
-\param[out]	outDepthStencilFmt The DepthStencilFormat that this DisplayAttributes object has
-\description This function is usually called on an object found with Shell::getDisplayAttributes(), in order to
-determine the formats that are necessary for an On Screen FBO.
-*******************************************************************************************************************/
-inline void getDisplayFormat(const system::DisplayAttributes& attribute,
-                             api::ImageDataFormat* outColorFmt,
-                             api::ImageDataFormat* outDepthStencilFmt)
-{
-	if (outColorFmt)
-	{
-		outColorFmt->format = PixelFormat(attribute.redBits ? 'r' : 0, attribute.greenBits ? 'g' : 0,
-		                                  attribute.blueBits ? 'b' : 0, attribute.alphaBits ? 'a' : 0,
-		                                  (uint8)attribute.redBits, (uint8)attribute.greenBits,
-		                                  (uint8)attribute.blueBits, (uint8)attribute.alphaBits);
-		outColorFmt->colorSpace = attribute.frameBufferSrgb ? types::ColorSpace::sRGB : types::ColorSpace::lRGB;
-	}
-
-	if (outDepthStencilFmt)
-	{
-		outDepthStencilFmt->format = PixelFormat('d', (attribute.stencilBPP ? 's' : 0), (uint8)0, (uint8)0,
-		                             (uint8)attribute.depthBPP, (uint8)attribute.stencilBPP, (uint8)0, (uint8)0);
-		outDepthStencilFmt->colorSpace = types::ColorSpace::lRGB;
-		outDepthStencilFmt->dataType = (uint8)attribute.depthBPP == 16 ? VariableType::UnsignedShortNorm : (uint8)attribute.depthBPP == 24 ? VariableType::UnsignedInteger : VariableType::Float;
-	}
-}
-
-/*!****************************************************************************************************************
-\brief	    Get the color format from a Displaydisplay's color format.
-\param[in]	attribute The DisplayAttributes to query. Normally from shell.getDisplayAttributes()
-\return     outColorFmt The Color Format that this DisplayAttributes object has
-\description This function is usually called on an object found with Shell::getDisplayAttributes(), in order to
-determine the formats that are necessary for an On Screen FBO.
-*******************************************************************************************************************/
-inline api::ImageDataFormat getDisplayColorFormat(const system::DisplayAttributes& attribute)
-{
-	api::ImageDataFormat outFmt;
-	getDisplayFormat(attribute, &outFmt, NULL);
-	return outFmt;
-}
-
-/*!****************************************************************************************************************
-\brief	    Get the depth and/or stencil format from a Displaydisplay's color format.
-\param[in]	attribute The DisplayAttributes to query. Normally from shell.getDisplayAttributes()
-\return     outDepthStencilFmt The DepthStencilFormat that this DisplayAttributes object has
-\description This function is usually called on an object found with Shell::getDisplayAttributes(), in order to
-determine the formats that are necessary for an On Screen FBO.
-*******************************************************************************************************************/
-inline api::ImageDataFormat getDisplayDepthStencilFormat(const system::DisplayAttributes& attribute)
-{
-	api::ImageDataFormat outFmt;
-	getDisplayFormat(attribute, NULL, &outFmt);
-	return outFmt;
-}
 }//namespace api
 }//namespace pvr
-
-

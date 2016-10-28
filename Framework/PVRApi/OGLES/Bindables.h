@@ -1,9 +1,10 @@
 /*!*********************************************************************************************************************
-\file         PVRApi\Bindables.h
+\file         PVRApi\OGLES\Bindables.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief         Contains classes representing objects that can be bound to pipeline binding points.
 ***********************************************************************************************************************/
+//!\cond NO_DOXYGEN
 #pragma once
 #include "PVRCore/IGraphicsContext.h"
 #include "PVRCore/ForwardDecApiObjects.h"
@@ -49,3 +50,4 @@ public:
 
 }
 }
+//!\endcond

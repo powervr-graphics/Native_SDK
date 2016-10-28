@@ -105,9 +105,6 @@
     <ClInclude Include="..\..\TextureVk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Vulkan.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\ApiObjectsVk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -126,10 +123,13 @@
     <ClInclude Include="..\..\FboVk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\GraphicsStateContainerVk.h">
+    <ClInclude Include="..\..\..\StructuredMemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\StructuredMemory.h">
+    <ClInclude Include="..\..\..\RenderManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GraphicsPipelineVk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -173,9 +173,6 @@
     <ClCompile Include="..\..\DescriptorSetVk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\EffectApi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\FboVk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -186,6 +183,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\PipelineLayoutVk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\RenderManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\EffectApi_2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

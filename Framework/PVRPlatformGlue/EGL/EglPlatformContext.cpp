@@ -17,28 +17,28 @@ bool isOpenGLES31NotSupported_Workaround = false;
 
 #ifndef EGL_CONTEXT_LOST_IMG
 /*! Extended error code EGL_CONTEXT_LOST_IMG generated when power management event has occurred. */
-#define EGL_CONTEXT_LOST_IMG				0x300E
+#define EGL_CONTEXT_LOST_IMG        0x300E
 #endif
 
 #ifndef EGL_CONTEXT_PRIORITY_LEVEL_IMG
 /*! An extensions added to the list of attributes for the context to give it a priority hint */
-#define EGL_CONTEXT_PRIORITY_LEVEL_IMG		0x3100
+#define EGL_CONTEXT_PRIORITY_LEVEL_IMG    0x3100
 /*! Request the context is created with high priority */
-#define EGL_CONTEXT_PRIORITY_HIGH_IMG		0x3101
+#define EGL_CONTEXT_PRIORITY_HIGH_IMG   0x3101
 /*! Request the context is created with medium priority */
-#define EGL_CONTEXT_PRIORITY_MEDIUM_IMG		0x3102
+#define EGL_CONTEXT_PRIORITY_MEDIUM_IMG   0x3102
 /*! Request the context is created with low priority */
-#define EGL_CONTEXT_PRIORITY_LOW_IMG		0x3103
+#define EGL_CONTEXT_PRIORITY_LOW_IMG    0x3103
 #endif
 
 namespace pvr {
 using std::string;
-namespace system {
+namespace platform {
 
 // File local function to return the global context store.
-inline static std::map<int32, system::PlatformContext*>& getContextStore()
+inline static std::map<int32, platform::PlatformContext*>& getContextStore()
 {
-	static std::map<int32, system::PlatformContext*> contextStore;
+	static std::map<int32, platform::PlatformContext*> contextStore;
 	return contextStore;
 }
 
@@ -78,13 +78,16 @@ char const* eglErrorToStr(EGLint errorCode)
 
 void logEGLConfiguration(const DisplayAttributes& attributes)
 {
-	Log(Log.Debug, "EGL Configuration");
-	Log(Log.Debug, "\tRedBits: %d", attributes.redBits);
-	Log(Log.Debug, "\tGreenBits: %d", attributes.greenBits);
-	Log(Log.Debug, "\tBlueBits: %d", attributes.blueBits);
-	Log(Log.Debug, "\tAlphaBits: %d", attributes.alphaBits);
-	Log(Log.Debug, "\taaSamples: %d", attributes.aaSamples);
-	Log(Log.Debug, "\tFullScreen: %s", (attributes.fullscreen ? "true" : "false"));
+	Log(Log.Information, "=== Final EGL Configuration ===");
+	Log(Log.Information, "\tRedBits: %d", attributes.redBits);
+	Log(Log.Information, "\tGreenBits: %d", attributes.greenBits);
+	Log(Log.Information, "\tBlueBits: %d", attributes.blueBits);
+	Log(Log.Information, "\tAlphaBits: %d", attributes.alphaBits);
+	Log(Log.Information, "\tDepthBits: %d", attributes.depthBPP);
+	Log(Log.Information, "\tStencilBits: %d", attributes.stencilBPP);
+	Log(Log.Information, "\taaSamples: %d", attributes.aaSamples);
+	Log(Log.Information, "\tFullScreen: %s", (attributes.fullscreen ? "true" : "false"));
+	Log(Log.Information, "===============================");
 }
 
 glm::uint32 PlatformContext::getSwapChainLength() const { return 1; }
@@ -132,7 +135,7 @@ void PlatformContext::release()
 	m_preInitialized = false;
 }
 
-static inline EGLContext getContextForConfig(EGLDisplay display, EGLConfig config, Api::Enum graphicsapi)
+static inline EGLContext getContextForConfig(EGLDisplay display, EGLConfig config, Api graphicsapi)
 {
 	static bool firstRun = true;
 	EGLint contextAttributes[10];
@@ -158,7 +161,6 @@ static inline EGLContext getContextForConfig(EGLDisplay display, EGLConfig confi
 	default:
 		return EGL_NO_CONTEXT;
 	}
-	assertion(requestedMajorVersion && (requestedMinorVersion >= 0), "Unsupported major-minor version");
 
 #ifdef DEBUG
 	int debug_flag = 0;
@@ -211,44 +213,52 @@ static inline EGLContext getContextForConfig(EGLDisplay display, EGLConfig confi
 	return ctx;
 }
 
-static inline Result::Enum isGlesVersionSupported(EGLDisplay display, Api::Enum graphicsapi, bool& isSupported)
+static inline Result isGlesVersionSupported(EGLDisplay display, DisplayAttributes& attributes, Api graphicsapi, bool& isSupported)
 {
 #if defined(TARGET_OS_MAC)
 	/* Max Api supported on OSX is OGLES3*/
-	if (graphicsapi > pvr::Api::OpenGLES3) {		return Result::UnsupportedRequest; }
+	if (graphicsapi > pvr::Api::OpenGLES3) { return Result::UnsupportedRequest; }
 #endif
 
 	isSupported = false;
 	std::vector<EGLConfig> configs;
-	EGLint configAttributes[5];
+	EGLint configAttributes[32];
 	unsigned int i = 0;
 
 
-	configAttributes[i++] = EGL_SURFACE_TYPE;
-	configAttributes[i++] = EGL_WINDOW_BIT;
-
-	switch (graphicsapi)
+	if (attributes.configID > 0)
 	{
-	case Api::OpenGLES2: //GLES2
-		Log(Log.Verbose, "EglPlatformContext.cpp: isGlesVersionSupported: Setting EGL_OPENGL_ES2_BIT");
-		configAttributes[i++] = EGL_RENDERABLE_TYPE;
-		configAttributes[i++] = EGL_OPENGL_ES2_BIT;
-		break;
-	case Api::OpenGLES3: //GLES2
-	case Api::OpenGLES31: //GLES2
-		Log(Log.Verbose, "EglPlatformContext.cpp: isGlesVersionSupported: Setting EGL_OPENGL_ES3_BIT_KHR");
-		configAttributes[i++] = EGL_RENDERABLE_TYPE;
-		configAttributes[i++] = EGL_OPENGL_ES3_BIT_KHR;
-		break;
-	default:
-		return Result::UnknownError;
-		break;
+		configAttributes[i++] = EGL_CONFIG_ID;
+		configAttributes[i++] = attributes.configID;
+	}
+	else
+	{
+		configAttributes[i++] = EGL_SURFACE_TYPE;
+		configAttributes[i++] = EGL_WINDOW_BIT;
+
+		switch (graphicsapi)
+		{
+		case Api::OpenGLES2: //GLES2
+			Log(Log.Debug, "EglPlatformContext.cpp: isGlesVersionSupported: Setting EGL_OPENGL_ES2_BIT");
+			configAttributes[i++] = EGL_RENDERABLE_TYPE;
+			configAttributes[i++] = EGL_OPENGL_ES2_BIT;
+			break;
+		case Api::OpenGLES3: //GLES2
+		case Api::OpenGLES31: //GLES2
+			Log(Log.Debug, "EglPlatformContext.cpp: isGlesVersionSupported: Setting EGL_OPENGL_ES3_BIT_KHR");
+			configAttributes[i++] = EGL_RENDERABLE_TYPE;
+			configAttributes[i++] = EGL_OPENGL_ES3_BIT_KHR;
+			break;
+		default:
+			return Result::UnknownError;
+			break;
+		}
 	}
 
 	configAttributes[i] = EGL_NONE;
 
-	EGLint	numConfigs;
-	EGLint	configsSize;
+	EGLint  numConfigs;
+	EGLint  configsSize;
 
 
 	// Find out how many configs there are in total that match our criteria
@@ -257,7 +267,7 @@ static inline Result::Enum isGlesVersionSupported(EGLDisplay display, Api::Enum 
 		Log("EglPlatformContext.cpp: getMaxEglVersion: eglChooseConfig error");
 		return Result::UnknownError;
 	}
-	Log(Log.Information, "EglPlatformContext.cpp: isGlesVersionSupported: number of configurations found for ES version [%s] was [%d]", Api::getApiName(graphicsapi), configsSize);
+	Log(Log.Debug, "EglPlatformContext.cpp: isGlesVersionSupported: number of configurations found for ES version [%s] was [%d]", apiName(graphicsapi), configsSize);
 	if (configsSize >= 0)
 	{
 		configs.resize(configsSize);
@@ -270,40 +280,195 @@ static inline Result::Enum isGlesVersionSupported(EGLDisplay display, Api::Enum 
 			return Result::UnknownError;
 		}
 
+		Log(Log.Information, "Trying to create context for all configs.");
 		for (size_t ii = 0; ii != configs.size(); ++ii)
 		{
-
-			Log(Log.Verbose, "Trying to create context for config #%d...", ii);
 			EGLContext ctx;
 			if ((ctx = getContextForConfig(display, configs[ii], graphicsapi)) != EGL_NO_CONTEXT)
 			{
-				Log(Log.Verbose, "SUCCESS creating context! Reporting success.");
+				Log(Log.Information, "SUCCESS creating context! Reporting success. (Used config #%d) .", ii);
 				isSupported = true;
 				egl::DestroyContext(display, ctx);
 				return Result::Success;
 			}
-			Log(Log.Verbose, "Failed to create context for config #%d.", ii);
 		}
+		Log(Log.Information, "Failed to create context for any configs. Tried %d configs.", configs.size());
 
-		// Choose a config based on user supplied attributes
 	}
 	return Result::Success;
 
 }
 
-static inline Result::Enum initializeContext(const bool wantWindow, DisplayAttributes& attributes, const NativePlatformHandles& handles, EGLConfig& config, Api::Enum graphicsapi)
+enum { retry_RemoveDebugBit, retry_DisableAA, retry_ReduceStencilBpp, retry_NoStencil, retry_StencilBpp, retry_ColorBpp, retry_reduceAlphaBpp, retry_NoAlpha, retry_DepthBpp, retry_DONE };
+const char* retries_string[] = { "RemoveDebugBit", "DisableAA", "ReduceStencilBpp", "NoStencil", "ColorBpp", "ReduceAlphaBpp", "NoAlpha", "DepthBpp" };
+
+void fix_attributes(DisplayAttributes& origAttr, DisplayAttributes& attr, uint32* retries, bool& debugBit)
+{
+	if (retries[retry_ColorBpp] == 1) //0:inactive 1:active, currently tested 2: active, unsure  3:active fixed
+	{
+		attr.redBits = 1;
+		attr.greenBits = 1;
+		attr.blueBits = 1;
+	}
+	else if (retries[retry_ColorBpp] == 0)
+	{
+		attr.redBits = origAttr.redBits;
+		attr.greenBits = origAttr.greenBits;
+		attr.blueBits = origAttr.blueBits;
+	}
+	if (!(retries[retry_reduceAlphaBpp] == 3) && !(retries[retry_NoAlpha] == 3)) // fixed. leave it alone..
+	{
+		if (retries[retry_reduceAlphaBpp] == 0 && retries[retry_NoAlpha] == 0) // reset.
+		{
+			attr.alphaBits = origAttr.alphaBits;
+		} // mutually exclusiv
+
+		if (retries[retry_reduceAlphaBpp] == 1) // test one
+		{
+			attr.alphaBits = 1;
+		} // mutually exclusive
+		if (retries[retry_NoAlpha] == 1) // test two
+		{
+			attr.alphaBits = 0;
+		} // mutually exclusive
+	}
+
+	if (retries[retry_DepthBpp] == 1)
+	{
+		attr.depthBPP = 1;
+	}
+	else if (retries[retry_DepthBpp] == 0)
+	{
+		attr.depthBPP = origAttr.depthBPP;
+	}
+	if (!(retries[retry_ReduceStencilBpp] == 3) && !(retries[retry_NoStencil] == 3)) // fixed. leave it alone..
+	{
+		if (retries[retry_ReduceStencilBpp] == 0 && retries[retry_NoStencil] == 0) // reset.
+		{
+			attr.stencilBPP = origAttr.stencilBPP;
+		} // mutually exclusiv
+
+		if (retries[retry_ReduceStencilBpp] == 1) // test one
+		{
+			attr.stencilBPP = 1;
+		} // mutually exclusive
+		if (retries[retry_NoStencil] == 1) // test two
+		{
+			attr.stencilBPP = 0;
+		} // mutually exclusive
+	}
+
+	if (retries[retry_DisableAA] == 1)
+	{
+		if (attr.aaSamples > 0)
+		{
+			// Reduce the anti-aliasing
+			attr.aaSamples = attr.aaSamples >> 1;
+		}
+	}
+	else if (retries[retry_DisableAA] == 0)
+	{
+		attr.aaSamples = origAttr.aaSamples;
+	}
+#ifdef DEBUG
+	bool ORIG_DEBUG_BIT = true;
+#else
+	bool ORIG_DEBUG_BIT = false;
+#endif
+	if (retries[retry_RemoveDebugBit] == 1)
+	{
+		debugBit = false;
+	}
+	else if (retries[retry_RemoveDebugBit] == 0)
+	{
+		debugBit = ORIG_DEBUG_BIT;
+	}
+}
+
+
+static inline Result initializeContext(const bool wantWindow, DisplayAttributes& original_attributes, const NativePlatformHandles& handles, EGLConfig& config, Api graphicsapi)
 {
 	// Choose a config based on user supplied attributes
 	std::vector<EGLConfig> configs;
 	EGLint configAttributes[32];
-	unsigned int i = 0;
 	bool debugBit = 0;
+
+
+	int requestedMajorVersion = -1;
+	int requestedMinorVersion = -1;
+
+
+	switch (graphicsapi)
+	{
+	case Api::OpenGLES2:
+		requestedMajorVersion = 2;
+		requestedMinorVersion = 0;
+		break;
+	case Api::OpenGLES3:
+		requestedMajorVersion = 3;
+		requestedMinorVersion = 0;
+		break;
+	case Api::OpenGLES31:
+		requestedMajorVersion = 3;
+		requestedMinorVersion = 1;
+		break;
+	default:
+		break;
+	}
+
+	bool create_context_supported = egl::isEglExtensionSupported(handles->display, "EGL_KHR_create_context");
+	if (create_context_supported) { Log(Log.Information, "EGL context creation: EGL_KHR_create_context supported..."); }
+	else
+	{
+		Log(requestedMinorVersion ? Log.Warning : Log.Information, "EGL context creation: EGL_KHR_create_context not supported. Minor version will be discarded, and debug disabled.");
+		requestedMinorVersion = 0;
+	}
+
+	Log(Log.Information, "Trying to get OpenGL ES version : %d.%d", requestedMajorVersion, requestedMinorVersion);
+
+	bool context_priority_supported = egl::isEglExtensionSupported(handles->display, "EGL_IMG_context_priority");
+	if (context_priority_supported)
+	{
+		switch (original_attributes.contextPriority)
+		{
+		case 0: Log(Log.Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context LOW priority..."); break;
+		case 1: Log(Log.Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context MEDIUM priority..."); break;
+		default: Log(Log.Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context HIGH priority (default)..."); break;
+		}
+	}
+	else
+	{
+		Log(Log.Information, "EGL context creation: EGL_IMG_context_priority not supported. Ignoring context Priority attribute.");
+	}
+
+	uint32 retries[retry_DONE] = {};
+	// O = not tried, 1 = now trying, 2 = not sure, 3 = keep disabled.
+	DisplayAttributes attributes = original_attributes;
 #ifdef DEBUG
 	debugBit = true;
 #endif
 
+	if (!debugBit) { retries[retry_RemoveDebugBit] = 4; }
+	if (attributes.aaSamples == 0) { retries[retry_DisableAA] = 3; }
+	if (attributes.alphaBits == 0) { retries[retry_reduceAlphaBpp] = 3; }
+	if (attributes.alphaBits == 0) { retries[retry_NoAlpha] = 3; }
+	if (attributes.stencilBPP == 0) { retries[retry_StencilBpp] = 3; }
+	if (attributes.stencilBPP == 0) { retries[retry_NoStencil] = 3; }
+	if (attributes.depthBPP == 0) { retries[retry_DepthBpp] = 3; }
+	if (attributes.forceColorBPP) { retries[retry_ColorBpp] = 3; }
+
 	for (;;)
 	{
+		unsigned int i = 0;
+		Log(Log.Debug, "Attempting to create context with:\n");
+		Log(Log.Debug, "\tDebugbit: %s", debugBit ? "true" : "false");
+		Log(Log.Debug, "\tRedBits: %d", attributes.redBits);
+		Log(Log.Debug, "\tGreenBits: %d", attributes.greenBits);
+		Log(Log.Debug, "\tBlueBits: %d", attributes.blueBits);
+		Log(Log.Debug, "\tAlphaBits: %d", attributes.alphaBits);
+		Log(Log.Debug, "\tDepthBits: %d", attributes.depthBPP);
+		Log(Log.Debug, "\tStencilBits: %d", attributes.stencilBPP);
+
 		if (attributes.configID > 0)
 		{
 			configAttributes[i++] = EGL_CONFIG_ID;
@@ -322,6 +487,9 @@ static inline Result::Enum initializeContext(const bool wantWindow, DisplayAttri
 
 			configAttributes[i++] = EGL_ALPHA_SIZE;
 			configAttributes[i++] = attributes.alphaBits;
+
+			// For OGLES clamp between 0 and 24
+			attributes.depthBPP = std::min(attributes.depthBPP, 24u);
 
 			configAttributes[i++] = EGL_DEPTH_SIZE;
 			configAttributes[i++] = attributes.depthBPP;
@@ -363,165 +531,167 @@ static inline Result::Enum initializeContext(const bool wantWindow, DisplayAttri
 				configAttributes[i++] = EGL_SAMPLES;
 				configAttributes[i++] = attributes.aaSamples;
 			}
-			else
-			{
-				Log(Log.Debug, "EGL context creation: EGL_SAMPLE_BUFFERS 0");
-				configAttributes[i++] = EGL_SAMPLE_BUFFERS;
-				configAttributes[i++] = 0;
-			}
 		}
 
 		configAttributes[i] = EGL_NONE;
 
-		EGLint	numConfigs;
-		EGLint	configsSize;
+		EGLint  numConfigs;
+		EGLint  configsSize;
+
+		EGLint eglerror = egl::GetError();
+		assertion(eglerror == EGL_SUCCESS, "initializeContext: egl error logged before choosing egl config");
+		eglerror = egl::ChooseConfig(handles->display, configAttributes, NULL, 0, &configsSize);
+		assertion(eglerror == EGL_TRUE, "initializeContext: EGL config returned a value that was not EGL_TRUE");
+		eglerror = egl::GetError();
+		assertion(eglerror == EGL_SUCCESS, "initializeContext: EGL choose config raised EGL error");
 
 		if (attributes.forceColorBPP)
 		{
-			// Find out how many configs there are in total that match our criteria
-			if (!egl::ChooseConfig(handles->display, configAttributes, NULL, 0, &configsSize) || configsSize == 0)
-			{
-				return Result::UnknownError;
-			}
+			if (configsSize == 0) { return Result::UnknownError; }
 		}
 		else
 		{
-			configsSize = 1;
+			if (configsSize > 1) { configsSize = 1; }
 		}
-
-		configs.resize(configsSize);
-
-		if (egl::ChooseConfig(handles->display, configAttributes, configs.data(), configsSize, &numConfigs) != EGL_TRUE
-		    || numConfigs != configsSize)
+		numConfigs = configsSize;
+		if (configsSize)
 		{
-			Log("EGL context creation: initializeContext Error choosing egl config. %x",
-			    egl::GetError());
-			return Result::UnsupportedRequest;
-		}
-		Log(Log.Information, "EGL context creation: Number of EGL Configs found: %d", configsSize);
-		EGLint configIdx = 0;
 
-		if (attributes.forceColorBPP)
-		{
-			Log(Log.Debug, "EGL context creation: Trying to find a for forced BPP compatible context support...");
-			EGLint value;
+			configs.resize(configsSize);
 
-			for (; configIdx < configsSize; ++configIdx)
+			if (egl::ChooseConfig(handles->display, configAttributes, configs.data(), configsSize, &numConfigs) != EGL_TRUE)
 			{
-				if ((egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_RED_SIZE, &value)
-				     && value == static_cast<EGLint>(attributes.redBits))
-				    && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_GREEN_SIZE, &value)
-				        && value == static_cast<EGLint>(attributes.greenBits))
-				    && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_BLUE_SIZE, &value)
-				        && value == static_cast<EGLint>(attributes.blueBits))
-				    && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_ALPHA_SIZE, &value)
-				        && value == static_cast<EGLint>(attributes.alphaBits))
-				   )
-				{
-					break;
-				}
+				Log("EGL context creation: initializeContext Error choosing egl config. %x.    Expected number of configs: %d    Actual: %d.", egl::GetError(), numConfigs, configsSize);
+				return Result::UnsupportedRequest;
 			}
 		}
+		Log(Log.Information, "EGL context creation: Number of EGL Configs found: %d", configsSize);
 
-		config = configs[configIdx];
-
-		EGLint contextAttributes[32];
-		i = 0;
-
-		int requestedMajorVersion = -1;
-		int requestedMinorVersion = -1;
-
-
-		switch (graphicsapi)
+		if (numConfigs > 0)
 		{
-		case Api::OpenGLES2:
-			requestedMajorVersion = 2;
-			requestedMinorVersion = 0;
-			break;
-		case Api::OpenGLES3:
-			requestedMajorVersion = 3;
-			requestedMinorVersion = 0;
-			break;
-		case Api::OpenGLES31:
-			requestedMajorVersion = 3;
-			requestedMinorVersion = 1;
-			break;
-		default:
-			break;
-		}
-		assertion(requestedMajorVersion && (requestedMinorVersion >= 0), "Unsupported major-minor version");
-		Log(Log.Information, "EGL context creation: Trying to get OpenGL ES version : %d.%d", requestedMajorVersion, requestedMinorVersion);
+			EGLint configIdx = 0;
+
+			if (attributes.forceColorBPP)
+			{
+				Log(Log.Information, "EGL context creation: Trying to find a for forced BPP compatible context support...");
+				EGLint value;
+
+				for (; configIdx < configsSize; ++configIdx)
+				{
+					if ((egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_RED_SIZE, &value)
+					     && value == static_cast<EGLint>(original_attributes.redBits))
+					    && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_GREEN_SIZE, &value)
+					        && value == static_cast<EGLint>(original_attributes.greenBits))
+					    && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_BLUE_SIZE, &value)
+					        && value == static_cast<EGLint>(original_attributes.blueBits))
+					    && (egl::GetConfigAttrib(handles->display, configs[configIdx], EGL_ALPHA_SIZE, &value)
+					        && value == static_cast<EGLint>(original_attributes.alphaBits))
+					   )
+					{
+						break;
+					}
+				}
+			}
+
+			config = configs[configIdx];
+
+			EGLint contextAttributes[32];
+			i = 0;
 
 
 #if defined(EGL_CONTEXT_MAJOR_VERSION_KHR)
-		if (egl::isEglExtensionSupported(handles->display, "EGL_KHR_create_context"))
-		{
-			Log(Log.Information, "EGL context creation: EGL_KHR_create_context supported...");
-			contextAttributes[i++] = EGL_CONTEXT_MAJOR_VERSION_KHR;
-			contextAttributes[i++] = requestedMajorVersion;
-			contextAttributes[i++] = EGL_CONTEXT_MINOR_VERSION_KHR;
-			contextAttributes[i++] = requestedMinorVersion;
+			if (create_context_supported)
+			{
+				contextAttributes[i++] = EGL_CONTEXT_MAJOR_VERSION_KHR;
+				contextAttributes[i++] = requestedMajorVersion;
+				contextAttributes[i++] = EGL_CONTEXT_MINOR_VERSION_KHR;
+				contextAttributes[i++] = requestedMinorVersion;
 #ifdef DEBUG
-			if (debugBit)
-			{
-				Log(Log.Information, "EGL context creation: Trying to set EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR. Since no direct query is enabled, failure will need to be tested...");
-				contextAttributes[i++] = EGL_CONTEXT_FLAGS_KHR;
-				contextAttributes[i++] = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR;
-			}
+				if (debugBit)
+				{
+					contextAttributes[i++] = EGL_CONTEXT_FLAGS_KHR;
+					contextAttributes[i++] = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR;
+				}
 #endif
-		}
-		else
-#endif
-		{
-			Log(requestedMinorVersion ? Log.Warning : Log.Information, "EGL context creation: EGL_KHR_create_context not supported. Minor version will be discarded, and debug disabled.");
-			contextAttributes[i++] = EGL_CONTEXT_CLIENT_VERSION;
-			contextAttributes[i++] = requestedMajorVersion;
-		}
-
-		if (egl::isEglExtensionSupported(handles->display, "EGL_IMG_context_priority"))
-		{
-			contextAttributes[i++] = EGL_CONTEXT_PRIORITY_LEVEL_IMG;
-
-			switch (attributes.contextPriority)
-			{
-			case 0: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_LOW_IMG;
-				Log(Log.Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context LOW priority...");
-				break;
-			case 1: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_MEDIUM_IMG;
-				Log(Log.Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context MEDIUM priority...");
-				break;
-			default: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_HIGH_IMG;
-				Log(Log.Information, "EGL context creation: EGL_IMG_context_priority supported! Setting context HIGH priority (default)...");
-				break;
 			}
-		}
-		else
-		{
-			Log(Log.Information, "EGL context creation: EGL_IMG_context_priority not supported. Ignoring context Priority attribute.");
-		}
+			else
+#endif
+			{
+				contextAttributes[i++] = EGL_CONTEXT_CLIENT_VERSION;
+				contextAttributes[i++] = requestedMajorVersion;
+			}
 
-		contextAttributes[i] = EGL_NONE;
+			if (context_priority_supported)
+			{
+				contextAttributes[i++] = EGL_CONTEXT_PRIORITY_LEVEL_IMG;
 
-		Log(Log.Verbose, "Creating EGL context...");
-		//Create the context
-		handles->context = egl::CreateContext(handles->display, config, NULL, contextAttributes);
+				switch (attributes.contextPriority)
+				{
+				case 0: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_LOW_IMG; break;
+				case 1: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_MEDIUM_IMG; break;
+				default: contextAttributes[i++] = EGL_CONTEXT_PRIORITY_HIGH_IMG; break;
+				}
+			}
+			contextAttributes[i] = EGL_NONE;
 
-		//// SUCCESS -- FUNCTION SUCCESSFUL EXIT POINT
-		if (handles->context != EGL_NO_CONTEXT)
-		{
-			Log(Log.Verbose, "EGL context created. Updating Config Attributes to reflect actual context parameters...");
+			Log(Log.Information, "Creating EGL context...");
+			//Create the context
+			handles->context = egl::CreateContext(handles->display, config, NULL, contextAttributes);
 
-			// Update the attributes to the config's
-			egl::GetConfigAttrib(handles->display, config, EGL_RED_SIZE, (EGLint*)&attributes.redBits);
-			egl::GetConfigAttrib(handles->display, config, EGL_GREEN_SIZE, (EGLint*)&attributes.greenBits);
-			egl::GetConfigAttrib(handles->display, config, EGL_BLUE_SIZE, (EGLint*)&attributes.blueBits);
-			egl::GetConfigAttrib(handles->display, config, EGL_ALPHA_SIZE, (EGLint*)&attributes.alphaBits);
-			egl::GetConfigAttrib(handles->display, config, EGL_DEPTH_SIZE, (EGLint*)&attributes.depthBPP);
-			egl::GetConfigAttrib(handles->display, config, EGL_STENCIL_SIZE, (EGLint*)&attributes.stencilBPP);
-			Log(Log.Verbose, "EGL Initialized Successfully");
-			system::logEGLConfiguration(attributes);
-			return Result::Success;
-		}
+			//// SUCCESS -- FUNCTION SUCCESSFUL EXIT POINT
+			if (handles->context != EGL_NO_CONTEXT)
+			{
+				Log(Log.Debug, "EGL context created. Will now check if any attributes were being debugged, and try to roll back unnecessary changes.");
+				bool is_final = true;
+				for (uint32 retrybit = 0; retrybit < retry_DONE && is_final; ++retrybit)
+				{
+					if (retries[retrybit] == 1) // If was "now trying"...
+					{
+						Log(Log.Debug, "Current testing bit was %s. Will mark this as 'definitely not supported'(3), clear all 'tentative'(2) bits if present. If no tentative bits were found, will succeed!", retries_string[retrybit]);
+						retries[retrybit] = 3; // Fix that we definitely need that.
+						// Now, we try and enable all the rest of them...
+						for (uint32 retrybit_2 = 0; retrybit_2 < retry_DONE; ++retrybit_2)
+						{
+							if (retries[retrybit_2] == 2) // Bit is: Tried disabling it, not sure yet
+							{
+								is_final = false;
+								retries[retrybit_2] = 0; // Reset it!
+							}
+						}
+
+					}
+				}
+
+				if (!is_final)
+				{
+					Log(Log.Debug, "Found EGL attribute retry bits to attempt reset. Will now test without the disabled attributes.");
+					fix_attributes(original_attributes, attributes, retries, debugBit);
+					continue;
+				}
+
+
+
+				Log(Log.Debug, "EGL context successfully created! Updating Config Attributes to reflect actual context parameters...");
+
+				// Update the attributes to the config's
+				egl::GetConfigAttrib(handles->display, config, EGL_RED_SIZE, (EGLint*)&attributes.redBits);
+				egl::GetConfigAttrib(handles->display, config, EGL_GREEN_SIZE, (EGLint*)&attributes.greenBits);
+				egl::GetConfigAttrib(handles->display, config, EGL_BLUE_SIZE, (EGLint*)&attributes.blueBits);
+				egl::GetConfigAttrib(handles->display, config, EGL_ALPHA_SIZE, (EGLint*)&attributes.alphaBits);
+				egl::GetConfigAttrib(handles->display, config, EGL_DEPTH_SIZE, (EGLint*)&attributes.depthBPP);
+				egl::GetConfigAttrib(handles->display, config, EGL_STENCIL_SIZE, (EGLint*)&attributes.stencilBPP);
+				Log(Log.Information, "EGL Initialized Successfully");
+				platform::logEGLConfiguration(attributes);
+				return Result::Success;
+			}
+
+			// clear the EGL error
+			eglerror = egl::GetError();
+			if (eglerror != EGL_SUCCESS)
+			{
+				Log(Log.Debug, "Context not created yet. Clearing EGL errors.");
+			}
+		} //eglChooseConfif failed.
 
 		//// FAILURE ////
 		if (attributes.configID > 0)
@@ -530,33 +700,37 @@ static inline Result::Enum initializeContext(const bool wantWindow, DisplayAttri
 			return Result::UnknownError;
 		}
 
-		// We've failed to create a context, a slight tweak of the config may allow us to salvage things
-		//First, try without the debug bit, if it was se...
-		if (debugBit)
+		Log(Log.Debug, "Context creation failed - Will change EGL attributes and retry.");
+
+		// FAILURE
+		bool must_retry = false;
+		for (uint32 retry_bit = 0; retry_bit < retry_DONE; ++retry_bit)
 		{
-			debugBit = 0;
-			Log(Log.Warning, "Failed to create egl::Context - possible that EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR was responsible. Removing debug bit and retrying...");
-			continue;
+			if (retries[retry_bit] == 1) //Was the current one being checked out?
+			{
+				Log(Log.Information, "Setting bit %s as 'unsure'(2), since the context creation still failed.", retries_string[retry_bit]);
+				retries[retry_bit] = 2; //Mark it as "unsure"
+				break;
+			}
 		}
-		// We've failed to create a context, a slight tweak of the config may allow us to salvage things
-		else if (attributes.aaSamples > 0)
+		for (uint32 retry_bit = 0; retry_bit < retry_DONE && !must_retry; ++retry_bit)
 		{
-			// Reduce the anti-aliasing
-			attributes.aaSamples = attributes.aaSamples >> 1;
-			Log(Log.Error, "Failed to create egl::Context. Reducing the number of anti-aliasing samples down to %i and trying again.",
-			    attributes.aaSamples);
-			continue;
+			if (retries[retry_bit] == 0) //Found one we didn't test?
+			{
+				Log(Log.Information, "Setting bit %s as 'currently testing'(1).", retries_string[retry_bit]);
+				retries[retry_bit] = 1; //Test it...
+				must_retry = true;
+			}
 		}
-		else if (attributes.stencilBPP > 0)
+
+		if (must_retry)
 		{
-			attributes.stencilBPP = 0;
-			Log(Log.Critical, "Failed to create egl::Context. Is it possible that a Stencil buffer is not supported?");
-			return Result::UnknownError;
+			fix_attributes(original_attributes, attributes, retries, debugBit);
 		}
 		else
 		{
 			// Nothing else we can remove, fail
-			Log(Log.Critical, "Failed to create egl::Context. Unknown reason of failure. Error is: %s", system::eglErrorToStr(egl::GetError()));
+			Log(Log.Critical, "Failed to create egl::Context. Unknown reason of failure. Last error logged is: %s", platform::eglErrorToStr(egl::GetError()));
 
 			return Result::UnknownError;
 		}
@@ -565,7 +739,7 @@ static inline Result::Enum initializeContext(const bool wantWindow, DisplayAttri
 }
 
 
-static inline Result::Enum preInitialize(OSManager& mgr, NativePlatformHandles& handles)
+static inline Result preInitialize(OSManager& mgr, NativePlatformHandles& handles)
 {
 	if (!handles.get())
 	{
@@ -592,7 +766,7 @@ static inline Result::Enum preInitialize(OSManager& mgr, NativePlatformHandles& 
 		return Result::UnknownError;
 	}
 
-	//	// Bind the correct API
+	//  // Bind the correct API
 	int result = EGL_FALSE;
 
 	result = egl::BindAPI(EGL_OPENGL_ES_API);
@@ -605,14 +779,14 @@ static inline Result::Enum preInitialize(OSManager& mgr, NativePlatformHandles& 
 }
 
 /*This function assumes that the osManager's getDisplay() and getWindow() types are one and the same with NativePlatformHandles::NativeDisplay and NativePlatformHandles::NativeWindow.*/
-Result::Enum PlatformContext::init()
+Result PlatformContext::init()
 {
 	if (m_initialized)
 	{
 		return Result::AlreadyInitialized;
 	}
 
-	Result::Enum result;
+	Result result;
 	if (!m_preInitialized)
 	{
 		result = preInitialize(m_OSManager, m_platformContextHandles);
@@ -621,7 +795,15 @@ Result::Enum PlatformContext::init()
 			return result;
 		}
 		m_preInitialized = true;
-		populateMaxApiVersion();
+
+		if (m_OSManager.getApiTypeRequired() == Api::Unspecified)
+		{
+			populateMaxApiVersion();
+		}
+		else
+		{
+			m_maxApiVersion = m_OSManager.getApiTypeRequired();
+		}
 	}
 
 	if (m_OSManager.getApiTypeRequired() == Api::Unspecified)
@@ -630,19 +812,19 @@ Result::Enum PlatformContext::init()
 		{
 			apiType = getMaxApiVersion();
 			m_OSManager.setApiTypeRequired(apiType);
-			Log(Log.Information, "Unspecified target API -- Setting to max API level : %s", Api::getApiName(apiType));
+			Log(Log.Information, "Unspecified target API -- Setting to max API level : %s", apiName(apiType));
 		}
 		else
 		{
 			apiType = std::max(m_OSManager.getMinApiTypeRequired(), getMaxApiVersion());
 			Log(Log.Information, "Requested minimum API level : %s. Will actually create %s since it is supported.",
-			    Api::getApiName(m_OSManager.getMinApiTypeRequired()), Api::getApiName(getMaxApiVersion()));
+			    apiName(m_OSManager.getMinApiTypeRequired()), apiName(getMaxApiVersion()));
 			m_OSManager.setApiTypeRequired(apiType);
 		}
 	}
 	else
 	{
-		Log(Log.Information, "Forcing specific API level: %s", Api::getApiName(apiType = m_OSManager.getApiTypeRequired()));
+		Log(Log.Information, "Forcing specific API level: %s", apiName(apiType = m_OSManager.getApiTypeRequired()));
 	}
 
 	if (apiType > getMaxApiVersion())
@@ -651,7 +833,7 @@ Result::Enum PlatformContext::init()
 		    "API level requested [%s] was not supported. Max supported API level on this device is [%s]\n"
 		    "**** APPLICATION WILL EXIT ****\n"
 		    "================================================================================",
-		    Api::getApiName(apiType), Api::getApiName(getMaxApiVersion()));
+		    apiName(apiType), apiName(getMaxApiVersion()));
 		return Result::UnsupportedRequest;
 	}
 
@@ -709,7 +891,7 @@ Result::Enum PlatformContext::init()
 	return Result::Success;
 }
 
-Api::Enum PlatformContext::getMaxApiVersion()
+Api PlatformContext::getMaxApiVersion()
 {
 
 	if (!m_preInitialized)
@@ -729,14 +911,14 @@ Api::Enum PlatformContext::getMaxApiVersion()
 void PlatformContext::populateMaxApiVersion()
 {
 	m_maxApiVersion = Api::Unspecified;
-	Api::Enum graphicsapi = Api::OpenGLESMaxVersion;
+	Api graphicsapi = Api::OpenGLESMaxVersion;
 	bool supported;
-	Result::Enum result;
+	Result result;
 	while (graphicsapi > Api::Unspecified)
 	{
 		const char* esversion = (graphicsapi == Api::OpenGLES31 ? "3.1" : graphicsapi == Api::OpenGLES3 ? "3.0" : graphicsapi == Api::OpenGLES2 ?
 		                         "2.0" : "UNKNOWN_VERSION");
-		result = isGlesVersionSupported(m_platformContextHandles->display, graphicsapi, supported);
+		result = isGlesVersionSupported(m_platformContextHandles->display, m_OSManager.getDisplayAttributes(), graphicsapi, supported);
 
 		if (result == Result::Success)
 		{
@@ -746,7 +928,7 @@ void PlatformContext::populateMaxApiVersion()
 				if (isOpenGLES31NotSupported_Workaround)
 				{
 					supported = false;
-					Log(Log.Debug, "Activating workaround - OpenGL ES 3.1 support was reported, but is not present.");
+					Log(Log.Information, "Activating workaround - OpenGL ES 3.1 support was reported, but is not present.");
 				}
 				/////////////////////////// /WORKAROUND FOR SOME DEBUG DRIVERS //////////////////////////
 			}
@@ -754,25 +936,25 @@ void PlatformContext::populateMaxApiVersion()
 			if (supported)
 			{
 				m_maxApiVersion = graphicsapi;
-				Log(Log.Verbose, "Maximum API level detected: OpenGL ES %s", esversion);
+				Log(Log.Information, "Maximum API level detected: OpenGL ES %s", esversion);
 				return;
 			}
 			else
 			{
-				Log(Log.Verbose, "OpenGL ES %s NOT supported. Trying lower version...", esversion);
+				Log(Log.Information, "OpenGL ES %s NOT supported. Trying lower version...", esversion);
 			}
 		}
 		else
 		{
 			Log("Error detected while testing OpenGL ES version %s for compatibility. Trying lower version", esversion);
 		}
-		graphicsapi = (Api::Enum)(graphicsapi - 1);
+		graphicsapi = (Api)((int)graphicsapi - 1);
 	}
 	Log(Log.Critical, "=== FATAL: COULD NOT FIND COMPATIBILITY WITH ANY OPENGL ES VERSION ===");
 
 }
 
-bool PlatformContext::isApiSupported(Api::Enum apiLevel)
+bool PlatformContext::isApiSupported(Api apiLevel)
 {
 
 	if (!m_preInitialized)
@@ -944,7 +1126,7 @@ std::auto_ptr<IPlatformContext> createNativePlatformContext(OSManager& mgr)
 {
 	if (!egl::initEgl()) { return std::auto_ptr<IPlatformContext>(); }
 	eglext::initEglExt();
-	return std::auto_ptr<IPlatformContext>(new system::PlatformContext(mgr));
+	return std::auto_ptr<IPlatformContext>(new platform::PlatformContext(mgr));
 }
 }
 //!\endcond
