@@ -104,7 +104,7 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 		if (!m_assetStream->read(1, asset.getDataSize(), asset.getDataPointer(), dataRead) || dataRead != asset.getDataSize()) { return false; }
 	}
 	else if (version == texture_legacy::c_headerSizeV1 ||
-	         version == texture_legacy::c_headerSizeV2)
+			 version == texture_legacy::c_headerSizeV2)
 	{
 		// Read a V2 legacy header
 		texture_legacy::HeaderV2 legacyHeader;
@@ -216,28 +216,35 @@ bool TextureReaderPVR::isSupportedFile(Stream& assetStream)
 	}
 
 	// Read the identifier
-	size_t version;
+	texture_legacy::HeaderV2 header;
 	size_t dataRead;
-	result = assetStream.read(sizeof(version), 1, &version, dataRead);
+	result = assetStream.read(1, texture_legacy::c_headerSizeV2,
+							  &header, dataRead);
 
+	assetStream.close();
 	// Make sure it read ok, if not it's probably not a usable stream.
-	if (!result || dataRead != 1)
+	if (!result)
 	{
-		assetStream.close();
 		return false;
 	}
-
-	// Reset the file
-	assetStream.close();
 
 	// Check that the identifier matches one of the accepted formats.
-	if (version != TextureHeader::Header::PVRv3 && version != texture_legacy::c_headerSizeV1 &&
-	    version != texture_legacy::c_headerSizeV2)
+	switch (header.headerSize)
 	{
-		return false;
+		case texture_legacy::c_headerSizeV1:
+			return dataRead >= texture_legacy::c_headerSizeV1;
+
+		case texture_legacy::c_headerSizeV2:
+			return dataRead == texture_legacy::c_headerSizeV2 &&
+				header.pvrMagic == texture_legacy::c_identifierV2;
+
+		case TextureHeader::Header::PVRv3:
+			return dataRead >= std::min(
+						texture_legacy::c_headerSizeV2,
+						uint32(TextureHeader::Header::SizeOfHeader));
 	}
 
-	return true;
+	return false;
 }
 
 vector<string> TextureReaderPVR::getSupportedFileExtensions()
