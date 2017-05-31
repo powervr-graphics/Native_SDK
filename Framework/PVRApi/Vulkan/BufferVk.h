@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRApi/Vulkan/BufferVk.h
 \author       PowerVR by Imagination, Developer Technology Team
@@ -6,6 +7,15 @@
               Provides the definitions allowing to move from the Framework object Buffer to the underlying Vulkan Buffer.
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
+=======
+/*!
+\brief Contains Vulkan specific implementation of the Buffer class. Use only if directly using Vulkan calls. Provides
+the definitions allowing to move from the Framework object Buffer to the underlying Vulkan Buffer.
+\file PVRApi/Vulkan/BufferVk.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 
 #pragma once
 #include "PVRApi/ApiObjects/Buffer.h"
@@ -13,39 +23,21 @@
 #include "PVRApi/Vulkan/ContextVk.h"
 #include "PVRNativeApi/Vulkan/ConvertToVkTypes.h"
 
-/*!*********************************************************************************************************************
-\brief Main PowerVR Framework Namespace
-***********************************************************************************************************************/
+/// <summary>Main PowerVR Framework Namespace</summary>
 namespace pvr {
-/*!*********************************************************************************************************************
-\brief Main PVRApi Namespace
-***********************************************************************************************************************/
+/// <summary>Main PVRApi Namespace</summary>
 namespace api {
 
-/*!*********************************************************************************************************************
-\brief Contains internal objects and wrapped versions of the PVRApi module
-***********************************************************************************************************************/
+/// <summary>Contains internal objects and wrapped versions of the PVRApi module</summary>
 namespace vulkan {
-/*!*********************************************************************************************************************
-\brief Vulkan implementation of the Buffer.
-***********************************************************************************************************************/
-class BufferVk_ : public native::HBuffer_ , public impl::Buffer_
+/// <summary>Vulkan implementation of the Buffer.</summary>
+class BufferVk_ : public native::HBuffer_, public impl::Buffer_
 {
 public:
+	BufferVk_(const GraphicsContext& context);
 
-	/*!*********************************************************************************************************************
-	\brief ctor, create buffer on device.
-	\param context The graphics context
-	\param size buffer size in bytes.
-	\param bufferUsage how this buffer will be used for. e.g VertexBuffer, IndexBuffer.
-	\param hints What kind of access will be done (GPU Read, GPU Write, CPU Write, Copy etc)
-	***********************************************************************************************************************/
-	BufferVk_(GraphicsContext& context);
-
-	/*!*********************************************************************************************************************
-	\brief dtor, release all resources
-	***********************************************************************************************************************/
 	virtual ~BufferVk_();
+<<<<<<< HEAD
 
 	/*!*********************************************************************************************************************
 	\brief Map the buffer.
@@ -101,15 +93,42 @@ public:
 /*!*********************************************************************************************************************
 \brief Vulkan implementation of the Buffer.
 ***********************************************************************************************************************/
+=======
+	void destroy();
+
+private:
+	void* map_(types::MapBufferFlags flags, uint32 offset, uint32 length);
+	void unmap_();
+	void update_(const void* data, uint32 offset, uint32 length)
+	{
+		assertion(length + offset <= _size);
+		void* mapData = map(types::MapBufferFlags::Write, offset, length);
+		if (mapData)
+		{
+			memcpy(mapData, data, length);
+			unmap();
+		}
+		else
+		{
+			assertion(false, "Failed to map memory");
+		}
+	}
+
+	bool allocate_(uint32 size, types::BufferBindingUse usage, bool isMappable);
+	bool isAllocated_() const { return buffer != VK_NULL_HANDLE; }
+
+};
+
+
+/// <summary>Vulkan implementation of the Buffer.</summary>
+>>>>>>> 1776432f... 4.3
 class BufferViewVk_ : public impl::BufferView_
 {
 public:
-	/*!*********************************************************************************************************************
-	\brief ctor, Create a buffer View
-	\param buffer The buffer of this view
-	\param offset Offset in to the buffer of this view
-	\param range Buffer range of this view
-	***********************************************************************************************************************/
+	/// <summary>ctor, Create a buffer View</summary>
+	/// <param name="buffer">The buffer of this view</param>
+	/// <param name="offset">Offset in to the buffer of this view</param>
+	/// <param name="range">Buffer range of this view</param>
 	BufferViewVk_(const Buffer& buffer, uint32 offset, uint32 range);
 };
 
@@ -118,53 +137,44 @@ typedef RefCountedResource<BufferVk_> BufferVk;
 }// namespace vulkan
 }
 
-/*!*********************************************************************************************************************
-\brief Contains functions and classes for manipulating the underlying API and getting to the underlying API objects
-***********************************************************************************************************************/
+/// <summary>Contains functions and classes for manipulating the underlying API and getting to the underlying API
+/// objects</summary>
 namespace native {
-/*!*********************************************************************************************************************
-\brief Get the Vulkan object underlying a PVRApi Buffer object.
-\return A smart pointer wrapper containing the Vulkan Buffer
-\description If the smart pointer returned by this function is kept alive, it will keep alive the underlying Vulkan
-object even if all other references to the buffer (including the one that was passed to this function)
-are released.
-***********************************************************************************************************************/
+/// <summary>Get the Vulkan object underlying a PVRApi Buffer object.</summary>
+/// <returns>A smart pointer wrapper containing the Vulkan Buffer</returns>
+/// <remarks>If the smart pointer returned by this function is kept alive, it will keep alive the underlying
+/// Vulkan object even if all other references to the buffer (including the one that was passed to this function)
+/// are released.</remarks>
 inline const HBuffer_& native_cast(const api::impl::Buffer_& buffer)
 {
 	return static_cast<const api::vulkan::BufferVk_&>(buffer);
 }
 
-/*!*********************************************************************************************************************
-\brief Get the Vulkan object underlying a PVRApi Buffer object.
-\return A smart pointer wrapper containing the Vulkan Buffer
-\description If the smart pointer returned by this function is kept alive, it will keep alive the underlying Vulkan
-object even if all other references to the buffer (including the one that was passed to this function)
-are released.
-***********************************************************************************************************************/
+/// <summary>Get the Vulkan object underlying a PVRApi Buffer object.</summary>
+/// <returns>A smart pointer wrapper containing the Vulkan Buffer</returns>
+/// <remarks>If the smart pointer returned by this function is kept alive, it will keep alive the underlying
+/// Vulkan object even if all other references to the buffer (including the one that was passed to this function)
+/// are released.</remarks>
 inline HBuffer_& native_cast(api::impl::Buffer_& buffer)
 {
 	return static_cast<api::vulkan::BufferVk_&>(buffer);
 }
 
-/*!*********************************************************************************************************************
-\brief Get the Vulkan object underlying a PVRApi Buffer object.
-\return A smart pointer wrapper containing the Vulkan Buffer
-\description If the smart pointer returned by this function is kept alive, it will keep alive the underlying Vulkan
-object even if all other references to the buffer (including the one that was passed to this function)
-are released.
-***********************************************************************************************************************/
+/// <summary>Get the Vulkan object underlying a PVRApi Buffer object.</summary>
+/// <returns>A smart pointer wrapper containing the Vulkan Buffer</returns>
+/// <remarks>If the smart pointer returned by this function is kept alive, it will keep alive the underlying
+/// Vulkan object even if all other references to the buffer (including the one that was passed to this function)
+/// are released.</remarks>
 inline const HBuffer_& native_cast(const api::Buffer& buffer)
 {
 	return static_cast<const api::vulkan::BufferVk_&>(*buffer);
 }
 
-/*!*********************************************************************************************************************
-\brief Get the Vulkan object underlying a PVRApi Buffer object.
-\return A smart pointer wrapper containing the Vulkan Buffer
-\description If the smart pointer returned by this function is kept alive, it will keep alive the underlying Vulkan
-object even if all other references to the buffer (including the one that was passed to this function)
-are released.
-***********************************************************************************************************************/
+/// <summary>Get the Vulkan object underlying a PVRApi Buffer object.</summary>
+/// <returns>A smart pointer wrapper containing the Vulkan Buffer</returns>
+/// <remarks>If the smart pointer returned by this function is kept alive, it will keep alive the underlying
+/// Vulkan object even if all other references to the buffer (including the one that was passed to this function)
+/// are released.</remarks>
 inline HBuffer_& native_cast(api::Buffer& buffer)
 {
 	return static_cast<api::vulkan::BufferVk_&>(*buffer);
@@ -176,4 +186,8 @@ inline HBuffer_& native_cast(api::Buffer& buffer)
 PVR_DECLARE_NATIVE_CAST(Buffer)
 PVR_DECLARE_NATIVE_CAST(BufferView)
 
+<<<<<<< HEAD
 //!\endcond
+=======
+
+>>>>>>> 1776432f... 4.3

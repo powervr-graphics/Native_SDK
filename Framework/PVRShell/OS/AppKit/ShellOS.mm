@@ -1,12 +1,12 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\OS\AppKit\ShellOS.mm
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief			Implementation of the OS specific part of the PVRShell class for the AppKit OSX implementation
-***********************************************************************************************************************/
+/*!
+\brief Implementation of the OS specific part of the PVRShell class for the AppKit OSX implementation
+\file PVRShell\OS/AppKit/ShellOS.mm
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/FilePath.h"
+#include "PVRCore/IO/FilePath.h"
 #include <mach/mach_time.h>
 #include <Foundation/Foundation.h>
 #include <AppKit/NSWindow.h>
@@ -37,39 +37,43 @@ struct InternalOS
 pvr::int16 g_cursorX, g_cursorY;
 
 // Setup the capabilities
+<<<<<<< HEAD
 const pvr::platform::ShellOS::Capabilities pvr::platform::ShellOS::m_capabilities = { pvr::types::Capability::Immutable, pvr::types::Capability::Immutable };
+=======
+const pvr::platform::ShellOS::Capabilities pvr::platform::ShellOS::_capabilities = { pvr::types::Capability::Immutable, pvr::types::Capability::Immutable };
+>>>>>>> 1776432f... 4.3
 
-ShellOS::ShellOS(/*NSObject<NSApplicationDelegate>*/void* hInstance, OSDATA osdata) : m_instance(hInstance)
+ShellOS::ShellOS(/*NSObject<NSApplicationDelegate>*/void* hInstance, OSDATA osdata) : _instance(hInstance)
 {
-	m_OSImplementation = new InternalOS;
+	_OSImplementation = new InternalOS;
 }
 
 ShellOS::~ShellOS()
 {
-	delete m_OSImplementation;
+	delete _OSImplementation;
 }
 
 pvr::Result ShellOS::init(DisplayAttributes &data)
 {
-	if(!m_OSImplementation)
+	if(!_OSImplementation)
 		return pvr::Result::OutOfMemory;
 	// Setup read and write paths
 	NSString* readPath = [NSString stringWithFormat:@"%@%@", [[NSBundle mainBundle] resourcePath], @"/"];
-	//m_Strings[eReadPath] = [readPath UTF8String];
-    m_ReadPaths.push_back([readPath UTF8String]);
+	//_Strings[eReadPath] = [readPath UTF8String];
+    _ReadPaths.push_back([readPath UTF8String]);
     NSString* writePath = [NSString stringWithFormat:@"%@%@", [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent], @"/"];
-    m_WritePath = [writePath UTF8String];
+    _WritePath = [writePath UTF8String];
 	// Setup the app name
     NSString* name = [[NSProcessInfo processInfo] processName];
     
-    m_AppName =[name UTF8String];
+    _AppName =[name UTF8String];
 	return pvr::Result::Success;
 }
 
 
 void ShellOS::updatePointingDeviceLocation()
 {
-    m_shell->updatePointerPosition(PointerLocation(g_cursorX, g_cursorY));
+    _shell->updatePointerPosition(PointerLocation(g_cursorX, g_cursorY));
 }
 
 pvr::Result ShellOS::initializeWindow(pvr::platform::DisplayAttributes &data)
@@ -100,50 +104,50 @@ pvr::Result ShellOS::initializeWindow(pvr::platform::DisplayAttributes &data)
         style = NSMiniaturizableWindowMask | NSTitledWindowMask | NSClosableWindowMask;
     }
     
-    m_OSImplementation->window = [[AppWindow alloc] initWithContentRect:frame styleMask:style backing:NSBackingStoreBuffered defer:NO screen:[NSScreen mainScreen]];
+    _OSImplementation->window = [[AppWindow alloc] initWithContentRect:frame styleMask:style backing:NSBackingStoreBuffered defer:NO screen:[NSScreen mainScreen]];
     
-    if(!m_OSImplementation->window)
+    if(!_OSImplementation->window)
     {
         NSLog(@"Failed to allocated the window.");
         return pvr::Result::UnknownError;
     }
-    m_OSImplementation->window.eventQueue = m_shell.get();
+    _OSImplementation->window.eventQueue = _shell.get();
 	
     // Don't release our window when closed
-    [m_OSImplementation->window setReleasedWhenClosed:NO];
+    [_OSImplementation->window setReleasedWhenClosed:NO];
     // When the window is closed, terminate the application
-    [[NSNotificationCenter defaultCenter] addObserver:(__bridge NSObject*)m_instance selector:@selector(terminateApp) name:NSWindowWillCloseNotification object:m_OSImplementation->window];
+    [[NSNotificationCenter defaultCenter] addObserver:(__bridge NSObject*)_instance selector:@selector(terminateApp) name:NSWindowWillCloseNotification object:_OSImplementation->window];
     
     // Set the window title
-    [m_OSImplementation->window setTitle:[NSString stringWithUTF8String:data.windowTitle.c_str()]];
+    [_OSImplementation->window setTitle:[NSString stringWithUTF8String:data.windowTitle.c_str()]];
     
     // Now create the view that we'll render to
-    m_OSImplementation->view = [[NSView alloc] initWithFrame:frame];
+    _OSImplementation->view = [[NSView alloc] initWithFrame:frame];
     
-    if(!m_OSImplementation->view)
+    if(!_OSImplementation->view)
     {
         return pvr::Result::UnknownError;
     }
     
     // Add our view to our window
-    [m_OSImplementation->window setContentView:m_OSImplementation->view];
+    [_OSImplementation->window setContentView:_OSImplementation->view];
     
     // Save a pointer to our window and view
     if(data.fullscreen)
     {
         // Set our window's level above the main menu window
-        [m_OSImplementation->window setLevel:NSMainMenuWindowLevel+1];
+        [_OSImplementation->window setLevel:NSMainMenuWindowLevel+1];
     }
 
-    [m_OSImplementation->window makeKeyAndOrderFront:nil];
+    [_OSImplementation->window makeKeyAndOrderFront:nil];
 	return pvr::Result::Success;
 }
 
 void ShellOS::releaseWindow()
 {
-	if(m_OSImplementation->window)
+	if(_OSImplementation->window)
 	{
-        m_OSImplementation->view = nil;
+        _OSImplementation->view = nil;
 	}
 }
 
@@ -159,7 +163,7 @@ OSDisplay ShellOS::getDisplay() const
 
 OSWindow ShellOS::getWindow() const
 {
-	return (__bridge OSWindow)m_OSImplementation->view;
+	return (__bridge OSWindow)_OSImplementation->view;
 }
 
 pvr::Result ShellOS::handleOSEvents()
@@ -170,10 +174,14 @@ pvr::Result ShellOS::handleOSEvents()
 
 bool ShellOS::isInitialized()
 {
-	return m_OSImplementation && m_OSImplementation->window;
+	return _OSImplementation && _OSImplementation->window;
 }
 
+<<<<<<< HEAD
 pvr::Result ShellOS::popUpMessage(const pvr::tchar *const title, const pvr::tchar *const message, ...)const
+=======
+pvr::Result ShellOS::popUpMessage(const pvr::char8 *const title, const pvr::char8 *const message, ...)const
+>>>>>>> 1776432f... 4.3
 {
     if(title && message)
     {

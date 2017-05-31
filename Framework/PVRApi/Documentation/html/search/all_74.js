@@ -1,5 +1,6 @@
 var searchData=
 [
+<<<<<<< HEAD
   ['tesscontrolshader',['tessControlShader',['../structpvr_1_1api_1_1_graphics_pipeline_create_param.html#ad7ed6298c1cbc74e79cbea5f1627bd6f',1,'pvr::api::GraphicsPipelineCreateParam']]],
   ['tesscontrolshaderstagecreateparam',['TessControlShaderStageCreateParam',['../structpvr_1_1api_1_1pipeline_creation_1_1_tess_control_shader_stage_create_param.html',1,'pvr::api::pipelineCreation']]],
   ['tesscontrolshaderstagecreateparam',['TessControlShaderStageCreateParam',['../structpvr_1_1api_1_1pipeline_creation_1_1_tess_control_shader_stage_create_param.html#a0d09934a0d994da90d69ed17c3b3346e',1,'pvr::api::pipelineCreation::TessControlShaderStageCreateParam::TessControlShaderStageCreateParam()'],['../structpvr_1_1api_1_1pipeline_creation_1_1_tess_control_shader_stage_create_param.html#ac86b46fe9f464e719922884f1c324595',1,'pvr::api::pipelineCreation::TessControlShaderStageCreateParam::TessControlShaderStageCreateParam(const api::Shader &amp;shader)']]],
@@ -43,4 +44,13 @@ var searchData=
   ['tobindtex',['toBindTex',['../structpvr_1_1platform_1_1_context_gles_1_1_texture_binding.html#af16abeef353e869f98b33ec081928fe6',1,'pvr::platform::ContextGles::TextureBinding::toBindTex()'],['../structpvr_1_1platform_1_1_context_vk_1_1_texture_binding.html#a9397556f02050a58f5d26d3b0a9ca624',1,'pvr::platform::ContextVk::TextureBinding::toBindTex()']]],
   ['topology',['topology',['../structpvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param.html#a8ad21e3836a26e58a092ade391918923',1,'pvr::api::pipelineCreation::InputAssemblerStateCreateParam']]],
   ['type',['type',['../structpvr_1_1api_1_1_descriptor_set_update_1_1_descriptor_binding.html#a95d25cf99c96e8d55f756b2c712e2cad',1,'pvr::api::DescriptorSetUpdate::DescriptorBinding::type()'],['../structpvr_1_1api_1_1_effect_api_shader.html#a0ceb082b79a9f5e244420f669e81d059',1,'pvr::api::EffectApiShader::type()']]]
+=======
+  ['tesselationstagecreateparam',['TesselationStageCreateParam',['../structpvr_1_1api_1_1pipeline_creation_1_1_tesselation_stage_create_param.html',1,'pvr::api::pipelineCreation']]],
+  ['tesselationstagecreateparam',['TesselationStageCreateParam',['../structpvr_1_1api_1_1pipeline_creation_1_1_tesselation_stage_create_param.html#a1d800811abad111ccfa7768b53bb0bd8',1,'pvr::api::pipelineCreation::TesselationStageCreateParam']]],
+  ['tesselationstates',['tesselationStates',['../structpvr_1_1api_1_1_graphics_pipeline_create_param.html#aa03871ab27a8be3f3ba9a332a7908165',1,'pvr::api::GraphicsPipelineCreateParam']]],
+  ['texture_2eh',['Texture.h',['../_texture_8h.html',1,'']]],
+  ['texturestore_5f',['TextureStore_',['../classpvr_1_1api_1_1impl_1_1_texture_store__.html',1,'pvr::api::impl']]],
+  ['textureview_5f',['TextureView_',['../classpvr_1_1api_1_1impl_1_1_texture_view__.html',1,'pvr::api::impl']]],
+  ['textureview_5f',['TextureView_',['../classpvr_1_1api_1_1impl_1_1_texture_view__.html#ab5443894d357a0769889195ba13b64db',1,'pvr::api::impl::TextureView_::TextureView_(const TextureStore &amp;texture, const native::HImageView_ &amp;view)'],['../classpvr_1_1api_1_1impl_1_1_texture_view__.html#aa0c5e8f4f61ac58d6db4a606144d817b',1,'pvr::api::impl::TextureView_::TextureView_(const TextureStore &amp;texture=TextureStore())']]]
+>>>>>>> 1776432f... 4.3
 ];

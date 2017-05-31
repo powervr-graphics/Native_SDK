@@ -45,6 +45,7 @@
     <ClInclude Include="..\..\OpenGLESHeaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\..\..\ApiErrors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -58,6 +59,39 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\BufferUtils.h">
+=======
+    <ClInclude Include="..\..\TextureUtilsGles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ApiErrorsGles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\NativeGles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ShaderUtilsGles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\EGL\EglPlatformHandles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\EGL\ExtensionLoaderEgl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\EGL\NativeLibraryEgl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\EGL\ApiEgl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ExtensionLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PlatformContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PlatformTypes.h">
+>>>>>>> 1776432f... 4.3
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -74,6 +108,7 @@
     <ClCompile Include="..\..\ShaderUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\..\TextureUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,6 +116,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\BufferUtilsGles.cpp">
+=======
+    <ClCompile Include="..\..\TextureUtilsGles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ApiErrorsGles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\GpuCapabilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\EGL\ExtensionLoaderEgl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\EGL\NativeLibraryEgl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\EGL\EglPlatformContext.cpp">
+>>>>>>> 1776432f... 4.3
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

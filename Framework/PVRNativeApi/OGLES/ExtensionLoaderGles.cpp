@@ -1,13 +1,22 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRNativeApi\OGLES\ExtensionLoaderGles.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief         Definitions for the function pointers of the glext:: class. See ExtensionLoaderGles.h.
 ***********************************************************************************************************************/
+=======
+/*!
+\brief Definitions for the function pointers of the glext:: class. See ExtensionLoaderGles.h.
+\file PVRNativeApi/OGLES/ExtensionLoaderGles.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 //!\cond NO_DOXYGEN
 #include "PVRNativeApi/OGLES/ExtensionLoaderGles.h"
-#include "PVRPlatformGlue/ExtensionLoader.h"
-#include "PVRCore/Assert_.h"
+#include "PVRNativeApi/ExtensionLoader.h"
+#include "PVRCore/Base/Assert_.h"
 
 PROC_EXT_glDiscardFramebufferEXT glext::DiscardFramebufferEXT = NULL;
 PROC_EXT_glMultiDrawElementsEXT glext::MultiDrawElementsEXT = NULL;
@@ -200,6 +209,13 @@ PROC_EXT_glBufferStorageEXT glext::BufferStorageEXT = NULL;
 PROC_EXT_glClearTexImageIMG glext::ClearTexImageIMG = NULL;
 PROC_EXT_glClearTexSubImageIMG glext::ClearTexSubImageIMG = NULL;
 
+<<<<<<< HEAD
+=======
+/* GL_EXT_clear_texture */
+PROC_EXT_glClearTexImageEXT glext::ClearTexImageEXT = NULL;
+PROC_EXT_glClearTexSubImageEXT glext::ClearTexSubImageEXT = NULL;
+
+>>>>>>> 1776432f... 4.3
 /* GL_IMG_framebuffer_downsample */
 PROC_EXT_glFramebufferTexture2DDownsampleIMG glext::FramebufferTexture2DDownsampleIMG = NULL;
 PROC_EXT_glFramebufferTextureLayerDownsampleIMG glext::FramebufferTextureLayerDownsampleIMG = NULL;
@@ -599,6 +615,13 @@ void glext::initGlext()
 	glext::ClearTexImageIMG = pvr::native::getExtensionProcAddress<PROC_EXT_glClearTexImageIMG>("glClearTexImageIMG");
 	glext::ClearTexSubImageIMG = pvr::native::getExtensionProcAddress<PROC_EXT_glClearTexSubImageIMG>("glClearTexSubImageIMG");
 
+<<<<<<< HEAD
+=======
+	/* GL_EXT_clear_texture */
+	glext::ClearTexImageEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glClearTexImageEXT>("glClearTexImageEXT");
+	glext::ClearTexSubImageEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glClearTexSubImageEXT>("glClearTexSubImageEXT");
+
+>>>>>>> 1776432f... 4.3
 	/* GL_IMG_framebuffer_downsample */
 	glext::FramebufferTexture2DDownsampleIMG = pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferTexture2DDownsampleIMG>("glFramebufferTexture2DDownsampleIMG");
 	glext::FramebufferTextureLayerDownsampleIMG = pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferTextureLayerDownsampleIMG>("glFramebufferTextureLayerDownsampleIMG");

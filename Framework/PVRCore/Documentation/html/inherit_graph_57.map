@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$structpvr_1_1types_1_1_descriptor_type_binding.html" title="Base class for a descriptor type binding" alt="" coords="6,70,183,111"/>
+<area shape="rect" id="node2" href="$structpvr_1_1types_1_1_descriptor_item_binding.html" title="pvr::types::DescriptorItem\lBinding\&lt; _BindingType \&gt;" alt="" coords="241,5,415,46"/>
+<area shape="rect" id="node3" href="$structpvr_1_1types_1_1_descriptor_binding_layout.html" title="A binding layout for a descriptor" alt="" coords="233,70,423,111"/>
+<area shape="rect" id="node4" href="$structpvr_1_1types_1_1_descriptor_item_binding.html" title="An item binding for a descriptor" alt="" coords="241,135,415,177"/>
+</map>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRApi\OGLES\SamplerGles.h
 \author       PowerVR by Imagination, Developer Technology Team
@@ -5,6 +6,14 @@
 \brief         OpenGL ES 2+ implementation of the Sampler class.
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
+=======
+/*!
+\brief OpenGL ES 2+ implementation of the Sampler class.
+\file PVRApi/OGLES/SamplerGles.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 #pragma once
 #include "PVRApi/ApiObjects/Sampler.h"
 #include "PVRApi/OGLES/ContextGles.h"
@@ -15,15 +24,15 @@ namespace gles {
 class SamplerGles_ : public impl::Sampler_, public native::HSampler_
 {
 public:
-	SamplerCreateParam m_desc;//< required for ES2
-	mutable bool m_initialized;
-	SamplerGles_(GraphicsContext& device) : Sampler_(device), m_initialized(false) {}
+	SamplerCreateParam _desc;//< required for ES2
+	mutable bool _initialized;
+	SamplerGles_(const GraphicsContext& device) : Sampler_(device), _initialized(false) {}
 	void bind(IGraphicsContext& context, uint32 index) const;
 	bool init(const SamplerCreateParam& _desc);
 	void destroy();
 	~SamplerGles_()
 	{
-		if (m_context.isValid())
+		if (_context.isValid())
 		{
 			destroy();
 		}
@@ -31,7 +40,6 @@ public:
 		{
 			reportDestroyedAfterContext("Sampler");
 		}
-
 	}
 };
 typedef RefCountedResource<gles::SamplerGles_> SamplerGles;

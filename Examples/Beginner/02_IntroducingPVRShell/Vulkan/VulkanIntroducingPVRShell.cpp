@@ -31,12 +31,11 @@ MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 #define VK_USE_PLATFORM_ANDROID_KHR
 #endif
 #define VK_PROTOTYPES
-#include "vulkan/vulkan.h"
 #include <algorithm>
 #include <cstdlib>
 #include "PVRShell/PVRShell.h"
-#include "PVRPlatformGlue/Vulkan/PlatformHandlesVulkanGlue.h"
 #include "PVRNativeApi/Vulkan/VulkanBindings.h"
+#include "PVRNativeApi/Vulkan/PlatformHandlesVulkanGlue.h"
 #include "PVRNativeApi/Vulkan/BufferUtilsVk.h"
 void vulkanSuccessOnDie(VkResult result, const char* msg)
 {
@@ -219,7 +218,7 @@ pvr::Result App::initView()
 		VkCommandPoolCreateInfo cmdPoolCreateInfo = {};
 		cmdPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		cmdPoolCreateInfo.pNext = NULL;
-		cmdPoolCreateInfo.queueFamilyIndex = platformContext->getNativePlatformHandles().graphicsQueueIndex;
+		cmdPoolCreateInfo.queueFamilyIndex = platformContext->getNativePlatformHandles().universalQueueIndex;
 		vk::CreateCommandPool(platformContext->getNativePlatformHandles().context.device, &cmdPoolCreateInfo, NULL, &cmdPool);
 	}
 	// create the renderpass and framebuffer
@@ -236,7 +235,11 @@ pvr::Result App::initView()
 pvr::Result App::releaseView()
 {
 	auto& handles = platformContext->getNativePlatformHandles();
+<<<<<<< HEAD
 	vk::QueueWaitIdle(handles.graphicsQueue);
+=======
+	vk::QueueWaitIdle(handles.mainQueue());
+>>>>>>> 1776432f... 4.3
 	for (uint32 i = 0; i < getSwapChainLength(); ++i)
 	{
 		vk::DestroyFramebuffer(getDevice(), framebuffer[i], NULL);
@@ -273,7 +276,11 @@ pvr::Result App::renderFrame()
 {
 	auto& handles = platformContext->getNativePlatformHandles();
 	pvr::uint32 swapchainindex = getPlatformContext().getSwapChainIndex();
+<<<<<<< HEAD
 	submit_command_buffers(handles.graphicsQueue, &cmdBuffer[swapchainindex], 1,
+=======
+	submit_command_buffers(handles.mainQueue(), &cmdBuffer[swapchainindex], 1,
+>>>>>>> 1776432f... 4.3
 	                       &handles.semaphoreCanBeginRendering[swapchainindex], handles.semaphoreCanBeginRendering[swapchainindex] != 0,
 	                       &handles.semaphoreFinishedRendering[swapchainindex], handles.semaphoreFinishedRendering[swapchainindex] != 0,
 	                       handles.fenceRender[swapchainindex]);

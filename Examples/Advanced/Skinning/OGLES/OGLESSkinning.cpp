@@ -6,8 +6,12 @@
 ***********************************************************************************************************************/
 #include "PVRApi/PVRApi.h"
 #include "PVRShell/PVRShell.h"
+<<<<<<< HEAD
 #include "PVRUIRenderer/UIRenderer.h"
 #include "PVRApi/RenderManager.h"
+=======
+#include "PVREngineUtils/PVREngineUtils.h"
+>>>>>>> 1776432f... 4.3
 
 using namespace pvr::types;
 // shader uniforms
@@ -32,7 +36,11 @@ class OGLESSkinning : public pvr::Shell
 		// Print3D class used to display text
 		pvr::ui::UIRenderer uiRenderer;
 
+<<<<<<< HEAD
 		pvr::api::AssetStore assetManager;
+=======
+		pvr::utils::AssetStore assetManager;
+>>>>>>> 1776432f... 4.3
 
 		pvr::GraphicsContext context;
 		pvr::api::CommandBuffer commandBuffer;
@@ -134,13 +142,21 @@ pvr::Result OGLESSkinning::initView()
 	apiObj->context = getGraphicsContext();
 	apiObj->commandBuffer = apiObj->context->createCommandBufferOnDefaultPool();
 
+<<<<<<< HEAD
 	pvr::assets::pfx::PfxParser rd(Configuration::EffectFile, this);
+=======
+        pvr::assets::pfx::PfxParser rd(Configuration::EffectFile, this);
+>>>>>>> 1776432f... 4.3
 	pvr::utils::RenderManager& mgr = apiObj->mgr;
 	mgr.addEffect(*rd.getAssetHandle(), getGraphicsContext(), apiObj->assetManager);
 	mgr.addModelForAllPasses(scene);
 	mgr.buildRenderObjects();
 
+<<<<<<< HEAD
 	for (auto& pipe : mgr.toSubpass(0, 0, 0).pipelines)
+=======
+	for (auto& pipe : mgr.toSubpassGroup(0, 0, 0,0).pipelines)
+>>>>>>> 1776432f... 4.3
 	{
 		pipe.createAutomaticModelSemantics();
 	}
@@ -192,10 +208,25 @@ pvr::Result OGLESSkinning::renderFrame()
 		while (currentFrame >= scene->getNumFrames() - 1) { currentFrame -= (scene->getNumFrames() - 1); }
 	}
 	// Set the scene animation to the current frame
+<<<<<<< HEAD
 
 	apiObj->mgr.toSubpassModel(0, 0, 0, 0).updateFrame(currentFrame);
 
 	apiObj->mgr.updateAutomaticSemantics(getSwapChainIndex());
+=======
+
+	apiObj->mgr.toSubpassGroupModel(0,0, 0, 0, 0).updateFrame(currentFrame);
+
+	//Get a new worldview camera and light position
+	apiObj->mgr.toPipeline(0, 0, 0, 0, 0).updateAutomaticModelSemantics(0);
+	apiObj->mgr.toPipeline(0, 0, 0,0, 1).updateAutomaticModelSemantics(0);
+
+	// Update all node-specific matrices (Worldview, bone array etc).
+
+	// Should be called before updating anything to optimise map/unmap. Suggest call once per frame.
+
+	for (auto& rendernode : apiObj->mgr.renderables()) { rendernode.updateAutomaticSemantics(0); }
+>>>>>>> 1776432f... 4.3
 
 	//Update all the bones matrices
 	apiObj->commandBuffer->submit();

@@ -8,7 +8,7 @@
 #include "ParticleSystemGPU.h"
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 using namespace pvr::types;
 using namespace pvr;
 namespace Files {
@@ -36,14 +36,14 @@ const glm::vec3 LightPosition(0.0f, 10.0f, 0.0f);
 
 const Sphere Spheres[] =
 {
-	Sphere(glm::vec3(-20.0f, 6.0f, -20.0f), 5.f) ,
-	Sphere(glm::vec3(-20.0f, 6.0f,   0.0f), 5.f) ,
-	Sphere(glm::vec3(-20.0f, 6.0f,  20.0f), 5.f) ,
-	Sphere(glm::vec3(0.0f, 6.0f, -20.0f), 5.f) ,
-	Sphere(glm::vec3(0.0f, 6.0f,  20.0f), 5.f) ,
-	Sphere(glm::vec3(20.0f, 6.0f, -20.0f), 5.f) ,
-	Sphere(glm::vec3(20.0f, 6.0f,   0.0f), 5.f) ,
-	Sphere(glm::vec3(20.0f, 6.0f,  20.0f), 5.f) ,
+	Sphere(glm::vec3(-20.0f, 6.0f, -20.0f), 5.f),
+	Sphere(glm::vec3(-20.0f, 6.0f,   0.0f), 5.f),
+	Sphere(glm::vec3(-20.0f, 6.0f,  20.0f), 5.f),
+	Sphere(glm::vec3(0.0f, 6.0f, -20.0f), 5.f),
+	Sphere(glm::vec3(0.0f, 6.0f,  20.0f), 5.f),
+	Sphere(glm::vec3(20.0f, 6.0f, -20.0f), 5.f),
+	Sphere(glm::vec3(20.0f, 6.0f,   0.0f), 5.f),
+	Sphere(glm::vec3(20.0f, 6.0f,  20.0f), 5.f),
 };
 
 BufferViewMapping SpherePipeUboMapping[] =
@@ -393,14 +393,20 @@ bool VulkanParticleSystem::createDescriptors()
 		apiObj->descLayoutUbo = apiObj->context->createDescriptorSetLayout(descLayoutInfo);
 	}
 
-	apiObj->passSphere.uboPerModel.setupDynamic(apiObj->context, Configuration::NumberOfSpheres,
-	    BufferViewTypes::UniformBufferDynamic);
 	apiObj->passSphere.uboPerModel.addEntriesPacked(Configuration::SpherePipeUboMapping,
 	    Configuration::SpherePipeDynamicUboElements::Count);
+	apiObj->passSphere.uboPerModel.finalize(apiObj->context, Configuration::NumberOfSpheres,
+	                                        BufferBindingUse::UniformBuffer, true, false);
 
-	apiObj->passFloor.uboPerModel.setupDynamic(apiObj->context, 1, BufferViewTypes::UniformBuffer);
 	apiObj->passFloor.uboPerModel.addEntriesPacked(Configuration::FloorPipeUboMapping,
 	    Configuration::FloorPipeDynamicUboElements::Count);
+	apiObj->passFloor.uboPerModel.finalize(apiObj->context, 1, BufferBindingUse::UniformBuffer, false, false);
+
+	apiObj->passSphere.uboLightProp.addEntryPacked(pvr::StringHash("uLightPosition"), GpuDatatypes::vec3);
+	apiObj->passSphere.uboLightProp.finalize(apiObj->context, 1, BufferBindingUse::UniformBuffer, false, false);
+
+	apiObj->passParticles.uboMvp.addEntryPacked("uModelViewProjectionMatrix", GpuDatatypes::mat4x4);
+	apiObj->passParticles.uboMvp.finalize(apiObj->context, 1, BufferBindingUse::UniformBuffer, false, false);
 
 	for (pvr::uint32 i = 0; i < getSwapChainLength(); ++i)
 	{
@@ -409,8 +415,7 @@ bool VulkanParticleSystem::createDescriptors()
 			// create the ubo dynamic buffer
 			apiObj->passSphere.uboPerModel.connectWithBuffer(i, apiObj->context->createBufferView(
 			      apiObj->context->createBuffer(apiObj->passSphere.uboPerModel.getAlignedTotalSize(),
-			                                    types::BufferBindingUse::UniformBuffer, true), 0,
-			      apiObj->passSphere.uboPerModel.getAlignedElementSize()), BufferViewTypes::UniformBufferDynamic);
+			                                    types::BufferBindingUse::UniformBuffer, true), 0, apiObj->passSphere.uboPerModel.getAlignedElementSize()));
 
 			// create the ubo dynamic descriptor set
 			apiObj->passSphere.descriptoruboPerModel[i] =
@@ -418,13 +423,10 @@ bool VulkanParticleSystem::createDescriptors()
 			apiObj->passSphere.descriptoruboPerModel[i]->update(api::DescriptorSetUpdate()
 			    .setDynamicUbo(0, apiObj->passSphere.uboPerModel.getConnectedBuffer(i)));
 
-			// create the ubo static buffer
-			apiObj->passSphere.uboLightProp.setupArray(apiObj->context, 1, BufferViewTypes::UniformBuffer);
-			apiObj->passSphere.uboLightProp.addEntryPacked(pvr::StringHash("uLightPosition"), GpuDatatypes::vec3);
 			apiObj->passSphere.uboLightProp.connectWithBuffer(i,
 			    apiObj->context->createBufferView(apiObj->context->createBuffer(
 			                                        apiObj->passSphere.uboLightProp.getAlignedTotalSize(), BufferBindingUse::UniformBuffer, true), 0,
-			                                      apiObj->passSphere.uboLightProp.getAlignedElementSize()), BufferViewTypes::UniformBuffer);
+			                                      apiObj->passSphere.uboLightProp.getAlignedElementSize()));
 
 			// create the ubo static descriptor set
 			apiObj->passSphere.descriptorLighProp[i] =
@@ -435,11 +437,9 @@ bool VulkanParticleSystem::createDescriptors()
 
 		// particle descriptor
 		{
-			apiObj->passParticles.uboMvp.setupArray(apiObj->context, 1, BufferViewTypes::UniformBuffer);
-			apiObj->passParticles.uboMvp.addEntryPacked("uModelViewProjectionMatrix", GpuDatatypes::mat4x4);
 			apiObj->passParticles.uboMvp.connectWithBuffer(i,
 			    apiObj->context->createBufferAndView(apiObj->passParticles.uboMvp.getAlignedElementSize(),
-			        BufferBindingUse::UniformBuffer, true), BufferViewTypes::UniformBuffer);
+			        BufferBindingUse::UniformBuffer, true));
 
 			apiObj->passParticles.descriptorMvp[i] =
 			  apiObj->context->createDescriptorSetOnDefaultPool(apiObj->descLayoutUbo);
@@ -455,7 +455,7 @@ bool VulkanParticleSystem::createDescriptors()
 			                                types::BufferBindingUse::UniformBuffer, true);
 
 			apiObj->passFloor.uboPerModel.connectWithBuffer(i, apiObj->context->createBufferView(
-			      buffer, 0, apiObj->passFloor.uboPerModel.getAlignedElementSize()), BufferViewTypes::UniformBuffer);
+			      buffer, 0, apiObj->passFloor.uboPerModel.getAlignedElementSize()));
 
 			// create the ubo dynamic descriptor set
 			apiObj->passFloor.descriptorUbo[i] = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->descLayoutUbo);

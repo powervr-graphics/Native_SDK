@@ -1,0 +1,351 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E1672E91DE85AB000FC9B21 /* AssetUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E1672E61DE85AB000FC9B21 /* AssetUtils.h */; settings = {ASSET_TAGS = (); }; };
+		0E1672EA1DE85AB000FC9B21 /* Asynchronous.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E1672E71DE85AB000FC9B21 /* Asynchronous.h */; settings = {ASSET_TAGS = (); }; };
+		0E1672EB1DE85AB000FC9B21 /* StructuredMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E1672E81DE85AB000FC9B21 /* StructuredMemory.h */; settings = {ASSET_TAGS = (); }; };
+		0E36322A1DCA38450013A77A /* ArialBoldFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3632181DCA38450013A77A /* ArialBoldFont.h */; settings = {ASSET_TAGS = (); }; };
+		0E36322B1DCA38450013A77A /* AssetStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3632191DCA38450013A77A /* AssetStore.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E36322C1DCA38450013A77A /* AssetStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E36321A1DCA38450013A77A /* AssetStore.h */; settings = {ASSET_TAGS = (); }; };
+		0E36322D1DCA38450013A77A /* EffectApi_2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E36321B1DCA38450013A77A /* EffectApi_2.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E36322E1DCA38450013A77A /* EffectApi_2.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E36321C1DCA38450013A77A /* EffectApi_2.h */; settings = {ASSET_TAGS = (); }; };
+		0E36322F1DCA38450013A77A /* PowerVRLogo.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E36321D1DCA38450013A77A /* PowerVRLogo.h */; settings = {ASSET_TAGS = (); }; };
+		0E3632301DCA38450013A77A /* PVREngineUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E36321E1DCA38450013A77A /* PVREngineUtils.h */; settings = {ASSET_TAGS = (); }; };
+		0E3632311DCA38450013A77A /* RenderManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E36321F1DCA38450013A77A /* RenderManager.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3632321DCA38450013A77A /* RenderManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3632201DCA38450013A77A /* RenderManager.h */; settings = {ASSET_TAGS = (); }; };
+		0E3632331DCA38450013A77A /* Sprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3632211DCA38450013A77A /* Sprite.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3632341DCA38450013A77A /* Sprite.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3632221DCA38450013A77A /* Sprite.h */; settings = {ASSET_TAGS = (); }; };
+		0E3632351DCA38450013A77A /* UIRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E3632231DCA38450013A77A /* UIRenderer.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E3632361DCA38450013A77A /* UIRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3632241DCA38450013A77A /* UIRenderer.h */; settings = {ASSET_TAGS = (); }; };
+		0E3632371DCA38450013A77A /* UIRendererShader_vk.fsh.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3632261DCA38450013A77A /* UIRendererShader_vk.fsh.h */; settings = {ASSET_TAGS = (); }; };
+		0E3632381DCA38450013A77A /* UIRendererShader_vk.vsh.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3632281DCA38450013A77A /* UIRendererShader_vk.vsh.h */; settings = {ASSET_TAGS = (); }; };
+		0E3632391DCA38450013A77A /* UIRendererShaders_ES.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3632291DCA38450013A77A /* UIRendererShaders_ES.h */; settings = {ASSET_TAGS = (); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0E1672E61DE85AB000FC9B21 /* AssetUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetUtils.h; path = ../../AssetUtils.h; sourceTree = "<group>"; };
+		0E1672E71DE85AB000FC9B21 /* Asynchronous.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Asynchronous.h; path = ../../Asynchronous.h; sourceTree = "<group>"; };
+		0E1672E81DE85AB000FC9B21 /* StructuredMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StructuredMemory.h; path = ../../StructuredMemory.h; sourceTree = "<group>"; };
+		0E3632181DCA38450013A77A /* ArialBoldFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArialBoldFont.h; path = ../../ArialBoldFont.h; sourceTree = "<group>"; };
+		0E3632191DCA38450013A77A /* AssetStore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AssetStore.cpp; path = ../../AssetStore.cpp; sourceTree = "<group>"; };
+		0E36321A1DCA38450013A77A /* AssetStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AssetStore.h; path = ../../AssetStore.h; sourceTree = "<group>"; };
+		0E36321B1DCA38450013A77A /* EffectApi_2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EffectApi_2.cpp; path = ../../EffectApi_2.cpp; sourceTree = "<group>"; };
+		0E36321C1DCA38450013A77A /* EffectApi_2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EffectApi_2.h; path = ../../EffectApi_2.h; sourceTree = "<group>"; };
+		0E36321D1DCA38450013A77A /* PowerVRLogo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PowerVRLogo.h; path = ../../PowerVRLogo.h; sourceTree = "<group>"; };
+		0E36321E1DCA38450013A77A /* PVREngineUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVREngineUtils.h; path = ../../PVREngineUtils.h; sourceTree = "<group>"; };
+		0E36321F1DCA38450013A77A /* RenderManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderManager.cpp; path = ../../RenderManager.cpp; sourceTree = "<group>"; };
+		0E3632201DCA38450013A77A /* RenderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderManager.h; path = ../../RenderManager.h; sourceTree = "<group>"; };
+		0E3632211DCA38450013A77A /* Sprite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sprite.cpp; path = ../../Sprite.cpp; sourceTree = "<group>"; };
+		0E3632221DCA38450013A77A /* Sprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sprite.h; path = ../../Sprite.h; sourceTree = "<group>"; };
+		0E3632231DCA38450013A77A /* UIRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UIRenderer.cpp; path = ../../UIRenderer.cpp; sourceTree = "<group>"; };
+		0E3632241DCA38450013A77A /* UIRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIRenderer.h; path = ../../UIRenderer.h; sourceTree = "<group>"; };
+		0E3632251DCA38450013A77A /* UIRendererShader_vk.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = UIRendererShader_vk.fsh; path = ../../UIRendererShader_vk.fsh; sourceTree = "<group>"; };
+		0E3632261DCA38450013A77A /* UIRendererShader_vk.fsh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIRendererShader_vk.fsh.h; path = ../../UIRendererShader_vk.fsh.h; sourceTree = "<group>"; };
+		0E3632271DCA38450013A77A /* UIRendererShader_vk.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = UIRendererShader_vk.vsh; path = ../../UIRendererShader_vk.vsh; sourceTree = "<group>"; };
+		0E3632281DCA38450013A77A /* UIRendererShader_vk.vsh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIRendererShader_vk.vsh.h; path = ../../UIRendererShader_vk.vsh.h; sourceTree = "<group>"; };
+		0E3632291DCA38450013A77A /* UIRendererShaders_ES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIRendererShaders_ES.h; path = ../../UIRendererShaders_ES.h; sourceTree = "<group>"; };
+		0E47C8281AC0563E0021937F /* libPVREngineUtils.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVREngineUtils.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0E47C8251AC0563E0021937F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0E47C81F1AC0563E0021937F = {
+			isa = PBXGroup;
+			children = (
+				0E53CE601AC551BC0032B504 /* Sources */,
+				0E47C8291AC0563E0021937F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0E47C8291AC0563E0021937F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0E47C8281AC0563E0021937F /* libPVREngineUtils.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0E53CE601AC551BC0032B504 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				0E1672E61DE85AB000FC9B21 /* AssetUtils.h */,
+				0E1672E71DE85AB000FC9B21 /* Asynchronous.h */,
+				0E1672E81DE85AB000FC9B21 /* StructuredMemory.h */,
+				0E3632181DCA38450013A77A /* ArialBoldFont.h */,
+				0E3632191DCA38450013A77A /* AssetStore.cpp */,
+				0E36321A1DCA38450013A77A /* AssetStore.h */,
+				0E36321B1DCA38450013A77A /* EffectApi_2.cpp */,
+				0E36321C1DCA38450013A77A /* EffectApi_2.h */,
+				0E36321D1DCA38450013A77A /* PowerVRLogo.h */,
+				0E36321E1DCA38450013A77A /* PVREngineUtils.h */,
+				0E36321F1DCA38450013A77A /* RenderManager.cpp */,
+				0E3632201DCA38450013A77A /* RenderManager.h */,
+				0E3632211DCA38450013A77A /* Sprite.cpp */,
+				0E3632221DCA38450013A77A /* Sprite.h */,
+				0E3632231DCA38450013A77A /* UIRenderer.cpp */,
+				0E3632241DCA38450013A77A /* UIRenderer.h */,
+				0E3632251DCA38450013A77A /* UIRendererShader_vk.fsh */,
+				0E3632261DCA38450013A77A /* UIRendererShader_vk.fsh.h */,
+				0E3632271DCA38450013A77A /* UIRendererShader_vk.vsh */,
+				0E3632281DCA38450013A77A /* UIRendererShader_vk.vsh.h */,
+				0E3632291DCA38450013A77A /* UIRendererShaders_ES.h */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		0E47C8261AC0563E0021937F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E3632381DCA38450013A77A /* UIRendererShader_vk.vsh.h in Headers */,
+				0E3632391DCA38450013A77A /* UIRendererShaders_ES.h in Headers */,
+				0E1672EB1DE85AB000FC9B21 /* StructuredMemory.h in Headers */,
+				0E36322A1DCA38450013A77A /* ArialBoldFont.h in Headers */,
+				0E1672E91DE85AB000FC9B21 /* AssetUtils.h in Headers */,
+				0E3632341DCA38450013A77A /* Sprite.h in Headers */,
+				0E36322F1DCA38450013A77A /* PowerVRLogo.h in Headers */,
+				0E3632321DCA38450013A77A /* RenderManager.h in Headers */,
+				0E36322E1DCA38450013A77A /* EffectApi_2.h in Headers */,
+				0E3632301DCA38450013A77A /* PVREngineUtils.h in Headers */,
+				0E3632371DCA38450013A77A /* UIRendererShader_vk.fsh.h in Headers */,
+				0E36322C1DCA38450013A77A /* AssetStore.h in Headers */,
+				0E1672EA1DE85AB000FC9B21 /* Asynchronous.h in Headers */,
+				0E3632361DCA38450013A77A /* UIRenderer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		0E47C8271AC0563E0021937F /* PVREngineUtils */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0E47C82C1AC0563E0021937F /* Build configuration list for PBXNativeTarget "PVREngineUtils" */;
+			buildPhases = (
+				0E47C8241AC0563E0021937F /* Sources */,
+				0E47C8251AC0563E0021937F /* Frameworks */,
+				0E47C8261AC0563E0021937F /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PVREngineUtils;
+			productName = PVREngineUtils;
+			productReference = 0E47C8281AC0563E0021937F /* libPVREngineUtils.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0E47C8201AC0563E0021937F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = ImaginationTechnology;
+				TargetAttributes = {
+					0E47C8271AC0563E0021937F = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 0E47C8231AC0563E0021937F /* Build configuration list for PBXProject "PVREngineUtils" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 0E47C81F1AC0563E0021937F;
+			productRefGroup = 0E47C8291AC0563E0021937F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0E47C8271AC0563E0021937F /* PVREngineUtils */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0E47C8241AC0563E0021937F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E36322D1DCA38450013A77A /* EffectApi_2.cpp in Sources */,
+				0E3632311DCA38450013A77A /* RenderManager.cpp in Sources */,
+				0E3632351DCA38450013A77A /* UIRenderer.cpp in Sources */,
+				0E3632331DCA38450013A77A /* Sprite.cpp in Sources */,
+				0E36322B1DCA38450013A77A /* AssetStore.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0E47C82A1AC0563E0021937F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../../Bin/OSX/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_MAC=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../../,
+					../../../../../Builds/Include,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		0E47C82B1AC0563E0021937F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CONFIGURATION_BUILD_DIR = "../../../../Bin/OSX/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_MAC=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../../,
+					../../../../../Builds/Include,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		0E47C82D1AC0563E0021937F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "../../../Bin/OSX/$(CONFIGURATION)";
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../,
+					../../../../Builds/Include,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		0E47C82E1AC0563E0021937F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "../../../Bin/OSX/$(CONFIGURATION)";
+				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					../../../,
+					../../../../Builds/Include,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0E47C8231AC0563E0021937F /* Build configuration list for PBXProject "PVREngineUtils" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E47C82A1AC0563E0021937F /* Debug */,
+				0E47C82B1AC0563E0021937F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0E47C82C1AC0563E0021937F /* Build configuration list for PBXNativeTarget "PVREngineUtils" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E47C82D1AC0563E0021937F /* Debug */,
+				0E47C82E1AC0563E0021937F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0E47C8201AC0563E0021937F /* Project object */;
+}

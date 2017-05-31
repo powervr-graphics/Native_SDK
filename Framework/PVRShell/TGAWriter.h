@@ -1,14 +1,15 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\TGAWriter.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Used to write out TGA files from image data. Required for screenshots.
-***********************************************************************************************************************/
+/*!
+\brief Used to write out TGA files from image data. Required for screenshots.
+\file PVRShell/TGAWriter.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRCore/CoreIncludes.h"
-#include "PVRCore/FileStream.h"
+#include "PVRCore/IO/FileStream.h"
 
 namespace pvr {
+<<<<<<< HEAD
 /*!************************************************************************************************************
 \brief Write out TGA data from an image.
 \param filename C-style string with the filename
@@ -18,6 +19,15 @@ namespace pvr {
 \param stride Size in bytes of each pixel
 \param PixelReplicate Upscale factor.
 ***************************************************************************************************************/
+=======
+/// <summary>Write out TGA data from an image.</summary>
+/// <param name="filename">C-style string with the filename</param>
+/// <param name="w">The width of the image</param>
+/// <param name="h">The height of the image</param>
+/// <param name="imageData">Pointer to the raw image data</param>
+/// <param name="stride">Size in bytes of each pixel</param>
+/// <param name="PixelReplicate">Upscale factor.</param>
+>>>>>>> 1776432f... 4.3
 static Result writeTGA(const char8* const filename, unsigned int w, unsigned int h, const unsigned char* const imageData, const unsigned char stride, unsigned int pixelReplicate = 1)
 {
 	if (pixelReplicate == 0 || w == 0 || h == 0)

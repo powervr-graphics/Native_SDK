@@ -1,9 +1,11 @@
-/*!*********************************************************************************************************************
-\file         PVRNativeApi\OGLES\ApiGles3.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains function pointer declarations for all OpenGL ES 3 functions (minus ES 2 functions).
-***********************************************************************************************************************/
+/*!
+\brief Contains function pointer declarations for all OpenGL ES 3 functions (minus ES 2 functions).
+\file PVRNativeApi/OGLES/ApiGles3.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+//!\cond NO_DOXYGEN
+
 #pragma once
 #include "PVRNativeApi/OGLES/ApiGles2.h"
 
@@ -110,4 +112,9 @@ typedef void (PVR_APIENTRY* PROC_ES3_glInvalidateFramebuffer)(GLenum target, GLs
 typedef void (PVR_APIENTRY* PROC_ES3_glInvalidateSubFramebuffer)(GLenum target, GLsizei numAttachments, const GLenum* attachments, GLint x, GLint y, GLsizei width, GLsizei height);
 typedef void (PVR_APIENTRY* PROC_ES3_glTexStorage2D)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
 typedef void (PVR_APIENTRY* PROC_ES3_glTexStorage3D)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth);
+<<<<<<< HEAD
 typedef void (PVR_APIENTRY* PROC_ES3_glGetInternalformativ)(GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint* params);
+=======
+typedef void (PVR_APIENTRY* PROC_ES3_glGetInternalformativ)(GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint* params);
+//!\endcond
+>>>>>>> 1776432f... 4.3

@@ -13,14 +13,6 @@ include $(PREBUILT_STATIC_LIBRARY)
 endif
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRVulkanGlue
-include $(CLEAR_VARS)
-LOCAL_MODULE := PVRVulkanGlue
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRVulkanGlue.a
-include $(PREBUILT_STATIC_LIBRARY)
-endif
-
-ifneq "$(MAKECMDGOALS)" "clean"
 # Prebuilt module PVRAssets
 include $(CLEAR_VARS)
 LOCAL_MODULE := PVRAssets
@@ -58,11 +50,16 @@ LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework \
 
 
 
+<<<<<<< HEAD
 LOCAL_LDLIBS := -latomic \
                 -llog \
+=======
+LOCAL_LDLIBS := -llog \
+                -latomic \
+>>>>>>> 1776432f... 4.3
                 -landroid
 
-LOCAL_STATIC_LIBRARIES := PVRNativeVulkan PVRVulkanGlue PVRAssets PVRCore android_native_app_glue
+LOCAL_STATIC_LIBRARIES := PVRNativeVulkan PVRAssets PVRCore android_native_app_glue
 
 
 LOCAL_CFLAGS += $(SDK_BUILD_FLAGS)

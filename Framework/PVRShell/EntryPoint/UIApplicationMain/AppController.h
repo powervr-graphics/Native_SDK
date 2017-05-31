@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\EntryPoint\UIApplicationMain\AppController.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        UIApplication delegate functioning as the application controller for UIKit implementation of Shell(iOS)
-***********************************************************************************************************************/
+/*!
+\brief UIApplication delegate functioning as the application controller for UIKit implementation of Shell(iOS)
+\file PVRShell\EntryPoint/UIApplicationMain/AppController.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
 #include "PVRShell/StateMachine.h"

@@ -1,18 +1,7 @@
 var searchData=
 [
-  ['api',['api',['../namespacepvr_1_1api.html',1,'pvr']]],
-  ['basetype',['BaseType',['../namespacepvr_1_1_gpu_datatypes_1_1_base_type.html',1,'pvr::GpuDatatypes']]],
-  ['bits',['Bits',['../namespacepvr_1_1_gpu_datatypes_1_1_bits.html',1,'pvr::GpuDatatypes']]],
-  ['buffers',['Buffers',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_buffers.html',1,'pvr::api::gpuCapabilities']]],
-  ['bufferviewtypes',['BufferViewTypes',['../namespacepvr_1_1_buffer_view_types.html',1,'pvr']]],
-  ['element',['Element',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_element.html',1,'pvr::api::gpuCapabilities']]],
-  ['fragmentshader',['FragmentShader',['../namespacepvr_1_1api_1_1gpu_capabilities_1_1_fragment_shader.html',1,'pvr::api::gpuCapabilities']]],
-  ['gles',['gles',['../namespacepvr_1_1api_1_1gles.html',1,'pvr::api']]],
-  ['gpucapabilities',['gpuCapabilities',['../namespacepvr_1_1api_1_1gpu_capabilities.html',1,'pvr::api']]],
-  ['gpudatatypes',['GpuDatatypes',['../namespacepvr_1_1_gpu_datatypes.html',1,'pvr']]],
-  ['impl',['impl',['../namespacepvr_1_1utils_1_1impl.html',1,'pvr::utils']]],
-  ['impl',['impl',['../namespacepvr_1_1api_1_1impl.html',1,'pvr::api']]],
   ['pvrapi',['PVRApi',['../index.html',1,'']]],
+<<<<<<< HEAD
   ['matrixcolumns',['MatrixColumns',['../namespacepvr_1_1_gpu_datatypes_1_1_matrix_columns.html',1,'pvr::GpuDatatypes']]],
   ['native',['native',['../namespacepvr_1_1native.html',1,'pvr']]],
   ['packdata',['packData',['../classgles_1_1_blend_factor_state.html#a51fe0a3d623105594ee7412af81a72e8',1,'gles::BlendFactorState']]],
@@ -22,15 +11,21 @@ var searchData=
   ['pipelinebarrier',['pipelineBarrier',['../classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#a8de1a379662a9a7bd05bb8d169173edd',1,'pvr::api::impl::CommandBufferBase_']]],
   ['pipelinebarrier',['PipelineBarrier',['../classpvr_1_1api_1_1_pipeline_barrier.html',1,'pvr::api']]],
   ['pipelinecompute',['PipelineCompute',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker.html#a7a6d84b866cdeb17c585db911300f4b7a5ecab95e7c844b1b1e440567e26ebfc3',1,'pvr::platform::ContextGles::RenderStatesTracker']]],
+=======
+  ['parentablegraphicspipeline_5f',['ParentableGraphicsPipeline_',['../classpvr_1_1api_1_1impl_1_1_parentable_graphics_pipeline__.html#a7e426d34e06b3f135a3a353569917002',1,'pvr::api::impl::ParentableGraphicsPipeline_']]],
+  ['parentablegraphicspipeline_5f',['ParentableGraphicsPipeline_',['../classpvr_1_1api_1_1impl_1_1_parentable_graphics_pipeline__.html',1,'pvr::api::impl']]],
+  ['parentableindirectraypipeline_5f',['ParentableIndirectRayPipeline_',['../classpvr_1_1api_1_1impl_1_1_parentable_indirect_ray_pipeline__.html',1,'pvr::api::impl']]],
+  ['parentableindirectraypipeline_5f',['ParentableIndirectRayPipeline_',['../classpvr_1_1api_1_1impl_1_1_parentable_indirect_ray_pipeline__.html#a25b141214c0748a0c0a58b3db9a3c0ce',1,'pvr::api::impl::ParentableIndirectRayPipeline_']]],
+  ['parentablescenetraversalpipeline_5f',['ParentableSceneTraversalPipeline_',['../classpvr_1_1api_1_1impl_1_1_parentable_scene_traversal_pipeline__.html',1,'pvr::api::impl']]],
+  ['parentablescenetraversalpipeline_5f',['ParentableSceneTraversalPipeline_',['../classpvr_1_1api_1_1impl_1_1_parentable_scene_traversal_pipeline__.html#a76896e9dd532fa4a943b2bbd369c7970',1,'pvr::api::impl::ParentableSceneTraversalPipeline_']]],
+  ['parentablevertexraypipeline_5f',['ParentableVertexRayPipeline_',['../classpvr_1_1api_1_1impl_1_1_parentable_vertex_ray_pipeline__.html',1,'pvr::api::impl']]],
+  ['parentablevertexraypipeline_5f',['ParentableVertexRayPipeline_',['../classpvr_1_1api_1_1impl_1_1_parentable_vertex_ray_pipeline__.html#a99ca443a2f51caedda0a8ade35d9f5e5',1,'pvr::api::impl::ParentableVertexRayPipeline_']]],
+  ['pipelinebarrier',['pipelineBarrier',['../classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#a5506e55f62155f1d81a8dc436ace5d84',1,'pvr::api::impl::CommandBufferBase_']]],
+>>>>>>> 1776432f... 4.3
   ['pipelineconfig_2eh',['PipelineConfig.h',['../_pipeline_config_8h.html',1,'']]],
-  ['pipelineconfigstatecreateparam_2ecpp',['PipelineConfigStateCreateParam.cpp',['../_pipeline_config_state_create_param_8cpp.html',1,'']]],
-  ['pipelineconfigstates_2ecpp',['PipelineConfigStates.cpp',['../_pipeline_config_states_8cpp.html',1,'']]],
-  ['pipelineconfigstatesgles_2eh',['PipelineConfigStatesGles.h',['../_pipeline_config_states_gles_8h.html',1,'']]],
-  ['pipelinecreation',['pipelineCreation',['../namespacepipeline_creation.html',1,'']]],
-  ['pipelinecreation',['pipelineCreation',['../namespacepvr_1_1api_1_1pipeline_creation.html',1,'pvr::api']]],
-  ['pipelinegraphics',['PipelineGraphics',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker.html#a7a6d84b866cdeb17c585db911300f4b7a56fc3a62fbd969832cc3f281e9f4b50a',1,'pvr::platform::ContextGles::RenderStatesTracker']]],
-  ['pipelinelayout',['pipelineLayout',['../structpvr_1_1api_1_1_compute_pipeline_create_param.html#a5e66f6a60d62e9047b485a8c2f7bf89a',1,'pvr::api::ComputePipelineCreateParam::pipelineLayout()'],['../structpvr_1_1api_1_1_graphics_pipeline_create_param.html#a3cb99ffc2a6a3c60e312cbff0389822e',1,'pvr::api::GraphicsPipelineCreateParam::pipelineLayout()'],['../structpvr_1_1api_1_1gles_1_1_graphics_state_container.html#ae37d6336c667555e7e323e73bfb0ff21',1,'pvr::api::gles::GraphicsStateContainer::pipelineLayout()'],['../structpvr_1_1api_1_1gles_1_1_compute_state_container.html#a1a1a2a4816112be3031640f14014f689',1,'pvr::api::gles::ComputeStateContainer::pipelineLayout()']]],
+  ['pipelinelayout',['pipelineLayout',['../structpvr_1_1api_1_1_compute_pipeline_create_param.html#a5e66f6a60d62e9047b485a8c2f7bf89a',1,'pvr::api::ComputePipelineCreateParam::pipelineLayout()'],['../structpvr_1_1api_1_1_graphics_pipeline_create_param.html#adacc54bfc40199ffd7200878a52bb6a3',1,'pvr::api::GraphicsPipelineCreateParam::pipelineLayout()'],['../structpvr_1_1api_1_1_indirect_ray_pipeline_create_param.html#a9d3c31d9c1506de621821e01f360f56c',1,'pvr::api::IndirectRayPipelineCreateParam::pipelineLayout()'],['../structpvr_1_1api_1_1_scene_traversal_pipeline_create_param.html#aba22a3242539ef0fe957a6f6272f12d7',1,'pvr::api::SceneTraversalPipelineCreateParam::pipelineLayout()'],['../structpvr_1_1api_1_1_vertex_ray_pipeline_create_param.html#a3f8ed1ceec9962778acaf3b3a9b9c6e6',1,'pvr::api::VertexRayPipelineCreateParam::pipelineLayout()']]],
   ['pipelinelayout_2eh',['PipelineLayout.h',['../_pipeline_layout_8h.html',1,'']]],
+<<<<<<< HEAD
   ['pipelinelayout_5f',['PipelineLayout_',['../classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html#a7ee86c6a131802c6b9213f0b4bd523cf',1,'pvr::api::impl::PipelineLayout_']]],
   ['pipelinelayout_5f',['PipelineLayout_',['../classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html',1,'pvr::api::impl']]],
   ['pipelinelayoutcreateparam',['PipelineLayoutCreateParam',['../structpvr_1_1api_1_1_pipeline_layout_create_param.html',1,'pvr::api']]],
@@ -74,4 +69,17 @@ var searchData=
   ['utils',['utils',['../namespacepvr_1_1utils.html',1,'pvr']]],
   ['vectorwidth',['VectorWidth',['../namespacepvr_1_1_gpu_datatypes_1_1_vector_width.html',1,'pvr::GpuDatatypes']]],
   ['vulkan',['vulkan',['../namespacepvr_1_1api_1_1vulkan.html',1,'pvr::api']]]
+=======
+  ['pipelinelayout_5f',['PipelineLayout_',['../classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html#aa0a68d6d63ec51a0c4426998a936fb5e',1,'pvr::api::impl::PipelineLayout_']]],
+  ['pipelinelayout_5f',['PipelineLayout_',['../classpvr_1_1api_1_1impl_1_1_pipeline_layout__.html',1,'pvr::api::impl']]],
+  ['pipelinelayoutcreateparam',['PipelineLayoutCreateParam',['../structpvr_1_1api_1_1_pipeline_layout_create_param.html#ae49f82fe7a763519ae39b88d505ed89f',1,'pvr::api::PipelineLayoutCreateParam']]],
+  ['pipelinelayoutcreateparam',['PipelineLayoutCreateParam',['../structpvr_1_1api_1_1_pipeline_layout_create_param.html',1,'pvr::api']]],
+  ['poppipeline',['popPipeline',['../classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#a3c9aabed41319304de1f36ad4b5b7026',1,'pvr::api::impl::CommandBufferBase_']]],
+  ['pushconstants',['pushConstants',['../structpvr_1_1api_1_1_indirect_ray_pipeline_create_param.html#a7eb492746e1112ab02891f751507b4d6',1,'pvr::api::IndirectRayPipelineCreateParam']]],
+  ['pushconstantsoffset',['pushConstantsOffset',['../structpvr_1_1api_1_1_indirect_ray_pipeline_create_param.html#a139a831cf35eca361f25aaa1ef92eb3a',1,'pvr::api::IndirectRayPipelineCreateParam']]],
+  ['pushconstantssize',['pushConstantsSize',['../structpvr_1_1api_1_1_indirect_ray_pipeline_create_param.html#a34e14598a9e22998af964f964510f2af',1,'pvr::api::IndirectRayPipelineCreateParam']]],
+  ['pushpipeline',['pushPipeline',['../classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#a82fada6bcf071b51e17f17d525bc9ba5',1,'pvr::api::impl::CommandBufferBase_']]],
+  ['pushsharedrayconstants',['pushSharedRayConstants',['../classpvr_1_1api_1_1impl_1_1_command_buffer_base__.html#aa0a759341fd752a954ca56ca3aa35266',1,'pvr::api::impl::CommandBufferBase_']]],
+  ['pvrapi_2eh',['PVRApi.h',['../_p_v_r_api_8h.html',1,'']]]
+>>>>>>> 1776432f... 4.3
 ];

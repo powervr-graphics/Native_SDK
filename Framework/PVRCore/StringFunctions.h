@@ -1,23 +1,20 @@
-/*!*********************************************************************************************************************
-\file         PVRCore\StringFunctions.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains helper functions for string manipulation.
-***********************************************************************************************************************/
+/*!
+\brief Contains helper functions for string manipulation.
+\file PVRCore/StringFunctions.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRCore/CoreIncludes.h"
+#include "PVRCore/Strings/UnicodeConverter.h"
 
 namespace pvr {
-/*!***************************************************************************************************************
-\brief   Contains several valuable helpers to assist with common string operations: Starts with, ends with,
-create with printf-style formatting and others.
-*****************************************************************************************************************/
+/// <summary>Contains several valuable helpers to assist with common string operations: Starts with, ends with, create
+/// with printf-style formatting and others.</summary>
 namespace strings {
-/*!***************************************************************************************************************
-\brief   Creates an std::string from a printf style vararg list.
-\param  format printf-style format string
-\param  argumentList printf-style va_list
-*****************************************************************************************************************/
+/// <summary>Creates an std::string from a printf style vararg list.</summary>
+/// <param name="format">printf-style format string</param>
+/// <param name="argumentList">printf-style va_list</param>
 inline string vaFormatString(const char* format, va_list argumentList)
 {
 	using namespace std;
@@ -58,11 +55,9 @@ inline string vaFormatString(const char* format, va_list argumentList)
 	return string(newString);
 }
 
-/*!***************************************************************************************************************
-\brief   Creates an std::wstring from a printf style vararg list.
-\param  format printf-style wide format string
-\param  argumentList printf-style va_list
-*****************************************************************************************************************/
+/// <summary>Creates an std::wstring from a printf style vararg list.</summary>
+/// <param name="format">printf-style wide format string</param>
+/// <param name="argumentList">printf-style va_list</param>
 inline std::basic_string<wchar> vaFormatString(const wchar* const format, va_list argumentList)
 {
 	Result result = Result::Success;
@@ -103,11 +98,9 @@ inline std::basic_string<wchar> vaFormatString(const wchar* const format, va_lis
 	return std::basic_string<wchar>(newString);
 }
 
-/*!***************************************************************************************************************
-\brief  Creates an std::string with a printf-like command.
-\param  format printf-style format string
-\param  ... printf-style variable arguments
-*****************************************************************************************************************/
+/// <summary>Creates an std::string with a printf-like command.</summary>
+/// <param name="format">printf-style format string</param>
+/// <param name="...">printf-style variable arguments</param>
 inline std::string createFormatted(const char8* const format, ...)
 {
 	// Calculate the length of the new string
@@ -119,11 +112,9 @@ inline std::string createFormatted(const char8* const format, ...)
 	return newString;
 }
 
-/*!***************************************************************************************************************
-\brief  Creates an std::wstring with a printf-like command.
-\param  format printf-style wide format string
-\param  ... printf-style variable arguments
-*****************************************************************************************************************/
+/// <summary>Creates an std::wstring with a printf-like command.</summary>
+/// <param name="format">printf-style wide format string</param>
+/// <param name="...">printf-style variable arguments</param>
 inline std::basic_string<wchar> createFormatted(const wchar* const format, ...)
 {
 	// Calculate the length of the new string
@@ -134,59 +125,48 @@ inline std::basic_string<wchar> createFormatted(const wchar* const format, ...)
 	return newString;
 }
 
-/*!***************************************************************************************************************
-\brief  Transforms a string to lowercase in place.
-\param  str A string to transform to lowercase.
-*****************************************************************************************************************/
+/// <summary>Transforms a string to lowercase in place.</summary>
+/// <param name="str">A string to transform to lowercase.</param>
 inline string& toLower(string& str)
 {
 	std::transform(str.begin(), str.end(), str.begin(), tolower);
 	return str;
 }
 
-/*!***************************************************************************************************************
-\brief  Transforms a string to lowercase in place.
-\param  str A string to transform to lowercase.
-*****************************************************************************************************************/
+/// <summary>Transforms a string to lowercase in place.</summary>
+/// <param name="str">A string to transform to lowercase.</param>
 inline string toLower(const string& str)
 {
 	std::string s = str;
 	return toLower(s);
 }
 
-/*!***************************************************************************************************************
-\brief	Skips any beginning space, tab or new-line characters, advancing the pointer to the first non-whitespace
-		character
-\param[inout]	myString Pointer to a c-style string. Will be advanced to the first non-whitespace char (or the
-				null terminator if no other characters exist)
-*****************************************************************************************************************/
-void ignoreWhitespace(tchar** myString);
+/// <summary>Skips any beginning space, tab or new-line characters, advancing the pointer to the first
+/// non-whitespace character</summary>
+/// <param name="myString">Pointer to a c-style string. Will be advanced to the first non-whitespace char (or the null
+/// terminator if no other characters exist)</param>
+void ignoreWhitespace(char8** myString);
 
-/*!***************************************************************************************************************
-\param[in]	pToken
-\return     char*
-\brief      Reads next strings to the end of the line and interperts as a token.
-*****************************************************************************************************************/
-tchar* readEOLToken(tchar* pToken);
+/// <summary>Reads next strings to the end of the line and interperts as a token.</summary>
+/// <param name="pToken">The string</param>
+/// <returns>char* The</returns>
+char8* readEOLToken(char8* pToken);
 
-/*!***************************************************************************************************************
-\param[out]		outStr	output text
-\param[in, out] line	Input start line number, outputs end line number
-\param[in]		lines	Input text - one array element per line
-\param[in]		endStr	End string: When this string is encountered, the procedure will stop.
-\param[in] 		limit	A limit to the number of lines concatenated
-\return			true if successful, false if endStr was not found before lines finished or limit was reached
-\brief			Outputs a block of text starting from nLine and ending when the string endStr is found.
-*****************************************************************************************************************/
+/// <summary>Outputs a block of text starting from nLine and ending when the string endStr is found.</summary>
+/// <param name="outStr">output text</param>
+/// <param name="line">Input start line number, outputs end line number</param>
+/// <param name="lines">Input text - one array element per line</param>
+/// <param name="endStr">End string: When this string is encountered, the procedure will stop.</param>
+/// <param name="limit">A limit to the number of lines concatenated</param>
+/// <returns>true if successful, false if endStr was not found before lines finished or limit was reached
+/// </returns>
 bool concatenateLinesUntil(string& outStr, int& line, const std::vector<string>& lines, unsigned int limit,
                            const char* endStr);
 
-/*!***************************************************************************************************************
-\brief  Tests if a string starts with another string.
-\param  str The string whose beginning will be checked
-\param  substr The sequence of characters to check if str starts with
-\return	true if the string substr is indeed the first characters of str, false otherwise.
-*****************************************************************************************************************/
+/// <summary>Tests if a string starts with another string.</summary>
+/// <param name="str">The string whose beginning will be checked</param>
+/// <param name="substr">The sequence of characters to check if str starts with</param>
+/// <returns>true if the string substr is indeed the first characters of str, false otherwise.</returns>
 inline bool startsWith(const char* str, const char* substr)
 {
 	int current = 0;
@@ -198,37 +178,32 @@ inline bool startsWith(const char* str, const char* substr)
 	if (!str[current] && substr[current]) { return false; }
 	return true;
 }
-/*!***************************************************************************************************************
-\brief  Tests if a string starts with another string.
-\param  str The string whose beginning will be checked
-\param  substr The sequence of characters to check if str starts with
-\return	true if the string substr is indeed the first characters of str, false otherwise.
-*****************************************************************************************************************/
+/// <summary>Tests if a string starts with another string.</summary>
+/// <param name="str">The string whose beginning will be checked</param>
+/// <param name="substr">The sequence of characters to check if str starts with</param>
+/// <returns>true if the string substr is indeed the first characters of str, false otherwise.</returns>
 inline bool startsWith(const std::string& str, const std::string& substr)
 {
 	return startsWith(str.c_str(), substr.c_str());
 }
 
-/*!***************************************************************************************************************
-\brief  Tests if a string starts with another string.
-\param  str The string whose beginning will be checked
-\param  substr The sequence of characters to check if str starts with
-\return	true if the string substr is indeed the first characters of str, false otherwise.
-*****************************************************************************************************************/
+/// <summary>Tests if a string starts with another string.</summary>
+/// <param name="str">The string whose beginning will be checked</param>
+/// <param name="substr">The sequence of characters to check if str starts with</param>
+/// <returns>true if the string substr is indeed the first characters of str, false otherwise.</returns>
 inline bool startsWith(const std::string& str, const char* substr)
 {
 	return startsWith(str.c_str(), substr);
 }
 
-/*!***************************************************************************************************************
-\brief  Tests if a string ends with another string.
-\param  str The string whose end will be checked. Not null terminated - length is passed explicitly.
-\param  lenStr The length of str
-\param  substr The sequence of characters to check if str ends with.  Not null terminated - length is passed
-        explicitly.
-\param  lenSubstr The length of Substr
-\return	true if the string substr is indeed the last characters of str, false otherwise.
-*****************************************************************************************************************/
+/// <summary>Tests if a string ends with another string.</summary>
+/// <param name="str">The string whose end will be checked. Not null terminated - length is passed explicitly.
+/// </param>
+/// <param name="lenStr">The length of str</param>
+/// <param name="substr">The sequence of characters to check if str ends with. Not null terminated - length is
+/// passed explicitly.</param>
+/// <param name="lenSubstr">The length of Substr</param>
+/// <returns>true if the string substr is indeed the last characters of str, false otherwise.</returns>
 inline bool endsWith(const char* str, int32 lenStr, const char* substr, int32 lenSubstr)
 {
 	if (lenSubstr > lenStr || !lenStr--) { return false; }
@@ -241,46 +216,38 @@ inline bool endsWith(const char* str, int32 lenStr, const char* substr, int32 le
 	return true;
 }
 
-/*!***************************************************************************************************************
-\brief  Tests if a string ends with another string.
-\param  str The string whose end will be checked.
-\param  substr The sequence of characters to check if str ends with.
-\return	true if the string substr is indeed the last characters of str, false otherwise.
-*****************************************************************************************************************/
+/// <summary>Tests if a string ends with another string.</summary>
+/// <param name="str">The string whose end will be checked.</param>
+/// <param name="substr">The sequence of characters to check if str ends with.</param>
+/// <returns>true if the string substr is indeed the last characters of str, false otherwise.</returns>
 inline bool endsWith(const std::string& str, const std::string& substr)
 {
 	return endsWith(str.c_str(), (int32)str.length(), substr.c_str(), (int32)substr.length());
 }
 
-/*!***************************************************************************************************************
-\brief  Tests if a string starts with another string.
-\param  str The string whose end will be checked.
-\param  substr The sequence of characters to check if str starts with.
-\return	true if the string substr is indeed the first characters of str, false otherwise.
-*****************************************************************************************************************/
+/// <summary>Tests if a string starts with another string.</summary>
+/// <param name="str">The string whose end will be checked.</param>
+/// <param name="substr">The sequence of characters to check if str starts with.</param>
+/// <returns>true if the string substr is indeed the first characters of str, false otherwise.</returns>
 inline bool endsWith(const std::string& str, const char* substr)
 {
 	return endsWith(str.c_str(), (int32)str.length(), substr, (int32)strlen(substr));
 }
 
-/*!***************************************************************************************************************
-\brief  Tests if a string starts with another string.
-\param  str The string whose end will be checked.
-\param  substr The sequence of characters to check if str starts with.
-\return	true if the string substr is indeed the first characters of str, false otherwise.
-*****************************************************************************************************************/
+/// <summary>Tests if a string starts with another string.</summary>
+/// <param name="str">The string whose end will be checked.</param>
+/// <param name="substr">The sequence of characters to check if str starts with.</param>
+/// <returns>true if the string substr is indeed the first characters of str, false otherwise.</returns>
 inline bool endsWith(const char* str, const char* substr)
 {
 	return endsWith(str, (int32)strlen(str), substr, (int32)strlen(substr));
 }
 
-/*!****************************************************************************************************************
-\brief	Separate a filename to name and extension
-\param[in]	fileAndExtension A filename
-\param[out]	filename The file part of the name (part before the last '.')
-\param[out]	extension The extension part of the name (part after the last '.')
-\description    The period is returned in neither filename nor the extension
-*******************************************************************************************************************/
+/// <summary>Separate a filename to name and extension</summary>
+/// <param name="fileAndExtension">A filename</param>
+/// <param name="filename">The file part of the name (part before the last '.')</param>
+/// <param name="extension">The extension part of the name (part after the last '.')</param>
+/// <remarks>The period is returned in neither filename nor the extension</remarks>
 inline void getFileNameAndExtension(const std::string& fileAndExtension, std::string& filename, std::string& extension)
 {
 	auto it = std::find(fileAndExtension.rbegin(), fileAndExtension.rend(), '.');

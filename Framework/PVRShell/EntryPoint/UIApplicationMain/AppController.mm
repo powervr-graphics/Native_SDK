@@ -1,9 +1,9 @@
-/*!*****************************************************************************************************************
-\file         PVRShell\EntryPoint\UIApplicationMain\AppController.mm
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Implementation of the AppController for the UIKit based (iOS) implementation of PVRShell.
-********************************************************************************************************************/
+/*!
+\brief Implementation of the AppController for the UIKit based (iOS) implementation of PVRShell.
+\file PVRShell\EntryPoint/UIApplicationMain/AppController.mm
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #import "AppController.h"
 
 //CONSTANTS:
@@ -70,4 +70,3 @@ const int kFPS = 60.0;
 }
 
 @end
-

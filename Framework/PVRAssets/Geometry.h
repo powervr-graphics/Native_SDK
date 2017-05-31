@@ -1,21 +1,20 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/Geometry.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-***********************************************************************************************************************/
+/*!
+\brief Geometry helpers, such as skybox generations
+\file PVRAssets/Geometry.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRCore/CoreIncludes.h"
 
 namespace pvr {
 namespace tool {
-	/*!********************************************************************************************************************
-	\brief    Create a Skybox vertices and UVs for a specified texture size
-    \param[in] scale scale the vertices
-    \param[in] adjustUV
-    \param[in] textureSize size of the texture
-    \param[out] outVertices array of generated vertices
-    \param[out] outUVs  array of generated UVs
-	**********************************************************************************************************************/
+	/// <summary>Create a Skybox vertices and UVs for a specified texture size</summary>
+	/// <param name="scale">scale the vertices</param>
+	/// <param name="adjustUV"></param>
+	/// <param name="textureSize">size of the texture</param>
+	/// <param name="outVertices">array of generated vertices</param>
+	/// <param name="outUVs">array of generated UVs</param>
     void createSkyBox(pvr::float32 scale, bool adjustUV, pvr::uint32 textureSize, std::vector<glm::vec3>& outVertices, std::vector<glm::vec2>& outUVs);
 }
 }

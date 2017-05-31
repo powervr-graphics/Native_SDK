@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>The PowerVR SDK Browser</title>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="./images/img-icon.png">
+</head>
+
+<body>
+	<div id="GlobalHeaderContainer">
+		<div id="GlobalHeader">
+			<div class="logo">
+				<a href="http://www.powervrinsider.com" target="_blank"><img src="./images/PVRlogo.png" width="40%" height="40%" /></a>
+            </div>
+			<div class="sitetitle">PowerVR SDK Browser</div>
+		</div>
+	</div>
+	<div id="NavContainer">
+		<nav>
+			<div class="navlink">
+				<a href="Home.html">Home</a>
+			</div>
+			<div class="navlink">
+				<a href="GettingStarted.html" class="current">Getting Started</a>
+			</div>
+			<div class="navlink">
+				<a href="Examples.html">Examples</a>
+			</div>
+			<div class="navlink">
+				<a href="Framework.html">Framework</a>
+			</div>
+			<div class="navlink">
+				<a href="Documentation.html">Documentation</a>
+			</div>
+			<div class="navlink">
+				<a href="PowerVRTools.html">PowerVR Tools</a>
+			</div>
+			<div class="navlink">
+				<a href="Licence.html">EULA</a>
+			</div>
+			<div class="navlink">
+				<a href="Contact.html">Contact Us</a>
+			</div>
+		</nav>
+	</div>
+	
+<!--API_TAB-->
+<div id="SubNavContainer"><nav><div class="subnavlink"><a href="./Android.html">Android</a></div>
+<div class="subnavlink"><a href="./iOS.html">iOS</a></div>
+<div class="subnavlink"><a href="./Windows.html">Windows</a></div>
+<div class="subnavlink"><a href="./OSX.html">OS X</a></div>
+<div class="subnavlink"><a href="./Linux.html">Linux</a></div>
+<div class="subnavlink"><a href="./WebGL.html">WebGL</a></div>
+</nav></div>
+
+	<div class="content">
+		<div id="windows">
+		<div id="linux">
+		<h1>Linux</h1>
+			<p><em><strong>Note:</strong> API libraries are not distributed with the PowerVR Graphics SDK for Linux. Please ask your platform provider for these libraries if you do not have them. You will also need to install the latest platform toolchain on your development machine for your target platform.</em></p>
+			<p>To build the code examples, follow the steps below:</p>
+			<ol>
+				<li>
+				<p>Define the <span class="code">TOOLCHAIN</span> environment variable to the toolchain directory, or add the path of the toolchain to the <span class="code">PATH</span> environment variable (i.e., run <span class="code">export PATH="<i>path to the toolchain</i>:$PATH"</span>).</p>
+				</li>
+				<li>
+				<p>If you want an X11 build and it is available, define the environment variable <span class="code">X11ROOT</span> to point to the <span class="code">freedesktop</span> directory (i.e., <span class="code">export X11ROOT=/usr/X11R6_SGX</span>).</p>
+				</li>
+				<li>
+				<p>To build individual components go to the directory <span class="code">Examples/<abbr title="The name of the folder the examples are sorted into according to their complexity.">[ExampleLevel]</abbr>/<abbr title="The name of the example application that you are building.">[ExampleName]</abbr>/<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>/Build/LinuxGeneric</span> and run the command: <span class="code">LinuxNullWS: "make PLATFORM=<abbr title="The targeted Application Binary Interface.">[Platform]</abbr>"</span> or <span class="code">LinuxX11: "make PLATFORM=<abbr title="The targeted Application Binary Interface.">[Platform]</abbr> X11BUILD=1"</span>. <span class="code"><abbr title="The targeted Application Binary Interface.">[Platform]</abbr></span> is an entry from one of the following supported ABIs:</p>
+					<ul>
+						<li>armv7</li>
+						<li>armv7hf</li>
+						<li>armv8</li>
+						<li>mips_32</li>
+						<li>mips_64</li>
+						<li>x86_32</li>
+						<li>x86_64</li>
+					</ul>
+				</li>
+			</ol>
+				<p>The executables for the examples will be under:	<span class="code">Examples/<abbr title="The name of the folder the examples are sorted into according to their complexity.">[ExampleLevel]</abbr>/<abbr title="The name of the example application that you are building.">[ExampleName]</abbr>/<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>/Build/<abbr title="The targeted Application Binary Interface.">[Platform]</abbr>/<abbr title="This refers to the release directory.">[ReleaseDir]</abbr></span> where <span class="code"><abbr title="This refers to the release directory.">[ReleaseDir]</abbr></span> is one of <span class="code">ReleaseNullWS</span> or <span class="code">ReleaseX11</span></p>
+			<p>To run an executable, follow the steps below:</p>
+			<ol>
+				<li>
+				<p>Ensure that the PowerVR drivers are installed on the target device (please refer to the DDK/driver installation instructions).</p>
+				</li>
+				<li>
+				<p>If the standard C++ libraries are not present on your target device, copy <span class="code">libc++</span> from the toolchain into <span class="code">/usr/lib</span>. <span class="code">libdl</span> and <span class="code">libgcc</span> may also be required.</p>
+				<p><em><strong>Note:</strong> <span class="code">libc++</span> lives at <span class="code">/usr/lib</span> if you have installed the drivers, or can be found as part of a binary driver release package.</em></p>
+				</li>
+				<li>
+				<p>Ensure the drivers are running (e.g., type <span class="code">/etc/init.d/rc/pvr</span> start, then run an X session if required).</p>
+				<p>Under X11, window sizes can be specified for the executables using the command-line arguments <span class="code">-posx=n</span> and <span class="code">-posy=n</span> to define the top right hand corner, and <span class="code">-width=n</span> and <span class="code">-height=n</span> to define width and height, respectively.</p>
+				<p>For example:</p>
+				<p class="code">./<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>IntroducingPOD -posx=10 -posy=10 -width=100 -height=100</p>
+				</li>
+				<li>
+				<p>If you attempt to run an SDK example and it fails with the message: <span class="code">"Can't open display"</span> produced by the X client, then make sure that the <span class="code">DISPLAY</span> variable is set with the shell command: <span class='code'>"set | grep -e DISPLAY"</span>. If this command does not yield any output then type (in shell): <span class='code'>"DISPLAY=:0.0; export DISPLAY"</span></p>
+				</li>
+			</ol>
+		</div>
+		
+</body>
+
+</html>

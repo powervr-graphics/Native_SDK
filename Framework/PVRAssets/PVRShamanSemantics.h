@@ -1,18 +1,16 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/PVRShamanSemantics.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Provides a list of Semantics that are directly understood by PVR Shaman and the POD loading code.
-***********************************************************************************************************************/
+/*!
+\brief Provides a list of Semantics that are directly understood by PVR Shaman and the POD loading code.
+\file PVRAssets/PVRShamanSemantics.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRAssets/Effect.h"
 namespace pvr {
 namespace assets {
 
-/*!*****************************************************************************************************************
-\brief         Struct to convert a semantic string to a number.
-               The application supplies an array of these so PVRTPFX can translate semantic strings to numbers.
-*******************************************************************************************************************/
+/// <summary>Struct to convert a semantic string to a number. The application supplies an array of these so PVRTPFX
+/// can translate semantic strings to numbers.</summary>
 struct SemanticNameIdPair
 {
 	string semanticName;	/*!< String containing semantic */
@@ -22,9 +20,7 @@ struct SemanticNameIdPair
 };
 
 
-/*!*****************************************************************************************************************
-\brief         Struct which contains list of shaman semantics and its name
-*******************************************************************************************************************/
+/// <summary>Struct which contains list of shaman semantics and its name</summary>
 class PVRShamanSemantics
 {
 public:
@@ -104,17 +100,22 @@ public:
 
 	static const SemanticNameIdPair Mapping[PVRShamanSemantics::Count];
 
-	/*!*********************************************************************************************************************
-	\brief Get map of shaman semantics.
-	\return Return a map of shaman seantics and its name
-	***********************************************************************************************************************/
+	/// <summary>Get map of shaman semantics.</summary>
+	/// <returns>Return a map of shaman seantics and its name</returns>
 	static const std::map<const char*, PVRShamanSemantics::Enum>& getShamanSemanticsMap();
 
+<<<<<<< HEAD
 	/*!*********************************************************************************************************************
 	\brief Get the data type expected by PVRShaman (or provided by POD code) for a specific semantic index.
 	\param[in] shamanSemanticIndex index of the shaman semantic 
 	\return Retunr semantic data type
 	***********************************************************************************************************************/
+=======
+	/// <summary>Get the data type expected by PVRShaman (or provided by POD code) for a specific semantic index.
+	/// </summary>
+	/// <param name="shamanSemanticIndex">index of the shaman semantic</param>
+	/// <returns>Retunr semantic data type</returns>
+>>>>>>> 1776432f... 4.3
 	static types::SemanticDataType getSemanticDataType(PVRShamanSemantics::Enum shamanSemanticIndex)
 	{
 		static const types::SemanticDataType map[] =
@@ -191,11 +192,9 @@ public:
 		return map[shamanSemanticIndex];
 	}
 
-	/*!*********************************************************************************************************************
-	\brief Return a index to the shaman semantic.
-	\param[in] shamanSemanticName shaman semantic name
-	\return The index of a PVR Shaman understood semantic.
-	***********************************************************************************************************************/
+	/// <summary>Return a index to the shaman semantic.</summary>
+	/// <param name="shamanSemanticName">shaman semantic name</param>
+	/// <returns>The index of a PVR Shaman understood semantic.</returns>
 	static PVRShamanSemantics::Enum getSemanticIndex(const char* shamanSemanticName)
 	{
 		return getShamanSemanticsMap().at(shamanSemanticName);

@@ -1,16 +1,16 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/Effect.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief		A pvr::assets::Effect is the description of the entire rendering setup and can be used to create pvr::api
-			objects and use them for rendering.
-***********************************************************************************************************************/
+/*!
+\brief A pvr::assets::Effect is the description of the entire rendering setup and can be used to create pvr::api
+objects and use them for rendering.
+\file PVRAssets/Effect.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRAssets/AssetIncludes.h"
 #include "PVRAssets/SkipGraph.h"
 #include "PVRAssets/Model.h"
-#include "PVRAssets/PixelFormat.h"
-#include "PVRCore/Types.h"
+#include "PVRCore/Texture.h"
+#include "PVRCore/Base/Types.h"
 #include <set>
 
 namespace pvr {
@@ -49,56 +49,50 @@ public:
 	bool operator!=(const MyType& rhs) const { return name != rhs.name; }
 };
 
-/*!*****************************************************************************************************************
-\brief   Stores effect texture information.
-*******************************************************************************************************************/
+/// <summary>Stores effect texture information.</summary>
 struct TextureDefinition : public NameComparable<TextureDefinition>
 {
-	StringHash path;		//!< File name
-	uint32 width, height;	//!< texture dimension
-	PixelFormat fmt;
-	bool fmt_srgb;
+	StringHash path;    //!< File name
+	uint32 width, height; //!< texture dimension
+	ImageDataFormat fmt;
 	TextureDefinition() {}
-	TextureDefinition(const StringHash& name, const StringHash& path, uint32 width, uint32 height, const PixelFormat& fmt, bool format_srgb) :
-		NameComparable(name), path(path),	width(width), height(height),	fmt(fmt), fmt_srgb(format_srgb) {}
+	TextureDefinition(const StringHash& name, const StringHash& path, uint32 width, uint32 height, const ImageDataFormat& fmt) :
+		NameComparable(name), path(path), width(width), height(height), fmt(fmt) {}
 	bool isFile() { return path.empty(); }
 	//uint64 flags;
 };
 
-/*!*****************************************************************************************************************
-\brief   Stores effect texture information.
-*******************************************************************************************************************/
+/// <summary>Stores effect texture information.</summary>
 struct TextureRef
 {
 	StringHash textureName;
-	uint8 set;			//!< Texture number to set
-	uint8 binding;			//!< Texture number to set
+	uint8 set;      //!< Texture number to set
+	uint8 binding;      //!< Texture number to set
 	StringHash variableName; //<! The variable name that this texture refers to in the shader.
+	TextureRef() {}
+
+	TextureRef(StringHash textureName, uint8 set, uint8 binding, StringHash variableName):
+		textureName(textureName), set(set), binding(binding), variableName(variableName) {}
 };
 
-/*!*****************************************************************************************************************
-\brief   Stores effect texture information.
-*******************************************************************************************************************/
+/// <summary>Stores effect texture information.</summary>
 struct TextureReference : public TextureRef
 {
-	types::PackedSamplerFilter samplerFilter;	//!< Sampler Filters
-	types::SamplerWrap wrapS, wrapT, wrapR;	//!< Either Clamp or Repeat
+	types::PackedSamplerFilter samplerFilter; //!< Sampler Filters
+	types::SamplerWrap wrapS, wrapT, wrapR; //!< Either Clamp or Repeat
 	StringHash semantic;  //!< The semantic from which this texture will get its value.
 };
 
-/*!*****************************************************************************************************************
-\brief  Store effect data from the shader block.
-*******************************************************************************************************************/
+/// <summary>Store effect data from the shader block.</summary>
 struct Shader : public NameComparable<Shader>
 {
 	std::string source; //<!Sources pairs
 	types::ShaderType type;
 	Shader() {}
-	Shader(StringHash&& name, types::ShaderType type, std::string&& source): NameComparable<Shader>(std::move(name)), source(std::move(source)), type(type) { }
+	Shader(StringHash&& name, types::ShaderType type, std::string&& source) :
+	    NameComparable<Shader>(std::move(name)), source(std::move(source)), type(type) { }
 };
 typedef const Shader* ShaderReference;
-
-
 
 struct BufferDefinition : public NameComparable<BufferDefinition>
 {
@@ -108,18 +102,20 @@ struct BufferDefinition : public NameComparable<BufferDefinition>
 		types::GpuDatatypes::Enum dataType;
 		uint32 arrayElements;
 	};
-	types::BufferViewTypes allSupportedBindings;
+	types::BufferBindingUse allSupportedBindings;
+	bool isDynamic;
 	std::vector<Entry> entries;
 	types::VariableScope scope;
 	bool multibuffering;
-	BufferDefinition() : allSupportedBindings(types::BufferViewTypes(0)), scope(types::VariableScope::Effect), multibuffering(0) {}
+	BufferDefinition() : allSupportedBindings(types::BufferBindingUse(0)), isDynamic(false),
+	    scope(types::VariableScope::Effect), multibuffering(0) {}
 };
 
 struct DescriptorRef
 {
-    int8 set;
-    int8 binding;
-    DescriptorRef(): set(0), binding(0){}
+	int8 set;
+	int8 binding;
+	DescriptorRef(): set(0), binding(0) {}
 };
 
 struct BufferRef : DescriptorRef
@@ -136,7 +132,6 @@ struct UniformSemantic : DescriptorRef
 	types::GpuDatatypes::Enum dataType;
 	uint32 arrayElements;
 	types::VariableScope scope;
-    Api api;
 };
 
 struct AttributeSemantic
@@ -151,16 +146,16 @@ struct AttributeSemantic
 struct InputAttachmentRef : DescriptorRef
 {
 	int8 targetIndex;
-    InputAttachmentRef() : targetIndex(-1) {}
+	InputAttachmentRef() : targetIndex(-1) {}
 };
 
 struct PipelineVertexBinding
 {
-    uint32 index;
-    types::StepRate stepRate;
+	uint32 index;
+	types::StepRate stepRate;
 
-    PipelineVertexBinding() : stepRate(types::StepRate::Default){}
-    PipelineVertexBinding(uint32 index, types::StepRate stepRate) : index(index), stepRate(stepRate){}
+	PipelineVertexBinding() : stepRate(types::StepRate::Vertex) {}
+	PipelineVertexBinding(uint32 index, types::StepRate stepRate) : index(index), stepRate(stepRate) {}
 };
 
 struct PipelineDefinition: public NameComparable<PipelineDefinition>
@@ -172,7 +167,7 @@ struct PipelineDefinition: public NameComparable<PipelineDefinition>
 	std::vector<BufferRef> buffers; //!< Effect targets};
 	types::BlendingConfig blending;
 	std::vector<InputAttachmentRef> inputAttachments;
-    std::vector<PipelineVertexBinding> vertexBinding;
+	std::vector<PipelineVertexBinding> vertexBinding;
 	// depth states
 	bool enableDepthTest;
 	bool enableDepthWrite;
@@ -187,7 +182,9 @@ struct PipelineDefinition: public NameComparable<PipelineDefinition>
 	types::PolygonWindingOrder windingOrder;
 	types::Face cullFace;
 
-
+	PipelineDefinition() : enableDepthTest(false), enableDepthWrite(true),
+		depthCmpFunc(types::ComparisonMode::Less), enableStencilTest(false),
+		windingOrder(types::PolygonWindingOrder::FrontFaceCCW), cullFace(types::Face::None) {}
 };
 
 struct PipelineCondition
@@ -211,13 +208,20 @@ struct PipelineReference
 	DynamicArray<StringHash> identifiers;
 };
 
+struct SubpassGroup
+{
+	StringHash name;
+	DynamicArray<PipelineReference> pipelines;
+};
+
+
 struct Subpass
 {
 	enum { MaxTargets = 4, MaxInputs = 4 };
 	StringHash targets[MaxTargets];
 	StringHash inputs[MaxInputs];
-	DynamicArray<PipelineReference> pipelines;
 	bool useDepthStencil;
+	std::vector<SubpassGroup> groups;
 };
 
 struct Pass

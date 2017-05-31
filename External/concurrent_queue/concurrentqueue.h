@@ -69,6 +69,10 @@
 #include <array>
 #include <thread>		// partly for __WINPTHREADS_VERSION if on MinGW-w64 w/ POSIX threading
 
+#ifdef __QNXNTO__
+#include <semaphore.h>
+#endif
+
 // Platform-specific definitions of a numeric thread ID type and an invalid value
 namespace moodycamel { namespace details {
 	template<typename thread_id_t> struct thread_id_converter {

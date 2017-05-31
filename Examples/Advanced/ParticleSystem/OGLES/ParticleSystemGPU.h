@@ -9,7 +9,7 @@
 
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 
 const pvr::uint32 NumBuffers(2);
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRApi\OGLES\PipelineConfigStatesGles.h
 \author       PowerVR by Imagination, Developer Technology Team
@@ -7,6 +8,16 @@
 				"unset", "reset" functions.
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
+=======
+/*!
+\brief Internal use. Contains objects required by the OpenGL ES versions of GraphicsPipeline and ComputePipeline. These
+are the objects that the actual work and execute the underlying API commands in their "set", "unset", "reset"
+functions.
+\file PVRApi/OGLES/PipelineConfigStatesGles.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 #pragma once
 #include "PVRApi/ApiObjects/PipelineConfig.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
@@ -17,24 +28,32 @@ namespace api {
 namespace gles { class GraphicsPipelineImplGles; }
 namespace impl {
 
+<<<<<<< HEAD
 //!\cond NO_DOXYGEN
 enum class GraphicsStateType
 {
 	ShaderProgram, VertexShader, FragmentShader, GeometryShader, TessellationControlShader,
 	TessellationEvaluationShader, DepthTest, DepthClear, DepthWrite,
+=======
+enum class GraphicsStateType
+{
+	ShaderProgram, VertexShader, FragmentShader, GeometryShader, TessellationControlShader,
+	TessellationEvaluationShader, DepthTest, DepthClear, DepthWrite, DepthBias,
+>>>>>>> 1776432f... 4.3
 	PolygonCulling, PolygonWindingOrder, BlendRgba, BlendTest, PolygonFill,
 	ScissorTest, StencilOpFront, StencilOpBack, FrameBufferClear,
 	FrameBufferWrite, DepthFunc, BlendEq, StencilTest, StencilClear,
 	VertexAttributeFormatState, VertexAttributeLocation, Count
 };
 
+<<<<<<< HEAD
 //!\endcond
+=======
+>>>>>>> 1776432f... 4.3
 class GraphicsPipeline_;
 class GraphicsPipelineImplState;
 
-/*!**********************************************************************************
-\brief Base interface for a pipeline state object.
-************************************************************************************/
+/// <summary>Base interface for a pipeline state object.</summary>
 class PipelineState
 {
 	friend class ::pvr::api::gles::GraphicsPipelineImplGles;
@@ -49,8 +68,9 @@ public:
 	{
 		delete clone;
 	}
-	PipelineState() : m_parent(NULL) { }
+	PipelineState() : _parent(NULL) { }
 
+<<<<<<< HEAD
 	/*!**********************************************************************************
 	\brief Set default state.
 	************************************************************************************/
@@ -87,14 +107,27 @@ public:
 	\return	bool
 	********************************************************************************/
 	virtual bool isValid() { return m_isValid; }
+=======
+	/// <summary>Destructor.</summary>
+	virtual ~PipelineState() {}
+
+	/// <summary>Set this state.</summary>
+	virtual void set(IGraphicsContext& device) = 0;
+
+	/// <summary>Type of this state.</summary>
+	/// <returns>void</returns>
+	virtual GraphicsStateType getStateType() const = 0;
+
+	/// <summary>Check is a valid state.</summary>
+	/// <returns>bool</returns>
+	virtual bool isValid() { return _isValid; }
+>>>>>>> 1776432f... 4.3
 protected:
-	PipelineState*  m_parent;
-	bool			m_isValid;
+	PipelineState*  _parent;
+	bool      _isValid;
 };
 
-/*!******************************************************************************
-\brief Base class for graphics pipeline state.
-********************************************************************************/
+/// <summary>Base class for graphics pipeline state.</summary>
 class GraphicsPipelineImplState : public PipelineState
 {
 public:
@@ -102,9 +135,7 @@ public:
 protected:
 };
 
-/*!******************************************************************************
-\brief Base class for compute pipeline states.
-********************************************************************************/
+/// <summary>Base class for compute pipeline states.</summary>
 class ComputePipelineImplState : public PipelineState
 {
 public:
@@ -129,6 +160,7 @@ class DepthTestState : public impl::GraphicsPipelineImplState
 {
 public:
 
+<<<<<<< HEAD
 	/*!
 	   \brief Constructor
 	   \param enable Enable/ disable depthtest (Default: false)
@@ -143,11 +175,22 @@ public:
 	/*!
 	   \brief Create a new clone of this state
 	 */
+=======
+	/// <summary>Constructor</summary>
+	/// <param name="enable">Enable/ disable depthtest (Default: false)</param>
+	DepthTestState(bool enable = types::PipelineDefaults::DepthStencilStates::DepthTestEnabled) { _depthTestEnabled = enable; }
+
+	/// <summary>Create a new defualt DepthTestState</summary>
+	impl::PipelineState::ptr_type createDefault() const { return new DepthTestState(); }
+
+	/// <summary>Create a new clone of this state</summary>
+>>>>>>> 1776432f... 4.3
 	impl::PipelineState::ptr_type createClone() const
 	{
-		return new DepthTestState(m_depthTestEnabled);
+		return new DepthTestState(_depthTestEnabled);
 	}
 
+<<<<<<< HEAD
 	/*!
 	   \brief Get this state type
 	 */
@@ -199,14 +242,40 @@ public:
 	void setDefault(IGraphicsContext& device) { commitState(device, types::PipelineDefaults::DepthStencilStates::DepthTestEnabled); }
 
 	bool m_depthTestEnabled;
+=======
+	/// <summary>Get this state type</summary>
+	impl::GraphicsStateType getStateType() const { return impl::GraphicsStateType::DepthTest; }
+
+	/// <summary>operator ==</summary>
+	/// <param name="rhs"></param>
+	/// <returns>Return true if equal</returns>
+	bool operator==(const DepthTestState& rhs)const { return (_depthTestEnabled == rhs._depthTestEnabled); }
+
+	/// <summary>operator !=</summary>
+	/// <param name="rhs"></param>
+	/// <returns>Return true if not equal</returns>
+	bool operator!=(const DepthTestState& rhs)const { return !(*this == rhs); }
+
+	/// <summary>commit this state to the gpu</summary>
+	/// <param name="device"></param>
+	void set(IGraphicsContext& device) { commitState(device, _depthTestEnabled); }
+
+	/// <summary>Commit this state to the gpu</summary>
+	/// <param name="device"></param>
+	/// <param name="depthTest">Enable/disable depth test</param>
+	void commitState(IGraphicsContext& device, bool depthTest);
+
+	bool _depthTestEnabled;
+>>>>>>> 1776432f... 4.3
 };
 
 class DepthFuncState : public impl::GraphicsPipelineImplState
 {
 public:
-	bool operator==(const DepthFuncState& rhs)const { return m_depthFunc == rhs.m_depthFunc; }
+	bool operator==(const DepthFuncState& rhs)const { return _depthFunc == rhs._depthFunc; }
 	bool operator!=(const DepthFuncState& rhs)const { return !(*this == rhs); }
 
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_depthFunc); }
 	void unset(IGraphicsContext& device)
 	{
@@ -222,11 +291,22 @@ public:
 	void setDefault(IGraphicsContext& device) { commitState(device, types::ComparisonMode::DefaultDepthFunc); }
 	void commitState(IGraphicsContext& device, types::ComparisonMode func);
 	types::ComparisonMode m_depthFunc;
+=======
+	void set(IGraphicsContext& device) { commitState(device, _depthFunc); }
+	impl::PipelineState::ptr_type createClone()const { return new DepthFuncState(_depthFunc); }
+	impl::PipelineState::ptr_type createDefault()const { return new DepthFuncState(); }
+	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::DepthFunc; }
+	DepthFuncState() { _depthFunc = types::ComparisonMode::DefaultDepthFunc; }
+	DepthFuncState(types::ComparisonMode depthFunc) { _depthFunc = depthFunc; }
+	void commitState(IGraphicsContext& device, types::ComparisonMode func);
+	types::ComparisonMode _depthFunc;
+>>>>>>> 1776432f... 4.3
 };
 
 class DepthWriteState : public impl::GraphicsPipelineImplState
 {
 public:
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_depthWriteEnabled); }
 	void unset(IGraphicsContext& device)
 	{
@@ -244,14 +324,25 @@ public:
 	void setDefault(IGraphicsContext& device) { commitState(device, types::PipelineDefaults::DepthStencilStates::DepthWriteEnabled); };
 	void commitState(IGraphicsContext& device, bool depthWrite);
 	bool m_depthWriteEnabled;
+=======
+	void set(IGraphicsContext& device) { commitState(device, _depthWriteEnabled); }
+	bool operator==(const DepthWriteState& rhs)const { return _depthWriteEnabled == rhs._depthWriteEnabled; }
+	impl::GraphicsStateType getStateType() const { return impl::GraphicsStateType::DepthWrite; }
+	bool operator!=(const DepthWriteState& rhs)const { return _depthWriteEnabled != rhs._depthWriteEnabled; }
+	impl::PipelineState::ptr_type createClone()const { return new DepthWriteState(_depthWriteEnabled); }
+	impl::PipelineState::ptr_type createDefault()const { return new DepthWriteState(); }
+	DepthWriteState() { _depthWriteEnabled = types::PipelineDefaults::DepthStencilStates::DepthWriteEnabled; }
+	DepthWriteState(bool enabled) { _depthWriteEnabled = enabled; }
+	void commitState(IGraphicsContext& device, bool depthWrite);
+	bool _depthWriteEnabled;
+>>>>>>> 1776432f... 4.3
 };
 
-/*!****************************************************************************************************************
-\brief Pipeline. Controls the polygon culling state.
-*******************************************************************************************************************/
+/// <summary>Pipeline. Controls the polygon culling state.</summary>
 class PolygonFrontFaceState : public impl::GraphicsPipelineImplState
 {
 public:
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_cullFace); }
 	void reset(IGraphicsContext& device) { m_cullFace = types::Face::DefaultCullFace; }
 	void unset(IGraphicsContext& device)
@@ -259,25 +350,36 @@ public:
 		if (m_parent) { m_parent->set(device); }
 		else { setDefault(device); }
 	}
+=======
+	void set(IGraphicsContext& device) { commitState(device, _cullFace); }
+
+>>>>>>> 1776432f... 4.3
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::PolygonCulling; }
 	impl::PipelineState::ptr_type createClone()const { return new PolygonFrontFaceState(*this); }
 	impl::PipelineState::ptr_type createDefault()const { return new PolygonFrontFaceState(); }
-	bool operator==(const PolygonFrontFaceState& rhs)const { return (m_cullFace == rhs.m_cullFace); }
+	bool operator==(const PolygonFrontFaceState& rhs)const { return (_cullFace == rhs._cullFace); }
 	bool operator!=(const PolygonFrontFaceState& rhs)const { return !(*this == rhs); }
+<<<<<<< HEAD
 	PolygonFrontFaceState() : m_cullFace(types::Face::DefaultCullFace) {}
 	PolygonFrontFaceState(types::Face cullFace) : m_cullFace(cullFace) {}
 
 	void commitState(IGraphicsContext& device, types::Face cullFace);
 	void setDefault(IGraphicsContext& device) { commitState(device, types::Face::DefaultCullFace); }
 	types::Face m_cullFace;
+=======
+	PolygonFrontFaceState() : _cullFace(types::Face::Default) {}
+	PolygonFrontFaceState(types::Face cullFace) : _cullFace(cullFace) {}
+
+	void commitState(IGraphicsContext& device, types::Face cullFace);
+	types::Face _cullFace;
+>>>>>>> 1776432f... 4.3
 };
 
-/*!****************************************************************************************************************
-\brief  Pipeline. Controls the polygon winding-order.
-*******************************************************************************************************************/
+/// <summary>Pipeline. Controls the polygon winding-order.</summary>
 class PolygonWindingOrderState : public impl::GraphicsPipelineImplState
 {
 public:
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_windingOrder); }
 	void unset(IGraphicsContext& device)
 	{
@@ -285,10 +387,14 @@ public:
 		else { setDefault(device); }
 	}
 	void reset(IGraphicsContext& device) { m_windingOrder = types::PolygonWindingOrder::Default; }
+=======
+	void set(IGraphicsContext& device) { commitState(device, _windingOrder); }
+>>>>>>> 1776432f... 4.3
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::PolygonWindingOrder; }
 	ptr_type createDefault()const { return new PolygonWindingOrderState(); }
 	ptr_type createClone()const { return new PolygonWindingOrderState(*this); }
 	PolygonWindingOrderState() {}
+<<<<<<< HEAD
 	PolygonWindingOrderState(types::PolygonWindingOrder windingOrder) : m_windingOrder(windingOrder) {}
 	void setDefault(IGraphicsContext& device) { commitState(device, types::PolygonWindingOrder::Default); };
 	void commitState(IGraphicsContext& device, types::PolygonWindingOrder windingOrderCCW);
@@ -336,6 +442,38 @@ public:
 /*!*********************************************************************************************************************
 \brief  Sets the Color write mask.
 ***********************************************************************************************************************/
+=======
+	PolygonWindingOrderState(types::PolygonWindingOrder windingOrder) : _windingOrder(windingOrder) {}
+	void commitState(IGraphicsContext& device, types::PolygonWindingOrder windingOrderCCW);
+	types::PolygonWindingOrder _windingOrder;
+};
+
+class TessPatchControlPoints : public impl::GraphicsPipelineImplState
+{
+public:
+	uint32 patchControlPoints;
+	TessPatchControlPoints(uint32 patchControlPoints =
+	                         types::PipelineDefaults::Tesselation::NumControlPoints) :
+		patchControlPoints(patchControlPoints) {}
+	void execute(impl::CommandBuffer_& cmdBuff);
+	bool operator==(const TessPatchControlPoints& rhs)const { return patchControlPoints == rhs.patchControlPoints; }
+	bool operator!=(const TessPatchControlPoints& rhs)const { return !(*this == rhs); }
+	ptr_type createClone()const { return new TessPatchControlPoints(*this); }
+	ptr_type createDefault()const
+	{
+		return new TessPatchControlPoints(types::PipelineDefaults::Tesselation::NumControlPoints);
+	}
+	void set(IGraphicsContext& device) { commitState(device, patchControlPoints); }
+	impl::GraphicsStateType getStateType()const
+	{
+		return impl::GraphicsStateType::TessellationControlShader;
+	}
+	void commitState(IGraphicsContext& device, uint32 patchControlPoints);
+};
+
+
+/// <summary>Sets the Color write mask.</summary>
+>>>>>>> 1776432f... 4.3
 class ColorWriteMask : public impl::GraphicsPipelineImplState
 {
 public:
@@ -346,6 +484,7 @@ public:
 	ptr_type createClone()const { return new ColorWriteMask(*this); }
 	ptr_type createDefault()const { return new ColorWriteMask(); }
 	void set(IGraphicsContext& device) { commitState(device, writeMask); }
+<<<<<<< HEAD
 	void unset(IGraphicsContext& device)
 	{
 		if (m_parent) { m_parent->set(device); return; }
@@ -360,6 +499,8 @@ public:
 		                       types::PipelineDefaults::ColorWrite::ColorMaskA));
 	}
 	void reset(IGraphicsContext& device) {}
+=======
+>>>>>>> 1776432f... 4.3
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::BlendTest; }
 	void commitState(IGraphicsContext& device, const glm::bvec4 mask);
 
@@ -382,16 +523,15 @@ public:
 	}
 };
 
-/*!****************************************************************************************************************
-\brief  Pipeline. Controls the Blending enable/disable.
-*******************************************************************************************************************/
+/// <summary>Pipeline. Controls the Blending enable/disable.</summary>
 class BlendingEnableState : public impl::GraphicsPipelineImplState
 {
 public:
-	bool operator==(const BlendingEnableState& rhs)const { return m_blendTestEnabled == rhs.m_blendTestEnabled; }
+	bool operator==(const BlendingEnableState& rhs)const { return _blendTestEnabled == rhs._blendTestEnabled; }
 	bool operator!=(const BlendingEnableState& rhs)const { return !(*this == rhs); }
 	ptr_type createClone()const { return new BlendingEnableState(*this); }
 	ptr_type createDefault()const { return new BlendingEnableState(); }
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_blendTestEnabled); }
 	void unset(IGraphicsContext& device)
 	{
@@ -404,16 +544,22 @@ public:
 	BlendingEnableState(bool enable) : m_blendTestEnabled(enable) { }
 	bool m_blendTestEnabled;
 	void setDefault(IGraphicsContext& device) { commitState(device, types::PipelineDefaults::ColorBlend::BlendEnabled); }
+=======
+	void set(IGraphicsContext& device) { commitState(device, _blendTestEnabled); }
+	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::BlendTest; }
+	BlendingEnableState() { }
+	BlendingEnableState(bool enable) : _blendTestEnabled(enable) { }
+	bool _blendTestEnabled;
+>>>>>>> 1776432f... 4.3
 	void commitState(IGraphicsContext&, bool blendTest);
 };
 
-/*!****************************************************************************************************************
-\brief  Pipeline. Controls the Blend Operation.
-*******************************************************************************************************************/
+/// <summary>Pipeline. Controls the Blend Operation.</summary>
 class BlendFactorState : public impl::GraphicsPipelineImplState
 {
 public:
 	void set(IGraphicsContext& device)
+<<<<<<< HEAD
 	{
 		commitState(device, types::BlendFactor((m_pack & 0xF000) >> 12), types::BlendFactor((m_pack & 0x0F00) >> 8), types::BlendFactor((m_pack & 0x00F0) >> 4), types::BlendFactor(m_pack & 0x000F));
 	}
@@ -424,26 +570,29 @@ public:
 		setDefault(device);
 	}
 	void unset(IGraphicsContext& device)
+=======
+>>>>>>> 1776432f... 4.3
 	{
-		if (m_parent)
-		{
-			m_parent->set(device);
-		}
-		else
-		{
-			setDefault(device);
-		}
+		commitState(device, types::BlendFactor((_pack & 0xF000) >> 12), types::BlendFactor((_pack & 0x0F00) >> 8), types::BlendFactor((_pack & 0x00F0) >> 4), types::BlendFactor(_pack & 0x000F));
 	}
+<<<<<<< HEAD
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::BlendRgba; }
 	impl::PipelineState::ptr_type createClone()const { return new BlendFactorState(m_pack); }
+=======
+
+
+	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::BlendRgba; }
+	impl::PipelineState::ptr_type createClone()const { return new BlendFactorState(_pack); }
+>>>>>>> 1776432f... 4.3
 	impl::PipelineState::ptr_type createDefault()const { return new BlendFactorState(); }
-	bool operator==(const BlendFactorState& rhs)const { return m_pack == rhs.m_pack; }
-	bool operator!=(const BlendFactorState& rhs)const { return m_pack != rhs.m_pack; }
+	bool operator==(const BlendFactorState& rhs)const { return _pack == rhs._pack; }
+	bool operator!=(const BlendFactorState& rhs)const { return _pack != rhs._pack; }
 
 	BlendFactorState() {}
 	BlendFactorState(types::BlendFactor srcRgbFactor, types::BlendFactor dstRgbFactor,
 	                 types::BlendFactor srcAlphaFactor,
 	                 types::BlendFactor dstAlphaFactor);
+<<<<<<< HEAD
 	BlendFactorState(uint32 data) : m_pack((uint16)data) {}
 	void commitState(IGraphicsContext& device, types::BlendFactor srcRgbFactor, types::BlendFactor dstRgbFactor, types::BlendFactor srcAlphaFactor,
 	                 types::BlendFactor dstAlphaFactor);
@@ -458,21 +607,32 @@ public:
 		m_pack |= ((uint16)dstRgbFactor << 8);
 		m_pack |= ((uint16)srcAlphaFactor << 4);
 		m_pack |= (uint16)dstAlphaFactor;
+=======
+	BlendFactorState(uint32 data) : _pack((uint16)data) {}
+	void commitState(IGraphicsContext& device, types::BlendFactor srcRgbFactor, types::BlendFactor dstRgbFactor, types::BlendFactor srcAlphaFactor,
+	                 types::BlendFactor dstAlphaFactor);
+
+	void packData(types::BlendFactor srcRgbFactor, types::BlendFactor dstRgbFactor, types::BlendFactor srcAlphaFactor, types::BlendFactor dstAlphaFactor)
+	{
+		_pack = ((uint16)srcRgbFactor << 12);
+		_pack |= ((uint16)dstRgbFactor << 8);
+		_pack |= ((uint16)srcAlphaFactor << 4);
+		_pack |= (uint16)dstAlphaFactor;
+>>>>>>> 1776432f... 4.3
 	}
-	uint16 m_pack;
+	uint16 _pack;
 };
 
-/*!****************************************************************************************************************
-\brief  Pipeline. Controls the Blend equation.
-*******************************************************************************************************************/
+/// <summary>Pipeline. Controls the Blend equation.</summary>
 class BlendOpState : public impl::GraphicsPipelineImplState
 {
 public:
 	bool operator==(const BlendOpState& rhs)const
 	{
-		return (m_rgbBlendEq == rhs.m_rgbBlendEq) && (m_alphaBlendEq == rhs.m_alphaBlendEq);
+		return (_rgbBlendEq == rhs._rgbBlendEq) && (_alphaBlendEq == rhs._alphaBlendEq);
 	}
 	bool operator!=(const BlendOpState& rhs)const { return !(*this == rhs); }
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_rgbBlendEq, m_alphaBlendEq); }
 	void reset(IGraphicsContext& device) { m_rgbBlendEq = m_alphaBlendEq = types::BlendOp::Default; }
 	void unset(IGraphicsContext& device)
@@ -485,11 +645,16 @@ public:
 		setDefault(device);
 	}
 	impl::PipelineState::ptr_type createClone()const { return new BlendOpState(m_rgbBlendEq, m_alphaBlendEq); }
+=======
+	void set(IGraphicsContext& device) { commitState(device, _rgbBlendEq, _alphaBlendEq); }
+	impl::PipelineState::ptr_type createClone()const { return new BlendOpState(_rgbBlendEq, _alphaBlendEq); }
+>>>>>>> 1776432f... 4.3
 	impl::PipelineState::ptr_type createDefault()const { return new BlendOpState(); }
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::BlendEq; }
 
 	BlendOpState() { }
 	BlendOpState(types::BlendOp rgbBlendEquation, types::BlendOp alphaBlendEquation) :
+<<<<<<< HEAD
 		m_rgbBlendEq(rgbBlendEquation), m_alphaBlendEq(alphaBlendEquation) {}
 
 	void commitState(IGraphicsContext& device, types::BlendOp rgbBlendEquation, types::BlendOp alphaBlendEquation);
@@ -500,14 +665,21 @@ public:
 
 	types::BlendOp m_rgbBlendEq;
 	types::BlendOp m_alphaBlendEq;
+=======
+		_rgbBlendEq(rgbBlendEquation), _alphaBlendEq(alphaBlendEquation) {}
+
+	void commitState(IGraphicsContext& device, types::BlendOp rgbBlendEquation, types::BlendOp alphaBlendEquation);
+
+	types::BlendOp _rgbBlendEq;
+	types::BlendOp _alphaBlendEq;
+>>>>>>> 1776432f... 4.3
 };
 
-/*!****************************************************************************************************************
-\brief  Pipeline state. Controls the depth clear value.
-*******************************************************************************************************************/
+/// <summary>Pipeline state. Controls the depth clear value.</summary>
 class DepthClearState : public impl::GraphicsPipelineImplState
 {
 public:
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(m_clearDepth); }
 	void reset(IGraphicsContext& device)
 	{
@@ -526,37 +698,52 @@ public:
 	}
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::DepthClear; }
 	impl::PipelineState::ptr_type createClone()const	{ return new DepthClearState(*this); }
+=======
+	void set(IGraphicsContext& device) { commitState(_clearDepth); }
+
+	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::DepthClear; }
+	impl::PipelineState::ptr_type createClone()const  { return new DepthClearState(*this); }
+>>>>>>> 1776432f... 4.3
 	impl::PipelineState::ptr_type createDefault()const { return new DepthClearState(); }
-	bool operator==(const DepthClearState& rhs) { return (m_clearDepth == rhs.m_clearDepth); }
+	bool operator==(const DepthClearState& rhs) { return (_clearDepth == rhs._clearDepth); }
 	bool operator!=(const DepthClearState& rhs) { return !(*this == rhs); }
 
 	DepthClearState() { }
-	DepthClearState(float32 depth) { m_clearDepth = depth; }
+	DepthClearState(float32 depth) { _clearDepth = depth; }
 	void commitState(float32 depth);
+<<<<<<< HEAD
 	void setDefault(IGraphicsContext& device)
 	{
 		commitState(types::PipelineDefaults::DepthStencilStates::DepthClearValue);
 	}
 	float32 m_clearDepth;
+=======
+
+	float32 _clearDepth;
+>>>>>>> 1776432f... 4.3
 };
 
-/*!****************************************************************************************************************
-\brief  Pipeline State. Controls the stencil clear value.
-*******************************************************************************************************************/
+/// <summary>Pipeline State. Controls the stencil clear value.</summary>
 class StencilClearState : public impl::GraphicsPipelineImplState
 {
 public:
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::StencilClear; }
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_clearStencil); }
 	void unset(IGraphicsContext& device) { if (m_parent) { m_parent->set(device); return; } setDefault(device); }
 	void reset(IGraphicsContext& device)
 	{
 		m_clearStencil = types::PipelineDefaults::DepthStencilStates::StencilClearValue;
 	}
+=======
+	void set(IGraphicsContext& device) { commitState(device, _clearStencil); }
+
+>>>>>>> 1776432f... 4.3
 	ptr_type createClone()const { return new StencilClearState(*this); }
 	ptr_type createDefault()const { return new StencilClearState(); }
 
 	StencilClearState() { }
+<<<<<<< HEAD
 	StencilClearState(int32 clearStencil) : m_clearStencil(clearStencil) {}
 	void setDefault(IGraphicsContext& device)
 	{
@@ -564,23 +751,32 @@ public:
 	}
 	void commitState(IGraphicsContext& device, int32 clearStencil);
 	int32 m_clearStencil;
+=======
+	StencilClearState(int32 clearStencil) : _clearStencil(clearStencil) {}
+
+	void commitState(IGraphicsContext& device, int32 clearStencil);
+	int32 _clearStencil;
+>>>>>>> 1776432f... 4.3
 };
 
-/*!****************************************************************************************************************
-\brief  Pipeline. Controls the stencil test enable/disable.
-*******************************************************************************************************************/
+/// <summary>Pipeline. Controls the stencil test enable/disable.</summary>
 class StencilTestState : public impl::GraphicsPipelineImplState
 {
 public:
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::StencilTest; }
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_stencilTest); }
 	void unset(IGraphicsContext& device) { if (m_parent) { m_parent->set(device); } else { setDefault(device); } }
 	void reset(IGraphicsContext& device) { m_stencilTest = types::PipelineDefaults::DepthStencilStates::StencilTestEnabled; }
 
+=======
+	void set(IGraphicsContext& device) { commitState(device, _stencilTest); }
+>>>>>>> 1776432f... 4.3
 	ptr_type createClone()const { return new StencilTestState(*this); }
 	ptr_type createDefault()const { return new StencilTestState(); }
 
 	StencilTestState() {}
+<<<<<<< HEAD
 	StencilTestState(bool enableTest) : m_stencilTest(enableTest) {}
 	void setDefault(IGraphicsContext& device)
 	{
@@ -588,49 +784,72 @@ public:
 	}
 	void commitState(IGraphicsContext& device, bool flag);
 	bool m_stencilTest;
+=======
+	StencilTestState(bool enableTest) : _stencilTest(enableTest) {}
+	void commitState(IGraphicsContext& device, bool flag);
+	bool _stencilTest;
+>>>>>>> 1776432f... 4.3
 };
 
 class StencilCompareOpFront : public impl::GraphicsPipelineImplState
 {
 public:
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_cmpOp); }
 	void unset(IGraphicsContext& device) { if (m_parent) { m_parent->set(device); } else { setDefault(device); } }
 	void reset(IGraphicsContext& device) { m_cmpOp = types::ComparisonMode::DefaultStencilOpFront; }
+=======
+	void set(IGraphicsContext& device) { commitState(device, _cmpOp); }
+>>>>>>> 1776432f... 4.3
 	ptr_type createClone()const { return new StencilCompareOpFront(*this); }
 	ptr_type createDefault()const { return new StencilCompareOpFront(); }
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::StencilOpFront; }
 
+<<<<<<< HEAD
 	StencilCompareOpFront(types::ComparisonMode cmp = types::ComparisonMode::DefaultStencilOpFront) : m_cmpOp(cmp) {}
 	types::ComparisonMode m_cmpOp;
 
 	void setDefault(IGraphicsContext& device) { commitState(device, types::ComparisonMode::DefaultStencilOpFront); }
+=======
+	StencilCompareOpFront(types::ComparisonMode cmp = types::ComparisonMode::DefaultStencilFunc) : _cmpOp(cmp) {}
+	types::ComparisonMode _cmpOp;
+>>>>>>> 1776432f... 4.3
 	void commitState(IGraphicsContext& device, types::ComparisonMode cmp);
 };
 
 class StencilCompareOpBack : public impl::GraphicsPipelineImplState
 {
 public:
+<<<<<<< HEAD
 	types::ComparisonMode m_cmpOp;
 
 	void set(IGraphicsContext& device) { commitState(device, m_cmpOp); }
 	void unset(IGraphicsContext& device) { if (m_parent) { m_parent->set(device); } else { setDefault(device); } }
 	void reset(IGraphicsContext& device) { m_cmpOp = types::ComparisonMode::DefaultStencilOpBack; }
+=======
+	types::ComparisonMode _cmpOp;
+
+	void set(IGraphicsContext& device) { commitState(device, _cmpOp); }
+>>>>>>> 1776432f... 4.3
 	ptr_type createClone()const { return new StencilCompareOpBack(*this); }
 	ptr_type createDefault()const { return new StencilCompareOpBack(); }
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::StencilOpBack; }
 
+<<<<<<< HEAD
 	StencilCompareOpBack(types::ComparisonMode cmp = types::ComparisonMode::DefaultStencilOpBack) : m_cmpOp(cmp) {}
 
 	void setDefault(IGraphicsContext& device) { commitState(device, types::ComparisonMode::DefaultStencilOpBack); }
+=======
+	StencilCompareOpBack(types::ComparisonMode cmp = types::ComparisonMode::DefaultStencilFunc) : _cmpOp(cmp) {}
+>>>>>>> 1776432f... 4.3
 	void commitState(IGraphicsContext& device, types::ComparisonMode cmp);
 };
 
-/*!****************************************************************************************************************
-\brief  Pipeline. Controls the front stencil op.
-*******************************************************************************************************************/
+/// <summary>Pipeline. Controls the front stencil op.</summary>
 class StencilOpFrontState : public impl::GraphicsPipelineImplState
 {
 public:
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_opStencilFail, m_opDepthFail, m_opDepthPass); }
 	void unset(IGraphicsContext& device) { if (m_parent) { m_parent->set(device); } else { setDefault(device); } }
 	void reset(IGraphicsContext& device)
@@ -639,12 +858,17 @@ public:
 		m_opStencilFail = types::StencilOp::DefaultStencilFailFront;
 		m_opDepthPass = types::StencilOp::DefaultDepthStencilPassFront;
 	}
+=======
+	void set(IGraphicsContext& device) { commitState(device, _opStencilFail, _opDepthFail, _opDepthPass); }
+
+>>>>>>> 1776432f... 4.3
 	ptr_type createClone()const { return new StencilOpFrontState(*this); }
 	ptr_type createDefault()const { return new StencilOpFrontState(); }
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::StencilOpFront; }
 
 	StencilOpFrontState() { }
 	StencilOpFrontState(types::StencilOp opStencilFail, types::StencilOp opDepthFail, types::StencilOp opDepthPass) :
+<<<<<<< HEAD
 		m_opStencilFail(opStencilFail), m_opDepthPass(opDepthPass), m_opDepthFail(opDepthFail) {}
 	types::StencilOp m_opStencilFail;
 	types::StencilOp m_opDepthPass;
@@ -657,14 +881,23 @@ public:
 	}
 	void commitState(IGraphicsContext& device, types::StencilOp opStencilFail, types::StencilOp opDepthFail,
 	                 types::StencilOp opDepthStencilPass);
+=======
+		_opStencilFail(opStencilFail), _opDepthPass(opDepthPass), _opDepthFail(opDepthFail) {}
+
+	void commitState(IGraphicsContext& device, types::StencilOp opStencilFail, types::StencilOp opDepthFail,
+	                 types::StencilOp opDepthStencilPass);
+
+	types::StencilOp _opStencilFail;
+	types::StencilOp _opDepthPass;
+	types::StencilOp _opDepthFail;
+>>>>>>> 1776432f... 4.3
 };
 
-/*!****************************************************************************************************************
-\brief  Pipeline. Controls the back stencil op.
-*******************************************************************************************************************/
+/// <summary>Pipeline. Controls the back stencil op.</summary>
 class StencilOpBackState : public impl::GraphicsPipelineImplState
 {
 public:
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_opStencilFail, m_opDepthFail, m_opDepthPass); }
 	void unset(IGraphicsContext& device) { if (m_parent) { m_parent->set(device); } else { setDefault(device); } }
 	void reset(IGraphicsContext& device)
@@ -673,6 +906,9 @@ public:
 		m_opStencilFail = types::StencilOp::DefaultStencilFailBack;
 		m_opDepthPass = types::StencilOp::DefaultDepthStencilPassBack;
 	}
+=======
+	void set(IGraphicsContext& device) { commitState(device, _opStencilFail, _opDepthFail, _opDepthPass); }
+>>>>>>> 1776432f... 4.3
 	ptr_type createClone()const { return new StencilOpBackState(*this); }
 	ptr_type createDefault()const { return new StencilOpBackState(); }
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::StencilOpBack; }
@@ -680,6 +916,7 @@ public:
 	StencilOpBackState() { }
 	StencilOpBackState(types::StencilOp opStencilFail, types::StencilOp opDepthFail,
 	                   types::StencilOp opDepthPass) :
+<<<<<<< HEAD
 		m_opStencilFail(opStencilFail), m_opDepthPass(opDepthPass), m_opDepthFail(opDepthFail) {}
 	types::StencilOp m_opStencilFail;
 	types::StencilOp m_opDepthPass;
@@ -689,25 +926,35 @@ public:
 		commitState(device, types::StencilOp::DefaultStencilFailBack, types::StencilOp::DefaultDepthFailBack,
 		            types::StencilOp::DefaultDepthStencilPassBack);
 	}
+=======
+		_opStencilFail(opStencilFail), _opDepthPass(opDepthPass), _opDepthFail(opDepthFail) {}
+	types::StencilOp _opStencilFail;
+	types::StencilOp _opDepthPass;
+	types::StencilOp _opDepthFail;
+>>>>>>> 1776432f... 4.3
 
 	void commitState(IGraphicsContext& device, types::StencilOp opStencilFail, types::StencilOp opDepthFail,
 	                 types::StencilOp opDepthPass);
 };
 
-/*!****************************************************************************************************************
-\brief  Pipeline. Controls the scissor test. Enable/ disable.
-*******************************************************************************************************************/
+/// <summary>Pipeline. Controls the scissor test. Enable/ disable.</summary>
 class ScissorTestState : public impl::GraphicsPipelineImplState
 {
 public:
+<<<<<<< HEAD
 	void set(IGraphicsContext& device) { commitState(device, m_scissorTest); }
 	void unset(IGraphicsContext& device) { if (m_parent) { m_parent->set(device); } else { setDefault(device); } }
 	void reset(IGraphicsContext& device) { setDefault(device); }
 	impl::PipelineState::ptr_type createClone()const	{ return new ScissorTestState(*this); }
+=======
+	void set(IGraphicsContext& device) { commitState(device, _scissorTest); }
+	impl::PipelineState::ptr_type createClone()const  { return new ScissorTestState(*this); }
+>>>>>>> 1776432f... 4.3
 	impl::PipelineState::ptr_type createDefault()const
 	{
 		return new ScissorTestState(types::PipelineDefaults::ViewportScissor::ScissorTestEnabled);
 	}
+<<<<<<< HEAD
 	bool operator==(const ScissorTestState& rhs) { return ((m_scissorTest == rhs.m_scissorTest)); }
 	bool operator!=(const ScissorTestState& rhs) { return !(*this == rhs); }
 	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::ScissorTest; }
@@ -722,12 +969,26 @@ public:
 /*!*********************************************************************************************************************
 \brief Pipeline graphics shader program state.
 ***********************************************************************************************************************/
+=======
+	bool operator==(const ScissorTestState& rhs) { return ((_scissorTest == rhs._scissorTest)); }
+	bool operator!=(const ScissorTestState& rhs) { return !(*this == rhs); }
+	impl::GraphicsStateType getStateType()const { return impl::GraphicsStateType::ScissorTest; }
+
+	ScissorTestState() : _scissorTest(types::PipelineDefaults::ViewportScissor::ScissorTestEnabled) { }
+	ScissorTestState(bool enable) : _scissorTest(enable) {}
+	void commitState(IGraphicsContext& device, bool enable);
+	bool _scissorTest;
+};
+
+/// <summary>Pipeline graphics shader program state.</summary>
+>>>>>>> 1776432f... 4.3
 class GraphicsShaderProgramState : public impl::GraphicsPipelineImplState
 {
 public:
 	GraphicsShaderProgramState(const GraphicsShaderProgramState& shaderProgram);
 	GraphicsShaderProgramState();
 
+<<<<<<< HEAD
 	/*!*********************************************************************************************************************
 	\brief Bind this program state.
 	***********************************************************************************************************************/
@@ -754,31 +1015,37 @@ public:
 		}
 		else { reset(device); }
 	}
+=======
+	/// <summary>Bind this program state.</summary>
+	void bind(IGraphicsContext& device) const;
+>>>>>>> 1776432f... 4.3
 
-	/*!*********************************************************************************************************************
-	\brief Return default program state.
-	***********************************************************************************************************************/
+	/// <summary>Set this program state.</summary>
+	void set(IGraphicsContext& device) { bind(device); }
+
+	/// <summary>Return default program state.</summary>
 	PipelineState::ptr_type createDefault()const { return new GraphicsShaderProgramState(); }
 
-	/*!*********************************************************************************************************************
-	\brief Return clone program state.
-	***********************************************************************************************************************/
+	/// <summary>Return clone program state.</summary>
 	PipelineState::ptr_type createClone()const { return new GraphicsShaderProgramState(*this); }
 
+<<<<<<< HEAD
 	/*!*********************************************************************************************************************
 	\brief Get thi state type.
 	***********************************************************************************************************************/
+=======
+	/// <summary>Get thi state type.</summary>
+>>>>>>> 1776432f... 4.3
 	impl::GraphicsStateType getStateType() const { return impl::GraphicsStateType::ShaderProgram; }
 
-	bool operator==(const GraphicsShaderProgramState& rhs)const { return (m_shaderProgram == rhs.m_shaderProgram); }
+	bool operator==(const GraphicsShaderProgramState& rhs)const { return (_shaderProgram == rhs._shaderProgram); }
 	bool operator!=(const GraphicsShaderProgramState& rhs)const { return !(*this == rhs); }
 	void generate();
 
-	/*!*********************************************************************************************************************
-	\brief Destroy this.
-	***********************************************************************************************************************/
+	/// <summary>Destroy this.</summary>
 	void destroy();
 
+<<<<<<< HEAD
 	/*!************************************************************************************************************
 	\brief	Return the api program object.
 	***************************************************************************************************************/
@@ -797,29 +1064,32 @@ public:
 private:
 	mutable native::HPipeline m_shaderProgram;
 	void setDefault(IGraphicsContext& device) { }
+=======
+	/// <summary>Save the program binary to a file or other stream.</summary>
+	/// <param name="outputStream">Output stream. Must be writable</param>
+	/// <returns>True if it is successful</returns>
+	bool saveProgramBinary(Stream& outputStream);
+
+	mutable native::HPipeline _shaderProgram;
+>>>>>>> 1776432f... 4.3
 };
 
-/*!*********************************************************************************************************************
-\brief ComputePipeline shader program state.
-***********************************************************************************************************************/
+/// <summary>ComputePipeline shader program state.</summary>
 class ComputeShaderProgramState : public impl::ComputePipelineImplState
 {
 public:
 
-	/*!*********************************************************************************************************************
-	\brief
-	***********************************************************************************************************************/
-	ComputeShaderProgramState() { m_isValid = false; }
+	/// <summary>Contstructor. Initializes a new instance of this class.</summary>
+	ComputeShaderProgramState() { _isValid = false; }
 
-	/*!*********************************************************************************************************************
-	\brief
-	***********************************************************************************************************************/
+	/// <summary>Copy Contstructor. Initializes a new instance of this class by copying another.</summary>
 	ComputeShaderProgramState(const ComputeShaderProgramState& shaderProgram)
-		: m_shaderProgram(shaderProgram.m_shaderProgram)
+		: _shaderProgram(shaderProgram._shaderProgram)
 	{
-		m_isValid = true;
+		_isValid = true;
 	}
 
+<<<<<<< HEAD
 	/*!*********************************************************************************************************************
 	\brief Bind this program state.
 	***********************************************************************************************************************/
@@ -846,32 +1116,34 @@ public:
 		}
 		else { reset(device); }
 	}
+=======
+	/// <summary>Bind this program state.</summary>
+	void bind(IGraphicsContext& device);
+>>>>>>> 1776432f... 4.3
 
-	/*!*********************************************************************************************************************
-	\brief Return native handle.
-	***********************************************************************************************************************/
-	native::HPipeline_& getNativeObject() { return *m_shaderProgram; }
+	/// <summary>Set this program state.</summary>
+	void set(IGraphicsContext& device) { bind(device); }
 
-	/*!*********************************************************************************************************************
-	\brief Return a default prgram state.
-	***********************************************************************************************************************/
+	/// <summary>Return a default prgram state.</summary>
 	PipelineState::ptr_type createDefault()const { return new ComputeShaderProgramState(); }
 
-	/*!*********************************************************************************************************************
-	\brief Return clone of this program state.
-	***********************************************************************************************************************/
+	/// <summary>Return clone of this program state.</summary>
 	PipelineState::ptr_type createClone()const { return new ComputeShaderProgramState(*this); }
 
+<<<<<<< HEAD
 	/*!*********************************************************************************************************************
 	\brief Return this state type.
 	***********************************************************************************************************************/
+=======
+	/// <summary>Return this state type.</summary>
+>>>>>>> 1776432f... 4.3
 	impl::GraphicsStateType getStateType() const { return impl::GraphicsStateType::ShaderProgram; }
 
-	bool operator==(const ComputeShaderProgramState& rhs)const { return (m_shaderProgram == rhs.m_shaderProgram); }
+	bool operator==(const ComputeShaderProgramState& rhs)const { return (_shaderProgram == rhs._shaderProgram); }
 	bool operator!=(const ComputeShaderProgramState& rhs)const { return !(*this == rhs); }
 	void generate();
-	void destroy();
 
+<<<<<<< HEAD
 	/*!************************************************************************************************************
 	\brief	Return the api program object.
 	***************************************************************************************************************/
@@ -903,9 +1175,84 @@ public:
 private:
 	native::HPipeline m_shaderProgram;
 	void setDefault(IGraphicsContext& device) { }
+=======
+	/// <summary>Return the api program object.</summary>
+	const native::HPipeline& get() const { return _shaderProgram; }
+
+	/// <summary>Return the api program object.</summary>
+	native::HPipeline& get() { return _shaderProgram; }
+
+	native::HPipeline _shaderProgram;
 };
 
+
+class DepthBiasState : public impl::GraphicsPipelineImplState
+{
+public:
+	DepthBiasState(bool enableDepthBias = false, float32 depthBiasClamp = 0.f, float32 depthBiasConstantFactor = 0.f,
+	               float32 depthBiasSlopeFactor = 0.f): _enableDepthBias(enableDepthBias), _depthBiasClamp(depthBiasClamp),
+		_depthBiasConstantFactor(depthBiasConstantFactor), _depthBiasSlopeFactor(depthBiasSlopeFactor) {}
+
+	DepthBiasState(const pipelineCreation::RasterStateCreateParam& state) :
+		_enableDepthBias(state.isDepthBiasEnabled()), _depthBiasClamp(state.getDepthBiasClamp()),
+		_depthBiasConstantFactor(state.getDepthBiasConstantFactor()), _depthBiasSlopeFactor(state.getDepthBiasSlopeFactor()) {}
+
+
+	impl::PipelineState::ptr_type createDefault() const { return new DepthBiasState(); }
+	impl::PipelineState::ptr_type createClone() const
+	{
+		return new DepthBiasState(_enableDepthBias, _depthBiasClamp, _depthBiasConstantFactor, _depthBiasSlopeFactor);
+	}
+	impl::GraphicsStateType getStateType() const { return impl::GraphicsStateType::DepthBias; }
+	bool operator==(const DepthBiasState& rhs)const
+	{
+		return (!_enableDepthBias && !rhs._enableDepthBias) || (
+		         _enableDepthBias == rhs._enableDepthBias &&
+		         _depthBiasClamp == rhs._depthBiasClamp &&
+		         _depthBiasConstantFactor == rhs._depthBiasConstantFactor &&
+		         _depthBiasSlopeFactor == rhs._depthBiasSlopeFactor);
+	}
+	bool operator!=(const DepthBiasState& rhs)const { return !(*this == rhs); }
+	void set(IGraphicsContext& device)
+	{
+		commitState(device, _enableDepthBias, _depthBiasClamp, _depthBiasConstantFactor, _depthBiasSlopeFactor);
+	}
+	void reset(IGraphicsContext& device)
+	{
+		_enableDepthBias = false;
+		_depthBiasClamp = 0.f;
+		_depthBiasConstantFactor = 0.f;
+		_depthBiasSlopeFactor = 0.f;
+	}
+	void unset(IGraphicsContext& device) { if (_parent) { _parent->set(device); } else { setDefault(device); } }
+	void commitState(IGraphicsContext& device, bool enable, float32 clamp, float32 constantFactor, float32 slopeFactor);
+	void setDefault(IGraphicsContext& device) { commitState(device, false, 0.f, 0.f, 0.f); }
+
+	bool _enableDepthBias;
+	float32 _depthBiasClamp;
+	float32 _depthBiasConstantFactor;
+	float32 _depthBiasSlopeFactor;
+>>>>>>> 1776432f... 4.3
+};
+
+
+}
+
+inline const native::HPipeline_& native_cast(const gles::GraphicsShaderProgramState& object)
+{
+	return *object._shaderProgram;
+}
+inline native::HPipeline_& native_cast(gles::GraphicsShaderProgramState& object)
+{
+	return *object._shaderProgram;
+}
+inline const native::HPipeline_& native_cast(const gles::ComputeShaderProgramState& object)
+{
+	return *object._shaderProgram;
+}
+inline native::HPipeline_& native_cast(gles::ComputeShaderProgramState& object)
+{
+	return *object._shaderProgram;
 }
 }
 }
-//!\endcond

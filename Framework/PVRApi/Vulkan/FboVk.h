@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRApi/Vulkan/FboVk.h
 \author       PowerVR by Imagination, Developer Technology Team
@@ -5,6 +6,14 @@
 \brief        Vulkan implementation of the PVRApi Fbo (Frame Buffer Object).
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
+=======
+/*!
+\brief Vulkan implementation of the PVRApi Fbo (Frame Buffer Object).
+\file PVRApi/Vulkan/FboVk.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 
 #pragma once
 #include "PVRApi/ApiObjects/Fbo.h"
@@ -14,12 +23,11 @@
 namespace pvr {
 namespace api {
 namespace vulkan {
-/*!*********************************************************************************************************************
-\brief Vulkan implementation of the Fbo (Framebuffer object) class.
-***********************************************************************************************************************/
+/// <summary>Vulkan implementation of the Fbo (Framebuffer object) class.</summary>
 class FboVk_ : public impl::Fbo_, public native::HFbo_
 {
 public:
+<<<<<<< HEAD
 	/*!*********************************************************************************************************************
 	\brief  ctor. Construct a new FBO on the provided context.
 	***********************************************************************************************************************/
@@ -40,22 +48,32 @@ public:
 	/*!*
 	\brief Destroy this object, release its resources.
 	 */
+=======
+	/// <summary>ctor. Construct a new FBO on the provided context.</summary>
+	FboVk_(const GraphicsContext& context);
+
+    /// <summary>Destructor.</summary>
+    ~FboVk_();
+
+    /// <summary>Initialize this FBO with the provided create param</summary>
+    /// <param name="desc">Fbo create param</param>
+    /// <returns>Return true on success</returns>
+	bool init(const FboCreateParam& desc);
+
+	/// <summary>Destroy this object, release its resources.</summary>
+>>>>>>> 1776432f... 4.3
 	void destroy();
 
 };
 
-/*!*********************************************************************************************************************
-\brief Vulkan Default FBO (FBO pointing to the Back Buffer). This object is necessary for rendering anything to the screen.
-       Should be used through the Fbo object. If a GLES direct manipulation is required, use through the DefaultFboVulkan Reference
-	   counted Framework object.
-***********************************************************************************************************************/
+/// <summary>Vulkan Default FBO (FBO pointing to the Back Buffer). This object is necessary for rendering anything to
+/// the screen. Should be used through the Fbo object. If a GLES direct manipulation is required, use through the
+/// DefaultFboVulkan Reference counted Framework object.</summary>
 class DefaultFboVk_ : public FboVk_
 {
 public:
-	/*!*********************************************************************************************************************
-	\brief  Constructor. Construct a new default FBO on the provided context.
-	***********************************************************************************************************************/
-	DefaultFboVk_(GraphicsContext& context);
+	/// <summary>Constructor. Construct a new default FBO on the provided context.</summary>
+	DefaultFboVk_(const GraphicsContext& context);
 
 	//\brief INTERNAL Vulkan: Return true if this is a default fbo (overload).
 	bool isDefault() const { return true; }
@@ -69,4 +87,7 @@ typedef RefCountedResource<FboVk_> FboVk;
 }// namespace pvr
 
 PVR_DECLARE_NATIVE_CAST(Fbo);
+<<<<<<< HEAD
 //!\endcond
+=======
+>>>>>>> 1776432f... 4.3

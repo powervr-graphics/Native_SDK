@@ -7,31 +7,13 @@
 ***********************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 
-using namespace pvr;
-using namespace types;
-utils::VertexBindings_Name VertexBindings[] =
+pvr::utils::VertexBindings_Name VertexBindings[] =
 {
 	{ "POSITION", "inVertex" },
 	{ "NORMAL", "inNormal" },
 	{ "UV0", "inTexCoord" },
-};
-
-enum class QuadAttribute
-{
-	Position,
-	TexCoord
-};
-
-enum class FboPass
-{
-	OnScreen,
-	RenderScene,
-	BlurFbo0,
-	BlurFbo1,
-	Count,
-	NumBlurFbo = 2
 };
 
 enum class Config
@@ -42,46 +24,37 @@ enum class Config
 /**********************************************************************************************
 Consts
 **********************************************************************************************/
-const glm::vec4 LightPos(-1.5f, 0.0f, 10.0f, 0.0);
-const uint32 TexSize = 256;    // Blur render target size (power-of-two)
+const glm::vec4 LightPosition(-1.5f, 0.0f, 10.0f, 0.0);
 
 /**********************************************************************************************
 Content file names
 ***********************************************************************************************/
-const char FragShaderSrcFile[]			= "FragShader_vk.fsh.spv";
-const char VertShaderSrcFile[]			= "VertShader_vk.vsh.spv";
-const char PreBloomFragShaderSrcFile[]	= "PreBloomFragShader_vk.fsh.spv";
-const char PreBloomVertShaderSrcFile[]	= "PreBloomVertShader_vk.vsh.spv";
+const char FragShaderSrcFile[] = "FragShader_vk.fsh.spv";
+const char VertShaderSrcFile[] = "VertShader_vk.vsh.spv";
+const char PreBloomFragShaderSrcFile[] = "PreBloomFragShader_vk.fsh.spv";
+const char PreBloomVertShaderSrcFile[] = "PreBloomVertShader_vk.vsh.spv";
 const char PostBloomFragShaderSrcFile[]	= "PostBloomFragShader_vk.fsh.spv";
 const char PostBloomVertShaderSrcFile[]	= "PostBloomVertShader_vk.vsh.spv";
-const char BlurFragSrcFile[]			= "BlurFragShader_vk.fsh.spv";
-const char BlurVertSrcFile[]			= "BlurVertShader_vk.vsh.spv";
+const char BlurFragSrcFile[] = "BlurFragShader_vk.fsh.spv";
+const char BlurVertSrcFile[] = "BlurVertShader_vk.vsh.spv";
 
 // PVR texture files
-const char BaseTexFile[]				= "Marble.pvr";
+const char BaseTexFile[] = "Marble.pvr";
 // POD scene files
-const char SceneFile[]					= "scene.pod";
+const char SceneFile[] = "scene.pod";
 
 struct Ubo
 {
 	pvr::utils::StructuredMemoryView buffer;
-	api::DescriptorSet sets[static_cast<pvr::uint32>(Config::MaxSwapChain)];
-};
-
-struct OffScreenFbo
-{
-	api::Fbo			fbo;		//	per swapchain
-	Rectanglei			renderArea;
+	pvr::api::DescriptorSet sets[static_cast<pvr::uint32>(Config::MaxSwapChain)];
 };
 
 struct BlurPass
 {
-	std::pair<utils::StructuredMemoryView, api::DescriptorSet> uboPerVert;
-	api::GraphicsPipeline			pipeline;
-	api::DescriptorSet texDescSet[static_cast<pvr::uint32>(Config::MaxSwapChain)]; // per swapchain
-
-	Rectanglei						renderArea;
-	api::Fbo fbo[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+	std::pair<pvr::utils::StructuredMemoryView, pvr::api::DescriptorSet> uboPerVert;
+	pvr::api::GraphicsPipeline pipeline;
+	pvr::api::DescriptorSet texDescSet[static_cast<pvr::uint32>(Config::MaxSwapChain)]; // per swapchain
+	pvr::api::Fbo fbo[static_cast<pvr::uint32>(Config::MaxSwapChain)];
 };
 
 typedef std::pair<pvr::StringHash, pvr::types::GpuDatatypes::Enum> BufferViewMapping;
@@ -91,8 +64,8 @@ struct RenderScenePass
 	Ubo uboDynamic;
 	Ubo uboStatic;
 
-	api::GraphicsPipeline pipeline;
-	Rectanglei renderArea;
+	pvr::api::GraphicsPipeline pipeline;
+	pvr::Rectanglei renderArea;
 	pvr::api::DescriptorSet texDescriptor;
 	static const BufferViewMapping UboDynamicMapping[];
 	enum class UboDynamicElements
@@ -114,18 +87,12 @@ const BufferViewMapping RenderScenePass::UboDynamicMapping[] =
 	BufferViewMapping("LightDirection", pvr::types::GpuDatatypes::vec3),
 };
 
-const BufferViewMapping RenderScenePass::UboStaticMapping[] =
-{
-	BufferViewMapping("Shininess", pvr::types::GpuDatatypes::float32),
-};
-
 struct PreBloomPass
 {
-	api::Fbo fbo[static_cast<pvr::uint32>(Config::MaxSwapChain)];
-	api::GraphicsPipeline			pipeline;
-	api::DescriptorSet				descTex;
-	std::pair<utils::StructuredMemoryView, api::DescriptorSet> descIntensity;
-	api::SecondaryCommandBuffer cmdBuffer[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+	pvr::api::Fbo fbo[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+	pvr::api::GraphicsPipeline pipeline;
+	pvr::api::DescriptorSet descTex;
+	std::pair<pvr::utils::StructuredMemoryView, pvr::api::DescriptorSet> descIntensity;
 
 	Ubo uboDynamic;
 	Ubo uboStatic;
@@ -133,144 +100,126 @@ struct PreBloomPass
 
 struct PostBloomPass
 {
-	api::GraphicsPipeline pipeline;
-	std::pair<api::BufferView, api::DescriptorSet> uboBloomConfig;
-	std::pair<api::BufferView, api::DescriptorSet> uboMVP;
-	api::DescriptorSet texDescSet[static_cast<pvr::uint32>(Config::MaxSwapChain)];//per swapchain
+	pvr::api::GraphicsPipeline pipeline;
+	std::pair<pvr::utils::StructuredMemoryView, pvr::Multi<pvr::api::DescriptorSet>> uboBloomConfig;
+	pvr::api::DescriptorSet texDescSet[static_cast<pvr::uint32>(Config::MaxSwapChain)];//per swapchain
 };
 
 /*!********************************************************************************************
 Class implementing the Shell functions.
 ***********************************************************************************************/
-class VulkanPostProcessing : public Shell
+class VulkanPostProcessing : public pvr::Shell
 {
-	struct DeviceResources
+	struct ApiObjects
 	{
 		// Renderpasses
 		PreBloomPass preBloomPass;
 		RenderScenePass renderScenePass;
 		PostBloomPass postBloomPass;
-		BlurPass blurPass0;
-		BlurPass blurPass1;
+		BlurPass horizontalBlurPass;
+		BlurPass verticalBlurPass;
 
-		api::FboSet onScreenFbo;
+		pvr::api::FboSet onScreenFbo;
 
 		// Textures
-		api::TextureView baseTex;
-		api::TextureView bloomMapTex;
+		pvr::api::TextureView baseTex;
+		pvr::api::TextureView bloomMapTex;
 
 		// Samplers
-		api::Sampler   samplerRepeat;
-		api::Sampler   samplerClamp;
+		pvr::api::Sampler sceneSamplerClamp;
 
 		// Vbos and Ibos
-		std::vector<api::Buffer> vbos;
-		std::vector<api::Buffer> ibos;
-
-		api::Buffer		quadVbo;
-		api::Buffer		quadIbo;
+		std::vector<pvr::api::Buffer> vbos;
+		std::vector<pvr::api::Buffer> ibos;
 
 		// Command Buffers
-		api::CommandBuffer cmdBloom[static_cast<pvr::uint32>(Config::MaxSwapChain)];
-		api::CommandBuffer cmdNoBloom[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+		pvr::api::CommandBuffer mainCmdBloom[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+		pvr::api::CommandBuffer mainCmdNoBloom[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+
+		pvr::api::SecondaryCommandBuffer preBloomCommandBuffer[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+		pvr::api::SecondaryCommandBuffer noBloomCommandBuffer[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+		pvr::api::SecondaryCommandBuffer noBloomUiRendererCommandBuffer[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+		pvr::api::SecondaryCommandBuffer bloomUiRendererCommandBuffer[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+
+		pvr::api::SecondaryCommandBuffer horizontalBlurCommandBuffer[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+		pvr::api::SecondaryCommandBuffer verticalBlurCommandBuffer[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+
+		pvr::api::SecondaryCommandBuffer postBloomCommandBuffer[static_cast<pvr::uint32>(Config::MaxSwapChain)];
 
 		// descriptor layouts
-		api::DescriptorSetLayout texSamplerLayoutFrag;
-		api::DescriptorSetLayout postBloomTexLayoutFrag;
-		api::DescriptorSetLayout uboLayoutVert;
-		api::DescriptorSetLayout uboLayoutFrag;
-		api::DescriptorSetLayout uboLayoutDynamicVert;
+		pvr::api::DescriptorSetLayout texSamplerLayoutFrag;
+		pvr::api::DescriptorSetLayout postBloomTexLayoutFrag;
+		pvr::api::DescriptorSetLayout uboLayoutVert;
+		pvr::api::DescriptorSetLayout uboLayoutFrag;
+		pvr::api::DescriptorSetLayout uboLayoutDynamicVert;
 
 		// 3D Model
-		assets::ModelHandle scene;
+		pvr::assets::ModelHandle scene;
 		// context
 		pvr::GraphicsContext context;
 		// UI Renderer
-		ui::UIRenderer	uiRenderer;
+		pvr::ui::UIRenderer uiRenderer;
 	};
 
-	std::auto_ptr<DeviceResources> apiObj;
+	std::auto_ptr<ApiObjects> _deviceResources;
 
-	float32 bloomIntensity;
-	bool applyBloom;
-	bool drawObject;
-	bool animating;
+	pvr::float32 _bloomIntensity;
+	bool _applyBloom;
+	bool _drawObject;
+	bool _animating;
 
-	float32 rotation;
-	api::AssetStore assetManager;
-	glm::mat4 world;
-	glm::mat4 view;
-	glm::mat4 proj;
+	pvr::float32 _rotation;
+	pvr::utils::AssetStore _assetManager;
+	glm::mat4 _worldMatrix;
+	glm::mat4 _viewMatrix;
+	glm::mat4 _projectionMatrix;
+
+	glm::float32 _blurTexelOffset;
+	pvr::uint32 _blurDimension;
+
 public:
-	VulkanPostProcessing() : bloomIntensity(1.f) {}
+	VulkanPostProcessing() : _bloomIntensity(1.f) {}
 
-	virtual Result initApplication();
-	virtual Result initView();
-	virtual Result releaseView();
-	virtual Result quitApplication();
-	virtual Result renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 
+	void calculateBlurTexelOffsets();
 	bool createDescriptors();
 	bool createPipelines();
-	bool loadVbos();
+	void createBuffers();
+	void createDescriptorSetLayouts();
 	bool createBlurFbo();
-	bool createOnScreenFbo();
 	bool createPreBloomFbo();
-	void recordBloomCommands(api::CommandBuffer& cmd, pvr::uint32 swapchain);
-	void recordNoBloomCommands(api::CommandBuffer& cmd, pvr::uint32 swapchain);
-	void recordCommandUIRenderer(api::CommandBuffer& cmdBuffer, pvr::uint32 swapchain);
+	void recordBloomCommands(pvr::uint32 swapchain);
+	void recordCommandsPreBloom(pvr::uint32 swapchain);
+	void recordNoBloomCommands(pvr::uint32 swapchain);
+	void recordCommandsBlur(pvr::api::SecondaryCommandBuffer& cmdBuffer, BlurPass& pass, pvr::uint32 swapchain);
+	void recordCommandsPostBloom(pvr::uint32 swapchain);
+	void recordCommandUIRenderer(pvr::uint32 swapchain);
+	void recordCommandsNoBloom(pvr::uint32 swapchain);
 	void updateSubtitleText();
-	void updatePostBloomConfig();
-	void drawMesh(int i32NodeIndex, api::CommandBuffer& cmdBuffer);
-	void drawAxisAlignedQuad(api::CommandBuffer& cmdBuffer);
-	void eventMappedInput(SimplifiedInput e);
+	void updatePostBloomConfig(pvr::uint32 swapchain);
+	void drawMesh(int i32NodeIndex, pvr::api::SecondaryCommandBuffer& cmdBuffer);
+	void eventMappedInput(pvr::SimplifiedInput e);
 	void updateAnimation();
-	void updateBloomIntensity(float32 bloomIntensity);
-	void preTransitionFbo(api::CommandBuffer& cmd, api::Fbo& fbo);
-	void postTransitionFbo(api::CommandBuffer& cmd, api::Fbo& fbo);
+	void updateBloomIntensity(pvr::float32 _bloomIntensity);
 	void recordCommandBuffers();
+	void createCommandBuffers(pvr::uint32 swapchain);
 };
 
-void VulkanPostProcessing::recordCommandUIRenderer(api::CommandBuffer& cmdBuffer, pvr::uint32 swapchain)
+void VulkanPostProcessing::calculateBlurTexelOffsets()
 {
-	apiObj->uiRenderer.beginRendering(cmdBuffer);
-	apiObj->uiRenderer.getSdkLogo()->render();
-	apiObj->uiRenderer.getDefaultTitle()->render();
-	apiObj->uiRenderer.getDefaultControls()->render();
-	apiObj->uiRenderer.getDefaultDescription()->render();
-	apiObj->uiRenderer.endRendering();
+	// Texel offset for blur filter kernel
+	_blurTexelOffset = 1.0f / (pvr::float32)_blurDimension;
+	// Altered weights for the faster filter kernel
+	pvr::float32 w1 = 0.0555555f;
+	pvr::float32 w2 = 0.2777777f;
+	pvr::float32 intraTexelOffset = (w1 / (w1 + w2)) * _blurTexelOffset;
+	_blurTexelOffset += intraTexelOffset;
 }
-
-void VulkanPostProcessing::recordNoBloomCommands(api::CommandBuffer& cmd, pvr::uint32 swapchain)
-{
-	//--- draw scene
-	cmd->beginRenderPass(apiObj->onScreenFbo[swapchain], pvr::Rectanglei(0, 0, getWidth(), getHeight()),
-	                     true, glm::vec4(0.00, 0.70, 0.67, 0.f));
-
-	// Simple rotating directional light in model-space
-	// Use simple shader program to render the mask
-	cmd->bindPipeline(apiObj->renderScenePass.pipeline);
-
-	// Bind descriptor Sets
-	// bind the albedo texture
-	cmd->bindDescriptorSet(apiObj->renderScenePass.pipeline->getPipelineLayout(), 0,
-	                       apiObj->renderScenePass.texDescriptor);
-
-	pvr::uint32 uboOffset = apiObj->renderScenePass.uboDynamic.buffer.getAlignedElementArrayOffset(0);
-
-	cmd->bindDescriptorSet(apiObj->renderScenePass.pipeline->getPipelineLayout(), 1,
-	                       apiObj->renderScenePass.uboDynamic.sets[swapchain], &uboOffset, 1);
-
-	cmd->bindDescriptorSet(apiObj->renderScenePass.pipeline->getPipelineLayout(), 2,
-	                       apiObj->renderScenePass.uboStatic.sets[0]);
-	// Draw the mesh
-	drawMesh(0, cmd);
-
-	recordCommandUIRenderer(cmd, swapchain);
-
-	cmd->endRenderPass();
-}
-
 
 /*!********************************************************************************************
 \return	Return true if no error occurred
@@ -279,230 +228,255 @@ void VulkanPostProcessing::recordNoBloomCommands(api::CommandBuffer& cmd, pvr::u
 bool VulkanPostProcessing::createDescriptors()
 {
 	// Load Textures
-	if (!assetManager.getTextureWithCaching(getGraphicsContext(), BaseTexFile, &apiObj->baseTex, NULL))
+	if (!_assetManager.getTextureWithCaching(getGraphicsContext(), BaseTexFile, &_deviceResources->baseTex, NULL))
 	{
 		setExitMessage("FAILED to load texture %s.", BaseTexFile);
 		return false;
 	}
 
-	// sampler repeat
-	assets::SamplerCreateParam samplerDesc;
-	samplerDesc.minificationFilter = SamplerFilter::Linear;
-	samplerDesc.mipMappingFilter = SamplerFilter::Nearest;
-	samplerDesc.magnificationFilter = SamplerFilter::Linear;
-	samplerDesc.wrapModeU = SamplerWrap::Repeat;
-	samplerDesc.wrapModeV = SamplerWrap::Repeat;
-	apiObj->samplerRepeat = apiObj->context->createSampler(samplerDesc);
-
 	// sampler clamp
-	samplerDesc.wrapModeU = SamplerWrap::Clamp;
-	samplerDesc.wrapModeV = SamplerWrap::Clamp;
-	apiObj->samplerClamp = apiObj->context->createSampler(samplerDesc);
-
-	// set up the per swapchains descriptors
-	Ubo& uboDynamic = apiObj->renderScenePass.uboDynamic;
-	uboDynamic.buffer.setupDynamic(apiObj->context, apiObj->scene->getNumMeshNodes(),
-	                               BufferViewTypes::UniformBufferDynamic);
-
-	uboDynamic.buffer.addEntriesPacked(RenderScenePass::UboDynamicMapping,
-	                                   sizeof(RenderScenePass::UboDynamicMapping) /
-	                                   sizeof(RenderScenePass::UboDynamicMapping[0]));
+	pvr::assets::SamplerCreateParam samplerDesc;
+	samplerDesc.minificationFilter = pvr::types::SamplerFilter::Linear;
+	samplerDesc.mipMappingFilter = pvr::types::SamplerFilter::Nearest;
+	samplerDesc.magnificationFilter = pvr::types::SamplerFilter::Linear;
+	samplerDesc.wrapModeU = pvr::types::SamplerWrap::Clamp;
+	samplerDesc.wrapModeV = pvr::types::SamplerWrap::Clamp;
+	_deviceResources->sceneSamplerClamp = _deviceResources->context->createSampler(samplerDesc);
 
 	for (pvr::uint32 i = 0; i < getSwapChainLength(); ++i)
 	{
-		// render pass descriptor set (albedo texture)
+		// render pass descriptor set dynamic ubo
 		{
-			// dynamic ubo
-			pvr::api::Buffer  uboDynamicBuffer = apiObj->context->createBuffer(uboDynamic.buffer.getAlignedTotalSize(),
-			                                     types::BufferBindingUse::UniformBuffer, true);
+			_deviceResources->renderScenePass.uboDynamic.sets[i] = _deviceResources->context->createDescriptorSetOnDefaultPool(_deviceResources->uboLayoutDynamicVert);
 
-			uboDynamic.buffer.connectWithBuffer(i, apiObj->context->createBufferView(uboDynamicBuffer, 0,
-			                                    uboDynamic.buffer.getAlignedElementSize()),
-			                                    BufferViewTypes::UniformBufferDynamic);
+			pvr::api::DescriptorSetUpdate descUpdate;
+			descUpdate.setDynamicUbo(0, _deviceResources->renderScenePass.uboDynamic.buffer.getConnectedBuffer(i));
 
-			uboDynamic.sets[i] = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->uboLayoutDynamicVert);
-			uboDynamic.sets[i]->update(api::DescriptorSetUpdate().setDynamicUbo(0, uboDynamic.buffer.getConnectedBuffer(i)));
+			_deviceResources->renderScenePass.uboDynamic.sets[i]->update(descUpdate);
 		}
 
 		// pre-bloom pass descriptor set
 		{
-			apiObj->preBloomPass.uboDynamic = apiObj->renderScenePass.uboDynamic;
+			_deviceResources->preBloomPass.uboDynamic = _deviceResources->renderScenePass.uboDynamic;
 		}
 
-		// blur pass0 descriptor set (blur pass1 texture for the shader read)
+		// horizontal blur descriptor set
 		{
-			apiObj->blurPass0.texDescSet[i] = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->texSamplerLayoutFrag);
-			apiObj->blurPass0.texDescSet[i]->update(pvr::api::DescriptorSetUpdate().setCombinedImageSampler(0,
-			                                        apiObj->preBloomPass.fbo[i]->getColorAttachment(1), apiObj->samplerClamp));
+			_deviceResources->horizontalBlurPass.texDescSet[i] = _deviceResources->context->createDescriptorSetOnDefaultPool(_deviceResources->texSamplerLayoutFrag);
+
+			pvr::api::DescriptorSetUpdate descUpdate;
+			descUpdate.setCombinedImageSampler(0, _deviceResources->preBloomPass.fbo[i]->getColorAttachment(1), _deviceResources->sceneSamplerClamp);
+
+			_deviceResources->horizontalBlurPass.texDescSet[i]->update(descUpdate);
 		}
 
-		// blur pass1 descriptor set (blur pass1 texture for the shader read)
+		// vertical blur pass descriptor set
 		{
-			apiObj->blurPass1.texDescSet[i] = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->texSamplerLayoutFrag);
-			apiObj->blurPass1.texDescSet[i]->update(pvr::api::DescriptorSetUpdate().setCombinedImageSampler(0,
-			                                        apiObj->blurPass0.fbo[i]->getColorAttachment(0), apiObj->samplerClamp));
+			_deviceResources->verticalBlurPass.texDescSet[i] = _deviceResources->context->createDescriptorSetOnDefaultPool(_deviceResources->texSamplerLayoutFrag);
+
+			pvr::api::DescriptorSetUpdate descUpdate;
+			descUpdate.setCombinedImageSampler(0, _deviceResources->horizontalBlurPass.fbo[i]->getColorAttachment(0), _deviceResources->sceneSamplerClamp);
+			_deviceResources->verticalBlurPass.texDescSet[i]->update(descUpdate);
 		}
 
-		// post bloom
+		// post bloom descriptor set
 		{
-			// tex-sampler descriptor
+			_deviceResources->postBloomPass.texDescSet[i] = _deviceResources->context->createDescriptorSetOnDefaultPool(_deviceResources->postBloomTexLayoutFrag);
+
 			pvr::api::DescriptorSetUpdate descSetUpdate;
-			descSetUpdate.setCombinedImageSampler(0,
-			                                      apiObj->preBloomPass.fbo[i]->getColorAttachment(0),
-			                                      apiObj->samplerClamp);
-			descSetUpdate.setCombinedImageSampler(1,
-			                                      apiObj->blurPass1.fbo[i]->getColorAttachment(0),
-			                                      apiObj->samplerClamp);
-			apiObj->postBloomPass.texDescSet[i] =
-			  apiObj->context->createDescriptorSetOnDefaultPool(apiObj->postBloomTexLayoutFrag);
+			descSetUpdate.setCombinedImageSampler(0, _deviceResources->preBloomPass.fbo[i]->getColorAttachment(0), _deviceResources->sceneSamplerClamp);
+			descSetUpdate.setCombinedImageSampler(1, _deviceResources->verticalBlurPass.fbo[i]->getColorAttachment(0), _deviceResources->sceneSamplerClamp);
 
-			apiObj->postBloomPass.texDescSet[i]->update(descSetUpdate);
+			//descSetUpdate.setCombinedImageSampler(1, _deviceResources->horizontalBlurPass.fbo[i]->getColorAttachment(0), _deviceResources->sceneSamplerClamp);
+			//descSetUpdate.setCombinedImageSampler(1, _deviceResources->preBloomPass.fbo[i]->getColorAttachment(1), _deviceResources->sceneSamplerClamp);
+
+			_deviceResources->postBloomPass.texDescSet[i]->update(descSetUpdate);
 		}
-	}// next swapchain
+
+		// pre bloom pass
+		{
+			// create the intensity descriptor
+			_deviceResources->preBloomPass.descIntensity.second = _deviceResources->context->createDescriptorSetOnDefaultPool(_deviceResources->uboLayoutFrag);
+
+			pvr::api::DescriptorSetUpdate descSetUpdate;
+			descSetUpdate.setUbo(0, _deviceResources->preBloomPass.descIntensity.first.getConnectedBuffer(0));
+
+			_deviceResources->preBloomPass.descIntensity.second->update(descSetUpdate);
+		}
+
+		// bloom config
+		{
+			_deviceResources->postBloomPass.uboBloomConfig.second.add(_deviceResources->context->createDescriptorSetOnDefaultPool(_deviceResources->uboLayoutFrag));
+
+			pvr::api::DescriptorSetUpdate descUpdate;
+			descUpdate.setUbo(0, _deviceResources->postBloomPass.uboBloomConfig.first.getConnectedBuffer(i));
+
+			_deviceResources->postBloomPass.uboBloomConfig.second[i]->update(descUpdate);
+		}
+	}
+
 	// set up the render scene pass static descriptors
 	{
-		apiObj->renderScenePass.uboStatic.buffer.setupArray(apiObj->context, 1, BufferViewTypes::UniformBuffer);
-		apiObj->renderScenePass.uboStatic.buffer.addEntriesPacked(RenderScenePass::UboStaticMapping,
-		    sizeof(RenderScenePass::UboStaticMapping) / sizeof(RenderScenePass::UboStaticMapping[0]));
-		apiObj->renderScenePass.uboStatic.buffer.connectWithBuffer(0, apiObj->context->createBufferAndView(sizeof(pvr::float32),
-		    types::BufferBindingUse::UniformBuffer, true), BufferViewTypes::UniformBuffer);
-		apiObj->renderScenePass.uboStatic.sets[0] = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->uboLayoutVert);
+		{
+			_deviceResources->renderScenePass.uboStatic.sets[0] = _deviceResources->context->createDescriptorSetOnDefaultPool(_deviceResources->uboLayoutVert);
 
-		apiObj->renderScenePass.uboStatic.sets[0]->update(api::DescriptorSetUpdate().setUbo(0,
-		    apiObj->renderScenePass.uboStatic.buffer.getConnectedBuffer(0)));
+			pvr::api::DescriptorSetUpdate descSetUpdate;
+			descSetUpdate.setUbo(0, _deviceResources->renderScenePass.uboStatic.buffer.getConnectedBuffer(0));
+			_deviceResources->renderScenePass.uboStatic.sets[0]->update(descSetUpdate);
+		}
 
-		// update the buffer once
-		apiObj->renderScenePass.uboStatic.buffer.map(0, MapBufferFlags::Write);
-		apiObj->renderScenePass.uboStatic.buffer.setValue(0, .6f);
-		apiObj->renderScenePass.uboStatic.buffer.unmap(0);
+		{
+			_deviceResources->renderScenePass.texDescriptor = _deviceResources->context->createDescriptorSetOnDefaultPool(_deviceResources->texSamplerLayoutFrag);
 
-		api::DescriptorSetUpdate descSetUpdate;
-		descSetUpdate.setCombinedImageSampler(0, apiObj->baseTex, apiObj->samplerClamp);
-		apiObj->renderScenePass.texDescriptor = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->texSamplerLayoutFrag);
-		apiObj->renderScenePass.texDescriptor->update(descSetUpdate);
-	}
+			pvr::api::DescriptorSetUpdate descSetUpdate;
+			descSetUpdate.setCombinedImageSampler(0, _deviceResources->baseTex, _deviceResources->sceneSamplerClamp);
 
-	api::DescriptorSetUpdate descSetUpdate;
-	// pre bloom pass
-	{
-		// create the intensity descriptor
-		apiObj->preBloomPass.descIntensity.first.setupArray(apiObj->context, 1, BufferViewTypes::UniformBuffer);
-		apiObj->preBloomPass.descIntensity.first.addEntryPacked("BloomIntensity", GpuDatatypes::float32);
-		apiObj->preBloomPass.descIntensity.first.connectWithBuffer(0, apiObj->context->createBufferAndView(sizeof(pvr::float32),
-		    types::BufferBindingUse::UniformBuffer, true), BufferViewTypes::UniformBuffer);
-		apiObj->preBloomPass.descIntensity.second = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->uboLayoutFrag);
-		descSetUpdate.setUbo(0, apiObj->preBloomPass.descIntensity.first.getConnectedBuffer(0));
-		apiObj->preBloomPass.descIntensity.second->update(descSetUpdate);
-
-		// update the initial bloom intensity
-		apiObj->preBloomPass.descIntensity.first.map(0, types::MapBufferFlags::Write);
-		apiObj->preBloomPass.descIntensity.first.setValue(0, 1.f);
-		apiObj->preBloomPass.descIntensity.first.unmap(0);
+			_deviceResources->renderScenePass.texDescriptor->update(descSetUpdate);
+		}
 
 		// copy the texture descriptor from the render scene pass
-		apiObj->preBloomPass.uboStatic = apiObj->renderScenePass.uboStatic;
-		apiObj->preBloomPass.descTex = apiObj->renderScenePass.texDescriptor;
+		_deviceResources->preBloomPass.uboStatic = _deviceResources->renderScenePass.uboStatic;
+		_deviceResources->preBloomPass.descTex = _deviceResources->renderScenePass.texDescriptor;
 	}
 
-	// Choosing Gaussian kernel weights row index 8 (1, 8, 28, 56, 70, 56, 28, 8, 1) (total 256)
-	// ignore first and second weighting - reduce total weight by 18 = 238 to avoid darkening image through repeated blurring
-	// Original Weightings
-	//		(28, 56, 70, 56, 28) - (total 238)
-	//		28 / 238 = 0.11764705882352941176470588235294
-	//		56 / 238 = 0.23529411764705882352941176470588
-	//		70 / 238 = 0.29411764705882352941176470588235
-	//		56 / 238 = 0.23529411764705882352941176470588
-	//		28 / 238 = 0.11764705882352941176470588235294
-	// Original Offsets:
-	//		2, 1, 0, 1, 2
-	// Formulas used:
-	//		Weight(t1,t2) = weight(t1) + weight(t2)
-	//		offset(t1,t2) = (offset(t1) * weight(t1) + offset(t2) * weight(t2)) / weight(t1,t2)
-	// Calculation:
-	//		Weight(0) = 0.11764705882352941176470588235294 + 0.23529411764705882352941176470588 =
-	//			0.35294117647058823529411764705882
-	//		Weight(1) = 0.23529411764705882352941176470588 + 0.29411764705882352941176470588235 =
-	//			0.52941176470588235294117647058823
-	//
-	//		offset(0) = ((0.11764705882352941176470588235294 * 2) + (0.23529411764705882352941176470588)) /
-	//												0.35294117647058823529411764705882 =
-	//		offset(0) = 1.3333333333333333333333333333333
-	//
-	//		offset(1) = 0.0
-
-	// Texel offset for blur filter kernel
-	float32 texelOffset = 1.0f / (pvr::float32)TexSize;
-
-	// Altered weights for the faster filter kernel
-	pvr::float32 intraTexelOffset = 1.333333f * texelOffset;
-	texelOffset += intraTexelOffset;
-
-	// blur pass0 (horizontal)
+	// blur pass (horizontal)
 	{
-		apiObj->blurPass0.uboPerVert.first.setupArray(apiObj->context, 1, BufferViewTypes::UniformBuffer);
-		apiObj->blurPass0.uboPerVert.first.addEntryPacked("TexelOffsetX", GpuDatatypes::float32);
-		apiObj->blurPass0.uboPerVert.first.addEntryPacked("TexelOffsetY", GpuDatatypes::float32);
-		apiObj->blurPass0.uboPerVert.first.connectWithBuffer(0, apiObj->context->createBufferAndView(
-		      apiObj->blurPass0.uboPerVert.first.getAlignedTotalSize(), types::BufferBindingUse::UniformBuffer, true),
-		    BufferViewTypes::UniformBuffer);
+		_deviceResources->horizontalBlurPass.uboPerVert.second = _deviceResources->context->createDescriptorSetOnDefaultPool(_deviceResources->uboLayoutVert);
 
-		apiObj->blurPass0.uboPerVert.second = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->uboLayoutVert);
-		apiObj->blurPass0.uboPerVert.second->update(api::DescriptorSetUpdate().setUbo(0,
-		    apiObj->blurPass0.uboPerVert.first.getConnectedBuffer(0)));
+		pvr::api::DescriptorSetUpdate descUpdate;
+		descUpdate.setUbo(0, _deviceResources->horizontalBlurPass.uboPerVert.first.getConnectedBuffer(0));
 
-		// set the const values
-		apiObj->blurPass0.uboPerVert.first.map(0, types::MapBufferFlags::Write);
-		apiObj->blurPass0.uboPerVert.first.setValue(0, texelOffset);
-		apiObj->blurPass0.uboPerVert.first.setValue(1, 0.f);
-		apiObj->blurPass0.uboPerVert.first.unmap(0);
+		_deviceResources->horizontalBlurPass.uboPerVert.second->update(descUpdate);
 	}
 
 	// blur pass1 (vertical)
 	{
-		apiObj->blurPass1.uboPerVert.first.setupArray(apiObj->context, 1, BufferViewTypes::UniformBuffer);
-		apiObj->blurPass1.uboPerVert.first.addEntryPacked("TexelOffsetX", GpuDatatypes::float32);
-		apiObj->blurPass1.uboPerVert.first.addEntryPacked("TexelOffsetY", GpuDatatypes::float32);
-		apiObj->blurPass1.uboPerVert.first.connectWithBuffer(0, apiObj->context->createBufferAndView(
-		      apiObj->blurPass1.uboPerVert.first.getAlignedTotalSize(), types::BufferBindingUse::UniformBuffer, true),
-		    BufferViewTypes::UniformBuffer);
+		_deviceResources->verticalBlurPass.uboPerVert.second = _deviceResources->context->createDescriptorSetOnDefaultPool(_deviceResources->uboLayoutVert);
 
-		apiObj->blurPass1.uboPerVert.second = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->uboLayoutVert);
-		apiObj->blurPass1.uboPerVert.second->update(api::DescriptorSetUpdate().setUbo(0,
-		    apiObj->blurPass1.uboPerVert.first.getConnectedBuffer(0)));
+		pvr::api::DescriptorSetUpdate descUpdate;
+		descUpdate.setUbo(0, _deviceResources->verticalBlurPass.uboPerVert.first.getConnectedBuffer(0));
+
+		_deviceResources->verticalBlurPass.uboPerVert.second->update(descUpdate);
+	}
+
+	return true;
+}
+
+void VulkanPostProcessing::createBuffers()
+{
+	// dynamic ubos
+	{
+		_deviceResources->renderScenePass.uboDynamic.buffer.addEntriesPacked(RenderScenePass::UboDynamicMapping,
+		    sizeof(RenderScenePass::UboDynamicMapping) / sizeof(RenderScenePass::UboDynamicMapping[0]));
+
+		_deviceResources->renderScenePass.uboDynamic.buffer.finalize(_deviceResources->context,
+		    _deviceResources->scene->getNumMeshNodes(), pvr::types::BufferBindingUse::UniformBuffer, true, false);
+
+		_deviceResources->renderScenePass.uboDynamic.buffer.createConnectedBuffers(getSwapChainLength(), _deviceResources->context);
+	}
+
+	// static ubos
+	{
+		_deviceResources->renderScenePass.uboStatic.buffer.addEntryPacked("Shininess", pvr::types::GpuDatatypes::float32);
+		_deviceResources->renderScenePass.uboStatic.buffer.finalize(_deviceResources->context, 1, pvr::types::BufferBindingUse::UniformBuffer, false, false);
+		_deviceResources->renderScenePass.uboStatic.buffer.createConnectedBuffer(0, _deviceResources->context);
+
+		// update the buffer once
+		_deviceResources->renderScenePass.uboStatic.buffer.map(0, pvr::types::MapBufferFlags::Write);
+		_deviceResources->renderScenePass.uboStatic.buffer.setValue("Shininess", .6f);
+		_deviceResources->renderScenePass.uboStatic.buffer.unmap(0);
+	}
+
+	// bloom intensity buffer
+	{
+		_deviceResources->preBloomPass.descIntensity.first.addEntryPacked("BloomIntensity", pvr::types::GpuDatatypes::float32);
+		_deviceResources->preBloomPass.descIntensity.first.finalize(_deviceResources->context, 1, pvr::types::BufferBindingUse::UniformBuffer, false, false);
+		_deviceResources->preBloomPass.descIntensity.first.createConnectedBuffer(0, _deviceResources->context);
+
+		// update the initial bloom intensity
+		_deviceResources->preBloomPass.descIntensity.first.map(0, pvr::types::MapBufferFlags::Write);
+		_deviceResources->preBloomPass.descIntensity.first.setValue("BloomIntensity", 1.f);
+		_deviceResources->preBloomPass.descIntensity.first.unmap(0);
+	}
+
+	// blur pass (horizontal)
+	{
+		_deviceResources->horizontalBlurPass.uboPerVert.first.addEntryPacked("TexelOffsetX", pvr::types::GpuDatatypes::float32);
+		_deviceResources->horizontalBlurPass.uboPerVert.first.addEntryPacked("TexelOffsetY", pvr::types::GpuDatatypes::float32);
+		_deviceResources->horizontalBlurPass.uboPerVert.first.finalize(_deviceResources->context, 1, pvr::types::BufferBindingUse::UniformBuffer, false, false);
+		_deviceResources->horizontalBlurPass.uboPerVert.first.createConnectedBuffer(0, _deviceResources->context);
 
 		// set the const values
-		apiObj->blurPass1.uboPerVert.first.map(0, types::MapBufferFlags::Write);
-		apiObj->blurPass1.uboPerVert.first.setValue(0, 0);
-		apiObj->blurPass1.uboPerVert.first.setValue(1, texelOffset);
-		apiObj->blurPass1.uboPerVert.first.unmap(0);
+		_deviceResources->horizontalBlurPass.uboPerVert.first.map(0, pvr::types::MapBufferFlags::Write);
+		_deviceResources->horizontalBlurPass.uboPerVert.first.setValue("TexelOffsetX", _blurTexelOffset);
+		_deviceResources->horizontalBlurPass.uboPerVert.first.setValue("TexelOffsetY", 0.f);
+		_deviceResources->horizontalBlurPass.uboPerVert.first.unmap(0);
 	}
 
-	// post bloom pass
+	// blur pass (vertical)
 	{
-		apiObj->postBloomPass.uboBloomConfig.first = apiObj->context->createBufferAndView(sizeof(pvr::float32) * 2,
-		    types::BufferBindingUse::UniformBuffer, true);
-		apiObj->postBloomPass.uboBloomConfig.second = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->uboLayoutFrag);
+		_deviceResources->verticalBlurPass.uboPerVert.first.addEntryPacked("TexelOffsetX", pvr::types::GpuDatatypes::float32);
+		_deviceResources->verticalBlurPass.uboPerVert.first.addEntryPacked("TexelOffsetY", pvr::types::GpuDatatypes::float32);
+		_deviceResources->verticalBlurPass.uboPerVert.first.finalize(_deviceResources->context, 1, pvr::types::BufferBindingUse::UniformBuffer, false, false);
+		_deviceResources->verticalBlurPass.uboPerVert.first.createConnectedBuffer(0, _deviceResources->context);
 
-		descSetUpdate.setUbo(0, apiObj->postBloomPass.uboBloomConfig.first);
-
-		apiObj->postBloomPass.uboBloomConfig.second->update(descSetUpdate);
-
-		pvr::float32 data[] = {1.0f, 1.0f};
-		apiObj->postBloomPass.uboBloomConfig.first->update(data, 0, apiObj->postBloomPass.uboBloomConfig.first->getRange());
-
-		// ubo mvp
-		apiObj->postBloomPass.uboMVP.first = apiObj->context->createBufferAndView(sizeof(glm::mat4),
-		                                     types::BufferBindingUse::UniformBuffer, true);
-
-		apiObj->postBloomPass.uboMVP.second = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->uboLayoutVert);
-
-		descSetUpdate.clear().setUbo(0, apiObj->postBloomPass.uboMVP.first);
-		apiObj->postBloomPass.uboMVP.second->update(descSetUpdate);
-
-		glm::mat4 mvp(1.f);
-		apiObj->postBloomPass.uboMVP.first->update(glm::value_ptr(mvp), 0, sizeof(mvp));
+		// set the const values
+		_deviceResources->verticalBlurPass.uboPerVert.first.map(0, pvr::types::MapBufferFlags::Write);
+		_deviceResources->verticalBlurPass.uboPerVert.first.setValue("TexelOffsetX", 0);
+		_deviceResources->verticalBlurPass.uboPerVert.first.setValue("TexelOffsetY", _blurTexelOffset);
+		_deviceResources->verticalBlurPass.uboPerVert.first.unmap(0);
 	}
-	return true;
+
+	// post bloom config
+	{
+		_deviceResources->postBloomPass.uboBloomConfig.first.addEntryPacked("sTexFactor", pvr::types::GpuDatatypes::float32);
+		_deviceResources->postBloomPass.uboBloomConfig.first.addEntryPacked("sBlurTexFactor", pvr::types::GpuDatatypes::float32);
+		_deviceResources->postBloomPass.uboBloomConfig.first.finalize(_deviceResources->context, 1, pvr::types::BufferBindingUse::UniformBuffer, false, false);
+		_deviceResources->postBloomPass.uboBloomConfig.first.createConnectedBuffers(getSwapChainLength(), _deviceResources->context);
+
+		// set the const values
+		for (pvr::uint32 i = 0; i < getSwapChainLength(); ++i)
+		{
+			_deviceResources->postBloomPass.uboBloomConfig.first.map(i, pvr::types::MapBufferFlags::Write);
+			_deviceResources->postBloomPass.uboBloomConfig.first.setValue("sTexFactor", 1.0f);
+			_deviceResources->postBloomPass.uboBloomConfig.first.setValue("sBlurTexFactor", 1.0f);
+			_deviceResources->postBloomPass.uboBloomConfig.first.unmap(i);
+		}
+	}
+}
+
+void VulkanPostProcessing::createDescriptorSetLayouts()
+{
+	{
+		pvr::api::DescriptorSetLayoutCreateParam layoutDesc;
+		layoutDesc.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
+		_deviceResources->texSamplerLayoutFrag = _deviceResources->context->createDescriptorSetLayout(layoutDesc);
+	}
+
+	{
+		pvr::api::DescriptorSetLayoutCreateParam layoutDesc;
+		layoutDesc.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
+		layoutDesc.setBinding(1, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
+		_deviceResources->postBloomTexLayoutFrag = _deviceResources->context->createDescriptorSetLayout(layoutDesc);
+	}
+
+	{
+		pvr::api::DescriptorSetLayoutCreateParam layoutDesc;
+		layoutDesc.setBinding(0, pvr::types::DescriptorType::UniformBuffer, 1, pvr::types::ShaderStageFlags::Vertex);
+		_deviceResources->uboLayoutVert = _deviceResources->context->createDescriptorSetLayout(layoutDesc);
+	}
+
+	{
+		pvr::api::DescriptorSetLayoutCreateParam layoutDesc;
+		layoutDesc.setBinding(0, pvr::types::DescriptorType::UniformBuffer, 1, pvr::types::ShaderStageFlags::Fragment);
+		_deviceResources->uboLayoutFrag = _deviceResources->context->createDescriptorSetLayout(layoutDesc);
+	}
+
+	{
+		pvr::api::DescriptorSetLayoutCreateParam layoutDesc;
+		layoutDesc.setBinding(0, pvr::types::DescriptorType::UniformBufferDynamic, 1, pvr::types::ShaderStageFlags::Vertex);
+		_deviceResources->uboLayoutDynamicVert = _deviceResources->context->createDescriptorSetLayout(layoutDesc);
+	}
 }
 
 /*!********************************************************************************************
@@ -511,86 +485,39 @@ bool VulkanPostProcessing::createDescriptors()
 ***********************************************************************************************/
 bool VulkanPostProcessing::createPipelines()
 {
-	{
-		api::DescriptorSetLayoutCreateParam layoutDesc;
-		layoutDesc.setBinding(0, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
-		apiObj->texSamplerLayoutFrag = apiObj->context->createDescriptorSetLayout(layoutDesc);
-	}
-
-	{
-		api::DescriptorSetLayoutCreateParam layoutDesc;
-		layoutDesc.setBinding(0, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
-		layoutDesc.setBinding(1, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
-		apiObj->postBloomTexLayoutFrag = apiObj->context->createDescriptorSetLayout(layoutDesc);
-	}
-
-	{
-		api::DescriptorSetLayoutCreateParam layoutDesc;
-		layoutDesc.setBinding(0, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Vertex);
-		apiObj->uboLayoutVert = apiObj->context->createDescriptorSetLayout(layoutDesc);
-	}
-
-	{
-		api::DescriptorSetLayoutCreateParam layoutDesc;
-		layoutDesc.setBinding(0, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Fragment);
-		apiObj->uboLayoutFrag = apiObj->context->createDescriptorSetLayout(layoutDesc);
-	}
-
-	{
-		api::DescriptorSetLayoutCreateParam layoutDesc;
-		layoutDesc.setBinding(0, DescriptorType::UniformBufferDynamic, 1, ShaderStageFlags::Vertex);
-		apiObj->uboLayoutDynamicVert = apiObj->context->createDescriptorSetLayout(layoutDesc);
-	}
-
-	api::GraphicsPipelineCreateParam basePipe;
-
-	// enable backface culling
-	basePipe.rasterizer.setCullFace(pvr::types::Face::Back);
-
-	// set blending states
-	types::BlendingConfig colorAttachemtState;
-	// disable blending
-	colorAttachemtState.blendEnable = false;
-	basePipe.colorBlend.setAttachmentState(0, colorAttachemtState);
-
-	// enable depth testing
-	basePipe.depthStencil.setDepthCompareFunc(ComparisonMode::Less);
-	basePipe.depthStencil.setDepthTestEnable(true);
-	basePipe.depthStencil.setDepthWrite(true);
-
-	api::VertexAttributeInfo quadAttributes[2] =
-	{
-		api::VertexAttributeInfo(static_cast<pvr::uint32>(QuadAttribute::Position),
-		DataType::Float32, 2, 0, "inVertex"),
-		api::VertexAttributeInfo(static_cast<pvr::uint32>(QuadAttribute::TexCoord),
-		DataType::Float32, 2, sizeof(float32) * 2, "inTexCoord")
-	};
-
-	const assets::Mesh& mesh = apiObj->scene->getMesh(0);
+	const pvr::assets::Mesh& mesh = _deviceResources->scene->getMesh(0);
 
 	// create render scene pass pipeline
 	{
-		api::GraphicsPipelineCreateParam basicPipeDesc = basePipe;
-		basicPipeDesc.vertexShader.setShader(apiObj->context->createShader(*getAssetStream(VertShaderSrcFile),
-		                                     ShaderType::VertexShader));
+		pvr::api::GraphicsPipelineCreateParam basicPipeDesc;
 
-		basicPipeDesc.fragmentShader.setShader(apiObj->context->createShader(*getAssetStream(FragShaderSrcFile),
-		                                       ShaderType::FragmentShader));
+		// enable backface culling
+		basicPipeDesc.rasterizer.setCullFace(pvr::types::Face::Back);
+		// disable blending
+		basicPipeDesc.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
 
-		utils::createInputAssemblyFromMesh(mesh, VertexBindings, 3, basicPipeDesc);
+		// enable depth testing
+		basicPipeDesc.depthStencil.setDepthCompareFunc(pvr::types::ComparisonMode::Less);
+		basicPipeDesc.depthStencil.setDepthTestEnable(true);
+		basicPipeDesc.depthStencil.setDepthWrite(true);
+
+		basicPipeDesc.vertexShader.setShader(_deviceResources->context->createShader(*getAssetStream(VertShaderSrcFile), pvr::types::ShaderType::VertexShader));
+		basicPipeDesc.fragmentShader.setShader(_deviceResources->context->createShader(*getAssetStream(FragShaderSrcFile), pvr::types::ShaderType::FragmentShader));
+
+		pvr::utils::createInputAssemblyFromMesh(mesh, VertexBindings, 3, basicPipeDesc);
 
 		// create pipeline layout
-		api::PipelineLayoutCreateParam pipeLayoutInfo;
-		pipeLayoutInfo.addDescSetLayout(apiObj->texSamplerLayoutFrag);
-		pipeLayoutInfo.addDescSetLayout(apiObj->uboLayoutDynamicVert);
-		pipeLayoutInfo.addDescSetLayout(apiObj->uboLayoutVert);
-		basicPipeDesc.pipelineLayout = apiObj->context->createPipelineLayout(pipeLayoutInfo);
+		pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
+		pipeLayoutInfo.addDescSetLayout(_deviceResources->texSamplerLayoutFrag);
+		pipeLayoutInfo.addDescSetLayout(_deviceResources->uboLayoutDynamicVert);
+		pipeLayoutInfo.addDescSetLayout(_deviceResources->uboLayoutVert);
+		basicPipeDesc.pipelineLayout = _deviceResources->context->createPipelineLayout(pipeLayoutInfo);
 
-		basicPipeDesc.renderPass = apiObj->onScreenFbo[0]->getRenderPass();
+		basicPipeDesc.renderPass = _deviceResources->onScreenFbo[0]->getRenderPass();
 		basicPipeDesc.subPass = 0;
-		apiObj->renderScenePass.pipeline = apiObj->context->createGraphicsPipeline(basicPipeDesc);
+		_deviceResources->renderScenePass.pipeline = _deviceResources->context->createGraphicsPipeline(basicPipeDesc);
 
-		if (apiObj->renderScenePass.pipeline.isValid() == false)
+		if (_deviceResources->renderScenePass.pipeline.isValid() == false)
 		{
 			this->setExitMessage("Failed To Create the RenderScenePass Pipeline");
 			return false;
@@ -599,37 +526,39 @@ bool VulkanPostProcessing::createPipelines()
 
 	// create prebloom pass pipeline
 	{
-		api::GraphicsPipelineCreateParam prebloomPipeDesc = basePipe;
+		pvr::api::GraphicsPipelineCreateParam prebloomPipeDesc;
 
-		prebloomPipeDesc.vertexShader.setShader(apiObj->context->createShader(*getAssetStream(PreBloomVertShaderSrcFile),
-		                                        ShaderType::VertexShader));
+		// enable backface culling
+		prebloomPipeDesc.rasterizer.setCullFace(pvr::types::Face::Back);
 
-		prebloomPipeDesc.fragmentShader.setShader(apiObj->context->createShader(*getAssetStream(PreBloomFragShaderSrcFile),
-		    ShaderType::FragmentShader));
+		// enable depth testing
+		prebloomPipeDesc.depthStencil.setDepthCompareFunc(pvr::types::ComparisonMode::Less);
+		prebloomPipeDesc.depthStencil.setDepthTestEnable(true);
+		prebloomPipeDesc.depthStencil.setDepthWrite(true);
 
-		utils::createInputAssemblyFromMesh(mesh, VertexBindings, 3, prebloomPipeDesc);
+		prebloomPipeDesc.vertexShader.setShader(_deviceResources->context->createShader(*getAssetStream(PreBloomVertShaderSrcFile), pvr::types::ShaderType::VertexShader));
+		prebloomPipeDesc.fragmentShader.setShader(_deviceResources->context->createShader(*getAssetStream(PreBloomFragShaderSrcFile), pvr::types::ShaderType::FragmentShader));
 
-		// set blending states
-		types::BlendingConfig colorAttachemtState;
-		// disable blending
-		colorAttachemtState.blendEnable = false;
-		prebloomPipeDesc.colorBlend.setAttachmentState(0, colorAttachemtState);
-		prebloomPipeDesc.colorBlend.setAttachmentState(1, colorAttachemtState);
+		pvr::utils::createInputAssemblyFromMesh(mesh, VertexBindings, 3, prebloomPipeDesc);
+
+		// set blending states - disable blending
+		prebloomPipeDesc.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
+		prebloomPipeDesc.colorBlend.setAttachmentState(1, pvr::types::BlendingConfig());
 
 		// create pipeline layout
-		api::PipelineLayoutCreateParam pipeLayoutInfo;
-		pipeLayoutInfo.addDescSetLayout(apiObj->texSamplerLayoutFrag);
-		pipeLayoutInfo.addDescSetLayout(apiObj->uboLayoutFrag);
-		pipeLayoutInfo.addDescSetLayout(apiObj->uboLayoutDynamicVert);
-		pipeLayoutInfo.addDescSetLayout(apiObj->uboLayoutVert);
+		pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
+		pipeLayoutInfo.addDescSetLayout(_deviceResources->texSamplerLayoutFrag);
+		pipeLayoutInfo.addDescSetLayout(_deviceResources->uboLayoutFrag);
+		pipeLayoutInfo.addDescSetLayout(_deviceResources->uboLayoutDynamicVert);
+		pipeLayoutInfo.addDescSetLayout(_deviceResources->uboLayoutVert);
 
-		prebloomPipeDesc.pipelineLayout = apiObj->context->createPipelineLayout(pipeLayoutInfo);
+		prebloomPipeDesc.pipelineLayout = _deviceResources->context->createPipelineLayout(pipeLayoutInfo);
 
-		prebloomPipeDesc.renderPass = apiObj->preBloomPass.fbo[0]->getRenderPass();
+		prebloomPipeDesc.renderPass = _deviceResources->preBloomPass.fbo[0]->getRenderPass();
 		prebloomPipeDesc.subPass = 0;
 
-		apiObj->preBloomPass.pipeline = apiObj->context->createGraphicsPipeline(prebloomPipeDesc);
-		if (apiObj->preBloomPass.pipeline.isValid() == false)
+		_deviceResources->preBloomPass.pipeline = _deviceResources->context->createGraphicsPipeline(prebloomPipeDesc);
+		if (_deviceResources->preBloomPass.pipeline.isValid() == false)
 		{
 			this->setExitMessage("Failed to Create preBloom pipeline");
 			return false;
@@ -638,39 +567,40 @@ bool VulkanPostProcessing::createPipelines()
 
 	// create Post-Bloom Pipeline
 	{
-		api::GraphicsPipelineCreateParam postbloomPipeDesc;
-		types::BlendingConfig attachmentState(false, BlendFactor::One, BlendFactor::One, BlendOp::Add);
-		postbloomPipeDesc.colorBlend.setAttachmentState(0, attachmentState);
+		pvr::api::GraphicsPipelineCreateParam postbloomPipeDesc;
+
+		// enable back face culling
+		postbloomPipeDesc.rasterizer.setCullFace(pvr::types::Face::Back);
+
+		// set counter clockwise winding order for front faces
+		postbloomPipeDesc.rasterizer.setFrontFaceWinding(pvr::types::PolygonWindingOrder::FrontFaceCCW);
+		postbloomPipeDesc.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
+
 		postbloomPipeDesc.depthStencil.setDepthTestEnable(false);
 		postbloomPipeDesc.depthStencil.setDepthWrite(false);
 
-		postbloomPipeDesc.vertexShader.setShader(apiObj->context->createShader(*getAssetStream(PostBloomVertShaderSrcFile),
-		    ShaderType::VertexShader));
+		postbloomPipeDesc.depthStencil.setStencilTest(false);
 
-		postbloomPipeDesc.fragmentShader.setShader(apiObj->context->createShader(*getAssetStream(PostBloomFragShaderSrcFile),
-		    ShaderType::FragmentShader));
+		postbloomPipeDesc.vertexShader.setShader(_deviceResources->context->createShader(*getAssetStream(PostBloomVertShaderSrcFile), pvr::types::ShaderType::VertexShader));
+		postbloomPipeDesc.fragmentShader.setShader(_deviceResources->context->createShader(*getAssetStream(PostBloomFragShaderSrcFile), pvr::types::ShaderType::FragmentShader));
 
-		postbloomPipeDesc.vertexInput.clear();
-		postbloomPipeDesc.inputAssembler.setPrimitiveTopology(types::PrimitiveTopology::TriangleStrip);
-
-		postbloomPipeDesc.renderPass = apiObj->onScreenFbo[0]->getRenderPass();
+		postbloomPipeDesc.renderPass = _deviceResources->onScreenFbo[0]->getRenderPass();
 		postbloomPipeDesc.subPass = 0;
 
-		postbloomPipeDesc.vertexInput.setInputBinding(0, sizeof(float32) * 4, StepRate::Vertex);
-		postbloomPipeDesc.vertexInput.addVertexAttributes(0, quadAttributes, sizeof(quadAttributes) / sizeof(quadAttributes[0]));
-		postbloomPipeDesc.inputAssembler.setPrimitiveTopology(types::PrimitiveTopology::TriangleList);
+		// setup vertex inputs
+		postbloomPipeDesc.vertexInput.clear();
+		postbloomPipeDesc.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::TriangleStrip);
 
 		// create pipeline layout
-		api::PipelineLayoutCreateParam pipeLayoutInfo;
-		pipeLayoutInfo.addDescSetLayout(apiObj->postBloomTexLayoutFrag);
-		pipeLayoutInfo.addDescSetLayout(apiObj->uboLayoutFrag);
-		pipeLayoutInfo.addDescSetLayout(apiObj->uboLayoutVert);
+		pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
+		pipeLayoutInfo.setDescSetLayout(0, _deviceResources->postBloomTexLayoutFrag);
+		pipeLayoutInfo.setDescSetLayout(1, _deviceResources->uboLayoutFrag);
 
-		postbloomPipeDesc.pipelineLayout = apiObj->context->createPipelineLayout(pipeLayoutInfo);
+		postbloomPipeDesc.pipelineLayout = _deviceResources->context->createPipelineLayout(pipeLayoutInfo);
 
-		apiObj->postBloomPass.pipeline = apiObj->context->createGraphicsPipeline(postbloomPipeDesc);
+		_deviceResources->postBloomPass.pipeline = _deviceResources->context->createGraphicsPipeline(postbloomPipeDesc);
 
-		if (apiObj->postBloomPass.pipeline.isValid() == false)
+		if (_deviceResources->postBloomPass.pipeline.isValid() == false)
 		{
 			this->setExitMessage("Failed to Create postBloom pipeline");
 			return false;
@@ -679,91 +609,50 @@ bool VulkanPostProcessing::createPipelines()
 
 	//   Blur Pipeline
 	{
-		api::GraphicsPipelineCreateParam blurPipeDesc;
+		pvr::api::GraphicsPipelineCreateParam blurPipeDesc;
 
-		// set blending states
-		types::BlendingConfig colorAttachemtState;
-		// disable blending
-		colorAttachemtState.blendEnable = false;
+		// enable back face culling
+		blurPipeDesc.rasterizer.setCullFace(pvr::types::Face::Back);
 
-		blurPipeDesc.colorBlend.setAttachmentState(0, colorAttachemtState);
+		// set counter clockwise winding order for front faces
+		blurPipeDesc.rasterizer.setFrontFaceWinding(pvr::types::PolygonWindingOrder::FrontFaceCCW);
+
+		// set blending states - disable blending
+		blurPipeDesc.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
+
 		blurPipeDesc.depthStencil.setDepthTestEnable(false);
 		blurPipeDesc.depthStencil.setDepthWrite(false);
+		blurPipeDesc.depthStencil.setStencilTest(false);
 
-		blurPipeDesc.vertexShader.setShader(apiObj->context->createShader(*getAssetStream(BlurVertSrcFile),
-		                                    ShaderType::VertexShader));
-		blurPipeDesc.fragmentShader.setShader(apiObj->context->createShader(*getAssetStream(BlurFragSrcFile),
-		                                      ShaderType::FragmentShader));
+		blurPipeDesc.vertexShader.setShader(_deviceResources->context->createShader(*getAssetStream(BlurVertSrcFile), pvr::types::ShaderType::VertexShader));
+		blurPipeDesc.fragmentShader.setShader(_deviceResources->context->createShader(*getAssetStream(BlurFragSrcFile), pvr::types::ShaderType::FragmentShader));
 
+		// setup vertex inputs
 		blurPipeDesc.vertexInput.clear();
+		blurPipeDesc.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::TriangleStrip);
 
-		blurPipeDesc.vertexInput.setInputBinding(0, sizeof(float32) * 4, StepRate::Vertex);
-		blurPipeDesc.vertexInput.addVertexAttributes(0, quadAttributes, sizeof(quadAttributes) / sizeof(quadAttributes[0]));
-		blurPipeDesc.inputAssembler.setPrimitiveTopology(types::PrimitiveTopology::TriangleList);
+		pvr::Rectanglei region(0, 0, _deviceResources->horizontalBlurPass.fbo[0]->getDimensions().x,
+		                       _deviceResources->horizontalBlurPass.fbo[0]->getDimensions().y);
+		blurPipeDesc.viewport.setViewportAndScissor(0, pvr::api::Viewport(region), region, _deviceResources->horizontalBlurPass.fbo[0]->getDimensions());
 
 		// create pipeline layout
-		api::PipelineLayoutCreateParam pipeLayoutInfo;
-		pipeLayoutInfo.addDescSetLayout(apiObj->texSamplerLayoutFrag);
-		pipeLayoutInfo.addDescSetLayout(apiObj->uboLayoutVert);
-		blurPipeDesc.pipelineLayout = apiObj->context->createPipelineLayout(pipeLayoutInfo);
+		pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
+		pipeLayoutInfo.addDescSetLayout(_deviceResources->texSamplerLayoutFrag);
+		pipeLayoutInfo.addDescSetLayout(_deviceResources->uboLayoutVert);
+		blurPipeDesc.pipelineLayout = _deviceResources->context->createPipelineLayout(pipeLayoutInfo);
 
-		blurPipeDesc.renderPass = apiObj->blurPass0.fbo[0]->getRenderPass();
+		blurPipeDesc.renderPass = _deviceResources->horizontalBlurPass.fbo[0]->getRenderPass();
+		blurPipeDesc.subPass = 0;
 
-		pvr::Rectanglei region(0, 0, apiObj->blurPass0.fbo[0]->getDimensions().x,
-		                       apiObj->blurPass0.fbo[0]->getDimensions().y);
+		_deviceResources->horizontalBlurPass.pipeline = _deviceResources->verticalBlurPass.pipeline =
+		      _deviceResources->context->createGraphicsPipeline(blurPipeDesc);
 
-		blurPipeDesc.viewport.setViewportAndScissor(0,  api::Viewport(region), region);
-
-		apiObj->blurPass0.pipeline = apiObj->blurPass1.pipeline =
-		                               apiObj->context->createGraphicsPipeline(blurPipeDesc);
-
-		if (apiObj->blurPass0.pipeline.isValid() == false)
+		if (_deviceResources->horizontalBlurPass.pipeline.isValid() == false)
 		{
 			this->setExitMessage("Failed to Create Blur pipeline");
 			return false;
 		}
 	}
-	return true;
-}
-
-/*!****************************************************************************
-\brief	Loads the mesh data required for this training course into vertex buffer objects
-******************************************************************************/
-bool VulkanPostProcessing::loadVbos()
-{
-	// Load vertex data of all meshes in the scene into VBOs
-	// The meshes have been exported with the "Interleave Vectors" option,
-	// so all data is interleaved in the buffer at pMesh->pInterleaved.
-	// Interleaving data improves the memory access pattern and cache efficiency,
-	// thus it can be read faster by the hardware.
-	utils::appendSingleBuffersFromModel(getGraphicsContext(), *apiObj->scene, apiObj->vbos, apiObj->ibos);
-
-	const float32 halfDim = 1.f;
-	// create quad vertices..
-	// in vulkan the -y is up and the texture origin is top left
-	const float32 afVertexData[] =
-	{
-		-halfDim, -halfDim,	// top left
-		0.0f, 0.0f,			// uv
-		-halfDim, halfDim,	// bottom left
-		0.0f, 1.0f,			// uv
-		halfDim, halfDim,	//  bottom right
-		1.0f, 1.0f,			// uv
-		halfDim, -halfDim,	// top right
-		1.0f, 0.0f,			// uv
-	};
-
-	uint16 indices[] = { 0, 1, 2, 0, 2, 3 };
-	apiObj->quadVbo = apiObj->context->createBuffer(sizeof(afVertexData), BufferBindingUse::VertexBuffer, true);
-	void* mapData = apiObj->quadVbo->map(types::MapBufferFlags::Write, 0, sizeof(afVertexData));
-	memcpy(mapData, afVertexData, sizeof(afVertexData));
-	apiObj->quadVbo->unmap();
-
-	apiObj->quadIbo = apiObj->context->createBuffer(sizeof(indices), BufferBindingUse::IndexBuffer, true);
-	mapData = apiObj->quadIbo->map(types::MapBufferFlags::Write, 0, sizeof(indices));
-	memcpy(mapData, indices, sizeof(afVertexData));
-	apiObj->quadIbo->unmap();
-
 	return true;
 }
 
@@ -775,34 +664,33 @@ bool VulkanPostProcessing::loadVbos()
 		loading meshes, etc.)
 		If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************/
-Result VulkanPostProcessing::initApplication()
+pvr::Result VulkanPostProcessing::initApplication()
 {
+	this->setStencilBitsPerPixel(0);
+
 	// Apply bloom per default
-	applyBloom = true;
-	drawObject = true;
-	animating = true;
-	// Initial number of blur passes, can be changed during runtime
-	rotation = 0.0f;
+	_applyBloom = true;
+	_drawObject = true;
+	_animating = true;
 
-	// Texel offset for blur filter kernel
-	// Altered weights for the faster filter kernel
-	float32 w1 = 0.0555555f;
-	float32 w2 = 0.2777777f;
+	_rotation = 0.0f;
 
-	// Intensity multiplier for the bloom effect
+	_assetManager.init(*this);
+	_deviceResources.reset(new ApiObjects());
+
 	// Load the scene
-	assetManager.init(*this);
-	apiObj.reset(new DeviceResources());
-	if (!assetManager.loadModel(SceneFile, apiObj->scene))
+	if (!_assetManager.loadModel(SceneFile, _deviceResources->scene))
 	{
 		this->setExitMessage("Error: Couldn't load the %s file\n", SceneFile);
-		return Result::NotFound;
+		return pvr::Result::NotFound;
 	}
-	float32 fov;
+
+	// calculate initial view matrix
+	pvr::float32 fov;
 	glm::vec3 from, to, up;
-	apiObj->scene->getCameraProperties(0, fov, from, to, up);
-	view = glm::lookAt(from, to, up);
-	return Result::Success;
+	_deviceResources->scene->getCameraProperties(0, fov, from, to, up);
+	_viewMatrix = glm::lookAt(from, to, up);
+	return pvr::Result::Success;
 }
 
 /*!********************************************************************************************
@@ -810,11 +698,11 @@ Result VulkanPostProcessing::initApplication()
 \brief	Code in quitApplication() will be called by Shell once per run, just before exiting the program.
 quitApplication() will not be called every time the rendering context is lost, only before application exit.
 ***********************************************************************************************/
-Result VulkanPostProcessing::quitApplication()
+pvr::Result VulkanPostProcessing::quitApplication()
 {
 	//Instructs the Asset Manager to free all resources
-	assetManager.releaseAll();
-	return Result::Success;
+	_assetManager.releaseAll();
+	return pvr::Result::Success;
 }
 
 /*!********************************************************************************************
@@ -823,111 +711,144 @@ Result VulkanPostProcessing::quitApplication()
 		in the rendering context. Used to initialize variables that are dependent on the rendering
 		context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************/
-Result VulkanPostProcessing::initView()
+pvr::Result VulkanPostProcessing::initView()
 {
-	apiObj->context = getGraphicsContext();
-	float32 fov = apiObj->scene->getCamera(0).getFOV();
+	_deviceResources->context = getGraphicsContext();
+
+	// Calculates the projection matrix
+	pvr::float32 fov = _deviceResources->scene->getCamera(0).getFOV();
 	bool bRotate = isFullScreen() && isScreenRotated();
 	if (bRotate)
 	{
-		proj = math::perspectiveFov(getApiType(), fov, (float)getHeight(), (float)getWidth(),
-		                            apiObj->scene->getCamera(0).getNear(), apiObj->scene->getCamera(0).getFar(),
-		                            glm::pi<float32>() * .5f);
+		_projectionMatrix = pvr::math::perspectiveFov(getApiType(), fov, (float)getHeight(), (float)getWidth(),
+		                    _deviceResources->scene->getCamera(0).getNear(), _deviceResources->scene->getCamera(0).getFar(),
+		                    glm::pi<pvr::float32>() * .5f);
 	}
 	else
 	{
-		proj = math::perspectiveFov(getApiType(), fov, (float)getWidth(), (float)getHeight(),
-		                            apiObj->scene->getCamera(0).getNear(), apiObj->scene->getCamera(0).getFar());
+		_projectionMatrix = pvr::math::perspectiveFov(getApiType(), fov, (float)getWidth(), (float)getHeight(),
+		                    _deviceResources->scene->getCamera(0).getNear(), _deviceResources->scene->getCamera(0).getFar());
 	}
+
+	_blurDimension = 256;
 
 	//	Initialize VBO data
-	if (!loadVbos()) {  return Result::NotInitialized;  }
+	// Load vertex data of all meshes in the scene into VBOs
+	// The meshes have been exported with the "Interleave Vectors" option,
+	// so all data is interleaved in the buffer at pMesh->pInterleaved.
+	// Interleaving data improves the memory access pattern and cache efficiency,
+	// thus it can be read faster by the hardware.
+	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *_deviceResources->scene, _deviceResources->vbos, _deviceResources->ibos);
 
 	// Create on screen Fbos
-	if (!createOnScreenFbo())
-	{
-		return Result::NotInitialized;
-	}
+	_deviceResources->onScreenFbo = _deviceResources->context->createOnScreenFboSet();
 
 	// Create fbo used for blur pass
 	if (!createBlurFbo())
 	{
-		return Result::NotInitialized;
+		return pvr::Result::NotInitialized;
 	}
 
 	// create Fbo used for the pre bloom pass
 	if (!createPreBloomFbo())
 	{
-		return Result::NotInitialized;
+		return pvr::Result::NotInitialized;
 	}
 
-	//	Load and compile the shaders & link programs
-	if (!createPipelines())
-	{
-		return Result::NotInitialized;
-	}
+	// calculate the texel offsets used in the blurring passes
+	calculateBlurTexelOffsets();
+
+	// create demo buffers
+	createBuffers();
+
+	// create the descriptor set layouts and pipeline layouts
+	createDescriptorSetLayouts();
 
 	//	Load textures
 	if (!createDescriptors())
 	{
-		return Result::NotInitialized;
+		return pvr::Result::NotInitialized;
 	}
 
-	if (apiObj->uiRenderer.init(apiObj->onScreenFbo[0]->getRenderPass(), 0) != Result::Success)
+	// create the graphics pipelines used throughout the demo
+	if (!createPipelines())
+	{
+		return pvr::Result::NotInitialized;
+	}
+
+	if (_deviceResources->uiRenderer.init(_deviceResources->onScreenFbo[0]->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		setExitMessage("Error: Failed to initialize the UIRenderer\n");
-		return Result::NotInitialized;
+		return pvr::Result::NotInitialized;
 	}
 
-	apiObj->uiRenderer.getDefaultTitle()->setText("PostProcessing");
-	apiObj->uiRenderer.getDefaultTitle()->commitUpdates();
-	apiObj->uiRenderer.getDefaultControls()->setText(
+	_deviceResources->uiRenderer.getDefaultTitle()->setText("PostProcessing");
+	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultControls()->setText(
 	  "Left / right: Rendering mode\n"
 	  "Up / down: Bloom intensity\n"
 	  "Action:     Pause\n"
 	);
-	apiObj->uiRenderer.getDefaultControls()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
 	updateSubtitleText();
 	recordCommandBuffers();
-	return Result::Success;
+	return pvr::Result::Success;
+}
+
+void VulkanPostProcessing::createCommandBuffers(pvr::uint32 swapchain)
+{
+	if (!_deviceResources->mainCmdNoBloom[swapchain].isValid())
+	{
+		_deviceResources->mainCmdNoBloom[swapchain] = _deviceResources->context->createCommandBufferOnDefaultPool();
+	}
+	if (!_deviceResources->mainCmdBloom[swapchain].isValid())
+	{
+		_deviceResources->mainCmdBloom[swapchain] = _deviceResources->context->createCommandBufferOnDefaultPool();
+	}
+	if (!_deviceResources->preBloomCommandBuffer[swapchain].isValid())
+	{
+		_deviceResources->preBloomCommandBuffer[swapchain] = _deviceResources->context->createSecondaryCommandBufferOnDefaultPool();
+	}
+	if (!_deviceResources->noBloomCommandBuffer[swapchain].isValid())
+	{
+		_deviceResources->noBloomCommandBuffer[swapchain] = _deviceResources->context->createSecondaryCommandBufferOnDefaultPool();
+	}
+	if (!_deviceResources->noBloomUiRendererCommandBuffer[swapchain].isValid())
+	{
+		_deviceResources->noBloomUiRendererCommandBuffer[swapchain] = _deviceResources->context->createSecondaryCommandBufferOnDefaultPool();
+	}
+	if (!_deviceResources->bloomUiRendererCommandBuffer[swapchain].isValid())
+	{
+		_deviceResources->bloomUiRendererCommandBuffer[swapchain] = _deviceResources->context->createSecondaryCommandBufferOnDefaultPool();
+	}
+	if (!_deviceResources->horizontalBlurCommandBuffer[swapchain].isValid())
+	{
+		_deviceResources->horizontalBlurCommandBuffer[swapchain] = _deviceResources->context->createSecondaryCommandBufferOnDefaultPool();
+	}
+	if (!_deviceResources->verticalBlurCommandBuffer[swapchain].isValid())
+	{
+		_deviceResources->verticalBlurCommandBuffer[swapchain] = _deviceResources->context->createSecondaryCommandBufferOnDefaultPool();
+	}
+	if (!_deviceResources->postBloomCommandBuffer[swapchain].isValid())
+	{
+		_deviceResources->postBloomCommandBuffer[swapchain] = _deviceResources->context->createSecondaryCommandBufferOnDefaultPool();
+	}
 }
 
 void VulkanPostProcessing::recordCommandBuffers()
 {
 	for (pvr::uint32 i = 0; i < getSwapChainLength(); ++i)
 	{
-		if (!apiObj->cmdNoBloom[i].isValid())
-		{
-			apiObj->cmdNoBloom[i] = apiObj->context->createCommandBufferOnDefaultPool();
-		}
-		if (!apiObj->cmdBloom[i].isValid())
-		{
-			apiObj->cmdBloom[i] = apiObj->context->createCommandBufferOnDefaultPool();
-		}
+		createCommandBuffers(i);
+
+		recordCommandUIRenderer(i);
 
 		// record no bloom command buffer
-		apiObj->cmdNoBloom[i]->beginRecording();
-		recordNoBloomCommands(apiObj->cmdNoBloom[i], i);
-		apiObj->cmdNoBloom[i]->endRecording();
+		recordNoBloomCommands(i);
 
 		// record bloom command buffer
-		apiObj->cmdBloom[i]->beginRecording();
-		recordBloomCommands(apiObj->cmdBloom[i], i);
-		apiObj->cmdBloom[i]->endRecording();
+		recordBloomCommands(i);
 	}
-}
-
-/*!********************************************************************************************
-\brief Create render fbo for rendering the scene
-\return	Return true if success
-***********************************************************************************************/
-bool VulkanPostProcessing::createOnScreenFbo()
-{
-	{
-		apiObj->onScreenFbo = apiObj->context->createOnScreenFboSet();
-	}
-
-	return true;
 }
 
 /*!********************************************************************************************
@@ -936,127 +857,145 @@ bool VulkanPostProcessing::createOnScreenFbo()
 ***********************************************************************************************/
 bool VulkanPostProcessing::createBlurFbo()
 {
-	api::ImageStorageFormat colorTexFormat(PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, VariableType::UnsignedByteNorm);
+	pvr::ImageStorageFormat colorFormat(pvr::PixelFormat::RGBA_8888, 1, pvr::types::ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm);
 
 	// create the render passes.
-	api::RenderPassCreateParam blurRenderPassDesc;
-	api::RenderPassColorInfo colorInfo(colorTexFormat, LoadOp::Clear);
-	api::SubPass subPass;
+	pvr::api::RenderPassCreateParam blurRenderPassDesc;
 
+	pvr::api::SubPass subPass;
 	// use the first color attachment
 	subPass.setColorAttachment(0, 0);
-	subPass.setDepthStencilAttachment(false);
+	subPass.enableDepthStencilAttachment(false);
 
 	// setup subpasses
-	blurRenderPassDesc.setColorInfo(0, colorInfo);
+	blurRenderPassDesc.setColorInfo(0, pvr::api::RenderPassColorInfo(colorFormat, pvr::types::LoadOp::Clear, pvr::types::StoreOp::Store,
+	                                pvr::types::ImageLayout::ColorAttachmentOptimal, pvr::types::ImageLayout::ShaderReadOnlyOptimal));
 	blurRenderPassDesc.setSubPass(0, subPass);
 
 	// create renderpass
-	api::RenderPass blurRenderPass = apiObj->context->createRenderPass(blurRenderPassDesc);
-	api::FboCreateParam blurFboDesc;
+	pvr::api::RenderPass blurRenderPass = _deviceResources->context->createRenderPass(blurRenderPassDesc);
+
+	pvr::api::FboCreateParam blurFboDesc;
 	blurFboDesc.setRenderPass(blurRenderPass);
-	blurFboDesc.setDimension(TexSize, TexSize);
+
+	// blur at a much lower resolution
+	blurFboDesc.setDimensions(_blurDimension, _blurDimension);
 
 	// for each swapchain
 	for (pvr::uint32 i = 0; i < getPlatformContext().getSwapChainLength(); ++i)
 	{
 		// blur pass0
 		{
-			api::TextureStore colorTex = apiObj->context->createTexture();
-			colorTex->allocate2D(colorTexFormat, TexSize, TexSize,
-			                     types::ImageUsageFlags::ColorAttachment | types::ImageUsageFlags::Sampled,
-			                     types::ImageLayout::ColorAttachmentOptimal);
+			pvr::api::TextureStore colorTex = _deviceResources->context->createTexture();
+			colorTex->allocate2D(colorFormat, _blurDimension, _blurDimension, pvr::types::ImageUsageFlags::ColorAttachment |
+			                     pvr::types::ImageUsageFlags::Sampled, pvr::types::ImageLayout::ColorAttachmentOptimal);
 
 			// set fbo color attachments
-			blurFboDesc.setColor(0, apiObj->context->createTextureView(colorTex));
+			blurFboDesc.setColor(0, _deviceResources->context->createTextureView(colorTex));
 
 			// create the blur pass fbo
-			apiObj->blurPass0.fbo[i] = apiObj->context->createFbo(blurFboDesc);
+			_deviceResources->horizontalBlurPass.fbo[i] = _deviceResources->context->createFbo(blurFboDesc);
 
-			if (!apiObj->blurPass0.fbo[i].isValid())
+			if (!_deviceResources->horizontalBlurPass.fbo[i].isValid())
 			{
-				Log("Failed to create blur fbo");
+				pvr::Log("Failed to create blur fbo");
 				return false;
 			}
 		}
 		// blur pass1
 		{
-			api::TextureStore colorTex = apiObj->context->createTexture();
-			colorTex->allocate2D(colorTexFormat, TexSize, TexSize,
-			                     types::ImageUsageFlags::ColorAttachment | types::ImageUsageFlags::Sampled,
-			                     types::ImageLayout::ColorAttachmentOptimal);
+			pvr::api::TextureStore colorTex = _deviceResources->context->createTexture();
+			colorTex->allocate2D(colorFormat, _blurDimension, _blurDimension, pvr::types::ImageUsageFlags::ColorAttachment |
+			                     pvr::types::ImageUsageFlags::Sampled, pvr::types::ImageLayout::ColorAttachmentOptimal);
 
 			// set fbo color attachments
-			blurFboDesc.setColor(0, apiObj->context->createTextureView(colorTex));
+			blurFboDesc.setColor(0, _deviceResources->context->createTextureView(colorTex));
 
 			// create the blur pass fbo
-			apiObj->blurPass1.fbo[i] = apiObj->context->createFbo(blurFboDesc);
+			_deviceResources->verticalBlurPass.fbo[i] = _deviceResources->context->createFbo(blurFboDesc);
 
-			if (!apiObj->blurPass1.fbo[i].isValid())
+			if (!_deviceResources->verticalBlurPass.fbo[i].isValid())
 			{
-				Log("Failed to create blur fbo");
+				pvr::Log("Failed to create blur fbo");
 				return false;
 			}
 		}
 	}
-	apiObj->blurPass1.renderArea = apiObj->blurPass0.renderArea = Rectanglei(0, 0, TexSize, TexSize);
+
 	return true;
 }
 
 bool VulkanPostProcessing::createPreBloomFbo()
 {
-	api::ImageStorageFormat depthTexFormat(PixelFormat::Depth16, 1, ColorSpace::lRGB, VariableType::Float);
-	api::ImageStorageFormat colorTexFormat(PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, VariableType::UnsignedByteNorm);
-	api::TextureStore depthTexture[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+	// color and depth image formats
+	pvr::ImageStorageFormat depthTexFormat(pvr::PixelFormat::Depth16, 1, pvr::types::ColorSpace::lRGB, pvr::VariableType::Float);
+	pvr::ImageStorageFormat colorTexFormat(pvr::PixelFormat::RGBA_8888, 1, pvr::types::ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm);
 
-	api::TextureStore colorTexture0[static_cast<pvr::uint32>(Config::MaxSwapChain)];
-	api::TextureStore colorTexture1[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+	// depth texture storage
+	pvr::api::TextureStore depthTexture[static_cast<pvr::uint32>(Config::MaxSwapChain)];
 
-	api::TextureView depthTexView[static_cast<pvr::uint32>(Config::MaxSwapChain)];
-	api::TextureView colorTexView[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+	// color texture storage
+	pvr::api::TextureStore colorTexture[static_cast<pvr::uint32>(Config::MaxSwapChain)];
+	pvr::api::TextureStore filterTexture[static_cast<pvr::uint32>(Config::MaxSwapChain)];
 
-	// create the render pass.
-	api::RenderPassCreateParam renderPassInfo;
-	api::RenderPassColorInfo colorInfo(colorTexFormat, LoadOp::Clear);
-	api::RenderPassDepthStencilInfo dsInfo(depthTexFormat, LoadOp::Clear);
+	// create the render pass
+	pvr::api::RenderPassCreateParam renderPassInfo;
+	pvr::api::RenderPassDepthStencilInfo dsInfo(depthTexFormat, pvr::types::LoadOp::Clear, pvr::types::StoreOp::Ignore);
 
-	api::SubPass subPass; subPass.setColorAttachment(0, 0).setColorAttachment(1, 1); // use the first and second colorAttachment
-
+	// configure the subpass
+	pvr::api::SubPass subPass;
+	subPass.setColorAttachment(0, 0);
+	subPass.setColorAttachment(1, 1);
+	subPass.enableDepthStencilAttachment(true);
+	subPass.setDepthStencilAttachment(0);
 	renderPassInfo.setSubPass(0, subPass);
-	renderPassInfo.setDepthStencilInfo(dsInfo);
-	renderPassInfo.setColorInfo(0, colorInfo).setColorInfo(1, colorInfo);
-	api::RenderPass renderPass = apiObj->context->createRenderPass(renderPassInfo);
-	api::FboCreateParam fboInfo;
+
+	renderPassInfo.setColorInfo(0, pvr::api::RenderPassColorInfo(colorTexFormat, pvr::types::LoadOp::Clear, pvr::types::StoreOp::Store, 1,
+	                            pvr::types::ImageLayout::ColorAttachmentOptimal, pvr::types::ImageLayout::ShaderReadOnlyOptimal));
+	renderPassInfo.setColorInfo(1, pvr::api::RenderPassColorInfo(colorTexFormat, pvr::types::LoadOp::Clear, pvr::types::StoreOp::Store, 1,
+	                            pvr::types::ImageLayout::ColorAttachmentOptimal, pvr::types::ImageLayout::ShaderReadOnlyOptimal));
+	renderPassInfo.setDepthStencilInfo(0, dsInfo);
+
+	// create the renderpass
+	pvr::api::RenderPass renderPass = _deviceResources->context->createRenderPass(renderPassInfo);
+
+	// pre bloom render area uses the full screen dimensions
+	pvr::Rectanglei renderArea(0, 0, getWidth(), getHeight());
+
+	// create the fbo
+	pvr::api::FboCreateParam fboInfo;
 	fboInfo.setRenderPass(renderPass);
-	Rectanglei renderArea(0, 0, getWidth(), getHeight());
-	fboInfo.setDimension(renderArea.width, renderArea.height);
+	fboInfo.setDimensions(renderArea.width, renderArea.height);
+
 	for (pvr::uint32 i = 0; i < getSwapChainLength(); ++i)
 	{
-		// create depth and color texture & view for color and sampler usage
-		depthTexture[i] = apiObj->context->createTexture();
-		depthTexture[i]->allocate2D(depthTexFormat, renderArea.width, renderArea.height,
-		                            types::ImageUsageFlags::DepthStencilAttachment);
+		// create depth texture as transient
+		depthTexture[i] = _deviceResources->context->createTexture();
+		depthTexture[i]->allocate2D(depthTexFormat, renderArea.width, renderArea.height, pvr::types::ImageUsageFlags::DepthStencilAttachment |
+		                            pvr::types::ImageUsageFlags::TransientAttachment);
 
-		colorTexture0[i] = apiObj->context->createTexture();
-		colorTexture0[i]->allocate2D(colorTexFormat, renderArea.width, renderArea.height,
-		                             types::ImageUsageFlags::ColorAttachment | types::ImageUsageFlags::Sampled,
-		                             types::ImageLayout::ColorAttachmentOptimal);
+		// color and filter textures will be sampled
+		colorTexture[i] = _deviceResources->context->createTexture();
+		colorTexture[i]->allocate2D(colorTexFormat, renderArea.width, renderArea.height, pvr::types::ImageUsageFlags::ColorAttachment |
+		                            pvr::types::ImageUsageFlags::Sampled, pvr::types::ImageLayout::ColorAttachmentOptimal);
 
-		colorTexture1[i] = apiObj->context->createTexture();
-		colorTexture1[i]->allocate2D(colorTexFormat, renderArea.width, renderArea.height,
-		                             types::ImageUsageFlags::ColorAttachment | types::ImageUsageFlags::Sampled,
-		                             types::ImageLayout::ColorAttachmentOptimal);
+		filterTexture[i] = _deviceResources->context->createTexture();
+		filterTexture[i]->allocate2D(colorTexFormat, renderArea.width, renderArea.height, pvr::types::ImageUsageFlags::ColorAttachment |
+		                             pvr::types::ImageUsageFlags::Sampled, pvr::types::ImageLayout::ColorAttachmentOptimal);
 
-		fboInfo
-		.setColor(0, apiObj->context->createTextureView(colorTexture0[i]))
-		.setColor(1, apiObj->context->createTextureView(colorTexture1[i]));
+		// set color attachments
+		fboInfo.setColor(0, _deviceResources->context->createTextureView(colorTexture[i]));
+		fboInfo.setColor(1, _deviceResources->context->createTextureView(filterTexture[i]));
 
-		fboInfo.setDepthStencil(apiObj->context->createTextureView(depthTexture[i]));
-		apiObj->preBloomPass.fbo[i] = apiObj->context->createFbo(fboInfo);
+		// set depth stencil attachment
+		fboInfo.setDepthStencil(0, _deviceResources->context->createTextureView(depthTexture[i]));
 
-		if (!apiObj->preBloomPass.fbo[i].isValid())
+		// create the fbo
+		_deviceResources->preBloomPass.fbo[i] = _deviceResources->context->createFbo(fboInfo);
+
+		if (!_deviceResources->preBloomPass.fbo[i].isValid())
 		{
-			Log("Failed to create the rendering fbo");
+			pvr::Log("Failed to create the rendering fbo");
 			return false;
 		}
 	}
@@ -1068,19 +1007,22 @@ bool VulkanPostProcessing::createPreBloomFbo()
 \brief	Code in releaseView() will be called by Shell when the application quits or before
 a change in the rendering context.
 ***********************************************************************************************/
-Result VulkanPostProcessing::releaseView()
+pvr::Result VulkanPostProcessing::releaseView()
 {
-	assetManager.releaseAll();
-	apiObj.reset();
-	return Result::Success;
+	_assetManager.releaseAll();
+	_deviceResources.reset();
+	return pvr::Result::Success;
 }
 
-void VulkanPostProcessing::updatePostBloomConfig()
+void VulkanPostProcessing::updatePostBloomConfig(pvr::uint32 swapchain)
 {
-	if (applyBloom)
+	if (_applyBloom)
 	{
-		pvr::float32 config[] = {(drawObject ? 1.f : 0.0f), 1.f};
-		apiObj->postBloomPass.uboBloomConfig.first->update(config, 0, sizeof(config));
+		pvr::float32 config[] = {(_drawObject ? 1.f : 0.0f), 1.f};
+		_deviceResources->postBloomPass.uboBloomConfig.first.map(swapchain);
+		_deviceResources->postBloomPass.uboBloomConfig.first.setValue("sTexFactor", config[0]);
+		_deviceResources->postBloomPass.uboBloomConfig.first.setValue("sBlurTexFactor", config[1]);
+		_deviceResources->postBloomPass.uboBloomConfig.first.unmap(swapchain);
 	}
 }
 
@@ -1090,68 +1032,68 @@ void VulkanPostProcessing::updatePostBloomConfig()
 ***********************************************************************************************************************/
 void VulkanPostProcessing::updateAnimation()
 {
-	// Calculate the mask and light rotation based on the passed time
-	float32 const twoPi = glm::pi<float32>() * 2.f;
+	// Calculate the mask and light _rotation based on the passed time
+	pvr::float32 const twoPi = glm::pi<pvr::float32>() * 2.f;
 
-	if (animating)
+	if (_animating)
 	{
-		rotation += glm::pi<float32>() * getFrameTime() * 0.0002f;
+		_rotation += glm::pi<pvr::float32>() * getFrameTime() * 0.0002f;
 		// wrap it
-		if (rotation > twoPi) { rotation -= twoPi; }
+		if (_rotation > twoPi) { _rotation -= twoPi; }
 	}
 
-	// Calculate the model, view and projection matrix
-	world = glm::rotate((-rotation), glm::vec3(0.f, 1.f, 0.f)) * glm::scale(glm::vec3(1.65f));
+	// Calculate the model, viewMatrix and projection matrix
+	_worldMatrix = glm::rotate((-_rotation), glm::vec3(0.f, 1.f, 0.f)) * glm::scale(glm::vec3(1.65f));
 
-	float32 fov;
-	fov = apiObj->scene->getCamera(0).getFOV(0);
+	pvr::float32 fov;
+	fov = _deviceResources->scene->getCamera(0).getFOV(0);
 
-	glm::mat4x4 viewProj = proj * view;
+	glm::mat4x4 viewProj = _projectionMatrix * _viewMatrix;
 	// Simple rotating directional light in model-space)
-	const glm::mat4& mvInv = glm::inverse(view * world * apiObj->scene->getWorldMatrix(
-	                                        apiObj->scene->getNode(0).getObjectId()));
-	const glm::mat4& mvp = viewProj * world * apiObj->scene->getWorldMatrix(apiObj->scene->getNode(0).getObjectId());
+	const glm::mat4& mvInv = glm::inverse(_viewMatrix * _worldMatrix * _deviceResources->scene->getWorldMatrix(
+	                                        _deviceResources->scene->getNode(0).getObjectId()));
+	const glm::mat4& mvp = viewProj * _worldMatrix * _deviceResources->scene->getWorldMatrix(_deviceResources->scene->getNode(0).getObjectId());
 
-	apiObj->renderScenePass.uboDynamic.buffer.mapMultipleArrayElements(getSwapChainIndex(), 0, apiObj->scene->getNumMeshNodes(),
-	    types::MapBufferFlags::Write);
-	for (pvr::uint32 i = 0; i < apiObj->scene->getNumMeshNodes(); ++i)
+	_deviceResources->renderScenePass.uboDynamic.buffer.mapMultipleArrayElements(getSwapChainIndex(), 0, _deviceResources->scene->getNumMeshNodes(),
+	    pvr::types::MapBufferFlags::Write);
+	for (pvr::uint32 i = 0; i < _deviceResources->scene->getNumMeshNodes(); ++i)
 	{
-		apiObj->renderScenePass.uboDynamic.buffer
+		_deviceResources->renderScenePass.uboDynamic.buffer
 		.setArrayValue(static_cast<pvr::uint32>(RenderScenePass::UboDynamicElements::MVInv), i, mvInv);
 
-		apiObj->renderScenePass.uboDynamic.buffer.setArrayValue(
+		_deviceResources->renderScenePass.uboDynamic.buffer.setArrayValue(
 		  static_cast<pvr::uint32>(RenderScenePass::UboDynamicElements::MVPMatrix), i, mvp);
-		apiObj->renderScenePass.uboDynamic.buffer.setArrayValue(
+		_deviceResources->renderScenePass.uboDynamic.buffer.setArrayValue(
 		  static_cast<pvr::uint32>(RenderScenePass::UboDynamicElements::LightDirection), i,
-		  (glm::normalize(glm::vec3(glm::inverse(world) * LightPos))));
+		  (glm::normalize(glm::vec3(glm::inverse(_worldMatrix) * LightPosition))));
 	}
-	apiObj->renderScenePass.uboDynamic.buffer.unmap(getSwapChainIndex());
+	_deviceResources->renderScenePass.uboDynamic.buffer.unmap(getSwapChainIndex());
 }
 
-void VulkanPostProcessing::updateBloomIntensity(float32 bloomIntensity)
+void VulkanPostProcessing::updateBloomIntensity(pvr::float32 bloomIntensity)
 {
-	this->bloomIntensity = bloomIntensity;
-	apiObj->preBloomPass.descIntensity.first.map(0);
-	apiObj->preBloomPass.descIntensity.first.setValue(0, bloomIntensity);
-	apiObj->preBloomPass.descIntensity.first.unmap(0);
+	this->_bloomIntensity = bloomIntensity;
+	_deviceResources->preBloomPass.descIntensity.first.map(0);
+	_deviceResources->preBloomPass.descIntensity.first.setValue("BloomIntensity", _bloomIntensity);
+	_deviceResources->preBloomPass.descIntensity.first.unmap(0);
 }
 
 /*!********************************************************************************************
 \return	Return Result::Suceess if no error occurred
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************/
-Result VulkanPostProcessing::renderFrame()
+pvr::Result VulkanPostProcessing::renderFrame()
 {
 	updateAnimation();
-	if (applyBloom)
+	if (_applyBloom)
 	{
-		apiObj->cmdBloom[getSwapChainIndex()]->submit();
+		_deviceResources->mainCmdBloom[getSwapChainIndex()]->submit();
 	}
 	else
 	{
-		apiObj->cmdNoBloom[getSwapChainIndex()]->submit();
+		_deviceResources->mainCmdNoBloom[getSwapChainIndex()]->submit();
 	}
-	return Result::Success;
+	return pvr::Result::Success;
 }
 
 /*!********************************************************************************************
@@ -1159,77 +1101,83 @@ Result VulkanPostProcessing::renderFrame()
 ***********************************************************************************************/
 void VulkanPostProcessing::updateSubtitleText()
 {
-	if (applyBloom)
+	if (_applyBloom)
 	{
-		if (drawObject)
+		if (_drawObject)
 		{
-			apiObj->uiRenderer.getDefaultDescription()->setText(strings::createFormatted("Object with bloom"
-			    " effect, intensity % 2.1f", bloomIntensity));
+			_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("Object with bloom"
+			    " effect, intensity % 2.1f", _bloomIntensity));
 		}
 		else
 		{
-			apiObj->uiRenderer.getDefaultDescription()->setText(strings::createFormatted("Bloom effect"
-			    " textures, intensity % 2.1f", bloomIntensity));
+			_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("Bloom effect"
+			    " textures, intensity % 2.1f", _bloomIntensity));
 		}
 	}
 	else
 	{
-		if (drawObject)
+		if (_drawObject)
 		{
-			apiObj->uiRenderer.getDefaultDescription()->setText("Object without bloom");
+			_deviceResources->uiRenderer.getDefaultDescription()->setText("Object without bloom");
 		}
 		else
 		{
-			apiObj->uiRenderer.getDefaultDescription()->setText("Use up - down to draw object and / or bloom textures");
+			_deviceResources->uiRenderer.getDefaultDescription()->setText("Use up - down to draw object and / or bloom textures");
 		}
 	}
-	apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 }
 
 /*!********************************************************************************************
 \brief	Handles user input and updates live variables accordingly.
 ***********************************************************************************************/
-void VulkanPostProcessing::eventMappedInput(SimplifiedInput e)
+void VulkanPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 {
 	static int mode = 0;
 	//Object+Bloom, object, bloom
 	switch (e)
 	{
-	case SimplifiedInput::Left:
+	case pvr::SimplifiedInput::Left:
 		if (--mode < 0) { mode = 2; }
-		applyBloom = (mode != 1); drawObject = (mode != 2);
+		_applyBloom = (mode != 1); _drawObject = (mode != 2);
 		updateSubtitleText();
-		updatePostBloomConfig();
-		apiObj->context->waitIdle();
+		_deviceResources->context->waitIdle();
+		for (pvr::uint32 i = 0; i < getPlatformContext().getSwapChainLength(); ++i)
+		{
+			updatePostBloomConfig(i);
+		}
 		recordCommandBuffers();
 		break;
-	case SimplifiedInput::Right:
+	case pvr::SimplifiedInput::Right:
 		++mode %= 3;
-		applyBloom = (mode != 1); drawObject = (mode != 2);
+		_applyBloom = (mode != 1); _drawObject = (mode != 2);
 		updateSubtitleText();
-		updatePostBloomConfig();
-		apiObj->context->waitIdle();
+		_deviceResources->context->waitIdle();
+		for (pvr::uint32 i = 0; i < getPlatformContext().getSwapChainLength(); ++i)
+		{
+			updatePostBloomConfig(i);
+		}
 		recordCommandBuffers();
 		break;
-	case SimplifiedInput::Up:
+	case pvr::SimplifiedInput::Up:
 		updateSubtitleText();
-		updateBloomIntensity(int(.5f + 10.f * std::min(bloomIntensity + .2f, 5.f)) * .1f);
-		apiObj->context->waitIdle();
+		updateBloomIntensity(std::min(_bloomIntensity + 0.1f, 5.f));
+		_deviceResources->context->waitIdle();
 		recordCommandBuffers();
 		break;
-	case SimplifiedInput::Down:
-		updateBloomIntensity(int(.5f + 10.f * std::max(bloomIntensity - .2f, 0.f)) * .1f);
+	case pvr::SimplifiedInput::Down:
+		updateBloomIntensity(std::max(_bloomIntensity - 0.1f, 0.f));
 		updateSubtitleText();
-		apiObj->context->waitIdle();
+		_deviceResources->context->waitIdle();
 		recordCommandBuffers();
 		break;
-	case SimplifiedInput::ActionClose:
+	case pvr::SimplifiedInput::ActionClose:
 		this->exitShell();
 		break;
-	case SimplifiedInput::Action1:
-	case SimplifiedInput::Action2:
-	case SimplifiedInput::Action3:
-		animating = !animating;
+	case pvr::SimplifiedInput::Action1:
+	case pvr::SimplifiedInput::Action2:
+	case pvr::SimplifiedInput::Action3:
+		_animating = !_animating;
 		break;
 	default:
 		break;
@@ -1238,16 +1186,16 @@ void VulkanPostProcessing::eventMappedInput(SimplifiedInput e)
 
 /*!********************************************************************************************
 \param	nodeIndex	Node index of the mesh to draw
-\brief	Draws a Model::Mesh after the model view matrix has been set and the material prepared.
+\brief	Draws a Model::Mesh after the model viewMatrix matrix has been set and the material prepared.
 ***********************************************************************************************/
-void VulkanPostProcessing::drawMesh(int nodeIndex, api::CommandBuffer& cmdBuffer)
+void VulkanPostProcessing::drawMesh(int nodeIndex, pvr::api::SecondaryCommandBuffer& cmdBuffer)
 {
-	int meshIndex = apiObj->scene->getNode(nodeIndex).getObjectId();
-	const assets::Model::Mesh& mesh = apiObj->scene->getMesh(meshIndex);
+	int meshIndex = _deviceResources->scene->getNode(nodeIndex).getObjectId();
+	const pvr::assets::Model::Mesh& mesh = _deviceResources->scene->getMesh(meshIndex);
 	// bind the VBO for the mesh
-	cmdBuffer->bindVertexBuffer(apiObj->vbos[meshIndex], 0, 0);
+	cmdBuffer->bindVertexBuffer(_deviceResources->vbos[meshIndex], 0, 0);
 	// bind the index buffer, won't hurt if the handle is 0
-	cmdBuffer->bindIndexBuffer(apiObj->ibos[meshIndex], 0, mesh.getFaces().getDataType());
+	cmdBuffer->bindIndexBuffer(_deviceResources->ibos[meshIndex], 0, mesh.getFaces().getDataType());
 
 	if (mesh.getMeshInfo().isIndexed)
 	{
@@ -1261,207 +1209,175 @@ void VulkanPostProcessing::drawMesh(int nodeIndex, api::CommandBuffer& cmdBuffer
 	}
 }
 
-/*!********************************************************************************************
-\brief	Add the draw commands for a full screen quad to a commandbuffer
-***********************************************************************************************/
-void VulkanPostProcessing::drawAxisAlignedQuad(api::CommandBuffer& cmdBuffer)
+void VulkanPostProcessing::recordCommandUIRenderer(pvr::uint32 swapchain)
 {
-	// construct the scale matrix
-	cmdBuffer->bindVertexBuffer(apiObj->quadVbo, 0, 0);
-	cmdBuffer->bindIndexBuffer(apiObj->quadIbo, 0, IndexType::IndexType16Bit);
-	cmdBuffer->drawIndexed(0, 6);
+	_deviceResources->noBloomUiRendererCommandBuffer[swapchain]->beginRecording(_deviceResources->onScreenFbo[swapchain], 0);
+	_deviceResources->uiRenderer.beginRendering(_deviceResources->noBloomUiRendererCommandBuffer[swapchain]);
+	_deviceResources->uiRenderer.getSdkLogo()->render();
+	_deviceResources->uiRenderer.getDefaultTitle()->render();
+	_deviceResources->uiRenderer.getDefaultControls()->render();
+	_deviceResources->uiRenderer.getDefaultDescription()->render();
+	_deviceResources->uiRenderer.endRendering();
+	_deviceResources->noBloomUiRendererCommandBuffer[swapchain]->endRecording();
+
+	_deviceResources->bloomUiRendererCommandBuffer[swapchain]->beginRecording(_deviceResources->onScreenFbo[swapchain], 0);
+	_deviceResources->uiRenderer.beginRendering(_deviceResources->bloomUiRendererCommandBuffer[swapchain]);
+	_deviceResources->uiRenderer.getSdkLogo()->render();
+	_deviceResources->uiRenderer.getDefaultTitle()->render();
+	_deviceResources->uiRenderer.getDefaultControls()->render();
+	_deviceResources->uiRenderer.getDefaultDescription()->render();
+	_deviceResources->uiRenderer.endRendering();
+	_deviceResources->bloomUiRendererCommandBuffer[swapchain]->endRecording();
 }
 
-void VulkanPostProcessing::postTransitionFbo(api::CommandBuffer& cmd, api::Fbo& fbo)
+void VulkanPostProcessing::recordCommandsNoBloom(pvr::uint32 swapchain)
 {
-	api::MemoryBarrierSet barriers;
-	for (pvr::uint32 i = 0; i < fbo->getNumColorAttachments(); ++i)
-	{
-		const api::TextureView& colorTex = fbo->getColorAttachment(i);
-		barriers.addBarrier(api::ImageAreaBarrier(types::AccessFlags::ColorAttachmentWrite,
-		                    types::AccessFlags::TransferRead, colorTex->getResource(), types::ImageSubresourceRange(),
-		                    types::ImageLayout::ColorAttachmentOptimal, types::ImageLayout::PresentSrc));
-	}
-	cmd->pipelineBarrier(types::PipelineStageFlags::AllCommands, types::PipelineStageFlags::AllCommands, barriers);
+	_deviceResources->noBloomCommandBuffer[swapchain]->beginRecording(_deviceResources->onScreenFbo[swapchain], 0);
+	// Simple rotating directional light in model-space
+	// Use simple shader program to render the mask
+	_deviceResources->noBloomCommandBuffer[swapchain]->bindPipeline(_deviceResources->renderScenePass.pipeline);
+
+	// Bind descriptor Sets
+	// bind the albedo texture
+	_deviceResources->noBloomCommandBuffer[swapchain]->bindDescriptorSet(_deviceResources->renderScenePass.pipeline->getPipelineLayout(), 0,
+	    _deviceResources->renderScenePass.texDescriptor);
+
+	pvr::uint32 uboOffset = _deviceResources->renderScenePass.uboDynamic.buffer.getAlignedElementArrayOffset(0);
+
+	_deviceResources->noBloomCommandBuffer[swapchain]->bindDescriptorSet(_deviceResources->renderScenePass.pipeline->getPipelineLayout(), 1,
+	    _deviceResources->renderScenePass.uboDynamic.sets[swapchain], &uboOffset, 1);
+
+	_deviceResources->noBloomCommandBuffer[swapchain]->bindDescriptorSet(_deviceResources->renderScenePass.pipeline->getPipelineLayout(), 2,
+	    _deviceResources->renderScenePass.uboStatic.sets[0]);
+	// Draw the mesh
+	drawMesh(0, _deviceResources->noBloomCommandBuffer[swapchain]);
+	_deviceResources->noBloomCommandBuffer[swapchain]->endRecording();
 }
 
-void VulkanPostProcessing::preTransitionFbo(api::CommandBuffer& cmd, api::Fbo& fbo)
+void VulkanPostProcessing::recordNoBloomCommands(pvr::uint32 swapchain)
 {
-	api::MemoryBarrierSet barriers;
-	for (pvr::uint32 i = 0; i < fbo->getNumColorAttachments(); ++i)
-	{
-		const api::TextureView& colorTex = fbo->getColorAttachment(i);
-		barriers.addBarrier(api::ImageAreaBarrier(types::AccessFlags::TransferRead,
-		                    types::AccessFlags::ColorAttachmentWrite, colorTex->getResource(), types::ImageSubresourceRange(),
-		                    types::ImageLayout::PresentSrc, types::ImageLayout::ColorAttachmentOptimal));
-	}
-	cmd->pipelineBarrier(types::PipelineStageFlags::AllCommands, types::PipelineStageFlags::AllCommands, barriers);
+	recordCommandsNoBloom(swapchain);
+
+	_deviceResources->mainCmdNoBloom[swapchain]->beginRecording();
+	_deviceResources->mainCmdNoBloom[swapchain]->beginRenderPass(_deviceResources->onScreenFbo[swapchain], _deviceResources->onScreenFbo[swapchain]->getRenderPass(),
+	    pvr::Rectanglei(0, 0, getWidth(), getHeight()), false, glm::vec4(0.00, 0.70, 0.67, 1.f));
+	_deviceResources->mainCmdNoBloom[swapchain]->enqueueSecondaryCmds(_deviceResources->noBloomCommandBuffer[swapchain]);
+	_deviceResources->mainCmdNoBloom[swapchain]->enqueueSecondaryCmds(_deviceResources->noBloomUiRendererCommandBuffer[swapchain]);
+	_deviceResources->mainCmdNoBloom[swapchain]->endRenderPass();
+	_deviceResources->mainCmdNoBloom[swapchain]->endRecording();
 }
 
-void VulkanPostProcessing::recordBloomCommands(api::CommandBuffer& cmd, pvr::uint32 swapchain)
+void VulkanPostProcessing::recordCommandsPreBloom(pvr::uint32 swapchain)
 {
-	// prebloom
+	_deviceResources->preBloomCommandBuffer[swapchain]->beginRecording(_deviceResources->preBloomPass.fbo[swapchain], 0);
+
+	// filter the bright portion of the image
+	_deviceResources->preBloomCommandBuffer[swapchain]->bindPipeline(_deviceResources->preBloomPass.pipeline);
+
+	pvr::uint32 uboOffset = _deviceResources->renderScenePass.uboDynamic.buffer.getAlignedElementArrayOffset(0);
+
+	// bind the pre bloom descriptor sets
+	_deviceResources->preBloomCommandBuffer[swapchain]->bindDescriptorSet(_deviceResources->preBloomPass.pipeline->getPipelineLayout(), 0, _deviceResources->preBloomPass.descTex);
+	_deviceResources->preBloomCommandBuffer[swapchain]->bindDescriptorSet(_deviceResources->preBloomPass.pipeline->getPipelineLayout(), 1, _deviceResources->preBloomPass.descIntensity.second);
+	_deviceResources->preBloomCommandBuffer[swapchain]->bindDescriptorSet(_deviceResources->preBloomPass.pipeline->getPipelineLayout(), 2, _deviceResources->preBloomPass.uboDynamic.sets[swapchain], &uboOffset, 1);
+	_deviceResources->preBloomCommandBuffer[swapchain]->bindDescriptorSet(_deviceResources->preBloomPass.pipeline->getPipelineLayout(), 3, _deviceResources->preBloomPass.uboStatic.sets[0]);
+	drawMesh(0, _deviceResources->preBloomCommandBuffer[swapchain]);
+	_deviceResources->preBloomCommandBuffer[swapchain]->endRecording();
+}
+
+void VulkanPostProcessing::recordCommandsBlur(pvr::api::SecondaryCommandBuffer& cmdBuffer, BlurPass& pass, pvr::uint32 swapchain)
+{
+	cmdBuffer->beginRecording(pass.fbo[swapchain], 0);
+	cmdBuffer->bindPipeline(pass.pipeline);
+	cmdBuffer->bindDescriptorSet(pass.pipeline->getPipelineLayout(), 0, pass.texDescSet[swapchain]);
+	cmdBuffer->bindDescriptorSet(pass.pipeline->getPipelineLayout(), 1, pass.uboPerVert.second);
+	cmdBuffer->drawArrays(0, 4);
+	cmdBuffer->endRecording();
+}
+
+void VulkanPostProcessing::recordCommandsPostBloom(pvr::uint32 swapchain)
+{
+	_deviceResources->postBloomCommandBuffer[swapchain]->beginRecording(_deviceResources->onScreenFbo[swapchain], 0);
+	_deviceResources->postBloomCommandBuffer[swapchain]->bindPipeline(_deviceResources->postBloomPass.pipeline);
+	_deviceResources->postBloomCommandBuffer[swapchain]->bindDescriptorSet(_deviceResources->postBloomPass.pipeline->getPipelineLayout(), 0,
+	    _deviceResources->postBloomPass.texDescSet[swapchain]);
+	_deviceResources->postBloomCommandBuffer[swapchain]->bindDescriptorSet(_deviceResources->postBloomPass.pipeline->getPipelineLayout(), 1,
+	    _deviceResources->postBloomPass.uboBloomConfig.second[swapchain]);
+	_deviceResources->postBloomCommandBuffer[swapchain]->drawArrays(0, 4);
+	_deviceResources->postBloomCommandBuffer[swapchain]->endRecording();
+}
+
+void VulkanPostProcessing::recordBloomCommands(pvr::uint32 swapchain)
+{
+	recordCommandsPreBloom(swapchain);
+	recordCommandsBlur(_deviceResources->horizontalBlurCommandBuffer[swapchain], _deviceResources->horizontalBlurPass, swapchain);
+	recordCommandsBlur(_deviceResources->verticalBlurCommandBuffer[swapchain], _deviceResources->verticalBlurPass, swapchain);
+	recordCommandsPostBloom(swapchain);
+
+	_deviceResources->mainCmdBloom[swapchain]->beginRecording();
+
+	// pre bloom
 	{
-//		put a barrier so bloom intensity updates from host can be synchronized properly
-		api::MemoryBarrierSet barriers;
-		barriers.addBarrier(pvr::api::BufferRangeBarrier(types::AccessFlags::HostWrite,
-		                    types::AccessFlags::ShaderRead,
-		                    apiObj->preBloomPass.descIntensity.first.getConnectedBuffer(0)->getResource(),
-		                    0, apiObj->preBloomPass.descIntensity.first.getAlignedTotalSize()));
-		cmd->pipelineBarrier(types::PipelineStageFlags::TopOfPipeline, types::PipelineStageFlags::TopOfPipeline, barriers);
-
-		glm::vec4 clearColors[] =
-		{
-			glm::vec4(.00, 0.70, 0.67, 0.f) ,
-			glm::vec4(.0, 0.0, 0.0, 1.f)
-		};
-
-		cmd->beginRenderPass(apiObj->preBloomPass.fbo[swapchain], pvr::Rectanglei(0, 0, getWidth(), getHeight()),
-		                     true, clearColors, sizeof(clearColors) / sizeof(clearColors[0]));
-
-		// filter the bright portion of the image
-		cmd->bindPipeline(apiObj->preBloomPass.pipeline);
-
-		// bind the pre bloom descriptor sets
-		cmd->bindDescriptorSet(apiObj->preBloomPass.pipeline->getPipelineLayout(), 0,
-		                       apiObj->preBloomPass.descTex, 0);
-
-		cmd->bindDescriptorSet(apiObj->preBloomPass.pipeline->getPipelineLayout(), 1,
-		                       apiObj->preBloomPass.descIntensity.second, 0);
-
-		pvr::uint32 uboOffset = apiObj->renderScenePass.uboDynamic.buffer.getAlignedElementArrayOffset(0);
-
-		cmd->bindDescriptorSet(apiObj->preBloomPass.pipeline->getPipelineLayout(), 2,
-		                       apiObj->preBloomPass.uboDynamic.sets[swapchain], &uboOffset, 1);
-
-		cmd->bindDescriptorSet(apiObj->preBloomPass.pipeline->getPipelineLayout(), 3,
-		                       apiObj->preBloomPass.uboStatic.sets[0], 0);
-		drawMesh(0, cmd);
-
-		cmd->endRenderPass();
+		glm::vec4 preBloomClearColors[] = { glm::vec4(0.0, 0.70, 0.67, 1.0f), glm::vec4(0.0, 0.0, 0.0, 1.f) };
+		_deviceResources->mainCmdBloom[swapchain]->beginRenderPass(_deviceResources->preBloomPass.fbo[swapchain],
+		    pvr::Rectanglei(0, 0, getWidth(), getHeight()), false, preBloomClearColors, 2);
+		_deviceResources->mainCmdBloom[swapchain]->enqueueSecondaryCmds(_deviceResources->preBloomCommandBuffer[swapchain]);
+		_deviceResources->mainCmdBloom[swapchain]->endRenderPass();
 	}
 
-	// Horizontal blur
+	// horizontal blur
 	{
-		BlurPass& pass = apiObj->blurPass0;
-		cmd->beginRenderPass(pass.fbo[swapchain], pvr::Rectanglei(0, 0, pass.fbo[swapchain]->getDimensions().x,
-		                     pass.fbo[swapchain]->getDimensions().y), true, glm::vec4(0.0f));
-
-		// transform from color-attachment write to shader read
-		api::MemoryBarrierSet barriers;
-		barriers.addBarrier(api::ImageAreaBarrier(types::AccessFlags::ColorAttachmentWrite, types::AccessFlags::ShaderRead,
-		                    apiObj->preBloomPass.fbo[swapchain]->getColorAttachment(1)->getResource(),
-		                    types::ImageSubresourceRange(), types::ImageLayout::ColorAttachmentOptimal,
-		                    types::ImageLayout::ShaderReadOnlyOptimal));
-
-		cmd->pipelineBarrier(types::PipelineStageFlags::TopOfPipeline, types::PipelineStageFlags::TopOfPipeline, barriers);
-
-		cmd->bindPipeline(apiObj->blurPass0.pipeline);
-		cmd->bindDescriptorSet(apiObj->blurPass0.pipeline->getPipelineLayout(), 0, apiObj->blurPass0.texDescSet[swapchain], 0);
-		cmd->bindDescriptorSet(apiObj->blurPass0.pipeline->getPipelineLayout(), 1, apiObj->blurPass0.uboPerVert.second, 0);
-		drawAxisAlignedQuad(cmd);
-
-		barriers.clearAllBarriers();
-
-		// transform back to color-attachment write from shader read
-		barriers.addBarrier(api::ImageAreaBarrier(types::AccessFlags::ShaderRead, types::AccessFlags::ColorAttachmentWrite,
-		                    apiObj->preBloomPass.fbo[swapchain]->getColorAttachment(1)->getResource(),
-		                    types::ImageSubresourceRange(), types::ImageLayout::ShaderReadOnlyOptimal,
-		                    types::ImageLayout::ColorAttachmentOptimal));
-
-		cmd->pipelineBarrier(types::PipelineStageFlags::TopOfPipeline, types::PipelineStageFlags::TopOfPipeline, barriers);
-
-		cmd->endRenderPass();
+		_deviceResources->mainCmdBloom[swapchain]->beginRenderPass(_deviceResources->horizontalBlurPass.fbo[swapchain],
+		    pvr::Rectanglei(0, 0, _deviceResources->horizontalBlurPass.fbo[swapchain]->getDimensions().x,
+		                    _deviceResources->horizontalBlurPass.fbo[swapchain]->getDimensions().y), false, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		_deviceResources->mainCmdBloom[swapchain]->enqueueSecondaryCmds(_deviceResources->horizontalBlurCommandBuffer[swapchain]);
+		_deviceResources->mainCmdBloom[swapchain]->endRenderPass();
 	}
 
-	// Vertical blur
+	// vertical blur
 	{
-		BlurPass& pass = apiObj->blurPass1;
-		cmd->beginRenderPass(pass.fbo[swapchain], pvr::Rectanglei(0, 0, pass.fbo[swapchain]->getDimensions().x,
-		                     pass.fbo[swapchain]->getDimensions().y), true, glm::vec4(0.0f));
-
-		// transform from color-attachment write to shader read
-		api::MemoryBarrierSet barriers;
-		barriers.addBarrier(api::ImageAreaBarrier(types::AccessFlags::ColorAttachmentWrite, types::AccessFlags::ShaderRead,
-		                    apiObj->blurPass0.fbo[swapchain]->getColorAttachment(0)->getResource(),
-		                    types::ImageSubresourceRange(), types::ImageLayout::ColorAttachmentOptimal,
-		                    types::ImageLayout::ShaderReadOnlyOptimal));
-
-		cmd->pipelineBarrier(types::PipelineStageFlags::TopOfPipeline, types::PipelineStageFlags::TopOfPipeline, barriers);
-
-		cmd->bindPipeline(apiObj->blurPass1.pipeline);
-		cmd->bindDescriptorSet(apiObj->blurPass1.pipeline->getPipelineLayout(), 0, apiObj->blurPass1.texDescSet[swapchain], 0);
-		cmd->bindDescriptorSet(apiObj->blurPass1.pipeline->getPipelineLayout(), 1, apiObj->blurPass1.uboPerVert.second, 0);
-		drawAxisAlignedQuad(cmd);
-
-		barriers.clearAllBarriers();
-
-		// transform back to color-attachment write from shader read
-		barriers.addBarrier(api::ImageAreaBarrier(types::AccessFlags::ShaderRead, types::AccessFlags::ColorAttachmentWrite,
-		                    apiObj->blurPass0.fbo[swapchain]->getColorAttachment(0)->getResource(),
-		                    types::ImageSubresourceRange(), types::ImageLayout::ShaderReadOnlyOptimal,
-		                    types::ImageLayout::ColorAttachmentOptimal));
-
-		cmd->pipelineBarrier(types::PipelineStageFlags::TopOfPipeline, types::PipelineStageFlags::TopOfPipeline, barriers);
-
-		cmd->endRenderPass();
+		_deviceResources->mainCmdBloom[swapchain]->beginRenderPass(_deviceResources->verticalBlurPass.fbo[swapchain],
+		    pvr::Rectanglei(0, 0, _deviceResources->verticalBlurPass.fbo[swapchain]->getDimensions().x,
+		                    _deviceResources->verticalBlurPass.fbo[swapchain]->getDimensions().y), false, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		_deviceResources->mainCmdBloom[swapchain]->enqueueSecondaryCmds(_deviceResources->verticalBlurCommandBuffer[swapchain]);
+		_deviceResources->mainCmdBloom[swapchain]->endRenderPass();
 	}
 
-	//Draw scene with bloom
+	// post bloom
 	{
-		// set a barrier so that the bloom configs updates are properly synchronized.
-		api::MemoryBarrierSet barriers;
-		barriers.addBarrier(api::BufferRangeBarrier(types::AccessFlags::HostWrite, types::AccessFlags::ShaderRead,
-		                    apiObj->postBloomPass.uboBloomConfig.first->getResource(), 0,
-		                    apiObj->postBloomPass.uboBloomConfig.first->getRange()));
-
-		cmd->pipelineBarrier(types::PipelineStageFlags::TopOfPipeline, types::PipelineStageFlags::TopOfPipeline, barriers);
-
-
-		cmd->beginRenderPass(apiObj->onScreenFbo[swapchain], pvr::Rectanglei(0, 0, getWidth(), getHeight()), true,
-		                     glm::vec4(.00, 0.70, 0.67, 0.f));
-
-		barriers.clearAllBarriers();
-
-		barriers.addBarrier(api::ImageAreaBarrier(types::AccessFlags::ColorAttachmentWrite, types::AccessFlags::ShaderRead,
-		                    apiObj->preBloomPass.fbo[swapchain]->getColorAttachment(0)->getResource(),
-		                    types::ImageSubresourceRange(), types::ImageLayout::ColorAttachmentOptimal,
-		                    types::ImageLayout::ShaderReadOnlyOptimal));
-
-		barriers.addBarrier(api::ImageAreaBarrier(types::AccessFlags::ColorAttachmentWrite, types::AccessFlags::ShaderRead,
-		                    apiObj->blurPass0.fbo[swapchain]->getColorAttachment(0)->getResource(),
-		                    types::ImageSubresourceRange(), types::ImageLayout::ColorAttachmentOptimal,
-		                    types::ImageLayout::ShaderReadOnlyOptimal));
-
-		cmd->pipelineBarrier(types::PipelineStageFlags::TopOfPipeline, types::PipelineStageFlags::TopOfPipeline, barriers);
-
-		cmd->bindPipeline(apiObj->postBloomPass.pipeline);
-		cmd->bindDescriptorSet(apiObj->postBloomPass.pipeline->getPipelineLayout(), 0,
-		                       apiObj->postBloomPass.texDescSet[swapchain]);
-		cmd->bindDescriptorSet(apiObj->postBloomPass.pipeline->getPipelineLayout(), 1,
-		                       apiObj->postBloomPass.uboBloomConfig.second);
-		cmd->bindDescriptorSet(apiObj->postBloomPass.pipeline->getPipelineLayout(), 2,
-		                       apiObj->postBloomPass.uboMVP.second);
-		drawAxisAlignedQuad(cmd);
-
-		barriers.clearAllBarriers();
-
-		barriers.addBarrier(api::ImageAreaBarrier(types::AccessFlags::ShaderRead, types::AccessFlags::ColorAttachmentWrite,
-		                    apiObj->preBloomPass.fbo[swapchain]->getColorAttachment(0)->getResource(),
-		                    types::ImageSubresourceRange(), types::ImageLayout::ShaderReadOnlyOptimal,
-		                    types::ImageLayout::ColorAttachmentOptimal));
-
-		barriers.addBarrier(api::ImageAreaBarrier(types::AccessFlags::ShaderRead, types::AccessFlags::ColorAttachmentWrite,
-		                    apiObj->blurPass0.fbo[swapchain]->getColorAttachment(0)->getResource(),
-		                    types::ImageSubresourceRange(), types::ImageLayout::ShaderReadOnlyOptimal,
-		                    types::ImageLayout::ColorAttachmentOptimal));
-
-		cmd->pipelineBarrier(types::PipelineStageFlags::TopOfPipeline, types::PipelineStageFlags::TopOfPipeline, barriers);
+		_deviceResources->mainCmdBloom[swapchain]->beginRenderPass(_deviceResources->onScreenFbo[swapchain],
+		    pvr::Rectanglei(0, 0, getWidth(), getHeight()), false, glm::vec4(0.0, 0.0, 0.0, 1.0f));
+		_deviceResources->mainCmdBloom[swapchain]->enqueueSecondaryCmds(_deviceResources->postBloomCommandBuffer[swapchain]);
+		_deviceResources->mainCmdBloom[swapchain]->enqueueSecondaryCmds(_deviceResources->bloomUiRendererCommandBuffer[swapchain]);
+		_deviceResources->mainCmdBloom[swapchain]->endRenderPass();
 	}
 
-	recordCommandUIRenderer(cmd, swapchain);
+	// Transition image layouts
+	pvr::api::MemoryBarrierSet barriers;
 
-	cmd->endRenderPass();
+	// transform back to color-attachment write from shader read
+	barriers.addBarrier(pvr::api::ImageAreaBarrier(pvr::types::AccessFlags::ShaderRead, pvr::types::AccessFlags::ColorAttachmentWrite,
+	                    _deviceResources->horizontalBlurPass.fbo[swapchain]->getColorAttachment(0)->getResource(),
+	                    pvr::types::ImageSubresourceRange(), pvr::types::ImageLayout::ShaderReadOnlyOptimal,
+	                    pvr::types::ImageLayout::ColorAttachmentOptimal));
+	barriers.addBarrier(pvr::api::ImageAreaBarrier(pvr::types::AccessFlags::ShaderRead, pvr::types::AccessFlags::ColorAttachmentWrite,
+	                    _deviceResources->verticalBlurPass.fbo[swapchain]->getColorAttachment(0)->getResource(),
+	                    pvr::types::ImageSubresourceRange(), pvr::types::ImageLayout::ShaderReadOnlyOptimal,
+	                    pvr::types::ImageLayout::ColorAttachmentOptimal));
+
+	// transform back to color-attachment write from shader read
+	barriers.addBarrier(pvr::api::ImageAreaBarrier(pvr::types::AccessFlags::ShaderRead, pvr::types::AccessFlags::ColorAttachmentWrite,
+	                    _deviceResources->preBloomPass.fbo[swapchain]->getColorAttachment(0)->getResource(),
+	                    pvr::types::ImageSubresourceRange(), pvr::types::ImageLayout::ShaderReadOnlyOptimal,
+	                    pvr::types::ImageLayout::ColorAttachmentOptimal));
+	barriers.addBarrier(pvr::api::ImageAreaBarrier(pvr::types::AccessFlags::ShaderRead, pvr::types::AccessFlags::ColorAttachmentWrite,
+	                    _deviceResources->preBloomPass.fbo[swapchain]->getColorAttachment(1)->getResource(),
+	                    pvr::types::ImageSubresourceRange(), pvr::types::ImageLayout::ShaderReadOnlyOptimal,
+	                    pvr::types::ImageLayout::ColorAttachmentOptimal));
+
+	_deviceResources->mainCmdBloom[swapchain]->pipelineBarrier(pvr::types::PipelineStageFlags::FragmentShader, pvr::types::PipelineStageFlags::FragmentShader, barriers);
+
+	_deviceResources->mainCmdBloom[swapchain]->endRecording();
 }
 
 /*!********************************************************************************************
@@ -1469,4 +1385,4 @@ void VulkanPostProcessing::recordBloomCommands(api::CommandBuffer& cmd, pvr::uin
 \brief	This function must be implemented by the user of the shell.
 The user should return its Shell object defining the behaviour of the application.
 ***********************************************************************************************/
-std::auto_ptr<Shell> pvr::newDemo() { return std::auto_ptr<Shell>(new VulkanPostProcessing()); }
+std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new VulkanPostProcessing()); }

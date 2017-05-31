@@ -1,3 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<<<<<<< HEAD
 <area shape="rect" id="node1" href="$structpvr_1_1api_1_1pipeline_creation_1_1_vertex_input_create_param.html" title="Contains parameters needed to configure the Vertex Input for a pipeline object. (vertex attrubutes..." alt="" coords="6,5,178,46"/>
+=======
+<area shape="rect" id="node1" href="$classpvr_1_1utils_1_1_asset_loading_delegate.html" title="Interface for a class that can provide Asset Loading and Uploading. Used by PFX API parser and simila..." alt="" coords="6,5,165,46"/>
+>>>>>>> 1776432f... 4.3
 </map>

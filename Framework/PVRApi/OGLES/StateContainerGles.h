@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRApi\OGLES\StateContainerGles.h
 \author       PowerVR by Imagination, Developer Technology Team
@@ -5,17 +6,24 @@
 \brief        Supporting class for the Graphics Pipeline object. Do not use directly.
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
+=======
+/*!
+\brief Supporting class for the Graphics Pipeline object. Do not use directly.
+\file PVRApi/OGLES/StateContainerGles.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 #pragma once
 #include "PVRApi/OGLES/PipelineConfigStatesGles.h"
-#include "PVRNativeApi/ApiErrors.h"
+#include "PVRNativeApi/OGLES/ApiErrorsGles.h"
 namespace pvr {
 namespace api {
 namespace gles {
 
-/*!****************************************************************************************************************
-\brief Supporting class for the Graphics Pipeline object. Do not use directly. Main responsibility: Contains
-       objects representing specific sub-states of the OpenGL ES pipeline, and controls their setting/unsetting.
-******************************************************************************************************************/
+/// <summary>Supporting class for the Graphics Pipeline object. Do not use directly. Main responsibility: Contains
+/// objects representing specific sub-states of the OpenGL ES pipeline, and controls their setting/unsetting.
+/// </summary>
 struct GraphicsStateContainer
 {
 public:
@@ -45,6 +53,7 @@ public:
 
 	bool hasVertexShader()const { return vertexShader.isValid(); }
 	bool hasFragmentShader()const { return fragmentShader.isValid(); }
+<<<<<<< HEAD
 
     /*!
        \brief Unset all the states.
@@ -63,6 +72,11 @@ public:
        \brief Set all the states.
        \param device
      */
+=======
+
+    /// <summary>Set all the states.</summary>
+    /// <param name="device"></param>
+>>>>>>> 1776432f... 4.3
 	void setAll(pvr::IGraphicsContext& device)const
 	{
 		for (StateContainer::const_iterator it = states.begin(); it != states.end(); ++it)
@@ -72,11 +86,17 @@ public:
 		}
 	}
 
+<<<<<<< HEAD
     /*!
        \brief Get vertex input bindingInfo
        \param bindingId Input binding id
        \return Return a pointer to VertexInputBindingInfo or NULL if not found.
      */
+=======
+    /// <summary>Get vertex input bindingInfo</summary>
+    /// <param name="bindingId">Input binding id</param>
+    /// <returns>Return a pointer to VertexInputBindingInfo or NULL if not found.</returns>
+>>>>>>> 1776432f... 4.3
 	const VertexInputBindingInfo* getInputBindingInfo(pvr::uint16 bindingId)const
 	{
 		auto found = std::find_if(vertexInputBindings.begin(), vertexInputBindings.end(), VertexBindingInfoPred_BindingEqual(bindingId));
@@ -84,11 +104,17 @@ public:
 		return NULL;
 	}
 
+<<<<<<< HEAD
     /*!
        \brief Get vertex attribute bindingInfo
        \param bindingId binding id
        \return Return a pointer to VertexAttributeInfoWithBinding or NULL if not found.
      */
+=======
+    /// <summary>Get vertex attribute bindingInfo</summary>
+    /// <param name="bindingId">binding id</param>
+    /// <returns>Return a pointer to VertexAttributeInfoWithBinding or NULL if not found.</returns>
+>>>>>>> 1776432f... 4.3
 	const VertexAttributeInfoWithBinding* getAttributesInfo(pvr::uint16 bindingId) const
 	{
 		auto found = std::find_if(vertexAttributes.begin(), vertexAttributes.end(), VertexAttributeInfoPred_BindingEquals(bindingId));
@@ -99,11 +125,16 @@ public:
 		return NULL;
 	}
 
+<<<<<<< HEAD
     /*!
        \brief Get the number of attributes for a buffer binding.
        \param bindingId
        \return
      */
+=======
+    /// <summary>Get the number of attributes for a buffer binding.</summary>
+    /// <param name="bindingId"></param>
+>>>>>>> 1776432f... 4.3
 	pvr::uint8 getNumAttributes(pvr::uint16 bindingId)const
 	{
 		uint8 retval = 0;

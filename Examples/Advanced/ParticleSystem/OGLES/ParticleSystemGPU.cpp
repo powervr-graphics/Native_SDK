@@ -33,6 +33,8 @@ ParticleSystemGPU::~ParticleSystemGPU()
 	}
 	particleConfigUbo.reset();
 	collisonSpheresUbo.reset();
+	pipe.reset();
+	context.reset();
 }
 
 /*!*********************************************************************************************************************
@@ -66,19 +68,24 @@ bool ParticleSystemGPU::createComputePipeline(pvr::string& errorStr)
 {
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
 	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
+<<<<<<< HEAD
 	descSetLayoutInfo
 	.setBinding(1, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Compute)
 	.setBinding(2, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Compute)
 	.setBinding(3, DescriptorType::StorageBuffer, 1, ShaderStageFlags::Compute)
 	.setBinding(4, DescriptorType::StorageBuffer, 1, ShaderStageFlags::Compute);
+=======
+	descSetLayoutInfo.setBinding(PARTICLE_CONFIG_UBO_BINDING_INDEX, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Compute);
+	descSetLayoutInfo.setBinding(SPHERES_UBO_BINDING_INDEX, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Compute);
+	descSetLayoutInfo.setBinding(PARTICLES_SSBO_BINDING_INDEX_IN, DescriptorType::StorageBuffer, 1, ShaderStageFlags::Compute);
+	descSetLayoutInfo.setBinding(PARTICLES_SSBO_BINDING_INDEX_OUT, DescriptorType::StorageBuffer, 1, ShaderStageFlags::Compute);
+>>>>>>> 1776432f... 4.3
 	pipeLayoutInfo.setDescSetLayout(0, context->createDescriptorSetLayout(descSetLayoutInfo));
 
-	pvr::api::debugLogApiError("ComputeShaderProgramState::generate enter");
 	pvr::api::ComputePipelineCreateParam pipeCreateInfo;
 	std::string defines("WORKGROUP_SIZE               ", 30);
 	sprintf(&defines[15], "%d", workgroupSize);
 	const char* defines_buffer[1] = { &defines[0] };
-	pvr::api::debugLogApiError("ComputeShaderProgramState::generate enter");
 	pvr::assets::ShaderFile fileVersioning;
 	fileVersioning.populateValidVersions(computeShaderSrcFile, assetProvider);
 	pvr::api::Shader shader = context->createShader(*fileVersioning.getBestStreamForApi(context->getApiType()),
@@ -148,7 +155,8 @@ bool ParticleSystemGPU::setCollisionSpheres(const Sphere* spheres, pvr::uint32 n
 {
 	if (numSpheres)
 	{
-		collisonSpheresUbo = context->createBufferView(context->createBuffer(sizeof(Sphere) * numSpheres, BufferBindingUse::UniformBuffer), 0, sizeof(Sphere) * numSpheres);
+		auto buffer = context->createBuffer(sizeof(Sphere) * numSpheres, BufferBindingUse::UniformBuffer);
+		collisonSpheresUbo = context->createBufferView(buffer, 0, sizeof(Sphere) * numSpheres);
 		collisonSpheresUbo->update(spheres, 0, sizeof(Sphere)* numSpheres);
 	}
 	return true;
@@ -183,10 +191,10 @@ void ParticleSystemGPU::setParticleVboBuffers(const pvr::api::Buffer* particleVb
 		id_in = (id_in - 1) % NumBuffers;
 		int id_out = (id_in + 1) % NumBuffers;
 		pvr::api::DescriptorSetUpdate descSetInfo;
-		descSetInfo.setUbo(PARTICLE_CONFIG_UBO_BINDING_INDEX, particleConfigUbo)
-		.setUbo(SPHERES_UBO_BINDING_INDEX, collisonSpheresUbo)
-		.setSsbo(PARTICLES_SSBO_BINDING_INDEX_IN, particleBufferViewSsbos[id_in])
-		.setSsbo(PARTICLES_SSBO_BINDING_INDEX_OUT, particleBufferViewSsbos[id_out]);
+		descSetInfo.setUbo(PARTICLE_CONFIG_UBO_BINDING_INDEX, particleConfigUbo);
+		descSetInfo.setUbo(SPHERES_UBO_BINDING_INDEX, collisonSpheresUbo);
+		descSetInfo.setSsbo(PARTICLES_SSBO_BINDING_INDEX_IN, particleBufferViewSsbos[id_in]);
+		descSetInfo.setSsbo(PARTICLES_SSBO_BINDING_INDEX_OUT, particleBufferViewSsbos[id_out]);
 		descSets[i]->update(descSetInfo);
 	}
 }

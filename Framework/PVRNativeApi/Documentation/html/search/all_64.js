@@ -1,5 +1,6 @@
 var searchData=
 [
+<<<<<<< HEAD
   ['data',['data',['../_api_gles2_8h.html#a0f78eecb0891cce3bdfc815b971866a1',1,'data():&#160;ApiGles2.h'],['../_api_gles3_8h.html#a299053a49de41e7b5b02e3b5e0bf6450',1,'data():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a028c406a4fca59a73db3a93a206700f6',1,'data():&#160;ApiGles31.h']]],
   ['dataformat',['dataFormat',['../namespacepvr_1_1api_1_1_convert_to_vk.html#ab041d986f5f36875d317d75beae02e02',1,'pvr::api::ConvertToVk']]],
   ['datatype',['dataType',['../namespacepvr_1_1api_1_1_convert_to_gles.html#a24a77c70d1a597e28d6254ef5cdcbe62',1,'pvr::api::ConvertToGles']]],
@@ -51,4 +52,9 @@ var searchData=
   ['dstx1',['dstX1',['../_api_gles3_8h.html#a67695e2103461680c794506cd17ac2e2',1,'ApiGles3.h']]],
   ['dsty0',['dstY0',['../_api_gles3_8h.html#a828a0708c8e3ebe901aba9022b72d904',1,'ApiGles3.h']]],
   ['dsty1',['dstY1',['../_api_gles3_8h.html#a164758878d9314363398e6f128dd9fbe',1,'ApiGles3.h']]]
+=======
+  ['datatype',['dataType',['../namespacepvr_1_1native_gles_1_1_convert_to_gles.html#a06817debdbe5a11e09172133fdce815c',1,'pvr::nativeGles::ConvertToGles']]],
+  ['debuglogapierror',['debugLogApiError',['../_api_errors_gles_8h.html#aa4a34e5f0fe25188000448cf51fead42',1,'ApiErrorsGles.h']]],
+  ['drawprimitivetype',['drawPrimitiveType',['../namespacepvr_1_1native_gles_1_1_convert_to_gles.html#ab10c8c4e5daaf08e8b8835d7464421fd',1,'pvr::nativeGles::ConvertToGles']]]
+>>>>>>> 1776432f... 4.3
 ];

@@ -1,12 +1,22 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRShell\OS\NullWS\ShellOS.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief     	  Contains the implementation for the pvr::platform::ShellOS class on Null Windowing System platforms (Linux & Neutrino).
 ***********************************************************************************************************************/
+=======
+/*!
+\brief Contains the implementation for the pvr::platform::ShellOS class on Null Windowing System platforms (Linux &
+Neutrino).
+\file PVRShell\OS/NullWS/ShellOS.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/FilePath.h"
+#include "PVRCore/IO/FilePath.h"
 #include "PVRCore/Log.h"
 
 #if defined(__linux__)
@@ -73,16 +83,16 @@ struct InternalOS
 };
 
 // Setup the capabilities.
-const ShellOS::Capabilities ShellOS::m_capabilities = { Capability::Unsupported, Capability::Unsupported };
+const ShellOS::Capabilities ShellOS::_capabilities = { Capability::Unsupported, Capability::Unsupported };
 
-ShellOS::ShellOS(OSApplication application, OSDATA osdata) : m_instance(application)
+ShellOS::ShellOS(OSApplication application, OSDATA osdata) : _instance(application)
 {
-	m_OSImplementation = new InternalOS;
+	_OSImplementation = new InternalOS;
 }
 
 ShellOS::~ShellOS()
 {
-	delete m_OSImplementation;
+	delete _OSImplementation;
 }
 
 void ShellOS::updatePointingDeviceLocation()
@@ -90,14 +100,14 @@ void ShellOS::updatePointingDeviceLocation()
 	static bool runOnlyOnce = true;
 	if (runOnlyOnce)
 	{
-		m_shell->updatePointerPosition(PointerLocation(0, 0));
+		_shell->updatePointerPosition(PointerLocation(0, 0));
 		runOnlyOnce = false;
 	}
 }
 
 Result ShellOS::init(DisplayAttributes& data)
 {
-	if (!m_OSImplementation)
+	if (!_OSImplementation)
 	{
 		return Result::OutOfMemory;
 	}
@@ -108,27 +118,27 @@ Result ShellOS::init(DisplayAttributes& data)
 	signal(SIGTTOU, SIG_IGN);
 
 	// Keyboard handling.
-	if ((m_OSImplementation->devfd = open(CONNAME, O_RDWR | O_NDELAY)) <= 0)
+	if ((_OSImplementation->devfd = open(CONNAME, O_RDWR | O_NDELAY)) <= 0)
 	{
 		Log(Log.Warning, "Can't open tty '" CONNAME "'");
 	}
 	else
 	{
-		tcgetattr(m_OSImplementation->devfd, &m_OSImplementation->termio_orig);
-		tcgetattr(m_OSImplementation->devfd, &m_OSImplementation->termio);
-		cfmakeraw(&m_OSImplementation->termio);
-		m_OSImplementation->termio.c_oflag |= OPOST | ONLCR; // Turn back on cr-lf expansion on output
-		m_OSImplementation->termio.c_cc[VMIN] = 1;
-		m_OSImplementation->termio.c_cc[VTIME] = 0;
+		tcgetattr(_OSImplementation->devfd, &_OSImplementation->termio_orig);
+		tcgetattr(_OSImplementation->devfd, &_OSImplementation->termio);
+		cfmakeraw(&_OSImplementation->termio);
+		_OSImplementation->termio.c_oflag |= OPOST | ONLCR; // Turn back on cr-lf expansion on output
+		_OSImplementation->termio.c_cc[VMIN] = 1;
+		_OSImplementation->termio.c_cc[VTIME] = 0;
 
-		if (tcsetattr(m_OSImplementation->devfd, TCSANOW, &m_OSImplementation->termio) == -1)
+		if (tcsetattr(_OSImplementation->devfd, TCSANOW, &_OSImplementation->termio) == -1)
 		{
 			Log(Log.Warning, "Can't set tty attributes for '" CONNAME "'");
 		}
 	}
 
 	// Keypad handling.
-	if ((m_OSImplementation->keypad_fd = open(KEYPAD_INPUT, O_RDONLY | O_NDELAY)) <= 0)
+	if ((_OSImplementation->keypad_fd = open(KEYPAD_INPUT, O_RDONLY | O_NDELAY)) <= 0)
 	{
 		Log(Log.Warning, "Can't open keypad input device (%s)\n", KEYPAD_INPUT);
 	}
@@ -157,8 +167,8 @@ Result ShellOS::init(DisplayAttributes& data)
 
 	static char* keyboardDeviceFileName = strdup(strcat(devFilePath, temp));
 
-	m_OSImplementation->keyboard_fd = open(keyboardDeviceFileName, O_RDONLY | O_NDELAY);
-	if (m_OSImplementation->keyboard_fd <= 0)
+	_OSImplementation->keyboard_fd = open(keyboardDeviceFileName, O_RDONLY | O_NDELAY);
+	if (_OSImplementation->keyboard_fd <= 0)
 	{
 		Log(Log.Warning, "Can't open keyboard input device (%s)  -- (Code : %i - %s)\n", keyboardDeviceFileName, errno, strerror(errno));
 	}
@@ -192,11 +202,11 @@ Result ShellOS::init(DisplayAttributes& data)
 		exePath[res] = '\0'; // Null-terminate readlink's result.
 		FilePath filepath(exePath);
 		setApplicationName(filepath.getFilenameNoExtension());
-		m_WritePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
-		m_ReadPaths.clear();
-		m_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
-		m_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
-		m_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
+		_WritePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
+		_ReadPaths.clear();
+		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
+		_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
+		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
 	}
 
 	delete[] exePath;
@@ -232,7 +242,7 @@ Result ShellOS::init(DisplayAttributes& data)
 
 Result ShellOS::initializeWindow(DisplayAttributes& data)
 {
-	m_OSImplementation->isInitialized = true;
+	_OSImplementation->isInitialized = true;
 	data.fullscreen = true;
 	data.x = data.y = 0;
 	data.width = data.height = 0; //no way of getting the monitor resolution.
@@ -241,20 +251,20 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 
 void ShellOS::releaseWindow()
 {
-	m_OSImplementation->isInitialized = false;
+	_OSImplementation->isInitialized = false;
 
-	close(m_OSImplementation->keyboard_fd);
-	close(m_OSImplementation->keypad_fd);
+	close(_OSImplementation->keyboard_fd);
+	close(_OSImplementation->keypad_fd);
 }
 
 OSApplication ShellOS::getApplication() const
 {
-	return m_instance;
+	return _instance;
 }
 
 OSDisplay ShellOS::getDisplay() const
 {
-	return reinterpret_cast<OSDisplay>(m_OSImplementation->display);
+	return reinterpret_cast<OSDisplay>(_OSImplementation->display);
 }
 
 OSWindow ShellOS::getWindow() const
@@ -443,29 +453,33 @@ Result ShellOS::handleOSEvents()
 
 #if defined(__linux__)
 	// Terminal.
-	if (m_OSImplementation->devfd > 0)
+	if (_OSImplementation->devfd > 0)
 	{
 		unsigned char initialKey;
+<<<<<<< HEAD
 		int bytesRead = read(m_OSImplementation->devfd, &initialKey, 1);
+=======
+		int bytesRead = read(_OSImplementation->devfd, &initialKey, 1);
+>>>>>>> 1776432f... 4.3
 		Keys key = Keys::Unknown;
 		if ((bytesRead > 0) && initialKey)
 		{
 			// Check for special multi-character key - (first character is Escape or F7).
 			if ((terminalStandardKeyMap[initialKey] == Keys::Escape) || (terminalStandardKeyMap[initialKey] == Keys::F7))
 			{
-				key = m_OSImplementation->getSpecialKey(terminalStandardKeyMap[initialKey]);
+				key = _OSImplementation->getSpecialKey(terminalStandardKeyMap[initialKey]);
 			}
 			else
 			{
 				key = terminalStandardKeyMap[initialKey];
 			}
 		}
-		m_shell->onKeyDown(key);
-		m_shell->onKeyUp(key);
+		_shell->onKeyDown(key);
+		_shell->onKeyUp(key);
 	}
 
 	// Keyboard.
-	if (m_OSImplementation->keyboard_fd > 0)
+	if (_OSImplementation->keyboard_fd > 0)
 	{
 		struct input_event
 		{
@@ -475,32 +489,36 @@ Result ShellOS::handleOSEvents()
 			unsigned int value;
 		} keyinfo;
 
-		int bytes = read(m_OSImplementation->keyboard_fd, &keyinfo, sizeof(struct input_event));
+		int bytes = read(_OSImplementation->keyboard_fd, &keyinfo, sizeof(struct input_event));
 
 		if ((bytes == sizeof(struct input_event)) && (keyinfo.type == EV_KEY))
 		{
 			// Update shift key status.
 			if (keyboardKeyMap[keyinfo.code] == Keys::Shift)
 			{
-				m_OSImplementation->keyboardShiftHeld = (keyinfo.value > 0);
+				_OSImplementation->keyboardShiftHeld = (keyinfo.value > 0);
 			}
 
 			// Select standard or shifted key map.
+<<<<<<< HEAD
 			Keys* keyMap = m_OSImplementation->keyboardShiftHeld ? keyboardShiftedKeyMap : keyboardKeyMap;
+=======
+			Keys* keyMap = _OSImplementation->keyboardShiftHeld ? keyboardShiftedKeyMap : keyboardKeyMap;
+>>>>>>> 1776432f... 4.3
 
 			if (keyinfo.value == 0)
 			{
-				m_shell->onKeyUp(keyMap[keyinfo.code]);
+				_shell->onKeyUp(keyMap[keyinfo.code]);
 			}
 			else
 			{
-				m_shell->onKeyDown(keyMap[keyinfo.code]);
+				_shell->onKeyDown(keyMap[keyinfo.code]);
 			}
 		}
 	}
 
 	// Keypad.
-	if (m_OSImplementation->keypad_fd > 0)
+	if (_OSImplementation->keypad_fd > 0)
 	{
 		struct input_event
 		{
@@ -510,7 +528,7 @@ Result ShellOS::handleOSEvents()
 			unsigned int value;
 		} keyinfo;
 
-		int bytes = read(m_OSImplementation->keypad_fd, &keyinfo, sizeof(struct input_event));
+		int bytes = read(_OSImplementation->keypad_fd, &keyinfo, sizeof(struct input_event));
 
 		if (bytes == sizeof(struct input_event) && keyinfo.type == 0x01)
 		{
@@ -521,7 +539,7 @@ Result ShellOS::handleOSEvents()
 			//case 37:
 			//case 65:
 			//{
-			//	m_shell->onSystemEvent(SystemEvent::Screenshot);
+			//	_shell->onSystemEvent(SystemEvent::Screenshot);
 			//	break;
 			//}
 			case 28: key = Keys::Space; break; // Old Select
@@ -535,7 +553,7 @@ Result ShellOS::handleOSEvents()
 			}
 			if (key != Keys::Unknown)
 			{
-				keyinfo.value == 0 ? m_shell->onKeyUp(key) : m_shell->onKeyDown(key);
+				keyinfo.value == 0 ? _shell->onKeyUp(key) : _shell->onKeyDown(key);
 			}
 
 		}
@@ -614,10 +632,14 @@ Result ShellOS::handleOSEvents()
 
 bool ShellOS::isInitialized()
 {
-	return m_OSImplementation && m_OSImplementation->isInitialized;
+	return _OSImplementation && _OSImplementation->isInitialized;
 }
 
+<<<<<<< HEAD
 Result ShellOS::popUpMessage(const tchar* title, const tchar* message, ...) const
+=======
+Result ShellOS::popUpMessage(const char8* title, const char8* message, ...) const
+>>>>>>> 1776432f... 4.3
 {
 	if (!message)
 	{

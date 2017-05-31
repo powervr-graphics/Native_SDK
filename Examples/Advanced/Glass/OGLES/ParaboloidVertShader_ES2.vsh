@@ -26,16 +26,16 @@ void main()
 	gl_Position.xy /= 1.0 - gl_Position.z;
 
 	// Calculate and set the Z and W coordinates
-	gl_Position.z = ((Distance / Far) - 0.5) * 2.0;
+	gl_Position.z = (((Distance - Near) / (Far - Near)) - 0.5) * 2.0;
 	gl_Position.w = 1.0;
-	
+
 	// Pass through texture coordinates
 	TexCoords = inTexCoords;
 
 	// Calculate light intensity
 	// Ambient
 	LightIntensity = 0.4;
-	
+
 	// Diffuse
 	LightIntensity += max(dot(inNormal, LightDir), 0.0) * 0.3;
 

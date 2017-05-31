@@ -1,13 +1,12 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\OGLES\RenderPassGles.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Definitions of the OpenGL ES implementation of the RenderPass.
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief Definitions of the OpenGL ES implementation of the RenderPass.
+\file PVRApi/OGLES/RenderPassGles.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRApi/OGLES/RenderPassGles.h"
 #include "PVRApi/ApiObjects/Fbo.h"
-#include "PVRNativeApi/ApiErrors.h"
+#include "PVRNativeApi/OGLES/ApiErrorsGles.h"
 #include "PVRApi/OGLES/ContextGles.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
 #include "PVRNativeApi/OGLES/OpenGLESBindings.h"
@@ -18,12 +17,16 @@ namespace api {
 namespace gles {
 void RenderPassGles_::destroy()
 {
+<<<<<<< HEAD
 	m_desc.clear();
+=======
+	_desc.clear();
+>>>>>>> 1776432f... 4.3
 }
 
 bool RenderPassGles_::init(const RenderPassCreateParam& descriptor)
 {
-	m_desc = descriptor;
+	_desc = descriptor;
 	return true;
 }
 
@@ -31,7 +34,7 @@ void RenderPassGles_::begin(IGraphicsContext& device, const api::Fbo& fbo, const
                             glm::vec4* clearColor, pvr::uint32 numClearColor, pvr::float32 clearDepth,
                             pvr::int32 clearStencil) const
 {
-	platform::ContextGles& deviceEs = static_cast<platform::ContextGles&>(device);
+	platform::ContextGles& deviceEs = native_cast(device);
 	platform::ContextGles::RenderStatesTracker& renderStates = deviceEs.getCurrentRenderStates();
 	GLbitfield clears = 0;
 	assertion(fbo.isValid() , "Null Fbo");
@@ -57,29 +60,34 @@ void RenderPassGles_::begin(IGraphicsContext& device, const api::Fbo& fbo, const
 		debugLogApiError("RenderPass_::begin end set scissor");
 	}
 
-	if (m_desc.getNumSubPass() > 1)
+	if (_desc.getNumSubPass() > 1)
 	{
 #ifdef GL_SHADER_PIXEL_LOCAL_STORAGE_EXT
-		if (m_context->isExtensionSupported("GL_EXT_shader_pixel_local_storage"))
+		if (_context->isExtensionSupported("GL_EXT_shader_pixel_local_storage"))
 		{
 			gl::Enable(GL_SHADER_PIXEL_LOCAL_STORAGE_EXT);
 		}
 #endif
 	}
 
-	if (device.getApiType() <= Api::OpenGLES2 && m_desc.getNumColorInfo())
+	if (device.getApiType() <= Api::OpenGLES2 && _desc.getNumColorInfo())
 	{
+<<<<<<< HEAD
 		const LoadOp& loadOpColor = m_desc.getColorInfo(0).loadOpColor;
 		const StoreOp& storeOpColor  = m_desc.getColorInfo(0).storeOpColor;
+=======
+		const LoadOp& loadOpColor = _desc.getColorInfo(0).loadOpColor;
+		const StoreOp& storeOpColor  = _desc.getColorInfo(0).storeOpColor;
+>>>>>>> 1776432f... 4.3
 
-		for (uint32 i = 1; i < m_desc.getNumColorInfo(); ++i)
+		for (uint32 i = 1; i < _desc.getNumColorInfo(); ++i)
 		{
-			if (loadOpColor != m_desc.getColorInfo(i).loadOpColor)
+			if (loadOpColor != _desc.getColorInfo(i).loadOpColor)
 			{
 				Log(Log.Error, "Different LoadOps defined for attachments of an FBO. OpenGL ES 2 cannot support"
 				    " different ops per attachment - defaulting to LoadOp of Attachment 0");
 			}
-			if (storeOpColor != m_desc.getColorInfo(i).storeOpColor)
+			if (storeOpColor != _desc.getColorInfo(i).storeOpColor)
 			{
 				Log(Log.Error, "Different StoreOps defined for attachments of an FBO. OpenGL ES 2 cannot support"
 				    " different ops per attachment - defaulting to StoreOp of Attachment 0");
@@ -89,9 +97,13 @@ void RenderPassGles_::begin(IGraphicsContext& device, const api::Fbo& fbo, const
 
 	std::vector<GLenum> invalidateAttachments;
 	//Weird for condition is so that for <=GLES2, run only once
-	for (uint32 i = 0; i < m_desc.getNumColorInfo() && (i == 0 || device.getApiType() >= Api::OpenGLES3); ++i)
+	for (uint32 i = 0; i < _desc.getNumColorInfo() && (i == 0 || device.getApiType() >= Api::OpenGLES3); ++i)
 	{
+<<<<<<< HEAD
 		const LoadOp& loadOp = m_desc.getColorInfo(i).loadOpColor;
+=======
+		const LoadOp& loadOp = _desc.getColorInfo(i).loadOpColor;
+>>>>>>> 1776432f... 4.3
 		switch (loadOp)
 		{
 		case LoadOp::Ignore:
@@ -133,57 +145,62 @@ void RenderPassGles_::begin(IGraphicsContext& device, const api::Fbo& fbo, const
 	}// next color op
 
 	// apply depth load op
-	switch (m_desc.getDepthStencilInfo().loadOpDepth)
+	if(_desc.getNumDepthStencilInfo() > 0)
 	{
-	case LoadOp::Load: break;// LoadOp::Load is the default GL behaviour - so don't clear or invalidate.
-	case LoadOp::Ignore:
-		// enable the depth mask if the current state is disabled
-		if (!renderStates.depthStencil.depthWrite) { gl::DepthMask(true); }
-		if (device.hasApiCapability(ApiCapabilities::InvalidateFrameBuffer))
+		switch (_desc.getDepthStencilInfo(0).loadOpDepth)
 		{
-			invalidateAttachments.push_back(isFrameBufferZero ? GL_DEPTH : GL_DEPTH_ATTACHMENT);
-		}
-		else
-		{
+		case LoadOp::Load: break;// LoadOp::Load is the default GL behaviour - so don't clear or invalidate.
+		case LoadOp::Ignore:
+			// enable the depth mask if the current state is disabled
+			if (!renderStates.depthStencil.depthWrite) { gl::DepthMask(true); }
+			if (device.hasApiCapability(ApiCapabilities::InvalidateFrameBuffer))
+			{
+				invalidateAttachments.push_back(isFrameBufferZero ? GL_DEPTH : GL_DEPTH_ATTACHMENT);
+			}
+			else
+			{
+				clears |= GL_DEPTH_BUFFER_BIT;
+			}
+			break;
+		case LoadOp::Clear:
+			debugLogApiError("RenderPass_::begin begin clear depth");
+			gl::ClearDepthf(clearDepth);
+			debugLogApiError("RenderPass_::begin end clear color");
+			if (!renderStates.depthStencil.depthWrite) { gl::DepthMask(true); }
 			clears |= GL_DEPTH_BUFFER_BIT;
+			break;
 		}
-		break;
-	case LoadOp::Clear:
-		debugLogApiError("RenderPass_::begin begin clear depth");
-		gl::ClearDepthf(clearDepth);
-		debugLogApiError("RenderPass_::begin end clear color");
-		if (!renderStates.depthStencil.depthWrite) { gl::DepthMask(true); }
-		clears |= GL_DEPTH_BUFFER_BIT;
-		break;
 	}
 	debugLogApiError("RenderPass_::begin depth");
 
 	// apply stencil load op
-	switch (m_desc.getDepthStencilInfo().loadOpStencil)
+	if(_desc.getNumDepthStencilInfo() > 0)
 	{
-	case LoadOp::Load: break;// LoadOp::Load is the default GL behaviour - so don't clear or invalidate.
-	case LoadOp::Ignore:
-		// enable stencil write mask if it is disabled
-		if (!renderStates.depthStencil.stencilWriteMask) { gl::StencilMask(1); }
-		if (device.hasApiCapability(ApiCapabilities::InvalidateFrameBuffer))
+		switch (_desc.getDepthStencilInfo(0).loadOpStencil)
 		{
-			invalidateAttachments.push_back(isFrameBufferZero ? GL_STENCIL : GL_STENCIL_ATTACHMENT);
-		}
-		else
-		{
-			clears |= GL_STENCIL_BUFFER_BIT;
+		case LoadOp::Load: break;// LoadOp::Load is the default GL behaviour - so don't clear or invalidate.
+		case LoadOp::Ignore:
 			// enable stencil write mask if it is disabled
+			if (!renderStates.depthStencil.stencilWriteMask) { gl::StencilMask(1); }
+			if (device.hasApiCapability(ApiCapabilities::InvalidateFrameBuffer))
+			{
+				invalidateAttachments.push_back(isFrameBufferZero ? GL_STENCIL : GL_STENCIL_ATTACHMENT);
+			}
+			else
+			{
+				clears |= GL_STENCIL_BUFFER_BIT;
+				// enable stencil write mask if it is disabled
+			}
+			break;
+		case LoadOp::Clear:
+			if (!renderStates.depthStencil.stencilWriteMask) {	gl::StencilMask(1); }
+			debugLogApiError("RenderPass_::begin begin clear stencil");
+			gl::ClearStencil(clearStencil);
+			debugLogApiError("RenderPass_::begin end clear stencil");
+			clears |= GL_STENCIL_BUFFER_BIT;
+			break;
 		}
-		break;
-	case LoadOp::Clear:
-		if (!renderStates.depthStencil.stencilWriteMask) {	gl::StencilMask(1); }
-		debugLogApiError("RenderPass_::begin begin clear stencil");
-		gl::ClearStencil(clearStencil);
-		debugLogApiError("RenderPass_::begin end clear stencil");
-		clears |= GL_STENCIL_BUFFER_BIT;
-		break;
-	}
-
+}
 	// do fbo's invalidate operation
 	if (invalidateAttachments.size())
 	{
@@ -231,10 +248,10 @@ void RenderPassGles_::begin(IGraphicsContext& device, const api::Fbo& fbo, const
 
 void RenderPassGles_::end(IGraphicsContext& context) const
 {
-	if (m_desc.getNumSubPass() > 1)
+	if (_desc.getNumSubPass() > 1)
 	{
 #ifdef GL_SHADER_PIXEL_LOCAL_STORAGE_EXT
-		if (m_context->isExtensionSupported("GL_EXT_shader_pixel_local_storage"))
+		if (_context->isExtensionSupported("GL_EXT_shader_pixel_local_storage"))
 		{
 			gl::Disable(GL_SHADER_PIXEL_LOCAL_STORAGE_EXT);
 		}
@@ -255,12 +272,17 @@ void RenderPassGles_::end(IGraphicsContext& context) const
 	bool isFrameBufferZero = (myint == 0);
 
 
-	if (context.getApiType() <= Api::OpenGLES2 && m_desc.getNumColorInfo())
+	if (context.getApiType() <= Api::OpenGLES2 && _desc.getNumColorInfo())
 	{
+<<<<<<< HEAD
 		const StoreOp& storeOpColor = m_desc.getColorInfo(0).storeOpColor;
 		for (uint32 i = 1; i < m_desc.getNumColorInfo(); ++i)
+=======
+		const StoreOp& storeOpColor = _desc.getColorInfo(0).storeOpColor;
+		for (uint32 i = 1; i < _desc.getNumColorInfo(); ++i)
+>>>>>>> 1776432f... 4.3
 		{
-			if (storeOpColor != m_desc.getColorInfo(i).storeOpColor)
+			if (storeOpColor != _desc.getColorInfo(i).storeOpColor)
 			{
 				Log(Log.Error, "Different StoreOps defined for attachments of an FBO. OpenGL ES 2 cannot support"
 				    " different ops per attachment - defaulting to StoreOp of Attachment 0");
@@ -272,9 +294,9 @@ void RenderPassGles_::end(IGraphicsContext& context) const
 	{
 		//ES 2 does not support ignore, and store is the default.
 		std::vector<GLenum> invalidateAttachments;
-		for (uint32 i = 0; i < m_desc.getNumColorInfo(); ++i)
+		for (uint32 i = 0; i < _desc.getNumColorInfo(); ++i)
 		{
-			if (m_desc.getColorInfo(i).storeOpColor == StoreOp::Ignore)
+			if (_desc.getColorInfo(i).storeOpColor == StoreOp::Ignore)
 			{
 				invalidateAttachments.push_back(isFrameBufferZero ? GL_COLOR : (GL_COLOR_ATTACHMENT0 + i));
 			}
@@ -284,21 +306,24 @@ void RenderPassGles_::end(IGraphicsContext& context) const
 		// apply depth load op
 
 		//ES 2 does not support ignore, and store is the default.
-		if (m_desc.getDepthStencilInfo().storeOpDepth == StoreOp::Ignore)
+		if(_desc.getNumDepthStencilInfo() > 0)
 		{
-			invalidateAttachments.push_back(isFrameBufferZero ? GL_DEPTH : GL_DEPTH_ATTACHMENT);
+			if (_desc.getDepthStencilInfo(0).storeOpDepth == StoreOp::Ignore)
+			{
+				invalidateAttachments.push_back(isFrameBufferZero ? GL_DEPTH : GL_DEPTH_ATTACHMENT);
+			}
+			
+			debugLogApiError("RenderPass_::end depth");
+			
+			
+			//ES 2 does not support ignore, and store is the default.
+			// apply stencil load op
+			if (_desc.getDepthStencilInfo(0).storeOpStencil == StoreOp::Ignore)
+			{
+				invalidateAttachments.push_back(isFrameBufferZero ? GL_STENCIL : GL_STENCIL_ATTACHMENT);
+			}
+			debugLogApiError("RenderPass_::end stencil");
 		}
-		debugLogApiError("RenderPass_::end depth");
-
-
-		//ES 2 does not support ignore, and store is the default.
-		// apply stencil load op
-		if (m_desc.getDepthStencilInfo().storeOpStencil == StoreOp::Ignore)
-		{
-			invalidateAttachments.push_back(isFrameBufferZero ? GL_STENCIL : GL_STENCIL_ATTACHMENT);
-		}
-		debugLogApiError("RenderPass_::end stencil");
-
 		// do fbo's invalidate operation
 		if (invalidateAttachments.size() && context.hasApiCapabilityNatively(ApiCapabilities::InvalidateFrameBuffer))
 		{
@@ -313,10 +338,9 @@ void RenderPassGles_::end(IGraphicsContext& context) const
 	}
 	debugLogApiError("RenderPass_::end exit");
 #if defined(TARGET_OS_IPHONE)
-	static_cast<platform::ContextGles&>(context).getPlatformContext().presentBackbuffer();
+	native_cast(context).getPlatformContext().presentBackbuffer();
 #endif
 }
 }
 }
 }
-//!\endcond

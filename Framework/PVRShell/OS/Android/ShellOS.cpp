@@ -1,13 +1,22 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRShell\OS\Android\ShellOS.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief     	  Contains the implementation for the pvr::platform::ShellOS class on Android systems.
  ***********************************************************************************************************************/
+=======
+/*!
+\brief Contains the implementation for the pvr::platform::ShellOS class on Android systems.
+\file PVRShell\OS/Android/ShellOS.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/FilePath.h"
+#include "PVRCore/IO/FilePath.h"
 #include "PVRCore/Log.h"
-#include "PVRCore/IInputHandler.h"
+#include "PVRCore/Interfaces/IInputHandler.h"
 
 #include <android_native_app_glue.h>
 #include <android/sensor.h>
@@ -248,7 +257,7 @@ static Keys keyboardKeyMap[]
 static int16 cursor_x; static int16 cursor_y;
 void ShellOS::updatePointingDeviceLocation()
 {
-	m_shell->updatePointerPosition(PointerLocation(cursor_x, cursor_y));
+	_shell->updatePointerPosition(PointerLocation(cursor_x, cursor_y));
 }
 
 // Setup the callback function that handles the input.
@@ -320,11 +329,11 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event)
 }
 
 // Setup the capabilities.
-const ShellOS::Capabilities ShellOS::m_capabilities = { types::Capability::Unsupported, types::Capability::Unsupported };
+const ShellOS::Capabilities ShellOS::_capabilities = { types::Capability::Unsupported, types::Capability::Unsupported };
 
-ShellOS::ShellOS(void* hInstance, OSDATA osdata) : m_instance(hInstance)
+ShellOS::ShellOS(void* hInstance, OSDATA osdata) : _instance(hInstance)
 {
-	m_OSImplementation = new InternalOS;
+	_OSImplementation = new InternalOS;
 
 	android_app* state = static_cast<android_app*>(hInstance);
 
@@ -341,12 +350,12 @@ ShellOS::ShellOS(void* hInstance, OSDATA osdata) : m_instance(hInstance)
 
 ShellOS::~ShellOS()
 {
-	//delete m_OSImplementation;
+	//delete _OSImplementation;
 }
 
 Result ShellOS::init(DisplayAttributes& data)
 {
-	if (!m_OSImplementation)
+	if (!_OSImplementation)
 	{
 		return Result::OutOfMemory;
 	}
@@ -393,12 +402,12 @@ Result ShellOS::init(DisplayAttributes& data)
 	}
 	else
 	{
-		m_AppName = pszAppName;
+		_AppName = pszAppName;
 		free(pszAppName);
 	}
 
 	// Setup the read/write path.
-	android_app* instance = static_cast<android_app*>(m_instance);
+	android_app* instance = static_cast<android_app*>(_instance);
 	// Construct the binary path for GetReadPath() and GetWritePath().
 	char* internalDataPath = (char*)instance->activity->internalDataPath;
 
@@ -407,15 +416,15 @@ Result ShellOS::init(DisplayAttributes& data)
 		Log(Log.Debug,
 		    "Warning: The internal data path returned from Android is null. Attempting to generate from the app name..\n");
 
-		if (!m_AppName.empty())
+		if (!_AppName.empty())
 		{
-			size_t size = strlen("/data/data/") + m_AppName.length() + 2;
+			size_t size = strlen("/data/data/") + _AppName.length() + 2;
 
 			internalDataPath = (char*)malloc(size);
 
 			if (internalDataPath)
 			{
-				snprintf(internalDataPath, size, "/data/data/%s/", m_AppName.c_str());
+				snprintf(internalDataPath, size, "/data/data/%s/", _AppName.c_str());
 			}
 		}
 
@@ -424,25 +433,25 @@ Result ShellOS::init(DisplayAttributes& data)
 			internalDataPath = (char*) "/sdcard/";
 		}
 
-		m_WritePath = internalDataPath;
+		_WritePath = internalDataPath;
 
-		if (!m_AppName.empty())
+		if (!_AppName.empty())
 		{
 			free(internalDataPath);
 		}
 	}
 	else
 	{
-		m_WritePath = internalDataPath;
+		_WritePath = internalDataPath;
 	}
 
-	m_ReadPaths.clear(); m_ReadPaths.push_back(m_WritePath);
+	_ReadPaths.clear(); _ReadPaths.push_back(_WritePath);
 	return Result::Success;
 }
 
 Result ShellOS::initializeWindow(DisplayAttributes& data)
 {
-	android_app* instance = static_cast<android_app*>(m_instance);
+	android_app* instance = static_cast<android_app*>(_instance);
 	if (!instance->window)
 	{
 		return Result::NotInitialized;
@@ -462,7 +471,7 @@ void ShellOS::releaseWindow()
 
 OSApplication ShellOS::getApplication() const
 {
-	return m_instance;
+	return _instance;
 }
 
 OSDisplay ShellOS::getDisplay() const
@@ -472,7 +481,7 @@ OSDisplay ShellOS::getDisplay() const
 
 OSWindow ShellOS::getWindow() const
 {
-	return static_cast<android_app*>(m_instance)->window;
+	return static_cast<android_app*>(_instance)->window;
 }
 
 Result ShellOS::handleOSEvents()
@@ -481,16 +490,20 @@ Result ShellOS::handleOSEvents()
 	return Result::Success;
 }
 
+<<<<<<< HEAD
 Result ShellOS::popUpMessage(const tchar* title, const tchar* message, ...) const
+=======
+Result ShellOS::popUpMessage(const char* title, const char* message, ...) const
+>>>>>>> 1776432f... 4.3
 {
-	if (!title && !message && m_instance)
+	if (!title && !message && _instance)
 	{
 		return Result::NoData;
 	}
 
 	Result result = Result::UnknownError;
 
-	ANativeActivity* activity = static_cast<android_app*>(m_instance)->activity;
+	ANativeActivity* activity = static_cast<android_app*>(_instance)->activity;
 
 	if (activity)
 	{

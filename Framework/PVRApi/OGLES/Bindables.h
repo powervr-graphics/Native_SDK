@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRApi\OGLES\Bindables.h
 \author       PowerVR by Imagination, Developer Technology Team
@@ -5,25 +6,29 @@
 \brief         Contains classes representing objects that can be bound to pipeline binding points.
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
+=======
+/*!
+\brief Contains classes representing objects that can be bound to pipeline binding points.
+\file PVRApi/OGLES/Bindables.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 #pragma once
-#include "PVRCore/IGraphicsContext.h"
-#include "PVRCore/ForwardDecApiObjects.h"
+#include "PVRCore/Interfaces/IGraphicsContext.h"
+#include "PVRCore/Interfaces/ForwardDecApiObjects.h"
 
 // Forward Declarations
 namespace pvr {
 class IGraphicsContext;
 namespace api {
-//!\cond NO_DOXYGEN
 class BindDescriptorSets;
 namespace impl {
 template<typename> class PackagedBindable;
 template<typename, typename> class PackagedBindableWithParam;
 }
-//!\endcond
 
-/*!****************************************************************************************************************
-\brief Interface for bindable objects. A bindable has a bind(IGraphicsContext) command.
-*******************************************************************************************************************/
+/// <summary>Interface for bindable objects. A bindable has a bind(IGraphicsContext) command.</summary>
 class IBindable
 {
 	template <typename> friend class ::pvr::api::impl::PackagedBindable;
@@ -34,9 +39,8 @@ public:
 	virtual ~IBindable() {}
 };
 
-/*!*********************************************************************************************************************
-\brief Interface for index bindable. An index bindable can be bound to an indexed  binding point : bind(IGraphicsContext, index).
-***********************************************************************************************************************/
+/// <summary>Interface for index bindable. An index bindable can be bound to an indexed binding point :
+/// bind(IGraphicsContext, index).</summary>
 class IIndexBindable
 {
 	friend class ::pvr::api::BindDescriptorSets;

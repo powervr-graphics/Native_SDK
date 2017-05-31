@@ -1,0 +1,5 @@
+<map id="pvr::ui::impl::I2dComponent" name="pvr::ui::impl::I2dComponent">
+<area shape="rect" id="node2" href="$classpvr_1_1ui_1_1impl_1_1_image__.html" title="Use this class through the Refcounted Framework Object pvr::ui::Image. Represents a 2D Image (aka Tex..." alt="" coords="5,80,145,107"/>
+<area shape="rect" id="node3" href="$classpvr_1_1ui_1_1impl_1_1_pixel_group__.html" title="This class is wrapped into the pvr::ui::Group Refcounted Framework Object. Use to apply a transformat..." alt="" coords="171,80,340,107"/>
+<area shape="rect" id="node4" href="$classpvr_1_1ui_1_1impl_1_1_text__.html" title="Use this class through the Refcounted Framework Object pvr::ui::Text. Represents some text that can b..." alt="" coords="365,80,495,107"/>
+</map>

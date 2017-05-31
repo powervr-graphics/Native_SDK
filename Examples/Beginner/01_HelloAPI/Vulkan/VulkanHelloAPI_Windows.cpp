@@ -391,6 +391,7 @@ public:
 	***********************************************************************************************************************/
 	NativeLibrary(const std::string& LibPath)
 	{
+<<<<<<< HEAD
 		m_hHostLib = LoadLibraryA(LibPath.c_str());
 
 		if (!m_hHostLib)
@@ -398,6 +399,15 @@ public:
 			LOGE("Could not load host library '%s'", LibPath.c_str());
 		}
 		LOGI("Host library '%s' loaded", LibPath.c_str());
+=======
+		_hostLib = LoadLibraryA(LibPath.c_str());
+
+		if (!_hostLib)
+		{
+			LOGE("Could not load host library '%s'\n", LibPath.c_str());
+		}
+		LOGI("Host library '%s' loaded\n", LibPath.c_str());
+>>>>>>> 1776432f... 4.3
 	}
 	~NativeLibrary() { CloseLib(); }
 
@@ -409,10 +419,17 @@ public:
 	void* getFunction(const char* functionName)
 	{
 
+<<<<<<< HEAD
 		void* pFn = GetProcAddress(m_hHostLib, functionName);
 		if (pFn == NULL)
 		{
 			LOGE("Could not get function %s", functionName);
+=======
+		void* pFn = GetProcAddress(_hostLib, functionName);
+		if (pFn == NULL)
+		{
+			LOGE("Could not get function %s\n", functionName);
+>>>>>>> 1776432f... 4.3
 		}
 		return pFn;
 	}
@@ -430,6 +447,7 @@ public:
 	***********************************************************************************************************************/
 	void CloseLib()
 	{
+<<<<<<< HEAD
 		if (m_hHostLib)
 		{
 			FreeLibrary(m_hHostLib);
@@ -438,6 +456,16 @@ public:
 	}
 protected:
 	HMODULE		m_hHostLib;
+=======
+		if (_hostLib)
+		{
+			FreeLibrary(_hostLib);
+			_hostLib = 0;
+		}
+	}
+protected:
+	HMODULE		_hostLib;
+>>>>>>> 1776432f... 4.3
 };
 static NativeLibrary& vkglueLib()
 {
@@ -639,8 +667,12 @@ VKAPI_ATTR VkBool32 VKAPI_CALL CustomDebugReportCallback(
   const char*                 pMessage,
   void*                       pUserData)
 {
+<<<<<<< HEAD
 	LOGE("LAYER_VALIDATION: %s",
 	     pMessage);
+=======
+	LOGE("LAYER_VALIDATION: %s\n", pMessage);
+>>>>>>> 1776432f... 4.3
 
 	return VK_FALSE;
 }
@@ -668,7 +700,11 @@ inline void vkSuccessOrDie(VkResult result, const char* msg)
 {
 	if (result != VK_SUCCESS)
 	{
+<<<<<<< HEAD
 		LOGE("Failed: %s", msg);
+=======
+		LOGE("Failed: %s\n", msg);
+>>>>>>> 1776432f... 4.3
 		exit(0);
 	}
 }
@@ -1016,13 +1052,21 @@ static void createPipeline(App& app)
 
 	if (!createVertShaderModule(app.platformHandles->context.device, vertexShaderModule))
 	{
+<<<<<<< HEAD
 		LOGE("Failed to create the vertex shader");
+=======
+		LOGE("Failed to create the vertex shader\n");
+>>>>>>> 1776432f... 4.3
 		exit(0);
 	}
 
 	if (!createFragShaderModule(app.platformHandles->context.device, fragmentShaderModule))
 	{
+<<<<<<< HEAD
 		LOGE("Failed to create the fragment shader");
+=======
+		LOGE("Failed to create the fragment shader\n");
+>>>>>>> 1776432f... 4.3
 		exit(0);
 	}
 
@@ -1271,7 +1315,11 @@ void drawFrame(App& app)
 	app.platformHandles->lastPresentedSwapIndex = app.platformHandles->swapIndex;
 	// we are reusing the same semaphore "semaphoreImageAcquired" to be signaled because we know that from previous
 	// frame we have wait for this semaphore in postAcquireTransition so it is guranteed of reuse.
+<<<<<<< HEAD
 	app.platformHandles->currentImageAcqSem = (app.platformHandles->currentImageAcqSem + 1) % (PVR_MAX_SWAPCHAIN_IMAGES + 1);
+=======
+	app.platformHandles->currentImageAcqSem = (app.platformHandles->currentImageAcqSem + 1) % (app.displayHandle->swapChainLength + 1);
+>>>>>>> 1776432f... 4.3
 	vkSuccessOrDie(vk::AcquireNextImageKHR(app.platformHandles->context.device,
 	                                       app.displayHandle->swapChain, uint64_t(-1),
 	                                       app.platformHandles->semaphoreImageAcquired[app.platformHandles->currentImageAcqSem],
@@ -1396,7 +1444,11 @@ void App::initVkInstanceAndPhysicalDevice(bool enableLayers, bool enableExtensio
 	vk::initVulkanInstance(this->platformHandles->context.instance);
 
 	vkSuccessOrDie(vk::EnumeratePhysicalDevices(this->platformHandles->context.instance, &gpuCount, NULL), "");
+<<<<<<< HEAD
 	LOGI("Number of Vulkan Physical devices: [%d]", gpuCount);
+=======
+	LOGI("Number of Vulkan Physical devices: [%d]\n", gpuCount);
+>>>>>>> 1776432f... 4.3
 
 	vkSuccessOrDie(vk::EnumeratePhysicalDevices(this->platformHandles->context.instance, &gpuCount,
 	               &this->platformHandles->context.physicalDevice), "");
@@ -1420,7 +1472,11 @@ void App::initVkInstanceAndPhysicalDevice(bool enableLayers, bool enableExtensio
 		VkResult result = vk::CreateDebugReportCallbackEXT(this->platformHandles->context.instance, &callbackCreateInfo,
 		                  nullptr, &this->platformHandles->debugReportCallback);
 
+<<<<<<< HEAD
 		LOGE("debug callback result: %i", result);
+=======
+		LOGE("debug callback result: %i\n", result);
+>>>>>>> 1776432f... 4.3
 
 		if (result == VK_SUCCESS)
 		{
@@ -1595,6 +1651,7 @@ void App::initSwapChain()
 	default:
 		this->displayHandle->onscreenFbo.depthStencilHasStencil = false;
 	}
+<<<<<<< HEAD
 
 	uint32_t numPresentMode;
 	vkSuccessOrDie(vk::GetPhysicalDeviceSurfacePresentModesKHR(this->platformHandles->context.physicalDevice, this->displayHandle->surface, &numPresentMode, NULL),
@@ -1619,6 +1676,10 @@ void App::initSwapChain()
 			swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
 		}
 	}
+=======
+	// Use FIFO mode (typical v-sync): No tearing, good battery use
+	VkPresentModeKHR swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
+>>>>>>> 1776432f... 4.3
 
 	this->displayHandle->onscreenFbo.colorFormat = format.format;
 	this->displayHandle->displayExtent = surfaceCapabilities.currentExtent;
@@ -1631,7 +1692,11 @@ void App::initSwapChain()
 	swapchainCreate.clipped = VK_TRUE;
 	swapchainCreate.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	swapchainCreate.surface = this->displayHandle->surface;
+<<<<<<< HEAD
 	swapchainCreate.minImageCount = max(surfaceCapabilities.minImageCount + 1, min(surfaceCapabilities.maxImageCount, 3u));
+=======
+	swapchainCreate.minImageCount = max(surfaceCapabilities.minImageCount, min(surfaceCapabilities.maxImageCount, 2u));
+>>>>>>> 1776432f... 4.3
 	swapchainCreate.imageFormat = this->displayHandle->onscreenFbo.colorFormat;
 	swapchainCreate.imageArrayLayers = 1;
 	swapchainCreate.imageColorSpace = format.colorSpace;
@@ -1709,7 +1774,11 @@ void App::initSwapChain()
 		this->displayHandle->onscreenFbo.depthStencilImage[i].second = allocateImageDeviceMemory(this->displayHandle->onscreenFbo.depthStencilImage[i].first, NULL);
 		if (this->displayHandle->onscreenFbo.depthStencilImage[i].second == VK_NULL_HANDLE)
 		{
+<<<<<<< HEAD
 			LOGE("Memory allocation failed");
+=======
+			LOGE("Memory allocation failed\n");
+>>>>>>> 1776432f... 4.3
 			exit(0);
 		}
 		// create the depth stencil view
@@ -1997,7 +2066,11 @@ VkDeviceMemory App::allocateImageDeviceMemory(VkImage image, VkMemoryRequirement
 	//Find the first allowed type:
 	if (pMemoryRequirements->memoryTypeBits == 0)
 	{
+<<<<<<< HEAD
 		LOGE("unsupported memory type bits");
+=======
+		LOGE("unsupported memory type bits\n");
+>>>>>>> 1776432f... 4.3
 		exit(0);
 	}
 
@@ -2033,7 +2106,11 @@ VkDeviceMemory App::allocateBufferDeviceMemory(VkBuffer buffer, VkMemoryRequirem
 	//Find the first allowed type:
 	if (pMemoryRequirements->memoryTypeBits == 0)
 	{
+<<<<<<< HEAD
 		LOGE("Invalid memory type bits");
+=======
+		LOGE("Invalid memory type bits\n");
+>>>>>>> 1776432f... 4.3
 		exit(0);
 	}
 	getMemoryTypeIndex(pMemoryRequirements->memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
@@ -2118,13 +2195,21 @@ void App::initSurface()
 	}
 	if (graphicsQueueIndex == uint32_t(-1) || presentQueueIndex == uint32_t(-1))
 	{
+<<<<<<< HEAD
 		LOGI("Could not find a graphics and a present queue Swapchain Initialization Failed");
+=======
+		LOGI("Could not find a graphics and a present queue Swapchain Initialization Failed\n");
+>>>>>>> 1776432f... 4.3
 	}
 	// NOTE: While it is possible for an application to use a separate graphics
 	//       and a present queues, the framework program assumes it is only using one
 	if (graphicsQueueIndex != presentQueueIndex)
 	{
+<<<<<<< HEAD
 		LOGI("Could not find a common graphics and a present queue Swapchain Initialization Failure");
+=======
+		LOGI("Could not find a common graphics and a present queue Swapchain Initialization Failure\n");
+>>>>>>> 1776432f... 4.3
 	}
 	graphicsQueueIndex = graphicsQueueIndex;
 }
@@ -2291,7 +2376,11 @@ int WINAPI WinMain(HINSTANCE applicationInstance, HINSTANCE previousInstance, TC
 	HDC					deviceContext = NULL;
 	if (!createWindowAndDisplay(applicationInstance, nativeWindow, deviceContext))
 	{
+<<<<<<< HEAD
 		LOGE("Failed to create application window");
+=======
+		LOGE("Failed to create application window\n");
+>>>>>>> 1776432f... 4.3
 		exit(0);
 	}
 	App app;
@@ -2300,7 +2389,11 @@ int WINAPI WinMain(HINSTANCE applicationInstance, HINSTANCE previousInstance, TC
 	app.application = new HelloAPI();
 	app.displayHandle->nativeDisplay = nativeWindow;
 	prepare(app);
+<<<<<<< HEAD
 	for (int i = 0; i < 2000; ++i) { drawFrame(app); }
+=======
+	for (int i = 0; i < 600; ++i) { drawFrame(app); }
+>>>>>>> 1776432f... 4.3
 	deinit(app);
 
 	delete app.displayHandle;

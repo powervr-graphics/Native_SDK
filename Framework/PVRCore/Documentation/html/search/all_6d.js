@@ -1,5 +1,6 @@
 var searchData=
 [
+<<<<<<< HEAD
   ['m_5fapicapabilities',['m_apiCapabilities',['../classpvr_1_1_i_graphics_context.html#a2ddc0c15ec67fb95d0debd0fab071544',1,'pvr::IGraphicsContext']]],
   ['m_5fapitype',['m_apiType',['../classpvr_1_1_i_graphics_context.html#a7db8b24e9d7f03962dc837736829ac10',1,'pvr::IGraphicsContext']]],
   ['m_5fberror',['m_bError',['../structpvr_1_1native_1_1_native_library.html#abfb810ce7fb64cdc04822e41db173049',1,'pvr::native::NativeLibrary']]],
@@ -17,35 +18,34 @@ var searchData=
   ['m_5fosmanager',['m_osManager',['../classpvr_1_1_i_graphics_context.html#a0a8c1dd0f0ab95ac18dd29263a50338e',1,'pvr::IGraphicsContext']]],
   ['m_5fverbositythreshold',['m_verbosityThreshold',['../classpvr_1_1system_1_1_messenger.html#ac6b59f90179d9f1c128efcf4a2cf9ebb',1,'pvr::system::Messenger']]],
   ['magnificationfilter',['magnificationFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#a5aa6f6b6fa1d1f29e78e799cab46d6b3',1,'pvr::types::SamplerCreateParam']]],
+=======
+  ['magnificationfilter',['magnificationFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#a2780ef12d46c4d793ef5bf9f4a286ca4',1,'pvr::types::SamplerCreateParam']]],
+  ['mailbox',['Mailbox',['../namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8a2dcff8c037093c5d3552ad532e603f9f',1,'pvr']]],
+>>>>>>> 1776432f... 4.3
   ['makecurrent',['makeCurrent',['../classpvr_1_1_i_platform_context.html#abaf173466b977326642f3c1cc640d955',1,'pvr::IPlatformContext']]],
   ['makepoweroftwohigh',['makePowerOfTwoHigh',['../namespacepvr_1_1math.html#a8deecf91075b1a9c0fac46fc682b0578',1,'pvr::math']]],
   ['makepoweroftwolow',['makePowerOfTwoLow',['../namespacepvr_1_1math.html#aaf4842b44b1b6563089c52748d13b592',1,'pvr::math']]],
   ['mapbuffer',['MapBuffer',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a3fa9dab61245fcc514245d943cef08a2',1,'pvr::ApiCapabilities']]],
-  ['mat2',['Mat2',['../namespacepvr_1_1types_1_1_semantic_data_type.html#a672aa607c724bdbfc1a0be3f6b6ba060a373e4079dc27d64b51cc045b074658de',1,'pvr::types::SemanticDataType']]],
-  ['mat3',['Mat3',['../namespacepvr_1_1types_1_1_semantic_data_type.html#a672aa607c724bdbfc1a0be3f6b6ba060a62fe9b73de6c2fd12464bce47c156992',1,'pvr::types::SemanticDataType']]],
-  ['mat4',['Mat4',['../namespacepvr_1_1types_1_1_semantic_data_type.html#a672aa607c724bdbfc1a0be3f6b6ba060a7f08e19214e9ef51ac5cc5deabce1bce',1,'pvr::types::SemanticDataType']]],
   ['maths_2eh',['Maths.h',['../_maths_8h.html',1,'']]],
-  ['max',['max',['../classpvr_1_1_normalised_integer.html#a22084663f99fb9e222f7084f64ed137d',1,'pvr::NormalisedInteger::max()'],['../namespacepvr_1_1types_1_1_blend_op.html#ab5b2c64982ddc6a4a78e8ed602ae4ac1aa9399a4248f989f50724ac650fc22b05',1,'pvr::types::BlendOp::Max()']]],
+  ['maxcolorattachments',['MaxColorAttachments',['../namespacepvr.html#a6f59f3b07a9eef11ccc1f34434bbcafaa51f97cef6d79d61c32e806eb68eb046f',1,'pvr']]],
   ['maxglslversion',['maxGlslVersion',['../structpvr_1_1_api_capabilities.html#ab2adba023def6cc5021c638a233a25dc',1,'pvr::ApiCapabilities']]],
-  ['memcopy',['memCopy',['../namespacepvr_1_1utils.html#ad1d2042ec2af243eaf4bcce0a06d6e5e',1,'pvr::utils']]],
+  ['maxsharedrayconstantssize',['maxSharedRayConstantsSize',['../structpvr_1_1_api_capabilities.html#a8cd70e5150670c3bf0384376907ffe4b',1,'pvr::ApiCapabilities']]],
   ['memcopyfromvolatile',['memCopyFromVolatile',['../namespacepvr_1_1utils.html#a5cc463ddc39c05eec129ff4264710314',1,'pvr::utils']]],
-  ['memcopytovolatile',['memCopyToVolatile',['../namespacepvr_1_1utils.html#ac847f23ce66e96bbbb645d41e9bc54da',1,'pvr::utils']]],
-  ['memorymanagement',['MemoryManagement',['../namespacepvr_1_1_device_queue_type.html#a1b065ba1a0f187f06440cf0e42e20a61ab72be4a7a34ac0dc4cd19fe05f8da545',1,'pvr::DeviceQueueType']]],
-  ['memoryread',['MemoryRead',['../namespacepvr_1_1types_1_1_access_flags.html#a2a1b3c34eb51c894a28686e0d6d41fada7b6c4605002be72af62f3911e98e71eb',1,'pvr::types::AccessFlags']]],
-  ['memorywrite',['MemoryWrite',['../namespacepvr_1_1types_1_1_access_flags.html#a2a1b3c34eb51c894a28686e0d6d41fada87a255e949e706082ea5c6ba981e0ee9',1,'pvr::types::AccessFlags']]],
-  ['memset',['memSet',['../namespacepvr_1_1utils.html#af5b0d60fcb212efafcea8302529bbb5e',1,'pvr::utils']]],
+  ['memorymanagement',['MemoryManagement',['../namespacepvr.html#a62a6e9db5b1a2dfe5d226b836305ca1ba95a69acfe49f3d68ecd2e3538e14e0f6',1,'pvr']]],
   ['mergebox',['mergeBox',['../classpvr_1_1math_1_1_axis_aligned_box.html#a002c0771629b40f91fd1da4941be2b3e',1,'pvr::math::AxisAlignedBox']]],
+<<<<<<< HEAD
   ['messenger',['Messenger',['../classpvr_1_1system_1_1_messenger.html',1,'pvr::system']]],
   ['messenger',['Messenger',['../classpvr_1_1system_1_1_messenger.html#a1f0cacc786c92723dfa52df86712e539',1,'pvr::system::Messenger']]],
+=======
+  ['messenger',['Messenger',['../classpvr_1_1platform_1_1_messenger.html',1,'pvr::platform']]],
+>>>>>>> 1776432f... 4.3
   ['messenger_2eh',['Messenger.h',['../_messenger_8h.html',1,'']]],
-  ['metadata',['Metadata',['../namespacepvr_1_1types_1_1_image_aspect.html#ade613913bfd98326c16d255782e82738a0e98ac343844a0814ad53d2c1bcb4ad5',1,'pvr::types::ImageAspect']]],
-  ['min',['min',['../classpvr_1_1_normalised_integer.html#ac3ed123227f58756ce87cc8658526d64',1,'pvr::NormalisedInteger::min()'],['../namespacepvr_1_1types_1_1_blend_op.html#ab5b2c64982ddc6a4a78e8ed602ae4ac1a8f5a827bf09723dbb29386b47dfd8a61',1,'pvr::types::BlendOp::Min()']]],
-  ['minificationfilter',['minificationFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#a2a1b9e9c60b3108a20585c56f272046f',1,'pvr::types::SamplerCreateParam']]],
-  ['minusx',['minusX',['../structpvr_1_1math_1_1_frustum.html#a4e3de8f88d7c92f1525ad6606e0e621b',1,'pvr::math::Frustum']]],
-  ['minusy',['minusY',['../structpvr_1_1math_1_1_frustum.html#a6681b7f0ef27e4e48a3b408eb55beda5',1,'pvr::math::Frustum']]],
-  ['minusz',['minusZ',['../structpvr_1_1math_1_1_frustum.html#a2a0b3677e78fd3eac265e4fa0b1ff466',1,'pvr::math::Frustum']]],
-  ['mipdefault',['MipDefault',['../namespacepvr_1_1types_1_1_sampler_filter.html#af5b6f76b0fb334b57e580156dfeb9b7babcfed988a244098e408f304863a324f0',1,'pvr::types::SamplerFilter']]],
+  ['metadata_2ecpp',['MetaData.cpp',['../_meta_data_8cpp.html',1,'']]],
+  ['metadata_2eh',['MetaData.h',['../_meta_data_8h.html',1,'']]],
+  ['metadatasize',['metaDataSize',['../structpvr_1_1_texture_header_1_1_header.html#ab09cee76415c97f643c92ef9dcfb605a',1,'pvr::TextureHeader::Header']]],
+  ['minificationfilter',['minificationFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#a7bfbd24da7202f686936ba48ac77cd0b',1,'pvr::types::SamplerCreateParam']]],
   ['mipleveloffset',['mipLevelOffset',['../structpvr_1_1types_1_1_image_subresource.html#a47bce45edeae68aca22afb5501eb31e0',1,'pvr::types::ImageSubresource']]],
+<<<<<<< HEAD
   ['mipmappingfilter',['mipMappingFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#af0b1fa67ddd2184aa1eada9ace031cce',1,'pvr::types::SamplerCreateParam']]],
   ['mirrorclamp',['MirrorClamp',['../namespacepvr_1_1types_1_1_sampler_wrap.html#a51e7fe4c7c441328b4390f99cbd4d50badf2fe2bfc697bcc38cd401f726318597',1,'pvr::types::SamplerWrap']]],
   ['mirrorrepeat',['MirrorRepeat',['../namespacepvr_1_1types_1_1_sampler_wrap.html#a51e7fe4c7c441328b4390f99cbd4d50bad44887dce878a138f164ff7d0835606b',1,'pvr::types::SamplerWrap']]],
@@ -53,4 +53,10 @@ var searchData=
   ['multi',['Multi',['../classpvr_1_1_multi.html#a7a384d36093b365a9904d34c4aba6dc5',1,'pvr::Multi::Multi()'],['../classpvr_1_1_multi.html#a6d5e9a5097296abec7f6636d58962de3',1,'pvr::Multi::Multi(const ElementType *elements, const uint32 count)']]],
   ['multiobject_2eh',['MultiObject.h',['../_multi_object_8h.html',1,'']]],
   ['mutable',['Mutable',['../namespacepvr_1_1types_1_1_capability.html#ad4bac5ef3f52f773b99b147814420561a65d345f57f3b5cd891da5aaf8b63547d',1,'pvr::types::Capability']]]
+=======
+  ['mipmapcount',['mipMapCount',['../structpvr_1_1_texture_header_1_1_header.html#ad17194159abe69c3ddd8254de5521e71',1,'pvr::TextureHeader::Header']]],
+  ['mipmaplevels',['mipmapLevels',['../structpvr_1_1_image_storage_format_compressed.html#a7039461261c190f6a6d545f8bab13b60',1,'pvr::ImageStorageFormatCompressed']]],
+  ['mipmappingfilter',['mipMappingFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#a7c732faaf02826869edca51f2a450313',1,'pvr::types::SamplerCreateParam']]],
+  ['multi',['Multi',['../classpvr_1_1_multi.html',1,'pvr']]]
+>>>>>>> 1776432f... 4.3
 ];

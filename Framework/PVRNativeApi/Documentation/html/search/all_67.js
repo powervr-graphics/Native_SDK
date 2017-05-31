@@ -1,5 +1,6 @@
 var searchData=
 [
+<<<<<<< HEAD
   ['genbuffers',['GenBuffers',['../classgl.html#a2c7509b5039f31d80837be944cee5293',1,'gl']]],
   ['generatemipmap',['GenerateMipmap',['../classgl.html#a350e950511b468ed7972edfb2cb143fb',1,'gl']]],
   ['genfencesnv',['GenFencesNV',['../classglext.html#a1fbfd5e31e16a366b04f306e362372de',1,'glext']]],
@@ -67,11 +68,17 @@ var searchData=
   ['getvertexattribiv',['GetVertexAttribiv',['../classgl.html#ab5c86447903c5606ccbb20bda1fbd77f',1,'gl']]],
   ['getvertexattribpointerv',['GetVertexAttribPointerv',['../classgl.html#a8b97d821ac10fcdbf216b62e21b61346',1,'gl']]],
   ['getvkbufferusage',['getVkBufferUsage',['../namespacepvr_1_1api_utils_1_1vulkan.html#a8d3d68b4fae148081527f641f3cb0631',1,'pvr::apiUtils::vulkan']]],
+=======
+  ['get',['get',['../namespacepvr_1_1gpu_capabilities.html#a7020dce99f402fa53acec363273966cc',1,'pvr::gpuCapabilities::get(IGraphicsContext &amp;context, TextureAndSamplers query)'],['../namespacepvr_1_1gpu_capabilities.html#a012e75c217e2a82302fcbd3d7fe9690a',1,'pvr::gpuCapabilities::get(IGraphicsContext &amp;context, FragmentShader query)'],['../namespacepvr_1_1gpu_capabilities.html#a10fbb5859533d75922d56d9cc3284b5a',1,'pvr::gpuCapabilities::get(IGraphicsContext &amp;context, ShaderAndProgram query)'],['../namespacepvr_1_1gpu_capabilities.html#ab52260de4a965c5067474bb73baeaff4',1,'pvr::gpuCapabilities::get(IGraphicsContext &amp;context, Buffers query)'],['../namespacepvr_1_1gpu_capabilities.html#a13a332c8440d8b27f459ad5913f37e10',1,'pvr::gpuCapabilities::get(IGraphicsContext &amp;context, Element query)'],['../namespacepvr_1_1gpu_capabilities.html#a3fd73ec3db6b80871a5082b48f9f7c4b',1,'pvr::gpuCapabilities::get(IGraphicsContext &amp;context, TransformFeedback query)'],['../namespacepvr_1_1gpu_capabilities.html#a0594760bddd35528f62bc0b6db0a27c3',1,'pvr::gpuCapabilities::get(IGraphicsContext &amp;context, Uniform query)']]],
+  ['getinfo',['getInfo',['../classpvr_1_1platform_1_1_platform_context.html#a5215e4a2faec0bc9c6aea03c0da89a8d',1,'pvr::platform::PlatformContext']]],
+  ['getmaxapiversion',['getMaxApiVersion',['../classpvr_1_1platform_1_1_platform_context.html#a4c662ae3547193e4187ab6751d216c65',1,'pvr::platform::PlatformContext']]],
+  ['getnativedisplayhandle',['getNativeDisplayHandle',['../classpvr_1_1platform_1_1_platform_context.html#a45a81d7bafb36e74584b8d9edf6ed994',1,'pvr::platform::PlatformContext::getNativeDisplayHandle() const '],['../classpvr_1_1platform_1_1_platform_context.html#a9f20dde7f63e242afd9a63d5892c9011',1,'pvr::platform::PlatformContext::getNativeDisplayHandle()']]],
+  ['getnativeplatformhandles',['getNativePlatformHandles',['../classpvr_1_1platform_1_1_platform_context.html#a650f9b99b4fd616179a1e2422e98ff69',1,'pvr::platform::PlatformContext::getNativePlatformHandles() const '],['../classpvr_1_1platform_1_1_platform_context.html#aec51592be7c1a446f88085182b60607a',1,'pvr::platform::PlatformContext::getNativePlatformHandles()']]],
+  ['getosmanager',['getOsManager',['../classpvr_1_1platform_1_1_platform_context.html#a0113c607001cecb59a64ebe05c75baab',1,'pvr::platform::PlatformContext::getOsManager()'],['../classpvr_1_1platform_1_1_platform_context.html#ab27b462cf950577513e48e97eba65591',1,'pvr::platform::PlatformContext::getOsManager() const ']]],
+>>>>>>> 1776432f... 4.3
   ['gl',['gl',['../classgl.html',1,'']]],
-  ['gl_5fno_5fprototypes',['GL_NO_PROTOTYPES',['../_open_g_l_e_s_headers_8h.html#aaf1544e524c1c535150fc0e7be038f5a',1,'OpenGLESHeaders.h']]],
-  ['glboolean',['GLboolean',['../_api_gles2_8h.html#a62d34cd37f8e40e37b1757925ec4d928',1,'GLboolean(PVR_APIENTRY *PROC_ES2_glIsBuffer)(GLuint buffer):&#160;ApiGles2.h'],['../_api_gles3_8h.html#aaddc005d8c08cd92efa451274576b6de',1,'GLboolean(PVR_APIENTRY *PROC_ES3_glIsQuery)(GLuint id):&#160;ApiGles3.h'],['../_api_gles31_8h.html#a1201e8c4a287e45a7f14ad6436b3492a',1,'GLboolean(PVR_APIENTRY *PROC_ES31_glIsProgramPipeline)(GLuint pipeline):&#160;ApiGles31.h']]],
-  ['glenum',['GLenum',['../_api_gles2_8h.html#a8c9fed4ef34d7b649243e47ab734596e',1,'GLenum(PVR_APIENTRY *PROC_ES2_glCheckFramebufferStatus)(GLenum target):&#160;ApiGles2.h'],['../_api_gles3_8h.html#add822650c9007f81c71fd30bfc9fc3b9',1,'GLenum(PVR_APIENTRY *PROC_ES3_glClientWaitSync)(GLsync sync:&#160;ApiGles3.h']]],
   ['glext',['glext',['../classglext.html',1,'']]],
+<<<<<<< HEAD
   ['glint',['GLint',['../_api_gles2_8h.html#a89ed4b64d0deb5d935dd1d23cd666f3f',1,'GLint(PVR_APIENTRY *PROC_ES2_glGetAttribLocation)(GLuint program:&#160;ApiGles2.h'],['../_api_gles3_8h.html#a4ae0e79f840a2f58ec380e6b0b2a77d8',1,'GLint(PVR_APIENTRY *PROC_ES3_glGetFragDataLocation)(GLuint program:&#160;ApiGles3.h'],['../_api_gles31_8h.html#a21a6be2237d181586aade0836850d423',1,'GLint(PVR_APIENTRY *PROC_ES31_glGetProgramResourceLocation)(GLuint program:&#160;ApiGles31.h']]],
   ['glsync',['GLsync',['../_api_gles3_8h.html#a73d205770fd0c6e66e0ae1ab0683b26c',1,'ApiGles3.h']]],
   ['gluint',['GLuint',['../_api_gles2_8h.html#a4b460d7db310a1e55cd0d0e45ed56869',1,'GLuint(PVR_APIENTRY *PROC_ES2_glCreateProgram)(void):&#160;ApiGles2.h'],['../_api_gles3_8h.html#afbbdc6884f1be2b69c57c7f0a7710e2a',1,'GLuint(PVR_APIENTRY *PROC_ES3_glGetUniformBlockIndex)(GLuint program:&#160;ApiGles3.h'],['../_api_gles31_8h.html#a9b83496def9a3e2f011efa052181116f',1,'GLuint(PVR_APIENTRY *PROC_ES31_glGetProgramResourceIndex)(GLuint program:&#160;ApiGles31.h']]],
@@ -85,4 +92,16 @@ var searchData=
   ['graphicspipelinecreateinfovulkan',['GraphicsPipelineCreateInfoVulkan',['../structpvr_1_1api_1_1vulkan_1_1_graphics_pipeline_create_info_vulkan.html#a42882091e9141f4c7acfc1e313a09f74',1,'pvr::api::vulkan::GraphicsPipelineCreateInfoVulkan']]],
   ['graphicspipelinecreateinfovulkan',['GraphicsPipelineCreateInfoVulkan',['../structpvr_1_1api_1_1vulkan_1_1_graphics_pipeline_create_info_vulkan.html',1,'pvr::api::vulkan']]],
   ['green',['green',['../_api_gles2_8h.html#ac14cda87cf6c751d53b65a3cd41c35a1',1,'ApiGles2.h']]]
+=======
+  ['glextrt',['glextRT',['../classglext_r_t.html',1,'']]],
+  ['gpucapabilities_2ecpp',['GpuCapabilities.cpp',['../_gpu_capabilities_8cpp.html',1,'']]],
+  ['gpucapabilitiesbuffers',['gpuCapabilitiesBuffers',['../namespacepvr_1_1native_gles_1_1_convert_to_gles.html#afe2e14f05d83619350d7529bc84f1dd9',1,'pvr::nativeGles::ConvertToGles']]],
+  ['gpucapabilitieselement',['gpuCapabilitiesElement',['../namespacepvr_1_1native_gles_1_1_convert_to_gles.html#ae3cfcebd1e6b3d9e00e3db13d16bc112',1,'pvr::nativeGles::ConvertToGles']]],
+  ['gpucapabilitiesfragment',['gpuCapabilitiesFragment',['../namespacepvr_1_1native_gles_1_1_convert_to_gles.html#afc43b5d45185a1b5687be68376c1e43d',1,'pvr::nativeGles::ConvertToGles']]],
+  ['gpucapabilitiesgles_2eh',['GpuCapabilitiesGles.h',['../_gpu_capabilities_gles_8h.html',1,'']]],
+  ['gpucapabilitiesshaderandprograms',['gpuCapabilitiesShaderAndPrograms',['../namespacepvr_1_1native_gles_1_1_convert_to_gles.html#afe59f8eaf3fdb73ab829c9bb20a04436',1,'pvr::nativeGles::ConvertToGles']]],
+  ['gpucapabilitiestextureandsamplers',['gpuCapabilitiesTextureAndSamplers',['../namespacepvr_1_1native_gles_1_1_convert_to_gles.html#a547660cdb691bfdad5982ea78cdea0ba',1,'pvr::nativeGles::ConvertToGles']]],
+  ['gpucapabilitiestransformfeedback',['gpuCapabilitiesTransformFeedback',['../namespacepvr_1_1native_gles_1_1_convert_to_gles.html#a58aa7baf8e7a5234173fd86395114aa6',1,'pvr::nativeGles::ConvertToGles']]],
+  ['gpucapabilitiesuniform',['gpuCapabilitiesUniform',['../namespacepvr_1_1native_gles_1_1_convert_to_gles.html#aef4f77ee3f0cac9cb78d845a3ee7b0f4',1,'pvr::nativeGles::ConvertToGles']]]
+>>>>>>> 1776432f... 4.3
 ];

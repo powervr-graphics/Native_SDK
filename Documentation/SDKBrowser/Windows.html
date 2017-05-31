@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>The PowerVR SDK Browser</title>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="./images/img-icon.png">
+</head>
+
+<body>
+	<div id="GlobalHeaderContainer">
+		<div id="GlobalHeader">
+			<div class="logo">
+				<a href="http://www.powervrinsider.com" target="_blank"><img src="./images/PVRlogo.png" width="40%" height="40%" /></a>
+            </div>
+			<div class="sitetitle">PowerVR SDK Browser</div>
+		</div>
+	</div>
+	<div id="NavContainer">
+		<nav>
+			<div class="navlink">
+				<a href="Home.html">Home</a>
+			</div>
+			<div class="navlink">
+				<a href="GettingStarted.html" class="current">Getting Started</a>
+			</div>
+			<div class="navlink">
+				<a href="Examples.html">Examples</a>
+			</div>
+			<div class="navlink">
+				<a href="Framework.html">Framework</a>
+			</div>
+			<div class="navlink">
+				<a href="Documentation.html">Documentation</a>
+			</div>
+			<div class="navlink">
+				<a href="PowerVRTools.html">PowerVR Tools</a>
+			</div>
+			<div class="navlink">
+				<a href="Licence.html">EULA</a>
+			</div>
+			<div class="navlink">
+				<a href="Contact.html">Contact Us</a>
+			</div>
+		</nav>
+	</div>
+	
+<!--API_TAB-->
+<div id="SubNavContainer"><nav><div class="subnavlink"><a href="./Android.html">Android</a></div>
+<div class="subnavlink"><a href="./iOS.html">iOS</a></div>
+<div class="subnavlink"><a href="./Windows.html">Windows</a></div>
+<div class="subnavlink"><a href="./OSX.html">OS X</a></div>
+<div class="subnavlink"><a href="./Linux.html">Linux</a></div>
+<div class="subnavlink"><a href="./WebGL.html">WebGL</a></div>
+</nav></div>
+
+	<div class="content">
+		<div id="windows">
+		<h1>Windows</h1>
+			<p>This SDK requires a PC equipped with Windows XP, Windows Vista or Windows 7. The required installation steps are:</p>
+			<ol>
+				<li>
+				<p>Install the SDK on your machine as specified by Windows hardware and software requirements. The project and solution files provided do not require the SDK to be installed in a pre-defined location and are configured to use relative paths.</p>
+				</li>
+				<li>
+				<p>If you have installed our SDK with the installer, the PVRVFrame libraries will already be in your PATH environment variable.</p>
+				</li>
+			</ol>
+			<p><em><strong>Note:</strong> The examples can be launched directly from their project files.</em></p>
+			<p><em><strong>Note:</strong> If the installer has not added the PVRVFrame directory to your PATH environment variable, you must copy the PVRVFrame emulation "drivers" to a DLL-accessible directory prior to running the SDK applications. The driver files names are; EGL, GLES_CM (OpenGL ES 1.x) and GLESv2 (OpenGL ES 2.0 & 3.x). The PVRVFrame libraries are provided as static libraries (lib*.lib) and dynamic libraries (lib*.dll).</em></p>
+		</div>
+		
+</body>
+
+</html>

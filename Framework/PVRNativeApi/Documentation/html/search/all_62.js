@@ -1,5 +1,6 @@
 var searchData=
 [
+<<<<<<< HEAD
   ['begincommandbuffer',['beginCommandBuffer',['../namespacepvr_1_1apiutils_1_1vulkan.html#a383844185d5be85249474fa66c3e0fa5',1,'pvr::apiutils::vulkan']]],
   ['beginperfmonitoramd',['BeginPerfMonitorAMD',['../classglext.html#aa19025a7e40b811c9e8f22b79443aceb',1,'glext']]],
   ['beginqueryext',['BeginQueryEXT',['../classglext.html#a019f44844e41bd1f855333dd2a1d0747',1,'glext']]],
@@ -37,9 +38,11 @@ var searchData=
   ['bufferusage',['bufferUsage',['../namespacepvr_1_1api_1_1_convert_to_vk.html#a2291012061cb6dda05d02cdfb3567e8e',1,'pvr::api::ConvertToVk']]],
   ['bufferutils_2eh',['BufferUtils.h',['../_buffer_utils_8h.html',1,'']]],
   ['bufferutilsgles_2ecpp',['BufferUtilsGles.cpp',['../_buffer_utils_gles_8cpp.html',1,'']]],
+=======
+  ['blendeq',['blendEq',['../namespacepvr_1_1native_gles_1_1_convert_to_gles.html#ae8c5b2b3ca61d5bb6b6a52c4ce4e72bf',1,'pvr::nativeGles::ConvertToGles']]],
+  ['blendfactor',['blendFactor',['../namespacepvr_1_1native_gles_1_1_convert_to_gles.html#a9b49964d1ceece105f525fdfc9d535e7',1,'pvr::nativeGles::ConvertToGles']]],
+  ['buffers',['Buffers',['../namespacepvr_1_1gpu_capabilities.html#a3e88f7a91c6e4b57e520f670be4da7cf',1,'pvr::gpuCapabilities::Buffers()'],['../namespacepvr_1_1gpu_capabilities.html#a3e88f7a91c6e4b57e520f670be4da7cf',1,'pvr::gpuCapabilities::Buffers()']]],
+>>>>>>> 1776432f... 4.3
   ['bufferutilsvk_2ecpp',['BufferUtilsVk.cpp',['../_buffer_utils_vk_8cpp.html',1,'']]],
-  ['bufferutilsvk_2eh',['BufferUtilsVk.h',['../_buffer_utils_vk_8h.html',1,'']]],
-  ['bufs',['bufs',['../_api_gles3_8h.html#abd460bd7a6c3013f5b44a791038b6754',1,'ApiGles3.h']]],
-  ['bufsize',['bufSize',['../_api_gles2_8h.html#a09918d77dec487a91825343c8cfb2b2d',1,'bufSize():&#160;ApiGles2.h'],['../_api_gles3_8h.html#a90f44e003e9c77d49d3d67067bb710b0',1,'bufSize():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a09918d77dec487a91825343c8cfb2b2d',1,'bufSize():&#160;ApiGles31.h']]],
-  ['build_5fapi_5fmax',['BUILD_API_MAX',['../_open_g_l_e_s_headers_8h.html#ae6b8d4cc8c1970863c6c38b224e9686c',1,'OpenGLESHeaders.h']]]
+  ['bufferutilsvk_2eh',['BufferUtilsVk.h',['../_buffer_utils_vk_8h.html',1,'']]]
 ];

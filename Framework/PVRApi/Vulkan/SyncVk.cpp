@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRApi\Vulkan\SyncVk.cpp
 \author       PowerVR by Imagination, Developer Technology Team
@@ -5,6 +6,15 @@
 \brief        Contains the definitions for the Vulkan  implementation of all Synchronization objects (Fence, Semaphore, MemoryBarrier, Event)
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
+=======
+/*!
+\brief Contains the definitions for the Vulkan implementation of all Synchronization objects (Fence, Semaphore,
+MemoryBarrier, Event)
+\file PVRApi/Vulkan/SyncVk.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 #include "PVRApi/Vulkan/SyncVk.h"
 #include "PVRApi/Vulkan/BufferVk.h"
 #include "PVRApi/Vulkan/TextureVk.h"
@@ -26,7 +36,7 @@ bool FenceVk_::init(bool createSignaled)
 	nfo.pNext = 0;
 	nfo.flags = ((createSignaled != 0) * VK_FENCE_CREATE_SIGNALED_BIT);
 	VkResult res = vk::CreateFence(native_cast(*context).getDevice(), &nfo, NULL, &*native_cast(*this));
-	vkThrowIfFailed(res, "FenceVk_::init: Failed to create Fence object");
+	nativeVk::vkThrowIfFailed(res, "FenceVk_::init: Failed to create Fence object");
 	return res == VK_SUCCESS;
 }
 void FenceVk_::destroy()
@@ -37,10 +47,33 @@ void FenceVk_::destroy()
 	}
 	else
 	{
-		vk::DestroyFence(native_cast(*context).getDevice(), handle, NULL);
-		handle  = VK_NULL_HANDLE;
+		if (!undeletable && handle)
+		{
+			vk::DestroyFence(native_cast(*context).getDevice(), handle, NULL);
+			handle = VK_NULL_HANDLE;
+		}
 	}
 }
+bool FenceVk_::wait_(uint64 timeoutNanos)
+{
+	VkResult res;
+	res = vk::WaitForFences(native_cast(*context).getDevice(), 1, &native_cast(*this).handle, true, timeoutNanos);
+	nativeVk::vkThrowIfFailed(res, "Fence::wait returned an error");
+	if (res == VK_SUCCESS) { return true; }
+	else if (res == VK_TIMEOUT) { return false; }
+	return false;
+}
+void FenceVk_::reset_()
+{
+	nativeVk::vkThrowIfFailed(vk::ResetFences(native_cast(*context).getDevice(), 1, &*native_cast(*this)), "Fence::reset returned an error");
+}
+bool FenceVk_::isSignalled_()
+{
+	VkResult res = vk::GetFenceStatus(native_cast(*context).getDevice(), native_cast(*this).handle);
+	nativeVk::vkThrowIfFailed(res, "Fence::wait returned an error");
+	return (res == VK_SUCCESS ? true : false);
+}
+
 SemaphoreVk_::~SemaphoreVk_()
 {
 	destroy();
@@ -52,7 +85,7 @@ bool SemaphoreVk_::init()
 	nfo.pNext = 0;
 	nfo.flags = 0;
 	VkResult res = vk::CreateSemaphore(native_cast(*context).getDevice(), &nfo, NULL, &*native_cast(*this));
-	vkThrowIfFailed(res, "SemaphoreVk_::init: Failed to create Semaphore object");
+	nativeVk::vkThrowIfFailed(res, "SemaphoreVk_::init: Failed to create Semaphore object");
 	return res == VK_SUCCESS;
 }
 void SemaphoreVk_::destroy()
@@ -78,7 +111,7 @@ bool EventVk_::init()
 	nfo.pNext = 0;
 	nfo.flags = 0;
 	VkResult res = vk::CreateEvent(native_cast(*context).getDevice(), &nfo, NULL, &*native_cast(*this));
-	vkThrowIfFailed(res, "EventVk_::init: Failed to create Semaphore object");
+	nativeVk::vkThrowIfFailed(res, "EventVk_::init: Failed to create Semaphore object");
 	return res == VK_SUCCESS;
 }
 void EventVk_::destroy()
@@ -96,33 +129,14 @@ void EventVk_::destroy()
 }
 
 namespace impl {
-bool Fence_::wait(uint64 timeoutNanos)
-{
-	VkResult res;
-	res = vk::WaitForFences(native_cast(*context).getDevice(), 1, &native_cast(*this).handle, true, timeoutNanos);
-	vkThrowIfFailed(res, "Fence::wait returned an error");
-	if (res == VK_SUCCESS) { return true; }
-	else if (res == VK_TIMEOUT) { return false; }
-	return false;
-}
-void Fence_::reset()
-{
-	vkThrowIfFailed(vk::ResetFences(native_cast(*context).getDevice(), 1, &*native_cast(*this)), "Fence::reset returned an error");
-}
-bool Fence_::isSignalled()
-{
-	VkResult res = vk::GetFenceStatus(native_cast(*context).getDevice(), native_cast(*this).handle);
-	vkThrowIfFailed(res, "Fence::wait returned an error");
-	return (res == VK_SUCCESS ? true : false);
-}
 
 void Event_::set()
 {
-	vkThrowIfFailed(vk::SetEvent(native_cast(*context).getDevice(), *native_cast(*this)), "Event::set returned an error");
+	nativeVk::vkThrowIfFailed(vk::SetEvent(native_cast(*context).getDevice(), *native_cast(*this)), "Event::set returned an error");
 }
 void Event_::reset()
 {
-	vkThrowIfFailed(vk::ResetEvent(native_cast(*context).getDevice(), *native_cast(*this)), "Event::reset returned an error");
+	nativeVk::vkThrowIfFailed(vk::ResetEvent(native_cast(*context).getDevice(), *native_cast(*this)), "Event::reset returned an error");
 }
 bool Event_::isSet()
 {
@@ -135,12 +149,12 @@ bool Event_::isSet()
 	{
 		return false;
 	}
-	vkThrowIfFailed(res, "Event::set returned an error");
+	nativeVk::vkThrowIfFailed(res, "Event::set returned an error");
 	return false;
 }
 
-
-
+// This class is necessary because we must keep alive any objects we use until they are
+// not used again.
 template <typename T_, typename VkT_, typename TVk_>
 class MultiContainer
 {
@@ -221,7 +235,7 @@ public:
 		res = vk::WaitForFences(native_cast(*itemsvk[0]->getContext()).getDevice(), cookedItemsSize, getVulkanArray(), waitAll, timeoutNanos);
 		if (res == VK_SUCCESS) { return true; }
 		else if (res == VK_TIMEOUT) { return false; }
-		vkThrowIfFailed(res, "FenceSet::wait returned an error");
+		nativeVk::vkThrowIfFailed(res, "FenceSet::wait returned an error");
 		return false;
 	}
 	void resetAll()
@@ -240,9 +254,9 @@ FenceSet_::FenceSet_(Fence* fences, uint32 numFences)
 	add(fences, numFences);
 }
 FenceSet_::~FenceSet_() { }
-void FenceSet_::add(const Fence& fence) {pimpl->add(fence); }
-void FenceSet_::add(Fence* fences, uint32 numFences) {pimpl->add(fences, numFences); }
-void FenceSet_::assign(Fence* fences, uint32 numFences) {pimpl->assign(fences, numFences); }
+void FenceSet_::add(const Fence& fence) { pimpl->add(fence); }
+void FenceSet_::add(Fence* fences, uint32 numFences) { pimpl->add(fences, numFences); }
+void FenceSet_::assign(Fence* fences, uint32 numFences) { pimpl->assign(fences, numFences); }
 bool FenceSet_::waitOne(uint64 timeout) { return pimpl->wait(timeout, false); }
 bool FenceSet_::waitAll(uint64 timeout) { return pimpl->wait(timeout, true); }
 void FenceSet_::clear() { pimpl->clear(); }
@@ -267,7 +281,7 @@ SemaphoreSet_::~SemaphoreSet_() { }
 void SemaphoreSet_::add(const Semaphore& semaphore) { pimpl->add(semaphore); }
 void SemaphoreSet_::add(Semaphore* semaphores, uint32 numSemaphores) { pimpl->add(semaphores, numSemaphores); }
 void SemaphoreSet_::assign(Semaphore* semaphores, uint32 numSemaphores) { pimpl->assign(semaphores, numSemaphores); }
-void SemaphoreSet_::clear() {pimpl->clear(); }
+void SemaphoreSet_::clear() { pimpl->clear(); }
 const Semaphore& SemaphoreSet_::operator[](uint32 index)const { return pimpl->itemsvk[index]; }
 Semaphore& SemaphoreSet_::operator[](uint32 index) { return pimpl->itemsvk[index]; }
 
@@ -334,6 +348,7 @@ bool EventSet_::all()
 	}
 	return true;
 }
+<<<<<<< HEAD
 
 
 class MemoryBarrierSetImpl
@@ -398,33 +413,11 @@ MemoryBarrierSet& MemoryBarrierSet::addBarrier(const BufferRangeBarrier& buffBar
 	barrier.size = buffBarrier.range;
 	pimpl->bufBarriers.push_back(barrier);
 	return *this;
-}
-MemoryBarrierSet& MemoryBarrierSet::addBarrier(const ImageAreaBarrier& imgBarrier)
-{
-	VkImageMemoryBarrier barrier;
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.pNext = 0;
-	barrier.srcAccessMask = ConvertToVk::accessFlags(imgBarrier.srcMask);
-	barrier.dstAccessMask = ConvertToVk::accessFlags(imgBarrier.dstMask);
-
-	barrier.dstQueueFamilyIndex = 0;
-	barrier.srcQueueFamilyIndex = 0;
-
-	barrier.image = native_cast(*imgBarrier.texture).image;
-	barrier.newLayout = ConvertToVk::imageLayout(imgBarrier.newLayout);
-	barrier.oldLayout = ConvertToVk::imageLayout(imgBarrier.oldLayout);
-	barrier.subresourceRange = ConvertToVk::imageSubResourceRange(imgBarrier.area);
-	pimpl->imgBarriers.push_back(barrier);
-	return *this;
+=======
+>>>>>>> 1776432f... 4.3
 }
 
-uint32 MemoryBarrierSet::getNativeMemoryBarriersCount() const { return (uint32)pimpl->memBarriers.size(); }
-const void* MemoryBarrierSet::getNativeMemoryBarriers() const { return pimpl->memBarriers.data(); }
-uint32 MemoryBarrierSet::getNativeImageBarriersCount() const { return (uint32)pimpl->imgBarriers.size(); }
-const void* MemoryBarrierSet::getNativeImageBarriers() const { return pimpl->imgBarriers.data(); }
-uint32 MemoryBarrierSet::getNativeBufferBarriersCount() const { return (uint32)pimpl->bufBarriers.size(); }
-const void* MemoryBarrierSet::getNativeBufferBarriers() const { return pimpl->bufBarriers.data(); }
-
 }
+
 }
 //!\endcond

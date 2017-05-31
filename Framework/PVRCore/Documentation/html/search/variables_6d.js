@@ -1,5 +1,6 @@
 var searchData=
 [
+<<<<<<< HEAD
   ['m_5fapicapabilities',['m_apiCapabilities',['../classpvr_1_1_i_graphics_context.html#a2ddc0c15ec67fb95d0debd0fab071544',1,'pvr::IGraphicsContext']]],
   ['m_5fapitype',['m_apiType',['../classpvr_1_1_i_graphics_context.html#a7db8b24e9d7f03962dc837736829ac10',1,'pvr::IGraphicsContext']]],
   ['m_5fberror',['m_bError',['../structpvr_1_1native_1_1_native_library.html#abfb810ce7fb64cdc04822e41db173049',1,'pvr::native::NativeLibrary']]],
@@ -21,6 +22,13 @@ var searchData=
   ['minusx',['minusX',['../structpvr_1_1math_1_1_frustum.html#a4e3de8f88d7c92f1525ad6606e0e621b',1,'pvr::math::Frustum']]],
   ['minusy',['minusY',['../structpvr_1_1math_1_1_frustum.html#a6681b7f0ef27e4e48a3b408eb55beda5',1,'pvr::math::Frustum']]],
   ['minusz',['minusZ',['../structpvr_1_1math_1_1_frustum.html#a2a0b3677e78fd3eac265e4fa0b1ff466',1,'pvr::math::Frustum']]],
+=======
+  ['magnificationfilter',['magnificationFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#a2780ef12d46c4d793ef5bf9f4a286ca4',1,'pvr::types::SamplerCreateParam']]],
+  ['metadatasize',['metaDataSize',['../structpvr_1_1_texture_header_1_1_header.html#ab09cee76415c97f643c92ef9dcfb605a',1,'pvr::TextureHeader::Header']]],
+  ['minificationfilter',['minificationFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#a7bfbd24da7202f686936ba48ac77cd0b',1,'pvr::types::SamplerCreateParam']]],
+>>>>>>> 1776432f... 4.3
   ['mipleveloffset',['mipLevelOffset',['../structpvr_1_1types_1_1_image_subresource.html#a47bce45edeae68aca22afb5501eb31e0',1,'pvr::types::ImageSubresource']]],
-  ['mipmappingfilter',['mipMappingFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#af0b1fa67ddd2184aa1eada9ace031cce',1,'pvr::types::SamplerCreateParam']]]
+  ['mipmapcount',['mipMapCount',['../structpvr_1_1_texture_header_1_1_header.html#ad17194159abe69c3ddd8254de5521e71',1,'pvr::TextureHeader::Header']]],
+  ['mipmaplevels',['mipmapLevels',['../structpvr_1_1_image_storage_format_compressed.html#a7039461261c190f6a6d545f8bab13b60',1,'pvr::ImageStorageFormatCompressed']]],
+  ['mipmappingfilter',['mipMappingFilter',['../structpvr_1_1types_1_1_sampler_create_param.html#a7c732faaf02826869edca51f2a450313',1,'pvr::types::SamplerCreateParam']]]
 ];

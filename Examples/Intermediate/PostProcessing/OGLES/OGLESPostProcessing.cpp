@@ -3,11 +3,11 @@
 \Title        Bloom
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Shows how to do a bloom effect
+\brief      Shows how to do a bloom effect
 ***********************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 
 using namespace pvr::api;
 using namespace pvr::types;
@@ -39,19 +39,19 @@ const pvr::uint32 TexSize = 256;    // Blur render target size (power-of-two)
 /**********************************************************************************************
 Content file names
 ***********************************************************************************************/
-const char FragShaderSrcFile[]			= "FragShader.fsh";
-const char VertShaderSrcFile[]			= "VertShader.vsh";
-const char PreBloomFragShaderSrcFile[]	= "PreBloomFragShader.fsh";
-const char PreBloomVertShaderSrcFile[]	= "PreBloomVertShader.vsh";
-const char PostBloomFragShaderSrcFile[]	= "PostBloomFragShader.fsh";
-const char PostBloomVertShaderSrcFile[]	= "PostBloomVertShader.vsh";
-const char BlurFragSrcFile[]			= "BlurFragShader.fsh";
-const char BlurVertSrcFile[]			= "BlurVertShader.vsh";
+const char FragShaderSrcFile[]      = "FragShader.fsh";
+const char VertShaderSrcFile[]      = "VertShader.vsh";
+const char PreBloomFragShaderSrcFile[]  = "PreBloomFragShader.fsh";
+const char PreBloomVertShaderSrcFile[]  = "PreBloomVertShader.vsh";
+const char PostBloomFragShaderSrcFile[] = "PostBloomFragShader.fsh";
+const char PostBloomVertShaderSrcFile[] = "PostBloomVertShader.vsh";
+const char BlurFragSrcFile[]      = "BlurFragShader.fsh";
+const char BlurVertSrcFile[]      = "BlurVertShader.vsh";
 
 // PVR texture files
-const char BaseTexFile[]				= "Marble.pvr";
+const char BaseTexFile[]        = "Marble.pvr";
 // POD scene files
-const char SceneFile[]					= "scene.pod";
+const char SceneFile[]          = "scene.pod";
 
 /*!********************************************************************************************
 Class implementing the pvr::Shell functions.
@@ -84,8 +84,8 @@ class OGLESPostProcessing : public pvr::Shell
 		pvr::api::Sampler   samplerRepeat;
 		pvr::api::Sampler   samplerClamp;
 
-		pvr::api::Buffer		quadVbo;
-		pvr::api::Buffer		quadIbo;
+		pvr::api::Buffer    quadVbo;
+		pvr::api::Buffer    quadIbo;
 		pvr::api::DescriptorSet descSetRenderPass;
 		pvr::api::DescriptorSet descSetFilterPass;
 		pvr::api::DescriptorSet descSetBlurPass[2];
@@ -101,7 +101,7 @@ class OGLESPostProcessing : public pvr::Shell
 
 
 	// Print3D class used to display text
-	pvr::ui::UIRenderer	uiRenderer;
+	pvr::ui::UIRenderer uiRenderer;
 
 	// 3D Model
 	pvr::assets::ModelHandle scene;
@@ -112,7 +112,7 @@ class OGLESPostProcessing : public pvr::Shell
 	bool animating;
 
 	pvr::float32 rotation;
-	pvr::api::AssetStore assetManager;
+	pvr::utils::AssetStore assetManager;
 	// Group shader programs and their uniform locations together
 	struct
 	{
@@ -195,8 +195,8 @@ public:
 };
 
 /*!********************************************************************************************
-\return	Return true if no error occurred
-\brief	Loads the textures required for this training course
+\return Return true if no error occurred
+\brief  Loads the textures required for this training course
 ***********************************************************************************************/
 bool OGLESPostProcessing::createTextureDescriptor()
 {
@@ -257,8 +257,8 @@ bool OGLESPostProcessing::createTextureDescriptor()
 }
 
 /*!********************************************************************************************
-\brief	Loads and compiles the shaders and links the shader programs
-\return	Return true if no error occurred required for this training course
+\brief  Loads and compiles the shaders and links the shader programs
+\return Return true if no error occurred required for this training course
 ***********************************************************************************************/
 bool OGLESPostProcessing::createPipeline()
 {
@@ -404,20 +404,20 @@ bool OGLESPostProcessing::createPipeline()
 
 	// Set the sampler2D variable to the first texture unit
 	deviceResource->cmdBuffer->bindPipeline(deviceResource->preBloomPipe);
-	deviceResource->cmdBuffer->setUniform<pvr::int32>(deviceResource->preBloomPipe->getUniformLocation("sTexture"), 0);
+	deviceResource->cmdBuffer->setUniform(deviceResource->preBloomPipe->getUniformLocation("sTexture"), 0);
 
 	// Set the sampler2D variable to the first texture unit
 	deviceResource->cmdBuffer->bindPipeline(deviceResource->blurPipe);
-	deviceResource->cmdBuffer->setUniform<pvr::int32>(deviceResource->blurPipe->getUniformLocation("sTexture"), 0);
+	deviceResource->cmdBuffer->setUniform(deviceResource->blurPipe->getUniformLocation("sTexture"), 0);
 
 	// Set the sampler2D variable to the first texture unit
 	deviceResource->cmdBuffer->bindPipeline(deviceResource->basePipe);
-	deviceResource->cmdBuffer->setUniform<pvr::int32>(deviceResource->basePipe->getUniformLocation("sTexture"), 0);
+	deviceResource->cmdBuffer->setUniform(deviceResource->basePipe->getUniformLocation("sTexture"), 0);
 
 	// Set the sampler2D variable to the first texture unit
 	deviceResource->cmdBuffer->bindPipeline(deviceResource->postBloomPipe);
-	deviceResource->cmdBuffer->setUniform<pvr::int32>(deviceResource->postBloomPipe->getUniformLocation("sTexture"), 0);
-	deviceResource->cmdBuffer->setUniform<pvr::int32>(deviceResource->postBloomPipe->getUniformLocation("sBlurTexture"), 1);
+	deviceResource->cmdBuffer->setUniform(deviceResource->postBloomPipe->getUniformLocation("sTexture"), 0);
+	deviceResource->cmdBuffer->setUniform(deviceResource->postBloomPipe->getUniformLocation("sBlurTexture"), 1);
 
 	deviceResource->cmdBuffer->endRecording();
 	deviceResource->cmdBuffer->submit();
@@ -425,7 +425,7 @@ bool OGLESPostProcessing::createPipeline()
 }
 
 /*!****************************************************************************
-\brief	Loads the mesh data required for this training course into vertex buffer objects
+\brief  Loads the mesh data required for this training course into vertex buffer objects
 ******************************************************************************/
 bool OGLESPostProcessing::loadVbos()
 {
@@ -457,6 +457,7 @@ bool OGLESPostProcessing::loadVbos()
 	pvr::uint16 indices[] = { 1, 2, 0, 0, 2, 3 };
 	auto i  = sizeof(afVertexData);
 	deviceResource->quadVbo = context->createBuffer(sizeof(afVertexData), BufferBindingUse::VertexBuffer, true);
+<<<<<<< HEAD
 	deviceResource->quadVbo->update(afVertexData, 0, sizeof(afVertexData));
 
 	deviceResource->quadIbo = context->createBuffer(sizeof(indices), BufferBindingUse::IndexBuffer, true);
@@ -464,20 +465,34 @@ bool OGLESPostProcessing::loadVbos()
 	deviceResource->quadIbo->update(indices, 0, sizeof(indices));
 	std::string apiError;
 	if (pvr::api::checkApiError(&apiError))
+=======
+	if (deviceResource->quadVbo.isNull())
 	{
 		this->setExitMessage("Failed to create the VBOs");
 		return false;
 	}
+	deviceResource->quadVbo->update(afVertexData, 0, sizeof(afVertexData));
+
+	deviceResource->quadIbo = context->createBuffer(sizeof(indices), BufferBindingUse::IndexBuffer, true);
+	if (deviceResource->quadIbo.isNull())
+>>>>>>> 1776432f... 4.3
+	{
+		this->setExitMessage("Failed to create the VBOs");
+		return false;
+	}
+
+	deviceResource->quadIbo->update(indices, 0, sizeof(indices));
+	std::string apiError;
 	return true;
 }
 
 /*!********************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Code in initApplication() will be called by pvr::Shell once per run, before the rendering
-		context is created.
-		Used to initialize variables that are not dependent on it (e.g. external modules,
-		loading meshes, etc.)
-		If the rendering context is lost, initApplication() will not be called again.
+\return Return Result::Success if no error occurred
+\brief  Code in initApplication() will be called by pvr::Shell once per run, before the rendering
+    context is created.
+    Used to initialize variables that are not dependent on it (e.g. external modules,
+    loading meshes, etc.)
+    If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************/
 pvr::Result OGLESPostProcessing::initApplication()
 {
@@ -508,8 +523,8 @@ pvr::Result OGLESPostProcessing::initApplication()
 }
 
 /*!********************************************************************************************
-\return	Return  pvr::Result::Success if no error occured
-\brief	Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
+\return Return  pvr::Result::Success if no error occured
+\brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
 quitApplication() will not be called every time the rendering context is lost, only before application exit.
 ***********************************************************************************************/
 pvr::Result OGLESPostProcessing::quitApplication()
@@ -520,10 +535,10 @@ pvr::Result OGLESPostProcessing::quitApplication()
 }
 
 /*!********************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Code in initView() will be called by pvr::Shell upon initialization or after a change
-		in the rendering context. Used to initialize variables that are dependent on the rendering
-		context (e.g. textures, vertex buffers, etc.)
+\return Return Result::Success if no error occurred
+\brief  Code in initView() will be called by pvr::Shell upon initialization or after a change
+    in the rendering context. Used to initialize variables that are dependent on the rendering
+    context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************/
 pvr::Result OGLESPostProcessing::initView()
 {
@@ -532,10 +547,10 @@ pvr::Result OGLESPostProcessing::initView()
 	deviceResource->cmdBuffer = context->createCommandBufferOnDefaultPool();
 	deviceResource->cmdBufferUIRenderer = context->createSecondaryCommandBufferOnDefaultPool();
 
-	//	Initialize VBO data
+	//  Initialize VBO data
 	if (!loadVbos()) {  return pvr::Result::NotInitialized;  }
 
-	//	Load and compile the shaders & link programs
+	//  Load and compile the shaders & link programs
 	if (!createPipeline()) {   return pvr::Result::NotInitialized;   }
 
 	if (!createOnScreenFbo() || !createRenderFbo() || !createBlurFbo())
@@ -543,7 +558,7 @@ pvr::Result OGLESPostProcessing::initView()
 		return pvr::Result::NotInitialized;
 	}
 
-	//	Load textures
+	//  Load textures
 	if (!createTextureDescriptor()) {  return pvr::Result::NotInitialized; }
 
 	if (uiRenderer.init(deviceResource->fbo->fbo->getRenderPass(), 0) != pvr::Result::Success)
@@ -583,12 +598,12 @@ pvr::Result OGLESPostProcessing::initView()
 
 /*!********************************************************************************************
 \brief Create render fbo for rendering the scene
-\return	Return true if success
+\return Return true if success
 ***********************************************************************************************/
 bool OGLESPostProcessing::createRenderFbo()
 {
-	pvr::api::ImageStorageFormat depthTexFormat(pvr::PixelFormat::Depth16, 1, ColorSpace::lRGB, pvr::VariableType::Float);
-	pvr::api::ImageStorageFormat colorTexFormat(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm);
+	pvr::ImageStorageFormat depthTexFormat(pvr::PixelFormat::Depth16, 1, ColorSpace::lRGB, pvr::VariableType::Float);
+	pvr::ImageStorageFormat colorTexFormat(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm);
 	pvr::api::TextureStore depthTexture, colorTexture;
 	pvr::api::TextureView  depthTexView, colorTexView;
 
@@ -610,15 +625,24 @@ bool OGLESPostProcessing::createRenderFbo()
 	pvr::api::SubPass subPass;
 	subPass.setColorAttachment(0, 0); // use the first color attachment
 	renderPassInfo.setSubPass(0, subPass);
+<<<<<<< HEAD
 	renderPassInfo.setDepthStencilInfo(dsInfo);
+=======
+	renderPassInfo.setDepthStencilInfo(0, dsInfo);
+>>>>>>> 1776432f... 4.3
 	renderPassInfo.setColorInfo(0, colorInfo);
 
 	pvr::api::FboCreateParam fboInfo;
 	fboInfo.setRenderPass(context->createRenderPass(renderPassInfo));
 
 	fboInfo.setColor(0, colorTexView);
+<<<<<<< HEAD
 	fboInfo.setDepthStencil(depthTexView);
 	fboInfo.setDimension(getWidth(), getHeight());
+=======
+	fboInfo.setDepthStencil(0, depthTexView);
+	fboInfo.setDimensions(getWidth(), getHeight());
+>>>>>>> 1776432f... 4.3
 	deviceResource->fbo[FboPass::RenderScene].fbo = context->createFbo(fboInfo);
 	deviceResource->fbo[FboPass::RenderScene].renderTex = colorTexView;
 	deviceResource->fbo[FboPass::RenderScene].depthTex = depthTexView;
@@ -632,12 +656,12 @@ bool OGLESPostProcessing::createRenderFbo()
 }
 
 /*!********************************************************************************************
-\brief	Create the blur fbo
-\return	Return  true on success
+\brief  Create the blur fbo
+\return Return  true on success
 ***********************************************************************************************/
 bool OGLESPostProcessing::createBlurFbo()
 {
-	pvr::api::ImageStorageFormat colorTexFormat(pvr::PixelFormat::RGB_888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm);
+	pvr::ImageStorageFormat colorTexFormat(pvr::PixelFormat::RGB_888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm);
 
 	// create the render passes.
 	pvr::api::RenderPassCreateParam blurRenderPassDesc;
@@ -654,7 +678,11 @@ bool OGLESPostProcessing::createBlurFbo()
 		deviceResource->fbo[FboPass::BlurFbo0 + i].renderTex = context->createTextureView(tex);
 
 		pvr::api::FboCreateParam blurFboDesc;
+<<<<<<< HEAD
 		blurFboDesc.setDimension(TexSize, TexSize);
+=======
+		blurFboDesc.setDimensions(TexSize, TexSize);
+>>>>>>> 1776432f... 4.3
 		blurFboDesc.setRenderPass(blurRenderPass);
 		blurFboDesc.setColor(0, deviceResource->fbo[FboPass::BlurFbo0 + i].renderTex);
 		// The first render target needs a depth buffer, as we have to draw "blooming" 3d objects into it
@@ -670,8 +698,8 @@ bool OGLESPostProcessing::createBlurFbo()
 }
 
 /*!********************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in releaseView() will be called by pvr::Shell when the application quits or before
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in releaseView() will be called by pvr::Shell when the application quits or before
 a change in the rendering context.
 ***********************************************************************************************/
 pvr::Result OGLESPostProcessing::releaseView()
@@ -712,8 +740,8 @@ void OGLESPostProcessing::updateAnimation()
 }
 
 /*!********************************************************************************************
-\return	Return Result::Suceess if no error occurred
-\brief	Main rendering loop function of the program. The shell will call this function every frame.
+\return Return Result::Suceess if no error occurred
+\brief  Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************/
 pvr::Result OGLESPostProcessing::renderFrame()
 {
@@ -723,7 +751,7 @@ pvr::Result OGLESPostProcessing::renderFrame()
 }
 
 /*!********************************************************************************************
-\brief	update the subtitle sprite
+\brief  update the subtitle sprite
 ***********************************************************************************************/
 void OGLESPostProcessing::updateSubtitleText()
 {
@@ -754,7 +782,7 @@ void OGLESPostProcessing::updateSubtitleText()
 }
 
 /*!********************************************************************************************
-\brief	Handles user input and updates live variables accordingly.
+\brief  Handles user input and updates live variables accordingly.
 ***********************************************************************************************/
 void OGLESPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 {
@@ -799,8 +827,8 @@ void OGLESPostProcessing::eventMappedInput(pvr::SimplifiedInput e)
 }
 
 /*!********************************************************************************************
-\param	nodeIndex	Node index of the mesh to draw
-\brief	Draws a pvr::Model::Mesh after the model view matrix has been set and the material prepared.
+\param  nodeIndex Node index of the mesh to draw
+\brief  Draws a pvr::Model::Mesh after the model view matrix has been set and the material prepared.
 ***********************************************************************************************/
 void OGLESPostProcessing::drawMesh(int nodeIndex, pvr::api::CommandBuffer& cmdBuffer)
 {
@@ -824,7 +852,7 @@ void OGLESPostProcessing::drawMesh(int nodeIndex, pvr::api::CommandBuffer& cmdBu
 }
 
 /*!********************************************************************************************
-\brief	Add the draw commands for a full screen quad to a commandbuffer
+\brief  Add the draw commands for a full screen quad to a commandbuffer
 ***********************************************************************************************/
 void OGLESPostProcessing::drawAxisAlignedQuad(pvr::float32 scaleX, pvr::float32 scaleY, const pvr::int32& matrixUniformLoc,
     pvr::api::CommandBuffer& cmdBuffer)
@@ -833,12 +861,12 @@ void OGLESPostProcessing::drawAxisAlignedQuad(pvr::float32 scaleX, pvr::float32 
 	glm::mat4 scaleMtx = glm::scale(glm::vec3(scaleX, scaleY, 1.0f));
 	cmdBuffer->bindVertexBuffer(deviceResource->quadVbo, 0, 0);
 	cmdBuffer->bindIndexBuffer(deviceResource->quadIbo, 0, IndexType::IndexType16Bit);
-	cmdBuffer->setUniform<glm::mat4>(matrixUniformLoc, scaleMtx);
+	cmdBuffer->setUniform(matrixUniformLoc, scaleMtx);
 	cmdBuffer->drawIndexed(0, 6);
 }
 
 /*!********************************************************************************************
-\brief	Record the command buffer
+\brief  Record the command buffer
 ***********************************************************************************************/
 void OGLESPostProcessing::recordCommandBuffer()
 {
@@ -855,11 +883,11 @@ void OGLESPostProcessing::recordCommandBuffer()
 		deviceResource->cmdBuffer->bindDescriptorSet(
 		  deviceResource->basePipe->getPipelineLayout(), 0, deviceResource->descSetRenderPass, 0);
 
-		deviceResource->cmdBuffer->setUniform<pvr::float32>(basicProgUniform.shininess, .6f);
-		deviceResource->cmdBuffer->setUniformPtr<glm::vec3>(basicProgUniform.lightDirLoc, 1, &passDrawMesh.lightPos);
+		deviceResource->cmdBuffer->setUniform(basicProgUniform.shininess, .6f);
+		deviceResource->cmdBuffer->setUniformPtr(basicProgUniform.lightDirLoc, 1, &passDrawMesh.lightPos);
 		// Draw the mesh
-		deviceResource->cmdBuffer->setUniformPtr<glm::mat4>(basicProgUniform.mvpLoc, 1, &passDrawMesh.mvp);
-		deviceResource->cmdBuffer->setUniformPtr<glm::mat4>(basicProgUniform.mvInvLoc, 1, &passDrawMesh.mvInv);
+		deviceResource->cmdBuffer->setUniformPtr(basicProgUniform.mvpLoc, 1, &passDrawMesh.mvp);
+		deviceResource->cmdBuffer->setUniformPtr(basicProgUniform.mvInvLoc, 1, &passDrawMesh.mvInv);
 		drawMesh(0, deviceResource->cmdBuffer);
 		deviceResource->cmdBuffer->endRenderPass();
 	}
@@ -878,8 +906,8 @@ void OGLESPostProcessing::recordCommandBuffer()
 		// shader shall be executed.Try to minimize the area by only drawing where the actual
 		// post processing should happen, as this is a very costly operation.
 		deviceResource->cmdBuffer->bindPipeline(deviceResource->postBloomPipe);
-		deviceResource->cmdBuffer->setUniform<pvr::float32>(postBloomProgUniform.texFactor, 1.f);
-		deviceResource->cmdBuffer->setUniform<pvr::float32>(postBloomProgUniform.blurTexFactor, 0.f);
+		deviceResource->cmdBuffer->setUniform(postBloomProgUniform.texFactor, 1.f);
+		deviceResource->cmdBuffer->setUniform(postBloomProgUniform.blurTexFactor, 0.f);
 		drawAxisAlignedQuad(1, 1, postBloomProgUniform.mvpMtx, deviceResource->cmdBuffer);
 	}
 	else
@@ -895,7 +923,7 @@ void OGLESPostProcessing::recordCommandBuffer()
 			deviceResource->cmdBuffer->bindDescriptorSet(
 			  deviceResource->preBloomPipe->getPipelineLayout(), 0, deviceResource->descSetFilterPass, 0);
 
-			deviceResource->cmdBuffer->setUniformPtr<pvr::float32>(preBloomProgUniform.bloomIntensity, 1, &bloomIntensity);
+			deviceResource->cmdBuffer->setUniformPtr(preBloomProgUniform.bloomIntensity, 1, &bloomIntensity);
 			drawAxisAlignedQuad(1, 1, preBloomProgUniform.mvpLoc, deviceResource->cmdBuffer);
 
 			deviceResource->cmdBuffer->endRenderPass();
@@ -909,8 +937,8 @@ void OGLESPostProcessing::recordCommandBuffer()
 				deviceResource->cmdBuffer->bindPipeline(deviceResource->blurPipe);
 				deviceResource->cmdBuffer->bindDescriptorSet(deviceResource->blurPipe->getPipelineLayout(), 0, deviceResource->descSetBlurPass[1], 0);
 
-				deviceResource->cmdBuffer->setUniformPtr<pvr::float32>(blurProgUnifom.texOffsetX, 1, &passBloom.texelOffset);
-				deviceResource->cmdBuffer->setUniform<pvr::float32>(blurProgUnifom.texOffsetY, 0.0f);
+				deviceResource->cmdBuffer->setUniformPtr(blurProgUnifom.texOffsetX, 1, &passBloom.texelOffset);
+				deviceResource->cmdBuffer->setUniform(blurProgUnifom.texOffsetY, 0.0f);
 				drawAxisAlignedQuad(1, 1, blurProgUnifom.mvpMtx, deviceResource->cmdBuffer);
 				deviceResource->cmdBuffer->endRenderPass();
 
@@ -920,8 +948,8 @@ void OGLESPostProcessing::recordCommandBuffer()
 				// bind the texture that we rendered in the horizontal pass
 				deviceResource->cmdBuffer->bindDescriptorSet(deviceResource->blurPipe->getPipelineLayout(), 0, deviceResource->descSetBlurPass[0], 0);
 
-				deviceResource->cmdBuffer->setUniform<pvr::float32>(blurProgUnifom.texOffsetX, 0.0f);
-				deviceResource->cmdBuffer->setUniformPtr<pvr::float32>(blurProgUnifom.texOffsetY, 1, &passBloom.texelOffset);
+				deviceResource->cmdBuffer->setUniform(blurProgUnifom.texOffsetX, 0.0f);
+				deviceResource->cmdBuffer->setUniformPtr(blurProgUnifom.texOffsetY, 1, &passBloom.texelOffset);
 				drawAxisAlignedQuad(1, 1, blurProgUnifom.mvpMtx, deviceResource->cmdBuffer);
 				deviceResource->cmdBuffer->endRenderPass();
 			}
@@ -937,15 +965,15 @@ void OGLESPostProcessing::recordCommandBuffer()
 			// shader shall be executed.Try to minimize the area by only drawing where the actual
 			// post processing should happen, as this is a very costly operation.
 			deviceResource->cmdBuffer->bindPipeline(deviceResource->postBloomPipe);
-			deviceResource->cmdBuffer->setUniform<pvr::float32>(postBloomProgUniform.blurTexFactor, 1.f);
+			deviceResource->cmdBuffer->setUniform(postBloomProgUniform.blurTexFactor, 1.f);
 
 			if (drawObject)
 			{
-				deviceResource->cmdBuffer->setUniform<pvr::float32>(postBloomProgUniform.texFactor, 1.f);
+				deviceResource->cmdBuffer->setUniform(postBloomProgUniform.texFactor, 1.f);
 			}
 			else  // Hide the object to show the bloom textures...
 			{
-				deviceResource->cmdBuffer->setUniform<pvr::float32>(postBloomProgUniform.texFactor, 0.f);
+				deviceResource->cmdBuffer->setUniform(postBloomProgUniform.texFactor, 0.f);
 			}
 
 			drawAxisAlignedQuad(1, 1, postBloomProgUniform.mvpMtx, deviceResource->cmdBuffer);
@@ -973,8 +1001,8 @@ void OGLESPostProcessing::recordCommandBuffer()
 }
 
 /*!********************************************************************************************
-\return	Return auto ptr to the demo supplied by the user
-\brief	This function must be implemented by the user of the shell.
+\return Return auto ptr to the demo supplied by the user
+\brief  This function must be implemented by the user of the shell.
 The user should return its pvr::Shell object defining the behaviour of the application.
 ***********************************************************************************************/
 std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new OGLESPostProcessing()); }

@@ -47,7 +47,7 @@ bool testGlError(const char* functionLastCalled)
 @interface EAGLView : UIView
 {
 @private
-	EAGLContext*        m_context;
+	EAGLContext*        _context;
 	GLuint				m_framebuffer;
 	GLuint				m_renderbuffer;
 	GLuint				m_depthBuffer;
@@ -263,7 +263,7 @@ bool testGlError(const char* functionLastCalled)
 	// Link the program
 	glLinkProgram(program);
 
-	// Check if linking succeeded in the same way we checked for compilation success
+	// Check if linking succeeded in the same way we checked for comapplicationDidFinishLaunchingilation success
 	GLint isLinked;
 	glGetProgramiv(program, GL_LINK_STATUS, &isLinked);
 	if (!isLinked)
@@ -318,9 +318,9 @@ bool testGlError(const char* functionLastCalled)
 
 	
 	// Create a context for rendering with OpenGL ES2.
-	m_context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+	_context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 
-	if((!m_context) || (![EAGLContext setCurrentContext:m_context])){	return FALSE;	}
+	if((!_context) || (![EAGLContext setCurrentContext:_context])){	return FALSE;	}
 
 	// Scale the display appropriately.
 	if([self respondsToSelector:@selector(contentScaleFactor)])
@@ -352,7 +352,7 @@ bool testGlError(const char* functionLastCalled)
 	glGenRenderbuffers(1, &m_renderbuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, m_renderbuffer);
 
-	if(![m_context renderbufferStorage:GL_RENDERBUFFER fromDrawable:eaglLayer])
+	if(![_context renderbufferStorage:GL_RENDERBUFFER fromDrawable:eaglLayer])
 	{
 		glDeleteRenderbuffers(1, &m_renderbuffer);
 		glBindRenderbuffer(GL_RENDERBUFFER_BINDING, oldRenderbuffer);
@@ -486,7 +486,7 @@ bool testGlError(const char* functionLastCalled)
 	// that OpenGL ES 2.0 has finished rendering a scene, and that the display should now draw to the screen from the new data. At the same
 	// time, the front buffer is made available for OpenGL ES 2.0 to start rendering to. In effect, this call swaps the front and back
 	// buffers.
-	if(![m_context presentRenderbuffer:GL_RENDERBUFFER]){ NSLog(@"Failed to swap renderbuffer.\n");	}
+	if(![_context presentRenderbuffer:GL_RENDERBUFFER]){ NSLog(@"Failed to swap renderbuffer.\n");	}
 
 	// Reset the older renderbuffer
 	glBindRenderbuffer(GL_RENDERBUFFER, oldRenderBuffer);
@@ -509,8 +509,8 @@ bool testGlError(const char* functionLastCalled)
 	// Release renderbuffers
 	EAGLContext *oldContext = [EAGLContext currentContext];
 
-	if (oldContext != m_context)
-		[EAGLContext setCurrentContext:m_context];
+	if (oldContext != _context)
+		[EAGLContext setCurrentContext:_context];
 
 	glDeleteRenderbuffers(1, &m_depthBuffer);
 	m_depthBuffer = 0;
@@ -521,13 +521,13 @@ bool testGlError(const char* functionLastCalled)
 	glDeleteFramebuffers(1, &m_framebuffer);
 
 	m_framebuffer = 0;
-	if (oldContext != m_context)
+	if (oldContext != _context)
 		[EAGLContext setCurrentContext:oldContext];
 
 	
 	// EAGLContext deinitialisation.
-	[m_context release];
-	m_context = nil;
+	[_context release];
+	_context = nil;
 }
 
 /*!*********************************************************************************************************************
@@ -613,6 +613,8 @@ bool testGlError(const char* functionLastCalled)
 
 	window = [[UIWindow alloc] initWithFrame:frameSize];
 	view   = [[EAGLView alloc] initWithFrame:frameSize scale:scale];
+        UIViewController* vc = [[UIViewController alloc]initWithNibName:nil bundle:nil];
+        window.rootViewController = vc;
 	if(view)
 	{
 		// Add this view to the window and show

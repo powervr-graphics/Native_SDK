@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRCore\Android\AndroidAssetStream.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         A Stream implementation used to access Android resources.
-***********************************************************************************************************************/
+/*!
+\brief A Stream implementation used to access Android resources.
+\file PVRCore/Android/AndroidAssetStream.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRCore/Stream.h"
 
@@ -12,11 +12,11 @@ struct AAsset;
 
 namespace pvr
 {
-/*!*********************************************************************************************************************
-\brief	      A Stream implementation that is used to access resources built in an Android package (apk).
-\description  This Stream abstraction allows the user to easily access the Resources embedded in an Android .apk package.
-              This is the default way resources are packed in the Android version of the PowerVR Examples.
-***********************************************************************************************************************/
+/// <summary>A Stream implementation that is used to access resources built in an Android package (apk).
+/// </summary>
+/// <remarks>This Stream abstraction allows the user to easily access the Resources embedded in an Android .apk
+/// package. This is the default way resources are packed in the Android version of the PowerVR Examples.
+/// </remarks>
 class AndroidAssetStream : public Stream
 {
 public:
@@ -33,7 +33,7 @@ public:
 	virtual size_t getSize() const;
 
 private:
-	AAssetManager* const m_assetManager;
-	mutable AAsset* m_asset;
+	AAssetManager* const assetManager;
+	mutable AAsset* _asset;
 };
 }

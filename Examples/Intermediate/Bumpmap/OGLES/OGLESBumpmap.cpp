@@ -7,7 +7,7 @@
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 using namespace pvr::types;
 const pvr::float32 RotateY = glm::pi<pvr::float32>() / 150;
 const glm::vec4 LightDir(.24f, .685f, -.685f, 0.0f);
@@ -81,7 +81,7 @@ class OGLESBumpMap : public pvr::Shell
 
 	pvr::uint32 pipeUniformLoc[Uniform::NumUniforms];
 	pvr::GraphicsContext context;
-	pvr::api::AssetStore assetManager;
+	pvr::utils::AssetStore assetManager;
 	// The translation and Rotate parameter of Model
 	pvr::float32 angleY;
 	DrawPass drawPass;
@@ -187,8 +187,8 @@ bool OGLESBumpMap::loadPipeline()
 
 	deviceResource->commandBuffer->beginRecording();
 	deviceResource->commandBuffer->bindPipeline(deviceResource->pipe);
-	deviceResource->commandBuffer->setUniform<pvr::int32>(deviceResource->pipe->getUniformLocation("sBaseTex"), 0);
-	deviceResource->commandBuffer->setUniform<pvr::int32>(deviceResource->pipe->getUniformLocation("sNormalMap"), 1);
+	deviceResource->commandBuffer->setUniform(deviceResource->pipe->getUniformLocation("sBaseTex"), 0);
+	deviceResource->commandBuffer->setUniform(deviceResource->pipe->getUniformLocation("sNormalMap"), 1);
 	deviceResource->commandBuffer->endRecording();
 	deviceResource->commandBuffer->submit();
 	return true;
@@ -374,10 +374,10 @@ void OGLESBumpMap::recordCommandBuffer()
 
 	// enqueue the static states which wont be changed through out the frame
 	deviceResource->commandBuffer->bindPipeline(deviceResource->pipe);
-	deviceResource->commandBuffer->setUniformPtr<glm::vec3>(pipeUniformLoc[Uniform::LightDir], 1, &drawPass.lightDir);
+	deviceResource->commandBuffer->setUniformPtr(pipeUniformLoc[Uniform::LightDir], 1, &drawPass.lightDir);
 
 	deviceResource->commandBuffer->bindDescriptorSet(deviceResource->pipe->getPipelineLayout(), 0, deviceResource->imageSamplerDescSet, 0);
-	deviceResource->commandBuffer->setUniformPtr<glm::mat4>(pipeUniformLoc[Uniform::MVPMatrix], 1, &drawPass.mvp);
+	deviceResource->commandBuffer->setUniformPtr(pipeUniformLoc[Uniform::MVPMatrix], 1, &drawPass.mvp);
 	drawMesh(0);
 
 	pvr::api::SecondaryCommandBuffer uiCmdBuffer = context->createSecondaryCommandBufferOnDefaultPool();

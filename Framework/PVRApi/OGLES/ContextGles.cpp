@@ -1,18 +1,16 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\OGLES\ContextGles.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementation of the ContextGles class. See ContextGles.h, IGraphicsContext.h.
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief Implementation of the ContextGles class. See ContextGles.h, IGraphicsContext.h.
+\file PVRApi/OGLES/ContextGles.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+#include "PVRNativeApi/NativeGles.h"
 #include "PVRApi/OGLES/ContextGles.h"
 #include "PVRApi/OGLES/BufferGles.h"
 #include "PVRApi/OGLES/ShaderGles.h"
 #include "PVRApi/OGLES/TextureGles.h"
 #include "PVRApi/OGLES/DescriptorSetGles.h"
 #include "PVRApi/OGLES/SamplerGles.h"
-#include "PVRNativeApi/ShaderUtils.h"
-#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
 #include "PVRApi/OGLES/FboGles.h"
 #include "PVRApi/OGLES/RenderPassGles.h"
 #include "PVRApi/OGLES/DescriptorSetGles.h"
@@ -20,9 +18,11 @@
 #include "PVRApi/OGLES/ComputePipelineGles.h"
 #include "PVRApi/OGLES/PipelineLayoutGles.h"
 #include "PVRApi/OGLES/CommandPoolGles.h"
-#include "PVRApi/ApiObjects/Sync.h"
+#include "PVRApi/OGLES/SyncGles.h"
 #include "PVRApi/EffectApi.h"
+#include "PVRCore/Texture.h"
 #include <algorithm>
+#include "PVRNativeApi/PlatformContext.h"
 
 using std::string;
 namespace pvr {
@@ -34,21 +34,27 @@ GraphicsContextStrongReference createGraphicsContext()
 	return ctx;
 }
 
+<<<<<<< HEAD
 inline GraphicsContext IGraphicsContext::getWeakRef()
+=======
+// Entry point to the Platform Context Creation. Only useful for the runtime Dynamic linking,
+// as in that case the application will not link against PlatformGlue. Instead, the PVRApi
+// library will be providing the implementation of the platform context creation function.
+std::auto_ptr<IPlatformContext> PVR_API_FUNC createNativePlatformContextApi(OSManager& mgr)
+>>>>>>> 1776432f... 4.3
 {
-	return static_cast<platform::ContextGles&>(*this).getWeakReference();
+	return pvr::createNativePlatformContext(mgr);
 }
+
 
 namespace platform {
 namespace {
-/*!**********************************************************************************************************
-\brief This struct is used to describe an extension entry for the purpose of OpenGL ES Capability definition.
-Capabilities can the be queried with the IGraphicsContext::hasApiCapability() functions
-\description A table of those describes which capabilities are present in which API version, core or with extensions.
-If this struct is used to populated properly a table, the context will automatically query all
-defined capabilities, and the presense or absense of a specific capability will be able to be queried, as
-well as if it is supported natively or through an extension.
-************************************************************************************************************/
+/// <summary>This struct is used to describe an extension entry for the purpose of OpenGL ES Capability definition.
+/// Capabilities can the be queried with the IGraphicsContext::hasApiCapability() functions</summary>
+/// <remarks>A table of those describes which capabilities are present in which API version, core or with
+/// extensions. If this struct is used to populated properly a table, the context will automatically query all
+/// defined capabilities, and the presense or absense of a specific capability will be able to be queried, as well
+/// as if it is supported natively or through an extension.</remarks>
 struct ExtensionEntry
 {
 	ApiCapabilities::Enum capability;
@@ -57,13 +63,12 @@ struct ExtensionEntry
 	Api minCoreLevel;//<! Minimum API level that this capability is core. If "unspecified", no version supports it as core
 };
 
-/*!**********************************************************************************************************
-\description This table describes what capabilities each OpenGL ES Api has.
-************************************************************************************************************/
+/// <remarks>This table describes what capabilities each OpenGL ES Api has.</remarks>
 static ExtensionEntry extensionMap[] =
 {
 	//Common to all OpenGL ES versions - but other APIS might not support them...
 
+<<<<<<< HEAD
 	//Always extensions, OpenGL ES 2+
 	{ ApiCapabilities::DebugCallback, "GL_KHR_debug", Api::OpenGLES2, Api::Unspecified },
 	{ ApiCapabilities::AnisotropicFiltering, "GL_EXT_texture_filter_anisotropic", Api::OpenGLES2, Api::Unspecified },
@@ -75,6 +80,33 @@ static ExtensionEntry extensionMap[] =
 	{ ApiCapabilities::ClearTexImage, "GL_IMG_clear_texture", Api::OpenGLES31, Api::Unspecified },
 	{ ApiCapabilities::ShaderPixelLocalStorage2, "GL_EXT_shader_pixel_local_storage2", Api::OpenGLES3, Api::Unspecified },
 	{ ApiCapabilities::GeometryShader, "GL_EXT_geometry_shader", Api::OpenGLES31, Api::Unspecified },
+=======
+	// INSTRUCTIONS TO FILL THE TABLE:
+	// Column 1: capability enum,
+	// Column 2: extension string (IF required)
+	// Column 3: The minimum API for which the extension is valid (before that, it is never supported)
+	// Column 4: The minimum API for which the capability has become CORE (so the extension is no longer required
+	// EXAMPLES:
+	// { NAME, NULL, Api::Unspecified, Api::OpenGLES3 } is something that was never an extension, and is core in ES3
+	// { NAME, "EXT_NAME", Api::OpenGLES2, Api::UNSPECIFIED } is something that is an extension in any GL version
+	// { NAME, "EXT_NAME", Api::OpenGLES2, Api::OpenGLES3} } is something that is an extension in ES2 but core in ES3
+
+	//Always extensions, OpenGL ES 2+
+	{ ApiCapabilities::DebugCallback, "GL_KHR_debug", Api::OpenGLES2, Api::Unspecified },
+	{ ApiCapabilities::AnisotropicFiltering, "GL_EXT_texture_filter_anisotropic", Api::OpenGLES2, Api::Unspecified },
+	{ ApiCapabilities::BicubicFiltering, "GL_IMG_texture_filter_cubic", Api::OpenGLES2, Api::Unspecified },
+
+	//Always extensions, for OpenGL ES3+
+	{ ApiCapabilities::ShaderPixelLocalStorage, "GL_EXT_shader_pixel_local_storage", Api::OpenGLES3, Api::Unspecified },
+	{ ApiCapabilities::ShaderPixelLocalStorage2, "GL_EXT_shader_pixel_local_storage2", Api::OpenGLES3, Api::Unspecified },
+
+	//Always extensions, for OpenGL ES3.1+
+	{ ApiCapabilities::Tessellation, "GL_EXT_tessellation_shader", Api::OpenGLES31, Api::Unspecified },
+	{ ApiCapabilities::ClearTexImageIMG, "GL_IMG_clear_texture", Api::OpenGLES31, Api::Unspecified },
+	{ ApiCapabilities::ClearTexImageEXT, "GL_EXT_clear_texture", Api::OpenGLES31, Api::Unspecified },
+	{ ApiCapabilities::GeometryShader, "GL_EXT_geometry_shader", Api::OpenGLES31, Api::Unspecified },
+	{ ApiCapabilities::Texture2DArrayMS, "GL_OES_texture_storage_multisample_2d_array", Api::OpenGLES31, Api::Unspecified },
+>>>>>>> 1776432f... 4.3
 
 	//Extensions for any OpenGL ES2+, core at later versions
 	{ ApiCapabilities::Texture3D, "GL_OES_texture_3D", Api::OpenGLES2, Api::OpenGLES3 },
@@ -85,9 +117,16 @@ static ExtensionEntry extensionMap[] =
 	{ ApiCapabilities::Instancing, "GL_EXT_draw_instanced", Api::OpenGLES2, Api::OpenGLES3 },
 	{ ApiCapabilities::InvalidateFrameBuffer, "GL_EXT_discard_framebuffer", Api::OpenGLES2, Api::OpenGLES3 },
 
+<<<<<<< HEAD
 	//Core Only (all ES versions support them - but Vulkan does not!)
 	{ ApiCapabilities::Uniforms, NULL, Api::Unspecified, Api::OpenGLES2 },
 	{ ApiCapabilities::ShaderAttributeReflection, NULL, Api::Unspecified, Api::OpenGLES2 },
+=======
+	//Core Only, present in all ES versions, but other APIs may not support them...
+	{ ApiCapabilities::Uniforms, NULL, Api::Unspecified, Api::OpenGLES2 },
+	{ ApiCapabilities::ShaderAttributeReflection, NULL, Api::Unspecified, Api::OpenGLES2 },
+
+>>>>>>> 1776432f... 4.3
 	//Core Only (ES 3)
 	{ ApiCapabilities::Sampler, NULL, Api::Unspecified, Api::OpenGLES3 },
 	{ ApiCapabilities::TextureSwizzling, NULL, Api::Unspecified, Api::OpenGLES3 },
@@ -97,6 +136,12 @@ static ExtensionEntry extensionMap[] =
 	{ ApiCapabilities::ShaderAttributeExplicitBind, NULL, Api::Unspecified, Api::OpenGLES3 },
 	{ ApiCapabilities::ClearBuffer, NULL, Api::Unspecified, Api::OpenGLES3 },
 	{ ApiCapabilities::FramebufferTextureLayer, NULL, Api::Unspecified, Api::OpenGLES3},
+<<<<<<< HEAD
+=======
+	{ ApiCapabilities::BlitFrameBuffer, NULL, Api::Unspecified, Api::OpenGLES3 },
+	{ ApiCapabilities::FenceSync, NULL, Api::Unspecified, Api::OpenGLES3 },
+
+>>>>>>> 1776432f... 4.3
 	//Core Only (ES 3.1)
 	{ ApiCapabilities::ComputeShader, NULL, Api::Unspecified, Api::OpenGLES31 },
 	{ ApiCapabilities::ImageStore, NULL, Api::Unspecified, Api::OpenGLES31 },
@@ -104,16 +149,37 @@ static ExtensionEntry extensionMap[] =
 	{ ApiCapabilities::AtomicBuffer, NULL, Api::Unspecified, Api::OpenGLES31 },
 	{ ApiCapabilities::Texture2DMS, NULL, Api::Unspecified, Api::OpenGLES31},
 
+<<<<<<< HEAD
 
 	{ ApiCapabilities::Texture2DArrayMS, NULL, Api::Unspecified, Api::Unspecified}
+=======
+	// Never supported in any ES version  (for now)
+	{ ApiCapabilities::DepthBiasClamp, NULL, Api::Unspecified, Api::Unspecified },
+>>>>>>> 1776432f... 4.3
 
 };
 }
 
 
+<<<<<<< HEAD
 ContextGles::ContextGles(size_t implementationID)   : IGraphicsContext(Api::OpenGLESMaxVersion),
 	m_ContextImplementationID(implementationID)
 { }
+=======
+void ContextGles::onBind(api::impl::GraphicsPipeline_* pipeline)
+{
+	_renderStatesTracker.lastBoundPipe = RenderStatesTracker::LastBoundPipeline::PipelineGraphics;
+	_renderStatesTracker.lastBoundProgram = api::native_cast(*pipeline);
+	setBoundGraphicsPipeline(pipeline);
+}
+
+void ContextGles::onBind(api::impl::ComputePipeline_* pipeline)
+{
+	_renderStatesTracker.lastBoundPipe = RenderStatesTracker::LastBoundPipeline::PipelineCompute;
+	_renderStatesTracker.lastBoundProgram = api::native_cast(*pipeline);
+	setBoundComputePipeline(pipeline);
+}
+>>>>>>> 1776432f... 4.3
 
 void ContextGles::waitIdle()
 {
@@ -122,7 +188,7 @@ void ContextGles::waitIdle()
 
 Result ContextGles::init(OSManager& osManager)
 {
-	if (m_osManager)
+	if (_osManager)
 	{
 		return Result::AlreadyInitialized;
 	}
@@ -131,49 +197,72 @@ Result ContextGles::init(OSManager& osManager)
 		return Result::NotInitialized;
 	}
 
-	m_apiType = osManager.getApiTypeRequired(); //PlatformContext should have already made sure that this is actually possible.
+	_apiType = osManager.getApiTypeRequired(); //PlatformContext should have already made sure that this is actually possible.
 
+<<<<<<< HEAD
 	if (m_apiType < Api::OpenGLES31 && (uint32(osManager.getDeviceQueueTypesRequired() & DeviceQueueType::Compute) != 0))
 	{
 		Log(Log.Error, "Compute queues are not supported in OpenGL ES versions less than 3.1 -- Requested api was %s",
 		    apiName(m_apiType));
+=======
+	if (_apiType < Api::OpenGLES31 && (uint32(osManager.getDeviceQueueTypesRequired() & DeviceQueueType::Compute) != 0))
+	{
+		Log(Log.Error, "Compute queues are not supported in OpenGL ES versions less than 3.1 -- Requested api was %s",
+		    apiName(_apiType));
+>>>>>>> 1776432f... 4.3
 		return Result::UnsupportedRequest;
 	}
 
 	//These cannot fail...
 	gl::initGl();
 	glext::initGlext();
-	m_platformContext = &osManager.getPlatformContext();
-	m_osManager = &osManager;
+	debugLogApiError("ContextGLES::init Enter");
 
-	m_platformContext->makeCurrent();
+	_platformContext = static_cast<platform::PlatformContext*>(&osManager.getPlatformContext());
 
-	int32 maxTexUnit = api::gpuCapabilities::get(*this, api::gpuCapabilities::TextureAndSamplers::MaxTextureImageUnit);
-	m_renderStatesTracker.texSamplerBindings.clear();
-	m_renderStatesTracker.texSamplerBindings.resize(maxTexUnit > 0 ? maxTexUnit : 100);
+	// query whether the ray tracing extension
+	_platformContext->setRayTracingSupported(this->isExtensionSupported("GL_IMG_ray_tracing"));
+
+	_osManager = &osManager;
+	_platformContext->makeCurrent();
+	debugLogApiError("ContextGLES::init Make Current");
+
+	int32 maxTexUnit = gpuCapabilities::get(*this, gpuCapabilities::TextureAndSamplers::MaxTextureImageUnit);
+	_renderStatesTracker.texSamplerBindings.clear();
+	_renderStatesTracker.texSamplerBindings.resize(maxTexUnit > 0 ? maxTexUnit : 100);
 	setUpCapabilities();
+	debugLogApiError("ContextGLES::init Set up capabilities");
 
 #ifdef DEBUG
-	if (m_apiCapabilities.supports(ApiCapabilities::DebugCallback))
+	if (_apiCapabilities.supports(ApiCapabilities::DebugCallback))
 	{
 		glext::DebugMessageCallbackKHR(&debugCallback, NULL);
 	}
 #endif
 
 	// create the default commandpool
-	m_defaultCmdPool = createCommandPool();
+	_defaultCmdPool = createCommandPool();
 
+	debugLogApiError("ContextGLES::init create command pool");
 	assets::SamplerCreateParam defaultSamplerInfo;
-	m_defaultSampler = createSampler(defaultSamplerInfo);
+	_defaultSampler = createSampler(defaultSamplerInfo);
+	debugLogApiError("ContextGLES::init create default sampler");
 
+<<<<<<< HEAD
 	m_renderStatesTracker.viewport =
 	  Rectanglei(0, 0, getDisplayAttributes().width, getDisplayAttributes().height);
 	m_renderStatesTracker.scissor = m_renderStatesTracker.viewport;
+=======
+	_renderStatesTracker.viewport =
+	  Rectanglei(0, 0, getDisplayAttributes().width, getDisplayAttributes().height);
+	_renderStatesTracker.scissor = _renderStatesTracker.viewport;
+>>>>>>> 1776432f... 4.3
 	return Result::Success;
 }
 
 void ContextGles::setUpCapabilities()
 {
+<<<<<<< HEAD
 	ApiCapabilitiesPrivate& caps = (ApiCapabilitiesPrivate&)m_apiCapabilities;
 	caps.maxglslesversion = (m_apiType >= Api::OpenGLES31 ? 310 : m_apiType >= Api::OpenGLES3 ? 300 : 200);
 	if (m_apiType >= Api::OpenGLES3)
@@ -189,20 +278,43 @@ void ContextGles::setUpCapabilities()
 	}
 #endif
 
+=======
+	ApiCapabilitiesPrivate& caps = (ApiCapabilitiesPrivate&)_apiCapabilities;
+	caps._maxglslesversion = (_apiType >= Api::OpenGLES31 ? 310 : _apiType >= Api::OpenGLES3 ? 300 : 200);
+>>>>>>> 1776432f... 4.3
 
 	// EXTENSIONS -- SEE TOP OF THIS FILE.
 	// For each extension, make sure that the we properly determine native or extension support.
 	for (uint32 i = 0; i < sizeof(extensionMap) / sizeof(extensionMap[0]); ++i)
 	{
-		if (extensionMap[i].minCoreLevel != Api::Unspecified && m_apiType >= extensionMap[i].minCoreLevel)
+		if (extensionMap[i].minCoreLevel != Api::Unspecified && _apiType >= extensionMap[i].minCoreLevel)
 		{
-			caps.nativeSupport[extensionMap[i].capability] = true;
+			caps._nativeSupport[extensionMap[i].capability] = true;
 		}
-		else if (extensionMap[i].minExtensionLevel != Api::Unspecified && m_apiType >= extensionMap[i].minExtensionLevel)
+		else if (extensionMap[i].minExtensionLevel != Api::Unspecified && _apiType >= extensionMap[i].minExtensionLevel)
 		{
-			caps.extensionSupport[extensionMap[i].capability] = isExtensionSupported(extensionMap[i].extensionString);
+			caps._extensionSupport[extensionMap[i].capability] = isExtensionSupported(extensionMap[i].extensionString);
 		}
 	}
+
+#ifdef GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT
+	if (_apiCapabilities.supports(ApiCapabilities::Ubo))
+	{
+		GLint tmp;
+		gl::GetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &tmp);
+		caps._uboOffsetAlignment = tmp;
+	}
+#endif
+#ifdef GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT
+	if (_apiCapabilities.supports(ApiCapabilities::Ssbo))
+	{
+
+		GLint tmp;
+		gl::GetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &tmp);
+		caps._ssboOffsetAlignment = tmp;
+	}
+#endif
+
 }
 
 ContextGles::~ContextGles()
@@ -212,6 +324,7 @@ ContextGles::~ContextGles()
 
 void ContextGles::popPipeline()
 {
+<<<<<<< HEAD
 	if (m_pushedPipelines.size())
 	{
 		if (m_pushedPipelines.back().second)
@@ -219,6 +332,15 @@ void ContextGles::popPipeline()
 			m_pushedPipelines.back().first(m_pushedPipelines.back().second, *this);
 		}
 		m_pushedPipelines.pop_back();// pop the pipeline (including the null pipeline)
+=======
+	if (_pushedPipelines.size())
+	{
+		if (_pushedPipelines.back().second)
+		{
+			_pushedPipelines.back().first(_pushedPipelines.back().second, *this);
+		}
+		_pushedPipelines.pop_back();// pop the pipeline (including the null pipeline)
+>>>>>>> 1776432f... 4.3
 	}
 	else
 	{
@@ -229,7 +351,56 @@ void ContextGles::popPipeline()
 
 void ContextGles::pushPipeline(fnBindPipeline bindPipePtr, void* pipe)
 {
-	m_pushedPipelines.push_back(std::make_pair(bindPipePtr, pipe));
+	_pushedPipelines.push_back(std::make_pair(bindPipePtr, pipe));
+}
+
+api::GraphicsPipeline ContextGles::createGraphicsPipeline(const api::GraphicsPipelineCreateParam& desc)
+{
+	return createGraphicsPipeline(desc, api::ParentableGraphicsPipeline());
+}
+
+api::GraphicsPipeline ContextGles::createGraphicsPipeline(const api::GraphicsPipelineCreateParam& desc,
+    api::ParentableGraphicsPipeline parent)
+{
+	std::auto_ptr<api::impl::GraphicsPipelineImplBase>impl(new api::gles::GraphicsPipelineImplGles(getWeakReference()));
+	api::GraphicsPipeline gp; gp.construct(impl);
+	if (!static_cast<api::gles::GraphicsPipelineImplGles&>(gp->getImpl()).init(desc, parent, gp))
+	{
+		gp.reset();
+		Log(Log.Error, "Failed to create graphics pipeline");
+	}
+	return gp;
+}
+
+api::ParentableGraphicsPipeline ContextGles::createParentableGraphicsPipeline(const api::GraphicsPipelineCreateParam& desc)
+{
+	return createParentableGraphicsPipeline(desc, api::ParentableGraphicsPipeline());
+}
+
+api::ParentableGraphicsPipeline ContextGles::createParentableGraphicsPipeline(const api::GraphicsPipelineCreateParam& desc,
+    const api::ParentableGraphicsPipeline& parent)
+{
+	std::auto_ptr<api::impl::GraphicsPipelineImplBase> pimpleVk(new api::gles::ParentableGraphicsPipelineImplGles(getWeakReference()));
+	api::ParentableGraphicsPipeline gp; gp.construct(pimpleVk);
+	if (!static_cast<api::gles::ParentableGraphicsPipelineImplGles&>(gp->getImpl()).init(desc, gp))
+	{
+		Log(Log.Error, "Failed to create parentable graphics pipeline");
+		gp.reset();
+	}
+	return gp;
+}
+
+api::ComputePipeline ContextGles::createComputePipeline(const api::ComputePipelineCreateParam& createParam)
+{
+	std::auto_ptr<api::impl::ComputePipelineImplBase> impl(new api::gles::ComputePipelineImplGles(getWeakReference()));
+	api::ComputePipeline cp; cp.construct(impl);
+
+	if (!static_cast<api::gles::ComputePipelineImplGles&>(cp->getImpl()).init(createParam, cp))
+	{
+		Log(Log.Error, "Failed to create compute pipeline");
+		cp.reset();
+	}
+	return cp;
 }
 
 api::GraphicsPipeline ContextGles::createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc)
@@ -347,34 +518,37 @@ string ContextGles::getInfo()const
 
 bool ContextGles::isExtensionSupported(const char8* extension) const
 {
-	if (m_extensions.empty())
+	if (_extensions.empty())
 	{
 		const char* extensions = (const char*)gl::GetString(GL_EXTENSIONS);
 		if (extensions)
 		{
-			m_extensions.assign(extensions);
+			_extensions.assign(extensions);
 		}
 		else
 		{
-			m_extensions.assign("");
+			_extensions.assign("");
 		}
 	}
-	return m_extensions.find(extension) != m_extensions.npos;
+	return _extensions.find(extension) != _extensions.npos;
 }
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> 1776432f... 4.3
 api::TextureStore ContextGles::createTexture()
 {
 	api::gles::TextureStoreGles tex;
-	tex.construct(getWeakRef());
+	tex.construct(getWeakReference());
 	return tex;
 }
 
 api::TextureView ContextGles::createTextureView(const api::TextureStore& texture, types::SwizzleChannels swizzle /* = types::SwizzleChannels() */)
 {
-	api::gles::TextureViewGles tex;
-	tex.construct(static_cast<const api::gles::TextureStoreGles>(texture), types::ImageSubresourceRange(), swizzle);
-	return tex;
+	return createTextureView(texture, types::ImageSubresourceRange(), swizzle);
 }
 
 api::TextureView ContextGles::createTextureView(const api::TextureStore& texture, types::ImageSubresourceRange range, types::SwizzleChannels swizzle /* = types::SwizzleChannels() */)
@@ -407,6 +581,7 @@ api::SecondaryCommandBuffer ContextGles::createSecondaryCommandBufferOnDefaultPo
 	return getDefaultCommandPool()->allocateSecondaryCommandBuffer();
 }
 
+<<<<<<< HEAD
 api::EffectApi ContextGles::createEffectApi(assets::Effect& effectDesc, api::GraphicsPipelineCreateParam& pipeDesc,
     api::AssetLoadingDelegate& effectDelegate)
 {
@@ -419,11 +594,17 @@ api::EffectApi ContextGles::createEffectApi(assets::Effect& effectDesc, api::Gra
 	return effect;
 }
 
+=======
+>>>>>>> 1776432f... 4.3
 api::Buffer ContextGles::createBuffer(uint32 size, types::BufferBindingUse bufferUsage,
                                       bool isMappable)
 {
 	api::gles::BufferGles buffer;
+<<<<<<< HEAD
 	buffer.construct(getWeakRef());
+=======
+	buffer.construct(getWeakReference());
+>>>>>>> 1776432f... 4.3
 	if (!buffer->allocate(size, bufferUsage, isMappable)) { buffer.reset(); }
 	return buffer;
 }
@@ -431,7 +612,7 @@ api::Buffer ContextGles::createBuffer(uint32 size, types::BufferBindingUse buffe
 api::RenderPass ContextGles::createRenderPass(const api::RenderPassCreateParam& renderPass)
 {
 	api::RenderPassGles rp;
-	rp.construct(getWeakRef());
+	rp.construct(getWeakReference());
 	if (!rp->init(renderPass))
 	{
 		rp.reset();
@@ -442,7 +623,7 @@ api::RenderPass ContextGles::createRenderPass(const api::RenderPassCreateParam& 
 api::Sampler ContextGles::createSampler(const assets::SamplerCreateParam& desc)
 {
 	api::gles::SamplerGles sampler;
-	sampler.construct(getWeakRef());
+	sampler.construct(getWeakReference());
 	if (!sampler->init(desc))
 	{
 		sampler.reset();
@@ -452,9 +633,10 @@ api::Sampler ContextGles::createSampler(const assets::SamplerCreateParam& desc)
 
 api::Shader ContextGles::createShader(const Stream& shaderSrc, types::ShaderType type, const char* const* defines, uint32 numDefines)
 {
+	nativeGles::logApiError("ContextGles::createShader entry");
 	api::gles::ShaderGles vs;
-	vs.construct(getWeakRef(), 0);
-	if (!utils::loadShader(native::HContext_(), shaderSrc, type, defines, numDefines, *vs, &m_apiCapabilities))
+	vs.construct(getWeakReference(), 0);
+	if (!nativeGles::loadShader(shaderSrc, type, defines, numDefines, *vs, &_apiCapabilities))
 	{
 		Log(Log.Error, "Failed to create Shader.");
 		vs.reset();
@@ -465,8 +647,8 @@ api::Shader ContextGles::createShader(const Stream& shaderSrc, types::ShaderType
 api::Shader ContextGles::createShader(Stream& shaderData, types::ShaderType type, types::ShaderBinaryFormat binaryFormat)
 {
 	api::gles::ShaderGles vs;
-	vs.construct(getWeakRef(), 0);
-	if (!utils::loadShader(native::HContext_(), shaderData, type, binaryFormat, *vs, &m_apiCapabilities))
+	vs.construct(getWeakReference(), 0);
+	if (!nativeGles::loadShader(shaderData, type, binaryFormat, *vs, &_apiCapabilities))
 	{
 		Log(Log.Error, "Failed to create Shader.");
 		vs.reset();
@@ -489,7 +671,11 @@ api::Fbo ContextGles::createOnScreenFboWithRenderPass(uint32 swapIndex, const ap
 	fboInfo.setRenderPass(renderPass);
 	fboInfo.setRenderPass(renderPass);
 	pvr::api::gles::DefaultFboGles fbo;
+<<<<<<< HEAD
 	fbo.construct(getWeakRef());
+=======
+	fbo.construct(getWeakReference());
+>>>>>>> 1776432f... 4.3
 	if (fbo->init(fboInfo))
 	{
 		fbo->bind(*this, types::FboBindingTarget::ReadWrite);
@@ -519,6 +705,14 @@ api::BufferView ContextGles::createBufferView(const pvr::api::Buffer& buffer, pv
 	return ubo;
 }
 
+<<<<<<< HEAD
+=======
+api::Fence ContextGles::createFence(bool createSignaled)
+{
+	auto fc = api::gles::FenceGles(); fc.construct(getWeakReference(), native::HFence_()); return fc;
+}
+
+>>>>>>> 1776432f... 4.3
 api::BufferView ContextGles::createBufferAndView(uint32 size, types::BufferBindingUse bufferUsage, bool isMappable)
 {
 	api::gles::BufferViewGles ubo;
@@ -538,7 +732,7 @@ api::BufferView ContextGles::createBufferAndView(uint32 size, types::BufferBindi
 api::PipelineLayout ContextGles::createPipelineLayout(const api::PipelineLayoutCreateParam& desc)
 {
 	pvr::api::gles::PipelineLayoutGles pipelayout;
-	pipelayout.construct(getWeakRef());
+	pipelayout.construct(getWeakReference());
 	if (!pipelayout->init(desc))
 	{
 		pipelayout.reset();
@@ -551,7 +745,7 @@ api::Fbo ContextGles::createOnScreenFboWithRenderPass(uint32 swapIndex, const ap
 	pvr::api::FboCreateParam fboInfo;
 	fboInfo.setRenderPass(renderPass);
 	pvr::api::gles::DefaultFboGles fbo;
-	fbo.construct(getWeakRef());
+	fbo.construct(getWeakReference());
 	fboInfo.width = getDisplayAttributes().width;
 	fboInfo.height = getDisplayAttributes().height;
 
@@ -566,11 +760,17 @@ api::Fbo ContextGles::createOnScreenFboWithRenderPass(uint32 swapIndex, const ap
 	return fbo;
 }
 
+<<<<<<< HEAD
 api::Fbo ContextGles::createOnScreenFbo(uint32 swapIndex, types::LoadOp colorLoadOp, types::StoreOp colorStoreOp,
                                         types::LoadOp depthLoadOp, types::StoreOp depthStoreOp, types::LoadOp stencilLoadOp,
                                         types::StoreOp stencilStoreOp)
+=======
+api::RenderPass ContextGles::createOnScreenRenderpass(
+  types::LoadOp colorLoadOp, types::StoreOp colorStoreOp,
+  types::LoadOp depthLoadOp, types::StoreOp depthStoreOp,
+  types::LoadOp stencilLoadOp, types::StoreOp stencilStoreOp)
+>>>>>>> 1776432f... 4.3
 {
-	// create the default fbo
 	api::RenderPassColorInfo colorInfo;
 	api::RenderPassDepthStencilInfo dsInfo;
 	colorInfo.format = getPresentationImageFormat();
@@ -585,20 +785,42 @@ api::Fbo ContextGles::createOnScreenFbo(uint32 swapIndex, types::LoadOp colorLoa
 
 	pvr::api::RenderPassCreateParam renderPassDesc;
 	renderPassDesc.setColorInfo(0, colorInfo);
+<<<<<<< HEAD
 	renderPassDesc.setDepthStencilInfo(dsInfo);
+=======
+	renderPassDesc.setDepthStencilInfo(0, dsInfo);
+>>>>>>> 1776432f... 4.3
 
 	// Require at least one sub pass
 	pvr::api::SubPass subPass;
 	subPass.setColorAttachment(0, 0); // use color attachment 0
 	renderPassDesc.setSubPass(0, subPass);
+<<<<<<< HEAD
 
 	return createOnScreenFboWithRenderPass(0, createRenderPass(renderPassDesc));
 }
 
+=======
+	return createRenderPass(renderPassDesc);
+}
+
+
+
+api::Fbo ContextGles::createOnScreenFbo(uint32 /*swapIndex*/, types::LoadOp colorLoadOp, types::StoreOp colorStoreOp,
+                                        types::LoadOp depthLoadOp, types::StoreOp depthStoreOp, types::LoadOp stencilLoadOp,
+                                        types::StoreOp stencilStoreOp)
+{
+	// create the default fbo
+
+	return createOnScreenFboWithRenderPass(0, createOnScreenRenderpass(colorLoadOp, colorStoreOp,
+	                                       depthLoadOp, depthStoreOp, stencilLoadOp, stencilStoreOp));
+}
+
+>>>>>>> 1776432f... 4.3
 api::DescriptorPool ContextGles::createDescriptorPool(const api::DescriptorPoolCreateParam& createParam)
 {
 	api::gles::DescriptorPoolGles descPool;
-	descPool.construct(getWeakRef());
+	descPool.construct(getWeakReference());
 	if (!descPool->init(createParam))
 	{
 		descPool.reset();
@@ -608,7 +830,7 @@ api::DescriptorPool ContextGles::createDescriptorPool(const api::DescriptorPoolC
 
 api::CommandPool ContextGles::createCommandPool()
 {
-	api::gles::CommandPoolGles cmdpool = api::gles::CommandPoolGles_::createNew(getWeakRef());
+	api::gles::CommandPoolGles cmdpool = api::gles::CommandPoolGles_::createNew(getWeakReference());
 	if (!cmdpool->init()) { cmdpool.reset(); }
 	return cmdpool;
 }
@@ -617,7 +839,7 @@ api::Fbo ContextGles::createFbo(const api::FboCreateParam& desc)
 {
 	api::gles::FboGles fbo;
 	// create fbo
-	fbo.construct(getWeakRef());
+	fbo.construct(getWeakReference());
 	if (!fbo->init(desc))
 	{
 		fbo.reset();
@@ -631,12 +853,17 @@ api::FboSet ContextGles::createFboSet(const Multi<api::FboCreateParam>& fboInfo)
 	for (uint32 i = 0; i < fboInfo.size(); ++i) {  fbo[i] = createFbo(fboInfo[i]);   }
 	return fbo;
 }
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> 1776432f... 4.3
 api::DescriptorSetLayout ContextGles::createDescriptorSetLayout(const api::DescriptorSetLayoutCreateParam& desc)
 {
 	api::gles::DescriptorSetLayoutGles layout;
-	layout.construct(getWeakRef(), desc);
+	layout.construct(getWeakReference(), desc);
 	return layout;
 }
 
@@ -657,7 +884,11 @@ api::FboSet ContextGles::createOnScreenFboSetWithRenderPass(const api::RenderPas
 }
 
 api::FboSet ContextGles::createOnScreenFboSetWithRenderPass(const api::RenderPass& renderPass,
+<<<<<<< HEAD
     pvr::Multi<api::OnScreenFboCreateParam>& onScreenFboCreateParams)
+=======
+    const Multi<api::OnScreenFboCreateParam>& onScreenFboCreateParams)
+>>>>>>> 1776432f... 4.3
 {
 	api::FboSet fbos;
 	for (uint32 i = 0; i < (uint32)FrameworkCaps::MaxSwapChains; ++i)
@@ -666,6 +897,115 @@ api::FboSet ContextGles::createOnScreenFboSetWithRenderPass(const api::RenderPas
 	}
 	return fbos;
 }
+<<<<<<< HEAD
+=======
+
+api::TextureView ContextGles::uploadTexture(const Texture& texture, bool allowDecompress)
+{
+	api::gles::TextureViewGles outTexture;
+	nativeGles::TextureUploadResults res = nativeGles::textureUpload(getPlatformContext(), texture, allowDecompress);
+	if (res.fenceSync)
+	{
+		gl::DeleteSync(res.fenceSync); res.fenceSync = 0;
+	}
+	if (res.result == Result::Success)
+	{
+		api::gles::TextureStoreGles texGles;
+		texGles.construct(getWeakReference(), res.image);
+
+		ImageStorageFormat& fmt = texGles->getFormat();
+		fmt = res.format;
+		fmt.colorSpace = texture.getColorSpace();
+		fmt.dataType = texture.getChannelType();
+		fmt.numSamples = 1;
+		fmt.format = texture.getPixelFormat();
+
+		texGles->setDimensions(res.textureSize);
+		texGles->setLayers(res.textureSize);
+		fmt.mipmapLevels = (uint8)texGles->getNumMipLevels();
+
+		outTexture.construct(texGles);
+	}
+	return outTexture;
+}
+
+SharedContext ContextGles::createSharedContext(uint32 contextId)
+{
+	return SharedContextGles::createNew(getWeakReference());
+}
+
+struct TextureUploadGlesResult_ : public api::TextureAndFence_
+{
+	nativeGles::TextureUploadResults nativeres;
+	~TextureUploadGlesResult_()
+	{
+	}
+	TextureUploadGlesResult_(nativeGles::TextureUploadResults&& rhs) :
+		nativeres(std::move(rhs))
+	{ }
+private:
+	TextureUploadGlesResult_(const TextureUploadGlesResult_&);
+	TextureUploadGlesResult_& operator=(const TextureUploadGlesResult_&);
+};
+
+typedef RefCountedResource<TextureUploadGlesResult_> TextureUploadGlesResult;
+
+api::TextureAndFence SharedContextGles::uploadTextureDeferred(const Texture& texture, bool allowDecompress)
+{
+	TextureUploadGlesResult result;
+	nativeGles::TextureUploadResults res = nativeGles::textureUpload(static_cast<platform::SharedPlatformContext&>(*_platformContext).getParentContext(), texture, allowDecompress);
+	result.construct(std::move(res));
+	api::gles::FenceGles fence;
+	fence.construct(_context, native::HFence_(res.fenceSync));
+
+	if (res.result == Result::Success)
+	{
+		api::gles::TextureStoreGles texGles;
+		texGles.construct(_context, res.image);
+
+		ImageStorageFormat& fmt = texGles->getFormat();
+		fmt = res.format;
+		fmt.colorSpace = texture.getColorSpace();
+		fmt.dataType = texture.getChannelType();
+		fmt.numSamples = 1;
+		fmt.format = texture.getPixelFormat();
+
+		texGles->setDimensions(res.textureSize);
+		texGles->setLayers(res.textureSize);
+		fmt.mipmapLevels = (uint8)texGles->getNumMipLevels();
+		api::gles::TextureViewGles texView;
+		texView.construct(texGles);
+		result->texture = texView;
+	}
+	result->fence = fence;
+	return result;
+}
+
+api::SceneHierarchy ContextGles::createSceneHierarchy(const api::SceneHierarchyCreateParam& createParam)
+{
+	debug_assertion(false, "Unimplemented");
+	return api::SceneHierarchy();
+}
+
+api::VertexRayPipeline ContextGles::createVertexRayPipeline(const api::VertexRayPipelineCreateParam& desc)
+{
+	debug_assertion(false, "Unimplemented");
+	return api::VertexRayPipeline();
+}
+
+api::SceneTraversalPipeline ContextGles::createSceneTraversalPipeline(const api::SceneTraversalPipelineCreateParam& desc)
+{
+	debug_assertion(false, "Unimplemented");
+	return api::SceneTraversalPipeline();
+}
+
+api::IndirectRayPipeline ContextGles::createIndirectRayPipeline(const api::IndirectRayPipelineCreateParam& desc)
+{
+	debug_assertion(false, "Unimplemented");
+	return api::IndirectRayPipeline();
+}
+
+
+>>>>>>> 1776432f... 4.3
 }
 }
-//!\endcond

@@ -1,5 +1,6 @@
 var searchData=
 [
+<<<<<<< HEAD
   ['undeletable',['undeletable',['../structpvr_1_1native_1_1_h_texture__.html#a99793ae5ec699bce64f47e60d5cad2bd',1,'pvr::native::HTexture_::undeletable()'],['../structpvr_1_1native_1_1_h_image_view__.html#a5bcf178ed869e85380a919ae8769bef8',1,'pvr::native::HImageView_::undeletable()']]],
   ['uniform1f',['Uniform1f',['../classgl.html#adfcdeb3cd32091d9fc7e5d894b0b1cd8',1,'gl']]],
   ['uniform1fv',['Uniform1fv',['../classgl.html#aad084c957c842dfb98331e7c020a2125',1,'gl']]],
@@ -32,4 +33,7 @@ var searchData=
   ['useprogram',['UseProgram',['../classgl.html#a3ab4438294286cdd097c344a8e5fbf38',1,'gl']]],
   ['useprogramstagesext',['UseProgramStagesEXT',['../classglext.html#a93de57c47fb3790cfa38435ff41d3ef2',1,'glext']]],
   ['userparam',['userParam',['../_api_gles_ext_8h.html#aff79ccea99d34c75703ac5b2f982c421',1,'ApiGlesExt.h']]]
+=======
+  ['uniform',['Uniform',['../namespacepvr_1_1gpu_capabilities.html#a89bfb806b8cb3db24a9b359caec50982',1,'pvr::gpuCapabilities::Uniform()'],['../namespacepvr_1_1gpu_capabilities.html#a89bfb806b8cb3db24a9b359caec50982',1,'pvr::gpuCapabilities::Uniform()']]]
+>>>>>>> 1776432f... 4.3
 ];

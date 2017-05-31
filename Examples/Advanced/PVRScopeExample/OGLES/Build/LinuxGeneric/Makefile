@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESPVRScopeExample
-DEPENDS =  PVRCore PVRAssets PVREgl PVRNativeGles PVRGles PVRShell PVRUIRenderer
-LIBRARIES =  PVRScopeDeveloper dl PVRUIRenderer PVRShell PVRGles PVRNativeGles PVREgl PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRNativeGles PVRGles PVRShell PVREngineUtils
+LIBRARIES =  PVRScopeDeveloper dl PVREngineUtils PVRShell PVRGles PVRNativeGles PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS) ../../../../../../Builds/Linux/$(PLAT_SUFFIX)/Lib
 
 OBJECTS +=	\

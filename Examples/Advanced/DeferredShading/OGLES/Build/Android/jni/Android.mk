@@ -5,10 +5,10 @@ ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/DeferredShading/OGLES/Build/Android/a
 
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRUIRenderer
+# Prebuilt module PVREngineUtils
 include $(CLEAR_VARS)
-LOCAL_MODULE := PVRUIRenderer
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRUIRenderer.a
+LOCAL_MODULE := PVREngineUtils
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVREngineUtils.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
@@ -33,14 +33,6 @@ ifneq "$(MAKECMDGOALS)" "clean"
 include $(CLEAR_VARS)
 LOCAL_MODULE := PVRNativeGles
 LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRNativeGles.a
-include $(PREBUILT_STATIC_LIBRARY)
-endif
-
-ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVREgl
-include $(CLEAR_VARS)
-LOCAL_MODULE := PVREgl
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVREgl.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
@@ -74,11 +66,16 @@ LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework \
 
 
 
+<<<<<<< HEAD
 LOCAL_LDLIBS := -llog \
                 -latomic \
+=======
+LOCAL_LDLIBS := -latomic \
+                -llog \
+>>>>>>> 1776432f... 4.3
                 -landroid
 
-LOCAL_STATIC_LIBRARIES := PVRUIRenderer PVRGles PVRNativeGles PVREgl PVRAssets PVRCore android_native_app_glue
+LOCAL_STATIC_LIBRARIES := PVREngineUtils PVRGles PVRNativeGles PVRAssets PVRCore android_native_app_glue
 
 
 LOCAL_CFLAGS += $(SDK_BUILD_FLAGS)

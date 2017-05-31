@@ -32,6 +32,7 @@
     <ClInclude Include="..\..\Helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\..\Texture\MetaData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -53,6 +54,8 @@
     <ClInclude Include="..\..\Texture\TextureHeaderWithMetaData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+=======
+>>>>>>> 1776432f... 4.3
     <ClInclude Include="..\..\FileIO\FileDefinesPVR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -110,12 +113,15 @@
     <ClInclude Include="..\..\FileIO\PODReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\..\AssetReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\AssetWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+=======
+>>>>>>> 1776432f... 4.3
     <ClInclude Include="..\..\FileIO\PODDefines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -134,9 +140,12 @@
     <ClInclude Include="..\..\BoundingBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\..\Asset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+=======
+>>>>>>> 1776432f... 4.3
     <ClInclude Include="..\..\PVRShamanSemantics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -146,15 +155,30 @@
     <ClInclude Include="..\..\PVRAssets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\..\PixelFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+=======
+>>>>>>> 1776432f... 4.3
     <ClInclude Include="..\..\FileIO\PFXParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Effect_2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
+=======
+    <ClInclude Include="..\..\TextureLoad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\TextureLoadAsync.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+>>>>>>> 1776432f... 4.3
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Model\Mesh.cpp">
@@ -175,6 +199,7 @@
     <ClCompile Include="..\..\ShadowVolume.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\..\Texture\MetaData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -190,6 +215,8 @@
     <ClCompile Include="..\..\Texture\TextureHeaderWithMetaData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+=======
+>>>>>>> 1776432f... 4.3
     <ClCompile Include="..\..\FileIO\TextureReaderPVR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -229,10 +256,17 @@
     <ClCompile Include="..\..\FileIO\PFXReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\..\PixelFormat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\FileIO\PFXParser.cpp">
+=======
+    <ClCompile Include="..\..\FileIO\PFXParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Geometry.cpp">
+>>>>>>> 1776432f... 4.3
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

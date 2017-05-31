@@ -55,5 +55,14 @@
     <ClInclude Include="..\..\PVRShellNoPVRApi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
+=======
+    <ClInclude Include="..\..\PVRShellDllImpls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\OS\Windows\WindowsOSData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+>>>>>>> 1776432f... 4.3
   </ItemGroup>
 </Project>

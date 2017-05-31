@@ -414,7 +414,7 @@ public:
 	\return   True if the library did NOT load properly.
 	***********************************************************************************************************************/
 	bool LoadFailed();
-	bool m_disableErrorPrint; //!< Set to true to avoid printing errors
+	bool disableErrorPrint; //!< Set to true to avoid printing errors
 
 	/*!*********************************************************************************************************************
 	\brief   Load a library with the specified filename.
@@ -425,7 +425,7 @@ public:
 		size_t start = 0;
 		std::string tmp;
 
-		while (!m_hHostLib)
+		while (!_hostLib)
 		{
 			size_t end = LibPath.find_first_of(';', start);
 
@@ -439,22 +439,22 @@ public:
 			}
 			if (!tmp.empty())
 			{
-				m_hHostLib = OpenLibrary(tmp.c_str());
+				_hostLib = OpenLibrary(tmp.c_str());
 
-				if (!m_hHostLib)
+				if (!_hostLib)
 				{
 					// Remove the last character in case a new line character snuck in
 					tmp = tmp.substr(0, tmp.size() - 1);
-					m_hHostLib = OpenLibrary(tmp.c_str());
+					_hostLib = OpenLibrary(tmp.c_str());
 				}
 			}
 			if (end == std::string::npos) { break; }
 			start = end + 1;
 		}
-		if (!m_hHostLib)
+		if (!_hostLib)
 		{
 			LOGE("Could not load host library '%s'", LibPath.c_str());
-			this->m_bError = true;
+			this->_error = true;
 		}
 		LOGI("Host library '%s' loaded", LibPath.c_str());
 	}
@@ -467,10 +467,10 @@ public:
 	***********************************************************************************************************************/
 	void* getFunction(const char* functionName)
 	{
-		void* pFn = dlsym((LIBTYPE)m_hHostLib, functionName);
-		if (pFn == NULL && m_disableErrorPrint == false)
+		void* pFn = dlsym((LIBTYPE)_hostLib, functionName);
+		if (pFn == NULL && disableErrorPrint == false)
 		{
-			m_bError |= (pFn == NULL);
+			_error |= (pFn == NULL);
 			LOGE("Could not get function %s", functionName);
 		}
 		return pFn;
@@ -489,15 +489,15 @@ public:
 	***********************************************************************************************************************/
 	void CloseLib()
 	{
-		if (m_hHostLib)
+		if (_hostLib)
 		{
-			dlclose((LIBTYPE)m_hHostLib);
-			m_hHostLib = 0;
+			dlclose((LIBTYPE)_hostLib);
+			_hostLib = 0;
 		}
 	}
 protected:
-	void*		m_hHostLib;
-	bool		m_bError;
+	void*		_hostLib;
+	bool		_error;
 };
 static NativeLibrary& vkglueLib()
 {
@@ -1415,6 +1415,7 @@ void App::initVkInstanceAndPhysicalDevice(bool enableLayers, bool enableExtensio
 
 		instanceCreateInfo.ppEnabledLayerNames = enabledLayers.data();
 		instanceCreateInfo.enabledLayerCount = (uint32_t)enabledLayers.size();
+<<<<<<< HEAD
 	}
 
 	std::vector<const char*> enabledExtensions;
@@ -1435,6 +1436,28 @@ void App::initVkInstanceAndPhysicalDevice(bool enableLayers, bool enableExtensio
 		instanceCreateInfo.enabledExtensionCount = (uint32_t)enabledExtensions.size();
 	}
 
+=======
+	}
+
+	std::vector<const char*> enabledExtensions;
+	if (enableExtensions)
+	{
+		uint32_t enabledExtensionCount = 0;
+		vkSuccessOrDie(vk::EnumerateInstanceExtensionProperties(NULL, &enabledExtensionCount, NULL),
+		               "Failed to enumerate instance extension properties");
+
+		std::vector<VkExtensionProperties> extensions; extensions.resize(enabledExtensionCount);
+		vkSuccessOrDie(vk::EnumerateInstanceExtensionProperties(NULL, &enabledExtensionCount, extensions.data()),
+		               "Failed to enumerate instance extension properties");
+
+		enabledExtensions = filterExtensions(extensions, instanceExtNames, sizeof(instanceExtNames)
+		                                     / sizeof(instanceExtNames[0]));
+
+		instanceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
+		instanceCreateInfo.enabledExtensionCount = (uint32_t)enabledExtensions.size();
+	}
+
+>>>>>>> 1776432f... 4.3
 	// create the vk instance
 	vkSuccessOrDie(vk::CreateInstance(&instanceCreateInfo, NULL, &this->platformHandles->context.instance),
 	               "Failed to create instance");
@@ -1588,6 +1611,7 @@ void App::initSwapChain()
 	VkSurfaceFormatKHR format = allFormats[0];
 
 	VkFormat preferredColorFormats[] =
+<<<<<<< HEAD
 	{
 		VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_R8G8B8A8_SRGB, VK_FORMAT_R8G8B8A8_SNORM,
 		VK_FORMAT_B8G8R8_SNORM, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_R5G6B5_UNORM_PACK16
@@ -1629,6 +1653,24 @@ void App::initSwapChain()
 		{
 			this->displayHandle->onscreenFbo.depthStencilFormat = currentDsFormat;
 			break;
+=======
+	{
+		VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_R8G8B8A8_SRGB, VK_FORMAT_R8G8B8A8_SNORM,
+		VK_FORMAT_B8G8R8_SNORM, VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_R5G6B5_UNORM_PACK16
+	};
+
+	bool foundFormat = false;
+	for (unsigned int i = 0; i < (sizeof(preferredColorFormats) / sizeof(preferredColorFormats[0])) && !foundFormat; ++i)
+	{
+		for (uint32_t f = 0; f < formatCount; ++f)
+		{
+			{
+				if (allFormats[f].format == preferredColorFormats[i])
+				{
+					format = allFormats[f]; foundFormat = true; break;
+				}
+			}
+>>>>>>> 1776432f... 4.3
 		}
 		currentDsFormat = preferredDsFormat[f];
 	}
@@ -1644,6 +1686,7 @@ void App::initSwapChain()
 		this->displayHandle->onscreenFbo.depthStencilHasStencil = false;
 	}
 
+<<<<<<< HEAD
 	uint32_t numPresentMode;
 	vkSuccessOrDie(vk::GetPhysicalDeviceSurfacePresentModesKHR(this->platformHandles->context.physicalDevice, this->displayHandle->surface, &numPresentMode, NULL),
 	               "Failed to get the number of present modes count");
@@ -1652,25 +1695,58 @@ void App::initSwapChain()
 	std::vector<VkPresentModeKHR> presentModes(numPresentMode);
 	vkSuccessOrDie(vk::GetPhysicalDeviceSurfacePresentModesKHR(this->platformHandles->context.physicalDevice, this->displayHandle->surface, &numPresentMode, &presentModes[0]),
 	               "failed to get the present modes");
-
-	// Try to use mailbox mode, Low latency and non-tearing
-	VkPresentModeKHR swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
-	for (size_t i = 0; i < numPresentMode; i++)
+=======
+	this->displayHandle->onscreenFbo.depthStencilHasStencil = false;
+	VkFormat dsFormatRequested = VK_FORMAT_D32_SFLOAT;
+	this->displayHandle->onscreenFbo.depthStencilFormat = VK_FORMAT_UNDEFINED;
+	VkFormat preferredDsFormat[] =
 	{
-		if (presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
+		VK_FORMAT_D32_SFLOAT_S8_UINT,
+		VK_FORMAT_D24_UNORM_S8_UINT,
+		VK_FORMAT_D16_UNORM_S8_UINT,
+		VK_FORMAT_D32_SFLOAT,
+		VK_FORMAT_D16_UNORM,
+		VK_FORMAT_X8_D24_UNORM_PACK32
+	};
+>>>>>>> 1776432f... 4.3
+
+	VkFormat currentDsFormat = dsFormatRequested;
+	for (uint32_t f = 0; f < sizeof(preferredDsFormat) / sizeof(preferredDsFormat[0]); ++f)
+	{
+		VkFormatProperties prop;
+		vk::GetPhysicalDeviceFormatProperties(this->platformHandles->context.physicalDevice, currentDsFormat, &prop);
+		if (prop.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
 		{
-			swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
+			this->displayHandle->onscreenFbo.depthStencilFormat = currentDsFormat;
 			break;
 		}
-		if ((swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR) && (presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR))
-		{
-			swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
-		}
+		currentDsFormat = preferredDsFormat[f];
 	}
+
+	switch (this->displayHandle->onscreenFbo.depthStencilFormat)
+	{
+	case VK_FORMAT_D32_SFLOAT_S8_UINT:
+	case VK_FORMAT_D24_UNORM_S8_UINT:
+	case VK_FORMAT_D16_UNORM_S8_UINT:
+		this->displayHandle->onscreenFbo.depthStencilHasStencil = true;
+		break;
+	default:
+		this->displayHandle->onscreenFbo.depthStencilHasStencil = false;
+	}
+
+<<<<<<< HEAD
+	this->displayHandle->onscreenFbo.colorFormat = format.format;
+	this->displayHandle->displayExtent = surfaceCapabilities.currentExtent;
+	
+=======
+	// Try to use FIFO mode (vsync)
+	VkPresentModeKHR swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
 
 	this->displayHandle->onscreenFbo.colorFormat = format.format;
 	this->displayHandle->displayExtent = surfaceCapabilities.currentExtent;
 	
+	this->displayHandle->swapChainLength = 2;
+>>>>>>> 1776432f... 4.3
 	this->displayHandle->swapChainLength = std::max<uint32_t>(this->displayHandle->swapChainLength, surfaceCapabilities.minImageCount);
 	this->displayHandle->swapChainLength = std::min<uint32_t>(this->displayHandle->swapChainLength, surfaceCapabilities.maxImageCount);
 	this->displayHandle->swapChainLength = std::min<uint32_t>(this->displayHandle->swapChainLength, PVR_MAX_SWAPCHAIN_IMAGES);
@@ -1833,6 +1909,7 @@ void App::initSynchronizationObjects()
 
 static void inline setImageLayout(VkCommandBuffer& cmd, VkImageLayout oldLayout, VkImageLayout newLayout,
                                   VkImageAspectFlags aspectMask, VkAccessFlags srcAccessMask, VkImage image)
+<<<<<<< HEAD
 {
 	VkImageMemoryBarrier imageMemBarrier = {};
 	imageMemBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -1969,6 +2046,144 @@ void App::initPostPresentBarrierCommandBuffer()
 
 void App::initGlobalState()
 {
+=======
+{
+	VkImageMemoryBarrier imageMemBarrier = {};
+	imageMemBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	imageMemBarrier.pNext = NULL;
+	imageMemBarrier.srcAccessMask = srcAccessMask;
+	imageMemBarrier.dstAccessMask = 0;
+	imageMemBarrier.oldLayout = oldLayout;
+	imageMemBarrier.newLayout = newLayout;
+	imageMemBarrier.image = image;
+	imageMemBarrier.subresourceRange = { aspectMask, 0, 1, 0, 1 };
+
+	if (newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+	{
+		/* Make sure anything that was copying from this image has completed */
+		imageMemBarrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+	}
+
+	if (newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+	{
+		imageMemBarrier.dstAccessMask =
+		  VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	}
+
+	if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+	{
+		imageMemBarrier.dstAccessMask =
+		  VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	}
+
+	if (newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+	{
+		/* Make sure any Copy or CPU writes to image are flushed */
+		imageMemBarrier.dstAccessMask =
+		  VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+	}
+
+	VkImageMemoryBarrier* memBarries = &imageMemBarrier;
+	vk::CmdPipelineBarrier(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, NULL, 0,
+	                       NULL, 1, memBarries);
+}
+
+void App::setInitialSwapchainLayouts()
+{
+	VkCommandBuffer cmdImgLayoutTrans = createCommandBuffer();
+
+	VkCommandBufferBeginInfo cmdBeginInfo = {};
+	cmdBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	cmdBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+	vkSuccessOrDie(vk::BeginCommandBuffer(cmdImgLayoutTrans, &cmdBeginInfo), "Failed to begin commandbuffer");
+
+	for (uint32_t i = 0; i < this->displayHandle->swapChainLength; ++i)
+	{
+		// prepare the current swapchain image for writing
+		if (i == this->platformHandles->swapIndex)
+		{
+			setImageLayout(cmdImgLayoutTrans, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			               VK_IMAGE_ASPECT_COLOR_BIT, 0, this->displayHandle->onscreenFbo.colorImages[i]);
+		}
+		else// set all other swapchains to present so they will be transformed properly later.
+		{
+			setImageLayout(cmdImgLayoutTrans, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+			               VK_IMAGE_ASPECT_COLOR_BIT, 0, this->displayHandle->onscreenFbo.colorImages[i]);
+		}
+		setImageLayout(cmdImgLayoutTrans, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+		               VK_IMAGE_ASPECT_DEPTH_BIT | (this->displayHandle->onscreenFbo.depthStencilHasStencil ? VK_IMAGE_ASPECT_STENCIL_BIT : 0),
+		               0, this->displayHandle->onscreenFbo.depthStencilImage[i].first);
+	}
+
+	vk::EndCommandBuffer(cmdImgLayoutTrans);
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.pCommandBuffers = &cmdImgLayoutTrans;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pSignalSemaphores = &this->platformHandles->semaphoreCanBeginRendering[this->platformHandles->swapIndex];
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = &this->platformHandles->semaphoreImageAcquired[this->platformHandles->currentImageAcqSem];
+	submitInfo.waitSemaphoreCount = 1;
+
+	VkPipelineStageFlags pipeStageFlags = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+	submitInfo.pWaitDstStageMask = &pipeStageFlags;
+
+	VkFence fence;
+	VkFenceCreateInfo fenceInfo{};
+	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	vk::CreateFence(this->platformHandles->context.device, &fenceInfo, NULL, &fence);
+	vk::QueueSubmit(this->platformHandles->graphicsQueue, 1, &submitInfo, fence);
+	vk::WaitForFences(this->platformHandles->context.device, 1, &fence, true, uint64_t(-1));
+	vk::DestroyFence(this->platformHandles->context.device, fence, NULL);
+	vk::FreeCommandBuffers(this->platformHandles->context.device, this->platformHandles->commandPool, 1, &cmdImgLayoutTrans);
+}
+
+void App::initPostPresentBarrierCommandBuffer()
+{
+	VkCommandBufferAllocateInfo cinfo = {};
+	cinfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	cinfo.commandPool = this->platformHandles->commandPool;
+	cinfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+
+	cinfo.commandBufferCount = this->displayHandle->swapChainLength;
+
+	vk::AllocateCommandBuffers(this->platformHandles->context.device, &cinfo, this->platformHandles->postPresentCmdBuffer);
+
+	VkImageMemoryBarrier barrier = {};
+	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	barrier.pNext = NULL;
+	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	barrier.subresourceRange.baseArrayLayer = 0;
+	barrier.subresourceRange.baseMipLevel = 0;
+	barrier.subresourceRange.layerCount = 1;
+	barrier.subresourceRange.levelCount = 1;
+
+	VkCommandBufferBeginInfo beginnfo = {};
+	beginnfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+	for (uint32_t swapIndex = 0; swapIndex < this->displayHandle->swapChainLength; ++swapIndex)
+	{
+		// post present
+		barrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		barrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		barrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		barrier.image = this->displayHandle->onscreenFbo.colorImages[swapIndex];
+		vk::BeginCommandBuffer(this->platformHandles->postPresentCmdBuffer[swapIndex], &beginnfo);
+		vk::CmdPipelineBarrier(this->platformHandles->postPresentCmdBuffer[swapIndex],
+		                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+		                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, NULL, 0,
+		                       NULL, 1, &barrier);
+		vk::EndCommandBuffer(this->platformHandles->postPresentCmdBuffer[swapIndex]);
+	}
+}
+
+void App::initGlobalState()
+{
+>>>>>>> 1776432f... 4.3
 	initVkInstanceAndPhysicalDevice(true, true);
 	initSurface();
 	initDevice(true);

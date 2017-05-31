@@ -7,7 +7,7 @@
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 using namespace pvr::types;
 namespace Semantics {
 enum Enum
@@ -46,25 +46,27 @@ class OGLESIntroducingPVRApi : public pvr::Shell
 	struct DeviceResources
 	{
 		pvr::GraphicsContext context;
+		pvr::api::CommandBuffer commandBuffer;
 		// The effect file handlers
-		pvr::api::EffectApi effect;
+		pvr::legacyPfx::EffectApi effect;
+
+		pvr::api::Fbo fboOnScreen;
+
+		std::vector<MaterialDescSet> descSet;
+		pvr::api::DescriptorSetLayout descSetLayout;
+		pvr::api::PipelineLayout pipelineLayout;
+		pvr::api::Sampler samplerTrilinear;
 
 		// The Vertex buffer object handle array.
 		std::vector<pvr::api::Buffer> vbos;
 		std::vector<pvr::api::Buffer> ibos;
-		pvr::api::Fbo fboOnScreen;
-		pvr::api::CommandBuffer commandBuffer;
-		std::vector<MaterialDescSet> descSet;
-		pvr::api::Sampler samplerTrilinear;
-		pvr::api::DescriptorSetLayout descSetLayout;
-		pvr::api::PipelineLayout pipelineLayout;
 	};
 
 	std::auto_ptr<DeviceResources> deviceResource;
 
 	pvr::int32 uniformSemanticsTable[Semantics::Count];
 	pvr::ui::UIRenderer uiRenderer;
-	pvr::api::AssetStore assetManager;
+	pvr::utils::AssetStore assetManager;
 	struct DrawPass
 	{
 		std::vector<glm::mat4> worldViewProj;
@@ -210,7 +212,7 @@ pvr::Result OGLESIntroducingPVRApi::initView()
 	deviceResource->pipelineLayout = deviceResource->context->createPipelineLayout(pipeLayoutInfo);
 
 	pipeDesc.pipelineLayout = deviceResource->pipelineLayout;
-	deviceResource->effect = deviceResource->context->createEffectApi(effectAsset, pipeDesc, assetManager);
+	deviceResource->effect = pvr::legacyPfx::createEffectApi(deviceResource->context, effectAsset, pipeDesc, assetManager);
 	if (!deviceResource->effect.isValid()) { return pvr::Result::UnknownError; }
 
 	createDescriptorSet();
@@ -314,7 +316,11 @@ void OGLESIntroducingPVRApi::recordCommandBuffer(pvr::assets::Effect& effectAsse
 	    pvr::Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(0.00, 0.70, 0.67, 1.0f));
 
 	deviceResource->commandBuffer->bindPipeline(deviceResource->effect->getPipeline());
+<<<<<<< HEAD
 	deviceResource->commandBuffer->setUniform<pvr::int32>(deviceResource->effect->getPipeline()->getUniformLocation(
+=======
+	deviceResource->commandBuffer->setUniform(deviceResource->effect->getPipeline()->getUniformLocation(
+>>>>>>> 1776432f... 4.3
 	      effectAsset.uniforms[uniformSemanticsTable[Semantics::Texture0]].variableName.c_str()), 0);
 
 	// A scene is composed of nodes. There are 3 types of nodes:
@@ -345,9 +351,9 @@ void OGLESIntroducingPVRApi::recordCommandBuffer(pvr::assets::Effect& effectAsse
 		deviceResource->commandBuffer->bindVertexBuffer(deviceResource->vbos[pNode->getObjectId()], 0, 0);
 		deviceResource->commandBuffer->bindIndexBuffer(deviceResource->ibos[pNode->getObjectId()], 0, pMesh->getFaces().getDataType());
 		// Passes the world-view-projection matrix (WVP) to the shader to transform the vertices
-		deviceResource->commandBuffer->setUniformPtr<glm::mat4>(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::WorldViewProjection]).location, 1, &drawPass.worldViewProj[i]);
-		deviceResource->commandBuffer->setUniformPtr<glm::vec3>(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::LightDirEye]).location, 1, &drawPass.dirLight[i]);
-		deviceResource->commandBuffer->setUniformPtr<glm::mat4>(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::WorldViewIT]).location, 1, &drawPass.worldViewIT[i]);
+		deviceResource->commandBuffer->setUniformPtr(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::WorldViewProjection]).location, 1, &drawPass.worldViewProj[i]);
+		deviceResource->commandBuffer->setUniformPtr(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::LightDirEye]).location, 1, &drawPass.dirLight[i]);
+		deviceResource->commandBuffer->setUniformPtr(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::WorldViewIT]).location, 1, &drawPass.worldViewIT[i]);
 
 		//Now that the model-view matrix is set and the materials ready,
 		//call another function to actually draw the mesh.
@@ -385,7 +391,7 @@ bool OGLESIntroducingPVRApi::createDescriptorSet()
 
 	const pvr::api::PipelineLayoutCreateParam& pipeLayoutInfo = deviceResource->effect->getPipeline()->getPipelineLayout()->getCreateParam();
 	pvr::uint32 i = 0;
-	while (i < scene->getNumMaterials() && scene->getMaterial(i).getDiffuseTextureIndex() != -1)
+	while (i < scene->getNumMaterials() && scene->getMaterial(i).defaultSemantics().getDiffuseTextureIndex() != -1)
 	{
 		pvr::api::DescriptorSetUpdate descSetInfo;
 		pvr::api::TextureView diffuseMap;
@@ -393,9 +399,9 @@ bool OGLESIntroducingPVRApi::createDescriptorSet()
 
 		// Load the diffuse texture map
 		if (!assetManager.getTextureWithCaching(getGraphicsContext(),
-		                                        scene->getTexture(material.getDiffuseTextureIndex()).getName(), &(diffuseMap), NULL))
+		                                        scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName(), &(diffuseMap), NULL))
 		{
-			setExitMessage("ERROR: Failed to load texture %s", scene->getTexture(material.getDiffuseTextureIndex()).getName().c_str());
+			setExitMessage("ERROR: Failed to load texture %s", scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
 			return false;
 		}
 		descSetInfo.setCombinedImageSampler(0, diffuseMap, deviceResource->samplerTrilinear);

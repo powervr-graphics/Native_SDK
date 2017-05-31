@@ -5,10 +5,10 @@ ASSETDIR := $(PVRSDKDIR)/Examples/Intermediate/Bumpmap/Vulkan/Build/Android/asse
 
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRUIRenderer
+# Prebuilt module PVREngineUtils
 include $(CLEAR_VARS)
-LOCAL_MODULE := PVRUIRenderer
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRUIRenderer.a
+LOCAL_MODULE := PVREngineUtils
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVREngineUtils.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
@@ -33,14 +33,6 @@ ifneq "$(MAKECMDGOALS)" "clean"
 include $(CLEAR_VARS)
 LOCAL_MODULE := PVRNativeVulkan
 LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRNativeVulkan.a
-include $(PREBUILT_STATIC_LIBRARY)
-endif
-
-ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRVulkanGlue
-include $(CLEAR_VARS)
-LOCAL_MODULE := PVRVulkanGlue
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRVulkanGlue.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
@@ -74,11 +66,17 @@ LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework \
 
 
 
+<<<<<<< HEAD
 LOCAL_LDLIBS := -landroid \
                 -llog \
                 -latomic
+=======
+LOCAL_LDLIBS := -llog \
+                -latomic \
+                -landroid
+>>>>>>> 1776432f... 4.3
 
-LOCAL_STATIC_LIBRARIES := PVRUIRenderer PVRVulkan PVRNativeVulkan PVRVulkanGlue PVRAssets PVRCore android_native_app_glue
+LOCAL_STATIC_LIBRARIES := PVREngineUtils PVRVulkan PVRNativeVulkan PVRAssets PVRCore android_native_app_glue
 
 
 LOCAL_CFLAGS += $(SDK_BUILD_FLAGS)

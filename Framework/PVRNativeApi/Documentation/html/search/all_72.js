@@ -1,5 +1,6 @@
 var searchData=
 [
+<<<<<<< HEAD
   ['range',['range',['../_api_gles2_8h.html#ac8f70a61350ac082e18a9ea4062a3197',1,'ApiGles2.h']]],
   ['readbufferindexedext',['ReadBufferIndexedEXT',['../classglext.html#adb8e805f99da7d4e014fb996354b22cb',1,'glext']]],
   ['readbuffernv',['ReadBufferNV',['../classglext.html#a7336f1c9a87b846b04310864e051fb04',1,'glext']]],
@@ -21,4 +22,8 @@ var searchData=
   ['renderbufferstoragemultisampleimg',['RenderbufferStorageMultisampleIMG',['../classglext.html#aa47df1af1942d9c7c0b73f9a9f319e50',1,'glext']]],
   ['renderbuffertarget',['renderbuffertarget',['../_api_gles2_8h.html#ad4ca76f1378b4a8be4243761c8df68e6',1,'ApiGles2.h']]],
   ['resolvemultisampleframebufferapple',['ResolveMultisampleFramebufferAPPLE',['../classglext.html#a7e628ccadeba14b4d5de0d404cb5faeb',1,'glext']]]
+=======
+  ['release',['release',['../classpvr_1_1platform_1_1_platform_context.html#a10820cc4033e172fcf795da7e98c5954',1,'pvr::platform::PlatformContext']]],
+  ['releasegl',['releaseGl',['../classgl.html#ae92624db194926f3ea9c56469f33bf53',1,'gl']]]
+>>>>>>> 1776432f... 4.3
 ];

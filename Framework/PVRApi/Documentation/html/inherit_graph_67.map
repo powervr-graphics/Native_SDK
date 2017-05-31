@@ -1,3 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<<<<<<< HEAD
 <area shape="rect" id="node1" href="$structpvr_1_1api_1_1pipeline_creation_1_1_tess_eval_shader_stage_create_param.html" title="Pipeline Tesselation Evaluation shader stage create param. " alt="" coords="6,5,239,46"/>
+=======
+<area shape="rect" id="node1" href="$structpvr_1_1api_1_1_viewport.html" title="Viewport specifes the drawing region, min and max depth. The viewport region x and y starts bottom le..." alt="" coords="6,5,130,32"/>
+>>>>>>> 1776432f... 4.3
 </map>

@@ -1,11 +1,11 @@
-:Title:
+﻿:Title:
 IntroducingPVRApi
 
 :ShortDescription:
-Ρender a .pod scene using a .pfx effect file with automatic shader versioning using the PVRApi library.
+Render a .pod scene using a .pfx effect file with automatic shader versioning using the PVRApi library.
 
 :FullDescription:
-This training course demonstrates how to use the PVRApi library to render a scene from a pod file, using a .pfx effect file. PFX is both a file format and an API, and stands for PowerVR Effects. The library loads the POD file and the PFX file separately, creates a PVRAssets Model from the POD and a PVRApi Effect from the PFX file, and combines them to render the scene using the PVRApi necessary objects. Uses the PVRUIRenderer library to display simple text on screen. Provided for Vulkan (with SpirV shaders) and OpenGL ES(version 2.x and 3.x shaders).
+This training course demonstrates how to use the PVRApi library to render a scene from a pod file, using a .pfx effect file. PFX is both a file format and an API, and stands for PowerVR Effects. The library loads the POD file and the PFX file separately, creates a PVRAssets Model from the POD and a PVRApi Effect from the PFX file, and combines them to render the scene using the PVRApi necessary objects. Uses the PVREngineUtils library to display simple text on screen. Provided for Vulkan (with SpirV shaders) and OpenGL ES(version 2.x and 3.x shaders).
 
 :APIS:
 Vulkan 1.0, OpenGL ES 2.0/3.0

@@ -1,9 +1,18 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRNativeApi\OGLES\LibraryLoaderGles.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief         Implementation of the PowerVR OpenGL ES bindings (gl:: namespace).
 ***********************************************************************************************************************/
+=======
+/*!
+\brief Implementation of the PowerVR OpenGL ES bindings (gl:: namespace).
+\file PVRNativeApi/OGLES/LibraryLoaderGles.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 //!\cond NO_DOXYGEN
 #include "LibraryLoaderGles.h"
 #include "ExtensionLoaderGles.h"

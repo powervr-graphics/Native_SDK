@@ -1,9 +1,11 @@
-/*!*********************************************************************************************************************
-\file         PVRNativeApi\OGLES\ApiGlesExt.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains function pointer declarations for all OpenGL ES 2+ extension functions.
-***********************************************************************************************************************/
+/*!
+\brief Contains function pointer declarations for all OpenGL ES 2+ extension functions.
+\file PVRNativeApi/OGLES/ApiGlesExt.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+//!\cond NO_DOXYGEN
+
 #pragma once
 #include "PVRNativeApi/OGLES/OpenGLESHeaders.h"
 
@@ -360,9 +362,26 @@ typedef void (PVR_APIENTRY* PROC_EXT_glClearTexSubImageIMG)(GLuint texture, GLin
     GLenum format, GLenum type,
     const GLvoid* data);
 
+<<<<<<< HEAD
+=======
+/* GL_EXT_clear_texture */
+typedef void (PVR_APIENTRY* PROC_EXT_glClearTexImageEXT)(GLuint texture, GLint level,
+    GLenum format, GLenum type,
+    const GLvoid* data);
+typedef void (PVR_APIENTRY* PROC_EXT_glClearTexSubImageEXT)(GLuint texture, GLint level,
+    GLint xoffset, GLint yoffset, GLint zoffset,
+    GLsizei width, GLsizei height, GLsizei depth,
+    GLenum format, GLenum type,
+    const GLvoid* data);
+
+>>>>>>> 1776432f... 4.3
 /* GL_IMG_framebuffer_downsample */
 typedef void (PVR_APIENTRY* PROC_EXT_glFramebufferTexture2DDownsampleIMG)(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLuint xscale, GLuint yscale);
 typedef void (PVR_APIENTRY* PROC_EXT_glFramebufferTextureLayerDownsampleIMG)(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer, GLuint xscale, GLuint yscale);
 
 /*GL_EXT_tessellation_shader*/
 typedef void (PVR_APIENTRY* PROC_EXT_glPatchParameteriEXT)(GLenum pname, GLint val);
+<<<<<<< HEAD
+=======
+//!\endcond
+>>>>>>> 1776432f... 4.3

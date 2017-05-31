@@ -1,0 +1,6 @@
+<map id="pvr::types::GenericOffset3D&lt; Txy, Tz &gt;" name="pvr::types::GenericOffset3D&lt; Txy, Tz &gt;">
+<area shape="rect" id="node3" href="$structpvr_1_1types_1_1_image_area_offset.html" title="Represents the geometric offset (distance from 0,0,0 in x&#45;y&#45;z) and offset of array and mipmap layers ..." alt="" coords="453,6,640,47"/>
+<area shape="rect" id="node5" href="$structpvr_1_1types_1_1_image_range.html" title="Represents a specific 3&#45;D range in an image (an orthogonal cuboid anywhere in the image)..." alt="" coords="465,71,628,113"/>
+<area shape="rect" id="node2" href="$structpvr_1_1types_1_1_generic_offset2_d.html" title="pvr::types::GenericOffset2\lD\&lt; Txy \&gt;" alt="" coords="5,39,181,81"/>
+<area shape="rect" id="node4" href="$structpvr_1_1types_1_1_image_area.html" title="Represents an exact range on an image: both a range of array and mipmap layers, and a geometric range..." alt="" coords="689,13,839,40"/>
+</map>

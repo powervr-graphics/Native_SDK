@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRApi\OGLES\DescriptorSetGles.h
 \author       PowerVR by Imagination, Developer Technology Team
@@ -5,37 +6,40 @@
 \brief		Definition of the OpenGL ES implementation of the DescriptorSet and supporting classes
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
+=======
+/*!
+\brief Definition of the OpenGL ES implementation of the DescriptorSet and supporting classes
+\file PVRApi/OGLES/DescriptorSetGles.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 #pragma once
 #include "PVRApi/ApiIncludes.h"
-#include "PVRNativeApi/ApiErrors.h"
+#include "PVRNativeApi/OGLES/ApiErrorsGles.h"
 #include "PVRApi/ApiObjects/DescriptorSet.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
 #include "PVRApi/OGLES/ContextGles.h"
 #include "PVRApi/OGLES/SamplerGles.h"
+#include "PVRApi/OGLES/TextureGles.h"
 namespace pvr {
 namespace api {
 namespace gles {
-/*!*********************************************************************************************************************
-\brief ctor. OpenGL ES implementation of a DescriptorSet.
-***********************************************************************************************************************/
+
+
+/// <summary>ctor. OpenGL ES implementation of a DescriptorSet.</summary>
 class DescriptorSetLayoutGles_ : public native::HDescriptorSetLayout_, public impl::DescriptorSetLayout_
 {
 public:
-	/*!*********************************************************************************************************************
-	\brief ctor. Do not use directly, use context->createDescriptorSet.
-	***********************************************************************************************************************/
-	DescriptorSetLayoutGles_(GraphicsContext& context, const DescriptorSetLayoutCreateParam& desc) :
+	/// <summary>ctor. Do not use directly, use context->createDescriptorSet.</summary>
+	DescriptorSetLayoutGles_(const GraphicsContext& context, const DescriptorSetLayoutCreateParam& desc) :
 		DescriptorSetLayout_(context, desc) {}
 
-	bool init() { return true; }
+	/// <summary>Initialize this descriptor-set-layout</summary>
+	/// <returns>Return true on success.</returns>
+	bool init();
 
-	/*!*********************************************************************************************************************
-	\brief dtor.
-	***********************************************************************************************************************/
-	~DescriptorSetLayoutGles_() {}
-};
-
-
+<<<<<<< HEAD
 inline void bindIndexedBuffer(const BufferView& view, IGraphicsContext& context, uint16 index, pvr::uint32 offset, GLenum type)
 {
 	const Buffer& buffer = view->getResource();
@@ -82,20 +86,24 @@ inline void bindTextureView(const TextureView& view, IGraphicsContext& context, 
 	                 resource->getNativeObject().target, resource->getNativeObject().handle).c_str());
 	contextEs.onBind(*view, bindIdx);
 }
+=======
+	/// <summary>Free all the resources held by this object</summary>
+	void destroy();
+>>>>>>> 1776432f... 4.3
 
+	/// <summary>dtor.</summary>
+	virtual ~DescriptorSetLayoutGles_();
+};
 
-/*!*********************************************************************************************************************
-\brief OpenGL ES implementation of a DescriptorSet.
-***********************************************************************************************************************/
+/// <summary>OpenGL ES implementation of a DescriptorSet.</summary>
 class DescriptorSetGles_ : public impl::DescriptorSet_, public native::HDescriptorSet_
 {
 public:
-	/*!*********************************************************************************************************************
-	\brief ctor.
-	***********************************************************************************************************************/
+	/// <summary>ctor.</summary>
 	DescriptorSetGles_(const DescriptorSetLayout& descSetLayout, const DescriptorPool& pool) :
 		DescriptorSet_(descSetLayout, pool) {}
 
+<<<<<<< HEAD
 	bool update_(const pvr::api::DescriptorSetUpdate& descSet);
 	void bind(IGraphicsContext& device, pvr::uint32*& dynamicOffsets)const
 	{
@@ -172,19 +180,41 @@ public:
 	***********************************************************************************************************************/
 	~DescriptorSetGles_() {}
 };
+=======
+	void bind(IGraphicsContext& device, uint32*& dynamicOffsets)const;
+>>>>>>> 1776432f... 4.3
 
+	/// <summary>Initialize this descriptor-set</summary>
+	/// <returns>Return true on success</returns>
+	bool init();
+
+	/// <summary>Free all the resources held by this object.</summary>
+	void destroy();
+
+	/// <summary>dtor.</summary>
+	virtual ~DescriptorSetGles_();
+private:
+	bool update_(const DescriptorSetUpdate& descSet);
+};
 
 class DescriptorPoolGles_ : public impl::DescriptorPool_, public native::HDescriptorPool_
 {
 public:
-	DescriptorPoolGles_(GraphicsContext& device) : DescriptorPool_(device) {}
-	bool init(const DescriptorPoolCreateParam& createParam)
-	{
-		m_poolInfo = createParam;
-		return true;
-	}
+	DescriptorPoolGles_(const GraphicsContext& device) : DescriptorPool_(device) {}
+
+	/// <summary>dtor</summary>
+	virtual ~DescriptorPoolGles_();
+
+	/// <summary>Initialize this descriptor-pool</summary>
+	/// <returns>Return true on success</returns>
+	bool init(const DescriptorPoolCreateParam& createParam);
+
+	/// <summary>Destroy this descriptor-pool</summary>
+	void destroy();
+
 private:
-	DescriptorPoolCreateParam m_poolInfo;
+	DescriptorSet allocateDescriptorSet_(const DescriptorSetLayout& layout);
+	DescriptorPoolCreateParam _createParam;
 };
 
 typedef RefCountedResource<gles::DescriptorSetGles_> DescriptorSetGles;
@@ -194,4 +224,9 @@ typedef RefCountedResource<gles::DescriptorSetLayoutGles_> DescriptorSetLayoutGl
 
 }
 }
+<<<<<<< HEAD
 //!\endcond
+=======
+PVR_DECLARE_NATIVE_CAST(DescriptorSet);
+PVR_DECLARE_NATIVE_CAST(DescriptorPool);
+>>>>>>> 1776432f... 4.3

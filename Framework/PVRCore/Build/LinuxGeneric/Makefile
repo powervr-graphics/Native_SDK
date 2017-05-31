@@ -8,6 +8,8 @@
 SDKDIR  = ../../../..
 OUTNAME = libPVRCore.a
 VPATH = ../..
+
+DIRECTORIES := Base/ DataStructures/ Interfaces/ IO/ Logging/ Math/ Strings/ Texture/
  
 COMPILE_ALL_CPP_IN_DIRECTORIES := 1
 

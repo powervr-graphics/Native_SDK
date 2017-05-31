@@ -26,7 +26,7 @@
 
 /* Khronos platform-specific types and definitions.
  *
- * $Revision: 1.6 $ on $Date: 2011/06/01 14:18:13 $
+ * $Revision: 32517 $ on $Date: 2016-03-11 02:41:19 -0800 (Fri, 11 Mar 2016) $
  *
  * Adopters may modify this file to suit their platform. Adopters are
  * encouraged to submit platform specific modifications to the Khronos
@@ -97,13 +97,17 @@
  *-------------------------------------------------------------------------
  * This precedes the return type of the function in the function prototype.
  */
- 
-#if (defined(_WIN32) || defined(__VC32__)) && !defined(__SCITECH_SNAP__)
+#if defined(_WIN32) && !defined(__SCITECH_SNAP__)
 #   if defined (_DLL_EXPORTS)
 #       define KHRONOS_APICALL __declspec(dllexport)
 #   else
 #       define KHRONOS_APICALL __declspec(dllimport)
 #   endif
+#elif defined (__SYMBIAN32__)
+#   define KHRONOS_APICALL IMPORT_C
+#elif defined(__ANDROID__)
+#   include <sys/cdefs.h>
+#   define KHRONOS_APICALL __attribute__((visibility("default")))
 #else
 #   define KHRONOS_APICALL
 #endif
@@ -224,10 +228,23 @@ typedef signed   char          khronos_int8_t;
 typedef unsigned char          khronos_uint8_t;
 typedef signed   short int     khronos_int16_t;
 typedef unsigned short int     khronos_uint16_t;
+
+/*
+ * Types that differ between LLP64 and LP64 architectures - in LLP64,
+ * pointers are 64 bits, but 'long' is still 32 bits. Win64 appears
+ * to be the only LLP64 architecture in current use.
+ */
+#ifdef _WIN64
+typedef signed   long long int khronos_intptr_t;
+typedef unsigned long long int khronos_uintptr_t;
+typedef signed   long long int khronos_ssize_t;
+typedef unsigned long long int khronos_usize_t;
+#else
 typedef signed   long  int     khronos_intptr_t;
 typedef unsigned long  int     khronos_uintptr_t;
 typedef signed   long  int     khronos_ssize_t;
 typedef unsigned long  int     khronos_usize_t;
+#endif
 
 #if KHRONOS_SUPPORT_FLOAT
 /*

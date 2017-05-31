@@ -2,12 +2,16 @@
 \File         VulkanSkinning.cpp
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Shows how to perform skinning combined with Dot3 (normal-mapped) lighting
+\brief      Shows how to perform skinning combined with Dot3 (normal-mapped) lighting
 ***********************************************************************************************************************/
 #include "PVRApi/PVRApi.h"
 #include "PVRShell/PVRShell.h"
+<<<<<<< HEAD
 #include "PVRUIRenderer/UIRenderer.h"
 #include "PVRApi/RenderManager.h"
+=======
+#include "PVREngineUtils/PVREngineUtils.h"
+>>>>>>> 1776432f... 4.3
 
 using namespace pvr;
 using namespace pvr::types;
@@ -30,7 +34,11 @@ class VulkanSkinning : public pvr::Shell
 		// Print3D class used to display text
 		pvr::ui::UIRenderer uiRenderer;
 		// Asset loader
+<<<<<<< HEAD
 		pvr::api::AssetStore assetManager;
+=======
+		pvr::utils::AssetStore assetManager;
+>>>>>>> 1776432f... 4.3
 
 		pvr::api::CommandBuffer cmdBuffers[4];
 	};
@@ -57,8 +65,8 @@ public:
 };
 
 /*!*********************************************************************************************************************
-\brief	handle the input event
-\param	action input actions to handle
+\brief  handle the input event
+\param  action input actions to handle
 ***********************************************************************************************************************/
 void VulkanSkinning::eventMappedInput(pvr::SimplifiedInput action)
 {
@@ -74,8 +82,13 @@ void VulkanSkinning::eventMappedInput(pvr::SimplifiedInput action)
 }
 
 /*!*********************************************************************************************************************
+<<<<<<< HEAD
 \return	Return pvr::Result::Success if no error occurred
 \brief	Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+=======
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+>>>>>>> 1776432f... 4.3
 Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
 If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
@@ -91,8 +104,13 @@ pvr::Result VulkanSkinning::initApplication()
 }
 
 /*!*********************************************************************************************************************
+<<<<<<< HEAD
 \return	Return Result::Success if no error occurred
 \brief	Code in quitApplication() will be called by Shell once per run, just before exiting the program.
+=======
+\return Return Result::Success if no error occurred
+\brief  Code in quitApplication() will be called by Shell once per run, just before exiting the program.
+>>>>>>> 1776432f... 4.3
 If the rendering context is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
 pvr::Result VulkanSkinning::quitApplication()
@@ -103,8 +121,13 @@ pvr::Result VulkanSkinning::quitApplication()
 }
 
 /*!*********************************************************************************************************************
+<<<<<<< HEAD
 \return	Return Result::Success if no error occurred
 \brief	Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+=======
+\return Return Result::Success if no error occurred
+\brief  Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
+>>>>>>> 1776432f... 4.3
 Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
 pvr::Result VulkanSkinning::initView()
@@ -122,6 +145,7 @@ pvr::Result VulkanSkinning::initView()
 	scene->releaseVertexData();
 	devObj->mgr.createAutomaticSemantics();
 
+<<<<<<< HEAD
 	// Under the hood, the above line will do the following:
 	//for (auto& pipe : devObj->mgr.toSubpass(0, 0, 0).pipelines) // actually, for all subpasses, but we only have 1
 	//{
@@ -132,6 +156,21 @@ pvr::Result VulkanSkinning::initView()
 	//{
 	//	node.createAutomaticSemantics();
 	//}
+=======
+	/***************************************************************
+	**** Under the hood, the above line will do the following: *****
+
+	for (auto& pipe : devObj->mgr.toSubpass(0, 0, 0).pipelines) // actually, for all subpasses, but we only have 1
+	{
+	  pipe.createAutomaticModelSemantics();
+	}
+
+	for (auto& node : devObj->mgr.renderables())
+	{
+	  node.createAutomaticSemantics();
+	}
+	***************************************************************/
+>>>>>>> 1776432f... 4.3
 
 	pvr::Result result = pvr::Result::Success;
 	result = devObj->uiRenderer.init(fboOnScreen[0]->getRenderPass(), 0);
@@ -140,6 +179,10 @@ pvr::Result VulkanSkinning::initView()
 	devObj->uiRenderer.getDefaultTitle()->setText("Skinning");
 	devObj->uiRenderer.getDefaultTitle()->commitUpdates();
 	devObj->uiRenderer.getDefaultDescription()->setText("Skinning with Normal Mapped Per Pixel Lighting");
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1776432f... 4.3
 	devObj->uiRenderer.getDefaultDescription()->commitUpdates();
 	devObj->uiRenderer.getDefaultControls()->setText("Any Action Key : Pause");
 	devObj->uiRenderer.getDefaultControls()->commitUpdates();
@@ -151,8 +194,8 @@ pvr::Result VulkanSkinning::initView()
 }
 
 /*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
+\return Return Result::Success if no error occurred
+\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
 pvr::Result VulkanSkinning::releaseView()
 {
@@ -161,8 +204,13 @@ pvr::Result VulkanSkinning::releaseView()
 }
 
 /*!*********************************************************************************************************************
+<<<<<<< HEAD
 \return	Return pvr::Result::Success if no error occurred
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
+=======
+\return Return pvr::Result::Success if no error occurred
+\brief  Main rendering loop function of the program. The shell will call this function every frame.
+>>>>>>> 1776432f... 4.3
 ***********************************************************************************************************************/
 pvr::Result VulkanSkinning::renderFrame()
 {
@@ -179,6 +227,7 @@ pvr::Result VulkanSkinning::renderFrame()
 	}
 	// Set the scene animation to the current frame
 
+<<<<<<< HEAD
 	devObj->mgr.toSubpassModel(0, 0, 0, 0).updateFrame(currentFrame);
 
 	devObj->mgr.updateAutomaticSemantics(getSwapChainIndex());
@@ -200,6 +249,31 @@ pvr::Result VulkanSkinning::renderFrame()
 	//// Must be called if beginBufferUpdates were previously called (performs the buffer->unmap calls)
 	//devObj->mgr.toEffect(0).endBufferUpdates(swapChainIndex);
 
+=======
+	devObj->mgr.toSubpassGroupModel(0, 0, 0, 0, 0).updateFrame(currentFrame);
+
+	devObj->mgr.updateAutomaticSemantics(getSwapChainIndex());
+
+	/***************************************************************
+	**** Under the hood, the above line will do the following: *****
+
+	//Get a new worldview camera and light position
+	auto& pipeline = devObj->mgr.toPipeline(0, 0, 0, 0);
+	pipeline.updateAutomaticModelSemantics(getSwapChainIndex());
+
+	// Update all node-specific matrices (Worldview, bone array etc).
+	pvr::uint32 swapChainIndex = getGraphicsContext()->getPlatformContext().getSwapChainIndex();
+
+	// Should be called before updating anything to optimise map/unmap. Suggest call once per frame.
+	devObj->mgr.toEffect(0).beginBufferUpdates(swapChainIndex);
+
+	for (auto& rendernode : devObj->mgr.renderables()) { rendernode.updateAutomaticSemantics(swapChainIndex); }
+
+	// Must be called if beginBufferUpdates were previously called (performs the buffer->unmap calls)
+	devObj->mgr.toEffect(0).endBufferUpdates(swapChainIndex);
+
+	***************************************************************/
+>>>>>>> 1776432f... 4.3
 
 	//Update all the bones matrices
 	devObj->cmdBuffers[getSwapChainIndex()]->submit();
@@ -244,7 +318,7 @@ inline std::vector<StringHash> generateBonesList(const char* base, uint32 numBon
 
 
 /*!*********************************************************************************************************************
-\brief	pre-record the rendering commands
+\brief  pre-record the rendering commands
 ***********************************************************************************************************************/
 void VulkanSkinning::recordCommandBuffer(api::FboSet& fbo)
 {
@@ -273,7 +347,11 @@ void VulkanSkinning::recordCommandBuffer(api::FboSet& fbo)
 
 /*!*********************************************************************************************************************
 \return Return auto ptr to the demo supplied by the user
+<<<<<<< HEAD
 \brief	This function must be implemented by the user of the shell. The user should return its Shell object defining the behaviour
+=======
+\brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the behaviour
+>>>>>>> 1776432f... 4.3
 of the application.
 ***********************************************************************************************************************/
 std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new VulkanSkinning()); }

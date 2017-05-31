@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\EntryPoint\NSApplicationMain\AppController.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Class necessary for the entry point of the AppKit based implementation of PVRShell.
-***********************************************************************************************************************/
+/*!
+\brief Class necessary for the entry point of the AppKit based implementation of PVRShell.
+\file PVRShell\EntryPoint/NSApplicationMain/AppController.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #ifndef _APPCONTROLLER_H_
 #define _APPCONTROLLER_H_
 
@@ -12,9 +12,7 @@
 #import <AppKit/NSApplication.h>
 #import <Foundation/NSTimer.h>
 
-/*!***************************************************************************************************************
-\brief iOS entry point implementation
-*****************************************************************************************************************/
+/// <summary>iOS entry point implementation</summary>
 @interface AppController : NSObject <NSApplicationDelegate>
 {
 	NSTimer*		 mainLoopTimer;	//!< timer for the main loop

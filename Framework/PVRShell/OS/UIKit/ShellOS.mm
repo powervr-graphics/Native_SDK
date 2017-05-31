@@ -1,12 +1,12 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\OS\UIKit\ShellOS.mm
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Implementation of the ShellOS class for the UIKit
-***********************************************************************************************************************/
+/*!
+\brief Implementation of the ShellOS class for the UIKit
+\file PVRShell\OS/UIKit/ShellOS.mm
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "OS/ShellOS.h"
-#include "PVRCore/FilePath.h"
+#include "PVRCore/IO/FilePath.h"
 #include <mach/mach_time.h>
 #import <UIKit/UIKit.h>
 
@@ -36,39 +36,39 @@ pvr::int16 g_cursorX, g_cursorY;
 namespace pvr{
 namespace platform{
 // Setup the capabilities
-const ShellOS::Capabilities ShellOS::m_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
+const ShellOS::Capabilities ShellOS::_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
 
-ShellOS::ShellOS(/*NSObject<NSApplicationDelegate>*/void* hInstance, OSDATA osdata) : m_instance(hInstance)
+ShellOS::ShellOS(/*NSObject<NSApplicationDelegate>*/void* hInstance, OSDATA osdata) : _instance(hInstance)
 {
-	m_OSImplementation = new InternalOS;
+	_OSImplementation = new InternalOS;
 }
 
 ShellOS::~ShellOS()
 {
-	delete m_OSImplementation;
+	delete _OSImplementation;
 }
 
 void ShellOS::updatePointingDeviceLocation()
 {
-    m_shell->updatePointerPosition(PointerLocation(g_cursorX, g_cursorY));
+    _shell->updatePointerPosition(PointerLocation(g_cursorX, g_cursorY));
 }
 
 Result ShellOS::init(DisplayAttributes &data)
 {
-	if(!m_OSImplementation)
+	if(!_OSImplementation)
 		return Result::OutOfMemory;
 
 	// Setup read and write paths
 	NSString* readPath = [NSString stringWithFormat:@"%@%@", [[NSBundle mainBundle] resourcePath], @"/"];
-	m_ReadPaths.push_back([readPath UTF8String]);
+	_ReadPaths.push_back([readPath UTF8String]);
 
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString* writePath = [NSString stringWithFormat:@"%@%@", [paths objectAtIndex:0], @"/"];
-	m_WritePath = [writePath UTF8String];
+	_WritePath = [writePath UTF8String];
     
 	// Setup the app name
     NSString* name = [[NSProcessInfo processInfo] processName];
-    m_AppName =[name UTF8String];
+    _AppName =[name UTF8String];
     
 	return Result::Success;
 }
@@ -94,26 +94,26 @@ Result ShellOS::initializeWindow(DisplayAttributes &data)
     data.width = frame.size.width * scale;
     data.height = frame.size.height * scale;
 
-    m_OSImplementation->window = [[AppWindow alloc] initWithFrame:frame];
+    _OSImplementation->window = [[AppWindow alloc] initWithFrame:frame];
     
-    if(!m_OSImplementation->window) {  return Result::UnknownError;   }
+    if(!_OSImplementation->window) {  return Result::UnknownError;   }
     
     // pass the shell as the event queue
-    m_OSImplementation->window.eventQueue = m_shell.get();
+    _OSImplementation->window.eventQueue = _shell.get();
     
 	// Give the window a copy of the eventQueue so it can pass on the keyboard/mouse events
-	[m_OSImplementation->window setScreenScale:scale];
-	[m_OSImplementation->window makeKeyAndVisible];
+	[_OSImplementation->window setScreenScale:scale];
+	[_OSImplementation->window makeKeyAndVisible];
 	
 	return Result::Success;
 }
 
 void ShellOS::releaseWindow()
 {
-	if(m_OSImplementation->window)
+	if(_OSImplementation->window)
 	{
-	//	[m_OSImplementation->window release];
-		m_OSImplementation->window = nil;
+	//	[_OSImplementation->window release];
+		_OSImplementation->window = nil;
 	}
 }
 
@@ -129,7 +129,7 @@ OSDisplay ShellOS::getDisplay() const
 
 OSWindow ShellOS::getWindow() const
 {
-	return (__bridge OSWindow)m_OSImplementation->window;
+	return (__bridge OSWindow)_OSImplementation->window;
 }
 
 Result ShellOS::handleOSEvents()
@@ -140,10 +140,14 @@ Result ShellOS::handleOSEvents()
 
 bool ShellOS::isInitialized()
 {
-	return m_OSImplementation && m_OSImplementation->window;
+	return _OSImplementation && _OSImplementation->window;
 }
 
+<<<<<<< HEAD
 Result ShellOS::popUpMessage(const tchar * const title, const tchar * const message, ...) const
+=======
+Result ShellOS::popUpMessage(const char8 * const title, const char8 * const message, ...) const
+>>>>>>> 1776432f... 4.3
 {
     if(title && message)
     {

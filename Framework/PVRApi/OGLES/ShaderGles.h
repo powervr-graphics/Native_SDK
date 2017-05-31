@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRApi\OGLES\ShaderGles.h
 \author       PowerVR by Imagination, Developer Technology Team
@@ -6,6 +7,16 @@
               Provides the definitions allowing to move from the Framework object Texture2D to the underlying OpenGL ES Shader.
 ***********************************************************************************************************************/
 //!\cond NO_DOXYGEN
+=======
+/*!
+\brief Contains OpenGL ES specific implementation of the Shader class. Use only if directly using OpenGL ES calls.
+Provides the definitions allowing to move from the Framework object Texture2D to the underlying OpenGL ES
+Shader.
+\file PVRApi/OGLES/ShaderGles.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 #pragma once
 #include "PVRApi/ApiObjects/Shader.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
@@ -13,43 +24,26 @@
 namespace pvr {
 namespace api {
 namespace gles {
-/*!*********************************************************************************************************************
-\param  gles shader wrapper
-***********************************************************************************************************************/
+/// <summary>OpenGL ES implementation of a shader</summary>
 class ShaderGles_ : public native::HShader_, public impl::Shader_
 {
 public:
 
-	/*!*********************************************************************************************************************
-	\brief ctor. Construct with namtoe shader handle.
-	***********************************************************************************************************************/
-	ShaderGles_(GraphicsContext& context, const native::HShader_& shader) : impl::Shader_(context)
+	/// <summary>ctor. Construct with namtoe shader handle.</summary>
+	ShaderGles_(const GraphicsContext& context, const native::HShader_& shader) : impl::Shader_(context)
 	{
 		this->handle = shader.handle;
 	}
 
-	/*!*********************************************************************************************************************
-	\brief dtor.
-	***********************************************************************************************************************/
+	/// <summary>dtor.</summary>
 	virtual ~ShaderGles_();
 };
 typedef RefCountedResource<ShaderGles_> ShaderGles;
 }
 }
-namespace native {
-/*!*********************************************************************************************************************
-\brief Get the OpenGL ES Shader object underlying a PVRApi Shader object.
-\return A smart pointer wrapper containing the OpenGL ES Shader.
-\description The smart pointer returned by this function works normally with the reference counting, and shares it with the
-             rest of the references to this object, keeping the underlying OpenGL ES object alive even if all other
-             references to it (including the one that was passed to this function) are released. Release when done using it to
-			 avoid leaking the object.
-***********************************************************************************************************************/
-inline HShader createNativeHandle(const RefCountedResource<api::impl::Shader_>& Shader)
-{
-	return static_cast<RefCountedResource<native::HShader_>/**/>(static_cast<RefCountedResource<api::gles::ShaderGles_>/**/>(Shader));
 }
 
+<<<<<<< HEAD
 }
 namespace utils {
 /*!*********************************************************************************************************************
@@ -69,3 +63,6 @@ bool createShaderProgram(native::HShader_ pShaders[], uint32 count, const char**
 }
 }
 //!\endcond
+=======
+PVR_DECLARE_NATIVE_CAST(Shader);
+>>>>>>> 1776432f... 4.3

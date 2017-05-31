@@ -1,14 +1,15 @@
-/*!******************************************************************************************************************
-\file         PVRCamera\CameraInterface_Android.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Platform independent camera interface API include file.
-\brief         Implementation of the Android camera interface.
-********************************************************************************************************************/
+/*!
+\brief Implementation of the Android camera interface.
+\file PVRCamera/CameraInterface_Android.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Platform independent camera interface API include file.
+*/
 
 #include "PVRCamera/CameraInterface.h"
 #include "PVRApi/Api.h"
 #include "PVRNativeApi/OGLES/OpenGLESBindings.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
+#include "PVRApi/OGLES/TextureGles.h"
 #include <jni.h>
 
 #ifdef __cplusplus
@@ -58,10 +59,6 @@ public:
 		gl::GenTextures(1, &hTexture.handle);
 
 		gl::BindTexture(GL_TEXTURE_EXTERNAL_OES, hTexture);
-		gl::TexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		gl::TexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		gl::TexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		gl::TexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		JNIEnv* env = 0;
 		jint res = cachedVM->AttachCurrentThread(&env, 0);
@@ -311,7 +308,7 @@ api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& context, co
 {
 	Log(Log.Verbose, "Camera interface util: Handle %d, Target 0x%08X", cameraTexture.handle, cameraTexture.target);
 	api::TextureStore texStore = context->createTexture();
-	texStore->getNativeObject() = cameraTexture;
-	api::TextureView tex; tex.construct(texStore); return tex;
+	static_cast<native::HTexture_&>(api::native_cast(*texStore)) = cameraTexture;
+	return context->createTextureView(texStore);
 }
 }

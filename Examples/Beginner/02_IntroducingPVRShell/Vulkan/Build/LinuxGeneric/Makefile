@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanIntroducingPVRShell
-DEPENDS =  PVRCore PVRShell PVRVulkanGlue PVRNativeVulkan
-LIBRARIES =  PVRNativeVulkan PVRVulkanGlue PVRShell PVRCore
+DEPENDS =  PVRCore PVRShell PVRNativeVulkan
+LIBRARIES =  PVRNativeVulkan PVRShell PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\

@@ -1,16 +1,16 @@
+/*!
+\brief Class containing internal data of the PowerVR Shell.
+\file PVRShell/ShellData.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
-/*!*********************************************************************************************************************
-\file         PVRShell\ShellData.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Class containing internal data of the PowerVR Shell.
-***********************************************************************************************************************/
 #include "PVRShell/CommandLine.h"
 
 /*! This file simply defines a version string. It can be commented out. */
 #include "sdkver.h"
-#if !defined(PVRSDK_VERSION)
-#define PVRSDK_VERSION "n.n@nnnnnnn"
+#if !defined(PVRSDK_BUILD)
+#define PVRSDK_BUILD "n.n@nnnnnnn"
 #endif
 
 /*! Define the txt file that we can load command-line options from. */
@@ -22,9 +22,7 @@ namespace pvr {
 namespace platform {
 class ShellOS;
 
-/*!****************************************************************************************************************
-\brief  Contains and tracks internal data necessary to power the pvr::Shell.
-*******************************************************************************************************************/
+/// <summary>Contains and tracks internal data necessary to power the pvr::Shell.</summary>
 struct ShellData
 {
 	Time timer;
@@ -39,7 +37,11 @@ struct ShellData
 	std::auto_ptr<IPlatformContext> platformContext;
 	DisplayAttributes attributes;
 
+<<<<<<< HEAD
 	platform::CommandLineParser* commandLine;
+=======
+	CommandLineParser* commandLine;
+>>>>>>> 1776432f... 4.3
 
 	int32 captureFrameStart;
 	int32 captureFrameStop;
@@ -68,6 +70,10 @@ struct ShellData
 
 	Api contextType;
 	Api minContextType;
+<<<<<<< HEAD
+=======
+	BaseApi baseContextType;
+>>>>>>> 1776432f... 4.3
 	DeviceQueueType deviceQueueType;
 
 	ShellData() :	os(0),
@@ -91,6 +97,7 @@ struct ShellData
 		showFPS(false),
 		contextType(Api::Unspecified),
 		minContextType(Api::Unspecified),
+		baseContextType(BaseApi::Unspecified),
 		deviceQueueType(DeviceQueueType::Graphics)
 	{
 	};

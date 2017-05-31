@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\EntryPoint\android_main\main.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Entry point for Android systems (android_main).
-***********************************************************************************************************************/
+/*!
+\brief Entry point for Android systems (android_main).
+\file PVRShell\EntryPoint/android_main/main.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRShell/StateMachine.h"
 #include "PVRShell/CommandLine.h"
@@ -121,12 +121,9 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 	};
 }
 
-/*!***************************************************************************
-\brief			Main function: Entry point for the Android platform
-\param			state	the android app state
-\description	This Main function is the Entry point for a NativeActivity-
-				style android NDK main app
-*****************************************************************************/
+/// <summary>Main function: Entry point for the Android platform</summary>
+/// <param name="state">the android app state</param>
+/// <remarks>This Main function is the Entry point for a NativeActivity- style android NDK main app</remarks>
 void android_main(struct android_app* state)
 {
 	app_dummy();

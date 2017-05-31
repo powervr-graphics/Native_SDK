@@ -1,21 +1,19 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/FileIO/TextureReaderTGA.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         An experimental AssetReader that reads pvr::asset::Texture objects from an TGA file.
-***********************************************************************************************************************/
+/*!
+\brief An experimental AssetReader that reads pvr::asset::Texture objects from an TGA file.
+\file PVRAssets/FileIO/TextureReaderTGA.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
-#include "PVRAssets/Texture/Texture.h"
-#include "PVRAssets/AssetReader.h"
-#include "PVRAssets/FileIO/FileDefinesTGA.h"
+#include "PVRCore/Texture.h"
+#include "PVRCore/Texture/FileDefinesTGA.h"
+#include "PVRCore/IO/AssetReader.h"
 
 namespace pvr {
 namespace assets {
 namespace assetReaders {
-/*!*********************************************************************************************************************
-\brief Experimental TGA Texture reader
-***********************************************************************************************************************/
+/// <summary>Experimental TGA Texture reader</summary>
 class TextureReaderTGA : public AssetReader<Texture>
 {
 public:
@@ -29,10 +27,10 @@ public:
 	virtual std::vector<string> getSupportedFileExtensions();
 private:
 	virtual bool readNextAsset(Texture& asset);
-	bool m_texturesToLoad;
-	bool m_fileHeaderLoaded;
+	bool _texturesToLoad;
+	bool _fileHeaderLoaded;
 
-	texture_tga::FileHeader m_fileHeader;
+	texture_tga::FileHeader _fileHeader;
 
 	bool initializeFile();
 	bool readFileHeader(texture_tga::FileHeader& fileheader);

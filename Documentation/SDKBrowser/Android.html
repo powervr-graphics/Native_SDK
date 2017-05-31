@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>The PowerVR SDK Browser</title>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="./images/img-icon.png">
+</head>
+
+<body>
+	<div id="GlobalHeaderContainer">
+		<div id="GlobalHeader">
+			<div class="logo">
+				<a href="http://www.powervrinsider.com" target="_blank"><img src="./images/PVRlogo.png" width="40%" height="40%" /></a>
+            </div>
+			<div class="sitetitle">PowerVR SDK Browser</div>
+		</div>
+	</div>
+	<div id="NavContainer">
+		<nav>
+			<div class="navlink">
+				<a href="Home.html">Home</a>
+			</div>
+			<div class="navlink">
+				<a href="GettingStarted.html" class="current">Getting Started</a>
+			</div>
+			<div class="navlink">
+				<a href="Examples.html">Examples</a>
+			</div>
+			<div class="navlink">
+				<a href="Framework.html">Framework</a>
+			</div>
+			<div class="navlink">
+				<a href="Documentation.html">Documentation</a>
+			</div>
+			<div class="navlink">
+				<a href="PowerVRTools.html">PowerVR Tools</a>
+			</div>
+			<div class="navlink">
+				<a href="Licence.html">EULA</a>
+			</div>
+			<div class="navlink">
+				<a href="Contact.html">Contact Us</a>
+			</div>
+		</nav>
+	</div>
+	
+<!--API_TAB-->
+<div id="SubNavContainer"><nav><div class="subnavlink"><a href="./Android.html">Android</a></div>
+<div class="subnavlink"><a href="./iOS.html">iOS</a></div>
+<div class="subnavlink"><a href="./Windows.html">Windows</a></div>
+<div class="subnavlink"><a href="./OSX.html">OS X</a></div>
+<div class="subnavlink"><a href="./Linux.html">Linux</a></div>
+<div class="subnavlink"><a href="./WebGL.html">WebGL</a></div>
+</nav></div>
+
+	<div class="content">
+		<div id="android">
+		<h1>Android</h1>
+			<p>The PowerVR Graphics SDK examples have been redesigned with the aim of making it as easy as possible to use with the new Android tools, including moving from Apache Ant to Gradle, and from Eclipse to Android Studio.</p>
+			<p>Using Gradle scripts, the native (NDK) component has been integrated with the Android Java component, so as to allow easier building from the Command Line (using the Gradle wrapper), or from Android Studio.</p>
+			<p>The following instructions for building the examples in the Android PowerVR Graphics SDK assume that you have:</p>
+			<ul>
+				<li>Installed the Android SDK from Google</li>
+				<li>Installed the Android NDK</li>
+				<li>Added the Android NDK to the system path</li>
+			</ul>
+			<p>Adding the Android NDK to the system path for Windows has changed to <span class="code">Control Panel/System/Advanced System Settings/Advanced/Environment Variables</span>. On Linux it is dependent on the specific system. It is also recommended to add the <span class="code"><abbr title="Path to the Android PowerVR Graphics SDK.">[Android SDK]</abbr>/platform-tools</span> sub-directory to the path to facilitate <span class="code">adb</span> and similar tools.</p>
+			<p>It is recommended to build through Android Studio, but it is also possible to build through a Command Line.</p>
+			<p><strong>To build through the Android Studio:</strong></p>
+			<ol>
+				<li>On the Startup screen or in the main Android Studio screen, select <span class="code">Import Project</span></li>
+				<li>Navigate to the <span class="code">/Build/Android</span> sub-directory of the component to build</li>
+				<li>Select the <span class="code">build.gradle</span> file (will normally have a green icon) and press <span class="code">OK</span></li>
+			</ol>
+			<p>From that point onwards, the project can be debugged and/or built using Android Studio as normal.</p>
+			<p><strong>To build through the Command Line:</strong></p>
+			<ol>
+				<li>A file named <span class="code">local.properties</span> must be present in the <span class="code">/Build/Android</span> sub-directory. This file must contain a line pointing to the Android SDK. On Windows, bear in mind that backslashes (<span class="code">\</span>) must be escaped (<span class="code">\\</span>), and semicolons (<span class="code">:</span>) must be escaped (<span class="code">\:</span>) as well. For example:
+				<ul>
+					<br>
+					<li>Windows: <span class="code">sdk.dir=C\:\\Android\\AndroidSdk</span></li>
+					<li>Linux: <span class="code">sdk.dir=/usr/local/android_sdk</span></li>
+				</ul>
+				<p>In order to create this file you can open a new file in any suitable text editor, like Notepad on Windows or Vim, Sublime etc. on Linux.</p>
+				<p>If you have imported the example in Android Studio, the <span class="code">local.properties</span> file will have already been created for you.</p>
+				</li>
+				<li>Run Gradle. We are bundling the Gradle wrapper so the required Gradle version will automatically be downloaded and used. On Windows, run <span class="code">gradlew [target]</span>; on Linux, run <span class="code">./gradlew [target]</span>, where <span class="code">[target]</span> is usually:
+				<ul>
+					<br>
+					<li><span class="code">clean</span> to remove old build and temporary files</li>
+					<li><span class="code">assembleDebug</span> to create a debug version of the application</li>
+					<li><span class="code">assembleRelease</span> to create the basis for a release version of the application. In order to create a release version of your application, visit the page <a href="http://developer.android.com/guide/index.html" target="_blank">http://developer.android.com/guide/index.html</a></li>
+				</ul>
+			</ol>
+		</div>
+</body>
+
+</html>

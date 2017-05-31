@@ -1,0 +1,4 @@
+<map id="pvr::types::ImageSubResourceLayers" name="pvr::types::ImageSubResourceLayers">
+<area shape="rect" id="node2" href="$structpvr_1_1types_1_1_image_subresource.html" title="Describes a single &quot;layer&quot; of an image: a single array layer of a single mip level, or the offset of a layer range." alt="" coords="5,5,203,32"/>
+<area shape="rect" id="node3" href="$structpvr_1_1types_1_1_image_aspect_range.html" title="Represents a single aspect of an image (Color, Depth, Stencil, Depth/Stencil)" alt="" coords="227,5,429,32"/>
+</map>

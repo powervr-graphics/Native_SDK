@@ -9,7 +9,7 @@
 
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 using namespace pvr;
 const char* const ComputeShaderFileName = "ParticleSolver_vk.csh.spv";
 typedef std::pair<pvr::StringHash, pvr::types::GpuDatatypes::Enum> BufferViewMapping;
@@ -137,8 +137,7 @@ public:
 		{
 			cmdBufferFence->reset();
 		}
-		cmdBuffer[swapchain]->submitStartOfFrame(signalSemaphore[swapchain], cmdBufferFence);
-		cmdBufferFence->wait(pvr::uint64(-1));
+		cmdBuffer[swapchain]->submitStartOfFrame(signalSemaphore[swapchain]);
 	}
 protected:
 	bool createComputePipeline(std::string& errorStr);

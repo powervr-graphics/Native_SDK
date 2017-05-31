@@ -1,20 +1,26 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/ShaderDescription.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Contains a function used to get a shader type from a filename.
-***********************************************************************************************************************/
+/*!
+\brief Contains a function used to get a shader type from a filename.
+\file PVRAssets/ShaderDescription.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRAssets/AssetIncludes.h"
 
 namespace pvr {
 namespace assets {
 
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \brief     A function that gets a shader type from a filename.
 \param     shaderName A filename(with extension) of a shader
 \return    Return The ShaderType of this shader
 ***********************************************************************************************************************/
+=======
+/// <summary>A function that gets a shader type from a filename.</summary>
+/// <param name="shaderName">A filename(with extension) of a shader</param>
+/// <returns>Return The ShaderType of this shader</returns>
+>>>>>>> 1776432f... 4.3
 inline ShaderType getShaderTypeFromFilename(const char* shaderName)
 {
 	std::string file(shaderName);

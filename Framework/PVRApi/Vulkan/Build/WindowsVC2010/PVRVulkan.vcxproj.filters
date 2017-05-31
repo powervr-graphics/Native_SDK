@@ -15,18 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <ClInclude Include="..\..\..\AssetStore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\AssetUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+=======
+>>>>>>> 1776432f... 4.3
     <ClInclude Include="..\..\..\Doxygen_Typedefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\EffectApi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\..\..\GpuCapabilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -36,6 +40,11 @@
     <ClInclude Include="..\..\..\TextureUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+=======
+    <ClInclude Include="..\..\..\PVRApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+>>>>>>> 1776432f... 4.3
     <ClInclude Include="..\..\..\Api.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -123,6 +132,7 @@
     <ClInclude Include="..\..\FboVk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\..\..\StructuredMemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -130,6 +140,45 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\GraphicsPipelineVk.h">
+=======
+    <ClInclude Include="..\..\GraphicsPipelineVk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ComputePipelineVk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\CommandBufferVk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ApiObjects\SceneTraversalPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ApiObjects\VertexRayPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ApiObjects\SceneHierarchy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SceneHierarchyVk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ApiObjects\IndirectRayPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\IndirectRayPipelineVk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\VertexRayPipelineVk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SceneTraversalPipelineVk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\PopulateVulkanCreateInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ApiUtils.h">
+>>>>>>> 1776432f... 4.3
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -146,6 +195,7 @@
     <ClCompile Include="..\..\SyncVk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\..\TextureUtilsVk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -155,6 +205,11 @@
     <ClCompile Include="..\..\AssetStore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+=======
+    <ClCompile Include="..\..\TextureVk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+>>>>>>> 1776432f... 4.3
     <ClCompile Include="..\..\BufferVk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -176,20 +231,43 @@
     <ClCompile Include="..\..\FboVk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\..\GpuCapabilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+=======
+>>>>>>> 1776432f... 4.3
     <ClCompile Include="..\..\GraphicsPipelineVk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\PipelineLayoutVk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\..\..\RenderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\EffectApi_2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+=======
+    <ClCompile Include="..\..\SceneTraversalPipelineVk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VertexRayPipelineVk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\SceneHierarchyVk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\IndirectRayPipelineVk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Exports.def">
+      <Filter>Source Files</Filter>
+    </None>
+>>>>>>> 1776432f... 4.3
   </ItemGroup>
 </Project>

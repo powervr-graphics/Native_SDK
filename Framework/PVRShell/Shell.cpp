@@ -1,16 +1,16 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\Shell.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementation for the PowerVR Shell (pvr::Shell).
-***********************************************************************************************************************/
+/*!
+\brief Implementation for the PowerVR Shell (pvr::Shell).
+\file PVRShell/Shell.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRShell/Shell.h"
 #include "PVRShell/ShellData.h"
-#include "PVRCore/FilePath.h"
+#include "PVRCore/IO/FilePath.h"
 #include "PVRCore/Log.h"
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/FileStream.h"
+#include "PVRCore/IO/FileStream.h"
 #include "PVRShell/TGAWriter.h"
 #include "PVRCore/StringFunctions.h"
 #include <cstdlib>
@@ -24,7 +24,11 @@
 #define EPSILON_PIXEL_SQUARE 100
 namespace pvr {
 namespace platform {
+<<<<<<< HEAD
 Shell::Shell() : m_dragging(false),m_data(0)
+=======
+Shell::Shell() : _dragging(false), _data(0)
+>>>>>>> 1776432f... 4.3
 {
 }
 
@@ -48,6 +52,7 @@ void Shell::implSystemEvent(SystemEvent systemEvent)
 
 void Shell::implPointingDeviceUp(uint8 buttonIdx)
 {
+<<<<<<< HEAD
 	if (!m_pointerState.isPressed(buttonIdx))
 	{
 		return;
@@ -56,18 +61,32 @@ void Shell::implPointingDeviceUp(uint8 buttonIdx)
 	if (buttonIdx == 0) // NO buttons pressed - start drag
 	{
 		m_pointerState.endDragging();
+=======
+	if (!_pointerState.isPressed(buttonIdx))
+	{
+		return;
+	}
+	_pointerState.setButton(buttonIdx, false);
+	if (buttonIdx == 0) // NO buttons pressed - start drag
+	{
+		_pointerState.endDragging();
+>>>>>>> 1776432f... 4.3
 	}
 
 	eventButtonUp(buttonIdx); //send the ButtonUp event
 
+<<<<<<< HEAD
 	bool drag = (m_dragging && buttonIdx == 0); //Detecting drag for first button only pointer
+=======
+	bool drag = (_dragging && buttonIdx == 0); //Detecting drag for first button only pointer
+>>>>>>> 1776432f... 4.3
 	if (drag) // Drag button was release - Detect Drag!
 	{
-		m_dragging = false;
-		eventDragFinished(m_pointerState.position());
+		_dragging = false;
+		eventDragFinished(_pointerState.position());
 
-		int16 dx = m_pointerState.position().x - m_pointerState.dragStartPosition().x;
-		int16 dy = m_pointerState.position().y - m_pointerState.dragStartPosition().y;
+		int16 dx = _pointerState.position().x - _pointerState.dragStartPosition().x;
+		int16 dy = _pointerState.position().y - _pointerState.dragStartPosition().y;
 		drag = (dx * dx + dy * dy > EPSILON_PIXEL_SQUARE);
 
 		//////// MAPPING SWIPES - TOUCHES TO MAIN INPUT /////////
@@ -83,7 +102,7 @@ void Shell::implPointingDeviceUp(uint8 buttonIdx)
 	}
 	if (!drag) //Not a drag, then a click...
 	{
-		eventClick(buttonIdx, m_pointerState.position());
+		eventClick(buttonIdx, _pointerState.position());
 
 		if (buttonIdx == 0) // First button, so map to other actions as well...
 		{
@@ -106,12 +125,12 @@ void Shell::implPointingDeviceUp(uint8 buttonIdx)
 
 void Shell::implPointingDeviceDown(uint8 buttonIdx)
 {
-	if (!m_pointerState.isPressed(buttonIdx))
+	if (!_pointerState.isPressed(buttonIdx))
 	{
-		m_pointerState.setButton(buttonIdx, true);
+		_pointerState.setButton(buttonIdx, true);
 		if (buttonIdx == 0) // NO buttons pressed - start drag
 		{
-			m_pointerState.startDragging();
+			_pointerState.startDragging();
 		}
 		eventButtonDown(buttonIdx);
 	}
@@ -119,15 +138,15 @@ void Shell::implPointingDeviceDown(uint8 buttonIdx)
 
 void Shell::updatePointerPosition(PointerLocation location)
 {
-	m_pointerState.setPointerLocation(location);
-	if (!m_dragging && m_pointerState.isDragging())
+	_pointerState.setPointerLocation(location);
+	if (!_dragging && _pointerState.isDragging())
 	{
-		int16 dx = m_pointerState.position().x - m_pointerState.dragStartPosition().x;
-		int16 dy = m_pointerState.position().y - m_pointerState.dragStartPosition().y;
-		m_dragging = (dx * dx + dy * dy > EPSILON_PIXEL_SQUARE);
-		if (m_dragging)
+		int16 dx = _pointerState.position().x - _pointerState.dragStartPosition().x;
+		int16 dy = _pointerState.position().y - _pointerState.dragStartPosition().y;
+		_dragging = (dx * dx + dy * dy > EPSILON_PIXEL_SQUARE);
+		if (_dragging)
 		{
-			eventDragStart(0, m_pointerState.dragStartPosition());
+			eventDragStart(0, _pointerState.dragStartPosition());
 		}
 
 	}
@@ -135,9 +154,15 @@ void Shell::updatePointerPosition(PointerLocation location)
 
 void Shell::implKeyDown(Keys key)
 {
+<<<<<<< HEAD
 	if (!m_keystate[(uint32)key]) //Swallow event on repeat.
 	{
 		m_keystate[(uint32)key] = true;
+=======
+	if (!_keystate[(uint32)key]) //Swallow event on repeat.
+	{
+		_keystate[(uint32)key] = true;
+>>>>>>> 1776432f... 4.3
 		eventKeyDown(key);
 	}
 	eventKeyStroke(key);
@@ -145,9 +170,15 @@ void Shell::implKeyDown(Keys key)
 
 void Shell::implKeyUp(Keys key)
 {
+<<<<<<< HEAD
 	if (m_keystate[(uint32)key])
 	{
 		m_keystate[(uint32)key] = false;
+=======
+	if (_keystate[(uint32)key])
+	{
+		_keystate[(uint32)key] = false;
+>>>>>>> 1776432f... 4.3
 		eventKeyUp(key);
 		SimplifiedInput action = MapKeyToMainInput(key);
 		if (action != SimplifiedInput::NONE)
@@ -159,11 +190,11 @@ void Shell::implKeyUp(Keys key)
 
 Result Shell::shellInitApplication()
 {
-	assertion(m_data != NULL);
+	assertion(_data != NULL);
 
-	m_data->timeAtInitApplication = getTime();
-	m_data->lastFrameTime = m_data->timeAtInitApplication;
-	m_data->currentFrameTime = m_data->timeAtInitApplication;
+	_data->timeAtInitApplication = getTime();
+	_data->lastFrameTime = _data->timeAtInitApplication;
+	_data->currentFrameTime = _data->timeAtInitApplication;
 	return initApplication();
 }
 
@@ -172,25 +203,50 @@ Result Shell::shellQuitApplication()
 	return quitApplication();
 }
 
+<<<<<<< HEAD
+=======
+
+typedef pvr::GraphicsContextStrongReference(PVR_API_FUNC* ContextCreatorFn)();
+
+>>>>>>> 1776432f... 4.3
 Result Shell::shellInitView()
 {
-	m_data->graphicsContextStore = createGraphicsContext();
-	if (m_data->graphicsContextStore.isValid())
+	bool pvrshell_dynamic = (pvrapi.get() != NULL);
+	ContextCreatorFn createContext = NULL;
+	if (pvrshell_dynamic) // We are dynamically linking to PVRApi
 	{
-		m_data->graphicsContext = m_data->graphicsContextStore;
-		m_data->graphicsContext->init(*this);
+		assert(!pvrapi->LoadFailed());
+		createContext = pvrapi->getFunction<ContextCreatorFn>("createGraphicsContext");
 	}
+	else // We are statically linking to PVRApi
+	{
+		createContext = &createGraphicsContext;
+	}
+<<<<<<< HEAD
 	pvr::Result res = initView();
 	m_data->currentFrameTime = getTime() - 17; //Avoid first frame huge times
 	m_data->lastFrameTime = getTime() - 32;
+=======
+
+	_data->graphicsContextStore = createContext();
+
+	if (_data->graphicsContextStore.isValid())
+	{
+		_data->graphicsContext = _data->graphicsContextStore;
+		_data->graphicsContext->init(*this);
+	}
+	pvr::Result res = initView();
+	_data->currentFrameTime = getTime() - 17; //Avoid first frame huge times
+	_data->lastFrameTime = getTime() - 32;
+>>>>>>> 1776432f... 4.3
 	return res;
 }
 
 Result Shell::shellReleaseView()
 {
-	if (m_data->graphicsContext.isValid())
+	if (_data->graphicsContext.isValid())
 	{
-		m_data->graphicsContext->waitIdle();
+		_data->graphicsContext->waitIdle();
 	}
 	pvr::Result retval = releaseView();
 	return retval;
@@ -200,6 +256,7 @@ Result Shell::shellRenderFrame()
 {
 	getOS().updatePointingDeviceLocation();
 	processShellEvents();
+<<<<<<< HEAD
 	m_data->lastFrameTime = m_data->currentFrameTime;
 	m_data->currentFrameTime = getTime();
 	Result result;
@@ -209,6 +266,17 @@ Result Shell::shellRenderFrame()
 	}
 	//m_data->weAreDone can very well be changed DURING renderFrame.
 	if (m_data->weAreDone)
+=======
+	_data->lastFrameTime = _data->currentFrameTime;
+	_data->currentFrameTime = getTime();
+    Result result = Result::Success;
+	if (!_data->weAreDone)
+	{
+		result = renderFrame();
+	}
+	//_data->weAreDone can very well be changed DURING renderFrame.
+	if (_data->weAreDone)
+>>>>>>> 1776432f... 4.3
 	{
 		result = Result::ExitRenderFrame;
 	}
@@ -247,12 +315,12 @@ void Shell::processShellEvents()
 
 uint64 Shell::getFrameTime()
 {
-	return m_data->currentFrameTime - m_data->lastFrameTime;
+	return _data->currentFrameTime - _data->lastFrameTime;
 }
 
 uint64 Shell::getTime()
 {
-	ShellData& data = *m_data;
+	ShellData& data = *_data;
 
 	if (data.forceFrameTime)
 	{
@@ -264,14 +332,14 @@ uint64 Shell::getTime()
 
 uint64 Shell::getTimeAtInitApplication() const
 {
-	return m_data->timeAtInitApplication;
+	return _data->timeAtInitApplication;
 }
 
 Result Shell::init(struct ShellData* data)
 {
-	if (!m_data)
+	if (!_data)
 	{
-		m_data = data;
+		_data = data;
 		return Result::Success;
 	}
 
@@ -280,28 +348,28 @@ Result Shell::init(struct ShellData* data)
 
 const platform::CommandLineParser::ParsedCommandLine& Shell::getCommandLine() const
 {
-	return m_data->commandLine->getParsedCommandLine();
+	return _data->commandLine->getParsedCommandLine();
 }
 
 void Shell::setFullscreen(const bool fullscreen)
 {
 	if (ShellOS::getCapabilities().resizable != types::Capability::Unsupported)
 	{
-		m_data->attributes.fullscreen = fullscreen;
+		_data->attributes.fullscreen = fullscreen;
 	}
 }
 
 bool Shell::isFullScreen() const
 {
-	return m_data->attributes.fullscreen;
+	return _data->attributes.fullscreen;
 }
 
 Result Shell::setDimensions(uint32 w, uint32 h)
 {
 	if (ShellOS::getCapabilities().resizable != types::Capability::Unsupported)
 	{
-		m_data->attributes.width = w;
-		m_data->attributes.height = h;
+		_data->attributes.width = w;
+		_data->attributes.height = h;
 		return Result::Success;
 	}
 
@@ -310,20 +378,20 @@ Result Shell::setDimensions(uint32 w, uint32 h)
 
 uint32 Shell::getWidth() const
 {
-	return m_data->attributes.width;
+	return _data->attributes.width;
 }
 
 uint32 Shell::getHeight() const
 {
-	return m_data->attributes.height;
+	return _data->attributes.height;
 }
 
 Result Shell::setPosition(uint32 x, uint32 y)
 {
 	if (ShellOS::getCapabilities().resizable != types::Capability::Unsupported)
 	{
-		m_data->attributes.x = x;
-		m_data->attributes.y = y;
+		_data->attributes.x = x;
+		_data->attributes.y = y;
 		return Result::Success;
 	}
 
@@ -332,27 +400,27 @@ Result Shell::setPosition(uint32 x, uint32 y)
 
 uint32 Shell::getPositionX() const
 {
-	return m_data->attributes.x;
+	return _data->attributes.x;
 }
 
 uint32 Shell::getPositionY() const
 {
-	return m_data->attributes.y;
+	return _data->attributes.y;
 }
 
 int32 Shell::getQuitAfterFrame() const
 {
-	return m_data->dieAfterFrame;
+	return _data->dieAfterFrame;
 }
 
 float32 Shell::getQuitAfterTime() const
 {
-	return m_data->dieAfterTime;
+	return _data->dieAfterTime;
 }
 
 VsyncMode Shell::getVsyncMode() const
 {
-	return m_data->attributes.vsyncMode;
+	return _data->attributes.vsyncMode;
 }
 
 uint32 Shell::getSwapChainLength() const
@@ -367,37 +435,42 @@ uint32 Shell::getSwapChainIndex() const
 
 uint32 Shell::getAASamples() const
 {
-	return m_data->attributes.aaSamples;
+	return _data->attributes.aaSamples;
 }
 
 uint32 Shell::getColorBitsPerPixel() const
 {
-	return m_data->attributes.redBits + m_data->attributes.blueBits + m_data->attributes.greenBits + m_data->attributes.alphaBits;
+	return _data->attributes.redBits + _data->attributes.blueBits + _data->attributes.greenBits + _data->attributes.alphaBits;
 }
 
 uint32 Shell::getDepthBitsPerPixel() const
 {
-	return m_data->attributes.depthBPP;
+	return _data->attributes.depthBPP;
 }
 
 uint32 Shell::getStencilBitsPerPixel() const
 {
-	return m_data->attributes.stencilBPP;
+	return _data->attributes.stencilBPP;
 }
 
 void Shell::setQuitAfterFrame(uint32 value)
 {
-	m_data->dieAfterFrame = value;
+	_data->dieAfterFrame = value;
 }
 
 void Shell::setQuitAfterTime(float32 value)
 {
-	m_data->dieAfterTime = value;
+	_data->dieAfterTime = value;
 }
 
 void Shell::setVsyncMode(VsyncMode value)
 {
-	m_data->attributes.vsyncMode = value;
+	_data->attributes.vsyncMode = value;
+}
+
+void Shell::setPreferredSwapChainLength(uint32 swapChainLength)
+{
+	_data->attributes.swapLength = swapChainLength;
 }
 
 void Shell::setPreferredSwapChainLength(uint32 swapChainLength)
@@ -407,96 +480,100 @@ void Shell::setPreferredSwapChainLength(uint32 swapChainLength)
 
 void Shell::forceReinitView()
 {
-	m_data->forceReleaseInitCycle = true;
+	_data->forceReleaseInitCycle = true;
 }
 
 void Shell::setAASamples(uint32 value)
 {
 	// Should this be passed to the api context instead just incase the API supports dynamic changing
 	// of the aa settings e.g. openVG
+<<<<<<< HEAD
 	m_data->attributes.aaSamples = value;
+=======
+	_data->attributes.aaSamples = value;
+>>>>>>> 1776432f... 4.3
 }
 
 void Shell::setColorBitsPerPixel(uint32 r, uint32 g, uint32 b, uint32 a)
 {
-	m_data->attributes.redBits = r;
-	m_data->attributes.greenBits = g;
-	m_data->attributes.blueBits = b;
-	m_data->attributes.alphaBits = a;
+	_data->attributes.redBits = r;
+	_data->attributes.greenBits = g;
+	_data->attributes.blueBits = b;
+	_data->attributes.alphaBits = a;
 }
 
 void Shell::setBackBufferColorspace(types::ColorSpace colorSpace)
 {
-	m_data->attributes.frameBufferSrgb = (colorSpace == types::ColorSpace::sRGB);
+	_data->attributes.frameBufferSrgb = (colorSpace == types::ColorSpace::sRGB);
 }
 
 types::ColorSpace Shell::getBackBufferColorspace()
 {
-	return m_data->attributes.frameBufferSrgb ? types::ColorSpace::sRGB : types::ColorSpace::lRGB;
+	return _data->attributes.frameBufferSrgb ? types::ColorSpace::sRGB : types::ColorSpace::lRGB;
 }
 
 void Shell::setDepthBitsPerPixel(uint32 value)
 {
-	m_data->attributes.depthBPP = value;
+	_data->attributes.depthBPP = value;
 }
 
 void Shell::setStencilBitsPerPixel(uint32 value)
 {
-	m_data->attributes.stencilBPP = value;
+	_data->attributes.stencilBPP = value;
 }
 
 void Shell::setCaptureFrames(uint32 start, uint32 stop)
 {
-	m_data->captureFrameStart = start;
-	m_data->captureFrameStop = stop;
+	_data->captureFrameStart = start;
+	_data->captureFrameStop = stop;
 }
 
 void Shell::setCaptureFrameScale(uint32 value)
 {
 	if (value >= 1)
 	{
-		m_data->captureFrameScale = value;
+		_data->captureFrameScale = value;
 	}
 }
 
 uint32 Shell::getCaptureFrameStart() const
 {
-	return m_data->captureFrameStart;
+	return _data->captureFrameStart;
 }
 
 uint32 Shell::getCaptureFrameStop() const
 {
-	return m_data->captureFrameStop;
+	return _data->captureFrameStop;
 }
 
 void Shell::setContextPriority(uint32 value)
 {
-	m_data->attributes.contextPriority = value;
+	_data->attributes.contextPriority = value;
 }
 
 uint32  Shell::getContextPriority() const
 {
-	return m_data->attributes.contextPriority;
+	return _data->attributes.contextPriority;
 }
 
 void Shell::setDesiredConfig(uint32 value)
 {
-	m_data->attributes.configID = value;
+	_data->attributes.configID = value;
 }
 
 uint32  Shell::getDesiredConfig() const
 {
-	return m_data->attributes.configID;
+	return _data->attributes.configID;
 }
 
 void Shell::setFakeFrameTime(uint32 value)
 {
-	m_data->fakeFrameTime = value;
+	_data->fakeFrameTime = value;
 }
 
 uint32  Shell::getFakeFrameTime() const
 {
-	return m_data->fakeFrameTime;
+	return _data->fakeFrameTime;
 }
 
 Stream::ptr_type Shell::getAssetStream(const string& filename, bool logFileNotFound)
@@ -534,7 +611,7 @@ Stream::ptr_type Shell::getAssetStream(const string& filename, bool logFileNotFo
 #if defined(_WIN32) // On windows, the filename also matches the resource id in our examples, which is fortunate
 	stream.reset(new WindowsResourceStream(filename.c_str()));
 #elif defined(__ANDROID__) // On android, external files are packaged in the .apk as assets
-	struct android_app* app = static_cast<android_app*>(m_data->os->getApplication());
+	struct android_app* app = static_cast<android_app*>(_data->os->getApplication());
 
 	if (app && app->activity && app->activity->assetManager)
 	{
@@ -562,16 +639,16 @@ Stream::ptr_type Shell::getAssetStream(const string& filename, bool logFileNotFo
 	return Stream::ptr_type((Stream::ptr_type::element_type*)0);
 }
 
-void Shell::setExitMessage(const tchar* const format, ...)
+void Shell::setExitMessage(const char8* const format, ...)
 {
 	va_list argumentList;
 
 	va_start(argumentList, format);
-	m_data->exitMessage = strings::vaFormatString(format, argumentList);
+	_data->exitMessage = strings::vaFormatString(format, argumentList);
 	va_end(argumentList);
 }
 
-void Shell::setApplicationName(const tchar* const format, ...)
+void Shell::setApplicationName(const char8* const format, ...)
 {
 	va_list argumentList;
 
@@ -580,18 +657,18 @@ void Shell::setApplicationName(const tchar* const format, ...)
 	va_end(argumentList);
 }
 
-void Shell::setTitle(const tchar* const format, ...)
+void Shell::setTitle(const char8* const format, ...)
 {
 	va_list argumentList;
 
 	va_start(argumentList, format);
-	m_data->attributes.windowTitle = strings::vaFormatString(format, argumentList);
+	_data->attributes.windowTitle = strings::vaFormatString(format, argumentList);
 	va_end(argumentList);
 }
 
 const string& Shell::getExitMessage() const
 {
-	return m_data->exitMessage;
+	return _data->exitMessage;
 }
 
 const string& Shell::getApplicationName() const
@@ -616,21 +693,26 @@ const string& Shell::getWritePath() const
 
 ShellOS& Shell::getOS() const
 {
-	return *m_data->os;
+	return *_data->os;
 }
 
 IPlatformContext& Shell::getPlatformContext()
 {
-	return *m_data->platformContext;
+	return *_data->platformContext;
 }
 const IPlatformContext& Shell::getPlatformContext() const
 {
-	return *m_data->platformContext;
+	return *_data->platformContext;
 }
 
 GraphicsContext& Shell::getGraphicsContext()
 {
-	return m_data->graphicsContext;
+	return _data->graphicsContext;
+}
+
+const GraphicsContext& Shell::getGraphicsContext() const
+{
+	return _data->graphicsContext;
 }
 
 const GraphicsContext& Shell::getGraphicsContext() const
@@ -640,12 +722,12 @@ const GraphicsContext& Shell::getGraphicsContext() const
 
 void Shell::setPresentBackBuffer(const bool value)
 {
-	m_data->presentBackBuffer = value;
+	_data->presentBackBuffer = value;
 }
 
 bool Shell::isPresentingBackBuffer()
 {
-	return m_data->presentBackBuffer;
+	return _data->presentBackBuffer;
 }
 
 void Shell::showOutputInfo()
@@ -700,9 +782,9 @@ void Shell::showOutputInfo()
 		attributesInfo.append(tmp);
 	}
 
-	if (!(m_data->platformContext.get()))
+	if (!(_data->platformContext.get()))
 	{
-		attributesInfo.append(m_data->platformContext->getInfo());
+		attributesInfo.append(_data->platformContext->getInfo());
 	}
 	else
 	{
@@ -712,7 +794,7 @@ void Shell::showOutputInfo()
 #if defined(__ANDROID__)
 	// Android's logging output truncates long strings. Therefore, output our info in blocks
 	int32 size = static_cast<int32>(attributesInfo.size());
-	const tchar* const ptr = attributesInfo.c_str();
+	const char8* const ptr = attributesInfo.c_str();
 
 	for (uint32 offset = 0; size > 0; offset += 1024, size -= 1024)
 	{
@@ -727,40 +809,49 @@ void Shell::showOutputInfo()
 
 void Shell::setForceFrameTime(const bool value)
 {
-	m_data->forceFrameTime = value;
+	_data->forceFrameTime = value;
 	if (value)
 	{
-		m_data->timeAtInitApplication = 0;
-		m_data->lastFrameTime = 0;
-		m_data->currentFrameTime = 0;
+		_data->timeAtInitApplication = 0;
+		_data->lastFrameTime = 0;
+		_data->currentFrameTime = 0;
 	}
 }
 
 bool Shell::isForcingFrameTime()
 {
-	return m_data->forceFrameTime;
+	return _data->forceFrameTime;
 }
 
 void Shell::setShowFPS(const bool showFPS)
 {
-	m_data->showFPS = showFPS;
+	_data->showFPS = showFPS;
 }
 
 bool Shell::isShowingFPS() const
 {
 	// Should this be passed to the api context instead just incase the API supports dynamic changing of the aa settings e.g. openVG
+<<<<<<< HEAD
 	return m_data->showFPS;
+=======
+	return _data->showFPS;
+>>>>>>> 1776432f... 4.3
 }
 
 float Shell::getFPS() const
 {
-	return m_data->FPS;
+	return _data->FPS;
 }
 
 void Shell::takeScreenshot() const
 {
+<<<<<<< HEAD
 	byte* pBuffer = (byte*) calloc(1, m_data->attributes.width * m_data->attributes.height * 4);
 	if (m_data->graphicsContext->screenCaptureRegion(0, 0, m_data->attributes.width, m_data->attributes.height,
+=======
+	byte* pBuffer = (byte*) calloc(1, _data->attributes.width * _data->attributes.height * 4);
+	if (_data->graphicsContext->screenCaptureRegion(0, 0, _data->attributes.width, _data->attributes.height,
+>>>>>>> 1776432f... 4.3
 	    pBuffer, IGraphicsContext::ImageFormatBGRA))
 	{
 		string filename;
@@ -768,7 +859,7 @@ void Shell::takeScreenshot() const
 		// Determine our screenshot filename
 		string suffix;
 		string prefix;
-		suffix = strings::createFormatted("_f%u.tga", m_data->frameNo);
+		suffix = strings::createFormatted("_f%u.tga", _data->frameNo);
 
 		prefix = getWritePath() + getApplicationName();
 		filename = prefix + suffix;
@@ -786,7 +877,7 @@ void Shell::takeScreenshot() const
 			//Should we really allow 100000 screenshots? Hmmm...
 			for (uint32 i = 1; i < 100000; ++i)
 			{
-				suffix = strings::createFormatted("_f%u_%u.tga", m_data->frameNo, i);
+				suffix = strings::createFormatted("_f%u_%u.tga", _data->frameNo, i);
 				filename = prefix + suffix;
 				FileStream file(filename.c_str(), "r");
 
@@ -799,78 +890,115 @@ void Shell::takeScreenshot() const
 			}
 		}
 		Log(pvr::Logger::Information, "Writing TGA screenshot, filename %s.", filename.c_str());
+<<<<<<< HEAD
 		writeTGA(filename.c_str(), m_data->attributes.width, m_data->attributes.height, (unsigned char*)pBuffer,
 		         4, m_data->captureFrameScale);
+=======
+		writeTGA(filename.c_str(), _data->attributes.width, _data->attributes.height, (unsigned char*)pBuffer,
+		         4, _data->captureFrameScale);
+>>>>>>> 1776432f... 4.3
 	}
 	free(pBuffer);
 }
 
+void Shell::prepareSharedContexts(const std::vector<SharedContextCapabilities>& contextList)
+{
+	getPlatformContext().prepareContexts(contextList);
+}
+
 bool Shell::isScreenRotated()const
 {
+<<<<<<< HEAD
 	return m_data->attributes.isScreenRotated();
+=======
+	return _data->attributes.isScreenRotated();
+>>>>>>> 1776432f... 4.3
 }
 
 void Shell::exitShell()
 {
+<<<<<<< HEAD
 	m_data->weAreDone = true;
+=======
+	_data->weAreDone = true;
+>>>>>>> 1776432f... 4.3
 }
 
 DisplayAttributes& Shell::getDisplayAttributes()
 {
-	return m_data->attributes;
+	return _data->attributes;
 }
 OSDisplay Shell::getDisplay()
 {
-	return m_data->os->getDisplay();
+	return _data->os->getDisplay();
 }
 
 OSWindow Shell::getWindow()
 {
-	return m_data->os->getWindow();
+	return _data->os->getWindow();
 }
 
 Api Shell::getApiTypeRequired()
 {
-	return m_data->contextType;
+	return _data->contextType;
 }
+<<<<<<< HEAD
 Api Shell::getApiType()
+=======
+Api Shell::getApiType() const
+>>>>>>> 1776432f... 4.3
 {
 	return getGraphicsContext()->getApiType();
 }
+BaseApi Shell::getApiTypeBase()
+{
+	return _data->baseContextType;
+}
+void Shell::setApiTypeRequired(Api value)
+{
+	_data->minContextType = value;
+	_data->contextType = value;
+}
 
+<<<<<<< HEAD
 void Shell::setApiTypeRequired(Api value)
 {
 	m_data->minContextType = value;
 	m_data->contextType = value;
+=======
+void Shell::setApiTypeBase(BaseApi value)
+{
+	_data->baseContextType = value;
+>>>>>>> 1776432f... 4.3
 }
 
 void Shell::setMinApiType(Api value)
 {
-	m_data->minContextType = value;
+	_data->minContextType = value;
 }
 Api Shell::getMinApiTypeRequired()
 {
-	return m_data->minContextType;
+	return _data->minContextType;
 }
 
 Api Shell::getMaxApiLevel()
 {
-	return m_data->platformContext->getMaxApiVersion();
+	return _data->platformContext->getMaxApiVersion();
 }
 
 bool Shell::isApiSupported(Api api)
 {
-	return m_data->platformContext->isApiSupported(api);
+	return _data->platformContext->isApiSupported(api);
 }
 
 
 void Shell::setDeviceQueueTypesRequired(DeviceQueueType value)
 {
-	m_data->deviceQueueType = value;
+	_data->deviceQueueType = value;
 }
 DeviceQueueType Shell::getDeviceQueueTypesRequired()
 {
-	return m_data->deviceQueueType;
+	return _data->deviceQueueType;
 }
 }
 }

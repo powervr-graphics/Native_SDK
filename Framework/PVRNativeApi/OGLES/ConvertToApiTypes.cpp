@@ -1,17 +1,25 @@
+<<<<<<< HEAD
 /*!*********************************************************************************************************************
 \file         PVRNativeApi\OGLES\ConvertToApiTypes.cpp
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief         Implementation of the conversions from PVR Framework enums to OpenGL types. See ConvertToApiTypes.h.
 ***********************************************************************************************************************/
+=======
+/*!
+\brief Implementation of the conversions from PVR Framework enums to OpenGL types. See ConvertToApiTypes.h.
+\file PVRNativeApi/OGLES/ConvertToApiTypes.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+>>>>>>> 1776432f... 4.3
 //!\cond NO_DOXYGEN
 #include "PVRNativeApi/OGLES/ConvertToApiTypes.h"
-#include "PVRApi/ApiObjects/Fbo.h"
-#include "PVRCore/Assert_.h"
+#include "PVRCore/Base/Assert_.h"
 
 namespace pvr {
 using namespace types;
-namespace api  {
+namespace nativeGles {
 namespace ConvertToGles {
 
 bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
@@ -168,6 +176,312 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			}
 			return true;
 		}
+<<<<<<< HEAD
+=======
+
+		case (uint64)CompressedPixelFormat::ASTC_10x10:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_10x10_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_10x5:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_10x5_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_10x6:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_10x6_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_10x8:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_10x8_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_12x10:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_12x10_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_12x12:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_12x12_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_3x3x3:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_ASTC_3x3x3_OES
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_3x3x3_OES;
+#endif
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB8_ALPHA8_ASTC_3x3x3_OES
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_3x3x3_OES;
+#endif
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_4x3x3:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_ASTC_4x3x3_OES
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_4x3x3_OES;
+#endif
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x3x3_OES
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x3x3_OES;
+#endif
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_4x4:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_4x4_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_4x4x3:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_ASTC_4x4x3_OES
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_4x4x3_OES;
+#endif
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x3_OES
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x3_OES;
+#endif
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_4x4x4:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_ASTC_4x4x4_OES
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_4x4x4_OES;
+#endif
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x4_OES
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x4_OES;
+#endif
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_5x4:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_5x4_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_5x4x4:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_ASTC_5x4x4_OES
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_5x4x4_OES;
+#endif
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4x4_OES
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4x4_OES;
+#endif
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_5x5:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_5x5_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_5x5x4:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_ASTC_5x4x4_OES
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_5x4x4_OES;
+#endif
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4x4_OES
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4x4_OES;
+#endif
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_5x5x5:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_ASTC_5x5x5_OES
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_5x5x5_OES;
+#endif
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5x5_OES
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5x5_OES;
+#endif
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_6x5:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_6x5_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_6x5x5:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_ASTC_6x5x5_OES
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_6x5x5_OES;
+#endif
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5x5_OES
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5x5_OES;
+#endif
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_6x6x5:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+#ifdef GL_COMPRESSED_RGBA_ASTC_6x6x5_OES
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_6x6x5_OES;
+#endif
+			}
+			else
+			{
+#ifdef GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x5_OES
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x5_OES;
+#endif
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_8x5:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_8x5_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_8x6:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_8x6_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR;
+			}
+			return true;
+		}
+		case (uint64)CompressedPixelFormat::ASTC_8x8:
+		{
+			if (colorSpace == types::ColorSpace::lRGB)
+			{
+				glInternalFormat = GL_COMPRESSED_RGBA_ASTC_8x8_KHR;
+			}
+			else
+			{
+				glInternalFormat = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR;
+			}
+			return true;
+		}
+
+
+>>>>>>> 1776432f... 4.3
 		//Formats not supported by opengl/opengles
 		case (uint64)CompressedPixelFormat::BC4:
 		case (uint64)CompressedPixelFormat::BC5:
@@ -187,7 +501,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 		switch (dataType)
 		{
 		case VariableType::UnsignedFloat:
+<<<<<<< HEAD
 			if (pixelFormat.getPixelTypeId() == assets::GeneratePixelType3<'r', 'g', 'b', 11, 11, 10>::ID)
+=======
+			if (pixelFormat.getPixelTypeId() == GeneratePixelType3<'b', 'g', 'r', 10, 11, 11>::ID)
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 4;
 				glType = GL_UNSIGNED_INT_10F_11F_11F_REV;
@@ -201,7 +519,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			switch (pixelFormat.getPixelTypeId())
 			{
 			//HALF_FLOAT
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 2;
 				glType = GL_HALF_FLOAT;
@@ -209,7 +531,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_RGBA16F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 2;
 				glType = GL_HALF_FLOAT;
@@ -217,7 +543,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_RGB16F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 2;
 				glType = GL_HALF_FLOAT;
@@ -225,7 +555,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_RG16F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 16>::ID:
+=======
+			case GeneratePixelType1<'r', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 2;
 				glType = GL_HALF_FLOAT;
@@ -233,7 +567,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_R16F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 2;
 				glType = GL_HALF_FLOAT;
@@ -241,7 +579,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_LUMINANCE_ALPHA16F_EXT;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 16>::ID:
+=======
+			case GeneratePixelType1<'l', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 2;
 				glType = GL_HALF_FLOAT;
@@ -249,7 +591,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_LUMINANCE16F_EXT;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'a', 16>::ID:
+=======
+			case GeneratePixelType1<'a', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 2;
 				glType = GL_HALF_FLOAT;
@@ -258,7 +604,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				return true;
 			}
 			//FLOAT
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 4;
 				glType = GL_FLOAT;
@@ -266,7 +616,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_RGBA32F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 4;
 				glType = GL_FLOAT;
@@ -274,7 +628,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_RGB32F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 32, 32>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 4;
 				glType = GL_FLOAT;
@@ -282,7 +640,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_RG32F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 32>::ID:
+=======
+			case GeneratePixelType1<'r', 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 4;
 				glType = GL_FLOAT;
@@ -290,7 +652,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_R32F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 32, 32>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 4;
 				glType = GL_FLOAT;
@@ -298,7 +664,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_LUMINANCE_ALPHA32F_EXT;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 32>::ID:
+=======
+			case GeneratePixelType1<'l', 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 4;
 				glType = GL_FLOAT;
@@ -306,7 +676,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_LUMINANCE32F_EXT;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'a', 32>::ID:
+=======
+			case GeneratePixelType1<'a', 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 4;
 				glType = GL_FLOAT;
@@ -314,7 +688,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glInternalFormat = GL_R32F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'d', 16>::ID:
+=======
+			case GeneratePixelType1<'d', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glType = GL_UNSIGNED_SHORT;
 				glTypeSize = 2;
@@ -322,7 +700,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glFormat = GL_DEPTH_COMPONENT;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'d', 24>::ID:
+=======
+			case GeneratePixelType1<'d', 24>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glType = GL_UNSIGNED_INT;
 				glTypeSize = 3;
@@ -330,7 +712,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glFormat = GL_DEPTH_COMPONENT;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'d', 's', 24, 8>::ID:
+=======
+			case GeneratePixelType2<'d', 's', 24, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glType = GL_UNSIGNED_INT_24_8;
 				glTypeSize = 4;
@@ -338,7 +724,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glFormat = GL_DEPTH_STENCIL;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'d', 's', 32, 8>::ID:
+=======
+			case GeneratePixelType2<'d', 's', 32, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glType = GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
 				glTypeSize = 5;
@@ -346,7 +736,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glFormat = GL_DEPTH_STENCIL;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'d', 32>::ID:
+=======
+			case GeneratePixelType1<'d', 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glType = GL_FLOAT;
 				glTypeSize = 4;
@@ -354,7 +748,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				glFormat = GL_DEPTH_COMPONENT;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'s', 8>::ID:
+=======
+			case GeneratePixelType1<'s', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glTypeSize = 4;
 				glInternalFormat = GL_STENCIL_INDEX8;
@@ -370,7 +768,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			glTypeSize = 1;
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGBA;
 				if (colorSpace == ColorSpace::sRGB)
@@ -383,7 +785,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				}
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = glInternalFormat = GL_RGB;
 #ifdef GL_SRGB8
@@ -398,37 +804,61 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 #endif
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RG;
 				glInternalFormat = GL_RG8;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 8>::ID:
+=======
+			case GeneratePixelType1<'r', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RED;
 				glInternalFormat = GL_R8;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_LUMINANCE_ALPHA;
 				glInternalFormat = GL_LUMINANCE_ALPHA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 8>::ID:
+=======
+			case GeneratePixelType1<'l', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_LUMINANCE;
 				glInternalFormat = GL_LUMINANCE;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'a', 8>::ID:
+=======
+			case GeneratePixelType1<'a', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_ALPHA;
 				glInternalFormat = GL_ALPHA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
+=======
+			case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_BGRA_EXT;
 				glInternalFormat = GL_BGRA_EXT;
@@ -443,43 +873,71 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			glTypeSize = 1;
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGBA;
 				glInternalFormat = GL_RGBA8_SNORM;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGB;
 				glInternalFormat = GL_RGB8_SNORM;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RG;
 				glInternalFormat = GL_RG8_SNORM;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 8>::ID:
+=======
+			case GeneratePixelType1<'r', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RED;
 				glInternalFormat = GL_R8_SNORM;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_LUMINANCE_ALPHA;
 				glInternalFormat = GL_LUMINANCE_ALPHA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 8>::ID:
+=======
+			case GeneratePixelType1<'l', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_LUMINANCE;
 				glInternalFormat = GL_LUMINANCE;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'a', 8>::ID:
+=======
+			case GeneratePixelType1<'a', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_ALPHA;
 				glInternalFormat = GL_ALPHA;
@@ -494,7 +952,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			glTypeSize = 1;
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				//TO INVESTIGATE - This should be GL_RGBA?
 				glFormat = GL_RGBA_INTEGER;
@@ -502,7 +964,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				//glInternalFormat = GL_RGBA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				//TO INVESTIGATE - This should be GL_RGBA?
 				glFormat = GL_RGB_INTEGER;
@@ -510,13 +976,21 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				//glInternalFormat = GL_RGB;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RG_INTEGER;
 				glInternalFormat = GL_RG8UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 8>::ID:
+=======
+			case GeneratePixelType1<'r', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RED_INTEGER;
 				glInternalFormat = GL_R8UI;
@@ -531,25 +1005,41 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			glTypeSize = 1;
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGBA_INTEGER;
 				glInternalFormat = GL_RGBA8I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGB_INTEGER;
 				glInternalFormat = GL_RGB8I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RG_INTEGER;
 				glInternalFormat = GL_RG8I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 8>::ID:
+=======
+			case GeneratePixelType1<'r', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RED_INTEGER;
 				glInternalFormat = GL_R8I;
@@ -564,21 +1054,33 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			glTypeSize = 2;
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glType = GL_UNSIGNED_SHORT_4_4_4_4;
 				glFormat = GL_RGBA;
 				glInternalFormat = GL_RGBA4;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 5, 5, 5, 1>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 5, 5, 5, 1>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glType = GL_UNSIGNED_SHORT_5_5_5_1;
 				glFormat = GL_RGBA;
 				glInternalFormat = GL_RGB5_A1;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glType = GL_UNSIGNED_SHORT_5_6_5;
 				glFormat = GL_RGB;
@@ -586,7 +1088,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				return true;
 			}
 #ifdef GL_RGBA16_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGBA;
 				glInternalFormat = GL_RGBA16_EXT;
@@ -594,13 +1100,21 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			}
 #endif
 #ifdef GL_RGBA16_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGB;
 				glInternalFormat = GL_RGB16_EXT;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RG;
 				glInternalFormat = GL_RGB16_EXT;
@@ -608,26 +1122,42 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			}
 #endif
 #ifdef GL_R16_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 16>::ID:
+=======
+			case GeneratePixelType1<'r', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RED;
 				glInternalFormat = GL_R16_EXT;
 				return true;
 			}
 #endif
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_LUMINANCE_ALPHA;
 				glInternalFormat = GL_LUMINANCE_ALPHA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 16>::ID:
+=======
+			case GeneratePixelType1<'l', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_LUMINANCE;
 				glInternalFormat = GL_LUMINANCE;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'a', 16>::ID:
+=======
+			case GeneratePixelType1<'a', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_ALPHA;
 				glInternalFormat = GL_ALPHA16F_EXT;
@@ -643,7 +1173,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			switch (pixelFormat.getPixelTypeId())
 			{
 #ifdef GL_RGBA16_SNORM_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGBA;
 				glInternalFormat = GL_RGBA16_SNORM_EXT;
@@ -651,7 +1185,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			}
 #endif
 #ifdef GL_RGB16_SNORM_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGB;
 				glInternalFormat = GL_RGB16_SNORM_EXT;
@@ -659,7 +1197,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			}
 #endif
 #ifdef GL_RG16_SNORM_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RG;
 				glInternalFormat = GL_RG16_SNORM_EXT;
@@ -667,26 +1209,42 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			}
 #endif
 #ifdef GL_R16_SNORM_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 16>::ID:
+=======
+			case GeneratePixelType1<'r', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RED;
 				glInternalFormat = GL_R16_SNORM_EXT;
 				return true;
 			}
 #endif
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_LUMINANCE_ALPHA;
 				glInternalFormat = GL_LUMINANCE_ALPHA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 16>::ID:
+=======
+			case GeneratePixelType1<'l', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_LUMINANCE;
 				glInternalFormat = GL_LUMINANCE;
 				return true;
 			}
+<<<<<<< HEAD
 				//case assets::GeneratePixelType1<'a', 16>::ID:
+=======
+				//case GeneratePixelType1<'a', 16>::ID:
+>>>>>>> 1776432f... 4.3
 				//{
 				//  glFormat =  GL_ALPHA;
 				//  glInternalFormat = GL_ALPHA16_SNORM;
@@ -701,31 +1259,51 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			glTypeSize = 2;
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGBA_INTEGER;
 				glInternalFormat = GL_RGBA16UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGB_INTEGER;
 				glInternalFormat = GL_RGB16UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RG_INTEGER;
 				glInternalFormat = GL_RG16UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 16>::ID:
+=======
+			case GeneratePixelType1<'r', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RED_INTEGER;
 				glInternalFormat = GL_R16UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'d', 16>::ID:
+=======
+			case GeneratePixelType1<'d', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_DEPTH_COMPONENT;
 				glInternalFormat = GL_DEPTH_COMPONENT16;
@@ -740,25 +1318,41 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			glTypeSize = 2;
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGBA_INTEGER;
 				glInternalFormat = GL_RGBA16I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGB_INTEGER;
 				glInternalFormat = GL_RGB16I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RG_INTEGER;
 				glInternalFormat = GL_RG16I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 16>::ID:
+=======
+			case GeneratePixelType1<'r', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RED_INTEGER;
 				glInternalFormat = GL_R16I;
@@ -770,7 +1364,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 		case VariableType::UnsignedIntegerNorm:
 		{
 			glTypeSize = 4;
+<<<<<<< HEAD
 			if (pixelFormat.getPixelTypeId() == assets::GeneratePixelType4<'a', 'b', 'g', 'r', 2, 10, 10, 10>::ID)
+=======
+			if (pixelFormat.getPixelTypeId() == GeneratePixelType4<'a', 'b', 'g', 'r', 2, 10, 10, 10>::ID)
+>>>>>>> 1776432f... 4.3
 			{
 				glType = GL_UNSIGNED_INT_2_10_10_10_REV;
 				glFormat = GL_RGBA;
@@ -778,7 +1376,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 				return true;
 			}
 #ifdef GL_RGB10_EXT
+<<<<<<< HEAD
 			if (pixelFormat.getPixelTypeId() == assets::GeneratePixelType4<'x', 'b', 'g', 'r', 2, 10, 10, 10>::ID)
+=======
+			if (pixelFormat.getPixelTypeId() == GeneratePixelType4<'x', 'b', 'g', 'r', 2, 10, 10, 10>::ID)
+>>>>>>> 1776432f... 4.3
 			{
 				glType = GL_UNSIGNED_INT_2_10_10_10_REV;
 				glFormat = GL_RGB;
@@ -794,38 +1396,62 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			glTypeSize = 4;
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGBA_INTEGER;
 				glInternalFormat = GL_RGBA32UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGB_INTEGER;
 				glInternalFormat = GL_RGB32UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 32, 32>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RG_INTEGER;
 				glInternalFormat = GL_RG32UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 32>::ID:
+=======
+			case GeneratePixelType1<'r', 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RED_INTEGER;
 				glInternalFormat = GL_R32UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'a', 'b', 'g', 'r', 2, 10, 10, 10>::ID:
+=======
+			case GeneratePixelType4<'a', 'b', 'g', 'r', 2, 10, 10, 10>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glType = GL_UNSIGNED_INT_2_10_10_10_REV;
 				glFormat = GL_RGBA_INTEGER;
 				glInternalFormat = GL_RGB10_A2UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'d', 24>::ID:
+=======
+			case GeneratePixelType1<'d', 24>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_DEPTH_COMPONENT;
 #if defined(BUILD_API_MAX)&&BUILD_API_MAX<30
@@ -835,7 +1461,11 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 #endif
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'d', 's', 24, 8>::ID:
+=======
+			case GeneratePixelType2<'d', 's', 24, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 #if defined(BUILD_API_MAX)&&BUILD_API_MAX<30
 				glFormat = GL_DEPTH_STENCIL_OES;
@@ -855,25 +1485,41 @@ bool getOpenGLFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colorSpace,
 			glTypeSize = 4;
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGBA_INTEGER;
 				glInternalFormat = GL_RGBA32I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RGB_INTEGER;
 				glInternalFormat = GL_RGB32I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 32, 32>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RG_INTEGER;
 				glInternalFormat = GL_RG32I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 32>::ID:
+=======
+			case GeneratePixelType1<'r', 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glFormat = GL_RED_INTEGER;
 				glInternalFormat = GL_R32I;
@@ -1053,7 +1699,11 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 		switch (dataType)
 		{
 		case VariableType::UnsignedFloat:
+<<<<<<< HEAD
 			if (pixelFormat.getPixelTypeId() == assets::GeneratePixelType3<'r', 'g', 'b', 11, 11, 10>::ID)
+=======
+			if (pixelFormat.getPixelTypeId() == GeneratePixelType3<'r', 'g', 'b', 11, 11, 10>::ID)
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R11F_G11F_B10F;
 				return true;
@@ -1064,73 +1714,129 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 			switch (pixelFormat.getPixelTypeId())
 			{
 			//HALF_FLOAT
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA16F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB16F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG16F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 16>::ID:
+=======
+			case GeneratePixelType1<'r', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R16F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE_ALPHA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 16>::ID:
+=======
+			case GeneratePixelType1<'l', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'a', 16>::ID:
+=======
+			case GeneratePixelType1<'a', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_ALPHA16F_EXT;
 				return true;
 			}
 			//FLOAT
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA32F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB32F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 32, 32>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG32F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 32>::ID:
+=======
+			case GeneratePixelType1<'r', 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R32F;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 32, 32>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE_ALPHA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 32>::ID:
+=======
+			case GeneratePixelType1<'l', 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'a', 32>::ID:
+=======
+			case GeneratePixelType1<'a', 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_ALPHA32F_EXT;
 				return true;
@@ -1142,7 +1848,11 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 		{
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				if (colorSpace == ColorSpace::sRGB)
 				{
@@ -1154,7 +1864,11 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 				}
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				if (colorSpace == ColorSpace::sRGB)
 				{
@@ -1166,32 +1880,56 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 				}
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG8;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 8>::ID:
+=======
+			case GeneratePixelType1<'r', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R8;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE_ALPHA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 8>::ID:
+=======
+			case GeneratePixelType1<'l', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'a', 8>::ID:
+=======
+			case GeneratePixelType1<'a', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_ALPHA8_EXT;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
+=======
+			case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_BGRA8_EXT;
 				return true;
@@ -1203,32 +1941,56 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 		{
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA8_SNORM;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB8_SNORM;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG8_SNORM;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 8>::ID:
+=======
+			case GeneratePixelType1<'r', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R8_SNORM;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE_ALPHA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 8>::ID:
+=======
+			case GeneratePixelType1<'l', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE;
 				return true;
@@ -1240,22 +2002,38 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 		{
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA8UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB8UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG8UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 8>::ID:
+=======
+			case GeneratePixelType1<'r', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R8UI;
 				return true;
@@ -1267,22 +2045,38 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 		{
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA8I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB8I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 8, 8>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 8, 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG8I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 8>::ID:
+=======
+			case GeneratePixelType1<'r', 8>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R8I;
 				return true;
@@ -1294,60 +2088,100 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 		{
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA4;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 5, 5, 5, 1>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 5, 5, 5, 1>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB5_A1;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB565;
 				return true;
 			}
 #ifdef GL_RGBA16_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA16_EXT;
 				return true;
 			}
 #endif
 #ifdef GL_RGB16_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB16_EXT;
 				return true;
 			}
 #endif
 #ifdef GL_RG16_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG16_EXT;
 				return true;
 			}
 #endif
 #ifdef GL_R16_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 16>::ID:
+=======
+			case GeneratePixelType1<'r', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R16_EXT;
 				return true;
 			}
 #endif
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE_ALPHA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 16>::ID:
+=======
+			case GeneratePixelType1<'l', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'a', 16>::ID:
+=======
+			case GeneratePixelType1<'a', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_ALPHA;
 				return true;
@@ -1360,44 +2194,72 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 			switch (pixelFormat.getPixelTypeId())
 			{
 #ifdef GL_RGBA16_SNORM_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA16_SNORM_EXT;
 				return true;
 			}
 #endif
 #ifdef GL_RGB16_SNORM_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB16_SNORM_EXT;
 				return true;
 			}
 #endif
 #ifdef GL_RG16_SNORM_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG16_SNORM_EXT;
 				return true;
 			}
 #endif
 #ifdef GL_R16_SNORM_EXT
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 16>::ID:
+=======
+			case GeneratePixelType1<'r', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R16_SNORM_EXT;
 				return true;
 			}
 #endif
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'l', 'a', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'l', 'a', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE_ALPHA;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'l', 16>::ID:
+=======
+			case GeneratePixelType1<'l', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_LUMINANCE;
 				return true;
 			}
+<<<<<<< HEAD
 				//case assets::GeneratePixelType1<'a', 16>::ID:
+=======
+				//case GeneratePixelType1<'a', 16>::ID:
+>>>>>>> 1776432f... 4.3
 				//{
 				//  glInternalFormat = GL_ALPHA16_SNORM;
 				//  return true;
@@ -1409,22 +2271,38 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 		{
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA16UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB16UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG16UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 16>::ID:
+=======
+			case GeneratePixelType1<'r', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R16UI;
 				return true;
@@ -1436,22 +2314,38 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 		{
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA16I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB16I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 16, 16>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 16, 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG16I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 16>::ID:
+=======
+			case GeneratePixelType1<'r', 16>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R16I;
 				return true;
@@ -1461,13 +2355,21 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 		}
 		case VariableType::UnsignedIntegerNorm:
 		{
+<<<<<<< HEAD
 			if (pixelFormat.getPixelTypeId() == assets::GeneratePixelType4<'a', 'b', 'g', 'r', 2, 10, 10, 10>::ID)
+=======
+			if (pixelFormat.getPixelTypeId() == GeneratePixelType4<'a', 'b', 'g', 'r', 2, 10, 10, 10>::ID)
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB10_A2;
 				return true;
 			}
 #ifdef GL_RGB10_EXT
+<<<<<<< HEAD
 			if (pixelFormat.getPixelTypeId() == assets::GeneratePixelType4<'x', 'b', 'g', 'r', 2, 10, 10, 10>::ID)
+=======
+			if (pixelFormat.getPixelTypeId() == GeneratePixelType4<'x', 'b', 'g', 'r', 2, 10, 10, 10>::ID)
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB10_EXT;
 				return true;
@@ -1479,27 +2381,47 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 		{
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA32UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB32UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 32, 32>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG32UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 32>::ID:
+=======
+			case GeneratePixelType1<'r', 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R32UI;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'a', 'b', 'g', 'r', 2, 10, 10, 10>::ID:
+=======
+			case GeneratePixelType4<'a', 'b', 'g', 'r', 2, 10, 10, 10>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB10_A2UI;
 				return true;
@@ -1511,22 +2433,38 @@ bool getOpenGLStorageFormat(PixelFormat pixelFormat, pvr::types::ColorSpace colo
 		{
 			switch (pixelFormat.getPixelTypeId())
 			{
+<<<<<<< HEAD
 			case assets::GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+=======
+			case GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGBA32I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+=======
+			case GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RGB32I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType2<'r', 'g', 32, 32>::ID:
+=======
+			case GeneratePixelType2<'r', 'g', 32, 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_RG32I;
 				return true;
 			}
+<<<<<<< HEAD
 			case assets::GeneratePixelType1<'r', 32>::ID:
+=======
+			case GeneratePixelType1<'r', 32>::ID:
+>>>>>>> 1776432f... 4.3
 			{
 				glInternalFormat = GL_R32I;
 				return true;
@@ -1551,7 +2489,11 @@ GLenum face(Face face)
 
 GLenum polygonWindingOrder(PolygonWindingOrder order)
 {
+<<<<<<< HEAD
 	static GLenum glWindingOrder[] = { GL_CCW , GL_CW};
+=======
+	static GLenum glWindingOrder[] = { GL_CCW, GL_CW};
+>>>>>>> 1776432f... 4.3
 	return glWindingOrder[(uint32)order];
 }
 
@@ -1595,6 +2537,7 @@ GLenum textureViewType(ImageViewType texType)
 {
 #if BUILD_API_MAX<30
 	static GLenum glTextureType[] = { GL_NONE, GL_NONE, GL_TEXTURE_2D, GL_TEXTURE_3D_OES, GL_TEXTURE_CUBE_MAP, GL_NONE, GL_TEXTURE_2D_ARRAY, GL_NONE, GL_NONE, GL_TEXTURE_EXTERNAL_OES };
+<<<<<<< HEAD
 #else
 	static GLenum glTextureType[] = { GL_NONE, GL_NONE, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_CUBE_MAP, GL_NONE, GL_TEXTURE_2D_ARRAY, GL_NONE, GL_NONE,
 #ifdef GL_TEXTURE_EXTERNAL_OES
@@ -1603,6 +2546,16 @@ GLenum textureViewType(ImageViewType texType)
         GL_NONE
 #endif
     };
+=======
+#else
+	static GLenum glTextureType[] = { GL_NONE, GL_NONE, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_CUBE_MAP, GL_NONE, GL_TEXTURE_2D_ARRAY, GL_NONE, GL_NONE,
+#ifdef GL_TEXTURE_EXTERNAL_OES
+	                                  GL_TEXTURE_EXTERNAL_OES
+#else
+	                                  GL_NONE
+#endif
+	                                };
+>>>>>>> 1776432f... 4.3
 #endif
 
 	return glTextureType[(uint32)texType];
@@ -1615,7 +2568,7 @@ GLenum dataType(DataType dataType)
 	                              GL_UNSIGNED_BYTE, GL_SHORT, GL_SHORT,
 	                              GL_BYTE, GL_BYTE,
 	                              GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT,
-	                              GL_UNSIGNED_INT, GL_NONE
+	                              GL_UNSIGNED_INT, GL_NONE, GL_HALF_FLOAT
 	                            };
 	return map[(int)dataType];
 }
@@ -1706,7 +2659,11 @@ GLenum drawPrimitiveType(PrimitiveTopology primitiveType)
 	static GLenum glPrimtiveType[] =
 	{
 		GL_POINTS, GL_LINES, GL_LINE_STRIP, GL_LINE_LOOP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN,
+<<<<<<< HEAD
 		GL_NONE, GL_NONE, GL_NONE, GL_NONE, GL_PATCHES_EXT, GL_QUADS_EXT, GL_ISOLINES_EXT
+=======
+		GL_LINES_ADJACENCY_OES, GL_LINE_STRIP_ADJACENCY_OES, GL_TRIANGLES_ADJACENCY_OES, GL_TRIANGLE_STRIP_ADJACENCY_OES, GL_PATCHES_EXT, GL_QUADS_EXT, GL_ISOLINES_EXT
+>>>>>>> 1776432f... 4.3
 	};
 #endif
 
@@ -1715,7 +2672,11 @@ GLenum drawPrimitiveType(PrimitiveTopology primitiveType)
 
 GLenum gpuCapabilitiesTextureAndSamplers(gpuCapabilities::TextureAndSamplers capabilities)
 {
+<<<<<<< HEAD
 	debug_assertion(capabilities < gpuCapabilities::TextureAndSamplers::Count , "Invalid GpuCapabilities TextureAndSamplers");
+=======
+	debug_assertion(capabilities < gpuCapabilities::TextureAndSamplers::Count, "Invalid GpuCapabilities TextureAndSamplers");
+>>>>>>> 1776432f... 4.3
 #if BUILD_API_MAX<30
 	bool capsSupported = (capabilities != gpuCapabilities::TextureAndSamplers::MaxSamples &&
 	                      capabilities != gpuCapabilities::TextureAndSamplers::Max3DTextureSize &&
@@ -1738,7 +2699,11 @@ GLenum gpuCapabilitiesTextureAndSamplers(gpuCapabilities::TextureAndSamplers cap
 
 GLenum gpuCapabilitiesTransformFeedback(gpuCapabilities::TransformFeedback caps)
 {
+<<<<<<< HEAD
 	debug_assertion(caps < gpuCapabilities::TransformFeedback::Count , "Invalid GpuCapabilities TransformFeedback");
+=======
+	debug_assertion(caps < gpuCapabilities::TransformFeedback::Count, "Invalid GpuCapabilities TransformFeedback");
+>>>>>>> 1776432f... 4.3
 #if BUILD_API_MAX<30
 	Log(Log.Error,
 	    "GpuCapabilities::TransformFeedback: TransformFeedback not built into PVRApi (BUILD_API_MAX is defined and BUILD_API_MAX<30)");
@@ -1772,7 +2737,11 @@ GLenum gpuCapabilitiesFragment(gpuCapabilities::FragmentShader caps)
 
 GLenum gpuCapabilitiesUniform(gpuCapabilities::Uniform caps)
 {
+<<<<<<< HEAD
 	debug_assertion(caps < gpuCapabilities::Uniform::Count , "Invalid GpuCapabilities Uniform");
+=======
+	debug_assertion(caps < gpuCapabilities::Uniform::Count, "Invalid GpuCapabilities Uniform");
+>>>>>>> 1776432f... 4.3
 #if BUILD_API_MAX<30
 	Log(Log.Error,
 	    "GpuCapabilities::Uniform capabilities query not built into PVRApi (BUILD_API_MAX is defined and BUILD_API_MAX<30)");
@@ -1788,7 +2757,11 @@ GLenum gpuCapabilitiesUniform(gpuCapabilities::Uniform caps)
 
 GLenum gpuCapabilitiesElement(gpuCapabilities::Element caps)
 {
+<<<<<<< HEAD
 	debug_assertion(caps < gpuCapabilities::Element::Count , "Invalid GpuCapabilities Element");
+=======
+	debug_assertion(caps < gpuCapabilities::Element::Count, "Invalid GpuCapabilities Element");
+>>>>>>> 1776432f... 4.3
 #if BUILD_API_MAX<30
 	Log(Log.Error,
 	    "GpuCapabilities: Element capabilities query not built into PVRApi (BUILD_API_MAX is defined and BUILD_API_MAX<30)");
@@ -1801,7 +2774,11 @@ GLenum gpuCapabilitiesElement(gpuCapabilities::Element caps)
 
 GLenum gpuCapabilitiesBuffers(gpuCapabilities::Buffers caps)
 {
+<<<<<<< HEAD
 	debug_assertion(caps < gpuCapabilities::Buffers::Count , "Invalid GpuCapabilities Buffers");
+=======
+	debug_assertion(caps < gpuCapabilities::Buffers::Count, "Invalid GpuCapabilities Buffers");
+>>>>>>> 1776432f... 4.3
 #if BUILD_API_MAX<30
 	Log(Log.Error,
 	    "GpuCapabilities: Buffers capabilities query not built into PVRApi (BUILD_API_MAX is defined and BUILD_API_MAX<30)");
@@ -1814,7 +2791,11 @@ GLenum gpuCapabilitiesBuffers(gpuCapabilities::Buffers caps)
 
 GLenum gpuCapabilitiesShaderAndPrograms(gpuCapabilities::ShaderAndProgram caps)
 {
+<<<<<<< HEAD
 	debug_assertion(caps < gpuCapabilities::ShaderAndProgram::Count , "Invalid GpuCapabilities ShaderAndProgram");
+=======
+	debug_assertion(caps < gpuCapabilities::ShaderAndProgram::Count, "Invalid GpuCapabilities ShaderAndProgram");
+>>>>>>> 1776432f... 4.3
 #if BUILD_API_MAX<30
 	Log(Log.Error,
 	    "GpuCapabilities: Shaders and Programs capabilities query not built into PVRApi (BUILD_API_MAX is defined and BUILD_API_MAX<30)");

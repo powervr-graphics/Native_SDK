@@ -9,11 +9,10 @@
 /* Begin PBXBuildFile section */
 		1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000F1A5C0 /* libPVRCore.a */; };
 		1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000A55E75 /* libPVRAssets.a */; };
-		1100B16BADC0DE0000C0BB1E /* libPVREgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000C0BB1E /* libPVREgl.a */; };
 		1100B16BADC0DE00BAC5B07E /* libPVRNativeGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE00BAC5B07E /* libPVRNativeGles.a */; };
 		1100B16BADC0DE00FEA51B1E /* libPVRGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE00FEA51B1E /* libPVRGles.a */; };
 		1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0005EAF00D /* libPVRShell.a */; };
-		1100B16BADC0DE0000FACADE /* libPVRUIRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000FACADE /* libPVRUIRenderer.a */; };
+		1100B16BADC0DE0000FACADE /* libPVREngineUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */; };
 		AC2A37F31A0A675B0093C884 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A37F21A0A675B0093C884 /* Cocoa.framework */; };
 		AC2A38491A0A68920093C884 /* libEGL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A38471A0A68920093C884 /* libEGL.dylib */; };
 		AC2A384A1A0A68920093C884 /* libGLESv2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A38481A0A68920093C884 /* libGLESv2.dylib */; };
@@ -22,6 +21,7 @@
 		AC2A38671A0A6BD80093C884 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC2A38641A0A6BD80093C884 /* Info.plist */; };
 		AC2A386E1A0A6BE10093C884 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386B1A0A6BE10093C884 /* InfoPlist.strings */; };
 		AC2A38711A0A6BE70093C884 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386F1A0A6BE70093C884 /* MainMenu.xib */; };
+<<<<<<< HEAD
 		F84E8C1762D152072F9D9ECF /* OGLESSkinning.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F825580089F125245A1BCAC8 /* OGLESSkinning.cpp */; };
 		F8A11B9FC5C3D486A43CD3B5 /* Robot.pod in Resources */ = {isa = PBXBuildFile; fileRef = F893936CEC5C4C119EBB2B93 /* Robot.pod */; };
 		F8EE5C92E6E550181B6C4D2B /* Arm.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8471F715D639BC2C683A0B1 /* Arm.pvr */; };
@@ -39,6 +39,25 @@
 		F8131EA1E3CA10C86E05A364 /* SkinnedVertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8CDF0C56E20F72298ED088C /* SkinnedVertShader_ES3.vsh */; };
 		F82B1A495471BBD43D601F1C /* SkinnedFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F81C55FD0F89A73578DCB019 /* SkinnedFragShader_ES3.fsh */; };
 		F85337B7FAD1325D3FA4FF60 /* Skinning_es.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F8B6DD501E45F3CAC95932CF /* Skinning_es.pfx */; };
+=======
+		F84E8C1762D152072F9D9ECF /* OGLESSkinning.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F88124F23B31ABEB668E7E2D /* OGLESSkinning.cpp */; };
+		F8A11B9FC5C3D486A43CD3B5 /* Robot.pod in Resources */ = {isa = PBXBuildFile; fileRef = F82376591E76815F25179B63 /* Robot.pod */; };
+		F8EE5C92E6E550181B6C4D2B /* Arm.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8589BEAA62D3BDC4DAFA25A /* Arm.pvr */; };
+		F8A1D7326534FCFAA2F1EDA9 /* Grid.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8B55AA2FC745ED9C43E0F42 /* Grid.pvr */; };
+		F872D6BEC1A2853F8A92A712 /* Pipes.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8E61A4957810BDBB101C17D /* Pipes.pvr */; };
+		F879BA3FCFD886F3802DDD91 /* RobotDiffuse.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F87D7307EE96213E82F6DF3A /* RobotDiffuse.pvr */; };
+		F8FA12DB75626F3D5B04C4F5 /* RobotNormal.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8FE4B9FB359A8EECDFE78B7 /* RobotNormal.pvr */; };
+		F86253D5C171FCE9741DC0F5 /* Tiles.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83EC7899E7CC02FDA09DB34 /* Tiles.pvr */; };
+		F82C77D2C06DB311609342D9 /* DefaultVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B250993E6B5BDE08457B77 /* DefaultVertShader_ES2.vsh */; };
+		F8AB1433A223B7FBB7BC1CAF /* DefaultFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F80FB52784B019DE89CD08D8 /* DefaultFragShader_ES2.fsh */; };
+		F8BDD08120FEE24A3A003979 /* DefaultVertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8433C24B52EB13C4A256707 /* DefaultVertShader_ES3.vsh */; };
+		F89872A342C567C3252A4C27 /* DefaultFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F854D3E351EA737DB4777251 /* DefaultFragShader_ES3.fsh */; };
+		F844ADA5102EF20BB76C169F /* SkinnedVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B2104CE74B3B429FE8E051 /* SkinnedVertShader_ES2.vsh */; };
+		F86079025DD5097F6520E7FD /* SkinnedFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8DB2DBEDBF98BFBD54FD634 /* SkinnedFragShader_ES2.fsh */; };
+		F8131EA1E3CA10C86E05A364 /* SkinnedVertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8D1083518429379F50635CD /* SkinnedVertShader_ES3.vsh */; };
+		F82B1A495471BBD43D601F1C /* SkinnedFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B0565F05BE1AC18DBDBFF4 /* SkinnedFragShader_ES3.fsh */; };
+		F87530DAFA1CF935AAC5906C /* Skinning_es.pfx in Resources */ = {isa = PBXBuildFile; fileRef = F82272FEA9BB44054A7C1260 /* Skinning_es.pfx */; };
+>>>>>>> 1776432f... 4.3
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,20 +88,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 9900B16BADC0DE0000A55E75;
 			remoteInfo = PVRAssets;
-		};
-		3300B16BADC0DE0000C0BB1E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE0000C0BB1E /* PVREgl.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9800B16BADC0DE0000C0BB1E;
-			remoteInfo = PVREgl;
-		};
-		6600B16BADC0DE0000C0BB1E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE0000C0BB1E /* PVREgl.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9900B16BADC0DE0000C0BB1E;
-			remoteInfo = PVREgl;
 		};
 		3300B16BADC0DE00BAC5B07E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -128,17 +133,17 @@
 		};
 		3300B16BADC0DE0000FACADE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE0000FACADE /* PVRUIRenderer.xcodeproj */;
+			containerPortal = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9800B16BADC0DE0000FACADE;
-			remoteInfo = PVRUIRenderer;
+			remoteInfo = PVREngineUtils;
 		};
 		6600B16BADC0DE0000FACADE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE0000FACADE /* PVRUIRenderer.xcodeproj */;
+			containerPortal = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9900B16BADC0DE0000FACADE;
-			remoteInfo = PVRUIRenderer;
+			remoteInfo = PVREngineUtils;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -159,11 +164,10 @@
 /* Begin PBXFileReference section */
 		4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRCore.xcodeproj; path = ../../../../../../Framework/PVRCore/Build/OSX/PVRCore.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRAssets.xcodeproj; path = ../../../../../../Framework/PVRAssets/Build/OSX/PVRAssets.xcodeproj; sourceTree = "<group>"; };
-		4400B16BADC0DE0000C0BB1E /* PVREgl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVREgl.xcodeproj; path = ../../../../../../Framework/PVRPlatformGlue/EGL/Build/OSX/PVREgl.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRNativeGles.xcodeproj; path = ../../../../../../Framework/PVRNativeApi/OGLES/Build/OSX/PVRNativeGles.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRGles.xcodeproj; path = ../../../../../../Framework/PVRApi/OGLES/Build/OSX/PVRGles.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRShell.xcodeproj; path = ../../../../../../Framework/PVRShell/Build/OSX/PVRShell.xcodeproj; sourceTree = "<group>"; };
-		4400B16BADC0DE0000FACADE /* PVRUIRenderer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRUIRenderer.xcodeproj; path = ../../../../../../Framework/PVRUIRenderer/Build/OSX/PVRUIRenderer.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVREngineUtils.xcodeproj; path = ../../../../../../Framework/PVREngineUtils/Build/OSX/PVREngineUtils.xcodeproj; sourceTree = "<group>"; };
 		AC2A37EF1A0A675B0093C884 /* OGLESSkinning.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLESSkinning.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC2A37F21A0A675B0093C884 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		AC2A37F51A0A675B0093C884 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -175,6 +179,7 @@
 		AC2A38661A0A6BD80093C884 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AC2A386C1A0A6BE10093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		AC2A38701A0A6BE70093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
+<<<<<<< HEAD
 		F825580089F125245A1BCAC8 /* OGLESSkinning.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESSkinning.cpp; path = ../../OGLESSkinning.cpp; sourceTree = SOURCE_ROOT; };
 		F893936CEC5C4C119EBB2B93 /* Robot.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Robot.pod; path = ../../../ProcessedAssets/Robot.pod; sourceTree = SOURCE_ROOT; };
 		F8471F715D639BC2C683A0B1 /* Arm.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Arm.pvr; path = ../../../ProcessedAssets/Arm.pvr; sourceTree = SOURCE_ROOT; };
@@ -192,6 +197,25 @@
 		F8CDF0C56E20F72298ED088C /* SkinnedVertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedVertShader_ES3.vsh; path = ../../SkinnedVertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
 		F81C55FD0F89A73578DCB019 /* SkinnedFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedFragShader_ES3.fsh; path = ../../SkinnedFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
 		F8B6DD501E45F3CAC95932CF /* Skinning_es.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = Skinning_es.pfx; path = ../../Skinning_es.pfx; sourceTree = SOURCE_ROOT; };
+=======
+		F88124F23B31ABEB668E7E2D /* OGLESSkinning.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESSkinning.cpp; path = ../../OGLESSkinning.cpp; sourceTree = SOURCE_ROOT; };
+		F82376591E76815F25179B63 /* Robot.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = Robot.pod; path = ../../../ProcessedAssets/Robot.pod; sourceTree = SOURCE_ROOT; };
+		F8589BEAA62D3BDC4DAFA25A /* Arm.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Arm.pvr; path = ../../../ProcessedAssets/Arm.pvr; sourceTree = SOURCE_ROOT; };
+		F8B55AA2FC745ED9C43E0F42 /* Grid.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Grid.pvr; path = ../../../ProcessedAssets/Grid.pvr; sourceTree = SOURCE_ROOT; };
+		F8E61A4957810BDBB101C17D /* Pipes.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Pipes.pvr; path = ../../../ProcessedAssets/Pipes.pvr; sourceTree = SOURCE_ROOT; };
+		F87D7307EE96213E82F6DF3A /* RobotDiffuse.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = RobotDiffuse.pvr; path = ../../../ProcessedAssets/RobotDiffuse.pvr; sourceTree = SOURCE_ROOT; };
+		F8FE4B9FB359A8EECDFE78B7 /* RobotNormal.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = RobotNormal.pvr; path = ../../../ProcessedAssets/RobotNormal.pvr; sourceTree = SOURCE_ROOT; };
+		F83EC7899E7CC02FDA09DB34 /* Tiles.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Tiles.pvr; path = ../../../ProcessedAssets/Tiles.pvr; sourceTree = SOURCE_ROOT; };
+		F8B250993E6B5BDE08457B77 /* DefaultVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultVertShader_ES2.vsh; path = ../../DefaultVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
+		F80FB52784B019DE89CD08D8 /* DefaultFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultFragShader_ES2.fsh; path = ../../DefaultFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
+		F8433C24B52EB13C4A256707 /* DefaultVertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultVertShader_ES3.vsh; path = ../../DefaultVertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
+		F854D3E351EA737DB4777251 /* DefaultFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DefaultFragShader_ES3.fsh; path = ../../DefaultFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8B2104CE74B3B429FE8E051 /* SkinnedVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedVertShader_ES2.vsh; path = ../../SkinnedVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
+		F8DB2DBEDBF98BFBD54FD634 /* SkinnedFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedFragShader_ES2.fsh; path = ../../SkinnedFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
+		F8D1083518429379F50635CD /* SkinnedVertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedVertShader_ES3.vsh; path = ../../SkinnedVertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
+		F8B0565F05BE1AC18DBDBFF4 /* SkinnedFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = SkinnedFragShader_ES3.fsh; path = ../../SkinnedFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F82272FEA9BB44054A7C1260 /* Skinning_es.pfx */ = {isa = PBXFileReference; lastKnownFileType = text; name = Skinning_es.pfx; path = ../../Skinning_es.pfx; sourceTree = SOURCE_ROOT; };
+>>>>>>> 1776432f... 4.3
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,11 +225,10 @@
 			files = (
 				1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */,
 				1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */,
-				1100B16BADC0DE0000C0BB1E /* libPVREgl.a in Frameworks */,
 				1100B16BADC0DE00BAC5B07E /* libPVRNativeGles.a in Frameworks */,
 				1100B16BADC0DE00FEA51B1E /* libPVRGles.a in Frameworks */,
 				1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */,
-				1100B16BADC0DE0000FACADE /* libPVRUIRenderer.a in Frameworks */,
+				1100B16BADC0DE0000FACADE /* libPVREngineUtils.a in Frameworks */,
 				AC2A37F31A0A675B0093C884 /* Cocoa.framework in Frameworks */,
 				AC2A384A1A0A68920093C884 /* libGLESv2.dylib in Frameworks */,
 				AC2A38491A0A68920093C884 /* libEGL.dylib in Frameworks */,
@@ -227,14 +250,6 @@
 			isa = PBXGroup;
 			children = (
 				2200B16BADC0DE0000A55E75 /* libPVRAssets.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		5500B16BADC0DE0000C0BB1E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2200B16BADC0DE0000C0BB1E /* libPVREgl.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -266,7 +281,7 @@
 		5500B16BADC0DE0000FACADE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2200B16BADC0DE0000FACADE /* libPVRUIRenderer.a */,
+				2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -297,11 +312,10 @@
 			children = (
 				4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */,
 				4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */,
-				4400B16BADC0DE0000C0BB1E /* PVREgl.xcodeproj */,
 				4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */,
 				4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */,
 				4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */,
-				4400B16BADC0DE0000FACADE /* PVRUIRenderer.xcodeproj */,
+				4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */,
 				AC2A37F21A0A675B0093C884 /* Cocoa.framework */,
 				AC2A37F41A0A675B0093C884 /* Other Frameworks */,
 			);
@@ -333,7 +347,7 @@
 		AC2A37F81A0A675B0093C884 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				F825580089F125245A1BCAC8 /* OGLESSkinning.cpp */,
+				F88124F23B31ABEB668E7E2D /* OGLESSkinning.cpp */,
 			);
 			name = Sources;
 			path = OSX;
@@ -376,7 +390,7 @@
 		AC2A385C1A0A697E0093C884 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F893936CEC5C4C119EBB2B93 /* Robot.pod */,
+				F82376591E76815F25179B63 /* Robot.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -384,12 +398,12 @@
 		AC2A385D1A0A69850093C884 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F8471F715D639BC2C683A0B1 /* Arm.pvr */,
-				F8107CDE8271341018AA46CC /* Grid.pvr */,
-				F8855C30DF8F1E02C7A6EE67 /* Pipes.pvr */,
-				F81E3A2E1FE87234F0AB2003 /* RobotDiffuse.pvr */,
-				F8DB06BE63410A0EAE176B9B /* RobotNormal.pvr */,
-				F8FFAF5A63F5C57FF0B85FE1 /* Tiles.pvr */,
+				F8589BEAA62D3BDC4DAFA25A /* Arm.pvr */,
+				F8B55AA2FC745ED9C43E0F42 /* Grid.pvr */,
+				F8E61A4957810BDBB101C17D /* Pipes.pvr */,
+				F87D7307EE96213E82F6DF3A /* RobotDiffuse.pvr */,
+				F8FE4B9FB359A8EECDFE78B7 /* RobotNormal.pvr */,
+				F83EC7899E7CC02FDA09DB34 /* Tiles.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -397,6 +411,7 @@
 		AC2A385E1A0A698B0093C884 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< HEAD
 				F8FB2610C2A3131EC9EE5CB1 /* DefaultVertShader_ES2.vsh */,
 				F81443D2A678DD63BA09355A /* DefaultFragShader_ES2.fsh */,
 				F8D3CB63336DCF695B28F5B7 /* DefaultVertShader_ES3.vsh */,
@@ -406,6 +421,17 @@
 				F8CDF0C56E20F72298ED088C /* SkinnedVertShader_ES3.vsh */,
 				F81C55FD0F89A73578DCB019 /* SkinnedFragShader_ES3.fsh */,
 				F8B6DD501E45F3CAC95932CF /* Skinning_es.pfx */,
+=======
+				F8B250993E6B5BDE08457B77 /* DefaultVertShader_ES2.vsh */,
+				F80FB52784B019DE89CD08D8 /* DefaultFragShader_ES2.fsh */,
+				F8433C24B52EB13C4A256707 /* DefaultVertShader_ES3.vsh */,
+				F854D3E351EA737DB4777251 /* DefaultFragShader_ES3.fsh */,
+				F8B2104CE74B3B429FE8E051 /* SkinnedVertShader_ES2.vsh */,
+				F8DB2DBEDBF98BFBD54FD634 /* SkinnedFragShader_ES2.fsh */,
+				F8D1083518429379F50635CD /* SkinnedVertShader_ES3.vsh */,
+				F8B0565F05BE1AC18DBDBFF4 /* SkinnedFragShader_ES3.fsh */,
+				F82272FEA9BB44054A7C1260 /* Skinning_es.pfx */,
+>>>>>>> 1776432f... 4.3
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -427,7 +453,6 @@
 			dependencies = (
 				7700B16BADC0DE0000F1A5C0 /* PBXTargetDependency */,
 				7700B16BADC0DE0000A55E75 /* PBXTargetDependency */,
-				7700B16BADC0DE0000C0BB1E /* PBXTargetDependency */,
 				7700B16BADC0DE00BAC5B07E /* PBXTargetDependency */,
 				7700B16BADC0DE00FEA51B1E /* PBXTargetDependency */,
 				7700B16BADC0DE0005EAF00D /* PBXTargetDependency */,
@@ -467,10 +492,6 @@
 					ProjectRef = 4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */;
 				},
 				{
-					ProductGroup = 5500B16BADC0DE0000C0BB1E /* Products */;
-					ProjectRef = 4400B16BADC0DE0000C0BB1E /* PVREgl.xcodeproj */;
-				},
-				{
 					ProductGroup = 5500B16BADC0DE00BAC5B07E /* Products */;
 					ProjectRef = 4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */;
 				},
@@ -484,7 +505,7 @@
 				},
 				{
 					ProductGroup = 5500B16BADC0DE0000FACADE /* Products */;
-					ProjectRef = 4400B16BADC0DE0000FACADE /* PVRUIRenderer.xcodeproj */;
+					ProjectRef = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -509,13 +530,6 @@
 			remoteRef = 3300B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2200B16BADC0DE0000C0BB1E /* libPVREgl.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libPVREgl.a;
-			remoteRef = 3300B16BADC0DE0000C0BB1E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		2200B16BADC0DE00BAC5B07E /* libPVRNativeGles.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -537,10 +551,10 @@
 			remoteRef = 3300B16BADC0DE0005EAF00D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2200B16BADC0DE0000FACADE /* libPVRUIRenderer.a */ = {
+		2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libPVRUIRenderer.a;
+			path = libPVREngineUtils.a;
 			remoteRef = 3300B16BADC0DE0000FACADE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -569,7 +583,11 @@
 				F86079025DD5097F6520E7FD /* SkinnedFragShader_ES2.fsh in Resources */,
 				F8131EA1E3CA10C86E05A364 /* SkinnedVertShader_ES3.vsh in Resources */,
 				F82B1A495471BBD43D601F1C /* SkinnedFragShader_ES3.fsh in Resources */,
+<<<<<<< HEAD
 				F85337B7FAD1325D3FA4FF60 /* Skinning_es.pfx in Resources */,
+=======
+				F87530DAFA1CF935AAC5906C /* Skinning_es.pfx in Resources */,
+>>>>>>> 1776432f... 4.3
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,11 +615,6 @@
 			name = PVRAssets;
 			targetProxy = 6600B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
 		};
-		7700B16BADC0DE0000C0BB1E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = PVREgl;
-			targetProxy = 6600B16BADC0DE0000C0BB1E /* PBXContainerItemProxy */;
-		};
 		7700B16BADC0DE00BAC5B07E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = PVRNativeGles;
@@ -619,7 +632,7 @@
 		};
 		7700B16BADC0DE0000FACADE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = PVRUIRenderer;
+			name = PVREngineUtils;
 			targetProxy = 6600B16BADC0DE0000FACADE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */

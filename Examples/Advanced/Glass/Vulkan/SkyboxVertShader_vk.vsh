@@ -1,15 +1,13 @@
 #version 450
 
+layout(location = 0) in highp vec3 inVertex;
 
-layout(location = 0)in highp vec3 inVertex;
+layout(location = 0) out mediump vec3 RayDir;
 
-layout(location = 0)out mediump vec3 RayDir;
-
-
-layout(std140,set = 0, binding = 0) uniform Dynamic
+layout(std140, set = 0, binding = 1) uniform Dynamic
 {
 	highp mat4 InvVPMatrix;
-	mediump vec3 EyePos;
+	mediump vec4 EyePos;
 };
 
 void main()
@@ -22,5 +20,5 @@ void main()
 	WorldPos /= WorldPos.w;
 
 	// Calculate ray direction
-	RayDir = normalize(WorldPos.xyz - EyePos);
+	RayDir = normalize(WorldPos.xyz - vec3(EyePos));
 }

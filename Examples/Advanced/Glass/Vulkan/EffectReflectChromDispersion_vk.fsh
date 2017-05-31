@@ -1,7 +1,7 @@
 #version 450
 
-layout(set = 1, binding = 0)uniform sampler2D sParaboloids;
-layout(set = 2, binding = 0)uniform samplerCube sSkybox;
+layout(set = 0, binding = 1) uniform sampler2D sParaboloids;
+layout(set = 0, binding = 2) uniform samplerCube sSkybox;
 
 layout(location = 0) in highp vec3 ReflectDir;
 layout(location = 1) in highp vec3 RefractDirRed;
@@ -21,7 +21,9 @@ void main()
 	// Sample reflection to paraboloids
 	lowp vec4 Reflection;
 
-	Normalised = normalize(ReflectDir);
+	highp vec3 vkReflectDir = ReflectDir;
+	vkReflectDir.y = -vkReflectDir.y;
+	Normalised = normalize(vkReflectDir);
 	Normalised.xy /= abs(Normalised.z) + 1.0;
 	Normalised.xy = Normalised.xy * 0.495 + 0.5;
 	Normalised.x *= 0.5;
@@ -41,7 +43,9 @@ void main()
 	lowp vec4 Refraction;
 
 	// Red
-	Normalised = normalize(RefractDirRed);
+	highp vec3 vkRefractDirRed = RefractDirRed;
+	vkRefractDirRed.y = -vkRefractDirRed.y;
+	Normalised = normalize(vkRefractDirRed);
 	Normalised.xy /= abs(Normalised.z) + 1.0;
 	Normalised.xy = Normalised.xy * 0.495 + 0.5;
 	Normalised.x *= 0.5;
@@ -51,7 +55,9 @@ void main()
 	Refraction.r = mix(RefractSky.r, RefractRed.r, RefractRed.a);
 
 	// Green
-	Normalised = normalize(RefractDirGreen);
+	highp vec3 vkRefractDirGreen = RefractDirGreen;
+	vkRefractDirGreen.y = -vkRefractDirGreen.y;
+	Normalised = normalize(vkRefractDirGreen);
 	Normalised.xy /= abs(Normalised.z) + 1.0;
 	Normalised.xy = Normalised.xy * 0.495 + 0.5;
 	Normalised.x *= 0.5;
@@ -61,7 +67,9 @@ void main()
 	Refraction.g = mix(RefractSky.g, RefractGreen.g, RefractGreen.a);
 
 	// Blue
-	Normalised = normalize(RefractDirBlue);
+	highp vec3 vkRefractDirBlue = RefractDirBlue;
+	vkRefractDirBlue.y = -vkRefractDirBlue.y;
+	Normalised = normalize(vkRefractDirBlue);
 	Normalised.xy /= abs(Normalised.z) + 1.0;
 	Normalised.xy = Normalised.xy * 0.495 + 0.5;
 	Normalised.x *= 0.5;

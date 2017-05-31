@@ -38,7 +38,7 @@ unsigned int Height (600);
     // Shaders
     GLuint           m_fragShader;
     GLuint           m_vertexShader;
-    GLuint           m_program;
+    GLuint           _program;
     
     // Vertex buffer objects
     GLuint           m_vertexBuffer;
@@ -461,7 +461,7 @@ unsigned int Height (600);
 	if(![self initializeBuffer:m_vertexBuffer])	{	[self terminateApp];  }
 
 	// Initialize the fragment and vertex shaders used in the application
-	if(![self initializeFragmentShader:m_fragShader andVertexShader:m_vertexBuffer withProgram:m_program]){		[self terminateApp];	}
+	if(![self initializeFragmentShader:m_fragShader andVertexShader:m_vertexBuffer withProgram:_program]){		[self terminateApp];	}
 
     // Setup a timer to redraw the view at a regular interval
     m_timer = [NSTimer scheduledTimerWithTimeInterval:(1.0 / Kfps) target:self selector:@selector(renderScene) userInfo:nil repeats:YES];
@@ -490,7 +490,7 @@ unsigned int Height (600);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Get the location of the transformation matrix in the shader using its name
-	int matrixLocation = glGetUniformLocation(m_program, "transformationMatrix");
+	int matrixLocation = glGetUniformLocation(_program, "transformationMatrix");
 
 	// Matrix used to specify the orientation of the triangle on screen.
 	const float transformationMatrix[] =
@@ -545,7 +545,7 @@ unsigned int Height (600);
 	// Frees the OpenGL handles for the program and the 2 shaders
 	glDeleteShader(m_fragShader);
 	glDeleteShader(m_vertexShader);
-	glDeleteProgram(m_program);
+	glDeleteProgram(_program);
 
 	// Delete the VBO as it is no longer needed
 	glDeleteBuffers(1, &m_vertexBuffer);

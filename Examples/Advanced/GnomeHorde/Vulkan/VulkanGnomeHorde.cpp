@@ -1,7 +1,7 @@
 #include "PVRApi/PVRApi.h"
 #include "PVRCore/Threading.h"
 #include "PVRShell/PVRShell.h"
-#include "PVRUIRenderer/UIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 
 /*///////////////////////////////////////////////////////////////////////////////
 THE GNOME HORDE - MULTITHREADED RENDERING ON THE VULKAN API USING THE POWERVR
@@ -279,7 +279,11 @@ struct ApiObjects
 	pvr::GraphicsContext context;
 	pvr::Multi<pvr::api::Fbo> fboOnScreen;
 	utils::StructuredMemoryView uboPerObject;
+<<<<<<< HEAD
 	pvr::api::AssetStore assetManager;
+=======
+	pvr::utils::AssetStore assetManager;
+>>>>>>> 1776432f... 4.3
 	pvr::ui::UIRenderer uiRenderer;
 	api::PipelineLayout pipeLayout;
 	// OpenGL handles for shaders and VBOs
@@ -776,11 +780,19 @@ Result VulkanGnomeHorde::initView()
 	api::DescriptorSetLayoutCreateParam imageDescParam;
 	imageDescParam.setBinding(0, types::DescriptorType::CombinedImageSampler, 1, types::ShaderStageFlags::Fragment);
 	api::DescriptorSetLayout descLayoutImage = ctx->createDescriptorSetLayout(imageDescParam);
+<<<<<<< HEAD
 
 	api::DescriptorSetLayoutCreateParam dynamicUboDescParam;
 	dynamicUboDescParam.setBinding(0, types::DescriptorType::UniformBufferDynamic, 1, types::ShaderStageFlags::Vertex);
 	api::DescriptorSetLayout descLayoutUboDynamic = ctx->createDescriptorSetLayout(dynamicUboDescParam);
 
+=======
+
+	api::DescriptorSetLayoutCreateParam dynamicUboDescParam;
+	dynamicUboDescParam.setBinding(0, types::DescriptorType::UniformBufferDynamic, 1, types::ShaderStageFlags::Vertex);
+	api::DescriptorSetLayout descLayoutUboDynamic = ctx->createDescriptorSetLayout(dynamicUboDescParam);
+
+>>>>>>> 1776432f... 4.3
 	api::DescriptorSetLayoutCreateParam uboDescParam;
 	uboDescParam.setBinding(0, types::DescriptorType::UniformBuffer, 1, types::ShaderStageFlags::Vertex);
 	api::DescriptorSetLayout descLayoutUboStatic = ctx->createDescriptorSetLayout(uboDescParam);
@@ -807,8 +819,8 @@ Result VulkanGnomeHorde::initView()
 		types::BlendingConfig cbStatePremulAlpha(true, types::BlendFactor::One, types::BlendFactor::OneMinusSrcAlpha, types::BlendOp::Add);
 
 		utils::createInputAssemblyFromMesh(*meshes.gnome[0].mesh, &attributeBindings[0], 3, pipeCreate);
-		pipeCreate.rasterizer.frontFaceWinding = types::PolygonWindingOrder::FrontFaceCCW;
-		pipeCreate.rasterizer.cullFace = types::Face::Back;
+		pipeCreate.rasterizer.setFrontFaceWinding(types::PolygonWindingOrder::FrontFaceCCW);
+		pipeCreate.rasterizer.setCullFace(types::Face::Back);
 		pipeCreate.depthStencil.setDepthTestEnable(true);
 		pipeCreate.depthStencil.setDepthCompareFunc(pvr::types::ComparisonMode::Less);
 		pipeCreate.depthStencil.setDepthWrite(true);
@@ -819,20 +831,36 @@ Result VulkanGnomeHorde::initView()
 		pipeCreate.vertexShader = objectVsh;
 		pipeCreate.fragmentShader = solidFsh;
 		pipeCreate.colorBlend.setAttachmentState(0, cbStateNoBlend);
+<<<<<<< HEAD
 		assertRefcountValid(apiObj->pipelines.solid = ctx->createGraphicsPipeline(pipeCreate));
+=======
+		if ((apiObj->pipelines.solid = ctx->createGraphicsPipeline(pipeCreate)).isNull())
+		{
+			setExitMessage("Failed to create Opaque rendering pipeline");
+			return Result::UnknownError;
+		}
+>>>>>>> 1776432f... 4.3
 
 		pipeCreate.depthStencil.setDepthWrite(false);
 		// create the alpha pre-multiply pipeline
 		pipeCreate.vertexShader = objectVsh;
 		pipeCreate.fragmentShader = premulFsh;
 		pipeCreate.colorBlend.setAttachmentState(0, cbStatePremulAlpha);
-		assertRefcountValid(apiObj->pipelines.alphaPremul = ctx->createGraphicsPipeline(pipeCreate));
+		if ((apiObj->pipelines.alphaPremul = ctx->createGraphicsPipeline(pipeCreate)).isNull())
+		{
+			setExitMessage("Failed to create Premultiplied Alpha rendering pipeline");
+			return Result::UnknownError;
+		}
 
 		// create the shadow pipeline
 		pipeCreate.colorBlend.setAttachmentState(0, cbStateBlend);
 		pipeCreate.vertexShader = shadowVsh;
 		pipeCreate.fragmentShader = shadowFsh;
-		assertRefcountValid(apiObj->pipelines.shadow = ctx->createGraphicsPipeline(pipeCreate));
+		if ((apiObj->pipelines.shadow = ctx->createGraphicsPipeline(pipeCreate)).isNull())
+		{
+			setExitMessage("Failed to create Shadow rendering pipeline");
+			return Result::UnknownError;
+		}
 	}
 
 	createDescSetsAndTiles(descLayoutImage, descLayoutUboDynamic, descLayoutUboStatic);
@@ -961,12 +989,26 @@ Result VulkanGnomeHorde::renderFrame()
 		uint32 result;
 		glm::ivec2 tileId[256];
 
+		uint32 loop = 0;
+
 		//We need some rather complex safeguards to make sure this thread does not wait forever.
 		//First - we must (using atomics) make sure that when we say we are done, i.e. no items are unaccounted for.
 		//Second, for the case where the main thread is waiting, but all remaining items are not visible, the last thread
 		//to process an item will trigger an additional "unblock" to the main thread.
 		while (itemsDrawn != itemsToDraw || itemsRemaining)
 		{
+
+			if ((itemsDrawn > itemsToDraw) && !itemsRemaining)
+			{
+				if ((result == 0) && (loop > 0)) //NOT THE FIRST TIME?
+				{
+					Log(Log.Error, "Blocking is not released");
+					poisonPill.store(0);
+					break;
+				}
+			}
+
+
 			result = (uint32)tilesToDrawQ.consumeMultiple(apiObj->drawQconsumerToken, tileId, 256);
 			if (!result) { --poisonPill; }
 			itemsDrawn += result;
@@ -980,10 +1022,16 @@ Result VulkanGnomeHorde::renderFrame()
 		cb->enqueueSecondaryCmds_EnqueueMultiple(&apiObj->multiBuffering[swapIndex].cmdBufferUI, 1);
 
 		cb->enqueueSecondaryCmds_SubmitMultiple(); //SUBMIT THE WORK!
-
-		while (poisonPill--)
+		if (poisonPill >= 0)
 		{
-			tilesToDrawQ.consume(apiObj->drawQconsumerToken, tileId[255]); //Make sure it is in a consistent state
+			while (poisonPill--)
+			{
+				tilesToDrawQ.consume(apiObj->drawQconsumerToken, tileId[255]); //Make sure it is in a consistent state
+			}
+		}
+		else
+		{
+			Log(Log.Error, "poisonPill is less than 0");
 		}
 	}
 
@@ -1046,7 +1094,11 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const api::DescriptorSetLayout& la
 	apiObj->uboPerObject.connectWithBuffer(
 	  0, ctx->createBufferView(
 	    ctx->createBuffer(apiObj->uboPerObject.getAlignedTotalSize(), types::BufferBindingUse::UniformBuffer, true),
+<<<<<<< HEAD
 	    0, apiObj->uboPerObject.getAlignedElementSize()), types::BufferViewTypes::UniformBufferDynamic);
+=======
+	    0, apiObj->uboPerObject.getAlignedElementSize()));
+>>>>>>> 1776432f... 4.3
 
 	apiObj->descSetAllObjects = ctx->createDescriptorSetOnDefaultPool(layoutPerObject);
 	apiObj->descSetAllObjects->update(api::DescriptorSetUpdate().setDynamicUbo(0, apiObj->uboPerObject.getConnectedBuffer(0)));
@@ -1058,7 +1110,11 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const api::DescriptorSetLayout& la
 		auto& current = apiObj->multiBuffering[i];
 		current.descSetPerFrame = ctx->createDescriptorSetOnDefaultPool(layoutPerFrameUbo);
 		current.uboPerFrame.connectWithBuffer(0, ctx->createBufferAndView(current.uboPerFrame.getAlignedElementSize(),
+<<<<<<< HEAD
 		                                      types::BufferBindingUse::UniformBuffer, true), types::BufferViewTypes::UniformBuffer);
+=======
+		                                      types::BufferBindingUse::UniformBuffer, true));
+>>>>>>> 1776432f... 4.3
 		current.descSetPerFrame->update(api::DescriptorSetUpdate().setUbo(0, current.uboPerFrame.getConnectedBuffer(0)));
 	}
 	//Create the UBOs/VBOs for the main objects. This automatically creates the VBOs.
@@ -1210,10 +1266,18 @@ void VulkanGnomeHorde::initUboStructuredObjects()
 	for (uint32 i = 0; i < numSwapImages; ++i)
 	{
 		apiObj->multiBuffering[i].uboPerFrame.addEntryPacked("projectionMat", types::GpuDatatypes::mat4x4);
+<<<<<<< HEAD
 	}
 	apiObj->uboPerObject.setupDynamic(getGraphicsContext(), TOTAL_NUMBER_OF_OBJECTS, types::BufferViewTypes::UniformBufferDynamic);
 	apiObj->uboPerObject.addEntryPacked("modelView", types::GpuDatatypes::mat4x4);
 	apiObj->uboPerObject.addEntryPacked("modelViewIT", types::GpuDatatypes::mat4x4);
+=======
+		apiObj->multiBuffering[i].uboPerFrame.finalize(getGraphicsContext(), 1, types::BufferBindingUse::UniformBuffer);
+	}
+	apiObj->uboPerObject.addEntryPacked("modelView", types::GpuDatatypes::mat4x4);
+	apiObj->uboPerObject.addEntryPacked("modelViewIT", types::GpuDatatypes::mat4x4);
+	apiObj->uboPerObject.finalize(getGraphicsContext(), TOTAL_NUMBER_OF_OBJECTS, types::BufferBindingUse::UniformBuffer, true, false);
+>>>>>>> 1776432f... 4.3
 }
 
 AppModeParameter VulkanGnomeHorde::calcAnimationParameters()

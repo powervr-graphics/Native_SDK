@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>The PowerVR SDK Browser</title>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="./images/img-icon.png">
+</head>
+
+<body>
+	<div id="GlobalHeaderContainer">
+		<div id="GlobalHeader">
+			<div class="logo">
+				<a href="http://www.powervrinsider.com" target="_blank"><img src="./images/PVRlogo.png" width="40%" height="40%" /></a>
+            </div>
+			<div class="sitetitle">PowerVR SDK Browser</div>
+		</div>
+	</div>
+	<div id="NavContainer">
+		<nav>
+			<div class="navlink">
+				<a href="Home.html">Home</a>
+			</div>
+			<div class="navlink">
+				<a href="GettingStarted.html" class="current">Getting Started</a>
+			</div>
+			<div class="navlink">
+				<a href="Examples.html">Examples</a>
+			</div>
+			<div class="navlink">
+				<a href="Framework.html">Framework</a>
+			</div>
+			<div class="navlink">
+				<a href="Documentation.html">Documentation</a>
+			</div>
+			<div class="navlink">
+				<a href="PowerVRTools.html">PowerVR Tools</a>
+			</div>
+			<div class="navlink">
+				<a href="Licence.html">EULA</a>
+			</div>
+			<div class="navlink">
+				<a href="Contact.html">Contact Us</a>
+			</div>
+		</nav>
+	</div>
+	
+<!--API_TAB-->
+<div id="SubNavContainer"><nav><div class="subnavlink"><a href="./Android.html">Android</a></div>
+<div class="subnavlink"><a href="./iOS.html">iOS</a></div>
+<div class="subnavlink"><a href="./Windows.html">Windows</a></div>
+<div class="subnavlink"><a href="./OSX.html">OS X</a></div>
+<div class="subnavlink"><a href="./Linux.html">Linux</a></div>
+<div class="subnavlink"><a href="./WebGL.html">WebGL</a></div>
+</nav></div>
+
+	<div class="content">
+		<div id="ios">
+		<h1>iOS</h1>
+			<p>To proceed with the installation of the PowerVR Graphics SDK on iOS, complete the following steps:<p>
+			<ol>
+				<li>
+				<p>Download a version of Apple's iOS SDK from <a href="http://developer.apple.com/ios/" target="_blank">http://developer.apple.com/ios/</a>. You will need to become a member of Apple's developer programme in order to access this page. You can find details of how to join at <a href="http://developer.apple.com" target="_blank">http://developer.apple.com</a>.</p>
+				</li>
+				<li>
+				<p>Install the Apple SDK on your Mac as specified by Apple's hardware and software requirements. This should also install Xcode and the other development tools required.</p>
+				</li>
+				<li>
+				<p>Expand the PowerVR Graphics SDK for iOS to a location for which you have both read and write access.</p>
+				</li>
+				<li>
+				<p>To build the examples and other projects from the SDK, find the various <span class="code"><abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>***.xcode</span> projects available within the <span class="code">SDKPackage_<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr></span> directory and double click these to launch them in Xcode.</p>
+				</li>
+				<li>
+				<p>To build for an iOS device you will need a valid developer certificate in your machine's keychain. You may also have to change the <span class="code">Properties | Identifier</span> property from <span class="code">Project | Edit Active Target...</span> to match that which you have set up for yourself through Apple's Program Portal.</p>
+				</li>
+				<li>
+				<p>If you do not have a developer certificate from Apple then you can still build and launch applications in the iOS Simulator. Choose this configuration from the dropdown menu at the top left and then choose <span class="code">Build and Run</span> from the dropdown menu.</p>
+				</li>
+			</ol>
+			<p><em><strong>Note:</strong> The Scheme that you are building under may need to be set up for the SDK's projects to run.</em></p>
+		</div>
+		
+</body>
+
+</html>

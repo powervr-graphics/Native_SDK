@@ -1,5 +1,6 @@
 var searchData=
 [
+<<<<<<< HEAD
   ['v',['v',['../_api_gles2_8h.html#a7e471149a1b4ddd4ca577658e8d1ca7d',1,'v():&#160;ApiGles2.h'],['../_api_gles3_8h.html#a03ce1325045c5166728f55edd4e6c551',1,'v():&#160;ApiGles3.h']]],
   ['v0',['v0',['../_api_gles2_8h.html#a3bfc203c855e789df52e150974f6ee0d',1,'v0():&#160;ApiGles2.h'],['../_api_gles3_8h.html#a7062a23d1d434121d4a88f530703d06a',1,'v0():&#160;ApiGles3.h'],['../_api_gles31_8h.html#a3bfc203c855e789df52e150974f6ee0d',1,'v0():&#160;ApiGles31.h']]],
   ['v1',['v1',['../_api_gles2_8h.html#accc27fde41dec12e9dc2e66cb5ca764d',1,'v1():&#160;ApiGles2.h'],['../_api_gles3_8h.html#a0779c3b73f9aa3a0ac5b0139b5d291d9',1,'v1():&#160;ApiGles3.h'],['../_api_gles31_8h.html#accc27fde41dec12e9dc2e66cb5ca764d',1,'v1():&#160;ApiGles31.h']]],
@@ -24,11 +25,9 @@ var searchData=
   ['viewport',['viewport',['../structpvr_1_1api_1_1vulkan_1_1_graphics_pipeline_create_info_vulkan.html#a0511448fffa37fd5745b5fe3fb23990a',1,'pvr::api::vulkan::GraphicsPipelineCreateInfoVulkan::viewport()'],['../classgl.html#a119b499a65a9a04b12d1a167a8255e51',1,'gl::Viewport()']]],
   ['vk',['vk',['../classvk.html',1,'']]],
   ['vkdummy',['VKdummy',['../structpvr_1_1native_1_1_v_kdummy.html',1,'pvr::native']]],
+=======
+>>>>>>> 1776432f... 4.3
   ['vkerrors_2eh',['VkErrors.h',['../_vk_errors_8h.html',1,'']]],
-  ['vkerrortostr',['vkErrorToStr',['../namespacepvr.html#a2f89e1e88d38887ab7b540a9578ca1a9',1,'pvr']]],
-  ['vkissuccessful',['vkIsSuccessful',['../namespacepvr.html#a71cb589e2188f82a83f28f416a8804fd',1,'pvr']]],
-  ['vkthrowiffailed',['vkThrowIfFailed',['../namespacepvr.html#a95a4c9c3ddf71c5576ff7ef275d7f914',1,'pvr']]],
-  ['void',['void',['../_api_gles2_8h.html#a464f1c9ac53c893b2922c7c94977ddee',1,'void(PVR_APIENTRY *PROC_ES2_glActiveTexture)(GLenum texture):&#160;ApiGles2.h'],['../_api_gles3_8h.html#a1966bca2ae2a1105f5b03eb61112abd6',1,'void(PVR_APIENTRY *PROC_ES3_glReadBuffer)(GLenum src):&#160;ApiGles3.h'],['../_api_gles31_8h.html#a5a6b5046c1cbd18277ddc42f7fafa725',1,'void(PVR_APIENTRY *PROC_ES31_glDispatchCompute)(GLuint num_groups_x:&#160;ApiGles31.h'],['../_api_gles_ext_8h.html#ae5d8fa23ad07c48bb609509eae494c95',1,'void(GL_APIENTRYP GLDEBUGPROCKHR)(GLenum source:&#160;ApiGlesExt.h']]],
   ['vulkanbindings_2ecpp',['VulkanBindings.cpp',['../_vulkan_bindings_8cpp.html',1,'']]],
   ['vulkanbindings_2eh',['VulkanBindings.h',['../_vulkan_bindings_8h.html',1,'']]]
 ];

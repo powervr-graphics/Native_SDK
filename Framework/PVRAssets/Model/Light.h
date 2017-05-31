@@ -1,18 +1,16 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/Model/Light.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Represents a Light in the scene (Model).
-***********************************************************************************************************************/
+/*!
+\brief Represents a Light in the scene (Model).
+\file PVRAssets/Model/Light.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
 #include "PVRCore/CoreIncludes.h"
 
 namespace pvr {
 namespace assets {
-/*!***********************************************************************************************
-\brief Represents a Light source in the scene.
-*************************************************************************************************/
+/// <summary>Represents a Light source in the scene.</summary>
 class Light
 {
 public:
@@ -25,9 +23,7 @@ public:
 		NumLightTypes /*!< number of supported light type */
 	};
 
-	/*!************************************************************************************************************
-	\brief Raw internal structure of the Light.
-	***************************************************************************************************************/
+	/// <summary>Raw internal structure of the Light.</summary>
 	struct InternalData
 	{
 		//------------- What is the targetindex?
@@ -50,103 +46,67 @@ public:
 
 public:
 
-	/*!******************************************************************************
-	\brief	Get the node ID of the target of a light with a direction.
-	\return	The Node ID of the target of a light with a direction
-	********************************************************************************/
+	/// <summary>Get the node ID of the target of a light with a direction.</summary>
+	/// <returns>The Node ID of the target of a light with a direction</returns>
 	int32	getTargetIdx() const;
 
-	/*!******************************************************************************
-	\brief	Get light color.
-	\return	RGB color triplet in a glm::vec3
-	********************************************************************************/
+	/// <summary>Get light color.</summary>
+	/// <returns>RGB color triplet in a glm::vec3</returns>
 	const glm::vec3&	getColor() const;
 
-	/*!******************************************************************************
-	\brief	Get light type (spot, point, directional).
-	********************************************************************************/
+	/// <summary>Get light type (spot, point, directional).</summary>
 	LightType getType() const;
 
-	/*!******************************************************************************
-	\brief	Get the Constant attenuation of a spot or point light.
-	********************************************************************************/
+	/// <summary>Get the Constant attenuation of a spot or point light.</summary>
 	float32	getConstantAttenuation() const;
 
-	/*!******************************************************************************
-	\brief	Get the Linear attenuation of a spot or point light.
-	********************************************************************************/
+	/// <summary>Get the Linear attenuation of a spot or point light.</summary>
 	float32	getLinearAttenuation() const;
 
-	/*!******************************************************************************
-	\brief	Get the Quadratic attenuation of a spot or point light.
-	********************************************************************************/
+	/// <summary>Get the Quadratic attenuation of a spot or point light.</summary>
 	float32	getQuadraticAttenuation() const;
 
-	/*!******************************************************************************
-	\brief	Get the Falloff angle of a spot light.
-	********************************************************************************/
+	/// <summary>Get the Falloff angle of a spot light.</summary>
 	float32	getFalloffAngle() const;
 
-	/*!******************************************************************************
-	\brief	Get the Falloff exponent of a spot light.
-	********************************************************************************/
+	/// <summary>Get the Falloff exponent of a spot light.</summary>
 	float32	getFalloffExponent() const;
 
-	/*!******************************************************************************
-	\brief	Set a Target for a spot light.
-	********************************************************************************/
+	/// <summary>Set a Target for a spot light.</summary>
 	void setTargetNodeIdx(int32 idx);
 
-	/*!******************************************************************************
-	\brief	Set light color.
-	\return	void
-	\param	r Red color channel ([0..1])
-	\param	g Green color channel ([0..1])
-	\param	b Blue color channel ([0..1])
-	********************************************************************************/
+	/// <summary>Set light color.</summary>
+	/// <param name="r">Red color channel ([0..1])</param>
+	/// <param name="g">Green color channel ([0..1])</param>
+	/// <param name="b">Blue color channel ([0..1])</param>
+	/// <returns>void</returns>
 	void setColor(float32 r, float32 g, float32 b);
 
-	/*!******************************************************************************
-	\brief	Set light type.
-	\param	t The type of the light
-	********************************************************************************/
+	/// <summary>Set light type.</summary>
+	/// <param name="t">The type of the light</param>
 	void setType(LightType t);
-	/*!******************************************************************************
-	\brief	Set constant attenuation.
-	\param	c Constant attenuation factor
-	********************************************************************************/
+	/// <summary>Set constant attenuation.</summary>
+	/// <param name="c">Constant attenuation factor</param>
 	void setConstantAttenuation(float32 c);
-	/*!******************************************************************************
-	\brief	Set linear attenuation.
-	\param	l Linear attenuation factor
-	********************************************************************************/
+	/// <summary>Set linear attenuation.</summary>
+	/// <param name="l">Linear attenuation factor</param>
 	void setLinearAttenuation(float32 l);
-	/*!******************************************************************************
-	\brief	Set Quadratic attenuation.
-	\param	q Quadratic attenuation factor
-	********************************************************************************/
+	/// <summary>Set Quadratic attenuation.</summary>
+	/// <param name="q">Quadratic attenuation factor</param>
 	void setQuadraticAttenuation(float32 q);
-	/*!******************************************************************************
-	\brief	Set spot Falloff angle. This is the angle inside of which the spotlight
-	        is full strength.
-	\param	fa Falloff angle
-	********************************************************************************/
+	/// <summary>Set spot Falloff angle. This is the angle inside of which the spotlight is full strength.</summary>
+	/// <param name="fa">Falloff angle</param>
 	void setFalloffAngle(float32 fa);
 
-	/*!******************************************************************************
-	\brief	Set a spot Falloff exponent. 
-	\param	fe Falloff exponent
-	********************************************************************************/
+	/// <summary>Set a spot Falloff exponent.</summary>
+	/// <param name="fe">Falloff exponent</param>
 	void setFalloffExponent(float32 fe);
 
-	/*!******************************************************************************
-	\brief	Get a reference to the internal representation of this object. Handle
-	        with care.
-	********************************************************************************/
+	/// <summary>Get a reference to the internal representation of this object. Handle with care.</summary>
 	InternalData& getInternalData(); // If you know what you're doing
 
 private:
-	InternalData m_data;
+	InternalData _data;
 };
 }
 }

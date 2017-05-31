@@ -109,7 +109,6 @@ FileCollection assetFiles = files(
     def ndkDependencies=[
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
     ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
-    ["PVRPlatformGlue", "${pvrSdkDir}/Framework/PVRPlatformGlue/Vulkan/Build/Android"],
     ["PVRNativeVulkan", "${pvrSdkDir}/Framework/PVRNativeApi/Vulkan/Build/Android"]
     ]
 

@@ -1,5 +1,5 @@
 /*!****************************************************************************
-\file         PVRShell\EntryPoint\UIApplicationMain\main.m
+\file         PVRShell\EntryPoint/UIApplicationMain/main.m
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
 \brief        Entry point for UIKit(iOS) systems.

@@ -398,40 +398,40 @@ public:
 	***********************************************************************************************************************/
 	NativeLibrary(const std::string& LibPath)
 	{
-		m_hHostLib = dlopen(LibPath.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+		_hostLib = dlopen(LibPath.c_str(), RTLD_LAZY | RTLD_GLOBAL);
 
-		if (!m_hHostLib)
+		if (!_hostLib)
 		{
-			LOGE("Could not load host library '%s'", LibPath.c_str());
+			LOGE("Could not load host library '%s'\n", LibPath.c_str());
 
 			const char* err = dlerror();
 
 			if (err)
 			{
-				LOGE("dlopen failed with error: %s => %s", err, LibPath.c_str());
+				LOGE("dlopen failed with error: %s => %s\n", err, LibPath.c_str());
 			}
 
 			char pathMod[256];
 			strcpy(pathMod, "./");
 			strcat(pathMod, LibPath.c_str());
 
-			m_hHostLib = dlopen(pathMod, RTLD_LAZY | RTLD_GLOBAL);
+			_hostLib = dlopen(pathMod, RTLD_LAZY | RTLD_GLOBAL);
 
-			if (!m_hHostLib)
+			if (!_hostLib)
 			{
 				const char* err = dlerror();
 
 				if (err)
 				{
-					LOGE("dlopen failed with error: %s => %s", err, pathMod);
+					LOGE("dlopen failed with error: %s => %s\n", err, pathMod);
 				}
 			}
 			else
 			{
-				LOGE("dlopen loaded (MOD PATH) %s", pathMod);
+				LOGE("dlopen loaded (MOD PATH) %s\n", pathMod);
 			}
 		}
-		LOGI("Host library '%s' loaded", LibPath.c_str());
+		LOGI("Host library '%s' loaded\n", LibPath.c_str());
 	}
 	~NativeLibrary() { CloseLib(); }
 
@@ -442,12 +442,12 @@ public:
 	***********************************************************************************************************************/
 	void* getFunction(const char* functionName)
 	{
-		if (m_hHostLib)
+		if (_hostLib)
 		{
-			void* pFn = dlsym(m_hHostLib, functionName);
+			void* pFn = dlsym(_hostLib, functionName);
 			if (pFn == NULL)
 			{
-				LOGE("Could not get function %s", functionName);
+				LOGE("Could not get function %s\n", functionName);
 			}
 
 			return pFn;
@@ -469,14 +469,14 @@ public:
 	***********************************************************************************************************************/
 	void CloseLib()
 	{
-		if (m_hHostLib)
+		if (_hostLib)
 		{
-			dlclose(m_hHostLib);
-			m_hHostLib = 0;
+			dlclose(_hostLib);
+			_hostLib = 0;
 		}
 	}
 protected:
-	LIBTYPE		m_hHostLib;
+	LIBTYPE		_hostLib;
 };
 static NativeLibrary& vkglueLib()
 {
@@ -678,8 +678,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL CustomDebugReportCallback(
   const char*                 pMessage,
   void*                       pUserData)
 {
-	LOGE("LAYER_VALIDATION: %s\n",
-	     pMessage);
+	LOGE("LAYER_VALIDATION: %s\n\n", pMessage);
 
 	return VK_FALSE;
 }
@@ -707,7 +706,7 @@ inline void vkSuccessOrDie(VkResult result, const char* msg)
 {
 	if (result != VK_SUCCESS)
 	{
-		LOGE("Failed: %s", msg);
+		LOGE("Failed: %s\n", msg);
 		exit(0);
 	}
 }
@@ -1059,13 +1058,13 @@ static void createPipeline(App& app)
 
 	if (!createVertShaderModule(app.platformHandles->context.device, vertexShaderModule))
 	{
-		LOGE("Failed to create the vertex shader");
+		LOGE("Failed to create the vertex shader\n");
 		exit(0);
 	}
 
 	if (!createFragShaderModule(app.platformHandles->context.device, fragmentShaderModule))
 	{
-		LOGE("Failed to create the fragment shader");
+		LOGE("Failed to create the fragment shader\n");
 		exit(0);
 	}
 
@@ -1314,7 +1313,7 @@ void drawFrame(App& app)
 	app.platformHandles->lastPresentedSwapIndex = app.platformHandles->swapIndex;
 	// we are reusing the same semaphore "semaphoreImageAcquired" to be signaled because we know that from previous
 	// frame we have wait for this semaphore in postAcquireTransition so it is guranteed of reuse.
-	app.platformHandles->currentImageAcqSem = (app.platformHandles->currentImageAcqSem + 1) % (PVR_MAX_SWAPCHAIN_IMAGES + 1);
+	app.platformHandles->currentImageAcqSem = (app.platformHandles->currentImageAcqSem + 1) % (app.displayHandle->swapChainLength + 1);
 	vkSuccessOrDie(vk::AcquireNextImageKHR(app.platformHandles->context.device,
 	                                       app.displayHandle->swapChain, uint64_t(-1),
 	                                       app.platformHandles->semaphoreImageAcquired[app.platformHandles->currentImageAcqSem],
@@ -1438,7 +1437,7 @@ void App::initVkInstanceAndPhysicalDevice(bool enableLayers, bool enableExtensio
 	vk::initVulkanInstance(this->platformHandles->context.instance);
 
 	vkSuccessOrDie(vk::EnumeratePhysicalDevices(this->platformHandles->context.instance, &gpuCount, NULL), "");
-	LOGI("Number of Vulkan Physical devices: [%d]", gpuCount);
+	LOGI("Number of Vulkan Physical devices: [%d]\n", gpuCount);
 
 	vkSuccessOrDie(vk::EnumeratePhysicalDevices(this->platformHandles->context.instance, &gpuCount,
 	               &this->platformHandles->context.physicalDevice), "");
@@ -1462,7 +1461,7 @@ void App::initVkInstanceAndPhysicalDevice(bool enableLayers, bool enableExtensio
 		VkResult result = vk::CreateDebugReportCallbackEXT(this->platformHandles->context.instance, &callbackCreateInfo,
 		                  nullptr, &this->platformHandles->debugReportCallback);
 
-		LOGE("debug callback result: %i", result);
+		LOGE("debug callback result: %i\n", result);
 
 		if (result == VK_SUCCESS)
 		{
@@ -1638,29 +1637,8 @@ void App::initSwapChain()
 		this->displayHandle->onscreenFbo.depthStencilHasStencil = false;
 	}
 
-	uint32_t numPresentMode;
-	vkSuccessOrDie(vk::GetPhysicalDeviceSurfacePresentModesKHR(this->platformHandles->context.physicalDevice, this->displayHandle->surface, &numPresentMode, NULL),
-	               "Failed to get the number of present modes count");
-
-	assert(numPresentMode > 0);
-	std::vector<VkPresentModeKHR> presentModes(numPresentMode);
-	vkSuccessOrDie(vk::GetPhysicalDeviceSurfacePresentModesKHR(this->platformHandles->context.physicalDevice, this->displayHandle->surface, &numPresentMode, &presentModes[0]),
-	               "failed to get the present modes");
-
-	// Try to use mailbox mode, Low latency and non-tearing
+	// Use FIFO mode (v-sync), No tearing and good battery use
 	VkPresentModeKHR swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
-	for (size_t i = 0; i < numPresentMode; i++)
-	{
-		if (presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
-		{
-			swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
-			break;
-		}
-		if ((swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR) && (presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR))
-		{
-			swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
-		}
-	}
 
 	this->displayHandle->onscreenFbo.colorFormat = format.format;
 	this->displayHandle->displayExtent = surfaceCapabilities.currentExtent;
@@ -1673,7 +1651,7 @@ void App::initSwapChain()
 	swapchainCreate.clipped = VK_TRUE;
 	swapchainCreate.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	swapchainCreate.surface = this->displayHandle->surface;
-	swapchainCreate.minImageCount = std::max(surfaceCapabilities.minImageCount + 1, std::min(surfaceCapabilities.maxImageCount, 3u));
+	swapchainCreate.minImageCount = std::max(surfaceCapabilities.minImageCount, std::min(surfaceCapabilities.maxImageCount, 2u));
 	swapchainCreate.imageFormat = this->displayHandle->onscreenFbo.colorFormat;
 	swapchainCreate.imageArrayLayers = 1;
 	swapchainCreate.imageColorSpace = format.colorSpace;
@@ -1751,7 +1729,7 @@ void App::initSwapChain()
 		this->displayHandle->onscreenFbo.depthStencilImage[i].second = allocateImageDeviceMemory(this->displayHandle->onscreenFbo.depthStencilImage[i].first, NULL);
 		if (this->displayHandle->onscreenFbo.depthStencilImage[i].second == VK_NULL_HANDLE)
 		{
-			LOGE("Memory allocation failed");
+			LOGE("Memory allocation failed\n");
 			exit(0);
 		}
 		// create the depth stencil view
@@ -2039,7 +2017,7 @@ VkDeviceMemory App::allocateImageDeviceMemory(VkImage image, VkMemoryRequirement
 	//Find the first allowed type:
 	if (pMemoryRequirements->memoryTypeBits == 0)
 	{
-		LOGE("unsupported memory type bits");
+		LOGE("unsupported memory type bits\n");
 		exit(0);
 	}
 
@@ -2075,7 +2053,7 @@ VkDeviceMemory App::allocateBufferDeviceMemory(VkBuffer buffer, VkMemoryRequirem
 	//Find the first allowed type:
 	if (pMemoryRequirements->memoryTypeBits == 0)
 	{
-		LOGE("Invalid memory type bits");
+		LOGE("Invalid memory type bits\n");
 		exit(0);
 	}
 	getMemoryTypeIndex(pMemoryRequirements->memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
@@ -2159,13 +2137,13 @@ void App::initSurface()
 	}
 	if (graphicsQueueIndex == uint32_t(-1) || presentQueueIndex == uint32_t(-1))
 	{
-		LOGI("Could not find a graphics and a present queue Swapchain Initialization Failed");
+		LOGI("Could not find a graphics and a present queue Swapchain Initialization Failed\n");
 	}
 	// NOTE: While it is possible for an application to use a separate graphics
 	//       and a present queues, the framework program assumes it is only using one
 	if (graphicsQueueIndex != presentQueueIndex)
 	{
-		LOGI("Could not find a common graphics and a present queue Swapchain Initialization Failure");
+		LOGI("Could not find a common graphics and a present queue Swapchain Initialization Failure\n");
 	}
 	graphicsQueueIndex = graphicsQueueIndex;
 }
@@ -2307,7 +2285,7 @@ int main(int /*argc*/, char** /*argv*/)
 	if (!initializeWindow(*app.displayHandle, 800, 600)) { exit(0); }
 	prepare(app);
 
-	for (int i = 0; i < 2000; ++i)
+	for (int i = 0; i < 600; ++i)
 	{
 	   // Check for messages from the windowing system.
 	   int numberOfMessages = XPending(app.displayHandle->display);

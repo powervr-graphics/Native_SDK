@@ -1,72 +1,79 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\OGLES\ComputePipelineGles.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        OpenGL ES Implementation of the ComputePipeline class.
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief OpenGL ES Implementation of the ComputePipeline class.
+\file PVRApi/OGLES/ComputePipelineGles.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRApi/ApiObjects/ComputePipeline.h"
-#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
-#include "PVRApi/OGLES/ContextGles.h"
 #include "PVRApi/OGLES/StateContainerGles.h"
-#include "PVRApi/OGLES/ShaderGles.h"
+#include "PVRApi/OGLES/ContextGles.h"
 namespace pvr {
 namespace api {
-namespace pipelineCreation {
-void createStateObjects(const ComputeShaderStageCreateParam& thisobject, gles::ComputeStateContainer& storage);
-}
 namespace gles {
 
-class ComputePipelineImplGles : public impl::ComputePipelineImplBase, public native::HPipeline_
+class ComputePipelineImplGles : public impl::ComputePipelineImplBase
 {
 public:
 	ComputePipelineImplGles(GraphicsContext context) :
-		m_initialized(false), m_owner(NULL), m_context(context) {}
+		_initialized(false), _owner(NULL), _context(context) {}
+
+	const ComputeShaderProgramState& getShaderProgram()const;
+	ComputeShaderProgramState& getShaderProgram();
+
+	void getUniformLocation(const char8** uniforms, uint32 numUniforms, int32* outLocation) const;
 
 	~ComputePipelineImplGles() { destroy(); }
 
-	// ComputePipelineImplBase interface
-	void getUniformLocation(const char8** uniforms, uint32 numUniforms, int32* outLocation);
+	void destroy();
 
-	bool init(const ComputePipelineCreateParam& desc, impl::ComputePipeline_ * owner);
+	int32 getUniformLocation(const char8* uniform)const;
 
-	void bind();
-
-	void setAll();
-
-	native::HPipeline_& getNativeObject();
-
-	const native::HPipeline_& getNativeObject() const;
-
-	inline ComputeShaderProgramState getShaderProgram()const;
-
-	/*!*********************************************************************************************************************
-	\brief Get the PipelineLayout of this pipeline.
-	\return The PipelineLayout of this pipeline.
-	***********************************************************************************************************************/
 	const PipelineLayout& getPipelineLayout()const;
 
-	/*!*********************************************************************************************************************
-	\brief If free standing uniforms are supported by the underlying API, get the location of a uniform.
-	If a uniform is not found (does not exist or is not active in the shader program), -1 is returned.
-	\param uniform uniform name
-	\return The location of a uniform variable
-	***********************************************************************************************************************/
-	int32 getUniformLocation(const char8* uniform);
-
-	void destroy();
+	bool init(const ComputePipelineCreateParam& desc, ComputePipeline& owner);
 
 	Result createProgram();
 
-	GraphicsContext m_context;
+	bool _initialized;
 
-	ComputeStateContainer m_states;
-	impl::ComputePipeline_* m_owner;
-	bool m_initialized;
+	void setAll();
+
+	const ComputePipelineCreateParam& getCreateParam()const;
+
+	void bind()
+	{
+		pvr::platform::ContextGles& contextES = native_cast(*_context);
+		if (!contextES.isLastBoundPipelineCompute() || contextES.getBoundComputePipeline() != _owner)
+		{
+			setAll();
+			contextES.onBind(_owner);
+		}
+	}
+
+	ComputeStateContainer         _states;
+	impl::ComputePipeline_*         _owner;
+	GraphicsContext             _context;
+	ComputePipelineCreateParam        _createParam;
 
 };
 }
+
+inline const native::HPipeline_& native_cast(const impl::ComputePipeline_& object)
+{
+	return native_cast(static_cast<const gles::ComputePipelineImplGles&>(object.getImpl()).getShaderProgram());
+}
+inline native::HPipeline_& native_cast(impl::ComputePipeline_& object)
+{
+	return native_cast(static_cast<gles::ComputePipelineImplGles&>(object.getImpl()).getShaderProgram());
+}
+inline const native::HPipeline_& native_cast(const ComputePipeline& object)
+{
+	return native_cast(*object);
+}
+inline native::HPipeline_& native_cast(ComputePipeline& object)
+{
+	return native_cast(*object);
 }
 }
-//!\endcond
+}

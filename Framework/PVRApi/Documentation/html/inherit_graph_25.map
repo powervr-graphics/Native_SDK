@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvr_1_1api_1_1_i_index_bindable.html" title="Interface for index bindable. An index bindable can be bound to an indexed binding point : bind(IGrap..." alt="" coords="5,5,160,32"/>
+<area shape="rect" id="node1" href="$classpvr_1_1api_1_1impl_1_1_indirect_ray_pipeline__.html" title="API indirect ray pipeline wrapper. A IndirectRayPipeline represents the configuration of default ray ..." alt="" coords="6,5,154,46"/>
+<area shape="rect" id="node2" href="$classpvr_1_1api_1_1impl_1_1_parentable_indirect_ray_pipeline__.html" title="API indirect ray pipeline wrapper. A IndirectRayPipeline represents the configuration of scene hierar..." alt="" coords="203,5,370,46"/>
 </map>

@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets\FileIO\TextureWriterLegacyPVR.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementation of methods of the TextureWriterLegacyPVR class.
-***********************************************************************************************************************/
+/*!
+\brief Implementation of methods of the TextureWriterLegacyPVR class.
+\file PVRAssets/FileIO/TextureWriterLegacyPVR.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRAssets/FileIO/TextureWriterLegacyPVR.h"
 using std::vector;
@@ -11,16 +11,16 @@ namespace pvr {
 using namespace types;
 namespace assets {
 namespace assetWriters {
-TextureWriterLegacyPVR::TextureWriterLegacyPVR() : m_targetAPI(texture_legacy::ApiOGL)
+TextureWriterLegacyPVR::TextureWriterLegacyPVR() : _targetAPI(texture_legacy::ApiOGL)
 {
 }
 
 bool TextureWriterLegacyPVR::addAssetToWrite(const Texture& asset)
 {
 	bool result = true;
-	if (m_assetsToWrite.size() < 1)
+	if (_assetsToWrite.size() < 1)
 	{
-		m_assetsToWrite.push_back(&asset);
+		_assetsToWrite.push_back(&asset);
 	}
 	else
 	{
@@ -36,7 +36,7 @@ bool TextureWriterLegacyPVR::writeAllAssets()
 	bool result = true;
 
 	// Get the header to be written.
-	const TextureHeader& currentTextureHeader = m_assetsToWrite[0]->getHeader();
+	const TextureHeader& currentTextureHeader = *_assetsToWrite[0];
 
 	// Create a V2 legacy header from that (if possible!)
 	texture_legacy::HeaderV2 textureHeader;
@@ -49,55 +49,55 @@ bool TextureWriterLegacyPVR::writeAllAssets()
 	size_t dataWritten = 0;
 
 	// Write the header size
-	result = m_assetStream->write(sizeof(textureHeader.headerSize), 1, &textureHeader.headerSize, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.headerSize), 1, &textureHeader.headerSize, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the height
-	result = m_assetStream->write(sizeof(textureHeader.height), 1, &textureHeader.height, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.height), 1, &textureHeader.height, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the width
-	result = m_assetStream->write(sizeof(textureHeader.width), 1, &textureHeader.width, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.width), 1, &textureHeader.width, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the MIP map count
-	result = m_assetStream->write(sizeof(textureHeader.mipMapCount), 1, &textureHeader.mipMapCount, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.mipMapCount), 1, &textureHeader.mipMapCount, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the texture flags
-	result = m_assetStream->write(sizeof(textureHeader.pixelFormatAndFlags), 1, &textureHeader.pixelFormatAndFlags, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.pixelFormatAndFlags), 1, &textureHeader.pixelFormatAndFlags, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the texture data size
-	result = m_assetStream->write(sizeof(textureHeader.dataSize), 1, &textureHeader.dataSize, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.dataSize), 1, &textureHeader.dataSize, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the bit count of the texture format
-	result = m_assetStream->write(sizeof(textureHeader.bitCount), 1, &textureHeader.bitCount, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.bitCount), 1, &textureHeader.bitCount, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the red mask
-	result = m_assetStream->write(sizeof(textureHeader.redBitMask), 1, &textureHeader.redBitMask, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.redBitMask), 1, &textureHeader.redBitMask, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the green mask
-	result = m_assetStream->write(sizeof(textureHeader.greenBitMask), 1, &textureHeader.greenBitMask, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.greenBitMask), 1, &textureHeader.greenBitMask, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the blue mask
-	result = m_assetStream->write(sizeof(textureHeader.blueBitMask), 1, &textureHeader.blueBitMask, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.blueBitMask), 1, &textureHeader.blueBitMask, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the alpha mask
-	result = m_assetStream->write(sizeof(textureHeader.alphaBitMask), 1, &textureHeader.alphaBitMask, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.alphaBitMask), 1, &textureHeader.alphaBitMask, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the magic number
-	result = m_assetStream->write(sizeof(textureHeader.pvrMagic), 1, &textureHeader.pvrMagic, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.pvrMagic), 1, &textureHeader.pvrMagic, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the number of surfaces
-	result = m_assetStream->write(sizeof(textureHeader.numberOfSurfaces), 1, &textureHeader.numberOfSurfaces, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.numberOfSurfaces), 1, &textureHeader.numberOfSurfaces, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the texture data
@@ -109,11 +109,11 @@ bool TextureWriterLegacyPVR::writeAllAssets()
 			{
 				for (uint32 mipMap = 0; mipMap < currentTextureHeader.getNumberOfMIPLevels(); ++mipMap)
 				{
-					uint32 surfaceSize = m_assetsToWrite[0]->getDataSize(mipMap, false, false) / m_assetsToWrite[0]->getDepth();
-					const byte* surfacePointer = m_assetsToWrite[0]->getDataPointer(mipMap, surface, face) + depth * surfaceSize;
+					uint32 surfaceSize = _assetsToWrite[0]->getDataSize(mipMap, false, false) / _assetsToWrite[0]->getDepth();
+					const byte* surfacePointer = _assetsToWrite[0]->getDataPointer(mipMap, surface, face) + depth * surfaceSize;
 
 					// Write each surface, one at a time
-					result = m_assetStream->write(1, surfaceSize, surfacePointer, dataWritten);
+					result = _assetStream->write(1, surfaceSize, surfacePointer, dataWritten);
 					if (!result || dataWritten != surfaceSize) { return result; }
 				}
 			}
@@ -124,7 +124,7 @@ bool TextureWriterLegacyPVR::writeAllAssets()
 
 uint32 TextureWriterLegacyPVR::assetsAddedSoFar()
 {
-	return (uint32)m_assetsToWrite.size();
+	return (uint32)_assetsToWrite.size();
 }
 
 bool TextureWriterLegacyPVR::supportsMultipleAssets()
@@ -136,7 +136,7 @@ bool TextureWriterLegacyPVR::canWriteAsset(const Texture& asset)
 {
 	// Check the pixel format is ok
 	texture_legacy::HeaderV2 legacyHeader;
-	return convertTextureHeader3To2(legacyHeader, asset.getHeader());
+	return convertTextureHeader3To2(legacyHeader, asset);
 }
 
 vector<string> TextureWriterLegacyPVR::getSupportedFileExtensions()
@@ -158,12 +158,12 @@ string TextureWriterLegacyPVR::getWriterVersion()
 
 void TextureWriterLegacyPVR::setTargetAPI(texture_legacy::API api)
 {
-	m_targetAPI = api;
+	_targetAPI = api;
 }
 
 texture_legacy::API TextureWriterLegacyPVR::getTargetAPI()
 {
-	return m_targetAPI;
+	return _targetAPI;
 }
 
 bool TextureWriterLegacyPVR::convertTextureHeader3To2(texture_legacy::HeaderV2& legacyHeader, const TextureHeader& newHeader)
@@ -248,7 +248,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGB:
 		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA:
 		{
-			switch (m_targetAPI)
+			switch (_targetAPI)
 			{
 			case texture_legacy::ApiMGL:
 			case texture_legacy::ApiD3DM:
@@ -265,7 +265,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGB:
 		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA:
 		{
-			switch (m_targetAPI)
+			switch (_targetAPI)
 			{
 			case texture_legacy::ApiMGL:
 			case texture_legacy::ApiD3DM:
@@ -321,7 +321,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 		}
 		case (uint64)CompressedPixelFormat::DXT1:
 		{
-			if (m_targetAPI == texture_legacy::ApiDX10)
+			if (_targetAPI == texture_legacy::ApiDX10)
 			{
 				if (colorSpace == ColorSpace::lRGB)
 				{
@@ -348,7 +348,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 		}
 		case (uint64)CompressedPixelFormat::DXT3:
 		{
-			if (m_targetAPI == texture_legacy::ApiDX10)
+			if (_targetAPI == texture_legacy::ApiDX10)
 			{
 				if (colorSpace == ColorSpace::lRGB)
 				{
@@ -375,7 +375,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 		}
 		case (uint64)CompressedPixelFormat::DXT5:
 		{
-			if (m_targetAPI == texture_legacy::ApiDX10)
+			if (_targetAPI == texture_legacy::ApiDX10)
 			{
 				if (colorSpace == ColorSpace::lRGB)
 				{
@@ -446,7 +446,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID:
 			{
-				if (m_targetAPI == texture_legacy::ApiOVG)
+				if (_targetAPI == texture_legacy::ApiOVG)
 				{
 					if (colorSpace == ColorSpace::lRGB)
 					{
@@ -471,7 +471,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 						}
 					}
 				}
-				else if (m_targetAPI == texture_legacy::ApiDX10)
+				else if (_targetAPI == texture_legacy::ApiDX10)
 				{
 					if (colorSpace == ColorSpace::lRGB)
 					{
@@ -490,7 +490,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			case GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID:
 			{
-				if (m_targetAPI == texture_legacy::ApiOVG)
+				if (_targetAPI == texture_legacy::ApiOVG)
 				{
 					if (colorSpace == ColorSpace::lRGB)
 					{
@@ -638,7 +638,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			case GeneratePixelType1<'a', 8>::ID:
 			{
-				if (m_targetAPI == texture_legacy::ApiOVG)
+				if (_targetAPI == texture_legacy::ApiOVG)
 				{
 					legacyPixelType = texture_legacy::VG_A_8;
 				}
@@ -746,7 +746,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			{
 			case GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID:
 			{
-				if (m_targetAPI == texture_legacy::ApiOVG && colorSpace == ColorSpace::sRGB)
+				if (_targetAPI == texture_legacy::ApiOVG && colorSpace == ColorSpace::sRGB)
 				{
 					legacyPixelType = texture_legacy::VG_sRGBA_4444;
 				}
@@ -758,7 +758,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			case GeneratePixelType4<'r', 'g', 'b', 'a', 5, 5, 5, 1>::ID:
 			{
-				if (m_targetAPI == texture_legacy::ApiOVG && colorSpace == ColorSpace::sRGB)
+				if (_targetAPI == texture_legacy::ApiOVG && colorSpace == ColorSpace::sRGB)
 				{
 					legacyPixelType = texture_legacy::VG_sRGBA_5551;
 				}
@@ -770,7 +770,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			case GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID:
 			{
-				if (m_targetAPI == texture_legacy::ApiOVG && colorSpace == ColorSpace::sRGB)
+				if (_targetAPI == texture_legacy::ApiOVG && colorSpace == ColorSpace::sRGB)
 				{
 					legacyPixelType = texture_legacy::VG_sRGB_565;
 				}
@@ -1103,7 +1103,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			{
 			case GeneratePixelType1<'r', 16>::ID:
 			{
-				if (m_targetAPI == texture_legacy::ApiD3DM)
+				if (_targetAPI == texture_legacy::ApiD3DM)
 				{
 					legacyPixelType = texture_legacy::D3D_R16F;
 				}
@@ -1125,7 +1125,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			case GeneratePixelType1<'r', 32>::ID:
 			{
-				if (m_targetAPI == texture_legacy::ApiD3DM)
+				if (_targetAPI == texture_legacy::ApiD3DM)
 				{
 					legacyPixelType = texture_legacy::D3D_R32F;
 				}
@@ -1137,7 +1137,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			case GeneratePixelType2<'r', 'g', 32, 32>::ID:
 			{
-				if (m_targetAPI == texture_legacy::ApiD3DM)
+				if (_targetAPI == texture_legacy::ApiD3DM)
 				{
 					legacyPixelType = texture_legacy::D3D_GR_3232F;
 				}

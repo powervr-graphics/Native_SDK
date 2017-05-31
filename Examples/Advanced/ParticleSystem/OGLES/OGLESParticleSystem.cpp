@@ -8,7 +8,7 @@
 #include "ParticleSystemGPU.h"
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 using namespace pvr::types;
 
 namespace Files {
@@ -328,7 +328,7 @@ bool OGLESParticleSystem::createPipelines()
 			pvr::api::VertexAttributeInfo(Attributes::ParticleLifespanArray, DataType::Float32, 1, (sizeof(float) * 7), "inLifespan")
 		};
 		const unsigned int numParticleAttribs = sizeof(particleAttribs) / sizeof(particleAttribs[0]);
-		pvr::api::ImageDataFormat colorFmt;
+		pvr::ImageDataFormat colorFmt;
 		pvr::api::GraphicsPipelineCreateParam pipeCreateInfo;
 		pipeCreateInfo.colorBlend.setAttachmentState(0,
 		    pvr::types::BlendingConfig(
@@ -395,6 +395,7 @@ pvr::Result OGLESParticleSystem::initView()
 
 	apiObj.reset(new ApiObjects(*this));
 	apiObj->context = getGraphicsContext();
+
 	for (pvr::uint8 i = 0; i < NumBuffers; ++i)	{	apiObj->commandBuffers[i] = apiObj->context->createCommandBufferOnDefaultPool();	}
 
 	apiObj->onscreenFbo = apiObj->context->createOnScreenFbo(0);
@@ -443,6 +444,7 @@ pvr::Result OGLESParticleSystem::initView()
 	apiObj->uiRenderer.getDefaultTitle()->commitUpdates();
 	apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
 	apiObj->uiRenderer.getDefaultControls()->commitUpdates();
+
 	recordCommandBuffers();
 
 	return pvr::Result::Success;
@@ -593,7 +595,7 @@ void OGLESParticleSystem::recordCmdDrawParticles(pvr::uint8 idx)
 {
 	apiObj->commandBuffers[idx]->bindPipeline(apiObj->pipeParticle.pipe);
 	apiObj->commandBuffers[idx]->bindVertexBuffer(apiObj->particleVbos[idx], 0, 0);
-	apiObj->commandBuffers[idx]->setUniformPtr<glm::mat4>(apiObj->pipeParticle.mvpMatrixLoc, 1, &viewProjMtx);
+	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipeParticle.mvpMatrixLoc, 1, &viewProjMtx);
 	apiObj->commandBuffers[idx]->drawArrays(0, apiObj->particleSystemGPU.getNumberOfParticles(), 0, 1);
 }
 
@@ -605,10 +607,10 @@ void OGLESParticleSystem::recordCmdDrawParticles(pvr::uint8 idx)
 void OGLESParticleSystem::recordCmdDrawSphere(DrawPass& passSphere, pvr::uint8 idx)
 {
 	apiObj->commandBuffers[idx]->bindPipeline(apiObj->pipelineSimple.pipe);
-	apiObj->commandBuffers[idx]->setUniformPtr<glm::mat4>(apiObj->pipelineSimple.mvpMatrixLoc, 1, &passSphere.modelViewProj);
-	apiObj->commandBuffers[idx]->setUniformPtr<glm::mat4>(apiObj->pipelineSimple.mvMatrixLoc, 1, &passSphere.modelView);
-	apiObj->commandBuffers[idx]->setUniformPtr<glm::mat3>(apiObj->pipelineSimple.mvITMatrixLoc, 1, &passSphere.modelViewIT);
-	apiObj->commandBuffers[idx]->setUniformPtr<glm::vec3>(apiObj->pipelineSimple.lightPosition, 1, &passSphere.lightPos);
+	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineSimple.mvpMatrixLoc, 1, &passSphere.modelViewProj);
+	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineSimple.mvMatrixLoc, 1, &passSphere.modelView);
+	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineSimple.mvITMatrixLoc, 1, &passSphere.modelViewIT);
+	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineSimple.lightPosition, 1, &passSphere.lightPos);
 
 	static const pvr::assets::Mesh& mesh = scene->getMesh(0);
 	apiObj->commandBuffers[idx]->bindVertexBuffer(apiObj->sphereVbo, 0, 0);
@@ -629,10 +631,10 @@ void OGLESParticleSystem::recordCmdDrawFloor(pvr::uint8 idx)
 	// then multiplied by the inverse of the current view matrix.
 	apiObj->commandBuffers[idx]->bindPipeline(apiObj->pipelineFloor.pipe);
 
-	apiObj->commandBuffers[idx]->setUniformPtr<glm::mat4>(apiObj->pipelineFloor.mvpMatrixLoc, 1, &viewProjMtx);
-	apiObj->commandBuffers[idx]->setUniformPtr<glm::mat4>(apiObj->pipelineFloor.mvMatrixLoc, 1, &viewMtx);
-	apiObj->commandBuffers[idx]->setUniformPtr<glm::mat3>(apiObj->pipelineFloor.mvITMatrixLoc, 1, &viewIT);
-	apiObj->commandBuffers[idx]->setUniformPtr<glm::vec3>(apiObj->pipelineFloor.lightPosition, 1, &lightPos);
+	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineFloor.mvpMatrixLoc, 1, &viewProjMtx);
+	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineFloor.mvMatrixLoc, 1, &viewMtx);
+	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineFloor.mvITMatrixLoc, 1, &viewIT);
+	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineFloor.lightPosition, 1, &lightPos);
 
 	apiObj->commandBuffers[idx]->bindVertexBuffer(apiObj->floorVbo, 0, 0);
 	// Draw the quad
