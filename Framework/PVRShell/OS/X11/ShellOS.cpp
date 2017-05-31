@@ -1,12 +1,12 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\OS\X11\ShellOS.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains an implementation of pvr::system::ShellOS for Linux X11 systems.
-***********************************************************************************************************************/
+/*!
+\brief Contains an implementation of pvr::platform::ShellOS for Linux X11 systems.
+\file PVRShell\OS/X11/ShellOS.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/FilePath.h"
+#include "PVRCore/IO/FilePath.h"
 #include "PVRCore/Log.h"
 
 #include "X11/Xlib.h"
@@ -24,7 +24,7 @@
 #include <cstring>
 
 namespace pvr {
-namespace system {
+namespace platform {
 /****************************************************************************
 	Defines
 	*****************************************************************************/
@@ -35,23 +35,13 @@ struct InternalOS
 	XVisualInfo* visual;
 	Colormap     colorMap;
 	Window       window;
-
-//#if defined(BUILDING_FOR_DESKTOP_GL)
-//	XF86VidModeModeLine originalMode;  // modeline that was active at the starting point of this aplication
-//	int         originalModeDotClock;
-//#endif
-
 	InternalOS() : display(0), screen(0), visual(0), window(0)
-// #if defined(BUILDING_FOR_DESKTOP_GL)
-		// , originalModeDotClock(0)
-// #endif
-	{
-
-	}
+	{}
 };
 
 
-static Keys::Enum X11_To_Keycode[255] ={
+static Keys X11_To_Keycode[255] =
+{
 	Keys::Unknown,
 	Keys::Unknown,
 	Keys::Unknown,
@@ -210,9 +200,10 @@ static Keys::Enum X11_To_Keycode[255] ={
 	Keys::Unknown,
 	Keys::Unknown,
 };
-static Keys::Enum getKeyFromX11Code(int keycode)
+static Keys getKeyFromX11Code(uint32 keycode)
 {
-	Keys::Enum key = X11_To_Keycode[keycode];
+	if (keycode >= sizeof(X11_To_Keycode) / sizeof(X11_To_Keycode[0])) { return Keys::Unknown; }
+	Keys key = X11_To_Keycode[keycode];
 	return key;
 }
 
@@ -221,28 +212,29 @@ void ShellOS::updatePointingDeviceLocation()
 	int x, y, dummy0, dummy1;
 	uint dummy2;
 	Window child_return, root_return;
-	if (XQueryPointer(m_OSImplementation->display, m_OSImplementation->window, &root_return, &child_return, &x, &y, &dummy0, &dummy1, &dummy2))
+	if (XQueryPointer(_OSImplementation->display, _OSImplementation->window, &root_return, &child_return, &x, &y, &dummy0, &dummy1, &dummy2))
 	{
-		m_shell->updatePointerPosition(PointerLocation((int16)x, (int16)y));
+		_shell->updatePointerPosition(PointerLocation((int16)x, (int16)y));
 	}
 }
 
 // Setup the capabilities
-const ShellOS::Capabilities ShellOS::m_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
+const ShellOS::Capabilities ShellOS::_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
 
-ShellOS::ShellOS(void* hInstance, OSDATA osdata) : m_instance(hInstance)
+ShellOS::ShellOS(void* hInstance, OSDATA osdata) : _instance(hInstance)
 {
-	m_OSImplementation = new InternalOS;
+	_OSImplementation = new InternalOS;
 }
 
 ShellOS::~ShellOS()
 {
-	delete m_OSImplementation;
+	delete _OSImplementation;
 }
 
-Result::Enum ShellOS::init(DisplayAttributes& data)
+Result ShellOS::init(DisplayAttributes& data)
 {
-	if (!m_OSImplementation)
+	(void)data;
+	if (!_OSImplementation)
 	{
 		return Result::OutOfMemory;
 	}
@@ -276,11 +268,11 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 		exePath[res] = '\0'; // Null-terminate readlink's result
 		FilePath filepath(exePath);
 		setApplicationName(filepath.getFilenameNoExtension());
-		m_WritePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
-		m_ReadPaths.clear();
-		m_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
-		m_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
-		m_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
+		_WritePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
+		_ReadPaths.clear();
+		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
+		_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
+		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
 	}
 
 	delete[] exePath;
@@ -288,12 +280,12 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	return Result::Success;
 }
 
-static Bool waitForMapNotify(Display* d, XEvent* e, char* arg)
+static Bool waitForMapNotify(Display* /*d*/, XEvent* e, char* arg)
 {
 	return (e->type == MapNotify) && (e->xmap.window == (Window)arg);
 }
 
-Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
+Result ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	Display* display = XOpenDisplay(NULL);
 
@@ -319,26 +311,20 @@ Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 	if (!data.fullscreen)
 	{
 		// Resize if the width and height if they're out of bounds
-		if (data.width > display_width)
+		if (data.width > (uint32)display_width)
 		{
 			data.width = display_width;
 		}
 
-		if (data.height > display_height)
+		if (data.height > (uint32)display_height)
 		{
 			data.height = display_height;
 		}
 	}
 
-	if (data.x == DisplayAttributes::PosDefault)
-	{
-		data.x = 0;
-	}
+	if (data.x == (uint32)DisplayAttributes::PosDefault) { data.x = 0; }
+	if (data.y == (uint32)DisplayAttributes::PosDefault) { data.y = 0; }
 
-	if (data.y == DisplayAttributes::PosDefault)
-	{
-		data.y = 0;
-	}
 	// Create the window
 	XSetWindowAttributes	WinAttibutes;
 	XSizeHints				sh;
@@ -358,7 +344,7 @@ Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 
 	Window window;
 //#if defined(BUILDING_FOR_DESKTOP_GL)
-//	m_i32OriginalModeDotClock = XF86VidModeBadClock;
+//	_i32OriginalModeDotClock = XF86VidModeBadClock;
 //
 //	if (data.fullScreen)
 //	{
@@ -391,7 +377,7 @@ Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 //		}
 //
 //		// save desktop-resolution before switching modes
-//		XF86VidModeGetModeLine(display, screen, &m_OSImplementation->originalModeDotClock, &m_OSImplementation->originalMode);
+//		XF86VidModeGetModeLine(display, screen, &_OSImplementation->originalModeDotClock, &_OSImplementation->originalMode);
 //
 //		XF86VidModeSwitchToMode(display, screen, modes[chosenMode]);
 //		XF86VidModeSetViewPort(display, screen, 0, 0);
@@ -492,61 +478,61 @@ Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 	XFlush(display);
 
 	// Save our variables
-	m_OSImplementation->display = display;
-	m_OSImplementation->window = window;
-	m_OSImplementation->visual = visual;
-	m_OSImplementation->colorMap = colorMap;
+	_OSImplementation->display = display;
+	_OSImplementation->window = window;
+	_OSImplementation->visual = visual;
+	_OSImplementation->colorMap = colorMap;
 	return Result::Success;
 }
 
 void ShellOS::releaseWindow()
 {
-	XDestroyWindow(m_OSImplementation->display, m_OSImplementation->window);
-	m_OSImplementation->window = 0;
-	XFreeColormap(m_OSImplementation->display, m_OSImplementation->colorMap);
-	m_OSImplementation->colorMap = 0;
+	XDestroyWindow(_OSImplementation->display, _OSImplementation->window);
+	_OSImplementation->window = 0;
+	XFreeColormap(_OSImplementation->display, _OSImplementation->colorMap);
+	_OSImplementation->colorMap = 0;
 
-	delete m_OSImplementation->visual;
-	m_OSImplementation->visual = 0;
+	delete _OSImplementation->visual;
+	_OSImplementation->visual = 0;
 
-	XCloseDisplay(m_OSImplementation->display);
-	m_OSImplementation->display = 0;
+	XCloseDisplay(_OSImplementation->display);
+	_OSImplementation->display = 0;
 }
 
 OSApplication ShellOS::getApplication() const
 {
-	return m_instance;
+	return _instance;
 }
 
 OSDisplay ShellOS::getDisplay() const
 {
-	return static_cast<OSDisplay>(m_OSImplementation->display);
+	return static_cast<OSDisplay>(_OSImplementation->display);
 }
 
 OSWindow ShellOS::getWindow() const
 {
-	return  reinterpret_cast<void*>(m_OSImplementation->window);
+	return  reinterpret_cast<void*>(_OSImplementation->window);
 }
 
-Result::Enum ShellOS::handleOSEvents()
+Result ShellOS::handleOSEvents()
 {
 	XEvent	event;
 	char*		atoms;
 
 	// Are there messages waiting?
-	int numMessages = XPending(m_OSImplementation->display);
+	int numMessages = XPending(_OSImplementation->display);
 
 	for (int i = 0; i < numMessages; ++i)
 	{
-		XNextEvent(m_OSImplementation->display, &event);
+		XNextEvent(_OSImplementation->display, &event);
 
 		switch (event.type)
 		{
 		case ClientMessage:
-			atoms = XGetAtomName(m_OSImplementation->display, event.xclient.message_type);
+			atoms = XGetAtomName(_OSImplementation->display, event.xclient.message_type);
 			if (*atoms == *"WM_PROTOCOLS")
 			{
-				m_shell->onSystemEvent(SystemEvent::SystemEvent_Quit);
+				_shell->onSystemEvent(SystemEvent::SystemEvent_Quit);
 			}
 			XFree(atoms);
 			break;
@@ -558,7 +544,7 @@ Result::Enum ShellOS::handleOSEvents()
 			{
 			case 1:
 			{
-				m_shell->onPointingDeviceUp(0);
+				_shell->onPointingDeviceUp(0);
 			}
 			break;
 			default: break;
@@ -572,7 +558,7 @@ Result::Enum ShellOS::handleOSEvents()
 			{
 			case 1:
 			{
-				m_shell->onPointingDeviceDown(0);
+				_shell->onPointingDeviceDown(0);
 			}
 			break;
 			default: break;
@@ -586,8 +572,8 @@ Result::Enum ShellOS::handleOSEvents()
 		//	Event e = EventTypeTouchMove;
 		//	e.touch.touchID = 0;
 
-		//	e.touch.x = motion_event->x / (float)XDisplayWidth(m_OSImplementation->display, m_OSImplementation->screen);
-		//	e.touch.y = motion_event->y / (float)XDisplayHeight(m_OSImplementation->display, m_OSImplementation->screen);
+		//	e.touch.x = motion_event->x / (float)XDisplayWidth(_OSImplementation->display, _OSImplementation->screen);
+		//	e.touch.y = motion_event->y / (float)XDisplayHeight(_OSImplementation->display, _OSImplementation->screen);
 
 		//	eventManager.submitEvent(e);
 		//	break;
@@ -596,18 +582,32 @@ Result::Enum ShellOS::handleOSEvents()
 		{
 			XKeyEvent* key_event = ((XKeyEvent*)&event);
 			Log(Log.Debug, "%d", key_event->keycode);
-if (getKeyFromX11Code(key_event->keycode)==Keys::Escape) {Log(Log.Debug, "Escape");} 
-else {Log(Log.Debug, "???");}
-			m_shell->onKeyDown(getKeyFromX11Code(key_event->keycode));
+			if (getKeyFromX11Code(key_event->keycode) == Keys::Escape) {Log(Log.Debug, "Escape");}
+			else {Log(Log.Debug, "???");}
+			_shell->onKeyDown(getKeyFromX11Code(key_event->keycode));
 		}
 		break;
 		case KeyRelease:
 		{
 			XKeyEvent* key_event = ((XKeyEvent*)&event);
-			m_shell->onKeyUp(getKeyFromX11Code(key_event->keycode));
+			_shell->onKeyUp(getKeyFromX11Code(key_event->keycode));
 		}
 		break;
 
+		case ConfigureNotify:
+		{
+			static XConfigureEvent*  configure_event = NULL;
+			 configure_event = ((XConfigureEvent*)&event);
+			_shell->onConfigureEvent(
+						ConfigureEvent
+			            		{
+							configure_event->x,
+							configure_event->y,
+							configure_event->width,
+							configure_event->height,
+							configure_event->border_width
+						});
+		}
 		default:
 			break;
 		}
@@ -619,10 +619,10 @@ else {Log(Log.Debug, "???");}
 
 bool ShellOS::isInitialized()
 {
-	return m_OSImplementation && m_OSImplementation->window;
+	return _OSImplementation && _OSImplementation->window;
 }
 
-Result::Enum ShellOS::popUpMessage(const char* title, const char* message, ...) const
+Result ShellOS::popUpMessage(const char* title, const char* message, ...) const
 {
 	if (!title && !message)
 	{

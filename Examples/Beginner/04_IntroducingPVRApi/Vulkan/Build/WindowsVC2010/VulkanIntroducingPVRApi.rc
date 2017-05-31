@@ -64,6 +64,8 @@ GnomeToy.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\GnomeToy.pod"
 // RCDATA: Shaders
 VertShader_vk.spv		RCDATA		"..\\..\\VertShader_vk.spv"
 FragShader_vk.spv		RCDATA		"..\\..\\FragShader_vk.spv"
+VertShader_vk.vsh		RCDATA		"..\\..\\VertShader_vk.vsh"
+FragShader_vk.fsh		RCDATA		"..\\..\\FragShader_vk.fsh"
 
 // RCDATA: Textures
 ClearWood.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\ClearWood.pvr"

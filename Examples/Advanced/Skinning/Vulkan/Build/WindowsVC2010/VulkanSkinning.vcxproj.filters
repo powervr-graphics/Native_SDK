@@ -69,6 +69,18 @@
   <None Include="..\..\..\ProcessedAssets\Grid.pvr">
       <Filter>Content Files\Textures</Filter>
   </None>
+  <None Include="..\..\DefaultFragShader_vk.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\DefaultVertShader_vk.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\SkinnedFragShader_vk.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\SkinnedVertShader_vk.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
   <None Include="..\..\DefaultVertShader_vk.spv">
       <Filter>Content Files\Shaders</Filter>
   </None>
@@ -79,6 +91,9 @@
       <Filter>Content Files\Shaders</Filter>
   </None>
   <None Include="..\..\SkinnedFragShader_vk.spv">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\Skinning_vk.pfx">
       <Filter>Content Files\Shaders</Filter>
   </None>
   </ItemGroup>

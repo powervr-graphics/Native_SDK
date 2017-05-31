@@ -5,6 +5,6 @@ var searchData=
   ['getluminancetexture',['getLuminanceTexture',['../classpvr_1_1_camera_interface.html#ac9a1f21df549a0e6f1562b5f806f073d',1,'pvr::CameraInterface']]],
   ['getprojectionmatrix',['getProjectionMatrix',['../classpvr_1_1_camera_interface.html#a3cb2b354f4f08ff057fe96066685bf70',1,'pvr::CameraInterface']]],
   ['getrgbtexture',['getRgbTexture',['../classpvr_1_1_camera_interface.html#ab77ba12e270dbe136e09361af3e0c36e',1,'pvr::CameraInterface']]],
-  ['gettexturefrompvrcamerahandle',['getTextureFromPVRCameraHandle',['../namespacepvr.html#a6fcf8fd07b38edad707db27da931dded',1,'pvr']]],
-  ['global_5fdummy',['global_dummy',['../_camera_interface___android_8cpp.html#a768af9f5c9aadc4708f06cff4621e95a',1,'CameraInterface_Android.cpp']]]
+  ['getsamplerforcameratexture',['getSamplerForCameraTexture',['../namespacepvr.html#a631aaaf90acf9851aa8e1dd982fb0421',1,'pvr']]],
+  ['gettexturefrompvrcamerahandle',['getTextureFromPVRCameraHandle',['../namespacepvr.html#a6fcf8fd07b38edad707db27da931dded',1,'pvr']]]
 ];

@@ -3,17 +3,5 @@ var searchData=
   ['databool',['dataBool',['../structpvr_1_1assets_1_1_effect_semantic_data.html#a5442231104195443f1c27992f2a9f6df',1,'pvr::assets::EffectSemanticData']]],
   ['datachar',['dataChar',['../structpvr_1_1assets_1_1_effect_semantic_data.html#a5108e4398293d1b0bce1efcfbdc44b63',1,'pvr::assets::EffectSemanticData']]],
   ['dataf32',['dataF32',['../structpvr_1_1assets_1_1_effect_semantic_data.html#a649e5c361a5c579b5c529627208fd1c2',1,'pvr::assets::EffectSemanticData']]],
-  ['datai32',['dataI32',['../structpvr_1_1assets_1_1_effect_semantic_data.html#a55e3c320b255c174637db62ea0b0c866',1,'pvr::assets::EffectSemanticData']]],
-  ['depth',['depth',['../structpvr_1_1assets_1_1_texture_header_1_1_header.html#ab381dd29d2df24fdce50104aa67579ec',1,'pvr::assets::TextureHeader::Header']]],
-  ['depth16',['Depth16',['../classpvr_1_1_pixel_format.html#a732f040b30f9d56e6efac125b8773110',1,'pvr::PixelFormat']]],
-  ['depth24',['Depth24',['../classpvr_1_1_pixel_format.html#a3a071a3459644ca9e3ea74055870f396',1,'pvr::PixelFormat']]],
-  ['depth24stencil8',['Depth24Stencil8',['../classpvr_1_1_pixel_format.html#a0f78b45bf22418d70ed6979bdaa007bf',1,'pvr::PixelFormat']]],
-  ['depth32',['Depth32',['../classpvr_1_1_pixel_format.html#a9d42dd3a564c2c7abc07916fafc9b280',1,'pvr::PixelFormat']]],
-  ['depth32stencil8',['Depth32Stencil8',['../classpvr_1_1_pixel_format.html#a1e5ccf8d77c7324fd0df1842f584ac67',1,'pvr::PixelFormat']]],
-  ['depth8',['Depth8',['../classpvr_1_1_pixel_format.html#a381047a8f522979eabbe8b4b75b4e8ff',1,'pvr::PixelFormat']]],
-  ['description',['Description',['../structpvr_1_1assets_1_1_p_f_x_parser_header.html#a4fe8948025012d498ab7dc5613cca257',1,'pvr::assets::PFXParserHeader']]],
-  ['diffuse',['diffuse',['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a5410ad97b892d0c3c359e2835be31ec8',1,'pvr::assets::Model::Material::InternalData']]],
-  ['diffusetextureindex',['diffuseTextureIndex',['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a9f6f58ae888284251bb619fea428c569',1,'pvr::assets::Model::Material::InternalData']]],
-  ['dxt_5fmin_5ftexheight',['DXT_MIN_TEXHEIGHT',['../namespacepvr_1_1assets.html#ad8336ed6266192582c9c62c53c8c49b8',1,'pvr::assets']]],
-  ['dxt_5fmin_5ftexwidth',['DXT_MIN_TEXWIDTH',['../namespacepvr_1_1assets.html#adb67ce210789091b523bee86f99f09ba',1,'pvr::assets']]]
+  ['datai32',['dataI32',['../structpvr_1_1assets_1_1_effect_semantic_data.html#a55e3c320b255c174637db62ea0b0c866',1,'pvr::assets::EffectSemanticData']]]
 ];

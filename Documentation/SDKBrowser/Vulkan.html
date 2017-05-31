@@ -37,9 +37,6 @@
 				<a href="PowerVRTools.html">PowerVR Tools</a>
 			</div>
 			<div class="navlink">
-				<a href="ReleaseNotes.html">Release Notes</a>
-			</div>
-			<div class="navlink">
 				<a href="Licence.html">EULA</a>
 			</div>
 			<div class="navlink">
@@ -131,13 +128,13 @@ Vulkan is a new API designed for portability across multiple platforms including
 						<a href="../../Examples/Beginner/04_IntroducingPVRApi/IntroducingPVRApi.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/04_IntroducingPVRApi/IntroducingPVRApi.png" alt="IntroducingPVRApi" /></a>
 						<input type="checkbox" id="IntroducingPVRApiFull2">
 							<label for="IntroducingPVRApiFull2" title="Click for more information"><h3>IntroducingPVRApi</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>Ρender a .pod scene using a .pfx effect file with automatic shader versioning using the PVRApi library.
+							<div class="ShortDescription" id="TexturingShort"><p>Render a .pod scene using a .pfx effect file with automatic shader versioning using the PVRApi library.
 </p><small><b>Vulkan 1.0, OpenGL ES 2.0/3.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This training course demonstrates how to use the PVRApi library to render a scene from a pod file, using a .pfx effect file. PFX is both a file format and an API, and stands for PowerVR Effects. The library loads the POD file and the PFX file separately, creates a PVRAssets Model from the POD and a PVRApi Effect from the PFX file, and combines them to render the scene using the PVRApi necessary objects. Uses the PVRUIRenderer library to display simple text on screen. Provided for Vulkan (with SpirV shaders) and OpenGL ES(version 2.x and 3.x shaders).
+								<p>This training course demonstrates how to use the PVRApi library to render a scene from a pod file, using a .pfx effect file. PFX is both a file format and an API, and stands for PowerVR Effects. The library loads the POD file and the PFX file separately, creates a PVRAssets Model from the POD and a PVRApi Effect from the PFX file, and combines them to render the scene using the PVRApi necessary objects. Uses the PVREngineUtils library to display simple text on screen. Provided for Vulkan (with SpirV shaders) and OpenGL ES(version 2.x and 3.x shaders).
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
@@ -147,24 +144,24 @@ Vulkan is a new API designed for portability across multiple platforms including
 						</input>
 					</div>
 				</li>
-				<li id="IntroUIRenderer">
+				<li id="IntroducingUIRenderer">
 					<div class="title">
-						<a href="../../Examples/Beginner/05_IntroUIRenderer/IntroUIRenderer.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/05_IntroUIRenderer/IntroUIRenderer.png" alt="IntroUIRenderer" /></a>
-						<input type="checkbox" id="IntroUIRendererFull2">
-							<label for="IntroUIRendererFull2" title="Click for more information"><h3>IntroUIRenderer</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>This training course introduces the PVRUIRenderer library to do advanced Text tasks.
+						<a href="../../Examples/Beginner/05_IntroducingUIRenderer/IntroducingUIRenderer.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/05_IntroducingUIRenderer/IntroducingUIRenderer.png" alt="IntroducingUIRenderer" /></a>
+						<input type="checkbox" id="IntroducingUIRendererFull2">
+							<label for="IntroducingUIRendererFull2" title="Click for more information"><h3>IntroducingUIRenderer</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>This training course introduces the PVREngineUtils library to do advanced Text tasks.
 </p><small><b>Vulkan 1.0, OpenGL ES 2.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This training course introduces the PVRUIRenderer framework library.The user can create "Sprites" (2D elements) which can be grouped in 2D and/or 3D groups to be displayed as UI's or world text. 2D transformations (pixel and/or NDC coordinates) both single and in a group, anchoring on different parts of the screen or the group and 3D transformations of groups of sprites are all possible.
+								<p>This training course introduces the PVREngineUtils framework library.The user can create "Sprites" (2D elements) which can be grouped in 2D and/or 3D groups to be displayed as UI's or world text. 2D transformations (pixel and/or NDC coordinates) both single and in a group, anchoring on different parts of the screen or the group and 3D transformations of groups of sprites are all possible.
 In this example, UIRendererer is used to display images and Unicode text, screen aligned and with 3D transformations. 
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
 								<p><strong>Links:</strong></p>
-								<p class="source"><a href="../../Examples/Beginner/05_IntroUIRenderer/Vulkan/VkIntroUIRenderer.cpp" target="_blank">VkIntroUIRenderer.cpp</a>  |  <a href="../../Examples/Beginner/05_IntroUIRenderer/Vulkan/Build/" target="_blank">Projects</a></p>
+								<p class="source"><a href="../../Examples/Beginner/05_IntroducingUIRenderer/Vulkan/VulkanIntroducingUIRenderer.cpp" target="_blank">VulkanIntroducingUIRenderer.cpp</a>  |  <a href="../../Examples/Beginner/05_IntroducingUIRenderer/Vulkan/Build/" target="_blank">Projects</a></p>
 							</div>
 						</input>
 					</div>
@@ -191,6 +188,50 @@ This example can be used as the baseline for rendering an object. Implemented fo
 						</input>
 					</div>
 				</li>
+				<li id="MultiSampling">
+					<div class="title">
+						<a href="../../Examples/Intermediate/MultiSampling/MultiSampling.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/MultiSampling/MultiSampling.png" alt="MultiSampling" /></a>
+						<input type="checkbox" id="MultiSamplingFull2">
+							<label for="MultiSamplingFull2" title="Click for more information"><h3>MultiSampling</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>Ρender a .pod scene using a .pfx effect file to a multisampling frame buffer object.
+</p><small><b>Vulkan 1.0, OpenGL ES 2.0/3.0
+</small></b></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p>This training course demonstrates how to use the framework to render a scene using multisampling feature. Uses the PVREngineUtils library to display simple text on screen. Provided for Vulkan (with SpirV shaders) and OpenGL ES(version 2.x and 3.x shaders).
+</p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Quit	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/MultiSampling/Vulkan/VulkanMultiSampling.cpp" target="_blank">VulkanMultiSampling.cpp</a>  |  <a href="../../Examples/Intermediate/MultiSampling/Vulkan/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="Multithreading">
+					<div class="title">
+						<a href="../../Examples/Intermediate/Multithreading/Multithreading.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/Multithreading/Multithreading.png" alt="Multithreading" /></a>
+						<input type="checkbox" id="MultithreadingFull2">
+							<label for="MultithreadingFull2" title="Click for more information"><h3>Multithreading</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>This training course demonstrates using the PowerVR Framework to stream assets asynchronously into an application
+</p><small><b>Vulkan 1.0, OpenGL ES 2.0
+</small></b></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p>This training course will display a loading screen while assets are being loaded in, and then 
+switch to displaying the bust from the BumpMap demo.
+Implemented for Vulkan and OpenGL ES 2.0/3.0.
+</p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Quit	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/Multithreading/Vulkan/VulkanMultithreading.cpp" target="_blank">VulkanMultithreading.cpp</a>  |  <a href="../../Examples/Intermediate/Multithreading/Vulkan/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
 				<li id="PostProcessing">
 					<div class="title">
 						<a href="../../Examples/Intermediate/PostProcessing/PostProcessing.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/PostProcessing/PostProcessing.png" alt="PostProcessing" /></a>
@@ -212,6 +253,98 @@ This example can be used as the baseline for rendering an object. Implemented fo
 						</input>
 					</div>
 				</li></div></ul><div id="Advanced""><h2>Advanced</h2><ul class="accordion">
+				<li id="DeferredShading">
+					<div class="title">
+						<a href="../../Examples/Advanced/DeferredShading/DeferredShading.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/DeferredShading/DeferredShading.png" alt="DeferredShading" /></a>
+						<input type="checkbox" id="DeferredShadingFull2">
+							<label for="DeferredShadingFull2" title="Click for more information"><h3>DeferredShading</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>Demonstrates deferred shading using Pixel Local Storage (PLS), or Multiple Render Targets(MRT).
+</p><small><b>OpenGL ES 3.0
+</small></b></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p>Traditional rendering algorithms submit geometry and immediately apply shading effects to the rasterized primitives. Complex shading effects may require multiple render passes to produce the final pixel color, with the geometry submitted every pass. Deferred shading is an alternative rendering technique that submits the scene geometry once, storing per-pixel attributes into local video memory to be used in the subsequent rendering passes. 
+In these later passes, light volume primitives are rendered, and the per-pixel attributes contained in the buffer are retrieved at a 1:1 mapping ratio so that each pixel is shaded individually.
+In the PowerVR architecture, the user can use fast on-chip memory instead of Multiple Render Targets, by utilising the Pixel Local Storage extension.
+If running from a command line, add -forcemrt to force Multiple Render Targets rendering.
+Requires at least OpenGL ES 3.0 capability for either MRT or PLS. Requires the extension GL_EXT_shader_pixel_local_storage for PLS.
+</p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Action1	:	Pause</p><p>	Action2	:	Orbit camera</p><p>	Quit	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/DeferredShading/Vulkan/VulkanDeferredShading.cpp" target="_blank">VulkanDeferredShading.cpp</a>  |  <a href="../../Examples/Advanced/DeferredShading/Vulkan/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="DeferredShadingPFX">
+					<div class="title">
+						<a href="../../Examples/Advanced/DeferredShadingPFX/DeferredShadingPFX.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/DeferredShadingPFX/DeferredShadingPFX.png" alt="DeferredShadingPFX" /></a>
+						<input type="checkbox" id="DeferredShadingPFXFull2">
+							<label for="DeferredShadingPFXFull2" title="Click for more information"><h3>DeferredShadingPFX</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>Demonstrates deferred shading using Pixel Local Storage (PLS), or Multiple Render Targets(MRT).
+</p><small><b>OpenGL ES 3.0
+</small></b></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p>Traditional rendering algorithms submit geometry and immediately apply shading effects to the rasterized primitives. Complex shading effects may require multiple render passes to produce the final pixel color, with the geometry submitted every pass. Deferred shading is an alternative rendering technique that submits the scene geometry once, storing per-pixel attributes into local video memory to be used in the subsequent rendering passes. 
+In these later passes, light volume primitives are rendered, and the per-pixel attributes contained in the buffer are retrieved at a 1:1 mapping ratio so that each pixel is shaded individually.
+In the PowerVR architecture, the user can use fast on-chip memory instead of Multiple Render Targets, by utilising the Pixel Local Storage extension.
+If running from a command line, add -forcemrt to force Multiple Render Targets rendering.
+Requires at least OpenGL ES 3.0 capability for either MRT or PLS. Requires the extension GL_EXT_shader_pixel_local_storage for PLS.
+</p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Action1	:	Pause</p><p>	Action2	:	Orbit camera</p><p>	Quit	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/DeferredShadingPFX/Vulkan/VulkanDeferredShadingPFX.cpp" target="_blank">VulkanDeferredShadingPFX.cpp</a>  |  <a href="../../Examples/Advanced/DeferredShadingPFX/Vulkan/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="ExampleUI">
+					<div class="title">
+						<a href="../../Examples/Advanced/ExampleUI/ExampleUI.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/ExampleUI/ExampleUI.png" alt="ExampleUI" /></a>
+						<input type="checkbox" id="ExampleUIFull2">
+							<label for="ExampleUIFull2" title="Click for more information"><h3>ExampleUI</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>Use the PVREngineUtils to efficiently render sprites to form a comples User Interface.
+</p><small><b>OpenGL ES 2.0, OpenGL ES 3.0
+</small></b></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p>Rendering graphical user interfaces can quickly become overly complex. The PVREngineUtils can assist in rendering a lot of sprites with different complicated transformations, while remaining crisp and responsive. Usability and performance optimizations can both be foun in this example, such as UIRenderer transformation groups and texture atlases. Shaders available for OpenGL ES 2.x and 3.x.
+</p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Left/Right	:	Change UI Page</p><p>	Quit	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/ExampleUI/Vulkan/VulkanExampleUI.cpp" target="_blank">VulkanExampleUI.cpp</a>  |  <a href="../../Examples/Advanced/ExampleUI/Vulkan/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="Glass">
+					<div class="title">
+						<a href="../../Examples/Advanced/Glass/Glass.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/Glass/Glass.png" alt="Glass" /></a>
+						<input type="checkbox" id="GlassFull2">
+							<label for="GlassFull2" title="Click for more information"><h3>Glass</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>Demonstrates dynamic reflection and refraction using a dual paraboloid environment map.
+</p><small><b>OpenGL ES 2.0/3.0
+</small></b></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p>This example shows a technique to maintain a dynamic environment map by rendering both hemispheres of the scene to two halves of a single rectangular texture. In addition, this also demonstrates rendering skyboxes with a full screen quad, reflection and refraction with chromatic dispersion. Shaders available for OpenGL ES 2.x and 3.x.
+</p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Quit	:	Close the application</p><p>	Left/Right : Change the effect between combinations of Reflection and Refraction/Chromatic Dispersion</p><p>	Up/Down	:	Look up or down.</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/Glass/Vulkan/VulkanGlass.cpp" target="_blank">VulkanGlass.cpp</a>  |  <a href="../../Examples/Advanced/Glass/Vulkan/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
 				<li id="GnomeHorde">
 					<div class="title">
 						<a href="../../Examples/Advanced/GnomeHorde/GnomeHorde.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/GnomeHorde/GnomeHorde.png" alt="GnomeHorde" /></a>
@@ -239,6 +372,48 @@ submits them to the GPU rendering Queue and allows the frame to proceed.
 								<p><p>	Esc	:	Close</p></p>
 								<p><strong>Links:</strong></p>
 								<p class="source"><a href="../../Examples/Advanced/GnomeHorde/Vulkan/VulkanGnomeHorde.cpp" target="_blank">VulkanGnomeHorde.cpp</a>  |  <a href="../../Examples/Advanced/GnomeHorde/Vulkan/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="PVRScopeExample">
+					<div class="title">
+						<a href="../../Examples/Advanced/PVRScopeExample/PVRScopeExample.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/PVRScopeExample/PVRScopeExample.png" alt="PVRScopeExample" /></a>
+						<input type="checkbox" id="PVRScopeExampleFull2">
+							<label for="PVRScopeExampleFull2" title="Click for more information"><h3>PVRScopeExample</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>Demonstrates the use of PVRScope and the example graphing code.
+</p><small><b>OpenGL ES 2.0, OpenGL ES 3.0
+</small></b></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p>This demo uses a simple PBR-style shader and shows the use of PVRScope that allows an application to return performance statistics from the GPU in real time. It uses the example graphing code to render a graph of the selected counters on the screen. For further details, refer to the PVRScope User Manual. 
+</p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Quit	:	Close demo</p><p>	Up/Down	:	Select a counter from the available list of HW counters</p><p>	Action1	:	Add/remove selected counter to the graph</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/PVRScopeExample/Vulkan/VulkanPVRScopeExample.cpp" target="_blank">VulkanPVRScopeExample.cpp</a>  |  <a href="../../Examples/Advanced/PVRScopeExample/Vulkan/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="PVRScopeRemote">
+					<div class="title">
+						<a href="../../Examples/Advanced/PVRScopeRemote/PVRScopeRemote.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/PVRScopeRemote/PVRScopeRemote.png" alt="PVRScopeRemote" /></a>
+						<input type="checkbox" id="PVRScopeRemoteFull2">
+							<label for="PVRScopeRemoteFull2" title="Click for more information"><h3>PVRScopeRemote</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>Demonstrates the use of PVRScope's remote communication features.
+</p><small><b>OpenGL ES 2.0, OpenGL ES 3.0
+</small></b></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p>This example shows how to use the editable data and custom mark functionality of PVRScope. PVRTune must be running and connected to an instance of PVRPerfServer running on the target device for this demo to function. You can then edit from the PVRTune GUI any variables that the application has exposed, in this case the shaders and material properties of the statue displayed.
+</p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Quit	:	Close demo</p><p>	PVRTune	:	Control demo variables through PVRTune</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Advanced/PVRScopeRemote/Vulkan/VulkanPVRScopeRemote.cpp" target="_blank">VulkanPVRScopeRemote.cpp</a>  |  <a href="../../Examples/Advanced/PVRScopeRemote/Vulkan/Build/" target="_blank">Projects</a></p>
 							</div>
 						</input>
 					</div>

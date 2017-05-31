@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['osapplication',['OSApplication',['../namespacepvr_1_1system.html#ab3aaacb91572c717579aa05bc60be7bc',1,'pvr::system']]],
-  ['osdata',['OSDATA',['../namespacepvr_1_1system.html#adfd6ffc2db512ec8a267ef62375acad3',1,'pvr::system']]],
-  ['osdisplay',['OSDisplay',['../namespacepvr_1_1system.html#a4c558e7be1f5a2cdbfc564000dcc72a6',1,'pvr::system']]],
-  ['oswindow',['OSWindow',['../namespacepvr_1_1system.html#ac2e089190fcdcec37af6df9f0aa8ff4a',1,'pvr::system']]]
+  ['osapplication',['OSApplication',['../namespacepvr_1_1platform.html#a4e66494665615871b2101e8a3d54191e',1,'pvr::platform']]],
+  ['osdata',['OSDATA',['../namespacepvr_1_1platform.html#a489051a8948186fd4bc6d3ca278ee91e',1,'pvr::platform']]],
+  ['osdisplay',['OSDisplay',['../namespacepvr_1_1platform.html#a4beb66550bdc8a29e34b9a1742c40e99',1,'pvr::platform']]],
+  ['oswindow',['OSWindow',['../namespacepvr_1_1platform.html#a3192dfd224eb111d61b3ce71b7587621',1,'pvr::platform']]]
 ];

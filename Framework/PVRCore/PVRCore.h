@@ -1,19 +1,18 @@
-/*!*********************************************************************************************************************
-\file         PVRCore\PVRCore.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Include this file if you wish to use the PVRCore functionality
-***********************************************************************************************************************/
+/*!
+\brief Include this file if you wish to use the PVRCore functionality
+\file PVRCore/Base/PVRCore.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRCore/CoreIncludes.h"
-#include "PVRCore/RefCounted.h"
-#include "PVRCore/AxisAlignedBox.h"
-#include "PVRCore/FileStream.h"
-#include "PVRCore/BufferStream.h"
-#include "PVRCore/RingBuffer.h"
+#include "PVRCore/Base/RefCounted.h"
+#include "PVRCore/Maths.h"
+#include "PVRCore/IO.h"
+#include "PVRCore/DataStructures.h"
 #include "PVRCore/StringFunctions.h"
-#include "PVRCore/Time_.h"
-#include "PVRCore/UnicodeConverter.h"
+#include "PVRCore/Base/Time_.h"
+#include "PVRCore/Interfaces.h"
 
 /*****************************************************************************/
 /*! \mainpage PVRCore

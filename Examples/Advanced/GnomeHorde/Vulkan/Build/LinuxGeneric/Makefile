@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanGnomeHorde
-DEPENDS =  PVRCore PVRAssets PVRVulkanGlue PVRVulkan PVRNativeVulkan PVRShell PVRUIRenderer
-LIBRARIES =  PVRUIRenderer PVRShell PVRNativeVulkan PVRVulkan PVRVulkanGlue PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRNativeVulkan PVRVulkan PVRShell PVREngineUtils
+LIBRARIES =  PVREngineUtils PVRShell PVRVulkan PVRNativeVulkan PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
@@ -22,6 +22,11 @@ RESOURCES += \
            Solid.fsh.spv\
            Shadow.fsh.spv\
            Plant.fsh.spv\
+           Object.vsh\
+           Shadow.vsh\
+           Solid.fsh\
+           Shadow.fsh\
+           Plant.fsh\
 
 COMMON_RESOURCES += \
            bigMushroom_shadow.pvr\

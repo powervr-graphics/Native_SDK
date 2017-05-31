@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\EntryPoint\WinMain\main.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Application entry point for Microsoft Windows systems.
-***********************************************************************************************************************/
+/*!
+\brief Application entry point for Microsoft Windows systems.
+\file PVRShell/EntryPoint/WinMain/main.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -11,7 +11,7 @@
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRShell/StateMachine.h"
 #include "PVRShell/CommandLine.h"
-#include "PVRCore/IPlatformContext.h"
+#include "PVRCore/Interfaces/IPlatformContext.h"
 #include "PVRShell/OS/Windows/WindowsOSData.h"
 #include <windows.h>
 #include <io.h>
@@ -28,13 +28,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE , LPWSTR lpCmdLine, int nCmdSh
 		// Enable memory-leak reports
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_EVERY_16_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
 #endif
-		pvr::system::WindowsOSData data;
+		pvr::platform::WindowsOSData data;
 		data.cmdShow = nCmdShow;
 
-		pvr::system::CommandLineParser commandLine;
+		pvr::platform::CommandLineParser commandLine;
 		commandLine.set(lpCmdLine);
 
-		pvr::system::StateMachine stateMachine(hInstance, commandLine, &data);
+		pvr::platform::StateMachine stateMachine(hInstance, commandLine, &data);
 
 		stateMachine.init();
 

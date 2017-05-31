@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['state',['State',['../classpvr_1_1system_1_1_state_machine.html#adeda70608e9f5f0351ad7298389becef',1,'pvr::system::StateMachine']]]
+  ['simplifiedinput',['SimplifiedInput',['../namespacepvr.html#a9a6da56806c568a6f9833d118c5c8083',1,'pvr']]],
+  ['systemevent',['SystemEvent',['../namespacepvr.html#ae4c92053860fcd90c8ae00f40354965a',1,'pvr']]]
 ];

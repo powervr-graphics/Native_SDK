@@ -2,10 +2,10 @@
 ExampleUI
 
 :ShortDescription:
-Use the PVRUIRenderer to efficiently render sprites to form a comples User Interface.
+Use the PVREngineUtils to efficiently render sprites to form a comples User Interface.
 
 :FullDescription:
-Rendering graphical user interfaces can quickly become overly complex. The PVRUIRenderer can assist in rendering a lot of sprites with different complicated transformations, while remaining crisp and responsive. Usability and performance optimizations can both be foun in this example, such as UIRenderer transformation groups and texture atlases. Shaders available for OpenGL ES 2.x and 3.x.
+Rendering graphical user interfaces can quickly become overly complex. The PVREngineUtils can assist in rendering a lot of sprites with different complicated transformations, while remaining crisp and responsive. Usability and performance optimizations can both be foun in this example, such as UIRenderer transformation groups and texture atlases. Shaders available for OpenGL ES 2.x and 3.x.
 	
 :APIS:
 OpenGL ES 2.0, OpenGL ES 3.0

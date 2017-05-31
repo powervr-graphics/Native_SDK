@@ -1,21 +1,19 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/FileIO/TextureReaderDDS.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         An experimental DDS texture reader.
-***********************************************************************************************************************/
+/*!
+\brief An experimental DDS texture reader.
+\file PVRAssets/FileIO/TextureReaderDDS.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
-#include "PVRAssets/Texture/Texture.h"
-#include "PVRAssets/AssetReader.h"
-#include "PVRAssets/FileIO/FileDefinesDDS.h"
+#include "PVRCore/Texture.h"
+#include "PVRCore/Texture/FileDefinesDDS.h"
+#include "PVRCore/IO/AssetReader.h"
 
 namespace pvr {
 namespace assets {
 namespace assetReaders {
-/*!*********************************************************************************************************************
-\brief Experimental DDS Texture reader
-***********************************************************************************************************************/
+/// <summary>Experimental DDS Texture reader</summary>
 class TextureReaderDDS : public AssetReader <Texture >
 {
 public:
@@ -27,13 +25,10 @@ public:
 
 	virtual bool isSupportedFile(Stream& assetStream);
 	virtual std::vector<std::string> getSupportedFileExtensions();
-	virtual std::string getReaderName();
-	virtual std::string getReaderVersion();
-
 private:
 	virtual bool readNextAsset(Texture& asset);
 	uint32 getDirect3DFormatFromDDSHeader(texture_dds::FileHeader& textureFileHeader);
-	bool m_texturesToLoad;
+	bool _texturesToLoad;
 };
 }
 }

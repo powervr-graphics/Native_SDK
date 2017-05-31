@@ -62,11 +62,16 @@ END
 Robot.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\Robot.pod"
 
 // RCDATA: Shaders
+DefaultFragShader_vk.fsh		RCDATA		"..\\..\\DefaultFragShader_vk.fsh"
+DefaultVertShader_vk.vsh		RCDATA		"..\\..\\DefaultVertShader_vk.vsh"
+SkinnedFragShader_vk.fsh		RCDATA		"..\\..\\SkinnedFragShader_vk.fsh"
+SkinnedVertShader_vk.vsh		RCDATA		"..\\..\\SkinnedVertShader_vk.vsh"
 DefaultVertShader_vk.spv		RCDATA		"..\\..\\DefaultVertShader_vk.spv"
 DefaultFragShader_vk.spv		RCDATA		"..\\..\\DefaultFragShader_vk.spv"
 SkinnedVertShader_vk.spv		RCDATA		"..\\..\\SkinnedVertShader_vk.spv"
 SkinnedFragShader_vk.spv		RCDATA		"..\\..\\SkinnedFragShader_vk.spv"
-
+// RCDATA: Effects
+Skinning_vk.pfx		RCDATA		"..\\..\\Skinning_vk.pfx"
 // RCDATA: Textures
 Tiles.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\Tiles.pvr"
 RobotDiffuse.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\RobotDiffuse.pvr"

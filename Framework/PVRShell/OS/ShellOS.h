@@ -1,42 +1,38 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\OS\ShellOS.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Contains the declaration of the ShellOS class. Most of the functionality is platform-specific, and as such is
-              delegated to platform-specific ShellOS.cpp files. Do not access or use directly.
-***********************************************************************************************************************/
+/*!
+\brief Contains the declaration of the ShellOS class. Most of the functionality is platform-specific, and as such is
+delegated to platform-specific ShellOS.cpp files. Do not access or use directly.
+\file PVRShell/OS/ShellOS.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRShell/ShellIncludes.h"
 #include "PVRShell/ShellData.h"
 #include "PVRShell/Shell.h"
 namespace pvr {
-namespace system {
+namespace platform {
 //Forward declaration of internal implementation.
 struct InternalOS;
 
-/*!****************************************************************************************************************
-\brief Implements a lot of the functionality and forwards to the platform from PVRShell. Users don't use directly,
-       instead use the pvr::Shell class.
-*******************************************************************************************************************/
+/// <summary>Implements a lot of the functionality and forwards to the platform from PVRShell. Users don't use directly,
+/// instead use the pvr::Shell class.</summary>
 class ShellOS
 {
 public:
-	/*!****************************************************************************************************************
-	\brief Capabilities that may be different between platforms.
-	*******************************************************************************************************************/
+	/// <summary>Capabilities that may be different between platforms.</summary>
 	struct Capabilities
 	{
-		types::Capability::Enum resizable;
-		types::Capability::Enum movable;
+		types::Capability resizable;
+		types::Capability movable;
 	};
 
-	ShellData m_shellData;
+	ShellData _shellData;
 	ShellOS(OSApplication instance, OSDATA osdata);
 
 	virtual ~ShellOS();
 
-	Result::Enum init(DisplayAttributes& data); // Accepts a data struct so it can overide default values
-	Result::Enum initializeWindow(DisplayAttributes& data);
+	Result init(DisplayAttributes& data); // Accepts a data struct so it can overide default values
+	Result initializeWindow(DisplayAttributes& data);
 	bool isInitialized();
 	void releaseWindow();
 
@@ -49,46 +45,46 @@ public:
 	const std::string& getWritePath() const;
 	const std::string& getApplicationName() const;
 	void setApplicationName(const std::string&);
-	Result::Enum handleOSEvents();
+	Result handleOSEvents();
 
 	static const Capabilities&	getCapabilities()
 	{
-		return m_capabilities;
+		return _capabilities;
 	}
 
 	Stream* getFileStream(const std::string filename);
-	Result::Enum popUpMessage(const tchar* const title, const tchar* const message, ...) const;
+	Result popUpMessage(const char8* const title, const char8* const message, ...) const;
 
-	Shell* getShell() { return m_shell.get(); }
+	Shell* getShell() { return _shell.get(); }
 
 
 	void updatePointingDeviceLocation();
 protected:
-	std::auto_ptr<Shell> m_shell;
-	std::string m_AppName;
-	std::vector<std::string> m_ReadPaths;
-	std::string m_WritePath;
+	std::auto_ptr<Shell> _shell;
+	std::string _AppName;
+	std::vector<std::string> _ReadPaths;
+	std::string _WritePath;
 
 private:
-	OSApplication m_instance;
-	InternalOS*	m_OSImplementation;
-	static const Capabilities m_capabilities;
+	OSApplication _instance;
+	InternalOS*	_OSImplementation;
+	static const Capabilities _capabilities;
 };
 
-inline const string& ShellOS::getApplicationName() const { return m_AppName; }
-inline void ShellOS::setApplicationName(const std::string& appName) { m_AppName = appName; }
+inline const string& ShellOS::getApplicationName() const { return _AppName; }
+inline void ShellOS::setApplicationName(const std::string& appName) { _AppName = appName; }
 inline const string& ShellOS::getDefaultReadPath() const
 {
-	assertion(m_ReadPaths.size() != 0);
-	return m_ReadPaths[0];
+	assertion(_ReadPaths.size() != 0);
+	return _ReadPaths[0];
 }
 inline const std::vector<std::string>& ShellOS::getReadPaths() const
 {
-	return m_ReadPaths;
+	return _ReadPaths;
 }
 inline const string& ShellOS::getWritePath() const
 {
-	return m_WritePath;
+	return _WritePath;
 }
 }
 }

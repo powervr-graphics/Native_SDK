@@ -3,7 +3,8 @@ ifeq "$(X11BUILD)" "1"
 WS_LIBS = -L$(X11ROOT)/lib -lX11 -lXau
 WS_INC  = $(X11ROOT)/include
 WS = X11
-
+PLAT_CFLAGS += -DX11
+WS_INC += /usr/include
 ifneq (,$(filter OGL,$(APIS)))
 WS_LIBS += -lXxf86vm -lXext
 WS_INC += /usr/include

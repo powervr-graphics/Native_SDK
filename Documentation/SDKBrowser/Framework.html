@@ -37,9 +37,6 @@
 				<a href="PowerVRTools.html">PowerVR Tools</a>
 			</div>
 			<div class="navlink">
-				<a href="ReleaseNotes.html">Release Notes</a>
-			</div>
-			<div class="navlink">
 				<a href="Licence.html">EULA</a>
 			</div>
 			<div class="navlink">
@@ -53,6 +50,7 @@
 		<p><strong>Contents: </strong><a href="#Overview" class="link">Overview</a>  |  <a href="#Building" class="link">Building</a>  |  <a href="#CreatingAnApplication" class="link">Creating an Application</a>  |  <a href="#Guidelines" class="link">Guidelines and Recommendations</a></p>
 		&nbsp;
 		<div id="Overview">
+			<p>For a detailed explanation of how the Framework functions, please refer to the <a href="../Documents/RELEASE/PowerVR Framework.Development Guide.pdf" target="_blank" class="link">PowerVR Framework Development Guide.</a></p>
 			<h2>Overview</h2>
 			<p>The PowerVR Framework is a complete framework source code, re-written from scratch and targeted for all major platforms, such as Windows, Linux, and OS X, as well as Android and iOS mobile platforms. The key strength of the PowerVR Framework is that it is platform-agnostic, meaning that with the same code, it is possible to compile for different platforms without changing source code.</p>
 			<p>The majority of the code is written in C++ and tested across different compilers (namely Visual Studio 2010, GNU Compiler Collection and Clang) using modern styling and in general provides a complete framework for application development. There is also the supporting per-platform code (Objective-C code for iOS and OS X, some Java code for Android, etc.), and project files.</p>
@@ -92,6 +90,7 @@
 		<p>To create a typical application, please follow these steps:</p>
 		<ol>
 			<li>Firstly, either build the Framework components previously mentioned (by moving to the corresponding <span class="code">/Builds/[Platform]</span> or add their build scripts and projects to your own</li>
+			&nbsp;
 			<li>Create a project or build script (Visual Studio, Makefile, etc.) for your platform. We suggest taking one of the scripts from the following location as base:</li>
 				<p><span class="code">Examples/[Intermediate/Advanced]/[API]/Builds/[Platform]</span>, where <span class="code">[Intermediate/Advanced]</span> is the folder for either the intermediate or advanced example applications supplied with the SDK. In more detail:</p>
 				<ul>
@@ -115,6 +114,7 @@
 						<li><span class="code">PVRCore</span></li>
 					</ul>
 				</ul>
+			&nbsp;
 			<li>Create your application files. For a single CPP file, your includes will usually be:</li>
 			<ul>
 				<li><span class="code">PVRShell/PVRShell.h</span></li>
@@ -122,6 +122,7 @@
 				<li><span class="code">PVRApi/AssetManager.h</span> (if you plan to use the AssetManager for loading)</li>
 				<li><span class="code">PVRUIRenderer/PVRUIRenderer.h</span> (if you plan to use the UIRenderer)</li>
 			</ul>
+			&nbsp;
 			<li>Write the skeleton of your application (see description of <a href="#PVRShell" class="link">PVRShell</a>)</li>
 		</ol>
 		</div>
@@ -131,8 +132,11 @@
 		<p>Below are a set of guidelines and recommendations you might want to consider when using PowerVR Framework:</p>
 		<ul>
 			<li>If you need to use the native API (for example OpenGL ES), we recommend using the header <span class="code">PVRApi/[API]/[API]Bindings.h</span>. This is a specially crafted binding for your specific API. For example, for OpenGL ES, <span class="code">OpenGLESBindings.h</span> it will provide you with a set of function pointers conveniently placed in the <span class="code">gl::namespace</span>. These functions follow the OpenGL ES specification, and can be called normally e.g. <span class="code">gl::MapBuffer(…)</span>. These function pointers get populated at runtime, allowing a unified entry point to the native API. Similarly, a set of function pointers for extensions are present in the <span class="code">glext</span> namespace. The function pointers get populated at initialisation time, but their use can be queried per-context, at runtime.</li>
+			&nbsp;
 			<li>Add an AssetManager member to your class and use it for loading Models, Textures, Shaders and other files that may be duplicated. The AssetManager will cache files and make sure you do not double-load files. Initialize the AssetManager with your application class <span class="code">((initialise(*this))</span>, and use it to one-step load Textures, Models, Shaders and other objects that will have to be read from disc.</li>
+			&nbsp;
 			<li>The <span class="code">pvr::assets::Model</span> class contains all the information you need for drawing, including cameras, lights, and potentially effects. Follow one of the PowerVR SDK examples (e.g. IntroducingPOD and IntroducingPFX) to understand its basic use, including getting out of a Model the information about the data layouts of its Meshes, etc.</li>
+			&nbsp;
 			<li>Many utility functions and methods are built-in, so that you can easily cover most common use cases. For example:</li>
 			<ul>
 				<li><span class="code">getLayoutIntoPipeline</span> function allows you to quickly match a Mesh to a specific custom shader by providing what your shader's "required semantics" are and at which binding points (attributes) to assign these. This function will add the entire vertex definition to the pipeline descriptor.</li>

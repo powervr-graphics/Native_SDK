@@ -1,40 +1,27 @@
-/*!*********************************************************************************************************************
-\file         PVRApi/Vulkan/SamplerVk.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Vulkan implementation of the Sampler class.
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief Vulkan implementation of the Sampler class.
+\file PVRApi/Vulkan/SamplerVk.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRApi/Vulkan/SamplerVk.h"
 #include "PVRApi/ApiIncludes.h"
 #include "PVRNativeApi/Vulkan/ConvertToVkTypes.h"
-#include "PVRNativeApi/ApiErrors.h"
 #include "PVRApi/ApiObjects/Texture.h"
 #include "PVRNativeApi/Vulkan/VulkanBindings.h"
 #include "PVRApi/Vulkan/ContextVk.h"
 namespace pvr {
 namespace api {
-namespace impl {
-native::HSampler_& Sampler_::getNativeObject()
-{
-	return native_cast(*this);
-}
-
-const native::HSampler_& Sampler_::getNativeObject() const
-{
-	return native_cast(*this);
-}
-}// namespace impl
-
 namespace vulkan {
+using namespace nativeVk;
 void SamplerVk_::destroy()
 {
-	VkSampler& s = native_cast(*this).handle;
+	VkSampler& s = handle;
 	if (getContext().isValid())
 	{
 		if (s != VK_NULL_HANDLE)
 		{
-			vk::DestroySampler(native_cast(*getContext()).getDevice(), getNativeObject(), NULL);
+			vk::DestroySampler(native_cast(*getContext()).getDevice(), handle, NULL);
 			s = VK_NULL_HANDLE;
 		}
 	}
@@ -52,7 +39,7 @@ bool SamplerVk_::init(const api::SamplerCreateParam& samplerDesc)
 	samplerInfo.addressModeW = ConvertToVk::samplerWrap(samplerDesc.wrapModeW);
 	samplerInfo.borderColor = ConvertToVk::borderColor(samplerDesc.borderColor);
 	samplerInfo.compareEnable = (samplerDesc.compareMode != types::ComparisonMode::None);
-	samplerInfo.compareOp = ConvertToVk::compareMode(pvr::types::ComparisonMode::Enum(samplerDesc.compareMode % 8));
+	samplerInfo.compareOp = ConvertToVk::compareMode(pvr::types::ComparisonMode((uint32)samplerDesc.compareMode % 8));
 	samplerInfo.flags = 0;
 	samplerInfo.magFilter = ConvertToVk::samplerFilter(samplerDesc.magnificationFilter);
 	samplerInfo.minFilter = ConvertToVk::samplerFilter(samplerDesc.minificationFilter);
@@ -63,9 +50,8 @@ bool SamplerVk_::init(const api::SamplerCreateParam& samplerDesc)
 	samplerInfo.mipLodBias = samplerDesc.lodBias;
 	samplerInfo.mipmapMode = ConvertToVk::mipmapFilter(samplerDesc.mipMappingFilter);
 	samplerInfo.unnormalizedCoordinates = samplerDesc.unnormalizedCoordinates;
-	return vkIsSuccessful(vk::CreateSampler(native_cast(*m_context).getDevice(), &samplerInfo, NULL, &native_cast(this)->handle), "Sampler creation failed");
+	return vkIsSuccessful(vk::CreateSampler(native_cast(*_context).getDevice(), &samplerInfo, NULL, &native_cast(this)->handle), "Sampler creation failed");
 }
 }// namespace vulkan
 }// namespace api
 }// namespace pvr
-//!\endcond

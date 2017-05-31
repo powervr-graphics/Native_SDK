@@ -1,18 +1,11 @@
 var searchData=
 [
   ['vertexattributeinfo',['VertexAttributeInfo',['../structpvr_1_1api_1_1_vertex_attribute_info.html',1,'pvr::api']]],
-  ['vertexattributeinfocmp_5fbindingless_5findexless',['VertexAttributeInfoCmp_BindingLess_IndexLess',['../structpvr_1_1api_1_1_vertex_attribute_info_cmp___binding_less___index_less.html',1,'pvr::api']]],
-  ['vertexattributeinfocmp_5findexless',['VertexAttributeInfoCmp_IndexLess',['../structpvr_1_1api_1_1_vertex_attribute_info_cmp___index_less.html',1,'pvr::api']]],
-  ['vertexattributeinfopred_5fbindingequals',['VertexAttributeInfoPred_BindingEquals',['../structpvr_1_1api_1_1_vertex_attribute_info_pred___binding_equals.html',1,'pvr::api']]],
-  ['vertexattributeinfopred_5findexequals',['VertexAttributeInfoPred_IndexEquals',['../structpvr_1_1api_1_1_vertex_attribute_info_pred___index_equals.html',1,'pvr::api']]],
   ['vertexattributeinfowithbinding',['VertexAttributeInfoWithBinding',['../structpvr_1_1api_1_1_vertex_attribute_info_with_binding.html',1,'pvr::api']]],
-  ['vertexbindinginfocmp_5fbindingless',['VertexBindingInfoCmp_BindingLess',['../structpvr_1_1api_1_1_vertex_binding_info_cmp___binding_less.html',1,'pvr::api']]],
-  ['vertexbindinginfopred_5fbindingequal',['VertexBindingInfoPred_BindingEqual',['../structpvr_1_1api_1_1_vertex_binding_info_pred___binding_equal.html',1,'pvr::api']]],
-  ['vertexbindinginfopred_5fbindingless',['VertexBindingInfoPred_BindingLess',['../structpvr_1_1api_1_1_vertex_binding_info_pred___binding_less.html',1,'pvr::api']]],
-  ['vertexbindings',['VertexBindings',['../structpvr_1_1utils_1_1_vertex_bindings.html',1,'pvr::utils']]],
-  ['vertexbindings_5fname',['VertexBindings_Name',['../structpvr_1_1utils_1_1_vertex_bindings___name.html',1,'pvr::utils']]],
   ['vertexinputbindinginfo',['VertexInputBindingInfo',['../structpvr_1_1api_1_1_vertex_input_binding_info.html',1,'pvr::api']]],
   ['vertexinputcreateparam',['VertexInputCreateParam',['../structpvr_1_1api_1_1pipeline_creation_1_1_vertex_input_create_param.html',1,'pvr::api::pipelineCreation']]],
+  ['vertexraypipeline_5f',['VertexRayPipeline_',['../classpvr_1_1api_1_1impl_1_1_vertex_ray_pipeline__.html',1,'pvr::api::impl']]],
+  ['vertexraypipelinecreateparam',['VertexRayPipelineCreateParam',['../structpvr_1_1api_1_1_vertex_ray_pipeline_create_param.html',1,'pvr::api']]],
   ['vertexshaderstagecreateparam',['VertexShaderStageCreateParam',['../structpvr_1_1api_1_1pipeline_creation_1_1_vertex_shader_stage_create_param.html',1,'pvr::api::pipelineCreation']]],
   ['viewport',['Viewport',['../structpvr_1_1api_1_1_viewport.html',1,'pvr::api']]],
   ['viewportstatecreateparam',['ViewportStateCreateParam',['../structpvr_1_1api_1_1pipeline_creation_1_1_viewport_state_create_param.html',1,'pvr::api::pipelineCreation']]]

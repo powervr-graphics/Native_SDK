@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:2.1.0'
     }
 }
 
@@ -20,13 +20,13 @@ apply plugin: 'com.android.application'
 File pvrSdkDir = file("${project.buildDir}/../../../../../../../")
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         applicationId "com.powervr.OGLESIntroducingPVRApi"
         minSdkVersion 16
-        targetSdkVersion 21
+        targetSdkVersion 24
     }
     buildTypes {
         release {
@@ -111,11 +111,10 @@ FileCollection assetFiles = files(
     def ndkDependencies=[
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
     ["PVRAssets", "${pvrSdkDir}/Framework/PVRAssets/Build/Android"],
-    ["PVRPlatformGlue", "${pvrSdkDir}/Framework/PVRPlatformGlue/EGL/Build/Android"],
     ["PVRNativeGles", "${pvrSdkDir}/Framework/PVRNativeApi/OGLES/Build/Android"],
     ["PVRGles", "${pvrSdkDir}/Framework/PVRApi/OGLES/Build/Android"],
     ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
-    ["PVRUIRenderer", "${pvrSdkDir}/Framework/PVRUIRenderer/Build/Android"]
+    ["PVREngineUtils", "${pvrSdkDir}/Framework/PVREngineUtils/Build/Android"]
     ]
 
 	//Create and configure a task for each combination of build type (debug/release or clean) and dependency

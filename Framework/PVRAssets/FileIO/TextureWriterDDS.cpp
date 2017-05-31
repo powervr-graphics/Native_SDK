@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets\FileIO\TextureWriterDDS.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementation of methods of the TextureWriterDDS class.
-***********************************************************************************************************************/
+/*!
+\brief Implementation of methods of the TextureWriterDDS class.
+\file PVRAssets/FileIO/TextureWriterDDS.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRAssets/FileIO/TextureWriterDDS.h"
 #include <algorithm>
@@ -14,9 +14,9 @@ namespace assets {
 namespace assetWriters {
 bool TextureWriterDDS::addAssetToWrite(const Texture& asset)
 {
-	if (m_assetsToWrite.size() < 1)
+	if (_assetsToWrite.size() < 1)
 	{
-		m_assetsToWrite.push_back(&asset);
+		_assetsToWrite.push_back(&asset);
 		return true;
 	}
 	else
@@ -32,7 +32,7 @@ bool TextureWriterDDS::writeAllAssets()
 	bool doDDS10 = false;
 
 	//DirectX 9-style DDS headers can't handle texture arrays, so if we have one of these we should use a DX10-style DDS.
-	if (m_assetsToWrite[0]->getNumberOfArrayMembers() > 1)
+	if (_assetsToWrite[0]->getNumberOfArrayMembers() > 1)
 	{
 		doDDS10 = true;
 	}
@@ -44,10 +44,10 @@ bool TextureWriterDDS::writeAllAssets()
 	// Set common data that doesn't depend on whether it's a DX10 header or not
 	ddsFileHeader.size = texture_dds::c_expectedDDSSize;
 	ddsFileHeader.flags = texture_dds::e_Capabilities | texture_dds::e_width | texture_dds::e_height | texture_dds::e_pixelFormat;
-	ddsFileHeader.height = m_assetsToWrite[0]->getHeight();
-	ddsFileHeader.width = m_assetsToWrite[0]->getWidth();
-	ddsFileHeader.depth = m_assetsToWrite[0]->getDepth();
-	ddsFileHeader.mipMapCount = m_assetsToWrite[0]->getNumberOfMIPLevels();
+	ddsFileHeader.height = _assetsToWrite[0]->getHeight();
+	ddsFileHeader.width = _assetsToWrite[0]->getWidth();
+	ddsFileHeader.depth = _assetsToWrite[0]->getDepth();
+	ddsFileHeader.mipMapCount = _assetsToWrite[0]->getNumberOfMIPLevels();
 	ddsFileHeader.Capabilities1 = texture_dds::e_texture;
 	ddsFileHeader.Capabilities2 = 0;
 	ddsFileHeader.Capabilities3 = 0;
@@ -70,22 +70,22 @@ bool TextureWriterDDS::writeAllAssets()
 	}
 
 	// Set the pitch or linear size
-	if (m_assetsToWrite[0]->getPixelFormat().getPart().High == 0)
+	if (_assetsToWrite[0]->getPixelFormat().getPart().High == 0)
 	{
 		ddsFileHeader.flags |= texture_dds::e_linearSize;
-		ddsFileHeader.pitchOrLinearSize = m_assetsToWrite[0]->getDataSize(0);
+		ddsFileHeader.pitchOrLinearSize = _assetsToWrite[0]->getDataSize(0);
 	}
 	else
 	{
 		ddsFileHeader.flags |= texture_dds::e_pitch;
 		ddsFileHeader.pitchOrLinearSize = std::max<uint32>(1,
-		                                  (m_assetsToWrite[0]->getWidth() * m_assetsToWrite[0]->getBitsPerPixel() + 7) / 8);
+		                                  (_assetsToWrite[0]->getWidth() * _assetsToWrite[0]->getBitsPerPixel() + 7) / 8);
 	}
 
 	// Proper cube map handling is a little complicated, but doable.
-	if (m_assetsToWrite[0]->getNumberOfFaces() > 1)
+	if (_assetsToWrite[0]->getNumberOfFaces() > 1)
 	{
-		if (m_assetsToWrite[0]->getNumberOfFaces() > 6)
+		if (_assetsToWrite[0]->getNumberOfFaces() > 6)
 		{
 			assertion(0 ,  "Invalid Argument");
 			return false;
@@ -93,10 +93,10 @@ bool TextureWriterDDS::writeAllAssets()
 
 		ddsFileHeader.Capabilities2 |= texture_dds::e_cubeMap;
 
-		std::string cubeFaces = m_assetsToWrite[0]->getCubeMapOrder();
+		std::string cubeFaces = _assetsToWrite[0]->getCubeMapOrder();
 
 		// Handle the cube map's faces, setting flags for faces that are available.
-		for (uint32 face = 0; face < m_assetsToWrite[0]->getNumberOfFaces(); ++face)
+		for (uint32 face = 0; face < _assetsToWrite[0]->getNumberOfFaces(); ++face)
 		{
 			switch (cubeFaces[face])
 			{
@@ -136,7 +136,7 @@ bool TextureWriterDDS::writeAllAssets()
 
 	// Check if a DDS file can be written without the DX10 header first, as this maintains the highest compatibility.
 	uint32 d3dFormat;
-	if (doDDS10 || !m_assetsToWrite[0]->getDirect3DFormat(d3dFormat))
+	if (doDDS10 || !_assetsToWrite[0]->getDirect3DFormat(d3dFormat))
 	{
 		// If a D3D format does not exist, attempt to write it as a DXGI format in a DX10 style header
 		doDDS10 = true;
@@ -153,7 +153,7 @@ bool TextureWriterDDS::writeAllAssets()
 
 		// Set the dxgi format, and whether or not it's actually a custom channel ('x') rather than actually alpha. Not confusing at all.
 		bool notAlpha = false;
-		if (!m_assetsToWrite[0]->getDirectXGIFormat(ddsFileHeaderDX10.dxgiFormat, notAlpha))
+		if (!_assetsToWrite[0]->getDirectXGIFormat(ddsFileHeaderDX10.dxgiFormat, notAlpha))
 		{
 			assertion(0 ,  "INVALID ARGUMENT");
 			return false;
@@ -174,24 +174,24 @@ bool TextureWriterDDS::writeAllAssets()
 		}
 
 		// Check for a cube map - only full cube maps are supported.
-		if (m_assetsToWrite[0]->getNumberOfFaces() == 6)
+		if (_assetsToWrite[0]->getNumberOfFaces() == 6)
 		{
 			ddsFileHeaderDX10.miscFlags = texture_dds::e_textureCube;
 		}
-		else if (m_assetsToWrite[0]->getNumberOfFaces() != 1)
+		else if (_assetsToWrite[0]->getNumberOfFaces() != 1)
 		{
 			assertion(0 ,  "INVALID ARGUMENT");
 			return false;
 		}
 
 		// Set the array size.
-		ddsFileHeaderDX10.arraySize = m_assetsToWrite[0]->getNumberOfArrayMembers();
+		ddsFileHeaderDX10.arraySize = _assetsToWrite[0]->getNumberOfArrayMembers();
 
 		if (notAlpha)
 		{
 			ddsFileHeaderDX10.miscFlags2 = texture_dds::e_custom;
 		}
-		else if (m_assetsToWrite[0]->isPreMultiplied())
+		else if (_assetsToWrite[0]->isPreMultiplied())
 		{
 			ddsFileHeaderDX10.miscFlags2 = texture_dds::e_premultiplied;
 		}
@@ -216,8 +216,8 @@ bool TextureWriterDDS::writeAllAssets()
 
 		setDirect3DFormatToDDSHeader(static_cast<texture_dds::D3DFormat>(d3dFormat), ddsFileHeader);
 
-		if (m_assetsToWrite[0]->getPixelFormat().getPixelTypeId() == CompressedPixelFormat::PVRTCI_4bpp_RGBA ||
-		    m_assetsToWrite[0]->getPixelFormat().getPixelTypeId() == CompressedPixelFormat::PVRTCI_2bpp_RGBA)
+		if (_assetsToWrite[0]->getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA ||
+		    _assetsToWrite[0]->getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA)
 		{
 			ddsFileHeader.pixelFormat.flags |= texture_dds::e_alphaPixels;
 		}
@@ -229,7 +229,7 @@ bool TextureWriterDDS::writeAllAssets()
 	size_t dataWritten = 0;
 
 	// Write the identifier
-	if (!m_assetStream->write(sizeof(texture_dds::c_magicIdentifier), 1, &texture_dds::c_magicIdentifier, dataWritten) || dataWritten != 1) { return false; }
+	if (!_assetStream->write(sizeof(texture_dds::c_magicIdentifier), 1, &texture_dds::c_magicIdentifier, dataWritten) || dataWritten != 1) { return false; }
 
 	// Write the DDS Header
 	if (!writeFileHeader(ddsFileHeader)) { return false; }
@@ -241,15 +241,15 @@ bool TextureWriterDDS::writeAllAssets()
 	}
 
 	// Write the texture data
-	for (uint32 surface = 0; surface < m_assetsToWrite[0]->getNumberOfArrayMembers(); ++surface)
+	for (uint32 surface = 0; surface < _assetsToWrite[0]->getNumberOfArrayMembers(); ++surface)
 	{
-		for (uint32 face = 0; face < m_assetsToWrite[0]->getNumberOfFaces(); ++face)
+		for (uint32 face = 0; face < _assetsToWrite[0]->getNumberOfFaces(); ++face)
 		{
-			for (uint32 mipMapLevel = 0; mipMapLevel < m_assetsToWrite[0]->getNumberOfMIPLevels(); ++mipMapLevel)
+			for (uint32 mipMapLevel = 0; mipMapLevel < _assetsToWrite[0]->getNumberOfMIPLevels(); ++mipMapLevel)
 			{
 				// Write out all the data - DDS files have a different order to PVR v3 files, but are not affected by padding.
-				if (!m_assetStream->write(m_assetsToWrite[0]->getDataSize(mipMapLevel, false, false), 1,
-				                          m_assetsToWrite[0]->getDataPointer(mipMapLevel, surface, face), dataWritten))
+				if (!_assetStream->write(_assetsToWrite[0]->getDataSize(mipMapLevel, false, false), 1,
+				                         _assetsToWrite[0]->getDataPointer(mipMapLevel, surface, face), dataWritten))
 				{ return false; }
 			}
 		}
@@ -261,7 +261,7 @@ bool TextureWriterDDS::writeAllAssets()
 
 uint32 TextureWriterDDS::assetsAddedSoFar()
 {
-	return static_cast<uint32>(m_assetsToWrite.size());
+	return static_cast<uint32>(_assetsToWrite.size());
 }
 
 bool TextureWriterDDS::supportsMultipleAssets()
@@ -500,117 +500,117 @@ bool TextureWriterDDS::setDirect3DFormatToDDSHeader(texture_dds::D3DFormat d3dFo
 
 bool TextureWriterDDS::writeFileHeader(const texture_dds::FileHeader& ddsFileHeader)
 {
-	bool result = Result::Success;
+	bool result = true;
 	size_t dataWritten = 0;
 
 	// Write the size
-	result = m_assetStream->write(sizeof(ddsFileHeader.size), 1, &ddsFileHeader.size, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.size), 1, &ddsFileHeader.size, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the flags
-	result = m_assetStream->write(sizeof(ddsFileHeader.flags), 1, &ddsFileHeader.flags, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.flags), 1, &ddsFileHeader.flags, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the height
-	result = m_assetStream->write(sizeof(ddsFileHeader.height), 1, &ddsFileHeader.height, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.height), 1, &ddsFileHeader.height, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the width
-	result = m_assetStream->write(sizeof(ddsFileHeader.width), 1, &ddsFileHeader.width, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.width), 1, &ddsFileHeader.width, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the pitchOrLinearSize
-	result = m_assetStream->write(sizeof(ddsFileHeader.pitchOrLinearSize), 1, &ddsFileHeader.pitchOrLinearSize, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.pitchOrLinearSize), 1, &ddsFileHeader.pitchOrLinearSize, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the depth
-	result = m_assetStream->write(sizeof(ddsFileHeader.depth), 1, &ddsFileHeader.depth, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.depth), 1, &ddsFileHeader.depth, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the mipMapCount
-	result = m_assetStream->write(sizeof(ddsFileHeader.mipMapCount), 1, &ddsFileHeader.mipMapCount, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.mipMapCount), 1, &ddsFileHeader.mipMapCount, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the reserved data
-	result = m_assetStream->write(sizeof(ddsFileHeader.reserved[0]), 11, &ddsFileHeader.reserved, dataWritten);
-	if (result != Result::Success || dataWritten != 11) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.reserved[0]), 11, &ddsFileHeader.reserved, dataWritten);
+	if (result != true || dataWritten != 11) { return result; }
 
 	// Write the pixelFormat
 	{
 		// Write the size
-		result = m_assetStream->write(sizeof(ddsFileHeader.pixelFormat.size), 1, &ddsFileHeader.pixelFormat.size, dataWritten);
-		if (result != Result::Success || dataWritten != 1) { return result; }
+		result = _assetStream->write(sizeof(ddsFileHeader.pixelFormat.size), 1, &ddsFileHeader.pixelFormat.size, dataWritten);
+		if (result != true || dataWritten != 1) { return result; }
 
 		// Write the flags
-		result = m_assetStream->write(sizeof(ddsFileHeader.pixelFormat.flags), 1, &ddsFileHeader.pixelFormat.flags, dataWritten);
-		if (result != Result::Success || dataWritten != 1) { return result; }
+		result = _assetStream->write(sizeof(ddsFileHeader.pixelFormat.flags), 1, &ddsFileHeader.pixelFormat.flags, dataWritten);
+		if (result != true || dataWritten != 1) { return result; }
 
 		// Write the fourCC
-		result = m_assetStream->write(sizeof(ddsFileHeader.pixelFormat.fourCC), 1, &ddsFileHeader.pixelFormat.fourCC, dataWritten);
-		if (result != Result::Success || dataWritten != 1) { return result; }
+		result = _assetStream->write(sizeof(ddsFileHeader.pixelFormat.fourCC), 1, &ddsFileHeader.pixelFormat.fourCC, dataWritten);
+		if (result != true || dataWritten != 1) { return result; }
 
 		// Write the bitCount
-		result = m_assetStream->write(sizeof(ddsFileHeader.pixelFormat.bitCount), 1, &ddsFileHeader.pixelFormat.bitCount, dataWritten);
-		if (result != Result::Success || dataWritten != 1) { return result; }
+		result = _assetStream->write(sizeof(ddsFileHeader.pixelFormat.bitCount), 1, &ddsFileHeader.pixelFormat.bitCount, dataWritten);
+		if (result != true || dataWritten != 1) { return result; }
 
 		// Write the redMask
-		result = m_assetStream->write(sizeof(ddsFileHeader.pixelFormat.redMask), 1, &ddsFileHeader.pixelFormat.redMask, dataWritten);
-		if (result != Result::Success || dataWritten != 1) { return result; }
+		result = _assetStream->write(sizeof(ddsFileHeader.pixelFormat.redMask), 1, &ddsFileHeader.pixelFormat.redMask, dataWritten);
+		if (result != true || dataWritten != 1) { return result; }
 
 		// Write the greenMask
-		result = m_assetStream->write(sizeof(ddsFileHeader.pixelFormat.greenMask), 1, &ddsFileHeader.pixelFormat.greenMask, dataWritten);
-		if (result != Result::Success || dataWritten != 1) { return result; }
+		result = _assetStream->write(sizeof(ddsFileHeader.pixelFormat.greenMask), 1, &ddsFileHeader.pixelFormat.greenMask, dataWritten);
+		if (result != true || dataWritten != 1) { return result; }
 
 		// Write the blueMask
-		result = m_assetStream->write(sizeof(ddsFileHeader.pixelFormat.blueMask), 1, &ddsFileHeader.pixelFormat.blueMask, dataWritten);
-		if (result != Result::Success || dataWritten != 1) { return result; }
+		result = _assetStream->write(sizeof(ddsFileHeader.pixelFormat.blueMask), 1, &ddsFileHeader.pixelFormat.blueMask, dataWritten);
+		if (result != true || dataWritten != 1) { return result; }
 
 		// Write the alphaMask
-		result = m_assetStream->write(sizeof(ddsFileHeader.pixelFormat.alphaMask), 1, &ddsFileHeader.pixelFormat.alphaMask, dataWritten);
-		if (result != Result::Success || dataWritten != 1) { return result; }
+		result = _assetStream->write(sizeof(ddsFileHeader.pixelFormat.alphaMask), 1, &ddsFileHeader.pixelFormat.alphaMask, dataWritten);
+		if (result != true || dataWritten != 1) { return result; }
 	}
 
 	// Write the Capabilities values
-	result = m_assetStream->write(sizeof(ddsFileHeader.Capabilities1), 1, &ddsFileHeader.Capabilities1, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
-	result = m_assetStream->write(sizeof(ddsFileHeader.Capabilities2), 1, &ddsFileHeader.Capabilities2, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
-	result = m_assetStream->write(sizeof(ddsFileHeader.Capabilities3), 1, &ddsFileHeader.Capabilities3, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
-	result = m_assetStream->write(sizeof(ddsFileHeader.Capabilities4), 1, &ddsFileHeader.Capabilities4, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.Capabilities1), 1, &ddsFileHeader.Capabilities1, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.Capabilities2), 1, &ddsFileHeader.Capabilities2, dataWritten);
+	if (result != true  || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.Capabilities3), 1, &ddsFileHeader.Capabilities3, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.Capabilities4), 1, &ddsFileHeader.Capabilities4, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the final reserved value
-	result = m_assetStream->write(sizeof(ddsFileHeader.reserved2), 1, &ddsFileHeader.reserved2, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeader.reserved2), 1, &ddsFileHeader.reserved2, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	return result;
 }
 
 bool TextureWriterDDS::writeFileHeaderDX10(const texture_dds::FileHeaderDX10& ddsFileHeaderDX10)
 {
-	bool result = Result::Success;
+	bool result = true;
 	size_t dataWritten = 0;
 
 	// Write the DXGI format
-	result = m_assetStream->write(sizeof(ddsFileHeaderDX10.dxgiFormat), 1, &ddsFileHeaderDX10.dxgiFormat, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeaderDX10.dxgiFormat), 1, &ddsFileHeaderDX10.dxgiFormat, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the resource dimension
-	result = m_assetStream->write(sizeof(ddsFileHeaderDX10.resourceDimension), 1, &ddsFileHeaderDX10.resourceDimension, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeaderDX10.resourceDimension), 1, &ddsFileHeaderDX10.resourceDimension, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the first miscellaneous flags
-	result = m_assetStream->write(sizeof(ddsFileHeaderDX10.miscFlags), 1, &ddsFileHeaderDX10.miscFlags, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeaderDX10.miscFlags), 1, &ddsFileHeaderDX10.miscFlags, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the array size
-	result = m_assetStream->write(sizeof(ddsFileHeaderDX10.arraySize), 1, &ddsFileHeaderDX10.arraySize, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeaderDX10.arraySize), 1, &ddsFileHeaderDX10.arraySize, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	// Write the second miscellaneous flags
-	result = m_assetStream->write(sizeof(ddsFileHeaderDX10.miscFlags2), 1, &ddsFileHeaderDX10.miscFlags2, dataWritten);
-	if (result != Result::Success || dataWritten != 1) { return result; }
+	result = _assetStream->write(sizeof(ddsFileHeaderDX10.miscFlags2), 1, &ddsFileHeaderDX10.miscFlags2, dataWritten);
+	if (result != true || dataWritten != 1) { return result; }
 
 	return result;
 }

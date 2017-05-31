@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['facedata',['FaceData',['../classpvr_1_1assets_1_1_mesh_1_1_face_data.html#aa78afcb929e61d9ed264f4bd6818993d',1,'pvr::assets::Mesh::FaceData']]],
   ['findtexturebyname',['findTextureByName',['../classpvr_1_1assets_1_1_pfx_reader.html#a5288ecf4b27f16bb55e3db4ad9128d8b',1,'pvr::assets::PfxReader']]],
   ['findtextureindex',['findTextureIndex',['../classpvr_1_1assets_1_1_pfx_reader.html#a31db348bbeba7deae98ee839be6de627',1,'pvr::assets::PfxReader']]],
   ['findvertexshader',['findVertexShader',['../classpvr_1_1assets_1_1_pfx_reader.html#ace8f897d0a0807216ad00fc2f0fbc5b0',1,'pvr::assets::PfxReader']]],

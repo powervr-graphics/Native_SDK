@@ -1,20 +1,18 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets\FileIO\TextureWriterKTX.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         An experimental Writer that writes pvr::asset::Texture objects into a KTX file.
-***********************************************************************************************************************/
+/*!
+\brief An experimental Writer that writes pvr::asset::Texture objects into a KTX file.
+\file PVRAssets/FileIO/TextureWriterKTX.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
-#include "PVRAssets/Texture/Texture.h"
-#include "PVRAssets/AssetWriter.h"
-#include "PVRAssets/FileIO/FileDefinesKTX.h"
+#include "PVRCore/Texture.h"
+#include "PVRCore/IO/AssetWriter.h"
+#include "PVRCore/Texture/FileDefinesKTX.h"
 namespace pvr {
 namespace assets {
 namespace assetWriters {
-/*!********************************************************************************************************************
-\brief         An experimental Writer that writes pvr::asset::Texture objects into a KTX file.
-***********************************************************************************************************************/
+/// <summary>An experimental Writer that writes pvr::asset::Texture objects into a KTX file.</summary>
 class TextureWriterKTX : public AssetWriter<Texture>
 {
 public:

@@ -7,7 +7,7 @@
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 using namespace pvr::types;
 namespace Semantics {
 enum Enum
@@ -46,25 +46,27 @@ class OGLESIntroducingPVRApi : public pvr::Shell
 	struct DeviceResources
 	{
 		pvr::GraphicsContext context;
+		pvr::api::CommandBuffer commandBuffer;
 		// The effect file handlers
-		pvr::api::EffectApi effect;
+		pvr::legacyPfx::EffectApi effect;
+
+		pvr::api::Fbo fboOnScreen;
+
+		std::vector<MaterialDescSet> descSet;
+		pvr::api::DescriptorSetLayout descSetLayout;
+		pvr::api::PipelineLayout pipelineLayout;
+		pvr::api::Sampler samplerTrilinear;
 
 		// The Vertex buffer object handle array.
 		std::vector<pvr::api::Buffer> vbos;
 		std::vector<pvr::api::Buffer> ibos;
-		pvr::api::Fbo fboOnScreen;
-		pvr::api::CommandBuffer commandBuffer;
-		std::vector<MaterialDescSet> descSet;
-		pvr::api::Sampler samplerTrilinear;
-		pvr::api::DescriptorSetLayout descSetLayout;
-		pvr::api::PipelineLayout pipelineLayout;
 	};
 
 	std::auto_ptr<DeviceResources> deviceResource;
 
 	pvr::int32 uniformSemanticsTable[Semantics::Count];
 	pvr::ui::UIRenderer uiRenderer;
-	pvr::api::AssetStore assetManager;
+	pvr::utils::AssetStore assetManager;
 	struct DrawPass
 	{
 		std::vector<glm::mat4> worldViewProj;
@@ -74,11 +76,11 @@ class OGLESIntroducingPVRApi : public pvr::Shell
 	};
 	DrawPass drawPass;
 public:
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 
 	bool createDescriptorSet();
 	void recordCommandBuffer(pvr::assets::Effect& effectAsset);
@@ -98,11 +100,11 @@ struct DescripotSetComp
 		Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.). If the rendering
 		context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRApi::initApplication()
+pvr::Result OGLESIntroducingPVRApi::initApplication()
 {
 	// Load the scene
 	assetManager.init(*this);
-	pvr::Result::Enum rslt = pvr::Result::Success;
+	pvr::Result rslt = pvr::Result::Success;
 	if ((scene = pvr::assets::Model::createWithReader(pvr::assets::PODReader(getAssetStream(SceneFileName)))).isNull())
 	{
 		this->setExitMessage("ERROR: Couldn't load the %s file\n", SceneFileName);
@@ -120,7 +122,7 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initApplication()
 	for (unsigned int i = 0; i < scene->getNumMeshes(); ++i)
 	{
 		if (scene->getMesh(i).getPrimitiveType() != PrimitiveTopology::TriangleList
-		        || scene->getMesh(i).getFaces().getDataSize() == 0)
+		    || scene->getMesh(i).getFaces().getDataSize() == 0)
 		{
 			this->setExitMessage("ERROR: The meshes in the scene should use an indexed triangle list\n");
 			return pvr::Result::InvalidData;
@@ -136,14 +138,14 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initApplication()
 \brief	Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
         If the rendering context is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRApi::quitApplication() { return pvr::Result::Success; }
+pvr::Result OGLESIntroducingPVRApi::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return	Result::Success if no error occurred
 \brief	Code in initView() will be called by Shell upon initialization or after a change  in the rendering context.
         Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRApi::initView()
+pvr::Result OGLESIntroducingPVRApi::initView()
 {
 	deviceResource.reset(new DeviceResources());
 	deviceResource->context = getGraphicsContext();
@@ -152,7 +154,7 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initView()
 
 	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *scene, deviceResource->vbos, deviceResource->ibos);
 
-	if (uiRenderer.init(deviceResource->context, deviceResource->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success) { return pvr::Result::UnknownError; }
+	if (uiRenderer.init(deviceResource->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success) { return pvr::Result::UnknownError; }
 
 	uiRenderer.getDefaultTitle()->setText("IntroducingPVRApi");
 	uiRenderer.getDefaultTitle()->commitUpdates();
@@ -164,20 +166,19 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initView()
 		return pvr::Result::InvalidData;
 	}
 
-	pvr::api::ImageStorageFormat targetColorFormat;
-	getDisplayFormat(getDisplayAttributes(), &targetColorFormat, 0);
 	pvr::assets::Effect effectAsset("Effect");
 
 	pvr::api::GraphicsPipelineCreateParam pipeDesc;
-	pvr::api::pipelineCreation::ColorBlendAttachmentState colorBlendAttachment;
+	pvr::types::BlendingConfig colorBlendAttachment;
 	colorBlendAttachment.blendEnable = false;
 
-	pipeDesc.colorBlend.addAttachmentState(colorBlendAttachment);
+	pipeDesc.colorBlend.setAttachmentState(0, colorBlendAttachment);
 	pipeDesc.rasterizer.setCullFace(Face::Back).setFrontFaceWinding(PolygonWindingOrder::FrontFaceCCW);
 	pipeDesc.depthStencil.setDepthTestEnable(true);
 
 	// open the pfx
 	pvr::assets::PfxReader effectParser;
+
 	pvr::assets::ShaderFile fileVersioning;
 	fileVersioning.populateValidVersions(PfxFileName, *this);
 	if (!effectParser.openAssetStream(fileVersioning.getBestStreamForApi(deviceResource->context->getApiType())))
@@ -211,7 +212,7 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initView()
 	deviceResource->pipelineLayout = deviceResource->context->createPipelineLayout(pipeLayoutInfo);
 
 	pipeDesc.pipelineLayout = deviceResource->pipelineLayout;
-	deviceResource->effect = deviceResource->context->createEffectApi(effectAsset, pipeDesc, assetManager);
+	deviceResource->effect = pvr::legacyPfx::createEffectApi(deviceResource->context, effectAsset, pipeDesc, assetManager);
 	if (!deviceResource->effect.isValid()) { return pvr::Result::UnknownError; }
 
 	createDescriptorSet();
@@ -243,7 +244,7 @@ pvr::Result::Enum OGLESIntroducingPVRApi::initView()
 \return	Result::Success if no error occurred
 \brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRApi::releaseView()
+pvr::Result OGLESIntroducingPVRApi::releaseView()
 {
 	assetManager.releaseAll();
 	uiRenderer.release();
@@ -255,8 +256,13 @@ pvr::Result::Enum OGLESIntroducingPVRApi::releaseView()
 \return Result::Success if no error occurred
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESIntroducingPVRApi::renderFrame()
+pvr::Result OGLESIntroducingPVRApi::renderFrame()
 {
+	static int done = 0;
+	if (++done == 1000)
+	{
+		exitShell();
+	}
 	//	Calculates the frame number to animate in a time-based manner.
 	//	get the time in milliseconds.
 	frame += (float)getFrameTime() / 30.f; // design-time target fps for animation
@@ -307,11 +313,11 @@ void OGLESIntroducingPVRApi::recordCommandBuffer(pvr::assets::Effect& effectAsse
 {
 	deviceResource->commandBuffer->beginRecording();
 	deviceResource->commandBuffer->beginRenderPass(deviceResource->fboOnScreen,
-	        pvr::Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(0.00, 0.70, 0.67, 1.0f));
+	    pvr::Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(0.00, 0.70, 0.67, 1.0f));
 
 	deviceResource->commandBuffer->bindPipeline(deviceResource->effect->getPipeline());
-	deviceResource->commandBuffer->setUniform<pvr::int32>(deviceResource->effect->getPipeline()->getUniformLocation(
-	            effectAsset.uniforms[uniformSemanticsTable[Semantics::Texture0]].variableName.c_str()), 0);
+	deviceResource->commandBuffer->setUniform(deviceResource->effect->getPipeline()->getUniformLocation(
+	      effectAsset.uniforms[uniformSemanticsTable[Semantics::Texture0]].variableName.c_str()), 0);
 
 	// A scene is composed of nodes. There are 3 types of nodes:
 	// - MeshNodes :
@@ -341,9 +347,9 @@ void OGLESIntroducingPVRApi::recordCommandBuffer(pvr::assets::Effect& effectAsse
 		deviceResource->commandBuffer->bindVertexBuffer(deviceResource->vbos[pNode->getObjectId()], 0, 0);
 		deviceResource->commandBuffer->bindIndexBuffer(deviceResource->ibos[pNode->getObjectId()], 0, pMesh->getFaces().getDataType());
 		// Passes the world-view-projection matrix (WVP) to the shader to transform the vertices
-		deviceResource->commandBuffer->setUniformPtr<glm::mat4>(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::WorldViewProjection]).location, 1, &drawPass.worldViewProj[i]);
-		deviceResource->commandBuffer->setUniformPtr<glm::vec3>(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::LightDirEye]).location, 1, &drawPass.dirLight[i]);
-		deviceResource->commandBuffer->setUniformPtr<glm::mat4>(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::WorldViewIT]).location, 1, &drawPass.worldViewIT[i]);
+		deviceResource->commandBuffer->setUniformPtr(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::WorldViewProjection]).location, 1, &drawPass.worldViewProj[i]);
+		deviceResource->commandBuffer->setUniformPtr(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::LightDirEye]).location, 1, &drawPass.dirLight[i]);
+		deviceResource->commandBuffer->setUniformPtr(deviceResource->effect->getUniform(uniformSemanticsTable[Semantics::WorldViewIT]).location, 1, &drawPass.worldViewIT[i]);
 
 		//Now that the model-view matrix is set and the materials ready,
 		//call another function to actually draw the mesh.
@@ -381,7 +387,7 @@ bool OGLESIntroducingPVRApi::createDescriptorSet()
 
 	const pvr::api::PipelineLayoutCreateParam& pipeLayoutInfo = deviceResource->effect->getPipeline()->getPipelineLayout()->getCreateParam();
 	pvr::uint32 i = 0;
-	while (i < scene->getNumMaterials() && scene->getMaterial(i).getDiffuseTextureIndex() != -1)
+	while (i < scene->getNumMaterials() && scene->getMaterial(i).defaultSemantics().getDiffuseTextureIndex() != -1)
 	{
 		pvr::api::DescriptorSetUpdate descSetInfo;
 		pvr::api::TextureView diffuseMap;
@@ -389,9 +395,9 @@ bool OGLESIntroducingPVRApi::createDescriptorSet()
 
 		// Load the diffuse texture map
 		if (!assetManager.getTextureWithCaching(getGraphicsContext(),
-		                                        scene->getTexture(material.getDiffuseTextureIndex()).getName(), &(diffuseMap), NULL))
+		                                        scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName(), &(diffuseMap), NULL))
 		{
-			setExitMessage("ERROR: Failed to load texture %s", scene->getTexture(material.getDiffuseTextureIndex()).getName().c_str());
+			setExitMessage("ERROR: Failed to load texture %s", scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
 			return false;
 		}
 		descSetInfo.setCombinedImageSampler(0, diffuseMap, deviceResource->samplerTrilinear);

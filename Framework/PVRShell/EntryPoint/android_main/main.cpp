@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\EntryPoint\android_main\main.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Entry point for Android systems (android_main).
-***********************************************************************************************************************/
+/*!
+\brief Entry point for Android systems (android_main).
+\file PVRShell\EntryPoint/android_main/main.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRShell/StateMachine.h"
 #include "PVRShell/CommandLine.h"
@@ -12,15 +12,15 @@
 
 static void handle_cmd(struct android_app* app, int32_t cmd)
 {
-	pvr::system::StateMachine* stateMachinePtr = static_cast<pvr::system::StateMachine*>(app->userData);
-	pvr::Result::Enum result;
+	pvr::platform::StateMachine* stateMachinePtr = static_cast<pvr::platform::StateMachine*>(app->userData);
+	pvr::Result result;
 	switch (cmd)
 	{
 	case APP_CMD_START:
 		pvr::Log(pvr::Log.Debug, "APP_CMD_START");
 		result = pvr::Result::Success;
 
-		if (stateMachinePtr->getCurrentState() == pvr::system::StateMachine::StateNotInitialized)
+		if (stateMachinePtr->getCurrentState() == pvr::platform::StateMachine::StateNotInitialized)
 		{
 			pvr::Log(pvr::Log.Debug, "Initializing State Machine");
 			if ((result = stateMachinePtr->init()) != pvr::Result::Success)
@@ -34,11 +34,11 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 		{
 			pvr::Log(pvr::Log.Debug, "State Machine already Initialized");
 		}
-		if (stateMachinePtr->getCurrentState() == pvr::system::StateMachine::StateInitApplication ||
-		    stateMachinePtr->getCurrentState() > pvr::system::StateMachine::StateQuitApplication)
+		if (stateMachinePtr->getCurrentState() == pvr::platform::StateMachine::StateInitApplication ||
+		    stateMachinePtr->getCurrentState() > pvr::platform::StateMachine::StateQuitApplication)
 		{
 			pvr::Log(pvr::Log.Debug, "Executing Init Application");
-			if ((result = stateMachinePtr->executeOnce(pvr::system::StateMachine::StateInitApplication)) != pvr::Result::Success)
+			if ((result = stateMachinePtr->executeOnce(pvr::platform::StateMachine::StateInitApplication)) != pvr::Result::Success)
 			{
 				ANativeActivity_finish(app->activity);
 				return;
@@ -61,21 +61,21 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 		pvr::Log(pvr::Log.Debug, "APP_CMD_INIT_WINDOW");
 		stateMachinePtr->resume();
 
-		if (stateMachinePtr->getCurrentState() != pvr::system::StateMachine::StateInitWindow &&
-		    stateMachinePtr->getCurrentState() < pvr::system::StateMachine::StateReleaseView)
+		if (stateMachinePtr->getCurrentState() != pvr::platform::StateMachine::StateInitWindow &&
+		    stateMachinePtr->getCurrentState() < pvr::platform::StateMachine::StateReleaseView)
 		{
 			pvr::Log(pvr::Log.Debug, "APP_CMD_INIT_WINDOW Was the wrong state: %d", stateMachinePtr->getCurrentState());
 			ANativeActivity_finish(app->activity);
 			return;
 		}
-		if (stateMachinePtr->executeOnce(pvr::system::StateMachine::StateInitWindow) != pvr::Result::Success)
+		if (stateMachinePtr->executeOnce(pvr::platform::StateMachine::StateInitWindow) != pvr::Result::Success)
 		{
 			pvr::Log(pvr::Log.Debug, "APP_CMD_INIT_WINDOW failed to reach InitWindow");
 			ANativeActivity_finish(app->activity);
 			return;
 		}
 
-		if (stateMachinePtr->executeUpTo(pvr::system::StateMachine::StateRenderScene) != pvr::Result::Success)
+		if (stateMachinePtr->executeUpTo(pvr::platform::StateMachine::StateRenderScene) != pvr::Result::Success)
 		{
 			pvr::Log(pvr::Log.Debug, "APP_CMD_INIT_WINDOW failed to reach RenderScene");
 			ANativeActivity_finish(app->activity);
@@ -87,16 +87,16 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 		pvr::Log(pvr::Log.Debug, "APP_CMD_TERM_WINDOW");
 		stateMachinePtr->resume();
 
-		if (stateMachinePtr->getState() < pvr::system::StateMachine::StateReleaseView)
+		if (stateMachinePtr->getState() < pvr::platform::StateMachine::StateReleaseView)
 		{
-			if (stateMachinePtr->executeOnce(pvr::system::StateMachine::StateReleaseView) != pvr::Result::Success)
+			if (stateMachinePtr->executeOnce(pvr::platform::StateMachine::StateReleaseView) != pvr::Result::Success)
 			{
 				ANativeActivity_finish(app->activity);
 				return;
 			}
 			pvr::Log(pvr::Log.Debug, "APP_CMD_TERM_WINDOW:ReleaseViewDone");
 		}
-		if (stateMachinePtr->executeUpTo(pvr::system::StateMachine::StateQuitApplication) != pvr::Result::Success)
+		if (stateMachinePtr->executeUpTo(pvr::platform::StateMachine::StateQuitApplication) != pvr::Result::Success)
 		{
 			pvr::Log(pvr::Log.Debug, "APP_CMD_TERM_WINDOW:Failed release window.");
 			ANativeActivity_finish(app->activity);
@@ -110,7 +110,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 	case APP_CMD_DESTROY:
 		pvr::Log(pvr::Log.Debug, "APP_CMD_DESTROY");
 		stateMachinePtr->resume();
-		if (stateMachinePtr->executeUpTo(pvr::system::StateMachine::StateExit) != pvr::Result::Success)
+		if (stateMachinePtr->executeUpTo(pvr::platform::StateMachine::StateExit) != pvr::Result::Success)
 		{
 			ANativeActivity_finish(app->activity);
 			return;
@@ -121,18 +121,15 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 	};
 }
 
-/*!***************************************************************************
-\brief			Main function: Entry point for the Android platform
-\param			state	the android app state
-\description	This Main function is the Entry point for a NativeActivity-
-				style android NDK main app
-*****************************************************************************/
+/// <summary>Main function: Entry point for the Android platform</summary>
+/// <param name="state">the android app state</param>
+/// <remarks>This Main function is the Entry point for a NativeActivity- style android NDK main app</remarks>
 void android_main(struct android_app* state)
 {
 	app_dummy();
 
 	// Make sure glue isn't stripped.
-	pvr::system::CommandLineParser commandLine;
+	pvr::platform::CommandLineParser commandLine;
 
 	{
 		// Handle command-line
@@ -175,7 +172,7 @@ void android_main(struct android_app* state)
 	}
 
 	//commandLine.Set(argc, argv);
-	pvr::system::StateMachine stateMachine(state, commandLine, NULL);
+	pvr::platform::StateMachine stateMachine(state, commandLine, NULL);
 
 	state->userData = &stateMachine;
 	state->onAppCmd = &handle_cmd;
@@ -187,7 +184,7 @@ void android_main(struct android_app* state)
 	//	Initialize our window/run/shutdown
 	while (true)
 	{
-		while (ALooper_pollAll((stateMachine.getState() == pvr::system::StateMachine::StateRenderScene && !stateMachine.isPaused()) ? 0 : -1, NULL, &events, (void**)&source) >= 0)
+		while (ALooper_pollAll((stateMachine.getState() == pvr::platform::StateMachine::StateRenderScene && !stateMachine.isPaused()) ? 0 : -1, NULL, &events, (void**)&source) >= 0)
 		{
 			// Process this event.
 			if (source != NULL)
@@ -212,11 +209,11 @@ void android_main(struct android_app* state)
 				ANativeActivity_finish(state->activity);
 				break;
 			}
-			if (stateMachine.getState() == pvr::system::StateMachine::StateExit)
+			if (stateMachine.getState() == pvr::platform::StateMachine::StateExit)
 			{
 				return;
 			}
 		}
-		while (stateMachine.getState() != pvr::system::StateMachine::StateRenderScene);
+		while (stateMachine.getState() != pvr::platform::StateMachine::StateRenderScene);
 	}
 }

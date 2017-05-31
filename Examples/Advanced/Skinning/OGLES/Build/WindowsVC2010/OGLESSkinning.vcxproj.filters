@@ -93,5 +93,8 @@
   <None Include="..\..\SkinnedFragShader_ES3.fsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
+  <None Include="..\..\Skinning_es.pfx">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
   </ItemGroup>
 </Project>

@@ -7,14 +7,7 @@
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRAssets/PVRAssets.h"
-#include "PVRPlatformGlue/Vulkan/PlatformHandlesVulkanGlue.h"
-#include "PVRNativeApi/TextureUtils.h"
-
-#include "PVRNativeApi/Vulkan/ConvertToVkTypes.h"
-
-#include "PVRNativeApi/BufferUtils.h"
-#include "PVRNativeApi/Vulkan/VulkanBindings.h"
-using namespace pvr;
+#include "PVRNativeApi/NativeVk.h"
 
 /*!*********************************************************************************************************************
 Content file names
@@ -35,8 +28,9 @@ void vkSuccessOrExit(VkResult result, const char* msg)
 
 struct UboPerMeshData
 {
-	glm::mat4	mvpMtx;
-	glm::mat4   worldViewIT;
+	glm::mat4 mvpMtx;
+	glm::mat4 worldViewIT;
+	// pad to 256 bits
 	char padding[128];
 };
 
@@ -48,13 +42,13 @@ struct UboStaticData
 struct MaterialDescSet
 {
 	pvr::native::HDescriptorSet_ descriptor;
-	pvr::native::HTexture_  texture;
+	pvr::native::HTexture_ texture;
 	pvr::native::HImageView_ view;
 };
 struct BufferDescriptor
 {
-	native::HBuffer_ buffer;
-	native::HDescriptorSet_ descriptor;
+	pvr::native::HBuffer_ buffer;
+	pvr::native::HDescriptorSet_ descriptor;
 	pvr::uint32 numBuffers;
 };
 
@@ -153,8 +147,12 @@ struct GraphicsPipelineCreate
 		ds.depthTestEnable = VK_TRUE;
 		ds.depthWriteEnable = VK_TRUE;
 		ds.depthCompareOp = VK_COMPARE_OP_LESS;
+		ds.minDepthBounds = 0.0f;
+		ds.maxDepthBounds = 1.0f;
+
+		ds.front.writeMask = 0xff;
 		ds.front.compareMask = 0xff;
-		ds.front.compareOp = VK_COMPARE_OP_ALWAYS;
+		ds.front.compareOp = VK_COMPARE_OP_LESS;
 		ds.front.depthFailOp = ds.front.passOp = ds.front.failOp = VK_STENCIL_OP_KEEP;
 		ds.back = ds.front;
 		return *this;
@@ -167,31 +165,33 @@ Class implementing the pvr::Shell functions.
 class VulkanIntroducingPVRAssets : public pvr::Shell
 {
 	// 3D Model
-	pvr::assets::ModelHandle scene;
+	pvr::assets::ModelHandle _scene;
 
 	// Projection and Model View matrices
-	glm::mat4 projMtx, viewMtx;
+	glm::mat4 _projMtx;
+	glm::mat4 _viewMtx;
 
 	// Variables to handle the animation in a time-based manner
-	float frame;
+	float _frame;
 
 	// The Vertex buffer object handle array.
-	std::vector<native::HBuffer_> vbos;
-	std::vector<native::HBuffer_> ibos;
-	MultiFbo fboOnScreen;
-	native::HRenderPass_ renderPass;
-	std::vector<native::HCommandBuffer_> commandBuffer;
-	std::vector<MaterialDescSet> diffuseTextures;
-	std::vector<BufferDescriptor> uboDescriptorDynamic;
-	BufferDescriptor uboDescriptorStatic;
-	api::Sampler samplerTrilinear;
-	native::HDescriptorSetLayout_ texLayout;
-	native::HDescriptorSetLayout_ uboLayoutDynamic, uboLayoutStatic;
-	uint32 perMeshUboSizePerItem;
-	native::HPipelineLayout_ pipelineLayout;
-	native::HPipeline_ pipeline;
-	native::HSampler_ sampler;
-	native::HDescriptorPool_ descriptorPool;
+	std::vector<pvr::native::HBuffer_> _vbos;
+	std::vector<pvr::native::HBuffer_> _ibos;
+	MultiFbo _fboOnScreen;
+	pvr::native::HRenderPass_ _renderPass;
+	std::vector<pvr::native::HCommandBuffer_> _commandBuffers;
+	std::vector<MaterialDescSet> _diffuseTextures;
+	std::vector<BufferDescriptor> _dynamicUboDescriptors;
+	BufferDescriptor _staticLightUboDescriptor;
+	pvr::api::Sampler _samplerTrilinear;
+	pvr::native::HDescriptorSetLayout_ _texLayout;
+	pvr::native::HDescriptorSetLayout_ _uboLayoutDynamic;
+	pvr::native::HDescriptorSetLayout_ _uboLayoutStatic;
+	pvr::uint32 _perMeshUboSizePerItem;
+	pvr::native::HPipelineLayout_ _pipelineLayout;
+	pvr::native::HPipeline_ _pipeline;
+	pvr::native::HSampler_ _sampler;
+	pvr::native::HDescriptorPool_ _descriptorPool;
 
 	struct DrawPass
 	{
@@ -200,67 +200,50 @@ class VulkanIntroducingPVRAssets : public pvr::Shell
 		std::vector<glm::vec3> dirLight;
 		glm::mat4 scale;
 	};
-	DrawPass drawPass;
+	DrawPass _drawPass;
 
 public:
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 
 	void writeVertexIndexBuffer();
-
 	bool initDescriptors();
-
 	bool loadShader(pvr::Stream::ptr_type stream, VkShaderModule& outShader);
-
 	void recordCommandBuffer();
-
-	MultiFbo createOnScreenFbo(native::HRenderPass_& renderPass);
-
-	void setupVertexAttribs(VkVertexInputBindingDescription* bindings, VkVertexInputAttributeDescription* attributes,
-	                        VkPipelineVertexInputStateCreateInfo& createInfo);
-
+	void createPipeline();
+	void createPipelineLayout();
+	void createDescriptorSetLayouts();
+	MultiFbo createOnScreenFbo(pvr::native::HRenderPass_& _renderPass);
+	void setupVertexAttribs(VkVertexInputBindingDescription* bindings, VkVertexInputAttributeDescription* attributes, VkPipelineVertexInputStateCreateInfo& createInfo);
 	void initColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& state);
-
-	native::HRenderPass_ createOnScreenRenderPass(VkAttachmentLoadOp colorLoad = VK_ATTACHMENT_LOAD_OP_CLEAR,
+	pvr::native::HRenderPass_ createOnScreenRenderPass(VkAttachmentLoadOp colorLoad = VK_ATTACHMENT_LOAD_OP_CLEAR,
 	    VkAttachmentStoreOp colorStore = VK_ATTACHMENT_STORE_OP_STORE,
 	    VkAttachmentLoadOp dsLoad = VK_ATTACHMENT_LOAD_OP_CLEAR,
 	    VkAttachmentStoreOp dsStore = VK_ATTACHMENT_STORE_OP_DONT_CARE);
-
-	void createUbo(native::HBuffer_& buffers, pvr::uint32 range, native::HDescriptorSetLayout_& descSetLayout,
-	               bool isDynamic, native::HDescriptorSet_& outDescSet);
-
-	void createCombinedImageSampler(native::HImageView_& images, native::HSampler_ sampler,
-	                                native::HDescriptorSetLayout_& descSetLayout, native::HDescriptorSet_& outDescSet);
-
-	void createPipeline();
-
+	void createUboDescriptor(pvr::native::HBuffer_& buffers, pvr::uint32 range, pvr::native::HDescriptorSetLayout_& descSetLayout,
+	                         bool isDynamic, pvr::native::HDescriptorSet_& outDescSet);
+	void createCombinedImageSamplerDescriptor(pvr::native::HImageView_& images, pvr::native::HSampler_ _sampler,
+	    pvr::native::HDescriptorSetLayout_& descSetLayout, pvr::native::HDescriptorSet_& outDescSet);
 	VkDevice& getDevice() { return getPlatformContext().getNativePlatformHandles().context.device; }
-
-	void updateBuffer(native::HBuffer_& buffer, pvr::uint32 offset, pvr::uint32 size, void* data);
-
-	pvr::Result::Enum loadTexturePVR(const pvr::StringHash& filename, native::HTexture_& outTex,
-	                                 native::HImageView_& outImageView);
-
-	void createDescriptorLayout(VkShaderStageFlagBits stages, VkDescriptorType type,
-	                            native::HDescriptorSetLayout_& outLayout);
-
+	void updateBuffer(pvr::native::HBuffer_& buffer, pvr::uint32 offset, pvr::uint32 size, void* data);
+	pvr::Result loadTexturePVR(const pvr::StringHash& filename, pvr::native::HTexture_& outTex, pvr::native::HImageView_& outImageView);
+	void createDescriptorLayout(VkShaderStageFlagBits stages, VkDescriptorType type, pvr::native::HDescriptorSetLayout_& outLayout);
 };
 
 struct DescripotSetComp
 {
 	pvr::int32 id;
 	DescripotSetComp(pvr::int32 id) : id(id) {}
-	bool operator()(std::pair<pvr::int32, pvr::api::DescriptorSet> const& pair)	{ return pair.first == id; }
+	bool operator()(std::pair<pvr::int32, pvr::api::DescriptorSet> const& pair) { return pair.first == id; }
 };
-
 
 void VulkanIntroducingPVRAssets::initColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& state)
 {
 	state.blendEnable = VK_FALSE;
-	state.colorWriteMask = 0xff;
+	state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
 	state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
 	state.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
@@ -271,11 +254,12 @@ void VulkanIntroducingPVRAssets::initColorBlendAttachmentState(VkPipelineColorBl
 	state.alphaBlendOp = VK_BLEND_OP_ADD;
 }
 
-void VulkanIntroducingPVRAssets::setupVertexAttribs(VkVertexInputBindingDescription* bindings, VkVertexInputAttributeDescription* attributes, VkPipelineVertexInputStateCreateInfo& createInfo)
+void VulkanIntroducingPVRAssets::setupVertexAttribs(VkVertexInputBindingDescription* bindings,
+    VkVertexInputAttributeDescription* attributes, VkPipelineVertexInputStateCreateInfo& createInfo)
 {
-	const auto& attribs = scene->getMesh(0).getVertexAttributes();
+	const auto& attribs = _scene->getMesh(0).getVertexAttributes();
 	bindings[0].binding = 0;
-	bindings[0].stride = scene->getMesh(0).getStride(0);
+	bindings[0].stride = _scene->getMesh(0).getStride(0);
 	bindings[0].inputRate = VK_VERTEX_INPUT_RATE_BEGIN_RANGE;
 	createInfo.vertexAttributeDescriptionCount = 0;
 	createInfo.vertexBindingDescriptionCount = 1;
@@ -283,7 +267,7 @@ void VulkanIntroducingPVRAssets::setupVertexAttribs(VkVertexInputBindingDescript
 	{
 		attributes[i].location = i;
 		attributes[i].offset = attribs[i].getOffset();
-		attributes[i].format = pvr::api::ConvertToVk::dataFormat(attribs[i].getVertexLayout().dataType, attribs[i].getN());
+		attributes[i].format = pvr::nativeVk::ConvertToVk::dataFormat(attribs[i].getVertexLayout().dataType, attribs[i].getN());
 		attributes[i].binding = 0;
 		++createInfo.vertexAttributeDescriptionCount;
 	}
@@ -291,53 +275,53 @@ void VulkanIntroducingPVRAssets::setupVertexAttribs(VkVertexInputBindingDescript
 
 /*!*********************************************************************************************************************
 \return Result::Success if no error occurred
-\brief	Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
 Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.). If the rendering
 context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
-pvr::Result::Enum VulkanIntroducingPVRAssets::initApplication()
+pvr::Result VulkanIntroducingPVRAssets::initApplication()
 {
 	// Load the scene
-	pvr::Result::Enum rslt = pvr::Result::Success;
-	if ((scene = pvr::assets::Model::createWithReader(pvr::assets::PODReader(getAssetStream(SceneFileName)))).isNull())
+	if ((_scene = pvr::assets::Model::createWithReader(pvr::assets::PODReader(getAssetStream(SceneFileName)))).isNull())
 	{
 		this->setExitMessage("ERROR: Couldn't load the %s file\n", SceneFileName);
-		return rslt;
+		return pvr::Result::UnknownError;
 	}
 
 	// The cameras are stored in the file. We check it contains at least one.
-	if (scene->getNumCameras() == 0)
+	if (_scene->getNumCameras() == 0)
 	{
-		this->setExitMessage("ERROR: The scene does not contain a camera\n");
+		this->setExitMessage("ERROR: The _scene does not contain a camera\n");
 		return pvr::Result::InvalidData;
 	}
 
 	// Ensure that all meshes use an indexed triangle list
-	for (uint32 i = 0; i < scene->getNumMeshes(); ++i)
+	for (pvr::uint32 i = 0; i < _scene->getNumMeshes(); ++i)
 	{
-		if (scene->getMesh(i).getPrimitiveType() != types::PrimitiveTopology::TriangleList ||
-		    scene->getMesh(i).getFaces().getDataSize() == 0)
+		if (_scene->getMesh(i).getPrimitiveType() != pvr::types::PrimitiveTopology::TriangleList ||
+		    _scene->getMesh(i).getFaces().getDataSize() == 0)
 		{
-			this->setExitMessage("ERROR: The meshes in the scene should use an indexed triangle list\n");
+			this->setExitMessage("ERROR: The meshes in the _scene should use an indexed triangle list\n");
 			return pvr::Result::InvalidData;
 		}
 	}
+
 	// Initialize variables used for the animation
-	frame = 0;
+	_frame = 0;
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-\return	Result::Success if no error occurred
-\brief	Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
+\return Result::Success if no error occurred
+\brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
 If the rendering context is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
-pvr::Result::Enum VulkanIntroducingPVRAssets::quitApplication() { return pvr::Result::Success; }
+pvr::Result VulkanIntroducingPVRAssets::quitApplication() { return pvr::Result::Success; }
 
-
-native::HRenderPass_ VulkanIntroducingPVRAssets::createOnScreenRenderPass(VkAttachmentLoadOp colorLoad, VkAttachmentStoreOp colorStore,
+pvr::native::HRenderPass_ VulkanIntroducingPVRAssets::createOnScreenRenderPass(VkAttachmentLoadOp colorLoad, VkAttachmentStoreOp colorStore,
     VkAttachmentLoadOp dsLoad, VkAttachmentStoreOp dsStore)
 {
+	// create the renderpass used for rendering to the screen
 	VkRenderPassCreateInfo renderPassInfo = {};
 	VkAttachmentDescription attachmentDesc[2] = { 0 };
 	VkSubpassDescription subpass = {};
@@ -347,26 +331,32 @@ native::HRenderPass_ VulkanIntroducingPVRAssets::createOnScreenRenderPass(VkAtta
 	renderPassInfo.pSubpasses = &subpass;
 	renderPassInfo.subpassCount = 1;
 
+	// color attachment
 	attachmentDesc[0].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	attachmentDesc[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	attachmentDesc[0].samples = VK_SAMPLE_COUNT_1_BIT;
-	attachmentDesc[0].format = getPlatformContext().getNativeDisplayHandle().fb.colorFormat;
-	attachmentDesc[0].format = VK_FORMAT_R8G8B8A8_UNORM;
+	attachmentDesc[0].format = getPlatformContext().getNativeDisplayHandle().onscreenFbo.colorFormat;
 	attachmentDesc[0].loadOp = colorLoad;
 	attachmentDesc[0].storeOp = colorStore;
 	attachmentDesc[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	attachmentDesc[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
+	// depth stencil attachment
 	attachmentDesc[1].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	attachmentDesc[1].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	attachmentDesc[1].samples = VK_SAMPLE_COUNT_1_BIT;
-	attachmentDesc[1].format = getPlatformContext().getNativeDisplayHandle().fb.depthStencilFormat;
+	attachmentDesc[1].format = getPlatformContext().getNativeDisplayHandle().onscreenFbo.depthStencilFormat;
 	attachmentDesc[1].loadOp = dsLoad;
 	attachmentDesc[1].storeOp = dsStore;
 	attachmentDesc[1].stencilLoadOp = dsLoad;
 	attachmentDesc[1].stencilStoreOp = dsStore;
 
-	VkAttachmentReference attachmentRef[2] = { { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }, { 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
+	VkAttachmentReference attachmentRef[2] =
+	{
+		{ 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
+		{ 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL }
+	};
+
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = attachmentRef;
 	subpass.pDepthStencilAttachment = &attachmentRef[1];
@@ -377,95 +367,109 @@ native::HRenderPass_ VulkanIntroducingPVRAssets::createOnScreenRenderPass(VkAtta
 	return outRenderpass;
 }
 
-
 /*!*********************************************************************************************************************
-\return	Result::Success if no error occurred
-\brief	Code in initView() will be called by Shell upon initialization or after a change  in the rendering context.
+\return Result::Success if no error occurred
+\brief  Code in initView() will be called by Shell upon initialization or after a change  in the rendering context.
 Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
-pvr::Result::Enum VulkanIntroducingPVRAssets::initView()
+pvr::Result VulkanIntroducingPVRAssets::initView()
 {
 	vk::initVk(getPlatformContext().getNativePlatformHandles().context.instance,
 	           getPlatformContext().getNativePlatformHandles().context.device);
 
-	//Calculate offset for UBO.
-	uint32 minDynamicOffset = 256;
-	uint32 structSize = sizeof(UboPerMeshData);
+	VkPhysicalDeviceProperties props = {};
+	vk::GetPhysicalDeviceProperties(getPlatformContext().getNativePlatformHandles().context.physicalDevice, &props);
 
-	if (structSize < minDynamicOffset)
+	//Calculate offset for UBO
+	pvr::uint32 minUboDynamicOffset = (pvr::uint32)props.limits.minUniformBufferOffsetAlignment;
+	pvr::uint32 structSize = sizeof(UboPerMeshData);
+
+	if (structSize < minUboDynamicOffset)
 	{
-		perMeshUboSizePerItem = minDynamicOffset;
+		_perMeshUboSizePerItem = minUboDynamicOffset;
 	}
 	else
 	{
-		perMeshUboSizePerItem =
-			((structSize / minDynamicOffset) * minDynamicOffset +
-				((structSize % minDynamicOffset) == 0 ? 0 : minDynamicOffset));
-
+		_perMeshUboSizePerItem =
+		  ((structSize / minUboDynamicOffset) * minUboDynamicOffset +
+		   ((structSize % minUboDynamicOffset) == 0 ? 0 : minUboDynamicOffset));
 	}
 
+	// create the renderpass
+	_renderPass = createOnScreenRenderPass();
+
 	// create the framebuffer
-	renderPass = createOnScreenRenderPass();
-	fboOnScreen = createOnScreenFbo(renderPass);
+	_fboOnScreen = createOnScreenFbo(_renderPass);
 
 	// create the descriptor pool
-	VkDescriptorPoolSize descriptorTypesRequired[4];
+	VkDescriptorPoolSize descriptorTypesRequired[3];
 	VkDescriptorPoolCreateInfo poolInfo = {};
 
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-
-	poolInfo.poolSizeCount = 4;
+	poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+	poolInfo.poolSizeCount = 3;
 	descriptorTypesRequired[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	descriptorTypesRequired[0].descriptorCount = 50;
+	descriptorTypesRequired[0].descriptorCount = 10;
 
 	descriptorTypesRequired[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	descriptorTypesRequired[1].descriptorCount = 50;
+	descriptorTypesRequired[1].descriptorCount = 10;
 
 	descriptorTypesRequired[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-	descriptorTypesRequired[2].descriptorCount = 50;
-
-	descriptorTypesRequired[3].type = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-	descriptorTypesRequired[3].descriptorCount = 5;
-
+	descriptorTypesRequired[2].descriptorCount = 10;
 
 	poolInfo.pPoolSizes = descriptorTypesRequired;
-	poolInfo.maxSets = 100;
+	poolInfo.maxSets = 10;
 	vkSuccessOrExit(vk::CreateDescriptorPool(getDevice(), &poolInfo, NULL,
-	                &descriptorPool.handle), "Failed to create descirptor pool");
-
+	                &_descriptorPool.handle), "Failed to create descirptor pool");
 
 	writeVertexIndexBuffer();
 
-	// We check the scene contains at least one light
-	if (scene->getNumLights() == 0)
+	// We check the _scene contains at least one light
+	if (_scene->getNumLights() == 0)
 	{
-		pvr::Log("The scene does not contain a light\n");
+		pvr::Log("The _scene does not contain a light\n");
 		return pvr::Result::InvalidData;
 	}
+
+	// create the descriptor set layouts
+	createDescriptorSetLayouts();
+
+	// create the _pipeline layout
+	createPipelineLayout();
+
+	// create the graphics _pipeline
 	createPipeline();
+
+	// create the descriptor sets
 	initDescriptors();
+
+	// record the rendering commands
 	recordCommandBuffer();
+
 	// Calculates the projection matrix
 	bool isRotated = this->isScreenRotated() && this->isFullScreen();
 	if (isRotated)
 	{
-		projMtx = math::perspective(pvr::Api::Vulkan, scene->getCamera(0).getFOV(), (float)this->getHeight() / (float)this->getWidth(),
-		                            scene->getCamera(0).getNear(), scene->getCamera(0).getFar(), glm::pi<pvr::float32>() * .5f);
+		_projMtx = pvr::math::perspective(pvr::Api::Vulkan, _scene->getCamera(0).getFOV(), (float)this->getHeight() / (float)this->getWidth(),
+		                                  _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), glm::pi<pvr::float32>() * .5f);
 	}
 	else
 	{
-		projMtx = math::perspective(pvr::Api::Vulkan, scene->getCamera(0).getFOV(), (float)this->getWidth() / (float)this->getHeight(),
-		                            scene->getCamera(0).getNear(), scene->getCamera(0).getFar());
+		_projMtx = pvr::math::perspective(pvr::Api::Vulkan, _scene->getCamera(0).getFOV(), (float)this->getWidth() / (float)this->getHeight(),
+		                                  _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar());
 	}
 
 
 	//update the light direction ubo only once.
 	glm::vec3 lightDir3;
-	scene->getLightDirection(0, lightDir3);
+	_scene->getLightDirection(0, lightDir3);
 	UboStaticData src{ glm::vec4(glm::normalize(lightDir3), 1.0f) };
-	updateBuffer(uboDescriptorStatic.buffer, 0, sizeof(src), &src);
 
-	vk::QueueWaitIdle(getPlatformContext().getNativePlatformHandles().graphicsQueue);
+	// update the static light buffer
+	updateBuffer(_staticLightUboDescriptor.buffer, 0, sizeof(src), &src);
+
+	vk::QueueWaitIdle(getPlatformContext().getNativePlatformHandles().mainQueue());
+
 	return pvr::Result::Success;
 }
 
@@ -486,21 +490,21 @@ struct ReleaseFbo
 {
 	VkDevice device;
 	ReleaseFbo(VkDevice& device) : device(device) {}
-	void operator()(native::HFbo_& fbo)	{	vk::DestroyFramebuffer(device, fbo.handle, NULL);	}
+	void operator()(pvr::native::HFbo_& fbo) { vk::DestroyFramebuffer(device, fbo.handle, NULL); }
 };
 struct ReleaseCommandBuffer
 {
 	VkDevice device;
 	VkCommandPool pool;
 	ReleaseCommandBuffer(VkDevice& device, VkCommandPool& cmdPool) : device(device), pool(cmdPool) {}
-	void operator()(native::HCommandBuffer_& cmd) {	vk::FreeCommandBuffers(device, pool, 1, &cmd.handle);	}
+	void operator()(pvr::native::HCommandBuffer_& cmd) { vk::FreeCommandBuffers(device, pool, 1, &cmd.handle); }
 };
 
 struct ReleaseMaterialDescriptor
 {
 	VkDevice device;
 	pvr::native::HDescriptorPool_ pool;
-	ReleaseMaterialDescriptor(VkDevice& device, native::HDescriptorPool_& pool) : device(device), pool(pool) {}
+	ReleaseMaterialDescriptor(VkDevice& device, pvr::native::HDescriptorPool_& pool) : device(device), pool(pool) {}
 	void operator()(MaterialDescSet& desc)
 	{
 		vk::FreeDescriptorSets(device, pool, 1, &desc.descriptor.handle);
@@ -514,7 +518,7 @@ struct ReleaseBufferDescriptor
 {
 	VkDevice device;
 	pvr::native::HDescriptorPool_ pool;
-	ReleaseBufferDescriptor(VkDevice& device, native::HDescriptorPool_& pool) : device(device), pool(pool) {}
+	ReleaseBufferDescriptor(VkDevice& device, pvr::native::HDescriptorPool_& pool) : device(device), pool(pool) {}
 	void operator()(BufferDescriptor& buffer)
 	{
 		vk::FreeDescriptorSets(device, pool, 1, &buffer.descriptor.handle);
@@ -524,36 +528,60 @@ struct ReleaseBufferDescriptor
 };
 
 /*!*********************************************************************************************************************
-\return	Result::Success if no error occurred
-\brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
+\return Result::Success if no error occurred
+\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
-pvr::Result::Enum VulkanIntroducingPVRAssets::releaseView()
+pvr::Result VulkanIntroducingPVRAssets::releaseView()
 {
-	std::for_each(vbos.begin(), vbos.end(), ReleaseBuffer(getDevice()));
-	std::for_each(ibos.begin(), ibos.end(), ReleaseBuffer(getDevice()));
-	std::for_each(fboOnScreen.begin(), fboOnScreen.end(), ReleaseFbo(getDevice()));
-	std::for_each(commandBuffer.begin(), commandBuffer.end(), ReleaseCommandBuffer(getDevice(),
-	              getPlatformContext().getNativePlatformHandles().commandPool));
-	vk::DestroyRenderPass(getDevice(), renderPass, NULL);
-	std::for_each(diffuseTextures.begin(), diffuseTextures.end(), ReleaseMaterialDescriptor(getDevice(), descriptorPool));
-	std::for_each(uboDescriptorDynamic.begin(), uboDescriptorDynamic.end(), ReleaseBufferDescriptor(getDevice(), descriptorPool));
-	ReleaseBufferDescriptor(getDevice(), descriptorPool).operator()(uboDescriptorStatic);
-	vk::DestroySampler(getDevice(), sampler, NULL);
-	vk::DestroyPipeline(getDevice(), pipeline, NULL);
-	vk::DestroyDescriptorSetLayout(getDevice(), texLayout, NULL);
-	vk::DestroyDescriptorSetLayout(getDevice(), uboLayoutDynamic, NULL);
-	vk::DestroyDescriptorSetLayout(getDevice(), uboLayoutStatic, NULL);
-	vk::DestroyPipelineLayout(getDevice(), pipelineLayout, NULL);
-	vk::DestroyDescriptorPool(getDevice(), descriptorPool, NULL);
+	auto& handles = getPlatformContext().getNativePlatformHandles();
+	vk::QueueWaitIdle(handles.mainQueue());
+
+	// release the buffer resources
+	std::for_each(_vbos.begin(), _vbos.end(), ReleaseBuffer(getDevice()));
+	std::for_each(_ibos.begin(), _ibos.end(), ReleaseBuffer(getDevice()));
+
+	// release the fbo
+	std::for_each(_fboOnScreen.begin(), _fboOnScreen.end(), ReleaseFbo(getDevice()));
+
+	// releaes the command buffers
+	std::for_each(_commandBuffers.begin(), _commandBuffers.end(), ReleaseCommandBuffer(getDevice(),
+	              getPlatformContext().getNativePlatformHandles().universalCommandPool));
+
+	// release the renderpass
+	vk::DestroyRenderPass(getDevice(), _renderPass, NULL);
+
+	// release the textures
+	std::for_each(_diffuseTextures.begin(), _diffuseTextures.end(), ReleaseMaterialDescriptor(getDevice(), _descriptorPool));
+
+	// release the ubos
+	std::for_each(_dynamicUboDescriptors.begin(), _dynamicUboDescriptors.end(), ReleaseBufferDescriptor(getDevice(), _descriptorPool));
+	ReleaseBufferDescriptor(getDevice(), _descriptorPool).operator()(_staticLightUboDescriptor);
+
+	// release _sampler
+	vk::DestroySampler(getDevice(), _sampler, NULL);
+
+	// release graphics _pipeline
+	vk::DestroyPipeline(getDevice(), _pipeline, NULL);
+
+	// release descriptor set layouts
+	vk::DestroyDescriptorSetLayout(getDevice(), _texLayout, NULL);
+	vk::DestroyDescriptorSetLayout(getDevice(), _uboLayoutDynamic, NULL);
+	vk::DestroyDescriptorSetLayout(getDevice(), _uboLayoutStatic, NULL);
+
+	// release _pipeline layout
+	vk::DestroyPipelineLayout(getDevice(), _pipelineLayout, NULL);
+
+	// release the descriptor pool
+	vk::DestroyDescriptorPool(getDevice(), _descriptorPool, NULL);
 	return pvr::Result::Success;
 }
 
 inline static void submit_command_buffers(VkQueue queue, VkDevice device, VkCommandBuffer* cmdBuffs,
-    uint32 numCmdBuffs = 1, VkSemaphore* waitSems = NULL, uint32 numWaitSems = 0,
-    VkSemaphore* signalSems = NULL, uint32 numSignalSems = 0, VkFence fence = VK_NULL_HANDLE)
+    pvr::uint32 numCmdBuffs = 1, VkSemaphore* waitSems = NULL, pvr::uint32 numWaitSems = 0,
+    VkSemaphore* signalSems = NULL, pvr::uint32 numSignalSems = 0, VkFence fence = VK_NULL_HANDLE)
 {
 	VkPipelineStageFlags pipeStageFlags = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-	VkSubmitInfo nfo;
+	VkSubmitInfo nfo = {};
 	nfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	nfo.pNext = 0;
 	nfo.waitSemaphoreCount = numWaitSems;
@@ -568,105 +596,97 @@ inline static void submit_command_buffers(VkQueue queue, VkDevice device, VkComm
 
 /*!*********************************************************************************************************************
 \return Result::Success if no error occurred
-\brief	Main rendering loop function of the program. The shell will call this function every frame.
+\brief  Main rendering loop function of the program. The shell will call this function every _frame.
 ***********************************************************************************************************************/
-pvr::Result::Enum VulkanIntroducingPVRAssets::renderFrame()
+pvr::Result VulkanIntroducingPVRAssets::renderFrame()
 {
 	auto& handles = getPlatformContext().getNativePlatformHandles();
-	//	Calculates the frame number to animate in a time-based manner.
-	//	get the time in milliseconds.
-	frame += (float)getFrameTime() / 30.f; // design-time target fps for animation
 
-	if (frame >= scene->getNumFrames() - 1)	{ frame = 0; }
+	//  Calculates the _frame number to animate in a time-based manner.
+	//  get the time in milliseconds.
+	_frame += (float)getFrameTime() / 30.f; // design-time target fps for animation
+	if (_frame >= _scene->getNumFrames() - 1) { _frame = 0; }
 
-	// Sets the scene animation to this frame
-	scene->setCurrentFrame(frame);
+	// Sets the _scene animation to this _frame
+	_scene->setCurrentFrame(_frame);
 
-	//	We can build the world view matrix from the camera position, target and an up vector.
-	//	A scene is composed of nodes. There are 3 types of nodes:
-	//	- MeshNodes :
-	//		references a mesh in the getMesh().
-	//		These nodes are at the beginning of of the Nodes array.
-	//		And there are nNumMeshNode number of them.
-	//		This way the .pod format can instantiate several times the same mesh
-	//		with different attributes.
-	//	- lights
-	//	- cameras
-	//	To draw a scene, you must go through all the MeshNodes and draw the referenced meshes.
-
+	//  We can build the world view matrix from the camera position, target and an up vector.
 	pvr::float32 fov;
 	glm::vec3 cameraPos, cameraTarget, cameraUp;
-	scene->getCameraProperties(0, fov, cameraPos, cameraTarget, cameraUp);
-	viewMtx = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-
-	// update the ubo
-	// only update the current swapchain ubo
-	std::vector<UboPerMeshData> tempMtx(scene->getNumMeshNodes());
-	for (pvr::uint32 i = 0; i < scene->getNumMeshNodes(); ++i)
-	{
-		tempMtx[i].mvpMtx = viewMtx * scene->getWorldMatrix(i);
-		tempMtx[i].worldViewIT = glm::inverseTranspose(tempMtx[i].mvpMtx);
-		tempMtx[i].mvpMtx = projMtx * tempMtx[i].mvpMtx;
-		updateBuffer(uboDescriptorDynamic[getPlatformContext().getSwapChainIndex()].buffer,
-		             0, perMeshUboSizePerItem * tempMtx.size(), tempMtx.data());
-	}
+	_scene->getCameraProperties(0, fov, cameraPos, cameraTarget, cameraUp);
+	_viewMtx = glm::lookAt(cameraPos, cameraTarget, cameraUp);
 
 	pvr::uint32 swapchainindex = getPlatformContext().getSwapChainIndex();
-	submit_command_buffers(handles.graphicsQueue, handles.context.device, &commandBuffer[swapchainindex].handle, 1,
+
+	// update the model ubo
+	// only update the current swapchain ubo
+	std::vector<UboPerMeshData> tempMtx(_scene->getNumMeshNodes());
+	for (pvr::uint32 i = 0; i < _scene->getNumMeshNodes(); ++i)
+	{
+		tempMtx[i].mvpMtx = _viewMtx * _scene->getWorldMatrix(i);
+		tempMtx[i].worldViewIT = glm::inverseTranspose(tempMtx[i].mvpMtx);
+		tempMtx[i].mvpMtx = _projMtx * tempMtx[i].mvpMtx;
+
+		updateBuffer(_dynamicUboDescriptors[swapchainindex].buffer, 0, _perMeshUboSizePerItem * static_cast<pvr::uint32>(tempMtx.size()), tempMtx.data());
+	}
+
+	// submit the current swap chain command buffer
+	submit_command_buffers(handles.mainQueue(), handles.context.device, &_commandBuffers[swapchainindex].handle, 1,
 	                       &handles.semaphoreCanBeginRendering[swapchainindex], handles.semaphoreCanBeginRendering[swapchainindex] != 0,
 	                       &handles.semaphoreFinishedRendering[swapchainindex], handles.semaphoreFinishedRendering[swapchainindex] != 0,
 	                       handles.fenceRender[swapchainindex]);
-	vk::QueueWaitIdle(getPlatformContext().getNativePlatformHandles().graphicsQueue);
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-\brief	Pre-record the rendering commands
+\brief  Pre-record the rendering commands
 ***********************************************************************************************************************/
 void VulkanIntroducingPVRAssets::recordCommandBuffer()
 {
-	commandBuffer.resize(getPlatformContext().getSwapChainLength());
-	// create the commandbuffer
-	VkCommandBufferAllocateInfo sAllocateInfo;
+	_commandBuffers.resize(getPlatformContext().getSwapChainLength());
 
+	// allocate the command buffers
+	VkCommandBufferAllocateInfo sAllocateInfo = {};
 	sAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	sAllocateInfo.pNext = NULL;
-	sAllocateInfo.commandPool = getPlatformContext().getNativePlatformHandles().commandPool;
+	sAllocateInfo.commandPool = getPlatformContext().getNativePlatformHandles().universalCommandPool;
 	sAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	sAllocateInfo.commandBufferCount = 1;
+
+	for (pvr::uint32 i = 0; i < getPlatformContext().getSwapChainLength(); ++i)
+	{
+		vkSuccessOrExit(vk::AllocateCommandBuffers(getDevice(), &sAllocateInfo, &_commandBuffers[i].handle), "");
+	}
 
 	VkCommandBufferBeginInfo cmdBufferBeginInfo = {};
 	cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-	VkRenderPassBeginInfo renderPassBeginInfo;
+	VkRenderPassBeginInfo renderPassBeginInfo = {};
 	VkClearValue clearVals[2] = { 0 };
-	clearVals[0].color.float32[0] = 0.6f;
-	clearVals[0].color.float32[1] = 0.8f;
-	clearVals[0].color.float32[2] = 1.f;
+	clearVals[0].color.float32[0] = 0.00f;
+	clearVals[0].color.float32[1] = 0.70f;
+	clearVals[0].color.float32[2] = .67f;
 	clearVals[0].color.float32[3] = 1.0f;
 	clearVals[1].depthStencil.depth = 1.0f;
 	clearVals[1].depthStencil.stencil = 0;
-	for (uint32 i = 0; i < getPlatformContext().getSwapChainLength(); ++i)
+	for (pvr::uint32 i = 0; i < getPlatformContext().getSwapChainLength(); ++i)
 	{
-
-		VkCommandBuffer& cmdBuffer = commandBuffer[i].handle;
-		vkSuccessOrExit(vk::AllocateCommandBuffers(getDevice(), &sAllocateInfo, &cmdBuffer), "");
-		vkSuccessOrExit(vk::BeginCommandBuffer(cmdBuffer, &cmdBufferBeginInfo),
+		vkSuccessOrExit(vk::BeginCommandBuffer(_commandBuffers[i].handle, &cmdBufferBeginInfo),
 		                "Failed to begin commandbuffer");
 
 		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassBeginInfo.pNext = NULL;
-		renderPassBeginInfo.renderPass = renderPass.handle;
-		renderPassBeginInfo.framebuffer = fboOnScreen[i].handle;
+		renderPassBeginInfo.renderPass = _renderPass.handle;
+		renderPassBeginInfo.framebuffer = _fboOnScreen[i].handle;
 		renderPassBeginInfo.renderArea.offset.x = 0;
 		renderPassBeginInfo.renderArea.offset.y = 0;
 		renderPassBeginInfo.renderArea.extent = { getWidth(), getHeight() };
 		renderPassBeginInfo.clearValueCount = 2;
 		renderPassBeginInfo.pClearValues = &clearVals[0];
-		vk::CmdBeginRenderPass(cmdBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-		vk::CmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.handle);
+		vk::CmdBeginRenderPass(_commandBuffers[i].handle, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+		vk::CmdBindPipeline(_commandBuffers[i].handle, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline.handle);
 
-		// A scene is composed of nodes. There are 3 types of nodes:
+		// A _scene is composed of nodes. There are 3 types of nodes:
 		// - MeshNodes :
 		// references a mesh in the getMesh().
 		// These nodes are at the beginning of of the Nodes array.
@@ -675,35 +695,33 @@ void VulkanIntroducingPVRAssets::recordCommandBuffer()
 		// with different attributes.
 		// - lights
 		// - cameras
-		// To draw a scene, you must go through all the MeshNodes and draw the referenced meshes.
+		// To draw a _scene, you must go through all the MeshNodes and draw the referenced meshes.
 		pvr::uint32 uboOffset = 0;
 		VkDeviceSize vertexBufferOffset = 0;
-		pvr::int32 matId = -1;
-		vk::CmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout.handle, 2,
-		                          1, &uboDescriptorStatic.descriptor.handle, 0, 0);
-		for (int j = 0; j < scene->getNumMeshNodes(); ++j)
+		vk::CmdBindDescriptorSets(_commandBuffers[i].handle, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout.handle, 2,
+		                          1, &_staticLightUboDescriptor.descriptor.handle, 0, 0);
+		for (unsigned int j = 0; j < _scene->getNumMeshNodes(); ++j)
 		{
-			const pvr::assets::Model::Node* pNode = &scene->getMeshNode(j);
+			const pvr::assets::Model::Node* pNode = &_scene->getMeshNode(j);
 			// Gets pMesh referenced by the pNode
-			const pvr::assets::Mesh* pMesh = &scene->getMesh(pNode->getObjectId());
-			uboOffset = perMeshUboSizePerItem * j;
-			vk::CmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout.handle, 0,
-			                          1, &diffuseTextures[pNode->getMaterialIndex()].descriptor.handle, 0, 0);
+			const pvr::assets::Mesh* pMesh = &_scene->getMesh(pNode->getObjectId());
+			uboOffset = _perMeshUboSizePerItem * j;
+			vk::CmdBindDescriptorSets(_commandBuffers[i].handle, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout.handle, 0,
+			                          1, &_diffuseTextures[pNode->getMaterialIndex()].descriptor.handle, 0, 0);
 
-			vk::CmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout.handle, 1,
-			                          1, &uboDescriptorDynamic[i].descriptor.handle, 1, &uboOffset);
+			vk::CmdBindDescriptorSets(_commandBuffers[i].handle, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout.handle, 1,
+			                          1, &_dynamicUboDescriptors[i].descriptor.handle, 1, &uboOffset);
 
-			vk::CmdBindVertexBuffers(cmdBuffer, 0, 1, &vbos[pNode->getObjectId()].buffer, &vertexBufferOffset);
-			vk::CmdBindIndexBuffer(cmdBuffer, ibos[pNode->getObjectId()].buffer, 0,
+			vk::CmdBindVertexBuffers(_commandBuffers[i].handle, 0, 1, &_vbos[pNode->getObjectId()].buffer, &vertexBufferOffset);
+			vk::CmdBindIndexBuffer(_commandBuffers[i].handle, _ibos[pNode->getObjectId()].buffer, 0,
 			                       (pMesh->getFaces().getDataTypeSize() == 16 ? VK_INDEX_TYPE_UINT16 : VK_INDEX_TYPE_UINT32));
 
 			//Now that the model-view matrix is set and the materials ready,
 			//call another function to actually draw the mesh.
-			vk::CmdDrawIndexed(cmdBuffer, pMesh->getNumFaces() * 3, 1, 0, 0, 0);
+			vk::CmdDrawIndexed(_commandBuffers[i].handle, pMesh->getNumFaces() * 3, 1, 0, 0, 0);
 		}
-		//commandBuffer->enqueueSecondaryCmds(uiRendererCmd);
-		vk::CmdEndRenderPass(cmdBuffer);
-		vk::EndCommandBuffer(cmdBuffer);
+		vk::CmdEndRenderPass(_commandBuffers[i].handle);
+		vk::EndCommandBuffer(_commandBuffers[i].handle);
 	}
 }
 
@@ -722,104 +740,102 @@ bool VulkanIntroducingPVRAssets::loadShader(pvr::Stream::ptr_type stream, VkShad
 	return true;
 }
 
-void VulkanIntroducingPVRAssets::createPipeline()
+void VulkanIntroducingPVRAssets::createPipelineLayout()
 {
-
-	VkShaderModule vertexShaderModule; loadShader(getAssetStream(VertShaderFileName), vertexShaderModule);
-	VkShaderModule fragmentShaderModule; loadShader(getAssetStream(FragShaderFileName), fragmentShaderModule);
-	// create the texture descriptor layout
-	createDescriptorLayout(VK_SHADER_STAGE_FRAGMENT_BIT, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-	                       texLayout);
-
-	createDescriptorLayout(VK_SHADER_STAGE_VERTEX_BIT, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
-	                       uboLayoutDynamic);
-
-	createDescriptorLayout(VK_SHADER_STAGE_VERTEX_BIT, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-	                       uboLayoutStatic);
-
-	// create the ubo descriptor layout
-	{
-		VkDescriptorSetLayoutBinding descBindings[1];
-		descBindings[0].binding = 0;
-		descBindings[0].descriptorCount = 1;
-		descBindings[0].pImmutableSamplers = NULL;
-		descBindings[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		descBindings[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-
-		VkDescriptorSetLayoutCreateInfo descLayoutInfo;
-		descLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		descLayoutInfo.flags = 0;
-		descLayoutInfo.pNext = 0;
-		descLayoutInfo.pBindings = descBindings;
-		descLayoutInfo.bindingCount = 1;
-
-		vkSuccessOrExit(vk::CreateDescriptorSetLayout(getDevice(), &descLayoutInfo, NULL,
-		                &uboLayoutDynamic.handle), "Failed to create ubo descriptorset layout");
-	}
-
-
-	//The various CreateInfos needed for a graphics pipeline
-	GraphicsPipelineCreate pipeCreate;
-
-	//These arrays is pointed to by the vertexInput create struct:
-	VkVertexInputAttributeDescription attributes[16];
-	VkVertexInputBindingDescription bindings[16];
-
-	pipeCreate.vi.pVertexAttributeDescriptions = attributes;
-	pipeCreate.vi.pVertexBindingDescriptions = bindings;
-
-	//This array is pointed to by the cb create struct
-	VkPipelineColorBlendAttachmentState attachments[1];
-
-	pipeCreate.cb.pAttachments = attachments;
-
-	//Set up the pipeline state
-	pipeCreate.vkPipeInfo.pNext = NULL;
-
-	//CreateInfos for the SetLayouts and PipelineLayouts
-	VkPipelineLayoutCreateInfo sPipelineLayoutCreateInfo;
+	// Create the _pipeline layout
+	VkPipelineLayoutCreateInfo sPipelineLayoutCreateInfo = {};
 	sPipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	sPipelineLayoutCreateInfo.pNext = NULL;
 	sPipelineLayoutCreateInfo.flags = 0;
 	sPipelineLayoutCreateInfo.pushConstantRangeCount = 0;
 	sPipelineLayoutCreateInfo.pPushConstantRanges = NULL;
+
 	VkDescriptorSetLayout descLayouts[] =
 	{
-		texLayout.handle,
-		uboLayoutDynamic.handle,
-		uboLayoutStatic
+		_texLayout.handle,
+		_uboLayoutDynamic.handle,
+		_uboLayoutStatic
 	};
 	sPipelineLayoutCreateInfo.setLayoutCount = sizeof(descLayouts) / sizeof(descLayouts[0]);
 	sPipelineLayoutCreateInfo.pSetLayouts = descLayouts;
-	vk::CreatePipelineLayout(getDevice(), &sPipelineLayoutCreateInfo, NULL, &pipelineLayout.handle);
+	vk::CreatePipelineLayout(getDevice(), &sPipelineLayoutCreateInfo, NULL, &_pipelineLayout.handle);
+}
 
-	static VkSampleMask sampleMask = 0xffffffff;
-	pipeCreate.ms.pSampleMask = &sampleMask;
-	initColorBlendAttachmentState(attachments[0]);
-	setupVertexAttribs(bindings, attributes, pipeCreate.vi);
+void VulkanIntroducingPVRAssets::createDescriptorSetLayouts()
+{
+	// create the texture descriptor layout
+	createDescriptorLayout(VK_SHADER_STAGE_FRAGMENT_BIT, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, _texLayout);
 
+	// create the matrices ubo descriptor layout
+	createDescriptorLayout(VK_SHADER_STAGE_VERTEX_BIT, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, _uboLayoutDynamic);
+
+	// create the static light ubo descriptor layout
+	createDescriptorLayout(VK_SHADER_STAGE_VERTEX_BIT, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, _uboLayoutStatic);
+}
+
+void VulkanIntroducingPVRAssets::createPipeline()
+{
+	// load the shader modules
+	VkShaderModule vertexShaderModule = {};
+	loadShader(getAssetStream(VertShaderFileName), vertexShaderModule);
+	VkShaderModule fragmentShaderModule = {};
+	loadShader(getAssetStream(FragShaderFileName), fragmentShaderModule);
+
+	//These arrays are then used in the graphics _pipeline creation
+	VkVertexInputAttributeDescription attributes[16];
+	VkVertexInputBindingDescription bindings[16];
 	VkRect2D scissors[1];
 	VkViewport viewports[1];
+	VkSampleMask sampleMask = 0xffffffff;
+
+	//The various CreateInfos needed for a graphics _pipeline
+	GraphicsPipelineCreate pipeCreate;
+
+	pipeCreate.vi.pVertexAttributeDescriptions = attributes;
+	pipeCreate.vi.pVertexBindingDescriptions = bindings;
+
+	// setup the vertex attributes and bindings
+	setupVertexAttribs(bindings, attributes, pipeCreate.vi);
+
+	// setup the color blend attachment state
+	VkPipelineColorBlendAttachmentState attachments[1];
+	pipeCreate.cb.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	pipeCreate.cb.pNext = 0;
+	pipeCreate.cb.flags = 0;
+	pipeCreate.cb.logicOpEnable = 0;
+	pipeCreate.cb.logicOp = VK_LOGIC_OP_SET;
+	pipeCreate.cb.attachmentCount = 1;
+	pipeCreate.cb.pAttachments = attachments;
+	pipeCreate.cb.blendConstants[0] = 0.0f;
+	pipeCreate.cb.blendConstants[1] = 0.0f;
+	pipeCreate.cb.blendConstants[2] = 0.0f;
+	pipeCreate.cb.blendConstants[3] = 0.0f;
+
+	initColorBlendAttachmentState(attachments[0]);
+
+	//Set up the _pipeline state
+	pipeCreate.vkPipeInfo.pNext = NULL;
+
+	pipeCreate.ms.pSampleMask = &sampleMask;
 
 	scissors[0].offset.x = 0;
 	scissors[0].offset.y = 0;
 	scissors[0].extent = { getWidth(), getHeight() };
-
 	pipeCreate.vp.pScissors = scissors;
 
 	viewports[0].minDepth = 0.0f;
 	viewports[0].maxDepth = 1.0f;
 	viewports[0].x = 0;
 	viewports[0].y = 0;
-	viewports[0].width = getWidth();
-	viewports[0].height = getHeight();
+	viewports[0].width = static_cast<pvr::float32>(getWidth());
+	viewports[0].height = static_cast<pvr::float32>(getHeight());
 
 	pipeCreate.vp.pViewports = viewports;
 	pipeCreate.vp.viewportCount = 1;
 	pipeCreate.vp.scissorCount = 1;
 
-	pipeCreate.vkPipeInfo.layout = pipelineLayout;
-	pipeCreate.vkPipeInfo.renderPass = renderPass.handle;
+	pipeCreate.vkPipeInfo.layout = _pipelineLayout;
+	pipeCreate.vkPipeInfo.renderPass = _renderPass.handle;
 	pipeCreate.vkPipeInfo.subpass = 0;
 	pipeCreate.shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
 	pipeCreate.shaderStages[0].module = vertexShaderModule;
@@ -827,19 +843,18 @@ void VulkanIntroducingPVRAssets::createPipeline()
 	pipeCreate.shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 	pipeCreate.shaderStages[1].module = fragmentShaderModule;
 	pipeCreate.shaderStages[1].pName = "main";
-	pipeCreate.ds.maxDepthBounds = 1;
-	pipeCreate.ds.front.writeMask = 0xff;
-	pipeCreate.ds.back.writeMask = 0xff;
-	pipeCreate.cb.logicOp = VK_LOGIC_OP_SET;
-	vkSuccessOrExit(vk::CreateGraphicsPipelines(getDevice(), NULL, 1,
-	                &pipeCreate.vkPipeInfo, NULL, &pipeline.handle), "Failed to create the pipeline");
+
+	pipeCreate.vkPipeInfo.flags |= VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
+	pipeCreate.vkPipeInfo.basePipelineIndex = -1;
+
+	vkSuccessOrExit(vk::CreateGraphicsPipelines(getDevice(), VK_NULL_HANDLE, 1, &pipeCreate.vkPipeInfo, NULL, &_pipeline.handle), "Failed to create the _pipeline");
 
 	// destroy the shader module not required anymore
 	vk::DestroyShaderModule(getDevice(), vertexShaderModule, NULL);
 	vk::DestroyShaderModule(getDevice(), fragmentShaderModule, NULL);
 }
 
-MultiFbo VulkanIntroducingPVRAssets::createOnScreenFbo(native::HRenderPass_ & renderPass)
+MultiFbo VulkanIntroducingPVRAssets::createOnScreenFbo(pvr::native::HRenderPass_ & renderPass)
 {
 	MultiFbo outFbo(getPlatformContext().getSwapChainLength());
 	VkFramebufferCreateInfo fboInfo = {};
@@ -854,8 +869,8 @@ MultiFbo VulkanIntroducingPVRAssets::createOnScreenFbo(native::HRenderPass_ & re
 	{
 		VkImageView imageViews[] =
 		{
-			getPlatformContext().getNativeDisplayHandle().fb.colorImageViews[i],
-			getPlatformContext().getNativeDisplayHandle().fb.depthStencilImageView[i]
+			getPlatformContext().getNativeDisplayHandle().onscreenFbo.colorImageViews[i],
+			getPlatformContext().getNativeDisplayHandle().onscreenFbo.depthStencilImageView[i]
 		};
 		fboInfo.pAttachments = imageViews;
 		vkSuccessOrExit(vk::CreateFramebuffer(getDevice(), &fboInfo, NULL, &outFbo[i].handle), "Failed to create the fbo");
@@ -863,25 +878,23 @@ MultiFbo VulkanIntroducingPVRAssets::createOnScreenFbo(native::HRenderPass_ & re
 	return outFbo;
 }
 
-pvr::Result::Enum VulkanIntroducingPVRAssets::loadTexturePVR(const pvr::StringHash& filename,
-    native::HTexture_ & outTexHandle, native::HImageView_ & outImageView)
+pvr::Result VulkanIntroducingPVRAssets::loadTexturePVR(const pvr::StringHash& filename,
+    pvr::native::HTexture_ & outTexHandle, pvr::native::HImageView_ & outImageView)
 {
-	pvr::assets::Texture tempTexture;
-	pvr::Result::Enum result;
+	pvr::Texture tempTexture;
+	pvr::Result result;
+
+	// get the texture asset
 	pvr::Stream::ptr_type assetStream = this->getAssetStream(filename);
-	pvr::types::ImageAreaSize imageSize;
 	if (!assetStream.get())
 	{
 		pvr::Log(pvr::Log.Error, "AssetStore.loadTexture error for filename %s : File not found", filename.c_str());
 		return pvr::Result::NotFound;
 	}
-	result = pvr::assets::textureLoad(assetStream, pvr::assets::TextureFileFormat::PVR, tempTexture);
-	PixelFormat pixelFormat;
-	bool isDecompressed;
-	if (result == pvr::Result::Success)
-	{
-		result = pvr::utils::textureUpload(getPlatformContext(), tempTexture, outTexHandle, imageSize, pixelFormat, isDecompressed);
-	}
+
+	// read the texture asset
+	result = pvr::assets::textureLoad(assetStream, pvr::TextureFileFormat::PVR, tempTexture);
+
 	if (result != pvr::Result::Success)
 	{
 		pvr::Log(pvr::Log.Error, "AssetStore.loadTexture error for filename %s : Failed to load texture with code %s.",
@@ -889,16 +902,29 @@ pvr::Result::Enum VulkanIntroducingPVRAssets::loadTexturePVR(const pvr::StringHa
 		return result;
 	}
 
+	// upload the texture asset
+	pvr::utils::vulkan::TextureUploadResults texUploadResults = pvr::utils::vulkan::textureUpload(getPlatformContext(), tempTexture, true);
+
+	if (texUploadResults.getResult() != pvr::Result::Success)
+	{
+		pvr::Log(pvr::Log.Error, "AssetStore.loadTexture error for filename %s : Failed to load texture with code %s.",
+		         filename.c_str(), pvr::Log.getResultCodeString(result));
+		return result;
+	}
+
+	outTexHandle.image = texUploadResults.getImage().image;
+	outTexHandle.memory = texUploadResults.getImage().memory;
+
 	// create the imageView
 	VkImageViewCreateInfo viewInfo = {};
 	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 	viewInfo.image = outTexHandle.image;
 	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 
-	VkFormat viewFormat = pvr::api::ConvertToVk::pixelFormat(tempTexture.getPixelFormat(), tempTexture.getColorSpace(), tempTexture.getChannelType());
-	if (isDecompressed)
+	VkFormat viewFormat = pvr::nativeVk::ConvertToVk::pixelFormat(tempTexture.getPixelFormat(), tempTexture.getColorSpace(), tempTexture.getChannelType());
+	if (texUploadResults.isDecompressed())
 	{
-		viewFormat = pvr::api::ConvertToVk::pixelFormat(pixelFormat, tempTexture.getColorSpace(), tempTexture.getChannelType());
+		viewFormat = pvr::nativeVk::ConvertToVk::pixelFormat(texUploadResults.getPixelFormat(), tempTexture.getColorSpace(), tempTexture.getChannelType());
 	}
 
 	viewInfo.format = viewFormat;
@@ -921,18 +947,16 @@ pvr::Result::Enum VulkanIntroducingPVRAssets::loadTexturePVR(const pvr::StringHa
 	return result;
 }
 
-
 /*!*********************************************************************************************************************
-\brief	Create combined texture and sampler descriptor set for the materials in the scene
-\return	Return true on success
+\brief  Create combined texture and _sampler descriptor set for the materials in the _scene
+\return Return true on success
 ***********************************************************************************************************************/
 bool VulkanIntroducingPVRAssets::initDescriptors()
 {
-	//	create the sampler
+	//  create the _sampler
 	{
 		VkSamplerCreateInfo samplerInfo = {};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-		samplerInfo.flags = NULL;
 		samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
 		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
@@ -946,66 +970,68 @@ bool VulkanIntroducingPVRAssets::initDescriptors()
 		samplerInfo.maxLod = 100.0f;
 
 		samplerInfo.compareOp = VK_COMPARE_OP_NEVER;
-		vkSuccessOrExit(vk::CreateSampler(getDevice(), &samplerInfo, NULL, &sampler.handle),
-		                "failed to create the sampler");
+		vkSuccessOrExit(vk::CreateSampler(getDevice(), &samplerInfo, NULL, &_sampler.handle),
+		                "failed to create the _sampler");
 	}
 
-	pvr::uint32 numMaterials = scene->getNumMaterials();
+	// load the demo materials
+	pvr::uint32 numMaterials = _scene->getNumMaterials();
 	pvr::uint32 i = 0;
-	while (i < scene->getNumMaterials() && scene->getMaterial(i).getDiffuseTextureIndex() != -1)
+	while (i < _scene->getNumMaterials() && _scene->getMaterial(i).defaultSemantics().getDiffuseTextureIndex() != -1)
 	{
-		const pvr::assets::Model::Material& material = scene->getMaterial(i);
-
+		const pvr::assets::Model::Material& material = _scene->getMaterial(i);
 
 		MaterialDescSet matDescSet;
 		// Load the diffuse texture map
-		if (loadTexturePVR(scene->getTexture(material.getDiffuseTextureIndex()).getName(),
+		if (loadTexturePVR(_scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName(),
 		                   matDescSet.texture, matDescSet.view) != pvr::Result::Success)
 		{
-			pvr::Log("Failed to load texture %s", scene->getTexture(material.getDiffuseTextureIndex()).getName().c_str());
+			pvr::Log("Failed to load texture %s", _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
 			return false;
 		}
-		createCombinedImageSampler(matDescSet.view, sampler,
-		                           texLayout, matDescSet.descriptor);
-		diffuseTextures.push_back(matDescSet);
+		createCombinedImageSamplerDescriptor(matDescSet.view, _sampler, _texLayout, matDescSet.descriptor);
+		_diffuseTextures.push_back(matDescSet);
 		++i;
 	}
 
-	// create the ubo
-	uboDescriptorDynamic.resize(getPlatformContext().getSwapChainLength());
-	for (uint32 i = 0; i < getPlatformContext().getSwapChainLength(); ++i)
+	// create the matrices ubos (one per swap chain)
+	_dynamicUboDescriptors.resize(getPlatformContext().getSwapChainLength());
+	for (pvr::uint32 i = 0; i < getPlatformContext().getSwapChainLength(); ++i)
 	{
+		// create the dynamic descriptor
+		if (!pvr::utils::vulkan::createBuffer(getPlatformContext(), pvr::types::BufferBindingUse::UniformBuffer,
+		                                      _perMeshUboSizePerItem * _scene->getNumMeshNodes(), true,
+		                                      _dynamicUboDescriptors[i].buffer))
 		{
-			// create the dynamic descriptor
-			if (!pvr::apiUtils::createBuffer(getPlatformContext(), types::BufferBindingUse::UniformBuffer, perMeshUboSizePerItem * scene->getNumMeshNodes(), true, uboDescriptorDynamic[i].buffer))
-			{
-				return false;
-			}
-			createUbo(uboDescriptorDynamic[i].buffer, perMeshUboSizePerItem, uboLayoutDynamic, true, uboDescriptorDynamic[i].descriptor);
+			return false;
 		}
+		createUboDescriptor(_dynamicUboDescriptors[i].buffer, _perMeshUboSizePerItem, _uboLayoutDynamic, true, _dynamicUboDescriptors[i].descriptor);
 	}
 
-	// create the static ubo
-	if (!pvr::apiUtils::createBuffer(getPlatformContext(), types::BufferBindingUse::UniformBuffer, perMeshUboSizePerItem, true, uboDescriptorStatic.buffer))
 	{
-		return false;
+		// create the static ubo
+		if (!pvr::utils::vulkan::createBuffer(getPlatformContext(), pvr::types::BufferBindingUse::UniformBuffer, _perMeshUboSizePerItem,
+		                                      true, _staticLightUboDescriptor.buffer))
+		{
+			return false;
+		}
+		createUboDescriptor(_staticLightUboDescriptor.buffer, _perMeshUboSizePerItem, _uboLayoutStatic, false, _staticLightUboDescriptor.descriptor);
 	}
-	createUbo(uboDescriptorStatic.buffer, perMeshUboSizePerItem, uboLayoutStatic, false, uboDescriptorStatic.descriptor);
+
 	return true;
 }
 
-void VulkanIntroducingPVRAssets::createUbo(native::HBuffer_& buffers, pvr::uint32 range,
-    native::HDescriptorSetLayout_ & descSetLayout,
-    bool isDynamic, native::HDescriptorSet_ & outDescSet)
+void VulkanIntroducingPVRAssets::createUboDescriptor(pvr::native::HBuffer_& buffers, pvr::uint32 range,
+    pvr::native::HDescriptorSetLayout_ & descSetLayout, bool isDynamic, pvr::native::HDescriptorSet_ & outDescSet)
 {
-	VkDescriptorSetAllocateInfo	descAllocInfo;
+	// create the ubo descriptor set
+	VkDescriptorSetAllocateInfo descAllocInfo = {};
 	descAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	descAllocInfo.pNext = NULL;
 	descAllocInfo.descriptorSetCount = 1;
 	descAllocInfo.pSetLayouts = &descSetLayout.handle;
-	descAllocInfo.descriptorPool = descriptorPool;
-	vkSuccessOrExit(vk::AllocateDescriptorSets(getDevice(),
-	                &descAllocInfo, &outDescSet.handle), "Failed to allocate descriptor set");
+	descAllocInfo.descriptorPool = _descriptorPool;
+	vkSuccessOrExit(vk::AllocateDescriptorSets(getDevice(), &descAllocInfo, &outDescSet.handle), "Failed to allocate descriptor set");
 
 	VkWriteDescriptorSet writeDesc = {};
 	VkDescriptorBufferInfo bufferInfo = {};
@@ -1024,84 +1050,79 @@ void VulkanIntroducingPVRAssets::createUbo(native::HBuffer_& buffers, pvr::uint3
 	vk::UpdateDescriptorSets(getDevice(), 1, &writeDesc, 0, 0);
 }
 
-
-
-
 void VulkanIntroducingPVRAssets::writeVertexIndexBuffer()
 {
 	void* ptr = 0;
-	vbos.resize(scene->getNumMeshes());
-	ibos.resize(scene->getNumMeshes());
-	// Load vertex data of all meshes in the scene into VBOs
+	_vbos.resize(_scene->getNumMeshes());
+	_ibos.resize(_scene->getNumMeshes());
+
+	// Load vertex data of all meshes in the _scene into VBOs
 	// The meshes have been exported with the "Interleave Vectors" option,
 	// so all data is interleaved in the buffer at pMesh->pInterleaved.
 	// Interleaving data improves the memory access pattern and cache efficiency,
 	// thus it can be read faster by the hardware.
-	for (pvr::uint32 i = 0; i < scene->getNumMeshes(); ++i)
+	for (pvr::uint32 i = 0; i < _scene->getNumMeshes(); ++i)
 	{
 		// Load vertex data into buffer object
-		const pvr::assets::Mesh& mesh = scene->getMesh(i);
+		const pvr::assets::Mesh& mesh = _scene->getMesh(i);
 		size_t size = mesh.getDataSize(0);
 		VkMappedMemoryRange range = {};
 		range.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 		range.offset = 0;
 		range.size = size;
-		pvr::apiUtils::createBuffer(getPlatformContext(), types::BufferBindingUse::VertexBuffer, size, true, vbos[i]);
-		range.memory = vbos[i].memory;
-		vk::MapMemory(getDevice(), vbos[i].memory, 0, size, 0, (void**)&ptr);
+		pvr::utils::vulkan::createBuffer(getPlatformContext(), pvr::types::BufferBindingUse::VertexBuffer, static_cast<pvr::uint32>(size), true, _vbos[i]);
+		range.memory = _vbos[i].memory;
+		vk::MapMemory(getDevice(), _vbos[i].memory, 0, size, 0, (void**)&ptr);
 		memcpy(ptr, mesh.getData(0), size);
-		vk::FlushMappedMemoryRanges(getDevice(), 1, &range);
-		vk::UnmapMemory(getDevice(), vbos[i].memory);
+		vk::UnmapMemory(getDevice(), _vbos[i].memory);
 
 		// Load index data into buffer object if available
 		if (mesh.getFaces().getData())
 		{
 			size = mesh.getFaces().getDataSize();
-			pvr::apiUtils::createBuffer(getPlatformContext(), types::BufferBindingUse::IndexBuffer, size, true, ibos[i]);
-			vk::MapMemory(getDevice(), ibos[i].memory, 0, size, 0, (void**)&ptr);
+			pvr::utils::vulkan::createBuffer(getPlatformContext(), pvr::types::BufferBindingUse::IndexBuffer, static_cast<pvr::uint32>(size), true, _ibos[i]);
+			vk::MapMemory(getDevice(), _ibos[i].memory, 0, size, 0, (void**)&ptr);
 			memcpy(ptr, mesh.getFaces().getData(), size);
-			range.memory = ibos[i].memory;
+			range.memory = _ibos[i].memory;
 			range.offset = 0;
 			range.size = size;
-			vk::FlushMappedMemoryRanges(getDevice(), 1, &range);
-			vk::UnmapMemory(getDevice(), ibos[i].memory);
+			vk::UnmapMemory(getDevice(), _ibos[i].memory);
 		}
 	}
 }
 
-void VulkanIntroducingPVRAssets::updateBuffer(native::HBuffer_ & buffer, pvr::uint32 offset, pvr::uint32 size, void* data)
+void VulkanIntroducingPVRAssets::updateBuffer(pvr::native::HBuffer_ & buffer, pvr::uint32 offset, pvr::uint32 size, void* data)
 {
 	void* tmpData = NULL;
 	vk::MapMemory(getDevice(), buffer.memory, offset, size, 0, (void**)&tmpData);
 	memcpy(tmpData, data, size);
-	VkMappedMemoryRange memRange;
+	VkMappedMemoryRange memRange = {};
 	memRange.offset = offset;
 	memRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 	memRange.pNext = 0;
 	memRange.size = size;
 	memRange.memory = buffer.memory;
-	vkSuccessOrExit(vk::FlushMappedMemoryRanges(getDevice(), 1, &memRange), "Failed to flush mapped memory");
 	vk::UnmapMemory(getDevice(), buffer.memory);
 }
 
-void VulkanIntroducingPVRAssets::createCombinedImageSampler(native::HImageView_ & images,
-    native::HSampler_ sampler, native::HDescriptorSetLayout_ & descSetLayout,
-    native::HDescriptorSet_ & outDescSet)
+void VulkanIntroducingPVRAssets::createCombinedImageSamplerDescriptor(pvr::native::HImageView_ & images,
+    pvr::native::HSampler_ _sampler, pvr::native::HDescriptorSetLayout_ & descSetLayout,
+    pvr::native::HDescriptorSet_ & outDescSet)
 {
+	// create the image _sampler descriptor set
 	VkDescriptorSetAllocateInfo descSetAlloc = {};
 	descSetAlloc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	descSetAlloc.descriptorSetCount = 1;
 	descSetAlloc.pNext = NULL;
-	descSetAlloc.descriptorPool = descriptorPool;
+	descSetAlloc.descriptorPool = _descriptorPool;
 	descSetAlloc.pSetLayouts = &descSetLayout.handle;
-	// create the descriptor sets
-	vkSuccessOrExit(vk::AllocateDescriptorSets(getDevice(),
-	                &descSetAlloc, &outDescSet.handle), "Failed to allocate descriptor set");
+	vkSuccessOrExit(vk::AllocateDescriptorSets(getDevice(), &descSetAlloc, &outDescSet.handle), "Failed to allocate descriptor set");
 
 	VkDescriptorImageInfo imageInfo = {};
 	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	imageInfo.sampler = sampler;
+	imageInfo.sampler = _sampler;
 	imageInfo.imageView = images;
+
 	VkWriteDescriptorSet descSetWrite = {};
 	descSetWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	descSetWrite.descriptorCount = 1;
@@ -1113,7 +1134,8 @@ void VulkanIntroducingPVRAssets::createCombinedImageSampler(native::HImageView_ 
 	vk::UpdateDescriptorSets(getDevice(), 1, &descSetWrite, 0, NULL);
 }
 
-void VulkanIntroducingPVRAssets::createDescriptorLayout(VkShaderStageFlagBits stages, VkDescriptorType type, native::HDescriptorSetLayout_& outLayout)
+void VulkanIntroducingPVRAssets::createDescriptorLayout(VkShaderStageFlagBits stages, VkDescriptorType type,
+    pvr::native::HDescriptorSetLayout_& outLayout)
 {
 	VkDescriptorSetLayoutBinding descBindings[1];
 	descBindings[0].binding = 0;
@@ -1139,7 +1161,7 @@ pvr::GraphicsContextStrongReference pvr::createGraphicsContext()
 }
 
 /*!*********************************************************************************************************************
-\brief	This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.
+\brief  This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.
 \return Return an auto ptr to the demo supplied by the user
 ***********************************************************************************************************************/
 std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new VulkanIntroducingPVRAssets()); }

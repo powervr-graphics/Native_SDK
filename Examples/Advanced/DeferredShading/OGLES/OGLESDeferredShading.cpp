@@ -7,7 +7,9 @@
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
+#include "PVREngineUtils/AssetStore.h"
+
 using namespace pvr::types;
 namespace QuadAttributes {
 enum Enum
@@ -271,15 +273,18 @@ public:
 
 		std::vector<Material>materials;
 		pvr::ui::UIRenderer uiRenderer;
+
+		// The effect file handler
+		std::vector<pvr::legacyPfx::EffectApi> effects;
+
+		RenderData renderInfo;
 	};
 
 	//Putting all api objects into a pointer just makes it easier to release them all together with RAII
 	std::auto_ptr<ApiObjects> apiObj;
 
-	pvr::api::AssetStore assetManager;
+	pvr::utils::AssetStore assetManager;
 
-	// The effect file handler
-	std::vector<pvr::api::EffectApi> effects;
 	std::vector<std::map<pvr::int32, pvr::int32>/**/> uniformMapping;
 
 	// Frame counters for animation
@@ -304,17 +309,15 @@ public:
 	// Object model
 	pvr::assets::ModelHandle scene;
 
-	RenderData renderInfo;
-
 	bool usePixelLocalStorage;
 
 	OGLESDeferredShading() { animateCamera = false; isPaused = false; }
-	//	Overriden from pvr::Shell
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	//  Overriden from pvr::Shell
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 
 	bool setUpRenderPass();
 	bool createPipelines();
@@ -345,7 +348,7 @@ public:
 
 	bool setUpEffectHelper(EffectId::Enum effectId, const pvr::assets::PfxReader& reader);
 
-	void eventMappedInput(pvr::SimplifiedInput::Enum key)
+	void eventMappedInput(pvr::SimplifiedInput key)
 	{
 		switch (key)
 		{
@@ -358,8 +361,8 @@ public:
 };
 
 /*!*********************************************************************************************************************
-\return	Return true if no error occurred
-\brief	Loads the textures required for this example and sets up descriptorSets
+\return Return true if no error occurred
+\brief  Loads the textures required for this example and sets up descriptorSets
 ***********************************************************************************************************************/
 bool OGLESDeferredShading::createMaterialsAndDescriptorSets()
 {
@@ -421,28 +424,28 @@ bool OGLESDeferredShading::createMaterialsAndDescriptorSets()
 		const pvr::assets::Model::Material& material = scene->getMaterial(i);
 
 		// get material properties
-		apiObj->materials[i].specularStrength = material.getShininess();
-		apiObj->materials[i].diffuseColor = material.getDiffuse();
+		apiObj->materials[i].specularStrength = material.defaultSemantics().getShininess();
+		apiObj->materials[i].diffuseColor = material.defaultSemantics().getDiffuse();
 
 		int numTextures = 0;
 
-		if (material.getDiffuseTextureIndex() != -1)
+		if (material.defaultSemantics().getDiffuseTextureIndex() != -1)
 		{
 			// Load the diffuse texture map
-			if (!assetManager.getTextureWithCaching(getGraphicsContext(), scene->getTexture(material.getDiffuseTextureIndex()).getName(), &(diffuseMap), NULL))
+			if (!assetManager.getTextureWithCaching(getGraphicsContext(), scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName(), &(diffuseMap), NULL))
 			{
-				setExitMessage("ERROR: Failed to load texture %s", scene->getTexture(material.getDiffuseTextureIndex()).getName().c_str());
+				setExitMessage("ERROR: Failed to load texture %s", scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
 				return false;
 			}
 			descSetInfo.setCombinedImageSampler(0, diffuseMap, samplerTrilinear);
 			++numTextures;
 		}
-		if (material.getBumpMapTextureIndex() != -1)
+		if (material.defaultSemantics().getBumpMapTextureIndex() != -1)
 		{
 			// Load the bumpmap
-			if (!assetManager.getTextureWithCaching(getGraphicsContext(), scene->getTexture(material.getBumpMapTextureIndex()).getName(), &(bumpMap), NULL))
+			if (!assetManager.getTextureWithCaching(getGraphicsContext(), scene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName(), &(bumpMap), NULL))
 			{
-				setExitMessage("ERROR: Failed to load texture %s", scene->getTexture(material.getBumpMapTextureIndex()).getName().c_str());
+				setExitMessage("ERROR: Failed to load texture %s", scene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName().c_str());
 				return false;
 			}
 			++numTextures;
@@ -501,8 +504,8 @@ bool OGLESDeferredShading::createMaterialsAndDescriptorSets()
 }
 
 /*!*********************************************************************************************************************
-\brief	Create the pipelines for this example
-\return	Return true if no error occurred
+\brief  Create the pipelines for this example
+\return Return true if no error occurred
 ***********************************************************************************************************************/
 bool OGLESDeferredShading::createPipelines()
 {
@@ -520,7 +523,7 @@ bool OGLESDeferredShading::createPipelines()
 	// disable stencil test
 	pipeInfo.depthStencil.setStencilTest(false);
 
-	pipelineCreation::ColorBlendAttachmentState colorAttachment;
+	types::BlendingConfig colorAttachment;
 	colorAttachment.channelWriteMask = ColorChannel::All;
 	colorAttachment.blendEnable = false;
 
@@ -531,7 +534,7 @@ bool OGLESDeferredShading::createPipelines()
 	// 1) RENDER TO EITHER GBUFFER USING MRTS OR INTO PIXEL LOCAL STORAGE
 	{
 		pipeInfo.vertexInput.clear();
-		pvr::utils::createInputAssemblyFromMeshAndEffect(scene->getMesh(0), effects[EffectId::RenderGBuffer]->getEffectAsset(), pipeInfo);
+		pvr::utils::createInputAssemblyFromMeshAndEffect(scene->getMesh(0), apiObj->effects[EffectId::RenderGBuffer]->getEffectAsset(), pipeInfo);
 
 		// if using pixel local storage then merge passes 1 and 2
 		// Pixel local storage can be used on the default frame buffer object and therefore the stencil buffer can be shared between passes
@@ -555,14 +558,14 @@ bool OGLESDeferredShading::createPipelines()
 		}
 
 		// 2 mesh nodes are used in this scene (floor and Satyr model)
-		renderInfo.storeRenderDataPass.objects.resize(scene->getNumMeshNodes());
+		apiObj->renderInfo.storeRenderDataPass.objects.resize(scene->getNumMeshNodes());
 
 		// setup the MRT
-		renderInfo.storeRenderDataPass.objects[MeshNodes::Satyr].pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderGBuffer]->getPipeline());
-		renderInfo.storeRenderDataPass.objects[MeshNodes::Satyr].effectId = EffectId::RenderGBuffer;
+		apiObj->renderInfo.storeRenderDataPass.objects[MeshNodes::Satyr].pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderGBuffer]->getPipeline());
+		apiObj->renderInfo.storeRenderDataPass.objects[MeshNodes::Satyr].effectId = EffectId::RenderGBuffer;
 
-		renderInfo.storeRenderDataPass.objects[MeshNodes::Floor].pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderGBufferFloor]->getPipeline());
-		renderInfo.storeRenderDataPass.objects[MeshNodes::Floor].effectId = EffectId::RenderGBufferFloor;
+		apiObj->renderInfo.storeRenderDataPass.objects[MeshNodes::Floor].pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderGBufferFloor]->getPipeline());
+		apiObj->renderInfo.storeRenderDataPass.objects[MeshNodes::Floor].effectId = EffectId::RenderGBufferFloor;
 	}
 
 	// as discussed above the depth stencil pass can be avoided if pixel local storage is used
@@ -572,10 +575,10 @@ bool OGLESDeferredShading::createPipelines()
 		// This is an optimisation pass, could be omitted with a little restructuring but the directional pass would be slower
 		{
 			pipeInfo.vertexInput.clear();
-			pvr::utils::createInputAssemblyFromMeshAndEffect(scene->getMesh(0), effects[EffectId::RenderNullColor]->getEffectAsset(), pipeInfo);
+			pvr::utils::createInputAssemblyFromMeshAndEffect(scene->getMesh(0), apiObj->effects[EffectId::RenderNullColor]->getEffectAsset(), pipeInfo);
 
 			// write only into depth and stencil.
-			colorAttachment.channelWriteMask = 0;
+			colorAttachment.channelWriteMask = types::ColorChannel(0);
 			pipeInfo.colorBlend.clearAttachments();
 
 			pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState stencilState;
@@ -594,8 +597,8 @@ bool OGLESDeferredShading::createPipelines()
 
 			pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
 
-			renderInfo.depthStencilPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderNullColor]->getPipeline());
-			renderInfo.depthStencilPass.effectId = EffectId::RenderNullColor;
+			apiObj->renderInfo.depthStencilPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderNullColor]->getPipeline());
+			apiObj->renderInfo.depthStencilPass.effectId = EffectId::RenderNullColor;
 		}
 	}
 
@@ -630,24 +633,24 @@ bool OGLESDeferredShading::createPipelines()
 		//Rendering without attributes
 		pipeInfo.vertexInput.clear();
 
-		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrips);
+		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 
-		renderInfo.directionalLightPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderDirLight]->getPipeline());
-		renderInfo.directionalLightPass.effectId = EffectId::RenderDirLight;
+		apiObj->renderInfo.directionalLightPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderDirLight]->getPipeline());
+		apiObj->renderInfo.directionalLightPass.effectId = EffectId::RenderDirLight;
 	}
 
 	// 4) POINT LIGHTS GEOMETRY STENCIL PASS
 	// Render the front face of each light volume
 	// Z function is set as Less/Equal
 	// Z test passes will leave the stencil as 0 i.e. the front of the light is infront of all geometry in the current pixel
-	//		This is the condition we want for determining whether the geometry can be affected by the point lights
+	//    This is the condition we want for determining whether the geometry can be affected by the point lights
 	// Z test fails will increment the stencil to 1. i.e. the front of the light is behind all of the geometry in the current pixel
-	//		Under this condition the current pixel cannot be affected by the current point light as the geometry is infront of the front of the point light
+	//    Under this condition the current pixel cannot be affected by the current point light as the geometry is infront of the front of the point light
 	{
 		pipeInfo.vertexInput.clear();
-		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), effects[EffectId::RenderNullColor]->getEffectAsset(), pipeInfo);
+		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), apiObj->effects[EffectId::RenderNullColor]->getEffectAsset(), pipeInfo);
 
-		colorAttachment.channelWriteMask = 0;// write only in to depth and stencil buffer
+		colorAttachment.channelWriteMask = types::ColorChannel(0);// write only in to depth and stencil buffer
 		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);// Additively blend the light contributions
 
 		pipeInfo.rasterizer.setCullFace(Face::Back);
@@ -677,8 +680,8 @@ bool OGLESDeferredShading::createPipelines()
 		stencilState.opDepthFail = StencilOp::Keep;
 		pipeInfo.depthStencil.setStencilBack(stencilState);
 
-		renderInfo.pointLightGeomPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderNullColor]->getPipeline());
-		renderInfo.pointLightGeomPass.effectId = EffectId::RenderNullColor;
+		apiObj->renderInfo.pointLightGeomPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderNullColor]->getPipeline());
+		apiObj->renderInfo.pointLightGeomPass.effectId = EffectId::RenderNullColor;
 	}
 
 	// 5) POINT LIGHTS PROXIES - Actually light the pixels touched by a point light.
@@ -700,7 +703,7 @@ bool OGLESDeferredShading::createPipelines()
 		pipeInfo.depthStencil.setDepthWrite(false);
 
 		pipeInfo.vertexInput.clear();
-		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), effects[EffectId::RenderPointLight]->getEffectAsset(), pipeInfo);
+		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), apiObj->effects[EffectId::RenderPointLight]->getEffectAsset(), pipeInfo);
 
 		// Set the stencil test to only shade the lit areas and re-enable color writes.
 		pipeInfo.depthStencil.setStencilTest(true);
@@ -723,14 +726,14 @@ bool OGLESDeferredShading::createPipelines()
 		pipeInfo.depthStencil.setStencilFront(stencilState);
 		pipeInfo.depthStencil.setStencilBack(stencilState);
 
-		renderInfo.pointLightProxyPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderPointLight]->getPipeline());
-		renderInfo.pointLightProxyPass.effectId = EffectId::RenderPointLight;
+		apiObj->renderInfo.pointLightProxyPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderPointLight]->getPipeline());
+		apiObj->renderInfo.pointLightProxyPass.effectId = EffectId::RenderPointLight;
 	}
 
 	// 6) LIGHT SOURCES : Rendering the "will-o-wisps" that are the sources of the light
 	{
 		pipeInfo.vertexInput.clear();
-		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), effects[EffectId::RenderSolidColor]->getEffectAsset(), pipeInfo);
+		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), apiObj->effects[EffectId::RenderSolidColor]->getEffectAsset(), pipeInfo);
 
 		pipeInfo.rasterizer.setCullFace(Face::Back);
 
@@ -754,8 +757,8 @@ bool OGLESDeferredShading::createPipelines()
 
 		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
 
-		renderInfo.pointLightSourcesPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::RenderSolidColor]->getPipeline());
-		renderInfo.pointLightSourcesPass.effectId = EffectId::RenderSolidColor;
+		apiObj->renderInfo.pointLightSourcesPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderSolidColor]->getPipeline());
+		apiObj->renderInfo.pointLightSourcesPass.effectId = EffectId::RenderSolidColor;
 	}
 
 	// &) WRITE OUT PIXEL LOCAL STORAGE: IF using pixel local storage, we need a final pass to write out from the pixel local storage colour to the FBO
@@ -771,10 +774,10 @@ bool OGLESDeferredShading::createPipelines()
 		colorAttachment.blendEnable = false;
 		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
 		pipeInfo.vertexInput.clear();
-		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrips);
+		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
 
-		renderInfo.writePlsPass.pipeline = context->createGraphicsPipeline(pipeInfo, effects[EffectId::WriteOutColorFromPls]->getPipeline());
-		renderInfo.writePlsPass.effectId = EffectId::WriteOutColorFromPls;
+		apiObj->renderInfo.writePlsPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::WriteOutColorFromPls]->getPipeline());
+		apiObj->renderInfo.writePlsPass.effectId = EffectId::WriteOutColorFromPls;
 	}
 
 	return true;
@@ -786,21 +789,21 @@ bool OGLESDeferredShading::setUpRenderPass()
 	pvr::api::SubPass subPass0(PipelineBindPoint::Graphics);
 
 	// use the first color attachment
-	subPass0.setColorAttachment(0);
+	subPass0.setColorAttachment(0, 0);
 
 	pvr::api::RenderPassCreateParam renderPassInfo;
 	pvr::api::RenderPassDepthStencilInfo renderPassDepthStencilInfo = pvr::api::RenderPassDepthStencilInfo(
-	      pvr::api::getDisplayDepthStencilFormat(getDisplayAttributes()),
+	      getGraphicsContext()->getDepthStencilImageFormat(),
 	      LoadOp::Clear, StoreOp::Store, LoadOp::Clear, StoreOp::Store);
 	renderPassInfo.setDepthStencilInfo(renderPassDepthStencilInfo);
-	renderPassInfo.addColorInfo(0, pvr::api::RenderPassColorInfo(pvr::api::getDisplayColorFormat(getDisplayAttributes()), LoadOp::Clear));
-	renderPassInfo.addSubPass(0, subPass0);
+	renderPassInfo.setColorInfo(0, pvr::api::RenderPassColorInfo(getGraphicsContext()->getPresentationImageFormat(), LoadOp::Clear));
+	renderPassInfo.setSubPass(0, subPass0);
 
 	// if using pls then add a second subpass
 	if (usePixelLocalStorage)
 	{
 		pvr::api::SubPass subPass1(PipelineBindPoint::Graphics);
-		renderPassInfo.addSubPass(1, subPass1);
+		renderPassInfo.setSubPass(1, subPass1);
 	}
 
 	apiObj->onScreenFbo = getGraphicsContext()->createOnScreenFboWithRenderPass(0, getGraphicsContext()->createRenderPass(renderPassInfo));
@@ -809,7 +812,7 @@ bool OGLESDeferredShading::setUpRenderPass()
 }
 
 /*!*********************************************************************************************************************
-\brief	Loads the mesh data required for this example into vertex buffer objects
+\brief  Loads the mesh data required for this example into vertex buffer objects
 \return Return true if no error occurred
 ***********************************************************************************************************************/
 bool OGLESDeferredShading::loadVbos()
@@ -828,10 +831,10 @@ bool OGLESDeferredShading::loadVbos()
 
 
 /*!*********************************************************************************************************************
-\brief	Parse each effect in the PFX file, and set everything up, notably create the pvr::api::EffectApi objects that we will use for rendering.
-\return	Return true if success
-\param	effectId Effect id to parse
-\param	reader Pfx Reader
+\brief  Parse each effect in the PFX file, and set everything up, notably create the pvr::api::EffectApi objects that we will use for rendering.
+\return Return true if success
+\param  effectId Effect id to parse
+\param  reader Pfx Reader
 ***********************************************************************************************************************/
 bool OGLESDeferredShading::setUpEffectHelper(EffectId::Enum effectId, const pvr::assets::PfxReader& reader)
 {
@@ -839,7 +842,7 @@ bool OGLESDeferredShading::setUpEffectHelper(EffectId::Enum effectId, const pvr:
 	pvr::api::GraphicsPipelineCreateParam pipeDesc;
 	pipeDesc.rasterizer.setCullFace(Face::Back);
 	pipeDesc.depthStencil.setDepthTestEnable(true);
-	pvr::api::pipelineCreation::ColorBlendAttachmentState colorAttachment;
+	pvr::types::BlendingConfig colorAttachment;
 	colorAttachment.blendEnable = false;
 	pipeDesc.colorBlend.setAttachmentState(0, colorAttachment);
 
@@ -872,23 +875,23 @@ bool OGLESDeferredShading::setUpEffectHelper(EffectId::Enum effectId, const pvr:
 	pvr::assertion(effectId >= 0, "invalid effect id");
 
 	//STEP 5: Actually create the EffectAPI object from the EffectAPI object.
-	effects[effectId] = context->createEffectApi(effectDesc, pipeDesc, assetManager);
+	apiObj->effects[effectId] = pvr::legacyPfx::createEffectApi(context, effectDesc, pipeDesc, assetManager);
 
-	if (!effects[effectId].isValid())
+	if (!apiObj->effects[effectId].isValid())
 	{
 		setExitMessage("Failed to load effect:%s file:%s ", effectDesc.getMaterial().getEffectName().c_str(), effectDesc.fileName.c_str());
 		return false;
 	}
 
 	//STEP 4: Assign the textures to texture units. These we will not usually be touching.
-	apiObj->cmdBufferMain->bindPipeline(effects[effectId]->getPipeline());
+	apiObj->cmdBufferMain->bindPipeline(apiObj->effects[effectId]->getPipeline());
 	for (int i = 0; i < 4; ++i)
 	{
 		int semanticId = effectDesc.getUniformSemanticId(pvr::strings::createFormatted("TEXTURE%d", i).c_str());
 		if (semanticId != -1)
 		{
-			pvr::uint32 uniformLoc = effects[effectId]->getUniform(semanticId).location;
-			apiObj->cmdBufferMain->setUniform<pvr::int32>(uniformLoc, i);
+			pvr::uint32 uniformLoc = apiObj->effects[effectId]->getUniform(semanticId).location;
+			apiObj->cmdBufferMain->setUniform(uniformLoc, i);
 		}
 	}
 
@@ -897,14 +900,14 @@ bool OGLESDeferredShading::setUpEffectHelper(EffectId::Enum effectId, const pvr:
 	{
 		uniformMapping[effectId][j] = -1;
 		pvr::int32 tmpSemanticId = effectDesc.getUniformSemanticId(semanticsName[j]);
-		if (tmpSemanticId != -1) { uniformMapping[effectId][j] = effects[effectId]->getUniform(tmpSemanticId).location; }
+		if (tmpSemanticId != -1) { uniformMapping[effectId][j] = apiObj->effects[effectId]->getUniform(tmpSemanticId).location; }
 	}
 	return true;
 }
 
 /*!*********************************************************************************************************************
 \return Return true if no error occurred
-\brief	Parses the entire PFX file to gather all effects that we will need to render.
+\brief  Parses the entire PFX file to gather all effects that we will need to render.
 ***********************************************************************************************************************/
 bool OGLESDeferredShading::loadPFX()
 {
@@ -922,7 +925,7 @@ bool OGLESDeferredShading::loadPFX()
 	}
 
 	const pvr::uint32 numEffects = pfxParser.getNumberEffects();
-	effects.resize(EffectId::Count);
+	apiObj->effects.resize(EffectId::Count);
 	uniformMapping.resize(numEffects);
 
 	apiObj->cmdBufferMain->beginRecording();
@@ -944,12 +947,12 @@ bool OGLESDeferredShading::loadPFX()
 }
 
 /*!*********************************************************************************************************************
-\return	Return true if no error occurred
-\brief	Code in initApplication() will be called by pvr::Shell once per run, before the rendering context is created.
+\return Return true if no error occurred
+\brief  Code in initApplication() will be called by pvr::Shell once per run, before the rendering context is created.
 Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
 If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESDeferredShading::initApplication()
+pvr::Result OGLESDeferredShading::initApplication()
 {
 	setStencilBitsPerPixel(8);
 	setMinApiType(pvr::Api::OpenGLES3);
@@ -974,7 +977,7 @@ pvr::Result::Enum OGLESDeferredShading::initApplication()
 		return pvr::Result::InvalidData;
 	}
 
-	//	Load light proxy geometry
+	//  Load light proxy geometry
 	if (!assetManager.loadModel(Files::PointLightModelFile, pointLightModel))
 	{
 		setExitMessage("ERROR: Couldn't load the point light proxy pod file\n");
@@ -984,19 +987,21 @@ pvr::Result::Enum OGLESDeferredShading::initApplication()
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
 If the rendering context is lost, QuitApplication() will not be called.x
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESDeferredShading::quitApplication() { return pvr::Result::Success; }
+pvr::Result OGLESDeferredShading::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
 Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESDeferredShading::initView()
+pvr::Result OGLESDeferredShading::initView()
 {
+	srand((unsigned int)this->getTime());
+
 	//Create the empty API objects.
 	apiObj.reset(new ApiObjects);
 
@@ -1009,7 +1014,7 @@ pvr::Result::Enum OGLESDeferredShading::initView()
 	// Check if pixel local storage extension is supported
 	usePixelLocalStorage = getGraphicsContext()->hasApiCapability(pvr::ApiCapabilities::ShaderPixelLocalStorage);// use pixel local storage by default
 
-	const pvr::system::CommandLine& cmdOptions = getCommandLine();
+	const pvr::platform::CommandLine& cmdOptions = getCommandLine();
 
 	cmdOptions.getIntOption("-fbowidth", fboWidth);
 	fboWidth = glm::min<pvr::int32>(fboWidth, windowWidth);
@@ -1033,7 +1038,7 @@ pvr::Result::Enum OGLESDeferredShading::initView()
 	setUpRenderPass();
 
 	// setup UI renderer
-	apiObj->uiRenderer.init(context, apiObj->onScreenFbo->getRenderPass(), 0);
+	apiObj->uiRenderer.init(apiObj->onScreenFbo->getRenderPass(), 0);
 	apiObj->uiRenderer.getDefaultTitle()->setText("DeferredShading");
 	apiObj->uiRenderer.getDefaultTitle()->commitUpdates();
 	apiObj->uiRenderer.getDefaultControls()->setText("Action1: Pause\nAction2: Orbit Camera\n");
@@ -1056,7 +1061,7 @@ pvr::Result::Enum OGLESDeferredShading::initView()
 	// Only need to setup GBuffer if not using pixel local storage
 	if (!usePixelLocalStorage)
 	{
-		//	Allocates the gbuffer buffer objects
+		//  Allocates the gbuffer buffer objects
 		if (!createGBufferMRT()) { return pvr::Result::NotInitialized; }
 	}
 
@@ -1089,10 +1094,10 @@ pvr::Result::Enum OGLESDeferredShading::initView()
 		projMtx = glm::perspectiveFov(scene->getCamera(0).getFOV(), (pvr::float32)fboWidth, (pvr::float32)fboHeight, scene->getCamera(0).getNear(), scene->getCamera(0).getFar());
 	}
 
-	//	Load objects from the scene into VBOs
+	//  Load objects from the scene into VBOs
 	if (!loadVbos()) { return pvr::Result::UnknownError; }
 
-	//	Load and compile the shaders & link programs
+	//  Load and compile the shaders & link programs
 	if (!loadPFX()) { return pvr::Result::UnknownError; }
 
 	createPipelines();
@@ -1116,23 +1121,23 @@ pvr::Result::Enum OGLESDeferredShading::initView()
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESDeferredShading::releaseView()
+pvr::Result OGLESDeferredShading::releaseView()
 {
 	apiObj.reset(0);
-	context.release();
 	assetManager.releaseAll();
+	context.release();
 
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Main rendering loop function of the program. The shell will call this function every frame.
+\return Return pvr::Result::Success if no error occurred
+\brief  Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESDeferredShading::renderFrame()
+pvr::Result OGLESDeferredShading::renderFrame()
 {
 	//  Handle user input and update object animations
 	updateAnimation();
@@ -1143,7 +1148,7 @@ pvr::Result::Enum OGLESDeferredShading::renderFrame()
 }
 
 /*!*********************************************************************************************************************
-\brief	Allocates the required FBOs and buffer objects. Will not be needed for PLS
+\brief  Allocates the required FBOs and buffer objects. Will not be needed for PLS
 ***********************************************************************************************************************/
 bool OGLESDeferredShading::createGBufferMRT()
 {
@@ -1151,11 +1156,11 @@ bool OGLESDeferredShading::createGBufferMRT()
 	pvr::api::RenderPassCreateParam renderpassCreateParam;
 	pvr::api::FboCreateParam gbufferFboCreateParam;
 	pvr::api::SubPass subPassInfo;
-	const pvr::api::ImageStorageFormat internalsFormats[3] =
+	const pvr::ImageStorageFormat internalsFormats[3] =
 	{
-		pvr::api::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),	// albedo
-		pvr::api::ImageStorageFormat(pvr::PixelFormat::RGB_888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),	// normal
-		pvr::api::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),	// depth
+		pvr::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),  // albedo
+		pvr::ImageStorageFormat(pvr::PixelFormat::RGB_888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),  // normal
+		pvr::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),  // depth
 	};
 
 	// Allocate the render targets
@@ -1166,13 +1171,13 @@ bool OGLESDeferredShading::createGBufferMRT()
 		apiObj->renderTextureViews[i] = context->createTextureView(renderTexure);
 
 		// setup the albedo, normal, depth attachment view
-		subPassInfo.setColorAttachment(i);
-		gbufferFboCreateParam.addColor(i, apiObj->renderTextureViews[i]);
-		renderpassCreateParam.addColorInfo(i, pvr::api::RenderPassColorInfo(internalsFormats[i], LoadOp::Clear, StoreOp::Store));
+		subPassInfo.setColorAttachment(i, i);
+		gbufferFboCreateParam.setColor(i, apiObj->renderTextureViews[i]);
+		renderpassCreateParam.setColorInfo(i, pvr::api::RenderPassColorInfo(internalsFormats[i], LoadOp::Clear, StoreOp::Store));
 	}
 
 	// create the depth stencil attachment
-	const pvr::api::ImageStorageFormat depthStencilFormat(pvr::PixelFormat::Depth24Stencil8, 1, ColorSpace::lRGB, pvr::VariableType::Float);
+	const pvr::ImageStorageFormat depthStencilFormat(pvr::PixelFormat::Depth24Stencil8, 1, ColorSpace::lRGB, pvr::VariableType::Float);
 	pvr::api::TextureStore gbufferDepthStencilTexure = context->createTexture();
 	gbufferDepthStencilTexure->allocate2D(depthStencilFormat, fboWidth, fboHeight);
 	pvr::api::TextureView gbufferDepthStencilView = context->createTextureView(gbufferDepthStencilTexure);
@@ -1185,7 +1190,7 @@ bool OGLESDeferredShading::createGBufferMRT()
 	renderpassCreateParam.setDepthStencilInfo(renderPassDepthStencilInfo);
 
 	// add the sub pass information
-	renderpassCreateParam.addSubPass(0, subPassInfo);
+	renderpassCreateParam.setSubPass(0, subPassInfo);
 
 	// create the gBuffer render pass
 	apiObj->gBufferRenderPass = context->createRenderPass(renderpassCreateParam);
@@ -1204,11 +1209,11 @@ bool OGLESDeferredShading::createGBufferMRT()
 }
 
 /*!*********************************************************************************************************************
-\brief	Draw deferred shading using pixel local storage
+\brief  Draw deferred shading using pixel local storage
 ***********************************************************************************************************************/
 void OGLESDeferredShading::updateSceneUniforms()
 {
-	RenderData& pass = renderInfo;
+	RenderData& pass = apiObj->renderInfo;
 
 	//Update GBuffer uniforms
 	for (pvr::uint32 i = 0; i < scene->getNumMeshNodes(); ++i)
@@ -1373,7 +1378,7 @@ void OGLESDeferredShading::updateProceduralPointLight(DrawPointLightProxy::Initi
 }
 
 /*!*********************************************************************************************************************
-\brief	Updates animation variables and camera matrices.
+\brief  Updates animation variables and camera matrices.
 ***********************************************************************************************************************/
 void OGLESDeferredShading::updateAnimation()
 {
@@ -1401,8 +1406,8 @@ void OGLESDeferredShading::updateAnimation()
 }
 
 /*!*********************************************************************************************************************
-\brief	Record Pixel-Local-Storage rendering commands
-\param	cmdBuff Commandbuffer to record
+\brief  Record Pixel-Local-Storage rendering commands
+\param  cmdBuff Commandbuffer to record
 ***********************************************************************************************************************/
 void OGLESDeferredShading::recordCommandsPLS(pvr::api::CommandBuffer& cmdBuff)
 {
@@ -1411,20 +1416,20 @@ void OGLESDeferredShading::recordCommandsPLS(pvr::api::CommandBuffer& cmdBuff)
 	//Pixel local storage defines that the value of PLS variables are "a function of the clear value" if the FBO
 	//has been cleared, which is NOT necessarily the same value they were cleared to.
 	//Only clearing to the value 0.0f is guaranteed to leave the PLS store with the value 0.0f.
-	cmdBuff->beginRenderPass(apiObj->onScreenFbo, renderArea, false, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), 1.f, 0);
+	cmdBuff->beginRenderPass(apiObj->onScreenFbo, renderArea, false, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.f, 0);
 
 	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffRenderGbuffer);
 	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffLighting);
 
-	cmdBuff->bindPipeline(renderInfo.writePlsPass.pipeline);
+	cmdBuff->bindPipeline(apiObj->renderInfo.writePlsPass.pipeline);
 	cmdBuff->drawArrays(0, 4);
 	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffUIRenderer);
 	cmdBuff->endRenderPass();
 }
 
 /*!*********************************************************************************************************************
-\brief	Record MRT rendering commands
-\param	cmdBuff CommandBuffer to record
+\brief  Record MRT rendering commands
+\param  cmdBuff CommandBuffer to record
 ***********************************************************************************************************************/
 void OGLESDeferredShading::recordCommandsMRT(pvr::api::CommandBuffer& cmdBuff)
 {
@@ -1479,23 +1484,23 @@ void OGLESDeferredShading::allocateUniforms()
 	if (countPoint >= Configuration::MaxScenePointLights) { countPoint = Configuration::MaxScenePointLights; }
 	countPoint += Configuration::NumProceduralPointLights;
 
-	renderInfo.directionalLightPass.uniforms.resize(countDirectional);
-	renderInfo.pointLightGeomPass.uniforms.resize(countPoint);
-	renderInfo.pointLightProxyPass.uniforms.resize(countPoint);
-	renderInfo.pointLightProxyPass.data.resize(countPoint);
-	renderInfo.pointLightSourcesPass.uniforms.resize(countPoint);
-	renderInfo.depthStencilPass.uniforms.resize(scene->getNumMeshNodes());
-	renderInfo.storeRenderDataPass.objects.resize(scene->getNumMeshNodes());
+	apiObj->renderInfo.directionalLightPass.uniforms.resize(countDirectional);
+	apiObj->renderInfo.pointLightGeomPass.uniforms.resize(countPoint);
+	apiObj->renderInfo.pointLightProxyPass.uniforms.resize(countPoint);
+	apiObj->renderInfo.pointLightProxyPass.data.resize(countPoint);
+	apiObj->renderInfo.pointLightSourcesPass.uniforms.resize(countPoint);
+	apiObj->renderInfo.depthStencilPass.uniforms.resize(scene->getNumMeshNodes());
+	apiObj->renderInfo.storeRenderDataPass.objects.resize(scene->getNumMeshNodes());
 
 	for (int i = countPoint - Configuration::NumProceduralPointLights; i < countPoint; ++i)
 	{
-		updateProceduralPointLight(renderInfo.pointLightProxyPass.data[i], renderInfo.pointLightProxyPass.uniforms[i],
-		                           renderInfo.pointLightGeomPass.uniforms[i], renderInfo.pointLightSourcesPass.uniforms[i], true);
+		updateProceduralPointLight(apiObj->renderInfo.pointLightProxyPass.data[i], apiObj->renderInfo.pointLightProxyPass.uniforms[i],
+		                           apiObj->renderInfo.pointLightGeomPass.uniforms[i], apiObj->renderInfo.pointLightSourcesPass.uniforms[i], true);
 	}
 }
 
 /*!*********************************************************************************************************************
-\brief	Record all the secondary command buffer for this scene
+\brief  Record all the secondary command buffer for this scene
 ***********************************************************************************************************************/
 void OGLESDeferredShading::recordSecondaryCommandBuffers()
 {
@@ -1530,7 +1535,7 @@ void OGLESDeferredShading::recordSecondaryCommandBuffers()
 ***********************************************************************************************************************/
 void OGLESDeferredShading::recordCommandBufferRenderGBuffer(pvr::api::SecondaryCommandBuffer& cmdBuffer)
 {
-	DrawGBuffer& pass = renderInfo.storeRenderDataPass;
+	DrawGBuffer& pass = apiObj->renderInfo.storeRenderDataPass;
 
 	if (usePixelLocalStorage)
 	{
@@ -1555,7 +1560,7 @@ void OGLESDeferredShading::recordCommandBufferRenderGBuffer(pvr::api::SecondaryC
 			cmdBuffer->setStencilWriteMask(pvr::types::StencilFace::FrontBack, 0xFF);
 		}
 		pvr::int32 effectId = pass.objects[i].effectId;
-		cmdBuffer->setUniformPtr<pvr::float32>(uniformMapping[effectId][Semantics::CustomSemanticFarClipDist], 1, &farClipDist);
+		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::CustomSemanticFarClipDist], 1, &farClipDist);
 
 		const pvr::assets::Model::Node& node = scene->getNode(i);
 		const pvr::assets::Mesh& mesh = scene->getMesh(node.getObjectId());
@@ -1565,11 +1570,11 @@ void OGLESDeferredShading::recordCommandBufferRenderGBuffer(pvr::api::SecondaryC
 		cmdBuffer->bindDescriptorSet(pass.objects[i].pipeline->getPipelineLayout(),
 		                             0, apiObj->materials[node.getMaterialIndex()].materialDescriptorSet, 0);
 
-		cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[effectId][Semantics::WorldView], 1, &pass.objects[i].worldView);
-		cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[effectId][Semantics::WorldViewProjection], 1, &pass.objects[i].worldViewProj);
-		cmdBuffer->setUniformPtr<glm::mat3>(uniformMapping[effectId][Semantics::WorldViewIT], 1, &pass.objects[i].worldViewIT3x3);
-		cmdBuffer->setUniformPtr<pvr::float32>(uniformMapping[effectId][Semantics::CustomSemanticSpecularStrength], 1, &material.specularStrength);
-		cmdBuffer->setUniformPtr<glm::vec3>(uniformMapping[effectId][Semantics::CustomSemanticDiffuseColor], 1, &material.diffuseColor);
+		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::WorldView], 1, &pass.objects[i].worldView);
+		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::WorldViewProjection], 1, &pass.objects[i].worldViewProj);
+		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::WorldViewIT], 1, &pass.objects[i].worldViewIT3x3);
+		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::CustomSemanticSpecularStrength], 1, &material.specularStrength);
+		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::CustomSemanticDiffuseColor], 1, &material.diffuseColor);
 
 		cmdBuffer->bindVertexBuffer(apiObj->sceneVbos[node.getObjectId()], 0, 0);
 		cmdBuffer->bindIndexBuffer(apiObj->sceneIbos[node.getObjectId()], 0, mesh.getFaces().getDataType());
@@ -1580,8 +1585,8 @@ void OGLESDeferredShading::recordCommandBufferRenderGBuffer(pvr::api::SecondaryC
 
 
 /*!*********************************************************************************************************************
-\brief	Record UIRenderer commands
-\param	cmdBuff Commandbuffer to record
+\brief  Record UIRenderer commands
+\param  cmdBuff Commandbuffer to record
 ***********************************************************************************************************************/
 void OGLESDeferredShading::recordCommandUIRenderer(pvr::api::SecondaryCommandBuffer& cmdBuff)
 {
@@ -1595,12 +1600,12 @@ void OGLESDeferredShading::recordCommandUIRenderer(pvr::api::SecondaryCommandBuf
 }
 
 /*!*********************************************************************************************************************
-\brief	Record draw scene into depth and stencil commands
-\param	cmdBuffer Commandbuffer to record
+\brief  Record draw scene into depth and stencil commands
+\param  cmdBuffer Commandbuffer to record
 ***********************************************************************************************************************/
 void OGLESDeferredShading::recordCommandBufferDepthStencil(pvr::api::SecondaryCommandBuffer& cmdBuffer)
 {
-	DrawDepthStencil& pass = renderInfo.depthStencilPass;
+	DrawDepthStencil& pass = apiObj->renderInfo.depthStencilPass;
 	apiObj->cmdBuffRenderDepthStencil->beginRecording(apiObj->defaultRenderPass);
 	// Imprint a 1 into the stencil buffer to indicate where geometry is found.
 	// This optimizes the rendering of directional light sources as the shader then only has to be executed where necessary.
@@ -1614,24 +1619,24 @@ void OGLESDeferredShading::recordCommandBufferDepthStencil(pvr::api::SecondaryCo
 		const pvr::uint32 meshId = scene->getNode(i).getObjectId();
 		const pvr::assets::Mesh& mesh = scene->getMesh(meshId);
 
-		cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[pass.effectId][Semantics::WorldViewProjection], 1, &pass.uniforms[i].worldViewProj);
+		cmdBuffer->setUniformPtr(uniformMapping[pass.effectId][Semantics::WorldViewProjection], 1, &pass.uniforms[i].worldViewProj);
 
 		cmdBuffer->bindVertexBuffer(apiObj->sceneVbos[meshId], 0, 0);
 		cmdBuffer->bindIndexBuffer(apiObj->sceneIbos[meshId], 0, mesh.getFaces().getDataType());
 		// Indexed Triangle list
 		cmdBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
-		cmdBuffer->setUniformPtr<glm::vec4>(uniformMapping[pass.effectId][Semantics::MaterialColorAmbient], 1, &pass.uniforms[i].color);
+		cmdBuffer->setUniformPtr(uniformMapping[pass.effectId][Semantics::MaterialColorAmbient], 1, &pass.uniforms[i].color);
 	}
 	apiObj->cmdBuffRenderDepthStencil->endRecording();
 }
 
 /*!*********************************************************************************************************************
-\brief	Record directional light draw commands
+\brief  Record directional light draw commands
 \param  cmdBuffer Commandbuffer to record
 ***********************************************************************************************************************/
 void OGLESDeferredShading::recordCommandsDirectionalLights(pvr::api::SecondaryCommandBuffer& cmdBuffer)
 {
-	DrawDirLight& pass = renderInfo.directionalLightPass;
+	DrawDirLight& pass = apiObj->renderInfo.directionalLightPass;
 
 	//The "uniforms" variable is one per directional light...
 	if (pass.uniforms.empty()) { return; }
@@ -1645,104 +1650,104 @@ void OGLESDeferredShading::recordCommandsDirectionalLights(pvr::api::SecondaryCo
 	// Make use of the stencil buffer contents to only shade pixels where actual geometry is located.
 	// Reset the stencil buffer to 0 at the same time to avoid the stencil clear operation afterwards.
 	// bind the albedo and normal textures from the gbuffer
-	cmdBuffer->bindDescriptorSet(renderInfo.directionalLightPass.pipeline->getPipelineLayout(), 0, apiObj->directionalLightDescriptorSet, 0);
+	cmdBuffer->bindDescriptorSet(apiObj->renderInfo.directionalLightPass.pipeline->getPipelineLayout(), 0, apiObj->directionalLightDescriptorSet, 0);
 	for (size_t i = 0; i < pass.uniforms.size(); i++)
 	{
-		cmdBuffer->setUniformPtr<glm::vec3>(uniformMapping[pass.effectId][Semantics::LightColor], 1, &pass.uniforms[i].lightIntensity);
-		cmdBuffer->setUniformPtr<glm::vec4>(uniformMapping[pass.effectId][Semantics::CustomSemanticDirLightDirection], 1, &pass.uniforms[i].lightDirView);
+		cmdBuffer->setUniformPtr(uniformMapping[pass.effectId][Semantics::LightColor], 1, &pass.uniforms[i].lightIntensity);
+		cmdBuffer->setUniformPtr(uniformMapping[pass.effectId][Semantics::CustomSemanticDirLightDirection], 1, &pass.uniforms[i].lightDirView);
 		// Draw a quad
 		cmdBuffer->drawArrays(0, 4);
 	}
 }
 
 /*!*********************************************************************************************************************
-\brief	Record point lights draw commands
-\param	cmdBuffer Commandbuffer to record
+\brief  Record point lights draw commands
+\param  cmdBuffer Commandbuffer to record
 ***********************************************************************************************************************/
 void OGLESDeferredShading::recordCommandsPointLights(pvr::api::SecondaryCommandBuffer& cmdBuffer)
 {
 	//Any of the geompointlightpass, lightsourcepointlightpass or pointlightproxiepass's uniforms have the same number of elements
-	if (renderInfo.pointLightProxyPass.uniforms.empty()) { return; }
+	if (apiObj->renderInfo.pointLightProxyPass.uniforms.empty()) { return; }
 
 	const pvr::assets::Mesh& mesh = pointLightModel->getMesh(0);
 
 	cmdBuffer->setStencilReference(StencilFace::FrontBack, 0);
 
 	//POINT LIGHTS: 1) Draw stencil to discard useless pixels
-	cmdBuffer->bindPipeline(renderInfo.pointLightGeomPass.pipeline);
+	cmdBuffer->bindPipeline(apiObj->renderInfo.pointLightGeomPass.pipeline);
 	// Bind the vertex and index buffer for the point light
 	cmdBuffer->bindVertexBuffer(apiObj->pointLightVbo, 0, 0);
 	cmdBuffer->bindIndexBuffer(apiObj->pointLightIbo, 0, IndexType::IndexType16Bit);
 
-	for (size_t i = 0; i < renderInfo.pointLightGeomPass.uniforms.size(); i++)
+	for (size_t i = 0; i < apiObj->renderInfo.pointLightGeomPass.uniforms.size(); i++)
 	{
-		cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[renderInfo.pointLightGeomPass.effectId][Semantics::WorldViewProjection], 1, &renderInfo.pointLightGeomPass.uniforms[i].worldViewProj);
-		cmdBuffer->setUniformPtr<glm::vec4>(uniformMapping[renderInfo.pointLightGeomPass.effectId][Semantics::MaterialColorAmbient], 1, &renderInfo.pointLightGeomPass.uniforms[i].color);
+		cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightGeomPass.effectId][Semantics::WorldViewProjection], 1, &apiObj->renderInfo.pointLightGeomPass.uniforms[i].worldViewProj);
+		cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightGeomPass.effectId][Semantics::MaterialColorAmbient], 1, &apiObj->renderInfo.pointLightGeomPass.uniforms[i].color);
 		cmdBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 	}
 
 	//POINT LIGHTS: 2) Lighting
-	cmdBuffer->bindDescriptorSet(renderInfo.pointLightProxyPass.pipeline->getPipelineLayout(), 0, apiObj->pointLightDescriptorSet, 0);
+	cmdBuffer->bindDescriptorSet(apiObj->renderInfo.pointLightProxyPass.pipeline->getPipelineLayout(), 0, apiObj->pointLightDescriptorSet, 0);
 
-	cmdBuffer->bindPipeline(renderInfo.pointLightProxyPass.pipeline);
-	if (uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticFarClipDist] >= 0)
+	cmdBuffer->bindPipeline(apiObj->renderInfo.pointLightProxyPass.pipeline);
+	if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticFarClipDist] >= 0)
 	{
-		cmdBuffer->setUniformPtr<pvr::float32>(uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticFarClipDist], 1, &farClipDist);
+		cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticFarClipDist], 1, &farClipDist);
 	}
 
 	// Bind the vertex and index buffer for the point light
 	cmdBuffer->bindVertexBuffer(apiObj->pointLightVbo, 0, 0);
 	cmdBuffer->bindIndexBuffer(apiObj->pointLightIbo, 0, mesh.getFaces().getDataType());
 
-	for (pvr::uint32 i = 0; i < renderInfo.pointLightProxyPass.uniforms.size(); ++i)
+	for (pvr::uint32 i = 0; i < apiObj->renderInfo.pointLightProxyPass.uniforms.size(); ++i)
 	{
-		if (uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::LightColor] >= 0)
+		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::LightColor] >= 0)
 		{
-			cmdBuffer->setUniformPtr<glm::vec3>(uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::LightColor], 1, &renderInfo.pointLightProxyPass.uniforms[i].lightIntensity);
+			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::LightColor], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].lightIntensity);
 		}
-		if (uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::WorldViewProjection] >= 0)
+		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldViewProjection] >= 0)
 		{
-			cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::WorldViewProjection], 1, &renderInfo.pointLightProxyPass.uniforms[i].worldViewProj);
+			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldViewProjection], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].worldViewProj);
 		}
-		if (uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::WorldView] >= 0)
+		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldView] >= 0)
 		{
-			cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::WorldView], 1, &renderInfo.pointLightProxyPass.uniforms[i].worldView);
+			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldView], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].worldView);
 		}
-		if (uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::WorldIT] >= 0)
+		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldIT] >= 0)
 		{
-			cmdBuffer->setUniformPtr<glm::mat3>(uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::WorldIT], 1, &renderInfo.pointLightProxyPass.uniforms[i].worldIT);
+			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldIT], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].worldIT);
 		}
-		if (uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticPointLightViewPos] >= 0)
+		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticPointLightViewPos] >= 0)
 		{
-			cmdBuffer->setUniformPtr<glm::vec3>(uniformMapping[renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticPointLightViewPos], 1, &renderInfo.pointLightProxyPass.uniforms[i].lightPosView);
+			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticPointLightViewPos], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].lightPosView);
 		}
 		cmdBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 	}
 
 	//POINT LIGHTS: 3) Light sources
-	cmdBuffer->bindPipeline(renderInfo.pointLightSourcesPass.pipeline);
+	cmdBuffer->bindPipeline(apiObj->renderInfo.pointLightSourcesPass.pipeline);
 	cmdBuffer->bindVertexBuffer(apiObj->pointLightVbo, 0, 0);
 	cmdBuffer->bindIndexBuffer(apiObj->pointLightIbo, 0, mesh.getFaces().getDataType());
 
-	for (pvr::uint32 i = 0; i < renderInfo.pointLightSourcesPass.uniforms.size(); ++i)
+	for (pvr::uint32 i = 0; i < apiObj->renderInfo.pointLightSourcesPass.uniforms.size(); ++i)
 	{
-		cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[renderInfo.pointLightSourcesPass.effectId][Semantics::WorldViewProjection], 1, &renderInfo.pointLightSourcesPass.uniforms[i].worldViewProj);
+		cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::WorldViewProjection], 1, &apiObj->renderInfo.pointLightSourcesPass.uniforms[i].worldViewProj);
 
-		if (uniformMapping[renderInfo.pointLightSourcesPass.effectId][Semantics::WorldIT] >= 0)
+		if (uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::WorldIT] >= 0)
 		{
-			cmdBuffer->setUniformPtr<glm::mat3>(uniformMapping[renderInfo.pointLightSourcesPass.effectId][Semantics::WorldIT], 1, &renderInfo.pointLightSourcesPass.uniforms[i].worldIT);
+			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::WorldIT], 1, &apiObj->renderInfo.pointLightSourcesPass.uniforms[i].worldIT);
 		}
-		if (uniformMapping[renderInfo.pointLightSourcesPass.effectId][Semantics::MaterialColorAmbient] >= 0)
+		if (uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::MaterialColorAmbient] >= 0)
 		{
-			cmdBuffer->setUniformPtr<glm::vec4>(uniformMapping[renderInfo.pointLightSourcesPass.effectId][Semantics::MaterialColorAmbient], 1, &renderInfo.pointLightSourcesPass.uniforms[i].color);
+			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::MaterialColorAmbient], 1, &apiObj->renderInfo.pointLightSourcesPass.uniforms[i].color);
 		}
 		cmdBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 	}
 }
 
 /*!*********************************************************************************************************************
-\return	Return an auto_ptr to a new Demo class, supplied by the user
-\brief	This function must be implemented by the user of the shell. The user should return its Shell object defining the
+\return Return an auto_ptr to a new Demo class, supplied by the user
+\brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the
 behaviour of the application.
 ***********************************************************************************************************************/
 std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new OGLESDeferredShading()); }

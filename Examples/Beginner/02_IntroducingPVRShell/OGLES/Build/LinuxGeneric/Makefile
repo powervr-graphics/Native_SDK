@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESIntroducingPVRShell
-DEPENDS =  PVRCore PVREgl PVRShell
-LIBRARIES =  GLESv2 PVRShell PVREgl PVRCore
+DEPENDS =  PVRCore PVRShell PVRNativeGles
+LIBRARIES =  GLESv2 PVRNativeGles PVRShell PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS) ../../../../../../Builds/Linux/$(PLAT_SUFFIX)/Lib
 
 OBJECTS +=	\

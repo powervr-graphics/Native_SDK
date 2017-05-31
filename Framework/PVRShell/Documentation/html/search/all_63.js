@@ -1,20 +1,11 @@
 var searchData=
 [
-  ['c',['C',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a3f6852aaf5787ca6198039d1f45e4d95',1,'pvr::Keys']]],
-  ['capabilities',['Capabilities',['../structpvr_1_1system_1_1_shell_o_s_1_1_capabilities.html',1,'pvr::system::ShellOS']]],
-  ['capslock',['CapsLock',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4aa45803b3c65ebc2e9d5b2807064d84af',1,'pvr::Keys']]],
-  ['captureframescale',['captureFrameScale',['../structpvr_1_1system_1_1_shell_data.html#a1ca7a187c81a8d5f1171714cf14fffe3',1,'pvr::system::ShellData']]],
-  ['captureframestart',['captureFrameStart',['../structpvr_1_1system_1_1_shell_data.html#a5de01e8ce3ba40fca3d87581795e31c7',1,'pvr::system::ShellData']]],
-  ['captureframestop',['captureFrameStop',['../structpvr_1_1system_1_1_shell_data.html#aa48c27c44eb39fc0fb5e5d6bd2de64e5',1,'pvr::system::ShellData']]],
-  ['cmdshow',['cmdShow',['../structpvr_1_1system_1_1_windows_o_s_data.html#a1147779f150f31111c322627fd1e08d7',1,'pvr::system::WindowsOSData']]],
-  ['comma',['Comma',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a4b6ef4255d63eed4752fe9bdc140e35b',1,'pvr::Keys']]],
-  ['commandline',['commandLine',['../interface_app_controller.html#a1623a053ea03f07f1ed4180f35c4129a',1,'AppController::commandLine()'],['../structpvr_1_1system_1_1_shell_data.html#af0815d5bbb6674411e9f19803f08e5a4',1,'pvr::system::ShellData::commandLine()'],['../namespacepvr_1_1system.html#afaac9c161642fb95c6060c8cfd81c78a',1,'pvr::system::CommandLine()']]],
+  ['capabilities',['Capabilities',['../structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html',1,'pvr::platform::ShellOS']]],
+  ['commandline',['commandLine',['../interface_app_controller.html#aee150b1673f4b49b56ef2bd3d3f536fc',1,'AppController']]],
   ['commandline_2ecpp',['CommandLine.cpp',['../_command_line_8cpp.html',1,'']]],
   ['commandline_2eh',['CommandLine.h',['../_command_line_8h.html',1,'']]],
-  ['commandlineparser',['CommandLineParser',['../classpvr_1_1system_1_1_command_line_parser.html',1,'pvr::system']]],
-  ['commandlineparser',['CommandLineParser',['../classpvr_1_1system_1_1_command_line_parser.html#a4ad4bcc338715b8c9129d2f3b0caf74c',1,'pvr::system::CommandLineParser']]],
-  ['contexttype',['contextType',['../structpvr_1_1system_1_1_shell_data.html#a827b9a326da3d141023870415b5b95b4',1,'pvr::system::ShellData']]],
-  ['control',['Control',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4af4045be17bd83ab7bf2a999934356139',1,'pvr::Keys']]],
-  ['creategraphicscontext',['createGraphicsContext',['../namespacepvr.html#ae0fead07cab06a03f05ffca415548e24',1,'pvr']]],
-  ['currentframetime',['currentFrameTime',['../structpvr_1_1system_1_1_shell_data.html#a67123597eb5ea0613cac07eaf88f69dd',1,'pvr::system::ShellData']]]
+  ['commandlineparser',['CommandLineParser',['../classpvr_1_1platform_1_1_command_line_parser.html',1,'pvr::platform']]],
+  ['commandlineparser',['CommandLineParser',['../classpvr_1_1platform_1_1_command_line_parser.html#a67634e1c5ec66330b84391258ba00f0b',1,'pvr::platform::CommandLineParser']]],
+  ['context',['context',['../classpvr_1_1platform_1_1_shell.html#a91a970a5e3e4389dfb11d9fbd860c9d0',1,'pvr::platform::Shell::context()'],['../classpvr_1_1platform_1_1_shell.html#adcd146a5f05d11ca3146e07b86f83991',1,'pvr::platform::Shell::context() const ']]],
+  ['creategraphicscontext',['createGraphicsContext',['../namespacepvr.html#a1b5be657a27a4a7dc96ecfbda0ff96b6',1,'pvr']]]
 ];

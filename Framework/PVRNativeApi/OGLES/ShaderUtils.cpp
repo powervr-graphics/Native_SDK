@@ -1,21 +1,24 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\OGLES\ShaderUtils.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementations of the shader utility functions
-***********************************************************************************************************************/
+/*!
+\brief Implementations of the shader utility functions
+\file PVRNativeApi/OGLES/ShaderUtils.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
-#include "PVRNativeApi/ShaderUtils.h"
+#include "PVRCore/Stream.h"
+#include "PVRCore/StringFunctions.h"
+#include "PVRNativeApi/OGLES/ShaderUtilsGles.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
 #include "PVRNativeApi/OGLES/OpenGLESBindings.h"
-#include "PVRNativeApi/ApiErrors.h"
+#include "PVRNativeApi/OGLES/ApiErrorsGles.h"
 
 namespace pvr {
-namespace utils {
+namespace nativeGles {
 
-bool loadShader(const native::HContext_& context, const Stream& shaderSource, types::ShaderType::Enum shaderType, const char* const* defines, uint32 defineCount,
+bool loadShader(const Stream& shaderSource, types::ShaderType shaderType, const char* const* defines, uint32 defineCount,
                 pvr::native::HShader_& outShader, const ApiCapabilities* contextCapabilities)
 {
+	logApiError("loadShader: Error on entry!");
 	if (!shaderSource.isopen() && !shaderSource.open())
 	{
 		Log(Log.Error, "loadShader: Could not open the shaderSource stream.");
@@ -40,7 +43,7 @@ bool loadShader(const native::HContext_& context, const Stream& shaderSource, ty
 		outShader = gl::CreateShader(GL_FRAGMENT_SHADER);
 		break;
 	case types::ShaderType::ComputeShader:
-#if !defined(BUILD_API_MAX)||BUILD_API_MAX >= 31
+#if defined(GL_COMPUTE_SHADER)
 		if (!contextCapabilities || contextCapabilities->supports(ApiCapabilities::ComputeShader))
 		{
 			outShader = gl::CreateShader(GL_COMPUTE_SHADER);
@@ -52,8 +55,46 @@ bool loadShader(const native::HContext_& context, const Stream& shaderSource, ty
 			return false;
 		}
 		break;
+	case types::ShaderType::GeometryShader:
+#if defined(GL_GEOMETRY_SHADER_EXT)
+		if (!contextCapabilities || contextCapabilities->supports(ApiCapabilities::GeometryShader))
+		{
+			outShader = gl::CreateShader(GL_GEOMETRY_SHADER_EXT);
+		}
+		else
+#endif
+		{
+			Log("loadShader: Geometry Shader not supported on this context");
+			return false;
+		}
 
-
+		break;
+	case types::ShaderType::TessControlShader:
+#if defined(GL_TESS_CONTROL_SHADER_EXT)
+		if (!contextCapabilities || contextCapabilities->supports(ApiCapabilities::Tessellation))
+		{
+			outShader = gl::CreateShader(GL_TESS_CONTROL_SHADER_EXT);
+		}
+		else
+#endif
+		{
+			Log("loadShader: Tessellation not supported on this context");
+			return false;
+		}
+		break;
+	case types::ShaderType::TessEvaluationShader:
+#if defined(GL_TESS_EVALUATION_SHADER_EXT)
+		if (!contextCapabilities || contextCapabilities->supports(ApiCapabilities::Tessellation))
+		{
+			outShader = gl::CreateShader(GL_TESS_EVALUATION_SHADER_EXT);
+		}
+		else
+#endif
+		{
+			Log("loadShader: Tessellation not supported on this context");
+			return false;
+		}
+		break;
 	default:
 		Log("loadShader: Unknown shader type requested.");
 		return false;
@@ -82,7 +123,11 @@ bool loadShader(const native::HContext_& context, const Stream& shaderSource, ty
 	sourceDataStr.append(shaderSrc.begin() + versBegin + versEnd, shaderSrc.end());
 	const char* pSource = sourceDataStr.c_str();
 	gl::ShaderSource(outShader, 1, &pSource, NULL);
+	logApiError("CreateShader::glShaderSource error");
 	gl::CompileShader(outShader);
+
+	logApiError("CreateShader::glCompile error");
+
 	// error checking
 	GLint glRslt;
 	gl::GetShaderiv(outShader, GL_COMPILE_STATUS, &glRslt);
@@ -98,7 +143,8 @@ bool loadShader(const native::HContext_& context, const Stream& shaderSource, ty
 		  (shaderType == types::ShaderType::VertexShader ? "Vertex" :
 		   shaderType == types::ShaderType::FragmentShader ? "Fragment" :
 		   shaderType == types::ShaderType::ComputeShader ? "Compute" :
-		   shaderType == types::ShaderType::FrameShader ? "Frame" :
+		   shaderType == types::ShaderType::TessControlShader ? "TessellationControl" :
+		   shaderType == types::ShaderType::TessEvaluationShader ? "TessellationEvaluation" :
 		   shaderType == types::ShaderType::RayShader ? "Ray" : "Unknown");
 
 
@@ -106,16 +152,17 @@ bool loadShader(const native::HContext_& context, const Stream& shaderSource, ty
 		                                        "==========Infolog:==========\n%s\n============================", typestring, pLog.data()).c_str());
 		return false;
 	}
+	logApiError("CreateShader::exit");
 	return true;
 }
 
-bool loadShader(const native::HContext_& context, Stream& shaderData, types::ShaderType::Enum shaderType,
-                types::ShaderBinaryFormat::Enum binaryFormat, pvr::native::HShader_& outShader,
+bool loadShader(Stream& shaderData, types::ShaderType shaderType,
+                types::ShaderBinaryFormat binaryFormat, pvr::native::HShader_& outShader,
                 const ApiCapabilities* contextCapabilities)
 {
 #if defined(TARGET_OS_IPHONE)
 	assertion(false , "Target IPhone does not support Binary");
-	return Result::UnsupportedRequest;
+	return false;
 #else
 
 	if (binaryFormat != types::ShaderBinaryFormat::ImgSgx)
@@ -145,16 +192,16 @@ bool createShaderProgram(pvr::native::HShader_ pShaders[], uint32 count,
                          const char** const sAttribs, pvr::uint16* attribIndex, uint32 attribCount, pvr::native::HPipeline_& outShaderProg,
                          string* infolog, const ApiCapabilities* contextCapabilities)
 {
-	pvr::api::logApiError("createShaderProgram begin");
+	pvr::nativeGles::logApiError("createShaderProgram begin");
 	if (!outShaderProg.handle)
 	{
 		outShaderProg = gl::CreateProgram();
 	}
 	for (uint32 i = 0; i < count; ++i)
 	{
-		pvr::api::logApiError("createShaderProgram begin AttachShader");
+		pvr::nativeGles::logApiError("createShaderProgram begin AttachShader");
 		gl::AttachShader(outShaderProg, pShaders[i].handle);
-		pvr::api::logApiError("createShaderProgram end AttachShader");
+		pvr::nativeGles::logApiError("createShaderProgram end AttachShader");
 	}
 	if (sAttribs && attribCount)
 	{
@@ -163,9 +210,9 @@ bool createShaderProgram(pvr::native::HShader_ pShaders[], uint32 count,
 			gl::BindAttribLocation(outShaderProg, attribIndex[i], sAttribs[i]);
 		}
 	}
-	pvr::api::logApiError("createShaderProgram begin linkProgram");
+	pvr::nativeGles::logApiError("createShaderProgram begin linkProgram");
 	gl::LinkProgram(outShaderProg);
-	pvr::api::logApiError("createShaderProgram end linkProgram");
+	pvr::nativeGles::logApiError("createShaderProgram end linkProgram");
 	//check for link sucess
 	GLint glStatus;
 	gl::GetProgramiv(outShaderProg, GL_LINK_STATUS, &glStatus);
@@ -181,7 +228,7 @@ bool createShaderProgram(pvr::native::HShader_ pShaders[], uint32 count,
 		}
 		return false;
 	}
-	pvr::api::logApiError("createShaderProgram end");
+	pvr::nativeGles::logApiError("createShaderProgram end");
 	return true;
 }
 

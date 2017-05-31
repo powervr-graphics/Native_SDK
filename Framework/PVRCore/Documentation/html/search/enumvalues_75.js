@@ -1,26 +1,6 @@
 var searchData=
 [
-  ['ubo',['Ubo',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a5e5f8d3c0ac014a6c2d9a64ff3d5746a',1,'pvr::ApiCapabilities::Ubo()'],['../namespacepvr_1_1types_1_1_api_object_type.html#a2ec622aa992afe2381f553e98752fcb1a2db7510147d2bff63513d2ca12f8b976',1,'pvr::types::ApiObjectType::UBO()']]],
-  ['ubyte4',['UBYTE4',['../namespacepvr_1_1types_1_1_data_type.html#a9be960bdfaa7a2cf8d12a845cf9251cea6c2c8cd540b8e92f872058f5e1c7d7eb',1,'pvr::types::DataType']]],
-  ['uint16',['UInt16',['../namespacepvr_1_1types_1_1_data_type.html#a9be960bdfaa7a2cf8d12a845cf9251cea3279163b5549f902e85ce74422b6676d',1,'pvr::types::DataType']]],
-  ['uint16norm',['UInt16Norm',['../namespacepvr_1_1types_1_1_data_type.html#a9be960bdfaa7a2cf8d12a845cf9251cea3537c8f7e2c97bef86b16d1a17942741',1,'pvr::types::DataType']]],
-  ['uint32',['UInt32',['../namespacepvr_1_1types_1_1_data_type.html#a9be960bdfaa7a2cf8d12a845cf9251cea1244d8d6a2769ae23f8c1822845838c7',1,'pvr::types::DataType']]],
-  ['uint8',['UInt8',['../namespacepvr_1_1types_1_1_data_type.html#a9be960bdfaa7a2cf8d12a845cf9251ceab1e925c6e89caa841fe62d18d98dba49',1,'pvr::types::DataType']]],
-  ['uint8norm',['UInt8Norm',['../namespacepvr_1_1types_1_1_data_type.html#a9be960bdfaa7a2cf8d12a845cf9251cea5ba86e4178ec6cf29ab9d1c72f36666b',1,'pvr::types::DataType']]],
+  ['ubo',['Ubo',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a5e5f8d3c0ac014a6c2d9a64ff3d5746a',1,'pvr::ApiCapabilities']]],
   ['uintuniforms',['UintUniforms',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2aafa4c8ee15df3ab7b9b274bf793ecb0d',1,'pvr::ApiCapabilities']]],
-  ['unabletoopen',['UnableToOpen',['../namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba839c84b4c0df23021d7529d954f5364a',1,'pvr::Result']]],
-  ['unallocated',['Unallocated',['../namespacepvr_1_1types_1_1_texture_dimension.html#a0ce9736738aa1f6e866cf8140856a409a77ec042632575ed9ab7f3337f1d097bf',1,'pvr::types::TextureDimension']]],
-  ['undefined',['Undefined',['../namespacepvr_1_1types_1_1_image_layout.html#a3ade234cafd7b98f9c16652475b206eea1413fe1b933c28bd9f9751d628c2d691',1,'pvr::types::ImageLayout']]],
-  ['uniformbuffer',['UniformBuffer',['../namespacepvr_1_1types_1_1_descriptor_type.html#a7eedba88f00e5105a7df04db1aac7e1ead8f1a9d585475864c64c3c59e43485de',1,'pvr::types::DescriptorType::UniformBuffer()'],['../namespacepvr_1_1types_1_1_buffer_binding_use.html#a88fda50117c1cb154e9ed9e27b2e7130aa20224ef61b4e0f4387217a59d561575',1,'pvr::types::BufferBindingUse::UniformBuffer()']]],
-  ['uniformbufferdynamic',['UniformBufferDynamic',['../namespacepvr_1_1types_1_1_descriptor_type.html#a7eedba88f00e5105a7df04db1aac7e1eaf029cad53943275a53c9c61d600eb6f9',1,'pvr::types::DescriptorType']]],
-  ['uniformread',['UniformRead',['../namespacepvr_1_1types_1_1_access_flags.html#a2a1b3c34eb51c894a28686e0d6d41fada9734fea3da3478078df593d0fc605f50',1,'pvr::types::AccessFlags']]],
-  ['uniforms',['Uniforms',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2aef7de77b3ead4b298b75e7597274387e',1,'pvr::ApiCapabilities']]],
-  ['uniformtexelbuffer',['UniformTexelBuffer',['../namespacepvr_1_1types_1_1_descriptor_type.html#a7eedba88f00e5105a7df04db1aac7e1ea68176c90c901cee461c06d9eb4fc6d67',1,'pvr::types::DescriptorType::UniformTexelBuffer()'],['../namespacepvr_1_1types_1_1_buffer_binding_use.html#a88fda50117c1cb154e9ed9e27b2e7130a6758152e0128e72048934d64a864eea2',1,'pvr::types::BufferBindingUse::UniformTexelBuffer()']]],
-  ['unknown',['Unknown',['../namespacepvr_1_1types_1_1_fbo_texture_target.html#abcbb5bc20f267f95ad5a419b39c1f668a2236852f42731ae8df54911a9ea22e13',1,'pvr::types::FboTextureTarget::Unknown()'],['../namespacepvr_1_1types_1_1_shader_binary_format.html#a081718b4fec389665e147313e5e9b5c6af2e2cc2dd6f5e9fea75b8ca29056a95b',1,'pvr::types::ShaderBinaryFormat::Unknown()']]],
-  ['unknownerror',['UnknownError',['../namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba4df905309d5e14f9ad1191747490570e',1,'pvr::Result']]],
-  ['unknownshader',['UnknownShader',['../namespacepvr_1_1types_1_1_shader_type.html#a54457467baf7029937631daab072bbdaa45affb375232862c52d7e78e2b5306f0',1,'pvr::types::ShaderType']]],
-  ['unspecified',['Unspecified',['../namespacepvr_1_1_api.html#a0046dbd915ab5fe111df975febf4c05ca7496eb86a74d2add7c13530f25118bdb',1,'pvr::Api']]],
-  ['unsupported',['Unsupported',['../namespacepvr_1_1types_1_1_capability.html#ad4bac5ef3f52f773b99b147814420561a5d377edb0d972f243146836e066f8ca0',1,'pvr::types::Capability']]],
-  ['unsupportedrequest',['UnsupportedRequest',['../namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bbac6915d3cb90e6ffc3e23a579ecbb3db1',1,'pvr::Result']]],
-  ['unsynchronised',['Unsynchronised',['../namespacepvr_1_1types_1_1_map_buffer_flags.html#ae886304c9ba4596ac9c2b1cd7c17dc0fa582925e3b7feff0a8198caf99a48aafa',1,'pvr::types::MapBufferFlags']]]
+  ['uniforms',['Uniforms',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2aef7de77b3ead4b298b75e7597274387e',1,'pvr::ApiCapabilities']]]
 ];

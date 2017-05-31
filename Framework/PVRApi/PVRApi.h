@@ -1,27 +1,24 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\PVRApi.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Include for the functionality of the PVRApi library. Contains the full PVRApi functionality, with core plus helpers
-              and libraries.
-***********************************************************************************************************************/
+/*!
+\brief Include for the functionality of the PVRApi library. Contains the full PVRApi functionality, with core plus
+helpers and libraries.
+\file PVRApi/PVRApi.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRApi/Api.h"
-#include "PVRAssets/PVRAssets.h"
-#include "PVRApi/AssetStore.h"
-#include "PVRApi/AssetUtils.h"
 #include "PVRApi/ApiObjects.h"
 
 /*****************************************************************************/
 /*! \mainpage PVRApi
 ******************************************************************************
 
-\tableofcontents 
- 
+\tableofcontents
+
 \section overview Overview
 *****************************
 
-PVRApi leverages PVRAssets and PVRShell in order to abstract the graphics API. PVRApi is a very ambitious project that aims to provide a common codebase across different graphics APIs. Combined with PVRShell (which provides a common codebase across platforms), PVRApi supports a cross-platform, cross-API Framework to develop your applications in.
+PVRApi leverages PVRCore and PVRShell in order to abstract the graphics API. PVRApi is a very ambitious project that aims to provide a common codebase across different graphics APIs. Combined with PVRShell (which provides a common codebase across platforms), PVRApi supports a cross-platform, cross-API Framework to develop your applications in.
 
 PVRApi becomes especially important with the emergence of new and powerful APIs like Vulkan, Metal and Mantle, where a lot of complexity is now revealed. This threatens to complicate simpler tasks and bloat application code as a fair exchange for their power, customizability and performance.
 
@@ -42,10 +39,10 @@ To use PVRApi:
 <li>The library to link against directly (windows/android/linux makefiles) (.so etc. in <span class="code">Framework/Bin/[Platform]/[lib?]PVR[API][.lib/.so]</span>)</li>
 </ol>
 <li>Include the header file (most commonly this file, <span class="code">PVRApi/PVRApi.h</span>)</li>
-<li>Also link against the PowerVR Framework dependencies of PVRApi: (PVRCore, PVRAssets, PVRPlatformGlue, PVRShell)</li>
+<li>Also link against the PowerVR Framework dependencies of PVRApi: (PVRCore, PVRAssets, PVRNativeApi, PVRShell)</li>
 <li>Use the library!</li>
 </ul>
-	
+
 \section code Code Examples
 *****************************
 

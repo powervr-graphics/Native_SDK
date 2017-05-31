@@ -1,217 +1,224 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\ApiObjects\Sync.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         The PVRApi basic Texture implementation.
-***********************************************************************************************************************/
+/*!
+\brief The PVRApi basic Texture implementation.
+\file PVRApi/ApiObjects/Sync.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRApi/ApiIncludes.h"
 
 namespace pvr {
 namespace api {
 namespace impl {
-/*!*********************************************************************************************************************
-\brief Fence can be used by the host to determine completion of execution of subimmisions to queues.
-	   The host can be polled for the fence signal
-***********************************************************************************************************************/
+/// <summary>Fence can be used by the host to determine completion of execution of subimmisions to queues. The host
+/// can be polled for the fence signal</summary>
 class Fence_
 {
 protected:
 	GraphicsContext context;
 	Fence_(const GraphicsContext& context) : context(context) {}
 public:
-	/*!*********************************************************************************************************************
-	\brief Returns const reference to the graphics context who own this resource
-	***********************************************************************************************************************/
+	/// <summary>Returns const reference to the graphics context who own this resource</summary>
 	const GraphicsContext& getContext() const { return context; }
 
-	/*!*********************************************************************************************************************
-	\brief Returns reference to the graphics context who own this resource
-	***********************************************************************************************************************/
+	/// <summary>Returns reference to the graphics context who own this resource</summary>
 	GraphicsContext& getContext() { return context; }
 
-	/*!*********************************************************************************************************************
-	\brief Host to wait for this fence to be signaled
-	\param timeoutNanos Time out period in nanoseconds
-	***********************************************************************************************************************/
-	bool wait(uint64 timeoutNanos = uint64(-1));
+	/// <summary>Host to wait for this fence to be signaled</summary>
+	/// <param name="timeoutNanos">Time out period in nanoseconds</param>
+	bool wait(uint64 timeoutNanos = uint64(-1)) { return wait_(timeoutNanos); }
 
-	/*!*********************************************************************************************************************
-	\brief Reset this fence
-	***********************************************************************************************************************/
-	void reset();
+	/// <summary>Reset this fence</summary>
+	void reset() { return reset_(); }
 
-	/*!*********************************************************************************************************************
-	\brief Return true if this fence is signaled
-	***********************************************************************************************************************/
-	bool isSignalled();
+	/// <summary>Return true if this fence is signaled</summary>
+	bool isSignalled() { return isSignalled_(); }
 
-	/*!*********************************************************************************************************************
-	\brief dtor
-	***********************************************************************************************************************/
+	/// <summary>dtor</summary>
 	virtual ~Fence_() {}
+private:
+	virtual bool wait_(uint64 timeoutNanos) = 0;
+	virtual void reset_() = 0;
+	virtual bool isSignalled_() = 0;
+
 };
 
-/*!*********************************************************************************************************************
-\brief Use to "serialize" access between CommandBuffer submissions and /Queues
-***********************************************************************************************************************/
+/// <summary>Use to "serialize" access between CommandBuffer submissions and /Queues</summary>
 class Semaphore_
 {
 protected:
 	GraphicsContext context;
 	Semaphore_(const GraphicsContext& context) : context(context) {}
 public:
-	/*!*********************************************************************************************************************
-	\brief dtor
-	***********************************************************************************************************************/
+	/// <summary>dtor</summary>
 	virtual ~Semaphore_() {}
 };
 
+/// <summary>Event can be used by the host to do fine-grained synchronization of commands, and it
+/// can be signalled either from the host (calling set()) or the device (submitting a setEvent() command).</summary>
 class Event_
 {
 protected:
 	GraphicsContext context;
 	Event_(const GraphicsContext& context) : context(context) {}
 public:
-	/*!*********************************************************************************************************************
-	\brief dtor
-	***********************************************************************************************************************/
+	/// <summary>dtor</summary>
 	virtual ~Event_() {}
 
-	/*!*********************************************************************************************************************
-	\brief Set this event
-	***********************************************************************************************************************/
+	/// <summary>Set this event</summary>
 	void set();
 
-	/*!*********************************************************************************************************************
-	\brief Reset this event
-	***********************************************************************************************************************/
+	/// <summary>Reset this event</summary>
 	void reset();
 
-	/*!*********************************************************************************************************************
-	\brief Return true if this event is set
-	***********************************************************************************************************************/
+	/// <summary>Return true if this event is set</summary>
 	bool isSet();
 };
 }
 
-/*!*********************************************************************************************************************
-\brief  A Global memory barrier used for memory accesses for all memory objects.
-***********************************************************************************************************************/
+/// <summary>A Global memory barrier used for memory accesses for all memory objects.</summary>
 struct MemoryBarrier
 {
-	types::AccessFlags::Bits srcMask;
-	types::AccessFlags::Bits dstMask;
-	MemoryBarrier(): srcMask(0), dstMask(0) {}
-	MemoryBarrier(types::AccessFlags::Bits srcMask, types::AccessFlags::Bits dstMask): srcMask(srcMask), dstMask(dstMask) {}
+	types::AccessFlags srcMask;
+	types::AccessFlags dstMask;
+	MemoryBarrier(): srcMask(types::AccessFlags(0)), dstMask(types::AccessFlags(0)) {}
+	MemoryBarrier(types::AccessFlags srcMask, types::AccessFlags dstMask): srcMask(srcMask), dstMask(dstMask) {}
 };
 
-/*!*********************************************************************************************************************
-\brief  A Buffer memory barrier used only for memory accesses involving a specific range
-		of the specified buffer object. It is also used to transfer ownership of an buffer range from one queue family to another.
-***********************************************************************************************************************/
+/// <summary>A Buffer memory barrier used only for memory accesses involving a specific range of the specified
+/// buffer object. It is also used to transfer ownership of an buffer range from one queue family to another.
+/// </summary>
 struct BufferRangeBarrier
 {
-	types::AccessFlags::Bits srcMask;
-	types::AccessFlags::Bits dstMask;
+	types::AccessFlags srcMask;
+	types::AccessFlags dstMask;
 	Buffer buffer;
 	uint32 offset;
 	uint32 range;
+	BufferRangeBarrier() : srcMask(types::AccessFlags(0)), dstMask(types::AccessFlags(0)) {}
+	BufferRangeBarrier(types::AccessFlags srcMask, types::AccessFlags dstMask, Buffer buffer, uint32 offset, uint32 range) :
+		srcMask(srcMask), dstMask(dstMask), buffer(buffer), offset(offset), range(range) {}
 };
 
-/*!*********************************************************************************************************************
-\brief  A Image memory barrier used only for memory accesses involving a specific subresource range
-		of the specified image object. It is also used to perform a layout transition for an image subresource range,
-		or to transfer ownership of an image subresource range from one queue family to another.
-***********************************************************************************************************************/
+/// <summary>A Image memory barrier used only for memory accesses involving a specific subresource range of the
+/// specified image object. It is also used to perform a layout transition for an image subresource range, or to
+/// transfer ownership of an image subresource range from one queue family to another.</summary>
 struct ImageAreaBarrier
 {
-	types::AccessFlags::Bits srcMask;
-	types::AccessFlags::Bits dstMask;
+	types::AccessFlags srcMask;
+	types::AccessFlags dstMask;
 	TextureStore texture;
 	types::ImageSubresourceRange area;
-	types::ImageLayout::Enum oldLayout;
-	types::ImageLayout::Enum newLayout;
+	types::ImageLayout oldLayout;
+	types::ImageLayout newLayout;
+	ImageAreaBarrier() {}
+	ImageAreaBarrier(types::AccessFlags srcMask, types::AccessFlags dstMask,
+	                 const TextureStore& texture, const types::ImageSubresourceRange& area,
+	                 types::ImageLayout oldLayout, types::ImageLayout newLayout) :
+		srcMask(srcMask), dstMask(dstMask), texture(texture), area(area), oldLayout(oldLayout), newLayout(newLayout)
+	{}
 };
 
-namespace impl {
-class MemoryBarrierSetImpl;
-}
-/*!*********************************************************************************************************************
-\brief  A memory barrier into the command stream. Used to signify that some types of pending operations from
-before the barrier must have finished before the commands after the barrier start executing.
-***********************************************************************************************************************/
+/// <summary>A memory barrier into the command stream. Used to signify that some types of pending operations
+/// from before the barrier must have finished before the commands after the barrier start executing.</summary>
 class MemoryBarrierSet
 {
-	std::auto_ptr<impl::MemoryBarrierSetImpl> pimpl;
 	MemoryBarrierSet(const MemoryBarrierSet&); //deleted
 	MemoryBarrierSet& operator=(const MemoryBarrierSet&); //deleted
+	typedef std::vector<MemoryBarrier> MemBarrierContainer;
+	typedef std::vector<ImageAreaBarrier> ImgBarrierContainer;
+	typedef std::vector<BufferRangeBarrier> BuffBarrierContainer;
+	MemBarrierContainer memBarriers;
+	ImgBarrierContainer imgBarriers;
+	BuffBarrierContainer bufBarriers;
 public:
-	/*!*********************************************************************************************************************
-	\brief ctor
-	***********************************************************************************************************************/
-	MemoryBarrierSet();
+	MemoryBarrierSet() {}
 
-	/*!*********************************************************************************************************************
-	\brief dtor
-	***********************************************************************************************************************/
-	~MemoryBarrierSet();
-	/*!*********************************************************************************************************************
-	\brief  A memory barrier into the command stream. Used to signify that some types of pending operations from
-	before the barrier must have finished before the commands after the barrier start executing.
-	***********************************************************************************************************************/
-	MemoryBarrierSet& addBarrier(MemoryBarrier barrier);
+	///<summary>Clear this object of all barriers</summary>
+	MemoryBarrierSet& clearAllBarriers()
+	{
+		memBarriers.clear();
+		imgBarriers.clear();
+		bufBarriers.clear();
+		return *this;
+	}
 
-	/*!*********************************************************************************************************************
-	\brief  A buffer range barrier into the command stream. Used to signify that some types of pending operations from
-	before the barrier must have finished before the commands after the barrier start executing.
-	***********************************************************************************************************************/
-	MemoryBarrierSet& addBarrier(const BufferRangeBarrier& barrier);
+	///<summary>Clear this object of all Memory barriers</summary>
+	MemoryBarrierSet& clearAllMemoryBarriers()
+	{
+		memBarriers.clear(); return *this;
+	}
 
-	/*!*********************************************************************************************************************
-	\brief  A image area barrier into the command stream. Used to signify that some types of pending operations from
-	before the barrier must have finished before the commands after the barrier start executing.
-	***********************************************************************************************************************/
-	MemoryBarrierSet& addBarrier(const ImageAreaBarrier& barrier);
+	///<summary>Clear this object of all Buffer barriers</summary>
+	MemoryBarrierSet& clearAllBufferRangeBarriers()
+	{
+		bufBarriers.clear(); return *this;
+	}
 
-	/*!*********************************************************************************************************************
-	\brief  Return the native memory barriers
-	***********************************************************************************************************************/
-	const void* getNativeMemoryBarriers()const;
 
-	/*!*********************************************************************************************************************
-	\brief  Return the native image barriers
-	***********************************************************************************************************************/
-	const void* getNativeImageBarriers()const;
+	///<summary>Clear this object of all Image barriers</summary>
+	MemoryBarrierSet& clearAllImageAreaBarriers()
+	{
+		imgBarriers.clear(); return *this;
+	}
 
-	/*!*********************************************************************************************************************
-	\brief  Return the native buffer barriers
-	***********************************************************************************************************************/
-	const void* getNativeBufferBarriers()const;
 
-	/*!*********************************************************************************************************************
-	\brief  Return the number of memory barriers
-	***********************************************************************************************************************/
-	uint32 getNativeMemoryBarriersCount() const;
+	/// <summary>Add a generic Memory barrier.</summary>
+	/// <param name="barrier">The barrier to add</param>
+	/// <returns>This object (allow chained calls)</returns>
+	MemoryBarrierSet& addBarrier(MemoryBarrier barrier)
+	{
+		memBarriers.push_back(barrier);
+		return *this;
+	}
 
-	/*!*********************************************************************************************************************
-	\brief  Return the number of image barriers
-	***********************************************************************************************************************/
-	uint32 getNativeImageBarriersCount() const;
+	/// <summary>Add a Buffer Range barrier, signifying that operations on a part of a buffer
+	/// must complete before other operations on that part of the buffer execute.</summary>
+	/// <param name="barrier">The barrier to add</param>
+	/// <returns>This object (allow chained calls)</returns>
+	MemoryBarrierSet& addBarrier(const BufferRangeBarrier& barrier)
+	{
+		bufBarriers.push_back(barrier);
+		return *this;
+	}
 
-	/*!*********************************************************************************************************************
-	\brief  Return the number of buffer barriers
-	***********************************************************************************************************************/
-	uint32 getNativeBufferBarriersCount() const;
+
+	/// <summary>Add a Buffer Range barrier, signifying that operations on a part of an Image
+	/// must complete before other operations on that part of the Image execute.</summary>
+	/// <param name="barrier">The barrier to add</param>
+	/// <returns>This object (allow chained calls)</returns>
+	MemoryBarrierSet& addBarrier(const ImageAreaBarrier& barrier)
+	{
+		imgBarriers.push_back(barrier);
+		return *this;
+	}
+
+
+	/// <summary>Get an array of the MemoryBarrier object of this set.</summary>
+	/// <returns>All MemoryBarrier objects that this object contains</returns>
+	const MemBarrierContainer& getMemoryBarriers() const { return this->memBarriers; }
+
+	/// <summary>Get an array of the Image Barriers of this set.</summary>
+	/// <returns>All MemoryBarrier objects that this object contains</returns>
+	const ImgBarrierContainer& getImageBarriers() const { return this->imgBarriers; }
+
+	/// <summary>Get an array of the Buffer Barriers of this set.</summary>
+	/// <returns>All MemoryBarrier objects that this object contains</returns>
+	const BuffBarrierContainer& getBufferBarriers() const { return this->bufBarriers; }
 };
 
 
+/// <summary>A framework Fence object (automatic reference counted).</summary>
 typedef RefCountedResource<impl::Fence_> Fence;
+/// <summary>A framework Semaphore object (automatic reference counted).</summary>
 typedef RefCountedResource<impl::Semaphore_> Semaphore;
+/// <summary>A framework Semaphore object (automatic reference counted).</summary>
 typedef RefCountedResource<impl::Event_> Event;
 
+//!\cond NO_DOXYGEN
 namespace impl {
 class FenceSetImpl_;
+
 class FenceSet_
 {
 	std::auto_ptr<FenceSetImpl_> pimpl;
@@ -294,11 +301,11 @@ public:
 	uint32 getNativeEventsCount() const;
 };
 }
-
 typedef RefCountedResource<impl::EventSet_> EventSet;
 typedef RefCountedResource<impl::FenceSet_> FenceSet;
 typedef RefCountedResource<impl::SemaphoreSet_> SemaphoreSet;
+//!\endcond
+
 }//namespace api
 }//namespace pvr
-
 

@@ -1,20 +1,5 @@
 var searchData=
 [
-  ['a',['A',['../namespacepvr_1_1types_1_1_swizzle.html#a7b7e6f2f6c9576ec435072d0c8dded40aad45074cf2bdd5d8a32289febf325e45',1,'pvr::types::Swizzle::A()'],['../namespacepvr_1_1types_1_1_color_channel.html#a94f36c0e98846e95034b9f6380b4d3f2aa81d4e754846ae9a7790646a705fc613',1,'pvr::types::ColorChannel::A()']]],
-  ['abgr',['ABGR',['../namespacepvr_1_1types_1_1_data_type.html#a9be960bdfaa7a2cf8d12a845cf9251cea68f3e3b21fd9e51062a8a2e81a60b491',1,'pvr::types::DataType']]],
-  ['add',['Add',['../namespacepvr_1_1types_1_1_blend_op.html#ab5b2c64982ddc6a4a78e8ed602ae4ac1af2641fa6645c2a4e47e6c5084bc9e37e',1,'pvr::types::BlendOp']]],
-  ['all',['All',['../namespacepvr_1_1types_1_1_color_channel.html#a94f36c0e98846e95034b9f6380b4d3f2a4c85ebb56c7f04ef58cb377035881690',1,'pvr::types::ColorChannel']]],
-  ['allcommands',['AllCommands',['../namespacepvr_1_1types_1_1_pipeline_stage_flags.html#a8144c078d22ccb2769e878fbe6fd0f3ea23ed3d0435e0d31225f03d2c2b7ad96e',1,'pvr::types::PipelineStageFlags']]],
-  ['allgraphics',['AllGraphics',['../namespacepvr_1_1types_1_1_pipeline_stage_flags.html#a8144c078d22ccb2769e878fbe6fd0f3eab22162e144b2762ea2bbbfcbd6c91c83',1,'pvr::types::PipelineStageFlags']]],
-  ['allgraphicsstages',['AllGraphicsStages',['../namespacepvr_1_1types_1_1_shader_stage_flags.html#a63ec35e2788783573214ceb23ef0b0cba9671bdf7b2cd11ab8b143a4b79e3bb27',1,'pvr::types::ShaderStageFlags']]],
-  ['allstages',['AllStages',['../namespacepvr_1_1types_1_1_shader_stage_flags.html#a63ec35e2788783573214ceb23ef0b0cba76b88317c642a7ef108b6306066eeb98',1,'pvr::types::ShaderStageFlags']]],
-  ['alpha',['Alpha',['../namespacepvr_1_1types_1_1_swizzle.html#a7b7e6f2f6c9576ec435072d0c8dded40ac85d8f187c2ef9779241821ff7fcf68c',1,'pvr::types::Swizzle']]],
-  ['alreadyinitialized',['AlreadyInitialized',['../namespacepvr_1_1_result.html#ab2911de813a38d96bb21a2faf76d35bba5613f2fabb064c73a9f6c1841733518c',1,'pvr::Result']]],
-  ['always',['Always',['../namespacepvr_1_1types_1_1_comparison_mode.html#a1ea00a2ac69f7bc344118988b479e78fa7f3fd09e9cae6d881886e410fb4fa4d3',1,'pvr::types::ComparisonMode']]],
-  ['and',['And',['../namespacepvr_1_1types_1_1_logic_op.html#adee99c6dcf6d8cb46dacb1fc3942a391ad7a2e54200de26b517b065675e67260c',1,'pvr::types::LogicOp']]],
-  ['andinverted',['AndInverted',['../namespacepvr_1_1types_1_1_logic_op.html#adee99c6dcf6d8cb46dacb1fc3942a391a1cbe9ba95ba94c10500ea09171f7848f',1,'pvr::types::LogicOp']]],
-  ['andreverse',['AndReverse',['../namespacepvr_1_1types_1_1_logic_op.html#adee99c6dcf6d8cb46dacb1fc3942a391afce8ec7d62c093631453a80a5f5c7749',1,'pvr::types::LogicOp']]],
   ['anisotropicfiltering',['AnisotropicFiltering',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a6d3ccd9356048d6d4f898fda41777862',1,'pvr::ApiCapabilities']]],
-  ['argb',['ARGB',['../namespacepvr_1_1types_1_1_data_type.html#a9be960bdfaa7a2cf8d12a845cf9251cead5c7949d9cdbf21251321a26b966b980',1,'pvr::types::DataType']]],
   ['atomicbuffer',['AtomicBuffer',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a10b0e30f3b678dac61f01f1bf55cbdb5',1,'pvr::ApiCapabilities']]]
 ];

@@ -1,15 +1,15 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets\FileIO\PFXReader.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementation of methods of the PFXReader class.
-***********************************************************************************************************************/
+/*!
+\brief Implementation of methods of the PFXReader class.
+\file PVRAssets/FileIO/PFXReader.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRAssets/FileIO/PFXReader.h"
 #include "PVRCore/StringFunctions.h"
-#include "PVRAssets/Texture/PixelFormat.h"
-#include "PVRCore/FileStream.h"
-#include "PVRCore/Assert_.h"
+#include "PVRCore/PixelFormat.h"
+#include "PVRCore/IO/FileStream.h"
+#include "PVRCore/Base/Assert_.h"
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
@@ -31,13 +31,13 @@ const uint32 g_PfxTexDepth = uint32(1 << 31);
 
 
 
-const char8* Filters[SamplerFilter::Size] =
+const char8* Filters[(uint32)SamplerFilter::Size] =
 {
-	g_NearestStr,		// eFilter_Nearest
-	g_LinearStr,		// FilterLinear
-	g_NoneStr,			// FilterNone
+	g_NearestStr,   // eFilter_Nearest
+	g_LinearStr,    // FilterLinear
+	g_NoneStr,      // FilterNone
 };
-const char8* Wraps[SamplerWrap::Size] =
+const char8* Wraps[(uint32)SamplerWrap::Size] =
 {
 	g_RepeatStr,
 	g_MirrorRepeatStr,
@@ -53,7 +53,7 @@ const uint32 g_DfltViewPortHeight = 480;
 #define DELIM_TOKENS " \t"
 
 bool getSemanticDataFromString(assets::EffectSemanticData& pDataItem, const char8* const pszArgumentString,
-                               types::SemanticDataType::Enum eType, std::string& errorOut)
+                               types::SemanticDataType eType, std::string& errorOut)
 {
 	char8* pszString = (char8*)pszArgumentString;
 	char8* pszTmp;
@@ -140,7 +140,7 @@ bool getSemanticDataFromString(assets::EffectSemanticData& pDataItem, const char
 		}
 
 		pszTmp = pszString;
-		switch (sDfltType.internalType)
+		switch (types::EffectDefaultDataInternalType(sDfltType.internalType))
 		{
 		case types::EffectDefaultDataInternalType::Float:
 			pDataItem.dataF32[i] = (float)strtod(pszString, &pszTmp);
@@ -208,7 +208,7 @@ class PFXParserReadContext
 public:
 	std::vector<string> ppszEffectFile;
 	std::vector<int32> fileLineNumbers;
-	uint32	nNumLines;
+	uint32  nNumLines;
 
 public:
 	PFXParserReadContext()
@@ -218,9 +218,9 @@ public:
 };
 
 PfxParserEffect::PfxParserEffect()/* :
-	Uniforms(DEFAULT_EFFECT_NUM_UNIFORM),
-	Attributes(DEFAULT_EFFECT_NUM_ATTRIB),
-	textures(DEFAULT_EFFECT_NUM_TEX)*/
+  Uniforms(DEFAULT_EFFECT_NUM_UNIFORM),
+  Attributes(DEFAULT_EFFECT_NUM_ATTRIB),
+  textures(DEFAULT_EFFECT_NUM_TEX)*/
 {
 }
 
@@ -233,13 +233,13 @@ PfxRenderPass::PfxRenderPass() :
 {
 }
 
-PfxReader::PfxReader(): m_fileName(""), m_viewportWidth(g_DfltViewPortWidth), m_viewportHeight(g_DfltViewPortHeight), m_currentEffect(0)
+PfxReader::PfxReader(): _fileName(""), _viewportWidth(g_DfltViewPortWidth), _viewportHeight(g_DfltViewPortHeight), _currentEffect(0)
 {
 }
 
 PfxReader::~PfxReader()
 {
-	for (std::vector<PFXParserTexture*>::iterator it = m_textures.begin(); it != m_textures.end(); ++it)
+	for (std::vector<PFXParserTexture*>::iterator it = _textures.begin(); it != _textures.end(); ++it)
 	{
 		delete *it; *it = 0;
 	}
@@ -262,13 +262,13 @@ bool PfxReader::parse(string& pReturnError)
 
 	const StringHash parserCommands[] =
 	{
-		StringHash("[HEADER]"),				// eCmds_Header
-		StringHash("[TEXTURE]"),			// eCmds_Texture
-		StringHash("[TARGET]"),				// eCmds_Target
-		StringHash("[TEXTURES]"),			// eCmds_Textures
-		StringHash("[VERTEXSHADER]"),		// eCmds_VertexShader
-		StringHash("[FRAGMENTSHADER]"),		// eCmds_FragmentShader
-		StringHash("[EFFECT]"),				// eCmds_Effect
+		StringHash("[HEADER]"),       // eCmds_Header
+		StringHash("[TEXTURE]"),      // eCmds_Texture
+		StringHash("[TARGET]"),       // eCmds_Target
+		StringHash("[TEXTURES]"),     // eCmds_Textures
+		StringHash("[VERTEXSHADER]"),   // eCmds_VertexShader
+		StringHash("[FRAGMENTSHADER]"),   // eCmds_FragmentShader
+		StringHash("[EFFECT]"),       // eCmds_Effect
 	};
 	PVR_STATIC_ASSERT(sizeof(parserCommands) / sizeof(parserCommands[0]) == CmdsSize, parserCommands);
 
@@ -277,17 +277,17 @@ bool PfxReader::parse(string& pReturnError)
 	uint32 i, j, k;
 
 	// Loop through the file
-	for (uint32 nLine = 0; nLine < m_context->nNumLines; nLine++)
+	for (uint32 nLine = 0; nLine < _context->nNumLines; nLine++)
 	{
 		// Skip blank lines
-		if (m_context->ppszEffectFile[nLine].empty()) {continue;}
+		if (_context->ppszEffectFile[nLine].empty()) {continue;}
 
-		StringHash Cmd(m_context->ppszEffectFile[nLine]);
+		StringHash Cmd(_context->ppszEffectFile[nLine]);
 		if (Cmd ==  parserCommands[CmdsHeader])
 		{
 			if (nHeaderCounter > 0)
 			{
-				pReturnError = strings::createFormatted("[HEADER] redefined on line %d\n", m_context->fileLineNumbers[nLine]);
+				pReturnError = strings::createFormatted("[HEADER] redefined on line %d\n", _context->fileLineNumbers[nLine]);
 				return false;
 			}
 			if (getEndTag("HEADER", nLine, &nEndLine))
@@ -303,7 +303,7 @@ bool PfxReader::parse(string& pReturnError)
 			}
 			else
 			{
-				pReturnError = strings::createFormatted("Missing [/HEADER] tag after [HEADER] on line %d\n", m_context->fileLineNumbers[nLine]);
+				pReturnError = strings::createFormatted("Missing [/HEADER] tag after [HEADER] on line %d\n", _context->fileLineNumbers[nLine]);
 				return false;
 			}
 			nLine = nEndLine;
@@ -319,7 +319,7 @@ bool PfxReader::parse(string& pReturnError)
 			}
 			else
 			{
-				pReturnError = strings::createFormatted("Missing [/TEXTURE] tag after [TEXTURE] on line %d\n", m_context->fileLineNumbers[nLine]);
+				pReturnError = strings::createFormatted("Missing [/TEXTURE] tag after [TEXTURE] on line %d\n", _context->fileLineNumbers[nLine]);
 				return false;
 			}
 			nLine = nEndLine;
@@ -335,7 +335,7 @@ bool PfxReader::parse(string& pReturnError)
 			}
 			else
 			{
-				pReturnError = strings::createFormatted("Missing [/TARGET] tag after [TARGET] on line %d\n", m_context->fileLineNumbers[nLine]);
+				pReturnError = strings::createFormatted("Missing [/TARGET] tag after [TARGET] on line %d\n", _context->fileLineNumbers[nLine]);
 				return false;
 			}
 			nLine = nEndLine;
@@ -344,7 +344,7 @@ bool PfxReader::parse(string& pReturnError)
 		{
 			if (nTexturesCounter > 0)
 			{
-				pReturnError = strings::createFormatted("[TEXTURES] redefined on line %d\n", m_context->fileLineNumbers[nLine]);
+				pReturnError = strings::createFormatted("[TEXTURES] redefined on line %d\n", _context->fileLineNumbers[nLine]);
 				return false;
 			}
 			if (getEndTag("TEXTURES", nLine, &nEndLine))
@@ -361,7 +361,7 @@ bool PfxReader::parse(string& pReturnError)
 			else
 			{
 				pReturnError = strings::createFormatted("Missing [/TEXTURES] tag after [TEXTURES] on line %d\n",
-				                                        m_context->fileLineNumbers[nLine]);
+				                                        _context->fileLineNumbers[nLine]);
 				return false;
 			}
 			nLine = nEndLine;
@@ -373,7 +373,7 @@ bool PfxReader::parse(string& pReturnError)
 				PFXParserShader vertexShader;
 				if (parseShader(nLine, nEndLine, pReturnError, vertexShader, "VERTEXSHADER"))
 				{
-					m_vertexShaders.push_back(vertexShader);
+					_vertexShaders.push_back(vertexShader);
 				}
 				else
 				{
@@ -383,7 +383,7 @@ bool PfxReader::parse(string& pReturnError)
 			else
 			{
 				pReturnError = strings::createFormatted("Missing [/VERTEXSHADER] tag after [VERTEXSHADER] on line %d\n",
-				                                        m_context->fileLineNumbers[nLine]);
+				                                        _context->fileLineNumbers[nLine]);
 				return false;
 			}
 			nLine = nEndLine;
@@ -395,7 +395,7 @@ bool PfxReader::parse(string& pReturnError)
 				PFXParserShader fragShader;
 				if (parseShader(nLine, nEndLine, pReturnError, fragShader, "FRAGMENTSHADER"))
 				{
-					m_fragmentShaders.push_back(fragShader);
+					_fragmentShaders.push_back(fragShader);
 				}
 				else
 				{
@@ -405,7 +405,7 @@ bool PfxReader::parse(string& pReturnError)
 			else
 			{
 				pReturnError = strings::createFormatted("Missing [/FRAGMENTSHADER] tag after [FRAGMENTSHADER] on line %d\n",
-				                                        m_context->fileLineNumbers[nLine]);
+				                                        _context->fileLineNumbers[nLine]);
 				return false;
 			}
 			nLine = nEndLine;
@@ -417,7 +417,7 @@ bool PfxReader::parse(string& pReturnError)
 				PfxParserEffect effect;
 				if (parseEffect(effect, nLine, nEndLine, pReturnError))
 				{
-					m_effects.push_back(effect);
+					_effects.push_back(effect);
 				}
 				else
 				{
@@ -426,48 +426,48 @@ bool PfxReader::parse(string& pReturnError)
 			}
 			else
 			{
-				pReturnError = strings::createFormatted("Missing [/EFFECT] tag after [EFFECT] on line %d\n", m_context->fileLineNumbers[nLine]);
+				pReturnError = strings::createFormatted("Missing [/EFFECT] tag after [EFFECT] on line %d\n", _context->fileLineNumbers[nLine]);
 				return false;
 			}
 			nLine = nEndLine;
 		}
 		else
 		{
-			pReturnError = strings::createFormatted("'%s' unexpected on line %d\n", m_context->ppszEffectFile[nLine].c_str(),
-			                                        m_context->fileLineNumbers[nLine]);
+			pReturnError = strings::createFormatted("'%s' unexpected on line %d\n", _context->ppszEffectFile[nLine].c_str(),
+			                                        _context->fileLineNumbers[nLine]);
 			return false;
 		}
 	}
 
-	if (m_effects.size() < 1)
+	if (_effects.size() < 1)
 	{
 		pReturnError = string("No [EFFECT] found. PFX file must have at least one defined.\n");
 		return false;
 	}
 
-	if (m_fragmentShaders.size() < 1)
+	if (_fragmentShaders.size() < 1)
 	{
 		pReturnError = string("No [FRAGMENTSHADER] found. PFX file must have at least one defined.\n");;
 		return false;
 	}
 
-	if (m_vertexShaders.size() < 1)
+	if (_vertexShaders.size() < 1)
 	{
 		pReturnError = string("No [VERTEXSHADER] found. PFX file must have at least one defined.\n");
 		return false;
 	}
 
 	// Loop Effects
-	for (i = 0; i < m_effects.size(); ++i)
+	for (i = 0; i < _effects.size(); ++i)
 	{
 		// Loop textures in Effects
-		for (j = 0; j < m_effects[i].textures.size(); ++j)
+		for (j = 0; j < _effects[i].textures.size(); ++j)
 		{
 			// Loop textures in whole PFX
-			uint32 uiTexSize = (uint32)m_textures.size();
+			uint32 uiTexSize = (uint32)_textures.size();
 			for (k = 0; k < uiTexSize; ++k)
 			{
-				if (m_textures[k]->name == m_effects[i].textures[j].name)
+				if (_textures[k]->name == _effects[i].textures[j].name)
 				{
 					break;
 				}
@@ -476,7 +476,7 @@ bool PfxReader::parse(string& pReturnError)
 			// Texture mismatch. Report error.
 			if (!uiTexSize || k == uiTexSize)
 			{
-				pReturnError = "Error: TEXTURE '" + m_effects[i].textures[j].name.str() + "' is not defined in [TEXTURES].\n";
+				pReturnError = "Error: TEXTURE '" + _effects[i].textures[j].name.str() + "' is not defined in [TEXTURES].\n";
 				return false;
 			}
 		}
@@ -493,13 +493,13 @@ bool PfxReader::parse(string& pReturnError)
 
 bool PfxReader::parseFromMemory(const char8* const pszScript, string& pReturnError)
 {
-	PFXParserReadContext	context;
-	char8			pszLine[512];
-	const char8*		pszEnd, *pszCurr;
-	int32				nLineCounter;
-	uint32	nLen;
-	uint32	nReduce;
-	bool			bDone;
+	PFXParserReadContext  context;
+	char8     pszLine[512];
+	const char8*    pszEnd, *pszCurr;
+	int32       nLineCounter;
+	uint32  nLen;
+	uint32  nReduce;
+	bool      bDone;
 
 	if (!pszScript)
 	{
@@ -507,12 +507,12 @@ bool PfxReader::parseFromMemory(const char8* const pszScript, string& pReturnErr
 		return false;
 	}
 
-	m_context = &context;
+	_context = &context;
 
 	// Find & process each line
-	nLineCounter	= 0;
-	bDone			= false;
-	pszCurr			= pszScript;
+	nLineCounter  = 0;
+	bDone     = false;
+	pszCurr     = pszScript;
 	while (!bDone)
 	{
 		nLineCounter++;
@@ -556,15 +556,15 @@ bool PfxReader::parseFromMemory(const char8* const pszScript, string& pReturnErr
 
 		// Ignore comments
 		char8* tmp = strstr(pszLine, "//");
-		if (tmp != NULL)	{ *tmp = '\0'; }
+		if (tmp != NULL)  { *tmp = '\0'; }
 
 		// Reduce whitespace to one character.
 		reduceWhitespace(pszLine);
 
 		// Store the line, even if blank lines (to get correct errors from GLSL compiler).
-		m_context->fileLineNumbers.push_back(nLineCounter);
-		m_context->ppszEffectFile.push_back(pszLine);
-		m_context->nNumLines++;
+		_context->fileLineNumbers.push_back(nLineCounter);
+		_context->ppszEffectFile.push_back(pszLine);
+		_context->nNumLines++;
 	}
 
 	return parse(pReturnError);
@@ -593,7 +593,7 @@ bool PfxReader::parseFromFile(Stream::ptr_type pfxFile, string& errorOut)
 		pfxData.assign(PfxFileString.begin(), PfxFileString.end());
 	}
 
-	m_fileName = pfxFile->getFileName();
+	_fileName = pfxFile->getFileName();
 
 	return parseFromMemory(&pfxData[0], errorOut);
 }
@@ -602,8 +602,8 @@ bool PfxReader::setViewportSize(uint32 width, uint32 height)
 {
 	if (width > 0 && height > 0)
 	{
-		m_viewportWidth = width;
-		m_viewportHeight = height;
+		_viewportWidth = width;
+		_viewportHeight = height;
 		return true;
 	}
 	else
@@ -633,12 +633,12 @@ bool PfxReader::retrieveRenderPassDependencies(std::vector<PfxRenderPass*>& aReq
 		}
 
 		// Find the specified effect
-		for (uj = 0, pTempEffect = NULL; uj < (uint32)m_effects.size(); ++uj)
+		for (uj = 0, pTempEffect = NULL; uj < (uint32)_effects.size(); ++uj)
 		{
-			if (aszActiveEffecstrings[ui] == m_effects[uj].name)
+			if (aszActiveEffecstrings[ui] == _effects[uj].name)
 			{
 				// Effect found
-				pTempEffect = &m_effects[uj];
+				pTempEffect = &_effects[uj];
 				break;
 			}
 		}
@@ -649,37 +649,37 @@ bool PfxReader::retrieveRenderPassDependencies(std::vector<PfxRenderPass*>& aReq
 			return false;
 		}
 
-		for (uj = 0; uj < m_renderPassSkipGraph.getNumNodes(); ++uj)
+		for (uj = 0; uj < _renderPassSkipGraph.getNumNodes(); ++uj)
 		{
-			if (m_renderPassSkipGraph[uj]->effect == pTempEffect)
+			if (_renderPassSkipGraph[uj]->effect == pTempEffect)
 			{
-				m_renderPassSkipGraph.RetreiveSortedDependencyList(aRequiredRenderPasses, uj);
+				_renderPassSkipGraph.RetreiveSortedDependencyList(aRequiredRenderPasses, uj);
 				return true;
 			}
 		}
 
 		/*
-			The effect wasn't a post-process. Check to see if it has any non-post-process dependencies,
-			e.g. RENDER CAMERA textures.
+		  The effect wasn't a post-process. Check to see if it has any non-post-process dependencies,
+		  e.g. RENDER CAMERA textures.
 		*/
 		// Loop Effects
-		for (uj = 0; uj < (uint32)m_effects.size(); ++uj)
+		for (uj = 0; uj < (uint32)_effects.size(); ++uj)
 		{
-			if (aszActiveEffecstrings[ui] != m_effects[uj].name)
+			if (aszActiveEffecstrings[ui] != _effects[uj].name)
 			{
 				continue;
 			}
 
 			// Loop textures in Effect
-			for (uk = 0; uk < m_effects[uj].textures.size(); ++uk)
+			for (uk = 0; uk < _effects[uj].textures.size(); ++uk)
 			{
 				// Loop Render Passes for whole PFX
-				for (ul = 0; ul < m_renderPasses.size(); ++ul)
+				for (ul = 0; ul < _renderPasses.size(); ++ul)
 				{
 					// Check that the name of this render pass output texture matches a provided texture in an Effect
-					if (m_renderPasses[ul].texture->name == m_effects[uj].textures[uk].name)
+					if (_renderPasses[ul].texture->name == _effects[uj].textures[uk].name)
 					{
-						aRequiredRenderPasses.push_back(&m_renderPasses[ul]);
+						aRequiredRenderPasses.push_back(&_renderPasses[ul]);
 					}
 				}
 			}
@@ -697,11 +697,9 @@ bool PfxReader::getEndTag(const char8* pszTagName, int32 nStartLine, int32* pnEn
 	strcpy(pszEndTag, "[/");
 	strcat(pszEndTag, pszTagName);
 	strcat(pszEndTag, "]");
-	char* bb = NULL;
-	for (uint32 i = nStartLine; i < m_context->nNumLines; i++)
+	for (uint32 i = nStartLine; i < _context->nNumLines; i++)
 	{
-		bb = (char*)m_context->ppszEffectFile[i].c_str();
-		if (strcmp(pszEndTag, m_context->ppszEffectFile[i].c_str()) == 0)
+		if (strcmp(pszEndTag, _context->ppszEffectFile[i].c_str()) == 0)
 		{
 			*pnEndLine = i;
 			return true;
@@ -791,7 +789,7 @@ string PfxReader::findParameter(char8* aszSourceString, const string& parameterT
 		{
 			// Create a string from the delimiter to the next space
 			size_t strCount(strcspn(aszDelimiterStart, " "));
-			aszDelimiterStart++;	// Skip =
+			aszDelimiterStart++;  // Skip =
 			returnString.assign(aszDelimiterStart, strCount - 1);
 		}
 	}
@@ -801,15 +799,15 @@ string PfxReader::findParameter(char8* aszSourceString, const string& parameterT
 
 bool PfxReader::readStringToken(char8* pszSource, string& output, string& ErrorStr, int32 i, const char8* pCaller)
 {
-	if (*pszSource == '\"')		// Quote marks. Continue parsing until end mark or NULL
+	if (*pszSource == '\"')   // Quote marks. Continue parsing until end mark or NULL
 	{
-		pszSource++;		// Skip past first quote
+		pszSource++;    // Skip past first quote
 		while (*pszSource != '\"')
 		{
 			if (*pszSource == '\0')
 			{
-				ErrorStr = strings::createFormatted("Incomplete argument in [%s] on line %d: %s\n", pCaller, m_context->fileLineNumbers[i],
-				                                    m_context->ppszEffectFile[i].c_str());
+				ErrorStr = strings::createFormatted("Incomplete argument in [%s] on line %d: %s\n", pCaller, _context->fileLineNumbers[i],
+				                                    _context->ppszEffectFile[i].c_str());
 				return false;
 			}
 
@@ -817,9 +815,9 @@ bool PfxReader::readStringToken(char8* pszSource, string& output, string& ErrorS
 			pszSource++;
 		}
 
-		pszSource++;		// Skip past final quote.
+		pszSource++;    // Skip past final quote.
 	}
-	else		// No quotes. Read until space
+	else    // No quotes. Read until space
 	{
 		pszSource = strtok(pszSource, DELIM_TOKENS NEWLINE_TOKENS);
 		output = pszSource;
@@ -832,7 +830,7 @@ bool PfxReader::readStringToken(char8* pszSource, string& output, string& ErrorS
 	if (pszSource)
 	{
 		ErrorStr = strings::createFormatted("Unknown keyword '%s' in [%s] on line %d: %s\n", pszSource, pCaller,
-		                                    m_context->fileLineNumbers[i],  m_context->ppszEffectFile[i].c_str());
+		                                    _context->fileLineNumbers[i],  _context->ppszEffectFile[i].c_str());
 		return false;
 	}
 
@@ -851,46 +849,46 @@ bool PfxReader::parseHeader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 
 	const StringHash HeaderCommands[] =
 	{
-		StringHash("VERSION"),			// eCmds_Version
-		StringHash("DESCRIPTION"),		// eCmds_Description
-		StringHash("COPYRIGHT"),		// eCmds_Copyright
+		StringHash("VERSION"),      // eCmds_Version
+		StringHash("DESCRIPTION"),    // eCmds_Description
+		StringHash("COPYRIGHT"),    // eCmds_Copyright
 	};
 	PVR_STATIC_ASSERT(sizeof(HeaderCommands) / sizeof(HeaderCommands[0]) == CmdsSize, HeaderCommands);
 
 	for (int32 i = nStartLine + 1; i < nEndLine; i++)
 	{
 		// Skip blank lines
-		if (m_context->ppszEffectFile[i].empty()) {	continue;	}
+		if (_context->ppszEffectFile[i].empty()) { continue; }
 
-		char8* str = strtok(const_cast<char8*>(m_context->ppszEffectFile[i].c_str()), " ");
+		char8* str = strtok(const_cast<char8*>(_context->ppszEffectFile[i].c_str()), " ");
 		if (str != NULL)
 		{
 			StringHash Cmd(str);
 			if (Cmd == HeaderCommands[CmdsVersion])
 			{
 				str += (strlen(str) + 1);
-				m_header.Version = str;
+				_header.Version = str;
 			}
 			else if (Cmd == HeaderCommands[CmdsDescription])
 			{
 				str += (strlen(str) + 1);
-				m_header.Description = str;
+				_header.Description = str;
 			}
 			else if (Cmd == HeaderCommands[CmdsCopyright])
 			{
 				str += (strlen(str) + 1);
-				m_header.Copyright = str;
+				_header.Copyright = str;
 			}
 			else
 			{
-				pReturnError = strings::createFormatted("Unknown keyword '%s' in [HEADER] on line %d\n", str, m_context->fileLineNumbers[i]);
+				pReturnError = strings::createFormatted("Unknown keyword '%s' in [HEADER] on line %d\n", str, _context->fileLineNumbers[i]);
 				return false;
 			}
 		}
 		else
 		{
-			pReturnError = strings::createFormatted("Missing arguments in [HEADER] on line %d : %s\n", m_context->fileLineNumbers[i],
-			                                        m_context->ppszEffectFile[i].c_str());
+			pReturnError = strings::createFormatted("Missing arguments in [HEADER] on line %d : %s\n", _context->fileLineNumbers[i],
+			                                        _context->ppszEffectFile[i].c_str());
 			return false;
 		}
 	}
@@ -902,9 +900,9 @@ bool PfxReader::parseHeader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 template<typename EnumType>
 static bool parseTextureFlags(const char8* c_pszRemainingLine, EnumType** ppFlagsOut, uint32 uiNumFlags,
                               const char8** c_ppszFlagNames, uint32 uiNumFlagNames,
-                              string& returnError, int32 iLineNum, PFXParserReadContext* m_context)
+                              string& returnError, int32 iLineNum, PFXParserReadContext* _context)
 {
-	const EnumType INVALID_TYPE = static_cast<EnumType>(0xAC1DBEEF);
+	const EnumType INVALID_TYPE = EnumType(0xAC1DBEEF);
 	uint32 uiIndex;
 	const char8* c_pszCursor;
 	const char8* c_pszResult;
@@ -929,32 +927,32 @@ static bool parseTextureFlags(const char8* c_pszRemainingLine, EnumType** ppFlag
 	// Quick error check - make sure that the first flag found is valid.
 	if (c_pszCursor != c_pszRemainingLine)
 	{
-		if (*(c_pszCursor - 1) == '-')		// Yeah this shouldn't be there. Must be invalid first tag.
+		if (*(c_pszCursor - 1) == '-')    // Yeah this shouldn't be there. Must be invalid first tag.
 		{
-			char8 szBuffer[128];		// Find out the tag.
+			char8 szBuffer[128];    // Find out the tag.
 			memset(szBuffer, 0, sizeof(szBuffer));
 			const char8* pszStart = c_pszCursor - 1;
 			while (pszStart != c_pszRemainingLine && *pszStart != ' ') { pszStart--; }
-			pszStart++;	// Escape the space.
+			pszStart++; // Escape the space.
 			uint32 uiNumChars = (uint32)((c_pszCursor - 1) - pszStart);
 			strncpy(szBuffer, pszStart, uiNumChars);
 
 			returnError = strings::createFormatted("Unknown keyword '%s' in [TEXTURES] on line %d: %s\n", szBuffer,
-			                                       m_context->fileLineNumbers[iLineNum], m_context->ppszEffectFile[iLineNum].c_str());
+			                                       _context->fileLineNumbers[iLineNum], _context->ppszEffectFile[iLineNum].c_str());
 			return false;
 		}
 	}
 
 	uint32 uiFlagsFound = 0;
 	uint32 uiBufferIdx;
-	char8 szBuffer[128];		// Buffer to hold the token
+	char8 szBuffer[128];    // Buffer to hold the token
 
 	while (*c_pszCursor != ' ' && *c_pszCursor != 0 && uiFlagsFound < uiNumFlags)
 	{
-		memset(szBuffer, 0, sizeof(szBuffer));		// Clear the buffer
+		memset(szBuffer, 0, sizeof(szBuffer));    // Clear the buffer
 		uiBufferIdx = 0;
 
-		while (*c_pszCursor != '-' && *c_pszCursor != 0 && *c_pszCursor != ' ' && uiBufferIdx < 128)		// - = delim. token
+		while (*c_pszCursor != '-' && *c_pszCursor != 0 && *c_pszCursor != ' ' && uiBufferIdx < 128)    // - = delim. token
 		{
 			szBuffer[uiBufferIdx++] = *c_pszCursor++;
 		}
@@ -974,14 +972,14 @@ static bool parseTextureFlags(const char8* c_pszRemainingLine, EnumType** ppFlag
 		if (Type == INVALID_TYPE)
 		{
 			returnError = strings::createFormatted("Unknown keyword '%s' in [TEXTURES] on line %d: %s\n", szBuffer,
-			                                       m_context->fileLineNumbers[iLineNum], m_context->ppszEffectFile[iLineNum].c_str());
+			                                       _context->fileLineNumbers[iLineNum], _context->ppszEffectFile[iLineNum].c_str());
 			return false;
 		}
 
 		// Set the flag to the enum type.
 		*ppFlagsOut[uiFlagsFound++] = Type;
 
-		if (*c_pszCursor == '-')	{ c_pszCursor++; }
+		if (*c_pszCursor == '-')  { c_pszCursor++; }
 	}
 
 	return true;
@@ -1011,16 +1009,16 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 
 	const StringHash GenericSurfCommands[] =
 	{
-		StringHash("MINIFICATION"),			// eCmds_Min
-		StringHash("MAGNIFICATION"),		// eCmds_Mag
-		StringHash("MIPMAP"),				// eCmds_Mip
-		StringHash("WRAP_S"),				// eCmds_WrapS
-		StringHash("WRAP_T"),				// eCmds_WrapT
-		StringHash("WRAP_R"),				// eCmds_WrapR
-		StringHash("FILTER"),				// eCmds_Filter
-		StringHash("WRAP"),					// eCmds_Wrap
-		StringHash("RESOLUTION"),			// eCmds_Resolution
-		StringHash("SURFACETYPE"),			// eCmds_Surface
+		StringHash("MINIFICATION"),     // eCmds_Min
+		StringHash("MAGNIFICATION"),    // eCmds_Mag
+		StringHash("MIPMAP"),       // eCmds_Mip
+		StringHash("WRAP_S"),       // eCmds_WrapS
+		StringHash("WRAP_T"),       // eCmds_WrapT
+		StringHash("WRAP_R"),       // eCmds_WrapR
+		StringHash("FILTER"),       // eCmds_Filter
+		StringHash("WRAP"),         // eCmds_Wrap
+		StringHash("RESOLUTION"),     // eCmds_Resolution
+		StringHash("SURFACETYPE"),      // eCmds_Surface
 	};
 	PVR_STATIC_ASSERT(sizeof(GenericSurfCommands) / sizeof(GenericSurfCommands[0]) == eCmds_Size, GenericSurfCommands);
 
@@ -1033,26 +1031,26 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 
 	const SSurfacePair surfacePairs[] =
 	{
-		{ StringHash("RGBA8888"),	PixelFormat::RGBA_8888, g_PfxTexColor },
-		{ StringHash("RGBA4444"),	PixelFormat::RGBA_4444, g_PfxTexColor },
-		{ StringHash("RGB888"),		PixelFormat::RGB_888, g_PfxTexColor },
-		{ StringHash("RGB565"),		PixelFormat::RGB_565, g_PfxTexColor },
+		{ StringHash("RGBA8888"), PixelFormat::RGBA_8888, g_PfxTexColor },
+		{ StringHash("RGBA4444"), PixelFormat::RGBA_4444, g_PfxTexColor },
+		{ StringHash("RGB888"),   PixelFormat::RGB_888, g_PfxTexColor },
+		{ StringHash("RGB565"),   PixelFormat::RGB_565, g_PfxTexColor },
 		{ StringHash("INTENSITY8"), PixelFormat::Intensity8, g_PfxTexColor },
-		{ StringHash("DEPTH24"),	PixelFormat::Depth24, g_PfxTexDepth },
-		{ StringHash("DEPTH16"),	PixelFormat::Depth16, g_PfxTexDepth },
-		{ StringHash("DEPTH8"),		PixelFormat::Depth8, g_PfxTexDepth },
+		{ StringHash("DEPTH24"),  PixelFormat::Depth24, g_PfxTexDepth },
+		{ StringHash("DEPTH16"),  PixelFormat::Depth16, g_PfxTexDepth },
+		{ StringHash("DEPTH8"),   PixelFormat::Depth8, g_PfxTexDepth },
 	};
 	const uint32 numSurfaceType = sizeof(surfacePairs) / sizeof(surfacePairs[0]);
 
 	for (int32 i = nStartLine + 1; i < nEndLine; i++)
 	{
 		// Skip blank lines
-		if (m_context->ppszEffectFile[i].empty()) {	continue; }
+		if (_context->ppszEffectFile[i].empty()) { continue; }
 
 		// Need to make a copy so we can use strtok and not affect subsequent parsing
-		string blockCopy(m_context->ppszEffectFile[i]);
+		string blockCopy(_context->ppszEffectFile[i]);
 		char8* str = strtok(const_cast<char8*>(blockCopy.c_str()), NEWLINE_TOKENS DELIM_TOKENS);
-		if (!str) {	return false; }
+		if (!str) { return false; }
 
 		StringHash Cmd(str);
 		const char8** ppParams    = NULL;
@@ -1063,7 +1061,7 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 		if (Cmd == GenericSurfCommands[eCmds_Min] || Cmd == GenericSurfCommands[eCmds_Mag] || Cmd == GenericSurfCommands[eCmds_Mip])
 		{
 			ppParams    = Filters;
-			uiNumParams = SamplerFilter::Size;
+			uiNumParams = (uint32)SamplerFilter::Size;
 			bKnown      = true;
 		}
 		// --- Verbose wrapping flags
@@ -1071,7 +1069,7 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 		         || Cmd == GenericSurfCommands[eCmds_WrapR])
 		{
 			ppParams    = Wraps;
-			uiNumParams = SamplerWrap::Size;
+			uiNumParams = (uint32)SamplerWrap::Size;
 			bKnown      = true;
 		}
 		// --- Inline filtering flags
@@ -1081,18 +1079,18 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 			if (!pszRemaining)
 			{
 				pReturnError = strings::createFormatted("Missing FILTER arguments in [%s] on line %d: %s\n", pCaller,
-				                                        m_context->fileLineNumbers[i],  m_context->ppszEffectFile[i].c_str());
+				                                        _context->fileLineNumbers[i],  _context->ppszEffectFile[i].c_str());
 				return false;
 			}
 
-			SamplerFilter::Enum* pFlags[3] =
+			SamplerFilter* pFlags[3] =
 			{
 				&Params.minFilter,
 				&Params.magFilter,
 				&Params.mipFilter,
 			};
 
-			if (!parseTextureFlags<SamplerFilter::Enum>(pszRemaining, pFlags, 3, Filters, SamplerFilter::Size, pReturnError, i, m_context)) { return false; }
+			if (!parseTextureFlags<SamplerFilter>(pszRemaining, pFlags, 3, Filters, (uint32)SamplerFilter::Size, pReturnError, i, _context)) { return false; }
 			bKnown     = true;
 		}
 		// --- Inline wrapping flags
@@ -1101,19 +1099,19 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 			char8* pszRemaining = strtok(NULL, NEWLINE_TOKENS DELIM_TOKENS);
 			if (!pszRemaining)
 			{
-				pReturnError = strings::createFormatted("Missing WRAP arguments in [%s] on line %d: %s\n", pCaller, m_context->fileLineNumbers[i],
-				                                        m_context->ppszEffectFile[i].c_str());
+				pReturnError = strings::createFormatted("Missing WRAP arguments in [%s] on line %d: %s\n", pCaller, _context->fileLineNumbers[i],
+				                                        _context->ppszEffectFile[i].c_str());
 				return false;
 			}
 
-			SamplerWrap::Enum* pFlags[3] =
+			SamplerWrap* pFlags[3] =
 			{
 				&Params.wrapS,
 				&Params.wrapT,
 				&Params.wrapR,
 			};
 
-			if (!parseTextureFlags<SamplerWrap::Enum>(pszRemaining, pFlags, 3, Wraps, SamplerWrap::Size, pReturnError, i, m_context)) { return false; }
+			if (!parseTextureFlags<SamplerWrap>(pszRemaining, pFlags, 3, Wraps, (uint32)SamplerWrap::Size, pReturnError, i, _context)) { return false; }
 			bKnown     = true;
 		}
 		// --- Resolution
@@ -1130,18 +1128,18 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 				if (!pszRemaining)
 				{
 					pReturnError = strings::createFormatted("Missing RESOLUTION argument(s) (requires width AND height) in [TARGET] on line %d\n",
-					                                        m_context->fileLineNumbers[i]);
+					                                        _context->fileLineNumbers[i]);
 					return false;
 				}
 
 				int32 val = atoi(pszRemaining);
 
 				if ((val == 0
-				     && *pszRemaining != '0')			// Make sure they haven't explicitly set the value to be 0 as this might be a valid use-case.
+				     && *pszRemaining != '0')     // Make sure they haven't explicitly set the value to be 0 as this might be a valid use-case.
 				    || (val < 0))
 				{
 					pReturnError = strings::createFormatted("Invalid RESOLUTION argument \"%s\" in [TEXTURE] on line %d\n", pszRemaining,
-					                                        m_context->fileLineNumbers[i]);
+					                                        _context->fileLineNumbers[i]);
 					return false;
 				}
 
@@ -1156,7 +1154,7 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 			char8* pszRemaining = strtok(NULL, NEWLINE_TOKENS DELIM_TOKENS);
 			if (!pszRemaining)
 			{
-				pReturnError = strings::createFormatted("Missing SURFACETYPE arguments in [TARGET] on line %d\n", m_context->fileLineNumbers[i]);
+				pReturnError = strings::createFormatted("Missing SURFACETYPE arguments in [TARGET] on line %d\n", _context->fileLineNumbers[i]);
 				return false;
 			}
 
@@ -1179,8 +1177,8 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 			char8* pszRemaining = strtok(NULL, NEWLINE_TOKENS DELIM_TOKENS);
 			if (!pszRemaining)
 			{
-				pReturnError = strings::createFormatted("Missing arguments in [%s] on line %d: %s\n", pCaller, m_context->fileLineNumbers[i],
-				                                        m_context->ppszEffectFile[i].c_str());
+				pReturnError = strings::createFormatted("Missing arguments in [%s] on line %d: %s\n", pCaller, _context->fileLineNumbers[i],
+				                                        _context->ppszEffectFile[i].c_str());
 				return false;
 			}
 
@@ -1189,7 +1187,7 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 			{
 				if (strcmp(pszRemaining, ppParams[uiIndex]) == 0)
 				{
-					Type = uiIndex;			// Yup, it's valid.
+					Type = uiIndex;     // Yup, it's valid.
 					break;
 				}
 			}
@@ -1198,16 +1196,16 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 			if (Type == INVALID_TYPE)
 			{
 				pReturnError = strings::createFormatted("Unknown keyword '%s' in [%s] on line %d: %s\n", pszRemaining, pCaller,
-				                                        m_context->fileLineNumbers[i], m_context->ppszEffectFile[i].c_str());
+				                                        _context->fileLineNumbers[i], _context->ppszEffectFile[i].c_str());
 				return false;
 			}
 
-			if (Cmd == GenericSurfCommands[eCmds_Min]) { Params.minFilter = static_cast<SamplerFilter::Enum>(Type); }
-			else if (Cmd == GenericSurfCommands[eCmds_Mag]) { Params.magFilter = static_cast<SamplerFilter::Enum>(Type); }
-			else if (Cmd == GenericSurfCommands[eCmds_Mip]) { Params.mipFilter = static_cast<SamplerFilter::Enum>(Type); }
-			else if (Cmd == GenericSurfCommands[eCmds_WrapR]) { Params.wrapR = static_cast<SamplerWrap::Enum>(Type); }
-			else if (Cmd == GenericSurfCommands[eCmds_WrapS]) { Params.wrapS = static_cast<SamplerWrap::Enum>(Type); }
-			else if (Cmd == GenericSurfCommands[eCmds_WrapT]) { Params.wrapT = static_cast<SamplerWrap::Enum>(Type); }
+			if (Cmd == GenericSurfCommands[eCmds_Min]) { Params.minFilter = static_cast<SamplerFilter>(Type); }
+			else if (Cmd == GenericSurfCommands[eCmds_Mag]) { Params.magFilter = static_cast<SamplerFilter>(Type); }
+			else if (Cmd == GenericSurfCommands[eCmds_Mip]) { Params.mipFilter = static_cast<SamplerFilter>(Type); }
+			else if (Cmd == GenericSurfCommands[eCmds_WrapR]) { Params.wrapR = static_cast<SamplerWrap>(Type); }
+			else if (Cmd == GenericSurfCommands[eCmds_WrapS]) { Params.wrapS = static_cast<SamplerWrap>(Type); }
+			else if (Cmd == GenericSurfCommands[eCmds_WrapT]) { Params.wrapT = static_cast<SamplerWrap>(Type); }
 		}
 
 		if (bKnown)
@@ -1219,7 +1217,7 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 			if (pszRemaining)
 			{
 				pReturnError = strings::createFormatted("Unexpected keyword '%s' in [%s] on line %d: %s\n", pszRemaining, pCaller,
-				                                        m_context->fileLineNumbers[i], m_context->ppszEffectFile[i].c_str());
+				                                        _context->fileLineNumbers[i], _context->ppszEffectFile[i].c_str());
 				return false;
 			}
 		}
@@ -1229,24 +1227,24 @@ bool PfxReader::parseGenericSurface(int32 nStartLine, int32 nEndLine, PFXParserT
 }
 bool PfxReader::parseTexture(int32 nStartLine, int32 nEndLine, string& pReturnError)
 {
-	enum eCmd {	CmdsName,	CmdsPath,	CmdsView,	CmdsCamera, CmdsSize	};
+	enum eCmd { CmdsName, CmdsPath, CmdsView, CmdsCamera, CmdsSize  };
 
 	const StringHash TextureCmds[] =
 	{
-		StringHash("NAME"),				// eTextureCmds_Name
-		StringHash("PATH"),				// eTextureCmds_Path
-		StringHash("VIEW"),				// eTextureCmds_View
-		StringHash("CAMERA"),			// eTextureCmds_Camera
+		StringHash("NAME"),       // eTextureCmds_Name
+		StringHash("PATH"),       // eTextureCmds_Path
+		StringHash("VIEW"),       // eTextureCmds_View
+		StringHash("CAMERA"),     // eTextureCmds_Camera
 	};
 	PVR_STATIC_ASSERT(sizeof(TextureCmds) / sizeof(TextureCmds[0]) == CmdsSize, TextureCmds);
 
 	PFXParserTexture TexDesc;
-	TexDesc.minFilter = SamplerFilter::Default;
-	TexDesc.magFilter = SamplerFilter::Default;
-	TexDesc.mipFilter = SamplerFilter::MipDefault;
-	TexDesc.wrapS = SamplerWrap::Default;
-	TexDesc.wrapT = SamplerWrap::Default;
-	TexDesc.wrapR = SamplerWrap::Default;
+	TexDesc.minFilter = SamplerFilter::Linear;
+	TexDesc.magFilter = SamplerFilter::Linear;
+	TexDesc.mipFilter = SamplerFilter::Linear;
+	TexDesc.wrapS = SamplerWrap::Clamp;
+	TexDesc.wrapT = SamplerWrap::Clamp;
+	TexDesc.wrapR = SamplerWrap::Clamp;
 	TexDesc.width  = ViewportSize;
 	TexDesc.height = ViewportSize;
 	TexDesc.flags = PixelFormat::RGBA_8888.getPixelTypeId() | g_PfxTexColor;
@@ -1261,13 +1259,13 @@ bool PfxReader::parseTexture(int32 nStartLine, int32 nEndLine, string& pReturnEr
 	for (int32 i = nStartLine + 1; i < nEndLine; i++)
 	{
 		// Skip blank lines
-		if (m_context->ppszEffectFile[i].empty()) {	continue;	}
+		if (_context->ppszEffectFile[i].empty()) { continue; }
 
-		char8* str = strtok(const_cast<char8*>(m_context->ppszEffectFile[i].c_str()), NEWLINE_TOKENS DELIM_TOKENS);
+		char8* str = strtok(const_cast<char8*>(_context->ppszEffectFile[i].c_str()), NEWLINE_TOKENS DELIM_TOKENS);
 		if (!str)
 		{
-			pReturnError = strings::createFormatted("Missing arguments in [TEXTURE] on line %d: %s\n", m_context->fileLineNumbers[i],
-			                                        m_context->ppszEffectFile[i].c_str());
+			pReturnError = strings::createFormatted("Missing arguments in [TEXTURE] on line %d: %s\n", _context->fileLineNumbers[i],
+			                                        _context->ppszEffectFile[i].c_str());
 			return false;
 		}
 
@@ -1278,8 +1276,8 @@ bool PfxReader::parseTexture(int32 nStartLine, int32 nEndLine, string& pReturnEr
 			char8* pszRemaining = strtok(NULL, NEWLINE_TOKENS DELIM_TOKENS);
 			if (!pszRemaining)
 			{
-				pReturnError = strings::createFormatted("Missing NAME arguments in [TEXTURE] on line %d: %s\n", m_context->fileLineNumbers[i],
-				                                        m_context->ppszEffectFile[i].c_str());
+				pReturnError = strings::createFormatted("Missing NAME arguments in [TEXTURE] on line %d: %s\n", _context->fileLineNumbers[i],
+				                                        _context->ppszEffectFile[i].c_str());
 				return false;
 			}
 
@@ -1291,8 +1289,8 @@ bool PfxReader::parseTexture(int32 nStartLine, int32 nEndLine, string& pReturnEr
 			char8* pszRemaining = strtok(NULL, NEWLINE_TOKENS);
 			if (!pszRemaining)
 			{
-				pReturnError = strings::createFormatted("Missing PATH arguments in [TEXTURE] on line %d: %s\n", m_context->fileLineNumbers[i],
-				                                        m_context->ppszEffectFile[i].c_str());
+				pReturnError = strings::createFormatted("Missing PATH arguments in [TEXTURE] on line %d: %s\n", _context->fileLineNumbers[i],
+				                                        _context->ppszEffectFile[i].c_str());
 				return false;
 			}
 
@@ -1304,11 +1302,11 @@ bool PfxReader::parseTexture(int32 nStartLine, int32 nEndLine, string& pReturnEr
 		// --- View/Camera name
 		else if (texCmd == TextureCmds[CmdsView] || texCmd == TextureCmds[CmdsCamera])
 		{
-			char8* pszRemaining = strtok(NULL, NEWLINE_TOKENS);		// String component. Get the rest of the line.
+			char8* pszRemaining = strtok(NULL, NEWLINE_TOKENS);   // String component. Get the rest of the line.
 			if (!pszRemaining || strlen(pszRemaining) == 0)
 			{
-				pReturnError = strings::createFormatted("Missing VIEW argument in [TEXTURE] on line %d: %s\n", m_context->fileLineNumbers[i],
-				                                        m_context->ppszEffectFile[i].c_str());
+				pReturnError = strings::createFormatted("Missing VIEW argument in [TEXTURE] on line %d: %s\n", _context->fileLineNumbers[i],
+				                                        _context->ppszEffectFile[i].c_str());
 				return false;
 			}
 
@@ -1329,12 +1327,12 @@ bool PfxReader::parseTexture(int32 nStartLine, int32 nEndLine, string& pReturnEr
 				}
 			}
 
-			continue;		// This line has already been processed.
+			continue;   // This line has already been processed.
 		}
 		else
 		{
-			pReturnError = strings::createFormatted("Unknown keyword '%s' in [TEXTURE] on line %d: %s\n", str, m_context->fileLineNumbers[i],
-			                                        m_context->ppszEffectFile[i].c_str());
+			pReturnError = strings::createFormatted("Unknown keyword '%s' in [TEXTURE] on line %d: %s\n", str, _context->fileLineNumbers[i],
+			                                        _context->ppszEffectFile[i].c_str());
 			return false;
 		}
 
@@ -1342,7 +1340,7 @@ bool PfxReader::parseTexture(int32 nStartLine, int32 nEndLine, string& pReturnEr
 		if (pszRemaining)
 		{
 			pReturnError = strings::createFormatted("Unexpected keyword '%s' in [TEXTURE] on line %d: %s\n", pszRemaining,
-			                                        m_context->fileLineNumbers[i], m_context->ppszEffectFile[i].c_str());
+			                                        _context->fileLineNumbers[i], _context->ppszEffectFile[i].c_str());
 			return false;
 		}
 	}
@@ -1350,65 +1348,65 @@ bool PfxReader::parseTexture(int32 nStartLine, int32 nEndLine, string& pReturnEr
 	if (texName.empty())
 	{
 		pReturnError = strings::createFormatted("No NAME tag specified in [TEXTURE] on line %d\n",
-		                                        m_context->fileLineNumbers[nStartLine]);
+		                                        _context->fileLineNumbers[nStartLine]);
 		return false;
 	}
 	if (!filePath.empty() && !viewName.empty())
 	{
 		pReturnError = strings::createFormatted("Both PATH and VIEW tags specified in [TEXTURE] on line %d\n",
-		                                        m_context->fileLineNumbers[nStartLine]);
+		                                        _context->fileLineNumbers[nStartLine]);
 		return false;
 	}
 	if (filePath.empty() && viewName.empty())
 	{
 		pReturnError = strings::createFormatted("No PATH or VIEW tag specified in [TEXTURE] on line %d\n",
-		                                        m_context->fileLineNumbers[nStartLine]);
+		                                        _context->fileLineNumbers[nStartLine]);
 		return false;
 	}
 
 	bool bRTT = (viewName.empty() ? false : true);
 	if (bRTT)
 	{
-		filePath = texName;									// RTT doesn't have a physical file.
+		filePath = texName;                 // RTT doesn't have a physical file.
 	}
 
 	// Create a new texture and copy over the vals.
 	PFXParserTexture* pTex = new PFXParserTexture();
 	pTex->name.assign(texName);
 	pTex->fileName.assign(filePath);
-	pTex->renderToTexture	= bRTT;
-	pTex->minFilter				= TexDesc.minFilter;
-	pTex->magFilter				= TexDesc.magFilter;
-	pTex->mipFilter				= TexDesc.mipFilter;
-	pTex->wrapS			= TexDesc.wrapS;
-	pTex->wrapT			= TexDesc.wrapT;
-	pTex->wrapR			= TexDesc.wrapR;
-	pTex->width			= TexDesc.width;
-	pTex->height			= TexDesc.height;
-	pTex->flags			= TexDesc.flags;
-	m_textures.push_back(pTex);
+	pTex->renderToTexture = bRTT;
+	pTex->minFilter       = TexDesc.minFilter;
+	pTex->magFilter       = TexDesc.magFilter;
+	pTex->mipFilter       = TexDesc.mipFilter;
+	pTex->wrapS     = TexDesc.wrapS;
+	pTex->wrapT     = TexDesc.wrapT;
+	pTex->wrapR     = TexDesc.wrapR;
+	pTex->width     = TexDesc.width;
+	pTex->height      = TexDesc.height;
+	pTex->flags     = TexDesc.flags;
+	_textures.push_back(pTex);
 
 	if (bRTT)
 	{
-		m_renderPasses.push_back(PfxRenderPass());
-		uint32 uiPassIdx = (uint32)m_renderPasses.size() - 1;
-		m_renderPasses[uiPassIdx].semanticName = texName;
+		_renderPasses.push_back(PfxRenderPass());
+		uint32 uiPassIdx = (uint32)_renderPasses.size() - 1;
+		_renderPasses[uiPassIdx].semanticName = texName;
 
 		if (viewName == g_CurrentViewStr)
 		{
-			m_renderPasses[uiPassIdx].viewType = EffectPassView::Current;
+			_renderPasses[uiPassIdx].viewType = EffectPassView::Current;
 		}
 		else
 		{
-			m_renderPasses[uiPassIdx].viewType = EffectPassView::PodCamera;
-			m_renderPasses[uiPassIdx].nodeName	 = viewName;
+			_renderPasses[uiPassIdx].viewType = EffectPassView::PodCamera;
+			_renderPasses[uiPassIdx].nodeName   = viewName;
 		}
 
-		m_renderPasses[uiPassIdx].renderPassType = EffectPassType::Camera;			// textures are always 'camera' passes
+		_renderPasses[uiPassIdx].renderPassType = EffectPassType::Camera;      // textures are always 'camera' passes
 
 		// Set render pass texture to the newly created texture.
-		m_renderPasses[uiPassIdx].texture		 = pTex;
-		m_renderPasses[uiPassIdx].formatFlags  = TexDesc.flags;
+		_renderPasses[uiPassIdx].texture    = pTex;
+		_renderPasses[uiPassIdx].formatFlags  = TexDesc.flags;
 	}
 
 	return true;
@@ -1420,18 +1418,18 @@ bool PfxReader::parseTarget(int32 nStartLine, int32 nEndLine, string& pReturnErr
 
 	const StringHash TargetCommands[] =
 	{
-		StringHash("NAME"),				// eCmds_Name
+		StringHash("NAME"),       // eCmds_Name
 	};
 	PVR_STATIC_ASSERT(sizeof(TargetCommands) / sizeof(TargetCommands[0]) == CmdsSize, TargetCommands);
 
 	string targetName;
 	PFXParserTexture TexDesc;
-	TexDesc.minFilter = SamplerFilter::Default;
-	TexDesc.magFilter = SamplerFilter::Default;
-	TexDesc.mipFilter = SamplerFilter::MipDefault;
-	TexDesc.wrapS = SamplerWrap::Default;
-	TexDesc.wrapT = SamplerWrap::Default;
-	TexDesc.wrapR = SamplerWrap::Default;
+	TexDesc.minFilter = SamplerFilter::Linear;
+	TexDesc.magFilter = SamplerFilter::Linear;
+	TexDesc.mipFilter = SamplerFilter::Linear;
+	TexDesc.wrapS = SamplerWrap::Clamp;
+	TexDesc.wrapT = SamplerWrap::Clamp;
+	TexDesc.wrapR = SamplerWrap::Clamp;
 	TexDesc.width  = ViewportSize;
 	TexDesc.height = ViewportSize;
 	TexDesc.flags = PixelFormat::RGBA_8888.getPixelTypeId() | g_PfxTexColor;
@@ -1445,12 +1443,12 @@ bool PfxReader::parseTarget(int32 nStartLine, int32 nEndLine, string& pReturnErr
 	for (int32 i = nStartLine + 1; i < nEndLine; i++)
 	{
 		// Skip blank lines
-		if (m_context->ppszEffectFile[i].empty()) {	continue;	}
+		if (_context->ppszEffectFile[i].empty()) { continue; }
 
-		char8* str = strtok(const_cast<char8*>(m_context->ppszEffectFile[i].c_str()), NEWLINE_TOKENS DELIM_TOKENS);
+		char8* str = strtok(const_cast<char8*>(_context->ppszEffectFile[i].c_str()), NEWLINE_TOKENS DELIM_TOKENS);
 		if (!str)
 		{
-			pReturnError = strings::createFormatted("Missing arguments in [TARGET] on line %d\n", m_context->fileLineNumbers[i]);
+			pReturnError = strings::createFormatted("Missing arguments in [TARGET] on line %d\n", _context->fileLineNumbers[i]);
 			return false;
 		}
 
@@ -1461,7 +1459,7 @@ bool PfxReader::parseTarget(int32 nStartLine, int32 nEndLine, string& pReturnErr
 			char8* pszRemaining = strtok(NULL, NEWLINE_TOKENS DELIM_TOKENS);
 			if (!pszRemaining)
 			{
-				pReturnError = strings::createFormatted("Missing NAME arguments in [TARGET] on line %d\n", m_context->fileLineNumbers[i]);
+				pReturnError = strings::createFormatted("Missing NAME arguments in [TARGET] on line %d\n", _context->fileLineNumbers[i]);
 				return false;
 			}
 
@@ -1479,11 +1477,11 @@ bool PfxReader::parseTarget(int32 nStartLine, int32 nEndLine, string& pReturnErr
 				}
 			}
 
-			continue;		// This line has already been processed.
+			continue;   // This line has already been processed.
 		}
 		else
 		{
-			pReturnError = strings::createFormatted("Unknown keyword '%s' in [TARGET] on line %d\n", str, m_context->fileLineNumbers[i]);
+			pReturnError = strings::createFormatted("Unknown keyword '%s' in [TARGET] on line %d\n", str, _context->fileLineNumbers[i]);
 			return false;
 		}
 
@@ -1491,7 +1489,7 @@ bool PfxReader::parseTarget(int32 nStartLine, int32 nEndLine, string& pReturnErr
 		if (pszRemaining)
 		{
 			pReturnError = strings::createFormatted("Unexpected keyword '%s' in [TARGET] on line %d\n", pszRemaining,
-			                                        m_context->fileLineNumbers[i]);
+			                                        _context->fileLineNumbers[i]);
 			return false;
 		}
 	}
@@ -1500,26 +1498,26 @@ bool PfxReader::parseTarget(int32 nStartLine, int32 nEndLine, string& pReturnErr
 	PFXParserTexture* pTex = new PFXParserTexture();
 	pTex->name.assign(targetName);
 	pTex->fileName.assign(targetName);
-	pTex->renderToTexture	= true;
-	pTex->minFilter				= TexDesc.minFilter;
-	pTex->magFilter				= TexDesc.magFilter;
-	pTex->mipFilter				= TexDesc.mipFilter;
-	pTex->wrapS			= TexDesc.wrapS;
-	pTex->wrapT			= TexDesc.wrapT;
-	pTex->wrapR			= TexDesc.wrapR;
-	pTex->width			= TexDesc.width;
-	pTex->height			= TexDesc.height;
-	pTex->flags			= TexDesc.flags;
-	m_textures.push_back(pTex);
+	pTex->renderToTexture = true;
+	pTex->minFilter       = TexDesc.minFilter;
+	pTex->magFilter       = TexDesc.magFilter;
+	pTex->mipFilter       = TexDesc.mipFilter;
+	pTex->wrapS     = TexDesc.wrapS;
+	pTex->wrapT     = TexDesc.wrapT;
+	pTex->wrapR     = TexDesc.wrapR;
+	pTex->width     = TexDesc.width;
+	pTex->height      = TexDesc.height;
+	pTex->flags     = TexDesc.flags;
+	_textures.push_back(pTex);
 
 	// Copy to render pass struct
-	m_renderPasses.push_back(PfxRenderPass());
-	uint32 uiPassIdx = (uint32)m_renderPasses.size() - 1;
-	m_renderPasses[uiPassIdx].semanticName		= targetName;
-	m_renderPasses[uiPassIdx].viewType = EffectPassView::None;
-	m_renderPasses[uiPassIdx].renderPassType = EffectPassType::PostProcess;			// Targets are always post-process passes.
-	m_renderPasses[uiPassIdx].texture			= pTex;
-	m_renderPasses[uiPassIdx].formatFlags		= TexDesc.flags;
+	_renderPasses.push_back(PfxRenderPass());
+	uint32 uiPassIdx = (uint32)_renderPasses.size() - 1;
+	_renderPasses[uiPassIdx].semanticName    = targetName;
+	_renderPasses[uiPassIdx].viewType = EffectPassView::None;
+	_renderPasses[uiPassIdx].renderPassType = EffectPassType::PostProcess;     // Targets are always post-process passes.
+	_renderPasses[uiPassIdx].texture     = pTex;
+	_renderPasses[uiPassIdx].formatFlags   = TexDesc.flags;
 
 	return true;
 }
@@ -1532,15 +1530,15 @@ bool PfxReader::parseTextures(int32 nStartLine, int32 nEndLine, string& pReturnE
 	for (int32 i = nStartLine + 1; i < nEndLine; i++)
 	{
 		// Skip blank lines
-		if (m_context->ppszEffectFile[i].empty()) {	continue;	}
+		if (_context->ppszEffectFile[i].empty()) { continue; }
 
-		char8* str = strtok(const_cast<char8*>(m_context->ppszEffectFile[i].c_str()), " ");
+		char8* str = strtok(const_cast<char8*>(_context->ppszEffectFile[i].c_str()), " ");
 		if (str != NULL)
 		{
 			// Set defaults
-			SamplerFilter::Enum	uiMin(SamplerFilter::Default), uiMag(SamplerFilter::Default), uiMip(SamplerFilter::MipDefault);
-			SamplerWrap::Enum uiWrapS(SamplerWrap::Default), uiWrapT(SamplerWrap::Default), uiWrapR(SamplerWrap::Default);
-			uint32	flags = 0;
+			SamplerFilter uiMin(SamplerFilter::Linear), uiMag(SamplerFilter::Linear), uiMip(SamplerFilter::Linear);
+			SamplerWrap uiWrapS(SamplerWrap::Clamp), uiWrapT(SamplerWrap::Clamp), uiWrapR(SamplerWrap::Clamp);
+			uint32  flags = 0;
 
 			uint32 width = PfxReader::ViewportSize;
 			uint32 height = PfxReader::ViewportSize;
@@ -1555,7 +1553,7 @@ bool PfxReader::parseTextures(int32 nStartLine, int32 nEndLine, string& pReturnE
 			// Compare against all valid keywords
 			if ((strcmp(str, "FILE") != 0) && (strcmp(str, "RENDER") != 0))
 			{
-				pReturnError = strings::createFormatted("Unknown keyword '%s' in [TEXTURES] on line %d\n", str, m_context->fileLineNumbers[i]);
+				pReturnError = strings::createFormatted("Unknown keyword '%s' in [TEXTURES] on line %d\n", str, _context->fileLineNumbers[i]);
 				return false;
 			}
 
@@ -1576,8 +1574,8 @@ bool PfxReader::parseTextures(int32 nStartLine, int32 nEndLine, string& pReturnE
 			}
 			else
 			{
-				pReturnError = strings::createFormatted("Texture name missing in [TEXTURES] on line %d: %s\n", m_context->fileLineNumbers[i],
-				                                        m_context->ppszEffectFile[i].c_str());
+				pReturnError = strings::createFormatted("Texture name missing in [TEXTURES] on line %d: %s\n", _context->fileLineNumbers[i],
+				                                        _context->ppszEffectFile[i].c_str());
 				return false;
 			}
 
@@ -1592,8 +1590,8 @@ bool PfxReader::parseTextures(int32 nStartLine, int32 nEndLine, string& pReturnE
 
 			if (pszRemaining == NULL)
 			{
-				pReturnError = strings::createFormatted("Incomplete definition in [TEXTURES] on line %d: %s\n", m_context->fileLineNumbers[i],
-				                                        m_context->ppszEffectFile[i].c_str());
+				pReturnError = strings::createFormatted("Incomplete definition in [TEXTURES] on line %d: %s\n", _context->fileLineNumbers[i],
+				                                        _context->ppszEffectFile[i].c_str());
 				return false;
 			}
 			else if (strcmp(pszKeyword.c_str(), "FILE") == 0)
@@ -1608,8 +1606,8 @@ bool PfxReader::parseTextures(int32 nStartLine, int32 nEndLine, string& pReturnE
 				}
 				else
 				{
-					pReturnError = strings::createFormatted("Texture name missing in [TEXTURES] on line %d: %s\n", m_context->fileLineNumbers[i],
-					                                        m_context->ppszEffectFile[i].c_str());
+					pReturnError = strings::createFormatted("Texture name missing in [TEXTURES] on line %d: %s\n", _context->fileLineNumbers[i],
+					                                        _context->ppszEffectFile[i].c_str());
 					return false;
 				}
 			}
@@ -1618,26 +1616,26 @@ bool PfxReader::parseTextures(int32 nStartLine, int32 nEndLine, string& pReturnE
 			{
 				// --- Filter flags
 				{
-					SamplerFilter::Enum* pFlags[3] =
+					SamplerFilter* pFlags[3] =
 					{
 						&uiMin,
 						&uiMag,
 						&uiMip,
 					};
 
-					if (!parseTextureFlags<SamplerFilter::Enum>(pszRemaining, pFlags, 3, Filters, SamplerFilter::Size, pReturnError, i, m_context)) { return false; }
+					if (!parseTextureFlags<SamplerFilter>(pszRemaining, pFlags, 3, Filters, (uint32)SamplerFilter::Size, pReturnError, i, _context)) { return false; }
 				}
 
 				// --- Wrap flags
 				{
-					SamplerWrap::Enum* pFlags[3] =
+					SamplerWrap* pFlags[3] =
 					{
 						&uiWrapS,
 						&uiWrapT,
 						&uiWrapR,
 					};
 
-					if (!parseTextureFlags<SamplerWrap::Enum>(pszRemaining, pFlags, 3, Wraps, SamplerWrap::Size, pReturnError, i, m_context)) { return false; }
+					if (!parseTextureFlags<SamplerWrap>(pszRemaining, pFlags, 3, Wraps, (uint32)SamplerWrap::Size, pReturnError, i, _context)) { return false; }
 				}
 
 				PFXParserTexture* pTex = new PFXParserTexture();
@@ -1653,18 +1651,18 @@ bool PfxReader::parseTextures(int32 nStartLine, int32 nEndLine, string& pReturnE
 				pTex->width = width;
 				pTex->height = height;
 				pTex->flags = flags;
-				m_textures.push_back(pTex);
+				_textures.push_back(pTex);
 			}
 			else
 			{
-				pReturnError = strings::createFormatted("Unknown keyword '%s' in [TEXTURES] on line %d\n", str, m_context->fileLineNumbers[i]);;
+				pReturnError = strings::createFormatted("Unknown keyword '%s' in [TEXTURES] on line %d\n", str, _context->fileLineNumbers[i]);;
 				return false;
 			}
 		}
 		else
 		{
-			pReturnError = strings::createFormatted("Missing arguments in [TEXTURES] on line %d: %s\n", m_context->fileLineNumbers[i],
-			                                        m_context->ppszEffectFile[i].c_str());
+			pReturnError = strings::createFormatted("Missing arguments in [TEXTURES] on line %d: %s\n", _context->fileLineNumbers[i],
+			                                        _context->ppszEffectFile[i].c_str());
 			return false;
 		}
 	}
@@ -1695,16 +1693,16 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 
 	bool glslcode = 0, glslfile = 0, bName = 0;
 
-	shader.useFileName		= false;
-	shader.firstLineNumPos	= 0;
+	shader.useFileName    = false;
+	shader.firstLineNumPos  = 0;
 	shader.lastLineNumPos  = 0;
 
 	for (int32 i = nStartLine + 1; i < nEndLine; i++)
 	{
 		// Skip blank lines
-		if (m_context->ppszEffectFile[i].empty()) {	continue;	}
+		if (_context->ppszEffectFile[i].empty()) { continue; }
 
-		char8* str = strtok(const_cast<char8*>(m_context->ppszEffectFile[i].c_str()), " ");
+		char8* str = strtok(const_cast<char8*>(_context->ppszEffectFile[i].c_str()), " ");
 		if (str != NULL)
 		{
 			StringHash Cmd(str);
@@ -1715,17 +1713,17 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 				if (glslcode)
 				{
 					pReturnError = strings::createFormatted("[GLSL_CODE] redefined in [%s] on line %d\n", pszBlockName,
-					                                        m_context->fileLineNumbers[i]);
+					                                        _context->fileLineNumbers[i]);
 					return false;
 				}
 				if (glslfile && !shader.glslBin.length())
 				{
 					pReturnError = strings::createFormatted("[GLSL_CODE] not allowed with FILE in [%s] on line %d\n", pszBlockName,
-					                                        m_context->fileLineNumbers[i]);
+					                                        _context->fileLineNumbers[i]);
 					return false;
 				}
 
-				shader.firstLineNumPos = m_context->fileLineNumbers[i];
+				shader.firstLineNumPos = _context->fileLineNumbers[i];
 
 				// Skip the block-start
 				i++;
@@ -1733,14 +1731,14 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 				if (!strings::concatenateLinesUntil(
 				      GLSLCode,
 				      i,
-				      m_context->ppszEffectFile,
-				      m_context->nNumLines,
+				      _context->ppszEffectFile,
+				      _context->nNumLines,
 				      "[/GLSL_CODE]"))
 				{
 					return false;
 				}
 
-				shader.lastLineNumPos = m_context->fileLineNumbers[i];
+				shader.lastLineNumPos = _context->fileLineNumbers[i];
 				shader.glslCode = GLSLCode;
 				shader.useFileName = false;
 				glslcode = 1;
@@ -1749,7 +1747,7 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 			{
 				if (bName)
 				{
-					pReturnError = strings::createFormatted("NAME redefined in [%s] on line %d\n", pszBlockName, m_context->fileLineNumbers[i]);
+					pReturnError = strings::createFormatted("NAME redefined in [%s] on line %d\n", pszBlockName, _context->fileLineNumbers[i]);
 					return false;
 				}
 
@@ -1757,7 +1755,7 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 
 				if (str == NULL)
 				{
-					pReturnError = strings::createFormatted("NAME missing value in [%s] on line %d\n", pszBlockName, m_context->fileLineNumbers[i]);
+					pReturnError = strings::createFormatted("NAME missing value in [%s] on line %d\n", pszBlockName, _context->fileLineNumbers[i]);
 					return false;
 				}
 
@@ -1768,13 +1766,13 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 			{
 				if (glslfile)
 				{
-					pReturnError = strings::createFormatted("FILE redefined in [%s] on line %d\n", pszBlockName, m_context->fileLineNumbers[i]);
+					pReturnError = strings::createFormatted("FILE redefined in [%s] on line %d\n", pszBlockName, _context->fileLineNumbers[i]);
 					return false;
 				}
 				if (glslcode)
 				{
 					pReturnError = strings::createFormatted("FILE not allowed with [GLSL_CODE] in [%s] on line %d\n", pszBlockName,
-					                                        m_context->fileLineNumbers[i]);
+					                                        _context->fileLineNumbers[i]);
 					return false;
 				}
 
@@ -1782,7 +1780,7 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 
 				if (str == NULL)
 				{
-					pReturnError = strings::createFormatted("FILE missing value in [%s] on line %d\n", pszBlockName, m_context->fileLineNumbers[i]);
+					pReturnError = strings::createFormatted("FILE missing value in [%s] on line %d\n", pszBlockName, _context->fileLineNumbers[i]);
 					return false;
 				}
 
@@ -1793,7 +1791,7 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 				if (!glslFile.open())
 				{
 					pReturnError = strings::createFormatted("Error loading file '%s' in [%s] on line %d\n", str, pszBlockName,
-					                                        m_context->fileLineNumbers[i]);
+					                                        _context->fileLineNumbers[i]);
 					return false;
 				}
 				std::vector<char> glslCode;
@@ -1803,7 +1801,7 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 				shader.glslCode.assign(&glslCode[0]);
 				shader.glslCode[glslFile.getSize()] = '\0';
 
-				shader.firstLineNumPos = m_context->fileLineNumbers[i];		// Mark position where GLSL file is defined.
+				shader.firstLineNumPos = _context->fileLineNumbers[i];   // Mark position where GLSL file is defined.
 
 				shader.useFileName = true;
 				glslfile = 1;
@@ -1815,7 +1813,7 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 				if (str == NULL)
 				{
 					pReturnError = strings::createFormatted("BINARYFILE missing value in [%s] on line %d\n", pszBlockName,
-					                                        m_context->fileLineNumbers[i]);
+					                                        _context->fileLineNumbers[i]);
 					return false;
 				}
 
@@ -1825,7 +1823,7 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 				if (!GLSLFile.open())
 				{
 					pReturnError = strings::createFormatted("Error loading file '%s' in [%s] on line %d\n", str, pszBlockName,
-					                                        m_context->fileLineNumbers[i]);
+					                                        _context->fileLineNumbers[i]);
 					return false;
 				}
 				std::vector<char> shaderBin;
@@ -1842,22 +1840,22 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 			else
 			{
 				pReturnError = strings::createFormatted("Unknown keyword '%s' in [%s] on line %d\n", str, pszBlockName,
-				                                        m_context->fileLineNumbers[i]);
+				                                        _context->fileLineNumbers[i]);
 				return false;
 			}
 
 			str = strtok(NULL, " ");
 			if (str != NULL)
 			{
-				pReturnError = strings::createFormatted("Unexpected data in [%s] on line %d: '%s'\n", pszBlockName, m_context->fileLineNumbers[i],
+				pReturnError = strings::createFormatted("Unexpected data in [%s] on line %d: '%s'\n", pszBlockName, _context->fileLineNumbers[i],
 				                                        str);
 				return false;
 			}
 		}
 		else
 		{
-			pReturnError = strings::createFormatted("Missing arguments in [%s] on line %d: %s\n", pszBlockName, m_context->fileLineNumbers[i],
-			                                        m_context->ppszEffectFile[i].c_str());
+			pReturnError = strings::createFormatted("Missing arguments in [%s] on line %d: %s\n", pszBlockName, _context->fileLineNumbers[i],
+			                                        _context->ppszEffectFile[i].c_str());
 			return false;
 		}
 	}
@@ -1865,14 +1863,14 @@ bool PfxReader::parseShader(int32 nStartLine, int32 nEndLine, string& pReturnErr
 	if (!bName)
 	{
 		pReturnError = strings::createFormatted("NAME not found in [%s] on line %d.\n", pszBlockName,
-		                                        m_context->fileLineNumbers[nStartLine]);
+		                                        _context->fileLineNumbers[nStartLine]);
 		return false;
 	}
 
 	if (!glslfile && !glslcode)
 	{
 		pReturnError = strings::createFormatted("No Shader File or Shader Code specified in [%s] on line %d\n", pszBlockName,
-		                                        m_context->fileLineNumbers[nStartLine]);
+		                                        _context->fileLineNumbers[nStartLine]);
 		return false;
 	}
 
@@ -1889,7 +1887,7 @@ bool PfxReader::parseSemantic(EffectSemantic& semantic, int32 nStartLine, string
 	str = strtok(NULL, " ");
 	if (str == NULL)
 	{
-		returnError = strings::createFormatted("UNIFORM missing name in [EFFECT] on line %d\n", m_context->fileLineNumbers[nStartLine]);
+		returnError = strings::createFormatted("UNIFORM missing name in [EFFECT] on line %d\n", _context->fileLineNumbers[nStartLine]);
 		return false;
 	}
 
@@ -1898,14 +1896,14 @@ bool PfxReader::parseSemantic(EffectSemantic& semantic, int32 nStartLine, string
 	str = strtok(NULL, " ");
 	if (str == NULL)
 	{
-		returnError = strings::createFormatted("UNIFORM missing value in [EFFECT] on line %d\n", m_context->fileLineNumbers[nStartLine]);
+		returnError = strings::createFormatted("UNIFORM missing value in [EFFECT] on line %d\n", _context->fileLineNumbers[nStartLine]);
 		return false;
 	}
 
 	/*
-		If the final digits of the semantic are a number they are
-		stripped off and used as the index, with the remainder
-		used as the semantic.
+	  If the final digits of the semantic are a number they are
+	  stripped off and used as the index, with the remainder
+	  used as the semantic.
 	*/
 	{
 		//size_t idx, len;
@@ -1914,17 +1912,17 @@ bool PfxReader::parseSemantic(EffectSemantic& semantic, int32 nStartLine, string
 		//idx = len;
 		//while (idx)
 		//{
-		//	--idx;
-		//	if (strcspn(&str[idx], "0123456789") != 0)
-		//	{
-		//		break;
-		//	}
+		//  --idx;
+		//  if (strcspn(&str[idx], "0123456789") != 0)
+		//  {
+		//    break;
+		//  }
 		//}
 		//if (idx == 0)
 		//{
-		//	returnError = strings::createFormatted("Semantic contains only numbers in [EFFECT] on line %d\n",
-		//	                                       m_context->fileLineNumbers[nStartLine]);
-		//	return false;
+		//  returnError = strings::createFormatted("Semantic contains only numbers in [EFFECT] on line %d\n",
+		//                                         _context->fileLineNumbers[nStartLine]);
+		//  return false;
 		//}
 
 		//++idx;
@@ -1932,11 +1930,11 @@ bool PfxReader::parseSemantic(EffectSemantic& semantic, int32 nStartLine, string
 		//// Store the semantic index
 		//if (len == idx)
 		//{
-		//	ordinal = 0;
+		//  ordinal = 0;
 		//}
 		//else
 		//{
-		//	ordinal = atoi(&str[idx]);
+		//  ordinal = atoi(&str[idx]);
 		//}
 
 		//// Chop off the index from the string containing the semantic
@@ -1946,7 +1944,7 @@ bool PfxReader::parseSemantic(EffectSemantic& semantic, int32 nStartLine, string
 	}
 
 	/*
-		Optional default semantic value
+	  Optional default semantic value
 	*/
 	char8 pszString[2048];
 	strcpy(pszString, "");
@@ -1963,15 +1961,15 @@ bool PfxReader::parseSemantic(EffectSemantic& semantic, int32 nStartLine, string
 
 		// default value
 		int32 i;
-		for (i = 0; i < SemanticDataType::Count; i++)
+		for (i = 0; i < (uint32)SemanticDataType::Count; i++)
 		{
 			const EffectSemanticDefaultDataTypeInfo& sDfltType =
-			  EffectSemanticDefaultDataTypeInfo::getSemanticDefaultTypeInfo(static_cast<SemanticDataType::Enum>(SemanticDataType::Enum(i)));
+			  EffectSemanticDefaultDataTypeInfo::getSemanticDefaultTypeInfo(SemanticDataType(i));
 			if (strncmp(pszString, sDfltType.name, strlen(sDfltType.name)) == 0)
 			{
 				if (!getSemanticDataFromString(semantic.sDefaultValue, &pszString[strlen(sDfltType.name)], sDfltType.type, returnError))
 				{
-					returnError = strings::createFormatted(" on line %d.\n", m_context->fileLineNumbers[nStartLine]);
+					returnError = strings::createFormatted(" on line %d.\n", _context->fileLineNumbers[nStartLine]);
 					return false;
 				}
 				semantic.sDefaultValue.type = sDfltType.type;
@@ -1980,9 +1978,9 @@ bool PfxReader::parseSemantic(EffectSemantic& semantic, int32 nStartLine, string
 		}
 
 		// invalid data type
-		if (i == SemanticDataType::Count)
+		if (i == (uint32)SemanticDataType::Count)
 		{
-			returnError = strings::createFormatted("'%s' unknown on line %d.\n", pszString, m_context->fileLineNumbers[nStartLine]);
+			returnError = strings::createFormatted("'%s' unknown on line %d.\n", pszString, _context->fileLineNumbers[nStartLine]);
 			return false;
 		}
 
@@ -2026,9 +2024,9 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 	for (int32 i = nStartLine + 1; i < nEndLine; i++)
 	{
 		// Skip blank lines
-		if (m_context->ppszEffectFile[i].empty())	{	continue;	}
+		if (_context->ppszEffectFile[i].empty()) { continue; }
 
-		char8* str = strtok(const_cast<char8*>(m_context->ppszEffectFile[i].c_str()), " ");
+		char8* str = strtok(const_cast<char8*>(_context->ppszEffectFile[i].c_str()), " ");
 
 		if (str != NULL)
 		{
@@ -2038,16 +2036,16 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 			{
 				if (!effect.annotation.empty())
 				{
-					returnError = strings::createFormatted("ANNOTATION redefined in [EFFECT] on line %d: \n", m_context->fileLineNumbers[i]);
+					returnError = strings::createFormatted("ANNOTATION redefined in [EFFECT] on line %d: \n", _context->fileLineNumbers[i]);
 					return false;
 				}
 
-				i++;		// Skip the block-start
+				i++;    // Skip the block-start
 				if (!strings::concatenateLinesUntil(
 				      effect.annotation,
 				      i,
-				      m_context->ppszEffectFile,
-				      m_context->nNumLines,
+				      _context->ppszEffectFile,
+				      _context->nNumLines,
 				      "[/ANNOTATION]"))
 				{
 					return false;
@@ -2057,7 +2055,7 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 			{
 				if (bVertShader)
 				{
-					returnError = strings::createFormatted("VERTEXSHADER redefined in [EFFECT] on line %d: \n", m_context->fileLineNumbers[i]);
+					returnError = strings::createFormatted("VERTEXSHADER redefined in [EFFECT] on line %d: \n", _context->fileLineNumbers[i]);
 					return false;
 				}
 
@@ -2065,7 +2063,7 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 
 				if (str == NULL)
 				{
-					returnError = strings::createFormatted("VERTEXSHADER missing value in [EFFECT] on line %d\n", m_context->fileLineNumbers[i]);
+					returnError = strings::createFormatted("VERTEXSHADER missing value in [EFFECT] on line %d\n", _context->fileLineNumbers[i]);
 					return false;
 				}
 				effect.vertexShaderName.assign(str);
@@ -2075,7 +2073,7 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 			{
 				if (bFragShader)
 				{
-					returnError = strings::createFormatted("FRAGMENTSHADER redefined in [EFFECT] on line %d: \n", m_context->fileLineNumbers[i]);
+					returnError = strings::createFormatted("FRAGMENTSHADER redefined in [EFFECT] on line %d: \n", _context->fileLineNumbers[i]);
 					return false;
 				}
 
@@ -2083,7 +2081,7 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 
 				if (str == NULL)
 				{
-					returnError = strings::createFormatted("FRAGMENTSHADER missing value in [EFFECT] on line %d\n", m_context->fileLineNumbers[i]);
+					returnError = strings::createFormatted("FRAGMENTSHADER missing value in [EFFECT] on line %d\n", _context->fileLineNumbers[i]);
 					return false;
 				}
 				effect.fragmentShaderName.assign(str);
@@ -2102,7 +2100,7 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 				}
 				else
 				{
-					returnError = strings::createFormatted("TEXTURE missing value in [EFFECT] on line %d\n", m_context->fileLineNumbers[i]);
+					returnError = strings::createFormatted("TEXTURE missing value in [EFFECT] on line %d\n", _context->fileLineNumbers[i]);
 					return false;
 				}
 
@@ -2114,7 +2112,7 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 				}
 				else
 				{
-					returnError = strings::createFormatted("TEXTURE missing value in [EFFECT] on line %d\n", m_context->fileLineNumbers[i]);
+					returnError = strings::createFormatted("TEXTURE missing value in [EFFECT] on line %d\n", _context->fileLineNumbers[i]);
 					return false;
 				}
 			}
@@ -2141,14 +2139,14 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 			{
 				if (bName)
 				{
-					returnError = strings::createFormatted("NAME redefined in [EFFECT] on line %d\n", m_context->fileLineNumbers[nStartLine]);
+					returnError = strings::createFormatted("NAME redefined in [EFFECT] on line %d\n", _context->fileLineNumbers[nStartLine]);
 					return false;
 				}
 
 				str = strtok(NULL, " ");
 				if (str == NULL)
 				{
-					returnError = strings::createFormatted("NAME missing value in [EFFECT] on line %d\n", m_context->fileLineNumbers[nStartLine]);
+					returnError = strings::createFormatted("NAME missing value in [EFFECT] on line %d\n", _context->fileLineNumbers[nStartLine]);
 					return false;
 				}
 
@@ -2161,7 +2159,7 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 				uint32 uiIndex = (uint32)effect.targets.size() - 1;
 
 				// Target requires 2 components
-				string* pVals[] = {	&effect.targets[uiIndex].first, &effect.targets[uiIndex].second	};
+				string* pVals[] = { &effect.targets[uiIndex].first, &effect.targets[uiIndex].second };
 
 				for (uint32 uiVal = 0; uiVal < 2; ++uiVal)
 				{
@@ -2169,7 +2167,7 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 					if (str == NULL)
 					{
 						returnError = strings::createFormatted("TARGET missing value(s) in [EFFECT] on line %d\n",
-						                                       m_context->fileLineNumbers[nStartLine]);
+						                                       _context->fileLineNumbers[nStartLine]);
 						return false;
 					}
 
@@ -2178,14 +2176,14 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 			}
 			else
 			{
-				returnError = strings::createFormatted("Unknown keyword '%s' in [EFFECT] on line %d\n", str, m_context->fileLineNumbers[i]);
+				returnError = strings::createFormatted("Unknown keyword '%s' in [EFFECT] on line %d\n", str, _context->fileLineNumbers[i]);
 				return false;
 			}
 		}
 		else
 		{
-			returnError = strings::createFormatted("Missing arguments in [EFFECT] on line %d: %s\n", m_context->fileLineNumbers[i],
-			                                       m_context->ppszEffectFile[i].c_str());
+			returnError = strings::createFormatted("Missing arguments in [EFFECT] on line %d: %s\n", _context->fileLineNumbers[i],
+			                                       _context->ppszEffectFile[i].c_str());
 			return false;
 		}
 	}
@@ -2216,7 +2214,7 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 		if (!bFound)
 		{
 			returnError = strings::createFormatted("TEXTURE %s missing matching UNIFORM in [EFFECT] on line %d\n", texName.c_str(),
-			                                       m_context->fileLineNumbers[nStartLine]);
+			                                       _context->fileLineNumbers[nStartLine]);
 			return false;
 		}
 	}
@@ -2224,19 +2222,19 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 
 	if (!bName)
 	{
-		returnError = strings::createFormatted("No 'NAME' found in [EFFECT] on line %d\n", m_context->fileLineNumbers[nStartLine]);
+		returnError = strings::createFormatted("No 'NAME' found in [EFFECT] on line %d\n", _context->fileLineNumbers[nStartLine]);
 		return false;
 	}
 	if (!bVertShader)
 	{
 		returnError = strings::createFormatted("No 'VERTEXSHADER' defined in [EFFECT] starting on line %d: \n",
-		                                       m_context->fileLineNumbers[nStartLine - 1]);
+		                                       _context->fileLineNumbers[nStartLine - 1]);
 		return false;
 	}
 	if (!bFragShader)
 	{
 		returnError = strings::createFormatted("No 'FRAGMENTSHADER' defined in [EFFECT] starting on line %d: \n",
-		                                       m_context->fileLineNumbers[nStartLine - 1]);
+		                                       _context->fileLineNumbers[nStartLine - 1]);
 		return false;
 	}
 
@@ -2245,20 +2243,20 @@ bool PfxReader::parseEffect(PfxParserEffect& effect, int32 nStartLine, int32 nEn
 
 bool PfxReader::determineRenderPassDependencies(string& errorOut)
 {
-	uint32	ui(0), uj(0), uk(0);
+	uint32  ui(0), uj(0), uk(0);
 
-	if (m_renderPasses.size() == 0) {return true;}
+	if (_renderPasses.size() == 0) {return true;}
 
 	// --- Add all render pass nodes to the skip graph.
-	for (ui = 0; ui < m_renderPasses.size(); ++ui)
+	for (ui = 0; ui < _renderPasses.size(); ++ui)
 	{
-		PfxRenderPass& Pass = m_renderPasses[ui];
+		PfxRenderPass& Pass = _renderPasses[ui];
 		bool bFound = false;
 
 		// Search all EFFECT blocks for matching TARGET. This is for post-processes behavior.
-		for (uint32 uiEffect = 0; uiEffect < m_effects.size(); ++uiEffect)
+		for (uint32 uiEffect = 0; uiEffect < _effects.size(); ++uiEffect)
 		{
-			PfxParserEffect& Effect = m_effects[uiEffect];
+			PfxParserEffect& Effect = _effects[uiEffect];
 
 			// Search all TARGETs in this effect
 			for (uint32 uiTargets = 0; uiTargets < Effect.targets.size(); ++uiTargets)
@@ -2272,7 +2270,7 @@ bool PfxReader::determineRenderPassDependencies(string& errorOut)
 
 					// This is now a post-process pass. Set relevant values.
 					Pass.renderPassType = EffectPassType::PostProcess;
-					m_postProcessNames.push_back(Pass.semanticName);
+					_postProcessNames.push_back(Pass.semanticName);
 
 					// Check that the surface type and output match are relevant (i.e DEPTH != RGBA8888).
 					if ((Target.first.find_first_of("DEPTH") != string::npos && !(Pass.formatFlags & g_PfxTexDepth))
@@ -2287,40 +2285,40 @@ bool PfxReader::determineRenderPassDependencies(string& errorOut)
 				}
 			}
 
-			if (bFound)	{	break;	}
+			if (bFound) { break;  }
 		}
 
 		// Add a pointer to the post process
-		m_renderPassSkipGraph.addNode(&Pass);
+		_renderPassSkipGraph.addNode(&Pass);
 	}
 
 
 	// --- Loop through all created render passes in the skip graph and determine their dependencies
-	for (ui = 0; ui < m_renderPassSkipGraph.getNumNodes(); ++ui)
+	for (ui = 0; ui < _renderPassSkipGraph.getNumNodes(); ++ui)
 	{
-		//	Loop through all other nodes in the skip graph
-		PfxRenderPass* pPass			= m_renderPassSkipGraph[ui];
+		//  Loop through all other nodes in the skip graph
+		PfxRenderPass* pPass      = _renderPassSkipGraph[ui];
 		PfxRenderPass* pTestPass       = NULL;
 
-		for (uj = 0; uj < m_renderPasses.size(); ++uj)
+		for (uj = 0; uj < _renderPasses.size(); ++uj)
 		{
-			pTestPass = m_renderPassSkipGraph[uj];
+			pTestPass = _renderPassSkipGraph[uj];
 
 			// No self compare
-			if (pPass == pTestPass)	{	continue;}
+			if (pPass == pTestPass) { continue;}
 
 			// No effect associated.
-			if (!pPass->effect)	{	continue;}
+			if (!pPass->effect) { continue;}
 
 			// Is the node a render pass I rely on?
 			for (uk = 0; uk < pPass->effect->textures.size(); ++uk)
 			{
 				/*
-					If the texture names match, add a new node
+				  If the texture names match, add a new node
 				*/
 				if (pTestPass->texture->name == pPass->effect->textures[uk].name)
 				{
-					m_renderPassSkipGraph.addNodeDependency(pPass, pTestPass);
+					_renderPassSkipGraph.addNodeDependency(pPass, pTestPass);
 					break;
 				}
 			}
@@ -2332,10 +2330,10 @@ bool PfxReader::determineRenderPassDependencies(string& errorOut)
 
 uint32 PfxReader::findTextureIndex(const StringHash& TextureName, uint32 uiEffect) const
 {
-	for (uint32 uiIndex = 0; uiIndex < m_effects[uiEffect].textures.size(); ++uiIndex)
+	for (uint32 uiIndex = 0; uiIndex < _effects[uiEffect].textures.size(); ++uiIndex)
 	{
-		const PFXParserEffectTexture& Tex = m_effects[uiEffect].textures[uiIndex];
-		if (Tex.name == TextureName) {	return uiIndex;	}
+		const PFXParserEffectTexture& Tex = _effects[uiEffect].textures[uiIndex];
+		if (Tex.name == TextureName) {  return uiIndex; }
 	}
 	return 0xFFFFFFFF;
 }
@@ -2343,16 +2341,16 @@ uint32 PfxReader::findTextureIndex(const StringHash& TextureName, uint32 uiEffec
 const PFXParserTexture* PfxReader::getTexture(uint32 uiIndex) const
 {
 	assertion(uiIndex < getNumberTextures());
-	return m_textures[uiIndex];
+	return _textures[uiIndex];
 }
 
 int32 PfxReader::getEffectId(const StringHash& name) const
 {
-	if (name.getHash() == 0) {	return -1;	}
+	if (name.getHash() == 0) {  return -1;  }
 
 	for (uint32 uiIndex = 0; uiIndex < getNumberEffects(); ++uiIndex)
 	{
-		if (getParserEffect(uiIndex).name == name) {	return (int32)uiIndex;	}
+		if (getParserEffect(uiIndex).name == name) {  return (int32)uiIndex;  }
 	}
 
 	return -1;
@@ -2360,11 +2358,11 @@ int32 PfxReader::getEffectId(const StringHash& name) const
 
 int32 PfxReader::findTextureByName(const StringHash& name) const
 {
-	if (name.getHash() == 0) {	return -1;	}
+	if (name.getHash() == 0) {  return -1;  }
 
 	for (uint32 uiIndex = 0; uiIndex < getNumberTextures(); ++uiIndex)
 	{
-		if (getTexture(uiIndex)->name == name)	{	return (int32)uiIndex;}
+		if (getTexture(uiIndex)->name == name)  { return (int32)uiIndex;}
 	}
 
 	return -1;
@@ -2372,13 +2370,13 @@ int32 PfxReader::findTextureByName(const StringHash& name) const
 
 bool PfxReader::readNextAsset(Effect& asset)
 {
-	if (!m_currentEffect)
+	if (!_currentEffect)
 	{
-		uint32 dataSize = (uint32)m_assetStream->getSize();
+		uint32 dataSize = (uint32)_assetStream->getSize();
 		std::vector<char> data(dataSize + 1, '\0');// allocate enough space and null terminate.
 		size_t dataRead;
 		// read the data and parse
-		if (!m_assetStream->read(dataSize, 1, &data[0], dataRead))
+		if (!_assetStream->read(dataSize, 1, &data[0], dataRead))
 		{
 			return false;
 		}
@@ -2388,7 +2386,7 @@ bool PfxReader::readNextAsset(Effect& asset)
 			return false;
 		}
 	}
-	return readEffect(asset, m_currentEffect++);
+	return readEffect(asset, _currentEffect++);
 }
 
 bool PfxReader::readEffect(Effect& asset, uint32 id) const
@@ -2397,9 +2395,9 @@ bool PfxReader::readEffect(Effect& asset, uint32 id) const
 	// Create room for per-texture data
 	const std::vector<PFXParserEffectTexture>& effectTextures = parserEffect.textures;
 	uint32 numTextures = (uint32)effectTextures.size();
-	m_textures.reserve(numTextures);
+	_textures.reserve(numTextures);
 	asset.material.setEffectName(parserEffect.name);
-	asset.fileName = m_fileName;
+	asset.fileName = _fileName;
 	// Initialize each Texture
 	for (uint32 i = 0; i < numTextures; ++i)
 	{
@@ -2441,7 +2439,7 @@ bool PfxReader::readEffect(Effect& asset, uint32 id) const
 			}
 			else
 			{
-				if (vertShader.glslCode.empty()) {	continue;  /* No code specified.*/  }
+				if (vertShader.glslCode.empty()) {  continue;  /* No code specified.*/  }
 
 				// offset glsl code by nFirstLineNumber
 				//vertShader.assign(VertexShader.firstLineNumPos + 1, '\n');
@@ -2499,7 +2497,7 @@ void pfxCreateStringCopy(char8** ppDst, const char8* pSrc)
 }
 
 const EffectSemanticDefaultDataTypeInfo& EffectSemanticDefaultDataTypeInfo::getSemanticDefaultTypeInfo(
-  SemanticDataType::Enum semanticDfltType)
+  SemanticDataType semanticDfltType)
 {
 	assertion(semanticDfltType < SemanticDataType::Count, "Invalid Semantic Data Type");
 	const static EffectSemanticDefaultDataTypeInfo g_semanticDefaultDataTypeInfo[] =
@@ -2520,7 +2518,7 @@ const EffectSemanticDefaultDataTypeInfo& EffectSemanticDefaultDataTypeInfo::getS
 		{ SemanticDataType::Int1, "int32", 1, EffectDefaultDataInternalType::Integer },
 		{ SemanticDataType::Bool1, "bool", 1, EffectDefaultDataInternalType::Boolean },
 	};
-	return g_semanticDefaultDataTypeInfo[semanticDfltType];
+	return g_semanticDefaultDataTypeInfo[(uint32)semanticDfltType];
 }
 
 }

@@ -1,7 +1,7 @@
 #include "PVRApi/PVRApi.h"
 #include "PVRCore/Threading.h"
 #include "PVRShell/PVRShell.h"
-#include "PVRUIRenderer/UIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 
 /*///////////////////////////////////////////////////////////////////////////////
 THE GNOME HORDE - MULTITHREADED RENDERING ON THE VULKAN API USING THE POWERVR
@@ -26,14 +26,6 @@ into a "Tiles to process" queue and the thread moves to check the next one
 * Another group of threads pull items from the "tiles to process" threads and for
 each of them generate the command buffers, and enter them into the "tiles to draw"
 * The main thread pulls the command buffers and draws them.
-
-
-
-
-
-
-
-
 ///////////////////////////////////////////////////////////////////////////////*/
 
 using glm::vec2;
@@ -52,8 +44,10 @@ enum CONSTANTS
 	MAX_NUMBER_OF_SWAP_IMAGES = 4,
 	MAX_NUMBER_OF_THREADS = 16,
 	TILE_SIZE_X = 150,
+	TILE_GAP_X = 20,
 	TILE_SIZE_Y = 100,
 	TILE_SIZE_Z = 150,
+	TILE_GAP_Z = 20,
 	NUM_TILES_X = 50,
 	NUM_TILES_Z = 50,
 	NUM_OBJECTS_PER_TILE = 9,
@@ -68,16 +62,15 @@ struct AppModeParameter
 	float cameraHeightOffset;
 	float cameraForwardOffset;
 	float duration;
-	//int postProcLevel;
 };
 
 const std::array<AppModeParameter, 4> DemoModes =
 {
 	{
 		{ 2.5f, 100.0f, 5.0f, 10.0f },
-		{ 2.5f, 800.0f, 10.0f, 10.0f },
-		{ 2.5f, 1400.0f, 25.0f, 10.0f },
-		{ 25.0f, 1400.0f, 25.0f, 10.0f }
+		{ 2.5f, 500.0f, 10.0f, 10.0f },
+		{ 2.5f, 1000.0f, 20.0f, 10.0f },
+		{ 15.0f, 1000.0f, 20.0f, 10.0f }
 	}
 };
 
@@ -108,10 +101,10 @@ class GnomeHordeTileThreadData : public GnomeHordeWorkerThread
 public:
 	struct ApiObjects
 	{
+		std::vector<api::CommandPool> cmdPools;
 		TileTasksQueue::ConsumerToken processQConsumerToken;
 		TileTasksQueue::ProducerToken drawQProducerToken;
 		uint8 lastSwapIndex;
-		std::vector<api::CommandPool> cmdPools;
 		std::array<std::vector<api::SecondaryCommandBuffer>, MAX_NUMBER_OF_SWAP_IMAGES> preFreeCmdBuffers;
 		std::array<std::vector<api::SecondaryCommandBuffer>, MAX_NUMBER_OF_SWAP_IMAGES> freeCmdBuffers;
 		ApiObjects(TileTasksQueue& processQ, TileTasksQueue& drawQ) :
@@ -151,8 +144,6 @@ public:
 	bool doWork();
 
 	void determineLineVisibility(const int32* lines, uint32 numLines);
-
-	void addlog(const std::string& str);
 };
 
 utils::VertexBindings attributeBindings[] =
@@ -285,30 +276,32 @@ struct TileInfo
 
 struct ApiObjects
 {
-	pvr::api::AssetStore assetManager;
-	pvr::ui::UIRenderer uiRenderer;
-
-	api::PipelineLayout pipeLayout;
-	// OpenGL handles for shaders and VBOs
 	pvr::GraphicsContext context;
 	pvr::Multi<pvr::api::Fbo> fboOnScreen;
-
-
 	utils::StructuredMemoryView uboPerObject;
+	pvr::utils::AssetStore assetManager;
+	pvr::ui::UIRenderer uiRenderer;
+	api::PipelineLayout pipeLayout;
+	// OpenGL handles for shaders and VBOs
+
+	api::Sampler trilinear;
+	api::Sampler nonMipmapped;
 
 	api::DescriptorSet descSetAllObjects;
 	DescriptorSets descSets;
 	Pipelines pipelines;
 
-	api::Sampler trilinear;
-	api::Sampler nonMipmapped;
 
-	MultiBuffering multiBuffering[MAX_NUMBER_OF_SWAP_IMAGES];
+	std::array<GnomeHordeTileThreadData, MAX_NUMBER_OF_THREADS> tileThreadData;
+	std::array<GnomeHordeVisibilityThreadData, MAX_NUMBER_OF_THREADS> visibilityThreadData;
+
 	std::array<std::array<TileInfo, NUM_TILES_X>, NUM_TILES_Z> tileInfos;
+	MultiBuffering multiBuffering[MAX_NUMBER_OF_SWAP_IMAGES];
 
 	std::array<std::thread, 16> threads;
 	LineTasksQueue::ProducerToken lineQproducerToken;
 	TileTasksQueue::ConsumerToken drawQconsumerToken;
+
 	ApiObjects(LineTasksQueue& lineQ, TileTasksQueue& drawQ)
 		: lineQproducerToken(lineQ.getProducerToken()), drawQconsumerToken(drawQ.getConsumerToken())
 	{ }
@@ -331,13 +324,8 @@ public:
 	TileTasksQueue tilesToProcessQ;
 	TileTasksQueue tilesToDrawQ;
 
-
-	GnomeHordeVisibilityThreadData visibilityThreadData[MAX_NUMBER_OF_THREADS];
-	GnomeHordeTileThreadData tileThreadData[MAX_NUMBER_OF_THREADS];
-
 	uint32 allLines[NUM_TILES_Z]; //Stores the line #. Used to kick initial work in the visibility threads
 	//as each thread will be processing one line
-
 
 	volatile glm::vec3 cameraPosition;
 	volatile math::ViewingFrustum frustum;
@@ -354,11 +342,11 @@ public:
 		}
 	}
 
-	Result::Enum initApplication();
-	Result::Enum initView();
-	Result::Enum releaseView();
-	Result::Enum quitApplication();
-	Result::Enum renderFrame();
+	Result initApplication();
+	Result initView();
+	Result releaseView();
+	Result quitApplication();
+	Result renderFrame();
 
 	void setUpUI();
 
@@ -370,14 +358,13 @@ public:
 	void createDescSetsAndTiles(const api::DescriptorSetLayout& layoutImage, const api::DescriptorSetLayout& layoutPerObject, const api::DescriptorSetLayout& layoutPerFrameUbo);
 	void kickReleaseCommandBuffers();
 	void updateCameraUbo(const glm::mat4& matrix);
-	void enqueueProduceCommandBuffer(const ivec2& id2d);
 
 	void printLog()
 	{
 		std::unique_lock<std::mutex> lock(logMutex);
 		while (!multiThreadLog.empty())
 		{
-			Log(multiThreadLog.front().c_str());
+			Log(Log.Information, multiThreadLog.front().c_str());
 			multiThreadLog.pop_front();
 		}
 	}
@@ -456,7 +443,6 @@ void GnomeHordeTileThreadData::freeCommandBuffer(const api::SecondaryCommandBuff
 	apiObj->preFreeCmdBuffers[swapIndex].push_back(cmdBuff);
 }
 
-
 bool GnomeHordeTileThreadData::doWork()
 {
 	int32 batch_size = 4;
@@ -465,34 +451,6 @@ bool GnomeHordeTileThreadData::doWork()
 	if ((result = app->tilesToProcessQ.consume(apiObj->processQConsumerToken, workItem[0])))
 	{
 		generateTileBuffer(workItem, result);
-	}
-	return result != 0;
-}
-
-
-void GnomeHordeWorkerThread::addlog(const std::string& str)
-{
-	std::unique_lock<std::mutex> lock(app->logMutex);
-	app->multiThreadLog.push_back(str);
-}
-
-void GnomeHordeWorkerThread::run()
-{
-	addlog(strings::createFormatted("=== Tile Visibility Thread [%d] ===            Starting", id));
-	running = true;
-	while (doWork()) { continue; } // grabs a piece of work as long as the queue is not empty.
-	running = false;
-	addlog(strings::createFormatted("=== Tile Visibility Thread [%d] ===            Exiting", id));
-}
-
-bool GnomeHordeVisibilityThreadData::doWork()
-{
-	int32 batch_size = 4;
-	int32 workItem[4];
-	int32 result;
-	if ((result = app->linesToProcessQ.consume(apiObj->linesQConsumerToken, workItem[0])))
-	{
-		determineLineVisibility(workItem, result);
 	}
 	return result != 0;
 }
@@ -525,14 +483,14 @@ void GnomeHordeTileThreadData::generateTileBuffer(const ivec2* tileIdxs, uint32 
 			for (uint32_t objId = 0; objId < NUM_OBJECTS_PER_TILE; ++objId)
 			{
 				TileObject& obj = tile.objects[objId];
-				uint32 lod = std::min<uint32>(obj.mesh->size() - 1, tile.lod);
+				uint32 lod = std::min<uint32>(static_cast<pvr::uint32>(obj.mesh->size()) - 1, tile.lod);
 
 				//Can it NOT be different than before? - Not in this demo.
 				cb->bindPipeline(obj.pipeline);
 
 				Mesh& mesh = (*obj.mesh)[lod];
 
-				uint32 offset = uboAllObj.getArrayOffset(0, tileIdx * NUM_OBJECTS_PER_TILE + objId);
+				uint32 offset = uboAllObj.getDynamicOffset(0, tileIdx * NUM_OBJECTS_PER_TILE + objId);
 
 				// Use the right texture and position - TEXTURES PER OBJECT (Can optimize to object type)
 				cb->bindDescriptorSet(app->apiObj->pipeLayout, 0, obj.set);
@@ -564,6 +522,33 @@ void GnomeHordeTileThreadData::generateTileBuffer(const ivec2* tileIdxs, uint32 
 	}
 }
 
+void GnomeHordeWorkerThread::addlog(const std::string& str)
+{
+	std::unique_lock<std::mutex> lock(app->logMutex);
+	app->multiThreadLog.push_back(str);
+}
+
+void GnomeHordeWorkerThread::run()
+{
+	addlog(strings::createFormatted("=== Tile Visibility Thread [%d] ===            Starting", id));
+	running = true;
+	while (doWork()) { continue; } // grabs a piece of work as long as the queue is not empty.
+	running = false;
+	addlog(strings::createFormatted("=== Tile Visibility Thread [%d] ===            Exiting", id));
+}
+
+bool GnomeHordeVisibilityThreadData::doWork()
+{
+	int32 batch_size = 4;
+	int32 workItem[4];
+	int32 result;
+	if ((result = app->linesToProcessQ.consume(apiObj->linesQConsumerToken, workItem[0])))
+	{
+		determineLineVisibility(workItem, result);
+	}
+	return result != 0;
+}
+
 void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32* lineIdxs, uint32 numLines)
 {
 	auto& tileInfos = app->apiObj->tileInfos;
@@ -588,7 +573,7 @@ void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32* lineId
 
 			// Compute tile lod
 			float dist = glm::distance(tile.aabb.center(), camPos);
-			float d = glm::max((dist - 300.0f) / 40.0f, 0.0f);
+			float d = glm::max((dist - 400.0f) / 20.0f, 0.0f);
 			float flod = glm::max<float>(sqrtf(d) - 2.0f, 0.0f);
 			tile.lod = static_cast<uint32_t>(flod);
 
@@ -598,7 +583,7 @@ void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32* lineId
 				{
 					if (tile.cbs[i].isValid())
 					{
-						app->tileThreadData[tile.threadId].freeCommandBuffer(tile.cbs[i], i);
+						app->apiObj->tileThreadData[tile.threadId].freeCommandBuffer(tile.cbs[i], i);
 						tile.cbs[i].reset();
 					}
 				}
@@ -611,6 +596,7 @@ void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32* lineId
 					//// PRODUCE ///
 					//The producer thread must signal the unblock...
 				}
+				//Otherwise, no further action is required.
 			}
 			else if (tile.visibility) // Tile had no change, but was visible - just add it to the drawing queue.
 			{
@@ -707,13 +693,12 @@ inline void generatePositions(vec3* points, vec3 minBound, vec3 maxBound)
 	{
 		points[i] = glm::mix(minBound, maxBound, vec3(randomrange(-1.f, 1.f), 0, randomrange(-1.f, 1.f)));
 	}
-	{ normalGridPositions[0] += 0.f; } //breakpoint trap
 }
 
 
 /////////// CLASS VulkanGnomeHorde ///////////
 ///// CALLBACKS - IMPLEMENTATION OF pvr::Shell /////
-Result::Enum VulkanGnomeHorde::initApplication()
+Result VulkanGnomeHorde::initApplication()
 {
 	int num_cores = (int)std::thread::hardware_concurrency();
 	int THREAD_FACTOR_RELAXATION = 1;
@@ -722,7 +707,9 @@ Result::Enum VulkanGnomeHorde::initApplication()
 
 	numVisibilityThreads = std::min(thread_factor, (int)MAX_NUMBER_OF_THREADS);
 	numTileThreads = std::min(thread_factor, (int)MAX_NUMBER_OF_THREADS);
-	Log(Log.Information, "Hardware concurreny reported: %u cores. Enabling %u visibility threads plus %u tile processing threads\n", num_cores, numVisibilityThreads, numTileThreads);
+	Log(Log.Information,
+	    "Hardware concurreny reported: %u cores. Enabling %u visibility threads plus %u tile processing threads\n",
+	    num_cores, numVisibilityThreads, numTileThreads);
 
 	// Meshes
 	meshes.gnome = loadLodMesh(StringHash("gnome"), "body", 7);
@@ -738,7 +725,7 @@ Result::Enum VulkanGnomeHorde::initApplication()
 	return Result::Success;
 }
 
-Result::Enum VulkanGnomeHorde::quitApplication()
+Result VulkanGnomeHorde::quitApplication()
 {
 	meshes.clearAll();
 	return Result::Success;
@@ -746,7 +733,7 @@ Result::Enum VulkanGnomeHorde::quitApplication()
 
 void VulkanGnomeHorde::setUpUI()
 {
-	apiObj->uiRenderer.init(getGraphicsContext(), apiObj->fboOnScreen[0]->getRenderPass(), 0);
+	apiObj->uiRenderer.init(apiObj->fboOnScreen[0]->getRenderPass(), 0);
 
 	apiObj->uiRenderer.getDefaultTitle()->setText("Gnome Horde");
 	apiObj->uiRenderer.getDefaultTitle()->commitUpdates();
@@ -766,7 +753,7 @@ void VulkanGnomeHorde::setUpUI()
 	}
 }
 
-Result::Enum VulkanGnomeHorde::initView()
+Result VulkanGnomeHorde::initView()
 {
 	apiObj.reset(new ApiObjects(linesToProcessQ, tilesToDrawQ));
 	apiObj->assetManager.init(*this);
@@ -785,15 +772,18 @@ Result::Enum VulkanGnomeHorde::initView()
 
 	initUboStructuredObjects();
 
-	//Create Descriptor sets
-	api::DescriptorSetLayoutCreateParam descParam;
+	//Create Descriptor set layouts
+	api::DescriptorSetLayoutCreateParam imageDescParam;
+	imageDescParam.setBinding(0, types::DescriptorType::CombinedImageSampler, 1, types::ShaderStageFlags::Fragment);
+	api::DescriptorSetLayout descLayoutImage = ctx->createDescriptorSetLayout(imageDescParam);
 
-	descParam.setBinding(0, types::DescriptorType::CombinedImageSampler, 1, types::ShaderStageFlags::Fragment);
-	api::DescriptorSetLayout descLayoutImage = ctx->createDescriptorSetLayout(descParam);
-	descParam.setBinding(0, types::DescriptorType::UniformBufferDynamic, 1, types::ShaderStageFlags::Vertex);
-	api::DescriptorSetLayout descLayoutUboDynamic = ctx->createDescriptorSetLayout(descParam);
-	descParam.setBinding(0, types::DescriptorType::UniformBuffer, 1, types::ShaderStageFlags::Vertex);
-	api::DescriptorSetLayout descLayoutUboStatic = ctx->createDescriptorSetLayout(descParam);
+	api::DescriptorSetLayoutCreateParam dynamicUboDescParam;
+	dynamicUboDescParam.setBinding(0, types::DescriptorType::UniformBufferDynamic, 1, types::ShaderStageFlags::Vertex);
+	api::DescriptorSetLayout descLayoutUboDynamic = ctx->createDescriptorSetLayout(dynamicUboDescParam);
+
+	api::DescriptorSetLayoutCreateParam uboDescParam;
+	uboDescParam.setBinding(0, types::DescriptorType::UniformBuffer, 1, types::ShaderStageFlags::Vertex);
+	api::DescriptorSetLayout descLayoutUboStatic = ctx->createDescriptorSetLayout(uboDescParam);
 
 	//Create Pipelines
 	{
@@ -812,15 +802,16 @@ Result::Enum VulkanGnomeHorde::initView()
 		api::Shader premulFsh = ctx->createShader(*getAssetStream("Plant.fsh.spv"), types::ShaderType::FragmentShader);
 
 		api::GraphicsPipelineCreateParam pipeCreate;
-		api::pipelineCreation::ColorBlendAttachmentState cbStateNoBlend;
-		api::pipelineCreation::ColorBlendAttachmentState cbStateBlend(true, types::BlendFactor::OneMinusSrcAlpha, types::BlendFactor::SrcAlpha, types::BlendOp::Add);
-		api::pipelineCreation::ColorBlendAttachmentState cbStatePremulAlpha(true, types::BlendFactor::One, types::BlendFactor::OneMinusSrcAlpha, types::BlendOp::Add);
-
+		types::BlendingConfig cbStateNoBlend;
+		types::BlendingConfig cbStateBlend(true, types::BlendFactor::OneMinusSrcAlpha, types::BlendFactor::SrcAlpha, types::BlendOp::Add);
+		types::BlendingConfig cbStatePremulAlpha(true, types::BlendFactor::One, types::BlendFactor::OneMinusSrcAlpha, types::BlendOp::Add);
 
 		utils::createInputAssemblyFromMesh(*meshes.gnome[0].mesh, &attributeBindings[0], 3, pipeCreate);
-		pipeCreate.rasterizer.frontFaceWinding = types::PolygonWindingOrder::FrontFaceCCW;
-		pipeCreate.rasterizer.cullFace = types::Face::Back;
+		pipeCreate.rasterizer.setFrontFaceWinding(types::PolygonWindingOrder::FrontFaceCCW);
+		pipeCreate.rasterizer.setCullFace(types::Face::Back);
 		pipeCreate.depthStencil.setDepthTestEnable(true);
+		pipeCreate.depthStencil.setDepthCompareFunc(pvr::types::ComparisonMode::Less);
+		pipeCreate.depthStencil.setDepthWrite(true);
 		pipeCreate.renderPass = apiObj->fboOnScreen[0]->getRenderPass();
 		pipeCreate.pipelineLayout = apiObj->pipeLayout;
 
@@ -828,21 +819,32 @@ Result::Enum VulkanGnomeHorde::initView()
 		pipeCreate.vertexShader = objectVsh;
 		pipeCreate.fragmentShader = solidFsh;
 		pipeCreate.colorBlend.setAttachmentState(0, cbStateNoBlend);
-		assertRefcountValid(apiObj->pipelines.solid = ctx->createGraphicsPipeline(pipeCreate));
-
+		if ((apiObj->pipelines.solid = ctx->createGraphicsPipeline(pipeCreate)).isNull())
+		{
+			setExitMessage("Failed to create Opaque rendering pipeline");
+			return Result::UnknownError;
+		}
 
 		pipeCreate.depthStencil.setDepthWrite(false);
 		// create the alpha pre-multiply pipeline
 		pipeCreate.vertexShader = objectVsh;
 		pipeCreate.fragmentShader = premulFsh;
 		pipeCreate.colorBlend.setAttachmentState(0, cbStatePremulAlpha);
-		assertRefcountValid(apiObj->pipelines.alphaPremul = ctx->createGraphicsPipeline(pipeCreate));
+		if ((apiObj->pipelines.alphaPremul = ctx->createGraphicsPipeline(pipeCreate)).isNull())
+		{
+			setExitMessage("Failed to create Premultiplied Alpha rendering pipeline");
+			return Result::UnknownError;
+		}
 
 		// create the shadow pipeline
 		pipeCreate.colorBlend.setAttachmentState(0, cbStateBlend);
 		pipeCreate.vertexShader = shadowVsh;
 		pipeCreate.fragmentShader = shadowFsh;
-		assertRefcountValid(apiObj->pipelines.shadow = ctx->createGraphicsPipeline(pipeCreate));
+		if ((apiObj->pipelines.shadow = ctx->createGraphicsPipeline(pipeCreate)).isNull())
+		{
+			setExitMessage("Failed to create Shadow rendering pipeline");
+			return Result::UnknownError;
+		}
 	}
 
 	createDescSetsAndTiles(descLayoutImage, descLayoutUboDynamic, descLayoutUboStatic);
@@ -852,26 +854,26 @@ Result::Enum VulkanGnomeHorde::initView()
 	{
 		for (uint32 i = 0; i < numVisibilityThreads; ++i)
 		{
-			visibilityThreadData[i].id = i;
-			visibilityThreadData[i].app = this;
-			visibilityThreadData[i].apiObj.reset(new GnomeHordeVisibilityThreadData::ApiObjects(linesToProcessQ, tilesToProcessQ, tilesToDrawQ));
-			visibilityThreadData[i].thread = std::thread(&GnomeHordeVisibilityThreadData::run, (GnomeHordeVisibilityThreadData*)&visibilityThreadData[i]);
+			apiObj->visibilityThreadData[i].id = i;
+			apiObj->visibilityThreadData[i].app = this;
+			apiObj->visibilityThreadData[i].apiObj.reset(new GnomeHordeVisibilityThreadData::ApiObjects(linesToProcessQ, tilesToProcessQ, tilesToDrawQ));
+			apiObj->visibilityThreadData[i].thread = std::thread(&GnomeHordeVisibilityThreadData::run, (GnomeHordeVisibilityThreadData*)&apiObj->visibilityThreadData[i]);
 		}
 		for (uint32 i = 0; i < numTileThreads; ++i)
 		{
-			tileThreadData[i].id = i;
-			tileThreadData[i].app = this;
-			tileThreadData[i].apiObj.reset(new GnomeHordeTileThreadData::ApiObjects(tilesToProcessQ, tilesToDrawQ));
-			tileThreadData[i].apiObj->cmdPools.clear();
-			tileThreadData[i].apiObj->cmdPools.push_back(ctx->createCommandPool());
-			tileThreadData[i].thread = std::thread(&GnomeHordeTileThreadData::run, (GnomeHordeTileThreadData*)&tileThreadData[i]);
+			apiObj->tileThreadData[i].id = i;
+			apiObj->tileThreadData[i].app = this;
+			apiObj->tileThreadData[i].apiObj.reset(new GnomeHordeTileThreadData::ApiObjects(tilesToProcessQ, tilesToDrawQ));
+			apiObj->tileThreadData[i].apiObj->cmdPools.clear();
+			apiObj->tileThreadData[i].apiObj->cmdPools.push_back(ctx->createCommandPool());
+			apiObj->tileThreadData[i].thread = std::thread(&GnomeHordeTileThreadData::run, (GnomeHordeTileThreadData*)&apiObj->tileThreadData[i]);
 		}
 	}
 	printLog();
 	return Result::Success;
 }
 
-Result::Enum VulkanGnomeHorde::releaseView()
+Result VulkanGnomeHorde::releaseView()
 {
 	Log(Log.Information, "Signalling all worker threads: Signal drain empty queues...");
 	//Done will allow the queue to finish its work if it has any, but then immediately
@@ -885,31 +887,29 @@ Result::Enum VulkanGnomeHorde::releaseView()
 	//are not being referenced.
 	getGraphicsContext()->waitIdle();
 
-	//Clear all objects. This will also free the command buffers that were allocated
-	//from the worker thread's command pools, but are currently only held by the
-	//tiles.
-	apiObj.reset();
-
 	Log(Log.Information, "Joining all worker threads...");
 
 	//Finally, tear down everything.
 	for (uint32 i = 0; i < numVisibilityThreads; ++i)
 	{
-		visibilityThreadData[i].thread.join();
-		visibilityThreadData[i].apiObj.reset();
+		apiObj->visibilityThreadData[i].thread.join();
 	}
 	for (uint32 i = 0; i < numTileThreads; ++i)
 	{
-		tileThreadData[i].thread.join();
-		tileThreadData[i].apiObj.reset();
+		apiObj->tileThreadData[i].thread.join();
 	}
 
+	//Clear all objects. This will also free the command buffers that were allocated
+	//from the worker thread's command pools, but are currently only held by the
+	//tiles.
+	apiObj.reset();
 	meshes.clearApiObjects();
+
 	Log(Log.Information, "All worker threads done!");
 	return Result::Success;
 }
 
-Result::Enum VulkanGnomeHorde::renderFrame()
+Result VulkanGnomeHorde::renderFrame()
 {
 	float dt = getFrameTime() * 0.001f;
 	animDetails.logicTime += dt;
@@ -927,7 +927,7 @@ Result::Enum VulkanGnomeHorde::renderFrame()
 	animDetails.gameTime += dt * parameters.speedFactor;
 	if (animDetails.gameTime > 10000000) { animDetails.gameTime = 0; }
 
-	const vec3 worldSize = vec3(TILE_SIZE_X, TILE_SIZE_Y, TILE_SIZE_Z) * vec3(NUM_TILES_X, 1, NUM_TILES_Z);
+	const vec3 worldSize = vec3(TILE_SIZE_X + TILE_GAP_X, TILE_SIZE_Y, TILE_SIZE_Z + TILE_GAP_Z) * vec3(NUM_TILES_X, 1, NUM_TILES_Z);
 	vec3 camPos = getTrackPosition(animDetails.gameTime, worldSize);
 	//cameraPosition is also used by the visibility threads. The "volatile" variable is to make sure it is visible to the threads
 	//we will be starting in a bit. For the moment, NO concurrent access happens (as the worker threads are inactive).
@@ -973,12 +973,26 @@ Result::Enum VulkanGnomeHorde::renderFrame()
 		uint32 result;
 		glm::ivec2 tileId[256];
 
+		uint32 loop = 0;
+
 		//We need some rather complex safeguards to make sure this thread does not wait forever.
 		//First - we must (using atomics) make sure that when we say we are done, i.e. no items are unaccounted for.
 		//Second, for the case where the main thread is waiting, but all remaining items are not visible, the last thread
 		//to process an item will trigger an additional "unblock" to the main thread.
 		while (itemsDrawn != itemsToDraw || itemsRemaining)
 		{
+
+			if ((itemsDrawn > itemsToDraw) && !itemsRemaining)
+			{
+				if ((result == 0) && (loop > 0)) //NOT THE FIRST TIME?
+				{
+					Log(Log.Error, "Blocking is not released");
+					poisonPill.store(0);
+					break;
+				}
+			}
+
+
 			result = (uint32)tilesToDrawQ.consumeMultiple(apiObj->drawQconsumerToken, tileId, 256);
 			if (!result) { --poisonPill; }
 			itemsDrawn += result;
@@ -992,10 +1006,16 @@ Result::Enum VulkanGnomeHorde::renderFrame()
 		cb->enqueueSecondaryCmds_EnqueueMultiple(&apiObj->multiBuffering[swapIndex].cmdBufferUI, 1);
 
 		cb->enqueueSecondaryCmds_SubmitMultiple(); //SUBMIT THE WORK!
-
-		while (poisonPill--)
+		if (poisonPill >= 0)
 		{
-			tilesToDrawQ.consume(apiObj->drawQconsumerToken, tileId[255]); //Make sure it is in a consistent state
+			while (poisonPill--)
+			{
+				tilesToDrawQ.consume(apiObj->drawQconsumerToken, tileId[255]); //Make sure it is in a consistent state
+			}
+		}
+		else
+		{
+			Log(Log.Error, "poisonPill is less than 0");
 		}
 	}
 
@@ -1018,9 +1038,9 @@ void VulkanGnomeHorde::kickReleaseCommandBuffers()
 
 void VulkanGnomeHorde::updateCameraUbo(const glm::mat4& matrix)
 {
-	apiObj->multiBuffering[swapIndex].uboPerFrame.map();
+	apiObj->multiBuffering[swapIndex].uboPerFrame.map(0);
 	apiObj->multiBuffering[swapIndex].uboPerFrame.setValue(0, matrix);
-	apiObj->multiBuffering[swapIndex].uboPerFrame.unmap();
+	apiObj->multiBuffering[swapIndex].uboPerFrame.unmap(0);
 }
 
 void VulkanGnomeHorde::createDescSetsAndTiles(const api::DescriptorSetLayout& layoutImage, const api::DescriptorSetLayout& layoutPerObject,
@@ -1056,12 +1076,12 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const api::DescriptorSetLayout& la
 	//of the part of the buffer that will be bound each time, not the total size. That is why we cannot do a one-step creation (...createBufferAndView) like
 	//for static UBOs.
 	apiObj->uboPerObject.connectWithBuffer(
-	  ctx->createBufferView(
-	    ctx->createBuffer(apiObj->uboPerObject.getAlignedTotalSize(), types::BufferBindingUse::UniformBuffer),
-	    0, apiObj->uboPerObject.getAlignedElementSize()), BufferViewTypes::UniformBufferDynamic);
+	  0, ctx->createBufferView(
+	    ctx->createBuffer(apiObj->uboPerObject.getAlignedTotalSize(), types::BufferBindingUse::UniformBuffer, true),
+	    0, apiObj->uboPerObject.getAlignedElementSize()));
 
 	apiObj->descSetAllObjects = ctx->createDescriptorSetOnDefaultPool(layoutPerObject);
-	apiObj->descSetAllObjects->update(api::DescriptorSetUpdate().setDynamicUbo(0, apiObj->uboPerObject.getConnectedBuffer()));
+	apiObj->descSetAllObjects->update(api::DescriptorSetUpdate().setDynamicUbo(0, apiObj->uboPerObject.getConnectedBuffer(0)));
 
 	for (uint32 i = 0; i < numSwapImages; ++i)
 	{
@@ -1069,32 +1089,31 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const api::DescriptorSetLayout& la
 		//stalling the GPU
 		auto& current = apiObj->multiBuffering[i];
 		current.descSetPerFrame = ctx->createDescriptorSetOnDefaultPool(layoutPerFrameUbo);
-		current.uboPerFrame.connectWithBuffer(ctx->createBufferAndView(current.uboPerFrame.getAlignedElementSize(), types::BufferBindingUse::UniformBuffer), BufferViewTypes::UniformBuffer);
-		current.descSetPerFrame->update(api::DescriptorSetUpdate().setUbo(0, current.uboPerFrame.getConnectedBuffer()));
+		current.uboPerFrame.connectWithBuffer(0, ctx->createBufferAndView(current.uboPerFrame.getAlignedElementSize(),
+		                                      types::BufferBindingUse::UniformBuffer, true));
+		current.descSetPerFrame->update(api::DescriptorSetUpdate().setUbo(0, current.uboPerFrame.getConnectedBuffer(0)));
 	}
 	//Create the UBOs/VBOs for the main objects. This automatically creates the VBOs.
 	meshes.createApiObjects(ctx);
-
 
 	//Using the StructuredMemoryView to update the objects
 	utils::StructuredMemoryView& perObj = apiObj->uboPerObject;
 	uint32 mvIndex = perObj.getIndex("modelView");
 	uint32 mvITIndex = perObj.getIndex("modelViewIT");
 
-	perObj.mapArray(types::MapBufferFlags::Write, TOTAL_NUMBER_OF_OBJECTS);
+	perObj.mapMultipleArrayElements(0, 0, TOTAL_NUMBER_OF_OBJECTS, types::MapBufferFlags::Write);
 
 	for (uint32 y = 0; y < NUM_TILES_Z; ++y)
 	{
 		for (uint32 x = 0; x < NUM_TILES_X; ++x)
 		{
-			vec3 tileBL(x * TILE_SIZE_X, TILE_SIZE_Y, y * TILE_SIZE_Z);
+			vec3 tileBL(x * (TILE_SIZE_X + TILE_GAP_Z), TILE_SIZE_Y, y * (TILE_SIZE_Z + TILE_GAP_Z));
 			vec3 tileTR = tileBL + vec3(TILE_SIZE_X, 0, TILE_SIZE_Z);
 
 			TileInfo& thisTile = apiObj->tileInfos[y][x];
 
 			thisTile.aabb.setMinMax(tileBL, tileTR);
 
-			// TODO
 			thisTile.visibility = false;
 			thisTile.lod = uint8(0xFFu);
 			thisTile.oldVisibility = false;
@@ -1125,15 +1144,13 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const api::DescriptorSetLayout& la
 			thisTile.objects[5].set = apiObj->descSets.bigMushroomShadow;
 			thisTile.objects[5].pipeline = apiObj->pipelines.shadow;
 
-			thisTile.objects[6].mesh = &meshes.fernShadow;
-			thisTile.objects[6].set = apiObj->descSets.fernShadow;
-			thisTile.objects[6].pipeline = apiObj->pipelines.shadow;
+			thisTile.objects[7].mesh = &meshes.fernShadow;
+			thisTile.objects[7].set = apiObj->descSets.fernShadow;
+			thisTile.objects[7].pipeline = apiObj->pipelines.shadow;
 
-			//// Draw plant last so it looks better
-			//// TODO
-			thisTile.objects[7].mesh = &meshes.fern;
-			thisTile.objects[7].set = apiObj->descSets.fern;
-			thisTile.objects[7].pipeline = apiObj->pipelines.alphaPremul;
+			thisTile.objects[6].mesh = &meshes.fern;
+			thisTile.objects[6].set = apiObj->descSets.fern;
+			thisTile.objects[6].pipeline = apiObj->pipelines.alphaPremul;
 
 			thisTile.objects[8].mesh = &meshes.rock;
 			thisTile.objects[8].set = apiObj->descSets.rock;
@@ -1158,8 +1175,7 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const api::DescriptorSetLayout& la
 				mat4 xform = glm::translate(position) * rotation * scale;
 				mat4 xformIT = glm::transpose(glm::inverse(xform));
 
-				perObj.getArrayOffset(mvITIndex, tileBaseIndex + obj);
-
+				perObj.getDynamicOffset(mvITIndex, tileBaseIndex + obj);
 				perObj.setArrayValue(mvIndex, tileBaseIndex + obj, xform);
 				perObj.setArrayValue(mvITIndex, tileBaseIndex + obj, xformIT);
 
@@ -1172,7 +1188,7 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const api::DescriptorSetLayout& la
 			}
 		}
 	}
-	perObj.unmap();
+	perObj.unmap(0);
 }
 
 MeshLod VulkanGnomeHorde::loadLodMesh(const StringHash& filename, const StringHash& mesh, uint32_t num_lods)
@@ -1185,7 +1201,6 @@ MeshLod VulkanGnomeHorde::loadLodMesh(const StringHash& filename, const StringHa
 		std::stringstream ss;
 		ss << i;
 		ss << ".pod";
-
 
 		std::string path = filename.str() + ss.str();
 		Log(Log.Information, "Loading model:%s mesh:%s\n", path.c_str(), mesh.c_str());
@@ -1226,11 +1241,12 @@ void VulkanGnomeHorde::initUboStructuredObjects()
 {
 	for (uint32 i = 0; i < numSwapImages; ++i)
 	{
-		apiObj->multiBuffering[i].uboPerFrame.addEntryPacked("projectionMat", GpuDatatypes::mat4x4);
+		apiObj->multiBuffering[i].uboPerFrame.addEntryPacked("projectionMat", types::GpuDatatypes::mat4x4);
+		apiObj->multiBuffering[i].uboPerFrame.finalize(getGraphicsContext(), 1, types::BufferBindingUse::UniformBuffer);
 	}
-	apiObj->uboPerObject.setupDynamic(getGraphicsContext(), TOTAL_NUMBER_OF_OBJECTS, BufferViewTypes::UniformBufferDynamic);
-	apiObj->uboPerObject.addEntryPacked("modelView", GpuDatatypes::mat4x4);
-	apiObj->uboPerObject.addEntryPacked("modelViewIT", GpuDatatypes::mat4x4);
+	apiObj->uboPerObject.addEntryPacked("modelView", types::GpuDatatypes::mat4x4);
+	apiObj->uboPerObject.addEntryPacked("modelViewIT", types::GpuDatatypes::mat4x4);
+	apiObj->uboPerObject.finalize(getGraphicsContext(), TOTAL_NUMBER_OF_OBJECTS, types::BufferBindingUse::UniformBuffer, true, false);
 }
 
 AppModeParameter VulkanGnomeHorde::calcAnimationParameters()

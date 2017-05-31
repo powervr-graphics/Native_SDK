@@ -6,11 +6,11 @@
 ***********************************************************************************************************************/
 #include "PVRScopeStats.h"
 #include "PVRScopeGraph.h"
-#include "PVRCore/BufferStream.h"
-#include "PVRNativeApi/ShaderUtils.h"
+#include "PVRCore/IO/BufferStream.h"
+#include "PVRAssets/Shader.h"
 #include <math.h>
 #include <string.h>
-
+using namespace pvr;
 
 glm::vec4 ColorTable[] =
 {
@@ -25,284 +25,295 @@ glm::vec4 ColorTable[] =
 	{ .70, .00, .00, 1. }, //8
 	{ .00, .80, .00, 1. }, //9
 	{ .00, .00, .80, 1. }, //10
-	{ .80, .30, .0, 1. },  //11
+	{ .80, .30, .0,  1. }, //11
 	{ .00, .50, .50, 1. }, //12
 	{ .50, .00, .00, 1. }, //13
 	{ .00, .50, .00, 1. }, //14
 	{ .00, .00, .50, 1. }, //15
 	{ .30, .60, 0.0, 1. }, //16
 	{ .00, .50, .80, 1. }, //17
+
+	{ 0.5, 0.5, 0.5, 1. }
 };
-enum {ColorTableSize = sizeof(ColorTable) / sizeof(ColorTable[0]) };
+enum {ColorTableSize = ARRAY_SIZE(ColorTable) };
 namespace Configuration {
-const char* const VertShaderFile = "GraphVertShader.vsh";
-const char* const FragShaderFile = "GraphFragShader.fsh";
+const char* const VertShaderFileVK = "GraphVertShader_vk.vsh.spv";
+const char* const FragShaderFileVK = "GraphFragShader_vk.fsh.spv";
+const char* const VertShaderFileES = "GraphVertShader.vsh";
+const char* const FragShaderFileES = "GraphFragShader.fsh";
 }
 
-PVRScopeGraph::PVRScopeGraph(pvr::GraphicsContext& device, pvr::IAssetProvider& assetProvider, pvr::ui::UIRenderer& uiRenderer)
-	: m_numCounter(0)
-	, m_scopeData(NULL)
-	, m_counters(NULL)
-	, m_activeGroup((pvr::uint32)0 - 2)
-	, m_activeGroupSelect(0)
-	, m_isActiveGroupChanged(true)
-	, m_sizeCB(0)
-	, m_x(0.0f)
-	, m_y(0.0f)
-	, m_pixelW(0.0f)
-	, m_graphH(0.0f)
-	, m_updateInterval(0)
-	, m_updateIntervalCounter(0)
-	, m_idxFPS((pvr::uint32)0 - 1)
-	, m_idx2D((pvr::uint32)0 - 1)
-	, m_idx3D((pvr::uint32)0 - 1)
-	, m_idxTA((pvr::uint32)0 - 1)
-	, m_idxCompute((pvr::uint32)0 - 1)
-	, m_idxShaderPixel((pvr::uint32)0 - 1)
-	, m_idxShaderVertex((pvr::uint32)0 - 1)
-	, m_idxShaderCompute((pvr::uint32)0 - 1),
-	  m_device(device), m_assetProvider(assetProvider), m_uiRenderer(uiRenderer)
+PVRScopeGraph::PVRScopeGraph()
+	: numCounter(0)
+	, scopeData(NULL)
+	, counters(NULL)
+	, activeGroup((uint32)0 - 2)
+	, activeGroupSelect(0)
+	, isActiveGroupChanged(true)
+	, sizeCB(0)
+	, x(0.0f)
+	, y(0.0f)
+	, pixelW(0.0f)
+	, graphH(0.0f)
+	, updateInterval(0)
+	, updateIntervalCounter(0)
+	, idxFPS((uint32)0 - 1)
+	, idx2D((uint32)0 - 1)
+	, idx3D((uint32)0 - 1)
+	, idxTA((uint32)0 - 1)
+	, idxCompute((uint32)0 - 1)
+	, idxShaderPixel((uint32)0 - 1)
+	, idxShaderVertex((uint32)0 - 1)
+	, idxShaderCompute((uint32)0 - 1)
+	, _isInitialzed(false)
 {
-	m_reading.pfValueBuf	= NULL;
-	m_reading.nValueCnt		= 0;
-	m_reading.nReadingActiveGroup	= 99;
+	reading.pfValueBuf  = NULL;
+	reading.nValueCnt   = 0;
+	reading.nReadingActiveGroup = 99;
+}
 
-	init();
+/*!*********************************************************************************************************************
+\brief  init
+\return true if no error occurred
+***********************************************************************************************************************/
+bool PVRScopeGraph::init(GraphicsContext& device, IAssetProvider& assetProvider, ui::UIRenderer& uiRenderer,
+                         const api::RenderPass& renderPass, std::string& outMsg)
+{
+	_uiRenderer = &uiRenderer;
+	_context = device;
+	_assetProvider = &assetProvider;
+	const EPVRScopeInitCode ePVRScopeInitCode = PVRScopeInitialise(&scopeData);
+	if (ePVRScopeInitCodeOk != ePVRScopeInitCode) { scopeData = 0; }
 
-	const EPVRScopeInitCode ePVRScopeInitCode = PVRScopeInitialise(&m_scopeData);
-	if (ePVRScopeInitCodeOk != ePVRScopeInitCode)
+	if (scopeData)
 	{
-		m_scopeData = 0;
-	}
-
-	if (m_scopeData)
-	{
-		if (PVRScopeGetCounters(m_scopeData, &m_numCounter, &m_counters, &m_reading))
+		// create the indexbuffer
+		const uint16 indexData[10] = {0, 1, 2, 3, 4, 5, 0, 4, 1, 5};
+		_indexBuffer = device->createBuffer(sizeof(indexData), types::BufferBindingUse::IndexBuffer, true);
+		_indexBuffer->update(indexData, 0, sizeof(indexData));
+		_vertexBufferGraphBorder = device->createBuffer(sizeof(glm::vec2) * Configuration::NumVerticesGraphBorder,
+		                           types::BufferBindingUse::VertexBuffer, true);
+		if (PVRScopeGetCounters(scopeData, &numCounter, &counters, &reading))
 		{
-			m_graphCounters.resize(m_numCounter);
-			position(320, 240, pvr::Rectanglei(0, 0, 320, 240));
+			graphCounters.resize(numCounter);
+
+			position(320, 240, Rectanglei(0, 0, 320, 240));
 		}
 		else
 		{
-			m_numCounter = 0;
+			numCounter = 0;
 		}
 	}
+
+	if (!createPipeline(_context->getApiType(), renderPass, outMsg)) { return false; }
+	_isInitialzed = true;
+	// create the color descriptorset for Vulkan
+	if (_context->getApiType() == Api::Vulkan)
+	{
+		_uboColor.addEntryPacked("color", types::GpuDatatypes::vec4);
+		_uboColor.finalize(device, ColorTableSize, types::BufferBindingUse::UniformBuffer, true, false);
+		_uboColor.createConnectedBuffer(0, _context);
+
+		// fill the buffer
+		_uboColor.map(0);
+		for (uint32 i = 0; i < ColorTableSize; ++i)
+		{
+			_uboColor.setArrayValue(0, i, ColorTable[i]);
+		}
+		_uboColor.unmap(0);
+		_uboColorDescriptor = device->createDescriptorSetOnDefaultPool(_pipeDrawLine->getPipelineLayout()->getDescriptorSetLayout(0));
+		_isInitialzed = _uboColorDescriptor->update(api::DescriptorSetUpdate().setDynamicUbo(0, _uboColor.getConnectedBuffer(0)));;
+	}
+	return _isInitialzed;
 }
 
 /*!*********************************************************************************************************************
-\brief	init
-\return	true if no error occurred
-***********************************************************************************************************************/
-bool PVRScopeGraph::init()
-{
-	pvr::assets::ShaderFile shaderFile;
-	shaderFile.populateValidVersions(Configuration::VertShaderFile, m_assetProvider);
-	pvr::api::Shader vertexShader = m_device->createShader(*shaderFile.getBestStreamForApi(m_device->getApiType()), pvr::types::ShaderType::VertexShader);
-
-	shaderFile.populateValidVersions(Configuration::FragShaderFile, m_assetProvider);
-	pvr::api::Shader fragmentShader = m_device->createShader(*shaderFile.getBestStreamForApi(m_device->getApiType()), pvr::types::ShaderType::FragmentShader);
-
-	if (!vertexShader.isValid() || !fragmentShader.isValid()) { return false; }
-
-	pvr::api::GraphicsPipelineCreateParam pipeInfo;
-	pipeInfo.vertexShader.setShader(vertexShader);
-	pipeInfo.fragmentShader.setShader(fragmentShader);
-	pipeInfo.depthStencil.setDepthTestEnable(false);
-	pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::Lines);
-
-	pipeInfo.vertexInput.setInputBinding(0, 0);
-	pipeInfo.vertexInput.addVertexAttribute(Configuration::VertexArrayBinding, 0, pvr::assets::VertexAttributeLayout(pvr::types::DataType::Float32, 2, 0) , "myVertex");
-
-	// create empty pipeline layout
-	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
-	pipeInfo.pipelineLayout = m_device->createPipelineLayout(pipeLayoutInfo);
-	pipeInfo.colorBlend.addAttachmentState(pvr::api::pipelineCreation::ColorBlendAttachmentState());
-	m_pipeDrawLine = m_device->createParentableGraphicsPipeline(pipeInfo);
-	colorId = m_pipeDrawLine->getUniformLocation("fColor");
-	pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::LineStrip);
-	m_pipeDrawLineStrip = m_device->createGraphicsPipeline(pipeInfo, m_pipeDrawLine);
-
-
-	// create the indexbuffer
-	const pvr::uint16 indexData[10] = {0, 1, 2, 3, 4, 5, 0, 4, 1, 5};
-	m_indexBuffer = m_device->createBuffer(sizeof(indexData), pvr::types::BufferBindingUse::IndexBuffer);
-	m_indexBuffer->update(indexData, 0, sizeof(indexData));
-	m_vertexBufferGraphBorder = m_device->createBuffer(sizeof(glm::vec2) * Configuration::NumVerticesGraphBorder, pvr::types::BufferBindingUse::VertexBuffer);
-	return true;
-}
-
-/*!*********************************************************************************************************************
-\brief	dtor
+\brief  dtor
 ***********************************************************************************************************************/
 PVRScopeGraph::~PVRScopeGraph()
 {
-
-	if (m_scopeData) {	PVRScopeDeInitialise(&m_scopeData, &m_counters, &m_reading); }
+	if (scopeData) {  PVRScopeDeInitialise(&scopeData, &counters, &reading); }
 }
 
+
 /*!*********************************************************************************************************************
-\brief	ping
+\brief  ping
 ***********************************************************************************************************************/
-void PVRScopeGraph::ping(pvr::float32 dt)
+void PVRScopeGraph::ping(float32 dt)
 {
-	if (m_scopeData)
+	if (scopeData)
 	{
-		SPVRScopeCounterReading*	psReading;
-		if (m_isActiveGroupChanged)
+		SPVRScopeCounterReading*  psReading = NULL;
+		if (isActiveGroupChanged)
 		{
-			PVRScopeSetGroup(m_scopeData, m_activeGroupSelect);
+			PVRScopeSetGroup(scopeData, activeGroupSelect);
 
 			// When the active group is changed, retrieve new indices
-			m_idxFPS		= PVRScopeFindStandardCounter(m_numCounter, m_counters, m_activeGroupSelect, ePVRScopeStandardCounter_FPS);
-			m_idx2D			= PVRScopeFindStandardCounter(m_numCounter, m_counters, m_activeGroupSelect, ePVRScopeStandardCounter_Load_2D);
-			m_idx3D			= PVRScopeFindStandardCounter(m_numCounter, m_counters, m_activeGroupSelect, ePVRScopeStandardCounter_Load_Renderer);
-			m_idxTA			= PVRScopeFindStandardCounter(m_numCounter, m_counters, m_activeGroupSelect, ePVRScopeStandardCounter_Load_Tiler);
-			m_idxCompute		= PVRScopeFindStandardCounter(m_numCounter, m_counters, m_activeGroupSelect, ePVRScopeStandardCounter_Load_Compute);
-			m_idxShaderPixel	= PVRScopeFindStandardCounter(m_numCounter, m_counters, m_activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Pixel);
-			m_idxShaderVertex	= PVRScopeFindStandardCounter(m_numCounter, m_counters, m_activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Vertex);
-			m_idxShaderCompute	= PVRScopeFindStandardCounter(m_numCounter, m_counters, m_activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Compute);
+			idxFPS = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_FPS);
+			idx2D = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_2D);
+			idx3D = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Renderer);
+			idxTA = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Tiler);
+			idxCompute = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Compute);
+			idxShaderPixel = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Pixel);
+			idxShaderVertex = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Vertex);
+			idxShaderCompute  = PVRScopeFindStandardCounter(numCounter, counters, activeGroupSelect, ePVRScopeStandardCounter_Load_Shader_Compute);
 
-			m_isActiveGroupChanged = false;
+			isActiveGroupChanged = false;
 		}
 
 		// Only recalculate counters periodically
-		if (++m_updateIntervalCounter >= m_updateInterval)
-		{
-			psReading = &m_reading;
-		}
-		else
-		{
-			psReading = NULL;
-		}
+		if (++updateIntervalCounter >= updateInterval) {  psReading = &reading; }
 
+		//  Always call this function, but if we don't want to calculate new
+		//  counters yet we set psReading to NULL.
 
-		//	Always call this function, but if we don't want to calculate new
-		//	counters yet we set psReading to NULL.
-
-		if (PVRScopeReadCounters(m_scopeData, psReading) && psReading)
+		if (PVRScopeReadCounters(scopeData, psReading) && psReading)
 		{
-			m_updateIntervalCounter = 0;
+			updateIntervalCounter = 0;
 
 			// Check whether the group has changed
-			if (m_activeGroup != m_reading.nReadingActiveGroup)
+			if (activeGroup != reading.nReadingActiveGroup)
 			{
-				m_activeGroup = m_reading.nReadingActiveGroup;
+				activeGroup = reading.nReadingActiveGroup;
 
 				// zero the buffers for all the counters becoming enabled
-				for (pvr::uint32 i = 0; i < m_numCounter; ++i)
+				for (uint32 i = 0; i < numCounter; ++i)
 				{
-					if (m_counters[i].nGroup == m_activeGroup || m_counters[i].nGroup == 0xffffffff)
+					if (counters[i].nGroup == activeGroup || counters[i].nGroup == 0xffffffff)
 					{
-						m_graphCounters[i].writePosCB = 0;
-						memset(m_graphCounters[i].valueCB.data(), 0, sizeof(m_graphCounters[i].valueCB[0]) * m_sizeCB);
+						graphCounters[i].writePosCB = 0;
+						memset(graphCounters[i].valueCB.data(), 0, sizeof(graphCounters[i].valueCB[0]) * sizeCB);
 					}
 				}
 			}
 
 			// Write the counter value to the buffer
-			pvr::uint32 ui32Index = 0;
+			uint32 ui32Index = 0;
 
-			for (pvr::uint32 i = 0; i < m_numCounter && ui32Index < m_reading.nValueCnt; ++i)
+			for (uint32 i = 0; i < numCounter && ui32Index < reading.nValueCnt; ++i)
 			{
-				if (m_counters[i].nGroup == m_activeGroup || m_counters[i].nGroup == 0xffffffff)
+				if (counters[i].nGroup == activeGroup || counters[i].nGroup == 0xffffffff)
 				{
-					if (m_graphCounters[i].writePosCB >= m_sizeCB) { m_graphCounters[i].writePosCB = 0; }
+					if (graphCounters[i].writePosCB >= sizeCB) { graphCounters[i].writePosCB = 0; }
 
-					m_graphCounters[i].valueCB[m_graphCounters[i].writePosCB++] = m_reading.pfValueBuf[ui32Index++];
+					graphCounters[i].valueCB[graphCounters[i].writePosCB++] = reading.pfValueBuf[ui32Index++];
 				}
 			}
 		}
+		_context->waitIdle();
 		update(dt);
 	}
 }
 
 /*!*********************************************************************************************************************
-\brief	pre-record the commands
-\param	pvr::api::CommandBufferBase cmdBuffer
+\brief  pre-record the commands
+\param  api::CommandBufferBase cmdBuffer
 ***********************************************************************************************************************/
-void PVRScopeGraph::recordCommandBuffer(pvr::api::CommandBufferBase cmdBuffer)
+void PVRScopeGraph::recordCommandBuffer(api::SecondaryCommandBuffer& cmdBuffer, uint32 swapChain)
 {
-	glm::vec4 color(0.5, 0.5, 0.5, 1);
-	cmdBuffer->bindVertexBuffer(m_vertexBufferGraphBorder, 0, 0);
-	cmdBuffer->bindIndexBuffer(m_indexBuffer, 0, pvr::types::IndexType::IndexType16Bit);
-	cmdBuffer->bindPipeline(m_pipeDrawLine);
-	cmdBuffer->setUniformPtr<glm::vec4>(colorId, 1, &color);
-	cmdBuffer->drawIndexed(0, 10);
+	if (scopeData)
+	{
+		cmdBuffer->bindPipeline(_pipeDrawLine);
+		cmdBuffer->bindVertexBuffer(_vertexBufferGraphBorder, 0, 0);
+		cmdBuffer->bindIndexBuffer(_indexBuffer, 0, types::IndexType::IndexType16Bit);
+		uint32 offset = _uboColor.getAlignedElementArrayOffset(ColorTableSize - 1);
+		if (_context->getApiType() == Api::Vulkan)
+		{
+			cmdBuffer->bindDescriptorSet(_pipeDrawLine->getPipelineLayout(), 0, _uboColorDescriptor, &offset, 1);
+		}
+		else
+		{
+			cmdBuffer->setUniform(_esShaderColorId, glm::vec4(0.5, 0.5, 0.5, 1));
+		}
+		cmdBuffer->drawIndexed(0, 10);
 
-	cmdBuffer->bindPipeline(m_pipeDrawLineStrip);
+		cmdBuffer->bindPipeline(_pipeDrawLineStrip);
 
 //Draw the visible counters.
-	for (pvr::uint32 ii = 0; ii < m_activeCounterIds.size(); ++ii)
-	{
-		pvr::uint32 i = m_activeCounterIds[ii];
-		if ((m_counters[i].nGroup == m_activeGroup || m_counters[i].nGroup == 0xffffffff) && m_graphCounters[i].showGraph)
+		for (uint32 ii = 0; ii < activeCounterIds.size(); ++ii)
 		{
-			cmdBuffer->bindVertexBuffer(m_activeCounters[ii].vbo, 0, 0);
-			cmdBuffer->setUniformPtr(colorId, 1, &m_graphCounters[i].color);
-			// Render geometry
-			cmdBuffer->drawArrays(0, m_sizeCB, 0, 1);
+			uint32 i = activeCounterIds[ii];
+			if ((counters[i].nGroup == activeGroup || counters[i].nGroup == 0xffffffff) && graphCounters[i].showGraph)
+			{
+				offset = _uboColor.getAlignedElementArrayOffset(graphCounters[i].colorLutIdx);
+				cmdBuffer->bindVertexBuffer(activeCounters[ii].vbo, 0, 0);
+
+				if (_context->getApiType() == Api::Vulkan)
+				{
+					cmdBuffer->bindDescriptorSet(_pipeDrawLineStrip->getPipelineLayout(), 0, _uboColorDescriptor,
+					                             &offset, 1);
+				}
+				else
+				{
+					cmdBuffer->setUniform(_esShaderColorId, ColorTable[graphCounters[i].colorLutIdx]);
+				}
+				// Render geometry
+				cmdBuffer->drawArrays(0, sizeCB, 0, 1);
+			}
 		}
 	}
 }
 
 /*!*********************************************************************************************************************
-\brief	pre-record the commands
-\param	pvr::api::CommandBufferBase cmdBuffer
+\brief  pre-record the commands
+\param  api::CommandBufferBase cmdBuffer
 ***********************************************************************************************************************/
 void PVRScopeGraph::recordUIElements()
 {
 	//Draw the visible counters.
-	for (pvr::uint32 ii = 0; ii < m_activeCounters.size(); ++ii)
+	for (uint32 ii = 0; ii < activeCounters.size(); ++ii)
 	{
-		m_activeCounters[ii].legendLabel->render();
-		m_activeCounters[ii].legendValue->render();
+		activeCounters[ii].legendLabel->render();
+		activeCounters[ii].legendValue->render();
 	}
 }
 
 
 /*!*********************************************************************************************************************
-\brief	update the graph
+\brief  update the graph
 ***********************************************************************************************************************/
-void PVRScopeGraph::update(pvr::float32 dt)
+void PVRScopeGraph::update(float32 dt)
 {
-	pvr::float32 fRatio;
-	static pvr::float32 lastUpdate = 10000.f;
+	float32 fRatio;
+	static float32 lastUpdate = 10000.f;
 	bool mustUpdate = false;
 	lastUpdate += dt;
+	float32 flipY = static_cast<pvr::float32>(_context->getApiType() == Api::Vulkan ? -1 : 1);
 	if (lastUpdate > 500.f)
 	{
 		mustUpdate = true;
 		lastUpdate = 0.f;
 	}
 
-	m_activeCounterIds.clear();
+	activeCounterIds.clear();
 	//Make a simple list of indexes with the counters plotted on the graph.
-	for (pvr::uint32 counterId = 0; counterId < m_numCounter; ++counterId)
+	for (uint32 counterId = 0; counterId < numCounter; ++counterId)
 	{
 		//Find if the counter is visible.
-		if ((m_counters[counterId].nGroup == m_activeGroup || m_counters[counterId].nGroup == 0xffffffff) && m_graphCounters[counterId].showGraph)
+		if ((counters[counterId].nGroup == activeGroup ||
+		     counters[counterId].nGroup == 0xffffffff) && graphCounters[counterId].showGraph)
 		{
 			//Add it to the list...
-			m_activeCounterIds.push_back(counterId);
+			activeCounterIds.push_back(counterId);
 		}
 	}
 	//We will need one VBO per visible counter
-	m_activeCounters.resize(m_activeCounterIds.size()); //Usually nop...
-	verticesGraphContent.resize(m_sizeCB);
+	activeCounters.resize(activeCounterIds.size()); //Usually nop...
+	verticesGraphContent.resize(sizeCB);
 
 	//Iterate only the visible filtering_window_sorted
-	for (pvr::uint32 ii = 0; ii < m_activeCounterIds.size(); ++ii)
+	for (uint32 ii = 0; ii < activeCounterIds.size(); ++ii)
 	{
-		pvr::uint32 counterId = m_activeCounterIds[ii];
+		uint32 counterId = activeCounterIds[ii];
 		{
-			m_graphCounters[counterId].color = ColorTable[ii % ColorTableSize];
+			graphCounters[counterId].colorLutIdx = ii % ColorTableSize;
 
-			pvr::float32 maximum = 0.0f;
-			if (m_graphCounters[counterId].maximum != 0.0f)
+			float32 maximum = 0.0f;
+			if (graphCounters[counterId].maximum != 0.0f)
 			{
-				maximum = m_graphCounters[counterId].maximum;
+				maximum = graphCounters[counterId].maximum;
 			}
-			else if (!m_counters[counterId].nBoolPercentage)
+			else if (!counters[counterId].nBoolPercentage)
 			{
 				maximum = getMaximumOfData(counterId);
 			}
@@ -311,66 +322,68 @@ void PVRScopeGraph::update(pvr::float32 dt)
 				maximum = 100.0f;
 			}
 
-			pvr::float32 filtering_window[3] = { .0f, .0f, .0f };
-			pvr::float32 filtering_window_sorted[3] = { .0f, .0f, .0f };
-			pvr::int32 filter_idx = -1;
+			float32 filtering_window[3] = { .0f, .0f, .0f };
+			float32 filtering_window_sorted[3] = { .0f, .0f, .0f };
+			int32 filter_idx = -1;
 
-			if (m_sizeCB > 0)
+			if (sizeCB > 0)
 			{
-				filtering_window[0] = filtering_window[1] = filtering_window[2] = m_graphCounters[counterId].valueCB[0];
+				filtering_window[0] = filtering_window[1] = filtering_window[2] = graphCounters[counterId].valueCB[0];
 			}
 
-			static float lastUpdate = 0;
 			{
 				bool updateThisCounter = mustUpdate;
 				//Set the legend
-				if (m_activeCounters[ii].legendLabel.isNull())
+				if (activeCounters[ii].legendLabel.isNull())
 				{
-					m_activeCounters[ii].legendLabel = m_uiRenderer.createText();
-					m_activeCounters[ii].legendValue = m_uiRenderer.createText();
+					activeCounters[ii].legendLabel = _uiRenderer->createText();
+					activeCounters[ii].legendValue = _uiRenderer->createText();
 					updateThisCounter = true;
 				}
 				if (updateThisCounter)
 				{
-					int id = (m_graphCounters[counterId].writePosCB ? m_graphCounters[counterId].writePosCB - 1 : m_sizeCB - 1);
-					m_activeCounters[ii].legendLabel->setText(pvr::strings::createFormatted("[%2d]  %s", counterId, m_counters[counterId].pszName));
-					if (m_counters[counterId].nBoolPercentage)
+					int id = (graphCounters[counterId].writePosCB ? graphCounters[counterId].writePosCB - 1 : sizeCB - 1);
+					activeCounters[ii].legendLabel->setText(strings::createFormatted("[%2d]  %s", counterId, counters[counterId].pszName));
+					if (counters[counterId].nBoolPercentage)
 					{
-						m_activeCounters[ii].legendValue->setText(pvr::strings::createFormatted(" %8.2f%%", m_graphCounters[counterId].valueCB[id]));
+						activeCounters[ii].legendValue->setText(strings::createFormatted(" %8.2f%%",
+						                                        graphCounters[counterId].valueCB[id]));
 					}
 					else if (maximum > 100000)
 					{
-						m_activeCounters[ii].legendValue->setText(pvr::strings::createFormatted(" %9.0fK", m_graphCounters[counterId].valueCB[id] / 1000));
+						activeCounters[ii].legendValue->setText(strings::createFormatted(" %9.0fK",
+						                                        graphCounters[counterId].valueCB[id] / 1000));
 					}
 					else
 					{
-						m_activeCounters[ii].legendValue->setText(pvr::strings::createFormatted(" %10.2f", m_graphCounters[counterId].valueCB[id]));
+						activeCounters[ii].legendValue->setText(strings::createFormatted(" %10.2f", graphCounters[counterId].valueCB[id]));
 					}
 
-					m_activeCounters[ii].legendLabel->setColor(m_graphCounters[counterId].color);
-					m_activeCounters[ii].legendValue->setColor(m_graphCounters[counterId].color);
-					m_activeCounters[ii].legendLabel->setAnchor(pvr::ui::Anchor::TopLeft, glm::vec2(-.98, .55));
-					m_activeCounters[ii].legendValue->setAnchor(pvr::ui::Anchor::TopRight, glm::vec2(-.98, .55));
-					m_activeCounters[ii].legendLabel->setPixelOffset(0, -30 * ii);
-					m_activeCounters[ii].legendValue->setPixelOffset(550, -30 * ii);
+					activeCounters[ii].legendLabel->setColor(ColorTable[graphCounters[counterId].colorLutIdx]);
+					activeCounters[ii].legendValue->setColor(ColorTable[graphCounters[counterId].colorLutIdx]);
+					activeCounters[ii].legendLabel->setAnchor(ui::Anchor::TopLeft, glm::vec2(-.98, .50));
+					activeCounters[ii].legendValue->setAnchor(ui::Anchor::TopRight, glm::vec2(-.98, .50));
+					activeCounters[ii].legendLabel->setPixelOffset(0, -30 * ii);
+					activeCounters[ii].legendValue->setPixelOffset(550, -30 * ii);
 
-					m_activeCounters[ii].legendLabel->setScale(.5, .5);
-					m_activeCounters[ii].legendValue->setScale(.5, .5);
-					m_activeCounters[ii].legendLabel->commitUpdates();
-					m_activeCounters[ii].legendValue->commitUpdates();
+					activeCounters[ii].legendLabel->setScale(.5, .5);
+					activeCounters[ii].legendValue->setScale(.5, .5);
+					activeCounters[ii].legendLabel->commitUpdates();
+					activeCounters[ii].legendValue->commitUpdates();
 				}
 			}
 
 			// Generate geometry
-			for (int iDst = 0, iSrc = m_graphCounters[counterId].writePosCB; iDst < (int)m_sizeCB; ++iDst, ++iSrc)
+			float32 oneOverMax = 1.f / maximum;
+			for (int iDst = 0, iSrc = graphCounters[counterId].writePosCB; iDst < (int)sizeCB; ++iDst, ++iSrc)
 			{
 				enum { FILTER = 3 };
 				++filter_idx; filter_idx %= FILTER;
 				// Wrap the source index when necessary
-				if (iSrc >= (int)m_sizeCB)	{	iSrc = 0;}
+				if (iSrc >= (int)sizeCB)  { iSrc = 0;}
 
 				//Filter the values to avoid spices. We use a rather aggressive median - of - three smoothing.
-				float value = m_graphCounters[counterId].valueCB[iSrc];
+				float value = graphCounters[counterId].valueCB[iSrc];
 				filtering_window[filter_idx] = value;
 				filtering_window_sorted[0] = filtering_window[0];
 				filtering_window_sorted[1] = filtering_window[1];
@@ -384,101 +397,177 @@ void PVRScopeGraph::update(pvr::float32 dt)
 				}
 
 				// X
-				verticesGraphContent[iDst].x = m_x + iDst * m_pixelW;
+				verticesGraphContent[iDst].x = x + iDst * pixelW;
 
 				// Y
+				fRatio = .0f;
 				if (filtering_window_sorted[1])
 				{
-					fRatio = filtering_window_sorted[1] / maximum;
-				}
-				else
-				{
-					fRatio = 0;
+					fRatio = filtering_window_sorted[1] * oneOverMax;
 				}
 
-				if (fRatio < 0)
-				{
-					fRatio = 0;
-				}
-				else if (fRatio > 1)
-				{
-					fRatio = 1;
-				}
-
-				verticesGraphContent[iDst].y = m_y + fRatio * m_graphH;
+				glm::clamp(fRatio, 0.f, 1.f);
+				verticesGraphContent[iDst].y = flipY * (y + fRatio * graphH);// flip the y for Vulkan
 			}
 
 		}
 		//Possible optimization: MapBuffer for ES3
 		//Need reallocation?
-		if (m_activeCounters[ii].vbo.isNull() || m_activeCounters[ii].vbo->getSize() != sizeof(verticesGraphContent[0]) * m_sizeCB)
+		if (activeCounters[ii].vbo.isNull() || activeCounters[ii].vbo->getSize() != sizeof(verticesGraphContent[0]) * sizeCB)
 		{
-			m_activeCounters[ii].vbo = m_device->createBuffer(sizeof(verticesGraphContent[0]) * m_sizeCB, pvr::types::BufferBindingUse::VertexBuffer);
+			activeCounters[ii].vbo = _context->createBuffer(sizeof(verticesGraphContent[0]) * sizeCB, types::BufferBindingUse::VertexBuffer, true);
 		}
 		//Need updating anyway...
-		m_activeCounters[ii].vbo->update(verticesGraphContent.data(), 0, sizeof(verticesGraphContent[0]) * m_sizeCB);
+		activeCounters[ii].vbo->update(verticesGraphContent.data(), 0, sizeof(verticesGraphContent[0]) * sizeCB);
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief	show the counter
-\param	pvr::uint32 nCounter
-\param	bool showGraph
-***********************************************************************************************************************/
-void PVRScopeGraph::showCounter(pvr::uint32 nCounter, bool showGraph)
+bool PVRScopeGraph::createPipeline(Api api, const api::RenderPass& renderPass, std::string& errorStr)
 {
-	if (nCounter < m_numCounter) { m_graphCounters[nCounter].showGraph = showGraph; }
+	api::GraphicsPipelineCreateParam pipeInfo;
+	pvr::api::Shader vertexShader;
+	pvr::api::Shader fragmentShader;
+	pipeInfo.depthStencil.setDepthTestEnable(false);
+	pipeInfo.inputAssembler.setPrimitiveTopology(types::PrimitiveTopology::LineList);
+	pipeInfo.rasterizer.setCullFace(types::Face::None);
+	pipeInfo.vertexInput
+	.setInputBinding(0, sizeof(glm::vec2))
+	.addVertexAttribute(Configuration::VertexArrayBinding, 0,
+	                    assets::VertexAttributeLayout(types::DataType::Float32, 2, 0), "myVertex");
+	pipeInfo.renderPass = renderPass;
+
+	if (api == Api::Vulkan)
+	{
+		vertexShader = _context->createShader(*_assetProvider->getAssetStream(Configuration::VertShaderFileVK),
+		                                      types::ShaderType::VertexShader);
+
+		fragmentShader = _context->createShader(*_assetProvider->getAssetStream(Configuration::FragShaderFileVK),
+		                                        types::ShaderType::FragmentShader);
+
+		// create the pipeline
+		if (!vertexShader.isValid() || !fragmentShader.isValid())
+		{
+			errorStr = "Failed to create the Vulkan Pipeline shaders";
+			return false;
+		}
+		pipeInfo.vertexShader.setShader(vertexShader);
+		pipeInfo.fragmentShader.setShader(fragmentShader);
+
+		// pipeline draw line
+		pipeInfo.pipelineLayout = _context->createPipelineLayout(api::PipelineLayoutCreateParam()
+		                          .setDescSetLayout(0, _context->createDescriptorSetLayout(
+		                                api::DescriptorSetLayoutCreateParam()
+		                                .setBinding(0, types::DescriptorType::UniformBufferDynamic, 1,
+		                                    types::ShaderStageFlags::Fragment))));
+	}
+	else if (api <= Api::OpenGLESMaxVersion)
+	{
+		pvr::assets::ShaderFile shaderFile;
+		shaderFile.populateValidVersions(Configuration::VertShaderFileES, *_assetProvider);
+		vertexShader = _context->createShader(*shaderFile.getBestStreamForApi(_context->getApiType()),
+		                                      pvr::types::ShaderType::VertexShader);
+
+		shaderFile.populateValidVersions(Configuration::FragShaderFileES, *_assetProvider);
+		fragmentShader = _context->createShader(*shaderFile.getBestStreamForApi(_context->getApiType()),
+		                                        pvr::types::ShaderType::FragmentShader);
+
+		// create the pipeline
+		if (!vertexShader.isValid() || !fragmentShader.isValid())
+		{
+			errorStr = "Failed to create the Gles Pipeline shaders";
+			return false;
+		}
+		pipeInfo.vertexShader.setShader(vertexShader);
+		pipeInfo.fragmentShader.setShader(fragmentShader);
+		// create empty pipeline layout
+		pipeInfo.pipelineLayout = _context->createPipelineLayout(api::PipelineLayoutCreateParam());
+	}
+
+	pipeInfo.vertexShader.setShader(vertexShader);
+	pipeInfo.fragmentShader.setShader(fragmentShader);
+
+
+	pipeInfo.colorBlend.setAttachmentState(0, types::BlendingConfig());
+	_pipeDrawLine = _context->createParentableGraphicsPipeline(pipeInfo);
+	if (!_pipeDrawLine.isValid())
+	{
+		errorStr = "Failed to create Draw Line pipeline";
+		return false;
+	}
+
+	// pipeline line strip
+	pipeInfo.inputAssembler.setPrimitiveTopology(types::PrimitiveTopology::LineStrip);
+	_pipeDrawLineStrip = _context->createGraphicsPipeline(pipeInfo, _pipeDrawLine);
+	if (!_pipeDrawLineStrip.isValid())
+	{
+		errorStr = "Failed to create Draw Line Strip pipeline";
+		return false;
+	}
+
+	if (_context->getApiType() <= Api::OpenGLESMaxVersion) { _esShaderColorId = _pipeDrawLine->getUniformLocation("fColor"); }
+
+	return true;
 }
 
 /*!*********************************************************************************************************************
-\brief	return true if counter is shown
-\return	bool
-\param	pvr::uint32 nCounter
+\brief  show the counter
+\param  uint32 nCounter
+\param  bool showGraph
 ***********************************************************************************************************************/
-bool PVRScopeGraph::isCounterShown(pvr::uint32 nCounter) const
+void PVRScopeGraph::showCounter(uint32 nCounter, bool showGraph)
 {
-	return m_graphCounters.size() && nCounter < m_numCounter ? m_graphCounters[nCounter].showGraph : false;
+	if (nCounter < numCounter) { graphCounters[nCounter].showGraph = showGraph; }
 }
 
 /*!*********************************************************************************************************************
-\brief	return whether the counter is being drawn
-\return	bool
-\param	pvr::uint32 counter
+\brief  return true if counter is shown
+\return bool
+\param  uint32 nCounter
 ***********************************************************************************************************************/
-bool PVRScopeGraph::isCounterBeingDrawn(pvr::uint32 counter) const
+bool PVRScopeGraph::isCounterShown(uint32 nCounter) const
 {
-	if (counter < m_numCounter && (m_counters[counter].nGroup == m_activeGroup || m_counters[counter].nGroup == 0xffffffff))	{ return true; }
+	return graphCounters.size() && nCounter < numCounter ? graphCounters[nCounter].showGraph : false;
+}
+
+/*!*********************************************************************************************************************
+\brief  return whether the counter is being drawn
+\return bool
+\param  uint32 counter
+***********************************************************************************************************************/
+bool PVRScopeGraph::isCounterBeingDrawn(uint32 counter) const
+{
+	if (counter < numCounter && (counters[counter].nGroup == activeGroup || counters[counter].nGroup == 0xffffffff))  { return true; }
 	return false;
 }
 
 /*!*********************************************************************************************************************
-\brief	return true whether the counter use percentage
-\return	bool
-\param	pvr::uint32 counter
+\brief  return true whether the counter use percentage
+\return bool
+\param  uint32 counter
 ***********************************************************************************************************************/
-bool PVRScopeGraph::isCounterPercentage(pvr::uint32 counter) const
+bool PVRScopeGraph::isCounterPercentage(uint32 counter) const
 {
-	return counter < m_numCounter && m_counters[counter].nBoolPercentage;
+	return counter < numCounter && counters[counter].nBoolPercentage;
 }
 
 /*!*********************************************************************************************************************
-\brief	return counter's maximum data
-\return	pvr::float32
-\param	pvr::uint32 counter
+\brief  return counter's maximum data
+\return float32
+\param  uint32 counter
 ***********************************************************************************************************************/
-pvr::float32 PVRScopeGraph::getMaximumOfData(pvr::uint32 counter)
+float32 PVRScopeGraph::getMaximumOfData(uint32 counter)
 {
-	pvr::float32 maximum = 0.f;
-	if (counter < m_numCounter && m_graphCounters[counter].valueCB.size())
+	float32 maximum = 0.f;
+	if (counter < numCounter && graphCounters[counter].valueCB.size())
 	{
-		for (pvr::uint32 i = 0; i < m_sizeCB; ++i)
+		for (uint32 i = 0; i < sizeCB; ++i)
 		{
-			int id_next = (i + 1 == m_sizeCB ? 0 : i + 1);
-			int id_prev = (i == 0 ? m_sizeCB - 1 : i - 1);
+			int id_next = (i + 1 == sizeCB ? 0 : i + 1);
+			int id_prev = (i == 0 ? sizeCB - 1 : i - 1);
 
-			pvr::float32 prev_value = m_graphCounters[counter].valueCB[id_prev];
-			pvr::float32 current_value = m_graphCounters[counter].valueCB[i];
-			pvr::float32 next_value = m_graphCounters[counter].valueCB[id_next];
+			float32 prev_value = graphCounters[counter].valueCB[id_prev];
+			float32 current_value = graphCounters[counter].valueCB[i];
+			float32 next_value = graphCounters[counter].valueCB[id_next];
 			if (prev_value > current_value) { std::swap(prev_value, current_value); }
 			if (current_value > next_value) { std::swap(current_value, next_value); }
 			if (prev_value > current_value) { std::swap(prev_value, current_value); }
@@ -495,42 +584,42 @@ pvr::float32 PVRScopeGraph::getMaximumOfData(pvr::uint32 counter)
 }
 
 /*!*********************************************************************************************************************
-\brief	return counter's maximum
-\return	pvr::float32
-\param	pvr::uint32 nCounter
+\brief  return counter's maximum
+\return float32
+\param  uint32 nCounter
 ***********************************************************************************************************************/
-pvr::float32 PVRScopeGraph::getMaximum(pvr::uint32 nCounter)
+float32 PVRScopeGraph::getMaximum(uint32 nCounter)
 {
-	if (nCounter < m_numCounter) {	return m_graphCounters[nCounter].maximum;	}
+	if (nCounter < numCounter) {  return graphCounters[nCounter].maximum; }
 	return 0.0f;
 }
 
 /*!*********************************************************************************************************************
-\brief	set counter's maximum
-\param	pvr::uint32 counter
-\param	pvr::float32 maximum
+\brief  set counter's maximum
+\param  uint32 counter
+\param  float32 maximum
 ***********************************************************************************************************************/
-void PVRScopeGraph::setMaximum(pvr::uint32 counter, pvr::float32 maximum)
+void PVRScopeGraph::setMaximum(uint32 counter, float32 maximum)
 {
-	if (counter < m_numCounter) { m_graphCounters[counter].maximum = maximum; }
+	if (counter < numCounter) { graphCounters[counter].maximum = maximum; }
 }
 
 /*!*********************************************************************************************************************
-\brief	set the active group
-\return	true if no error occurred
-\param	const pvr::uint32 activeGroup
+\brief  set the active group
+\return true if no error occurred
+\param  const uint32 activeGroup
 ***********************************************************************************************************************/
-bool PVRScopeGraph::setActiveGroup(const pvr::uint32 activeGroup)
+bool PVRScopeGraph::setActiveGroup(const uint32 activeGroup)
 {
-	if (m_activeGroupSelect == activeGroup) { return true; }
+	if (activeGroupSelect == activeGroup) { return true; }
 
-	for (pvr::uint32 i = 0; i < m_numCounter; ++i)
+	for (uint32 i = 0; i < numCounter; ++i)
 	{
 		// Is it a valid group
-		if (m_counters[i].nGroup != 0xffffffff && m_counters[i].nGroup >= activeGroup)
+		if (counters[i].nGroup != 0xffffffff && counters[i].nGroup >= activeGroup)
 		{
-			m_activeGroupSelect = activeGroup;
-			m_isActiveGroupChanged = true;
+			activeGroupSelect = activeGroup;
+			isActiveGroupChanged = true;
 			return true;
 		}
 	}
@@ -538,185 +627,187 @@ bool PVRScopeGraph::setActiveGroup(const pvr::uint32 activeGroup)
 }
 
 /*!*********************************************************************************************************************
-\brief	return the counter name
-\return	const char*
-\param	i counter index
+\brief  return the counter name
+\return const char*
+\param  i counter index
 ***********************************************************************************************************************/
-const char* PVRScopeGraph::getCounterName(const pvr::uint32 i) const
+const char* PVRScopeGraph::getCounterName(const uint32 i) const
 {
-	if (i >= m_numCounter) { return ""; }
-	return m_counters[i].pszName;
+	if (i >= numCounter) { return ""; }
+	return counters[i].pszName;
 }
 
 /*!*********************************************************************************************************************
-\brief	return FPS
-\return	pvr::float32
+\brief  return FPS
+\return float32
 ***********************************************************************************************************************/
-pvr::float32 PVRScopeGraph::getStandardFPS() const
+float32 PVRScopeGraph::getStandardFPS() const
 {
-	return m_idxFPS < m_reading.nValueCnt ? m_reading.pfValueBuf[m_idxFPS] : -1.0f;
+	return idxFPS < reading.nValueCnt ? reading.pfValueBuf[idxFPS] : -1.0f;
 }
 
 /*!*********************************************************************************************************************
-\brief	return FPS
-\return	pvr::float32
+\brief  return FPS
+\return float32
 ***********************************************************************************************************************/
-pvr::int32 PVRScopeGraph::getStandardFPSIndex() const
+int32 PVRScopeGraph::getStandardFPSIndex() const
 {
-	return m_idxFPS;
+	return idxFPS;
 }
 
-pvr::float32 PVRScopeGraph::getStandard2D() const
+float32 PVRScopeGraph::getStandard2D() const
 {
-	const pvr::float32 fRet = m_idx2D < m_reading.nValueCnt ? m_reading.pfValueBuf[m_idx2D] : -1.0f;
+	const float32 fRet = idx2D < reading.nValueCnt ? reading.pfValueBuf[idx2D] : -1.0f;
 	return fRet;
 }
-pvr::int32 PVRScopeGraph::getStandard2DIndex() const
+int32 PVRScopeGraph::getStandard2DIndex() const
 {
-	return m_idx2D;
+	return idx2D;
 }
 
-pvr::float32 PVRScopeGraph::getStandard3D() const
+float32 PVRScopeGraph::getStandard3D() const
 {
-	return m_idx3D < m_reading.nValueCnt ? m_reading.pfValueBuf[m_idx3D] : -1.0f;
+	return idx3D < reading.nValueCnt ? reading.pfValueBuf[idx3D] : -1.0f;
 }
-pvr::int32 PVRScopeGraph::getStandard3DIndex() const
+int32 PVRScopeGraph::getStandard3DIndex() const
 {
-	return m_idx3D;
-}
-
-pvr::float32 PVRScopeGraph::getStandardTA() const
-{
-	return m_idxTA < m_reading.nValueCnt ? m_reading.pfValueBuf[m_idxTA] : -1.0f;
+	return idx3D;
 }
 
-pvr::int32 PVRScopeGraph::getStandardTAIndex() const
+float32 PVRScopeGraph::getStandardTA() const
 {
-	return m_idxTA;
+	return idxTA < reading.nValueCnt ? reading.pfValueBuf[idxTA] : -1.0f;
 }
 
-
-/*!*********************************************************************************************************************
-\brief	return standard compute
-\return	pvr::float32
-***********************************************************************************************************************/
-pvr::float32 PVRScopeGraph::getStandardCompute() const
+int32 PVRScopeGraph::getStandardTAIndex() const
 {
-	return m_idxCompute < m_reading.nValueCnt ? m_reading.pfValueBuf[m_idxCompute] : -1.0f;
+	return idxTA;
 }
 
-pvr::int32 PVRScopeGraph::getStandardComputeIndex() const
-{
-	return m_idxCompute;
-}
 
 /*!*********************************************************************************************************************
-\brief	return the standard pixel size
-\return	pvr::float32
+\brief  return standard compute
+\return float32
 ***********************************************************************************************************************/
-pvr::float32 PVRScopeGraph::getStandardShaderPixel() const
+float32 PVRScopeGraph::getStandardCompute() const
 {
-	return m_idxShaderPixel < m_reading.nValueCnt ? m_reading.pfValueBuf[m_idxShaderPixel] : -1.0f;
+	return idxCompute < reading.nValueCnt ? reading.pfValueBuf[idxCompute] : -1.0f;
 }
-pvr::int32 PVRScopeGraph::getStandardShaderPixelIndex() const
+
+int32 PVRScopeGraph::getStandardComputeIndex() const
 {
-	return m_idxShaderPixel;
+	return idxCompute;
 }
 
 /*!*********************************************************************************************************************
-\brief	return the standard shared vertex
-\return	pvr::float32
+\brief  return the standard pixel size
+\return float32
 ***********************************************************************************************************************/
-pvr::float32 PVRScopeGraph::getStandardShaderVertex() const
+float32 PVRScopeGraph::getStandardShaderPixel() const
 {
-	return m_idxShaderVertex < m_reading.nValueCnt ? m_reading.pfValueBuf[m_idxShaderVertex] : -1.0f;
+	return idxShaderPixel < reading.nValueCnt ? reading.pfValueBuf[idxShaderPixel] : -1.0f;
 }
-pvr::int32 PVRScopeGraph::getStandardShaderVertexIndex() const
+int32 PVRScopeGraph::getStandardShaderPixelIndex() const
 {
-	return m_idxShaderVertex;
-}
-/*!*********************************************************************************************************************
-\brief	return the standard compute shader
-\return	pvr::float32
-***********************************************************************************************************************/
-pvr::float32 PVRScopeGraph::getStandardShaderCompute() const
-{
-	return m_idxShaderCompute < m_reading.nValueCnt ? m_reading.pfValueBuf[m_idxShaderCompute] : -1.0f;
-}
-pvr::int32 PVRScopeGraph::getStandardShaderComputeIndex() const
-{
-	return m_idxShaderCompute;
-}
-/*!*********************************************************************************************************************
-\brief	return counter's number of group
-\return	number of group
-\param	const pvr::uint32 i
-***********************************************************************************************************************/
-int PVRScopeGraph::getCounterGroup(const pvr::uint32 i) const
-{
-	if (i >= m_numCounter) { return 0xffffffff; }
-	return m_counters[i].nGroup;
+	return idxShaderPixel;
 }
 
 /*!*********************************************************************************************************************
-\brief	set the position of the graph
-\param	const pvr::uint32 viewportW
-\param	const pvr::uint32 viewportH
-\param	pvr::Rectanglei const & graph
+\brief  return the standard shared vertex
+\return float32
 ***********************************************************************************************************************/
-void PVRScopeGraph::position(const pvr::uint32 viewportW, const pvr::uint32 viewportH, pvr::Rectanglei const& graph)
+float32 PVRScopeGraph::getStandardShaderVertex() const
 {
-	if (m_scopeData && m_graphCounters.size())
+	return idxShaderVertex < reading.nValueCnt ? reading.pfValueBuf[idxShaderVertex] : -1.0f;
+}
+int32 PVRScopeGraph::getStandardShaderVertexIndex() const
+{
+	return idxShaderVertex;
+}
+/*!*********************************************************************************************************************
+\brief  return the standard compute shader
+\return float32
+***********************************************************************************************************************/
+float32 PVRScopeGraph::getStandardShaderCompute() const
+{
+	return idxShaderCompute < reading.nValueCnt ? reading.pfValueBuf[idxShaderCompute] : -1.0f;
+}
+int32 PVRScopeGraph::getStandardShaderComputeIndex() const
+{
+	return idxShaderCompute;
+}
+/*!*********************************************************************************************************************
+\brief  return counter's number of group
+\return number of group
+\param  const uint32 i
+***********************************************************************************************************************/
+int PVRScopeGraph::getCounterGroup(const uint32 i) const
+{
+	if (i >= numCounter) { return 0xffffffff; }
+	return counters[i].nGroup;
+}
+
+/*!*********************************************************************************************************************
+\brief  set the position of the graph
+\param  const uint32 viewportW
+\param  const uint32 viewportH
+\param  Rectanglei const & graph
+***********************************************************************************************************************/
+void PVRScopeGraph::position(const uint32 viewportW, const uint32 viewportH, Rectanglei const& graph)
+{
+
+	if (scopeData && graphCounters.size())
 	{
-		m_sizeCB = graph.width;
+		sizeCB = graph.width;
 
-		pvr::float32 pixelW = 2 * 1.0f / viewportW;
-		pvr::float32 graphH = 2 * (pvr::float32)graph.height / viewportH;
+		float32 pixelW = 2 * 1.0f / viewportW;
+		float32 graphH = 2 * (float32)graph.height / viewportH;
 
-		if (pixelW != m_pixelW || graphH != m_graphH)
+		if (this->pixelW != pixelW || this->graphH != graphH)
 		{
-			m_pixelW = pixelW;
-			m_graphH = graphH;
+			this->pixelW = pixelW;
+			this->graphH = graphH;
 
-			for (pvr::uint32 i = 0; i < m_numCounter; ++i)
+			for (uint32 i = 0; i < numCounter; ++i)
 			{
-				m_graphCounters[i].valueCB.clear();
-				m_graphCounters[i].valueCB.resize(m_sizeCB);
-				memset(m_graphCounters[i].valueCB.data(), 0, sizeof(m_graphCounters[i].valueCB[0]) * m_sizeCB);
-				m_graphCounters[i].writePosCB = 0;
+				graphCounters[i].valueCB.clear();
+				graphCounters[i].valueCB.resize(sizeCB);
+				memset(graphCounters[i].valueCB.data(), 0, sizeof(graphCounters[i].valueCB[0]) * sizeCB);
+				graphCounters[i].writePosCB = 0;
 			}
 		}
-		m_x = 2 * ((pvr::float32)graph.x / viewportW) - 1;
-		m_y = 2 * ((pvr::float32)graph.y / viewportH) - 1;
+		x = 2 * ((float32)graph.x / viewportW) - 1;
+		y = 2 * ((float32)graph.y / viewportH) - 1;// flip the y for Vulkan
 		updateBufferLines();
 	}
 }
 
 /*!*********************************************************************************************************************
-\brief	update the vertex buffer lines
-\return	void
+\brief  update the vertex buffer lines
+\return void
 ***********************************************************************************************************************/
 void PVRScopeGraph::updateBufferLines()
 {
-	verticesGraphBorder[0].x = m_x;
-	verticesGraphBorder[0].y = m_y;
+	const float32 flipY = static_cast<pvr::float32>(_context->getApiType() == Api::Vulkan ? -1 : 1);
+	verticesGraphBorder[0].x = x;
+	verticesGraphBorder[0].y = flipY * y;
 
-	verticesGraphBorder[1].x = m_x + m_sizeCB * m_pixelW;
-	verticesGraphBorder[1].y = m_y;
+	verticesGraphBorder[1].x = x + sizeCB * pixelW;
+	verticesGraphBorder[1].y = flipY * y;
 
-	verticesGraphBorder[2].x = m_x;
-	verticesGraphBorder[2].y = m_y + m_graphH * 0.5f;
+	verticesGraphBorder[2].x = x;
+	verticesGraphBorder[2].y = flipY * (y + graphH * 0.5f);
 
-	verticesGraphBorder[3].x = m_x + m_sizeCB * m_pixelW;
-	verticesGraphBorder[3].y = m_y + m_graphH * 0.5f;
+	verticesGraphBorder[3].x = x + sizeCB * pixelW;
+	verticesGraphBorder[3].y = flipY * (y + graphH * 0.5f);
 
-	verticesGraphBorder[4].x = m_x;
-	verticesGraphBorder[4].y = m_y + m_graphH;
+	verticesGraphBorder[4].x = x;
+	verticesGraphBorder[4].y = flipY * (y + graphH);
 
-	verticesGraphBorder[5].x = m_x + m_sizeCB * m_pixelW;
-	verticesGraphBorder[5].y = m_y + m_graphH;
+	verticesGraphBorder[5].x = x + sizeCB * pixelW;
+	verticesGraphBorder[5].y = flipY * (y + graphH);
 
-	m_vertexBufferGraphBorder->update(&verticesGraphBorder[0].x, 0, sizeof(verticesGraphBorder));
+	_vertexBufferGraphBorder->update(&verticesGraphBorder[0].x, 0, sizeof(verticesGraphBorder));
 }
 
-void PVRScopeGraph::setUpdateInterval(const pvr::uint32 updateInterval) { m_updateInterval = updateInterval; }
+void PVRScopeGraph::setUpdateInterval(const uint32 updateInterval) { this->updateInterval = updateInterval; }

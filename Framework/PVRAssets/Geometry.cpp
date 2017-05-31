@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/Geometry.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains definition of the Geometry.h function.
-***********************************************************************************************************************/
+/*!
+\brief Contains definition of the Geometry.h function.
+\file PVRAssets/Geometry.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRAssets/Geometry.h"
 
 namespace pvr {

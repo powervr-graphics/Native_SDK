@@ -138,5 +138,20 @@
   <None Include="..\..\Plant.fsh.spv">
       <Filter>Content Files\Shaders</Filter>
   </None>
+  <None Include="..\..\Object.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\Shadow.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\Solid.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\Shadow.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\Plant.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
   </ItemGroup>
 </Project>

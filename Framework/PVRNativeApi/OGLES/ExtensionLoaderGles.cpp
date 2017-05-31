@@ -1,13 +1,13 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\OGLES\ExtensionLoaderGles.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Definitions for the function pointers of the glext:: class. See ExtensionLoaderGles.h.
-***********************************************************************************************************************/
+/*!
+\brief Definitions for the function pointers of the glext:: class. See ExtensionLoaderGles.h.
+\file PVRNativeApi/OGLES/ExtensionLoaderGles.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRNativeApi/OGLES/ExtensionLoaderGles.h"
-#include "PVRPlatformGlue/ExtensionLoader.h"
-#include "PVRCore/Assert_.h"
+#include "PVRNativeApi/ExtensionLoader.h"
+#include "PVRCore/Base/Assert_.h"
 
 PROC_EXT_glDiscardFramebufferEXT glext::DiscardFramebufferEXT = NULL;
 PROC_EXT_glMultiDrawElementsEXT glext::MultiDrawElementsEXT = NULL;
@@ -185,14 +185,37 @@ PROC_EXT_glGetIntegeri_vEXT glext::GetIntegeri_vEXT = NULL;
 PROC_EXT_glDrawBuffersEXT glext::DrawBuffersEXT = NULL;
 PROC_EXT_glBlendBarrierKHR glext::BlendBarrierKHR = NULL;
 PROC_EXT_glTexStorage3DMultisampleOES glext::TexStorage3DMultisampleOES = NULL;
+// GL_OVR_multiview
+PROC_EXT_glFramebufferTextureMultiviewOVR glext::FramebufferTextureMultiviewOVR = NULL;
+
+/* PLS2 */
+PROC_EXT_glFramebufferPixelLocalStorageSize glext::FramebufferPixelLocalStorageSize = NULL;
+PROC_EXT_glClearPixelLocalStorageui glext::ClearPixelLocalStorageui = NULL;
+PROC_EXT_glGetFramebufferPixelLocalStorageSize glext::GetFramebufferPixelLocalStorageSize = NULL;
+
+/* Buffer Storage EXT */
+PROC_EXT_glBufferStorageEXT glext::BufferStorageEXT = NULL;
+
+/* GL_IMG_clear_texture */
+PROC_EXT_glClearTexImageIMG glext::ClearTexImageIMG = NULL;
+PROC_EXT_glClearTexSubImageIMG glext::ClearTexSubImageIMG = NULL;
+
+/* GL_EXT_clear_texture */
+PROC_EXT_glClearTexImageEXT glext::ClearTexImageEXT = NULL;
+PROC_EXT_glClearTexSubImageEXT glext::ClearTexSubImageEXT = NULL;
+
+/* GL_IMG_framebuffer_downsample */
+PROC_EXT_glFramebufferTexture2DDownsampleIMG glext::FramebufferTexture2DDownsampleIMG = NULL;
+PROC_EXT_glFramebufferTextureLayerDownsampleIMG glext::FramebufferTextureLayerDownsampleIMG = NULL;
+
+/* GL_EXT_tessellation_shader */
+PROC_EXT_glPatchParameteriEXT glext::PatchParameteriEXT = NULL;
+
 namespace pvr {
 namespace native {
 static inline bool isExtensionSupported(const char* const extensionString, const char* const extension)
 {
-	if (!extensionString)
-	{
-		return false;
-	}
+	if (!extensionString) {  return false; }
 
 	// The recommended technique for querying OpenGL extensions;
 	// from http://opengl.org/resources/features/OGLextensions/
@@ -202,10 +225,7 @@ static inline bool isExtensionSupported(const char* const extensionString, const
 	// Extension names should not have spaces.
 	position = (char*)strchr(extension, ' ');
 
-	if (position || *extension == '\0')
-	{
-		return 0;
-	}
+	if (position || *extension == '\0') { return 0; }
 
 	/* It takes a bit of care to be fool-proof about parsing the
 	OpenGL extensions string. Don't be fooled by sub-strings, etc. */
@@ -213,10 +233,7 @@ static inline bool isExtensionSupported(const char* const extensionString, const
 	{
 		position = (char*)strstr((char*)start, extension);
 
-		if (!position)
-		{
-			break;
-		}
+		if (!position) { break; }
 
 		terminator = position + strlen(extension);
 
@@ -238,11 +255,11 @@ static inline bool isExtensionSupported(const char* const extensionString, const
 }
 void glext::initGlext()
 {
-   
-    
+
+
 #ifndef TARGET_OS_IPHONE
- // GL_EXT_discard_framebuffer
-glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glDiscardFramebufferEXT>("glDiscardFramebufferEXT");
+// GL_EXT_discard_framebuffer
+	glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glDiscardFramebufferEXT>("glDiscardFramebufferEXT");
 	// GL_EXT_multi_draw_arrays
 	glext::MultiDrawElementsEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glMultiDrawElementsEXT>("glMultiDrawElementsEXT");
 	glext::MultiDrawArraysEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glMultiDrawArraysEXT>("glMultiDrawArraysEXT");
@@ -268,16 +285,14 @@ glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glD
 	glext::SetFenceNV = pvr::native::getExtensionProcAddress<PROC_EXT_glSetFenceNV>("glSetFenceNV");
 
 	// GL_OES_EGL_image and GL_OES_EGL_image_external
-#ifndef TARGET_OS_IPHONE
 	glext::EGLImageTargetRenderbufferStorageOES =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glEGLImageTargetRenderbufferStorageOES>("glEGLImageTargetRenderbufferStorageOES");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glEGLImageTargetRenderbufferStorageOES>("glEGLImageTargetRenderbufferStorageOES");
 	glext::EGLImageTargetTexture2DOES =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glEGLImageTargetTexture2DOES>("glEGLImageTargetTexture2DOES");
-#endif
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glEGLImageTargetTexture2DOES>("glEGLImageTargetTexture2DOES");
 
 	// GL_OES_blend_equation_separate
 	glext::BlendEquationSeparateOES =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glBlendEquationSeparateOES>("glBlendEquationSeparateOES");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glBlendEquationSeparateOES>("glBlendEquationSeparateOES");
 
 	// GL_OES_blend_func_separate
 	glext::BlendFuncSeparateOES = pvr::native::getExtensionProcAddress<PROC_EXT_glBlendFuncSeparateOES>("glBlendFuncSeparateOES");
@@ -291,14 +306,14 @@ glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glD
 
 	// GL_APPLE_copy_texture_levels
 	glext::CopyTextureLevelsAPPLE =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glCopyTextureLevelsAPPLE>("glCopyTextureLevelsAPPLE");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glCopyTextureLevelsAPPLE>("glCopyTextureLevelsAPPLE");
 
 
 	// GL_APPLE_framebuffer_multisample
 	glext::RenderbufferStorageMultisampleAPPLE =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glRenderbufferStorageMultisampleAPPLE>("glRenderbufferStorageMultisampleAPPLE");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glRenderbufferStorageMultisampleAPPLE>("glRenderbufferStorageMultisampleAPPLE");
 	glext::ResolveMultisampleFramebufferAPPLE =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glResolveMultisampleFramebufferAPPLE>("glResolveMultisampleFramebufferAPPLE");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glResolveMultisampleFramebufferAPPLE>("glResolveMultisampleFramebufferAPPLE");
 
 	// GL_APPLE_sync
 	glext::FenceSyncAPPLE = pvr::native::getExtensionProcAddress<PROC_EXT_glFenceSyncAPPLE>("glFenceSyncAPPLE");
@@ -312,17 +327,17 @@ glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glD
 	// GL_EXT_map_buffer_range
 	glext::MapBufferRangeEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glMapBufferRangeEXT>("glMapBufferRangeEXT");
 	glext::FlushMappedBufferRangeEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glFlushMappedBufferRangeEXT>("glFlushMappedBufferRangeEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glFlushMappedBufferRangeEXT>("glFlushMappedBufferRangeEXT");
 
 	// GL_EXT_multisampled_render_to_texture
 	glext::RenderbufferStorageMultisampleEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glRenderbufferStorageMultisampleEXT>("glRenderbufferStorageMultisampleEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glRenderbufferStorageMultisampleEXT>("glRenderbufferStorageMultisampleEXT");
 	glext::FramebufferTexture2DMultisampleEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferTexture2DMultisampleEXT>("glFramebufferTexture2DMultisampleEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferTexture2DMultisampleEXT>("glFramebufferTexture2DMultisampleEXT");
 
 	// GL_EXT_robustness
 	glext::GetGraphicsResetStatusEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGetGraphicsResetStatusEXT>("glGetGraphicsResetStatusEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGetGraphicsResetStatusEXT>("glGetGraphicsResetStatusEXT");
 	glext::ReadnPixelsEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glReadnPixelsEXT>("glReadnPixelsEXT");
 	glext::GetnUniformfvEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glGetnUniformfvEXT>("glGetnUniformfvEXT");
 	glext::GetnUniformivEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glGetnUniformivEXT>("glGetnUniformivEXT");
@@ -337,39 +352,39 @@ glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glD
 
 	// GL_IMG_multisampled_render_to_texture
 	glext::RenderbufferStorageMultisampleIMG =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glRenderbufferStorageMultisampleIMG>("glRenderbufferStorageMultisampleIMG");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glRenderbufferStorageMultisampleIMG>("glRenderbufferStorageMultisampleIMG");
 	glext::FramebufferTexture2DMultisampleIMG =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferTexture2DMultisampleIMG>("glFramebufferTexture2DMultisampleIMG");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferTexture2DMultisampleIMG>("glFramebufferTexture2DMultisampleIMG");
 
 	// GL_EXT_blend_minmax
 	glext::BlendEquationEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glBlendEquationEXT>("glBlendEquationEXT");
 
 	// GL_AMD_performance_monitor
 	glext::GetPerfMonitorGroupsAMD =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorGroupsAMD>("glGetPerfMonitorGroupsAMD");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorGroupsAMD>("glGetPerfMonitorGroupsAMD");
 	glext::GetPerfMonitorCountersAMD =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorCountersAMD>("glGetPerfMonitorCountersAMD");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorCountersAMD>("glGetPerfMonitorCountersAMD");
 	glext::GetPerfMonitorGroupStringAMD =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorGroupStringAMD>("glGetPerfMonitorGroupStringAMD");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorGroupStringAMD>("glGetPerfMonitorGroupStringAMD");
 	glext::GetPerfMonitorCounterStringAMD =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorCounterStringAMD>("glGetPerfMonitorCounterStringAMD");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorCounterStringAMD>("glGetPerfMonitorCounterStringAMD");
 	glext::GetPerfMonitorCounterInfoAMD =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorCounterInfoAMD>("glGetPerfMonitorCounterInfoAMD");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorCounterInfoAMD>("glGetPerfMonitorCounterInfoAMD");
 	glext::GenPerfMonitorsAMD = pvr::native::getExtensionProcAddress<PROC_EXT_glGenPerfMonitorsAMD>("glGenPerfMonitorsAMD");
 	glext::DeletePerfMonitorsAMD = pvr::native::getExtensionProcAddress<PROC_EXT_glDeletePerfMonitorsAMD>("glDeletePerfMonitorsAMD");
 	glext::SelectPerfMonitorCountersAMD =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glSelectPerfMonitorCountersAMD>("glSelectPerfMonitorCountersAMD");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glSelectPerfMonitorCountersAMD>("glSelectPerfMonitorCountersAMD");
 	glext::BeginPerfMonitorAMD = pvr::native::getExtensionProcAddress<PROC_EXT_glBeginPerfMonitorAMD>("glBeginPerfMonitorAMD");
 	glext::EndPerfMonitorAMD = pvr::native::getExtensionProcAddress<PROC_EXT_glEndPerfMonitorAMD>("glEndPerfMonitorAMD");
 	glext::GetPerfMonitorCounterDataAMD =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorCounterDataAMD>("glGetPerfMonitorCounterDataAMD");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGetPerfMonitorCounterDataAMD>("glGetPerfMonitorCounterDataAMD");
 
 	// GL_ANGLE_framebuffer_blit
 	glext::BlitFramebufferANGLE = pvr::native::getExtensionProcAddress<PROC_EXT_glBlitFramebufferANGLE>("glBlitFramebufferANGLE");
 
 	// GL_ANGLE_framebuffer_multisample
 	glext::RenderbufferStorageMultisampleANGLE =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glRenderbufferStorageMultisampleANGLE>("glRenderbufferStorageMultisampleANGLE");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glRenderbufferStorageMultisampleANGLE>("glRenderbufferStorageMultisampleANGLE");
 
 	// GL_NV_coverage_sample
 	glext::CoverageMaskNV = pvr::native::getExtensionProcAddress<PROC_EXT_glCoverageMaskNV>("glCoverageMaskNV");
@@ -378,34 +393,34 @@ glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glD
 	// GL_QCOM_driver_control
 	glext::GetDriverControlsQCOM = pvr::native::getExtensionProcAddress<PROC_EXT_glGetDriverControlsQCOM>("glGetDriverControlsQCOM");
 	glext::GetDriverControlStringQCOM =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGetDriverControlStringQCOM>("glGetDriverControlStringQCOM");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGetDriverControlStringQCOM>("glGetDriverControlStringQCOM");
 	glext::EnableDriverControlQCOM =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glEnableDriverControlQCOM>("glEnableDriverControlQCOM");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glEnableDriverControlQCOM>("glEnableDriverControlQCOM");
 	glext::DisableDriverControlQCOM =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glDisableDriverControlQCOM>("glDisableDriverControlQCOM");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glDisableDriverControlQCOM>("glDisableDriverControlQCOM");
 
 	// GL_QCOM_extended_get
 	glext::ExtGetTexturesQCOM = pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetTexturesQCOM>("glExtGetTexturesQCOM");
 	glext::ExtGetBuffersQCOM = pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetBuffersQCOM>("glExtGetBuffersQCOM");
 	glext::ExtGetRenderbuffersQCOM =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetRenderbuffersQCOM>("glExtGetRenderbuffersQCOM");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetRenderbuffersQCOM>("glExtGetRenderbuffersQCOM");
 	glext::ExtGetFramebuffersQCOM =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetFramebuffersQCOM>("glExtGetFramebuffersQCOM");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetFramebuffersQCOM>("glExtGetFramebuffersQCOM");
 	glext::ExtGetTexLevelParameterivQCOM =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetTexLevelParameterivQCOM>("glExtGetTexLevelParameterivQCOM");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetTexLevelParameterivQCOM>("glExtGetTexLevelParameterivQCOM");
 	glext::ExtTexObjectStateOverrideiQCOM =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glExtTexObjectStateOverrideiQCOM>("glExtTexObjectStateOverrideiQCOM");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glExtTexObjectStateOverrideiQCOM>("glExtTexObjectStateOverrideiQCOM");
 	glext::ExtGetTexSubImageQCOM = pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetTexSubImageQCOM>("glExtGetTexSubImageQCOM");
 	glext::ExtGetBufferPointervQCOM =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetBufferPointervQCOM>("glExtGetBufferPointervQCOM");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetBufferPointervQCOM>("glExtGetBufferPointervQCOM");
 
 	// GL_QCOM_extended_get2
 	glext::ExtGetShadersQCOM = pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetShadersQCOM>("glExtGetShadersQCOM");
 	glext::ExtGetProgramsQCOM = pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetProgramsQCOM>("glExtGetProgramsQCOM");
 	glext::ExtIsProgramBinaryQCOM =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glExtIsProgramBinaryQCOM>("glExtIsProgramBinaryQCOM");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glExtIsProgramBinaryQCOM>("glExtIsProgramBinaryQCOM");
 	glext::ExtGetProgramBinarySourceQCOM =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetProgramBinarySourceQCOM>("glExtGetProgramBinarySourceQCOM");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glExtGetProgramBinarySourceQCOM>("glExtGetProgramBinarySourceQCOM");
 
 	// GL_QCOM_tiled_rendering
 	glext::StartTilingQCOM = pvr::native::getExtensionProcAddress<PROC_EXT_glStartTilingQCOM>("glStartTilingQCOM");
@@ -420,19 +435,19 @@ glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glD
 	glext::TexSubImage3DOES = pvr::native::getExtensionProcAddress<PROC_EXT_glTexSubImage3DOES>("glTexSubImage3DOES");
 	glext::CopyTexSubImage3DOES = pvr::native::getExtensionProcAddress<PROC_EXT_glCopyTexSubImage3DOES>("glCopyTexSubImage3DOES");
 	glext::CompressedTexImage3DOES =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glCompressedTexImage3DOES>("glCompressedTexImage3DOES");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glCompressedTexImage3DOES>("glCompressedTexImage3DOES");
 	glext::CompressedTexSubImage3DOES =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glCompressedTexSubImage3DOES>("glCompressedTexSubImage3DOES");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glCompressedTexSubImage3DOES>("glCompressedTexSubImage3DOES");
 	glext::FramebufferTexture3DOES =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferTexture3DOES>("glFramebufferTexture3DOES");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferTexture3DOES>("glFramebufferTexture3DOES");
 
 	// GL_KHR_debug
 	glext::DebugMessageControlKHR =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glDebugMessageControlKHR>("glDebugMessageControlKHR", "glDebugMessageControl");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glDebugMessageControlKHR>("glDebugMessageControlKHR", "glDebugMessageControl");
 	glext::DebugMessageInsertKHR = pvr::native::getExtensionProcAddress<PROC_EXT_glDebugMessageInsertKHR>("glDebugMessageInsertKHR",
 	                               "glDebugMessageInsert");
 	glext::DebugMessageCallbackKHR =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glDebugMessageCallbackKHR>("glDebugMessageCallbackKHR", "glDebugMessageCallback");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glDebugMessageCallbackKHR>("glDebugMessageCallbackKHR", "glDebugMessageCallback");
 	glext::GetDebugMessageLogKHR = pvr::native::getExtensionProcAddress<PROC_EXT_glGetDebugMessageLogKHR>("glGetDebugMessageLogKHR",
 	                               "glGetDebugMessageLog");
 	glext::PushDebugGroupKHR = pvr::native::getExtensionProcAddress<PROC_EXT_glPushDebugGroupKHR>("glPushDebugGroupKHR",
@@ -450,15 +465,15 @@ glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glD
 
 	// GL_ANGLE_instanced_arrays
 	glext::DrawArraysInstancedANGLE =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glDrawArraysInstancedANGLE>("glDrawArraysInstancedANGLE");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glDrawArraysInstancedANGLE>("glDrawArraysInstancedANGLE");
 	glext::DrawElementsInstancedANGLE =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glDrawElementsInstancedANGLE>("glDrawElementsInstancedANGLE");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glDrawElementsInstancedANGLE>("glDrawElementsInstancedANGLE");
 	glext::VertexAttribDivisorANGLE =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glVertexAttribDivisorANGLE>("glVertexAttribDivisorANGLE");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glVertexAttribDivisorANGLE>("glVertexAttribDivisorANGLE");
 
 	// GL_ANGLE_texture_usage
 	glext::GetTranslatedShaderSourceANGLE =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGetTranslatedShaderSourceANGLE>("glGetTranslatedShaderSourceANGLE");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGetTranslatedShaderSourceANGLE>("glGetTranslatedShaderSourceANGLE");
 
 	// GL_EXT_debug_label
 	glext::LabelObjectEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glLabelObjectEXT>("glLabelObjectEXT");
@@ -481,19 +496,19 @@ glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glD
 	// GL_EXT_separate_shader_objects
 	glext::UseProgramStagesEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glUseProgramStagesEXT>("glUseProgramStagesEXT");
 	glext::ActiveShaderProgramEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glActiveShaderProgramEXT>("glActiveShaderProgramEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glActiveShaderProgramEXT>("glActiveShaderProgramEXT");
 	glext::CreateShaderProgramvEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glCreateShaderProgramvEXT>("glCreateShaderProgramvEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glCreateShaderProgramvEXT>("glCreateShaderProgramvEXT");
 	glext::BindProgramPipelineEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glBindProgramPipelineEXT>("glBindProgramPipelineEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glBindProgramPipelineEXT>("glBindProgramPipelineEXT");
 	glext::DeleteProgramPipelinesEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glDeleteProgramPipelinesEXT>("glDeleteProgramPipelinesEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glDeleteProgramPipelinesEXT>("glDeleteProgramPipelinesEXT");
 	glext::GenProgramPipelinesEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGenProgramPipelinesEXT>("glGenProgramPipelinesEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGenProgramPipelinesEXT>("glGenProgramPipelinesEXT");
 	glext::IsProgramPipelineEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glIsProgramPipelineEXT>("glIsProgramPipelineEXT");
 	glext::ProgramParameteriEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glProgramParameteriEXT>("glProgramParameteriEXT");
 	glext::GetProgramPipelineivEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGetProgramPipelineivEXT>("glGetProgramPipelineivEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGetProgramPipelineivEXT>("glGetProgramPipelineivEXT");
 	glext::ProgramUniform1iEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniform1iEXT>("glProgramUniform1iEXT");
 	glext::ProgramUniform2iEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniform2iEXT>("glProgramUniform2iEXT");
 	glext::ProgramUniform3iEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniform3iEXT>("glProgramUniform3iEXT");
@@ -511,15 +526,15 @@ glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glD
 	glext::ProgramUniform3fvEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniform3fvEXT>("glProgramUniform3fvEXT");
 	glext::ProgramUniform4fvEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniform4fvEXT>("glProgramUniform4fvEXT");
 	glext::ProgramUniformMatrix2fvEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix2fvEXT>("glProgramUniformMatrix2fvEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix2fvEXT>("glProgramUniformMatrix2fvEXT");
 	glext::ProgramUniformMatrix3fvEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix3fvEXT>("glProgramUniformMatrix3fvEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix3fvEXT>("glProgramUniformMatrix3fvEXT");
 	glext::ProgramUniformMatrix4fvEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix4fvEXT>("glProgramUniformMatrix4fvEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix4fvEXT>("glProgramUniformMatrix4fvEXT");
 	glext::ValidateProgramPipelineEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glValidateProgramPipelineEXT>("glValidateProgramPipelineEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glValidateProgramPipelineEXT>("glValidateProgramPipelineEXT");
 	glext::GetProgramPipelineInfoLogEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glGetProgramPipelineInfoLogEXT>("glGetProgramPipelineInfoLogEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glGetProgramPipelineInfoLogEXT>("glGetProgramPipelineInfoLogEXT");
 	glext::ProgramUniform1uiEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniform1uiEXT>("glProgramUniform1uiEXT");
 	glext::ProgramUniform2uiEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniform2uiEXT>("glProgramUniform2uiEXT");
 	glext::ProgramUniform3uiEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniform3uiEXT>("glProgramUniform3uiEXT");
@@ -529,17 +544,17 @@ glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glD
 	glext::ProgramUniform3uivEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniform3uivEXT>("glProgramUniform3uivEXT");
 	glext::ProgramUniform4uivEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniform4uivEXT>("glProgramUniform4uivEXT");
 	glext::ProgramUniformMatrix2x3fvEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix2x3fvEXT>("glProgramUniformMatrix2x3fvEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix2x3fvEXT>("glProgramUniformMatrix2x3fvEXT");
 	glext::ProgramUniformMatrix3x2fvEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix3x2fvEXT>("glProgramUniformMatrix3x2fvEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix3x2fvEXT>("glProgramUniformMatrix3x2fvEXT");
 	glext::ProgramUniformMatrix2x4fvEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix2x4fvEXT>("glProgramUniformMatrix2x4fvEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix2x4fvEXT>("glProgramUniformMatrix2x4fvEXT");
 	glext::ProgramUniformMatrix4x2fvEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix4x2fvEXT>("glProgramUniformMatrix4x2fvEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix4x2fvEXT>("glProgramUniformMatrix4x2fvEXT");
 	glext::ProgramUniformMatrix3x4fvEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix3x4fvEXT>("glProgramUniformMatrix3x4fvEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix3x4fvEXT>("glProgramUniformMatrix3x4fvEXT");
 	glext::ProgramUniformMatrix4x3fvEXT =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix4x3fvEXT>("glProgramUniformMatrix4x3fvEXT");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glProgramUniformMatrix4x3fvEXT>("glProgramUniformMatrix4x3fvEXT");
 
 	// GL_QCOM_alpha_test
 	glext::AlphaFuncQCOM = pvr::native::getExtensionProcAddress<PROC_EXT_glAlphaFuncQCOM>("glAlphaFuncQCOM");
@@ -566,19 +581,41 @@ glext::DiscardFramebufferEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glD
 
 	// GL_OES_texture_storage_multisample_2d_array
 	glext::TexStorage3DMultisampleOES =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glTexStorage3DMultisampleOES>("glTexStorage3DMultisampleOES");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glTexStorage3DMultisampleOES>("glTexStorage3DMultisampleOES");
 
 	// GL_EXT_texture_cube_map_array
 	glext::TexStorage3DMultisampleOES =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glTexStorage3DMultisampleOES>("glTexStorage3DMultisampleOES");
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glTexStorage3DMultisampleOES>("glTexStorage3DMultisampleOES");
 
-	glext::TexStorage3DMultisampleOES =
-	    pvr::native::getExtensionProcAddress<PROC_EXT_glTexStorage3DMultisampleOES>("glTexStorage3DMultisampleOES");
+	// OVR_multiview
+	glext::FramebufferTextureMultiviewOVR =
+	  pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferTextureMultiviewOVR>("glFramebufferTextureMultiviewOVR");
 
+	/* PLS2 */
+	glext::FramebufferPixelLocalStorageSize = pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferPixelLocalStorageSize>("glFramebufferPixelLocalStorageSizeEXT");
+	glext::ClearPixelLocalStorageui = pvr::native::getExtensionProcAddress<PROC_EXT_glClearPixelLocalStorageui>("glClearPixelLocalStorageuiEXT");
+	glext::GetFramebufferPixelLocalStorageSize = pvr::native::getExtensionProcAddress<PROC_EXT_glGetFramebufferPixelLocalStorageSize>("glGetFramebufferPixelLocalStorageSizeEXT");
+
+	/* Buffer Storage EXT */
+	glext::BufferStorageEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glBufferStorageEXT>("glBufferStorageEXT");
+
+	/* GL_IMG_clear_texture */
+	glext::ClearTexImageIMG = pvr::native::getExtensionProcAddress<PROC_EXT_glClearTexImageIMG>("glClearTexImageIMG");
+	glext::ClearTexSubImageIMG = pvr::native::getExtensionProcAddress<PROC_EXT_glClearTexSubImageIMG>("glClearTexSubImageIMG");
+
+	/* GL_EXT_clear_texture */
+	glext::ClearTexImageEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glClearTexImageEXT>("glClearTexImageEXT");
+	glext::ClearTexSubImageEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glClearTexSubImageEXT>("glClearTexSubImageEXT");
+
+	/* GL_IMG_framebuffer_downsample */
+	glext::FramebufferTexture2DDownsampleIMG = pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferTexture2DDownsampleIMG>("glFramebufferTexture2DDownsampleIMG");
+	glext::FramebufferTextureLayerDownsampleIMG = pvr::native::getExtensionProcAddress<PROC_EXT_glFramebufferTextureLayerDownsampleIMG>("glFramebufferTextureLayerDownsampleIMG");
+
+	glext::PatchParameteriEXT = pvr::native::getExtensionProcAddress<PROC_EXT_glPatchParameteriEXT>("glPatchParameteriEXT");
 #else //TARGET_OS_IPHONE
 
 // GL_EXT_discard_framebuffer
-    glext::DiscardFramebufferEXT = &glDiscardFramebufferEXT;
+	glext::DiscardFramebufferEXT = &glDiscardFramebufferEXT;
 //glext::GenVertexArraysOES = &glGenVertexArraysOES;
 //	glext::IsVertexArrayOES = &glIsVertexArrayOES;
 

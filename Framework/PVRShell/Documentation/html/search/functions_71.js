@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['quitapplication',['quitApplication',['../classpvr_1_1system_1_1_shell.html#a3ce3a305b3fb05b19036d9fc2cfe202a',1,'pvr::system::Shell']]]
+  ['quitapplication',['quitApplication',['../classpvr_1_1platform_1_1_shell.html#a83c09cd21a42a07fc26d38d63d4df9b0',1,'pvr::platform::Shell']]]
 ];

@@ -1,19 +1,15 @@
-/*!****************************************************************************************************************
-\file         PVRCamera/CameraInterface.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Common interfaceof the PVRCamera camera streaming interface.
-******************************************************************************************************************/
+/*!
+\brief Common interfaceof the PVRCamera camera streaming interface.
+\file PVRCamera/CameraInterface.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
 #include "PVRCore/CoreIncludes.h"
-/*!****************************************************************************************************************
-\brief Main PowerVR Namespace
-******************************************************************************************************************/
+/// <summary>Main PowerVR Namespace</summary>
 namespace pvr {
-/*!****************************************************************************************************************
-\brief Enumeration of the possible hardware cameras present (front, back)
-******************************************************************************************************************/
+/// <summary>Enumeration of the possible hardware cameras present (front, back)</summary>
 namespace HWCamera {
 enum Enum
 {
@@ -21,108 +17,78 @@ enum Enum
 	Back,
 };
 };
-/*!****************************************************************************************************************
-\brief Contains objects representing the low-level native API objects. For PVRCamera, that is the Texture handle
-******************************************************************************************************************/
+/// <summary>Contains objects representing the low-level native API objects. For PVRCamera, that is the Texture handle
+/// </summary>
 namespace native {
-/*!****************************************************************************************************************
-\brief A struct wrapping the native API Texture handle.
-******************************************************************************************************************/
+/// <summary>A struct wrapping the native API Texture handle.</summary>
 struct HTexture_;
 }
-/*!****************************************************************************************************************
-\brief A class design to provide you with a Texture handle to the Camera's image.
-******************************************************************************************************************/
+/// <summary>A class design to provide you with a Texture handle to the Camera's image.</summary>
 class CameraInterface
 {
 public:
-	/*!****************************************************************************************************************
-	\brief Constructor
-	******************************************************************************************************************/
+	/// <summary>Constructor</summary>
 	CameraInterface();
 	
-	/*!****************************************************************************************************************
-	\brief Destructor
-	******************************************************************************************************************/
+	/// <summary>Destructor</summary>
 	~CameraInterface(); 
 
-	/*!****************************************************************************************************************
-	\brief      Initializes the capture session using the given hardware camera, if it is available.
-	\param[in]  eCamera       The hardware camera to attempt to stream from
-	\param[in]  preferredResX,preferredResY If supported by the implementation, set a preferred resolution
-	\return     true if successful
-	******************************************************************************************************************/
+	/// <summary>Initializes the capture session using the given hardware camera, if it is available.</summary>
+	/// <param name="eCamera">The hardware camera to attempt to stream from</param>
+	/// <param name="preferredResX,preferredResY">If supported by the implementation, set a preferred resolution
+	/// </param>
+	/// <returns>true if successful</returns>
 	bool initializeSession(HWCamera::Enum eCamera, int preferredResX = 0, int preferredResY = 0);
 
-	/*!****************************************************************************************************************
-	\brief      		Shutdown the AV capture session and release associated objects.
-	******************************************************************************************************************/
+	/// <summary>Shutdown the AV capture session and release associated objects.</summary>
 	void destroySession();
 
-	/*!****************************************************************************************************************
-	\brief      Checks to see if the image has been updated.
-	******************************************************************************************************************/
+	/// <summary>Checks to see if the image has been updated.</summary>
 	bool updateImage();
 
-	/*!****************************************************************************************************************
-	\brief      Checks to see if the projection matrix has changed.
-	******************************************************************************************************************/
+	/// <summary>Checks to see if the projection matrix has changed.</summary>
 	bool hasProjectionMatrixChanged();
 
-	/*!****************************************************************************************************************
-	\brief      		Retrieves the current texture projection matrix and resets
-	the 'changed' flag.
-	\return            pointer to 16 float values representing the matrix
-	******************************************************************************************************************/
+	/// <summary>Retrieves the current texture projection matrix and resets the 'changed' flag.</summary>
+	/// <returns>pointer to 16 float values representing the matrix</returns>
 	const glm::mat4& getProjectionMatrix();
 
-	/*!****************************************************************************************************************
-	\brief      Retrieves the texture name for the YUV camera texture.
-	\return     A native API handle that can be used to get the texture.
-	******************************************************************************************************************/
+	/// <summary>Retrieves the texture name for the YUV camera texture.</summary>
+	/// <returns>A native API handle that can be used to get the texture.</returns>
 	const native::HTexture_& getRgbTexture();
 
-	/*!****************************************************************************************************************
-	\brief    Query if this implementation supports a single RGB texture for the camera streaming interface.
-	\return   True if the implementation supports an RGB texture, false otherwise 
-	\details  This function will return true if the getRgbTexture() can be used.  In implementations where this 
-			  is not supported (e.g. iOS), this function will return false, and the getRgbTexture() function will
-			  return an empty (invalid) texture if used. See hasLumaChromaTextures(). In implementations where 
-			  RGB textures are supported (e.g. Android)  this function will return true and the getRgbTexture()
-			  will return a valid texture handle (if called after this interface was successfully initialized).
-	******************************************************************************************************************/
+	/// <summary>Query if this implementation supports a single RGB texture for the camera streaming interface.
+	/// </summary>
+	/// <returns>True if the implementation supports an RGB texture, false otherwise</returns>
+	/// <remarks>This function will return true if the getRgbTexture() can be used. In implementations where this is
+	/// not supported (e.g. iOS), this function will return false, and the getRgbTexture() function will return an
+	/// empty (invalid) texture if used. See hasLumaChromaTextures(). In implementations where RGB textures are
+	/// supported (e.g. Android) this function will return true and the getRgbTexture() will return a valid texture
+	/// handle (if called after this interface was successfully initialized).</remarks>
 	bool hasRgbTexture();
 
-	/*!****************************************************************************************************************
-	\brief    Query if this implementation supports YUV (Luma/Chroma)planar textures.
-	\return   True if the implementation supports Luminance/Chrominance textures, false otherwise
-	\details  This function will return true if the getLuminanceTexture() and and getChrominanceTexture() can be used.
-			  In implementations where this is not supported (e.g. Android), this function will return false, and the 
-			  getLuminanceTexture/getChrominanceTexture will return empty (invalid) textures if used. 
-			  In implementations where Luminance/Chrominance textures are supported (e.g. iOS) this function will 
-			  return true and the getLuminanceTexture(), getChrominanceTexture() will return valid texture handles that
-			  can each be used to directly query the Luminance texture (Y channel of the format) and the Chrominance 
-			  texture(UV channels of the format)
-	******************************************************************************************************************/
+	/// <summary>Query if this implementation supports YUV (Luma/Chroma)planar textures.</summary>
+	/// <returns>True if the implementation supports Luminance/Chrominance textures, false otherwise</returns>
+	/// <remarks>This function will return true if the getLuminanceTexture() and and getChrominanceTexture() can be
+	/// used. In implementations where this is not supported (e.g. Android), this function will return false, and the
+	/// getLuminanceTexture/getChrominanceTexture will return empty (invalid) textures if used. In implementations
+	/// where Luminance/Chrominance textures are supported (e.g. iOS) this function will return true and the
+	/// getLuminanceTexture(), getChrominanceTexture() will return valid texture handles that can each be used to
+	/// directly query the Luminance texture (Y channel of the format) and the Chrominance texture(UV channels of the
+	/// format)</remarks>
 	bool hasLumaChromaTextures();
 
-	/*!****************************************************************************************************************
-	\brief      		Retrieves the texture name for the YUV camera texture.
-	\return            GL texture ID
-	******************************************************************************************************************/
+	/// <summary>Retrieves the texture name for the YUV camera texture.</summary>
+	/// <returns>GL texture ID</returns>
 	const native::HTexture_& getLuminanceTexture();
 
-	/*!****************************************************************************************************************
-	\brief      		Retrieves the texture name for the YUV camera texture.
-	\return            GL texture ID
-	******************************************************************************************************************/
+	/// <summary>Retrieves the texture name for the YUV camera texture.</summary>
+	/// <returns>GL texture ID</returns>
 	const native::HTexture_& getChrominanceTexture();
 
-	/*!****************************************************************************************************************
-	\brief      		Returns the resolution of the currently active camera.
-	\param[out]        x
-	\param[out]        y
-	******************************************************************************************************************/
+	/// <summary>Returns the resolution of the currently active camera.</summary>
+	/// <param name="x">The horizontal resolution of the currently active camera will be saved here</param>
+	/// <param name="y">The vertical resolution of the currently active camera will be saved here</param>
 	void getCameraResolution(unsigned int& x, unsigned int& y);
 
 private:

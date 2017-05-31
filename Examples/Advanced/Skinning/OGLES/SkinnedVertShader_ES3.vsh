@@ -38,53 +38,42 @@ uniform mediump vec3 LightPos;
 uniform mediump	int	 BoneCount;
 uniform highp   mat4 BoneMatrixArray[MAX_BONE_COUNT];
 uniform highp   mat3 BoneMatrixArrayIT[MAX_BONE_COUNT];
-uniform bool	bUseDot3;
-
 
 out mediump vec3 vLight;
 out mediump vec2 vTexCoord;
 
 void main()
 {
-	// On PowerVR SGX it is possible to index the components of a vector
+	// On PowerVR GPUs it is possible to index the components of a vector
 	// with the [] operator. However this can cause trouble with PC
 	// emulation on some hardware so we "rotate" the vectors instead.
 	mediump ivec4 boneIndex = ivec4(inBoneIndex);
 	mediump vec4 boneWeights = inBoneWeights;
 
-	highp mat4 boneMatrix = BoneMatrixArray[boneIndex.x];
-	mediump mat3 normalMatrix = BoneMatrixArrayIT[boneIndex.x];
+	highp mat4 boneMatrix;
+	mediump mat3 normalMatrix;
 
-	highp vec4 position = boneMatrix * vec4(inVertex, 1.0) * boneWeights.x;
-	mediump vec3 worldNormal = normalMatrix * inNormal * boneWeights.x;
+	mediump vec3 worldTangent = vec3(0, 0, 0);
+	mediump vec3 worldBiNormal = vec3(0, 0, 0);
 
-	mediump vec3 worldTangent;
-	mediump vec3 worldBiNormal;
+	highp vec4 position = vec4(0, 0, 0, 0);
+	mediump vec3 worldNormal = vec3(0, 0, 0);
 
-	worldTangent = normalMatrix * inTangent * boneWeights.x;
-	worldBiNormal = normalMatrix * inBiNormal * boneWeights.x;
-
-	for (lowp int i = 1; i < 3; ++i)
+	for (lowp int i = 0; i < BoneCount; ++i)
 	{
-		if (i < BoneCount)
-		{
-			// "rotate" the vector components
-			boneIndex = boneIndex.yzwx;
-			boneWeights = boneWeights.yzwx;
-
-			boneMatrix = BoneMatrixArray[boneIndex.x];
-			normalMatrix = BoneMatrixArrayIT[boneIndex.x];
+		boneMatrix = BoneMatrixArray[boneIndex.x]; normalMatrix = BoneMatrixArrayIT[boneIndex.x];
 
 			position += boneMatrix * vec4(inVertex, 1.0) * boneWeights.x;
 			worldNormal += normalMatrix * inNormal * boneWeights.x;
 
-			if (bUseDot3)
-			{
 				worldTangent += normalMatrix * inTangent * boneWeights.x;
 				worldBiNormal += normalMatrix * inBiNormal * boneWeights.x;
+
+		// "rotate" the vector components
+		boneIndex = boneIndex.yzwx;
+		boneWeights = boneWeights.yzwx;
 			}
-		}
-	}
+
 	gl_Position = ViewProjMatrix * position;
 
 	// lighting

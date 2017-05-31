@@ -1,9 +1,9 @@
-/*!*****************************************************************************************************************
-\file         PVRShell\EntryPoint\UIApplicationMain\AppController.mm
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Implementation of the AppController for the UIKit based (iOS) implementation of PVRShell.
-********************************************************************************************************************/
+/*!
+\brief Implementation of the AppController for the UIKit based (iOS) implementation of PVRShell.
+\file PVRShell\EntryPoint/UIApplicationMain/AppController.mm
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #import "AppController.h"
 
 //CONSTANTS:
@@ -36,7 +36,7 @@ const int kFPS = 60.0;
 	commandLine.set([cl UTF8String]);
 	//[cl release];
 	
-	stateMachine = new pvr::system::StateMachine((__bridge pvr::system::OSApplication)self, commandLine,NULL);
+	stateMachine = new pvr::platform::StateMachine((__bridge pvr::platform::OSApplication)self, commandLine,NULL);
 
 	if(!stateMachine)
 	{
@@ -60,9 +60,9 @@ const int kFPS = 60.0;
     [mainLoopTimer invalidate];
     mainLoopTimer = nil;
     
-    if(stateMachine->getCurrentState() == pvr::system::StateMachine::StateRenderScene)
+    if(stateMachine->getCurrentState() == pvr::platform::StateMachine::StateRenderScene)
     {
-        stateMachine->executeOnce(pvr::system::StateMachine::StateReleaseView);
+        stateMachine->executeOnce(pvr::platform::StateMachine::StateReleaseView);
     }
     stateMachine->execute();
     delete stateMachine;
@@ -70,4 +70,3 @@ const int kFPS = 60.0;
 }
 
 @end
-

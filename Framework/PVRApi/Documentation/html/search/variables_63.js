@@ -1,19 +1,5 @@
 var searchData=
 [
-  ['channelwritemask',['channelWriteMask',['../structpvr_1_1api_1_1pipeline_creation_1_1_color_blend_attachment_state.html#a2af0cd908347ebce74046f496403f91a',1,'pvr::api::pipelineCreation::ColorBlendAttachmentState']]],
-  ['clearstencilvalue',['clearStencilValue',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker_1_1_depth_stencil_state.html#a6fd295a5bdb1c06ee1e23876835e9329',1,'pvr::platform::ContextGles::RenderStatesTracker::DepthStencilState']]],
-  ['color',['color',['../structpvr_1_1api_1_1_render_pass_create_param.html#a9311f7cd2d0cc08b6fd3d735783a0de3',1,'pvr::api::RenderPassCreateParam']]],
   ['colorblend',['colorBlend',['../structpvr_1_1api_1_1_graphics_pipeline_create_param.html#aa029136484f136a874a6c9d9b73b5928',1,'pvr::api::GraphicsPipelineCreateParam']]],
-  ['colorblendconstants',['colorBlendConstants',['../structpvr_1_1api_1_1pipeline_creation_1_1_color_blend_state_create_param.html#a8ce0e4ca30247f6da8d02c88b16d738a',1,'pvr::api::pipelineCreation::ColorBlendStateCreateParam']]],
-  ['colorspace',['colorSpace',['../structpvr_1_1api_1_1_image_data_format.html#ae1127b977ebe50dbc45256229570711a',1,'pvr::api::ImageDataFormat']]],
-  ['colorviews',['colorViews',['../structpvr_1_1api_1_1_fbo_create_param.html#a3c0b7795b10ae6913763720a45e6c8f3',1,'pvr::api::FboCreateParam::colorViews()'],['../structpvr_1_1api_1_1_on_screen_fbo_create_param.html#ac36d49aae2964cda530262f99ab73f79',1,'pvr::api::OnScreenFboCreateParam::colorViews()']]],
-  ['colorwritemask',['colorWriteMask',['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker.html#a64d8c04969883fd8b2054ab4a9ad2988',1,'pvr::platform::ContextGles::RenderStatesTracker']]],
-  ['combinedsamplerimage',['combinedSamplerImage',['../structpvr_1_1api_1_1_descriptor_set_update_1_1_bindings.html#aa6ec0396909e996872a59bf045540158',1,'pvr::api::DescriptorSetUpdate::Bindings']]],
-  ['comparemask',['compareMask',['../structpvr_1_1api_1_1_stencil_state.html#a810191f655aa6ce474d15283de0ac8eb',1,'pvr::api::StencilState']]],
-  ['compareop',['compareOp',['../structpvr_1_1api_1_1_stencil_state.html#a09132ac81cd124bb46006e4b06703190',1,'pvr::api::StencilState']]],
-  ['compressedsize',['compressedSize',['../structpvr_1_1api_1_1_texture_area.html#a207d1bd5e420df877c934e335e711efc',1,'pvr::api::TextureArea']]],
-  ['computeshader',['computeShader',['../structpvr_1_1api_1_1_compute_pipeline_create_param.html#aadadc290d442d86f7c1435a2c98850d0',1,'pvr::api::ComputePipelineCreateParam::computeShader()'],['../structpvr_1_1api_1_1gles_1_1_compute_state_container.html#ae8d5f837145032d452de0cf52af73990',1,'pvr::api::gles::ComputeStateContainer::computeShader()']]],
-  ['context',['context',['../classpvr_1_1api_1_1impl_1_1_fence__.html#ae4ff7dde32b94fcdd16fbde5c66c0b26',1,'pvr::api::impl::Fence_::context()'],['../classpvr_1_1api_1_1impl_1_1_semaphore__.html#a71eea4e6a8039526ab3fb881b4105023',1,'pvr::api::impl::Semaphore_::context()'],['../classpvr_1_1api_1_1impl_1_1_event__.html#aafe7386a58471f0a6675db2cafc8e0a1',1,'pvr::api::impl::Event_::context()'],['../classpvr_1_1api_1_1impl_1_1_texture_store__.html#ab09794b65079f394806cec81f4f8b192',1,'pvr::api::impl::TextureStore_::context()']]],
-  ['cubeface',['cubeFace',['../structpvr_1_1api_1_1_texture_area.html#a47658c29d57fc586306c5e9abfca9333',1,'pvr::api::TextureArea']]],
-  ['cullface',['cullFace',['../structpvr_1_1api_1_1pipeline_creation_1_1_raster_state_create_param.html#a0aa7108bb24ba4468a0c3d434a2c3395',1,'pvr::api::pipelineCreation::RasterStateCreateParam::cullFace()'],['../structpvr_1_1platform_1_1_context_gles_1_1_render_states_tracker.html#a28b9615dda87d862fba5de6adc9a75fd',1,'pvr::platform::ContextGles::RenderStatesTracker::cullFace()']]]
+  ['computeshader',['computeShader',['../structpvr_1_1api_1_1_compute_pipeline_create_param.html#aadadc290d442d86f7c1435a2c98850d0',1,'pvr::api::ComputePipelineCreateParam']]]
 ];

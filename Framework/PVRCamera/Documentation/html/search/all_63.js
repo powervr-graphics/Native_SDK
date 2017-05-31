@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['cachedvm',['cachedVM',['../_camera_interface___android_8cpp.html#ae19a8333e1fdd7debf71745b67dd69b8',1,'CameraInterface_Android.cpp']]],
   ['camerainterface',['CameraInterface',['../classpvr_1_1_camera_interface.html',1,'pvr']]],
   ['camerainterface',['CameraInterface',['../classpvr_1_1_camera_interface.html#a86aadb420430ff62cddf00a277feaa49',1,'pvr::CameraInterface']]],
   ['camerainterface_2eh',['CameraInterface.h',['../_camera_interface_8h.html',1,'']]],

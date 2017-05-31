@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets\FileIO\TextureReaderXNB.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Implementation of methods of the TextureWriterXNB class.
-***********************************************************************************************************************/
+/*!
+\brief Implementation of methods of the TextureWriterXNB class.
+\file PVRAssets/FileIO/TextureReaderXNB.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRAssets/FileIO/TextureReaderXNB.h"
 #include "PVRCore/Log.h"
@@ -11,40 +11,40 @@ using std::vector;
 namespace pvr {
 namespace assets {
 namespace assetReaders {
-TextureReaderXNB::TextureReaderXNB() : m_nextAssetToLoad(0), m_fileHeaderLoaded(false)
+TextureReaderXNB::TextureReaderXNB() : _nextAssetToLoad(0), _fileHeaderLoaded(false)
 {
 }
 
 bool  TextureReaderXNB::readNextAsset(Texture& asset)
 {
 	bool result;
-	if (m_hasNewAssetStream)
+	if (_hasNewAssetStream)
 	{
 		result = initializeFile();
-		m_hasNewAssetStream = false;
+		_hasNewAssetStream = false;
 		if (result)
 		{
 			// Check that the file is loaded properly.
-			if (!m_fileHeaderLoaded)
+			if (!_fileHeaderLoaded)
 			{
 				return false;
 			}
 		}
 	}
 	// Make sure that the next data is a texture.
-	if (m_objectsStrings[m_nextAssetToLoad] == "Texture2DReader")
+	if (_objectsStrings[_nextAssetToLoad] == "Texture2DReader")
 	{
 		texture_xnb::Texture2DHeader assetHeader;
 
 		result = read2DTexture(assetHeader, asset);
 	}
-	else if (m_objectsStrings[m_nextAssetToLoad] == "Texture3DReader")
+	else if (_objectsStrings[_nextAssetToLoad] == "Texture3DReader")
 	{
 		texture_xnb::Texture3DHeader assetHeader;
 
 		result = read3DTexture(assetHeader, asset);
 	}
-	else if (m_objectsStrings[m_nextAssetToLoad] == "TextureCubeReader")
+	else if (_objectsStrings[_nextAssetToLoad] == "TextureCubeReader")
 	{
 		texture_xnb::TextureCubeHeader assetHeader;
 
@@ -57,7 +57,7 @@ bool  TextureReaderXNB::readNextAsset(Texture& asset)
 	}
 
 // Increment the assetIndex
-	++m_nextAssetToLoad;
+	++_nextAssetToLoad;
 
 // Return
 	return result;
@@ -65,7 +65,7 @@ bool  TextureReaderXNB::readNextAsset(Texture& asset)
 
 bool TextureReaderXNB::hasAssetsLeftToLoad()
 {
-	return (m_nextAssetToLoad != m_objectsStrings.size());
+	return (_nextAssetToLoad != _objectsStrings.size());
 }
 
 bool TextureReaderXNB::canHaveMultipleAssets()
@@ -117,16 +117,6 @@ vector<string> TextureReaderXNB::getSupportedFileExtensions()
 	return vector<string>(extensions);
 }
 
-string TextureReaderXNB::getReaderName()
-{
-	return "PowerVR XNA Binary Texture Reader";
-}
-
-string TextureReaderXNB::getReaderVersion()
-{
-	return "1.0.0";
-}
-
 bool TextureReaderXNB::initializeFile()
 {
 	const uint32 c_objectNotFound = 0xffffffffu;
@@ -135,17 +125,17 @@ bool TextureReaderXNB::initializeFile()
 	size_t dataRead = 0;
 
 	// Read the file header
-	bool result = readFileHeader(m_xnbFileHeader);
+	bool result = readFileHeader(_xnbFileHeader);
 	if (!result) { return result; }
 
 	// Check if the file is compressed, if it is it's currently unsupported
-	if ((m_xnbFileHeader.flags & texture_xnb::e_fileCompressed) != 0)
+	if ((_xnbFileHeader.flags & texture_xnb::e_fileCompressed) != 0)
 	{
 		return false;
 	}
 
 	// Check the file size makes sense
-	if (m_xnbFileHeader.fileSize != m_assetStream->getSize())
+	if (_xnbFileHeader.fileSize != _assetStream->getSize())
 	{
 		return false;
 	}
@@ -156,7 +146,7 @@ bool TextureReaderXNB::initializeFile()
 	if (!result) { return result; }
 
 	// Resize the string array to hold string identifiers for all the assets
-	m_objectsStrings.resize(numberOfAssets);
+	_objectsStrings.resize(numberOfAssets);
 
 	// Loop through and get all the object names
 	for (int32 assetIndex = 0; assetIndex < numberOfAssets; ++assetIndex)
@@ -184,14 +174,14 @@ bool TextureReaderXNB::initializeFile()
 		size_t typeEnd = typeReaderInformation.find(',', typeStart);
 		if (contentLocation != c_objectNotFound || typeStart != c_objectNotFound || typeEnd != c_objectNotFound)
 		{
-			m_objectsStrings[assetIndex] = typeReaderInformation;
-			m_objectsStrings[assetIndex].erase(0, typeStart);
-			m_objectsStrings[assetIndex].erase(typeReaderInformation.length() - typeEnd, std::string::npos);
+			_objectsStrings[assetIndex] = typeReaderInformation;
+			_objectsStrings[assetIndex].erase(0, typeStart);
+			_objectsStrings[assetIndex].erase(typeReaderInformation.length() - typeEnd, std::string::npos);
 		}
 
 		// Get the asset version
 		int32 readerVersion = 0;
-		m_assetStream->read(sizeof(readerVersion), 1, &readerVersion, dataRead);
+		_assetStream->read(sizeof(readerVersion), 1, &readerVersion, dataRead);
 		if (!result || dataRead != 1) { return result; }
 
 		// If it's not version 0, it's not supported
@@ -204,7 +194,7 @@ bool TextureReaderXNB::initializeFile()
 	if (!result) { return result; }
 
 	// Mark that the header has been loaded
-	m_fileHeaderLoaded = true;
+	_fileHeaderLoaded = true;
 
 	// Return
 	return result;
@@ -218,9 +208,9 @@ uint64 TextureReaderXNB::getPVRFormatFromXNBFormat(uint32 xnbFormat)
 		GeneratePixelType3<'b', 'g', 'r', 5, 6, 5>::ID,
 		GeneratePixelType4<'b', 'g', 'r', 'a', 5, 5, 5, 1>::ID,
 		GeneratePixelType4<'b', 'g', 'r', 'a', 4, 4, 4, 4>::ID,
-		CompressedPixelFormat::DXT1,
-		CompressedPixelFormat::DXT3,
-		CompressedPixelFormat::DXT5,
+		(uint64)CompressedPixelFormat::DXT1,
+		(uint64)CompressedPixelFormat::DXT3,
+		(uint64)CompressedPixelFormat::DXT5,
 		GeneratePixelType2<'r', 'g', 8, 8>::ID, //???
 		GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID, //???
 		GeneratePixelType4<'r', 'g', 'b', 'a', 10, 10, 10, 2>::ID,
@@ -243,9 +233,9 @@ uint64 TextureReaderXNB::getPVRFormatFromXNBFormat(uint32 xnbFormat)
 	return mappedFormats[xnbFormat];
 }
 
-VariableType::Enum TextureReaderXNB::getPVRTypeFromXNBFormat(uint32 xnbFormat)
+VariableType TextureReaderXNB::getPVRTypeFromXNBFormat(uint32 xnbFormat)
 {
-	const VariableType::Enum mappedTypes[] =
+	const VariableType mappedTypes[] =
 	{
 		VariableType::UnsignedByteNorm,
 		VariableType::UnsignedShortNorm,
@@ -293,7 +283,7 @@ bool TextureReaderXNB::read7BitEncodedInt(int32& decodedInteger)
 	do
 	{
 		// Read the first 7 bit value
-		result = m_assetStream->read(1, 1, &value, dataRead);
+		result = _assetStream->read(1, 1, &value, dataRead);
 		if (!result || dataRead != 1) { return result; }
 
 		// Add the bits to the decoded integer and increase the bit counter
@@ -313,7 +303,7 @@ bool TextureReaderXNB::readFileHeader(texture_xnb::FileHeader& xnbFileHeader)
 	size_t dataRead = 0;
 
 	// Read the identifier
-	result = m_assetStream->read(1, 3, xnbFileHeader.identifier, dataRead);
+	result = _assetStream->read(1, 3, xnbFileHeader.identifier, dataRead);
 	if (!result || dataRead != 3) { return result; }
 
 	// Verify that it's an XNB header before doing anything else.
@@ -324,11 +314,11 @@ bool TextureReaderXNB::readFileHeader(texture_xnb::FileHeader& xnbFileHeader)
 	}
 
 	// Read the platform
-	result = m_assetStream->read(1, 1, &xnbFileHeader.platform, dataRead);
+	result = _assetStream->read(1, 1, &xnbFileHeader.platform, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the version
-	result = m_assetStream->read(1, 1, &xnbFileHeader.version, dataRead);
+	result = _assetStream->read(1, 1, &xnbFileHeader.version, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Check that the version is '5' to ensure it's a supported version
@@ -339,11 +329,11 @@ bool TextureReaderXNB::readFileHeader(texture_xnb::FileHeader& xnbFileHeader)
 	}
 
 	// Read the flags
-	result = m_assetStream->read(1, 1, &xnbFileHeader.flags, dataRead);
+	result = _assetStream->read(1, 1, &xnbFileHeader.flags, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the file size
-	result = m_assetStream->read(4, 1, &xnbFileHeader.fileSize, dataRead);
+	result = _assetStream->read(4, 1, &xnbFileHeader.fileSize, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Return
@@ -364,7 +354,7 @@ bool TextureReaderXNB::readString(string& stringToRead)
 	stringToRead.resize(stringLength + 1);
 
 	// Read in the string data
-	result = m_assetStream->read(1, stringLength + 1, &stringToRead, dataRead);
+	result = _assetStream->read(1, stringLength + 1, &stringToRead, dataRead);
 	if (!result || dataRead != static_cast<uint32>(stringLength) + 1) { return result; }
 
 	// Return
@@ -377,19 +367,19 @@ bool TextureReaderXNB::read2DTexture(texture_xnb::Texture2DHeader& assetHeader, 
 	size_t dataRead = 0;
 
 	// Read the surface format
-	result = m_assetStream->read(sizeof(assetHeader.format), 1, &assetHeader.format, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.format), 1, &assetHeader.format, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the width
-	result = m_assetStream->read(sizeof(assetHeader.width), 1, &assetHeader.width, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.width), 1, &assetHeader.width, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the height
-	result = m_assetStream->read(sizeof(assetHeader.height), 1, &assetHeader.height, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.height), 1, &assetHeader.height, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the mip map count
-	result = m_assetStream->read(sizeof(assetHeader.mipMapCount), 1, &assetHeader.mipMapCount, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.mipMapCount), 1, &assetHeader.mipMapCount, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Setup the texture header
@@ -408,7 +398,7 @@ bool TextureReaderXNB::read2DTexture(texture_xnb::Texture2DHeader& assetHeader, 
 	{
 		// Read in the size of the next surface
 		uint32 surfaceSize = 0;
-		result = m_assetStream->read(sizeof(surfaceSize), 1, &surfaceSize, dataRead);
+		result = _assetStream->read(sizeof(surfaceSize), 1, &surfaceSize, dataRead);
 		if (!result || dataRead != 1) { return result; }
 
 		// Make sure the surface size matches...
@@ -418,7 +408,7 @@ bool TextureReaderXNB::read2DTexture(texture_xnb::Texture2DHeader& assetHeader, 
 		}
 
 		// Read in the texture data.
-		result = m_assetStream->read(1, surfaceSize, asset.getDataPointer(mipMapLevel), dataRead);
+		result = _assetStream->read(1, surfaceSize, asset.getDataPointer(mipMapLevel), dataRead);
 		if (!result || dataRead != 1) { return result; }
 	}
 
@@ -431,23 +421,23 @@ bool TextureReaderXNB::read3DTexture(texture_xnb::Texture3DHeader& assetHeader, 
 	size_t dataRead = 0;
 
 	// Read the surface format
-	result = m_assetStream->read(sizeof(assetHeader.format), 1, &assetHeader.format, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.format), 1, &assetHeader.format, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the width
-	result = m_assetStream->read(sizeof(assetHeader.width), 1, &assetHeader.width, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.width), 1, &assetHeader.width, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the height
-	result = m_assetStream->read(sizeof(assetHeader.height), 1, &assetHeader.height, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.height), 1, &assetHeader.height, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the depth
-	result = m_assetStream->read(sizeof(assetHeader.depth), 1, &assetHeader.depth, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.depth), 1, &assetHeader.depth, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the mip map count
-	result = m_assetStream->read(sizeof(assetHeader.mipMapCount), 1, &assetHeader.mipMapCount, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.mipMapCount), 1, &assetHeader.mipMapCount, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Setup the texture header
@@ -467,7 +457,7 @@ bool TextureReaderXNB::read3DTexture(texture_xnb::Texture3DHeader& assetHeader, 
 	{
 		// Read in the size of the next surface
 		uint32 surfaceSize = 0;
-		result = m_assetStream->read(sizeof(surfaceSize), 1, &surfaceSize, dataRead);
+		result = _assetStream->read(sizeof(surfaceSize), 1, &surfaceSize, dataRead);
 		if (!result || dataRead != 1) { return result; }
 
 		// Make sure the surface size matches...
@@ -477,7 +467,7 @@ bool TextureReaderXNB::read3DTexture(texture_xnb::Texture3DHeader& assetHeader, 
 		}
 
 		// Read in the texture data.
-		result = m_assetStream->read(1, surfaceSize, asset.getDataPointer(mipMapLevel), dataRead);
+		result = _assetStream->read(1, surfaceSize, asset.getDataPointer(mipMapLevel), dataRead);
 		if (!result || dataRead != 1) { return result; }
 	}
 
@@ -490,15 +480,15 @@ bool TextureReaderXNB::readCubeTexture(texture_xnb::TextureCubeHeader& assetHead
 	size_t dataRead = 0;
 
 	// Read the surface format
-	result = m_assetStream->read(sizeof(assetHeader.format), 1, &assetHeader.format, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.format), 1, &assetHeader.format, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the width
-	result = m_assetStream->read(sizeof(assetHeader.size), 1, &assetHeader.size, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.size), 1, &assetHeader.size, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the mip map count
-	result = m_assetStream->read(sizeof(assetHeader.mipMapCount), 1, &assetHeader.mipMapCount, dataRead);
+	result = _assetStream->read(sizeof(assetHeader.mipMapCount), 1, &assetHeader.mipMapCount, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Setup the texture header
@@ -520,7 +510,7 @@ bool TextureReaderXNB::readCubeTexture(texture_xnb::TextureCubeHeader& assetHead
 		{
 			// Read in the size of the next surface
 			uint32 surfaceSize = 0;
-			result = m_assetStream->read(sizeof(surfaceSize), 1, &surfaceSize, dataRead);
+			result = _assetStream->read(sizeof(surfaceSize), 1, &surfaceSize, dataRead);
 			if (!result || dataRead != 1) { return result; }
 
 			// Make sure the surface size matches...
@@ -530,7 +520,7 @@ bool TextureReaderXNB::readCubeTexture(texture_xnb::TextureCubeHeader& assetHead
 			}
 
 			// Read in the texture data.
-			result = m_assetStream->read(1, surfaceSize, asset.getDataPointer(mipMapLevel, 0, face), dataRead);
+			result = _assetStream->read(1, surfaceSize, asset.getDataPointer(mipMapLevel, 0, face), dataRead);
 			if (!result || dataRead != 1) { return result; }
 		}
 	}

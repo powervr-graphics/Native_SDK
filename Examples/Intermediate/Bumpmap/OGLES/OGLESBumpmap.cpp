@@ -7,7 +7,7 @@
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 using namespace pvr::types;
 const pvr::float32 RotateY = glm::pi<pvr::float32>() / 150;
 const glm::vec4 LightDir(.24f, .685f, -.685f, 0.0f);
@@ -15,14 +15,6 @@ const glm::vec4 LightDir(.24f, .685f, -.685f, 0.0f);
 /*!*********************************************************************************************************************
  shader attributes
  ***********************************************************************************************************************/
-// vertex attributes
-namespace VertexAttrib {
-enum Enum
-{
-	VertexArray, NormalArray, TexCoordArray, TangentArray, numAttribs
-};
-}
-
 const pvr::utils::VertexBindings_Name VertexAttribBindings[] =
 {
 	{ "POSITION", "inVertex" },
@@ -89,18 +81,18 @@ class OGLESBumpMap : public pvr::Shell
 
 	pvr::uint32 pipeUniformLoc[Uniform::NumUniforms];
 	pvr::GraphicsContext context;
-	pvr::api::AssetStore assetManager;
+	pvr::utils::AssetStore assetManager;
 	// The translation and Rotate parameter of Model
 	pvr::float32 angleY;
 	DrawPass drawPass;
 	std::auto_ptr<DeviceResources> deviceResource;
 public:
 	OGLESBumpMap() {}
-	virtual pvr::Result::Enum initApplication();
-	virtual pvr::Result::Enum initView();
-	virtual pvr::Result::Enum releaseView();
-	virtual pvr::Result::Enum quitApplication();
-	virtual pvr::Result::Enum renderFrame();
+	virtual pvr::Result initApplication();
+	virtual pvr::Result initView();
+	virtual pvr::Result releaseView();
+	virtual pvr::Result quitApplication();
+	virtual pvr::Result renderFrame();
 
 	bool createImageSamplerDescriptor();
 	bool loadPipeline();
@@ -129,7 +121,7 @@ bool OGLESBumpMap::createImageSamplerDescriptor()
 	pvr::api::Sampler samplerTrilinear = context->createSampler(samplerInfo);
 
 	if (!assetManager.getTextureWithCaching(getGraphicsContext(), StatueTexFile,	&texBase, NULL) ||
-	        !assetManager.getTextureWithCaching(getGraphicsContext(), StatueNormalMapFile, &texNormalMap, NULL))
+	    !assetManager.getTextureWithCaching(getGraphicsContext(), StatueNormalMapFile, &texNormalMap, NULL))
 	{
 		setExitMessage("ERROR: Failed to load texture.");
 		return false;
@@ -154,9 +146,9 @@ bool OGLESBumpMap::createImageSamplerDescriptor()
 ***********************************************************************************************************************/
 bool OGLESBumpMap::loadPipeline()
 {
-	pvr::api::pipelineCreation::ColorBlendAttachmentState colorAttachemtState;
+	pvr::types::BlendingConfig colorAttachemtState;
 	pvr::api::GraphicsPipelineCreateParam pipeInfo;
-	colorAttachemtState.blendEnable = true;
+	colorAttachemtState.blendEnable = false;
 
 	//--- create the descriptor set layout
 	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
@@ -168,7 +160,7 @@ bool OGLESBumpMap::loadPipeline()
 	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
 	pipeLayoutInfo.addDescSetLayout(deviceResource->descSetLayout);
 
-	pipeInfo.colorBlend.addAttachmentState(colorAttachemtState);
+	pipeInfo.colorBlend.setAttachmentState(0, colorAttachemtState);
 
 	pvr::assets::ShaderFile fileVersioning;
 	fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
@@ -182,6 +174,7 @@ bool OGLESBumpMap::loadPipeline()
 	const pvr::assets::Mesh& mesh = scene->getMesh(0);
 	pipeInfo.inputAssembler.setPrimitiveTopology(mesh.getPrimitiveType());
 	pipeInfo.pipelineLayout = context->createPipelineLayout(pipeLayoutInfo);
+	pipeInfo.rasterizer.setCullFace(pvr::types::Face::Back);
 	// Enable z-buffer test. We are using a projection matrix optimized for a floating point depth buffer,
 	// so the depth test and clear value need to be inverted (1 becomes near, 0 becomes far).
 	pipeInfo.depthStencil.setDepthTestEnable(true).setDepthCompareFunc(ComparisonMode::Less).setDepthWrite(true);
@@ -194,8 +187,8 @@ bool OGLESBumpMap::loadPipeline()
 
 	deviceResource->commandBuffer->beginRecording();
 	deviceResource->commandBuffer->bindPipeline(deviceResource->pipe);
-	deviceResource->commandBuffer->setUniform<pvr::int32>(deviceResource->pipe->getUniformLocation("sBaseTex"), 0);
-	deviceResource->commandBuffer->setUniform<pvr::int32>(deviceResource->pipe->getUniformLocation("sNormalMap"), 1);
+	deviceResource->commandBuffer->setUniform(deviceResource->pipe->getUniformLocation("sBaseTex"), 0);
+	deviceResource->commandBuffer->setUniform(deviceResource->pipe->getUniformLocation("sNormalMap"), 1);
 	deviceResource->commandBuffer->endRecording();
 	deviceResource->commandBuffer->submit();
 	return true;
@@ -207,7 +200,7 @@ bool OGLESBumpMap::loadPipeline()
 		Used to initialize variables that are not dependent on it	(e.g. external modules, loading meshes, etc.)
 		If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESBumpMap::initApplication()
+pvr::Result OGLESBumpMap::initApplication()
 {
 	if (isApiSupported(pvr::Api::OpenGLES3))
 	{
@@ -234,14 +227,14 @@ pvr::Result::Enum OGLESBumpMap::initApplication()
 \brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
 		If the rendering context is lost, quitApplication() will not be called.x
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESBumpMap::quitApplication() {	return pvr::Result::Success;}
+pvr::Result OGLESBumpMap::quitApplication() {	return pvr::Result::Success;}
 
 /*!*********************************************************************************************************************
 \return	Return pvr::Result::Success if no error occurred
 \brief	Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
 		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESBumpMap::initView()
+pvr::Result OGLESBumpMap::initView()
 {
 	context = getGraphicsContext();
 	deviceResource.reset(new DeviceResources());
@@ -257,7 +250,7 @@ pvr::Result::Enum OGLESBumpMap::initView()
 	deviceResource->fboOnScreen = context->createOnScreenFbo(0);
 
 	//	Initialize UIRenderer
-	if (uiRenderer.init(context, deviceResource->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success)
+	if (uiRenderer.init(deviceResource->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
 		return pvr::Result::UnknownError;
@@ -286,7 +279,7 @@ pvr::Result::Enum OGLESBumpMap::initView()
 \brief	Code in releaseView() will be called by PVRShell when theapplication quits or before a change in the rendering context.
 \return	Return Result::Success if no error occurred
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESBumpMap::releaseView()
+pvr::Result OGLESBumpMap::releaseView()
 {
 	deviceResource.reset();
 	uiRenderer.release();
@@ -299,7 +292,7 @@ pvr::Result::Enum OGLESBumpMap::releaseView()
 \return	Return pvr::Result::Success if no error occurred
 \brief	Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
-pvr::Result::Enum OGLESBumpMap::renderFrame()
+pvr::Result OGLESBumpMap::renderFrame()
 {
 	// Calculate the model matrix
 	glm::mat4 mModel = glm::rotate(angleY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::vec3(1.8f));
@@ -358,7 +351,7 @@ void OGLESBumpMap::drawMesh(int nodeIndex)
 			{
 				// Indexed Triangle strips
 				deviceResource->commandBuffer->bindIndexBuffer(deviceResource->ibo[meshId], 0,
-				        mesh.getFaces().getDataType());
+				    mesh.getFaces().getDataType());
 				deviceResource->commandBuffer->drawIndexed(0, mesh.getStripLength(i) + 2, offset * 2, 0, 1);
 			}
 			else
@@ -381,10 +374,10 @@ void OGLESBumpMap::recordCommandBuffer()
 
 	// enqueue the static states which wont be changed through out the frame
 	deviceResource->commandBuffer->bindPipeline(deviceResource->pipe);
-	deviceResource->commandBuffer->setUniformPtr<glm::vec3>(pipeUniformLoc[Uniform::LightDir], 1, &drawPass.lightDir);
+	deviceResource->commandBuffer->setUniformPtr(pipeUniformLoc[Uniform::LightDir], 1, &drawPass.lightDir);
 
 	deviceResource->commandBuffer->bindDescriptorSet(deviceResource->pipe->getPipelineLayout(), 0, deviceResource->imageSamplerDescSet, 0);
-	deviceResource->commandBuffer->setUniformPtr<glm::mat4>(pipeUniformLoc[Uniform::MVPMatrix], 1, &drawPass.mvp);
+	deviceResource->commandBuffer->setUniformPtr(pipeUniformLoc[Uniform::MVPMatrix], 1, &drawPass.mvp);
 	drawMesh(0);
 
 	pvr::api::SecondaryCommandBuffer uiCmdBuffer = context->createSecondaryCommandBufferOnDefaultPool();

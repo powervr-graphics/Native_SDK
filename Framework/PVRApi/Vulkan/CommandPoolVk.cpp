@@ -1,4 +1,11 @@
+/*!
+\brief Vulkan Implementation details CommandPool class.
+\file PVRApi/Vulkan/CommandPoolVk.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRApi/Vulkan/CommandPoolVk.h"
+#include "PVRApi/Vulkan/CommandBufferVk.h"
 #include "PVRApi/Vulkan/ContextVk.h"
 namespace pvr {
 namespace api {
@@ -15,7 +22,7 @@ bool CommandPoolVk_::init()
 }
 CommandPoolVk_::~CommandPoolVk_()
 {
-	if (m_context.isValid())
+	if (_context.isValid())
 	{
 		destroy();
 		Log(Log.Warning, "Command pool was still active after context destruction");
@@ -24,12 +31,12 @@ CommandPoolVk_::~CommandPoolVk_()
 
 void CommandPoolVk_::destroy()
 {
-	if (m_context.isValid() && handle != VK_NULL_HANDLE)
+	if (_context.isValid() && handle != VK_NULL_HANDLE)
 	{
 		VkDevice dev = native_cast(*getContext()).getDevice();
 		vk::DestroyCommandPool(dev, handle, NULL);
 		handle = VK_NULL_HANDLE;
-		m_context.reset();
+		_context.reset();
 	}
 }
 }
@@ -40,8 +47,7 @@ CommandBuffer CommandPool_::allocateCommandBuffer()
 	api::CommandBuffer commandBuffer;
 	CommandPool this_ref = static_cast<vulkan::CommandPoolVk_*>(this)->getReference();
 
-	VkDevice device = native_cast(*m_context).getDevice();
-	native::HCommandBuffer_ buffer;
+	native::HCommandBuffer_ cbuff;
 
 	VkCommandBufferAllocateInfo nfo;
 	nfo.commandBufferCount = 1;
@@ -50,13 +56,14 @@ CommandBuffer CommandPool_::allocateCommandBuffer()
 	nfo.pNext = 0;
 	nfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	VkResult res;
-	if ((res = vk::AllocateCommandBuffers(native_cast(*m_context).getDevice(), &nfo, &buffer.handle)) != VK_SUCCESS)
+	if ((res = vk::AllocateCommandBuffers(native_cast(*_context).getDevice(), &nfo, &cbuff.handle)) != VK_SUCCESS)
 	{
-		Log(Log.Error, "CommandBuffer Allocation Failure with error %s. Use another command pool.", vkErrorToStr(res));
+		Log(Log.Error, "CommandBuffer Allocation Failure with error %s. Use another command pool.", nativeVk::vkErrorToStr(res));
 	}
 	else
 	{
-		commandBuffer.construct(m_context, this_ref, buffer);
+		std::auto_ptr<ICommandBufferImpl_> impl(new CommandBufferImplVk_(_context, this_ref, cbuff));
+		commandBuffer.construct(impl);
 	}
 	return commandBuffer;
 }
@@ -64,8 +71,7 @@ SecondaryCommandBuffer CommandPool_::allocateSecondaryCommandBuffer()
 {
 	api::SecondaryCommandBuffer commandBuffer;
 	CommandPool this_ref = static_cast<vulkan::CommandPoolVk_*>(this)->getReference();
-	native::HCommandBuffer_ buffer;
-	VkDevice device = native_cast(*m_context).getDevice();
+	native::HCommandBuffer_ cbuff;
 
 	VkCommandBufferAllocateInfo nfo;
 	nfo.commandBufferCount = 1;
@@ -74,26 +80,18 @@ SecondaryCommandBuffer CommandPool_::allocateSecondaryCommandBuffer()
 	nfo.pNext = 0;
 	nfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	VkResult res;
-	if ((res = vk::AllocateCommandBuffers(native_cast(*m_context).getDevice(), &nfo, &buffer.handle)) != VK_SUCCESS)
+	if ((res = vk::AllocateCommandBuffers(native_cast(*_context).getDevice(), &nfo, &cbuff.handle)) != VK_SUCCESS)
 	{
-		Log(Log.Critical, "CommandBuffer Allocation Failure with error %s. Use another command pool.", vkErrorToStr(res));
+		Log(Log.Critical, "CommandBuffer Allocation Failure with error %s. Use another command pool.", nativeVk::vkErrorToStr(res));
 	}
 	else
 	{
-		commandBuffer.construct(m_context, this_ref, buffer);
+		std::auto_ptr<ICommandBufferImpl_> impl(new CommandBufferImplVk_(_context, this_ref, cbuff));
+		commandBuffer.construct(impl);
 	}
 	return commandBuffer;
 }
 
-const native::HCommandPool_& impl::CommandPool_::getNativeObject() const
-{
-	return native_cast(*this);
-}
-
-native::HCommandPool_& impl::CommandPool_::getNativeObject()
-{
-	return native_cast(*this);
-}
 }
 }
 }

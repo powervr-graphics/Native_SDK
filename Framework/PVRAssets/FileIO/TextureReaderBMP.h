@@ -1,25 +1,21 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/FileIO/TextureReaderBMP.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         An experimental BMP texture reader.
-***********************************************************************************************************************/
+/*!
+\brief An experimental BMP texture reader.
+\file PVRAssets/FileIO/TextureReaderBMP.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
-#include "PVRAssets/Texture/Texture.h"
-#include "PVRAssets/AssetReader.h"
-#include "PVRAssets/FileIO/FileDefinesBMP.h"
+#include "PVRCore/Texture.h"
+#include "PVRCore/Texture/FileDefinesBMP.h"
+#include "PVRCore/IO/AssetReader.h"
 
 namespace pvr {
 namespace assets {
-/*!*********************************************************************************************************************
-\brief Contains classes whose purpose is to read specific storage formats (bmp, POD, pfx, pvr etc.) into PVRAssets classes
-(Texture, Model, Effect etc.).
-***********************************************************************************************************************/
+/// <summary>Contains classes whose purpose is to read specific storage formats (bmp, POD, pfx, pvr etc.) into
+/// PVRAssets classes (Texture, Model, Effect etc.).</summary>
 namespace assetReaders {
-/*!*********************************************************************************************************************
-\brief Experimental BMP Texture reader
-***********************************************************************************************************************/
+/// <summary>Experimental BMP Texture reader</summary>
 class TextureReaderBMP : public AssetReader < Texture >
 {
 public:
@@ -31,15 +27,12 @@ public:
 
 	virtual bool isSupportedFile(Stream& assetStream);
 	virtual std::vector<std::string>  getSupportedFileExtensions();
-	virtual std::string getReaderName();
-	virtual std::string getReaderVersion();
-
 private:
 	virtual bool readNextAsset(Texture& asset);
-	bool m_texturesToLoad;
-	bool m_fileHeaderLoaded;
+	bool _texturesToLoad;
+	bool _fileHeaderLoaded;
 
-	texture_bmp::FileHeader m_fileHeader;
+	texture_bmp::FileHeader _fileHeader;
 
 	bool initializeFile();
 	bool loadImageFromFile(Texture& asset);
@@ -54,12 +47,12 @@ private:
 
 	bool loadRowAligned(Texture& asset, uint32 bytesPerDataEntry, uint32 rowAlignment);
 	bool loadIndexed(Texture& asset, uint32 bytesPerPaletteEntry, uint32 bitsPerDataEntry,
-	                         uint32 numberOfPaletteEntries, uint32 rowAlignment);
+	                 uint32 numberOfPaletteEntries, uint32 rowAlignment);
 	bool loadRunLength(Texture& asset, uint32 bytesPerDataEntry,
-	                           uint32 rowAlignment);
+	                   uint32 rowAlignment);
 	bool loadRunLengthIndexed(Texture& asset, uint32 bytesPerPaletteEntry,
-	                                  uint32 bytesPerDataEntry, uint32 numberOfPaletteEntries,
-	                                  uint32 rowAlignment);
+	                          uint32 bytesPerDataEntry, uint32 numberOfPaletteEntries,
+	                          uint32 rowAlignment);
 };
 
 }

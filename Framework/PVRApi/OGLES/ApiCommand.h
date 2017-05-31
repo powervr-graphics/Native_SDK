@@ -1,19 +1,18 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\ApiCommand.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Contains the ApiCommand interface used by commands that can be enqueued in a CommandBuffer.
-***********************************************************************************************************************/
+/*!
+\brief Contains the ApiCommand interface used by the OpenGL ES classes representing commands that can be enqueued in a
+CommandBuffer.
+\file PVRApi/OGLES/ApiCommand.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
-#include "PVRCore/IGraphicsContext.h"
-#include "PVRNativeApi/ApiErrors.h"
+#include "PVRCore/Interfaces/IGraphicsContext.h"
+#include "PVRNativeApi/OGLES/ApiErrorsGles.h"
 namespace pvr {
 namespace api {
-/*!*********************************************************************************************************************
-\brief Interface for Dynamic commands which can be queued into a CommandBuffer. In specific
-       implementations, contains a stacktrace for the actual submission of the command into the
-       commandbuffer, which can greatly assist debugging.
-***********************************************************************************************************************/
+/// <summary>Interface for Dynamic commands which can be queued into a CommandBuffer. In specific implementations,
+/// contains a stacktrace for the actual submission of the command into the commandbuffer, which can greatly assist
+/// debugging.</summary>
 class ApiCommand
 {
 public:

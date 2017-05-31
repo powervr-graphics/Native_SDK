@@ -1,22 +1,5 @@
 var searchData=
 [
-  ['n',['N',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a263f861a6b143638f7e21bf6c03143af',1,'pvr::Keys']]],
   ['newdemo',['newDemo',['../namespacepvr.html#aacdfd9cc3d99a51f4b534c2b75f40920',1,'pvr']]],
-  ['none',['NONE',['../namespacepvr_1_1_simplified_input.html#ace2de3f709dfe57949e7b224fee4bb4fa40f5102d912c65f7e04cb00ca6ff987d',1,'pvr::SimplifiedInput']]],
-  ['num0',['Num0',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4af6b870e11918a0f7112fc9a7b4d2ea41',1,'pvr::Keys']]],
-  ['num1',['Num1',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4af58a8b6a5c77f497bdaf24dc7f7d5193',1,'pvr::Keys']]],
-  ['num2',['Num2',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a2135ca02fb82c00bc3827639c5f286c8',1,'pvr::Keys']]],
-  ['num3',['Num3',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4ae7a3c11039736bd61bd1c8624612e6de',1,'pvr::Keys']]],
-  ['num4',['Num4',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4ac4c021cdd60e25de35aea855cac71221',1,'pvr::Keys']]],
-  ['num5',['Num5',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a2279316b4be2f6ac3df00c60be56b0c3',1,'pvr::Keys']]],
-  ['num6',['Num6',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4aa741be6c3ec31f55ae0e87f2600cd967',1,'pvr::Keys']]],
-  ['num7',['Num7',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a6beccc5e120525d7fc0ea3f477903179',1,'pvr::Keys']]],
-  ['num8',['Num8',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a6f2992aa8077da57d6d8da2ec78ee1f3',1,'pvr::Keys']]],
-  ['num9',['Num9',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4aafeba836cbe01fc5f56b3e676baa1e76',1,'pvr::Keys']]],
-  ['numadd',['NumAdd',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a597288c4ddd23ad1a77246be300da7a3',1,'pvr::Keys']]],
-  ['numdiv',['NumDiv',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a4b9b6a3a3de27cb4737be7c99d0d6d52',1,'pvr::Keys']]],
-  ['numlock',['NumLock',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a1933964d5a764e07bd0b509175a813af',1,'pvr::Keys']]],
-  ['nummul',['NumMul',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a9e110f232e585b6acebeed88d4737375',1,'pvr::Keys']]],
-  ['numperiod',['NumPeriod',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4a4a0310cbd5342d9b5af15752aac37acb',1,'pvr::Keys']]],
-  ['numsub',['NumSub',['../namespacepvr_1_1_keys.html#a1e943a32bb18373005e898dfb51d88a4af11cb7f88f97953ce05f00bcce49f22e',1,'pvr::Keys']]]
+  ['none',['NONE',['../namespacepvr.html#a9a6da56806c568a6f9833d118c5c8083ab50339a10e1de285ac99d4c3990b8693',1,'pvr']]]
 ];

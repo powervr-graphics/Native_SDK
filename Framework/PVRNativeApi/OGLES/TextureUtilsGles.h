@@ -1,41 +1,42 @@
-/*!*********************************************************************************************************************
-\file         PVRNativeApi\OGLES\TextureUtils.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains OpenGL ES specific Helper utilities. Use only if directly using the underlying API's.
-***********************************************************************************************************************/
+/*!
+\brief Contains OpenGL ES specific Helper utilities. Use only if directly using the underlying API's.
+\file PVRNativeApi/OGLES/TextureUtilsGles.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
-#include "PVRNativeApi/TextureUtils.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
-namespace pvr {
-namespace utils {
-/*!*********************************************************************************************************************
-\brief	Gets the openGL/ES equivalent texture format values, as per the
-		Khronos KTX specification:
-		http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/
-\param[in]			pixelFormat The pixel format (RGBA8888 etc)
-\param[in]			colorSpace  The colorspace   (srgb/lrgb)
-\param[in]			dataType	The datatype     (Float32, unsignedbyte...)
-\param[out]			glInternalFormat Set to The internal format (a GLenum of the specified format GL_RGBA8888_sRGB)
-\param[out]			glFormat         Set to The format (a GLenum of the specified format GL_RGBA)
-\param[out]			glType			 Set to The type	(a GLenum of the specified format GL_FLOAT, GL_UNSIGNED_SHORT_1_5_5_5_REV)
-\param[out]			glTypeSize       Set to the number of components in the format
-\param[out]			isCompressedFormat  Set to true if the format is compressed, false otherwise
-\return			true on success, false if a suitable type cannot be matched
-***********************************************************************************************************************/
-bool getOpenGLFormat(PixelFormat pixelFormat, types::ColorSpace::Enum colorSpace, VariableType::Enum dataType,
-                     uint32& glInternalFormat, uint32& glFormat,
-                     uint32& glType, uint32& glTypeSize, bool& isCompressedFormat);
+#include "PVRCore/Interfaces/IGraphicsContext.h"
+#include "PVRCore/PixelFormat.h"
 
-/*!*********************************************************************************************************************
-\brief Gets OpenGL/ES equivalent texture storage format values, as per the khronos KTX specification
-		http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/
-\param[in]			pixelFormat The pixel format (RGBA8888 etc)
-\param[in]			colorSpace  The colorspace   (srgb/lrgb)
-\param[in]			dataType	The datatype     (Float32, unsignedbyte...)
-\param[out]			glInternalFormat             (a GLenum of the specified format GL_RGBA8888_sRGB)
-\return			true on success, returns false if it cannot find a suitable type
-***********************************************************************************************************************/
-bool getOpenGLStorageFormat(PixelFormat pixelFormat, types::ColorSpace::Enum colorSpace, VariableType::Enum dataType,  GLenum& glInternalFormat);
+namespace pvr {
+namespace nativeGles {
+struct TextureUploadResults
+{
+	/// <summary>The dimensions of the texture created</summary>
+	types::ImageAreaSize textureSize;
+	/// <summary>A native texture handle where the texture was uploaded</summary>
+	native::HTexture_ image;
+	/// <summary>The format of the created texture</summary>
+	PixelFormat format;
+
+	GLsync fenceSync;
+	/// <summary>Will be set to 'true' if the file was of an uncompressed format unsupported by the
+	/// platform, and it was (software) decompressed to a supported uncompressed format</summary>
+	bool isDecompressed;
+	Result result;
+};
+
+/// <summary>Upload a texture to the GPU on the current context, and retrieve the into native handle.</summary>
+/// <param name="context">The PlatformContext to use to upload the texture. This will only be used for queries.</param>
+/// <param name="texture">The pvr::assets::texture to upload to the GPU</param>
+/// <param name="allowDecompress">Set to true to allow to attempt to de-compress unsupported compressed textures.
+/// The textures will be decompressed if ALL of the following are true: The texture is in a compressed format that
+/// can be decompressed by the framework (PVRTC), the platform does NOT support this format (if it is hardware
+/// supported, it will never be decompressed), and this flag is set to true. Default:true.</param>
+/// <returns>A TextureUploadResults object containing the uploaded texture and all necessary information (size, formats,
+/// whether it was actually decompressed, a sync object to wait on. The "result" field will contain Result::Success
+/// on success, errorcode otherwise. See the Texture</returns>
+TextureUploadResults textureUpload(IPlatformContext& context, const Texture& texture, bool allowDecompress = true);
 }
 }

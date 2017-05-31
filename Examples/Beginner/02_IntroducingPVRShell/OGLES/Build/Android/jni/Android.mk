@@ -5,18 +5,18 @@ ASSETDIR := $(PVRSDKDIR)/Examples/Beginner/02_IntroducingPVRShell/OGLES/Build/An
 
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRShell
+# Prebuilt module PVRNativeGles
 include $(CLEAR_VARS)
-LOCAL_MODULE := PVRShell
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRShell.a
+LOCAL_MODULE := PVRNativeGles
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRNativeGles.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVREgl
+# Prebuilt module PVRShell
 include $(CLEAR_VARS)
-LOCAL_MODULE := PVREgl
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVREgl.a
+LOCAL_MODULE := PVRShell
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRShell.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
@@ -43,10 +43,11 @@ LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework \
 
 
 LOCAL_LDLIBS := -lGLESv2 \
+                -latomic \
                 -llog \
                 -landroid
 
-LOCAL_STATIC_LIBRARIES := PVREgl PVRCore android_native_app_glue
+LOCAL_STATIC_LIBRARIES := PVRNativeGles PVRCore android_native_app_glue
 
 
 LOCAL_CFLAGS += $(SDK_BUILD_FLAGS)

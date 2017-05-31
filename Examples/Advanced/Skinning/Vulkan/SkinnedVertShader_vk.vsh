@@ -36,30 +36,13 @@ layout(location = 6) in uvec4 inBoneIndex;
 // perframe / per mesh
 layout(std140,set = 1, binding = 0) uniform Dynamics
 {
-	mat4 BoneMatrixArray0;
-    mat4 BoneMatrixArray1;
-    mat4 BoneMatrixArray2;
-    mat4 BoneMatrixArray3;
-    mat4 BoneMatrixArray4;
-    mat4 BoneMatrixArray5;
-    mat4 BoneMatrixArray6;
-    mat4 BoneMatrixArray7;
-    mat3x3 BoneMatrixArrayIT0;
-    mat3x3 BoneMatrixArrayIT1;
-    mat3x3 BoneMatrixArrayIT2;
-    mat3x3 BoneMatrixArrayIT3;
-    mat3x3 BoneMatrixArrayIT4;
-    mat3x3 BoneMatrixArrayIT5;
-    mat3x3 BoneMatrixArrayIT6;
-    mat3x3 BoneMatrixArrayIT7;
-    int	 BoneCount;
-    float     pad0;
-    float     pad1;
-    float     pad2;
+	mat4 BoneMatrixArray[8];
+    mat3x3 BoneMatrixArrayIT[8];
+    int BoneCount;
 };
 
 // static throughout the lifetime
-layout(packed,set = 2, binding = 0) uniform Statics
+layout(std140,set = 2, binding = 0) uniform Statics
 {
     mat4 ViewProjMatrix;
     vec3 LightPos;
@@ -70,7 +53,7 @@ layout(location = 1) out mediump vec2 vTexCoord;
 
 void main()
 {
-	// On PowerVR SGX it is possible to index the components of a vector
+	// On PowerVR GPUs it is possible to index the components of a vector
 	// with the [] operator. However this can cause trouble with PC
 	// emulation on some hardware so we "rotate" the vectors instead.
 	mediump uvec4 boneIndex = uvec4(inBoneIndex);
@@ -88,17 +71,8 @@ void main()
 	
 	for (lowp int i = 0; i < BoneCount; ++i)
 	{
-		switch (boneIndex.x)
-		{
-			case 0:boneMatrix = BoneMatrixArray0; normalMatrix = BoneMatrixArrayIT0;break;
-			case 1:boneMatrix = BoneMatrixArray1; normalMatrix = BoneMatrixArrayIT1;break;
-			case 2:boneMatrix = BoneMatrixArray2; normalMatrix = BoneMatrixArrayIT2;break;
-			case 3:boneMatrix = BoneMatrixArray3; normalMatrix = BoneMatrixArrayIT3;break;
-			case 4:boneMatrix = BoneMatrixArray4; normalMatrix = BoneMatrixArrayIT4;break;
-			case 5:boneMatrix = BoneMatrixArray5; normalMatrix = BoneMatrixArrayIT5;break;
-			case 6:boneMatrix = BoneMatrixArray6; normalMatrix = BoneMatrixArrayIT6;break;
-			case 7:boneMatrix = BoneMatrixArray7; normalMatrix = BoneMatrixArrayIT7;break;
-		}
+		boneMatrix = BoneMatrixArray[boneIndex.x];
+		normalMatrix = BoneMatrixArrayIT[boneIndex.x];
 
 		position += boneMatrix * vec4(inVertex, 1.0) * boneWeights.x;
 		worldNormal += normalMatrix * inNormal * boneWeights.x;

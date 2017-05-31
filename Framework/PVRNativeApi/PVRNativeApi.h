@@ -1,10 +1,10 @@
-/*!*********************************************************************************************************************
-\file         PVRNativeApi\PVRNativeApi.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Include for the functionality of the PVRNativeApi library. Contains the full PVRNativeApi functionality,
-			  with core plus helpers and libraries.
-***********************************************************************************************************************/
+/*!
+\brief Include for the functionality of the PVRNativeApi library. Contains the full PVRNativeApi functionality, with
+core plus helpers and libraries.
+\file PVRNativeApi/PVRNativeApi.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
 /*****************************************************************************/

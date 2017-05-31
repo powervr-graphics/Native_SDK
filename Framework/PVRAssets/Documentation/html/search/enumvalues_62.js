@@ -1,12 +1,5 @@
 var searchData=
 [
-  ['bc1',['BC1',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849ea105a60ea45458dc0c383ffb3e97921a3',1,'pvr::CompressedPixelFormat']]],
-  ['bc2',['BC2',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849ea8d7c156a33340c565bd2a816332a6c3e',1,'pvr::CompressedPixelFormat']]],
-  ['bc3',['BC3',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849ea4c0633bb1249b89a65a100e44468b2a8',1,'pvr::CompressedPixelFormat']]],
-  ['bc4',['BC4',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849ea248b8223d61720c4588a765b14fd2ecf',1,'pvr::CompressedPixelFormat']]],
-  ['bc5',['BC5',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849eae4b8d0f3baf3a231f75cd605c4859198',1,'pvr::CompressedPixelFormat']]],
-  ['bc6',['BC6',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849ea09b2e5b87c6357e7d5dde28d6554dc70',1,'pvr::CompressedPixelFormat']]],
-  ['bc7',['BC7',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849ead6bcaf55ff117981cd479da870b62938',1,'pvr::CompressedPixelFormat']]],
   ['binormal',['Binormal',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a9c7fc25da85e52ac9030ba41dcbd5108',1,'pvr::assets::PVRShamanSemantics']]],
   ['blendfuncconstantalpha',['BlendFuncConstantAlpha',['../classpvr_1_1assets_1_1_model_1_1_material.html#a80058fe081fb36cb9a54c2b4cc609f07ad147bf9808bf8e5b1e1dfd8ebce59d1e',1,'pvr::assets::Model::Material']]],
   ['blendfuncconstantcolor',['BlendFuncConstantColor',['../classpvr_1_1assets_1_1_model_1_1_material.html#a80058fe081fb36cb9a54c2b4cc609f07a34b784749e4834c78bd4aa32baa8df96',1,'pvr::assets::Model::Material']]],
@@ -30,11 +23,9 @@ var searchData=
   ['blendopmin',['BlendOpMin',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1ab89bcd9b84ed7c1f710669dae302afac',1,'pvr::assets::Model::Material']]],
   ['blendopreversesubtract',['BlendOpReverseSubtract',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1a358e8cfd35f9a403f4ca08fbb25ce898',1,'pvr::assets::Model::Material']]],
   ['blendopsubtract',['BlendOpSubtract',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1adb0c6374a15167c09a7ff38b11f55be0',1,'pvr::assets::Model::Material']]],
-  ['bmp',['BMP',['../namespacepvr_1_1assets_1_1_texture_file_format.html#acfb6ddbbeb038ec6e4b7cbad9e38c024adbfae20e0754bbbac8a0a0fefd990a68',1,'pvr::assets::TextureFileFormat']]],
   ['bonecount',['BoneCount',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a9fced9be6ff64baa9e1ddd07ea652d17',1,'pvr::assets::PVRShamanSemantics']]],
   ['boneindex',['BoneIndex',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926ac802fb2c3b0abb0072402ce93f8a48f6',1,'pvr::assets::PVRShamanSemantics']]],
   ['bonematrixarray',['BoneMatrixArray',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926aa86428acf365c402a41141bb940f58cf',1,'pvr::assets::PVRShamanSemantics']]],
   ['bonematrixarrayit',['BoneMatrixArrayIT',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926acf8c02c3c5de362e4a8cc8bba65a862e',1,'pvr::assets::PVRShamanSemantics']]],
-  ['boneweight',['BoneWeight',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926aac96cce9904a8cab0bc75865414431c4',1,'pvr::assets::PVRShamanSemantics']]],
-  ['bw1bpp',['BW1bpp',['../namespacepvr_1_1_compressed_pixel_format.html#a3ebca165ea8d9b6f9edcc9b37aa2849eab9c81834d6c5362b1a00312bfc040aa2',1,'pvr::CompressedPixelFormat']]]
+  ['boneweight',['BoneWeight',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926aac96cce9904a8cab0bc75865414431c4',1,'pvr::assets::PVRShamanSemantics']]]
 ];

@@ -62,6 +62,8 @@ END
 GnomeToy.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\GnomeToy.pod"
 
 // RCDATA: Shaders
+FragShader_vk.fsh		RCDATA		"..\\..\\FragShader_vk.fsh"
+VertShader_vk.vsh		RCDATA		"..\\..\\VertShader_vk.vsh"
 FragShader_vk.spv		RCDATA		"..\\..\\FragShader_vk.spv"
 VertShader_vk.spv		RCDATA		"..\\..\\VertShader_vk.spv"
 

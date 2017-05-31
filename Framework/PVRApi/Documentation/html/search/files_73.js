@@ -1,19 +1,8 @@
 var searchData=
 [
   ['sampler_2eh',['Sampler.h',['../_sampler_8h.html',1,'']]],
-  ['samplergles_2ecpp',['SamplerGles.cpp',['../_sampler_gles_8cpp.html',1,'']]],
-  ['samplergles_2eh',['SamplerGles.h',['../_sampler_gles_8h.html',1,'']]],
-  ['samplervk_2ecpp',['SamplerVk.cpp',['../_sampler_vk_8cpp.html',1,'']]],
-  ['samplervk_2eh',['SamplerVk.h',['../_sampler_vk_8h.html',1,'']]],
+  ['scenehierarchy_2eh',['SceneHierarchy.h',['../_scene_hierarchy_8h.html',1,'']]],
+  ['scenetraversalpipeline_2eh',['SceneTraversalPipeline.h',['../_scene_traversal_pipeline_8h.html',1,'']]],
   ['shader_2eh',['Shader.h',['../_shader_8h.html',1,'']]],
-  ['shadergles_2ecpp',['ShaderGles.cpp',['../_shader_gles_8cpp.html',1,'']]],
-  ['shadergles_2eh',['ShaderGles.h',['../_shader_gles_8h.html',1,'']]],
-  ['shadervk_2ecpp',['ShaderVk.cpp',['../_shader_vk_8cpp.html',1,'']]],
-  ['shadervk_2eh',['ShaderVk.h',['../_shader_vk_8h.html',1,'']]],
-  ['statecontainergles_2eh',['StateContainerGles.h',['../_state_container_gles_8h.html',1,'']]],
-  ['structuredmemory_2eh',['StructuredMemory.h',['../_structured_memory_8h.html',1,'']]],
-  ['sync_2ecpp',['Sync.cpp',['../_sync_8cpp.html',1,'']]],
-  ['sync_2eh',['Sync.h',['../_sync_8h.html',1,'']]],
-  ['syncvk_2ecpp',['SyncVk.cpp',['../_sync_vk_8cpp.html',1,'']]],
-  ['syncvk_2eh',['SyncVk.h',['../_sync_vk_8h.html',1,'']]]
+  ['sync_2eh',['Sync.h',['../_sync_8h.html',1,'']]]
 ];

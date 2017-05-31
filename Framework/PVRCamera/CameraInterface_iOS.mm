@@ -1,17 +1,19 @@
-/*!****************************************************************************
-\file         PVRCamera\CameraInterface_iOS.mm
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief		An iOS implementation of the PVRCamera camera streaming interface.
-******************************************************************************/
+/*!
+\brief An iOS implementation of the PVRCamera camera streaming interface.
+\file PVRCamera/CameraInterface_iOS.mm
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #import <AVFoundation/AVFoundation.h>
 #include "CameraInterface.h"
 #import <OpenGLES/EAGL.h>
 #include "PVRNativeApi/OGLES/OpenGLESBindings.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
-#include "PVRCore/IGraphicsContext.h"
+#include "PVRCore/Interfaces/IGraphicsContext.h"
 #include "PVRApi/ApiObjects/Texture.h"
+#include "PVRApi/OGLES/TextureGles.h"
+
 //Description  Delegate Obj-C class required by AVCaptureVideoDataOutput
 @interface CameraInterfaceImpl : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>
 {
@@ -38,7 +40,7 @@
 - (BOOL) intialiseCaptureSessionFromCamera:(pvr::HWCamera::Enum)cam withError:(NSString**)error
 {
 	pAVSessionPreset = AVCaptureSessionPresetHigh;
-	cameraTransformation = glm::rotate(glm::pi<pvr::float32>() * 0.5f,glm::vec3(0.0f,0.0f,1.0f));
+    cameraTransformation = glm::translate(glm::vec3(1.0f,0.0f,0.0f)) * glm::scale(glm::vec3(-1.0f,-1.0f,1.0f)) * glm::rotate(glm::pi<pvr::float32>()*-.5f,glm::vec3(0.0f,0.0f,1.0f));
 	// Get the current context.
 	EAGLContext* pContext = [EAGLContext currentContext];
 
@@ -311,9 +313,10 @@ namespace pvr{
 pvr::api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& context, const pvr::native::HTexture_& cameraTexture)
 {
 	pvr::Log(pvr::Log.Verbose, "Camera interface util: Handle %d, Target 0x%08X", cameraTexture.handle, cameraTexture.target);
-    api::TextureStore texStore = context->createTexture();
-    texStore->getNativeObject() = cameraTexture;
-    api::TextureView tex; tex.construct(texStore); return tex;
+	api::TextureStore texStore = context->createTexture();
+	static_cast<native::HTexture_&>(api::native_cast(*texStore)) = cameraTexture;
+    
+    return context->createTextureView(texStore, types::ImageSubresourceRange(types::ImageLayersSize(1,1),types::ImageSubresource(0,0)));
 }
 }
-//!\cond NO_DOXYGEN
+//!\endcond

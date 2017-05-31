@@ -9,17 +9,17 @@
 
 #include "PVRScopeStats.h"
 #include "PVRApi/Api.h"
-#include "PVRUIRenderer/UIRenderer.h"
+#include "PVREngineUtils/UIRenderer.h"
 
 struct PVRGraphCounter
 {
 	std::vector<pvr::float32> valueCB;	// Circular buffer of counter values
 	pvr::uint32   writePosCB;	// Current write position of circular buffer
 	bool showGraph; // Show the graph
-	glm::vec4 color;
+	pvr::uint32 colorLutIdx;// color lookup table index
 	pvr::float32 maximum;
 
-	PVRGraphCounter() : writePosCB(0), showGraph(true), color(1.f, 0.0f, 0.0f, 1.0f), maximum(0.0f) {}
+	PVRGraphCounter() : writePosCB(0), showGraph(true), maximum(0.0f) {}
 };
 
 namespace Configuration {
@@ -27,6 +27,7 @@ enum
 {
 	VertexArrayBinding = 0,
 	NumVerticesGraphBorder = 6,
+	MaxSwapChains = 8
 };
 }
 
@@ -37,16 +38,16 @@ protected:
 	std::vector<glm::vec2> verticesGraphContent;
 	glm::vec2 verticesGraphBorder[Configuration::NumVerticesGraphBorder];
 
-	SPVRScopeCounterReading	m_reading;
+	SPVRScopeCounterReading	reading;
 
-	pvr::uint32		m_numCounter;
-	SPVRScopeImplData*		m_scopeData;
-	SPVRScopeCounterDef*	m_counters;
-	pvr::uint32		m_activeGroup;			// most recent group seen
-	pvr::uint32		m_activeGroupSelect;	// users desired group
-	bool m_isActiveGroupChanged;
+	pvr::uint32		numCounter;
+	SPVRScopeImplData*		scopeData;
+	SPVRScopeCounterDef*	counters;
+	pvr::uint32		activeGroup;			// most recent group seen
+	pvr::uint32		activeGroupSelect;	// users desired group
+	bool isActiveGroupChanged;
 
-	pvr::uint32		m_sizeCB;
+	pvr::uint32		sizeCB;
 
 	struct ActiveCounter
 	{
@@ -55,42 +56,44 @@ protected:
 		pvr::ui::Text    legendValue;
 	};
 
-	std::vector<PVRGraphCounter>	m_graphCounters;
-	std::vector<ActiveCounter>	m_activeCounters;
-	std::vector<pvr::uint16>    m_activeCounterIds;
+	std::vector<PVRGraphCounter>	graphCounters;
+	std::vector<ActiveCounter>	activeCounters;
+	std::vector<pvr::uint16>    activeCounterIds;
 
-	pvr::float32	m_x, m_y, m_pixelW, m_graphH;
+	pvr::float32	x, y, pixelW, graphH;
 
-	pvr::uint32		m_updateInterval, m_updateIntervalCounter;
+	pvr::uint32		updateInterval, updateIntervalCounter;
 
-	pvr::uint32		m_idxFPS;
-	pvr::uint32		m_idx2D;
-	pvr::uint32		m_idx3D;
-	pvr::uint32		m_idxTA;
-	pvr::uint32		m_idxCompute;
-	pvr::uint32		m_idxShaderPixel;
-	pvr::uint32		m_idxShaderVertex;
-	pvr::uint32		m_idxShaderCompute;
+	pvr::uint32		idxFPS;
+	pvr::uint32		idx2D;
+	pvr::uint32		idx3D;
+	pvr::uint32		idxTA;
+	pvr::uint32		idxCompute;
+	pvr::uint32		idxShaderPixel;
+	pvr::uint32		idxShaderVertex;
+	pvr::uint32		idxShaderCompute;
 
-	pvr::api::ParentableGraphicsPipeline m_pipeDrawLine;
-	pvr::api::GraphicsPipeline m_pipeDrawLineStrip;
-	pvr::api::Buffer m_vertexBufferGraphBorder;
-	pvr::api::Buffer m_indexBuffer;
-
-	pvr::uint32 colorId;
-	pvr::GraphicsContext m_device;
-	pvr::IAssetProvider& m_assetProvider;
-	pvr::ui::UIRenderer& m_uiRenderer;
-
+	pvr::api::ParentableGraphicsPipeline _pipeDrawLine;
+	pvr::api::GraphicsPipeline _pipeDrawLineStrip;
+	pvr::api::Buffer _vertexBufferGraphBorder;
+	pvr::api::Buffer _indexBuffer;
+	pvr::utils::StructuredMemoryView _uboColor;
+	pvr::api::DescriptorSet	 _uboColorDescriptor;
+	pvr::ui::UIRenderer* _uiRenderer;
+	pvr::IAssetProvider* _assetProvider;
+	pvr::GraphicsContext _context;
+	pvr::uint32	_esShaderColorId;
+	bool _isInitialzed;
 public:
-	PVRScopeGraph(pvr::GraphicsContext& device, pvr::IAssetProvider& assetProvider, pvr::ui::UIRenderer& uiRenderer);
+	PVRScopeGraph();
+
 	~PVRScopeGraph();
 
 	// Disallow copying
 	PVRScopeGraph(const PVRScopeGraph&); // deleted
 	PVRScopeGraph& operator=(const PVRScopeGraph&);// deleted
 
-	void recordCommandBuffer(pvr::api::CommandBufferBase cmdBuffer);
+	void recordCommandBuffer(pvr::api::SecondaryCommandBuffer &cmdBuffer, pvr::uint32 swapChain);
 	void recordUIElements();
 	void ping(pvr::float32 dt_millis);
 
@@ -99,7 +102,7 @@ public:
 	bool isCounterBeingDrawn(pvr::uint32 nCounter) const;
 	bool isCounterPercentage(const pvr::uint32 nCounter) const;
 	bool setActiveGroup(const pvr::uint32 nActiveGroup);
-	pvr::uint32 getActiveGroup() const { return m_activeGroup; }
+	pvr::uint32 getActiveGroup() const { return activeGroup; }
 	pvr::float32 getMaximumOfData(pvr::uint32 nCounter);
 	pvr::float32 getMaximum(pvr::uint32 nCounter);
 	void  setMaximum(pvr::uint32 nCounter, pvr::float32 fMaximum);
@@ -121,7 +124,7 @@ public:
 	pvr::float32 getStandardShaderCompute() const;
 	pvr::int32 getStandardShaderComputeIndex() const;
 
-	pvr::uint32 getCounterNum() const { return m_numCounter; }
+	pvr::uint32 getCounterNum() const { return numCounter; }
 
 	const char* getCounterName(const pvr::uint32 i) const;
 	int getCounterGroup(const pvr::uint32 i) const;
@@ -129,11 +132,13 @@ public:
 	void position(const pvr::uint32 nViewportW, const pvr::uint32 nViewportH, pvr::Rectanglei const& graph);
 
 	void setUpdateInterval(const pvr::uint32 nUpdateInverval);
+	bool isInitialized()const{ return _isInitialzed; }
 
+	bool init(pvr::GraphicsContext &device, pvr::IAssetProvider& assetProvider, pvr::ui::UIRenderer& uiRenderer,
+			  const pvr::api::RenderPass& renderPass, std::string& outMsg);
 protected:
-	bool init();
 	void updateBufferLines();
 	void update(pvr::float32 dt_millis);
 	void filter();
-
+	bool createPipeline(pvr::Api api, const pvr::api::RenderPass &renderPass, std::string &errorStr);
 };

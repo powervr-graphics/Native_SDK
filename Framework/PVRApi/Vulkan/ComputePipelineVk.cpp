@@ -1,93 +1,69 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\OGLES\ComputePipelineVk.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains the OpenGL ES 2/3 implementation of the all-important pvr::api::GraphicsPipeline object.
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
-#include "PVRApi/ApiObjects/ComputePipeline.h"
-#include "PVRNativeApi/Vulkan/VulkanBindings.h"
-#include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
-#include "PVRNativeApi/ShaderUtils.h"
-#include "PVRApi/Vulkan/ShaderVk.h"
+/*!
+\brief Contains the OpenGL ES 2/3 implementation of the all-important pvr::api::ComputePipeline object.
+\file PVRApi/Vulkan/ComputePipelineVk.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+#include "PVRApi/Vulkan/ComputePipelineVk.h"
 #include "PVRApi/Vulkan/ContextVk.h"
-#include "PVRNativeApi/Vulkan/PopulateVulkanCreateInfo.h"
-
 namespace pvr {
 namespace api {
-namespace impl {
-//!\cond NO_DOXYGEN
-class PushPipeline;
-class PopPipeline;
-class ResetPipeline;
-template<typename> class PackagedBindable;
-template<typename, typename> class PackagedBindableWithParam;
+namespace vulkan {
 
-class ParentableComputePipeline_;
-//!\endcond
+ComputePipelineImplVk::~ComputePipelineImplVk() { destroy(); }
 
-//////IMPLEMENTATION INFO/////
-/*The desired class hierarchy was
----- OUTSIDE INTERFACE ----
-* ParentableGraphicsPipeline(PGP)			: GraphicsPipeline(GP)
--- Inside implementation --
-* ParentableGraphicsPipelineGles(PGPGles)	: GraphicsPipelineGles(GPGles)
-* GraphicsPipelineGles(GPGles)				: GraphicsPipeline(GP)
----------------------------
-This would cause a diamond inheritance, with PGPGles inheriting twice from GP, once through PGP and once through GPGles.
-To avoid this issue while maintaining the outside interface, the pImpl idiom is being used instead of the inheritance
-chains commonly used for all other PVRApi objects. The same idiom (for the same reasons) is found in the CommandBuffer.
-*/////////////////////////////
+ComputePipelineImplVk::ComputePipelineImplVk(GraphicsContext context) : _context(context),
+	_pipeCache(VK_NULL_HANDLE) {}
 
-
-class ComputePipelineImplementationDetails : public native::HPipeline_
+bool ComputePipelineImplVk::init(const ComputePipelineCreateParam& desc)
 {
-public:
-	ComputePipelineImplementationDetails(GraphicsContext& context) : m_context(context), m_initialized(false) { }
-	~ComputePipelineImplementationDetails() { destroy(); }
+	_createParam = desc;
+	_createParam.pipelineLayout =
+	  (desc.pipelineLayout.isValid() ? desc.pipelineLayout : PipelineLayout());
 
-	void destroy();
-	PipelineLayout pipelineLayout;
-	ParentableComputePipeline_* m_parent;
-	vulkan::ContextVkWeakRef m_context;
-	Result::Enum init(ComputePipelineCreateParam& desc, ParentableComputePipeline_* parent = NULL);
-	bool m_initialized;
-	bool createPipeline();
-};
+	if (!getPipelineLayout().isValid())
+	{
+		assertion(0, "Invalid PipelineLayout");
+		return false;
+	}
+	vulkan::ComputePipelineCreateInfoVulkan createInfoFactory(desc, _context);
+	createInfoFactory.createInfo.flags = 0;
+	createInfoFactory.createInfo.flags |= VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
 
-ComputePipeline_::~ComputePipeline_() { destroy(); }
+	return nativeVk::vkIsSuccessful(vk::CreateComputePipelines(pvr::api::native_cast(*_context).getDevice(),
+	                                VK_NULL_HANDLE, 1, &createInfoFactory.createInfo,
+	                                NULL, &handle), "Create ComputePipeline");
+}
 
-
-inline void ComputePipelineImplementationDetails::destroy()
+void ComputePipelineImplVk::destroy()
 {
-	vk::DestroyPipeline(m_context->getDevice(), handle, NULL);
-	m_parent = 0;
+	if (_context.isValid() && handle)
+	{
+		vk::DestroyPipeline(pvr::api::native_cast(*_context).getDevice(), handle, NULL);
+		handle = VK_NULL_HANDLE;
+	}
+	if (_pipeCache != VK_NULL_HANDLE)
+	{
+		vk::DestroyPipelineCache(pvr::api::native_cast(*_context).getDevice(), _pipeCache, NULL);
+		_pipeCache = VK_NULL_HANDLE;
+	}
 }
 
-const native::HPipeline_& ComputePipeline_::getNativeObject() const { return *pimpl; }
-
-native::HPipeline_& ComputePipeline_::getNativeObject() { return *pimpl; }
-
-void ComputePipeline_::destroy() { return pimpl->destroy(); }
-
-ComputePipeline_::ComputePipeline_(GraphicsContext& context)
+void ComputePipelineImplVk::getUniformLocation(const char8**, uint32, int32*) const
 {
-	pimpl.reset(new ComputePipelineImplementationDetails(context));
+	assertion(false, "VULKAN DOES NOT SUPPORT SHADER REFLECTION");
 }
 
-Result::Enum ComputePipeline_::init(const ComputePipelineCreateParam& desc)
+int32 ComputePipelineImplVk::getUniformLocation(const char8*) const
 {
-	vulkan::ComputePipelineCreateInfoVulkan createInfoFactory(desc, pimpl->m_context);
-	pimpl->pipelineLayout = desc.pipelineLayout;
-	vk::CreateComputePipelines(pimpl->m_context->getDevice(), VK_NULL_HANDLE, 1, &createInfoFactory.createInfo, NULL, &pimpl->handle);
-	return Result::Success;
+	assertion(false, "VULKAN DOES NOT SUPPORT SHADER REFLECTION");
+	return -1;
 }
 
-const pvr::api::PipelineLayout& ComputePipeline_::getPipelineLayout() const
-{
-	return pimpl->pipelineLayout;
+
+const ComputePipelineCreateParam& ComputePipelineImplVk::getCreateParam() const { return _createParam; }
+
+}
+
 }
 }
-}
-}
-//!\endcond

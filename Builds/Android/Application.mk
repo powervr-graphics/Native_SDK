@@ -1,4 +1,4 @@
-SDK_BUILD_FLAGS := -Wno-switch -Wno-unused-value
+SDK_BUILD_FLAGS := -Wno-switch -Wno-unused-value -Wno-inconsistent-missing-override
 APP_PLATFORM := android-15
 APP_STL := c++_static
 NDK_TOOLCHAIN_VERSION := clang

@@ -1,11 +1,10 @@
-/*!*********************************************************************************************************************
-\file         PVRNativeApi\OGLES\LibraryLoaderGles.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         This file contains OpenGL ES bindings with function pointers. The PowerVR Framework uses them to allow unified
-              access to OpenGL ES 2 and OpenGL ES 3 context throught the same functions.
-			  Function pointer loading is done with the initGl function which is normally called by the PVR Shell.
-***********************************************************************************************************************/
+/*!
+\brief This file contains OpenGL ES bindings with function pointers. The PowerVR Framework uses them to allow
+unified access to OpenGL ES 2 and OpenGL ES 3 context throught the same functions. Function pointer loading is
+done with the initGl function which is normally called by the PVR Shell.\file PVRNativeApi/OGLES/LibraryLoaderGles.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRNativeApi/OGLES/OpenGLESHeaders.h"
 #if BUILD_API_MAX>3
@@ -16,29 +15,26 @@
 #include "ApiGles2.h"
 #endif
 
-#include "PVRCore/NativeLibrary.h"
+#include "PVRCore/Base/NativeLibrary.h"
 #include "PVRNativeApi/OGLES/ApiGlesExt.h"
 
 #ifdef MemoryBarrier
 #undef MemoryBarrier
 #endif
-/*!*********************************************************************************************************************
-\brief This class contains function pointers to all OpenGL ES 2,3 and 3.1 functions. These function pointers will be populated
-       on the initGl call, but should only be used when compatible OpenGL ES contexts are current. Use normally, using the gl
-	   class as a namespace. For example gl::BindBuffer(GL_UNIFORM_BUFFER, myBuffer);
-***********************************************************************************************************************/
+/// <summary>This class contains function pointers to all OpenGL ES 2,3 and 3.1 functions. These function pointers
+/// will be populated on the initGl call, but should only be used when compatible OpenGL ES contexts are current.
+/// Use normally, using the gl class as a namespace. For example gl::BindBuffer(GL_UNIFORM_BUFFER, myBuffer);
+/// </summary>
 class gl
 {
 public:
 	//Call this function once before using the OpenGL namespace. Do not call during static initialisation phase as it uses static global components.
-	/*!*******************************************************************************************************************
-	\brief Call once per application run to populate the function pointers. PVRShell calls this on context creation.
-	*********************************************************************************************************************/
+	/// <summary>Call once per application run to populate the function pointers. PVRShell calls this on context
+	/// creation.</summary>
 	static void initGl();
-	/*!*******************************************************************************************************************
-	\brief Call once per application run to release the OpenGL library. PVRShell calls this on exit.
-	*********************************************************************************************************************/
+	/// <summary>Call once per application run to release the OpenGL library. PVRShell calls this on exit.</summary>
 	static void releaseGl();
+//!\cond NO_DOXYGEN
 
 	// Es2 functions
 	static PROC_ES2_glActiveTexture ActiveTexture;
@@ -362,5 +358,6 @@ public:
 	static PROC_ES31_glGetMultisamplefv GetMultisamplefv;
 	static PROC_ES31_glGetTexLevelParameteriv GetTexLevelParameteriv;
 	static PROC_ES31_glGetTexLevelParameterfv GetTexLevelParameterfv;
+//!\endcond
 #endif
 };

@@ -31,12 +31,11 @@ MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 #define VK_USE_PLATFORM_ANDROID_KHR
 #endif
 #define VK_PROTOTYPES
-#include "vulkan/vulkan.h"
 #include <algorithm>
 #include <cstdlib>
 #include "PVRShell/PVRShell.h"
-#include "PVRPlatformGlue/Vulkan/PlatformHandlesVulkanGlue.h"
 #include "PVRNativeApi/Vulkan/VulkanBindings.h"
+#include "PVRNativeApi/Vulkan/PlatformHandlesVulkanGlue.h"
 #include "PVRNativeApi/Vulkan/BufferUtilsVk.h"
 void vulkanSuccessOnDie(VkResult result, const char* msg)
 {
@@ -48,7 +47,7 @@ void vulkanSuccessOnDie(VkResult result, const char* msg)
 }
 const char* VertShaderName = "VertShader_vk.spv";
 const char* FragShaderName = "FragShader_vk.spv";
-struct App;
+class App;
 typedef std::vector<VkFramebuffer> MultiFbo;
 using namespace pvr;
 
@@ -175,7 +174,7 @@ class App : public pvr::Shell
 	pvr::IPlatformContext* platformContext;
 	VkCommandPool cmdPool;
 
-	pvr::Result::Enum initApplication() {	return pvr::Result::Success;	}
+	pvr::Result initApplication() {	return pvr::Result::Success;	}
 
 	MultiFbo createOnScreenFbo(VkRenderPass& renderPass);
 
@@ -184,17 +183,17 @@ class App : public pvr::Shell
 	VkRenderPass createOnScreenRenderPass(VkAttachmentLoadOp colorLoad = VK_ATTACHMENT_LOAD_OP_CLEAR,
 	                                      VkAttachmentStoreOp colorStore = VK_ATTACHMENT_STORE_OP_STORE,
 	                                      VkAttachmentLoadOp dsLoad = VK_ATTACHMENT_LOAD_OP_CLEAR,
-	                                      VkAttachmentStoreOp dsStore = VK_ATTACHMENT_STORE_OP_STORE);
+	                                      VkAttachmentStoreOp dsStore = VK_ATTACHMENT_STORE_OP_DONT_CARE);
 
 	VkDevice& getDevice() { return platformContext->getNativePlatformHandles().context.device; }
 
-	pvr::Result::Enum initView();
+	pvr::Result initView();
 
-	pvr::Result::Enum releaseView();
+	pvr::Result releaseView();
 
-	pvr::Result::Enum quitApplication() {	return pvr::Result::Success;	}
+	pvr::Result quitApplication() {	return pvr::Result::Success;	}
 
-	pvr::Result::Enum renderFrame();
+	pvr::Result renderFrame();
 
 	bool loadShader(pvr::Stream::ptr_type stream, VkShaderModule& outShader);
 
@@ -207,12 +206,10 @@ class App : public pvr::Shell
 	void setupVertexAttribs(VkVertexInputBindingDescription* bindings, VkVertexInputAttributeDescription* attributes,
 	                        VkPipelineVertexInputStateCreateInfo& createInfo);
 
-	bool createBuffer(pvr::uint32 size, types::BufferBindingUse::Bits usage, native::HBuffer_& outBuffer);
-
-	void createFrameBuffer();
+	bool createBuffer(pvr::uint32 size, types::BufferBindingUse usage, native::HBuffer_& outBuffer);
 };
 
-pvr::Result::Enum App::initView()
+pvr::Result App::initView()
 {
 	platformContext = &getPlatformContext();
 	vk::initVk(platformContext->getNativePlatformHandles().context.instance,
@@ -221,10 +218,10 @@ pvr::Result::Enum App::initView()
 		VkCommandPoolCreateInfo cmdPoolCreateInfo = {};
 		cmdPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		cmdPoolCreateInfo.pNext = NULL;
-		cmdPoolCreateInfo.queueFamilyIndex = platformContext->getNativePlatformHandles().graphicsQueueIndex;
+		cmdPoolCreateInfo.queueFamilyIndex = platformContext->getNativePlatformHandles().universalQueueIndex;
 		vk::CreateCommandPool(platformContext->getNativePlatformHandles().context.device, &cmdPoolCreateInfo, NULL, &cmdPool);
 	}
-	// create the framebuffer
+	// create the renderpass and framebuffer
 	renderPass = createOnScreenRenderPass();
 	framebuffer = createOnScreenFbo(renderPass);
 
@@ -235,8 +232,14 @@ pvr::Result::Enum App::initView()
 	return pvr::Result::Success;
 }
 
-pvr::Result::Enum App::releaseView()
+pvr::Result App::releaseView()
 {
+	auto& handles = platformContext->getNativePlatformHandles();
+	vk::QueueWaitIdle(handles.mainQueue());
+	for (uint32 i = 0; i < getSwapChainLength(); ++i)
+	{
+		vk::DestroyFramebuffer(getDevice(), framebuffer[i], NULL);
+	}
 	vk::DestroyRenderPass(getDevice(), renderPass, NULL);
 	vk::DestroyPipelineLayout(getDevice(), emptyPipelayout, NULL);
 	vk::DestroyPipeline(getDevice(), opaquePipeline, NULL);
@@ -247,14 +250,14 @@ pvr::Result::Enum App::releaseView()
 	return pvr::Result::Success;
 }
 
-inline static void submit_command_buffers(VkQueue queue, VkDevice device, VkCommandBuffer* cmdBuffs,
-        pvr::uint32 numCmdBuffs = 1, VkSemaphore* waitSems = NULL, pvr::uint32 numWaitSems = 0,
-        VkSemaphore* signalSems = NULL, pvr::uint32 numSignalSems = 0, VkFence fence = VK_NULL_HANDLE)
+inline static void submit_command_buffers(
+  VkQueue queue, VkCommandBuffer* cmdBuffs,
+    pvr::uint32 numCmdBuffs = 1, VkSemaphore* waitSems = NULL, pvr::uint32 numWaitSems = 0,
+    VkSemaphore* signalSems = NULL, pvr::uint32 numSignalSems = 0, VkFence fence = VK_NULL_HANDLE)
 {
 	VkPipelineStageFlags pipeStageFlags = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-	VkSubmitInfo nfo;
+	VkSubmitInfo nfo={};
 	nfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	nfo.pNext = 0;
 	nfo.waitSemaphoreCount = numWaitSems;
 	nfo.pWaitSemaphores = waitSems;
 	nfo.pWaitDstStageMask = &pipeStageFlags;
@@ -265,13 +268,11 @@ inline static void submit_command_buffers(VkQueue queue, VkDevice device, VkComm
 	vulkanSuccessOnDie(vk::QueueSubmit(queue, 1, &nfo, fence), "CommandBufferBase::submitCommandBuffers failed");
 }
 
-pvr::Result::Enum App::renderFrame()
+pvr::Result App::renderFrame()
 {
-	VkResult presentResult;
-	VkSubmitInfo sSubmitInfo = {};
 	auto& handles = platformContext->getNativePlatformHandles();
 	pvr::uint32 swapchainindex = getPlatformContext().getSwapChainIndex();
-	submit_command_buffers(handles.graphicsQueue, getDevice(), &cmdBuffer[swapchainindex], 1,
+	submit_command_buffers(handles.mainQueue(), &cmdBuffer[swapchainindex], 1,
 	                       &handles.semaphoreCanBeginRendering[swapchainindex], handles.semaphoreCanBeginRendering[swapchainindex] != 0,
 	                       &handles.semaphoreFinishedRendering[swapchainindex], handles.semaphoreFinishedRendering[swapchainindex] != 0,
 	                       handles.fenceRender[swapchainindex]);
@@ -312,9 +313,9 @@ void App::recordCommandBuffer()
 
 	VkRenderPassBeginInfo renderPassBeginInfo;
 	VkClearValue clearVals[2] = { 0 };
-	clearVals[0].color.float32[0] = 0.6f;
-	clearVals[0].color.float32[1] = 0.8f;
-	clearVals[0].color.float32[2] = 1.f;
+	clearVals[0].color.float32[0] = 0.00f;
+	clearVals[0].color.float32[1] = 0.70f;
+	clearVals[0].color.float32[2] = .67f;
 	clearVals[0].color.float32[3] = 1.0f;
 	clearVals[1].depthStencil.depth = 1.0f;
 	clearVals[1].depthStencil.stencil = 0xFF;
@@ -393,8 +394,8 @@ void App::createPipeline()
 	viewports[0].maxDepth = 1.0f;
 	viewports[0].x = 0;
 	viewports[0].y = 0;
-	viewports[0].width = getWidth();
-	viewports[0].height = getHeight();
+	viewports[0].width = static_cast<pvr::float32>(getWidth());
+	viewports[0].height = static_cast<pvr::float32>(getHeight());
 
 	pipeCreate.vp.pViewports = viewports;
 	pipeCreate.vp.viewportCount = 1;
@@ -413,8 +414,7 @@ void App::createPipeline()
 	pipeCreate.shaderStages[1].module = fragmentShaderModule;
 	pipeCreate.shaderStages[1].pName = "main";
 	attachments[0].blendEnable = VK_FALSE;
-	vulkanSuccessOnDie(vk::CreateGraphicsPipelines(getDevice(), NULL, 1,
-	                   &pipeCreate.vkPipeInfo, NULL, &opaquePipeline), "Failed to create the pipeline");
+	vulkanSuccessOnDie(vk::CreateGraphicsPipelines(getDevice(), VK_NULL_HANDLE, 1, &pipeCreate.vkPipeInfo, NULL, &opaquePipeline), "Failed to create the pipeline");
 	vk::DestroyShaderModule(getDevice(), vertexShaderModule, NULL);
 	vk::DestroyShaderModule(getDevice(), fragmentShaderModule, NULL);
 }
@@ -456,10 +456,10 @@ void App::setupVertexAttribs(VkVertexInputBindingDescription* bindings, VkVertex
 	createInfo.vertexAttributeDescriptionCount = 1;
 }
 
-bool App::createBuffer(pvr::uint32 size, types::BufferBindingUse::Bits usage, native::HBuffer_& outBuffer)
+bool App::createBuffer(pvr::uint32 size, types::BufferBindingUse usage, native::HBuffer_& outBuffer)
 {
-	return pvr::apiUtils::vulkan::createBuffer(getDevice(), getPlatformContext().getNativePlatformHandles().deviceMemProperties,
-	        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, usage, size, outBuffer, NULL);
+	return pvr::utils::vulkan::createBufferAndMemory(getDevice(), getPlatformContext().getNativePlatformHandles().deviceMemProperties,
+	       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, usage, size, outBuffer, NULL);
 }
 
 
@@ -478,8 +478,8 @@ MultiFbo App::createOnScreenFbo(VkRenderPass& renderPass)
 	{
 		VkImageView imageViews[] =
 		{
-			platformContext->getNativeDisplayHandle().fb.colorImageViews[i],
-			platformContext->getNativeDisplayHandle().fb.depthStencilImageView[i]
+			platformContext->getNativeDisplayHandle().onscreenFbo.colorImageViews[i],
+			platformContext->getNativeDisplayHandle().onscreenFbo.depthStencilImageView[i]
 		};
 		fboInfo.pAttachments = imageViews;
 		vulkanSuccessOnDie(vk::CreateFramebuffer(getDevice(), &fboInfo, NULL, &outFbo[i]), "Failed to create the fbo");
@@ -488,7 +488,7 @@ MultiFbo App::createOnScreenFbo(VkRenderPass& renderPass)
 }
 
 VkRenderPass App::createOnScreenRenderPass(VkAttachmentLoadOp colorLoad, VkAttachmentStoreOp colorStore,
-        VkAttachmentLoadOp dsLoad, VkAttachmentStoreOp dsStore)
+    VkAttachmentLoadOp dsLoad, VkAttachmentStoreOp dsStore)
 {
 	VkRenderPassCreateInfo renderPassInfo = {};
 	VkAttachmentDescription attachmentDesc[2] = {0};
@@ -502,7 +502,7 @@ VkRenderPass App::createOnScreenRenderPass(VkAttachmentLoadOp colorLoad, VkAttac
 	attachmentDesc[0].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	attachmentDesc[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	attachmentDesc[0].samples = VK_SAMPLE_COUNT_1_BIT;
-	attachmentDesc[0].format = platformContext->getNativeDisplayHandle().fb.colorFormat;
+	attachmentDesc[0].format = platformContext->getNativeDisplayHandle().onscreenFbo.colorFormat;
 	attachmentDesc[0].loadOp = colorLoad;
 	attachmentDesc[0].storeOp = colorStore;
 	attachmentDesc[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -511,13 +511,19 @@ VkRenderPass App::createOnScreenRenderPass(VkAttachmentLoadOp colorLoad, VkAttac
 	attachmentDesc[1].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	attachmentDesc[1].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	attachmentDesc[1].samples = VK_SAMPLE_COUNT_1_BIT;
-	attachmentDesc[1].format = platformContext->getNativeDisplayHandle().fb.depthStencilFormat;
+	attachmentDesc[1].format = platformContext->getNativeDisplayHandle().onscreenFbo.depthStencilFormat;
 	attachmentDesc[1].loadOp = dsLoad;
 	attachmentDesc[1].storeOp = dsStore;
-	attachmentDesc[1].stencilLoadOp = dsLoad;
-	attachmentDesc[1].stencilStoreOp = dsStore;
+	attachmentDesc[1].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachmentDesc[1].stencilStoreOp =  VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
-	VkAttachmentReference attachmentRef[2] = { {0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }, {1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } };
+	VkAttachmentReference attachmentRef[2] =
+	{
+		{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
+		{1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL }
+	};
+
+	// setup subpass descriptio
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = attachmentRef;
 	subpass.pDepthStencilAttachment = &attachmentRef[1];

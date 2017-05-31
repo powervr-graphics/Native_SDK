@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanIntroducingPVRApi
-DEPENDS =  PVRCore PVRShell PVRAssets PVRVulkanGlue PVRUIRenderer PVRVulkan PVRNativeVulkan
-LIBRARIES =  PVRNativeVulkan PVRVulkan PVRUIRenderer PVRVulkanGlue PVRAssets PVRShell PVRCore
+DEPENDS =  PVRCore PVRShell PVRAssets PVRNativeVulkan PVRVulkan PVREngineUtils
+LIBRARIES =  PVREngineUtils PVRVulkan PVRNativeVulkan PVRAssets PVRShell PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
@@ -19,6 +19,8 @@ OBJECTS +=	\
 RESOURCES += \
            VertShader_vk.spv\
            FragShader_vk.spv\
+           VertShader_vk.vsh\
+           FragShader_vk.fsh\
 
 COMMON_RESOURCES += \
            GnomeWood.pvr\

@@ -1,13 +1,5 @@
 var searchData=
 [
-  ['texture_2ecpp',['Texture.cpp',['../_texture_8cpp.html',1,'']]],
-  ['texture_2eh',['Texture.h',['../_texture_8h.html',1,'']]],
-  ['texturedefines_2eh',['TextureDefines.h',['../_texture_defines_8h.html',1,'']]],
-  ['textureformats_2eh',['TextureFormats.h',['../_texture_formats_8h.html',1,'']]],
-  ['textureheader_2ecpp',['TextureHeader.cpp',['../_texture_header_8cpp.html',1,'']]],
-  ['textureheader_2eh',['TextureHeader.h',['../_texture_header_8h.html',1,'']]],
-  ['textureheaderwithmetadata_2ecpp',['TextureHeaderWithMetaData.cpp',['../_texture_header_with_meta_data_8cpp.html',1,'']]],
-  ['textureheaderwithmetadata_2eh',['TextureHeaderWithMetaData.h',['../_texture_header_with_meta_data_8h.html',1,'']]],
   ['texturereaderbmp_2ecpp',['TextureReaderBMP.cpp',['../_texture_reader_b_m_p_8cpp.html',1,'']]],
   ['texturereaderbmp_2eh',['TextureReaderBMP.h',['../_texture_reader_b_m_p_8h.html',1,'']]],
   ['texturereaderdds_2ecpp',['TextureReaderDDS.cpp',['../_texture_reader_d_d_s_8cpp.html',1,'']]],

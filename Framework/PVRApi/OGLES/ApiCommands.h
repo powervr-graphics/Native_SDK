@@ -1,24 +1,22 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\ApiCommands.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Internal classes that are used by the CommandBuffer to represent user commands. Each class corresponds to a
-              CommandBuffer command of the same name.
-***********************************************************************************************************************/
+/*!
+\brief Internal classes that are used by the CommandBuffer to represent user commands. Each class corresponds to a
+CommandBuffer command of the same name.
+\file PVRApi/OGLES/ApiCommands.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRApi/OGLES/ApiCommand.h"
-#include "PVRAssets/Model/Mesh.h"
 #include "PVRApi/ApiObjects/RenderPass.h"
 #include "PVRApi/ApiObjects/Fbo.h"
 #include "PVRApi/ApiObjects/DescriptorSet.h"
-#include "PVRCore/RingBuffer.h"
+#include "PVRCore/DataStructures/RingBuffer.h"
 #include <vector>
 namespace pvr {
 class IGraphicsContext;
 namespace api {
 namespace impl {
 
-/*! \cond NO_DOXYGEN*/
 class PushPipeline : public ApiCommand
 {
 public:
@@ -48,7 +46,7 @@ public:
 class BindDescriptorSets : public ApiCommand
 {
 public:
-	BindDescriptorSets(types::PipelineBindPoint::Enum bindingPoint, const api::PipelineLayout& pipelineLayout,
+	BindDescriptorSets(types::PipelineBindPoint bindingPoint, const api::PipelineLayout& pipelineLayout,
 	                   const DescriptorSet* set, uint32 numSet, const uint32* dynamicOffsets, uint32 numDynamicOffset) :
 		set(set, set + numSet), dynamicOffsets(dynamicOffsets, dynamicOffsets + numDynamicOffset) {}
 private:
@@ -68,16 +66,65 @@ private:
 	void execute_private(impl::CommandBufferBase_& cmdBuff);
 };
 
+class ClearColorImage : public ApiCommand
+{
+public:
+
+	ClearColorImage(pvr::api::TextureView& image, glm::vec4 clearColor, const pvr::uint32 baseMipLevel = 0u,
+	                const pvr::uint32 baseArrayLayer = 0u, const pvr::uint32 layerCount = 1u)
+		: imageToClear(image), clearColor(clearColor), baseMipLevel(baseMipLevel),
+		  baseArrayLayer(baseArrayLayer), layerCount(layerCount)
+	{}
+
+private:
+	pvr::api::TextureView& imageToClear;
+	glm::vec4 clearColor;
+	pvr::uint32 baseMipLevel;
+	pvr::uint32 baseArrayLayer;
+	pvr::uint32 layerCount;
+	void execute_private(impl::CommandBufferBase_& cmdBuff);
+};
+
+class ClearDepthStencilImage : public ApiCommand
+{
+public:
+
+	ClearDepthStencilImage(pvr::api::TextureView& image, float clearDepth, pvr::uint32 clearStencil, const pvr::uint32 baseMipLevel = 0u,
+	                       const pvr::uint32 baseArrayLayer = 0u, const pvr::uint32 layerCount = 1u)
+		: imageToClear(image), clearDepth(clearDepth), clearStencil(clearStencil),
+		  baseMipLevel(baseMipLevel),
+		  baseArrayLayer(baseArrayLayer), layerCount(layerCount)
+	{}
+
+private:
+	pvr::api::TextureView& imageToClear;
+	float clearDepth;
+	pvr::uint32 clearStencil;
+	pvr::uint32 baseMipLevel;
+	pvr::uint32 baseArrayLayer;
+	pvr::uint32 layerCount;
+	void execute_private(impl::CommandBufferBase_& cmdBuff);
+};
+
 class ClearColorAttachment : public ApiCommand
 {
 public:
 
-	ClearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 const& clearColor, pvr::Rectanglei const& clearRect)
-		: clearConst(attachmentCount, clearColor), clearRect(attachmentCount, clearRect)
+	ClearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 const& clearColor, pvr::uint32 rectCount, pvr::Rectanglei const& clearRect)
+		: clearConst(attachmentCount, clearColor), clearRect(rectCount, clearRect)
 	{}
 
-	ClearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 const* clearColor, pvr::Rectanglei const* clearRect)
-	{}
+	ClearColorAttachment(pvr::uint32 attachmentCount, glm::vec4 const* clearColor, pvr::uint32 rectCount, pvr::Rectanglei const* clearRect)
+	{
+		for (unsigned int i = 0; i < attachmentCount; i++)
+		{
+			this->clearConst.push_back(clearColor[i]);
+		}
+		for (unsigned int i = 0; i < rectCount; i++)
+		{
+			this->clearRect.push_back(clearRect[i]);
+		}
+	}
 private:
 	std::vector<glm::vec4> clearConst;
 	std::vector<pvr::Rectanglei> clearRect;
@@ -163,14 +210,14 @@ private:
 class BindIndexBuffer : public ApiCommand
 {
 public:
-	BindIndexBuffer(const api::Buffer& buffer, uint32 offset, types::IndexType::Enum indexType)
+	BindIndexBuffer(const api::Buffer& buffer, uint32 offset, types::IndexType indexType)
 		: buffer(buffer), offset(offset), indexType(indexType) {}
 
 private:
 	void execute_private(impl::CommandBufferBase_&);
 	api::Buffer buffer;
 	uint32 offset;
-	types::IndexType::Enum indexType;
+	types::IndexType indexType;
 };
 
 class DrawArrays : public ApiCommand
@@ -190,25 +237,27 @@ private:
 class BeginRenderPass : public ApiCommand
 {
 public:
-	BeginRenderPass(api::Fbo& fbo, const Rectanglei& renderArea, const glm::vec4& clearColor
-	                = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), float32 clearDepth = 1.f, uint32 clearStencil = 0) :
-		m_fbo(fbo), m_renderArea(renderArea), m_clearDepth(clearDepth), m_clearStencil(clearStencil)
+	BeginRenderPass(api::Fbo& fbo, const Rectanglei& renderArea,
+	                const glm::vec4& clearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
+	                float32 clearDepth = types::PipelineDefaults::DepthStencilStates::DepthClearValue,
+	                uint32 clearStencil = 0) :
+		_fbo(fbo), _renderArea(renderArea), _clearDepth(clearDepth), _clearStencil(clearStencil)
 	{
-		m_clearColor.push_back(clearColor);
+		_clearColor.push_back(clearColor);
 	}
 
 	BeginRenderPass(api::Fbo& fbo, const Rectanglei& renderArea, const glm::vec4*& clearColor, uint32 numClearColor,
 	                float32 clearDepth = 1.f, uint32 clearStencil = 0) :
-		m_fbo(fbo), m_renderArea(renderArea), m_clearDepth(clearDepth), m_clearStencil(clearStencil),
-		m_clearColor(clearColor, clearColor + numClearColor)
+		_fbo(fbo), _renderArea(renderArea), _clearDepth(clearDepth), _clearStencil(clearStencil),
+		_clearColor(clearColor, clearColor + numClearColor)
 	{}
 
 private:
-	api::Fbo m_fbo;
-	std::vector<glm::vec4> m_clearColor;
-	const Rectanglei m_renderArea;
-	float32 m_clearDepth;
-	uint32 m_clearStencil;
+	api::Fbo _fbo;
+	std::vector<glm::vec4> _clearColor;
+	const Rectanglei _renderArea;
+	float32 _clearDepth;
+	uint32 _clearStencil;
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
@@ -220,25 +269,25 @@ public:
 
 class SetScissor : public ApiCommand
 {
-	const Rectanglei m_scissor;
+	const Rectanglei _scissor;
 public:
-	SetScissor(pvr::Rectanglei const& scissor) : m_scissor(scissor) {}
+	SetScissor(pvr::Rectanglei const& scissor) : _scissor(scissor) {}
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
 class SetViewport : public ApiCommand
 {
-	const Rectanglei m_viewport;
+	const Rectanglei _viewport;
 public:
-	SetViewport(pvr::Rectanglei const& viewport) : m_viewport(viewport) {}
+	SetViewport(pvr::Rectanglei const& viewport) : _viewport(viewport) {}
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
 class SetDepthBound : public ApiCommand
 {
-	const pvr::float32 m_min, m_max;
+	const pvr::float32 _min, _max;
 public:
-	SetDepthBound(pvr::float32 min, pvr::float32 max) : m_min(min), m_max(max) {}
+	SetDepthBound(pvr::float32 min, pvr::float32 max) : _min(min), _max(max) {}
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
@@ -257,44 +306,44 @@ public:
 
 class SetStencilCompareMask : public ApiCommand
 {
-	const types::StencilFace::Enum m_face;
-	const pvr::uint32 m_mask;
+	const types::StencilFace _face;
+	const pvr::uint32 _mask;
 public:
-	SetStencilCompareMask(types::StencilFace::Enum face, pvr::uint32 mask) : m_face(face), m_mask(mask) {}
+	SetStencilCompareMask(types::StencilFace face, pvr::uint32 mask) : _face(face), _mask(mask) {}
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
 class SetStencilWriteMask : public ApiCommand
 {
-	const types::StencilFace::Enum m_face;
-	const pvr::uint32 m_mask;
+	const types::StencilFace _face;
+	const pvr::uint32 _mask;
 public:
-	SetStencilWriteMask(types::StencilFace::Enum face, pvr::uint32 mask) : m_face(face), m_mask(mask) {}
+	SetStencilWriteMask(types::StencilFace face, pvr::uint32 mask) : _face(face), _mask(mask) {}
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
 class SetStencilReference : public ApiCommand
 {
-	const types::StencilFace::Enum m_face;
-	const pvr::uint32 m_ref;
+	const types::StencilFace _face;
+	const pvr::uint32 _ref;
 public:
-	SetStencilReference(types::StencilFace::Enum face, pvr::uint32 ref) : m_face(face), m_ref(ref) {}
+	SetStencilReference(types::StencilFace face, pvr::uint32 ref) : _face(face), _ref(ref) {}
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
 class SetLineWidth : public ApiCommand
 {
-	const pvr::float32 m_lineWidth;
+	const pvr::float32 _lineWidth;
 public:
-	SetLineWidth(pvr::float32 lineWidth) : m_lineWidth(lineWidth) {}
+	SetLineWidth(pvr::float32 lineWidth) : _lineWidth(lineWidth) {}
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
 class SetBlendConstants : public ApiCommand
 {
-	const glm::vec4 m_constants;
+	const glm::vec4 _constants;
 public:
-	SetBlendConstants(glm::vec4 const& constants) : m_constants(constants) {}
+	SetBlendConstants(glm::vec4 const& constants) : _constants(constants) {}
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 };
 
@@ -303,393 +352,76 @@ class DispatchCompute : public ApiCommand
 public:
 	DispatchCompute(uint32 numGroupDispatchX, uint32 numGroupDispatchY = 1, uint32 numGroupDispatchZ = 1)
 	{
-		m_numGroupXYZ[0] = numGroupDispatchX, m_numGroupXYZ[1] = numGroupDispatchY,
-		                   m_numGroupXYZ[2] = numGroupDispatchZ;
+		_numGroupXYZ[0] = numGroupDispatchX, _numGroupXYZ[1] = numGroupDispatchY,
+		                   _numGroupXYZ[2] = numGroupDispatchZ;
 	}
 private:
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
-	uint32 m_numGroupXYZ[3];
+	uint32 _numGroupXYZ[3];
 };
 
 
 #ifndef PVR_NO_UNIFORM_SUPPORT
 
-#pragma region Uniforms
-
 template<typename _type> class SetUniformPtr;
 template<typename _type> class SetUniform;
 
 
-template<>
-class SetUniform<float32> : public ApiCommand
-{
-	int32 location;
-	float32 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, float32 val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
+#define SET_UNIFORM_CLASS_DEFINITION(type) \
+template<> class SetUniform<type> : public ApiCommand \
+{	int32 location;  type val; \
+	void execute_private(impl::CommandBufferBase_& cmdBuff); \
+public: \
+	SetUniform(int32 location, type val) : location(location), val(val) {} \
+	virtual ~SetUniform() {} }; \
+\
+template<> class SetUniformPtr<type> : public ApiCommand \
+{ 	const type* val; int32 location; int32 count; \
+	void execute_private(impl::CommandBufferBase_& cmdBuff); \
+public: \
+	SetUniformPtr(int32 location, uint32 count, const type* val) : val(val), location(location), count(count) {} \
+	virtual ~SetUniformPtr() {} \
+}; \
 
-template<>
-class SetUniform<int32> : public ApiCommand
-{
-	int32 location;
-	int32 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, int32 val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
+#define SET_UNIFORM_CLASS_DEFINITION_LARGE(type) \
+template<> class SetUniform<type> : public ApiCommand \
+{	int32 location;  type val; \
+	void execute_private(impl::CommandBufferBase_& cmdBuff); \
+public: \
+	SetUniform(int32 location, const type& val) : location(location), val(val) {} \
+	virtual ~SetUniform() {} }; \
+\
+template<> class SetUniformPtr<type> : public ApiCommand \
+{ 	const type* val; int32 location; int32 count; \
+	void execute_private(impl::CommandBufferBase_& cmdBuff); \
+public: \
+	SetUniformPtr(int32 location, uint32 count, const type* val) : val(val), location(location), count(count) {} \
+	virtual ~SetUniformPtr() {} \
+}; \
 
-template<>
-class SetUniform<uint32> : public ApiCommand
-{
-	int32 location;
-	uint32 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(uint32 location, uint32 val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniformPtr<float32> : public ApiCommand
-{
-	const float32* val;
-	int32 location;
-	int32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const float32* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<int32> : public ApiCommand
-{
-	const int32* val;
-	int32 location;
-	int32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-
-public:
-	SetUniformPtr(int32 location, int32 count, const int32* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<uint32> : public ApiCommand
-{
-	const uint32* val;
-	int32 location;
-	int32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(uint32 location, uint32 count, const uint32* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniform<glm::ivec2> : public ApiCommand
-{
-	int32 location;
-	glm::ivec2 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::ivec2& val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::uvec2> : public ApiCommand
-{
-	int32 location;
-	glm::uvec2 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::uvec2& val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::vec2> : public ApiCommand
-{
-	int32 location;
-	glm::vec2 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::vec2& val) : location(location), val(val) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniformPtr<glm::ivec2> : public ApiCommand
-{
-	int32 location;
-	int32 count;
-	const glm::ivec2* val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, int32 count, const glm::ivec2* val) : location(location), count(count), val(val) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::uvec2> : public ApiCommand
-{
-	const glm::uvec2* val;
-	int32 location;
-	int32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, int32 count, const glm::uvec2* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::vec2> : public ApiCommand
-{
-	const glm::vec2* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::vec2* val) : val(val), location(location), count(count) {}
-
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniform<glm::ivec3> : public ApiCommand
-{
-	int32 location;
-	glm::ivec3 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::ivec3& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, int32 x, int32 y, int32 z) : location(location), val(x, y, z) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::uvec3> : public ApiCommand
-{
-	int32 location;
-	glm::uvec3 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::uvec3& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, uint32 x, uint32 y, uint32 z) : location(location), val(x, y, z) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::vec3> : public ApiCommand
-{
-	int32 location;
-	glm::vec3 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::vec3& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, float32 x, float32 y, float32 z) : location(location), val(x, y, z) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniformPtr<glm::ivec3> : public ApiCommand
-{
-	const glm::ivec3* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::ivec3* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::uvec3> : public ApiCommand
-{
-	const glm::uvec3* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::uvec3* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::vec3> : public ApiCommand
-{
-	const glm::vec3* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::vec3* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniform<glm::ivec4> : public ApiCommand
-{
-	int32 location;
-	glm::ivec4 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::ivec4& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, int32 x, int32 y, int32 z, int32 w) :
-		location(location), val(x, y, z, w) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::uvec4> : public ApiCommand
-{
-	int32 location;
-	glm::uvec4 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::uvec4& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, uint32 x, uint32 y, uint32 z, uint32 w) :
-		location(location), val(x, y, z, w) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::vec4> : public ApiCommand
-{
-	int32 location;
-	glm::vec4 val;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::vec4& val) : location(location), val(val) {}
-
-	SetUniform(int32 location, float32 x, float32 y, float32 z, float32 w) :
-		location(location), val(x, y, z, w) {}
-
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::mat2> : public ApiCommand
-{
-	glm::mat2 val;
-	int32 location;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::mat2& val) : val(val), location(location) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::mat3> : public ApiCommand
-{
-	glm::mat3 val;
-	int32 location;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::mat3& val) : val(val), location(location) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniform<glm::mat4> : public ApiCommand
-{
-	glm::mat4 val;
-	int32 location;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniform(int32 location, const glm::mat4& val) : val(val), location(location) {}
-	virtual ~SetUniform() {}
-};
-
-template<>
-class SetUniformPtr<glm::ivec4> : public ApiCommand
-{
-	const glm::ivec4* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::ivec4* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::uvec4> : public ApiCommand
-{
-	const glm::uvec4* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::uvec4* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::vec4> : public ApiCommand
-{
-	const glm::vec4* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::vec4* val) : val(val), location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::mat2> : public ApiCommand
-{
-	const glm::mat2* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::mat2* val) : val(val),
-		location(location), count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::mat3> : public ApiCommand
-{
-	const glm::mat3* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::mat3* val) : val(val), location(location),
-		count(count) {}
-	virtual ~SetUniformPtr() {}
-};
-
-template<>
-class SetUniformPtr<glm::mat4> : public ApiCommand
-{
-	const glm::mat4* val;
-	int32 location;
-	uint32 count;
-	void execute_private(impl::CommandBufferBase_& cmdBuff);
-public:
-	SetUniformPtr(int32 location, uint32 count, const glm::mat4* val) : val(val), location(location), count(count) { }
-	virtual ~SetUniformPtr() {}
-};
-#pragma endregion
+SET_UNIFORM_CLASS_DEFINITION(float32)
+SET_UNIFORM_CLASS_DEFINITION(int32)
+SET_UNIFORM_CLASS_DEFINITION(uint32)
+SET_UNIFORM_CLASS_DEFINITION(glm::vec2)
+SET_UNIFORM_CLASS_DEFINITION(glm::ivec2)
+SET_UNIFORM_CLASS_DEFINITION(glm::uvec2)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::vec3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::ivec3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::uvec3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::vec4)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::ivec4)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::uvec4)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat2)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat2x3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat2x4)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat3x2)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat3x3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat3x4)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat4x2)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat4x3)
+SET_UNIFORM_CLASS_DEFINITION_LARGE(glm::mat4x4)
 
 #endif
-
-/*! \endcond */
-
 
 struct SyncWaitResult
 {
@@ -704,20 +436,17 @@ struct SyncWaitResult
 
 class CreateFenceSync_;
 
-/*!*********************************************************************************************************************
-\brief  The Sync object can be used both as an API command, or to be directly queried by the application.
-Each time the CommandBuffer is submitted, an underlying sync object is added to the list. If the MaxSize is reached, the
-first sync object to be submitted is discarder. The user normally queries/uses the syncs last-to-first with an index. This
-technique makes it trivial to use frame-lag techniques, like double/triple buffering.
-Each Sync starts in a non-signaled state, and becomes Signaled as soon as the GPU actually executes it previous command.
-All of the functions work on a last-to-first indexing - passing 0 refers to the last command buffer submission, and from
-there backwards in time, until getMaxSize() - 1, which is the earliest sync point used.
-Use:
-Get a sync object with insertFenceSync().
-2) Use clientWait() to CPU-block until the Sync becomes Signaled.
-3) Use isSignaled() to query if the Sync is Signaled, without blocking.
-4) Use commandBuffer.serverSync() to force the implementation to wait for the specified sync object before proceeding.
-***********************************************************************************************************************/
+/// <summary>The Sync object can be used both as an API command, or to be directly queried by the application.
+/// Each time the CommandBuffer is submitted, an underlying sync object is added to the list. If the MaxSize is
+/// reached, the first sync object to be submitted is discarder. The user normally queries/uses the syncs
+/// last-to-first with an index. This technique makes it trivial to use frame-lag techniques, like double/triple
+/// buffering. Each Sync starts in a non-signaled state, and becomes Signaled as soon as the GPU actually executes
+/// it previous command. All of the functions work on a last-to-first indexing - passing 0 refers to the last
+/// command buffer submission, and from there backwards in time, until getMaxSize() - 1, which is the earliest sync
+/// point used. Use: Get a sync object with insertFenceSync(). 2) Use clientWait() to CPU-block until the Sync
+/// becomes Signaled. 3) Use isSignaled() to query if the Sync is Signaled, without blocking. 4) Use
+/// commandBuffer.serverSync() to force the implementation to wait for the specified sync object before proceeding.
+/// </summary>
 class Sync_
 {
 	friend class ::pvr::api::impl::CreateFenceSync_;
@@ -730,62 +459,50 @@ class Sync_
 	void serverWait(uint32 which);
 public:
 
-	/*!*********************************************************************************************************************
-	\brief  Manually discards the last howMany sync points. Specialised use only.
-	\param  howMany The number of sync points to discard. Non positive numbers have no effect.
-	***********************************************************************************************************************/
+	/// <summary>Manually discards the last howMany sync points. Specialised use only.</summary>
+	/// <param name="howMany">The number of sync points to discard. Non positive numbers have no effect.</param>
 	void discardLast(int32 howMany = 1);
 
-	/*!*********************************************************************************************************************
-	\brief  Get the maximum number of syncs that will be created. Each time the command buffer that created this sync object
-	(with the insertFenceSync call) is submitted, another sync is created. When MaxSize is reached, the first sync to be
-	created is discarded.
-	\return The maximum number of sync points that this object represents.
-	***********************************************************************************************************************/
+	/// <summary>Get the maximum number of syncs that will be created. Each time the command buffer that created this
+	/// sync object (with the insertFenceSync call) is submitted, another sync is created. When MaxSize is reached,
+	/// the first sync to be created is discarded.</summary>
+	/// <returns>The maximum number of sync points that this object represents.</returns>
 	uint32 getMaxSize() { return this->maxSize; }
 
-	/*!*********************************************************************************************************************
-	\brief  Set the maximum number of syncs that will be created. Each time the command buffer that created this sync object
-	(with the insertFenceSync call) is submitted, another sync is created. When MaxSize is reached, the first sync to be
-	created is discarded.
-	\param maxSize The maximum number of sync points that this object represents will be set to this number
-	***********************************************************************************************************************/
+	/// <summary>Set the maximum number of syncs that will be created. Each time the command buffer that created this
+	/// sync object (with the insertFenceSync call) is submitted, another sync is created. When MaxSize is reached,
+	/// the first sync to be created is discarded.</summary>
+	/// <param name="maxSize">The maximum number of sync points that this object represents will be set to this number
+	/// </param>
 	void setMaxSize(uint32 maxSize) { this->maxSize = maxSize; }
 
-	/*!*********************************************************************************************************************
-	\brief  Call this function to test if a Sync is signalled, without blocking for it. Each call to "submit" on the command
-			buffer that created this sync, will push a new sync point to the front of this queue.
-	\param which The ordinal, newest-to-oldest, of the sync point to query (0=last submit, 1=previous frame etc.)
-	\return True if the Sync is signaled (hence its previous commands are complete), false otherwise
-	***********************************************************************************************************************/
+	/// <summary>Call this function to test if a Sync is signalled, without blocking for it. Each call to "submit" on
+	/// the command buffer that created this sync, will push a new sync point to the front of this queue.</summary>
+	/// <param name="which">The ordinal, newest-to-oldest, of the sync point to query (0=last submit, 1=previous frame
+	/// etc.)</param>
+	/// <returns>True if the Sync is signaled (hence its previous commands are complete), false otherwise</returns>
 	bool isSignaled(uint32 which);
 
-	/*!*********************************************************************************************************************
-	\brief  Call this function to wait on the sync object (i.e. wait for it to become Signalled, meaning that any commands
-			preceding it are complete)
-	\param timeout Optional: Provide a timeout. If 0 is passed, the wait is infinite.
-	\param which The fence sync to wait on (0 is the latest, maxSize is the earliest).
-	\return * SyncResult::Ok if the Sync was either already signaled or became signaled within the timeout (the preceding
-	        commands have finished)
-			* SyncResult::CommandBufferNotSubmitted if the commandBuffer that would generat the Sync has not yet been
-			submitted, hence the sync will never be signalled (so waiting on it would probably result in a deadlock).
-			* SyncResult::TimeoutExpired, if the Sync was NOT signalled, but the timeout expired.
-			* SyncResult::Failed, if the implementation failed to wait (for example, the sync was already destroyed)
-	***********************************************************************************************************************/
-	SyncWaitResult::Enum clientWait(uint32 which, uint64 timeout = 0);
+	/// <summary>Call this function to wait on the sync object (i.e. wait for it to become Signalled, meaning that any
+	/// commands preceding it are complete)</summary>
+	/// <param name="timeout">Optional: Provide a timeout. If 0 is passed, the wait is infinite.</param>
+	/// <param name="which">The fence sync to wait on (0 is the latest, maxSize is the earliest).</param>
+	/// <returns>* SyncResult::Ok if the Sync was either already signaled or became signaled within the timeout (the
+	/// preceding commands have finished) * SyncResult::CommandBufferNotSubmitted if the commandBuffer that would
+	/// generat the Sync has not yet been submitted, hence the sync will never be signalled (so waiting on it would
+	/// probably result in a deadlock). * SyncResult::TimeoutExpired, if the Sync was NOT signalled, but the timeout
+	/// expired. * SyncResult::Failed, if the implementation failed to wait (for example, the sync was already
+	/// destroyed)</returns>
+	SyncWaitResult clientWait(uint32 which, uint64 timeout = 0);
 };
 }
 
-/*!****************************************************************************************************************
-\brief Reference-counted handle to a Sync object.
-Default constructor returns an empty handle that wraps a NULL object.
-Use the CommandBuffer's insertFenceSync to construct a Sync.
-As with all reference-counted handles, access with the arrow operator.
-*******************************************************************************************************************/
+/// <summary>Reference-counted handle to a Sync object. Default constructor returns an empty handle that wraps a NULL object.
+/// Use the CommandBuffer's insertFenceSync to construct a Sync. As with all reference-counted handles, access with
+/// the arrow operator.</summary>
 typedef RefCountedResource<impl::Sync_> Sync;
 
 namespace impl {
-//!\cond NO_DOXYGEN
 class CreateFenceSync_ : public ApiCommand
 {
 	friend class ::pvr::api::impl::CommandBufferBase_;
@@ -793,12 +510,9 @@ class CreateFenceSync_ : public ApiCommand
 	void execute_private(impl::CommandBufferBase_& cmdBuffer);
 	CreateFenceSync_() { syncObject.construct(); }
 };
-//!\endcond
 }
-/*!*********************************************************************************************************************
-\brief  A memory barrier into the command stream. Used to signify that some types of pending operations from
-before the barrier must have finished before the commands after the barrier start executing.
-***********************************************************************************************************************/
+/// <summary>A memory barrier into the command stream. Used to signify that some types of pending operations
+/// from before the barrier must have finished before the commands after the barrier start executing.</summary>
 class PipelineBarrier : public ApiCommand
 {
 public:

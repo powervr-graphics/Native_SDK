@@ -1,27 +1,23 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/BoundingBox.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief		Functionality to extract and work with the Bounding Boxes of PVRAssets (meshes etc.)
-***********************************************************************************************************************/
+/*!
+\brief Functionality to extract and work with the Bounding Boxes of PVRAssets (meshes etc.)
+\file PVRAssets/BoundingBox.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include <PVRAssets/Model.h>
-#include <PVRCore/AxisAlignedBox.h>
+#include <PVRCore/Math/AxisAlignedBox.h>
 namespace pvr {
 namespace assets {
-/*!*********************************************************************************************************************
-\brief Contains utilities and helpers
-***********************************************************************************************************************/
+/// <summary>Contains utilities and helpers</summary>
 namespace utils {
 
-/*!*********************************************************************************************************************
-\brief Return bounding box from vertex data.
-\param[in] data ?ertex data
-\param[in] stride_bytes Vertex stride in bytes
-\param[in] offset_bytes Offset to the vertex data
-\param[in] size_bytes Data size 
-\return The Axis-aligned bounding box of the data
-***********************************************************************************************************************/
+/// <summary>Return bounding box from vertex data.</summary>
+/// <param name="data">?ertex data</param>
+/// <param name="stride_bytes">Vertex stride in bytes</param>
+/// <param name="offset_bytes">Offset to the vertex data</param>
+/// <param name="size_bytes">Data size</param>
+/// <returns>The Axis-aligned bounding box of the data</returns>
 inline math::AxisAlignedBox getBoundingBox(const byte* data, size_t stride_bytes, size_t offset_bytes, size_t size_bytes)
 {
 	math::AxisAlignedBox aabb;
@@ -49,13 +45,11 @@ inline math::AxisAlignedBox getBoundingBox(const byte* data, size_t stride_bytes
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief Return bounding box of a mesh.
-\param[in] mesh A mesh from which to get the bounding box of
-\param[in] positionSemanticName Position attribute semantic name
-\return Axis-aligned bounding box
-\details It will be assumed that Vertex Position is a vec3.
-***********************************************************************************************************************/
+/// <summary>Return bounding box of a mesh.</summary>
+/// <param name="mesh">A mesh from which to get the bounding box of</param>
+/// <param name="positionSemanticName">Position attribute semantic name</param>
+/// <returns>Axis-aligned bounding box</returns>
+/// <remarks>It will be assumed that Vertex Position is a vec3.</remarks>
 inline math::AxisAlignedBox getBoundingBox(const Mesh& mesh, const char* positionSemanticName)
 {
 	const Mesh::VertexAttributeData* vbo = mesh.getVertexAttributeByName(positionSemanticName);
@@ -66,23 +60,19 @@ inline math::AxisAlignedBox getBoundingBox(const Mesh& mesh, const char* positio
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief Return bounding box of a mesh.
-\param[in] mesh A mesh from which to get the bounding box of
-\return Axis-aligned bounding box
-\details It will be assumed that Vertex Position is a vec3 and has the semantic "POSITION".
-***********************************************************************************************************************/
+/// <summary>Return bounding box of a mesh.</summary>
+/// <param name="mesh">A mesh from which to get the bounding box of</param>
+/// <returns>Axis-aligned bounding box</returns>
+/// <remarks>It will be assumed that Vertex Position is a vec3 and has the semantic "POSITION".</remarks>
 inline math::AxisAlignedBox getBoundingBox(const Mesh& mesh)
 {
 	return getBoundingBox(mesh, "POSITION");
 }
 
-/*!*********************************************************************************************************************
-\brief Return bounding box of a model.
-\param[in] model A model from which to get the bounding box of. All meshes will be considered. 
-\return Axis-aligned bounding box
-\details It will be assumed that Vertex Position is a vec3 and has the semantic "POSITION".
-***********************************************************************************************************************/
+/// <summary>Return bounding box of a model.</summary>
+/// <param name="model">A model from which to get the bounding box of. All meshes will be considered.</param>
+/// <returns>Axis-aligned bounding box</returns>
+/// <remarks>It will be assumed that Vertex Position is a vec3 and has the semantic "POSITION".</remarks>
 inline math::AxisAlignedBox getBoundingBox(const Model& model)
 {
 	if (model.getNumMeshes())

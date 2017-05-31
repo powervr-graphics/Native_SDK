@@ -1,12 +1,12 @@
-/*!*********************************************************************************************************************
-\file         PVRCore\Windows\StackTraceWindows.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        A StackTrace class implementation for windows.
-***********************************************************************************************************************/
+/*!
+\brief A StackTrace class implementation for windows.
+\file PVRCore/Windows/StackTraceWindows.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #ifdef DEBUG
-#include "PVRCore/StackTrace.h"
+#include "PVRCore/Base/StackTrace.h"
 #include <windows.h>
 #include <string>
 #include <sstream>

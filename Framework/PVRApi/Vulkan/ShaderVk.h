@@ -1,10 +1,10 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\Vulkan\ShaderVk.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Contains Vulkan specific implementation of the Shader class. Use only if directly using Vulkan calls.
-			  Provides the definitions allowing to move from the Framework object Texture2D to the underlying Vulkan Shader.
-***********************************************************************************************************************/
+/*!
+\brief Contains Vulkan specific implementation of the Shader class. Use only if directly using Vulkan calls. Provides
+the definitions allowing to move from the Framework object Texture2D to the underlying Vulkan Shader.
+\file PVRApi/Vulkan/ShaderVk.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 
 #pragma once
 #include "PVRApi/ApiObjects/Shader.h"
@@ -14,43 +14,31 @@
 namespace pvr {
 namespace api {
 namespace vulkan {
-/*!*********************************************************************************************************************
-\param  Vulkan shader wrapper
-***********************************************************************************************************************/
+/// <summary>Vulkan shader wrapper</summary>
 class ShaderVk_ : public impl::Shader_, public native::HShader_
 {
 public:
-	/*!*********************************************************************************************************************
-	\brief ctor. Construct with namtoe shader handle.
-	***********************************************************************************************************************/
-	ShaderVk_(GraphicsContext& context, const native::HShader_& shader) : Shader_(context) { this->handle = shader.handle; }
-	/*!*********************************************************************************************************************
-	\brief ctor. Construct with namtoe shader handle.
-	***********************************************************************************************************************/
-	ShaderVk_(GraphicsContext& context) : Shader_(context), HShader_() { }
+	/// <summary>ctor. Construct with namtoe shader handle.</summary>
+	ShaderVk_(const GraphicsContext& context, const native::HShader_& shader) : Shader_(context) { this->handle = shader.handle; }
+	/// <summary>ctor. Construct with namtoe shader handle.</summary>
+	ShaderVk_(const GraphicsContext& context) : Shader_(context), HShader_() { }
 
-	/*!*********************************************************************************************************************
-	\brief dtor.
-	***********************************************************************************************************************/
+	/// <summary>dtor.</summary>
 	virtual ~ShaderVk_();
 
-	/*!*********************************************************************************************************************
-	\brief Destroy this shader object
-	***********************************************************************************************************************/
+	/// <summary>Destroy this shader object</summary>
 	void destroy();
 };
 typedef RefCountedResource<vulkan::ShaderVk_> ShaderVk;
 }
 }
 namespace native {
-/*!*********************************************************************************************************************
-\brief Get the Vulkan Shader object underlying a PVRApi Shader object.
-\return A smart pointer wrapper containing the Vulkan Shader.
-\description The smart pointer returned by this function works normally with the reference counting, and shares it with the
-			 rest of the references to this object, keeping the underlying Vulkan object alive even if all other
-             references to it (including the one that was passed to this function) are released. Release when done using it to
-			 avoid leaking the object.
-***********************************************************************************************************************/
+/// <summary>Get the Vulkan Shader object underlying a PVRApi Shader object.</summary>
+/// <returns>A smart pointer wrapper containing the Vulkan Shader.</returns>
+/// <remarks>The smart pointer returned by this function works normally with the reference counting, and shares it
+/// with the rest of the references to this object, keeping the underlying Vulkan object alive even if all other
+/// references to it (including the one that was passed to this function) are released. Release when done using it
+/// to avoid leaking the object.</remarks>
 inline HShader createNativeHandle(const RefCountedResource<api::impl::Shader_>& Shader)
 {
 	return static_cast<RefCountedResource<native::HShader_>/**/>(static_cast<RefCountedResource<api::vulkan::ShaderVk_>/**/>(Shader));
@@ -66,12 +54,13 @@ namespace api {
 namespace vulkan {
 inline void pvr::api::vulkan::ShaderVk_::destroy()
 {
-	if (handle != VK_NULL_HANDLE && m_context.isValid())
+	if (handle != VK_NULL_HANDLE && _context.isValid())
 	{
-		vk::DestroyShaderModule(native_cast(*m_context).getDevice(), getNativeObject(), NULL);
-		getNativeObject() = VK_NULL_HANDLE;
+		vk::DestroyShaderModule(native_cast(*_context).getDevice(), handle, NULL);
+		handle = VK_NULL_HANDLE;
 	}
 }
 }
 }
 }
+

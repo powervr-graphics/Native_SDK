@@ -1,12 +1,12 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\OS\EWS\ShellOS.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Contains the implementation for the pvr::system::ShellOS class on Example Windowing System for Linux.
-***********************************************************************************************************************/
+/*!
+\brief Contains the implementation for the pvr::platform::ShellOS class on Example Windowing System for Linux.
+\file PVRShell\OS/EWS/ShellOS.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/FilePath.h"
+#include "PVRCore/IO/FilePath.h"
 #include "PVRCore/Log.h"
 #include "EWS/ews.h"
 #include <sys/time.h>
@@ -20,7 +20,7 @@
 
 using namespace pvr::types;
 namespace pvr {
-namespace system{
+namespace platform {
 struct InternalOS
 {
 	bool isInitialized;
@@ -35,24 +35,24 @@ struct InternalOS
 };
 
 // Setup the capabilities.
-const ShellOS::Capabilities ShellOS::m_capabilities = { Capability::Immutable, Capability::Immutable };
+const ShellOS::Capabilities ShellOS::_capabilities = { Capability::Immutable, Capability::Immutable };
 
-ShellOS::ShellOS(OSApplication hInstance, OSDATA osdata) : m_instance(hInstance)
+ShellOS::ShellOS(OSApplication hInstance, OSDATA osdata) : _instance(hInstance)
 {
-	m_OSImplementation = new InternalOS;
+	_OSImplementation = new InternalOS;
 }
 
 ShellOS::~ShellOS()
 {
-	delete m_OSImplementation;
+	delete _OSImplementation;
 }
 void ShellOS::updatePointingDeviceLocation()
 {
 }
 
-Result::Enum ShellOS::init(DisplayAttributes& data)
+Result ShellOS::init(DisplayAttributes& data)
 {
-	if (!m_OSImplementation)
+	if (!_OSImplementation)
 	{ return Result::OutOfMemory; }
 
 	// Construct our read and write path.
@@ -74,7 +74,7 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 		if (res < 0)
 		{
 			Log(Log.Warning, "Readlink %s failed. The application name, read path and write path have not been set.\n",
-			                 exePath);
+			    exePath);
 			break;
 		}
 	}
@@ -86,11 +86,11 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 		FilePath filepath(exePath);
 		setApplicationName(filepath.getFilenameNoExtension());
 
-		m_WritePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
-		m_ReadPaths.clear();
-		m_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
-		m_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
-		m_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
+		_WritePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
+		_ReadPaths.clear();
+		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
+		_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
+		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
 	}
 
 	delete[] exePath;
@@ -98,14 +98,14 @@ Result::Enum ShellOS::init(DisplayAttributes& data)
 	return Result::Success;
 }
 
-Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
+Result ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	EWS_COORD windowPosition;
 	EWS_SIZE windowSize;
 	EWS_PIXELFORMAT ePixelFormat;
 
 
-	m_OSImplementation->isInitialized = true;
+	_OSImplementation->isInitialized = true;
 	data.fullscreen = true;
 	data.x = data.y = 0;
 	//data.width = data.height = 0; //TODO: Hmmm, there doesn't appear to be a way of getting the monitor resolution.
@@ -113,9 +113,9 @@ Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 	data.width = 1280;
 	data.height = 1024;
 
-	m_OSImplementation->display = EWSOpenDisplay(EWS_DEFAULT_DISPLAY, 0);
+	_OSImplementation->display = EWSOpenDisplay(EWS_DEFAULT_DISPLAY, 0);
 
-	if (m_OSImplementation->display == EWS_NO_DISPLAY)
+	if (_OSImplementation->display == EWS_NO_DISPLAY)
 	{
 		Log(Log.Error, "EWSOpenDisplay failed (%s:%i)", __FILE__, __LINE__);
 		return Result::UnknownError;
@@ -142,12 +142,12 @@ Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 	windowSize.uiHeight = data.width;
 	windowSize.uiWidth = data.height;
 
-	m_OSImplementation->window = EWSCreateWindow(m_OSImplementation->display, windowPosition, windowSize, ePixelFormat, EWS_ROTATE_0);
+	_OSImplementation->window = EWSCreateWindow(_OSImplementation->display, windowPosition, windowSize, ePixelFormat, EWS_ROTATE_0);
 
-	if (m_OSImplementation->window == EWS_NO_WINDOW)
+	if (_OSImplementation->window == EWS_NO_WINDOW)
 	{
 		Log(Log.Error, "EWSCreateWindow failed (%s:%i)", __FILE__, __LINE__);
-		EWSCloseDisplay(m_OSImplementation->display);
+		EWSCloseDisplay(_OSImplementation->display);
 		return Result::UnknownError;
 	}
 
@@ -156,30 +156,30 @@ Result::Enum ShellOS::initializeWindow(DisplayAttributes& data)
 
 void ShellOS::releaseWindow()
 {
-	EWSDestroyWindow(m_OSImplementation->window);
-	m_OSImplementation->window = EWS_NO_WINDOW;
+	EWSDestroyWindow(_OSImplementation->window);
+	_OSImplementation->window = EWS_NO_WINDOW;
 
-	EWSCloseDisplay(m_OSImplementation->display);
-	m_OSImplementation->display = EWS_NO_DISPLAY;
+	EWSCloseDisplay(_OSImplementation->display);
+	_OSImplementation->display = EWS_NO_DISPLAY;
 }
 
 OSApplication ShellOS::getApplication() const
 {
-	return m_instance;
+	return _instance;
 }
 
 OSDisplay ShellOS::getDisplay() const
 {
-	return reinterpret_cast<void*>(m_OSImplementation->display);
+	return reinterpret_cast<void*>(_OSImplementation->display);
 }
 
 OSWindow ShellOS::getWindow() const
 {
-	return reinterpret_cast<void*>(m_OSImplementation->window);
+	return reinterpret_cast<void*>(_OSImplementation->window);
 }
 
 
-static Keys::Enum mapEwsKeyToPvrKey(int key)
+static Keys mapEwsKeyToPvrKey(int key)
 {
 	switch (key)
 	{
@@ -195,17 +195,17 @@ static Keys::Enum mapEwsKeyToPvrKey(int key)
 	}
 }
 
-Result::Enum ShellOS::handleOSEvents()
+Result ShellOS::handleOSEvents()
 {
 	EWS_EVENT sEvent;
 	while (EWSNextEventIfAvailable(&sEvent))
 	{
-		if (sEvent.sWindow == m_OSImplementation->window)
+		if (sEvent.sWindow == _OSImplementation->window)
 		{
 			if (sEvent.eType == EWS_EVENT_KEYPRESS)
 			{
-				m_shell->onKeyDown(mapEwsKeyToPvrKey(sEvent.uiKeyCode));
-				m_shell->onKeyUp(mapEwsKeyToPvrKey(sEvent.uiKeyCode));
+				_shell->onKeyDown(mapEwsKeyToPvrKey(sEvent.uiKeyCode));
+				_shell->onKeyUp(mapEwsKeyToPvrKey(sEvent.uiKeyCode));
 			}
 		}
 	}
@@ -215,10 +215,10 @@ Result::Enum ShellOS::handleOSEvents()
 
 bool ShellOS::isInitialized()
 {
-	return m_OSImplementation && m_OSImplementation->window;
+	return _OSImplementation && _OSImplementation->window;
 }
 
-Result::Enum ShellOS::popUpMessage(const tchar* const title, const tchar* const message, ...) const
+Result ShellOS::popUpMessage(const char8* const title, const char8* const message, ...) const
 {
 	if (!message)
 	{ return Result::NoData; }
