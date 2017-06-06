@@ -1,0 +1,194 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+	
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.0'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.application'
+
+File pvrSdkDir = file("${project.buildDir}/../../../../../../../")
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+
+    defaultConfig {
+        applicationId "com.powervr.VulkanDeferredShadingPFX"
+        minSdkVersion 16
+        targetSdkVersion 24
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            ext{
+                ndkArgs=['-j8']
+            }
+
+        }
+        debug {
+            jniDebuggable true
+            ext {
+                ndkArgs = ['-j8', 'DEBUG=1', 'NDK_DEBUG=1']
+            }
+        }
+    }
+    if (System.env.APP_ABI) {
+        buildTypes.release.ndkArgs << ' APP_ABI='+System.env.APP_ABI + ''
+        buildTypes.debug.ndkArgs << ' APP_ABI='+System.env.APP_ABI + ''
+    }
+	
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+            jni.srcDirs= [] //Disable built-in ndk building.
+            jniLibs.srcDir 'libs'
+
+        }
+    }
+
+//Copy all our asset files into the android assets folder.
+//Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
+FileCollection assetFiles = files(
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/ProcessedAssets/Marble.pvr",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/ProcessedAssets/MarbleNormalMap.pvr",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/ProcessedAssets/Table.pvr",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/AttributelessVertexShader.vsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/GBufferFragmentShader.fsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/GBufferVertexShader.vsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/GBufferFloorFragmentShader.fsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/GBufferFloorVertexShader.vsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/DirectionalLightFragmentShader.fsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass1FragmentShader.fsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass1VertexShader.vsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass2FragmentShader.fsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass2VertexShader.vsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass3FragmentShader.fsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass3VertexShader.vsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/ProcessedAssets/scene.pod",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/ProcessedAssets/pointlight.pod",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/effect_MRT_PFX3.pfx",
+
+)
+
+    String ndkBuildCommand = 'ndk-build';
+
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        ndkBuildCommand = 'ndk-build.cmd'
+    }
+
+	//Runs before ndk building tasks
+    task copyAssets(type: Copy){
+        from assetFiles
+        into 'assets'
+    }
+
+	//Main tasks for ndk Building of the application. Dependencies will be added to framework projects later
+    task ndkBuildDebug(type: Exec, dependsOn:[copyAssets]) {
+        executable ndkBuildCommand
+		args buildTypes.debug.ndkArgs
+    }
+
+    task ndkBuildRelease(type: Exec, dependsOn:[copyAssets]) {
+        executable ndkBuildCommand
+		args buildTypes.release.ndkArgs
+    }
+
+    task ndkBuildClean(type: Exec) {
+        executable ndkBuildCommand
+		args buildTypes.release.ndkArgs + 'clean'
+    }
+
+    //In order to shorten this file a bit, create the NDK Build tasks dynamically for each Framework project.
+    // We will be creating a debug and a release task for each PVR Framework project dependency.
+	// Otherwise we would need to add 3 tasks per project... (build debug, build release, clean...)
+
+    def ndkDependencies=[
+    ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
+    ["PVRAssets", "${pvrSdkDir}/Framework/PVRAssets/Build/Android"],
+    ["PVRNativeVulkan", "${pvrSdkDir}/Framework/PVRNativeApi/Vulkan/Build/Android"],
+    ["PVRVulkan", "${pvrSdkDir}/Framework/PVRApi/Vulkan/Build/Android"],
+    ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
+    ["PVREngineUtils", "${pvrSdkDir}/Framework/PVREngineUtils/Build/Android"]
+    ]
+
+	//Create and configure a task for each combination of build type (debug/release or clean) and dependency
+	//For example, there will be task for ndkBuildPVRAssetsDebug, ndkBuildPVRAssetsRelease, ndkBuildPVRAssetsClean
+    android.buildTypes.all{ theBuildType -> //Debug/Release
+        ndkDependencies.each() { 
+            project -> //The list above ProjectName, ProjectPath
+            String projectName = "ndkBuild${project[0]}${theBuildType.name.capitalize()}" //e.g. ndkBuildPVRCoreDebug
+            task(projectName, type: Exec) {
+                workingDir "${project[1]}"
+                executable ndkBuildCommand
+                args theBuildType.ext.ndkArgs
+            }
+            task(projectName + "Clean", type: Exec) { //e.g. ndkBuildPVRCoreClean
+                workingDir "${project[1]}"
+                executable ndkBuildCommand
+                args theBuildType.ext.ndkArgs + 'clean'
+            }
+            tasks.findByName("ndkBuild${theBuildType.name.capitalize()}").dependsOn projectName
+			clean.dependsOn projectName + "Clean"
+        }
+    }
+
+	    tasks.withType(JavaCompile) {
+        theTask ->
+            buildTypes.each() { theBuildType ->
+                if(theTask.name.contains("compile${theBuildType.name.capitalize()}Java")){
+                    theTask.dependsOn "ndkBuild${theBuildType.name.capitalize()}"
+                }
+            }
+    }
+
+	//Copy outputs to the bin/ folder. Less idiomatic, more understandable...
+	task copyToBin(type: Copy) {
+        from 'build/outputs/apk/'
+        into 'bin/'
+        include('*.apk')
+   }
+
+    assembleRelease {
+        doLast() {
+            copyToBin.execute()
+        }
+    }
+
+    clean.dependsOn ndkBuildClean
+    clean {
+        doLast() {
+            delete "assets"
+            delete "obj"
+            delete "bin"
+        }
+    }
+
+    tasks.withType(Exec) {
+        doFirst {
+            println commandLine
+        }
+    }
+    preBuild.dependsOn copyAssets
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}

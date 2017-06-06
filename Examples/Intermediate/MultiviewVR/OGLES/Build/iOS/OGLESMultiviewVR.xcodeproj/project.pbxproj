@@ -1,0 +1,651 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000F1A5C0 /* libPVRCore.a */; };
+		1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000A55E75 /* libPVRAssets.a */; };
+		1100B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a */; };
+		1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0005EAF00D /* libPVRShell.a */; };
+		1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */; };
+		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		2D500B9A0D5A79CF00DBA0E3 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D500B990D5A79CF00DBA0E3 /* QuartzCore.framework */; };
+		F864940310F75E5100F46F54 /* Entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = F864940210F75E5100F46F54 /* Entitlements.plist */; };
+		594B97D016D39E37002ED79F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 594B97CF16D39E37002ED79F /* Default@2x.png */; };
+		594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5911E5FD16D39DAD00155177 /* Default-568h@2x.png */; };
+		BA240AC20FEFE77A00DE852D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA240AC10FEFE77A00DE852D /* OpenGLES.framework */; };
+		F8205A8B130408E100253AE7 /* Default-Portrait.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A82130408E100253AE7 /* Default-Portrait.png */; };
+		F8205A8C130408E100253AE7 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A83130408E100253AE7 /* Default.png */; };
+		F8205A8D130408E100253AE7 /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A84130408E100253AE7 /* Icon-72.png */; };
+		F8205A8E130408E100253AE7 /* Icon-Small-50.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A85130408E100253AE7 /* Icon-Small-50.png */; };
+		F8205A8F130408E100253AE7 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A86130408E100253AE7 /* Icon-Small.png */; };
+		F8205A90130408E100253AE7 /* Icon-Small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A87130408E100253AE7 /* Icon-Small@2x.png */; };
+		F8205A91130408E100253AE7 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A88130408E100253AE7 /* Icon.png */; };
+		F8205A92130408E100253AE7 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A89130408E100253AE7 /* Icon@2x.png */; };
+		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
+		F8B469765F5DA01ED4B36D65 /* OGLESMultiviewVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8C54982137BA6061EE2275F /* OGLESMultiviewVR.cpp */; };
+		F865BD586B1E437C21BD059D /* GnomeToy.pod in Resources */ = {isa = PBXBuildFile; fileRef = F88B3A25819F6070B6F52E27 /* GnomeToy.pod */; };
+		F80F85B31A82D95240C7FC18 /* GnomeWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */; };
+		F8EE4D05F9CB49F44068B9D2 /* DarkWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */; };
+		F88DCB8438E405666A2192F7 /* ClearWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EB813261D4F268F63A078F /* ClearWood.pvr */; };
+		F8275C81FB76017154924E92 /* FragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */; };
+		F8C99D4319A45CC4793F62F7 /* VertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */; };
+		F815B672A84A40B86D3FBBA2 /* TexQuadFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8808F4F094B5ACDA7FA66FD /* TexQuadFragShader_ES3.fsh */; };
+		F82D018A4DCD22B1A42A7AAF /* TexQuadVertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B97897BF2649D2140DDF4F /* TexQuadVertShader_ES3.vsh */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3300B16BADC0DE0000F1A5C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9800B16BADC0DE0000F1A5C0;
+			remoteInfo = PVRCore;
+		};
+		6600B16BADC0DE0000F1A5C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9900B16BADC0DE0000F1A5C0;
+			remoteInfo = PVRCore;
+		};
+		3300B16BADC0DE0000A55E75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9800B16BADC0DE0000A55E75;
+			remoteInfo = PVRAssets;
+		};
+		6600B16BADC0DE0000A55E75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9900B16BADC0DE0000A55E75;
+			remoteInfo = PVRAssets;
+		};
+		3300B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9800B16BADC0DE00BAC1BO4E;
+			remoteInfo = PVRNativeGles;
+		};
+		6600B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9900B16BADC0DE00BAC1BO4E;
+			remoteInfo = PVRNativeGles;
+		};
+		3300B16BADC0DE0005EAF00D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9800B16BADC0DE0005EAF00D;
+			remoteInfo = PVRShell;
+		};
+		6600B16BADC0DE0005EAF00D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9900B16BADC0DE0005EAF00D;
+			remoteInfo = PVRShell;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BA909F0A0FF0EADD00A4C97C /* data */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = data;
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			name = data;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA909F0B0FF0EADD00A4C97C /* textures */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = data/textures;
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			name = textures;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BA909F1C0FF0EB3200A4C97C /* shaders */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = data/shaders;
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			name = shaders;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRCore.xcodeproj; path = ../../../../../../Framework/PVRCore/Build/iOS/PVRCore.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRAssets.xcodeproj; path = ../../../../../../Framework/PVRAssets/Build/iOS/PVRAssets.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRNativeGles.xcodeproj; path = ../../../../../../Framework/PVRNativeApi/OGLES/Build/iOS/PVRNativeGles.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRShell.xcodeproj; path = ../../../../../../Framework/PVRShell/Build/iOS/PVRShell.xcodeproj; sourceTree = "<group>"; };
+		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		1D6058910D05DD3D006BFB54 /* OGLESMultiviewVR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLESMultiviewVR.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		2D500B990D5A79CF00DBA0E3 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		32CA4F630368D1EE00C91783 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
+		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		BA240AC10FEFE77A00DE852D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		F8205A82130408E100253AE7 /* Default-Portrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-Portrait.png"; path = "../../../../../../Builds/iOS/Resources/Default-Portrait.png"; sourceTree = SOURCE_ROOT; };
+		F8205A83130408E100253AE7 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = ../../../../../../Builds/iOS/Resources/Default.png; sourceTree = SOURCE_ROOT; };
+		F8205A84130408E100253AE7 /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon-72.png"; path = "../../../../../../Builds/iOS/Resources/OGLES/Icon-72.png"; sourceTree = SOURCE_ROOT; };
+		F8205A85130408E100253AE7 /* Icon-Small-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon-Small-50.png"; path = "../../../../../../Builds/iOS/Resources/OGLES/Icon-Small-50.png"; sourceTree = SOURCE_ROOT; };
+		F8205A86130408E100253AE7 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon-Small.png"; path = "../../../../../../Builds/iOS/Resources/OGLES/Icon-Small.png"; sourceTree = SOURCE_ROOT; };
+		F8205A87130408E100253AE7 /* Icon-Small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon-Small@2x.png"; path = "../../../../../../Builds/iOS/Resources/OGLES/Icon-Small@2x.png"; sourceTree = SOURCE_ROOT; };
+		F8205A88130408E100253AE7 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = ../../../../../../Builds/iOS/Resources/OGLES/Icon.png; sourceTree = SOURCE_ROOT; };
+		F8205A89130408E100253AE7 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "../../../../../../Builds/iOS/Resources/OGLES/Icon@2x.png"; sourceTree = SOURCE_ROOT; };
+		F8205A8A130408E100253AE7 /* iTunesArtwork */ = {isa = PBXFileReference; lastKnownFileType = file; name = iTunesArtwork; path = ../../../../../../Builds/iOS/Resources/iTunesArtwork; sourceTree = SOURCE_ROOT; };
+		F864940210F75E5100F46F54 /* Entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
+		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
+		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
+		F8C54982137BA6061EE2275F /* OGLESMultiviewVR.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESMultiviewVR.cpp; path = ../../OGLESMultiviewVR.cpp; sourceTree = SOURCE_ROOT; };
+		F88B3A25819F6070B6F52E27 /* GnomeToy.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeToy.pod; path = ../../../ProcessedAssets/GnomeToy.pod; sourceTree = SOURCE_ROOT; };
+		F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeWood.pvr; path = ../../../ProcessedAssets/GnomeWood.pvr; sourceTree = SOURCE_ROOT; };
+		F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = DarkWood.pvr; path = ../../../ProcessedAssets/DarkWood.pvr; sourceTree = SOURCE_ROOT; };
+		F8EB813261D4F268F63A078F /* ClearWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = ClearWood.pvr; path = ../../../ProcessedAssets/ClearWood.pvr; sourceTree = SOURCE_ROOT; };
+		F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES3.fsh; path = ../../FragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES3.vsh; path = ../../VertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
+		F8808F4F094B5ACDA7FA66FD /* TexQuadFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexQuadFragShader_ES3.fsh; path = ../../TexQuadFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8B97897BF2649D2140DDF4F /* TexQuadVertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexQuadVertShader_ES3.vsh; path = ../../TexQuadVertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */,
+				1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */,
+				1100B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a in Frameworks */,
+				1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */,
+				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
+				1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */,
+				2D500B9A0D5A79CF00DBA0E3 /* QuartzCore.framework in Frameworks */,
+				BA240AC20FEFE77A00DE852D /* OpenGLES.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5500B16BADC0DE0000F1A5C0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2200B16BADC0DE0000F1A5C0 /* libPVRCore.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5500B16BADC0DE0000A55E75 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2200B16BADC0DE0000A55E75 /* libPVRAssets.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5500B16BADC0DE00BAC1BO4E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2200B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5500B16BADC0DE0005EAF00D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2200B16BADC0DE0005EAF00D /* libPVRShell.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D6058910D05DD3D006BFB54 /* OGLESMultiviewVR.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				F85E2B260DD21E3F00CA9BEB /* Source */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				3E20F92119C99BDF00B0749D /* Contents */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+				F864940210F75E5100F46F54 /* Entitlements.plist */,
+			);
+			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32CA4F630368D1EE00C91783 /* Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				594B97CF16D39E37002ED79F /* Default@2x.png */,
+				5911E5FD16D39DAD00155177 /* Default-568h@2x.png */,
+				F8205A82130408E100253AE7 /* Default-Portrait.png */,
+				F8205A83130408E100253AE7 /* Default.png */,
+				F8205A84130408E100253AE7 /* Icon-72.png */,
+				F8205A85130408E100253AE7 /* Icon-Small-50.png */,
+				F8205A86130408E100253AE7 /* Icon-Small.png */,
+				F8205A87130408E100253AE7 /* Icon-Small@2x.png */,
+				F8205A88130408E100253AE7 /* Icon.png */,
+				F8205A89130408E100253AE7 /* Icon@2x.png */,
+				F8205A8A130408E100253AE7 /* iTunesArtwork */,
+				8D1107310486CEB800E47090 /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */,
+				4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */,
+				4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */,
+				4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */,
+				BA240AC10FEFE77A00DE852D /* OpenGLES.framework */,
+				1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */,
+				2D500B990D5A79CF00DBA0E3 /* QuartzCore.framework */,
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3E20F92119C99BDF00B0749D /* Contents */ = {
+			isa = PBXGroup;
+			children = (
+				F8E27FF51004EDB10006BBB4 /* Models */,
+				F8E27FF61004EDBD0006BBB4 /* Textures */,
+				F82C4A6F10298C9800FF3CC6 /* Effects */,
+				F8E27FF71004EDC30006BBB4 /* Shaders */,
+				F8E27FF51004EDB1ABC6BBB4 /* Generic */,
+			);
+			name = Contents;
+			sourceTree = "<group>";
+		};
+		F82C4A6F10298C9800FF3CC6 /* Effects */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Effects;
+			sourceTree = "<group>";
+		};
+		F85E2B260DD21E3F00CA9BEB /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				F8C54982137BA6061EE2275F /* OGLESMultiviewVR.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		F8E27FF51004EDB10006BBB4 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F88B3A25819F6070B6F52E27 /* GnomeToy.pod */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		F8E27FF51004EDB1ABC6BBB4 /* Generic */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Generic;
+			sourceTree = "<group>";
+		};
+		F8E27FF61004EDBD0006BBB4 /* Textures */ = {
+			isa = PBXGroup;
+			children = (
+				F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */,
+				F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */,
+				F8EB813261D4F268F63A078F /* ClearWood.pvr */,
+			);
+			name = Textures;
+			sourceTree = "<group>";
+		};
+		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */,
+				F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */,
+				F8808F4F094B5ACDA7FA66FD /* TexQuadFragShader_ES3.fsh */,
+				F8B97897BF2649D2140DDF4F /* TexQuadVertShader_ES3.vsh */,
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D6058900D05DD3D006BFB54 /* OGLESMultiviewVR */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "OGLESMultiviewVR" */;
+			buildPhases = (
+				1D60588D0D05DD3D006BFB54 /* Resources */,
+				1D60588E0D05DD3D006BFB54 /* Sources */,
+				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				BA909F0A0FF0EADD00A4C97C /* data */,
+				BA909F0B0FF0EADD00A4C97C /* textures */,
+				BA909F1C0FF0EB3200A4C97C /* shaders */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7700B16BADC0DE0000F1A5C0 /* PBXTargetDependency */,
+				7700B16BADC0DE0000A55E75 /* PBXTargetDependency */,
+				7700B16BADC0DE00BAC1BO4E /* PBXTargetDependency */,
+				7700B16BADC0DE0005EAF00D /* PBXTargetDependency */,
+			);
+			name = "OGLESMultiviewVR";
+			productName = foo;
+			productReference = 1D6058910D05DD3D006BFB54 /* OGLESMultiviewVR.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OGLESMultiviewVR" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 5500B16BADC0DE0000F1A5C0 /* Products */;
+					ProjectRef = 4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */;
+				},
+				{
+					ProductGroup = 5500B16BADC0DE0000A55E75 /* Products */;
+					ProjectRef = 4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */;
+				},
+				{
+					ProductGroup = 5500B16BADC0DE00BAC1BO4E /* Products */;
+					ProjectRef = 4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */;
+				},
+				{
+					ProductGroup = 5500B16BADC0DE0005EAF00D /* Products */;
+					ProjectRef = 4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				1D6058900D05DD3D006BFB54 /* OGLESMultiviewVR */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		2200B16BADC0DE0000F1A5C0 /* libPVRCore.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPVRCore.a;
+			remoteRef = 3300B16BADC0DE0000F1A5C0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2200B16BADC0DE0000A55E75 /* libPVRAssets.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPVRAssets.a;
+			remoteRef = 3300B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2200B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPVRNativeGles.a;
+			remoteRef = 3300B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2200B16BADC0DE0005EAF00D /* libPVRShell.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPVRShell.a;
+			remoteRef = 3300B16BADC0DE0005EAF00D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F864940310F75E5100F46F54 /* Entitlements.plist in Resources */,
+				F8205A8B130408E100253AE7 /* Default-Portrait.png in Resources */,
+				F8205A8C130408E100253AE7 /* Default.png in Resources */,
+				F8205A8D130408E100253AE7 /* Icon-72.png in Resources */,
+				F8205A8E130408E100253AE7 /* Icon-Small-50.png in Resources */,
+				F8205A8F130408E100253AE7 /* Icon-Small.png in Resources */,
+				F8205A90130408E100253AE7 /* Icon-Small@2x.png in Resources */,
+				F8205A91130408E100253AE7 /* Icon.png in Resources */,
+				F8205A92130408E100253AE7 /* Icon@2x.png in Resources */,
+				F8205A93130408E100253AE7 /* iTunesArtwork in Resources */,
+				594B97D016D39E37002ED79F /* Default@2x.png in Resources */,
+				594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */,
+				F865BD586B1E437C21BD059D /* GnomeToy.pod in Resources */,
+				F80F85B31A82D95240C7FC18 /* GnomeWood.pvr in Resources */,
+				F8EE4D05F9CB49F44068B9D2 /* DarkWood.pvr in Resources */,
+				F88DCB8438E405666A2192F7 /* ClearWood.pvr in Resources */,
+				F8275C81FB76017154924E92 /* FragShader_ES3.fsh in Resources */,
+				F8C99D4319A45CC4793F62F7 /* VertShader_ES3.vsh in Resources */,
+				F815B672A84A40B86D3FBBA2 /* TexQuadFragShader_ES3.fsh in Resources */,
+				F82D018A4DCD22B1A42A7AAF /* TexQuadVertShader_ES3.vsh in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8B469765F5DA01ED4B36D65 /* OGLESMultiviewVR.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7700B16BADC0DE0000F1A5C0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PVRCore;
+			targetProxy = 6600B16BADC0DE0000F1A5C0 /* PBXContainerItemProxy */;
+		};
+		7700B16BADC0DE0000A55E75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PVRAssets;
+			targetProxy = 6600B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
+		};
+		7700B16BADC0DE00BAC1BO4E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PVRNativeGles;
+			targetProxy = 6600B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */;
+		};
+		7700B16BADC0DE0005EAF00D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PVRShell;
+			targetProxy = 6600B16BADC0DE0005EAF00D /* PBXContainerItemProxy */;
+		};
+
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = "-Wl,-all_load";
+			};
+			name = Debug;
+		};
+		1D6058950D05DD3E006BFB54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = "-Wl,-all_load";
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				/*ARCHS = "$(ARCHS_STANDARD_32_BIT)";*/
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CONFIGURATION_BUILD_DIR = "../../../../../Bin/iOS/$(CONFIGURATION)";
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_POSTPROCESSING = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1"
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = ("$(inherited)",);
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Framework";
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				/*ARCHS = "$(ARCHS_STANDARD_32_BIT)";*/
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = ("$(inherited)",);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Framework";
+			};
+			name = Release;
+		};
+		F864940010F75E0600F46F54 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				/*ARCHS = "$(ARCHS_STANDARD_32_BIT)";*/
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Framework";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Distribution;
+		};
+		F864940110F75E0600F46F54 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+			};
+			name = Distribution;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "OGLESMultiviewVR" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+				F864940110F75E0600F46F54 /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OGLESMultiviewVR" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+				F864940010F75E0600F46F54 /* Distribution */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

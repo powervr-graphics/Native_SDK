@@ -1,0 +1,114 @@
+//Microsoft eMbedded Visual C++ generated resource script.
+//
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        118
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+	"\r\n"
+	"\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+/////////////////////////////////////////////////////////////////////////////
+// RCDATA: Scenes
+Balloon.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\Balloon.pod"
+scene.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\scene.pod"
+
+// RCDATA: Shaders
+DefaultFragShader_vk.fsh		RCDATA		"..\\..\\DefaultFragShader_vk.fsh"
+DefaultFragShader_vk.fsh.spv		RCDATA		"..\\..\\DefaultFragShader_vk.fsh.spv"
+DefaultVertShader_vk.vsh		RCDATA		"..\\..\\DefaultVertShader_vk.vsh"
+DefaultVertShader_vk.vsh.spv		RCDATA		"..\\..\\DefaultVertShader_vk.vsh.spv"
+EffectChromaticDispersion_vk.fsh		RCDATA		"..\\..\\EffectChromaticDispersion_vk.fsh"
+EffectChromaticDispersion_vk.fsh.spv		RCDATA		"..\\..\\EffectChromaticDispersion_vk.fsh.spv"
+EffectChromaticDispersion_vk.vsh		RCDATA		"..\\..\\EffectChromaticDispersion_vk.vsh"
+EffectChromaticDispersion_vk.vsh.spv		RCDATA		"..\\..\\EffectChromaticDispersion_vk.vsh.spv"
+EffectReflectChromDispersion_vk.fsh		RCDATA		"..\\..\\EffectReflectChromDispersion_vk.fsh"
+EffectReflectChromDispersion_vk.fsh.spv		RCDATA		"..\\..\\EffectReflectChromDispersion_vk.fsh.spv"
+EffectReflectChromDispersion_vk.vsh		RCDATA		"..\\..\\EffectReflectChromDispersion_vk.vsh"
+EffectReflectChromDispersion_vk.vsh.spv		RCDATA		"..\\..\\EffectReflectChromDispersion_vk.vsh.spv"
+EffectReflectFragShader_vk.fsh		RCDATA		"..\\..\\EffectReflectFragShader_vk.fsh"
+EffectReflectFragShader_vk.fsh.spv		RCDATA		"..\\..\\EffectReflectFragShader_vk.fsh.spv"
+EffectReflectionRefraction_vk.fsh		RCDATA		"..\\..\\EffectReflectionRefraction_vk.fsh"
+EffectReflectionRefraction_vk.fsh.spv		RCDATA		"..\\..\\EffectReflectionRefraction_vk.fsh.spv"
+EffectReflectionRefraction_vk.vsh		RCDATA		"..\\..\\EffectReflectionRefraction_vk.vsh"
+EffectReflectionRefraction_vk.vsh.spv		RCDATA		"..\\..\\EffectReflectionRefraction_vk.vsh.spv"
+EffectReflectVertShader_vk.vsh		RCDATA		"..\\..\\EffectReflectVertShader_vk.vsh"
+EffectReflectVertShader_vk.vsh.spv		RCDATA		"..\\..\\EffectReflectVertShader_vk.vsh.spv"
+EffectRefractFragShader_vk.fsh		RCDATA		"..\\..\\EffectRefractFragShader_vk.fsh"
+EffectRefractFragShader_vk.fsh.spv		RCDATA		"..\\..\\EffectRefractFragShader_vk.fsh.spv"
+EffectRefractVertShader_vk.vsh		RCDATA		"..\\..\\EffectRefractVertShader_vk.vsh"
+EffectRefractVertShader_vk.vsh.spv		RCDATA		"..\\..\\EffectRefractVertShader_vk.vsh.spv"
+ParaboloidVertShader_vk.vsh		RCDATA		"..\\..\\ParaboloidVertShader_vk.vsh"
+ParaboloidVertShader_vk.vsh.spv		RCDATA		"..\\..\\ParaboloidVertShader_vk.vsh.spv"
+SkyboxFragShader_vk.fsh		RCDATA		"..\\..\\SkyboxFragShader_vk.fsh"
+SkyboxFragShader_vk.fsh.spv		RCDATA		"..\\..\\SkyboxFragShader_vk.fsh.spv"
+SkyboxVertShader_vk.vsh		RCDATA		"..\\..\\SkyboxVertShader_vk.vsh"
+SkyboxVertShader_vk.vsh.spv		RCDATA		"..\\..\\SkyboxVertShader_vk.vsh.spv"
+
+// RCDATA: Textures
+SkyboxTex.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\SkyboxTex.pvr"
+BalloonTex.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\BalloonTex.pvr"
+BalloonTex2.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\BalloonTex2.pvr"
+
+#endif    // English (United Kingdom) resources
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
