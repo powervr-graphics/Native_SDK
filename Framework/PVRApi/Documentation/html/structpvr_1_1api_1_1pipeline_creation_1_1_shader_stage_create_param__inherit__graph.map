@@ -1,0 +1,7 @@
+<map id="pvr::api::pipelineCreation::ShaderStageCreateParam" name="pvr::api::pipelineCreation::ShaderStageCreateParam">
+<area shape="rect" id="node2" href="$structpvr_1_1api_1_1pipeline_creation_1_1_compute_shader_stage_create_param.html" title="Creation parameters for a Compute Shader" alt="" coords="257,5,492,46"/>
+<area shape="rect" id="node3" href="$structpvr_1_1api_1_1pipeline_creation_1_1_fragment_shader_stage_create_param.html" title="Creation parameters for a Fragment Shader" alt="" coords="256,70,493,111"/>
+<area shape="rect" id="node4" href="$structpvr_1_1api_1_1pipeline_creation_1_1_geometry_shader_stage_create_param.html" title="Creation parameters for a Geometry Shader" alt="" coords="255,135,494,177"/>
+<area shape="rect" id="node5" href="$structpvr_1_1api_1_1pipeline_creation_1_1_scene_traversal_shader_stage_create_param.html" title="Create params for the scene traversal stage. Set scene traversal shader stages and entry points..." alt="" coords="238,201,511,242"/>
+<area shape="rect" id="node6" href="$structpvr_1_1api_1_1pipeline_creation_1_1_vertex_shader_stage_create_param.html" title="Creation parameters for a Vertex shader" alt="" coords="265,266,485,307"/>
+</map>

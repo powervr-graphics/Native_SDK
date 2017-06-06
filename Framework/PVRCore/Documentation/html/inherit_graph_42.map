@@ -1,0 +1,8 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc..." alt="" coords="5,56,96,83"/>
+<area shape="rect" id="node2" href="$classpvr_1_1_android_asset_stream.html" title="A Stream implementation that is used to access resources built in an Android package (apk)..." alt="" coords="144,5,312,32"/>
+<area shape="rect" id="node3" href="$classpvr_1_1_buffer_stream.html" title="This class is used to access a block of memory as a Stream." alt="" coords="165,56,291,83"/>
+<area shape="rect" id="node6" href="$classpvr_1_1_file_stream.html" title="A FileStream is a Stream that is used to access a File in the filesystem of the platform. " alt="" coords="173,107,283,133"/>
+<area shape="rect" id="node4" href="$classpvr_1_1_file_wrap_stream.html" title="Represents a stream that can be created from a file on which the FileWrap utility has been used to cr..." alt="" coords="389,31,531,57"/>
+<area shape="rect" id="node5" href="$classpvr_1_1_windows_resource_stream.html" title="A Stream implementation that is used to access resources built in a MS Windows executable. " alt="" coords="360,81,560,108"/>
+</map>
