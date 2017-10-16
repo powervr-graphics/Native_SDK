@@ -11,11 +11,8 @@
 #include "PVRAssets/PVRAssets.h"
 //The OpenGL ES bindings used throughout this SDK. Use by calling gl::initGL and then using all the OpenGL ES functions from the gl::namespace.
 // (So, glTextImage2D becomes gl::TexImage2D)
-#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
-#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
-#include "PVRNativeApi/TextureUtils.h"
-#include "PVRNativeApi/ShaderUtils.h"
-#include "PVRNativeApi/ApiErrors.h"
+#include "PVRNativeApi/NativeGles.h"
+
 using namespace pvr;
 using namespace pvr::types;
 // Index to bind the attributes to vertex shaders
@@ -102,7 +99,7 @@ public:
 	bool createMultiViewFbo();
 	pvr::Result renderToMultiViewFbo();
 	Result loadTexturePVR(const StringHash& filename, GLuint& outTexHandle,
-	                      pvr::assets::Texture* outTexture, assets::TextureHeader* outDescriptor);
+	                      pvr::Texture* outTexture, TextureHeader* outDescriptor);
 
 	void drawHighLowResQuad();
 
@@ -215,15 +212,14 @@ Result createShaderProgram(native::HShader_ shaders[], uint32 count, const char*
 \return Result::Success on success
 \param  const StringHash & filename
 \param  GLuint & outTexHandle
-\param  pvr::assets::Texture * outTexture
+\param  pvr::Texture * outTexture
 \param  assets::TextureHeader * outDescriptor
 ***********************************************************************************************************************/
-Result MultiviewVR::loadTexturePVR(const StringHash& filename, GLuint& outTexHandle, pvr::assets::Texture* outTexture,
-                                   assets::TextureHeader* outDescriptor)
+Result MultiviewVR::loadTexturePVR(const StringHash& filename, GLuint& outTexHandle, pvr::Texture* outTexture,
+                                   TextureHeader* outDescriptor)
 {
-	assets::Texture tempTexture;
-	Result result;
-	native::HTexture_ textureHandle;
+	Texture tempTexture;
+	pvr::nativeGles::TextureUploadResults results;
 	Stream::ptr_type assetStream = this->getAssetStream(filename);
 
 	if (!assetStream.get())
@@ -231,22 +227,22 @@ Result MultiviewVR::loadTexturePVR(const StringHash& filename, GLuint& outTexHan
 		Log(Log.Error, "AssetStore.loadTexture error for filename %s : File not found", filename.c_str());
 		return Result::NotFound;
 	}
-	result = assets::textureLoad(assetStream, assets::TextureFileFormat::PVR, tempTexture);
-	if (result == Result::Success)
+	results.result = assets::textureLoad(assetStream, TextureFileFormat::PVR, tempTexture);
+	if (results.result == Result::Success)
 	{
 		bool isDecompressed;
 		types::ImageAreaSize areaSize; PixelFormat pixelFmt;
-		pvr::utils::textureUpload(getPlatformContext(), tempTexture, textureHandle, areaSize, pixelFmt, isDecompressed);
+		results = pvr::nativeGles::textureUpload(getPlatformContext(), tempTexture);
 	}
-	if (result != Result::Success)
+	if (results.result != Result::Success)
 	{
 		Log(Log.Error, "AssetStore.loadTexture error for filename %s : Failed to load texture with code %s.",
-		    filename.c_str(), Log.getResultCodeString(result));
-		return result;
+		    filename.c_str(), Log.getResultCodeString(results.result));
+		return results.result;
 	}
 	if (outTexture) { *outTexture = tempTexture; }
-	outTexHandle = textureHandle;
-	return result;
+	outTexHandle = results.image;
+	return results.result;
 }
 
 /*!*********************************************************************************************************************
@@ -291,13 +287,13 @@ bool MultiviewVR::loadTextures()
 	for (pvr::uint32 i = 0; i < numMaterials; ++i)
 	{
 		const pvr::assets::Model::Material& material = scene->getMaterial(i);
-		if (material.getDiffuseTextureIndex() != -1)
+		if (material.defaultSemantics().getDiffuseTextureIndex() != -1)
 		{
 			// Load the diffuse texture map
-			if (loadTexturePVR(scene->getTexture(material.getDiffuseTextureIndex()).getName(),
+			if (loadTexturePVR(scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName(),
 			                   texDiffuse[i], NULL, 0) != pvr::Result::Success)
 			{
-				Log("Failed to load texture %s", scene->getTexture(material.getDiffuseTextureIndex()).getName().c_str());
+				Log("Failed to load texture %s", scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
 				return false;
 			}
 			gl::BindTexture(GL_TEXTURE_2D, texDiffuse[i]);
@@ -322,20 +318,18 @@ bool MultiviewVR::loadShaders()
 		pvr::assets::ShaderFile fileVersioning;
 		fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
 		native::HShader_ shaders[2];
-		if (!pvr::utils::loadShader(native::HContext_(), *fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3), ShaderType::VertexShader, 0, 0,
-		                            shaders[0]))
+		if (!pvr::nativeGles::loadShader(*fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3), ShaderType::VertexShader, 0, 0, shaders[0]))
 		{
 			return false;
 		}
 
 		fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
-		if (!pvr::utils::loadShader(native::HContext_(), *fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3), ShaderType::FragmentShader, 0,
-		                            0, shaders[1]))
+		if (!pvr::nativeGles::loadShader(*fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3), ShaderType::FragmentShader, 0, 0, shaders[1]))
 		{
 			return false;
 		}
-		if (createShaderProgram(shaders, 2, attributes, sizeof(attributes) / sizeof(attributes[0]),
-		                        multiViewProgram.handle) != pvr::Result::Success)
+		
+		if (createShaderProgram(shaders, 2, attributes, sizeof(attributes) / sizeof(attributes[0]), multiViewProgram.handle) != pvr::Result::Success)
 		{
 			return false;
 		}
@@ -358,15 +352,15 @@ bool MultiviewVR::loadShaders()
 		pvr::assets::ShaderFile fileVersioning;
 		fileVersioning.populateValidVersions(TexQuadVertShaderSrcFile, *this);
 		native::HShader_ shaders[2];
-		if (!pvr::utils::loadShader(native::HContext_(), *fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3),
-		                            ShaderType::VertexShader, 0, 0, shaders[0]))
+		if (!pvr::nativeGles::loadShader(*fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3),
+		                                 ShaderType::VertexShader, 0, 0, shaders[0]))
 		{
 			return false;
 		}
 
 		fileVersioning.populateValidVersions(TexQuadFragShaderSrcFile, *this);
-		if (!pvr::utils::loadShader(native::HContext_(), *fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3),
-		                            ShaderType::FragmentShader, 0, 0, shaders[1]))
+		if (!pvr::nativeGles::loadShader(*fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3),
+		                                 ShaderType::FragmentShader, 0, 0, shaders[1]))
 		{
 			return false;
 		}
@@ -466,7 +460,7 @@ pvr::Result MultiviewVR::initApplication()
 {
 	// Load the scene
 	pvr::Result rslt = pvr::Result::Success;
-	setApiTypeRequired(pvr::Api::OpenGLES3);
+	setMinApiType(pvr::Api::OpenGLES3);
 	if ((rslt = loadModel(this, SceneFile, scene)) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
@@ -621,7 +615,7 @@ pvr::Result MultiviewVR::releaseView()
 
 pvr::Result MultiviewVR::renderToMultiViewFbo()
 {
-	pvr::api::logApiError("renderFrame begin");
+	pvr::nativeGles::logApiError("renderFrame begin");
 	gl::Viewport(0, 0, width_high, height_high);
 	// Clear the color and depth buffer
 	gl::BindFramebuffer(GL_FRAMEBUFFER, multiViewFbo.fbo.handle);
@@ -697,18 +691,18 @@ pvr::Result MultiviewVR::renderToMultiViewFbo()
 		mvp[2] = projection[2] * worldViewLeft;
 		mvp[3] = projection[3] * worldViewRight;
 
-		pvr::api::logApiError("renderFrame before mvp");
+		pvr::nativeGles::logApiError("renderFrame before mvp");
 		gl::UniformMatrix4fv(multiViewProgram.uiMVPMatrixLoc, 4, GL_FALSE, glm::value_ptr(mvp[0]));
 		gl::UniformMatrix4fv(multiViewProgram.uiWorldViewITLoc, 4, GL_FALSE, glm::value_ptr(worldViewIT[0]));
-		pvr::api::logApiError("renderFrame after mvp");
+		pvr::nativeGles::logApiError("renderFrame after mvp");
 
 		//  Now that the model-view matrix is set and the materials are ready,
 		//  call another function to actually draw the mesh.
-		pvr::api::logApiError("renderFrame before draw");
+		pvr::nativeGles::logApiError("renderFrame before draw");
 		drawMesh(i);
-		pvr::api::logApiError("renderFrame after draw");
+		pvr::nativeGles::logApiError("renderFrame after draw");
 	}
-	pvr::api::logApiError("renderFrame end");
+	pvr::nativeGles::logApiError("renderFrame end");
 	return pvr::Result::Success;
 }
 
@@ -727,19 +721,19 @@ pvr::Result MultiviewVR::renderFrame()
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	// Use shader program
 	gl::UseProgram(texQuadProgram.handle);
-	pvr::api::logApiError("TexQuad DrawArrays begin");
+	pvr::nativeGles::logApiError("TexQuad DrawArrays begin");
 	gl::BindTexture(GL_TEXTURE_2D_ARRAY, multiViewFbo.color.handle);
-	pvr::api::logApiError("TexQuad DrawArrays begin");
+	pvr::nativeGles::logApiError("TexQuad DrawArrays begin");
 	uint32 offset = sizeof(pvr::float32) * 8;
 	for (pvr::uint32 i = 0; i < 2; ++i)
 	{
 		gl::Viewport(getWidth() / 2 * i, 0, getWidth() / 2, getHeight());
 
-		pvr::api::logApiError("TexQuad DrawArrays begin");
+		pvr::nativeGles::logApiError("TexQuad DrawArrays begin");
 		// Draw the quad
 		gl::Uniform1i(texQuadProgram.layerIndexLoc, i);
 		drawHighLowResQuad();
-		pvr::api::logApiError("TexQuad DrawArrays after");
+		pvr::nativeGles::logApiError("TexQuad DrawArrays after");
 	}
 	gl::DisableVertexAttribArray(0);
 	gl::DisableVertexAttribArray(1);
@@ -758,9 +752,9 @@ void MultiviewVR::drawMesh(int nodeIndex)
 	int meshIndex = scene->getMeshNode(nodeIndex).getObjectId();
 	const pvr::assets::Mesh& mesh = scene->getMesh(meshIndex);
 	const pvr::int32 matId = scene->getMeshNode(nodeIndex).getMaterialIndex();
-	pvr::api::logApiError("before BindTexture");
+	pvr::nativeGles::logApiError("before BindTexture");
 	gl::BindTexture(GL_TEXTURE_2D, texDiffuse[matId]);
-	pvr::api::logApiError("after  BindTexture");
+	pvr::nativeGles::logApiError("after  BindTexture");
 	// bind the VBO for the mesh
 
 	gl::BindBuffer(GL_ARRAY_BUFFER, vbo[meshIndex]);
@@ -768,11 +762,11 @@ void MultiviewVR::drawMesh(int nodeIndex)
 	gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVbo[meshIndex]);
 
 	// Enable the vertex attribute arrays
-	pvr::api::logApiError("before EnableVertexAttribArray");
+	pvr::nativeGles::logApiError("before EnableVertexAttribArray");
 	gl::EnableVertexAttribArray(VertexArray);
 	gl::EnableVertexAttribArray(NormalArray);
 	gl::EnableVertexAttribArray(TexCoordArray);
-	pvr::api::logApiError("after EnableVertexAttribArray");
+	pvr::nativeGles::logApiError("after EnableVertexAttribArray");
 	// Set the vertex attribute offsets
 	const pvr::assets::VertexAttributeData* posAttrib = mesh.getVertexAttributeByName(AttribNames[0]);
 	const pvr::assets::VertexAttributeData* normalAttrib = mesh.getVertexAttributeByName(AttribNames[1]);
@@ -794,16 +788,16 @@ void MultiviewVR::drawMesh(int nodeIndex)
 			// Indexed Triangle list
 			// Are our face indices unsigned shorts? If they aren't, then they are unsigned ints
 			GLenum type = (mesh.getFaces().getDataType() == IndexType::IndexType16Bit) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-			pvr::api::logApiError("before DrawElements");
+			pvr::nativeGles::logApiError("before DrawElements");
 			gl::DrawElements(GL_TRIANGLES, mesh.getNumFaces() * 3, type, 0);
-			pvr::api::logApiError("after DrawElements");
+			pvr::nativeGles::logApiError("after DrawElements");
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			pvr::api::logApiError("before DrawArrays");
+			pvr::nativeGles::logApiError("before DrawArrays");
 			gl::DrawArrays(GL_TRIANGLES, 0, mesh.getNumFaces() * 3);
-			pvr::api::logApiError("after DrawArrays");
+			pvr::nativeGles::logApiError("after DrawArrays");
 		}
 	}
 	else
@@ -817,17 +811,17 @@ void MultiviewVR::drawMesh(int nodeIndex)
 			if (indexVbo[meshIndex])
 			{
 				// Indexed Triangle strips
-				pvr::api::logApiError("before DrawElements");
+				pvr::nativeGles::logApiError("before DrawElements");
 				gl::DrawElements(GL_TRIANGLE_STRIP, mesh.getStripLength(i) + 2, type,
 				                 (void*)(size_t)(offset * mesh.getFaces().getDataSize()));
-				pvr::api::logApiError("after DrawElements");
+				pvr::nativeGles::logApiError("after DrawElements");
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				pvr::api::logApiError("before DrawArrays");
+				pvr::nativeGles::logApiError("before DrawArrays");
 				gl::DrawArrays(GL_TRIANGLE_STRIP, offset, mesh.getStripLength(i) + 2);
-				pvr::api::logApiError("after DrawArrays");
+				pvr::nativeGles::logApiError("after DrawArrays");
 			}
 			offset += mesh.getStripLength(i) + 2;
 		}

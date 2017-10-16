@@ -1,6 +1,6 @@
 ifeq "$(X11BUILD)" "1"
 
-WS_LIBS = -L$(X11ROOT)/lib -lX11 -lXau -lxcb -lX11-xcb
+WS_LIBS = -L$(X11ROOT)/lib -lX11 -lXau
 WS_INC  = $(X11ROOT)/include
 WS = X11
 PLAT_CFLAGS += -DX11

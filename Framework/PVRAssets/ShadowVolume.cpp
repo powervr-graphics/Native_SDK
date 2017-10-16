@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets\ShadowVolume.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains definitions for methods of the ShadowVolume class.
-***********************************************************************************************************************/
+/*!
+\brief Contains definitions for methods of the ShadowVolume class.
+\file PVRAssets/ShadowVolume.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include <cstring>
 
@@ -37,24 +37,24 @@ using namespace types;
 ShadowVolume::~ShadowVolume()
 {
 
-	std::map<uint32, ShadowVolumeData>::iterator walk = m_shadowVolumes.begin();
-	for (; walk != m_shadowVolumes.end(); ++walk)
+	std::map<uint32, ShadowVolumeData>::iterator walk = _shadowVolumes.begin();
+	for (; walk != _shadowVolumes.end(); ++walk)
 	{
 		const ShadowVolumeData& volume = walk->second;
 		delete [] volume.indexData;
 	}
-	delete [] m_shadowMesh.vertices;
-	delete [] m_shadowMesh.edges;
-	delete [] m_shadowMesh.triangles;
-	delete [] m_shadowMesh.vertexData;
+	delete [] _shadowMesh.vertices;
+	delete [] _shadowMesh.edges;
+	delete [] _shadowMesh.triangles;
+	delete [] _shadowMesh.vertexData;
 }
 
 uint32 ShadowVolume::findOrCreateVertex(const glm::vec3& vertex, bool& existed)
 {
 	// First check whether we already have a vertex here
-	for (uint32 i = 0; i < m_shadowMesh.numVertices; ++i)
+	for (uint32 i = 0; i < _shadowMesh.numVertices; ++i)
 	{
-		if (m_shadowMesh.vertices[i].x == vertex.x && m_shadowMesh.vertices[i].y == vertex.y && m_shadowMesh.vertices[i].z == vertex.z)
+		if (_shadowMesh.vertices[i].x == vertex.x && _shadowMesh.vertices[i].y == vertex.y && _shadowMesh.vertices[i].z == vertex.z)
 		{
 			// Don't do anything more if the vertex already exists
 			existed = true;
@@ -62,35 +62,35 @@ uint32 ShadowVolume::findOrCreateVertex(const glm::vec3& vertex, bool& existed)
 		}
 	}
 
-	if (m_shadowMesh.numVertices == 0)
+	if (_shadowMesh.numVertices == 0)
 	{
-		m_shadowMesh.minimum = m_shadowMesh.maximum = vertex;
+		_shadowMesh.minimum = _shadowMesh.maximum = vertex;
 	}
 	else
 	{
-		if (vertex.x < m_shadowMesh.minimum.x)
-		{ m_shadowMesh.minimum.x = vertex.x; }
+		if (vertex.x < _shadowMesh.minimum.x)
+		{ _shadowMesh.minimum.x = vertex.x; }
 
-		if (vertex.y < m_shadowMesh.minimum.y)
-		{ m_shadowMesh.minimum.y = vertex.y; }
+		if (vertex.y < _shadowMesh.minimum.y)
+		{ _shadowMesh.minimum.y = vertex.y; }
 
-		if (vertex.z < m_shadowMesh.minimum.z)
-		{ m_shadowMesh.minimum.z = vertex.z; }
+		if (vertex.z < _shadowMesh.minimum.z)
+		{ _shadowMesh.minimum.z = vertex.z; }
 
-		if (vertex.x > m_shadowMesh.maximum.x)
-		{ m_shadowMesh.maximum.x = vertex.x; }
+		if (vertex.x > _shadowMesh.maximum.x)
+		{ _shadowMesh.maximum.x = vertex.x; }
 
-		if (vertex.y > m_shadowMesh.maximum.y)
-		{ m_shadowMesh.maximum.y = vertex.y; }
+		if (vertex.y > _shadowMesh.maximum.y)
+		{ _shadowMesh.maximum.y = vertex.y; }
 
-		if (vertex.z > m_shadowMesh.maximum.z)
-		{ m_shadowMesh.maximum.z = vertex.z; }
+		if (vertex.z > _shadowMesh.maximum.z)
+		{ _shadowMesh.maximum.z = vertex.z; }
 	}
 
 	// Add the vertex
-	memcpy(&m_shadowMesh.vertices[m_shadowMesh.numVertices], &vertex, sizeof(vertex));
+	memcpy(&_shadowMesh.vertices[_shadowMesh.numVertices], &vertex, sizeof(vertex));
 	existed = false;
-	return m_shadowMesh.numVertices++;
+	return _shadowMesh.numVertices++;
 }
 
 uint32 ShadowVolume::findOrCreateEdge(const glm::vec3& v0, const glm::vec3& v1, bool& existed)
@@ -103,10 +103,10 @@ uint32 ShadowVolume::findOrCreateEdge(const glm::vec3& v0, const glm::vec3& v1, 
 	if (alreadyExisted[0] && alreadyExisted[1])
 	{
 		// Check whether we already have an edge here
-		for (uint32 i = 0; i < m_shadowMesh.numEdges; ++i)
+		for (uint32 i = 0; i < _shadowMesh.numEdges; ++i)
 		{
-			if ((m_shadowMesh.edges[i].vertexIndices[0] == vertexIndices[0] && m_shadowMesh.edges[i].vertexIndices[1] == vertexIndices[1]) ||
-			    (m_shadowMesh.edges[i].vertexIndices[0] == vertexIndices[1] && m_shadowMesh.edges[i].vertexIndices[1] == vertexIndices[0]))
+			if ((_shadowMesh.edges[i].vertexIndices[0] == vertexIndices[0] && _shadowMesh.edges[i].vertexIndices[1] == vertexIndices[1]) ||
+			    (_shadowMesh.edges[i].vertexIndices[0] == vertexIndices[1] && _shadowMesh.edges[i].vertexIndices[1] == vertexIndices[0]))
 			{
 				// Don't do anything more if the edge already exists
 				existed = true;
@@ -116,11 +116,11 @@ uint32 ShadowVolume::findOrCreateEdge(const glm::vec3& v0, const glm::vec3& v1, 
 	}
 
 	// Add the edge
-	m_shadowMesh.edges[m_shadowMesh.numEdges].vertexIndices[0] = vertexIndices[0];
-	m_shadowMesh.edges[m_shadowMesh.numEdges].vertexIndices[1] = vertexIndices[1];
-	m_shadowMesh.edges[m_shadowMesh.numEdges].visibilityFlags = 0;
+	_shadowMesh.edges[_shadowMesh.numEdges].vertexIndices[0] = vertexIndices[0];
+	_shadowMesh.edges[_shadowMesh.numEdges].vertexIndices[1] = vertexIndices[1];
+	_shadowMesh.edges[_shadowMesh.numEdges].visibilityFlags = 0;
 	existed = false;
-	return m_shadowMesh.numEdges++;
+	return _shadowMesh.numEdges++;
 }
 
 void ShadowVolume::findOrCreateTriangle(const glm::vec3& v0, const glm::vec3& v1,
@@ -143,14 +143,14 @@ void ShadowVolume::findOrCreateTriangle(const glm::vec3& v0, const glm::vec3& v1
 	// First check whether we already have a triangle here
 	if (alreadyExisted[0] && alreadyExisted[1] && alreadyExisted[2])
 	{
-		for (uint32 i = 0; i < m_shadowMesh.numTriangles; ++i)
+		for (uint32 i = 0; i < _shadowMesh.numTriangles; ++i)
 		{
-			if ((m_shadowMesh.triangles[i].edgeIndices[0] == edgeIndex0 || m_shadowMesh.triangles[i].edgeIndices[0] == edgeIndex1
-			     || m_shadowMesh.triangles[i].edgeIndices[0] == edgeIndex2) &&
-			    (m_shadowMesh.triangles[i].edgeIndices[1] == edgeIndex0 || m_shadowMesh.triangles[i].edgeIndices[1] == edgeIndex1
-			     || m_shadowMesh.triangles[i].edgeIndices[1] == edgeIndex2) &&
-			    (m_shadowMesh.triangles[i].edgeIndices[2] == edgeIndex0 || m_shadowMesh.triangles[i].edgeIndices[2] == edgeIndex1
-			     || m_shadowMesh.triangles[i].edgeIndices[2] == edgeIndex2))
+			if ((_shadowMesh.triangles[i].edgeIndices[0] == edgeIndex0 || _shadowMesh.triangles[i].edgeIndices[0] == edgeIndex1
+			     || _shadowMesh.triangles[i].edgeIndices[0] == edgeIndex2) &&
+			    (_shadowMesh.triangles[i].edgeIndices[1] == edgeIndex0 || _shadowMesh.triangles[i].edgeIndices[1] == edgeIndex1
+			     || _shadowMesh.triangles[i].edgeIndices[1] == edgeIndex2) &&
+			    (_shadowMesh.triangles[i].edgeIndices[2] == edgeIndex0 || _shadowMesh.triangles[i].edgeIndices[2] == edgeIndex1
+			     || _shadowMesh.triangles[i].edgeIndices[2] == edgeIndex2))
 			{
 				// Don't do anything more if the triangle already exists
 				return;
@@ -159,51 +159,51 @@ void ShadowVolume::findOrCreateTriangle(const glm::vec3& v0, const glm::vec3& v1
 	}
 
 	// Add the triangle then
-	m_shadowMesh.triangles[m_shadowMesh.numTriangles].edgeIndices[0] = edgeIndex0;
-	m_shadowMesh.triangles[m_shadowMesh.numTriangles].edgeIndices[1] = edgeIndex1;
-	m_shadowMesh.triangles[m_shadowMesh.numTriangles].edgeIndices[2] = edgeIndex2;
+	_shadowMesh.triangles[_shadowMesh.numTriangles].edgeIndices[0] = edgeIndex0;
+	_shadowMesh.triangles[_shadowMesh.numTriangles].edgeIndices[1] = edgeIndex1;
+	_shadowMesh.triangles[_shadowMesh.numTriangles].edgeIndices[2] = edgeIndex2;
 
 	// Store the triangle indices; these are indices into the shadow mesh, not the source model indices
-	edge0 = &m_shadowMesh.edges[edgeIndex0];
-	edge1 = &m_shadowMesh.edges[edgeIndex1];
-	edge2 = &m_shadowMesh.edges[edgeIndex2];
+	edge0 = &_shadowMesh.edges[edgeIndex0];
+	edge1 = &_shadowMesh.edges[edgeIndex1];
+	edge2 = &_shadowMesh.edges[edgeIndex2];
 
 	if (edge0->vertexIndices[0] == edge1->vertexIndices[0] || edge0->vertexIndices[0] == edge1->vertexIndices[1])
-	{ m_shadowMesh.triangles[m_shadowMesh.numTriangles].vertexIndices[0] = edge0->vertexIndices[1]; }
+	{ _shadowMesh.triangles[_shadowMesh.numTriangles].vertexIndices[0] = edge0->vertexIndices[1]; }
 	else
-	{ m_shadowMesh.triangles[m_shadowMesh.numTriangles].vertexIndices[0] = edge0->vertexIndices[0]; }
+	{ _shadowMesh.triangles[_shadowMesh.numTriangles].vertexIndices[0] = edge0->vertexIndices[0]; }
 
 	if (edge1->vertexIndices[0] == edge2->vertexIndices[0] || edge1->vertexIndices[0] == edge2->vertexIndices[1])
-	{ m_shadowMesh.triangles[m_shadowMesh.numTriangles].vertexIndices[1] = edge1->vertexIndices[1]; }
+	{ _shadowMesh.triangles[_shadowMesh.numTriangles].vertexIndices[1] = edge1->vertexIndices[1]; }
 	else
-	{ m_shadowMesh.triangles[m_shadowMesh.numTriangles].vertexIndices[1] = edge1->vertexIndices[0]; }
+	{ _shadowMesh.triangles[_shadowMesh.numTriangles].vertexIndices[1] = edge1->vertexIndices[0]; }
 
 	if (edge2->vertexIndices[0] == edge0->vertexIndices[0] || edge2->vertexIndices[0] == edge0->vertexIndices[1])
-	{ m_shadowMesh.triangles[m_shadowMesh.numTriangles].vertexIndices[2] = edge2->vertexIndices[1]; }
+	{ _shadowMesh.triangles[_shadowMesh.numTriangles].vertexIndices[2] = edge2->vertexIndices[1]; }
 	else
-	{ m_shadowMesh.triangles[m_shadowMesh.numTriangles].vertexIndices[2] = edge2->vertexIndices[0]; }
+	{ _shadowMesh.triangles[_shadowMesh.numTriangles].vertexIndices[2] = edge2->vertexIndices[0]; }
 
 	// Calculate the triangle normal
 	glm::vec3 n0(v1.x - v0.x, v1.y - v0.y, v1.z - v0.z);
 	glm::vec3 n1(v2.x - v0.x, v2.y - v0.y, v2.z - v0.z);
 
-	m_shadowMesh.triangles[m_shadowMesh.numTriangles].normal.x = n0.y * n1.z - n0.z * n1.y;
-	m_shadowMesh.triangles[m_shadowMesh.numTriangles].normal.y = n0.z * n1.x - n0.x * n1.z;
-	m_shadowMesh.triangles[m_shadowMesh.numTriangles].normal.z = n0.x * n1.y - n0.y * n1.x;
+	_shadowMesh.triangles[_shadowMesh.numTriangles].normal.x = n0.y * n1.z - n0.z * n1.y;
+	_shadowMesh.triangles[_shadowMesh.numTriangles].normal.y = n0.z * n1.x - n0.x * n1.z;
+	_shadowMesh.triangles[_shadowMesh.numTriangles].normal.z = n0.x * n1.y - n0.y * n1.x;
 
 	// Check which edges have the correct winding order for this triangle
-	m_shadowMesh.triangles[m_shadowMesh.numTriangles].winding = 0;
+	_shadowMesh.triangles[_shadowMesh.numTriangles].winding = 0;
 
-	if (memcmp(&m_shadowMesh.vertices[edge0->vertexIndices[0]], &v0, sizeof(v0)) == 0)
-	{ m_shadowMesh.triangles[m_shadowMesh.numTriangles].winding |= 0x01; }
+	if (memcmp(&_shadowMesh.vertices[edge0->vertexIndices[0]], &v0, sizeof(v0)) == 0)
+	{ _shadowMesh.triangles[_shadowMesh.numTriangles].winding |= 0x01; }
 
-	if (memcmp(&m_shadowMesh.vertices[edge1->vertexIndices[0]], &v1, sizeof(v1)) == 0)
-	{ m_shadowMesh.triangles[m_shadowMesh.numTriangles].winding |= 0x02; }
+	if (memcmp(&_shadowMesh.vertices[edge1->vertexIndices[0]], &v1, sizeof(v1)) == 0)
+	{ _shadowMesh.triangles[_shadowMesh.numTriangles].winding |= 0x02; }
 
-	if (memcmp(&m_shadowMesh.vertices[edge2->vertexIndices[0]], &v2, sizeof(v2)) == 0)
-	{ m_shadowMesh.triangles[m_shadowMesh.numTriangles].winding |= 0x04; }
+	if (memcmp(&_shadowMesh.vertices[edge2->vertexIndices[0]], &v2, sizeof(v2)) == 0)
+	{ _shadowMesh.triangles[_shadowMesh.numTriangles].winding |= 0x04; }
 
-	++m_shadowMesh.numTriangles;
+	++_shadowMesh.numTriangles;
 	return;
 }
 
@@ -227,21 +227,21 @@ Result ShadowVolume::init(const byte* const data, uint32 numVertices,
                           uint32 verticesStride, DataType vertexType, const byte* const faceData,
                           uint32 numFaces, IndexType indexType)
 {
-	delete [] m_shadowMesh.vertices;
-	m_shadowMesh.numVertices = 0;
+	delete [] _shadowMesh.vertices;
+	_shadowMesh.numVertices = 0;
 
-	delete [] m_shadowMesh.edges;
-	m_shadowMesh.numEdges = 0;
+	delete [] _shadowMesh.edges;
+	_shadowMesh.numEdges = 0;
 
-	delete [] m_shadowMesh.triangles;
-	m_shadowMesh.numTriangles = 0;
+	delete [] _shadowMesh.triangles;
+	_shadowMesh.numTriangles = 0;
 
-	m_shadowMesh.vertices = new glm::vec3[numVertices];
+	_shadowMesh.vertices = new glm::vec3[numVertices];
 
 	if (faceData)
 	{
-		m_shadowMesh.edges = new ShadowVolumeEdge[3 * numFaces];
-		m_shadowMesh.triangles = new ShadowVolumeTriangle[3 * numFaces];
+		_shadowMesh.edges = new ShadowVolumeEdge[3 * numFaces];
+		_shadowMesh.triangles = new ShadowVolumeTriangle[3 * numFaces];
 
 		uint32 indexStride = indexTypeSizeInBytes(indexType);
 
@@ -267,8 +267,8 @@ Result ShadowVolume::init(const byte* const data, uint32 numVertices,
 	}
 	else     // Non-index
 	{
-		m_shadowMesh.edges = new ShadowVolumeEdge[numVertices / 3];
-		m_shadowMesh.triangles = new ShadowVolumeTriangle[numVertices / 3];
+		_shadowMesh.edges = new ShadowVolumeEdge[numVertices / 3];
+		_shadowMesh.triangles = new ShadowVolumeTriangle[numVertices / 3];
 
 		for (uint32 i = 0; i < numVertices; i += 3)
 		{
@@ -283,18 +283,18 @@ Result ShadowVolume::init(const byte* const data, uint32 numVertices,
 
 #ifdef DEBUG
 	// Check the data is valid
-	for (uint32 edge = 0; edge < m_shadowMesh.numEdges; ++edge)
+	for (uint32 edge = 0; edge < _shadowMesh.numEdges; ++edge)
 	{
 		uint32 count = 0;
-		for (uint32 triangle = 0; triangle < m_shadowMesh.numTriangles; ++triangle)
+		for (uint32 triangle = 0; triangle < _shadowMesh.numTriangles; ++triangle)
 		{
-			if (m_shadowMesh.triangles[triangle].edgeIndices[0] == edge)
+			if (_shadowMesh.triangles[triangle].edgeIndices[0] == edge)
 			{ ++count; }
 
-			if (m_shadowMesh.triangles[triangle].edgeIndices[1] == edge)
+			if (_shadowMesh.triangles[triangle].edgeIndices[1] == edge)
 			{ ++count; }
 
-			if (m_shadowMesh.triangles[triangle].edgeIndices[2] == edge)
+			if (_shadowMesh.triangles[triangle].edgeIndices[2] == edge)
 			{ ++count; }
 		}
 
@@ -309,30 +309,30 @@ Result ShadowVolume::init(const byte* const data, uint32 numVertices,
 
 	// Create the real mesh
 	{
-		glm::vec3* tmp = new glm::vec3[m_shadowMesh.numVertices];
+		glm::vec3* tmp = new glm::vec3[_shadowMesh.numVertices];
 
-		memcpy(tmp, m_shadowMesh.vertices, m_shadowMesh.numVertices * sizeof(*m_shadowMesh.vertices));
-		delete [] m_shadowMesh.vertices;
-		m_shadowMesh.vertices = tmp;
+		memcpy(tmp, _shadowMesh.vertices, _shadowMesh.numVertices * sizeof(*_shadowMesh.vertices));
+		delete [] _shadowMesh.vertices;
+		_shadowMesh.vertices = tmp;
 	}
 
 	{
-		ShadowVolumeEdge* tmp = new ShadowVolumeEdge[m_shadowMesh.numEdges];
+		ShadowVolumeEdge* tmp = new ShadowVolumeEdge[_shadowMesh.numEdges];
 
-		memcpy(tmp, m_shadowMesh.edges, m_shadowMesh.numEdges * sizeof(*m_shadowMesh.edges));
-		delete [] m_shadowMesh.edges;
-		m_shadowMesh.edges = tmp;
+		memcpy(tmp, _shadowMesh.edges, _shadowMesh.numEdges * sizeof(*_shadowMesh.edges));
+		delete [] _shadowMesh.edges;
+		_shadowMesh.edges = tmp;
 	}
 
 	{
-		ShadowVolumeTriangle* tmp = new ShadowVolumeTriangle[m_shadowMesh.numTriangles];
+		ShadowVolumeTriangle* tmp = new ShadowVolumeTriangle[_shadowMesh.numTriangles];
 
-		memcpy(tmp, m_shadowMesh.triangles, m_shadowMesh.numTriangles * sizeof(*m_shadowMesh.triangles));
-		delete [] m_shadowMesh.triangles;
-		m_shadowMesh.triangles = tmp;
+		memcpy(tmp, _shadowMesh.triangles, _shadowMesh.numTriangles * sizeof(*_shadowMesh.triangles));
+		delete [] _shadowMesh.triangles;
+		_shadowMesh.triangles = tmp;
 	}
 
-	m_shadowMesh.needs32BitIndices = (m_shadowMesh.numTriangles * 2 * 3) > 65535;
+	_shadowMesh.needs32BitIndices = (_shadowMesh.numTriangles * 2 * 3) > 65535;
 
 	initializeVertexData();
 	return Result::Success;
@@ -348,10 +348,10 @@ void ShadowVolume::initializeVertexData(byte** externalBuffer)
 	}
 	else
 	{
-		delete [] m_shadowMesh.vertexData;
-		m_shadowMesh.vertexData = new byte[getVertexDataSize()];
+		delete [] _shadowMesh.vertexData;
+		_shadowMesh.vertexData = new byte[getVertexDataSize()];
 
-		tmp = m_shadowMesh.vertexData;
+		tmp = _shadowMesh.vertexData;
 	}
 
 	struct LocalVertex
@@ -363,14 +363,14 @@ void ShadowVolume::initializeVertexData(byte** externalBuffer)
 	uint32 stride = getVertexDataStride();
 
 	// Fill the vertex buffer with two subtly different copies of the vertices
-	for (uint32 i = 0; i < m_shadowMesh.numVertices; ++i)
+	for (uint32 i = 0; i < _shadowMesh.numVertices; ++i)
 	{
 		LocalVertex& vertex = *reinterpret_cast<LocalVertex*>(&tmp[i * stride]);
-		LocalVertex& mirrorMirrorVertex = *reinterpret_cast<LocalVertex*>(&tmp[(i + m_shadowMesh.numVertices) * stride]);
+		LocalVertex& mirrorMirrorVertex = *reinterpret_cast<LocalVertex*>(&tmp[(i + _shadowMesh.numVertices) * stride]);
 
-		vertex.x = mirrorMirrorVertex.x = m_shadowMesh.vertices[i].x;
-		vertex.y = mirrorMirrorVertex.y = m_shadowMesh.vertices[i].y;
-		vertex.z = mirrorMirrorVertex.z = m_shadowMesh.vertices[i].z;
+		vertex.x = mirrorMirrorVertex.x = _shadowMesh.vertices[i].x;
+		vertex.y = mirrorMirrorVertex.y = _shadowMesh.vertices[i].y;
+		vertex.z = mirrorMirrorVertex.z = _shadowMesh.vertices[i].z;
 
 		vertex.extrude = 0;
 		mirrorMirrorVertex.extrude = 0x04030201; // The order is wzyx
@@ -382,15 +382,15 @@ void ShadowVolume::alllocateShadowVolume(uint32 volumeID)
 {
 	ShadowVolumeData volume;
 	volume.indexData = new byte[getIndexDataSize()];
-	m_shadowVolumes.insert(pair<uint32, ShadowVolumeData>(volumeID, volume));
+	_shadowVolumes.insert(pair<uint32, ShadowVolumeData>(volumeID, volume));
 }
 
 Result ShadowVolume::releaseVolume(uint32 volumeID)
 {
-	std::map<uint32, ShadowVolumeData>::iterator found = m_shadowVolumes.find(volumeID);
-	assertion(found != m_shadowVolumes.end());
+	std::map<uint32, ShadowVolumeData>::iterator found = _shadowVolumes.find(volumeID);
+	assertion(found != _shadowVolumes.end());
 
-	if (found == m_shadowVolumes.end())
+	if (found == _shadowVolumes.end())
 	{
 		return Result::OutOfBounds;
 	}
@@ -398,13 +398,13 @@ Result ShadowVolume::releaseVolume(uint32 volumeID)
 		const ShadowVolumeData& volume = found->second;
 		delete [] volume.indexData;
 	}
-	m_shadowVolumes.erase(found);
+	_shadowVolumes.erase(found);
 	return Result::Success;
 }
 
 byte* ShadowVolume::getVertexData()
 {
-	return m_shadowMesh.vertexData;
+	return _shadowMesh.vertexData;
 }
 
 uint32 ShadowVolume::getVertexDataPositionOffset()
@@ -419,7 +419,7 @@ uint32 ShadowVolume::getVertexDataExtrudeOffset()
 
 uint32 ShadowVolume::getVertexDataSize()
 {
-	return m_shadowMesh.numVertices * 2 * getVertexDataStride();
+	return _shadowMesh.numVertices * 2 * getVertexDataStride();
 }
 
 uint32 ShadowVolume::getVertexDataStride()
@@ -429,34 +429,34 @@ uint32 ShadowVolume::getVertexDataStride()
 
 bool ShadowVolume::isVertexDataInternal()
 {
-	return m_shadowMesh.vertexData != NULL;
+	return _shadowMesh.vertexData != NULL;
 }
 
 bool ShadowVolume::isIndexDataInternal(uint32 volumeID)
 {
 
-	ShadowVolumeMapType::iterator found = m_shadowVolumes.begin();
+	ShadowVolumeMapType::iterator found = _shadowVolumes.begin();
 	std::advance(found, volumeID);
-	return (found != m_shadowVolumes.end() && found->second.indexData != NULL);
+	return (found != _shadowVolumes.end() && found->second.indexData != NULL);
 }
 
 uint32 ShadowVolume::getIndexDataSize()
 {
-	return m_shadowMesh.numTriangles * 2 * 3 * getIndexDataStride();
+	return _shadowMesh.numTriangles * 2 * 3 * getIndexDataStride();
 }
 
 uint32 ShadowVolume::getIndexDataStride()
 {
-	return m_shadowMesh.needs32BitIndices ? sizeof(uint32) : sizeof(uint16);
+	return _shadowMesh.needs32BitIndices ? sizeof(uint32) : sizeof(uint16);
 }
 
 uint32 ShadowVolume::getIndexCount(uint32 volumeID)
 {
 
-	ShadowVolumeMapType::iterator found = m_shadowVolumes.find(volumeID);
-	assertion(found != m_shadowVolumes.end());
+	ShadowVolumeMapType::iterator found = _shadowVolumes.find(volumeID);
+	assertion(found != _shadowVolumes.end());
 
-	if (found == m_shadowVolumes.end())
+	if (found == _shadowVolumes.end())
 	{
 		return 0;
 	}
@@ -466,10 +466,10 @@ uint32 ShadowVolume::getIndexCount(uint32 volumeID)
 
 byte* ShadowVolume::getIndices(uint32 volumeID)
 {
-	ShadowVolumeMapType::iterator found = m_shadowVolumes.find(volumeID);
-	assertion(found != m_shadowVolumes.end());
+	ShadowVolumeMapType::iterator found = _shadowVolumes.find(volumeID);
+	assertion(found != _shadowVolumes.end());
 
-	if (found == m_shadowVolumes.end())
+	if (found == _shadowVolumes.end())
 	{
 		return 0;
 	}
@@ -480,7 +480,7 @@ byte* ShadowVolume::getIndices(uint32 volumeID)
 Result ShadowVolume::projectSilhouette(uint32 volumeID, uint32 flags, const glm::vec3& lightModel, bool isPointLight,
                                        byte** externalIndexBuffer)
 {
-	if (m_shadowMesh.needs32BitIndices)
+	if (_shadowMesh.needs32BitIndices)
 	{
 		return project<uint32>(volumeID, flags, lightModel, isPointLight, reinterpret_cast<uint32**>(externalIndexBuffer));
 	}
@@ -494,10 +494,10 @@ template<typename INDEXTYPE>
 Result ShadowVolume::project(uint32 volumeID, uint32 flags, const glm::vec3& lightModel, bool isPointLight,
                              INDEXTYPE** externalIndexBuffer)
 {
-	ShadowVolumeMapType::iterator found = m_shadowVolumes.find(volumeID);
-	assertion(found != m_shadowVolumes.end());
+	ShadowVolumeMapType::iterator found = _shadowVolumes.find(volumeID);
+	assertion(found != _shadowVolumes.end());
 
-	if (found != m_shadowVolumes.end())
+	if (found != _shadowVolumes.end())
 	{
 		return Result::OutOfBounds;
 	}
@@ -512,28 +512,28 @@ Result ShadowVolume::project(uint32 volumeID, uint32 flags, const glm::vec3& lig
 	volume.indexCount = 0;
 
 	// Run through triangles, testing which face the From point
-	for (uint32 i = 0; i < m_shadowMesh.numTriangles; ++i)
+	for (uint32 i = 0; i < _shadowMesh.numTriangles; ++i)
 	{
 		ShadowVolumeEdge* edge0, *edge1, *edge2;
-		edge0 = &m_shadowMesh.edges[m_shadowMesh.triangles[i].edgeIndices[0]];
-		edge1 = &m_shadowMesh.edges[m_shadowMesh.triangles[i].edgeIndices[1]];
-		edge2 = &m_shadowMesh.edges[m_shadowMesh.triangles[i].edgeIndices[2]];
+		edge0 = &_shadowMesh.edges[_shadowMesh.triangles[i].edgeIndices[0]];
+		edge1 = &_shadowMesh.edges[_shadowMesh.triangles[i].edgeIndices[1]];
+		edge2 = &_shadowMesh.edges[_shadowMesh.triangles[i].edgeIndices[2]];
 
 		if (isPointLight)
 		{
 			glm::vec3 v;
-			v.x = m_shadowMesh.vertices[edge0->vertexIndices[0]].x - lightModel.x;
-			v.y = m_shadowMesh.vertices[edge0->vertexIndices[0]].y - lightModel.y;
-			v.z = m_shadowMesh.vertices[edge0->vertexIndices[0]].z - lightModel.z;
+			v.x = _shadowMesh.vertices[edge0->vertexIndices[0]].x - lightModel.x;
+			v.y = _shadowMesh.vertices[edge0->vertexIndices[0]].y - lightModel.y;
+			v.z = _shadowMesh.vertices[edge0->vertexIndices[0]].z - lightModel.z;
 
 			// Dot product
-			f = m_shadowMesh.triangles[i].normal.x * v.x + m_shadowMesh.triangles[i].normal.y * v.y + m_shadowMesh.triangles[i].normal.z *
+			f = _shadowMesh.triangles[i].normal.x * v.x + _shadowMesh.triangles[i].normal.y * v.y + _shadowMesh.triangles[i].normal.z *
 			    v.z;
 		}
 		else
 		{
-			f = m_shadowMesh.triangles[i].normal.x * lightModel.x + m_shadowMesh.triangles[i].normal.y * lightModel.y +
-			    m_shadowMesh.triangles[i].normal.z * lightModel.z;
+			f = _shadowMesh.triangles[i].normal.x * lightModel.x + _shadowMesh.triangles[i].normal.y * lightModel.y +
+			    _shadowMesh.triangles[i].normal.z * lightModel.z;
 		}
 
 		if (f >= 0)
@@ -546,26 +546,26 @@ Result ShadowVolume::project(uint32 volumeID, uint32 flags, const glm::vec3& lig
 			if (flags & Cap_front)
 			{
 				// Add the triangle to the volume, un-extruded.
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.triangles[i].vertexIndices[0]);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.triangles[i].vertexIndices[1]);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.triangles[i].vertexIndices[2]);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.triangles[i].vertexIndices[0]);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.triangles[i].vertexIndices[1]);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.triangles[i].vertexIndices[2]);
 			}
 		}
 		else
 		{
 			// Triangle is in shade; set Bit3 if the winding order needs reversing
-			edge0->visibilityFlags |= 0x02 | (m_shadowMesh.triangles[i].winding & 0x01) << 2;
-			edge1->visibilityFlags |= 0x02 | (m_shadowMesh.triangles[i].winding & 0x02) << 1;
-			edge2->visibilityFlags |= 0x02 | (m_shadowMesh.triangles[i].winding & 0x04);
+			edge0->visibilityFlags |= 0x02 | (_shadowMesh.triangles[i].winding & 0x01) << 2;
+			edge1->visibilityFlags |= 0x02 | (_shadowMesh.triangles[i].winding & 0x02) << 1;
+			edge2->visibilityFlags |= 0x02 | (_shadowMesh.triangles[i].winding & 0x04);
 
 			if (flags & Cap_back)
 			{
 				// Add the triangle to the volume, extruded.
 				// numVertices is used as an offset so that the new index refers to the
 				// corresponding position in the second array of vertices (which are extruded)
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.triangles[i].vertexIndices[0] + m_shadowMesh.numVertices);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.triangles[i].vertexIndices[1] + m_shadowMesh.numVertices);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.triangles[i].vertexIndices[2] + m_shadowMesh.numVertices);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.triangles[i].vertexIndices[0] + _shadowMesh.numVertices);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.triangles[i].vertexIndices[1] + _shadowMesh.numVertices);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.triangles[i].vertexIndices[2] + _shadowMesh.numVertices);
 			}
 		}
 	}
@@ -575,43 +575,43 @@ Result ShadowVolume::project(uint32 volumeID, uint32 flags, const glm::vec3& lig
 
 	for (uint32 i = 0; i < volume.indexCount; ++i)
 	{
-		assertion(indices[i] < m_shadowMesh.numVertices * 2);
+		assertion(indices[i] < _shadowMesh.numVertices * 2);
 	}
 #endif
 
 	// Run through edges, testing which are silhouette edges
-	for (uint32 i = 0; i < m_shadowMesh.numEdges; ++i)
+	for (uint32 i = 0; i < _shadowMesh.numEdges; ++i)
 	{
-		if ((m_shadowMesh.edges[i].visibilityFlags & 0x03) == 0x03)
+		if ((_shadowMesh.edges[i].visibilityFlags & 0x03) == 0x03)
 		{
 			/*
 				Silhouette edge found!
 				The edge is both visible and hidden, so it is along the silhouette of the model (See header notes for more info)
 			*/
-			if (m_shadowMesh.edges[i].visibilityFlags & 0x04)
+			if (_shadowMesh.edges[i].visibilityFlags & 0x04)
 			{
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[0]);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[1]);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[0] + m_shadowMesh.numVertices);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[0]);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[1]);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[0] + _shadowMesh.numVertices);
 
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[0] + m_shadowMesh.numVertices);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[1]);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[1] + m_shadowMesh.numVertices);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[0] + _shadowMesh.numVertices);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[1]);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[1] + _shadowMesh.numVertices);
 			}
 			else
 			{
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[1]);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[0]);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[1] + m_shadowMesh.numVertices);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[1]);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[0]);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[1] + _shadowMesh.numVertices);
 
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[1] + m_shadowMesh.numVertices);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[0]);
-				indices[volume.indexCount++] = static_cast<INDEXTYPE>(m_shadowMesh.edges[i].vertexIndices[0] + m_shadowMesh.numVertices);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[1] + _shadowMesh.numVertices);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[0]);
+				indices[volume.indexCount++] = static_cast<INDEXTYPE>(_shadowMesh.edges[i].vertexIndices[0] + _shadowMesh.numVertices);
 			}
 		}
 
 		// Zero for next render
-		m_shadowMesh.edges[i].visibilityFlags = 0;
+		_shadowMesh.edges[i].visibilityFlags = 0;
 	}
 
 #ifdef DEBUG // Sanity checks
@@ -619,7 +619,7 @@ Result ShadowVolume::project(uint32 volumeID, uint32 flags, const glm::vec3& lig
 
 	for (uint32 i = 0; i < volume.indexCount; ++i)
 	{
-		assertion(indices[i] < m_shadowMesh.numVertices * 2);
+		assertion(indices[i] < _shadowMesh.numVertices * 2);
 	}
 #endif
 
@@ -924,21 +924,21 @@ uint32 ShadowVolume::isVisible(const glm::mat4x4 projection, const glm::vec3& li
 
 	// Transform the eight bounding box points into projection space
 	// Transform the 8 points
-	transformPoint(projection, m_shadowMesh.minimum.x, m_shadowMesh.minimum.y, m_shadowMesh.minimum.z, lightProjZ,
+	transformPoint(projection, _shadowMesh.minimum.x, _shadowMesh.minimum.y, _shadowMesh.minimum.z, lightProjZ,
 	               boundingHyperCubeT[0], clipZCount, clipFlagsA);
-	transformPoint(projection, m_shadowMesh.minimum.x, m_shadowMesh.minimum.y, m_shadowMesh.maximum.z, lightProjZ,
+	transformPoint(projection, _shadowMesh.minimum.x, _shadowMesh.minimum.y, _shadowMesh.maximum.z, lightProjZ,
 	               boundingHyperCubeT[1], clipZCount, clipFlagsA);
-	transformPoint(projection, m_shadowMesh.minimum.x, m_shadowMesh.maximum.y, m_shadowMesh.minimum.z, lightProjZ,
+	transformPoint(projection, _shadowMesh.minimum.x, _shadowMesh.maximum.y, _shadowMesh.minimum.z, lightProjZ,
 	               boundingHyperCubeT[2], clipZCount, clipFlagsA);
-	transformPoint(projection, m_shadowMesh.minimum.x, m_shadowMesh.maximum.y, m_shadowMesh.maximum.z, lightProjZ,
+	transformPoint(projection, _shadowMesh.minimum.x, _shadowMesh.maximum.y, _shadowMesh.maximum.z, lightProjZ,
 	               boundingHyperCubeT[3], clipZCount, clipFlagsA);
-	transformPoint(projection, m_shadowMesh.maximum.x, m_shadowMesh.minimum.y, m_shadowMesh.minimum.z, lightProjZ,
+	transformPoint(projection, _shadowMesh.maximum.x, _shadowMesh.minimum.y, _shadowMesh.minimum.z, lightProjZ,
 	               boundingHyperCubeT[4], clipZCount, clipFlagsA);
-	transformPoint(projection, m_shadowMesh.maximum.x, m_shadowMesh.minimum.y, m_shadowMesh.maximum.z, lightProjZ,
+	transformPoint(projection, _shadowMesh.maximum.x, _shadowMesh.minimum.y, _shadowMesh.maximum.z, lightProjZ,
 	               boundingHyperCubeT[5], clipZCount, clipFlagsA);
-	transformPoint(projection, m_shadowMesh.maximum.x, m_shadowMesh.maximum.y, m_shadowMesh.minimum.z, lightProjZ,
+	transformPoint(projection, _shadowMesh.maximum.x, _shadowMesh.maximum.y, _shadowMesh.minimum.z, lightProjZ,
 	               boundingHyperCubeT[6], clipZCount, clipFlagsA);
-	transformPoint(projection, m_shadowMesh.maximum.x, m_shadowMesh.maximum.y, m_shadowMesh.maximum.z, lightProjZ,
+	transformPoint(projection, _shadowMesh.maximum.x, _shadowMesh.maximum.y, _shadowMesh.maximum.z, lightProjZ,
 	               boundingHyperCubeT[7], clipZCount, clipFlagsA);
 
 	if (clipZCount == 8 && clipFlagsA == 8)
@@ -948,21 +948,21 @@ uint32 ShadowVolume::isVisible(const glm::mat4x4 projection, const glm::vec3& li
 	}
 
 	// Extrude the bounding box and transform into projection space
-	extrudeAndTransformPoint(projection, m_shadowMesh.minimum.x, m_shadowMesh.minimum.y, m_shadowMesh.minimum.z, lightModel,
+	extrudeAndTransformPoint(projection, _shadowMesh.minimum.x, _shadowMesh.minimum.y, _shadowMesh.minimum.z, lightModel,
 	                         isPointLight, extrudeLength, boundingHyperCubeT[8]);
-	extrudeAndTransformPoint(projection, m_shadowMesh.minimum.x, m_shadowMesh.minimum.y, m_shadowMesh.maximum.z, lightModel,
+	extrudeAndTransformPoint(projection, _shadowMesh.minimum.x, _shadowMesh.minimum.y, _shadowMesh.maximum.z, lightModel,
 	                         isPointLight, extrudeLength, boundingHyperCubeT[9]);
-	extrudeAndTransformPoint(projection, m_shadowMesh.minimum.x, m_shadowMesh.maximum.y, m_shadowMesh.minimum.z, lightModel,
+	extrudeAndTransformPoint(projection, _shadowMesh.minimum.x, _shadowMesh.maximum.y, _shadowMesh.minimum.z, lightModel,
 	                         isPointLight, extrudeLength, boundingHyperCubeT[10]);
-	extrudeAndTransformPoint(projection, m_shadowMesh.minimum.x, m_shadowMesh.maximum.y, m_shadowMesh.maximum.z, lightModel,
+	extrudeAndTransformPoint(projection, _shadowMesh.minimum.x, _shadowMesh.maximum.y, _shadowMesh.maximum.z, lightModel,
 	                         isPointLight, extrudeLength, boundingHyperCubeT[11]);
-	extrudeAndTransformPoint(projection, m_shadowMesh.maximum.x, m_shadowMesh.minimum.y, m_shadowMesh.minimum.z, lightModel,
+	extrudeAndTransformPoint(projection, _shadowMesh.maximum.x, _shadowMesh.minimum.y, _shadowMesh.minimum.z, lightModel,
 	                         isPointLight, extrudeLength, boundingHyperCubeT[12]);
-	extrudeAndTransformPoint(projection, m_shadowMesh.maximum.x, m_shadowMesh.minimum.y, m_shadowMesh.maximum.z, lightModel,
+	extrudeAndTransformPoint(projection, _shadowMesh.maximum.x, _shadowMesh.minimum.y, _shadowMesh.maximum.z, lightModel,
 	                         isPointLight, extrudeLength, boundingHyperCubeT[13]);
-	extrudeAndTransformPoint(projection, m_shadowMesh.maximum.x, m_shadowMesh.maximum.y, m_shadowMesh.minimum.z, lightModel,
+	extrudeAndTransformPoint(projection, _shadowMesh.maximum.x, _shadowMesh.maximum.y, _shadowMesh.minimum.z, lightModel,
 	                         isPointLight, extrudeLength, boundingHyperCubeT[14]);
-	extrudeAndTransformPoint(projection, m_shadowMesh.maximum.x, m_shadowMesh.maximum.y, m_shadowMesh.maximum.z, lightModel,
+	extrudeAndTransformPoint(projection, _shadowMesh.maximum.x, _shadowMesh.maximum.y, _shadowMesh.maximum.z, lightModel,
 	                         isPointLight, extrudeLength, boundingHyperCubeT[15]);
 
 	// Check whether any part of the hyper bounding box is visible

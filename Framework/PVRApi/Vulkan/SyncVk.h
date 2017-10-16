@@ -1,11 +1,10 @@
-/*!*********************************************************************************************************************
-\file         PVRApi/Vulkan/SyncVk.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Contains Vulkan specific implementation of the Fence class. Use only if directly using Vulkan calls.
-			  Provides the definitions allowing to move from the Framework object Fence to the underlying Vulkan Fence.
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief Contains Vulkan specific implementation of the Fence class. Use only if directly using Vulkan calls. Provides
+the definitions allowing to move from the Framework object Fence to the underlying Vulkan Fence.
+\file PVRApi/Vulkan/SyncVk.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRApi/ApiObjects/Sync.h"
 #include "PVRNativeApi/Vulkan/NativeObjectsVk.h"
@@ -16,108 +15,76 @@
 namespace pvr {
 namespace api {
 namespace vulkan {
-/*!*********************************************************************************************************************
-\brief Vulkan implementation of the Fence class.
-***********************************************************************************************************************/
+/// <summary>Vulkan implementation of the Fence class.</summary>
 class FenceVk_ : public impl::Fence_, public native::HFence_
 {
 public:
-	/*!*********************************************************************************************************************
-	\brief ctor. Construct this object
-	\param context The Context to be construct from
-	\param fence A native handle to the fence that need to be wrapped in 
-	***********************************************************************************************************************/
+	/// <summary>ctor. Construct this object</summary>
+	/// <param name="context">The Context to be construct from</param>
+	/// <param name="fence">A native handle to the fence that need to be wrapped in</param>
 	FenceVk_(const GraphicsContext& context, HFence_ fence) : Fence_(context), HFence_(fence){}
 	
-	/*!*********************************************************************************************************************
-	\brief ctor. Construct this object
-	\param context The Context to be construct from
-	***********************************************************************************************************************/
+	/// <summary>ctor. Construct this object</summary>
+	/// <param name="context">The Context to be construct from</param>
 	FenceVk_(const GraphicsContext& context) : Fence_(context){}
 	
-	/*!*********************************************************************************************************************
-	\brief dtor.
-	***********************************************************************************************************************/
+	/// <summary>dtor.</summary>
 	virtual ~FenceVk_();
 	
-	/*!*********************************************************************************************************************
-	\brief Initialize this object.
-	\param createSignaled Create this Fence with the signaled state
-	***********************************************************************************************************************/
+	/// <summary>Initialize this object.</summary>
+	/// <param name="createSignaled">Create this Fence with the signaled state</param>
 	bool init(bool createSignaled);
 	
-	/*!*********************************************************************************************************************
-	\brief Destroy this object.
-	***********************************************************************************************************************/
+	/// <summary>Destroy this object.</summary>
 	void destroy();
+
+	bool wait_(uint64 timeoutNanos);
+	bool isSignalled_();
+	void reset_();
 };
 
-/*!*********************************************************************************************************************
-\brief Vulkan implementation of the Semaphore class.
-***********************************************************************************************************************/
+/// <summary>Vulkan implementation of the Semaphore class.</summary>
 class SemaphoreVk_ : public impl::Semaphore_, public native::HSemaphore_
 {
 public:
-	/*!*********************************************************************************************************************
-	\brief ctor. Construct this object
-	\param context The Context to be construct from
-	\param A native handle to the semaphore that need to be wrapped in to
-	***********************************************************************************************************************/
+	/// <summary>ctor. Construct this object</summary>
+	/// <param name="context">The Context to be construct from</param>
+	/// <param name="A">native handle to the semaphore that need to be wrapped in to</param>
 	SemaphoreVk_(const GraphicsContext& context, HSemaphore_ semaphore) : Semaphore_(context), HSemaphore_(semaphore){}
 	
-	/*!*********************************************************************************************************************
-	\brief ctor. Construct this object
-	\param context The Context to be construct from
-	***********************************************************************************************************************/
+	/// <summary>ctor. Construct this object</summary>
+	/// <param name="context">The Context to be construct from</param>
 	SemaphoreVk_(const GraphicsContext& context) : Semaphore_(context) { }
 	
-	/*!*********************************************************************************************************************
-	\brief dtor.
-	***********************************************************************************************************************/
+	/// <summary>dtor.</summary>
 	virtual ~SemaphoreVk_();
 	
-	/*!*********************************************************************************************************************
-	\brief Initialize this object.
-	***********************************************************************************************************************/
+	/// <summary>Initialize this object.</summary>
 	bool init();
 	
-	/*!*********************************************************************************************************************
-	\brief Destroy this object.
-	***********************************************************************************************************************/
+	/// <summary>Destroy this object.</summary>
 	void destroy();
 };
 
-/*!*********************************************************************************************************************
-\brief Vulkan implementation of the Event class.
-***********************************************************************************************************************/
+/// <summary>Vulkan implementation of the Event class.</summary>
 class EventVk_ : public impl::Event_, public native::HEvent_
 {
-	/*!*********************************************************************************************************************
-	\brief ctor. Construct this object
-	\param context The Context to be construct from
-	***********************************************************************************************************************/
+	/// <summary>ctor. Construct this object</summary>
+	/// <param name="context">The Context to be construct from</param>
 	EventVk_(const GraphicsContext& context, HEvent_ event) : Event_(context), HEvent_(event){}
 	
-	/*!*********************************************************************************************************************
-	\brief ctor. Construct this object
-	\param context The Context to be construct from
-	***********************************************************************************************************************/
+	/// <summary>ctor. Construct this object</summary>
+	/// <param name="context">The Context to be construct from</param>
 	EventVk_(const GraphicsContext& context) : Event_(context) { }
 	
-	/*!*********************************************************************************************************************
-	\brief dtor.
-	***********************************************************************************************************************/
+	/// <summary>dtor.</summary>
 	virtual ~EventVk_();
 	
-	/*!*********************************************************************************************************************
-	\brief Initialize this object.
-	\param createSignaled Create this Fence with the signaled state
-	***********************************************************************************************************************/
+	/// <summary>Initialize this object.</summary>
+	/// <param name="createSignaled">Create this Fence with the signaled state</param>
 	bool init();
 	
-	/*!*********************************************************************************************************************
-	\brief Destroy this object.
-	***********************************************************************************************************************/
+	/// <summary>Destroy this object.</summary>
 	void destroy();
 };
 
@@ -131,4 +98,3 @@ typedef RefCountedResource<FenceVk_> FenceVk;
 PVR_DECLARE_NATIVE_CAST(Event);
 PVR_DECLARE_NATIVE_CAST(Fence);
 PVR_DECLARE_NATIVE_CAST(Semaphore);
-//!\endcond

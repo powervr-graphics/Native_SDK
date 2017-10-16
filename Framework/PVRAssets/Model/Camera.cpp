@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets\Model\Camera.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementations of methods of the Camera class.
-***********************************************************************************************************************/
+/*!
+\brief Implementations of methods of the Camera class.
+\file PVRAssets/Model/Camera.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include <cstring>
 
@@ -17,12 +17,12 @@ float32 Camera::getFOV(uint32 frame, float32 interp)  const
 		if (getNumFrames() > 1)
 		{
 			assertion(frame < getNumFrames() - 1);
-			const float32* fov = &m_data.FOVs[frame];
+			const float32* fov = &_data.FOVs[frame];
 			return fov[0] + interp * (fov[1] - fov[0]);
 		}
 		else
 		{
-			return m_data.FOVs[0];
+			return _data.FOVs[0];
 		}
 	}
 	else
@@ -38,14 +38,14 @@ void Camera::setFOV(float32 fov)
 
 void Camera::setFOV(uint32 frames, const float32* const fovs)
 {
-	m_data.FOVs.resize(frames);
+	_data.FOVs.resize(frames);
 
 	if (fovs == NULL)
 	{
-		m_data.FOVs.resize(0);
+		_data.FOVs.resize(0);
 		return;
 	}
-	m_data.FOVs.assign(fovs, fovs + frames);
+	_data.FOVs.assign(fovs, fovs + frames);
 }
 }
 }

@@ -1,23 +1,19 @@
 #version 450
 
-#define AXIS_ALIGNED_QUAD_VERTEX_ARRAY	0
-#define AXIS_ALIGNED_QUAD_TEXCOORD_ARRAY	1
+const highp vec2 positions[4] = vec2[4]
+                                (
+                                  vec2(-1., -1.),
+                                  vec2(-1., 1.),
+                                  vec2(1., -1.),
+                                  vec2(1., 1.)
+                                );
 
-layout (location = AXIS_ALIGNED_QUAD_VERTEX_ARRAY) in highp vec2	 inVertex;
-layout (location = AXIS_ALIGNED_QUAD_TEXCOORD_ARRAY) in mediump vec2 inTexCoord;
-
-layout(set = 2, binding = 0) uniform MVP
-{
-	mediump mat4 MVPMatrix;
-};
-
-layout(location = 0)out mediump vec2 TexCoord;
+out mediump vec2 vTexCoord;
 
 void main()
 {
-    // Pass through vertex
-	gl_Position = vec4(inVertex, 0.0, 1.0);
-	
-	// Pass through texcoords
-	TexCoord = inTexCoord;
+	highp vec2 position = positions[gl_VertexIndex];
+	gl_Position = vec4(position, 0.5, 1.);
+
+	vTexCoord = position * .5 + .5; //Map -1..1->0..1
 }

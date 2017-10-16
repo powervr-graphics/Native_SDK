@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\EntryPoint\main\main.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Generic entry point, normally used for Linux based systems.
-***********************************************************************************************************************/
+/*!
+\brief Generic entry point, normally used for Linux based systems.
+\file PVRShell\EntryPoint/main/main.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRShell/StateMachine.h"
 #include "PVRShell/CommandLine.h"

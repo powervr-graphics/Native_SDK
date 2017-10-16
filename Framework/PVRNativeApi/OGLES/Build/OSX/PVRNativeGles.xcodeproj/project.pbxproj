@@ -7,10 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0E13081E1BC562B40027D06D /* ShaderUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E13081D1BC562B40027D06D /* ShaderUtils.h */; settings = {ASSET_TAGS = (); }; };
+		0E1672EE1DE85ACA00FC9B21 /* NativeGles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E1672EC1DE85ACA00FC9B21 /* NativeGles.h */; settings = {ASSET_TAGS = (); }; };
+		0E1672EF1DE85ACA00FC9B21 /* PVRNativeApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E1672ED1DE85ACA00FC9B21 /* PVRNativeApi.h */; settings = {ASSET_TAGS = (); }; };
+		0E1672F81DE85ADC00FC9B21 /* ApiErrorsGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E1672F01DE85ADC00FC9B21 /* ApiErrorsGles.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E1672F91DE85ADC00FC9B21 /* ApiErrorsGles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E1672F11DE85ADC00FC9B21 /* ApiErrorsGles.h */; settings = {ASSET_TAGS = (); }; };
+		0E1672FC1DE85ADC00FC9B21 /* GpuCapabilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E1672F41DE85ADC00FC9B21 /* GpuCapabilities.cpp */; settings = {ASSET_TAGS = (); }; };
+		0E1672FD1DE85ADC00FC9B21 /* GpuCapabilitiesGles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E1672F51DE85ADC00FC9B21 /* GpuCapabilitiesGles.h */; settings = {ASSET_TAGS = (); }; };
+		0E1672FE1DE85ADC00FC9B21 /* ShaderUtilsGles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E1672F61DE85ADC00FC9B21 /* ShaderUtilsGles.h */; settings = {ASSET_TAGS = (); }; };
+		0E1672FF1DE85ADC00FC9B21 /* TextureUtilsGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E1672F71DE85ADC00FC9B21 /* TextureUtilsGles.cpp */; settings = {ASSET_TAGS = (); }; };
 		0E3AE6681C69E56C006FE386 /* TextureUtilsGles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E3AE6671C69E56C006FE386 /* TextureUtilsGles.h */; settings = {ASSET_TAGS = (); }; };
 		0E4EB01E1B668EA500635FED /* NativeObjectsGles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E4EB0191B668EA500635FED /* NativeObjectsGles.h */; };
-		0EB9410D1B1708C400E2967A /* ApiErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB940E41B1708C400E2967A /* ApiErrors.cpp */; };
 		0EB9410F1B1708C400E2967A /* ApiGles2.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940E61B1708C400E2967A /* ApiGles2.h */; };
 		0EB941101B1708C400E2967A /* ApiGles3.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940E71B1708C400E2967A /* ApiGles3.h */; };
 		0EB941111B1708C400E2967A /* ApiGles31.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940E81B1708C400E2967A /* ApiGles31.h */; };
@@ -23,16 +29,30 @@
 		0EB941211B1708C400E2967A /* OpenGLESHeaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940F81B1708C400E2967A /* OpenGLESHeaders.h */; };
 		0EB941271B1708C400E2967A /* LibraryLoaderGles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB940FE1B1708C400E2967A /* LibraryLoaderGles.cpp */; };
 		0EB941281B1708C400E2967A /* LibraryLoaderGles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB940FF1B1708C400E2967A /* LibraryLoaderGles.h */; };
-		0EB941321B1708C400E2967A /* TextureUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EB941091B1708C400E2967A /* TextureUtils.cpp */; };
-		0EB941D21B2706B800E2967A /* ApiErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB941C31B2706B800E2967A /* ApiErrors.h */; };
+		0EC8F6D01E43482A00F2093A /* ExtensionLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EC8F6CD1E43482A00F2093A /* ExtensionLoader.h */; settings = {ASSET_TAGS = (); }; };
+		0EC8F6D11E43482A00F2093A /* PlatformContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EC8F6CE1E43482A00F2093A /* PlatformContext.h */; settings = {ASSET_TAGS = (); }; };
+		0EC8F6D21E43482A00F2093A /* PlatformTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EC8F6CF1E43482A00F2093A /* PlatformTypes.h */; settings = {ASSET_TAGS = (); }; };
+		0EC8F6DA1E43483300F2093A /* ApiEgl.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EC8F6D31E43483300F2093A /* ApiEgl.h */; settings = {ASSET_TAGS = (); }; };
+		0EC8F6DB1E43483300F2093A /* EglPlatformContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EC8F6D41E43483300F2093A /* EglPlatformContext.cpp */; settings = {ASSET_TAGS = (); }; };
+		0EC8F6DC1E43483300F2093A /* EglPlatformHandles.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EC8F6D51E43483300F2093A /* EglPlatformHandles.h */; settings = {ASSET_TAGS = (); }; };
+		0EC8F6DD1E43483300F2093A /* ExtensionLoaderEgl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EC8F6D61E43483300F2093A /* ExtensionLoaderEgl.cpp */; settings = {ASSET_TAGS = (); }; };
+		0EC8F6DE1E43483300F2093A /* ExtensionLoaderEgl.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EC8F6D71E43483300F2093A /* ExtensionLoaderEgl.h */; settings = {ASSET_TAGS = (); }; };
+		0EC8F6DF1E43483300F2093A /* NativeLibraryEgl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EC8F6D81E43483300F2093A /* NativeLibraryEgl.cpp */; settings = {ASSET_TAGS = (); }; };
+		0EC8F6E01E43483300F2093A /* NativeLibraryEgl.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EC8F6D91E43483300F2093A /* NativeLibraryEgl.h */; settings = {ASSET_TAGS = (); }; };
 		0EE12A6B1B8F4EC8006ACAEB /* ShaderUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EE12A691B8F4EC8006ACAEB /* ShaderUtils.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0E13081D1BC562B40027D06D /* ShaderUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderUtils.h; path = ../../../ShaderUtils.h; sourceTree = "<group>"; };
+		0E1672EC1DE85ACA00FC9B21 /* NativeGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeGles.h; path = ../../../NativeGles.h; sourceTree = "<group>"; };
+		0E1672ED1DE85ACA00FC9B21 /* PVRNativeApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRNativeApi.h; path = ../../../PVRNativeApi.h; sourceTree = "<group>"; };
+		0E1672F01DE85ADC00FC9B21 /* ApiErrorsGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ApiErrorsGles.cpp; path = ../../ApiErrorsGles.cpp; sourceTree = "<group>"; };
+		0E1672F11DE85ADC00FC9B21 /* ApiErrorsGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiErrorsGles.h; path = ../../ApiErrorsGles.h; sourceTree = "<group>"; };
+		0E1672F41DE85ADC00FC9B21 /* GpuCapabilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GpuCapabilities.cpp; path = ../../GpuCapabilities.cpp; sourceTree = "<group>"; };
+		0E1672F51DE85ADC00FC9B21 /* GpuCapabilitiesGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GpuCapabilitiesGles.h; path = ../../GpuCapabilitiesGles.h; sourceTree = "<group>"; };
+		0E1672F61DE85ADC00FC9B21 /* ShaderUtilsGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShaderUtilsGles.h; path = ../../ShaderUtilsGles.h; sourceTree = "<group>"; };
+		0E1672F71DE85ADC00FC9B21 /* TextureUtilsGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureUtilsGles.cpp; path = ../../TextureUtilsGles.cpp; sourceTree = "<group>"; };
 		0E3AE6671C69E56C006FE386 /* TextureUtilsGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureUtilsGles.h; path = ../../TextureUtilsGles.h; sourceTree = "<group>"; };
 		0E4EB0191B668EA500635FED /* NativeObjectsGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeObjectsGles.h; path = ../../NativeObjectsGles.h; sourceTree = "<group>"; };
-		0EB940E41B1708C400E2967A /* ApiErrors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ApiErrors.cpp; path = ../../ApiErrors.cpp; sourceTree = "<group>"; };
 		0EB940E61B1708C400E2967A /* ApiGles2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiGles2.h; path = ../../ApiGles2.h; sourceTree = "<group>"; };
 		0EB940E71B1708C400E2967A /* ApiGles3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiGles3.h; path = ../../ApiGles3.h; sourceTree = "<group>"; };
 		0EB940E81B1708C400E2967A /* ApiGles31.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiGles31.h; path = ../../ApiGles31.h; sourceTree = "<group>"; };
@@ -45,8 +65,16 @@
 		0EB940F81B1708C400E2967A /* OpenGLESHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenGLESHeaders.h; path = ../../OpenGLESHeaders.h; sourceTree = "<group>"; };
 		0EB940FE1B1708C400E2967A /* LibraryLoaderGles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LibraryLoaderGles.cpp; path = ../../LibraryLoaderGles.cpp; sourceTree = "<group>"; };
 		0EB940FF1B1708C400E2967A /* LibraryLoaderGles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LibraryLoaderGles.h; path = ../../LibraryLoaderGles.h; sourceTree = "<group>"; };
-		0EB941091B1708C400E2967A /* TextureUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureUtils.cpp; path = ../../TextureUtils.cpp; sourceTree = "<group>"; };
-		0EB941C31B2706B800E2967A /* ApiErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiErrors.h; path = ../../../ApiErrors.h; sourceTree = "<group>"; };
+		0EC8F6CD1E43482A00F2093A /* ExtensionLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtensionLoader.h; path = ../../../ExtensionLoader.h; sourceTree = "<group>"; };
+		0EC8F6CE1E43482A00F2093A /* PlatformContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlatformContext.h; path = ../../../PlatformContext.h; sourceTree = "<group>"; };
+		0EC8F6CF1E43482A00F2093A /* PlatformTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlatformTypes.h; path = ../../../PlatformTypes.h; sourceTree = "<group>"; };
+		0EC8F6D31E43483300F2093A /* ApiEgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApiEgl.h; path = ../../../EGL/ApiEgl.h; sourceTree = "<group>"; };
+		0EC8F6D41E43483300F2093A /* EglPlatformContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EglPlatformContext.cpp; path = ../../../EGL/EglPlatformContext.cpp; sourceTree = "<group>"; };
+		0EC8F6D51E43483300F2093A /* EglPlatformHandles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EglPlatformHandles.h; path = ../../../EGL/EglPlatformHandles.h; sourceTree = "<group>"; };
+		0EC8F6D61E43483300F2093A /* ExtensionLoaderEgl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExtensionLoaderEgl.cpp; path = ../../../EGL/ExtensionLoaderEgl.cpp; sourceTree = "<group>"; };
+		0EC8F6D71E43483300F2093A /* ExtensionLoaderEgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExtensionLoaderEgl.h; path = ../../../EGL/ExtensionLoaderEgl.h; sourceTree = "<group>"; };
+		0EC8F6D81E43483300F2093A /* NativeLibraryEgl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeLibraryEgl.cpp; path = ../../../EGL/NativeLibraryEgl.cpp; sourceTree = "<group>"; };
+		0EC8F6D91E43483300F2093A /* NativeLibraryEgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeLibraryEgl.h; path = ../../../EGL/NativeLibraryEgl.h; sourceTree = "<group>"; };
 		0EE12A691B8F4EC8006ACAEB /* ShaderUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderUtils.cpp; path = ../../ShaderUtils.cpp; sourceTree = "<group>"; };
 		AC99070D19F547F800447292 /* libPVRNativeGles.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVRNativeGles.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -81,12 +109,27 @@
 		AC99071419F5482C00447292 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				0EC8F6D31E43483300F2093A /* ApiEgl.h */,
+				0EC8F6D41E43483300F2093A /* EglPlatformContext.cpp */,
+				0EC8F6D51E43483300F2093A /* EglPlatformHandles.h */,
+				0EC8F6D61E43483300F2093A /* ExtensionLoaderEgl.cpp */,
+				0EC8F6D71E43483300F2093A /* ExtensionLoaderEgl.h */,
+				0EC8F6D81E43483300F2093A /* NativeLibraryEgl.cpp */,
+				0EC8F6D91E43483300F2093A /* NativeLibraryEgl.h */,
+				0EC8F6CD1E43482A00F2093A /* ExtensionLoader.h */,
+				0EC8F6CE1E43482A00F2093A /* PlatformContext.h */,
+				0EC8F6CF1E43482A00F2093A /* PlatformTypes.h */,
+				0E1672F01DE85ADC00FC9B21 /* ApiErrorsGles.cpp */,
+				0E1672F11DE85ADC00FC9B21 /* ApiErrorsGles.h */,
+				0E1672F41DE85ADC00FC9B21 /* GpuCapabilities.cpp */,
+				0E1672F51DE85ADC00FC9B21 /* GpuCapabilitiesGles.h */,
+				0E1672F61DE85ADC00FC9B21 /* ShaderUtilsGles.h */,
+				0E1672F71DE85ADC00FC9B21 /* TextureUtilsGles.cpp */,
+				0E1672EC1DE85ACA00FC9B21 /* NativeGles.h */,
+				0E1672ED1DE85ACA00FC9B21 /* PVRNativeApi.h */,
 				0E3AE6671C69E56C006FE386 /* TextureUtilsGles.h */,
-				0E13081D1BC562B40027D06D /* ShaderUtils.h */,
 				0EE12A691B8F4EC8006ACAEB /* ShaderUtils.cpp */,
 				0E4EB0191B668EA500635FED /* NativeObjectsGles.h */,
-				0EB941C31B2706B800E2967A /* ApiErrors.h */,
-				0EB940E41B1708C400E2967A /* ApiErrors.cpp */,
 				0EB940E61B1708C400E2967A /* ApiGles2.h */,
 				0EB940E71B1708C400E2967A /* ApiGles3.h */,
 				0EB940E81B1708C400E2967A /* ApiGles31.h */,
@@ -99,7 +142,6 @@
 				0EB940F81B1708C400E2967A /* OpenGLESHeaders.h */,
 				0EB940FE1B1708C400E2967A /* LibraryLoaderGles.cpp */,
 				0EB940FF1B1708C400E2967A /* LibraryLoaderGles.h */,
-				0EB941091B1708C400E2967A /* TextureUtils.cpp */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -111,17 +153,27 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0EB941D21B2706B800E2967A /* ApiErrors.h in Headers */,
+				0E1672EE1DE85ACA00FC9B21 /* NativeGles.h in Headers */,
 				0EB941101B1708C400E2967A /* ApiGles3.h in Headers */,
-				0E13081E1BC562B40027D06D /* ShaderUtils.h in Headers */,
 				0EB941191B1708C400E2967A /* ConvertToApiTypes.h in Headers */,
 				0EB941111B1708C400E2967A /* ApiGles31.h in Headers */,
 				0EB9411C1B1708C400E2967A /* ExtensionLoaderGles.h in Headers */,
+				0EC8F6DC1E43483300F2093A /* EglPlatformHandles.h in Headers */,
+				0EC8F6DE1E43483300F2093A /* ExtensionLoaderEgl.h in Headers */,
+				0EC8F6E01E43483300F2093A /* NativeLibraryEgl.h in Headers */,
 				0E4EB01E1B668EA500635FED /* NativeObjectsGles.h in Headers */,
 				0E3AE6681C69E56C006FE386 /* TextureUtilsGles.h in Headers */,
+				0E1672FE1DE85ADC00FC9B21 /* ShaderUtilsGles.h in Headers */,
+				0EC8F6DA1E43483300F2093A /* ApiEgl.h in Headers */,
+				0EC8F6D21E43482A00F2093A /* PlatformTypes.h in Headers */,
 				0EB941121B1708C400E2967A /* ApiGlesExt.h in Headers */,
+				0EC8F6D11E43482A00F2093A /* PlatformContext.h in Headers */,
 				0EB941281B1708C400E2967A /* LibraryLoaderGles.h in Headers */,
 				0EB941201B1708C400E2967A /* OpenGLESBindings.h in Headers */,
+				0EC8F6D01E43482A00F2093A /* ExtensionLoader.h in Headers */,
+				0E1672EF1DE85ACA00FC9B21 /* PVRNativeApi.h in Headers */,
+				0E1672FD1DE85ADC00FC9B21 /* GpuCapabilitiesGles.h in Headers */,
+				0E1672F91DE85ADC00FC9B21 /* ApiErrorsGles.h in Headers */,
 				0EB9410F1B1708C400E2967A /* ApiGles2.h in Headers */,
 				0EB941211B1708C400E2967A /* OpenGLESHeaders.h in Headers */,
 			);
@@ -178,12 +230,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E1672F81DE85ADC00FC9B21 /* ApiErrorsGles.cpp in Sources */,
+				0EC8F6DB1E43483300F2093A /* EglPlatformContext.cpp in Sources */,
+				0E1672FF1DE85ADC00FC9B21 /* TextureUtilsGles.cpp in Sources */,
 				0EB941141B1708C400E2967A /* ConvertToApiTypes.cpp in Sources */,
 				0EB9411B1B1708C400E2967A /* ExtensionLoaderGles.cpp in Sources */,
+				0EC8F6DD1E43483300F2093A /* ExtensionLoaderEgl.cpp in Sources */,
+				0E1672FC1DE85ADC00FC9B21 /* GpuCapabilities.cpp in Sources */,
 				0EB941271B1708C400E2967A /* LibraryLoaderGles.cpp in Sources */,
-				0EB941321B1708C400E2967A /* TextureUtils.cpp in Sources */,
 				0EE12A6B1B8F4EC8006ACAEB /* ShaderUtils.cpp in Sources */,
-				0EB9410D1B1708C400E2967A /* ApiErrors.cpp in Sources */,
+				0EC8F6DF1E43483300F2093A /* NativeLibraryEgl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

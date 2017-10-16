@@ -1,15 +1,14 @@
-/*!*********************************************************************************************************************te
-\file         PVRApi\OGLES\GraphicsPipelineGles.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains the OpenGL ES 2/3 implementation of the all-important pvr::api::GraphicsPipeline object.
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief Contains the OpenGL ES 2/3 implementation of the all-important pvr::api::GraphicsPipeline object.
+\file PVRApi/OGLES/GraphicsPipelineGles.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRApi/ApiIncludes.h"
 #include "PVRApi/OGLES/StateContainerGles.h"
 #include "PVRNativeApi/OGLES/OpenGLESBindings.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
-#include "PVRNativeApi/ShaderUtils.h"
+#include "PVRNativeApi/OGLES/ShaderUtilsGles.h"
 #include "PVRApi/OGLES/ShaderGles.h"
 #include "PVRApi/OGLES/ContextGles.h"
 #include "PVRApi/OGLES/GraphicsPipelineGles.h"
@@ -38,10 +37,10 @@ class ParentableGraphicsPipeline_;
 //////IMPLEMENTATION INFO/////
 /*The desired class hierarchy was
 ---- OUTSIDE INTERFACE ----
-* ParentableGraphicsPipeline(PGP)			: GraphicsPipeline(GP)
+* ParentableGraphicsPipeline(PGP)     : GraphicsPipeline(GP)
 -- Inside implementation --
-* ParentableGraphicsPipelineGles(PGPGles)	: GraphicsPipelineGles(GPGles)
-* GraphicsPipelineGles(GPGles)				: GraphicsPipeline(GP)
+* ParentableGraphicsPipelineGles(PGPGles) : GraphicsPipelineGles(GPGles)
+* GraphicsPipelineGles(GPGles)        : GraphicsPipeline(GP)
 ---------------------------
 This would cause a diamond inheritance, with PGPGles inheriting twice from GP, once through PGP and once through GPGles.
 To avoid this issue while maintaining the outside interface, the pImpl idiom is being used instead of the inheritance
@@ -88,45 +87,51 @@ static GraphicsShaderProgramState dummy_state;
 
 const GraphicsShaderProgramState& GraphicsPipelineImplGles::getShaderProgram()const
 {
-	if (!m_states.numStates() || m_states.states[0]->getStateType() !=
+	if (!_states.numStates() || _states.states[0]->getStateType() !=
 	    impl::GraphicsStateType::ShaderProgram)
 	{
-		if (m_parent)
+		if (_parent)
 		{
-			return static_cast<const GraphicsPipelineImplGles&>(m_parent->getImpl()).getShaderProgram();
+			return static_cast<const GraphicsPipelineImplGles&>(_parent->getImpl()).getShaderProgram();
 		}
 		else
 		{
 			return dummy_state;
 		}
 	}
-	return *(static_cast<gles::GraphicsShaderProgramState*>(m_states.states[0]));
+	return *(static_cast<gles::GraphicsShaderProgramState*>(_states.states[0]));
+}
+GraphicsShaderProgramState& GraphicsPipelineImplGles::getShaderProgram()
+{
+	if (!_states.numStates() || _states.states[0]->getStateType() !=
+	    impl::GraphicsStateType::ShaderProgram)
+	{
+		if (_parent)
+		{
+			return static_cast<GraphicsPipelineImplGles&>(_parent->getImpl()).getShaderProgram();
+		}
+		else
+		{
+			return dummy_state;
+		}
+	}
+	return *(static_cast<gles::GraphicsShaderProgramState*>(_states.states[0]));
 }
 
 
 const GraphicsPipelineCreateParam& GraphicsPipelineImplGles::getCreateParam()const
 {
-	return m_createParam;
-}
-
-const native::HPipeline_& GraphicsPipelineImplGles::getNativeObject() const
-{
-	return getShaderProgram().getNativeObject();
-}
-
-native::HPipeline_& GraphicsPipelineImplGles::getNativeObject()
-{
-	return getShaderProgram().getNativeObject();
+	return _createParam;
 }
 
 int32 GraphicsPipelineImplGles::getAttributeLocation(const char8* attribute)const
 {
-	return getAttributeLocation_(attribute, getNativeObject());
+	return getAttributeLocation_(attribute, native_cast(getShaderProgram()));
 }
 
 void GraphicsPipelineImplGles::getAttributeLocation(const char8** attributes, uint32 numAttributes, int32* outLocation)const
 {
-	GLint prog = getNativeObject();
+	GLint prog = native_cast(getShaderProgram());
 	for (uint32 i = 0; i < numAttributes; ++i)
 	{
 		outLocation[i] = getAttributeLocation_(attributes[i], prog);
@@ -135,12 +140,12 @@ void GraphicsPipelineImplGles::getAttributeLocation(const char8** attributes, ui
 
 int32 GraphicsPipelineImplGles::getUniformLocation(const char8* uniform)const
 {
-	return getUniformLocation_(uniform, getNativeObject());
+	return getUniformLocation_(uniform, native_cast(getShaderProgram()));
 }
 
 void GraphicsPipelineImplGles::getUniformLocation(const char8** uniforms, uint32 numUniforms, int32* outLocation)const
 {
-	GLuint prog = getNativeObject();
+	GLuint prog = native_cast(getShaderProgram());
 	for (uint32 i = 0; i < numUniforms; ++i)
 	{
 		outLocation[i] = getUniformLocation_(uniforms[i], prog);
@@ -149,40 +154,38 @@ void GraphicsPipelineImplGles::getUniformLocation(const char8** uniforms, uint32
 
 pvr::uint8 GraphicsPipelineImplGles::getNumAttributes(pvr::uint16 bindingId)const
 {
-	return m_states.getNumAttributes(bindingId);
+	return _states.getNumAttributes(bindingId);
 }
 
 const VertexInputBindingInfo* GraphicsPipelineImplGles::getInputBindingInfo(pvr::uint16 bindingId)const
 {
-	return m_states.getInputBindingInfo(bindingId);
+	return _states.getInputBindingInfo(bindingId);
 }
 
 const VertexAttributeInfoWithBinding* GraphicsPipelineImplGles::getAttributesInfo(pvr::uint16 bindId)const
 {
-	return m_states.getAttributesInfo(bindId);
+	return _states.getAttributesInfo(bindId);
 }
 
 const pvr::api::PipelineLayout& GraphicsPipelineImplGles::getPipelineLayout() const
 {
 	// return the pipeline layout / else return the valid parent's pipeline layout else NULL object
-	if (m_states.pipelineLayout.isNull() && m_parent)
+	if (_states.pipelineLayout.isNull() && _parent)
 	{
-		return m_parent->getPipelineLayout();
+		return _parent->getPipelineLayout();
 	}
-	assertion(!m_states.pipelineLayout.isNull(), "invalid pipeline layout");
-	return m_states.pipelineLayout;
+	assertion(!_states.pipelineLayout.isNull(), "invalid pipeline layout");
+	return _states.pipelineLayout;
 }
 
-void GraphicsPipelineImplGles::setFromParent() { m_states.setAll(*m_context); }
-
-void GraphicsPipelineImplGles::unsetToParent() { m_states.unsetAll(*m_context); }
+void GraphicsPipelineImplGles::setFromParent() { _states.setAll(*_context); }
 
 void GraphicsPipelineImplGles::setAll()
 {
 	debugLogApiError("GraphicsPipeline::setAll entry");
-	if (m_parent)
+	if (_parent)
 	{
-		static_cast<ParentableGraphicsPipelineImplGles&>(m_parent->getImpl()).setAll();
+		static_cast<ParentableGraphicsPipelineImplGles&>(_parent->getImpl()).setAll();
 	}
 	setFromParent();
 	debugLogApiError("GraphicsPipeline::setAll exit");
@@ -191,56 +194,50 @@ void GraphicsPipelineImplGles::setAll()
 
 void GraphicsPipelineImplGles::destroy()
 {
-	m_states.vertexShader.reset();
-	m_states.fragmentShader.reset();
-	m_states.geometryShader.reset();
-	m_states.tessControlShader.reset();
-	m_states.tessEvalShader.reset();
-	m_states.vertexInputBindings.clear();
-	for (gles::GraphicsStateContainer::StateContainerIter it = m_states.states.begin();
-	     it != m_states.states.end(); ++it)
+	_states.vertexShader.reset();
+	_states.fragmentShader.reset();
+	_states.geometryShader.reset();
+	_states.tessControlShader.reset();
+	_states.tessEvalShader.reset();
+	_states.vertexInputBindings.clear();
+	for (gles::GraphicsStateContainer::StateContainerIter it = _states.states.begin();
+	     it != _states.states.end(); ++it)
 	{
 		delete *it;
 	}
-	m_states.states.clear();
-	m_states.clear();
-	m_parent = 0;
+	_states.states.clear();
+	_states.clear();
+	_parent = 0;
 }
 
-bool GraphicsPipelineImplGles::init(const GraphicsPipelineCreateParam& desc, impl::ParentableGraphicsPipeline_* parent,
-                                    impl::GraphicsPipeline_* owner)
+bool GraphicsPipelineImplGles::initBase(const GraphicsPipelineCreateParam& desc, gles::GraphicsStateContainer& states, ParentableGraphicsPipeline& parent)
 {
-	if (m_initialized) { pvr::Log(pvr::Logger::Debug, "Pipeline is already initialized"); return true; }
-	m_parent = parent;
-	m_owner = owner;
-	m_createParam = desc;
-	gles::GraphicsStateContainer& states = m_states;
 	states.pipelineLayout = desc.pipelineLayout;
-	if (!states.pipelineLayout.isValid() && (parent && !parent->getPipelineLayout().isValid()))
+	if (!states.pipelineLayout.isValid() && (parent.isValid() && !parent->getPipelineLayout().isValid()))
 	{
 		pvr::Log(pvr::Logger::Error, "Invalid Pipeline Layout");
 		return false;
 	}
-	if (desc.colorBlend.getAttachmentStates().empty() || (parent && parent->getCreateParam().colorBlend.getAttachmentStates().empty()))
+	if (desc.colorBlend.getAttachmentStatesCount() == 0 || (parent.isValid() && parent->getCreateParam().colorBlend.getAttachmentStatesCount() == 0))
 	{
 		pvr::Log("Pipeline must have atleast one color attachment state");
 		return false;
 	}
-	pipelineCreation::createStateObjects(desc.colorBlend, states, (m_parent ? &m_parent->getCreateParam().colorBlend : NULL));
-	pipelineCreation::createStateObjects(desc.depthStencil, states, (m_parent ? &m_parent->getCreateParam().depthStencil : NULL));
-	pipelineCreation::createStateObjects(desc.fragmentShader, states, (m_parent ? &m_parent->getCreateParam().fragmentShader : NULL));
-	pipelineCreation::createStateObjects(desc.vertexShader, states, (m_parent ? &m_parent->getCreateParam().vertexShader : NULL));
-	pipelineCreation::createStateObjects(desc.inputAssembler, states, (m_parent ? &m_parent->getCreateParam().inputAssembler : NULL));
-	pipelineCreation::createStateObjects(desc.rasterizer, states, (m_parent ? &m_parent->getCreateParam().rasterizer : NULL));
-	pipelineCreation::createStateObjects(desc.vertexInput, states, (m_parent ? &m_parent->getCreateParam().vertexInput : NULL));
-	pipelineCreation::createStateObjects(desc.viewport, states, (m_parent ? &m_parent->getCreateParam().viewport : NULL));
-	pipelineCreation::createStateObjects(desc.geometryShader, states, (m_parent ? &m_parent->getCreateParam().geometryShader : NULL));
-	pipelineCreation::createStateObjects(desc.tesselationStates, states, (m_parent ? &m_parent->getCreateParam().tesselationStates : NULL));
+	pipelineCreation::createStateObjects(desc.colorBlend, states, (_parent ? &_parent->getCreateParam().colorBlend : NULL));
+	pipelineCreation::createStateObjects(desc.depthStencil, states, (_parent ? &_parent->getCreateParam().depthStencil : NULL));
+	pipelineCreation::createStateObjects(desc.fragmentShader, states, (_parent ? &_parent->getCreateParam().fragmentShader : NULL));
+	pipelineCreation::createStateObjects(desc.vertexShader, states, (_parent ? &_parent->getCreateParam().vertexShader : NULL));
+	pipelineCreation::createStateObjects(desc.inputAssembler, states, (_parent ? &_parent->getCreateParam().inputAssembler : NULL));
+	pipelineCreation::createStateObjects(desc.rasterizer, states, (_parent ? &_parent->getCreateParam().rasterizer : NULL));
+	pipelineCreation::createStateObjects(desc.vertexInput, states, (_parent ? &_parent->getCreateParam().vertexInput : NULL));
+	pipelineCreation::createStateObjects(desc.viewport, states, (_parent ? &_parent->getCreateParam().viewport : NULL));
+	pipelineCreation::createStateObjects(desc.geometryShader, states, (_parent ? &_parent->getCreateParam().geometryShader : NULL));
+	pipelineCreation::createStateObjects(desc.tesselationStates, states, (_parent ? &_parent->getCreateParam().tesselationStates : NULL));
 
 	if (!states.hasVertexShader() || !states.hasFragmentShader())
 	{
-		if ((parent != NULL) && (!static_cast<const GraphicsPipelineImplGles&>(m_parent->getImpl()).m_states.hasVertexShader() ||
-		                         !static_cast<const GraphicsPipelineImplGles&>(m_parent->getImpl()).m_states.hasFragmentShader()))
+		if ((!parent.isNull()) && (!static_cast<const GraphicsPipelineImplGles&>(_parent->getImpl())._states.hasVertexShader() ||
+		                           !static_cast<const GraphicsPipelineImplGles&>(_parent->getImpl())._states.hasFragmentShader()))
 		{
 			pvr::Log(Log.Error, "GraphicsPipeline:: Shaders were invalid, and parent pipeline did not contain shaders.");
 			return false;
@@ -252,7 +249,7 @@ bool GraphicsPipelineImplGles::init(const GraphicsPipelineCreateParam& desc, imp
 	{
 		retval = createProgram();
 	}
-	else if (!parent)
+	else if (parent.isNull())
 	{
 		pvr::Log(Log.Error, "GraphicsPipeline:: Shaders were invalid");
 		retval = Result::InvalidData;
@@ -266,27 +263,27 @@ bool GraphicsPipelineImplGles::init(const GraphicsPipelineCreateParam& desc, imp
 	gles::GraphicsStateContainer& containerGles = states;
 	std::sort(containerGles.states.begin(), containerGles.states.end(), PipelineStatePointerLess());
 
-	PipelineStatePointerLess	compLess;
+	PipelineStatePointerLess  compLess;
 	PipelineStatePointerGreater compGreater;
 	uint32 counterChild = 0, counterParent = 0;
 
-	while (m_parent != NULL && containerGles.states.size() > counterChild
-	       && static_cast<const GraphicsPipelineImplGles&>(m_parent->getImpl()).m_states.states.size() > counterParent)
+	while (_parent != NULL && containerGles.states.size() > counterChild
+	       && static_cast<const GraphicsPipelineImplGles&>(_parent->getImpl())._states.states.size() > counterParent)
 	{
 		if (compLess(containerGles.states[counterChild],
-		             static_cast<const GraphicsPipelineImplGles&>(m_parent->getImpl()).m_states.states[counterParent]))
+		             static_cast<const GraphicsPipelineImplGles&>(_parent->getImpl())._states.states[counterParent]))
 		{
 			counterChild++;
 		}
 		else if (compGreater(containerGles.states[counterChild],
-		                     static_cast<const GraphicsPipelineImplGles&>(m_parent->getImpl()).m_states.states[counterParent]))
+		                     static_cast<const GraphicsPipelineImplGles&>(_parent->getImpl())._states.states[counterParent]))
 		{
 			counterParent++;
 		}
 		else
 		{
-			containerGles.states[counterChild]->m_parent =
-			  static_cast<const ParentableGraphicsPipelineImplGles&>(m_parent->getImpl()).m_states.states[counterParent];
+			containerGles.states[counterChild]->_parent =
+			  static_cast<const ParentableGraphicsPipelineImplGles&>(_parent->getImpl())._states.states[counterParent];
 			counterChild++;
 			counterParent++;
 		}
@@ -294,51 +291,83 @@ bool GraphicsPipelineImplGles::init(const GraphicsPipelineCreateParam& desc, imp
 
 	const pipelineCreation::OGLES2TextureUnitBindings* texUnitBinding = NULL;
 
-	if (desc.es2TextureBindings.getNumBindings())
+	if (desc.es2TextureBindings.getBindingCount())
 	{
 		texUnitBinding = &desc.es2TextureBindings;
 	}
-	else if (m_parent && m_parent->getCreateParam().es2TextureBindings.getNumBindings())
+	else if (_parent && _parent->getCreateParam().es2TextureBindings.getBindingCount())
 	{
-		texUnitBinding = &m_parent->getCreateParam().es2TextureBindings;
+		texUnitBinding = &_parent->getCreateParam().es2TextureBindings;
 	}
 	if (texUnitBinding)
 	{
-		GLuint prog = getNativeObject();
-		for (uint32 i = 0; i < texUnitBinding->getNumBindings(); ++i)
+		platform::ContextGles::RenderStatesTracker& stateTracker = static_cast<platform::ContextGles&>(*_context).getCurrentRenderStates();
+		GLuint last_prog = stateTracker.lastBoundProgram;
+		GLuint prog = native_cast(getShaderProgram());
+		for (uint32 i = 0; i < texUnitBinding->getBindingCount(); ++i)
 		{
 			int32 uniformLoc = getUniformLocation(texUnitBinding->getTextureUnitName(i));
 			if (uniformLoc >= 0)
 			{
-				gl::UseProgram(prog);
+				if (stateTracker.lastBoundProgram != prog)
+				{
+					gl::UseProgram(prog);
+					stateTracker.lastBoundProgram = prog;
+				}
 				gl::Uniform1i(uniformLoc, i);
 			}
 		}
+		if (stateTracker.lastBoundProgram != last_prog)
+		{
+			gl::UseProgram(last_prog);
+			stateTracker.lastBoundProgram = last_prog;
+		}
 	}
-	m_initialized = true;
+	_initialized = true;
 
 	return retval == Result::Success;
+}
+
+bool ParentableGraphicsPipelineImplGles::init(const GraphicsPipelineCreateParam& desc, ParentableGraphicsPipeline& owner)
+{
+	if (_initialized) { pvr::Log(pvr::Logger::Debug, "Pipeline is already initialized"); return true; }
+	_parent = NULL;
+	_owner = owner.get();
+	_createParam = desc;
+
+	return GraphicsPipelineImplGles::initBase(desc, _states, owner);
+}
+
+bool GraphicsPipelineImplGles::init(const GraphicsPipelineCreateParam& desc, ParentableGraphicsPipeline& parent,
+                                    GraphicsPipeline& owner)
+{
+	if (_initialized) { pvr::Log(pvr::Logger::Debug, "Pipeline is already initialized"); return true; }
+	_parent = parent.get();
+	_owner = owner.get();
+	_createParam = desc;
+
+	return GraphicsPipelineImplGles::initBase(desc, _states, parent);
 }
 
 Result GraphicsPipelineImplGles::createProgram()
 {
 	gles::GraphicsShaderProgramState* program = new gles::GraphicsShaderProgramState();
-	gles::GraphicsStateContainer& containerGles = m_states;
+	gles::GraphicsStateContainer& containerGles = _states;
 
 	std::vector<native::HShader_> shaders;
-	shaders.push_back(containerGles.vertexShader->getNativeObject());
-	shaders.push_back(containerGles.fragmentShader->getNativeObject());
+	shaders.push_back(static_cast<ShaderGles_&>(*containerGles.vertexShader));
+	shaders.push_back(static_cast<ShaderGles_&>(*containerGles.fragmentShader));
 	if (containerGles.geometryShader.isValid())
 	{
-		shaders.push_back(containerGles.geometryShader->getNativeObject());
+		shaders.push_back(native_cast(*containerGles.geometryShader));
 	}
 	if (containerGles.tessControlShader.isValid())
 	{
-		shaders.push_back(containerGles.tessControlShader->getNativeObject());
+		shaders.push_back(native_cast(*containerGles.tessControlShader));
 	}
 	if (containerGles.tessEvalShader.isValid())
 	{
-		shaders.push_back(containerGles.tessEvalShader->getNativeObject());
+		shaders.push_back(native_cast(*containerGles.tessEvalShader));
 	}
 
 	std::vector<const char*> attribNames;
@@ -353,17 +382,16 @@ Result GraphicsPipelineImplGles::createProgram()
 	std::vector<int> vec;
 	std::string errorStr;
 	const char** attribs = (attribNames.size() ? &attribNames[0] : NULL);
-	if (!pvr::utils::createShaderProgram(&shaders[0], (uint32)shaders.size(), attribs, attribIndex.data(),
-	                                     (uint32)attribIndex.size(), program->getNativeObject(), &errorStr,
-	                                     &m_context->getApiCapabilities()))
+	if (!nativeGles::createShaderProgram(&shaders[0], (uint32)shaders.size(), attribs, attribIndex.data(),
+	                                     (uint32)attribIndex.size(), native_cast(*program), &errorStr,
+	                                     &_context->getApiCapabilities()))
 	{
 		Log(Log.Critical, "Linking failed. Shader infolog: %s", errorStr.c_str());
 		return Result::InvalidData;
 	}
 	containerGles.states.push_back(program);
 	return Result::Success;
-}//	namespace gles
+}// namespace gles
 }
 }
 }
-//!\endcond

@@ -3,23 +3,23 @@
 \Title        ExampleUI
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Demonstrates how to efficiently render UI and sprites using UIRenderer
+\brief      Demonstrates how to efficiently render UI and sprites using UIRenderer
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 
-const pvr::uint32 AtlasWidth		= 1024;
-const pvr::uint32 AtlasHeight		= 1024;
-const pvr::uint32 NullQuadPix		= 4;
-const pvr::uint32 VirtualWidth		= 640;
-const pvr::uint32 VirtualHeight		= 480;
+const pvr::uint32 AtlasWidth    = 1024;
+const pvr::uint32 AtlasHeight   = 1024;
+const pvr::uint32 NullQuadPix   = 4;
+const pvr::uint32 VirtualWidth    = 640;
+const pvr::uint32 VirtualHeight   = 480;
 const pvr::uint32 AtlasPixelBorder  = 1;
-const pvr::uint32 UiDisplayTime		= 5;// Display each page for 5 seconds
+const pvr::uint32 UiDisplayTime   = 5;// Display each page for 5 seconds
 const pvr::uint32 UiDisplayTimeInMs = UiDisplayTime * 1000;
 const glm::vec2 BaseDim(800, 600);
 const pvr::float32 LowerContainerHight = .3f;
-#define ELEMENTS_IN_ARRAY(x)		(sizeof(x) / sizeof(x[0]))
+#define ELEMENTS_IN_ARRAY(x)    (sizeof(x) / sizeof(x[0]))
 using namespace pvr::types;
 // Shaders
 namespace ShaderNames {
@@ -82,45 +82,45 @@ enum Enum
 
 const char* const SpritesFileNames[Sprites::Count + Ancillary::Count] =
 {
-	"clock-face.pvr",			// Clockface
-	"hand.pvr",					// Hand
-	"battery.pvr",				// Battery
-	"internet-web-browser.pvr",	// Web
-	"mail-message-new.pvr",		// Newmail
-	"network-wireless.pvr",		// Network
-	"office-calendar.pvr",		// Calendar
+	"clock-face.pvr",     // Clockface
+	"hand.pvr",         // Hand
+	"battery.pvr",        // Battery
+	"internet-web-browser.pvr", // Web
+	"mail-message-new.pvr",   // Newmail
+	"network-wireless.pvr",   // Network
+	"office-calendar.pvr",    // Calendar
 
 	"weather-sun-cloud-big.pvr",// Weather_SUNCLOUD_BIG
-	"weather-sun-cloud.pvr",	// Weather_SUNCLOUD
-	"weather-rain.pvr",			// Weather_RAIN
-	"weather-storm.pvr",		// Weather_STORM
+	"weather-sun-cloud.pvr",  // Weather_SUNCLOUD
+	"weather-rain.pvr",     // Weather_RAIN
+	"weather-storm.pvr",    // Weather_STORM
 
-	"container-corner.pvr",		// Container_CORNER
-	"container-vertical.pvr",	// Container_VERT
-	"container-horizontal.pvr",	// Container_HORI
+	"container-corner.pvr",   // Container_CORNER
+	"container-vertical.pvr", // Container_VERT
+	"container-horizontal.pvr", // Container_HORI
 	"container-filler.pvr",     // container_FILLER
 	"vertical-bar.pvr",
-	"text1.pvr",				// Text1
-	"text2.pvr",				// Text2
+	"text1.pvr",        // Text1
+	"text2.pvr",        // Text2
 	"loremipsum.pvr",
-	"text-weather.pvr",			// Text_WEATHER
-	"text-fri.pvr",				// Fri
-	"text-sat.pvr",				// Sat
-	"text-sun.pvr",				// Sun
-	"text-mon.pvr",				// Mon
+	"text-weather.pvr",     // Text_WEATHER
+	"text-fri.pvr",       // Fri
+	"text-sat.pvr",       // Sat
+	"text-sun.pvr",       // Sun
+	"text-mon.pvr",       // Mon
 
-	"clock-face-small.pvr",		// ClockfaceSmall
-	"hand-small.pvr",			// Hand_SMALL
+	"clock-face-small.pvr",   // ClockfaceSmall
+	"hand-small.pvr",     // Hand_SMALL
 
-	"window-bottom.pvr",		// Window_BOTTOM
-	"window-bottomcorner.pvr",	// Window_BOTTOMCORNER
-	"window-side.pvr",			// Window_SIDE
-	"window-top.pvr",			// Window_TOP
-	"window-topleft.pvr",		// Window_TOPLEFT
-	"window-topright.pvr",		// Window_TOPRIGHT
+	"window-bottom.pvr",    // Window_BOTTOM
+	"window-bottomcorner.pvr",  // Window_BOTTOMCORNER
+	"window-side.pvr",      // Window_SIDE
+	"window-top.pvr",     // Window_TOP
+	"window-topleft.pvr",   // Window_TOPLEFT
+	"window-topright.pvr",    // Window_TOPRIGHT
 
-	"background.pvr",		// Background
-	"topbar.pvr",			// Topbar
+	"background.pvr",   // Background
+	"topbar.pvr",     // Topbar
 };
 
 // Displayed pages
@@ -159,14 +159,14 @@ enum Enum
 
 const char* const FragShaderFileName[ShaderNames::Count] =
 {
-	"TexColShaderF.fsh",		// ColorTexture
-	"ColShaderF.fsh",			// ColorShader
+	"TexColShaderF.fsh",    // ColorTexture
+	"ColShaderF.fsh",     // ColorShader
 };
 
 const char* const VertShaderFileName[ShaderNames::Count] =
 {
-	"TexColShaderV.vsh",		// ColorTexture
-	"ColShaderV.vsh",			// ColorShader
+	"TexColShaderV.vsh",    // ColorTexture
+	"ColShaderV.vsh",     // ColorShader
 };
 
 // Group shader programs and their uniform locations together
@@ -181,17 +181,17 @@ struct Pipeline
 struct DrawPass
 {
 	pvr::api::DescriptorSet descSet;
-	Pipeline		 pipe;
+	Pipeline     pipe;
 };
 
 struct SpriteDesc
 {
 	pvr::api::TextureView tex;
-	pvr::uint32			uiWidth;
-	pvr::uint32			uiHeight;
-	pvr::uint32			uiSrcX;
-	pvr::uint32			uiSrcY;
-	bool			    bHasAlpha;
+	pvr::uint32     uiWidth;
+	pvr::uint32     uiHeight;
+	pvr::uint32     uiSrcX;
+	pvr::uint32     uiSrcY;
+	bool          bHasAlpha;
 	void release() {tex.reset();}
 };
 
@@ -244,22 +244,22 @@ struct PageWindow
 };
 
 /*!*********************************************************************************************************************
-\brief	Update the clock page
-\param	screenWidth Screen width
-\param	screenHeight Screen height
-\param	frameTime Current frame
-\param	trans Transformation matrix
+\brief  Update the clock page
+\param  screenWidth Screen width
+\param  screenHeight Screen height
+\param  frameTime Current frame
+\param  trans Transformation matrix
 ***********************************************************************************************************************/
 void PageClock::update(pvr::float32 frameTime, const glm::mat4& trans)
 {
 	// to do render the container
 	static pvr::float32 handRotate = 0.0f;
 	handRotate -= frameTime * 0.001f;
-	pvr::float32 clockHandScale(.22f);
+	const pvr::float32 clockHandScale(.22f);
 	pvr::uint32 i = 0;
 	// right groups
-	glm::vec2 clockOrigin(container.size.width, container.size.height);
-	glm::uvec2 smallClockDim(clock[0].group->getDimensions() * clock[0].scale);
+	glm::vec2 clockOrigin(container.size.x + container.size.width, container.size.y + container.size.height);
+	const glm::uvec2 smallClockDim(clock[0].group->getDimensions() * clock[0].scale);
 	glm::uvec2 clockOffset(0, 0);
 	pvr::uint32 clockIndex = 1;
 	for (; i < clock.size() / 2; i += 2)
@@ -272,7 +272,7 @@ void PageClock::update(pvr::float32 frameTime, const glm::mat4& trans)
 			++clockIndex;
 
 			clock[i + 1].hand->setRotation(handRotate + clockIndex)->setScale(glm::vec2(clockHandScale));
-			clock[i + 1].group->setAnchor(pvr::ui::Anchor::TopLeft, glm::vec2(container.size.x, container.size.height));
+			clock[i + 1].group->setAnchor(pvr::ui::Anchor::TopLeft, glm::vec2(container.size.x, clockOrigin.y));
 			clock[i + 1].group->setPixelOffset(smallClockDim.x * 2, 0);
 			++clockIndex;
 			continue;
@@ -292,7 +292,7 @@ void PageClock::update(pvr::float32 frameTime, const glm::mat4& trans)
 	}
 
 	// left group
-	clockOrigin = glm::vec2(container.size.x, container.size.height);
+	clockOrigin = glm::vec2(container.size.x, container.size.y + container.size.height);
 	clockOffset.y = 0;
 	for (; i < clock.size() - 1; i += 2)
 	{
@@ -315,17 +315,17 @@ void PageClock::update(pvr::float32 frameTime, const glm::mat4& trans)
 }
 
 /*!*********************************************************************************************************************
-\brief	Update the window page
-\param	screenWidth Screen width
-\param	screenHeight Screen height
-\param	trans Transformation matrix
+\brief  Update the window page
+\param  screenWidth Screen width
+\param  screenHeight Screen height
+\param  trans Transformation matrix
 ***********************************************************************************************************************/
 void PageWindow::update(pvr::float32 width, pvr::float32 height, const glm::mat4& trans)
 {
 	glm::vec2 offset(width * .5f, height * .5f);// center it on the screen
 	// offset it so the clip center aligned to the center of the screen
-	offset.x -= clipArea.getDimension().x * .5f;
-	offset.y -= clipArea.getDimension().y * .25f;
+	offset.x -= clipArea.extent().x * .5f;
+	offset.y -= clipArea.extent().y * .25f;
 
 	glm::mat4 worldTrans = trans * glm::translate(glm::vec3(offset, 0.0f));
 	mvp = proj * worldTrans;
@@ -334,10 +334,10 @@ void PageWindow::update(pvr::float32 width, pvr::float32 height, const glm::mat4
 }
 
 /*!*********************************************************************************************************************
-\brief	Update the weather page
-\param	screenWidth Screen width
-\param	screenHeight Screen height
-\param	transMtx Transformation matrix
+\brief  Update the weather page
+\param  screenWidth Screen width
+\param  screenHeight Screen height
+\param  transMtx Transformation matrix
 ***********************************************************************************************************************/
 void PageWeather::update(const glm::mat4& transMtx)
 {
@@ -352,8 +352,8 @@ class OGLESExampleUI;
 ***********************************************************************************************************************/
 const char* const DisplayOpts[DisplayOption::Count] =
 {
-	"Displaying Interface",			// Ui
-	"Displaying Texture Atlas",		// Texatlas
+	"Displaying Interface",     // Ui
+	"Displaying Texture Atlas",   // Texatlas
 };
 
 #ifdef DISPLAY_SPRITE_ALPHA
@@ -367,8 +367,8 @@ const char** const SpriteShaderDefines = NULL;
 
 const char* const* ShaderDefines[ShaderNames::Count] =
 {
-	NULL,								// eTEXCOL_SHADER
-	NULL,								// eTEXCOL_SHADER
+	NULL,               // eTEXCOL_SHADER
+	NULL,               // eTEXCOL_SHADER
 };
 
 static const pvr::uint32 DimDefault = 0xABCD;
@@ -387,15 +387,15 @@ static const char* const TextLoremIpsum =
 class Area
 {
 private:
-	pvr::int32		x;
-	pvr::int32		y;
-	pvr::int32		w;
-	pvr::int32		h;
-	pvr::int32		size;
-	bool			isFilled;
+	pvr::int32    x;
+	pvr::int32    y;
+	pvr::int32    w;
+	pvr::int32    h;
+	pvr::int32    size;
+	bool      isFilled;
 
-	Area*			right;
-	Area*			left;
+	Area*     right;
+	Area*     left;
 
 private:
 	void setSize(pvr::int32 iWidth, pvr::int32 iHeight);
@@ -426,24 +426,24 @@ class OGLESExampleUI : public pvr::Shell
 private:
 	struct DeviceResource
 	{
-		Pipeline			pipePreClip;
-		Pipeline			pipePostClip;
+		Pipeline      pipePreClip;
+		Pipeline      pipePostClip;
 
-		pvr::api::TextureView	textureAtlas;
+		pvr::api::TextureView textureAtlas;
 
 		// Shader handles
-		pvr::api::Shader		vertexShader[ShaderNames::Count];
-		pvr::api::Shader		fragmentShader[ShaderNames::Count];
+		pvr::api::Shader    vertexShader[ShaderNames::Count];
+		pvr::api::Shader    fragmentShader[ShaderNames::Count];
 
 		// Programs
-		Pipeline		pipeSprite;
-		Pipeline		pipeColor;
+		Pipeline    pipeSprite;
+		Pipeline    pipeColor;
 		pvr::api::GraphicsPipeline pipeClipping;
-		pvr::api::Sampler	samplerNearest;
+		pvr::api::Sampler samplerNearest;
 		pvr::api::Sampler samplerBilinear;
 
-		pvr::api::Fbo	fboAtlas;
-		pvr::api::Fbo	fboOnScreen;
+		pvr::api::Fbo fboAtlas;
+		pvr::api::Fbo fboOnScreen;
 		pvr::api::CommandBuffer cmdBuffer;
 		pvr::api::SecondaryCommandBuffer cmdBufferTitleDesc;
 		pvr::api::SecondaryCommandBuffer cmdBufferTexAtlas;
@@ -453,25 +453,25 @@ private:
 		pvr::api::SecondaryCommandBuffer cmdBufferWindow;
 		pvr::api::SecondaryCommandBuffer cmdBufferRenderUI;
 
-		pvr::api::Buffer					quadVbo;
+		pvr::api::Buffer          quadVbo;
 
-		SpriteDesc							spritesDesc[Sprites::Count + Ancillary::Count];
-		pvr::ui::Text						textLorem;
-		DrawPass							drawPassAtlas;
-		pvr::ui::Image						spriteAtlas;
-		pvr::ui::Image						sprites[Sprites::Count + Ancillary::Count];
-		pvr::ui::PixelGroup					groupBaseUI;
+		SpriteDesc              spritesDesc[Sprites::Count + Ancillary::Count];
+		pvr::ui::Text           textLorem;
+		DrawPass              drawPassAtlas;
+		pvr::ui::Image            spriteAtlas;
+		pvr::ui::Image            sprites[Sprites::Count + Ancillary::Count];
+		pvr::ui::PixelGroup         groupBaseUI;
 
-		PageClock							pageClock;
-		PageWeather							pageWeather;
-		PageWindow							pageWindow;
-		SpriteContainer						containerTop;
+		PageClock             pageClock;
+		PageWeather             pageWeather;
+		PageWindow              pageWindow;
+		SpriteContainer           containerTop;
 
-		pvr::api::AssetStore				assetManager;
-		pvr::ui::UIRenderer					uiRenderer;
+		pvr::utils::AssetStore        assetManager;
+		pvr::ui::UIRenderer         uiRenderer;
 	};
 	std::auto_ptr<DeviceResource> deviceResource;
-	bool		isAtlasGenerated;
+	bool    isAtlasGenerated;
 
 	// Transforms
 	pvr::float32 clockHandRotate;
@@ -480,21 +480,21 @@ private:
 	glm::mat4 projMtx;
 
 	// Display options
-	pvr::int32			displayOption;
-	DisplayState::Enum	state;
-	pvr::float32		transitionPerc;
-	DisplayPage::Enum	currentPage;
-	DisplayPage::Enum	lastPage;
-	pvr::int32			cycleDir;
+	pvr::int32      displayOption;
+	DisplayState::Enum  state;
+	pvr::float32    transitionPerc;
+	DisplayPage::Enum currentPage;
+	DisplayPage::Enum lastPage;
+	pvr::int32      cycleDir;
 	pvr::uint64 currTime;
 	// Data
-	pvr::int32			drawCallPerFrame;
+	pvr::int32      drawCallPerFrame;
 
 	// Time
-	pvr::float32	wndRotPerc;
-	pvr::uint64		prevTransTime;
-	pvr::uint64  	prevTime;
-	bool			swipe;
+	pvr::float32  wndRotPerc;
+	pvr::uint64   prevTransTime;
+	pvr::uint64   prevTime;
+	bool      swipe;
 	pvr::GraphicsContext  context;
 	glm::vec2 screenScale;
 	void updateTitleAndDesc(DisplayOption::Enum displayOption)
@@ -560,7 +560,7 @@ public:
 };
 
 /*!*********************************************************************************************************************
-\brief		Constructor
+\brief    Constructor
 ***********************************************************************************************************************/
 OGLESExampleUI::OGLESExampleUI() :
 	isAtlasGenerated(false), clockHandRotate(0.0f),
@@ -609,10 +609,10 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 	const pvr::float32 borderY = deviceResource->sprites[Sprites::ContainerCorner]->getHeight() /
 	                             deviceResource->uiRenderer.getRenderingDimY() * 2.f;
 
-	pvr::Rectangle<pvr::float32> rectVerticleLeft(rect.x, rect.y + borderY, rect.x + borderX, rect.height - borderY);
-	pvr::Rectangle<pvr::float32> rectVerticleRight(rect.width - borderX, rect.y + borderY, rect.width, rect.height - borderY);
-	pvr::Rectangle<pvr::float32> rectTopHorizontal(rect.x + borderX, rect.height - borderY, rect.width - borderX, rect.height);
-	pvr::Rectangle<pvr::float32> rectBottomHorizontal(rect.x  + borderX , rect.y, rect.width - borderX, rect.y + borderY);
+	pvr::Rectangle<pvr::float32> rectVerticleLeft(rect.x, rect.y + borderY, borderX, rect.height - borderY * 2);
+	pvr::Rectangle<pvr::float32> rectVerticleRight(rect.x + rect.width, rect.y + borderY, rect.width, rect.height - borderY * 2);
+	pvr::Rectangle<pvr::float32> rectTopHorizontal(rect.x + borderX, rect.y + rect.height - borderY, rect.width - borderX * 2, rect.height);
+	pvr::Rectangle<pvr::float32> rectBottomHorizontal(rect.x  + borderX, rect.y, rect.width - borderX * 2, rect.y + borderY);
 
 	// align the sprites to lower left so they will be aligned with their group
 	deviceResource->sprites[Sprites::ContainerCorner]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.0f);
@@ -624,10 +624,11 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 		pvr::ui::PixelGroup filler = deviceResource->uiRenderer.createPixelGroup();
 		filler->add(deviceResource->sprites[Sprites::ContainerFiller]);
 		deviceResource->sprites[Sprites::ContainerFiller]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
-		filler->setAnchor(pvr::ui::Anchor::TopLeft, rect.x + borderX, rect.height - borderY);
-		filler->setScale(glm::vec2(.5f * (rect.getDimension().x - borderX * 2 /*minus the left and right borders*/) *
+		filler->setAnchor(pvr::ui::Anchor::BottomLeft, rect.x + borderX, rect.y + borderY);
+
+		filler->setScale(glm::vec2(.5f * (rect.width - borderX * 2 /*minus the left and right borders*/) *
 		                           deviceResource->uiRenderer.getRenderingDimX() / deviceResource->sprites[Sprites::ContainerFiller]->getWidth(),
-		                           .501f * (rect.getDimension().y - borderY * 2/*minus Top and Bottom borders*/) *
+		                           .501f * (rect.height - borderY * 2/*minus Top and Bottom borders*/) *
 		                           deviceResource->uiRenderer.getRenderingDimY() / deviceResource->sprites[Sprites::ContainerFiller]->getHeight()));
 		outContainer.group->add(filler);
 		outContainer.group->setSize(glm::vec2(deviceResource->uiRenderer.getRenderingDimX(), deviceResource->uiRenderer.getRenderingDimY()));
@@ -647,7 +648,7 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 		pvr::ui::PixelGroup newGroup = deviceResource->uiRenderer.createPixelGroup();
 		newGroup->add(deviceResource->sprites[Sprites::ContainerCorner]);
 		// flip the x coordinate by negative scale
-		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectTopHorizontal.width,
+		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectTopHorizontal.x + rectTopHorizontal.width,
 		                    rectTopHorizontal.y)->setScale(glm::vec2(-1.f, 1.0f));
 		outContainer.group->add(newGroup);
 	}
@@ -667,7 +668,7 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 		pvr::ui::PixelGroup newGroup = deviceResource->uiRenderer.createPixelGroup();
 		newGroup->add(deviceResource->sprites[Sprites::ContainerCorner]);
 		// flip the x and y coordinates
-		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectBottomHorizontal.width,
+		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectBottomHorizontal.x + rectBottomHorizontal.width,
 		                    rectBottomHorizontal.height)->setScale(glm::vec2(-1.f, -1.0f));
 		outContainer.group->add(newGroup);
 	}
@@ -675,7 +676,7 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 	// Horizontal Up
 	{
 		//calculate the width of the sprite
-		pvr::float32 width = (rectTopHorizontal.getDimension().x * .5f * deviceResource->uiRenderer.getRenderingDimX() /
+		pvr::float32 width = (rectTopHorizontal.width * .5f * deviceResource->uiRenderer.getRenderingDimX() /
 		                      deviceResource->sprites[Sprites::ContainerVertical]->getWidth());
 		pvr::ui::PixelGroup horizontal = deviceResource->uiRenderer.createPixelGroup();
 		horizontal->add(deviceResource->sprites[Sprites::ContainerVertical]);
@@ -687,7 +688,7 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 	// Horizontal Down
 	{
 		//calculate the width of the sprite
-		pvr::float32 width = (rectBottomHorizontal.getDimension().x * .5f * deviceResource->uiRenderer.getRenderingDimX() /
+		pvr::float32 width = (rectBottomHorizontal.width * .5f * deviceResource->uiRenderer.getRenderingDimX() /
 		                      deviceResource->sprites[Sprites::ContainerVertical]->getWidth());
 		pvr::ui::PixelGroup horizontal = deviceResource->uiRenderer.createPixelGroup();
 		horizontal->add(deviceResource->sprites[Sprites::ContainerVertical]);
@@ -699,24 +700,24 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 	// Vertical Left
 	{
 		//calculate the height of the sprite
-		pvr::float32 height = (rectVerticleLeft.getDimension().y  * .501f * deviceResource->uiRenderer.getRenderingDimY() /
+		pvr::float32 height = (rectVerticleLeft.height  * .501f * deviceResource->uiRenderer.getRenderingDimY() /
 		                       deviceResource->sprites[Sprites::ContainerHorizontal]->getHeight());
 		pvr::ui::PixelGroup verticle = deviceResource->uiRenderer.createPixelGroup();
 		verticle->add(deviceResource->sprites[Sprites::ContainerHorizontal]);
-		verticle->setScale(glm::vec2(1, height))->setAnchor(pvr::ui::Anchor::TopLeft, rectVerticleLeft.x,
-		    rectVerticleLeft.height)->setPixelOffset(0, 0);
+		verticle->setScale(glm::vec2(1, height))->setAnchor(pvr::ui::Anchor::BottomLeft, rectVerticleLeft.x,
+		    rectVerticleLeft.y)->setPixelOffset(0, 0);
 		outContainer.group->add(verticle);
 	}
 
 	// Vertical Right
 	{
 		//calculate the height of the sprite
-		pvr::float32 height = (rectVerticleRight.getDimension().y * .501f * deviceResource->uiRenderer.getRenderingDimY() /
+		pvr::float32 height = (rectVerticleRight.height * .501f * deviceResource->uiRenderer.getRenderingDimY() /
 		                       deviceResource->sprites[Sprites::ContainerHorizontal]->getHeight());
 		pvr::ui::PixelGroup vertical = deviceResource->uiRenderer.createPixelGroup();
 		vertical->add(deviceResource->sprites[Sprites::ContainerHorizontal]);
-		vertical->setScale(glm::vec2(-1, height))->setAnchor(pvr::ui::Anchor::TopLeft,
-		    rectVerticleRight.width, rectVerticleRight.height);
+		vertical->setScale(glm::vec2(-1, height))->setAnchor(pvr::ui::Anchor::BottomLeft,
+		    rectVerticleRight.x, rectVerticleRight.y);
 		outContainer.group->add(vertical);
 	}
 
@@ -724,7 +725,7 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 	pvr::float32 height = (outContainer.size.height - outContainer.size.y) * .5f;
 
 	// calculate the each container size
-	pvr::float32 containerWidth = (rect.width - rect.x) / numSubContainer;
+	pvr::float32 containerWidth = rect.width / numSubContainer;
 	pvr::float32 borderWidth = 1.f / deviceResource->uiRenderer.getRenderingDimX() * deviceResource->sprites[Sprites::VerticalBar]->getWidth();
 	pvr::Rectangle<pvr::float32> subRect(rect.x , rect.y, rect.x + containerWidth, rect.y + lowerContainerHeight);
 	height = .5f * (subRect.height - subRect.y) * deviceResource->uiRenderer.getRenderingDimY() /
@@ -734,7 +735,7 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 	// Horizontal Split
 	{
 		// half it here because the scaling happen at the center
-		width = (rect.getDimension().x * .5f * deviceResource->uiRenderer.getRenderingDimX() /
+		width = (rect.width * .5f * deviceResource->uiRenderer.getRenderingDimX() /
 		         deviceResource->sprites[Sprites::VerticalBar]->getHeight());
 		width -= .25;// reduce the width by quarter of a pixel so they fit well between the container
 		pvr::ui::PixelGroup horizontal = deviceResource->uiRenderer.createPixelGroup();
@@ -759,9 +760,9 @@ void OGLESExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& re
 }
 
 /*!*********************************************************************************************************************
-\brief	Code in initApplication() will be called by PVRShell once per run, before the rendering context is created.
-		Used to initialize variables that are not Dependant on it (e.g. external modules, loading meshes, etc.)
-		If the rendering context is lost, InitApplication() will not be called again.
+\brief  Code in initApplication() will be called by PVRShell once per run, before the rendering context is created.
+    Used to initialize variables that are not Dependant on it (e.g. external modules, loading meshes, etc.)
+    If the rendering context is lost, InitApplication() will not be called again.
 \return Return pvr::Result::Success if no error occurred
 ***********************************************************************************************************************/
 pvr::Result OGLESExampleUI::initApplication()
@@ -773,7 +774,7 @@ pvr::Result OGLESExampleUI::initApplication()
 }
 
 /*!*********************************************************************************************************************
-\brief	create the weather page
+\brief  create the weather page
 ***********************************************************************************************************************/
 void OGLESExampleUI::createPageWeather()
 {
@@ -795,9 +796,9 @@ void OGLESExampleUI::createPageWeather()
 	deviceResource->sprites[Sprites::TextWeather]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
 	group->setScale(screenScale);
 	group->add(deviceResource->sprites[Sprites::TextWeather]);
-	const glm::vec2& containerHalfSize = deviceResource->pageWeather.containerTop.size.getDimension() * .5f;
+	const glm::vec2& containerHalfSize = deviceResource->pageWeather.containerTop.size.extent() * .5f;
 	group->setAnchor(pvr::ui::Anchor::CenterLeft, deviceResource->pageWeather.containerTop.size.x,
-	                 deviceResource->pageWeather.containerTop.size.getCenter().y)->setPixelOffset(10, 40);
+	                 deviceResource->pageWeather.containerTop.size.center().y)->setPixelOffset(10, 40);
 	deviceResource->pageWeather.group->add(group);
 
 	// add the Weather
@@ -819,7 +820,7 @@ void OGLESExampleUI::createPageWeather()
 		Sprites::WeatherStorm, Sprites::TextMonday
 	};
 
-	pvr::float32 width = (deviceResource->pageWeather.containerTop.size.width - deviceResource->pageWeather.containerTop.size.x) / 4.f;
+	pvr::float32 width = deviceResource->pageWeather.containerTop.size.width / 4.f;
 	pvr::float32 tempOffsetX = deviceResource->pageWeather.containerTop.size.x + (width * .5f);;
 	// pvr::float32 offsetYWeather =
 	for (pvr::uint32 i = 0; i < 8; i += 2)
@@ -849,9 +850,9 @@ void OGLESExampleUI::createPageWeather()
 }
 
 /*!*********************************************************************************************************************
-\brief	Create clock sprite
-\param	outClock Returned clock
-\param	sprite Clock Sprite to create
+\brief  Create clock sprite
+\param  outClock Returned clock
+\param  sprite Clock Sprite to create
 ***********************************************************************************************************************/
 void OGLESExampleUI::createClockSprite(SpriteClock& outClock, Sprites::Enum sprite)
 {
@@ -880,7 +881,7 @@ void OGLESExampleUI::createClockSprite(SpriteClock& outClock, Sprites::Enum spri
 }
 
 /*!*********************************************************************************************************************
-\brief	Create clock page
+\brief  Create clock page
 ***********************************************************************************************************************/
 void OGLESExampleUI::createPageClock()
 {
@@ -893,7 +894,7 @@ void OGLESExampleUI::createPageClock()
 	containerWidth /= BaseDim.x;
 
 	pvr::Rectangle<pvr::float32> containerRect(-containerWidth, -containerHeight,
-	    containerWidth, containerHeight);
+	    containerWidth * 2.f, containerHeight * 2.f);
 	createSpriteContainer(pvr::Rectangle<pvr::float32>(containerRect), 2, LowerContainerHight, container);
 	deviceResource->pageClock.container = container;
 
@@ -924,22 +925,23 @@ void OGLESExampleUI::createPageClock()
 	deviceResource->pageClock.group->add(clockCenter.group);
 	deviceResource->pageClock.clock.push_back(clockCenter);
 
-	deviceResource->pageClock.group->add(deviceResource->sprites[Sprites::Text1]);
+
 	deviceResource->sprites[Sprites::Text1]->setAnchor(pvr::ui::Anchor::BottomLeft,
 	    glm::vec2(deviceResource->pageClock.container.size.x,
 	              deviceResource->pageClock.container.size.y))->setPixelOffset(0, 10);
-
 	deviceResource->sprites[Sprites::Text1]->setScale(screenScale);
-	deviceResource->pageClock.group->add(deviceResource->sprites[Sprites::Text2]);
+	deviceResource->pageClock.group->add(deviceResource->sprites[Sprites::Text1]);
 
 	deviceResource->sprites[Sprites::Text2]->setAnchor(pvr::ui::Anchor::BottomRight,
-	    glm::vec2(deviceResource->pageClock.container.size.width - 0.05f,
+	    glm::vec2(deviceResource->pageClock.container.size.width +
+				  deviceResource->pageClock.container.size.x - 0.05f,
 	              deviceResource->pageClock.container.size.y))->setPixelOffset(0, 10);
 	deviceResource->sprites[Sprites::Text2]->setScale(screenScale);
+	deviceResource->pageClock.group->add(deviceResource->sprites[Sprites::Text2]);
 }
 
 /*!*********************************************************************************************************************
-\brief	Create base UI
+\brief  Create base UI
 ***********************************************************************************************************************/
 void OGLESExampleUI::createBaseUI()
 {
@@ -989,9 +991,9 @@ void OGLESExampleUI::createBaseUI()
 }
 
 /*!*********************************************************************************************************************
-\brief	Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
+\brief  Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
         Used to initialize variables that are Dependant on the rendering context (e.g. textures, vertex buffers, etc.)
-\return	Return true if no error occurred
+\return Return true if no error occurred
 ***********************************************************************************************************************/
 pvr::Result OGLESExampleUI::initView()
 {
@@ -1001,7 +1003,7 @@ pvr::Result OGLESExampleUI::initView()
 	deviceResource->cmdBufferTitleDesc = context->createSecondaryCommandBufferOnDefaultPool();
 
 	// Initialize uiRenderer
-	if (deviceResource->uiRenderer.init(deviceResource->fboOnScreen->getRenderPass(), 0) != pvr::Result::Success)
+	if (deviceResource->uiRenderer.init(deviceResource->fboOnScreen->getRenderPass(), 0, 1024) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize Print3D\n");
 		return pvr::Result::NotInitialized;
@@ -1033,7 +1035,7 @@ pvr::Result OGLESExampleUI::initView()
 		return pvr::Result::NotInitialized;
 	}
 	// Generate the atlas texture.
-	if (!isAtlasGenerated) {	generateAtlas();   }
+	if (!isAtlasGenerated) {  generateAtlas();   }
 
 	if (isScreenRotated())
 	{
@@ -1063,8 +1065,8 @@ pvr::Result OGLESExampleUI::initView()
 }
 
 /*!*********************************************************************************************************************
-\brief	Loads sprites that will be used to create a texture atlas.
-\return	Return true if no error occurred
+\brief  Loads sprites that will be used to create a texture atlas.
+\return Return true if no error occurred
 ***********************************************************************************************************************/
 bool OGLESExampleUI::loadSprites()
 {
@@ -1078,7 +1080,7 @@ bool OGLESExampleUI::loadSprites()
 
 	samplerInfo.minificationFilter = samplerInfo.magnificationFilter = SamplerFilter::Linear;
 
-	pvr::assets::TextureHeader header;
+	pvr::TextureHeader header;
 	// Load sprites and add to sprite array so that we can generate a texture atlas from them.
 	for (pvr::uint32 i = 0; i < Sprites::Count + Ancillary::Count; i++)
 	{
@@ -1104,21 +1106,15 @@ bool OGLESExampleUI::loadSprites()
 			deviceResource->spritesDesc[i].bHasAlpha = false;
 		}
 
-		deviceResource->sprites[i] = deviceResource->uiRenderer.createImage(deviceResource->spritesDesc[i].tex, header.getWidth(), header.getHeight());
-
-		deviceResource->sprites[i]->setSampler(samplerNearest);
-
-		if (i == Sprites::ContainerCorner || i == Sprites::ContainerVertical || i == Sprites::ContainerHorizontal || i == Sprites::ContainerFiller)
-		{
-			deviceResource->sprites[i]->setSampler(samplerNearest);
-		}
+		deviceResource->sprites[i] = deviceResource->uiRenderer.createImage(deviceResource->spritesDesc[i].tex,
+            header.getWidth(), header.getHeight(), samplerNearest);
 	}
 	return true;
 }
 
 /*!*********************************************************************************************************************
-\brief	Create nearest and bilinear sampler, and descriptor set for texture atlas
-\return	Return true if no error occurred
+\brief  Create nearest and bilinear sampler, and descriptor set for texture atlas
+\return Return true if no error occurred
 ***********************************************************************************************************************/
 bool OGLESExampleUI::createSamplersAndDescriptorSet()
 {
@@ -1153,7 +1149,7 @@ bool OGLESExampleUI::createSamplersAndDescriptorSet()
 
 /*!*********************************************************************************************************************
 \brief create graphics pipeline for texture-atlas, pre-clip and post-clip pass.
-\return	 Return true if no error occurred
+\return  Return true if no error occurred
 ***********************************************************************************************************************/
 bool OGLESExampleUI::createPipelines()
 {
@@ -1179,7 +1175,7 @@ bool OGLESExampleUI::createPipelines()
 		  context->createShader(*shaderVersioning.getBestStreamForApi(context->getApiType()), ShaderType::FragmentShader,
 		                        ShaderDefines[i], (ShaderDefines[i] ? ELEMENTS_IN_ARRAY(ShaderDefines[i]) : 0));
 
-		if (deviceResource->vertexShader[i].isNull() || deviceResource->fragmentShader[i].isNull())	{ return false; }
+		if (deviceResource->vertexShader[i].isNull() || deviceResource->fragmentShader[i].isNull()) { return false; }
 	}
 
 	// --- texture-atlas pipeline
@@ -1267,15 +1263,15 @@ bool OGLESExampleUI::createPipelines()
 	// set the shader sampler location
 	deviceResource->cmdBuffer->beginRecording();
 	deviceResource->cmdBuffer->bindPipeline(deviceResource->drawPassAtlas.pipe.pipe);
-	deviceResource->cmdBuffer->setUniform<pvr::int32>(deviceResource->drawPassAtlas.pipe.pipe->getUniformLocation("Texture"), 0);
+	deviceResource->cmdBuffer->setUniform(deviceResource->drawPassAtlas.pipe.pipe->getUniformLocation("Texture"), 0);
 	deviceResource->cmdBuffer->endRecording();
 	deviceResource->cmdBuffer->submit();
 	return true;
 }
 
 /*!*********************************************************************************************************************
-\brief	Sorts and packs sprites in to the texture atlas.
-\return	Return true if no error occurred
+\brief  Sorts and packs sprites in to the texture atlas.
+\return Return true if no error occurred
 ***********************************************************************************************************************/
 bool OGLESExampleUI::generateAtlas()
 {
@@ -1298,7 +1294,7 @@ bool OGLESExampleUI::generateAtlas()
 	Area* pRtrn = NULL;
 
 	deviceResource->cmdBuffer->bindPipeline(deviceResource->drawPassAtlas.pipe.pipe);
-	deviceResource->cmdBuffer->setUniform<glm::mat4>(deviceResource->drawPassAtlas.pipe.mvpLoc, mMVP);
+	deviceResource->cmdBuffer->setUniform(deviceResource->drawPassAtlas.pipe.mvpLoc, mMVP);
 	deviceResource->cmdBuffer->endRecording();
 	deviceResource->cmdBuffer->submit();
 	// Render some quads within the texture.
@@ -1355,7 +1351,7 @@ bool OGLESExampleUI::generateAtlas()
 	deviceResource->cmdBuffer->beginRenderPass(deviceResource->fboAtlas,
 	    pvr::Rectanglei(0, 0, AtlasWidth, AtlasHeight), true);
 	deviceResource->cmdBuffer->bindPipeline(deviceResource->pipeColor.pipe);
-	deviceResource->cmdBuffer->setUniform<glm::mat4>(deviceResource->pipeColor.mvpLoc, mMVP);
+	deviceResource->cmdBuffer->setUniform(deviceResource->pipeColor.mvpLoc, mMVP);
 	{
 		pRtrn = head->insert(4, 4);
 		if (!pRtrn)
@@ -1381,9 +1377,9 @@ bool OGLESExampleUI::generateAtlas()
 }
 
 /*!*********************************************************************************************************************
-\brief	Renders a 2D quad with the given parameters. DstRect is the rectangle to be rendered in
-		world coordinates. SrcRect is the rectangle to be cropped from the texture in pixel coordinates.
-		NOTE: This is not an optimized function and should not be called repeatedly to draw quads to the screen at render time.
+\brief  Renders a 2D quad with the given parameters. DstRect is the rectangle to be rendered in
+    world coordinates. SrcRect is the rectangle to be cropped from the texture in pixel coordinates.
+    NOTE: This is not an optimized function and should not be called repeatedly to draw quads to the screen at render time.
 ***********************************************************************************************************************/
 void OGLESExampleUI::drawScreenAlignedQuad(const Pipeline& pipe,
     const pvr::Rectangle<pvr::float32>& dstRect, pvr::api::CommandBufferBase cmdBuffer,
@@ -1406,14 +1402,14 @@ void OGLESExampleUI::drawScreenAlignedQuad(const Pipeline& pipe,
 	glm::vec4 vRGBA(((uiRGBA >> 24) & 0xFF)*ByteToFloat, ((uiRGBA >> 16) & 0xFF)*ByteToFloat,
 	                ((uiRGBA >> 8) & 0xFF)*ByteToFloat, (uiRGBA & 0xFF)*ByteToFloat);
 
-	cmdBuffer->setUniform<glm::vec4>(pipe.rgbaLoc, glm::vec4(vRGBA));
+	cmdBuffer->setUniform(pipe.rgbaLoc, glm::vec4(vRGBA));
 	cmdBuffer->bindVertexBuffer(deviceResource->quadVbo, 0, 0);
 	cmdBuffer->drawArrays(0, 4, 0, 1);
 }
 
 /*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
+\return Return Result::Success if no error occurred
+\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
 pvr::Result OGLESExampleUI::releaseView()
 {
@@ -1423,16 +1419,16 @@ pvr::Result OGLESExampleUI::releaseView()
 }
 
 /*!*********************************************************************************************************************
-\brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting
-		the program. If the rendering context is lost, quitApplication() will not be called.
-\return	Return pvr::Result::Success if no error occurred
+\brief  Code in quitApplication() will be called by PVRShell once per run, just before exiting
+    the program. If the rendering context is lost, quitApplication() will not be called.
+\return Return pvr::Result::Success if no error occurred
 ***********************************************************************************************************************/
 pvr::Result OGLESExampleUI::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
-\brief	Render the page
-\param	page Page to render
-\param	mTransform Transformation matrix
+\brief  Render the page
+\param  page Page to render
+\param  mTransform Transformation matrix
 ***********************************************************************************************************************/
 void OGLESExampleUI::renderPage(DisplayPage::Enum page, const glm::mat4& mTransform)
 {
@@ -1454,7 +1450,7 @@ void OGLESExampleUI::renderPage(DisplayPage::Enum page, const glm::mat4& mTransf
 }
 
 /*!*********************************************************************************************************************
-\brief	Renders the default interface.
+\brief  Renders the default interface.
 ***********************************************************************************************************************/
 void OGLESExampleUI::renderUI()
 {
@@ -1470,8 +1466,7 @@ void OGLESExampleUI::renderUI()
 		{
 			glm::mat4 vRot, vCentre, vInv;
 			vRot = glm::rotate(wndRotate, glm::vec3(0.0f, 0.0f, 1.0f));
-			vCentre = glm::translate(glm::vec3(-deviceResource->uiRenderer.getRenderingDimX() * .5f,
-			                                   -deviceResource->uiRenderer.getRenderingDimY() * .5f, 0.0f));
+			vCentre = glm::translate(glm::vec3(-deviceResource->uiRenderer.getRenderingDim() * .5f, 0.0f));
 			vInv = glm::inverse(vCentre);
 			// align the group center to the center of the rotation, rotate and translate it back.
 			transform =  vInv * vRot * vCentre;
@@ -1489,7 +1484,7 @@ void OGLESExampleUI::renderUI()
 		pvr::float32 fX = pvr::math::quadraticEaseIn(0.0f, -deviceResource->uiRenderer.getRenderingDimX() * cycleDir, transitionPerc);
 		transform = glm::translate(glm::vec3(fX, 0.0f, 0.0f));
 
-		//	the last page page
+		//  the last page page
 		renderPage(lastPage, transform);
 
 		// --- Render inward group
@@ -1505,7 +1500,7 @@ void OGLESExampleUI::renderUI()
 }
 
 /*!*********************************************************************************************************************
-\brief	Renders the generated texture atlas.
+\brief  Renders the generated texture atlas.
 ***********************************************************************************************************************/
 void OGLESExampleUI::renderAtlas()
 {
@@ -1521,7 +1516,7 @@ void OGLESExampleUI::renderAtlas()
 }
 
 /*!*********************************************************************************************************************
-\brief	Swipe left
+\brief  Swipe left
 ***********************************************************************************************************************/
 void OGLESExampleUI::swipeLeft()
 {
@@ -1531,7 +1526,7 @@ void OGLESExampleUI::swipeLeft()
 }
 
 /*!*********************************************************************************************************************
-\brief	Swipe right
+\brief  Swipe right
 ***********************************************************************************************************************/
 void OGLESExampleUI::swipeRight()
 {
@@ -1541,8 +1536,8 @@ void OGLESExampleUI::swipeRight()
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success	if no error occurred
-\brief	Main rendering loop function of the program. The shell will call this function every frame.
+\return Return pvr::Result::Success if no error occurred
+\brief  Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
 pvr::Result OGLESExampleUI::renderFrame()
 {
@@ -1567,8 +1562,8 @@ pvr::Result OGLESExampleUI::renderFrame()
 		pvr::int32 nextPage = currentPage + cycleDir;
 		if (nextPage >= DisplayPage::Count || nextPage < 0)
 		{
-			cycleDir *= -1;							// Reverse direction
-			nextPage = currentPage + cycleDir;	// Recalculate
+			cycleDir *= -1;             // Reverse direction
+			nextPage = currentPage + cycleDir;  // Recalculate
 		}
 		currentPage = (DisplayPage::Enum)nextPage;
 		swipe = false;
@@ -1577,14 +1572,14 @@ pvr::Result OGLESExampleUI::renderFrame()
 	// Calculate next transition amount
 	if (state == DisplayState::Transition)
 	{
-		transitionPerc += 0.01666f;	// 60 FPS
+		transitionPerc += 0.01666f; // 60 FPS
 		if (transitionPerc > 1.f)
 		{
 			state = DisplayState::Element;
 			transitionPerc = 1.f;
-			wndRotate = 0.0f;			// Reset Window rotation
-			wndRotPerc = 0.0f;		// Reset Window rotation percentage
-			prevTransTime = currTime;	// Reset time
+			wndRotate = 0.0f;     // Reset Window rotation
+			wndRotPerc = 0.0f;    // Reset Window rotation percentage
+			prevTransTime = currTime; // Reset time
 		}
 	}
 
@@ -1598,8 +1593,8 @@ pvr::Result OGLESExampleUI::renderFrame()
 }
 
 /*!*********************************************************************************************************************
-\brief	create texture atlas fbo
-\return	Return true on success
+\brief  create texture atlas fbo
+\return Return true on success
 ***********************************************************************************************************************/
 bool OGLESExampleUI::createFbo()
 {
@@ -1612,7 +1607,7 @@ bool OGLESExampleUI::createFbo()
 		pvr::api::SubPass subPass;
 
 		// create texture-atlas texture
-		pvr::api::ImageStorageFormat texAtlasFmt(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB,
+		pvr::ImageStorageFormat texAtlasFmt(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB,
 		    pvr::VariableType::UnsignedByteNorm);
 		pvr::api::TextureStore texAtlas = context->createTexture();
 		texAtlas->allocate2D(texAtlasFmt, AtlasWidth, AtlasHeight);
@@ -1639,7 +1634,7 @@ bool OGLESExampleUI::createFbo()
 }
 
 /*!*********************************************************************************************************************
-\brief	Record secondary command buffer for drawing texture atlas, clock page, weather page and Window page
+\brief  Record secondary command buffer for drawing texture atlas, clock page, weather page and Window page
 ***********************************************************************************************************************/
 void OGLESExampleUI::recordSecondaryCommandBuffers()
 {
@@ -1689,7 +1684,7 @@ void OGLESExampleUI::recordSecondaryCommandBuffers()
 		deviceResource->cmdBufferWindow->clearStencilAttachment(pvr::Rectanglei(0, 0,
 		    (pvr::int32)deviceResource->uiRenderer.getRenderingDimX(),
 		    (pvr::int32)deviceResource->uiRenderer.getRenderingDimY()), 0);
-		deviceResource->cmdBufferWindow->setUniformPtr<glm::mat4>(deviceResource->pipePreClip.mvpLoc,
+		deviceResource->cmdBufferWindow->setUniformPtr(deviceResource->pipePreClip.mvpLoc,
 		    1, (const glm::mat4*)&deviceResource->pageWindow.mvp);
 
 		// draw a quad only in to the stencil buffer
@@ -1728,22 +1723,22 @@ void OGLESExampleUI::eventMappedInput(pvr::SimplifiedInput action)
 }
 
 /*!*********************************************************************************************************************
-\brief	Constructor
+\brief  Constructor
 \param[in] width Area width
 \param[in] height Area height
 ***********************************************************************************************************************/
 Area::Area(pvr::int32 width, pvr::int32 height) : x(0), y(0), isFilled(false), right(NULL), left(NULL) { setSize(width, height); }
 
 /*!*********************************************************************************************************************
-\brief	Constructor
+\brief  Constructor
 ***********************************************************************************************************************/
 Area::Area() : x(0), y(0), isFilled(false), right(NULL), left(NULL) { setSize(0, 0); }
 
 /*!*********************************************************************************************************************
-\brief	Calculates an area where there's sufficient space or returns NULL if no space could be found.
-\return	Return a pointer to the area added, else NULL if it fails
-\param	width Area width
-\param	height Area height
+\brief  Calculates an area where there's sufficient space or returns NULL if no space could be found.
+\return Return a pointer to the area added, else NULL if it fails
+\param  width Area width
+\param  height Area height
 ***********************************************************************************************************************/
 Area* Area::insert(pvr::int32 width, pvr::int32 height)
 {
@@ -1758,7 +1753,7 @@ Area* Area::insert(pvr::int32 width, pvr::int32 height)
 	// Now check right
 	if (right) { return right->insert(width, height); }
 	// Already filled!
-	if (isFilled)	{ return NULL; }
+	if (isFilled) { return NULL; }
 
 	// Too small
 	if (size < width * height || w < width || h < height) { return NULL; }
@@ -1814,8 +1809,8 @@ Area* Area::insert(pvr::int32 width, pvr::int32 height)
 }
 
 /*!*********************************************************************************************************************
-\brief	Deletes the given area.
-\return	 Return true on success
+\brief  Deletes the given area.
+\return  Return true on success
 ***********************************************************************************************************************/
 bool Area::deleteArea()
 {
@@ -1843,30 +1838,30 @@ bool Area::deleteArea()
 }
 
 /*!*********************************************************************************************************************
-\brief	set the area size
-\param	width Area width
+\brief  set the area size
+\param  width Area width
 \param  height Area height
 ***********************************************************************************************************************/
 void Area::setSize(pvr::int32 width, pvr::int32 height)
 {
-	w = width;	h = height;	size = width * height;
+	w = width;  h = height; size = width * height;
 }
 
 /*!*********************************************************************************************************************
-\brief	Get the X position of the area.
-\return	Return the area's x position
+\brief  Get the X position of the area.
+\return Return the area's x position
 ***********************************************************************************************************************/
 inline pvr::int32 Area::getX()const {return x;}
 
 /*!*********************************************************************************************************************
-\brief	get the Y position of the area.
+\brief  get the Y position of the area.
 \return Return the area's y position
 ***********************************************************************************************************************/
 inline pvr::int32 Area::getY()const { return y; }
 
 /*!*********************************************************************************************************************
-\brief	This function must be implemented by the user of the shell.The user should return its pvr::Shell object defining
+\brief  This function must be implemented by the user of the shell.The user should return its pvr::Shell object defining
         the behavior of the application.
-\return	Return The demo supplied by the user
+\return Return The demo supplied by the user
 ***********************************************************************************************************************/
 std::auto_ptr<pvr::Shell> pvr::newDemo() {return std::auto_ptr<pvr::Shell>(new OGLESExampleUI());}

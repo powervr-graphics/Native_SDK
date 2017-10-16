@@ -1,40 +1,38 @@
-/*!*********************************************************************************************************************
-\file         PVRApi/Vulkan/GraphicsPipelineVk.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Definition of the Vulkan implementation of the all important GraphicsPipeline class
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief Definition of the Vulkan implementation of the all important GraphicsPipeline class
+\file PVRApi/Vulkan/GraphicsPipelineVk.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRApi/Vulkan/GraphicsPipelineVk.h"
 #include "PVRApi/Vulkan/ContextVk.h"
 namespace pvr {
 namespace api {
 namespace vulkan {
-
 GraphicsPipelineImplVk::~GraphicsPipelineImplVk() { destroy(); }
 
-GraphicsPipelineImplVk::GraphicsPipelineImplVk(GraphicsContext context) : m_context(context),
-	m_pipeCache(VK_NULL_HANDLE), m_parent(NULL) {}
+GraphicsPipelineImplVk::GraphicsPipelineImplVk(GraphicsContext context) : _context(context),
+	_pipeCache(VK_NULL_HANDLE), _parent(NULL) {}
 
-bool GraphicsPipelineImplVk::init(const GraphicsPipelineCreateParam& desc, impl::ParentableGraphicsPipeline_ *parent)
+bool GraphicsPipelineImplVk::init(const GraphicsPipelineCreateParam& desc, const ParentableGraphicsPipeline& parent)
 {
-	m_pipeInfo = desc;
-	m_pipeInfo.pipelineLayout =
+	_createParam = desc;
+	_createParam.pipelineLayout =
 	  (desc.pipelineLayout.isValid() ? desc.pipelineLayout :
-	   (parent ? parent->getPipelineLayout() : PipelineLayout()));
+	   (parent.isValid() ? parent->getPipelineLayout() : PipelineLayout()));
 
 	if (!getPipelineLayout().isValid())
 	{
 		assertion(0, "Invalid PipelineLayout");
 		return false;
 	}
-	vulkan::GraphicsPipelineCreateInfoVulkan createInfoFactory(desc, m_context, parent);
-	createInfoFactory.createInfo.flags = (parent ? VK_PIPELINE_CREATE_DERIVATIVE_BIT : 0);
+	vulkan::GraphicsPipelineCreateInfoVulkan createInfoFactory(desc, _context, parent);
+	createInfoFactory.createInfo.flags = (parent.isValid() ? VK_PIPELINE_CREATE_DERIVATIVE_BIT : 0);
 	createInfoFactory.createInfo.flags |= VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
 
-	return pvr::vkIsSuccessful(vk::CreateGraphicsPipelines(pvr::api::native_cast(*m_context).getDevice(),
-	                           VK_NULL_HANDLE, 1, &createInfoFactory.createInfo,
-	                           NULL, &handle), "Create GraphicsPipeline");
+	return nativeVk::vkIsSuccessful(vk::CreateGraphicsPipelines(pvr::api::native_cast(*_context).getDevice(),
+	                                VK_NULL_HANDLE, 1, &createInfoFactory.createInfo,
+	                                NULL, &handle), "Create GraphicsPipeline");
 }
 
 const VertexInputBindingInfo* GraphicsPipelineImplVk::getInputBindingInfo(uint16) const
@@ -49,20 +47,20 @@ const VertexAttributeInfoWithBinding* GraphicsPipelineImplVk::getAttributesInfo(
 
 void GraphicsPipelineImplVk::destroy()
 {
-	if (m_context.isValid() && handle)
+	if (_context.isValid() && handle)
 	{
-		vk::DestroyPipeline(pvr::api::native_cast(*m_context).getDevice(), handle, NULL);
+		vk::DestroyPipeline(pvr::api::native_cast(*_context).getDevice(), handle, NULL);
 		handle = VK_NULL_HANDLE;
 	}
-	if (m_pipeCache != VK_NULL_HANDLE)
+	if (_pipeCache.handle != VK_NULL_HANDLE)
 	{
-		vk::DestroyPipelineCache(pvr::api::native_cast(*m_context).getDevice(), m_pipeCache, NULL);
-		m_pipeCache = VK_NULL_HANDLE;
+		vk::DestroyPipelineCache(pvr::api::native_cast(*_context).getDevice(), _pipeCache, NULL);
+		_pipeCache = VK_NULL_HANDLE;
 	}
-	m_parent = 0;
+	_parent = 0;
 }
 
-void GraphicsPipelineImplVk::getUniformLocation(const char8**, uint32 , int32*) const
+void GraphicsPipelineImplVk::getUniformLocation(const char8**, uint32, int32*) const
 {
 	assertion(false, "VULKAN DOES NOT SUPPORT SHADER REFLECTION");
 }
@@ -79,7 +77,7 @@ int32 GraphicsPipelineImplVk::getAttributeLocation(const char8*) const
 	return -1;
 }
 
-void GraphicsPipelineImplVk::getAttributeLocation(const char8**, uint32 , int32*) const
+void GraphicsPipelineImplVk::getAttributeLocation(const char8**, uint32, int32*) const
 {
 	assertion(false, "VULKAN DOES NOT SUPPORT SHADER REFLECTION");
 }
@@ -90,21 +88,15 @@ uint8 GraphicsPipelineImplVk::getNumAttributes(uint16) const
 	return 0;
 }
 
-const PipelineLayout& GraphicsPipelineImplVk::getPipelineLayout() const { return m_pipeInfo.pipelineLayout; }
+const PipelineLayout& GraphicsPipelineImplVk::getPipelineLayout() const { return _createParam.pipelineLayout; }
 
-const native::HPipeline_& GraphicsPipelineImplVk::getNativeObject() const { return *this; }
-
-native::HPipeline_& GraphicsPipelineImplVk::getNativeObject() { return *this; }
-
-void GraphicsPipelineImplVk::bind() {}
-
-const GraphicsPipelineCreateParam& GraphicsPipelineImplVk::getCreateParam() const { return m_pipeInfo; }
+const GraphicsPipelineCreateParam& GraphicsPipelineImplVk::getCreateParam() const { return _createParam; }
 
 ParentableGraphicsPipelineImplVk::ParentableGraphicsPipelineImplVk(GraphicsContext context) : GraphicsPipelineImplVk(context) {}
 
-bool ParentableGraphicsPipelineImplVk::init(const GraphicsPipelineCreateParam& desc)
+bool ParentableGraphicsPipelineImplVk::init(const GraphicsPipelineCreateParam& desc, const api::ParentableGraphicsPipeline& parent)
 {
-	m_pipeInfo = desc;
+	_createParam = desc;
 	if (!desc.pipelineLayout.isValid())
 	{
 		assertion(false, "Invalid PipelineLayout");
@@ -112,17 +104,17 @@ bool ParentableGraphicsPipelineImplVk::init(const GraphicsPipelineCreateParam& d
 	}
 	VkPipelineCacheCreateInfo cacheCreateInfo{};
 	cacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
-	if (vk::CreatePipelineCache(pvr::api::native_cast(m_context)->getDevice(), &cacheCreateInfo,
-	                            NULL, &m_pipeCache.handle) != VK_SUCCESS)
+	if (vk::CreatePipelineCache(pvr::api::native_cast(_context)->getDevice(), &cacheCreateInfo,
+	                            NULL, &_pipeCache.handle) != VK_SUCCESS)
 	{
 		Log("Failed to create Pipeline Cache");
 		return false;
 	}
-	vulkan::GraphicsPipelineCreateInfoVulkan createInfoFactory(desc, m_context, NULL);
-	createInfoFactory.createInfo.flags = VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT;
+	vulkan::GraphicsPipelineCreateInfoVulkan createInfoFactory(desc, _context, parent);
+	createInfoFactory.createInfo.flags = VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT | (parent.isValid() ? VK_PIPELINE_CREATE_DERIVATIVE_BIT : 0);
 
-	return pvr::vkIsSuccessful(vk::CreateGraphicsPipelines(pvr::api::native_cast(m_context)->getDevice(),
-	                           m_pipeCache, 1, &createInfoFactory.createInfo, NULL, &handle), "Create Parentable GraphicsPipeline");
+	return nativeVk::vkIsSuccessful(vk::CreateGraphicsPipelines(pvr::api::native_cast(_context)->getDevice(),
+	                                _pipeCache, 1, &createInfoFactory.createInfo, NULL, &handle), "Create Parentable GraphicsPipeline");
 }
 
 
@@ -130,4 +122,3 @@ bool ParentableGraphicsPipelineImplVk::init(const GraphicsPipelineCreateParam& d
 }
 }
 }
-//!\endcond

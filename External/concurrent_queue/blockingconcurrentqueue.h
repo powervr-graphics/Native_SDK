@@ -22,6 +22,10 @@
 #include <type_traits>
 #include <memory>
 
+#ifdef __QNXNTO__
+#include <semaphore.h>
+#endif
+
 #if defined(_WIN32)
 // Avoid including windows.h in a header; we only need a handful of
 // items, so we'll redeclare them here (this is relatively safe since
@@ -141,7 +145,7 @@ public:
 		}
 	}
 };
-#elif defined(__unix__)
+#elif defined(__unix__) || defined(__QNXNTO__)
 //---------------------------------------------------------
 // Semaphore (POSIX, Linux)
 //---------------------------------------------------------

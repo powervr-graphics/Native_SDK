@@ -1,12 +1,12 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\OS\Windows\ShellOS.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains an implementation of pvr::platform::ShellOS for Microsoft Windows systems.
-***********************************************************************************************************************/
+/*!
+\brief Contains an implementation of pvr::platform::ShellOS for Microsoft Windows systems.
+\file PVRShell/OS/Windows/ShellOS.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
-#include "PVRCore/FilePath.h"
+#include "PVRCore/IO/FilePath.h"
 #include "PVRCore/Log.h"
 #include "PVRShell/OS/Windows/WindowsOSData.h"
 #include <WindowsX.h>
@@ -28,42 +28,42 @@ struct InternalOS
 };
 
 // Setup the capabilities.
-const ShellOS::Capabilities ShellOS::m_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
+const ShellOS::Capabilities ShellOS::_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
 
-ShellOS::ShellOS(OSApplication hInstance, OSDATA osdata) : m_instance(hInstance), m_shell(0)
+ShellOS::ShellOS(OSApplication hInstance, OSDATA osdata) : _instance(hInstance), _shell(0)
 {
-	m_OSImplementation = new InternalOS;
+	_OSImplementation = new InternalOS;
 
 	if (osdata)
 	{
-		m_OSImplementation->osdata = new WindowsOSData;
+		_OSImplementation->osdata = new WindowsOSData;
 
-		if (m_OSImplementation->osdata)
+		if (_OSImplementation->osdata)
 		{
-			memcpy(m_OSImplementation->osdata, osdata, sizeof(WindowsOSData));
+			memcpy(_OSImplementation->osdata, osdata, sizeof(WindowsOSData));
 		}
 	}
 	else
 	{
-		m_OSImplementation->osdata = 0;
+		_OSImplementation->osdata = 0;
 	}
 }
 
 ShellOS::~ShellOS()
 {
-	if (m_OSImplementation)
+	if (_OSImplementation)
 	{
-		delete m_OSImplementation->osdata;
-		delete m_OSImplementation;
+		delete _OSImplementation->osdata;
+		delete _OSImplementation;
 	}
 }
 
 void ShellOS::updatePointingDeviceLocation()
 {
 	POINT point;
-	if (GetCursorPos(&point) && ScreenToClient(m_OSImplementation->hWnd, &point))
+	if (GetCursorPos(&point) && ScreenToClient(_OSImplementation->hWnd, &point))
 	{
-		m_shell->updatePointerPosition(PointerLocation((int16)point.x, (int16)point.y));
+		_shell->updatePointerPosition(PointerLocation((int16)point.x, (int16)point.y));
 	}
 }
 
@@ -210,17 +210,17 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
 Result ShellOS::init(DisplayAttributes& /*data*/)
 {
-	if (!m_OSImplementation)
+	if (!_OSImplementation)
 	{
 		return Result::UnknownError;
 	}
 
 	// Register our class.
-	MyRegisterClass(static_cast<HINSTANCE>(m_instance));
+	MyRegisterClass(static_cast<HINSTANCE>(_instance));
 
 	// Construct our read and write path.
 	{
-		tchar moduleFilename[MAX_PATH] = "";
+		char8 moduleFilename[MAX_PATH] = "";
 
 		if (GetModuleFileName(NULL, moduleFilename, sizeof(moduleFilename) - 1) == 0)
 		{
@@ -229,11 +229,11 @@ Result ShellOS::init(DisplayAttributes& /*data*/)
 
 		FilePath filepath(moduleFilename);
 		setApplicationName(filepath.getFilenameNoExtension());
-		m_WritePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
-		m_ReadPaths.clear();
-		m_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
-		m_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
-		m_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
+		_WritePath = filepath.getDirectory() + FilePath::getDirectorySeparator();
+		_ReadPaths.clear();
+		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
+		_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
+		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
 	}
 
 	return Result::Success;
@@ -274,7 +274,7 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 		data.height = sMInfo.rcMonitor.bottom - sMInfo.rcMonitor.top;
 
 		hWnd = CreateWindow(WINDOW_CLASS, data.windowTitle.c_str(), WS_VISIBLE | WS_SYSMENU, CW_USEDEFAULT, CW_USEDEFAULT, data.width,
-		                    data.height, NULL, NULL, static_cast<HINSTANCE>(m_instance), this->m_shell.get());
+		                    data.height, NULL, NULL, static_cast<HINSTANCE>(_instance), this->_shell.get());
 
 		SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) & ~WS_CAPTION);
 		SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
@@ -312,7 +312,7 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 		}
 
 		hWnd = CreateWindow(WINDOW_CLASS, data.windowTitle.c_str(), WS_VISIBLE | WS_CAPTION | WS_SYSMENU, x, y,
-		                    winRect.right - winRect.left, winRect.bottom - winRect.top, NULL, NULL, static_cast<HINSTANCE>(m_instance), this->m_shell.get());
+		                    winRect.right - winRect.left, winRect.bottom - winRect.top, NULL, NULL, static_cast<HINSTANCE>(_instance), this->_shell.get());
 	}
 
 	if (!hWnd)
@@ -320,40 +320,40 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 		return Result::UnknownError;
 	}
 
-	ShowWindow(hWnd, static_cast<WindowsOSData*>(m_OSImplementation->osdata)->cmdShow);
+	ShowWindow(hWnd, static_cast<WindowsOSData*>(_OSImplementation->osdata)->cmdShow);
 	UpdateWindow(hWnd);
 	SetForegroundWindow(hWnd);
 
-	m_OSImplementation->hWnd = hWnd;
-	m_OSImplementation->hDC = GetDC(hWnd);
+	_OSImplementation->hWnd = hWnd;
+	_OSImplementation->hDC = GetDC(hWnd);
 
 	return Result::Success;
 }
 
 void ShellOS::releaseWindow()
 {
-	if (m_OSImplementation)
+	if (_OSImplementation)
 	{
-		ReleaseDC(m_OSImplementation->hWnd, m_OSImplementation->hDC);
-		DestroyWindow(m_OSImplementation->hWnd);
-		m_OSImplementation->hWnd = 0;
-		m_OSImplementation->hDC = 0;
+		ReleaseDC(_OSImplementation->hWnd, _OSImplementation->hDC);
+		DestroyWindow(_OSImplementation->hWnd);
+		_OSImplementation->hWnd = 0;
+		_OSImplementation->hDC = 0;
 	}
 }
 
 OSApplication ShellOS::getApplication() const
 {
-	return m_instance;
+	return _instance;
 }
 
 OSDisplay ShellOS::getDisplay() const
 {
-	return m_OSImplementation->hDC;
+	return _OSImplementation->hDC;
 }
 
 OSWindow ShellOS::getWindow() const
 {
-	return m_OSImplementation->hWnd;
+	return _OSImplementation->hWnd;
 }
 
 Result ShellOS::handleOSEvents()
@@ -361,7 +361,7 @@ Result ShellOS::handleOSEvents()
 	MSG	msg;
 
 	// Process the message queue.
-	while (PeekMessage(&msg, m_OSImplementation->hWnd, 0, 0, PM_REMOVE))
+	while (PeekMessage(&msg, _OSImplementation->hWnd, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
@@ -372,10 +372,10 @@ Result ShellOS::handleOSEvents()
 
 bool ShellOS::isInitialized()
 {
-	return m_OSImplementation && m_OSImplementation->hDC;
+	return _OSImplementation && _OSImplementation->hDC;
 }
 
-Result ShellOS::popUpMessage(const tchar* const title, const tchar* const message, ...) const
+Result ShellOS::popUpMessage(const char8* const title, const char8* const message, ...) const
 {
 	if (!title && !message)
 	{
@@ -383,7 +383,7 @@ Result ShellOS::popUpMessage(const tchar* const title, const tchar* const messag
 	}
 
 	va_list arg;
-	tchar buf[1024];
+	char8 buf[1024];
 	memset(buf, 0, sizeof(buf));
 
 	va_start(arg, message);

@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\EntryPoint\WinMain\main.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Application entry point for Microsoft Windows systems.
-***********************************************************************************************************************/
+/*!
+\brief Application entry point for Microsoft Windows systems.
+\file PVRShell/EntryPoint/WinMain/main.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -11,7 +11,7 @@
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRShell/StateMachine.h"
 #include "PVRShell/CommandLine.h"
-#include "PVRCore/IPlatformContext.h"
+#include "PVRCore/Interfaces/IPlatformContext.h"
 #include "PVRShell/OS/Windows/WindowsOSData.h"
 #include <windows.h>
 #include <io.h>

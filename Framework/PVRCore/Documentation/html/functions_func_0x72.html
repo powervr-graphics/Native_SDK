@@ -102,7 +102,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(11)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -120,6 +120,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="classpvr_1_1_buffer_stream.html#a24a5987c72c611a4df41f55b2f7c95d3">pvr::BufferStream</a>
 , <a class="el" href="classpvr_1_1_stream.html#ae908ddd0986519e6db033693eb92440c">pvr::Stream</a>
 , <a class="el" href="classpvr_1_1_file_stream.html#add704babeffafbb5099999c5e3ea902c">pvr::FileStream</a>
+</li>
+<li>readAsset()
+: <a class="el" href="classpvr_1_1_asset_reader.html#a02c5f35303d7944d8e499877717a0f15">pvr::AssetReader&lt; AssetType &gt;</a>
 </li>
 <li>readChars()
 : <a class="el" href="classpvr_1_1_stream.html#a9290b6c6fc81f6a094bb4947ba5dc388">pvr::Stream</a>
@@ -139,9 +142,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Rectangle()
 : <a class="el" href="structpvr_1_1_rectangle.html#a1b26208f9e68ec1d7212f239624e5ecd">pvr::Rectangle&lt; TYPE &gt;</a>
 </li>
-<li>Register()
-: <a class="el" href="classpvr_1_1_file_wrap_stream_1_1_register.html#a5f4ae06dc0d63e14bb2eee9e963c06c0">pvr::FileWrapStream::Register</a>
-</li>
 <li>release()
 : <a class="el" href="classpvr_1_1_i_graphics_context.html#a0aefda4d41bc635950993e85dee5f984">pvr::IGraphicsContext</a>
 , <a class="el" href="classpvr_1_1_i_platform_context.html#adb774a0b10dc5ee3343b0365af055af4">pvr::IPlatformContext</a>
@@ -149,21 +149,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>relocate()
 : <a class="el" href="classpvr_1_1_indexed_array.html#a92da13fb7957ca214b6d3fec340a51da">pvr::IndexedArray&lt; ValueType_, IndexType_ &gt;</a>
 </li>
-<li>remove()
-: <a class="el" href="classpvr_1_1math_1_1_axis_aligned_box.html#a40c5d54f3983000c517943dab8034a3d">pvr::math::AxisAlignedBox</a>
-</li>
 <li>reserve()
-: <a class="el" href="classpvr_1_1_list_of_interfaces.html#ab80933d42b248bfb7beaad9c3b38b1ac">pvr::ListOfInterfaces&lt; Interface_ &gt;</a>
-, <a class="el" href="classpvr_1_1_ring_buffer.html#a4d6cd53be4aceff1e67baab6834a1e20">pvr::RingBuffer&lt; typename &gt;</a>
-</li>
-<li>reserveUntyped()
-: <a class="el" href="classpvr_1_1_list_of_interfaces.html#a4465b2058b0cf3a3798d0d728760eaea">pvr::ListOfInterfaces&lt; Interface_ &gt;</a>
+: <a class="el" href="classpvr_1_1_ring_buffer.html#a4d6cd53be4aceff1e67baab6834a1e20">pvr::RingBuffer&lt; typename &gt;</a>
 </li>
 <li>Reset()
 : <a class="el" href="classpvr_1_1_time.html#ac5dd3442e902fba866670af2cb654d66">pvr::Time</a>
 </li>
-<li>reset()
-: <a class="el" href="classpvr_1_1_locked_queue.html#a8bbac04ac31fadabeb7de8b934073c0f">pvr::LockedQueue&lt; T &gt;</a>
+<li>retrieveDescriptor()
+: <a class="el" href="classpvr_1_1types_1_1_descriptor_update_binding_store.html#aa43746ec4067c132dc0d9dd190ee96b9">pvr::types::DescriptorUpdateBindingStore&lt; _BindingType &gt;</a>
+, <a class="el" href="classpvr_1_1types_1_1_descriptor_layout_binding_store.html#a5a8bb193ee2c2013f1669ea029d83da9">pvr::types::DescriptorLayoutBindingStore</a>
+, <a class="el" href="classpvr_1_1types_1_1_descriptor_update_binding_store.html#abdbf30f8a6cdd1b8aa35757e66cf9ee2">pvr::types::DescriptorUpdateBindingStore&lt; _BindingType &gt;</a>
+, <a class="el" href="classpvr_1_1types_1_1_descriptor_layout_binding_store.html#ae731b784100adb8153f1522c2d7fc886">pvr::types::DescriptorLayoutBindingStore</a>
+</li>
+<li>retrieveDescriptorByIndex()
+: <a class="el" href="classpvr_1_1types_1_1_descriptor_binding_store.html#afa2b0bbea9eaef8f2043c8ba2544b0df">pvr::types::DescriptorBindingStore&lt; DescriptorTypeBinding &gt;</a>
+</li>
+<li>retrieveDescriptorIndex()
+: <a class="el" href="classpvr_1_1types_1_1_descriptor_update_binding_store.html#af0d4220468bc607ece977e25dd18a43e">pvr::types::DescriptorUpdateBindingStore&lt; _BindingType &gt;</a>
+, <a class="el" href="classpvr_1_1types_1_1_descriptor_layout_binding_store.html#a39f3c05daa804df5fa8a2fb852ddf8fe">pvr::types::DescriptorLayoutBindingStore</a>
 </li>
 <li>RingBuffer()
 : <a class="el" href="classpvr_1_1_ring_buffer.html#af4fabe8610fd07b7b149204da9c19e36">pvr::RingBuffer&lt; typename &gt;</a>

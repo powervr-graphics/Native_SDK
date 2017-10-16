@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/FileIO/PODDefines.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains Enumerations and Defines necessary to read POD model files.
-***********************************************************************************************************************/
+/*!
+\brief Contains Enumerations and Defines necessary to read POD model files.
+\file PVRAssets/FileIO/PODDefines.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRCore/CoreIncludes.h"
 
@@ -20,9 +20,7 @@ namespace pod {
 	};
 static const char8* const c_PODFormatVersion = "AB.POD.2.0";
 
-/*!****************************************************************************
- \brief        Enum for the identifiers in the pod blocks.
-******************************************************************************/
+/// <summary>Enum for the identifiers in the pod blocks.</summary>
 enum PODIdentifiers
 {
 	PODFormatVersion	= 1000,

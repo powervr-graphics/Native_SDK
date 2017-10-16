@@ -1,19 +1,17 @@
+/*!
+\brief The StateMachine controlling the PowerVR Shell.
+\file PVRShell/StateMachine.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
-/*!*********************************************************************************************************************
-\file         PVRShell\StateMachine.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  The StateMachine controlling the PowerVR Shell.
-***********************************************************************************************************************/
-#include "PVRShell/ShellData.h"
 #include "PVRShell/OS/ShellOS.h"
 namespace pvr {
 namespace platform {
 class Shell;
 
-/*!****************************************************************************************************************
-\brief The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks.
-*******************************************************************************************************************/
+/// <summary>The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks.
+/// </summary>
 class StateMachine : public ShellOS
 {
 public:
@@ -34,62 +32,45 @@ public:
 	};
 
 public:
-	/*!****************************************************************************************************************
-	\brief Constructor. Called by the application's entry point (main).
-	*******************************************************************************************************************/
+	/// <summary>Constructor. Called by the application's entry point (main).</summary>
 	StateMachine(OSApplication instance, platform::CommandLineParser& commandLine, OSDATA osdata);
 
-	/*!****************************************************************************************************************
-	\brief Called by the application's entry point (main).
-	*******************************************************************************************************************/
+	/// <summary>Called by the application's entry point (main).</summary>
 	Result init();
 
-	/*!****************************************************************************************************************
-	\brief Called by the application's entry point (main).
-	*******************************************************************************************************************/
+	/// <summary>Called by the application's entry point (main).</summary>
 	Result execute();
 
-	/*!****************************************************************************************************************
-	\brief Called internally by the state machine.
-	*******************************************************************************************************************/
+	/// <summary>Called internally by the state machine.</summary>
 	Result executeOnce();
 
-	/*!****************************************************************************************************************
-	\brief Called internally by the state machine.
-	*******************************************************************************************************************/
+	/// <summary>Called internally by the state machine.</summary>
 	Result executeOnce(const State state);
 
-	/*!****************************************************************************************************************
-	\brief Called internally by the state machine.
-	*******************************************************************************************************************/
+	/// <summary>Called internally by the state machine.</summary>
 	Result executeUpTo(const State state);
 
-	/*!****************************************************************************************************************
-	\return The current state of the StateMachine.
-	*******************************************************************************************************************/
-	State getState() const { return m_currentState; }
+	/// <summary>Get the current state of the StateMachine.</summary>
+	/// <returns>The current state of the StateMachine.</returns>
+	State getState() const { return _currentState; }
 
-	/*!****************************************************************************************************************
-	\return True if the StateMachine is paused.
-	*******************************************************************************************************************/
-	bool isPaused() const { return m_pause; }
+	/// <summary>Check if the StateMachine is paused.</summary>
+	/// <returns>True if the StateMachine is paused.</returns>
+	bool isPaused() const { return _pause; }
 
-	/*!****************************************************************************************************************
-	\brief Pauses the state machine.
-	*******************************************************************************************************************/
-	void pause() { m_pause = true; }
+	/// <summary>Pauses the state machine.</summary>
+	void pause() { _pause = true; }
 
-	/*!****************************************************************************************************************
-	\brief Resumes (exits pause state for) the state machine.
-	*******************************************************************************************************************/
-	void resume() { m_pause = false; }
+	/// <summary>Resumes (exits pause state for) the state machine.</summary>
+	void resume() { _pause = false; }
 
-	State getCurrentState()const { return m_currentState; }
+	State getCurrentState()const { return _currentState; }
 private:
 	void applyCommandLine();
+	void readApiFromCommandLine();
 
-	State m_currentState;
-	bool m_pause;
+	State _currentState;
+	bool _pause;
 };
 }
 }

@@ -1,17 +1,17 @@
-/*!*********************************************************************************************************************
-\file         PVRCore\Android\AndroidAssetStream.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementation file for the AndroidAssetStream.
-***********************************************************************************************************************/
+/*!
+\brief Implementation file for the AndroidAssetStream.
+\file PVRCore/Android/AndroidAssetStream.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRCore/Android/AndroidAssetStream.h"
 #include <android/asset_manager.h>
 
 namespace pvr {
 AndroidAssetStream::AndroidAssetStream(AAssetManager* const assetManager, const std::string& filename)
-	: Stream(filename), m_assetManager(assetManager), m_asset(NULL)
+	: Stream(filename), assetManager(assetManager), _asset(NULL)
 {
-	m_isReadable = true;
+	_isReadable = true;
 }
 
 AndroidAssetStream::~AndroidAssetStream()
@@ -21,9 +21,9 @@ AndroidAssetStream::~AndroidAssetStream()
 
 bool AndroidAssetStream::read(size_t size, size_t count, void* outData, size_t& outElementsRead) const
 {
-	if (m_asset)
+	if (_asset)
 	{
-		int dataRead = (size_t)AAsset_read(m_asset, outData, size * count);
+		int dataRead = (size_t)AAsset_read(_asset, outData, size * count);
 
 		if (dataRead == 0)
 		{
@@ -50,9 +50,9 @@ bool AndroidAssetStream::write(size_t size, size_t count, const void* data, size
 
 bool AndroidAssetStream::seek(long offset, SeekOrigin origin) const
 {
-	if (m_asset)
+	if (_asset)
 	{
-		off_t newPos = AAsset_seek(m_asset, offset, (int)origin);
+		off_t newPos = AAsset_seek(_asset, offset, (int)origin);
 
 		if (newPos == (off_t) - 1)
 		{
@@ -67,10 +67,10 @@ bool AndroidAssetStream::seek(long offset, SeekOrigin origin) const
 
 bool AndroidAssetStream::open() const
 {
-	if (m_asset == NULL)
+	if (_asset == NULL)
 	{
-		m_asset = AAssetManager_open(m_assetManager, m_fileName.c_str(), AASSET_MODE_RANDOM);
-		return !!m_asset;
+		_asset = AAssetManager_open(assetManager, _fileName.c_str(), AASSET_MODE_RANDOM);
+		return !!_asset;
 	}
 	else
 	{
@@ -80,23 +80,23 @@ bool AndroidAssetStream::open() const
 
 void AndroidAssetStream::close()
 {
-	if (m_asset)
+	if (_asset)
 	{
-		AAsset_close(m_asset);
-		m_asset = NULL;
+		AAsset_close(_asset);
+		_asset = NULL;
 	}
 }
 
 bool AndroidAssetStream::isopen() const
 {
-	return m_asset != NULL;
+	return _asset != NULL;
 }
 
 size_t	AndroidAssetStream::getPosition() const
 {
-	if (m_asset)
+	if (_asset)
 	{
-		return static_cast<pvr::uint64>(AAsset_getLength(m_asset) - AAsset_getRemainingLength(m_asset));
+		return static_cast<pvr::uint64>(AAsset_getLength(_asset) - AAsset_getRemainingLength(_asset));
 	}
 
 	return 0;
@@ -104,9 +104,9 @@ size_t	AndroidAssetStream::getPosition() const
 
 size_t AndroidAssetStream::getSize() const
 {
-	if (m_asset)
+	if (_asset)
 	{
-		return static_cast<size_t>(AAsset_getLength(m_asset));
+		return static_cast<size_t>(AAsset_getLength(_asset));
 	}
 	return 0;
 }

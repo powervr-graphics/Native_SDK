@@ -8,10 +8,10 @@ layout (set = 1, binding = 0) uniform BloomConfig
 	mediump float sBlurTexFactor;
 };
 
-layout (location = 0) in mediump vec2 TexCoord;
+in mediump vec2 vTexCoord;
 layout (location = 0) out mediump vec4 oColor;
 
 void main()
 {
-	oColor = (texture(sTexture, TexCoord) * sTexFactor) + (texture(sBlurTexture, TexCoord) * sBlurTexFactor);
+	oColor = (texture(sTexture, vTexCoord) * sTexFactor) + (texture(sBlurTexture, vTexCoord) * sBlurTexFactor);
 }

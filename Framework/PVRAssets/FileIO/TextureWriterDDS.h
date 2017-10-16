@@ -1,25 +1,21 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/FileIO/TextureWriterDDS.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         An experimental Writer that writes pvr::asset::Texture objects into a DDS file.
-***********************************************************************************************************************/
+/*!
+\brief An experimental Writer that writes pvr::asset::Texture objects into a DDS file.
+\file PVRAssets/FileIO/TextureWriterDDS.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
-#include "PVRAssets/Texture/Texture.h"
-#include "PVRAssets/AssetWriter.h"
-#include "PVRAssets/FileIO/FileDefinesDDS.h"
+#include "PVRCore/Texture.h"
+#include "PVRCore/IO/AssetWriter.h"
+#include "PVRCore/Texture/FileDefinesDDS.h"
 
 namespace pvr {
 namespace assets {
-/*!*********************************************************************************************************************
-\brief Contains experimental serialization classes whose purpose is to write PVRAssets classes (Texture, Model, Effect etc.)
-into specified storage/data formats (DDS, pvr, pfx etc.)
-***********************************************************************************************************************/
+/// <summary>Contains experimental serialization classes whose purpose is to write PVRAssets classes (Texture, Model,
+/// Effect etc.) into specified storage/data formats (DDS, pvr, pfx etc.)</summary>
 namespace assetWriters {
-/*!*********************************************************************************************************************
-\brief Experimental DDS Texture writer. For demostration purposes.
-***********************************************************************************************************************/
+/// <summary>Experimental DDS Texture writer. For demostration purposes.</summary>
 class TextureWriterDDS : public AssetWriter < Texture >
 {
 public:

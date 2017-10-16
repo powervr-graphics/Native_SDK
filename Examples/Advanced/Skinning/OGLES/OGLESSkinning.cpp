@@ -6,8 +6,7 @@
 ***********************************************************************************************************************/
 #include "PVRApi/PVRApi.h"
 #include "PVRShell/PVRShell.h"
-#include "PVRUIRenderer/UIRenderer.h"
-#include "PVRApi/RenderManager.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 
 using namespace pvr::types;
 // shader uniforms
@@ -32,7 +31,7 @@ class OGLESSkinning : public pvr::Shell
 		// Print3D class used to display text
 		pvr::ui::UIRenderer uiRenderer;
 
-		pvr::api::AssetStore assetManager;
+		pvr::utils::AssetStore assetManager;
 
 		pvr::GraphicsContext context;
 		pvr::api::CommandBuffer commandBuffer;
@@ -134,13 +133,13 @@ pvr::Result OGLESSkinning::initView()
 	apiObj->context = getGraphicsContext();
 	apiObj->commandBuffer = apiObj->context->createCommandBufferOnDefaultPool();
 
-	pvr::assets::pfx::PfxParser rd(Configuration::EffectFile, this);
+        pvr::assets::pfx::PfxParser rd(Configuration::EffectFile, this);
 	pvr::utils::RenderManager& mgr = apiObj->mgr;
 	mgr.addEffect(*rd.getAssetHandle(), getGraphicsContext(), apiObj->assetManager);
 	mgr.addModelForAllPasses(scene);
 	mgr.buildRenderObjects();
 
-	for (auto& pipe : mgr.toSubpass(0, 0, 0).pipelines)
+	for (auto& pipe : mgr.toSubpassGroup(0, 0, 0,0).pipelines)
 	{
 		pipe.createAutomaticModelSemantics();
 	}
@@ -193,9 +192,17 @@ pvr::Result OGLESSkinning::renderFrame()
 	}
 	// Set the scene animation to the current frame
 
-	apiObj->mgr.toSubpassModel(0, 0, 0, 0).updateFrame(currentFrame);
+	apiObj->mgr.toSubpassGroupModel(0,0, 0, 0, 0).updateFrame(currentFrame);
 
-	apiObj->mgr.updateAutomaticSemantics(getSwapChainIndex());
+	//Get a new worldview camera and light position
+	apiObj->mgr.toPipeline(0, 0, 0, 0, 0).updateAutomaticModelSemantics(0);
+	apiObj->mgr.toPipeline(0, 0, 0,0, 1).updateAutomaticModelSemantics(0);
+
+	// Update all node-specific matrices (Worldview, bone array etc).
+
+	// Should be called before updating anything to optimise map/unmap. Suggest call once per frame.
+
+	for (auto& rendernode : apiObj->mgr.renderables()) { rendernode.updateAutomaticSemantics(0); }
 
 	//Update all the bones matrices
 	apiObj->commandBuffer->submit();

@@ -7,7 +7,7 @@
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 #include "PVRCamera/PVRCamera.h"
 
 #if defined(__ANDROID__)
@@ -42,7 +42,7 @@ class OGLESIntroducingPVRCamera : public Shell
 	ui::UIRenderer uiRenderer;
 
 	// Camera interface
-	CameraInterface m_Camera;
+	CameraInterface camera;
 public:
 	virtual Result initApplication();
 	virtual Result initView();
@@ -84,34 +84,32 @@ void OGLESIntroducingPVRCamera::createBuffers()
 ***********************************************************************************************************************/
 bool OGLESIntroducingPVRCamera::createPipelineAndDescriptors()
 {
-	if (!m_Camera.initializeSession(HWCamera::Front, getWidth(), getHeight())) { return false; }
+	if (!camera.initializeSession(HWCamera::Front, getWidth(), getHeight())) { return false; }
 	pvr::api::DescriptorSetLayoutCreateParam descriptorLayoutDesc;
 
-	pvr::assets::SamplerCreateParam desc;
-	desc.magnificationFilter = pvr::types::SamplerFilter::Nearest;
-	desc.minificationFilter = pvr::types::SamplerFilter::Nearest;
-	desc.mipMappingFilter = pvr::types::SamplerFilter::None;
-	sampler = getGraphicsContext()->createSampler(desc);
-	if (m_Camera.hasRgbTexture())
+	auto context = getGraphicsContext();
+
+	sampler = getSamplerForCameraTexture(context);
+	if (camera.hasRgbTexture())
 	{
 		descriptorLayoutDesc.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
-		descriptorLayout = getGraphicsContext()->createDescriptorSetLayout(descriptorLayoutDesc);
+		descriptorLayout = context->createDescriptorSetLayout(descriptorLayoutDesc);
 		pvr::api::DescriptorSetUpdate descSetCreateParam;
-		descSetCreateParam.setCombinedImageSampler(0, getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getRgbTexture()), sampler);
-		descriptorSet = getGraphicsContext()->createDescriptorSetOnDefaultPool(descriptorLayout);
+		descSetCreateParam.setCombinedImageSampler(0, getTextureFromPVRCameraHandle(context, camera.getRgbTexture()), sampler);
+		descriptorSet = context->createDescriptorSetOnDefaultPool(descriptorLayout);
 		descriptorSet->update(descSetCreateParam);
 	}
-	else if (m_Camera.hasLumaChromaTextures()) // use the chrominance and luminance
+	else if (camera.hasLumaChromaTextures()) // use the chrominance and luminance
 	{
 		descriptorLayoutDesc.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment)
 		.setBinding(1, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
-		descriptorLayout = getGraphicsContext()->createDescriptorSetLayout(descriptorLayoutDesc);
+		descriptorLayout = context->createDescriptorSetLayout(descriptorLayoutDesc);
 		pvr::api::DescriptorSetUpdate descSetCreateParam;
 
-		descSetCreateParam.setCombinedImageSampler(0, getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getChrominanceTexture()), sampler);
-		descSetCreateParam.setCombinedImageSampler(1, getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getLuminanceTexture()),  sampler);
+		descSetCreateParam.setCombinedImageSampler(0, getTextureFromPVRCameraHandle(context, camera.getChrominanceTexture()), sampler);
+		descSetCreateParam.setCombinedImageSampler(1, getTextureFromPVRCameraHandle(context, camera.getLuminanceTexture()),  sampler);
 
-		descriptorSet = getGraphicsContext()->createDescriptorSetOnDefaultPool(descriptorLayout);
+		descriptorSet = context->createDescriptorSetOnDefaultPool(descriptorLayout);
 		descriptorSet->update(descSetCreateParam);
 	}
 
@@ -129,9 +127,9 @@ bool OGLESIntroducingPVRCamera::createPipelineAndDescriptors()
 		return false;
 	}
 
-	vertexShader = getGraphicsContext()->createShader(*vertexShaderStream, types::ShaderType::VertexShader, ShaderDefines, NumShaderDefines);
-	fragmentShader = getGraphicsContext()->createShader(*fragmentShaderStream, types::ShaderType::FragmentShader, ShaderDefines,
-	                 NumShaderDefines);
+	vertexShader = context->createShader(*vertexShaderStream, types::ShaderType::VertexShader, ShaderDefines, NumShaderDefines);
+	fragmentShader = context->createShader(*fragmentShaderStream, types::ShaderType::FragmentShader, ShaderDefines,
+	                                       NumShaderDefines);
 
 	api::GraphicsPipelineCreateParam pipeParams;
 	pipeParams.vertexShader.setShader(vertexShader);
@@ -142,33 +140,33 @@ bool OGLESIntroducingPVRCamera::createPipelineAndDescriptors()
 	pipeParams.vertexInput.addVertexAttribute(0, api::VertexAttributeInfo(0, types::DataType::Float32, 2, 0, "inVertex"));
 	pipeParams.vertexInput.setInputBinding(0, 0);
 
-	pipeParams.pipelineLayout = getGraphicsContext()->createPipelineLayout(api::PipelineLayoutCreateParam().addDescSetLayout(
+	pipeParams.pipelineLayout = context->createPipelineLayout(api::PipelineLayoutCreateParam().addDescSetLayout(
 	                              descriptorLayout));
 
 	pipeParams.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
-	renderingPipeline = getGraphicsContext()->createGraphicsPipeline(pipeParams);
+	renderingPipeline = context->createGraphicsPipeline(pipeParams);
 	uvTransformLocation = renderingPipeline->getUniformLocation("uvTransform");
 
 	//Create a temporary command buffer to do one-shot initialization
 	{
-		pvr::api::CommandBuffer oneShotCommandBuffer = getGraphicsContext()->createCommandBufferOnDefaultPool();
+		pvr::api::CommandBuffer oneShotCommandBuffer = context->createCommandBufferOnDefaultPool();
 		oneShotCommandBuffer->beginRecording();
 
 		oneShotCommandBuffer->bindPipeline(renderingPipeline);
-		if (m_Camera.hasLumaChromaTextures())
+		if (camera.hasLumaChromaTextures())
 		{
-			oneShotCommandBuffer->setUniform<pvr::int32>(renderingPipeline->getUniformLocation("SamplerY"), 0);
-			oneShotCommandBuffer->setUniform<pvr::int32>(renderingPipeline->getUniformLocation("SamplerUV"), 1);
+			oneShotCommandBuffer->setUniform(renderingPipeline->getUniformLocation("SamplerY"), 0);
+			oneShotCommandBuffer->setUniform(renderingPipeline->getUniformLocation("SamplerUV"), 1);
 		}
-		else if (m_Camera.hasRgbTexture())
+		else if (camera.hasRgbTexture())
 		{
-			oneShotCommandBuffer->setUniform<pvr::int32>(renderingPipeline->getUniformLocation("Sampler"), 0);
+			oneShotCommandBuffer->setUniform(renderingPipeline->getUniformLocation("Sampler"), 0);
 		}
 
 		oneShotCommandBuffer->endRecording();
 		oneShotCommandBuffer->submit();
 	}
-	onScreenFbo = getGraphicsContext()->createOnScreenFbo(0);
+	onScreenFbo = context->createOnScreenFbo(0);
 	return true;
 }
 
@@ -184,7 +182,7 @@ void OGLESIntroducingPVRCamera::recordCommandBuffers()
 
 	commandBuffer->bindDescriptorSet(renderingPipeline->getPipelineLayout(), 0, descriptorSet, 0);
 	commandBuffer->bindPipeline(renderingPipeline);
-	commandBuffer->setUniformPtr<glm::mat4>(uvTransformLocation, 1, &m_Camera.getProjectionMatrix());
+	commandBuffer->setUniformPtr(uvTransformLocation, 1, &camera.getProjectionMatrix());
 	commandBuffer->beginRenderPass(onScreenFbo, Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(.2, .2, .2, 1.));
 	commandBuffer->drawIndexed(0, 6);
 
@@ -242,7 +240,7 @@ Result OGLESIntroducingPVRCamera::initView()
 Result OGLESIntroducingPVRCamera::releaseView()
 {
 	// Clean up AV capture
-	m_Camera.destroySession();
+	camera.destroySession();
 
 	// Release Print3D Textures
 	uiRenderer.release();
@@ -264,11 +262,11 @@ Result OGLESIntroducingPVRCamera::releaseView()
 ***********************************************************************************************************************/
 Result OGLESIntroducingPVRCamera::renderFrame()
 {
-	m_Camera.updateImage();
+	camera.updateImage();
 #if defined(TARGET_OS_IPHONE)
 	static bool firstFrame = true;
-	static pvr::api::TextureView tex0 = getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getLuminanceTexture());
-	static pvr::api::TextureView tex1 = getTextureFromPVRCameraHandle(getGraphicsContext(), m_Camera.getChrominanceTexture());
+	static pvr::api::TextureView tex0 = getTextureFromPVRCameraHandle(getGraphicsContext(), camera.getLuminanceTexture());
+	static pvr::api::TextureView tex1 = getTextureFromPVRCameraHandle(getGraphicsContext(), camera.getChrominanceTexture());
 	if (firstFrame)
 	{
 		pvr::api::DescriptorSetUpdate descSetInfo;

@@ -9,11 +9,10 @@
 /* Begin PBXBuildFile section */
 		1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000F1A5C0 /* libPVRCore.a */; };
 		1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000A55E75 /* libPVRAssets.a */; };
-		1100B16BADC0DE0000C0BB1E /* libPVREgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000C0BB1E /* libPVREgl.a */; };
 		1100B16BADC0DE00BAC5B07E /* libPVRNativeGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE00BAC5B07E /* libPVRNativeGles.a */; };
 		1100B16BADC0DE00FEA51B1E /* libPVRGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE00FEA51B1E /* libPVRGles.a */; };
 		1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0005EAF00D /* libPVRShell.a */; };
-		1100B16BADC0DE0000FACADE /* libPVRUIRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000FACADE /* libPVRUIRenderer.a */; };
+		1100B16BADC0DE0000FACADE /* libPVREngineUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */; };
 		AC2A37F31A0A675B0093C884 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A37F21A0A675B0093C884 /* Cocoa.framework */; };
 		AC2A38491A0A68920093C884 /* libEGL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A38471A0A68920093C884 /* libEGL.dylib */; };
 		AC2A384A1A0A68920093C884 /* libGLESv2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A38481A0A68920093C884 /* libGLESv2.dylib */; };
@@ -96,20 +95,6 @@
 			remoteGlobalIDString = 9900B16BADC0DE0000A55E75;
 			remoteInfo = PVRAssets;
 		};
-		3300B16BADC0DE0000C0BB1E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE0000C0BB1E /* PVREgl.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9800B16BADC0DE0000C0BB1E;
-			remoteInfo = PVREgl;
-		};
-		6600B16BADC0DE0000C0BB1E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE0000C0BB1E /* PVREgl.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9900B16BADC0DE0000C0BB1E;
-			remoteInfo = PVREgl;
-		};
 		3300B16BADC0DE00BAC5B07E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */;
@@ -154,17 +139,17 @@
 		};
 		3300B16BADC0DE0000FACADE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE0000FACADE /* PVRUIRenderer.xcodeproj */;
+			containerPortal = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9800B16BADC0DE0000FACADE;
-			remoteInfo = PVRUIRenderer;
+			remoteInfo = PVREngineUtils;
 		};
 		6600B16BADC0DE0000FACADE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE0000FACADE /* PVRUIRenderer.xcodeproj */;
+			containerPortal = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9900B16BADC0DE0000FACADE;
-			remoteInfo = PVRUIRenderer;
+			remoteInfo = PVREngineUtils;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -185,11 +170,10 @@
 /* Begin PBXFileReference section */
 		4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRCore.xcodeproj; path = ../../../../../../Framework/PVRCore/Build/OSX/PVRCore.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRAssets.xcodeproj; path = ../../../../../../Framework/PVRAssets/Build/OSX/PVRAssets.xcodeproj; sourceTree = "<group>"; };
-		4400B16BADC0DE0000C0BB1E /* PVREgl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVREgl.xcodeproj; path = ../../../../../../Framework/PVRPlatformGlue/EGL/Build/OSX/PVREgl.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRNativeGles.xcodeproj; path = ../../../../../../Framework/PVRNativeApi/OGLES/Build/OSX/PVRNativeGles.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRGles.xcodeproj; path = ../../../../../../Framework/PVRApi/OGLES/Build/OSX/PVRGles.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRShell.xcodeproj; path = ../../../../../../Framework/PVRShell/Build/OSX/PVRShell.xcodeproj; sourceTree = "<group>"; };
-		4400B16BADC0DE0000FACADE /* PVRUIRenderer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRUIRenderer.xcodeproj; path = ../../../../../../Framework/PVRUIRenderer/Build/OSX/PVRUIRenderer.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVREngineUtils.xcodeproj; path = ../../../../../../Framework/PVREngineUtils/Build/OSX/PVREngineUtils.xcodeproj; sourceTree = "<group>"; };
 		AC2A37EF1A0A675B0093C884 /* OGLESExampleUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLESExampleUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC2A37F21A0A675B0093C884 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		AC2A37F51A0A675B0093C884 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -253,11 +237,10 @@
 			files = (
 				1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */,
 				1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */,
-				1100B16BADC0DE0000C0BB1E /* libPVREgl.a in Frameworks */,
 				1100B16BADC0DE00BAC5B07E /* libPVRNativeGles.a in Frameworks */,
 				1100B16BADC0DE00FEA51B1E /* libPVRGles.a in Frameworks */,
 				1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */,
-				1100B16BADC0DE0000FACADE /* libPVRUIRenderer.a in Frameworks */,
+				1100B16BADC0DE0000FACADE /* libPVREngineUtils.a in Frameworks */,
 				AC2A37F31A0A675B0093C884 /* Cocoa.framework in Frameworks */,
 				AC2A384A1A0A68920093C884 /* libGLESv2.dylib in Frameworks */,
 				AC2A38491A0A68920093C884 /* libEGL.dylib in Frameworks */,
@@ -279,14 +262,6 @@
 			isa = PBXGroup;
 			children = (
 				2200B16BADC0DE0000A55E75 /* libPVRAssets.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		5500B16BADC0DE0000C0BB1E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2200B16BADC0DE0000C0BB1E /* libPVREgl.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -318,7 +293,7 @@
 		5500B16BADC0DE0000FACADE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2200B16BADC0DE0000FACADE /* libPVRUIRenderer.a */,
+				2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -349,11 +324,10 @@
 			children = (
 				4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */,
 				4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */,
-				4400B16BADC0DE0000C0BB1E /* PVREgl.xcodeproj */,
 				4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */,
 				4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */,
 				4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */,
-				4400B16BADC0DE0000FACADE /* PVRUIRenderer.xcodeproj */,
+				4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */,
 				AC2A37F21A0A675B0093C884 /* Cocoa.framework */,
 				AC2A37F41A0A675B0093C884 /* Other Frameworks */,
 			);
@@ -505,7 +479,6 @@
 			dependencies = (
 				7700B16BADC0DE0000F1A5C0 /* PBXTargetDependency */,
 				7700B16BADC0DE0000A55E75 /* PBXTargetDependency */,
-				7700B16BADC0DE0000C0BB1E /* PBXTargetDependency */,
 				7700B16BADC0DE00BAC5B07E /* PBXTargetDependency */,
 				7700B16BADC0DE00FEA51B1E /* PBXTargetDependency */,
 				7700B16BADC0DE0005EAF00D /* PBXTargetDependency */,
@@ -545,10 +518,6 @@
 					ProjectRef = 4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */;
 				},
 				{
-					ProductGroup = 5500B16BADC0DE0000C0BB1E /* Products */;
-					ProjectRef = 4400B16BADC0DE0000C0BB1E /* PVREgl.xcodeproj */;
-				},
-				{
 					ProductGroup = 5500B16BADC0DE00BAC5B07E /* Products */;
 					ProjectRef = 4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */;
 				},
@@ -562,7 +531,7 @@
 				},
 				{
 					ProductGroup = 5500B16BADC0DE0000FACADE /* Products */;
-					ProjectRef = 4400B16BADC0DE0000FACADE /* PVRUIRenderer.xcodeproj */;
+					ProjectRef = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -587,13 +556,6 @@
 			remoteRef = 3300B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2200B16BADC0DE0000C0BB1E /* libPVREgl.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libPVREgl.a;
-			remoteRef = 3300B16BADC0DE0000C0BB1E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		2200B16BADC0DE00BAC5B07E /* libPVRNativeGles.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -615,10 +577,10 @@
 			remoteRef = 3300B16BADC0DE0005EAF00D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2200B16BADC0DE0000FACADE /* libPVRUIRenderer.a */ = {
+		2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libPVRUIRenderer.a;
+			path = libPVREngineUtils.a;
 			remoteRef = 3300B16BADC0DE0000FACADE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -701,11 +663,6 @@
 			name = PVRAssets;
 			targetProxy = 6600B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
 		};
-		7700B16BADC0DE0000C0BB1E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = PVREgl;
-			targetProxy = 6600B16BADC0DE0000C0BB1E /* PBXContainerItemProxy */;
-		};
 		7700B16BADC0DE00BAC5B07E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = PVRNativeGles;
@@ -723,7 +680,7 @@
 		};
 		7700B16BADC0DE0000FACADE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = PVRUIRenderer;
+			name = PVREngineUtils;
 			targetProxy = 6600B16BADC0DE0000FACADE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */

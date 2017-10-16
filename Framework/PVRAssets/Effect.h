@@ -1,10 +1,10 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/Effect.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief    A pvr::assets::Effect is the description of the entire rendering setup and can be used to create pvr::api
-      objects and use them for rendering.
-***********************************************************************************************************************/
+/*!
+\brief A pvr::assets::Effect is the description of the entire rendering setup and can be used to create pvr::api
+objects and use them for rendering.
+\file PVRAssets/Effect.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRAssets/AssetIncludes.h"
 #include "PVRAssets/SkipGraph.h"
@@ -12,9 +12,7 @@
 #include <string>
 namespace pvr {
 namespace types {
-/*!*****************************************************************************************************************
-\brief  Enum values for the various variable types supported by Semantics.
-*******************************************************************************************************************/
+/// <summary>Enum values for the various variable types supported by Semantics.</summary>
 enum class SemanticDataType
 {
 	Mat2,//!< 2x2 matrix
@@ -41,9 +39,7 @@ enum class SemanticDataType
 	RGBA//!< Semantic RGBA
 };
 
-/*!*****************************************************************************************************************
-\brief  Enumeration of the type of render required for an effect.
-*******************************************************************************************************************/
+/// <summary>Enumeration of the type of render required for an effect.</summary>
 enum class EffectPassType
 {
 	Null,   //!< Null pass
@@ -55,9 +51,7 @@ enum class EffectPassType
 };
 
 
-/*!*****************************************************************************************************************
-\brief   Enumeration Describes the type of different Effect Passes.
-*******************************************************************************************************************/
+/// <summary>Enumeration Describes the type of different Effect Passes.</summary>
 enum class EffectPassView
 {
 	Current,      //!< The scene's active camera is used
@@ -65,9 +59,7 @@ enum class EffectPassView
 	None        //!< No specified view
 };
 
-/*!*****************************************************************************************************************
-\brief  Enum values for defining whether a variable is float, integer or bool.
-*******************************************************************************************************************/
+/// <summary>Enum values for defining whether a variable is float, integer or bool.</summary>
 enum class EffectDefaultDataInternalType
 {
 	Float,//!< Float
@@ -79,9 +71,7 @@ enum class EffectDefaultDataInternalType
 namespace assets {
 
 
-/*!*****************************************************************************************************************
-\brief   Stores effect texture information.
-*******************************************************************************************************************/
+/// <summary>Stores effect texture information.</summary>
 struct EffectTexture
 {
 	StringHash name;      //!< Name of texture.
@@ -95,9 +85,7 @@ struct EffectTexture
 	bool renderToTexture; //!< render to the texture
 };
 
-/*!*****************************************************************************************************************
-\brief  Stores type information for a default data type.
-*******************************************************************************************************************/
+/// <summary>Stores type information for a default data type.</summary>
 struct EffectSemanticDefaultDataTypeInfo
 {
 	types::SemanticDataType type; //!< Semantic data type
@@ -108,9 +96,7 @@ struct EffectSemanticDefaultDataTypeInfo
 	const static EffectSemanticDefaultDataTypeInfo& getSemanticDefaultTypeInfo(types::SemanticDataType semanticDfltType);
 };
 
-/*!*****************************************************************************************************************
-\brief   Stores a Semantic value. Union of different possible values. Support up to 64 bytes.
-*******************************************************************************************************************/
+/// <summary>Stores a Semantic value. Union of different possible values. Support up to 64 bytes.</summary>
 struct EffectSemanticData
 {
 	union
@@ -125,9 +111,7 @@ struct EffectSemanticData
 	EffectSemanticData() : type(types::SemanticDataType::None) {}
 };
 
-/*!*****************************************************************************************************************
-\brief  Stores information about a semantic.
-*******************************************************************************************************************/
+/// <summary>Stores information about a semantic.</summary>
 struct EffectSemantic
 {
 	std::string variableName; //!< The variable name as used in the shader-language code
@@ -135,9 +119,7 @@ struct EffectSemantic
 	EffectSemanticData sDefaultValue;     //!< Default value
 };
 
-/*!*****************************************************************************************************************
-\brief  Store effect data from the shader block.
-*******************************************************************************************************************/
+/// <summary>Store effect data from the shader block.</summary>
 struct EffectShader
 {
 	StringHash name;
@@ -151,9 +133,7 @@ struct EffectShader
 	uint32 lastLineNumPos;  //!< The final line number of the GLSL block.
 };
 
-/*!*****************************************************************************************************************
-\brief   Stores a buffer type and name for a render target.
-*******************************************************************************************************************/
+/// <summary>Stores a buffer type and name for a render target.</summary>
 typedef std::pair<std::string, std::string> EffectTargetPair;
 
 template<typename T_>
@@ -172,11 +152,9 @@ struct SemanticComparator<EffectTexture>
 	bool operator()(const EffectTexture& effectTex)const { return semantic == effectTex.name; }
 };
 
-/*!*****************************************************************************************************************
-\brief  Represents the information of an entire Effect, all information required to set up rendering of a Mesh in a
-    graphics API, such as number and type of textures, attributes, shader variables etc.
-\remarks Models can have effects. Can be used to generate API objects for rendering.
-*******************************************************************************************************************/
+/// <summary>Represents the information of an entire Effect, all information required to set up rendering of a Mesh in a
+/// graphics API, such as number and type of textures, attributes, shader variables etc.</summary>
+/// <remarks>Models can have effects. Can be used to generate API objects for rendering.</remarks>
 struct Effect : public Asset<Effect>
 {
 public:
@@ -195,11 +173,9 @@ public:
 	Effect(const std::string& effectName) { material.setEffectName(effectName); }
 	const assets::Model::Material& getMaterial()const { return material; }
 
-	/*!*********************************************************************************************************************
-	\brief Return an id of uniform semantic. return -1 if the semantic not found
-	\param[in] semantic a semantic
-	\return semantic id
-	***********************************************************************************************************************/
+	/// <summary>Return an id of uniform semantic. return -1 if the semantic not found</summary>
+	/// <param name="semantic">a semantic</param>
+	/// <returns>semantic id</returns>
 	int32 getUniformSemanticId(const StringHash& semantic)const
 	{
 		auto it = std::find_if(uniforms.begin(), uniforms.end(), SemanticComparator<EffectSemantic>(semantic));
@@ -207,11 +183,9 @@ public:
 		return (int32)(it - uniforms.begin());
 	}
 
-	/*!*********************************************************************************************************************
-	\brief Return an id to asset semantic. return -1 if the semantic not found
-	\param[in] semantic a semantic
-	\return semantic id
-	***********************************************************************************************************************/
+	/// <summary>Return an id to asset semantic. return -1 if the semantic not found</summary>
+	/// <param name="semantic">a semantic</param>
+	/// <returns>semantic id</returns>
 	int32 getAssetSemanticId(const StringHash& semantic)const
 	{
 		auto it = std::find_if(attributes.begin(), attributes.end(), SemanticComparator<EffectSemantic>(semantic));
@@ -219,11 +193,9 @@ public:
 		return (int32)(it - attributes.begin());
 	}
 
-	/*!*********************************************************************************************************************
-	\brief Return an id to texture semantic.  return -1 if the semantic not found
-	\param[in] semantic a semantic
-	\return  semantic id
-	***********************************************************************************************************************/
+	/// <summary>Return an id to texture semantic. return -1 if the semantic not found</summary>
+	/// <param name="semantic">a semantic</param>
+	/// <returns>semantic id</returns>
 	int32 getTextureSemanticId(const StringHash& semantic)const
 	{
 		auto it = std::find_if(textures.begin(), textures.end(), SemanticComparator<EffectTexture>(semantic));

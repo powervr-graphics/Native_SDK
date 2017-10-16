@@ -1,20 +1,18 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\OGLES\ApiCommand.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Contains the ApiCommand interface used by the OpenGL ES classes representing commands that can be enqueued in a CommandBuffer.
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief Contains the ApiCommand interface used by the OpenGL ES classes representing commands that can be enqueued in a
+CommandBuffer.
+\file PVRApi/OGLES/ApiCommand.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
-#include "PVRCore/IGraphicsContext.h"
-#include "PVRNativeApi/ApiErrors.h"
+#include "PVRCore/Interfaces/IGraphicsContext.h"
+#include "PVRNativeApi/OGLES/ApiErrorsGles.h"
 namespace pvr {
 namespace api {
-/*!*********************************************************************************************************************
-\brief Interface for Dynamic commands which can be queued into a CommandBuffer. In specific
-       implementations, contains a stacktrace for the actual submission of the command into the
-       commandbuffer, which can greatly assist debugging.
-***********************************************************************************************************************/
+/// <summary>Interface for Dynamic commands which can be queued into a CommandBuffer. In specific implementations,
+/// contains a stacktrace for the actual submission of the command into the commandbuffer, which can greatly assist
+/// debugging.</summary>
 class ApiCommand
 {
 public:
@@ -28,7 +26,7 @@ public:
 	{
 		execute_private(commandBuffer);
 #ifdef DEBUG
-		debugLogApiError(debug_commandCallSiteStackTrace.c_str());
+		debugLogApiError(("Error logged for API command. Stacktrace:\n" + debug_commandCallSiteStackTrace).c_str());
 #endif
 	}
 private:
@@ -36,4 +34,3 @@ private:
 };
 }
 }
-//!\endcond

@@ -1,0 +1,706 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000F1A5C0 /* libPVRCore.a */; };
+		1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000A55E75 /* libPVRAssets.a */; };
+		1100B16BADC0DE00BAC5B07E /* libPVRNativeGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE00BAC5B07E /* libPVRNativeGles.a */; };
+		1100B16BADC0DE00FEA51B1E /* libPVRGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE00FEA51B1E /* libPVRGles.a */; };
+		1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0005EAF00D /* libPVRShell.a */; };
+		1100B16BADC0DE0000FACADE /* libPVREngineUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */; };
+		AC2A37F31A0A675B0093C884 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A37F21A0A675B0093C884 /* Cocoa.framework */; };
+		AC2A38491A0A68920093C884 /* libEGL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A38471A0A68920093C884 /* libEGL.dylib */; };
+		AC2A384A1A0A68920093C884 /* libGLESv2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A38481A0A68920093C884 /* libGLESv2.dylib */; };
+		AC2A384C1A0A68BB0093C884 /* libEGL.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = AC2A38471A0A68920093C884 /* libEGL.dylib */; };
+		AC2A384D1A0A68BB0093C884 /* libGLESv2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = AC2A38481A0A68920093C884 /* libGLESv2.dylib */; };
+		AC2A38671A0A6BD80093C884 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC2A38641A0A6BD80093C884 /* Info.plist */; };
+		AC2A386E1A0A6BE10093C884 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386B1A0A6BE10093C884 /* InfoPlist.strings */; };
+		AC2A38711A0A6BE70093C884 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386F1A0A6BE70093C884 /* MainMenu.xib */; };
+		F89AEF6EFF9A15BC33E0373F /* OGLESMultithreading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F87C7FDA9E684BAAABF72440 /* OGLESMultithreading.cpp */; };
+		F80E639778A5DE2FA4B14675 /* scene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8BB9AB63F43C18BB129DE03 /* scene.pod */; };
+		F83A93119BD23CD25E822273 /* MarbleNormalMap.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F806B9CE8C751258A65F2ADF /* MarbleNormalMap.pvr */; };
+		F83A3E639C13CDBACC378654 /* Marble.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F81CF1AEC4CD863A92A7AFE4 /* Marble.pvr */; };
+		F8275C81FB76017154924E92 /* FragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8E7D1E37A98B91558A902F8 /* FragShader_ES3.fsh */; };
+		F8C99D4319A45CC4793F62F7 /* VertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B497A9C452E44B18F68260 /* VertShader_ES3.vsh */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3300B16BADC0DE0000F1A5C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9800B16BADC0DE0000F1A5C0;
+			remoteInfo = PVRCore;
+		};
+		6600B16BADC0DE0000F1A5C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9900B16BADC0DE0000F1A5C0;
+			remoteInfo = PVRCore;
+		};
+		3300B16BADC0DE0000A55E75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9800B16BADC0DE0000A55E75;
+			remoteInfo = PVRAssets;
+		};
+		6600B16BADC0DE0000A55E75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9900B16BADC0DE0000A55E75;
+			remoteInfo = PVRAssets;
+		};
+		3300B16BADC0DE00BAC5B07E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9800B16BADC0DE00BAC5B07E;
+			remoteInfo = PVRNativeGles;
+		};
+		6600B16BADC0DE00BAC5B07E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9900B16BADC0DE00BAC5B07E;
+			remoteInfo = PVRNativeGles;
+		};
+		3300B16BADC0DE00FEA51B1E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9800B16BADC0DE00FEA51B1E;
+			remoteInfo = PVRGles;
+		};
+		6600B16BADC0DE00FEA51B1E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9900B16BADC0DE00FEA51B1E;
+			remoteInfo = PVRGles;
+		};
+		3300B16BADC0DE0005EAF00D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9800B16BADC0DE0005EAF00D;
+			remoteInfo = PVRShell;
+		};
+		6600B16BADC0DE0005EAF00D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9900B16BADC0DE0005EAF00D;
+			remoteInfo = PVRShell;
+		};
+		3300B16BADC0DE0000FACADE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9800B16BADC0DE0000FACADE;
+			remoteInfo = PVREngineUtils;
+		};
+		6600B16BADC0DE0000FACADE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9900B16BADC0DE0000FACADE;
+			remoteInfo = PVREngineUtils;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AC2A384B1A0A68AF0093C884 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				AC2A384C1A0A68BB0093C884 /* libEGL.dylib in CopyFiles */,
+				AC2A384D1A0A68BB0093C884 /* libGLESv2.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRCore.xcodeproj; path = ../../../../../../Framework/PVRCore/Build/OSX/PVRCore.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRAssets.xcodeproj; path = ../../../../../../Framework/PVRAssets/Build/OSX/PVRAssets.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRNativeGles.xcodeproj; path = ../../../../../../Framework/PVRNativeApi/OGLES/Build/OSX/PVRNativeGles.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRGles.xcodeproj; path = ../../../../../../Framework/PVRApi/OGLES/Build/OSX/PVRGles.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRShell.xcodeproj; path = ../../../../../../Framework/PVRShell/Build/OSX/PVRShell.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVREngineUtils.xcodeproj; path = ../../../../../../Framework/PVREngineUtils/Build/OSX/PVREngineUtils.xcodeproj; sourceTree = "<group>"; };
+		AC2A37EF1A0A675B0093C884 /* OGLESMultithreading.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLESMultithreading.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC2A37F21A0A675B0093C884 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		AC2A37F51A0A675B0093C884 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		AC2A37F61A0A675B0093C884 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		AC2A37F71A0A675B0093C884 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AC2A38471A0A68920093C884 /* libEGL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libEGL.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libEGL.dylib"; sourceTree = "<group>"; };
+		AC2A38481A0A68920093C884 /* libGLESv2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLESv2.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libGLESv2.dylib"; sourceTree = "<group>"; };
+		AC2A38641A0A6BD80093C884 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		AC2A38661A0A6BD80093C884 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
+		AC2A386C1A0A6BE10093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
+		AC2A38701A0A6BE70093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
+		F87C7FDA9E684BAAABF72440 /* OGLESMultithreading.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESMultithreading.cpp; path = ../../OGLESMultithreading.cpp; sourceTree = SOURCE_ROOT; };
+		F8BB9AB63F43C18BB129DE03 /* scene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = scene.pod; path = ../../../ProcessedAssets/scene.pod; sourceTree = SOURCE_ROOT; };
+		F806B9CE8C751258A65F2ADF /* MarbleNormalMap.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = MarbleNormalMap.pvr; path = ../../../ProcessedAssets/MarbleNormalMap.pvr; sourceTree = SOURCE_ROOT; };
+		F81CF1AEC4CD863A92A7AFE4 /* Marble.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Marble.pvr; path = ../../../ProcessedAssets/Marble.pvr; sourceTree = SOURCE_ROOT; };
+		F8E7D1E37A98B91558A902F8 /* FragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES3.fsh; path = ../../FragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8B497A9C452E44B18F68260 /* VertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES3.vsh; path = ../../VertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AC2A37EC1A0A675B0093C884 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */,
+				1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */,
+				1100B16BADC0DE00BAC5B07E /* libPVRNativeGles.a in Frameworks */,
+				1100B16BADC0DE00FEA51B1E /* libPVRGles.a in Frameworks */,
+				1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */,
+				1100B16BADC0DE0000FACADE /* libPVREngineUtils.a in Frameworks */,
+				AC2A37F31A0A675B0093C884 /* Cocoa.framework in Frameworks */,
+				AC2A384A1A0A68920093C884 /* libGLESv2.dylib in Frameworks */,
+				AC2A38491A0A68920093C884 /* libEGL.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5500B16BADC0DE0000F1A5C0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2200B16BADC0DE0000F1A5C0 /* libPVRCore.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5500B16BADC0DE0000A55E75 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2200B16BADC0DE0000A55E75 /* libPVRAssets.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5500B16BADC0DE00BAC5B07E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2200B16BADC0DE00BAC5B07E /* libPVRNativeGles.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5500B16BADC0DE00FEA51B1E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2200B16BADC0DE00FEA51B1E /* libPVRGles.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5500B16BADC0DE0005EAF00D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2200B16BADC0DE0005EAF00D /* libPVRShell.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5500B16BADC0DE0000FACADE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AC2A37E61A0A675B0093C884 = {
+			isa = PBXGroup;
+			children = (
+				AC2A385A1A0A69430093C884 /* Content */,
+				AC2A38591A0A69410093C884 /* Resources */,
+				AC2A38581A0A69400093C884 /* Libraries */,
+				AC2A37F91A0A675B0093C884 /* Supporting Files */,
+				AC2A37F81A0A675B0093C884 /* Sources */,
+				AC2A37F11A0A675B0093C884 /* Frameworks */,
+				AC2A37F01A0A675B0093C884 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AC2A37F01A0A675B0093C884 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AC2A37EF1A0A675B0093C884 /* OGLESMultithreading.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AC2A37F11A0A675B0093C884 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */,
+				4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */,
+				4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */,
+				4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */,
+				4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */,
+				4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */,
+				AC2A37F21A0A675B0093C884 /* Cocoa.framework */,
+				AC2A37F41A0A675B0093C884 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AC2A37F41A0A675B0093C884 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AC2A37F51A0A675B0093C884 /* AppKit.framework */,
+				AC2A37F61A0A675B0093C884 /* CoreData.framework */,
+				AC2A37F71A0A675B0093C884 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		AC2A37F91A0A675B0093C884 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				AC2A386F1A0A6BE70093C884 /* MainMenu.xib */,
+				AC2A386B1A0A6BE10093C884 /* InfoPlist.strings */,
+				AC2A38641A0A6BD80093C884 /* Info.plist */,
+				AC2A38661A0A6BD80093C884 /* Prefix.pch */,
+			);
+			name = "Supporting Files";
+			path = OSX;
+			sourceTree = "<group>";
+		};
+		AC2A37F81A0A675B0093C884 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				F87C7FDA9E684BAAABF72440 /* OGLESMultithreading.cpp */,
+			);
+			name = Sources;
+			path = OSX;
+			sourceTree = "<group>";
+		};
+		AC2A38591A0A69410093C884 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		AC2A38581A0A69400093C884 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				AC2A38471A0A68920093C884 /* libEGL.dylib */,
+				AC2A38481A0A68920093C884 /* libGLESv2.dylib */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		AC2A385A1A0A69430093C884 /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				AC2A385E1A0A698B0093C884 /* Shaders */,
+				AC2A385D1A0A69850093C884 /* Textures */,
+				AC2A385C1A0A697E0093C884 /* Models */,
+				AC2A385B1A0A69780093C884 /* Generic */,
+			);
+			name = Content;
+			sourceTree = "<group>";
+		};
+		AC2A385B1A0A69780093C884 /* Generic */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Generic;
+			sourceTree = "<group>";
+		};
+		AC2A385C1A0A697E0093C884 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F8BB9AB63F43C18BB129DE03 /* scene.pod */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		AC2A385D1A0A69850093C884 /* Textures */ = {
+			isa = PBXGroup;
+			children = (
+				F806B9CE8C751258A65F2ADF /* MarbleNormalMap.pvr */,
+				F81CF1AEC4CD863A92A7AFE4 /* Marble.pvr */,
+			);
+			name = Textures;
+			sourceTree = "<group>";
+		};
+		AC2A385E1A0A698B0093C884 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				F8E7D1E37A98B91558A902F8 /* FragShader_ES3.fsh */,
+				F8B497A9C452E44B18F68260 /* VertShader_ES3.vsh */,
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AC2A37EE1A0A675B0093C884 /* OGLESMultithreading */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AC2A38201A0A675B0093C884 /* Build configuration list for PBXNativeTarget "OGLESMultithreading" */;
+			buildPhases = (
+				AC2A37EB1A0A675B0093C884 /* Sources */,
+				AC2A37EC1A0A675B0093C884 /* Frameworks */,
+				AC2A37ED1A0A675B0093C884 /* Resources */,
+				AC2A384B1A0A68AF0093C884 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7700B16BADC0DE0000F1A5C0 /* PBXTargetDependency */,
+				7700B16BADC0DE0000A55E75 /* PBXTargetDependency */,
+				7700B16BADC0DE00BAC5B07E /* PBXTargetDependency */,
+				7700B16BADC0DE00FEA51B1E /* PBXTargetDependency */,
+				7700B16BADC0DE0005EAF00D /* PBXTargetDependency */,
+				7700B16BADC0DE0000FACADE /* PBXTargetDependency */,
+			);
+			name = "OGLESMultithreading";
+			productName = "OGLESMultithreading";
+			productReference = AC2A37EF1A0A675B0093C884 /* OGLESMultithreading.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AC2A37E71A0A675B0093C884 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "___ImaginationTechnology___";
+			};
+			buildConfigurationList = AC2A37EA1A0A675B0093C884 /* Build configuration list for PBXProject "OGLESMultithreading" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = AC2A37E61A0A675B0093C884;
+			productRefGroup = AC2A37F01A0A675B0093C884 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 5500B16BADC0DE0000F1A5C0 /* Products */;
+					ProjectRef = 4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */;
+				},
+				{
+					ProductGroup = 5500B16BADC0DE0000A55E75 /* Products */;
+					ProjectRef = 4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */;
+				},
+				{
+					ProductGroup = 5500B16BADC0DE00BAC5B07E /* Products */;
+					ProjectRef = 4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */;
+				},
+				{
+					ProductGroup = 5500B16BADC0DE00FEA51B1E /* Products */;
+					ProjectRef = 4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */;
+				},
+				{
+					ProductGroup = 5500B16BADC0DE0005EAF00D /* Products */;
+					ProjectRef = 4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */;
+				},
+				{
+					ProductGroup = 5500B16BADC0DE0000FACADE /* Products */;
+					ProjectRef = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				AC2A37EE1A0A675B0093C884 /* OGLESMultithreading */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		2200B16BADC0DE0000F1A5C0 /* libPVRCore.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPVRCore.a;
+			remoteRef = 3300B16BADC0DE0000F1A5C0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2200B16BADC0DE0000A55E75 /* libPVRAssets.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPVRAssets.a;
+			remoteRef = 3300B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2200B16BADC0DE00BAC5B07E /* libPVRNativeGles.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPVRNativeGles.a;
+			remoteRef = 3300B16BADC0DE00BAC5B07E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2200B16BADC0DE00FEA51B1E /* libPVRGles.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPVRGles.a;
+			remoteRef = 3300B16BADC0DE00FEA51B1E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2200B16BADC0DE0005EAF00D /* libPVRShell.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPVRShell.a;
+			remoteRef = 3300B16BADC0DE0005EAF00D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPVREngineUtils.a;
+			remoteRef = 3300B16BADC0DE0000FACADE /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AC2A37ED1A0A675B0093C884 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC2A38671A0A6BD80093C884 /* Info.plist in Resources */,
+				AC2A386E1A0A6BE10093C884 /* InfoPlist.strings in Resources */,
+				AC2A38711A0A6BE70093C884 /* MainMenu.xib in Resources */,
+				F80E639778A5DE2FA4B14675 /* scene.pod in Resources */,
+				F83A93119BD23CD25E822273 /* MarbleNormalMap.pvr in Resources */,
+				F83A3E639C13CDBACC378654 /* Marble.pvr in Resources */,
+				F8275C81FB76017154924E92 /* FragShader_ES3.fsh in Resources */,
+				F8C99D4319A45CC4793F62F7 /* VertShader_ES3.vsh in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AC2A37EB1A0A675B0093C884 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F89AEF6EFF9A15BC33E0373F /* OGLESMultithreading.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7700B16BADC0DE0000F1A5C0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PVRCore;
+			targetProxy = 6600B16BADC0DE0000F1A5C0 /* PBXContainerItemProxy */;
+		};
+		7700B16BADC0DE0000A55E75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PVRAssets;
+			targetProxy = 6600B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
+		};
+		7700B16BADC0DE00BAC5B07E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PVRNativeGles;
+			targetProxy = 6600B16BADC0DE00BAC5B07E /* PBXContainerItemProxy */;
+		};
+		7700B16BADC0DE00FEA51B1E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PVRGles;
+			targetProxy = 6600B16BADC0DE00FEA51B1E /* PBXContainerItemProxy */;
+		};
+		7700B16BADC0DE0005EAF00D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PVRShell;
+			targetProxy = 6600B16BADC0DE0005EAF00D /* PBXContainerItemProxy */;
+		};
+		7700B16BADC0DE0000FACADE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PVREngineUtils;
+			targetProxy = 6600B16BADC0DE0000FACADE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		AC2A386B1A0A6BE10093C884 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AC2A386C1A0A6BE10093C884 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		AC2A386F1A0A6BE70093C884 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AC2A38701A0A6BE70093C884 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		AC2A381E1A0A675B0093C884 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)"
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"../../../../../../Framework/Bin/OSX","../../../../../../Builds/OSX/x86/Lib"
+				);
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Framework";
+
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		AC2A381F1A0A675B0093C884 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"../../../../../../Framework/Bin/OSX","../../../../../../Builds/OSX/x86/Lib"
+				);
+				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Framework";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+                GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+				);
+			};
+			name = Release;
+		};
+		AC2A38211A0A675B0093C884 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"../../../../../../Framework/Bin/OSX","../../../../../../Builds/OSX/x86/Lib"
+				);
+				OTHER_LDFLAGS = "-all_load";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		AC2A38221A0A675B0093C884 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Prefix.pch;
+				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"../../../../../../Framework/Bin/OSX","../../../../../../Builds/OSX/x86/Lib"
+				);
+				OTHER_LDFLAGS = "-all_load";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AC2A37EA1A0A675B0093C884 /* Build configuration list for PBXProject "OGLESMultithreading" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC2A381E1A0A675B0093C884 /* Debug */,
+				AC2A381F1A0A675B0093C884 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AC2A38201A0A675B0093C884 /* Build configuration list for PBXNativeTarget "OGLESMultithreading" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC2A38211A0A675B0093C884 /* Debug */,
+				AC2A38221A0A675B0093C884 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AC2A37E71A0A675B0093C884 /* Project object */;
+}

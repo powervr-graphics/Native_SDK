@@ -1,0 +1,7 @@
+<map id="pvr::ui::impl::Sprite_" name="pvr::ui::impl::Sprite_">
+<area shape="rect" id="node2" href="$classpvr_1_1ui_1_1impl_1_1_group__.html" title="Abstract container for sprites. See MatrixGroup or PixelGroup. A group contains references to a numbe..." alt="" coords="122,80,261,107"/>
+<area shape="rect" id="node5" href="$classpvr_1_1ui_1_1impl_1_1_image__.html" title="Use this class through the Refcounted Framework Object pvr::ui::Image. Represents a 2D Image (aka Tex..." alt="" coords="287,80,427,107"/>
+<area shape="rect" id="node6" href="$classpvr_1_1ui_1_1impl_1_1_text__.html" title="Use this class through the Refcounted Framework Object pvr::ui::Text. Represents some text that can b..." alt="" coords="452,80,581,107"/>
+<area shape="rect" id="node3" href="$classpvr_1_1ui_1_1impl_1_1_matrix_group__.html" title="This class is wrapped into the pvr::ui::Group Refcounted Framework Object. Use to apply a transformat..." alt="" coords="5,155,181,181"/>
+<area shape="rect" id="node4" href="$classpvr_1_1ui_1_1impl_1_1_pixel_group__.html" title="This class is wrapped into the pvr::ui::Group Refcounted Framework Object. Use to apply a transformat..." alt="" coords="206,155,375,181"/>
+</map>

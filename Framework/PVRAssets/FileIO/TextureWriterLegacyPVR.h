@@ -1,21 +1,20 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/FileIO/TextureWriterLegacyPVR.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         An legacy Writer that writes pvr::asset::Texture objects into a PVR file.
-***********************************************************************************************************************/
+/*!
+\brief An legacy Writer that writes pvr::asset::Texture objects into a PVR file.
+\file PVRAssets/FileIO/TextureWriterLegacyPVR.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
-#include "PVRAssets/Texture/Texture.h"
-#include "PVRAssets/AssetWriter.h"
-#include "PVRAssets/FileIO/FileDefinesPVR.h"
+#include "PVRCore/Texture.h"
+#include "PVRCore/IO/AssetWriter.h"
+#include "PVRCore/Texture/FileDefinesPVR.h"
 #include <vector>
 namespace pvr {
 namespace assets {
 namespace assetWriters {
 
-/*!********************************************************************************************************************
-\brief  An experimentat Writer that writes pvr::asset::Texture objects into a legacy (v2) PVR file.
-***********************************************************************************************************************/
+/// <summary>An experimentat Writer that writes pvr::asset::Texture objects into a legacy (v2) PVR file.
+/// </summary>
 class TextureWriterLegacyPVR : public AssetWriter <Texture>
 {
 public:
@@ -40,7 +39,7 @@ private:
 	                              const types::ColorSpace colorSpace, const VariableType channelType, const bool isPremultiplied);
 
 private:
-	texture_legacy::API m_targetAPI;
+	texture_legacy::API _targetAPI;
 };
 }
 }

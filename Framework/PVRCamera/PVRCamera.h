@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRCamera\PVRCamera.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Include this file if you wish to use the PVRCamera functionality
-***********************************************************************************************************************/
+/*!
+\brief Include this file if you wish to use the PVRCamera functionality
+\file PVRCamera/PVRCamera.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 
 #pragma once
 #include "PVRCamera/CameraInterfacePVRApi.h"

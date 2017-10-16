@@ -1,9 +1,11 @@
-/*!*********************************************************************************************************************
-\file         PVRNativeApi\OGLES\ApiGles2.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains function pointer declarations for all OpenGL ES 2 functions.
-***********************************************************************************************************************/
+/*!
+\brief Contains function pointer declarations for all OpenGL ES 2 functions.
+\file PVRNativeApi/OGLES/ApiGles2.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+//!\cond NO_DOXYGEN
+
 #pragma once
 #include "PVRNativeApi/OGLES/OpenGLESHeaders.h"
 
@@ -149,3 +151,4 @@ typedef void (PVR_APIENTRY* PROC_ES2_glVertexAttrib4f)(GLuint index, GLfloat x, 
 typedef void (PVR_APIENTRY* PROC_ES2_glVertexAttrib4fv)(GLuint index, const GLfloat* v);
 typedef void (PVR_APIENTRY* PROC_ES2_glVertexAttribPointer)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
 typedef void (PVR_APIENTRY* PROC_ES2_glViewport)(GLint x, GLint y, GLsizei width, GLsizei height);
+//!\endcond

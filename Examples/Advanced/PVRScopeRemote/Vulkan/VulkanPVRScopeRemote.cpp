@@ -7,7 +7,7 @@
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 #include "PVRScopeComms.h"
 using namespace pvr;
 // Source and binary shaders
@@ -60,7 +60,7 @@ using namespace pvr;
 ***********************************************************************************************************************/
 class VulkanPVRScopeRemote : public Shell
 {
-	struct DeviceResources
+	struct ApiObjects
 	{
 		api::GraphicsPipeline	pipeline;
 		api::TextureView texture;
@@ -77,13 +77,13 @@ class VulkanPVRScopeRemote : public Shell
 		api::DescriptorSetLayout descriptorSetLayout;
 		api::FboSet onScreenFbo;
 		ui::UIRenderer uiRenderer;
-		api::AssetStore assetStore;
+		utils::AssetStore assetStore;
 
 		// 3D Model
 		assets::ModelHandle scene;
 		GraphicsContext context;
 	};
-	std::auto_ptr<DeviceResources> apiObj;
+	std::auto_ptr<ApiObjects> apiObj;
 
 	glm::mat4 projectionMtx;
 	glm::mat4 viewMtx;
@@ -216,7 +216,7 @@ void VulkanPVRScopeRemote::loadVbos()
 ***********************************************************************************************************************/
 Result VulkanPVRScopeRemote::initApplication()
 {
-	apiObj.reset(new DeviceResources());
+	apiObj.reset(new ApiObjects());
 	apiObj->assetStore.init(*this);
 	// Load the scene
 	if (!apiObj->assetStore.loadModel(SceneFile, apiObj->scene))
@@ -641,12 +641,12 @@ bool VulkanPVRScopeRemote::createDescriptorSet()
 {
 	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<uint32>(strlen(__FUNCTION__)), frameCounter);
 	// create the MVP ubo
-	apiObj->uboMVP.setupArray(apiObj->context, 1, types::BufferViewTypes::UniformBuffer);
 	apiObj->uboMVP.addEntriesPacked(UboMvpElements::Mappings, UboMvpElements::Count);
+	apiObj->uboMVP.finalize(apiObj->context, 1, types::BufferBindingUse::UniformBuffer, false, false);
 	for (uint32 i = 0; i < apiObj->context->getSwapChainLength(); ++i)
 	{
 		apiObj->uboMVP.connectWithBuffer(i, apiObj->context->createBufferAndView(apiObj->uboMVP.getAlignedElementSize(),
-		                                 types::BufferBindingUse::UniformBuffer, true), types::BufferViewTypes::UniformBuffer);
+		                                 types::BufferBindingUse::UniformBuffer, true));
 
 		apiObj->uboMvpDesc[i] = apiObj->context->createDescriptorSetOnDefaultPool(
 		                          apiObj->pipeline->getPipelineLayout()->getDescriptorSetLayout(0));
@@ -671,10 +671,10 @@ bool VulkanPVRScopeRemote::createDescriptorSet()
 	samplerDesc.magnificationFilter = types::SamplerFilter::Linear;
 	api::Sampler bilinearSampler = apiObj->context->createSampler(samplerDesc);
 
-	apiObj->uboMaterial.setupArray(apiObj->context, 1, types::BufferViewTypes::UniformBuffer);
 	apiObj->uboMaterial.addEntriesPacked(UboMaterialElements::Mappings, UboMaterialElements::Count);
+	apiObj->uboMaterial.finalize(apiObj->context, 1, types::BufferBindingUse::UniformBuffer, false, false);
 	apiObj->uboMaterial.connectWithBuffer(0, apiObj->context->createBufferAndView(apiObj->uboMaterial.getAlignedElementSize(),
-	                                      types::BufferBindingUse::UniformBuffer, true), types::BufferViewTypes::UniformBuffer);
+	                                      types::BufferBindingUse::UniformBuffer, true));
 
 	apiObj->uboMatDesc = apiObj->context->createDescriptorSetOnDefaultPool(
 	                       apiObj->pipeline->getPipelineLayout()->getDescriptorSetLayout(PipelineConfigs::DescriptorMaterial));

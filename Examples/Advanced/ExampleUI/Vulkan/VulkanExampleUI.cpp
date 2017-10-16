@@ -3,23 +3,26 @@
 \Title        ExampleUI
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Demonstrates how to efficiently render UI and sprites using UIRenderer
+\brief      Demonstrates how to efficiently render UI and sprites using UIRenderer
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 using namespace pvr;
-const pvr::uint32 AtlasWidth		= 1024;
-const pvr::uint32 AtlasHeight		= 1024;
-const pvr::uint32 NullQuadPix		= 4;
-const pvr::uint32 VirtualWidth		= 640;
-const pvr::uint32 VirtualHeight		= 480;
-const pvr::uint32 AtlasPixelBorder  = 1;
-const pvr::uint32 MaxSwapchain		= 8;
-const pvr::uint32 UiDisplayTime		= 5;// Display each page for 5 seconds
-const pvr::uint32 UiDisplayTimeInMs = UiDisplayTime * 1000;
-const glm::vec2 BaseDim(800, 600);
-const pvr::float32 LowerContainerHeight = .3f;
+enum {
+AtlasWidth    = 1024,
+AtlasHeight   = 1024,
+NullQuadPix   = 4,
+VirtualWidth    = 640,
+VirtualHeight   = 480,
+AtlasPixelBorder  = 1,
+UiDisplayTime   = 5,// Display each page for 5 seconds
+UiDisplayTimeInMs = UiDisplayTime * 1000,
+BaseDimX = 800,
+BaseDimY = 600,
+NumClocks = 22
+};
+static const pvr::float32 LowerContainerHeight = .3f;
 
 using namespace pvr::types;
 // Shaders
@@ -83,45 +86,45 @@ enum Enum
 
 const StringHash SpritesFileNames[Sprites::Count + Ancillary::Count] =
 {
-	"clock-face.pvr",			// Clockface
-	"hand.pvr",					// Hand
-	"battery.pvr",				// Battery
-	"internet-web-browser.pvr",	// Web
-	"mail-message-new.pvr",		// Newmail
-	"network-wireless.pvr",		// Network
-	"office-calendar.pvr",		// Calendar
+	"clock-face.pvr",				// Clockface
+	"hand.pvr",						// Hand
+	"battery.pvr",					// Battery
+	"internet-web-browser.pvr",		// Web
+	"mail-message-new.pvr",			// Newmail
+	"network-wireless.pvr",			// Network
+	"office-calendar.pvr",			// Calendar
 
-	"weather-sun-cloud-big.pvr",// Weather_SUNCLOUD_BIG
-	"weather-sun-cloud.pvr",	// Weather_SUNCLOUD
-	"weather-rain.pvr",			// Weather_RAIN
-	"weather-storm.pvr",		// Weather_STORM
+	"weather-sun-cloud-big.pvr",	// Weather_SUNCLOUD_BIG
+	"weather-sun-cloud.pvr",		// Weather_SUNCLOUD
+	"weather-rain.pvr",				// Weather_RAIN
+	"weather-storm.pvr",			// Weather_STORM
 
-	"container-corner.pvr",		// Container_CORNER
-	"container-vertical.pvr",	// Container_VERT
-	"container-horizontal.pvr",	// Container_HORI
-	"container-filler.pvr",     // container_FILLER
+	"container-corner.pvr",			// Container_CORNER
+	"container-vertical.pvr",		// Container_VERT
+	"container-horizontal.pvr",		// Container_HORI
+	"container-filler.pvr",			// container_FILLER
 	"vertical-bar.pvr",
-	"text1.pvr",				// Text1
-	"text2.pvr",				// Text2
+	"text1.pvr",					// Text1
+	"text2.pvr",					// Text2
 	"loremipsum.pvr",
-	"text-weather.pvr",			// Text_WEATHER
-	"text-fri.pvr",				// Fri
-	"text-sat.pvr",				// Sat
-	"text-sun.pvr",				// Sun
-	"text-mon.pvr",				// Mon
+	"text-weather.pvr",				// Text_WEATHER
+	"text-fri.pvr",					// Fri
+	"text-sat.pvr",					// Sat
+	"text-sun.pvr",					// Sun
+	"text-mon.pvr",					// Mon
 
-	"clock-face-small.pvr",		// ClockfaceSmall
-	"hand-small.pvr",			// Hand_SMALL
+	"clock-face-small.pvr",			// ClockfaceSmall
+	"hand-small.pvr",				// Hand_SMALL
 
-	"window-bottom.pvr",		// Window_BOTTOM
-	"window-bottomcorner.pvr",	// Window_BOTTOMCORNER
-	"window-side.pvr",			// Window_SIDE
-	"window-top.pvr",			// Window_TOP
-	"window-topleft.pvr",		// Window_TOPLEFT
-	"window-topright.pvr",		// Window_TOPRIGHT
+	"window-bottom.pvr",			// Window_BOTTOM
+	"window-bottomcorner.pvr",		// Window_BOTTOMCORNER
+	"window-side.pvr",				// Window_SIDE
+	"window-top.pvr",				// Window_TOP
+	"window-topleft.pvr",			// Window_TOPLEFT
+	"window-topright.pvr",			// Window_TOPRIGHT
 
-	"topbar.pvr",			// Topbar
-	"background.pvr",		// Background
+	"topbar.pvr",					// Topbar
+	"background.pvr",				// Background
 };
 
 // Displayed pages
@@ -161,14 +164,14 @@ enum Enum
 
 const char* const FragShaderFileName[ShaderNames::Count] =
 {
-	"TexColShader_vk.fsh.spv",		// ColorTexture
-	"ColShader_vk.fsh.spv",			// ColorShader
+	"TexColShader_vk.fsh.spv",    // ColorTexture
+	"ColShader_vk.fsh.spv",     // ColorShader
 };
 
 const char* const VertShaderFileName[ShaderNames::Count] =
 {
-	"TexColShader_vk.vsh.spv",		// ColorTexture
-	"ColShader_vk.vsh.spv",			// ColorShader
+	"TexColShader_vk.vsh.spv",    // ColorTexture
+	"ColShader_vk.vsh.spv",     // ColorShader
 };
 
 // Group shader programs and their uniform locations together
@@ -176,17 +179,17 @@ const char* const VertShaderFileName[ShaderNames::Count] =
 struct DrawPass
 {
 	pvr::api::DescriptorSet descSet;
-	api::GraphicsPipeline	 pipe;
+	api::GraphicsPipeline  pipe;
 };
 
 struct SpriteDesc
 {
 	pvr::api::TextureView tex;
-	pvr::uint32			uiWidth;
-	pvr::uint32			uiHeight;
-	pvr::uint32			uiSrcX;
-	pvr::uint32			uiSrcY;
-	bool			    bHasAlpha;
+	pvr::uint32     uiWidth;
+	pvr::uint32     uiHeight;
+	pvr::uint32     uiSrcX;
+	pvr::uint32     uiSrcY;
+	bool          bHasAlpha;
 	void release() {tex.reset();}
 };
 
@@ -212,53 +215,52 @@ struct SpriteContainer
 
 struct PageClock
 {
-	pvr::ui::MatrixGroup group;// root group
-	void update(pvr::float32 frameTime, const glm::mat4& trans);
+	pvr::ui::MatrixGroup group[(uint8)FrameworkCaps::MaxSwapChains];// root group
+	void update(uint32 swapChain, pvr::float32 frameTime, const glm::mat4& trans);
 	std::vector<SpriteClock> clock;
 	SpriteContainer container;
 	glm::mat4 projMtx;
-	static pvr::uint32 numClocks;
 };
-pvr::uint32 PageClock::numClocks = 22;
 
 struct PageWeather
 {
-	pvr::ui::MatrixGroup group;
-	void update(const glm::mat4& transMtx);
+	pvr::ui::MatrixGroup group[(uint8)FrameworkCaps::MaxSwapChains];
+	void update(uint32 swapchain, const glm::mat4& transMtx);
 	glm::mat4 projMtx;
 	SpriteContainer containerTop, containerBottom;
 };
 
 struct PageWindow
 {
-	pvr::ui::MatrixGroup group;
+	pvr::ui::MatrixGroup group[(uint8)FrameworkCaps::MaxSwapChains];
 	utils::StructuredMemoryView clippingUboBuffer;
-	api::DescriptorSet clippingUboDesc[MaxSwapchain];
+	api::DescriptorSet clippingUboDesc[4];
 	void update(glm::mat4& proj, uint32 swapChain, pvr::float32 width, pvr::float32 height, const glm::mat4& trans);
 	pvr::Rectanglei clipArea;
 };
 
 /*!*********************************************************************************************************************
-\brief	Update the clock page
-\param	screenWidth Screen width
-\param	screenHeight Screen height
-\param	frameTime Current frame
-\param	trans Transformation matrix
+\brief  Update the clock page
+\param  screenWidth Screen width
+\param  screenHeight Screen height
+\param  frameTime Current frame
+\param  trans Transformation matrix
 ***********************************************************************************************************************/
-void PageClock::update(pvr::float32 frameTime, const glm::mat4& trans)
+void PageClock::update(uint32 swapChain,pvr::float32 frameTime, const glm::mat4& trans)
 {
 	// to do render the container
 	static pvr::float32 handRotate = 0.0f;
 	handRotate -= frameTime * 0.001f;
-	pvr::float32 clockHandScale(.22f);
+	const pvr::float32 clockHandScale(.22f);
 	pvr::uint32 i = 0;
 	// right groups
-	glm::vec2 clockOrigin(container.size.width, container.size.height);
-	glm::uvec2 smallClockDim(clock[0].group->getDimensions() * clock[0].scale);
+	glm::vec2 clockOrigin(container.size.x + container.size.width, container.size.y + container.size.height);
+	const glm::uvec2 smallClockDim(clock[0].group->getDimensions() * clock[0].scale);
 	glm::uvec2 clockOffset(0, 0);
 	pvr::uint32 clockIndex = 1;
 	for (; i < clock.size() / 2; i += 2)
 	{
+		// the first two small clock (left & right) at the top closer.
 		if (i < 2)
 		{
 			clock[i].hand->setRotation(handRotate + clockIndex)->setScale(glm::vec2(clockHandScale));
@@ -267,7 +269,7 @@ void PageClock::update(pvr::float32 frameTime, const glm::mat4& trans)
 			++clockIndex;
 
 			clock[i + 1].hand->setRotation(handRotate + clockIndex)->setScale(glm::vec2(clockHandScale));
-			clock[i + 1].group->setAnchor(pvr::ui::Anchor::TopLeft, glm::vec2(container.size.x, container.size.height));
+			clock[i + 1].group->setAnchor(pvr::ui::Anchor::TopLeft, glm::vec2(container.size.x, clockOrigin.y));
 			clock[i + 1].group->setPixelOffset(smallClockDim.x * 2, 0);
 			++clockIndex;
 			continue;
@@ -287,7 +289,7 @@ void PageClock::update(pvr::float32 frameTime, const glm::mat4& trans)
 	}
 
 	// left group
-	clockOrigin = glm::vec2(container.size.x, container.size.height);
+	clockOrigin = glm::vec2(container.size.x, container.size.y + container.size.height);
 	clockOffset.y = 0;
 	for (; i < clock.size() - 1; i += 2)
 	{
@@ -305,43 +307,43 @@ void PageClock::update(pvr::float32 frameTime, const glm::mat4& trans)
 	//render the center clock
 	clock[i].hand->setRotation(handRotate);
 	clock[i].group->setAnchor(pvr::ui::Anchor::Center, glm::vec2(0))->setPixelOffset(0, 30);
-	group->setScaleRotateTranslate(trans);// transform the entire group
-	group->commitUpdates();
+	group[swapChain]->setScaleRotateTranslate(trans);// transform the entire group
+	group[swapChain]->commitUpdates();
 }
 
 /*!*********************************************************************************************************************
-\brief	Update the window page
-\param	screenWidth Screen width
-\param	screenHeight Screen height
-\param	trans Transformation matrix
+\brief  Update the window page
+\param  screenWidth Screen width
+\param  screenHeight Screen height
+\param  trans Transformation matrix
 ***********************************************************************************************************************/
 void PageWindow::update(glm::mat4& proj, uint32 swapChain, pvr::float32 width, pvr::float32 height, const glm::mat4& trans)
 {
 	glm::vec2 offset(width * .5f, height * .5f);// center it on the screen
 	// offset the clip area center to aligned with the center of the screen
-	offset -= glm::vec2(clipArea.getDimension().x * .5f, clipArea.getDimension().y * .5f);
+	offset -= glm::vec2(clipArea.extent()) * .5f;
 
 	glm::mat4 worldTrans = glm::translate(glm::vec3(offset, 0.0f)) * trans ;
-	group->setScaleRotateTranslate(worldTrans);
-	group->commitUpdates();
+	group[swapChain]->setScaleRotateTranslate(worldTrans);
+	group[swapChain]->commitUpdates();
 
 	//update the clipping ubo
-	glm::mat4 scale = glm::scale(glm::vec3(glm::vec2(clipArea.getDimension()) / glm::vec2(width, height), 1.f));
+	glm::mat4 scale = glm::scale(glm::vec3(glm::vec2(clipArea.extent()) / glm::vec2(width, height), 1.f));
 	clippingUboBuffer.map(swapChain);
 	clippingUboBuffer.setValue(0, proj * worldTrans * scale);
 	clippingUboBuffer.unmap(swapChain);
 }
 
 /*!*********************************************************************************************************************
-\brief	Update the weather page
-\param	screenWidth Screen width
-\param	screenHeight Screen height
-\param	transMtx Transformation matrix
+\brief  Update the weather page
+\param  screenWidth Screen width
+\param  screenHeight Screen height
+\param  transMtx Transformation matrix
 ***********************************************************************************************************************/
-void PageWeather::update(const glm::mat4& transMtx)
+void PageWeather::update(uint32 swapchain,const glm::mat4& transMtx)
 {
-	group->setScaleRotateTranslate(transMtx);
-	group->commitUpdates();
+	group[swapchain]->setScaleRotateTranslate(transMtx);
+	group[swapchain]->commitUpdates();
 }
 
 class VulkanExampleUI;
@@ -351,8 +353,8 @@ class VulkanExampleUI;
 ***********************************************************************************************************************/
 const char* const DisplayOpts[DisplayOption::Count] =
 {
-	"Displaying Interface",			// Ui
-	"Displaying Texture Atlas",		// Texatlas
+	"Displaying Interface",     // Ui
+	"Displaying Texture Atlas",   // Texatlas
 };
 
 #ifdef DISPLAY_SPRITE_ALPHA
@@ -442,7 +444,7 @@ private:
 
 
 		PageClock pageClock;
-		PageWeather	pageWeather;
+		PageWeather pageWeather;
 		PageWindow pageWindow;
 		SpriteContainer containerTop;
 		api::Buffer quadVbo;
@@ -470,7 +472,7 @@ private:
 		pvr::ui::PixelGroup groupBaseUI;
 	};
 	std::auto_ptr<DeviceResource> deviceResource;
-	pvr::ui::UIRenderer	uiRenderer;
+	pvr::ui::UIRenderer uiRenderer;
 	bool isAtlasGenerated;
 
 	// Transforms
@@ -495,7 +497,7 @@ private:
 	pvr::uint64 prevTransTime;
 	pvr::uint64 prevTime;
 	bool swipe;
-	pvr::api::AssetStore assetManager;
+	pvr::utils::AssetStore assetManager;
 	pvr::GraphicsContext context;
 	glm::vec2 screenScale;
 	Rectanglef texAtlasRegions[Sprites::Count];
@@ -578,7 +580,7 @@ public:
 };
 
 /*!*********************************************************************************************************************
-\brief		Constructor
+\brief    Constructor
 ***********************************************************************************************************************/
 VulkanExampleUI::VulkanExampleUI() :
 	isAtlasGenerated(false), clockHandRotate(0.0f),
@@ -592,19 +594,22 @@ VulkanExampleUI::VulkanExampleUI() :
 void VulkanExampleUI::createPageWindow()
 {
 	// create the window page
-	deviceResource->pageWindow.group = uiRenderer.createMatrixGroup();
 	deviceResource->textLorem = uiRenderer.createText(TextLoremIpsum);
-	deviceResource->pageWindow.group->setViewProjection(projMtx);
+	deviceResource->textLorem->setScale(glm::vec2(.5f));
+	deviceResource->textLorem->setColor(0.0f, 0.0f, 0.0f, 1.0f);
+	deviceResource->textLorem->setAnchor(pvr::ui::Anchor::BottomLeft, glm::vec2(-1.0f, -1.0f));
 	deviceResource->pageWindow.clipArea = pvr::Rectanglei(0, 0, 390, 250);
 	deviceResource->pageWindow.clipArea.x = pvr::int32(deviceResource->pageWindow.clipArea.x * screenScale.x);
 	deviceResource->pageWindow.clipArea.y = pvr::int32(deviceResource->pageWindow.clipArea.y * screenScale.y);
 	deviceResource->pageWindow.clipArea.width = pvr::int32(deviceResource->pageWindow.clipArea.width * screenScale.x);
 	deviceResource->pageWindow.clipArea.height = pvr::int32(deviceResource->pageWindow.clipArea.height * screenScale.y);
-	deviceResource->textLorem->setScale(glm::vec2(.5f));
-	deviceResource->textLorem->setColor(0.0f, 0.0f, 0.0f, 1.0f);
-	deviceResource->textLorem->setAnchor(pvr::ui::Anchor::BottomLeft, glm::vec2(-1.0f, -1.0f));
-	deviceResource->pageWindow.group->add(deviceResource->textLorem);
-	deviceResource->pageWindow.group->commitUpdates();
+	for(uint32 i = 0; i < getSwapChainLength(); ++i)
+	{
+		deviceResource->pageWindow.group[i] = uiRenderer.createMatrixGroup();
+		deviceResource->pageWindow.group[i]->setViewProjection(projMtx);
+		deviceResource->pageWindow.group[i]->add(deviceResource->textLorem);
+		deviceResource->pageWindow.group[i]->commitUpdates();
+	}
 }
 
 /*!*********************************************************************************************************************
@@ -627,10 +632,10 @@ void VulkanExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& r
 	const pvr::float32 borderY = deviceResource->sprites[Sprites::ContainerCorner]->getHeight() /
 	                             uiRenderer.getRenderingDimY() * 2.f;
 
-	pvr::Rectangle<pvr::float32> rectVerticleLeft(rect.x, rect.y + borderY, rect.x + borderX, rect.height - borderY);
-	pvr::Rectangle<pvr::float32> rectVerticleRight(rect.width - borderX, rect.y + borderY, rect.width, rect.height - borderY);
-	pvr::Rectangle<pvr::float32> rectTopHorizontal(rect.x + borderX, rect.height - borderY, rect.width - borderX, rect.height);
-	pvr::Rectangle<pvr::float32> rectBottomHorizontal(rect.x  + borderX , rect.y, rect.width - borderX, rect.y + borderY);
+	pvr::Rectangle<pvr::float32> rectVerticleLeft(rect.x, rect.y + borderY, borderX, rect.height - borderY * 2);
+	pvr::Rectangle<pvr::float32> rectVerticleRight(rect.x + rect.width, rect.y + borderY, rect.width, rect.height - borderY * 2);
+	pvr::Rectangle<pvr::float32> rectTopHorizontal(rect.x + borderX, rect.y + rect.height - borderY, rect.width - borderX * 2, rect.height);
+	pvr::Rectangle<pvr::float32> rectBottomHorizontal(rect.x  + borderX, rect.y, rect.width - borderX * 2, rect.y + borderY);
 
 	// align the sprites to lower left so they will be aligned with their group
 	deviceResource->sprites[Sprites::ContainerCorner]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.0f);
@@ -642,11 +647,11 @@ void VulkanExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& r
 		pvr::ui::PixelGroup filler = uiRenderer.createPixelGroup();
 		filler->add(deviceResource->sprites[Sprites::ContainerFiller]);
 		deviceResource->sprites[Sprites::ContainerFiller]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.f, -1.f);
-		filler->setAnchor(pvr::ui::Anchor::TopLeft, rect.x + borderX, rect.height - borderY);
+		filler->setAnchor(pvr::ui::Anchor::BottomLeft, rect.x + borderX, rect.y + borderY);
 
-		filler->setScale(glm::vec2(.5f * (rect.getDimension().x - borderX * 2 /*minus the left and right borders*/) *
+		filler->setScale(glm::vec2(.5f * (rect.width - borderX * 2 /*minus the left and right borders*/) *
 		                           uiRenderer.getRenderingDimX() / deviceResource->sprites[Sprites::ContainerFiller]->getWidth(),
-		                           .501f * (rect.getDimension().y - borderY * 2/*minus Top and Bottom borders*/) *
+		                           .501f * (rect.height - borderY * 2/*minus Top and Bottom borders*/) *
 		                           uiRenderer.getRenderingDimY() / deviceResource->sprites[Sprites::ContainerFiller]->getHeight()));
 
 		outContainer.group->add(filler);
@@ -667,7 +672,7 @@ void VulkanExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& r
 		pvr::ui::PixelGroup newGroup = uiRenderer.createPixelGroup();
 		newGroup->add(deviceResource->sprites[Sprites::ContainerCorner]);
 		// flip the x coordinate by negative scale
-		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectTopHorizontal.width,
+		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectTopHorizontal.x + rectTopHorizontal.width,
 		                    rectTopHorizontal.y)->setScale(glm::vec2(-1.f, 1.0f));
 		outContainer.group->add(newGroup);
 	}
@@ -687,7 +692,7 @@ void VulkanExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& r
 		pvr::ui::PixelGroup newGroup = uiRenderer.createPixelGroup();
 		newGroup->add(deviceResource->sprites[Sprites::ContainerCorner]);
 		// flip the x and y coordinates
-		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectBottomHorizontal.width,
+		newGroup->setAnchor(pvr::ui::Anchor::BottomRight, rectBottomHorizontal.x + rectBottomHorizontal.width,
 		                    rectBottomHorizontal.height)->setScale(glm::vec2(-1.f, -1.0f));
 		outContainer.group->add(newGroup);
 	}
@@ -695,7 +700,7 @@ void VulkanExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& r
 	// Horizontal Up
 	{
 		//calculate the width of the sprite
-		float32 width = (rectTopHorizontal.getDimension().x * .5f * uiRenderer.getRenderingDimX() /
+		float32 width = (rectTopHorizontal.width * .5f * uiRenderer.getRenderingDimX() /
 		                 deviceResource->sprites[Sprites::ContainerVertical]->getWidth());
 		pvr::ui::PixelGroup horizontal = uiRenderer.createPixelGroup();
 		horizontal->add(deviceResource->sprites[Sprites::ContainerVertical]);
@@ -707,7 +712,7 @@ void VulkanExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& r
 	// Horizontal Down
 	{
 		//calculate the width of the sprite
-		float32 width = (rectBottomHorizontal.getDimension().x * .5f * uiRenderer.getRenderingDimX() /
+		float32 width = (rectBottomHorizontal.width * .5f * uiRenderer.getRenderingDimX() /
 		                 deviceResource->sprites[Sprites::ContainerVertical]->getWidth());
 		pvr::ui::PixelGroup horizontal = uiRenderer.createPixelGroup();
 		horizontal->add(deviceResource->sprites[Sprites::ContainerVertical]);
@@ -719,24 +724,24 @@ void VulkanExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& r
 	// Vertical Left
 	{
 		//calculate the height of the sprite
-		float32  height = (rectVerticleLeft.getDimension().y  * .501f * uiRenderer.getRenderingDimY() /
+		float32  height = (rectVerticleLeft.height * .501f * uiRenderer.getRenderingDimY() /
 		                   deviceResource->sprites[Sprites::ContainerHorizontal]->getHeight());
 		pvr::ui::PixelGroup verticle = uiRenderer.createPixelGroup();
 		verticle->add(deviceResource->sprites[Sprites::ContainerHorizontal]);
-		verticle->setScale(glm::vec2(1, height))->setAnchor(pvr::ui::Anchor::TopLeft, rectVerticleLeft.x,
-		    rectVerticleLeft.height)->setPixelOffset(0, 0);
+		verticle->setScale(glm::vec2(1, height))->setAnchor(pvr::ui::Anchor::BottomLeft, rectVerticleLeft.x,
+		    rectVerticleLeft.y)->setPixelOffset(0, 0);
 		outContainer.group->add(verticle);
 	}
 
 	// Vertical Right
 	{
 		//calculate the height of the sprite
-		float32 height = (rectVerticleRight.getDimension().y * .501f * uiRenderer.getRenderingDimY() /
+		float32 height = (rectVerticleRight.height * .501f * uiRenderer.getRenderingDimY() /
 		                  deviceResource->sprites[Sprites::ContainerHorizontal]->getHeight());
 		pvr::ui::PixelGroup vertical = uiRenderer.createPixelGroup();
 		vertical->add(deviceResource->sprites[Sprites::ContainerHorizontal]);
-		vertical->setScale(glm::vec2(-1, height))->setAnchor(pvr::ui::Anchor::TopLeft,
-		    rectVerticleRight.width, rectVerticleRight.height);
+		vertical->setScale(glm::vec2(-1, height))->setAnchor(pvr::ui::Anchor::BottomLeft,
+		    rectVerticleRight.x, rectVerticleRight.y);
 		outContainer.group->add(vertical);
 	}
 
@@ -744,9 +749,9 @@ void VulkanExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& r
 	float32  height = (outContainer.size.height - outContainer.size.y) * .5f;
 
 	// calculate the each container size
-	pvr::float32 containerWidth = (rect.width - rect.x) / numSubContainer;
+	pvr::float32 containerWidth = rect.width / numSubContainer;
 	pvr::float32 borderWidth = 1.f / uiRenderer.getRenderingDimX() * deviceResource->sprites[Sprites::VerticalBar]->getWidth();
-	pvr::Rectangle<pvr::float32> subRect(rect.x , rect.y, rect.x + containerWidth, rect.y + lowerContainerHeight);
+	pvr::Rectangle<pvr::float32> subRect(rect.x, rect.y, rect.x + containerWidth, rect.y + lowerContainerHeight);
 	height = .5f * (subRect.height - subRect.y) * uiRenderer.getRenderingDimY() /
 	         deviceResource->sprites[Sprites::VerticalBar]->getHeight();
 	// create the lower containers
@@ -754,7 +759,7 @@ void VulkanExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& r
 	// Horizontal Split
 	{
 		// half it here because the scaling happen at the center
-		width = (rect.getDimension().x * .5f * uiRenderer.getRenderingDimX() /
+		width = (rect.width * .5f * uiRenderer.getRenderingDimX() /
 		         deviceResource->sprites[Sprites::VerticalBar]->getHeight());
 		width -= .25;// reduce the width by quarter of a pixel so they fit well between the container
 		pvr::ui::PixelGroup horizontal = uiRenderer.createPixelGroup();
@@ -780,9 +785,9 @@ void VulkanExampleUI::createSpriteContainer(pvr::Rectangle<pvr::float32>const& r
 }
 
 /*!*********************************************************************************************************************
-\brief	Code in initApplication() will be called by PVRShell once per run, before the rendering context is created.
-		Used to initialize variables that are not Dependant on it (e.g. external modules, loading meshes, etc.)
-		If the rendering context is lost, InitApplication() will not be called again.
+\brief  Code in initApplication() will be called by PVRShell once per run, before the rendering context is created.
+    Used to initialize variables that are not Dependant on it (e.g. external modules, loading meshes, etc.)
+    If the rendering context is lost, InitApplication() will not be called again.
 \return Return pvr::Result::Success if no error occurred
 ***********************************************************************************************************************/
 pvr::Result VulkanExampleUI::initApplication()
@@ -793,7 +798,7 @@ pvr::Result VulkanExampleUI::initApplication()
 }
 
 /*!*********************************************************************************************************************
-\brief	create the weather page
+\brief  create the weather page
 ***********************************************************************************************************************/
 void VulkanExampleUI::createPageWeather()
 {
@@ -802,23 +807,23 @@ void VulkanExampleUI::createPageWeather()
 	backGround->add(deviceResource->sprites[Ancillary::Background]);
 
 	// create the weather page
+	std::vector<ui::Sprite> groupsList;
+
+
 	SpriteContainer container;
 	createSpriteContainer(deviceResource->pageClock.container.size, 4, LowerContainerHeight, container);
-
 	deviceResource->pageWeather.containerTop = container;
-	deviceResource->pageWeather.group = uiRenderer.createMatrixGroup();
-	deviceResource->pageWeather.group->add(container.group);
-
+	groupsList.push_back(container.group);
 	pvr::ui::PixelGroup group = uiRenderer.createPixelGroup();
 
 	// align the sprite with its parent group
 	deviceResource->sprites[Sprites::TextWeather]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
 	group->setScale(screenScale);
 	group->add(deviceResource->sprites[Sprites::TextWeather]);
-	const glm::vec2& containerHalfSize = deviceResource->pageWeather.containerTop.size.getDimension() * .5f;
+	const glm::vec2& containerHalfSize = deviceResource->pageWeather.containerTop.size.extent() * .5f;
 	group->setAnchor(pvr::ui::Anchor::CenterLeft, deviceResource->pageWeather.containerTop.size.x,
-	                 deviceResource->pageWeather.containerTop.size.getCenter().y)->setPixelOffset(10, 40);
-	deviceResource->pageWeather.group->add(group);
+					 deviceResource->pageWeather.containerTop.size.center().y)->setPixelOffset(10, 40);
+	groupsList.push_back(group);
 
 	// add the Weather
 	group = uiRenderer.createPixelGroup();
@@ -826,12 +831,12 @@ void VulkanExampleUI::createPageWeather()
 	// align the sprite with its parent group
 	deviceResource->sprites[Sprites::WeatherSunCloudBig]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
 	group->setAnchor(pvr::ui::Anchor::Center, deviceResource->pageWeather.containerTop.size.x + containerHalfSize.x,
-	                 deviceResource->pageWeather.containerTop.size.y + containerHalfSize.y)->setPixelOffset(0, 40);
+					 deviceResource->pageWeather.containerTop.size.y + containerHalfSize.y)->setPixelOffset(0, 40);
 	group->setScale(screenScale);
-	deviceResource->pageWeather.group->add(group);
+	groupsList.push_back(group);
 
 	// create the bottom 4 groups
-	Sprites::Enum sprites[] =
+	const Sprites::Enum sprites[] =
 	{
 		Sprites::WeatherSunCloud, Sprites::TextFriday,
 		Sprites::WeatherSunCloud, Sprites::TextSaturday,
@@ -839,11 +844,9 @@ void VulkanExampleUI::createPageWeather()
 		Sprites::WeatherStorm, Sprites::TextMonday
 	};
 
-	pvr::float32 width = (deviceResource->pageWeather.containerTop.size.width -
-	                      deviceResource->pageWeather.containerTop.size.x) / 4.f;
-
+	const pvr::float32 width = deviceResource->pageWeather.containerTop.size.width / 4.f;
 	pvr::float32 tempOffsetX = deviceResource->pageWeather.containerTop.size.x + (width * .5f);;
-	// pvr::float32 offsetYWeather =
+
 	for (pvr::uint32 i = 0; i < 8; i += 2)
 	{
 		Sprites::Enum weather = sprites[i];
@@ -855,7 +858,7 @@ void VulkanExampleUI::createPageWeather()
 		group->add(this->deviceResource->sprites[weather]);
 		group->setAnchor(pvr::ui::Anchor::BottomCenter, tempOffsetX, deviceResource->pageWeather.containerTop.size.y);
 		group->setScale(screenScale);
-		deviceResource->pageWeather.group->add(group);
+		groupsList.push_back(group);
 
 		//add the text
 		group = uiRenderer.createPixelGroup();
@@ -863,20 +866,30 @@ void VulkanExampleUI::createPageWeather()
 		this->deviceResource->sprites[text]->setAnchor(pvr::ui::Anchor::BottomLeft, -1.0f, -1.f);
 		group->add(this->deviceResource->sprites[text]);
 		group->setAnchor(pvr::ui::Anchor::TopCenter, tempOffsetX, deviceResource->pageWeather.containerTop.size.y
-		                 + LowerContainerHeight)->setPixelOffset(0, -5);
+						 + LowerContainerHeight)->setPixelOffset(0, -5);
 
 		group->setScale(screenScale);
-
-		deviceResource->pageWeather.group->add(group);
+		groupsList.push_back(group);
 		tempOffsetX = tempOffsetX + width;
 	}
-	deviceResource->pageWeather.group->commitUpdates();
+
+	for(uint32 i = 0; i < getSwapChainLength(); ++i)
+	{
+		deviceResource->pageWeather.group[i] = uiRenderer.createMatrixGroup();
+		deviceResource->pageWeather.group[i]->add(groupsList.data(), groupsList.size());
+		deviceResource->pageWeather.group[i]->setViewProjection(projMtx);
+		deviceResource->pageWeather.group[i]->commitUpdates();
+	}
+
+
+
+
 }
 
 /*!*********************************************************************************************************************
-\brief	Create clock sprite
-\param	outClock Returned clock
-\param	sprite Clock Sprite to create
+\brief  Create clock sprite
+\param  outClock Returned clock
+\param  sprite Clock Sprite to create
 ***********************************************************************************************************************/
 void VulkanExampleUI::createClockSprite(SpriteClock& outClock, Sprites::Enum sprite)
 {
@@ -905,38 +918,33 @@ void VulkanExampleUI::createClockSprite(SpriteClock& outClock, Sprites::Enum spr
 }
 
 /*!*********************************************************************************************************************
-\brief	Create clock page
+\brief  Create clock page
 ***********************************************************************************************************************/
 void VulkanExampleUI::createPageClock()
 {
 	SpriteContainer container;
 	const pvr::uint32 numClocksInColumn = 5;
-	pvr::float32 containerHeight = deviceResource->sprites[Sprites::ClockfaceSmall]->getDimensions().y * numClocksInColumn / BaseDim.y;
+	pvr::float32 containerHeight = deviceResource->sprites[Sprites::ClockfaceSmall]->getDimensions().y * numClocksInColumn / BaseDimY;
 	containerHeight += LowerContainerHeight * .5f;// add the lower container height as well
 	pvr::float32 containerWidth = deviceResource->sprites[Sprites::ClockfaceSmall]->getDimensions().x * 4;
 	containerWidth += deviceResource->sprites[Sprites::Clockface]->getDimensions().x;
-	containerWidth /= BaseDim.x;
+	containerWidth /= BaseDimX;
 
 	pvr::Rectangle<pvr::float32> containerRect(-containerWidth, -containerHeight,
-	    containerWidth, containerHeight);
+	    containerWidth * 2.f, containerHeight * 2.f);
 	createSpriteContainer(pvr::Rectangle<pvr::float32>(containerRect), 2, LowerContainerHeight, container);
 	deviceResource->pageClock.container = container;
 
-	deviceResource->pageClock.group = uiRenderer.createMatrixGroup();
-	pvr::ui::MatrixGroup groupBorder  = uiRenderer.createMatrixGroup();
-	groupBorder->add(deviceResource->sprites[Sprites::ContainerVertical]);
-	groupBorder->setScaleRotateTranslate(glm::translate(glm::vec3(0.0f, -0.45f, 0.0f))
-	                                     * glm::scale(glm::vec3(.65f, .055f, .2f)));
-	deviceResource->pageClock.group->add(deviceResource->containerTop.group);
-
-	for (pvr::uint32 i = 0; i < PageClock::numClocks; ++i)
+	ui::Sprite groupSprites[NumClocks + 3];
+	uint32 i = 0;
+	for (; i < NumClocks; ++i)
 	{
 		SpriteClock clock;
 		createClockSprite(clock, Sprites::ClockfaceSmall);
 		clock.group->setScale(screenScale);
 		clock.scale = screenScale;
 		// add the clock group in to page group
-		deviceResource->pageClock.group->add(clock.group);
+		groupSprites[i] = clock.group;
 		deviceResource->pageClock.clock.push_back(clock);// add the clock
 	}
 
@@ -945,27 +953,38 @@ void VulkanExampleUI::createPageClock()
 	SpriteClock clockCenter;
 	createClockSprite(clockCenter, Sprites::Clockface);
 	clockCenter.group->setScale(screenScale);
-
-	deviceResource->pageClock.group->add(clockCenter.group);
+	groupSprites[i++] = clockCenter.group;
 	deviceResource->pageClock.clock.push_back(clockCenter);
 
-	deviceResource->pageClock.group->add(deviceResource->sprites[Sprites::Text1]);
 	deviceResource->sprites[Sprites::Text1]->setAnchor(pvr::ui::Anchor::BottomLeft,
 	    glm::vec2(deviceResource->pageClock.container.size.x,
 	              deviceResource->pageClock.container.size.y))->setPixelOffset(0, 10);
-
 	deviceResource->sprites[Sprites::Text1]->setScale(screenScale);
-	deviceResource->pageClock.group->add(deviceResource->sprites[Sprites::Text2]);
+	groupSprites[i++] = deviceResource->sprites[Sprites::Text1];
 
 	deviceResource->sprites[Sprites::Text2]->setAnchor(pvr::ui::Anchor::BottomRight,
-	    glm::vec2(deviceResource->pageClock.container.size.width - 0.05f,
+	    glm::vec2(deviceResource->pageClock.container.size.width +
+				  deviceResource->pageClock.container.size.x - 0.05f,
 	              deviceResource->pageClock.container.size.y))->setPixelOffset(0, 10);
 	deviceResource->sprites[Sprites::Text2]->setScale(screenScale);
-	deviceResource->pageClock.group->commitUpdates();
+	groupSprites[i++] =deviceResource->sprites[Sprites::Text2];
+
+	for(uint32 i = 0; i < getSwapChainLength(); ++i)
+	{
+		deviceResource->pageClock.group[i] = uiRenderer.createMatrixGroup();
+		pvr::ui::MatrixGroup groupBorder  = uiRenderer.createMatrixGroup();
+		groupBorder->add(deviceResource->sprites[Sprites::ContainerVertical]);
+		groupBorder->setScaleRotateTranslate(glm::translate(glm::vec3(0.0f, -0.45f, 0.0f))
+											 * glm::scale(glm::vec3(.65f, .055f, .2f)));
+		deviceResource->pageClock.group[i]->add(deviceResource->containerTop.group);
+		deviceResource->pageClock.group[i]->add(groupSprites, ARRAY_SIZE(groupSprites));
+		deviceResource->pageClock.group[i]->setViewProjection(projMtx);
+		deviceResource->pageClock.group[i]->commitUpdates();
+	}
 }
 
 /*!*********************************************************************************************************************
-\brief	Create base UI
+\brief  Create base UI
 ***********************************************************************************************************************/
 void VulkanExampleUI::createBaseUI()
 {
@@ -1015,9 +1034,9 @@ void VulkanExampleUI::createBaseUI()
 }
 
 /*!*********************************************************************************************************************
-\brief	Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
+\brief  Code in initView() will be called by PVRShell upon initialization or after a change in the rendering context.
         Used to initialize variables that are Dependant on the rendering context (e.g. textures, vertex buffers, etc.)
-\return	Return true if no error occurred
+\return Return true if no error occurred
 ***********************************************************************************************************************/
 pvr::Result VulkanExampleUI::initView()
 {
@@ -1033,13 +1052,12 @@ pvr::Result VulkanExampleUI::initView()
 		deviceResource->cmdBufferTitleDesc[i] = context->createSecondaryCommandBufferOnDefaultPool();
 	}
 	// Initialize uiRenderer
-	if (uiRenderer.init(deviceResource->fboOnScreen[0]->getRenderPass(), 0) != pvr::Result::Success)
+	if (uiRenderer.init(deviceResource->fboOnScreen[0]->getRenderPass(), 0, 1024) != pvr::Result::Success)
 	{
 		this->setExitMessage("ERROR: Cannot initialize Print3D\n");
 		return pvr::Result::NotInitialized;
 	}
-	screenScale = uiRenderer.getRenderingDim() / BaseDim;
-	screenScale = glm::vec2(glm::min(screenScale.x, screenScale.y));
+	screenScale = glm::vec2(glm::min(uiRenderer.getRenderingDim().x / BaseDimX, uiRenderer.getRenderingDim().y / BaseDimY));
 	prevTransTime = this->getTime();
 
 	// Load the sprites
@@ -1077,22 +1095,21 @@ pvr::Result VulkanExampleUI::initView()
 	createPageClock();
 	createPageWeather();
 	createPageWindow();
-	deviceResource->pageClock.group->setViewProjection(projMtx);
-	deviceResource->pageWeather.group->setViewProjection(projMtx);
-	deviceResource->pageWindow.group->setViewProjection(projMtx);
 
 	for (pvr::uint32 i = 0; i < getSwapChainLength(); ++i)
 	{
 		recordSecondaryCommandBuffers(i);
 	}
+
+
 	updateTitleAndDesc((DisplayOption::Enum)displayOption);
 
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-\brief	Loads sprites that will be used to create a texture atlas.
-\return	Return true if no error occurred
+\brief  Loads sprites that will be used to create a texture atlas.
+\return Return true if no error occurred
 ***********************************************************************************************************************/
 bool VulkanExampleUI::loadSprites()
 {
@@ -1108,7 +1125,7 @@ bool VulkanExampleUI::loadSprites()
 
 	api::Sampler samplerBilinear = context->createSampler(samplerInfo);
 
-	pvr::assets::TextureHeader header;
+	pvr::TextureHeader header;
 	// Load sprites and add to sprite array so that we can generate a texture atlas from them.
 	for (pvr::uint32 i = 0; i < Sprites::Count + Ancillary::Count; i++)
 	{
@@ -1135,17 +1152,9 @@ bool VulkanExampleUI::loadSprites()
 		}
 
 
-		deviceResource->sprites[i] = uiRenderer.createImage(deviceResource->spritesDesc[i].tex, header.getWidth(), header.getHeight());
-
-		deviceResource->sprites[i]->setSampler(samplerNearest);
-
-		if (i == Sprites::ContainerCorner || i == Sprites::ContainerVertical ||
-		    i == Sprites::ContainerHorizontal || i == Sprites::ContainerFiller)
-		{
-			deviceResource->sprites[i]->setSampler(samplerNearest);
-		}
+		deviceResource->sprites[i] = uiRenderer.createImage(deviceResource->spritesDesc[i].tex, header.getWidth(), header.getHeight(), samplerNearest);
 	}
-	assets::TextureHeader atlasHeader;
+	TextureHeader atlasHeader;
 	if (!assetManager.generateTextureAtlas(context, SpritesFileNames, texAtlasRegions, Sprites::Count,
 	                                       &deviceResource->textureAtlas, &atlasHeader))
 	{
@@ -1161,8 +1170,8 @@ bool VulkanExampleUI::loadSprites()
 }
 
 /*!*********************************************************************************************************************
-\brief	Create nearest and bilinear sampler, and descriptor set for texture atlas
-\return	Return true if no error occurred
+\brief  Create nearest and bilinear sampler, and descriptor set for texture atlas
+\return Return true if no error occurred
 ***********************************************************************************************************************/
 bool VulkanExampleUI::createSamplersAndDescriptorSet()
 {
@@ -1191,14 +1200,14 @@ bool VulkanExampleUI::createSamplersAndDescriptorSet()
 	deviceResource->drawPassAtlas.descSet = descSetTexAtlas;
 
 	// set up the page window ubo
+	auto& ubo = deviceResource->pageWindow.clippingUboBuffer;
+	ubo.addEntryPacked("MVP", GpuDatatypes::mat4x4);
+	ubo.finalize(getGraphicsContext(), 1, types::BufferBindingUse::UniformBuffer, false, false);
 	for (uint32 i = 0; i < getSwapChainLength(); ++i)
 	{
-		auto& ubo = deviceResource->pageWindow.clippingUboBuffer;
 		api::DescriptorSet& uboDesc = deviceResource->pageWindow.clippingUboDesc[i];
-		ubo.addEntryPacked("MVP", GpuDatatypes::mat4x4);
-		ubo.setupArray(getGraphicsContext(), 1, types::BufferViewTypes::UniformBuffer);
 		ubo.connectWithBuffer(i, getGraphicsContext()->createBufferAndView(ubo.getAlignedElementSize(),
-		                      types::BufferBindingUse::UniformBuffer, true), types::BufferViewTypes::UniformBuffer);
+		                      types::BufferBindingUse::UniformBuffer, true));
 		uboDesc = getGraphicsContext()->createDescriptorSetOnDefaultPool(
 		            deviceResource->pipePreClip->getPipelineLayout()->getDescriptorSetLayout(0));
 		uboDesc->update(api::DescriptorSetUpdate().setUbo(0, ubo.getConnectedBuffer(i)));
@@ -1208,7 +1217,7 @@ bool VulkanExampleUI::createSamplersAndDescriptorSet()
 
 /*!*********************************************************************************************************************
 \brief create graphics pipeline for texture-atlas, pre-clip and post-clip pass.
-\return	 Return true if no error occurred
+\return  Return true if no error occurred
 ***********************************************************************************************************************/
 bool VulkanExampleUI::createPipelines()
 {
@@ -1355,9 +1364,9 @@ bool VulkanExampleUI::createPipelines()
 }
 
 /*!*********************************************************************************************************************
-\brief	Renders a 2D quad with the given parameters. DstRect is the rectangle to be rendered in
-		world coordinates. SrcRect is the rectangle to be cropped from the texture in pixel coordinates.
-		NOTE: This is not an optimized function and should not be called repeatedly to draw quads to the screen at render time.
+\brief  Renders a 2D quad with the given parameters. DstRect is the rectangle to be rendered in
+    world coordinates. SrcRect is the rectangle to be cropped from the texture in pixel coordinates.
+    NOTE: This is not an optimized function and should not be called repeatedly to draw quads to the screen at render time.
 ***********************************************************************************************************************/
 void VulkanExampleUI::drawScreenAlignedQuad(const api::GraphicsPipeline& pipe,
     api::DescriptorSet& ubo, pvr::api::CommandBufferBase cmdBuffer)
@@ -1368,13 +1377,12 @@ void VulkanExampleUI::drawScreenAlignedQuad(const api::GraphicsPipeline& pipe,
 }
 
 /*!*********************************************************************************************************************
-\return	Return Result::Success if no error occurred
-\brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
+\return Return Result::Success if no error occurred
+\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
 pvr::Result VulkanExampleUI::releaseView()
 {
 	// release all the textures and sprites
-	pvr::uint32 i = 0;
 	uiRenderer.release();
 	assetManager.releaseAll();
 	deviceResource.reset();
@@ -1383,27 +1391,27 @@ pvr::Result VulkanExampleUI::releaseView()
 }
 
 /*!*********************************************************************************************************************
-\brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting
-		the program. If the rendering context is lost, quitApplication() will not be called.
-\return	Return pvr::Result::Success if no error occurred
+\brief  Code in quitApplication() will be called by PVRShell once per run, just before exiting
+    the program. If the rendering context is lost, quitApplication() will not be called.
+\return Return pvr::Result::Success if no error occurred
 ***********************************************************************************************************************/
 pvr::Result VulkanExampleUI::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
-\brief	Render the page
-\param	page Page to render
-\param	mTransform Transformation matrix
+\brief  Render the page
+\param  page Page to render
+\param  mTransform Transformation matrix
 ***********************************************************************************************************************/
 void VulkanExampleUI::renderPage(DisplayPage::Enum page, const glm::mat4& mTransform, uint32 swapChain)
 {
 	switch (page)
 	{
 	case DisplayPage::Clocks:
-		deviceResource->pageClock.update(pvr::float32(getFrameTime()), mTransform);
+		deviceResource->pageClock.update(getSwapChainIndex(), pvr::float32(getFrameTime()), mTransform);
 		deviceResource->cmdBuffer[swapChain]->enqueueSecondaryCmds(deviceResource->cmdBufferClockPage[swapChain]);
 		break;
 	case DisplayPage::Weather:
-		deviceResource->pageWeather.update(mTransform);
+		deviceResource->pageWeather.update(getSwapChainIndex(), mTransform);
 		deviceResource->cmdBuffer[swapChain]->enqueueSecondaryCmds(deviceResource->cmdBufferWeatherpage[swapChain]);
 		break;
 	case DisplayPage::Window:
@@ -1415,7 +1423,7 @@ void VulkanExampleUI::renderPage(DisplayPage::Enum page, const glm::mat4& mTrans
 }
 
 /*!*********************************************************************************************************************
-\brief	Renders the default interface.
+\brief  Renders the default interface.
 ***********************************************************************************************************************/
 void VulkanExampleUI::renderUI(uint32 swapChain)
 {
@@ -1424,6 +1432,7 @@ void VulkanExampleUI::renderUI(uint32 swapChain)
 
 	// render the baseUI
 	deviceResource->cmdBuffer[swapChain]->enqueueSecondaryCmds(deviceResource->cmdBufferBaseUI[swapChain]);
+
 	if (state == DisplayState::Element)
 	{
 		// A transformation matri,x
@@ -1432,14 +1441,10 @@ void VulkanExampleUI::renderUI(uint32 swapChain)
 			glm::mat4 vRot, vCentre, vInv;
 			vRot = glm::rotate(wndRotate, glm::vec3(0.0f, 0.0f, 1.0f));
 
-			vCentre = glm::translate(glm::vec3(-uiRenderer.getRenderingDimX() * .5f,
-			                                   -uiRenderer.getRenderingDimY() * .5f, 0.0f));
+			vCentre = glm::translate(glm::vec3(-uiRenderer.getRenderingDim() * .5f, 0.0f));
 
 			vInv = glm::inverse(vCentre);
-			glm::vec2 rotateOrigin = glm::vec2(-deviceResource->textLorem->getScaledDimension().x * .5,
-			                                   -deviceResource->textLorem->getScaledDimension().y * .5f);
-
-			rotateOrigin = -glm::vec2(deviceResource->pageWindow.clipArea.getDimension()) * glm::vec2(.5f);
+			const glm::vec2 rotateOrigin = -glm::vec2(deviceResource->pageWindow.clipArea.extent()) * glm::vec2(.5f);
 
 			vCentre = glm::translate(glm::vec3(rotateOrigin, 0.0f));
 			vInv = glm::inverse(vCentre);
@@ -1458,10 +1463,10 @@ void VulkanExampleUI::renderUI(uint32 swapChain)
 	else if (state == DisplayState::Transition)
 	{
 		//--- Render outward group
-		pvr::float32 fX = pvr::math::quadraticEaseIn(0.0f, -uiRenderer.getRenderingDimX() * cycleDir, transitionPerc);
+		pvr::float32 fX = pvr::math::quadraticEaseIn(0.f, -uiRenderer.getRenderingDimX() * cycleDir, transitionPerc);
 		transform = glm::translate(glm::vec3(fX, 0.0f, 0.0f));
 
-		//	the last page page
+		//  the last page page
 		renderPage(lastPage, transform, swapChain);
 
 		// --- Render inward group
@@ -1477,7 +1482,7 @@ void VulkanExampleUI::renderUI(uint32 swapChain)
 }
 
 /*!*********************************************************************************************************************
-\brief	Swipe left
+\brief  Swipe left
 ***********************************************************************************************************************/
 void VulkanExampleUI::swipeLeft()
 {
@@ -1487,7 +1492,7 @@ void VulkanExampleUI::swipeLeft()
 }
 
 /*!*********************************************************************************************************************
-\brief	Swipe right
+\brief  Swipe right
 ***********************************************************************************************************************/
 void VulkanExampleUI::swipeRight()
 {
@@ -1497,8 +1502,8 @@ void VulkanExampleUI::swipeRight()
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success	if no error occurred
-\brief	Main rendering loop function of the program. The shell will call this function every frame.
+\return Return pvr::Result::Success if no error occurred
+\brief  Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
 pvr::Result VulkanExampleUI::renderFrame()
 {
@@ -1523,8 +1528,8 @@ pvr::Result VulkanExampleUI::renderFrame()
 		pvr::int32 nextPage = currentPage + cycleDir;
 		if (nextPage >= DisplayPage::Count || nextPage < 0)
 		{
-			cycleDir *= -1;							// Reverse direction
-			nextPage = currentPage + cycleDir;	// Recalculate
+			cycleDir *= -1;             // Reverse direction
+			nextPage = currentPage + cycleDir;  // Recalculate
 		}
 		currentPage = (DisplayPage::Enum)nextPage;
 		swipe = false;
@@ -1533,14 +1538,14 @@ pvr::Result VulkanExampleUI::renderFrame()
 	// Calculate next transition amount
 	if (state == DisplayState::Transition)
 	{
-		transitionPerc += 0.01666f;	// 60 FPS
+		transitionPerc += 0.01666f; // 60 FPS
 		if (transitionPerc > 1.f)
 		{
 			state = DisplayState::Element;
 			transitionPerc = 1.f;
-			wndRotate = 0.0f;			// Reset Window rotation
-			wndRotPerc = 0.0f;		// Reset Window rotation percentage
-			prevTransTime = currTime;	// Reset time
+			wndRotate = 0.0f;     // Reset Window rotation
+			wndRotPerc = 0.0f;    // Reset Window rotation percentage
+			prevTransTime = currTime; // Reset time
 		}
 	}
 
@@ -1553,21 +1558,14 @@ pvr::Result VulkanExampleUI::renderFrame()
 }
 
 /*!*********************************************************************************************************************
-\brief	Record secondary command buffer for drawing texture atlas, clock page, weather page and Window page
+\brief  Record secondary command buffer for drawing texture atlas, clock page, weather page and Window page
 ***********************************************************************************************************************/
 void VulkanExampleUI::recordSecondaryCommandBuffers(uint32 swapChain)
 {
-	// record render texture atlas commands
-	{
-		deviceResource->cmdBufferTexAtlas[swapChain] = context->createSecondaryCommandBufferOnDefaultPool();
-		uiRenderer.beginRendering(deviceResource->cmdBufferTexAtlas[swapChain], deviceResource->fboOnScreen[swapChain]);
-		deviceResource->spriteAtlas->render();
-		uiRenderer.endRendering();
-	}
-
+	// record the base ui
 	{
 		deviceResource->cmdBufferBaseUI[swapChain] = context->createSecondaryCommandBufferOnDefaultPool();
-		uiRenderer.beginRendering(deviceResource->cmdBufferBaseUI[swapChain], deviceResource->fboOnScreen[swapChain]);
+		uiRenderer.beginRendering(deviceResource->cmdBufferBaseUI[swapChain]);
 		deviceResource->groupBaseUI->render();//render the base GUI
 		uiRenderer.endRendering();
 	}
@@ -1576,8 +1574,7 @@ void VulkanExampleUI::recordSecondaryCommandBuffers(uint32 swapChain)
 	{
 		deviceResource->cmdBufferClockPage[swapChain] = context->createSecondaryCommandBufferOnDefaultPool();
 		uiRenderer.beginRendering(deviceResource->cmdBufferClockPage[swapChain], deviceResource->fboOnScreen[swapChain]);
-		deviceResource->groupBaseUI->render();//render the base GUI
-		deviceResource->pageClock.group->render();
+		deviceResource->pageClock.group[swapChain]->render();
 		uiRenderer.endRendering();
 	}
 
@@ -1586,7 +1583,7 @@ void VulkanExampleUI::recordSecondaryCommandBuffers(uint32 swapChain)
 		deviceResource->cmdBufferWeatherpage[swapChain] = context->createSecondaryCommandBufferOnDefaultPool();
 		deviceResource->cmdBufferWeatherpage[swapChain]->beginRecording(deviceResource->fboOnScreen[swapChain]);
 		uiRenderer.beginRendering(deviceResource->cmdBufferWeatherpage[swapChain], deviceResource->fboOnScreen[swapChain]);
-		deviceResource->pageWeather.group->render();
+		deviceResource->pageWeather.group[swapChain]->render();
 		uiRenderer.endRendering();
 		deviceResource->cmdBufferWeatherpage[swapChain]->endRecording();
 	}
@@ -1609,7 +1606,7 @@ void VulkanExampleUI::recordSecondaryCommandBuffers(uint32 swapChain)
 		// bind the post clip pipeline and render the text only where the stencil passes
 		uiRenderer.beginRendering(deviceResource->cmdBufferWindow[swapChain], deviceResource->pipePostClip,
 		                          deviceResource->fboOnScreen[swapChain]);
-		deviceResource->pageWindow.group->render();
+		deviceResource->pageWindow.group[swapChain]->render();
 		uiRenderer.endRendering();
 		deviceResource->cmdBufferWindow[swapChain]->endRecording();
 	}
@@ -1636,22 +1633,22 @@ void VulkanExampleUI::eventMappedInput(pvr::SimplifiedInput action)
 }
 
 /*!*********************************************************************************************************************
-\brief	Constructor
+\brief  Constructor
 \param[in] width Area width
 \param[in] height Area height
 ***********************************************************************************************************************/
 Area::Area(pvr::int32 width, pvr::int32 height) : x(0), y(0), isFilled(false), right(NULL), left(NULL) { setSize(width, height); }
 
 /*!*********************************************************************************************************************
-\brief	Constructor
+\brief  Constructor
 ***********************************************************************************************************************/
 Area::Area() : x(0), y(0), isFilled(false), right(NULL), left(NULL) { setSize(0, 0); }
 
 /*!*********************************************************************************************************************
-\brief	Calculates an area where there's sufficient space or returns NULL if no space could be found.
-\return	Return a pointer to the area added, else NULL if it fails
-\param	width Area width
-\param	height Area height
+\brief  Calculates an area where there's sufficient space or returns NULL if no space could be found.
+\return Return a pointer to the area added, else NULL if it fails
+\param  width Area width
+\param  height Area height
 ***********************************************************************************************************************/
 Area* Area::insert(pvr::int32 width, pvr::int32 height)
 {
@@ -1666,7 +1663,7 @@ Area* Area::insert(pvr::int32 width, pvr::int32 height)
 	// Now check right
 	if (right) { return right->insert(width, height); }
 	// Already filled!
-	if (isFilled)	{ return NULL; }
+	if (isFilled) { return NULL; }
 
 	// Too small
 	if (size < width * height || w < width || h < height) { return NULL; }
@@ -1722,8 +1719,8 @@ Area* Area::insert(pvr::int32 width, pvr::int32 height)
 }
 
 /*!*********************************************************************************************************************
-\brief	Deletes the given area.
-\return	 Return true on success
+\brief  Deletes the given area.
+\return  Return true on success
 ***********************************************************************************************************************/
 bool Area::deleteArea()
 {
@@ -1751,30 +1748,30 @@ bool Area::deleteArea()
 }
 
 /*!*********************************************************************************************************************
-\brief	set the area size
-\param	width Area width
+\brief  set the area size
+\param  width Area width
 \param  height Area height
 ***********************************************************************************************************************/
 void Area::setSize(pvr::int32 width, pvr::int32 height)
 {
-	w = width;	h = height;	size = width * height;
+	w = width;  h = height; size = width * height;
 }
 
 /*!*********************************************************************************************************************
-\brief	Get the X position of the area.
-\return	Return the area's x position
+\brief  Get the X position of the area.
+\return Return the area's x position
 ***********************************************************************************************************************/
 inline pvr::int32 Area::getX()const {return x;}
 
 /*!*********************************************************************************************************************
-\brief	get the Y position of the area.
+\brief  get the Y position of the area.
 \return Return the area's y position
 ***********************************************************************************************************************/
 inline pvr::int32 Area::getY()const { return y; }
 
 /*!*********************************************************************************************************************
-\brief	This function must be implemented by the user of the shell.The user should return its pvr::Shell object defining
+\brief  This function must be implemented by the user of the shell.The user should return its pvr::Shell object defining
         the behavior of the application.
-\return	Return The demo supplied by the user
+\return Return The demo supplied by the user
 ***********************************************************************************************************************/
 std::auto_ptr<pvr::Shell> pvr::newDemo() {return std::auto_ptr<pvr::Shell>(new VulkanExampleUI());}

@@ -16,9 +16,9 @@ layout (location = 0) out mediump vec4 oColor;
 
 void main()
 {
-    mediump vec3 color = texture(sTexture, TexCoord0).rgb * 0.52941176470588235294117647058823;
-    color = color + texture(sTexture, TexCoord1).rgb * 0.35294117647058823529411764705882;
-    color = color + texture(sTexture, TexCoord2).rgb * 0.35294117647058823529411764705882;    
-    oColor.rgb = color;
-	oColor.a = 1.;
+	mediump vec3 color = vec3(0.0);
+	color += texture(sTexture, TexCoord0).rgb * 0.333;
+    color += texture(sTexture, TexCoord1).rgb * 0.333;
+    color += texture(sTexture, TexCoord2).rgb * 0.333;    
+    oColor = vec4(color, 1.0);
 }

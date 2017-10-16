@@ -1,22 +1,22 @@
-/*!*********************************************************************************************************************
-\file         PVRNativeApi\OGLES\ExtensionLoaderGles.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains the glext:: class, with function pointers for all OpenGL ES 2/3 extensions. The function pointers are
-              populated on start, but they must only be used when a context for which they are supported is bound.
-***********************************************************************************************************************/
+/*!
+\brief Contains the glext:: class, with function pointers for all OpenGL ES 2/3 extensions. The function pointers are
+populated on start, but they must only be used when a context for which they are supported is bound.
+\file PVRNativeApi/OGLES/ExtensionLoaderGles.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include <cstring>
 #include "ApiGlesExt.h"
 
-/*!*********************************************************************************************************************
-\brief    Contains function pointers for all OpenGL ES 2/3 extensions. The function pointers are populated when the glext::initGlext()
-         is called (normally, PVR Shell calls this), but they must only be used when a context for which they are supported is
-     bound.
-***********************************************************************************************************************/
+/// <summary>Contains function pointers for all OpenGL ES 2/3 extensions. The function pointers are populated when the
+/// glext::initGlext() is called (normally, PVR Shell calls this), but they must only be used when a context for
+/// which they are supported is bound.</summary>
 class glext
 {
 public:
+//!\cond NO_DOXYGEN
+
 	// GL_EXT_discard_framebuffer
 	static PROC_EXT_glDiscardFramebufferEXT DiscardFramebufferEXT;
 
@@ -290,13 +290,14 @@ public:
 	static PROC_EXT_glClearTexImageIMG ClearTexImageIMG;
 	static PROC_EXT_glClearTexSubImageIMG ClearTexSubImageIMG;
 
+	static PROC_EXT_glClearTexImageEXT ClearTexImageEXT;
+	static PROC_EXT_glClearTexSubImageEXT ClearTexSubImageEXT;
+
 	static PROC_EXT_glFramebufferTexture2DDownsampleIMG FramebufferTexture2DDownsampleIMG;
 	static PROC_EXT_glFramebufferTextureLayerDownsampleIMG FramebufferTextureLayerDownsampleIMG;
 
 	// GL_EXT_tessellation_shader
 	static PROC_EXT_glPatchParameteriEXT PatchParameteriEXT;
-
-	static void isExtensionSupported(const char* extension);
-
 	static void initGlext();
+//!\endcond
 };

@@ -1,21 +1,22 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\OGLES\ContextGles.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief		Definition of the OpenGL ES implementation of the GraphicsContext (platform::ContextGles)
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief Definition of the OpenGL ES implementation of the GraphicsContext (platform::ContextGles)
+\file PVRApi/OGLES/ContextGles.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
-#include "PVRCore/IGraphicsContext.h"
-#include "PVRCore/IPlatformContext.h"
-#include "PVRApi/OGLES/FboGles.h"
+#include "PVRCore/Interfaces/IGraphicsContext.h"
+#include "PVRCore/Interfaces/IPlatformContext.h"
 #include "PVRNativeApi/OGLES/OpenGLESBindings.h"
+#include "PVRApi/OGLES/FboGles.h"
 #include "PVRApi/ApiObjects/DescriptorSet.h"
-#include "PVRApi/GpuCapabilities.h"
+#include "PVRApi/ApiObjects/GraphicsPipeline.h"
+#include "PVRApi/ApiObjects/ComputePipeline.h"
 #include <map>
 #include <set>
 #include <stdlib.h>
 #include <bitset>
+#include "PVRNativeApi/PlatformContext.h"
 
 namespace pvr {
 inline void reportDestroyedAfterContext(const char* objectName)
@@ -25,24 +26,20 @@ inline void reportDestroyedAfterContext(const char* objectName)
 #endif
 }
 
-/*!**********************************************************************************************************
-\brief Contains functions and methods related to the wiring of the PVRApi library to the underlying platform,
-including extensions and the Context classes.
-************************************************************************************************************/
+namespace api { namespace gles { class TextureStoreGles_; class TextureViewGles_; class SamplerGles_; } }
+
+/// <summary>Contains functions and methods related to the wiring of the PVRApi library to the underlying platform,
+/// including extensions and the Context classes.</summary>
 namespace platform {
 
-/*!*********************************************************************************************************************
-\brief This class is added as the Debug Callback. Redirects the debug output to the Log object.
-***********************************************************************************************************************/
+/// <summary>This class is added as the Debug Callback. Redirects the debug output to the Log object.</summary>
 inline void GL_APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
                                       const GLchar* message, const void* userParam)
 {
 	Log(Log.Debug, "%s", message);
 }
 
-/*!*********************************************************************************************************************
-\brief IGraphicsContext implementation that supports all OpenGL ES 2 and above versions.
-***********************************************************************************************************************/
+/// <summary>IGraphicsContext implementation that supports all OpenGL ES 2 and above versions.</summary>
 class ContextGles : public IGraphicsContext, public EmbeddedRefCount<ContextGles>
 {
 public:
@@ -68,14 +65,14 @@ private:
 	};
 
 public:
-	/*!*********************************************************************************************************************
-	\brief Create a new, empty, uninitialized context.
-	***********************************************************************************************************************/
+	/// <summary>Create a new, empty, uninitialized context.</summary>
 	ContextGles() : IGraphicsContext(Api::OpenGLESMaxVersion) {}
 
-	/*!*********************************************************************************************************************
-	\brief Virtual destructor.
-	***********************************************************************************************************************/
+	api::TextureView uploadTexture(const Texture& texture, bool allowDecompress);
+
+	SharedContext createSharedContext(uint32 contextId);
+
+	/// <summary>Virtual destructor.</summary>
 	virtual ~ContextGles();
 
 	void waitIdle();
@@ -84,60 +81,49 @@ public:
 
 	void pushPipeline(fnBindPipeline bindPipePtr, void* pipe);
 
-	/*!*********************************************************************************************************************
-	\brief Implementation of IGraphicsContext. Initializes this class using an OS manager.
-	\description This function must be called before using the Context. Will use the OS manager to make this Context
-	ready to use.
-	***********************************************************************************************************************/
+	/// <summary>Implementation of IGraphicsContext. Initializes this class using an OS manager.</summary>
+	/// <remarks>This function must be called before using the Context. Will use the OS manager to make this Context
+	/// ready to use.</remarks>
 	Result init(OSManager& osManager);
 
 	void setUpCapabilities();
 
-	/*!****************************************************************************************************************
-	\brief	Implementation of IGraphicsContext. Release the resources held by this context.
-	*******************************************************************************************************************/
+	/// <summary>Implementation of IGraphicsContext. Release the resources held by this context.</summary>
 	void release()
 	{
-		if (m_osManager) //Is already initialized?
+		if (_osManager) //Is already initialized?
 		{
-			m_osManager = 0;
-			memset(&(ApiCapabilitiesPrivate&)m_apiCapabilities, 0, sizeof(ApiCapabilitiesPrivate));
-			m_extensions.clear();
-			m_defaultCmdPool.reset();
-			m_defaultDescPool.reset();
-			m_defaultSampler.reset();
-			m_ContextImplementationID = (size_t)(-1);
-			m_platformContext = 0;
-			m_apiType = Api::Unspecified;
-			m_renderStatesTracker.releaseAll();
+			_osManager = 0;
+			memset(&(ApiCapabilitiesPrivate&)_apiCapabilities, 0, sizeof(ApiCapabilitiesPrivate));
+			_extensions.clear();
+			_defaultCmdPool.reset();
+			_defaultDescPool.reset();
+			_defaultSampler.reset();
+			_platformContext = 0;
+			_apiType = Api::Unspecified;
+			_renderStatesTracker.releaseAll();
 			gl::releaseGl();
 		}
-	}		//Error if no display set
+	}   //Error if no display set
 
-	/*!****************************************************************************************************************
-	\brief	Implementation of IGraphicsContext. Τake a screenshot in the specified buffer of the specified screen area.
-	*******************************************************************************************************************/
+	/// <summary>Implementation of IGraphicsContext. Τake a screenshot in the specified buffer of the specified screen area.
+	/// </summary>
 	bool screenCaptureRegion(uint32 x, uint32 y, uint32 w, uint32 h, byte* buffer,
 	                         ImageFormat requestedImageFormat);
 
-	/*!*********************************************************************************************************************
-	\brief Implementation of IGraphicsContext. Query if a specific extension is supported.
-	\param extension A c-style string representing the extension
-	\return True if the extension is supported
-	***********************************************************************************************************************/
+	/// <summary>Implementation of IGraphicsContext. Query if a specific extension is supported.</summary>
+	/// <param name="extension">A c-style string representing the extension</param>
+	/// <returns>True if the extension is supported</returns>
 	bool isExtensionSupported(const char8* extension) const;
 
 	api::Fbo createFbo(const api::FboCreateParam& desc);
 
 	api::FboSet createFboSet(const Multi<api::FboCreateParam>& fboInfo);
 
-
-	/*!****************************************************************************************************************
-	\brief	Get the ImageDataFormat associated with the presentation image for this GraphicsContext.
-	*******************************************************************************************************************/
-	const api::ImageDataFormat getPresentationImageFormat()const
+	/// <summary>Get the ImageDataFormat associated with the presentation image for this GraphicsContext.</summary>
+	const ImageDataFormat getPresentationImageFormat()const
 	{
-		api::ImageDataFormat presentationFormat;
+		ImageDataFormat presentationFormat;
 		presentationFormat.format = PixelFormat(getDisplayAttributes().redBits ? 'r' : 0, getDisplayAttributes().greenBits ? 'g' : 0,
 		                                        getDisplayAttributes().blueBits ? 'b' : 0, getDisplayAttributes().alphaBits ? 'a' : 0,
 		                                        (uint8)getDisplayAttributes().redBits, (uint8)getDisplayAttributes().greenBits,
@@ -147,12 +133,10 @@ public:
 		return presentationFormat;
 	}
 
-	/*!****************************************************************************************************************
-	\brief	Get the ImageDataFormat associated with the depth stencil image for this GraphicsContext.
-	*******************************************************************************************************************/
-	const api::ImageDataFormat getDepthStencilImageFormat()const
+	/// <summary>Get the ImageDataFormat associated with the depth stencil image for this GraphicsContext.</summary>
+	const ImageDataFormat getDepthStencilImageFormat()const
 	{
-		api::ImageDataFormat depthStencilFormat;
+		ImageDataFormat depthStencilFormat;
 		depthStencilFormat.format = PixelFormat('d', (getDisplayAttributes().stencilBPP ? 's' : 0), (uint8)0, (uint8)0,
 		                                        (uint8)getDisplayAttributes().depthBPP, (uint8)getDisplayAttributes().stencilBPP, (uint8)0, (uint8)0);
 		depthStencilFormat.colorSpace = types::ColorSpace::lRGB;
@@ -164,20 +148,19 @@ public:
 
 	std::string getInfo()const;
 
-	api::ParentableGraphicsPipeline  createParentableGraphicsPipeline(const api::GraphicsPipelineCreateParam& createParam);
+	api::GraphicsPipeline createGraphicsPipeline(const api::GraphicsPipelineCreateParam& desc);
+
+	api::GraphicsPipeline createGraphicsPipeline(const api::GraphicsPipelineCreateParam& desc,
+	    api::ParentableGraphicsPipeline parent);
+
+	api::ParentableGraphicsPipeline createParentableGraphicsPipeline(const api::GraphicsPipelineCreateParam& createParam);
+
+	api::ParentableGraphicsPipeline createParentableGraphicsPipeline(const api::GraphicsPipelineCreateParam& desc,
+	    const api::ParentableGraphicsPipeline& parent);
 
 	api::ComputePipeline createComputePipeline(const api::ComputePipelineCreateParam& createParam);
 
-	api::GraphicsPipeline createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc);
-
-	api::GraphicsPipeline createGraphicsPipeline(api::GraphicsPipelineCreateParam& desc,
-	    api::ParentableGraphicsPipeline parent);
-
-
 	api::Sampler createSampler(const api::SamplerCreateParam& createParam);
-
-    api::EffectApi createEffectApi(assets::Effect& effectDesc, api::GraphicsPipelineCreateParam& pipeDesc,
-	                               api::AssetLoadingDelegate& effectDelegate);
 
 	api::TextureStore createTexture();
 
@@ -208,20 +191,29 @@ public:
 
 
 	api::FboSet createOnScreenFboSetWithRenderPass(const api::RenderPass& renderPass,
-        Multi<api::OnScreenFboCreateParam>& onScreenFboCreateParams);
+	    const Multi<api::OnScreenFboCreateParam>& onScreenFboCreateParams);
 
 	api::Fbo createOnScreenFboWithRenderPass(uint32 swapIndex, const api::RenderPass& renderPass);
 
 
-    api::FboSet createOnScreenFboSet(types::LoadOp colorLoadOp, types::StoreOp colorStoreOp,
-                                     types::LoadOp depthLoadOp, types::StoreOp depthStoreOp,
-                                     types::LoadOp stencilLoadOp, types::StoreOp stencilStoreOp);
+	api::FboSet createOnScreenFboSet(types::LoadOp colorLoadOp, types::StoreOp colorStoreOp,
+	                                 types::LoadOp depthLoadOp, types::StoreOp depthStoreOp,
+	                                 types::LoadOp stencilLoadOp, types::StoreOp stencilStoreOp);
 
 
-    api::Fbo createOnScreenFbo(uint32 swapIndex, types::LoadOp colorLoadOp,
-                               types::StoreOp colorStoreOp, types::LoadOp depthLoadOp,
-                               types::StoreOp depthStoreOp, types::LoadOp stencilLoadOp,
-                               types::StoreOp stencilStoreOp);
+	api::Fbo createOnScreenFbo(uint32 swapIndex, types::LoadOp colorLoadOp,
+	                           types::StoreOp colorStoreOp, types::LoadOp depthLoadOp,
+	                           types::StoreOp depthStoreOp, types::LoadOp stencilLoadOp,
+	                           types::StoreOp stencilStoreOp);
+
+	api::RenderPass createOnScreenRenderpass(
+	  types::LoadOp colorLoadOp = types::LoadOp::Clear,
+	  types::StoreOp colorStoreOp = types::StoreOp::Store,
+	  types::LoadOp depthLoadOp = types::LoadOp::Clear,
+	  types::StoreOp depthStoreOp = types::StoreOp::Ignore,
+	  types::LoadOp stencilLoadOp = types::LoadOp::Clear,
+	  types::StoreOp stencilStoreOp = types::StoreOp::Ignore);
+
 
 	api::RenderPass createRenderPass(const api::RenderPassCreateParam& renderPassDesc);
 
@@ -235,74 +227,83 @@ public:
 
 	api::CommandPool createCommandPool();
 
-	api::Fence createFence(bool createSignaled) { return api::Fence(); }
+	api::Fence createFence(bool createSignaled);
 
 	api::Semaphore createSemaphore() { return api::Semaphore(); }
 
-	uint32 getSwapChainLength()const { return 1;}
+	api::SceneHierarchy createSceneHierarchy(const api::SceneHierarchyCreateParam& createParam);
 
-	uint32 getSwapChainIndex()const { return 0; }
+	api::VertexRayPipeline createVertexRayPipeline(const api::VertexRayPipelineCreateParam& createParam);
 
-	/*!*********************************************************************************************************************
-	\brief	return true if last bound pipeline was graphics
-	\return	bool
-	***********************************************************************************************************************/
+	api::SceneTraversalPipeline createSceneTraversalPipeline(const api::SceneTraversalPipelineCreateParam& createParam);
+
+	api::IndirectRayPipeline createIndirectRayPipeline(const api::IndirectRayPipelineCreateParam& createParam);
+
+	/// <summary>return true if last bound pipeline was graphics</summary>
+	/// <returns>bool</returns>
 	bool isLastBoundPipelineGraphics()const
 	{
-        return m_renderStatesTracker.lastBoundPipe == RenderStatesTracker::LastBoundPipeline::PipelineGraphics;
+		return _renderStatesTracker.lastBoundPipe == RenderStatesTracker::LastBoundPipeline::PipelineGraphics;
 	}
 
-	/*!*********************************************************************************************************************
-	\brief	return true if last bound pipeline was compute
-	\return	bool
-	***********************************************************************************************************************/
+	/// <summary>return true if last bound pipeline was compute</summary>
+	/// <returns>bool</returns>
 	bool isLastBoundPipelineCompute()const
 	{
-        return m_renderStatesTracker.lastBoundPipe == RenderStatesTracker::LastBoundPipeline::PipelineCompute;
+		return _renderStatesTracker.lastBoundPipe == RenderStatesTracker::LastBoundPipeline::PipelineCompute;
 	}
 
-    void onBind(api::impl::GraphicsPipeline_* pipeline)
+	void onBind(api::impl::GraphicsPipeline_* pipeline);
+
+	void onBind(api::impl::ComputePipeline_* pipeline);
+
+	void onBind(api::impl::VertexRayPipeline_* pipeline)
 	{
-        m_renderStatesTracker.lastBoundPipe = RenderStatesTracker::LastBoundPipeline::PipelineGraphics;
-		setBoundGraphicsPipeline(pipeline);
+		assertion(false, "Binding a vertex ray pipeline is unsupported.");
 	}
 
-    void onBind(api::impl::ComputePipeline_* pipeline)
+	void onBind(api::impl::SceneTraversalPipeline_* pipeline)
 	{
-        m_renderStatesTracker.lastBoundPipe = RenderStatesTracker::LastBoundPipeline::PipelineCompute;
-		setBoundComputePipeline(pipeline);
+		assertion(false, "Binding a scene traversal pipeline is unsupported.");
 	}
 
-	/*!*********************************************************************************************************************
-	\brief Internal use. State tracking. Outside code calls this to notify the context that a new texture has been bound to a texture unit.
-	***********************************************************************************************************************/
-	void onBind(const api::impl::TextureView_& texture, uint16 bindIndex)
+	/// <summary>Internal use. State tracking. Outside code calls this to notify the context that a new texture has been
+	/// bound to a texture unit.</summary>
+	void onBind(const api::gles::TextureStoreGles_& texture, uint16 bindIndex)
 	{
-		if (m_renderStatesTracker.texSamplerBindings.size() <= bindIndex)
+		if (_renderStatesTracker.texSamplerBindings.size() <= bindIndex)
 		{
-			assertion(false , "UnSupported Texture Unit binding");
+			assertion(false, "UnSupported Texture Unit binding");
 			Log("UnSupported Texture Unit binding %d", bindIndex);
 		}
-		m_renderStatesTracker.lastBoundTexBindIndex = bindIndex;
-		m_renderStatesTracker.texSamplerBindings[bindIndex].toBindTex = &texture;
-		//m_renderStatesTracker.texUnits.push_back(std::pair<string, uint32>(shaderVaribleName, bindIndex));
+		_renderStatesTracker.lastBoundTexBindIndex = bindIndex;
+		_renderStatesTracker.texSamplerBindings[bindIndex].lastBoundTex = &texture;
+		//_renderStatesTracker.texUnits.push_back(std::pair<string, uint32>(shaderVaribleName, bindIndex));
 	}
 
-	void onBind(const api::impl::Sampler_& sampler, uint16 bindIndex)
+	/// <summary>Internal use. State tracking. Outside code calls this to notify the context that a new texture has been
+	/// bound to a texture unit.</summary>
+	void onBindImage(const api::gles::TextureStoreGles_& texture, uint16 imageUnit)
 	{
-		if (m_renderStatesTracker.texSamplerBindings.size() <= bindIndex)
+		assertion(_renderStatesTracker.imageBindings.size() > imageUnit, "UnSupported Image Unit binding");
+		_renderStatesTracker.imageBindings[imageUnit] = &texture;
+	}
+
+	void onBind(const api::gles::SamplerGles_& sampler, uint16 bindIndex)
+	{
+		if (_renderStatesTracker.texSamplerBindings.size() <= bindIndex)
 		{
-			assertion(false , "UnSupported Sampler Unit binding");
+			assertion(false, "UnSupported Sampler Unit binding");
 			Log("UnSupported Sampler Unit binding %d", bindIndex);
 		}
-		m_renderStatesTracker.texSamplerBindings[bindIndex].lastBoundSampler = &sampler;
+		_renderStatesTracker.texSamplerBindings[bindIndex].lastBoundSampler = &sampler;
 	}
 
 	void onBindUbo(uint16 bindIndex, const api::Buffer& buffer, uint32 offset, uint32 range)
 	{
 		std::vector<std::pair<uint16, BufferRange>/**/>::iterator it =
-		  std::find_if(m_renderStatesTracker.uboBufferBindings.begin(), m_renderStatesTracker.uboBufferBindings.end(), BufferBindingComp(bindIndex));
-		if (it != m_renderStatesTracker.uboBufferBindings.end())
+		  std::find_if(_renderStatesTracker.uboBufferBindings.begin(), _renderStatesTracker.uboBufferBindings.end(), BufferBindingComp(bindIndex));
+		if (it != _renderStatesTracker.uboBufferBindings.end())
 		{
 			it->second.offset = offset;
 			it->second.range = range;
@@ -310,15 +311,15 @@ public:
 		}
 		else
 		{
-			m_renderStatesTracker.uboBufferBindings.push_back(std::make_pair(bindIndex, BufferRange(buffer, offset, range)));
+			_renderStatesTracker.uboBufferBindings.push_back(std::make_pair(bindIndex, BufferRange(buffer, offset, range)));
 		}
 	}
 
 	void onBindSsbo(uint16 bindIndex, const api::Buffer& buffer, uint32 offset, uint32 range)
 	{
 		std::vector<std::pair<uint16, BufferRange>/**/>::iterator it =
-		  std::find_if(m_renderStatesTracker.ssboBufferBindings.begin(), m_renderStatesTracker.ssboBufferBindings.end(), BufferBindingComp(bindIndex));
-		if (it != m_renderStatesTracker.ssboBufferBindings.end())
+		  std::find_if(_renderStatesTracker.ssboBufferBindings.begin(), _renderStatesTracker.ssboBufferBindings.end(), BufferBindingComp(bindIndex));
+		if (it != _renderStatesTracker.ssboBufferBindings.end())
 		{
 			it->second.offset = offset;
 			it->second.range = range;
@@ -326,15 +327,15 @@ public:
 		}
 		else
 		{
-			m_renderStatesTracker.ssboBufferBindings.push_back(std::make_pair(bindIndex, BufferRange(buffer, offset, range)));
+			_renderStatesTracker.ssboBufferBindings.push_back(std::make_pair(bindIndex, BufferRange(buffer, offset, range)));
 		}
 	}
 
 	void onBindAtomicBuffer(uint16 bindIndex, const api::Buffer& buffer, uint32 offset, uint32 range)
 	{
 		std::vector<std::pair<uint16, BufferRange>/**/>::iterator it =
-		  std::find_if(m_renderStatesTracker.atomicBufferBindings.begin(), m_renderStatesTracker.atomicBufferBindings.end(), BufferBindingComp(bindIndex));
-		if (it != m_renderStatesTracker.atomicBufferBindings.end())
+		  std::find_if(_renderStatesTracker.atomicBufferBindings.begin(), _renderStatesTracker.atomicBufferBindings.end(), BufferBindingComp(bindIndex));
+		if (it != _renderStatesTracker.atomicBufferBindings.end())
 		{
 			it->second.offset = offset;
 			it->second.range = range;
@@ -342,103 +343,88 @@ public:
 		}
 		else
 		{
-			m_renderStatesTracker.atomicBufferBindings.push_back(std::make_pair(bindIndex, BufferRange(buffer, offset, range)));
+			_renderStatesTracker.atomicBufferBindings.push_back(std::make_pair(bindIndex, BufferRange(buffer, offset, range)));
 		}
 	}
 
 	BufferRange getBoundProgramBufferUbo(uint16 bindIndex)
 	{
 		std::vector<std::pair<uint16, BufferRange>/**/>::iterator it =
-		  std::find_if(m_renderStatesTracker.uboBufferBindings.begin(), m_renderStatesTracker.uboBufferBindings.end(), BufferBindingComp(bindIndex));
-		return (it != m_renderStatesTracker.uboBufferBindings.end() ? it->second : BufferRange());
+		  std::find_if(_renderStatesTracker.uboBufferBindings.begin(), _renderStatesTracker.uboBufferBindings.end(), BufferBindingComp(bindIndex));
+		return (it != _renderStatesTracker.uboBufferBindings.end() ? it->second : BufferRange());
 	}
 
 	BufferRange getBoundProgramBufferSsbo(uint16 bindIndex)
 	{
 		std::vector<std::pair<uint16, BufferRange>/**/>::iterator it =
-		  std::find_if(m_renderStatesTracker.ssboBufferBindings.begin(), m_renderStatesTracker.ssboBufferBindings.end(), BufferBindingComp(bindIndex));
-		return (it != m_renderStatesTracker.ssboBufferBindings.end() ? it->second : BufferRange());
+		  std::find_if(_renderStatesTracker.ssboBufferBindings.begin(), _renderStatesTracker.ssboBufferBindings.end(), BufferBindingComp(bindIndex));
+		return (it != _renderStatesTracker.ssboBufferBindings.end() ? it->second : BufferRange());
 	}
 
 	BufferRange getBoundProgramBufferAtomicBuffer(uint16 bindIndex)
 	{
 		std::vector<std::pair<uint16, BufferRange>/**/>::iterator it =
-		  std::find_if(m_renderStatesTracker.atomicBufferBindings.begin(), m_renderStatesTracker.atomicBufferBindings.end(), BufferBindingComp(bindIndex));
-		return (it != m_renderStatesTracker.atomicBufferBindings.end() ? it->second : BufferRange());
+		  std::find_if(_renderStatesTracker.atomicBufferBindings.begin(), _renderStatesTracker.atomicBufferBindings.end(), BufferBindingComp(bindIndex));
+		return (it != _renderStatesTracker.atomicBufferBindings.end() ? it->second : BufferRange());
 	}
 
 	const api::Fbo& getBoundFbo()const
 	{
-		return m_renderStatesTracker.boundFbo;
+		return _renderStatesTracker.boundFbo;
 	}
 
-	/*!*********************************************************************************************************************
-	\brief  Implementation of IGraphicsContext. Return the  platform context that powers this graphics context.
-	***********************************************************************************************************************/
-	IPlatformContext& getPlatformContext()const { return *m_platformContext; }
+	/// <summary>Implementation of IGraphicsContext. Return the platform context that powers this graphics context.</summary>
+	IPlatformContext& getPlatformContext()const { return *_platformContext; }
 
-	/*!*********************************************************************************************************************
-	\brief Internal use. State tracking. enable veretx atribute.
-	***********************************************************************************************************************/
+	/// <summary>Internal use. State tracking. enable veretx atribute.</summary>
 	void enableAttribute(uint16 attributeIdx)
 	{
-		m_renderStatesTracker.attributesToEnableBitfield |= (1 << attributeIdx);
-		if ((m_renderStatesTracker.attributesEnabledBitfield & (1 << attributeIdx)) == 0)
+		_renderStatesTracker.attributesToEnableBitfield |= (1 << attributeIdx);
+		if ((_renderStatesTracker.attributesEnabledBitfield & (1 << attributeIdx)) == 0)
 		{
 			gl::EnableVertexAttribArray(attributeIdx);
-			m_renderStatesTracker.attributesEnabledBitfield |= (1 << attributeIdx);
+			_renderStatesTracker.attributesEnabledBitfield |= (1 << attributeIdx);
 		}
-		m_renderStatesTracker.attributesMaxToEnable = (std::max)(attributeIdx, m_renderStatesTracker.attributesMaxToEnable) + 1;
+		_renderStatesTracker.attributesMaxToEnable = (std::max)(attributeIdx, _renderStatesTracker.attributesMaxToEnable) + 1;
 	}
 
-	/*!*********************************************************************************************************************
-	\brief Internal use. State tracking.disable unneeded vertex attributes.
-	***********************************************************************************************************************/
+	/// <summary>Internal use. State tracking.disable unneeded vertex attributes.</summary>
 	void disableUnneededAttributes()
 	{
-		uint32 deactivate = m_renderStatesTracker.attributesEnabledBitfield ^ m_renderStatesTracker.attributesToEnableBitfield;
+		uint32 deactivate = _renderStatesTracker.attributesEnabledBitfield ^ _renderStatesTracker.attributesToEnableBitfield;
 
-		for (uint8 i = 0; i < m_renderStatesTracker.attributesMaxEnabled; ++i)
+		for (uint8 i = 0; i < _renderStatesTracker.attributesMaxEnabled; ++i)
 		{
 			if (Bitfield<uint32>::isSet(deactivate, i))
 			{
 				gl::DisableVertexAttribArray(i);
 			}
 		}
-		m_renderStatesTracker.attributesEnabledBitfield = m_renderStatesTracker.attributesToEnableBitfield;
-		m_renderStatesTracker.attributesMaxEnabled = m_renderStatesTracker.attributesMaxToEnable;
-		m_renderStatesTracker.attributesMaxToEnable = 0;
-		m_renderStatesTracker.attributesToEnableBitfield = 0;
+		_renderStatesTracker.attributesEnabledBitfield = _renderStatesTracker.attributesToEnableBitfield;
+		_renderStatesTracker.attributesMaxEnabled = _renderStatesTracker.attributesMaxToEnable;
+		_renderStatesTracker.attributesMaxToEnable = 0;
+		_renderStatesTracker.attributesToEnableBitfield = 0;
 	}
 
-	/*!****************************************************************************************************************
-	\brief	A map of VBO bindings.
-	*******************************************************************************************************************/
+	/// <summary>A map of VBO bindings.</summary>
 	typedef std::map<uint16, api::Buffer> VboBindingMap;//< bind index, buffer
 
 	struct TextureBinding
 	{
-		const api::impl::TextureView_* toBindTex;
-		const api::impl::TextureView_* lastBoundTex;
-		const api::impl::Sampler_* lastBoundSampler;
-
-
-		TextureBinding() : toBindTex(0), lastBoundTex(0), lastBoundSampler(0) {}
+		const api::gles::TextureStoreGles_* lastBoundTex;
+		const api::gles::SamplerGles_* lastBoundSampler;
+		TextureBinding() : /*toBindTex(0),*/ lastBoundTex(0), lastBoundSampler(0) {}
 	};
 
-	/*!****************************************************************************************************************
-	\brief	A map of texture bindings.
-	*******************************************************************************************************************/
 	typedef std::vector<TextureBinding> TextureBindingList;
+	typedef std::vector < const api::gles::TextureStoreGles_* > ImageBindingList;
 
 	typedef std::vector<std::pair<uint16, BufferRange>/**/> ProgBufferBingingList;
 
-	/*!****************************************************************************************************************
-	\brief internal state tracker for OpenGLES
-	*******************************************************************************************************************/
+	/// <summary>internal state tracker for OpenGLES</summary>
 	struct RenderStatesTracker
 	{
-        friend class pvr::platform::ContextGles;
+		friend class platform::ContextGles;
 		// Stencil
 		struct DepthStencilState
 		{
@@ -460,34 +446,46 @@ public:
 			types::StencilOp depthFailOpBack;
 			types::ComparisonMode stencilOpBack;
 
+			bool depthBias;
+			float32 depthBiasMax;
+			float32 depthBiasConstantFactor;
+			float32 depthBiasSlopeFactor;
+			float32 depthBiasClamp;
+
 			int32 refFront, refBack;
 
 			uint32 readMaskFront, readMaskBack, writeMaskFront, writeMaskBack;
 
-			glm::bvec4 m_colorWriteMask;
+			glm::bvec4 _colorWriteMask;
 
-            DepthStencilState() : depthTest(types::PipelineDefaults::DepthStencilStates::DepthTestEnabled),
-                depthWrite(types::PipelineDefaults::DepthStencilStates::DepthWriteEnabled),
-                stencilWriteMask(types::PipelineDefaults::DepthStencilStates::StencilWriteMask),
-                enableStencilTest(types::PipelineDefaults::DepthStencilStates::StencilTestEnabled),
-                clearStencilValue(types::PipelineDefaults::DepthStencilStates::StencilClearValue),
+			DepthStencilState() : depthTest(false),
+				depthWrite(true),
+				stencilWriteMask(0xff),
+				enableStencilTest(false),
+				clearStencilValue(0),
 				depthOp(types::ComparisonMode::DefaultDepthFunc),
-				stencilFailOpFront(types::StencilOp::DefaultStencilFailFront),
-				depthStencilPassOpFront(types::StencilOp::DefaultDepthStencilPassFront),
-				depthFailOpFront(types::StencilOp::DefaultDepthFailFront),
-				stencilOpFront(types::ComparisonMode::DefaultStencilOpFront),
+				stencilFailOpFront(types::StencilOp::Default),
+				depthStencilPassOpFront(types::StencilOp::Default),
+				depthFailOpFront(types::StencilOp::Default),
+				stencilOpFront(types::ComparisonMode::DefaultStencilFunc),
 
-				stencilFailOpBack(types::StencilOp::DefaultStencilFailBack),
-				depthStencilPassOpBack(types::StencilOp::DefaultDepthStencilPassBack),
-				depthFailOpBack(types::StencilOp::DefaultDepthFailBack),
-				stencilOpBack(types::ComparisonMode::DefaultStencilOpBack),
+				stencilFailOpBack(types::StencilOp::Default),
+				depthStencilPassOpBack(types::StencilOp::Default),
+				depthFailOpBack(types::StencilOp::Default),
+				stencilOpBack(types::ComparisonMode::DefaultStencilFunc),
 
-                refFront(types::PipelineDefaults::DepthStencilStates::StencilReference),
-                refBack(types::PipelineDefaults::DepthStencilStates::StencilReference),
-                readMaskFront(types::PipelineDefaults::DepthStencilStates::StencilReadMask),
-                readMaskBack(types::PipelineDefaults::DepthStencilStates::StencilReadMask),
-                writeMaskFront(types::PipelineDefaults::DepthStencilStates::StencilWriteMask),
-                writeMaskBack(types::PipelineDefaults::DepthStencilStates::StencilWriteMask)
+				depthBias(false),
+				depthBiasMax(0.f),
+				depthBiasConstantFactor(0.f),
+				depthBiasSlopeFactor(0.f),
+				depthBiasClamp(0.f),
+
+				refFront(0),
+				refBack(0),
+				readMaskFront(0xff),
+				readMaskBack(0xff),
+				writeMaskFront(0xff),
+				writeMaskBack(0xff)
 			{}
 		};
 		struct IndexBufferState
@@ -498,10 +496,13 @@ public:
 			IndexBufferState() : offset(0) {}
 		};
 
+
+
 		IndexBufferState iboState;
 		VboBindingMap vboBindings;
 		api::Buffer lastBoundVbo;
 		TextureBindingList texSamplerBindings;
+		ImageBindingList imageBindings;
 		uint32 lastBoundTexBindIndex;
 		DepthStencilState depthStencil;
 		api::Fbo boundFbo;
@@ -515,6 +516,7 @@ public:
 		types::BlendOp rgbBlendOp;
 		types::BlendOp alphaBlendOp;
 		types::BlendFactor srcRgbFactor, srcAlphaFactor, destRgbFactor, destAlphaFactor;
+		native::HPipeline_ lastBoundProgram;
 		bool enabledScissorTest;
 		bool enabledBlend;
 
@@ -523,100 +525,114 @@ public:
 
 		std::vector<std::pair<string, uint32>/**/> texUnits;
 	private:
-		void releaseAll() {	*this = RenderStatesTracker();	}
+		void releaseAll() { *this = RenderStatesTracker();  }
 		uint32 attributesToEnableBitfield;
 		uint32 attributesEnabledBitfield;
 		uint16 attributesMaxToEnable;
 		uint16 attributesMaxEnabled;
 
-        enum class LastBoundPipeline
-        {
-            PipelineGraphics,
-            PipelineCompute,
-            PipelineNone,
-            Default = PipelineNone
-        };
+		enum class LastBoundPipeline
+		{
+			PipelineGraphics,
+			PipelineCompute,
+			PipelineNone,
+			Default = PipelineNone
+		};
 
-        LastBoundPipeline lastBoundPipe;
+		LastBoundPipeline lastBoundPipe;
 	public:
 		RenderStatesTracker() :
-            lastBoundTexBindIndex(0),
-            colorWriteMask(types::PipelineDefaults::ColorWrite::ColorMaskR, types::PipelineDefaults::ColorWrite::ColorMaskG,
-                           types::PipelineDefaults::ColorWrite::ColorMaskB, types::PipelineDefaults::ColorWrite::ColorMaskA),
-			cullFace(types::Face::DefaultCullFace),
+			lastBoundTexBindIndex(0),
+			colorWriteMask(types::PipelineDefaults::ColorWrite::ColorMaskR, types::PipelineDefaults::ColorWrite::ColorMaskG,
+			               types::PipelineDefaults::ColorWrite::ColorMaskB, types::PipelineDefaults::ColorWrite::ColorMaskA),
+			cullFace(types::Face::Default),
 			polyWindingOrder(types::PolygonWindingOrder::Default),
-            rgbBlendOp(types::BlendOp::Default),
-            alphaBlendOp(types::BlendOp::Default),
-            srcRgbFactor(types::BlendFactor::DefaultSrcRgba),
-            srcAlphaFactor(types::BlendFactor::DefaultSrcRgba),
-            destRgbFactor(types::BlendFactor::DefaultDestRgba),
-            destAlphaFactor(types::BlendFactor::DefaultDestRgba),
-            enabledScissorTest(types::PipelineDefaults::ViewportScissor::ScissorTestEnabled),
-            enabledBlend(types::PipelineDefaults::ColorBlend::BlendEnabled),
-            viewport(types::PipelineDefaults::ViewportScissor::OffsetX,
-                     types::PipelineDefaults::ViewportScissor::OffsetY,
-                     types::PipelineDefaults::ViewportScissor::Width,
-                     types::PipelineDefaults::ViewportScissor::Height),
-            scissor(types::PipelineDefaults::ViewportScissor::OffsetX,
-                    types::PipelineDefaults::ViewportScissor::OffsetY,
-                    types::PipelineDefaults::ViewportScissor::Width,
-                    types::PipelineDefaults::ViewportScissor::Height),
-            attributesToEnableBitfield(0),
-            attributesEnabledBitfield(0),
-            attributesMaxToEnable(0),
-            attributesMaxEnabled(0),
-            lastBoundPipe(LastBoundPipeline::Default) {}
+			rgbBlendOp(types::BlendOp::Default),
+			alphaBlendOp(types::BlendOp::Default),
+			srcRgbFactor(types::BlendFactor::DefaultSrcRgba),
+			srcAlphaFactor(types::BlendFactor::DefaultSrcRgba),
+			destRgbFactor(types::BlendFactor::DefaultDestRgba),
+			destAlphaFactor(types::BlendFactor::DefaultDestRgba),
+			enabledScissorTest(types::PipelineDefaults::ViewportScissor::ScissorTestEnabled),
+			enabledBlend(types::PipelineDefaults::ColorBlend::BlendEnabled),
+			viewport(0, 0, 0, 0),
+			scissor(0, 0, 0, 0),
+			attributesToEnableBitfield(0),
+			attributesEnabledBitfield(0),
+			attributesMaxToEnable(0),
+			attributesMaxEnabled(0),
+			lastBoundPipe(LastBoundPipeline::Default),
+			lastBoundProgram(0) {}
 
-        ~RenderStatesTracker() {}
+		~RenderStatesTracker() {}
 	};
-	RenderStatesTracker& getCurrentRenderStates() { return m_renderStatesTracker; }
-	RenderStatesTracker const& getCurrentRenderStates()const { return m_renderStatesTracker; }
+	RenderStatesTracker& getCurrentRenderStates() { return _renderStatesTracker; }
+	RenderStatesTracker const& getCurrentRenderStates()const { return _renderStatesTracker; }
 
-	api::Sampler getDefaultSampler()const { return m_defaultSampler; }
-	api::CommandPool& getDefaultCommandPool() { return m_defaultCmdPool; }
-	const api::CommandPool& getDefaultCommandPool()const { return m_defaultCmdPool; }
+	api::Sampler getDefaultSampler()const { return _defaultSampler; }
+	api::CommandPool& getDefaultCommandPool() { return _defaultCmdPool; }
+	const api::CommandPool& getDefaultCommandPool()const { return _defaultCmdPool; }
 	api::DescriptorPool& getDefaultDescriptorPool()
 	{
-		if (!m_defaultDescPool.isValid())
+		if (!_defaultDescPool.isValid())
 		{
 			api::DescriptorPoolCreateParam poolInfo;
-			m_defaultDescPool = createDescriptorPool(poolInfo);
+			_defaultDescPool = createDescriptorPool(poolInfo);
 		}
-		return m_defaultDescPool;
+		return _defaultDescPool;
 	}
 
-	const api::DescriptorPool& getDefaultDescriptorPool()const { return m_defaultDescPool; }
+	const api::DescriptorPool& getDefaultDescriptorPool()const { return _defaultDescPool; }
 	static StrongReferenceType createNew()
 	{
 		return EmbeddedRefCount<ContextGles>::createNew();
 	}
 protected:
-	RenderStatesTracker m_renderStatesTracker;
+	RenderStatesTracker _renderStatesTracker;
 
-	/*!*********************************************************************************************************************
-	\brief Implements IGraphicsContext. Get the source of a shader as a stream.
-	\param stream A Stream object containing the source of the shader.
-	\param outSourceData Reference to an std::string where the source data will be read to.
-	\return Result::Success on success
-	***********************************************************************************************************************/
-	Result createShader(const Stream& stream, string& outSourceData);
-
-	/*!*********************************************************************************************************************
-	\brief Internal use. State tracking. Notify fbo unbind.
-	***********************************************************************************************************************/
-	ContextGles(size_t implementationId);
-
-	api::CommandPool m_defaultCmdPool;
-	api::DescriptorPool m_defaultDescPool;
-	size_t m_ContextImplementationID;
-	IPlatformContext* m_platformContext;
-	mutable std::string m_extensions;
-	api::Sampler m_defaultSampler;
-	std::vector<std::pair<fnBindPipeline, void*>/**/> m_pushedPipelines;
+	api::CommandPool _defaultCmdPool;
+	api::DescriptorPool _defaultDescPool;
+	mutable std::string _extensions;
+	api::Sampler _defaultSampler;
+	std::vector<std::pair<fnBindPipeline, void*>/**/> _pushedPipelines;
 
 private:
 	void destroyObject() { release(); }
 };
+
+class SharedContextGles : public ISharedContext, public EmbeddedRefCount<SharedContextGles>
+{
+	friend class ContextGles;
+	template<typename> friend class ::pvr::EmbeddedRefCount;
+	static EmbeddedRefCountedResource<SharedContextGles> createNew(const GraphicsContext& ctx)
+	{
+		return EmbeddedRefCount<SharedContextGles>::createNew(ctx);
+	}
+	SharedContextGles(const GraphicsContext& ctx) : ISharedContext(ctx, ctx->getPlatformContext().createSharedPlatformContext((uint32) - 1))
+	{ }
+public:
+	api::TextureAndFence uploadTextureDeferred(const Texture& texture, bool allowDecompress = true);
+	//api::TextureAndFence createGraphicsPipelineDeferred();
+	void destroyObject()
+	{
+		_context.reset();
+		_platformContext.reset();
+	}
+
+	ISharedPlatformContext& getSharedPlatformContext() { return *_platformContext; }
+
+};
+
 }
 }
-//!\endcond
+namespace pvr {
+namespace api {
+inline const platform::ContextGles& native_cast(const IGraphicsContext& object) { return static_cast<const platform::ContextGles&>(object); } \
+inline const platform::ContextGles* native_cast(const GraphicsContext& object) { return &native_cast(*object); } \
+inline const platform::ContextGles* native_cast(const IGraphicsContext* object) { return &native_cast(*object); } \
+inline platform::ContextGles& native_cast(IGraphicsContext& object) { return static_cast<platform::ContextGles&>(object); } \
+inline platform::ContextGles* native_cast(GraphicsContext& object) { return &native_cast(*object); } \
+inline platform::ContextGles* native_cast(IGraphicsContext* object) { return &native_cast(*object); } \
+}
+}
+

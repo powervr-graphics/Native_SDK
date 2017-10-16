@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\EntryPoint\NSApplicationMain\AppController.mm
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Implementation for the AppKit version of AppController
-***********************************************************************************************************************/
+/*!
+\brief Implementation for the AppKit version of AppController
+\file PVRShell\EntryPoint/NSApplicationMain/AppController.mm
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #import "AppController.h"
 #import <AppKit/NSAlert.h>
 #import <Foundation/NSString.h>
@@ -76,4 +76,3 @@ const int kFPS = 60.0;
 }
 
 @end
-

@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRCore\Windows\WindowsResourceStream.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementations file for the WindowsResourceStream.
-***********************************************************************************************************************/
+/*!
+\brief Implementations file for the WindowsResourceStream.
+\file PVRCore/Windows/WindowsResourceStream.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRCore/Windows/WindowsResourceStream.h"
 #ifndef WIN32_LEAN_AND_MEAN
@@ -14,7 +14,7 @@ using std::string;
 namespace pvr{
 WindowsResourceStream::WindowsResourceStream(const string& fileName) : BufferStream(fileName)
 {
-	m_isReadable = true;
+	_isReadable = true;
 
 	// Find a handle to the resource
 	HRSRC hR = FindResource(GetModuleHandle(NULL), fileName.c_str(), RT_RCDATA);
@@ -27,8 +27,8 @@ WindowsResourceStream::WindowsResourceStream(const string& fileName) : BufferStr
 		if(hG)
 		{
 			//Get the data pointer itself. NB: Does not actually lock anything.
-			m_originalData = LockResource(hG);
-			m_bufferSize = SizeofResource(NULL, hR);
+			_originalData = LockResource(hG);
+			_bufferSize = SizeofResource(NULL, hR);
 		}
 	}
 }

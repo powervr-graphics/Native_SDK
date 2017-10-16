@@ -1,21 +1,19 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/FileIO/TextureReaderXNB.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         An experimental AssetReader that reads pvr::asset::Texture objects from an XNB file.
-***********************************************************************************************************************/
+/*!
+\brief An experimental AssetReader that reads pvr::asset::Texture objects from an XNB file.
+\file PVRAssets/FileIO/TextureReaderXNB.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
-#include "PVRAssets/Texture/Texture.h"
-#include "PVRAssets/AssetReader.h"
-#include "PVRAssets/FileIO/FileDefinesXNB.h"
+#include "PVRCore/Texture.h"
+#include "PVRCore/Texture/FileDefinesXNB.h"
+#include "PVRCore/IO/AssetReader.h"
 
 namespace pvr {
 namespace assets {
 namespace assetReaders {
-/*!*********************************************************************************************************************
-\brief Experimental XNB Texture reader
-***********************************************************************************************************************/
+/// <summary>Experimental XNB Texture reader</summary>
 class TextureReaderXNB : public AssetReader <Texture>
 {
 public:
@@ -39,11 +37,11 @@ private:
 	bool readCubeTexture(texture_xnb::TextureCubeHeader& assetHeader, Texture& asset);
 
 private:
-	texture_xnb::FileHeader     m_xnbFileHeader;
-	uint32                    m_nextAssetToLoad;
-	//uint32                    m_totalTextureCount;
-	std::vector<string>       m_objectsStrings;
-	bool                           m_fileHeaderLoaded;
+	texture_xnb::FileHeader     _xnbFileHeader;
+	uint32                    _nextAssetToLoad;
+	//uint32                    _totalTextureCount;
+	std::vector<string>       _objectsStrings;
+	bool                           _fileHeaderLoaded;
 };
 }
 }

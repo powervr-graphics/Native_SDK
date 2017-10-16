@@ -1,13 +1,14 @@
-/*!****************************************************************************
-\file         PVRCamera/CameraInterface_Dummy.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Android implementation of the camera streaming interface.
-******************************************************************************/
+/*!
+\brief Android implementation of the camera streaming interface.
+\file PVRCamera/CameraInterface_Dummy.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRCamera/CameraInterface.h"
 #include "PVRApi/Api.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
 #include "PVRNativeApi/OGLES/OpenGLESBindings.h"
+#include "PVRApi/OGLES/TextureGles.h"
 namespace pvr {
 class CameraInterfaceImpl
 {
@@ -144,8 +145,8 @@ api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& context, co
 	Log(Log.Verbose, "Camera interface util: Handle %d, Target 0x%08X", cameraTexture.handle, cameraTexture.target);
 
 	api::TextureStore texStore = context->createTexture();
-	texStore->getNativeObject() = cameraTexture;
-	api::TextureView tex; tex.construct(texStore); return tex;
+	static_cast<native::HTexture_&>(api::native_cast(*texStore)) = cameraTexture;
+	return context->createTextureView(texStore);
 }
 
 }

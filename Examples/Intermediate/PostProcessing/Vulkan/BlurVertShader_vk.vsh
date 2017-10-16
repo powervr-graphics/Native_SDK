@@ -12,11 +12,13 @@
 // reduced to three. To calculate the offset, use this formula:
 // d = w1 / (w1 + w2),  whereas w1 and w2 denote the filter kernel weights
 
-#define AXIS_ALIGNED_QUAD_VERTEX_ARRAY	0
-#define AXIS_ALIGNED_QUAD_TEXCOORD_ARRAY	1
-
-layout (location = AXIS_ALIGNED_QUAD_VERTEX_ARRAY) in highp vec3	    inVertex;
-layout (location = AXIS_ALIGNED_QUAD_TEXCOORD_ARRAY) in mediump vec2	inTexCoord;
+const highp vec2 positions[4] = vec2[4]
+                                (
+                                  vec2(-1., -1.),
+                                  vec2(-1., 1.),
+                                  vec2(1., -1.),
+                                  vec2(1., 1.)
+                                );
 
 layout(set = 1, binding = 0) uniform TexOffsets
 {
@@ -30,13 +32,16 @@ layout(location = 2) out mediump vec2 TexCoord2;
 
 void main()
 {
-	// Pass through vertex
-	gl_Position = vec4(inVertex, 1.0);
+	highp vec2 position = positions[gl_VertexIndex];
+
+	gl_Position = vec4(position, 0.5, 1.);
 
 	// Calculate texture offsets and pass through
 	mediump vec2 offset = vec2(TexelOffsetX, TexelOffsetY);
 
-	TexCoord0 = inTexCoord - offset;
-	TexCoord1 = inTexCoord;
-	TexCoord2 = inTexCoord + offset;
+	highp vec2 vTexCoord = position * .5 + .5; //Map -1..1->0..1
+
+	TexCoord0 = vTexCoord - offset;
+	TexCoord1 = vTexCoord;
+	TexCoord2 = vTexCoord + offset;
 }

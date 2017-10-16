@@ -1,9 +1,11 @@
-/*!*********************************************************************************************************************
-\file         PVRNativeApi\OGLES\ApiGles31.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Contains function pointer declarations for all OpenGL ES 3.1 functions (minus ES 3/2 functions).
-***********************************************************************************************************************/
+/*!
+\brief Contains function pointer declarations for all OpenGL ES 3.1 functions (minus ES 3/2 functions).
+\file PVRNativeApi/OGLES/ApiGles31.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+//!\cond NO_DOXYGEN
+
 #pragma once
 #include "PVRNativeApi/OGLES/ApiGles3.h"
 typedef void (PVR_APIENTRY* PROC_ES31_glDispatchCompute)(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z);
@@ -75,3 +77,4 @@ typedef void (PVR_APIENTRY* PROC_ES31_glVertexAttribIFormat)(GLuint attribindex,
 typedef void (PVR_APIENTRY* PROC_ES31_glVertexAttribBinding)(GLuint attribindex, GLuint bindingindex);
 typedef void (PVR_APIENTRY* PROC_ES31_glVertexBindingDivisor)(GLuint bindingindex, GLuint divisor);
 
+//!\endcond

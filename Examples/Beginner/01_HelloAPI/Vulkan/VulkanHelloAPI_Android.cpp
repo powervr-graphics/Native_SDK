@@ -414,7 +414,7 @@ public:
 	\return   True if the library did NOT load properly.
 	***********************************************************************************************************************/
 	bool LoadFailed();
-	bool m_disableErrorPrint; //!< Set to true to avoid printing errors
+	bool disableErrorPrint; //!< Set to true to avoid printing errors
 
 	/*!*********************************************************************************************************************
 	\brief   Load a library with the specified filename.
@@ -425,7 +425,7 @@ public:
 		size_t start = 0;
 		std::string tmp;
 
-		while (!m_hHostLib)
+		while (!_hostLib)
 		{
 			size_t end = LibPath.find_first_of(';', start);
 
@@ -439,22 +439,22 @@ public:
 			}
 			if (!tmp.empty())
 			{
-				m_hHostLib = OpenLibrary(tmp.c_str());
+				_hostLib = OpenLibrary(tmp.c_str());
 
-				if (!m_hHostLib)
+				if (!_hostLib)
 				{
 					// Remove the last character in case a new line character snuck in
 					tmp = tmp.substr(0, tmp.size() - 1);
-					m_hHostLib = OpenLibrary(tmp.c_str());
+					_hostLib = OpenLibrary(tmp.c_str());
 				}
 			}
 			if (end == std::string::npos) { break; }
 			start = end + 1;
 		}
-		if (!m_hHostLib)
+		if (!_hostLib)
 		{
 			LOGE("Could not load host library '%s'", LibPath.c_str());
-			this->m_bError = true;
+			this->_error = true;
 		}
 		LOGI("Host library '%s' loaded", LibPath.c_str());
 	}
@@ -467,10 +467,10 @@ public:
 	***********************************************************************************************************************/
 	void* getFunction(const char* functionName)
 	{
-		void* pFn = dlsym((LIBTYPE)m_hHostLib, functionName);
-		if (pFn == NULL && m_disableErrorPrint == false)
+		void* pFn = dlsym((LIBTYPE)_hostLib, functionName);
+		if (pFn == NULL && disableErrorPrint == false)
 		{
-			m_bError |= (pFn == NULL);
+			_error |= (pFn == NULL);
 			LOGE("Could not get function %s", functionName);
 		}
 		return pFn;
@@ -489,15 +489,15 @@ public:
 	***********************************************************************************************************************/
 	void CloseLib()
 	{
-		if (m_hHostLib)
+		if (_hostLib)
 		{
-			dlclose((LIBTYPE)m_hHostLib);
-			m_hHostLib = 0;
+			dlclose((LIBTYPE)_hostLib);
+			_hostLib = 0;
 		}
 	}
 protected:
-	void*		m_hHostLib;
-	bool		m_bError;
+	void*		_hostLib;
+	bool		_error;
 };
 static NativeLibrary& vkglueLib()
 {
@@ -1644,33 +1644,13 @@ void App::initSwapChain()
 		this->displayHandle->onscreenFbo.depthStencilHasStencil = false;
 	}
 
-	uint32_t numPresentMode;
-	vkSuccessOrDie(vk::GetPhysicalDeviceSurfacePresentModesKHR(this->platformHandles->context.physicalDevice, this->displayHandle->surface, &numPresentMode, NULL),
-	               "Failed to get the number of present modes count");
-
-	assert(numPresentMode > 0);
-	std::vector<VkPresentModeKHR> presentModes(numPresentMode);
-	vkSuccessOrDie(vk::GetPhysicalDeviceSurfacePresentModesKHR(this->platformHandles->context.physicalDevice, this->displayHandle->surface, &numPresentMode, &presentModes[0]),
-	               "failed to get the present modes");
-
-	// Try to use mailbox mode, Low latency and non-tearing
+	// Try to use FIFO mode (vsync)
 	VkPresentModeKHR swapchainPresentMode = VK_PRESENT_MODE_FIFO_KHR;
-	for (size_t i = 0; i < numPresentMode; i++)
-	{
-		if (presentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
-		{
-			swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
-			break;
-		}
-		if ((swapchainPresentMode != VK_PRESENT_MODE_MAILBOX_KHR) && (presentModes[i] == VK_PRESENT_MODE_IMMEDIATE_KHR))
-		{
-			swapchainPresentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;
-		}
-	}
 
 	this->displayHandle->onscreenFbo.colorFormat = format.format;
 	this->displayHandle->displayExtent = surfaceCapabilities.currentExtent;
 	
+	this->displayHandle->swapChainLength = 2;
 	this->displayHandle->swapChainLength = std::max<uint32_t>(this->displayHandle->swapChainLength, surfaceCapabilities.minImageCount);
 	this->displayHandle->swapChainLength = std::min<uint32_t>(this->displayHandle->swapChainLength, surfaceCapabilities.maxImageCount);
 	this->displayHandle->swapChainLength = std::min<uint32_t>(this->displayHandle->swapChainLength, PVR_MAX_SWAPCHAIN_IMAGES);

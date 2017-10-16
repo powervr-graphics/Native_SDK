@@ -112,11 +112,10 @@ FileCollection assetFiles = files(
     def ndkDependencies=[
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
     ["PVRAssets", "${pvrSdkDir}/Framework/PVRAssets/Build/Android"],
-    ["PVRPlatformGlue", "${pvrSdkDir}/Framework/PVRPlatformGlue/Vulkan/Build/Android"],
     ["PVRNativeVulkan", "${pvrSdkDir}/Framework/PVRNativeApi/Vulkan/Build/Android"],
     ["PVRVulkan", "${pvrSdkDir}/Framework/PVRApi/Vulkan/Build/Android"],
     ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
-    ["PVRUIRenderer", "${pvrSdkDir}/Framework/PVRUIRenderer/Build/Android"]
+    ["PVREngineUtils", "${pvrSdkDir}/Framework/PVREngineUtils/Build/Android"]
     ]
 
 	//Create and configure a task for each combination of build type (debug/release or clean) and dependency

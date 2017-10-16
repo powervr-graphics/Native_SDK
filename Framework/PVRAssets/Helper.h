@@ -1,20 +1,18 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/Helper.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
+/*!
 \brief Internal helper classes
-***********************************************************************************************************************/
+\file PVRAssets/Helper.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
 #include "PVRAssets/Model/Mesh.h"
 namespace pvr {
-/*!*********************************************************************************************************************
-\brief Read vertex data into float32 buffer.
-\param[in] data Data to read from
-\param[in] type Data type of the vertex to read 
-\param[in] count Number of vertices to read
-\param[out] out Array of vertex read
-***********************************************************************************************************************/
+/// <summary>Read vertex data into float32 buffer.</summary>
+/// <param name="data">Data to read from</param>
+/// <param name="type">Data type of the vertex to read</param>
+/// <param name="count">Number of vertices to read</param>
+/// <param name="out">Array of vertex read</param>
 inline void VertexRead(const byte* const data, const types::DataType type, uint32 count, float32* out)
 {
 	uint32	i;
@@ -212,12 +210,10 @@ inline void VertexRead(const byte* const data, const types::DataType type, uint3
 	}
 }
 
-/*!*********************************************************************************************************************
-\brief Read vertex index data into uin32 buffer.
-\param[in] data Data to read from
-\param[in] type Index type to read
-\param[out] out of index data read
-***********************************************************************************************************************/
+/// <summary>Read vertex index data into uin32 buffer.</summary>
+/// <param name="data">Data to read from</param>
+/// <param name="type">Index type to read</param>
+/// <param name="out">of index data read</param>
 inline void VertexIndexRead(const byte* const data, const types::IndexType type, uint32* const out)
 {
 	switch (type)

@@ -1,10 +1,10 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\OGLES\PipelineConfigStateCreateParam.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Definitions of the OpenGL ES implementation of several Pipeline State object creation params (see GraphicsPipeline).
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief Definitions of the OpenGL ES implementation of several Pipeline State object creation params (see
+GraphicsPipeline).
+\file PVRApi/OGLES/PipelineConfigStateCreateParam.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRApi/ApiObjects/PipelineConfig.h"
 #include "PVRApi/OGLES/PipelineConfigStatesGles.h"
 #include "PVRApi/OGLES/StateContainerGles.h"
@@ -24,16 +24,16 @@ void createStateObjects(const DepthStencilStateCreateParam& thisobject,
 		storageGles.addState(new gles::DepthTestState(thisobject.isDepthTestEnable()));
 	}
 	/*
-		-If the there is no parent and has depth test enabled then add the state. ELSE
-		-If the child has depth test enabled AND
-		          either the child has a different op than the parent OR
-				  the parent has no depth test
-				  then add the state
+	  -If the there is no parent and has depth test enabled then add the state. ELSE
+	  -If the child has depth test enabled AND
+	            either the child has a different op than the parent OR
+	        the parent has no depth test
+	        then add the state
 
-		If
-		     1) This object has no depthtest
-			 2) This object has the same function as its parent and the parent HAS depthest enabled
-			 Don't add the state
+	  If
+	       1) This object has no depthtest
+	     2) This object has the same function as its parent and the parent HAS depthest enabled
+	     Don't add the state
 	*/
 	if ((!parent_param && thisobject.isDepthTestEnable()) || (parent_param && (parent_param->getDepthComapreOp() != thisobject.getDepthComapreOp() || !parent_param->isDepthTestEnable())
 	    && thisobject.isDepthTestEnable())) { storageGles.addState(new gles::DepthFuncState(thisobject.getDepthComapreOp())); }
@@ -48,7 +48,7 @@ void createStateObjects(const DepthStencilStateCreateParam& thisobject,
 	if (!parent_param || parent_param->isStencilTestEnable() != thisobject.isStencilTestEnable()) { storageGles.addState(new gles::StencilTestState(thisobject.isStencilTestEnable())); }
 
 	if (!parent_param || (parentStencilFront.opStencilFail != thisStencilFront.opStencilFail ||
-	                      parentStencilFront.opDepthFail != thisStencilFront.opDepthFail	 ||
+	                      parentStencilFront.opDepthFail != thisStencilFront.opDepthFail   ||
 	                      parentStencilFront.opDepthPass != thisStencilFront.opDepthPass))
 	{
 		storageGles.addState(new gles::StencilOpFrontState(thisStencilFront.opStencilFail, thisStencilFront.opDepthFail, thisStencilFront.opDepthPass));
@@ -77,14 +77,14 @@ void createStateObjects(const ColorBlendStateCreateParam& thisobject,
                         gles::GraphicsStateContainer& storage,
                         const ColorBlendStateCreateParam* parent_param)
 {
-	if (thisobject.getAttachmentStates().size())
+	if (thisobject.getAttachmentStatesCount())
 	{
-		if (!parent_param || parent_param->getAttachmentStates().size() == 0
+		if (!parent_param || parent_param->getAttachmentStatesCount() == 0
 		    || parent_param->getAttachmentStates()[0].blendEnable != thisobject.getAttachmentStates()[0].blendEnable)
 		{
 			storage.addState(new gles::BlendingEnableState(thisobject.getAttachmentStates()[0].blendEnable));
 		}
-		if (!parent_param || parent_param->getAttachmentStates().size() == 0 ||
+		if (!parent_param || parent_param->getAttachmentStatesCount() == 0 ||
 		    parent_param->getAttachmentStates()[0].srcBlendColor != thisobject.getAttachmentStates()[0].srcBlendColor ||
 		    parent_param->getAttachmentStates()[0].destBlendColor != thisobject.getAttachmentStates()[0].destBlendColor ||
 		    parent_param->getAttachmentStates()[0].srcBlendAlpha != thisobject.getAttachmentStates()[0].srcBlendAlpha ||
@@ -94,14 +94,14 @@ void createStateObjects(const ColorBlendStateCreateParam& thisobject,
 			                 thisobject.getAttachmentStates()[0].destBlendColor, thisobject.getAttachmentStates()[0].srcBlendAlpha,
 			                 thisobject.getAttachmentStates()[0].destBlendAlpha));
 		}
-		if (!parent_param || parent_param->getAttachmentStates().size() == 0 ||
+		if (!parent_param || parent_param->getAttachmentStatesCount() == 0 ||
 		    parent_param->getAttachmentStates()[0].channelWriteMask != thisobject.getAttachmentStates()[0].channelWriteMask)
 		{
 			storage.addState(new gles::ColorWriteMask(thisobject.getAttachmentStates()[0].channelWriteMask));
 		}
 	}
 
-	if (thisobject.getAttachmentStates().size() > 1)
+	if (thisobject.getAttachmentStatesCount() > 1)
 	{
 		pvr::Log(pvr::Logger::Warning, "OpenGL doesn't support multiple color blend states.\n"
 		         "using the first colorblend state");
@@ -116,13 +116,21 @@ void createStateObjects(const RasterStateCreateParam& thisobject,
                         gles::GraphicsStateContainer& storage,
                         const RasterStateCreateParam* parent_param)
 {
-	if (!parent_param || parent_param->cullFace != thisobject.cullFace)
+	if (!parent_param || parent_param->getCullFace() != thisobject.getCullFace())
 	{
-		storage.addState(new gles::PolygonFrontFaceState(thisobject.cullFace));
+		storage.addState(new gles::PolygonFrontFaceState(thisobject.getCullFace()));
 	}
-	if (!parent_param || parent_param->frontFaceWinding != thisobject.frontFaceWinding)
+	if (!parent_param || parent_param->getFrontFaceWinding() != thisobject.getFrontFaceWinding())
 	{
-		storage.addState(new gles::PolygonWindingOrderState(thisobject.frontFaceWinding));
+		storage.addState(new gles::PolygonWindingOrderState(thisobject.getFrontFaceWinding()));
+	}
+	if (!parent_param ||
+	    (parent_param->isDepthBiasEnabled() != thisobject.isDepthBiasEnabled() || (
+	       thisobject.isDepthBiasEnabled() && (
+	         parent_param->getDepthBiasConstantFactor() != thisobject.getDepthBiasConstantFactor() ||
+	         parent_param->getDepthBiasSlopeFactor() != thisobject.getDepthBiasSlopeFactor()))))
+	{
+		storage.addState(new gles::DepthBiasState(thisobject));
 	}
 }
 
@@ -211,4 +219,3 @@ void createStateObjects(const ComputeShaderStageCreateParam& thisobject,
 }
 }
 }
-//!\endcond

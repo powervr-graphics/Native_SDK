@@ -55,16 +55,15 @@ bool ParticleSystemGPU::init(pvr::uint32 maxParticles, const Sphere* spheres, pv
 	                          BufferBindingUse(BufferBindingUse::StorageBuffer | BufferBindingUse::TransferDest));
 	if (!particleBufferViewSsbos.isValid()) { pvr::Log("Failed to create the uniform buffer"); return false;}
 
-	multiBuffer.particleConfigUbo.setupArray(context, 1, pvr::types::BufferViewTypes::UniformBuffer);
-
 	multiBuffer.particleConfigUbo.addEntriesPacked(ParticleConfigViewMapping,
 	    sizeof(ParticleConfigViewMapping) / sizeof(ParticleConfigViewMapping[0]));
+	multiBuffer.particleConfigUbo.finalize(context, 1, pvr::types::BufferBindingUse::UniformBuffer, false, false);
 
 	for (pvr::uint8 i = 0; i < context->getSwapChainLength(); ++i)
 	{
 		multiBuffer.particleConfigUbo.connectWithBuffer(i,
 		    context->createBufferAndView(multiBuffer.particleConfigUbo.getAlignedTotalSize(),
-		                                 BufferBindingUse::UniformBuffer, true), pvr::types::BufferViewTypes::UniformBuffer);
+		                                 BufferBindingUse::UniformBuffer, true));
 
 		multiBuffer.descSets[i] =
 		  context->createDescriptorSetOnDefaultPool(pipe->getPipelineLayout()->getDescriptorSetLayout(0));
@@ -99,7 +98,6 @@ bool ParticleSystemGPU::createComputePipeline(pvr::string& errorStr)
 	.setBinding(PARTICLES_SSBO_BINDING_IN_OUT, DescriptorType::StorageBuffer, 1, ShaderStageFlags::Compute);
 	pipeLayoutInfo.setDescSetLayout(0, context->createDescriptorSetLayout(descSetLayoutInfo));
 
-	pvr::api::debugLogApiError("ComputeShaderProgramState::generate enter");
 	pvr::api::ComputePipelineCreateParam pipeCreateInfo;
 	pvr::api::Shader shader = context->createShader(*assetProvider.getAssetStream(ComputeShaderFileName), ShaderType::ComputeShader);
 	if (shader.isNull())
@@ -156,7 +154,7 @@ void ParticleSystemGPU::setNumberOfParticles(pvr::uint32 numParticles)
 	api::Fence fence = context->createFence(false);
 	cmdStaging->submit(pvr::api::Semaphore(), api::Semaphore(), fence);
 	fence->wait(uint32(-1));
-	if (cmdBufferFence->isSignalled())
+        if (fence->isSignalled())
 	{
 		cmdStaging.reset();
 		for (pvr::uint32 i = 0; i < context->getSwapChainLength(); ++i)
@@ -186,10 +184,10 @@ bool ParticleSystemGPU::setCollisionSpheres(const Sphere* spheres, pvr::uint32 n
 {
 	if (numSpheres)
 	{
-		collisonSpheresUbo.setupArray(context, 1, pvr::types::BufferViewTypes::UniformBuffer);
 		collisonSpheresUbo.addEntriesPacked(SphereViewMapping, sizeof(SphereViewMapping) / sizeof(SphereViewMapping[0]));
+		collisonSpheresUbo.finalize(context, 1, pvr::types::BufferBindingUse::UniformBuffer, false, false);
 		collisonSpheresUbo.connectWithBuffer(0, context->createBufferAndView(collisonSpheresUbo.getAlignedElementSize(),
-		                                     BufferBindingUse::UniformBuffer, true), pvr::types::BufferViewTypes::UniformBuffer);
+		                                     BufferBindingUse::UniformBuffer, true));
 
 		collisonSpheresUbo.map(0, MapBufferFlags::Write);
 		for (pvr::uint32 i = 0; i < numSpheres; ++i)

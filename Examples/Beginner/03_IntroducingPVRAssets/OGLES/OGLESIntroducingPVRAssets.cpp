@@ -11,10 +11,7 @@
 #include "PVRAssets/PVRAssets.h"
 //The OpenGL ES bindings used throughout this SDK. Use by calling gl::initGL and then using all the OpenGL ES functions from the gl::namespace.
 // (So, glTextImage2D becomes gl::TexImage2D)
-#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
-#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
-#include "PVRNativeApi/TextureUtils.h"
-#include "PVRNativeApi/ShaderUtils.h"
+#include "PVRNativeApi/NativeGles.h"
 using namespace pvr;
 using namespace pvr::types;
 // Index to bind the attributes to vertex shaders
@@ -75,7 +72,7 @@ public:
 	bool LoadVbos();
 
 	Result loadTexturePVR(const StringHash& filename, GLuint& outTexHandle,
-	                            pvr::assets::Texture* outTexture, assets::TextureHeader* outDescriptor);
+	                            pvr::Texture* outTexture, TextureHeader* outDescriptor);
 
 	void drawMesh(int i32NodeIndex);
 };
@@ -128,28 +125,28 @@ Result createShaderProgram(native::HShader_ shaders[], uint32 count, const char*
 \return	Result::Success on success
 \param	const StringHash & filename
 \param	GLuint & outTexHandle
-\param	pvr::assets::Texture * outTexture
-\param	assets::TextureHeader * outDescriptor
+\param	pvr::Texture * outTexture
+\param	TextureHeader * outDescriptor
 ***********************************************************************************************************************/
-Result OGLESIntroducingPVRAssets::loadTexturePVR(const StringHash& filename, GLuint& outTexHandle, pvr::assets::Texture* outTexture,
-    assets::TextureHeader* outDescriptor)
+Result OGLESIntroducingPVRAssets::loadTexturePVR(const StringHash& filename, GLuint& outTexHandle, pvr::Texture* outTexture,
+    TextureHeader* outDescriptor)
 {
-	assets::Texture tempTexture;
+	Texture tempTexture;
 	Result result;
-	native::HTexture_ textureHandle;
 	Stream::ptr_type assetStream = this->getAssetStream(filename);
+	pvr::nativeGles::TextureUploadResults uploadResults;
+
 
 	if (!assetStream.get())
 	{
 		Log(Log.Error, "AssetStore.loadTexture error for filename %s : File not found", filename.c_str());
 		return Result::NotFound;
 	}
-	result = assets::textureLoad(assetStream, assets::TextureFileFormat::PVR, tempTexture);
+	result = assets::textureLoad(assetStream, TextureFileFormat::PVR, tempTexture);
 	if (result == Result::Success)
 	{
-		bool isDecompressed;
 		types::ImageAreaSize areaSize; PixelFormat pixelFmt;
-		pvr::utils::textureUpload(getPlatformContext(), tempTexture, textureHandle, areaSize, pixelFmt, isDecompressed);
+		uploadResults = pvr::nativeGles::textureUpload(getPlatformContext(), tempTexture, true);
 	}
 	if (result != Result::Success)
 	{
@@ -158,7 +155,7 @@ Result OGLESIntroducingPVRAssets::loadTexturePVR(const StringHash& filename, GLu
 		return result;
 	}
 	if (outTexture) { *outTexture = tempTexture; }
-	outTexHandle = textureHandle;
+	outTexHandle = uploadResults.image;
 	return result;
 }
 
@@ -204,13 +201,13 @@ bool OGLESIntroducingPVRAssets::loadTextures()
 	for (pvr::uint32 i = 0; i < numMaterials; ++i)
 	{
 		const pvr::assets::Model::Material& material = scene->getMaterial(i);
-		if (material.getDiffuseTextureIndex() != -1)
+		if (material.defaultSemantics().getDiffuseTextureIndex() != -1)
 		{
 			// Load the diffuse texture map
-			if (loadTexturePVR(scene->getTexture(material.getDiffuseTextureIndex()).getName(),
+			if (loadTexturePVR(scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName(),
 			                   texDiffuse[i], NULL, 0) != pvr::Result::Success)
 			{
-				Log("Failed to load texture %s", scene->getTexture(material.getDiffuseTextureIndex()).getName().c_str());
+				Log("Failed to load texture %s", scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
 				return false;
 			}
 			gl::BindTexture(GL_TEXTURE_2D, texDiffuse[i]);
@@ -236,14 +233,14 @@ bool OGLESIntroducingPVRAssets::loadShaders()
 	fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
 
 	native::HShader_ shaders[2];
-	if (!pvr::utils::loadShader(native::HContext_(), *fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES2), ShaderType::VertexShader, 0, 0,
+	if (!pvr::nativeGles::loadShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES2), ShaderType::VertexShader, 0, 0,
 	                            shaders[0]))
 	{
 		return false;
 	}
 
 	fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
-	if (!pvr::utils::loadShader(native::HContext_(), *fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES2), ShaderType::FragmentShader, 0,
+	if (!pvr::nativeGles::loadShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES2), ShaderType::FragmentShader, 0,
 	                            0, shaders[1]))
 	{
 		return false;

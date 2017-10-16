@@ -1,10 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\OGLES\FboGles.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         OpenGL ES implementation of the PVRApi Default Fbo (Frame Buffer Object).
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief OpenGL ES implementation of the PVRApi Default Fbo (Frame Buffer Object).
+\file PVRApi/OGLES/FboGles.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRApi/ApiObjects/Fbo.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
@@ -15,43 +14,35 @@ namespace gles {
 class FboGles_ : public impl::Fbo_, public  native::HFbo_
 {
 public:
-	FboGles_(GraphicsContext& context);
-	virtual void bind(IGraphicsContext& m_context, types::FboBindingTarget types)const;
+	FboGles_(const GraphicsContext& context);
+	virtual void bind(IGraphicsContext& _context, types::FboBindingTarget types)const;
 	void destroy();
-	const native::HFbo_&  getNativeObject() const;
-	native::HFbo_& getNativeObject();
 	bool init(const FboCreateParam& desc);
-	bool checkFboStatus();
-	const RenderPass& getRenderPass()const { return m_desc.renderPass; }
-	RenderPass& getRenderPass() { return m_desc.renderPass; }
+	bool checkFboStatus(GraphicsContext& context);
+	const RenderPass& getRenderPass()const { return _desc.renderPass; }
+	RenderPass& getRenderPass() { return _desc.renderPass; }
 
 	virtual ~FboGles_() {}
 
-	mutable types::FboBindingTarget m_target;
-	std::vector<TextureView> m_colorAttachments;
-	std::vector<TextureView> m_depthStencilAttachment;
+	mutable types::FboBindingTarget _target;
+	std::vector<TextureView> _colorAttachments;
+	std::vector<TextureView> _depthStencilAttachment;
 };
 
-/*!*********************************************************************************************************************
-\brief OpenGL ES Default FBO (FBO pointing to the Back Buffer). This object is necessary for rendering anything to the screen.
-       Should be used through the Fbo object. If a GLES direct manipulation is required, use through the DefaultFboGles Reference
-	   counted Framework object.
-***********************************************************************************************************************/
+/// <summary>OpenGL ES Default FBO (FBO pointing to the Back Buffer). This object is necessary for rendering anything
+/// to the screen. Should be used through the Fbo object. If a GLES direct manipulation is required, use through
+/// the DefaultFboGles Reference counted Framework object.</summary>
 class DefaultFboGles_ : public FboGles_
 {
 public:
-	/*!*********************************************************************************************************************
-	\brief  Constructor. Construct a new FBO on the provided context.
-	***********************************************************************************************************************/
-	DefaultFboGles_(GraphicsContext& context);
+	/// <summary>Constructor. Construct a new FBO on the provided context.</summary>
+	DefaultFboGles_(const GraphicsContext& context);
 
-	/*!*********************************************************************************************************************
-	\brief INTERNAL OGLES: Initialize this fbo with provided parameters.
-	\return pvr::Result::Success on success
-	***********************************************************************************************************************/
+	/// <summary>INTERNAL OGLES: Initialize this fbo with provided parameters.</summary>
+	/// <returns>pvr::Result::Success on success</returns>
 	bool init(const FboCreateParam& desc)
 	{
-		m_desc = desc;
+		_desc = desc;
 		handle = 0;
 		return true;
 	}
@@ -66,7 +57,7 @@ public:
 
 	//\brief INTERNALCheck the status of this fbo.
 	//\return return true on success
-	bool checkFboStatus();
+	bool checkFboStatus(GraphicsContext& context);
 };
 //OpenGL ES Default FBO (FBO pointing to the Back Buffer). This object is necessary for rendering anything to the screen. Reference counted.
 typedef RefCountedResource<DefaultFboGles_> DefaultFboGles;
@@ -74,4 +65,3 @@ typedef RefCountedResource<FboGles_> FboGles;
 }
 }
 }
-//!\endcond

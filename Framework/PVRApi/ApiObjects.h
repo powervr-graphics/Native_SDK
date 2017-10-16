@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\ApiObjects.h
+/*!
+\brief Includes all API object types.
+\file         PVRApi/ApiObjects.h
 \author       PowerVR by Imagination, Developer Technology Team
 \copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Includes all API object types.
-***********************************************************************************************************************/
+*/
 #pragma once
 #include "PVRApi/ApiIncludes.h"
 #include "PVRApi/ApiObjects/Texture.h"
@@ -13,30 +13,31 @@
 #include "PVRApi/ApiObjects/DescriptorSet.h"
 #include "PVRApi/ApiObjects/CommandPool.h"
 #include "PVRApi/ApiObjects/RenderPass.h"
+#include "PVRApi/ApiObjects/Fbo.h"
 #include "PVRApi/ApiIncludes.h"
-
+#include "PVRApi/ApiObjects/Sync.h"
+#include "PVRApi/ApiObjects/VertexRayPipeline.h"
+#include "PVRApi/ApiObjects/SceneTraversalPipeline.h"
+#include "PVRApi/ApiObjects/SceneHierarchy.h"
+#include "PVRApi/ApiObjects/IndirectRayPipeline.h"
 
 namespace pvr {
-namespace api {
-/*!*****************************************************************************************************************
-\brief        Interface for a class that can provide Asset Loading and Uploading. Used by PFX API parser and similar.
-*******************************************************************************************************************/
+namespace utils {
+/// <summary>Interface for a class that can provide Asset Loading and Uploading. Used by PFX API parser and similar.
+/// </summary>
 class AssetLoadingDelegate
 {
 public:
-	/*!****************************************************************************************************************
-	\brief This function must implement Texture loading from a filename. Will be called to load the texture.
-	\param[in] textureName The filename of the texture that must be loaded into outTex2d
-	\param[out] outTex2d The implementation of this function must put the created texture into this variable
-	\return error if texture could not be loaded
-	*******************************************************************************************************************/
+	/// <summary>This function must implement Texture loading from a filename. Will be called to load the texture.
+	/// </summary>
+	/// <param name="textureName">The filename of the texture that must be loaded into outTex2d</param>
+	/// <param name="outTex2d">The implementation of this function must put the created texture into this variable
+	/// </param>
+	/// <returns>error if texture could not be loaded</returns>
 	virtual bool effectOnLoadTexture(const string& textureName, api::TextureView& outTex2d) = 0;
 
-	/*!****************************************************************************************************************
-	\brief dtor
-	*******************************************************************************************************************/
+	/// <summary>dtor</summary>
 	virtual ~AssetLoadingDelegate() { }
 };
 }
 }
-

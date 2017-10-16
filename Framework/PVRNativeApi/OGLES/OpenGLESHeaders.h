@@ -1,10 +1,10 @@
-/*!*********************************************************************************************************************
-\file         PVRNativeApi\OGLES\OpenGLESHeaders.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Includes the headers for OpenGL ES. Prefer to directly include the OpenGLESBindings.h which will include the
-              gl:: and glext:: class for you to use.
-***********************************************************************************************************************/
+/*!
+\brief Includes the headers for OpenGL ES. Prefer to directly include the OpenGLESBindings.h which will include the
+gl:: and glext:: class for you to use.
+\file PVRNativeApi/OGLES/OpenGLESHeaders.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #define GL_NO_PROTOTYPES
 

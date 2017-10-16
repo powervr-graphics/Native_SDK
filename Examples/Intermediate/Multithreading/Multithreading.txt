@@ -1,0 +1,17 @@
+:Title:
+Bumpmap
+
+:ShortDescription:
+This training course demonstrates using the PowerVR Framework to stream assets asynchronously into an application
+
+:FullDescription:
+This training course will display a loading screen while assets are being loaded in, and then 
+switch to displaying the bust from the BumpMap demo.
+Implemented for Vulkan and OpenGL ES 2.0/3.0.
+
+:APIS:
+Vulkan 1.0, OpenGL ES 2.0
+
+:Controls:
+	-	Quit	-	Close the application
+

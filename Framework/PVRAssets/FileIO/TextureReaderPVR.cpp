@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets\FileIO\TextureReaderPVR.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementation of methods of the TextureReaderPVR class.
-***********************************************************************************************************************/
+/*!
+\brief Implementation of methods of the TextureReaderPVR class.
+\file PVRAssets/FileIO/TextureReaderPVR.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRAssets/FileIO/TextureReaderPVR.h"
 #include "PVRCore/Log.h"
@@ -12,16 +12,16 @@ namespace pvr {
 using namespace types;
 namespace assets {
 namespace assetReaders {
-TextureReaderPVR::TextureReaderPVR() : m_texturesToLoad(true)
+TextureReaderPVR::TextureReaderPVR() : _texturesToLoad(true)
 { }
 
-TextureReaderPVR::TextureReaderPVR(Stream::ptr_type assetStream) : AssetReader<Texture>(assetStream), m_texturesToLoad(true)
+TextureReaderPVR::TextureReaderPVR(Stream::ptr_type assetStream) : AssetReader<Texture>(assetStream), _texturesToLoad(true)
 { }
 
 bool TextureReaderPVR::readNextAsset(Texture& asset)
 {
 	// Acknowledge that once this function has returned the user won't be able load a texture from the file.
-	m_texturesToLoad = false;
+	_texturesToLoad = false;
 
 	// Get the file header to Read.
 	TextureHeader::Header textureFileHeader;
@@ -31,45 +31,45 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 
 	// Read the texture header version
 	uint32 version;
-	if (!m_assetStream->read(sizeof(version), 1, &version, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(version), 1, &version, dataRead) || dataRead != 1) { return false; }
 
 	if (version == TextureHeader::Header::PVRv3)
 	{
 		// Read the flags
-		if (!m_assetStream->read(sizeof(textureFileHeader.flags), 1, &textureFileHeader.flags, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.flags), 1, &textureFileHeader.flags, dataRead) || dataRead != 1) { return false; }
 
 		// Read the pixel format
-		if (!m_assetStream->read(sizeof(textureFileHeader.pixelFormat), 1, &textureFileHeader.pixelFormat, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.pixelFormat), 1, &textureFileHeader.pixelFormat, dataRead) || dataRead != 1) { return false; }
 
 		// Read the color space
-		if (!m_assetStream->read(sizeof(textureFileHeader.colorSpace), 1, &textureFileHeader.colorSpace, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.colorSpace), 1, &textureFileHeader.colorSpace, dataRead) || dataRead != 1) { return false; }
 
 		// Read the channel type
-		if (!m_assetStream->read(sizeof(textureFileHeader.channelType), 1, &textureFileHeader.channelType, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.channelType), 1, &textureFileHeader.channelType, dataRead) || dataRead != 1) { return false; }
 
 		// Read the height
-		if (!m_assetStream->read(sizeof(textureFileHeader.height), 1, &textureFileHeader.height, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.height), 1, &textureFileHeader.height, dataRead) || dataRead != 1) { return false; }
 
 		// Read the width
-		if (!m_assetStream->read(sizeof(textureFileHeader.width), 1, &textureFileHeader.width, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.width), 1, &textureFileHeader.width, dataRead) || dataRead != 1) { return false; }
 
 		// Read the depth
-		if (!m_assetStream->read(sizeof(textureFileHeader.depth), 1, &textureFileHeader.depth, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.depth), 1, &textureFileHeader.depth, dataRead) || dataRead != 1) { return false; }
 
 		// Read the number of surfaces
-		if (!m_assetStream->read(sizeof(textureFileHeader.numberOfSurfaces), 1, &textureFileHeader.numberOfSurfaces, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.numberOfSurfaces), 1, &textureFileHeader.numberOfSurfaces, dataRead) || dataRead != 1) { return false; }
 
 		// Read the number of faces
-		if (!m_assetStream->read(sizeof(textureFileHeader.numberOfFaces), 1, &textureFileHeader.numberOfFaces, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.numberOfFaces), 1, &textureFileHeader.numberOfFaces, dataRead) || dataRead != 1) { return false; }
 
 		// Read the number of MIP maps
-		if (!m_assetStream->read(sizeof(textureFileHeader.mipMapCount), 1, &textureFileHeader.mipMapCount, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.mipMapCount), 1, &textureFileHeader.mipMapCount, dataRead) || dataRead != 1) { return false; }
 
 
 
 		// Read the meta data size, but store it for now.
 		uint32 tempMetaDataSize = 0;
-		if (!m_assetStream->read(sizeof(tempMetaDataSize), 1, &tempMetaDataSize, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(tempMetaDataSize), 1, &tempMetaDataSize, dataRead) || dataRead != 1) { return false; }
 		// Construct a texture header.
 		// Set the meta data size to 0
 		textureFileHeader.metaDataSize = 0;
@@ -81,7 +81,7 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 		while (metaDataRead < tempMetaDataSize)
 		{
 			TextureMetaData metaDataBlock;
-			if (!metaDataBlock.loadFromStream(*m_assetStream)) { return false; }
+			if (!metaDataBlock.loadFromStream(*_assetStream)) { return false; }
 
 			// Add the meta data
 			asset.addMetaData(metaDataBlock);
@@ -101,10 +101,10 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 		}
 
 		// Read the texture data
-		if (!m_assetStream->read(1, asset.getDataSize(), asset.getDataPointer(), dataRead) || dataRead != asset.getDataSize()) { return false; }
+		if (!_assetStream->read(1, asset.getDataSize(), asset.getDataPointer(), dataRead) || dataRead != asset.getDataSize()) { return false; }
 	}
 	else if (version == texture_legacy::c_headerSizeV1 ||
-			 version == texture_legacy::c_headerSizeV2)
+	         version == texture_legacy::c_headerSizeV2)
 	{
 		// Read a V2 legacy header
 		texture_legacy::HeaderV2 legacyHeader;
@@ -113,42 +113,42 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 		legacyHeader.headerSize = version;
 
 		// Read the height
-		if (!m_assetStream->read(sizeof(legacyHeader.height), 1, &legacyHeader.height, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(legacyHeader.height), 1, &legacyHeader.height, dataRead) || dataRead != 1) { return false; }
 
 		// Read the width
-		if (!m_assetStream->read(sizeof(legacyHeader.width), 1, &legacyHeader.width, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(legacyHeader.width), 1, &legacyHeader.width, dataRead) || dataRead != 1) { return false; }
 
 		// Read the MIP map count
-		if (!m_assetStream->read(sizeof(legacyHeader.mipMapCount), 1, &legacyHeader.mipMapCount, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(legacyHeader.mipMapCount), 1, &legacyHeader.mipMapCount, dataRead) || dataRead != 1) { return false; }
 
 		// Read the texture flags
-		if (!m_assetStream->read(sizeof(legacyHeader.pixelFormatAndFlags), 1, &legacyHeader.pixelFormatAndFlags, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(legacyHeader.pixelFormatAndFlags), 1, &legacyHeader.pixelFormatAndFlags, dataRead) || dataRead != 1) { return false; }
 
 		// Read the texture data size
-		if (!m_assetStream->read(sizeof(legacyHeader.dataSize), 1, &legacyHeader.dataSize, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(legacyHeader.dataSize), 1, &legacyHeader.dataSize, dataRead) || dataRead != 1) { return false; }
 
 		// Read the bit count of the texture format
-		if (!m_assetStream->read(sizeof(legacyHeader.bitCount), 1, &legacyHeader.bitCount, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(legacyHeader.bitCount), 1, &legacyHeader.bitCount, dataRead) || dataRead != 1) { return false; }
 
 		// Read the red mask
-		if (!m_assetStream->read(sizeof(legacyHeader.redBitMask), 1, &legacyHeader.redBitMask, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(legacyHeader.redBitMask), 1, &legacyHeader.redBitMask, dataRead) || dataRead != 1) { return false; }
 
 		// Read the green mask
-		if (!m_assetStream->read(sizeof(legacyHeader.greenBitMask), 1, &legacyHeader.greenBitMask, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(legacyHeader.greenBitMask), 1, &legacyHeader.greenBitMask, dataRead) || dataRead != 1) { return false; }
 
 		// Read the blue mask
-		if (!m_assetStream->read(sizeof(legacyHeader.blueBitMask), 1, &legacyHeader.blueBitMask, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(legacyHeader.blueBitMask), 1, &legacyHeader.blueBitMask, dataRead) || dataRead != 1) { return false; }
 
 		// Read the alpha mask
-		if (!m_assetStream->read(sizeof(legacyHeader.alphaBitMask), 1, &legacyHeader.alphaBitMask, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(legacyHeader.alphaBitMask), 1, &legacyHeader.alphaBitMask, dataRead) || dataRead != 1) { return false; }
 
 		if (version == texture_legacy::c_headerSizeV2)
 		{
 			// Read the magic number
-			if (!m_assetStream->read(sizeof(legacyHeader.pvrMagic), 1, &legacyHeader.pvrMagic, dataRead) || dataRead != 1) { return false; }
+			if (!_assetStream->read(sizeof(legacyHeader.pvrMagic), 1, &legacyHeader.pvrMagic, dataRead) || dataRead != 1) { return false; }
 
 			// Read the number of surfaces
-			if (!m_assetStream->read(sizeof(legacyHeader.numberOfSurfaces), 1, &legacyHeader.numberOfSurfaces, dataRead) || dataRead != 1) { return false; }
+			if (!_assetStream->read(sizeof(legacyHeader.numberOfSurfaces), 1, &legacyHeader.numberOfSurfaces, dataRead) || dataRead != 1) { return false; }
 		}
 		else
 		{
@@ -180,7 +180,7 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 						byte* surfacePointer = asset.getDataPointer(mipMap, surface, face) + depth * surfaceSize;
 
 						// Write each surface, one at a time
-						if (!m_assetStream->read(1, surfaceSize, surfacePointer, dataRead) || dataRead != surfaceSize) { return false; }
+						if (!_assetStream->read(1, surfaceSize, surfacePointer, dataRead) || dataRead != surfaceSize) { return false; }
 					}
 				}
 			}
@@ -198,7 +198,7 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 
 bool TextureReaderPVR::hasAssetsLeftToLoad()
 {
-	return m_texturesToLoad;
+	return _texturesToLoad;
 }
 
 bool TextureReaderPVR::canHaveMultipleAssets()

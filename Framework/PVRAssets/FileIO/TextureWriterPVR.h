@@ -1,19 +1,17 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/FileIO/TextureWriterPVR.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         An experimental Writer that writes pvr::asset::Texture objects into a PVR file.
-***********************************************************************************************************************/
+/*!
+\brief An experimental Writer that writes pvr::asset::Texture objects into a PVR file.
+\file PVRAssets/FileIO/TextureWriterPVR.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
-#include "PVRAssets/Texture/Texture.h"
-#include "PVRAssets/AssetWriter.h"
-#include "PVRAssets/FileIO/FileDefinesPVR.h"
+#include "PVRCore/Texture.h"
+#include "PVRCore/IO/AssetWriter.h"
+#include "PVRCore/Texture/FileDefinesPVR.h"
 namespace pvr {
 namespace assets {
 namespace assetWriters {
-/*!********************************************************************************************************************
-\brief         An experimental Writer that writes pvr::asset::Texture objects into a PVR file.
-***********************************************************************************************************************/
+/// <summary>An experimental Writer that writes pvr::asset::Texture objects into a PVR file.</summary>
 class TextureWriterPVR : public AssetWriter<Texture>
 {
 public:

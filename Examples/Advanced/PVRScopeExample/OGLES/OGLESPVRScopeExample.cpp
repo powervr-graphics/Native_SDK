@@ -7,7 +7,7 @@
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 #include "PVRScopeGraph.h"
 using namespace pvr;
 #if !defined(_WIN32) || defined(__WINSCW__)
@@ -32,7 +32,7 @@ class OGLESPVRScopeExample : public pvr::Shell
 	// Print3D class used to display text
 	pvr::ui::UIRenderer uiRenderer;
 
-	struct DeviceResources
+	struct ApiObjects
 	{
 		pvr::api::CommandBuffer commandBuffer;
 		pvr::api::SecondaryCommandBuffer secCmd;
@@ -46,11 +46,11 @@ class OGLESPVRScopeExample : public pvr::Shell
 		PVRScopeGraph scopeGraph;
 		pvr::GraphicsContext context;
 	};
-	std::auto_ptr<DeviceResources> apiObj;
+	std::auto_ptr<ApiObjects> apiObj;
 
 	// 3D Model
 	pvr::assets::ModelHandle scene;
-	pvr::api::AssetStore assetStore;
+	pvr::utils::AssetStore assetStore;
 	// Projection and view matrices
 
 	// Group shader programs and their uniform locations together
@@ -208,7 +208,7 @@ bool OGLESPVRScopeExample::createPipeline()
 	// Store the location of uniforms for later use
 	apiObj->commandBuffer->beginRecording();
 	apiObj->commandBuffer->bindPipeline(apiObj->pipeline);
-	apiObj->commandBuffer->setUniform<pvr::int32>(apiObj->pipeline-> getUniformLocation("sDiffuseMap"), 0);
+	apiObj->commandBuffer->setUniform(apiObj->pipeline-> getUniformLocation("sDiffuseMap"), 0);
 	apiObj->commandBuffer->endRecording();
 	apiObj->commandBuffer->submit();
 
@@ -283,7 +283,7 @@ pvr::Result OGLESPVRScopeExample::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result OGLESPVRScopeExample::initView()
 {
-	apiObj.reset(new DeviceResources());
+	apiObj.reset(new ApiObjects());
 	apiObj->context = getGraphicsContext();
 	// create the default fbo using default params
 	apiObj->onScreenFbo = apiObj->context->createOnScreenFbo(0);
@@ -503,20 +503,20 @@ void OGLESPVRScopeExample::recordCommandBuffer()
 	apiObj->secCmd->bindDescriptorSet(
 	  apiObj->pipeline->getPipelineLayout(), 0, apiObj->descriptorSet, 0);
 
-	apiObj->secCmd->setUniformPtr<glm::vec3>(uniformLocations.lightDirView, 1, &progUniforms.lightDirView);
-	apiObj->secCmd->setUniformPtr<pvr::float32>(uniformLocations.specularExponent, 1, &progUniforms.specularExponent);
-	apiObj->secCmd->setUniformPtr<pvr::float32>(uniformLocations.metallicity, 1, &progUniforms.metallicity);
-	apiObj->secCmd->setUniformPtr<pvr::float32>(uniformLocations.reflectivity, 1, &progUniforms.reflectivity);
-	apiObj->secCmd->setUniformPtr<glm::vec3>(uniformLocations.albedo, 1, &progUniforms.albedo);
+	apiObj->secCmd->setUniformPtr(uniformLocations.lightDirView, 1, &progUniforms.lightDirView);
+	apiObj->secCmd->setUniformPtr(uniformLocations.specularExponent, 1, &progUniforms.specularExponent);
+	apiObj->secCmd->setUniformPtr(uniformLocations.metallicity, 1, &progUniforms.metallicity);
+	apiObj->secCmd->setUniformPtr(uniformLocations.reflectivity, 1, &progUniforms.reflectivity);
+	apiObj->secCmd->setUniformPtr(uniformLocations.albedo, 1, &progUniforms.albedo);
 
 
 	// Now that the uniforms are set, call another function to actually draw the mesh.
-	apiObj->secCmd->setUniformPtr<glm::mat4>(uniformLocations.mvpMtx, 1, &progUniforms.mvpMatrix1);
-	apiObj->secCmd->setUniformPtr<glm::mat3>(uniformLocations.mvITMtx, 1, &progUniforms.mvITMatrix1);
+	apiObj->secCmd->setUniformPtr(uniformLocations.mvpMtx, 1, &progUniforms.mvpMatrix1);
+	apiObj->secCmd->setUniformPtr(uniformLocations.mvITMtx, 1, &progUniforms.mvITMatrix1);
 	drawMesh(0, apiObj->secCmd);
 	// Now that the uniforms are set, call another function to actually draw the mesh.
-	apiObj->secCmd->setUniformPtr<glm::mat4>(uniformLocations.mvpMtx, 1, &progUniforms.mvpMatrix2);
-	apiObj->secCmd->setUniformPtr<glm::mat3>(uniformLocations.mvITMtx, 1, &progUniforms.mvITMatrix2);
+	apiObj->secCmd->setUniformPtr(uniformLocations.mvpMtx, 1, &progUniforms.mvpMatrix2);
+	apiObj->secCmd->setUniformPtr(uniformLocations.mvITMtx, 1, &progUniforms.mvITMatrix2);
 	drawMesh(0, apiObj->secCmd);
 
 	apiObj->scopeGraph.recordCommandBuffer(apiObj->secCmd, 0);

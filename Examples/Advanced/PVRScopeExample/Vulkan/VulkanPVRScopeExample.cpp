@@ -7,7 +7,7 @@
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
 #include "PVRApi/PVRApi.h"
-#include "PVRUIRenderer/PVRUIRenderer.h"
+#include "PVREngineUtils/PVREngineUtils.h"
 #include "PVRScopeGraph.h"
 
 #if !defined(_WIN32) || defined(__WINSCW__)
@@ -30,7 +30,7 @@ namespace MvpUboElements {
 enum Enum { MVP, MVIT, Count };
 std::pair<StringHash, types::GpuDatatypes::Enum> Mapping[Count] =
 {
-	{ "MVPMatrix" , types::GpuDatatypes::mat4x4 },
+	{ "MVPMatrix", types::GpuDatatypes::mat4x4 },
 	{ "MVITMatrix", types::GpuDatatypes::mat3x3 }
 };
 }//namespace MvpUboElements
@@ -58,7 +58,7 @@ class VulkanPVRScopeExample : public Shell
 {
 	// Print3D class used to display text
 
-	struct DeviceResources
+	struct ApiObjects
 	{
 		api::CommandBuffer commandBuffer[MaxSwapChain];
 		api::SecondaryCommandBuffer secCmdBuffer[MaxSwapChain];
@@ -78,9 +78,9 @@ class VulkanPVRScopeExample : public Shell
 		ui::UIRenderer uiRenderer;
 		PVRScopeGraph scopeGraph;
 		GraphicsContext context;
-		api::AssetStore assetStore;
+		utils::AssetStore assetStore;
 	};
-	std::auto_ptr<DeviceResources> apiObj;
+	std::auto_ptr<ApiObjects> apiObj;
 
 	// 3D Model
 	assets::ModelHandle scene;
@@ -205,8 +205,8 @@ bool VulkanPVRScopeExample::createUboDescriptorSet()
 {
 	// create the mvp ubo
 	utils::StructuredMemoryView& mvpMemView = apiObj->mvpUboView;
-	mvpMemView.setupDynamic(apiObj->context, NumModelInstance, types::BufferViewTypes::UniformBufferDynamic);
 	mvpMemView.addEntriesPacked(MvpUboElements::Mapping, MvpUboElements::Count);
+	mvpMemView.finalize(apiObj->context, NumModelInstance, types::BufferBindingUse::UniformBuffer, true, false);
 	for (uint32 i = 0; i < getSwapChainLength(); ++i)
 	{
 		api::Buffer buffer = apiObj->context->createBuffer(mvpMemView.getAlignedTotalSize(),
@@ -214,7 +214,7 @@ bool VulkanPVRScopeExample::createUboDescriptorSet()
 
 
 		mvpMemView.connectWithBuffer(i, apiObj->context->createBufferView(buffer, 0,
-		                             mvpMemView.getAlignedElementSize()), types::BufferViewTypes::UniformBufferDynamic);
+		                             mvpMemView.getAlignedElementSize()));
 
 		api::DescriptorSet& descSet = apiObj->mvpDescriptor[i];
 		descSet = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->uboLayoutVert);
@@ -227,13 +227,12 @@ bool VulkanPVRScopeExample::createUboDescriptorSet()
 
 	// create the material ubo
 	utils::StructuredMemoryView& matMemView = apiObj->materialUboView;
-	matMemView.setupArray(apiObj->context, 1, types::BufferViewTypes::UniformBuffer);
 	matMemView.addEntriesPacked(MaterialUboElements::Mapping, MaterialUboElements::Count);
+	matMemView.finalize(apiObj->context, 1, types::BufferBindingUse::UniformBuffer, false, false);
 	for (uint32 i = 0; i < getSwapChainLength(); ++i)
 	{
 		matMemView.connectWithBuffer(i, apiObj->context->createBufferAndView(
-		                               matMemView.getAlignedElementSize(), types::BufferBindingUse::UniformBuffer, true),
-		                             types::BufferViewTypes::UniformBuffer);
+		                               matMemView.getAlignedElementSize(), types::BufferBindingUse::UniformBuffer, true));
 
 		api::DescriptorSet& descSet = apiObj->materialDescriptor[i];
 		descSet = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->uboLayoutFrag);
@@ -364,7 +363,7 @@ Result VulkanPVRScopeExample::initApplication()
 	selectedCounter = 0;
 	interval = 0;
 	angleY = 0.0f;
-	apiObj.reset(new DeviceResources());
+	apiObj.reset(new ApiObjects());
 	apiObj->assetStore.init(*this);
 	// Load the scene
 	if (!apiObj->assetStore.loadModel(SceneFile, scene))

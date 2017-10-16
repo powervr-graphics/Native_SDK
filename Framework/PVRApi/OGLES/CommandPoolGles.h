@@ -1,10 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRApi/OGLES/CommandPoolGles.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        OpenGL ES Implementation of the CommandPool class.
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief OpenGL ES Implementation of the CommandPool class.
+\file PVRApi/OGLES/CommandPoolGles.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRApi/ApiObjects/CommandPool.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
@@ -25,10 +24,8 @@ public:
 private:
 	CommandPoolGles_(const GraphicsContext& context) : CommandPool_(context) {}
 	CommandPoolGles_(const CommandPoolGles_&); //deleted
-	/*!*********************************************************************************************************************
-	\brief ctor, Construct a CommandPool
-	\param context The GraphicsContext this command pool will be constructed from.
-	***********************************************************************************************************************/
+	/// <summary>ctor, Construct a CommandPool</summary>
+	/// <param name="context">The GraphicsContext this command pool will be constructed from.</param>
 
 	/* IMPLEMENTING EmbeddedResource */
 	void destroyObject() { }
@@ -37,4 +34,3 @@ private:
 }
 }
 }
-//!\endcond

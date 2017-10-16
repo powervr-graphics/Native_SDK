@@ -1,5 +1,5 @@
 <map id="pvr::types::ImageSubresourceRange" name="pvr::types::ImageSubresourceRange">
-<area shape="rect" id="node2" href="$structpvr_1_1types_1_1_image_layers_size.html" title="pvr::types::ImageLayersSize" alt="" coords="12,5,199,32"/>
-<area shape="rect" id="node3" href="$structpvr_1_1types_1_1_image_subresource.html" title="Describes an area of an image, out of which a Subresource can be defined. This area is a subarea of t..." alt="" coords="8,56,203,83"/>
-<area shape="rect" id="node4" href="$structpvr_1_1types_1_1_image_aspect_range.html" title="pvr::types::ImageAspectRange" alt="" coords="6,107,205,133"/>
+<area shape="rect" id="node2" href="$structpvr_1_1types_1_1_image_layers_size.html" title="Structure describes the number of array levels and mip levels an image contains" alt="" coords="12,5,201,32"/>
+<area shape="rect" id="node3" href="$structpvr_1_1types_1_1_image_subresource.html" title="Describes a single &quot;layer&quot; of an image: a single array layer of a single mip level, or the offset of a layer range." alt="" coords="8,56,205,83"/>
+<area shape="rect" id="node4" href="$structpvr_1_1types_1_1_image_aspect_range.html" title="Represents a single aspect of an image (Color, Depth, Stencil, Depth/Stencil)" alt="" coords="5,107,208,133"/>
 </map>

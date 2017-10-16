@@ -1,52 +1,34 @@
-/*!*********************************************************************************************************************
-\file         PVRApi/ApiObjects/Sampler.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains the Sampler framework object.
-***********************************************************************************************************************/
+/*!
+\brief Contains the Sampler framework object.
+\file PVRApi/ApiObjects/Sampler.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRApi/ApiIncludes.h"
 
 namespace pvr {
 namespace api {
 typedef types::SamplerCreateParam SamplerCreateParam;
-class BindDescriptorSets;
 namespace impl {
 
-/*!****************************************************************************************************************
-\brief The Sampler Framework API object. Wrapped in the pvr::api::Sampler as a Reference counted Framework object.
-*******************************************************************************************************************/
+/// <summary>The Sampler Framework API object. Wrapped in the pvr::api::Sampler as a Reference counted Framework
+/// object.</summary>
 class Sampler_
 {
 	Sampler_& operator=(const Sampler_&);//deleted
 public:
-	/*!****************************************************************************************************************
-	\brief Destructor. Releases the object.
-	*******************************************************************************************************************/
+	/// <summary>Destructor. Releases the object.</summary>
 	virtual ~Sampler_() { }
 
-	/*!****************************************************************************************************************
-	\brief Get const reference to the underlying API object of this sampler.
-	*******************************************************************************************************************/
-	const native::HSampler_& getNativeObject()const;
-
-	/*!****************************************************************************************************************
-	\brief Get reference to the underlying API object of this sampler.
-	*******************************************************************************************************************/
-	native::HSampler_& getNativeObject();
-
-	/*!****************************************************************************************************************
-	\brief Get the context who owns this object
-	*******************************************************************************************************************/
-	GraphicsContext& getContext(){ return m_context; }
+	/// <summary>Get the context who owns this object</summary>
+	GraphicsContext& getContext() { return _context; }
 protected:
-	/*!****************************************************************************************************************
-	\brief Create a new sampler object on device from the parameters.
-	\param device The device on which to create the sampler on
-	*******************************************************************************************************************/
-	Sampler_(GraphicsContext& device) : m_context(device){}
+	/// <summary>Create a new sampler object on device from the parameters.</summary>
+	/// <param name="device">The device on which to create the sampler on</param>
+	Sampler_(const GraphicsContext& device) : _context(device) {}
 protected:
-	GraphicsContext m_context;
+	GraphicsContext _context;
 };
 }// namespace impl
 typedef RefCountedResource<impl::Sampler_> Sampler;

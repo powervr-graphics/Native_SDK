@@ -1,4 +1,0 @@
-<map id="pvr::api::impl::Sampler_" name="pvr::api::impl::Sampler_">
-<area shape="rect" id="node2" href="$classpvr_1_1api_1_1gles_1_1_sampler_gles__.html" title="pvr::api::gles::SamplerGles_" alt="" coords="5,80,189,107"/>
-<area shape="rect" id="node3" href="$classpvr_1_1api_1_1vulkan_1_1_sampler_vk__.html" title="SamplerVk_ implementation that wraps the vulkan sampler. " alt="" coords="215,80,401,107"/>
-</map>

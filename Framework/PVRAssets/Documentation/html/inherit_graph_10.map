@@ -1,7 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvr_1_1assets_1_1_asset_writer.html" title="pvr::assets::AssetWriter\l\&lt; Texture \&gt;" alt="" coords="5,103,168,145"/>
-<area shape="rect" id="node2" href="$classpvr_1_1assets_1_1asset_writers_1_1_texture_writer_d_d_s.html" title="Experimental DDS Texture writer. For demostration purposes. " alt="" coords="222,5,389,46"/>
-<area shape="rect" id="node3" href="$classpvr_1_1assets_1_1asset_writers_1_1_texture_writer_k_t_x.html" title="An experimental Writer that writes pvr::asset::Texture objects into a KTX file. " alt="" coords="222,70,389,111"/>
-<area shape="rect" id="node4" href="$classpvr_1_1assets_1_1asset_writers_1_1_texture_writer_legacy_p_v_r.html" title="An experimentat Writer that writes pvr::asset::Texture objects into a legacy (v2) PVR file..." alt="" coords="217,135,394,177"/>
-<area shape="rect" id="node5" href="$classpvr_1_1assets_1_1asset_writers_1_1_texture_writer_p_v_r.html" title="An experimental Writer that writes pvr::asset::Texture objects into a PVR file. " alt="" coords="222,201,389,242"/>
+<area shape="rect" id="node1" href="$classpvr_1_1assets_1_1asset_writers_1_1_texture_writer_legacy_p_v_r.html" title="An experimentat Writer that writes pvr::asset::Texture objects into a legacy (v2) PVR file..." alt="" coords="5,5,184,46"/>
 </map>

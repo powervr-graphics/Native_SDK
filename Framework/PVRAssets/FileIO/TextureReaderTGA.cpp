@@ -1,11 +1,11 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets\FileIO\TextureReaderTGA.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementation of methods of the TextureReaderTGA class.
-***********************************************************************************************************************/
+/*!
+\brief Implementation of methods of the TextureReaderTGA class.
+\file PVRAssets/FileIO/TextureReaderTGA.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
-#include "PVRCore/FilePath.h"
+#include "PVRCore/IO/FilePath.h"
 #include "PVRCore/Log.h"
 
 #include "PVRAssets/FileIO/TextureReaderTGA.h"
@@ -15,28 +15,28 @@ using std::vector;
 namespace pvr {
 namespace assets {
 namespace assetReaders {
-TextureReaderTGA::TextureReaderTGA() : m_texturesToLoad(true)
+TextureReaderTGA::TextureReaderTGA() : _texturesToLoad(true)
 { }
 
-TextureReaderTGA::TextureReaderTGA(Stream::ptr_type assetStream) : AssetReader<Texture>(assetStream), m_texturesToLoad(true)
+TextureReaderTGA::TextureReaderTGA(Stream::ptr_type assetStream) : AssetReader<Texture>(assetStream), _texturesToLoad(true)
 { }
 
 bool TextureReaderTGA::readNextAsset(Texture& asset)
 {
 	// Check the Result
 	bool result = true;
-	if (m_hasNewAssetStream)
+	if (_hasNewAssetStream)
 	{
 		result = initializeFile();
 
 		if (result)
 		{
-			m_texturesToLoad = true;
+			_texturesToLoad = true;
 		}
-		m_hasNewAssetStream = false;
+		_hasNewAssetStream = false;
 	}
 
-	long streamPosition = (long)m_assetStream->getPosition();
+	long streamPosition = (long)_assetStream->getPosition();
 	if (result)
 	{
 		result = loadImageFromFile(asset);
@@ -45,12 +45,12 @@ bool TextureReaderTGA::readNextAsset(Texture& asset)
 	if (result)
 	{
 		// If it succeeded, let the user know that there are no more texture to load.
-		m_texturesToLoad = false;
+		_texturesToLoad = false;
 	}
 	else
 	{
 		// Return to the beginning of the texture data if not loaded correctly.
-		m_assetStream->seek(streamPosition, Stream::SeekOriginFromStart);
+		_assetStream->seek(streamPosition, Stream::SeekOriginFromStart);
 	}
 
 	// Return the result
@@ -59,7 +59,7 @@ bool TextureReaderTGA::readNextAsset(Texture& asset)
 
 bool TextureReaderTGA::hasAssetsLeftToLoad()
 {
-	return m_texturesToLoad;
+	return _texturesToLoad;
 }
 
 bool TextureReaderTGA::canHaveMultipleAssets()
@@ -86,15 +86,15 @@ vector<string> TextureReaderTGA::getSupportedFileExtensions()
 bool TextureReaderTGA::initializeFile()
 {
 	// Read the file header
-	bool result = readFileHeader(m_fileHeader);
+	bool result = readFileHeader(_fileHeader);
 	if (!result) { return result; }
 
 	// Skip the identifier area
-	result = m_assetStream->seek(m_fileHeader.identSize, Stream::SeekOriginFromCurrent);
+	result = _assetStream->seek(_fileHeader.identSize, Stream::SeekOriginFromCurrent);
 	if (!result) { return result; }
 
 	// Mark that the header has been loaded
-	m_fileHeaderLoaded = true;
+	_fileHeaderLoaded = true;
 
 	return result;
 }
@@ -106,51 +106,51 @@ bool TextureReaderTGA::readFileHeader(texture_tga::FileHeader& fileheader)
 	bool result = true;
 
 	// Read the size of the identifier area
-	result = m_assetStream->read(sizeof(fileheader.identSize), 1, &fileheader.identSize, dataRead);
+	result = _assetStream->read(sizeof(fileheader.identSize), 1, &fileheader.identSize, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the color map type
-	result = m_assetStream->read(sizeof(fileheader.colorMapType), 1, &fileheader.colorMapType, dataRead);
+	result = _assetStream->read(sizeof(fileheader.colorMapType), 1, &fileheader.colorMapType, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the image type
-	result = m_assetStream->read(sizeof(fileheader.imageType), 1, &fileheader.imageType, dataRead);
+	result = _assetStream->read(sizeof(fileheader.imageType), 1, &fileheader.imageType, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the start position of the color map
-	result = m_assetStream->read(sizeof(fileheader.colorMapStart), 1, &fileheader.colorMapStart, dataRead);
+	result = _assetStream->read(sizeof(fileheader.colorMapStart), 1, &fileheader.colorMapStart, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the length of the color map
-	result = m_assetStream->read(sizeof(fileheader.colorMapLength), 1, &fileheader.colorMapLength, dataRead);
+	result = _assetStream->read(sizeof(fileheader.colorMapLength), 1, &fileheader.colorMapLength, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the number of bits per palette entry in the color map
-	result = m_assetStream->read(sizeof(fileheader.colorMapBits), 1, &fileheader.colorMapBits, dataRead);
+	result = _assetStream->read(sizeof(fileheader.colorMapBits), 1, &fileheader.colorMapBits, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the horizontal offset for the start of the image
-	result = m_assetStream->read(sizeof(fileheader.xStart), 1, &fileheader.xStart, dataRead);
+	result = _assetStream->read(sizeof(fileheader.xStart), 1, &fileheader.xStart, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the vertical offset for the start of the image
-	result = m_assetStream->read(sizeof(fileheader.yStart), 1, &fileheader.yStart, dataRead);
+	result = _assetStream->read(sizeof(fileheader.yStart), 1, &fileheader.yStart, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the width of the image
-	result = m_assetStream->read(sizeof(fileheader.width), 1, &fileheader.width, dataRead);
+	result = _assetStream->read(sizeof(fileheader.width), 1, &fileheader.width, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the height of the image
-	result = m_assetStream->read(sizeof(fileheader.height), 1, &fileheader.height, dataRead);
+	result = _assetStream->read(sizeof(fileheader.height), 1, &fileheader.height, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the bits per pixel in the image
-	result = m_assetStream->read(sizeof(fileheader.bits), 1, &fileheader.bits, dataRead);
+	result = _assetStream->read(sizeof(fileheader.bits), 1, &fileheader.bits, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the descriptor flags
-	result = m_assetStream->read(sizeof(fileheader.descriptor), 1, &fileheader.descriptor, dataRead);
+	result = _assetStream->read(sizeof(fileheader.descriptor), 1, &fileheader.descriptor, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	return result;
@@ -161,7 +161,7 @@ bool TextureReaderTGA::loadImageFromFile(Texture& asset)
 	bool result = true;
 
 	// Make sure the file is ready to load
-	if (!m_fileHeaderLoaded || !m_texturesToLoad)
+	if (!_fileHeaderLoaded || !_texturesToLoad)
 	{
 		assertion(0 ,  "[TextureReaderTGA::loadImageFromFile] Attempted to read empty TGA.");
 		return false;
@@ -171,31 +171,31 @@ bool TextureReaderTGA::loadImageFromFile(Texture& asset)
 	TextureHeader textureHeader;
 
 	// Set the width and height from the file header.
-	textureHeader.setWidth(m_fileHeader.width);
-	textureHeader.setHeight(m_fileHeader.height);
+	textureHeader.setWidth(_fileHeader.width);
+	textureHeader.setHeight(_fileHeader.height);
 
 	// Check whether the alpha value is ignored or not.
-	bool alphaIgnored = ((m_fileHeader.descriptor & texture_tga::DescriptorFlagAlpha) == 0);
+	bool alphaIgnored = ((_fileHeader.descriptor & texture_tga::DescriptorFlagAlpha) == 0);
 
 	// Get the bytes per data entry
-	uint32 bytesPerDataEntry = m_fileHeader.bits / 8;
-	if (m_fileHeader.bits == 15)
+	uint32 bytesPerDataEntry = _fileHeader.bits / 8;
+	if (_fileHeader.bits == 15)
 	{
 		bytesPerDataEntry = 2;
 	}
 
 	// Get the bytes per color map entry
-	uint32 bytesPerPaletteEntry = m_fileHeader.colorMapBits / 8;
-	if (m_fileHeader.colorMapBits == 15)
+	uint32 bytesPerPaletteEntry = _fileHeader.colorMapBits / 8;
+	if (_fileHeader.colorMapBits == 15)
 	{
 		bytesPerPaletteEntry = 2;
 	}
 
 	// Work out the bits per pixel of the final pixel format
-	uint32 bitsPerPixel = m_fileHeader.bits;
-	if (m_fileHeader.colorMapType == texture_tga::ColorMap::Paletted)
+	uint32 bitsPerPixel = _fileHeader.bits;
+	if (_fileHeader.colorMapType == texture_tga::ColorMap::Paletted)
 	{
-		bitsPerPixel = m_fileHeader.colorMapBits;
+		bitsPerPixel = _fileHeader.colorMapBits;
 	}
 
 	// Work out the pixel format - based on the number of bits in the final pixel format
@@ -245,7 +245,7 @@ bool TextureReaderTGA::loadImageFromFile(Texture& asset)
 	default:
 		// Invalid format
 		Log(Log.Error, "Reading from \"%s\" - Invalid number of bits per pixel in TGA file: %d",
-		    m_assetStream->getFileName().c_str(), m_fileHeader.bits);
+		    _assetStream->getFileName().c_str(), _fileHeader.bits);
 		return false;
 	}
 
@@ -253,7 +253,7 @@ bool TextureReaderTGA::loadImageFromFile(Texture& asset)
 	asset = Texture(textureHeader);
 
 	// Read the texture data according to how it's stored
-	switch (m_fileHeader.imageType)
+	switch (_fileHeader.imageType)
 	{
 	case texture_tga::ImageType::None:
 	{
@@ -269,7 +269,7 @@ bool TextureReaderTGA::loadImageFromFile(Texture& asset)
 	case texture_tga::ImageType::GreyScale:
 	{
 		size_t dataRead = 0;
-		m_assetStream->read(bytesPerDataEntry, asset.getTextureSize(), asset.getDataPointer(), dataRead);
+		_assetStream->read(bytesPerDataEntry, asset.getTextureSize(), asset.getDataPointer(), dataRead);
 		if (!result || dataRead != asset.getTextureSize()) { return result; }
 		break;
 	}
@@ -294,7 +294,7 @@ bool TextureReaderTGA::loadImageFromFile(Texture& asset)
 	}
 
 	// Signify that the image has been loaded.
-	m_texturesToLoad = false;
+	_texturesToLoad = false;
 
 	return result;
 }
@@ -305,15 +305,15 @@ bool TextureReaderTGA::loadIndexed(Texture& asset, uint32 bytesPerPaletteEntry, 
 	size_t dataRead = 0;
 
 	// Check that a palette is present.
-	if (m_fileHeader.colorMapType != texture_tga::ColorMap::Paletted)
+	if (_fileHeader.colorMapType != texture_tga::ColorMap::Paletted)
 	{
 		Log(Log.Error, "Reading from \"%s\" - Image Type specifies palette data, but no palette is supplied.",
-		    m_assetStream->getFileName().c_str());
+		    _assetStream->getFileName().c_str());
 		return false;
 	}
 
 	// Work out the size of the palette data entries
-	uint32 paletteEntries = (m_fileHeader.colorMapLength - m_fileHeader.colorMapStart);
+	uint32 paletteEntries = (_fileHeader.colorMapLength - _fileHeader.colorMapStart);
 	uint32 paletteSize = paletteEntries * bytesPerPaletteEntry;
 
 	// Allocate data to read the palette into.
@@ -321,11 +321,11 @@ bool TextureReaderTGA::loadIndexed(Texture& asset, uint32 bytesPerPaletteEntry, 
 	paletteData.resize(paletteSize);
 
 	// seek to the beginning of the palette
-	result = m_assetStream->seek(m_fileHeader.colorMapStart * bytesPerPaletteEntry, Stream::SeekOriginFromCurrent);
+	result = _assetStream->seek(_fileHeader.colorMapStart * bytesPerPaletteEntry, Stream::SeekOriginFromCurrent);
 	if (!result) { return result; }
 
 	// Read the palette
-	result = m_assetStream->read(bytesPerPaletteEntry, paletteEntries, paletteData.data(), dataRead);
+	result = _assetStream->read(bytesPerPaletteEntry, paletteEntries, paletteData.data(), dataRead);
 	if (!result || dataRead != paletteEntries) { return result; }
 
 	// Create the palette helper class
@@ -337,7 +337,7 @@ bool TextureReaderTGA::loadIndexed(Texture& asset, uint32 bytesPerPaletteEntry, 
 	for (uint32 texturePosition = 0; texturePosition < (asset.getTextureSize()); ++texturePosition)
 	{
 		// Read the index
-		result = m_assetStream->read(bytesPerDataEntry, 1, &currentIndex, dataRead);
+		result = _assetStream->read(bytesPerDataEntry, 1, &currentIndex, dataRead);
 		if (!result || dataRead != 1) { return result; }
 
 		// Get the color output
@@ -365,7 +365,7 @@ bool TextureReaderTGA::loadRunLength(Texture& asset, uint32 bytesPerDataEntry)
 	{
 		// Read the leading character for this block
 		int8 leadingCharacter;
-		result = m_assetStream->read(1, 1, &leadingCharacter, dataRead);
+		result = _assetStream->read(1, 1, &leadingCharacter, dataRead);
 		if (!result || dataRead != 1) { return result; }
 
 		// Check if it's a run of differing values or a run of the same value multiple times
@@ -377,7 +377,7 @@ bool TextureReaderTGA::loadRunLength(Texture& asset, uint32 bytesPerDataEntry)
 				if (outputPixel < (asset.getDataPointer() + asset.getDataSize()))
 				{
 					// Read in the value
-					result = m_assetStream->read(bytesPerDataEntry, 1, outputPixel, dataRead);
+					result = _assetStream->read(bytesPerDataEntry, 1, outputPixel, dataRead);
 					if (!result || dataRead != 1) { return result; }
 
 					// Increment the output location
@@ -388,7 +388,7 @@ bool TextureReaderTGA::loadRunLength(Texture& asset, uint32 bytesPerDataEntry)
 		else if (leadingCharacter > -128)
 		{
 			// Read a repeated value
-			result = m_assetStream->read(bytesPerDataEntry, 1, repeatedValue.data(), dataRead);
+			result = _assetStream->read(bytesPerDataEntry, 1, repeatedValue.data(), dataRead);
 			if (!result || dataRead != 1) { return result; }
 
 			// Write the repeated value the appropriate number of times
@@ -416,15 +416,15 @@ bool TextureReaderTGA::loadRunLengthIndexed(Texture& asset, uint32 bytesPerPalet
 	size_t dataRead = 0;
 
 	// Check that a palette is present.
-	if (m_fileHeader.colorMapType != texture_tga::ColorMap::Paletted)
+	if (_fileHeader.colorMapType != texture_tga::ColorMap::Paletted)
 	{
 		Log(Log.Error, "Reading from \"%s\" - Image Type specifies palette data, but no palette is supplied.",
-		    m_assetStream->getFileName().c_str());
+		    _assetStream->getFileName().c_str());
 		return false;
 	}
 
 	// Work out the size of the palette data entries
-	uint32 paletteEntries = (m_fileHeader.colorMapLength - m_fileHeader.colorMapStart);
+	uint32 paletteEntries = (_fileHeader.colorMapLength - _fileHeader.colorMapStart);
 	uint32 paletteSize = paletteEntries * bytesPerPaletteEntry;
 
 	// Allocate data to read the palette into.
@@ -432,11 +432,11 @@ bool TextureReaderTGA::loadRunLengthIndexed(Texture& asset, uint32 bytesPerPalet
 	paletteData.resize(paletteSize);
 
 	// seek to the beginning of the palette
-	result = m_assetStream->seek(m_fileHeader.colorMapStart, Stream::SeekOriginFromCurrent);
+	result = _assetStream->seek(_fileHeader.colorMapStart, Stream::SeekOriginFromCurrent);
 	if (!result) { return result; }
 
 	// Read the palette
-	result = m_assetStream->read(bytesPerPaletteEntry, paletteEntries, paletteData.data(), dataRead);
+	result = _assetStream->read(bytesPerPaletteEntry, paletteEntries, paletteData.data(), dataRead);
 	if (!result || dataRead != paletteEntries) { return result; }
 
 	// Create the palette helper class
@@ -451,7 +451,7 @@ bool TextureReaderTGA::loadRunLengthIndexed(Texture& asset, uint32 bytesPerPalet
 	{
 		// Read the leading character for this block
 		int8 leadingCharacter;
-		result = m_assetStream->read(1, 1, &leadingCharacter, dataRead);
+		result = _assetStream->read(1, 1, &leadingCharacter, dataRead);
 		if (!result || dataRead != 1) { return result; }
 
 		// Check if it's a run of differing values or a run of the same value multiple times
@@ -463,7 +463,7 @@ bool TextureReaderTGA::loadRunLengthIndexed(Texture& asset, uint32 bytesPerPalet
 				if (outputPixel < (asset.getDataPointer() + asset.getDataSize()))
 				{
 					// Read in the value
-					result = m_assetStream->read(bytesPerDataEntry, 1, &currentIndex, dataRead);
+					result = _assetStream->read(bytesPerDataEntry, 1, &currentIndex, dataRead);
 					if (!result || dataRead != 1) { return result; }
 
 					// Get the color output
@@ -477,7 +477,7 @@ bool TextureReaderTGA::loadRunLengthIndexed(Texture& asset, uint32 bytesPerPalet
 		else if (leadingCharacter > -128)
 		{
 			// Read in the repeated value
-			result = m_assetStream->read(bytesPerDataEntry, 1, &currentIndex, dataRead);
+			result = _assetStream->read(bytesPerDataEntry, 1, &currentIndex, dataRead);
 			if (!result || dataRead != 1) { return result; }
 
 			// Write the repeated value the appropriate number of times

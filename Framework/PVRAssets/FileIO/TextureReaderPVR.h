@@ -1,73 +1,55 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/FileIO/TextureReaderPVR.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         An AssetReader that reads pvr::asset::Texture objects from a PVR stream(file). Used extensively in the PowerVR
-              Framework and examples.
-***********************************************************************************************************************/
+/*!
+\brief An AssetReader that reads pvr::asset::Texture objects from a PVR stream(file). Used extensively in the
+PowerVR Framework and examples.
+\file PVRAssets/FileIO/TextureReaderPVR.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 
-#include "PVRAssets/Texture/Texture.h"
-#include "PVRAssets/AssetReader.h"
-#include "PVRAssets/FileIO/FileDefinesPVR.h"
+#include "PVRCore/Texture.h"
+#include "PVRCore/Texture/FileDefinesPVR.h"
+#include "PVRCore/IO/AssetReader.h"
 
 namespace pvr {
 namespace assets {
 namespace assetReaders {
-/*!*********************************************************************************************************************
-\brief    This class creates pvr::assets::Texture object from Streams of PVR texture data. Use the readAsset method to
-         create Texture objects from the data in your stream
-***********************************************************************************************************************/
+/// <summary>This class creates pvr::Texture object from Streams of PVR texture data. Use the readAsset
+/// method to create Texture objects from the data in your stream</summary>
 class TextureReaderPVR : public AssetReader<Texture>
 {
 public:
-	/*!******************************************************************************************************************
-	\brief    Construct empty reader
-	********************************************************************************************************************/
+	/// <summary>Construct empty reader</summary>
 	TextureReaderPVR();
-	/*!******************************************************************************************************************
-	\brief    Construct reader from the specified stream
-	********************************************************************************************************************/
+	/// <summary>Construct reader from the specified stream</summary>
 	TextureReaderPVR(Stream::ptr_type assetStream);
 
-	/*!******************************************************************************************************************
-	\brief    Check if there more assets in the stream
-	\return  True if the readAsset() method can be called again to read another asset
-	********************************************************************************************************************/
+	/// <summary>Check if there more assets in the stream</summary>
+	/// <returns>True if the readAsset() method can be called again to read another asset</returns>
 	virtual bool hasAssetsLeftToLoad();
 
-	/*!******************************************************************************************************************
-	\brief    Check if this reader supports multiple assets per stream
-	\return  True if this reader supports multiple assets per stream
-	********************************************************************************************************************/
+	/// <summary>Check if this reader supports multiple assets per stream</summary>
+	/// <returns>True if this reader supports multiple assets per stream</returns>
 	virtual bool canHaveMultipleAssets();
 
-	/*!******************************************************************************************************************
-	\brief    Check if this reader supports the particular assetStream
-	\return  True if this reader supports the particular assetStream
-	********************************************************************************************************************/
+	/// <summary>Check if this reader supports the particular assetStream</summary>
+	/// <returns>True if this reader supports the particular assetStream</returns>
 	virtual bool isSupportedFile(Stream& assetStream);
 
-	/*!******************************************************************************************************************
-	\brief    Check what are the expected file extensions for files supported by this reader
-	\return  A vector with the expected file extensions for files supported by this reader
-	********************************************************************************************************************/
+	/// <summary>Check what are the expected file extensions for files supported by this reader</summary>
+	/// <returns>A vector with the expected file extensions for files supported by this reader</returns>
 	virtual std::vector<std::string> getSupportedFileExtensions();
 
-	/*!******************************************************************************************************************
-	\brief    Convert a PVR Version 2 header to a PVR Version 3 header
-	********************************************************************************************************************/
+	/// <summary>Convert a PVR Version 2 header to a PVR Version 3 header</summary>
 	static bool convertTextureHeader2To3(const texture_legacy::HeaderV2& legacyHeader, TextureHeader& newHeader);
 
-	/*!******************************************************************************************************************
-	\brief    Convert a legacy PixelFormat into a new PixelFormat
-	********************************************************************************************************************/
+	/// <summary>Convert a legacy PixelFormat into a new PixelFormat</summary>
 	static bool mapLegacyEnumToNewFormat(const texture_legacy::PixelFormat legacyPixelType, PixelFormat& newPixelType,
 	                                     types::ColorSpace& newColorSpace, VariableType& newChannelType,
 	                                     bool& isPremultiplied);
 private:
 	virtual bool readNextAsset(Texture& asset);
-	bool m_texturesToLoad;
+	bool _texturesToLoad;
 };
 }
 }

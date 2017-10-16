@@ -1,13 +1,12 @@
-/*!*********************************************************************************************************************
-\file         PVRApi\OGLES\SamplerGles.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         OpenGL ES 2+ implementation of the Sampler class.
-***********************************************************************************************************************/
-//!\cond NO_DOXYGEN
+/*!
+\brief OpenGL ES 2+ implementation of the Sampler class.
+\file PVRApi/OGLES/SamplerGles.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #include "PVRApi/OGLES/SamplerGles.h"
 #include "PVRNativeApi/OGLES/ConvertToApiTypes.h"
-#include "PVRNativeApi/ApiErrors.h"
+#include "PVRNativeApi/OGLES/ApiErrorsGles.h"
 #include "PVRApi/ApiObjects/Texture.h"
 #include "PVRNativeApi/OGLES/OpenGLESBindings.h"
 #include "PVRApi/OGLES/ContextGles.h"
@@ -30,7 +29,7 @@ static GLenum glCmpFunc[] = { GL_NONE, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, G
 
 namespace {
 
-const char* samplerFilterToStr(pvr::types::SamplerFilter filter)
+const char* samplerFilterToStr(types::SamplerFilter filter)
 {
 	const char* str[] = {"Nearest",
 	                     "Linear",
@@ -44,31 +43,18 @@ const char* samplerFilterToStr(pvr::types::SamplerFilter filter)
 
 
 
-
-namespace impl {
-const native::HSampler_& Sampler_::getNativeObject()const
-{
-	return static_cast<const gles::SamplerGles_&>(*this);
-}
-
-native::HSampler_& Sampler_::getNativeObject()
-{
-	return static_cast<gles::SamplerGles_&>(*this);
-}
-}
-
 namespace gles {
 void SamplerGles_::destroy()
 {
-	if (m_initialized && m_context.isValid() && m_context->hasApiCapability(ApiCapabilities::Sampler))
+	if (_initialized && _context.isValid() && _context->hasApiCapability(ApiCapabilities::Sampler))
 	{
-		gl::DeleteSamplers(1, &getNativeObject().handle);
+		gl::DeleteSamplers(1, &handle);
 	}
 }
 
-GLenum getMinificationFilter(IGraphicsContext& context, uint32 texMipLevelCount, const assets::SamplerCreateParam& samplerDesc)
+GLenum getMinificationFilter(IGraphicsContext& context, uint32 texMipLevelCount, const SamplerCreateParam& samplerDesc)
 {
-	pvr::platform::ContextGles& contextEs = static_cast<pvr::platform::ContextGles&>(context);
+	platform::ContextGles& contextEs = native_cast(context);
 
 	uint8 minFilter = 0;
 	if (samplerDesc.mipMappingFilter != types::SamplerFilter::None &&
@@ -94,9 +80,9 @@ GLenum getMinificationFilter(IGraphicsContext& context, uint32 texMipLevelCount,
 	return minFilter;
 }
 
-GLenum getMagnificationFilter(IGraphicsContext& context, const assets::SamplerCreateParam& samplerDesc)
+GLenum getMagnificationFilter(IGraphicsContext& context, const SamplerCreateParam& samplerDesc)
 {
-	pvr::platform::ContextGles& contextEs = static_cast<pvr::platform::ContextGles&>(context);
+	platform::ContextGles& contextEs = native_cast(context);
 
 	uint8 magFilter = 0;
 
@@ -115,21 +101,21 @@ GLenum getMagnificationFilter(IGraphicsContext& context, const assets::SamplerCr
 
 void SamplerGles_::bind(IGraphicsContext& context, uint32 index) const
 {
-	pvr::platform::ContextGles& contextEs = static_cast<pvr::platform::ContextGles&>(context);
+	platform::ContextGles& contextEs = native_cast(context);
 	if (contextEs.hasApiCapability(ApiCapabilities::Sampler)) //API supports separate sampler objects
 	{
 		if (contextEs.getCurrentRenderStates().texSamplerBindings[index].lastBoundSampler == this) { return; }
-		gl::BindSampler(index, getNativeObject().handle); contextEs.onBind(*this, (uint16)index);
+		gl::BindSampler(index, handle); contextEs.onBind(*this, (uint16)index);
 		debugLogApiError("Sampler_::bind exit");
 	}
 	else  //API has fused textures with sampler objects
 	{
-		pvr::platform::ContextGles::RenderStatesTracker& renderStates =  contextEs.getCurrentRenderStates();
-		const impl::TextureView_* textureToBind = renderStates.texSamplerBindings[renderStates.lastBoundTexBindIndex].toBindTex;
-		const GLenum texType = ConvertToGles::textureViewType(textureToBind->getViewType());
+		platform::ContextGles::RenderStatesTracker& renderStates =  contextEs.getCurrentRenderStates();
+		const TextureStoreGles_* textureToBind = renderStates.texSamplerBindings[renderStates.lastBoundTexBindIndex].lastBoundTex;
+		const GLenum texType = textureToBind->target;
 
-		if (static_cast<const TextureStoreGles_&>(*textureToBind->getResource()).m_sampler == this) { return; }
-		static_cast<const TextureStoreGles_&>(*textureToBind->getResource()).m_sampler = this;
+		if (static_cast<const TextureStoreGles_&>(*textureToBind)._sampler == this) { return; }
+		static_cast<const TextureStoreGles_&>(*textureToBind)._sampler = this;
 		debugLogApiError("Begin Sampler_::bind\n");
 
 #ifdef  GL_TEXTURE_EXTERNAL_OES
@@ -138,12 +124,13 @@ void SamplerGles_::bind(IGraphicsContext& context, uint32 index) const
 		if (texType != GL_NONE)
 #endif
 		{
-			GLenum minFilter = (GLenum)getMinificationFilter(context, textureToBind->getResource()->getNumMipLevels(), m_desc);
-			GLenum magFilter = (GLenum)getMagnificationFilter(context, m_desc);
+			GLenum minFilter = (GLenum)getMinificationFilter(context, textureToBind->getNumMipLevels(), _desc);
+			GLenum magFilter = (GLenum)getMagnificationFilter(context, _desc);
 
 			if (renderStates.lastBoundTexBindIndex != index)
 			{
 				gl::ActiveTexture(GL_TEXTURE0 + index);
+				renderStates.lastBoundTexBindIndex = index;
 			}
 			debugLogApiError("calling glActiveTexture in SampelrImpl::bind\n");
 			if (glFilter[minFilter] == GL_NONE)
@@ -160,7 +147,7 @@ void SamplerGles_::bind(IGraphicsContext& context, uint32 index) const
 			debugLogApiError("calling glTexParameteri in SampelrImpl::bind\n");
 			if (context.hasApiCapability(ApiCapabilities::ShadowSamplers))
 			{
-				if (m_desc.compareMode == types::ComparisonMode::None)
+				if (_desc.compareMode == types::ComparisonMode::None)
 				{
 					gl::TexParameteri(texType, GL_TEXTURE_COMPARE_MODE_EXT, GL_NONE);
 					debugLogApiError("calling glTexParameteri in Sampler_::bind\n");
@@ -169,27 +156,27 @@ void SamplerGles_::bind(IGraphicsContext& context, uint32 index) const
 				{
 					gl::TexParameteri(texType, GL_TEXTURE_COMPARE_MODE_EXT, GL_COMPARE_REF_TO_TEXTURE_EXT);
 					debugLogApiError("calling glTexParameteri in SampelrImpl::bind\n");
-					gl::TexParameteri(texType, GL_TEXTURE_COMPARE_FUNC_EXT, glCmpFunc[(uint32)m_desc.compareMode]);
+					gl::TexParameteri(texType, GL_TEXTURE_COMPARE_FUNC_EXT, glCmpFunc[(uint32)_desc.compareMode]);
 					debugLogApiError("calling glTexParameteri in Sampler_::bind\n");
 				}
 			}
 
-			gl::TexParameteri(texType, GL_TEXTURE_WRAP_S, ConvertToGles::samplerWrap(m_desc.wrapModeU));
+			gl::TexParameteri(texType, GL_TEXTURE_WRAP_S, nativeGles::ConvertToGles::samplerWrap(_desc.wrapModeU));
 			debugLogApiError("calling glTexParameteri in SampelrImpl::bind\n");
-			gl::TexParameteri(texType, GL_TEXTURE_WRAP_T, ConvertToGles::samplerWrap(m_desc.wrapModeV));
+			gl::TexParameteri(texType, GL_TEXTURE_WRAP_T, nativeGles::ConvertToGles::samplerWrap(_desc.wrapModeV));
 			debugLogApiError("calling glTexParameteri in Sampler_::bind\n");
 #ifdef GL_TEXTURE_WRAP_R_OES
-			if (context.hasApiCapability(ApiCapabilities::Texture3D) && textureToBind->getViewType() == types::ImageViewType::ImageView3D)
+			if (context.hasApiCapability(ApiCapabilities::Texture3D) && textureToBind->target == GL_TEXTURE_3D)
 			{
-				gl::TexParameteri(texType, GL_TEXTURE_WRAP_R_OES, ConvertToGles::samplerWrap(m_desc.wrapModeW));
+				gl::TexParameteri(texType, GL_TEXTURE_WRAP_R_OES, nativeGles::ConvertToGles::samplerWrap(_desc.wrapModeW));
 				debugLogApiError("calling glTexParameteri in Sampler_::bind\n");
 			}
 #endif
-			/*gl::TexParameteri(gSamplerType[m_desc.samplerType], GL_TEXTURE_MIN_LOD, m_desc.lodMinimum);
-			gl::TexParameteri(gSamplerType[m_desc.samplerType], GL_TEXTURE_MAX_LOD, m_desc.lodMaximum);*/
-			if (context.hasApiCapability(ApiCapabilities::AnisotropicFiltering) && m_desc.anisotropyMaximum)
+			/*gl::TexParameteri(gSamplerType[_desc.samplerType], GL_TEXTURE_MIN_LOD, _desc.lodMinimum);
+			gl::TexParameteri(gSamplerType[_desc.samplerType], GL_TEXTURE_MAX_LOD, _desc.lodMaximum);*/
+			if (context.hasApiCapability(ApiCapabilities::AnisotropicFiltering) && _desc.anisotropyMaximum)
 			{
-				gl::TexParameterf(texType, GL_TEXTURE_MAX_ANISOTROPY_EXT, m_desc.anisotropyMaximum);
+				gl::TexParameterf(texType, GL_TEXTURE_MAX_ANISOTROPY_EXT, _desc.anisotropyMaximum);
 				debugLogApiError("calling glTexParameteri in Sampler_::bind\n");
 			}
 		}
@@ -197,56 +184,54 @@ void SamplerGles_::bind(IGraphicsContext& context, uint32 index) const
 	}
 }
 
-bool SamplerGles_::init(const assets::SamplerCreateParam& samplerDesc)
+bool SamplerGles_::init(const SamplerCreateParam& samplerDesc)
 {
 	//If samplers are not supported, no need to do anything - we will be using textures for it...
-	if (!m_context->hasApiCapability(ApiCapabilities::Sampler)) { return true; }
-	if (m_initialized) { return true; }
-	using namespace assets;
+	if (!_context->hasApiCapability(ApiCapabilities::Sampler)) { return true; }
+	if (_initialized) { return true; }
 
-	GLenum minFilter = getMinificationFilter(*m_context, uint32(-1), samplerDesc);
-	GLenum magFilter = getMagnificationFilter(*m_context, samplerDesc);
+	GLenum minFilter = getMinificationFilter(*_context, uint32(-1), samplerDesc);
+	GLenum magFilter = getMagnificationFilter(*_context, samplerDesc);
 
 #if BUILD_API_MAX>=30
-	gl::GenSamplers(1, &getNativeObject().handle);
+	gl::GenSamplers(1, &handle);
 
-	gl::SamplerParameteri(getNativeObject().handle, GL_TEXTURE_MIN_FILTER, glFilter[minFilter]);
+	gl::SamplerParameteri(handle, GL_TEXTURE_MIN_FILTER, glFilter[minFilter]);
 	debugLogApiError("Sampler_::init SetMinFilter");
 
-	gl::SamplerParameteri(getNativeObject().handle, GL_TEXTURE_MAG_FILTER, glFilter[magFilter]);
+	gl::SamplerParameteri(handle, GL_TEXTURE_MAG_FILTER, glFilter[magFilter]);
 	debugLogApiError("Sampler_::init SetMagFilter");
 
 	if (samplerDesc.compareMode == types::ComparisonMode::None)
 	{
-		gl::SamplerParameteri(getNativeObject().handle, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+		gl::SamplerParameteri(handle, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 	}
 	else
 	{
-		gl::SamplerParameteri(getNativeObject().handle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-		gl::SamplerParameteri(getNativeObject().handle, GL_TEXTURE_COMPARE_FUNC, api::ConvertToGles::comparisonMode(samplerDesc.compareMode));
+		gl::SamplerParameteri(handle, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+		gl::SamplerParameteri(handle, GL_TEXTURE_COMPARE_FUNC, nativeGles::ConvertToGles::comparisonMode(samplerDesc.compareMode));
 	}
 	debugLogApiError("Sampler_::init TextureCompareMode");
 
-	gl::SamplerParameteri(getNativeObject().handle, GL_TEXTURE_WRAP_S, api::ConvertToGles::samplerWrap(samplerDesc.wrapModeU));
+	gl::SamplerParameteri(handle, GL_TEXTURE_WRAP_S, nativeGles::ConvertToGles::samplerWrap(samplerDesc.wrapModeU));
 	debugLogApiError("Sampler_::init WrapS");
-	gl::SamplerParameteri(getNativeObject().handle, GL_TEXTURE_WRAP_T, api::ConvertToGles::samplerWrap(samplerDesc.wrapModeV));
+	gl::SamplerParameteri(handle, GL_TEXTURE_WRAP_T, nativeGles::ConvertToGles::samplerWrap(samplerDesc.wrapModeV));
 	debugLogApiError("Sampler_::init WrapT");
-	gl::SamplerParameteri(getNativeObject().handle, GL_TEXTURE_WRAP_R, api::ConvertToGles::samplerWrap(samplerDesc.wrapModeW));
+	gl::SamplerParameteri(handle, GL_TEXTURE_WRAP_R, nativeGles::ConvertToGles::samplerWrap(samplerDesc.wrapModeW));
 	debugLogApiError("Sampler_::init WrapR");
-	gl::SamplerParameteri(getNativeObject().handle, GL_TEXTURE_MIN_LOD, static_cast<GLint>(samplerDesc.lodMinimum));
+	gl::SamplerParameteri(handle, GL_TEXTURE_MIN_LOD, static_cast<GLint>(samplerDesc.lodMinimum));
 	debugLogApiError("Sampler_::init MinLod");
-	gl::SamplerParameteri(getNativeObject().handle, GL_TEXTURE_MAX_LOD, static_cast<GLint>(samplerDesc.lodMaximum));
+	gl::SamplerParameteri(handle, GL_TEXTURE_MAX_LOD, static_cast<GLint>(samplerDesc.lodMaximum));
 	debugLogApiError("Sampler_::init MaxLod");
-	if (m_context->hasApiCapability(ApiCapabilities::AnisotropicFiltering) && samplerDesc.anisotropyMaximum)
+	if (_context->hasApiCapability(ApiCapabilities::AnisotropicFiltering) && samplerDesc.anisotropyMaximum)
 	{
-		gl::SamplerParameterf(getNativeObject().handle, GL_TEXTURE_MAX_ANISOTROPY_EXT, samplerDesc.anisotropyMaximum);
+		gl::SamplerParameterf(handle, GL_TEXTURE_MAX_ANISOTROPY_EXT, samplerDesc.anisotropyMaximum);
 		debugLogApiError("Sampler_::init Anisotropy");
 	}
 #endif
-	m_initialized = true;
+	_initialized = true;
 	return true;
 }
 }
 }// namespace api
 }// namespace pvr
-//!\endcond

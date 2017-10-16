@@ -1,17 +1,16 @@
 var searchData=
 [
-  ['enddragging',['endDragging',['../structpvr_1_1system_1_1_shell_1_1_private_pointer_state.html#a9ed5212769f9aff45c4753c0eb99c644',1,'pvr::system::Shell::PrivatePointerState']]],
-  ['eventbuttondown',['eventButtonDown',['../classpvr_1_1system_1_1_shell.html#a12fb7939e46471a726a770c414ff3843',1,'pvr::system::Shell']]],
-  ['eventbuttonup',['eventButtonUp',['../classpvr_1_1system_1_1_shell.html#af34178cd7e4b7e847767cb3d41ecd2fe',1,'pvr::system::Shell']]],
-  ['eventclick',['eventClick',['../classpvr_1_1system_1_1_shell.html#a74135cc28e883bad92640d6dc2ec86de',1,'pvr::system::Shell']]],
-  ['eventdragfinished',['eventDragFinished',['../classpvr_1_1system_1_1_shell.html#ab0648822192c4b99778fbbdf0dffad7d',1,'pvr::system::Shell']]],
-  ['eventdragstart',['eventDragStart',['../classpvr_1_1system_1_1_shell.html#ae6cc4060bf48c7daf1b4063e7742f67c',1,'pvr::system::Shell']]],
-  ['eventkeydown',['eventKeyDown',['../classpvr_1_1system_1_1_shell.html#ae4d21842cf73e128a0cdc54dcff67e1f',1,'pvr::system::Shell']]],
-  ['eventkeystroke',['eventKeyStroke',['../classpvr_1_1system_1_1_shell.html#a1afefe27db7cc1b69e55fd832221b348',1,'pvr::system::Shell']]],
-  ['eventkeyup',['eventKeyUp',['../classpvr_1_1system_1_1_shell.html#a80f28e27b54996ea9ebdc0e520adfec0',1,'pvr::system::Shell']]],
-  ['eventmappedinput',['eventMappedInput',['../classpvr_1_1system_1_1_shell.html#a51ad0df5ac3704def88cf3fcb3664ba4',1,'pvr::system::Shell']]],
-  ['execute',['execute',['../classpvr_1_1system_1_1_state_machine.html#a24d29ee50cf18f37c027156f45f7f7ea',1,'pvr::system::StateMachine']]],
-  ['executeonce',['executeOnce',['../classpvr_1_1system_1_1_state_machine.html#a0033a7c9949aa761d11403fddf2fed12',1,'pvr::system::StateMachine::executeOnce()'],['../classpvr_1_1system_1_1_state_machine.html#abdebec57f98452ee8209d98beaa64258',1,'pvr::system::StateMachine::executeOnce(const State state)']]],
-  ['executeupto',['executeUpTo',['../classpvr_1_1system_1_1_state_machine.html#af9c7073c28dead0a68163f2ed97c0858',1,'pvr::system::StateMachine']]],
-  ['exitshell',['exitShell',['../classpvr_1_1system_1_1_shell.html#ad0e959c49a82675785fe35af2eead2e8',1,'pvr::system::Shell']]]
+  ['eventbuttondown',['eventButtonDown',['../classpvr_1_1platform_1_1_shell.html#ace40c1791026bfb17d90ae9e005f28d8',1,'pvr::platform::Shell']]],
+  ['eventbuttonup',['eventButtonUp',['../classpvr_1_1platform_1_1_shell.html#af7f59b78bb6d0da1da9339b87b695f1d',1,'pvr::platform::Shell']]],
+  ['eventclick',['eventClick',['../classpvr_1_1platform_1_1_shell.html#a8bb36fe97c5f88408421c601fbbe2698',1,'pvr::platform::Shell']]],
+  ['eventdragfinished',['eventDragFinished',['../classpvr_1_1platform_1_1_shell.html#a216861873786dda96e1cd44a8d49c1d8',1,'pvr::platform::Shell']]],
+  ['eventdragstart',['eventDragStart',['../classpvr_1_1platform_1_1_shell.html#a3f5d3ccde2d3dae7f799212f2b5be7c4',1,'pvr::platform::Shell']]],
+  ['eventkeydown',['eventKeyDown',['../classpvr_1_1platform_1_1_shell.html#a35e933adb4460841204b58b36bb79d79',1,'pvr::platform::Shell']]],
+  ['eventkeystroke',['eventKeyStroke',['../classpvr_1_1platform_1_1_shell.html#afe4c6f24ff198e9d2b2772cbd00da007',1,'pvr::platform::Shell']]],
+  ['eventkeyup',['eventKeyUp',['../classpvr_1_1platform_1_1_shell.html#a7fd1296cb45dffdac831bfff5bd9c730',1,'pvr::platform::Shell']]],
+  ['eventmappedinput',['eventMappedInput',['../classpvr_1_1platform_1_1_shell.html#a5e9a69685418d9328fa2415476319f06',1,'pvr::platform::Shell']]],
+  ['execute',['execute',['../classpvr_1_1platform_1_1_state_machine.html#aa0ceef207e50096836056de3df07a697',1,'pvr::platform::StateMachine']]],
+  ['executeonce',['executeOnce',['../classpvr_1_1platform_1_1_state_machine.html#abe0b141d27c80ae22f68676c6c82c7d4',1,'pvr::platform::StateMachine::executeOnce()'],['../classpvr_1_1platform_1_1_state_machine.html#ab8a49e3f00302adc3fbe4eae2ec3f594',1,'pvr::platform::StateMachine::executeOnce(const State state)']]],
+  ['executeupto',['executeUpTo',['../classpvr_1_1platform_1_1_state_machine.html#a9fec54fc1350baad6b33770d38a49a2f',1,'pvr::platform::StateMachine']]],
+  ['exitshell',['exitShell',['../classpvr_1_1platform_1_1_shell.html#a4167538c72b7eae18d00a73f9f72a753',1,'pvr::platform::Shell']]]
 ];

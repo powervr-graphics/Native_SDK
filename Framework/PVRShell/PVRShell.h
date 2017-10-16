@@ -1,9 +1,9 @@
-/*!*********************************************************************************************************************
-\file         PVRShell\PVRShell.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Include this file if you wish to use the PVRShell functionality. Also see PVRShellNoPVRApi.h.
-***********************************************************************************************************************/
+/*!
+\brief Include this file if you wish to use the PVRShell functionality. Also see PVRShellNoPVRApi.h.
+\file PVRShell/PVRShell.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 
 #pragma once
 #include "PVRShell/Shell.h"
@@ -24,7 +24,7 @@ PVRShell will usually be the foundation on top of which an application is writte
 
 Also, PVRShell will create and teardown the window, initialize and de-initialize the graphics system, swap the buffers at the end of every frame, search platform-specific methods and file system storage (file system, assets, bundle, etc.).
 
-PVRShell directly depends on PVRCore and PVRPlatformGlue, and needs the presence of PVRApi (or technically another library that provides a <span class="code">createGraphicsContext</span> library returning an <span class="code">IGraphicsContext</span>). Normally, PVRShell is used as the first step of every PowerVR SDK application.
+PVRShell directly depends on PVRCore and PVRNativeApi, and needs the presence of PVRApi (or technically another library that provides a <span class="code">createGraphicsContext</span> library returning an <span class="code">IGraphicsContext</span>). Normally, PVRShell is used as the first step of every PowerVR SDK application.
 
 PVRShell source can be found in the <a href="../../">PVRShell</a> folder in the SDK package.
 

@@ -1,21 +1,17 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets/PVRAssets.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Include this file if you wish to use the PVRAssets functionality.
-***********************************************************************************************************************/
+/*!
+\brief Include this file if you wish to use the PVRAssets functionality.
+\file PVRAssets/PVRAssets.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 #pragma once
 #include "PVRAssets/Model.h"
 #include "PVRAssets/Shader.h"
 #include "PVRAssets/FileIO/PODReader.h"
 #include "PVRAssets/FileIO/PFXReader.h"
 #include "PVRAssets/FileIO/PFXParser.h"
-#include "PVRAssets/FileIO/TextureReaderPVR.h"
-#include "PVRAssets/FileIO/TextureReaderBMP.h"
-#include "PVRAssets/FileIO/TextureReaderKTX.h"
-#include "PVRAssets/FileIO/TextureReaderDDS.h"
-#include "PVRAssets/FileIO/TextureReaderXNB.h"
-#include "PVRAssets/FileIO/TextureReaderTGA.h"
+#include "PVRAssets/TextureLoad.h"
+
 
 /*****************************************************************************/
 /*! \mainpage PVRAssets
@@ -37,14 +33,14 @@ PVRAssets source can be found in the <a href="../../">PVRAssets</a> folder in th
 
 To use PVRAssets:
 <ul>
-	<li>Depending on the platform, add the module in by adding either:<br/>
-		<ol>
-			<li>A project dependency (windows/osx/ios/android/...) (project file in <span class="code">Framework/PVRCamera/Build/[Platform]/...</span>)</li>
-			<li>The library to link against directly (windows/android/linux makefiles) (.so etc. in <span class="code">Framework/Bin/[Platform]/[lib?]PVRCamera[.lib/.so]</span>)</li>
-		</ol>
-	</li>
-	<li>Include the relevant header files (usually <span class="code">PVRAssets/PVRAssets.h</span>)</li>
-	<li>Use the code (load .pod files into models, modify meshes, load .pvr textures, inspect texture metadata, extract attribute information from meshes, etc.)</li>
+  <li>Depending on the platform, add the module in by adding either:<br/>
+    <ol>
+      <li>A project dependency (windows/osx/ios/android/...) (project file in <span class="code">Framework/PVRCamera/Build/[Platform]/...</span>)</li>
+      <li>The library to link against directly (windows/android/linux makefiles) (.so etc. in <span class="code">Framework/Bin/[Platform]/[lib?]PVRCamera[.lib/.so]</span>)</li>
+    </ol>
+  </li>
+  <li>Include the relevant header files (usually <span class="code">PVRAssets/PVRAssets.h</span>)</li>
+  <li>Use the code (load .pod files into models, modify meshes, load .pvr textures, inspect texture metadata, extract attribute information from meshes, etc.)</li>
 </ul>
 
 \section code Code Examples

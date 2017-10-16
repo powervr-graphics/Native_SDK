@@ -1,26 +1,1054 @@
-/*!*********************************************************************************************************************
-\file         PVRAssets\FileIO\TextureReaderKTX.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Implementation of methods of the TextureReaderKTX class.
-***********************************************************************************************************************/
+/*!
+\brief Implementation of methods of the TextureReaderKTX class.
+\file PVRAssets/FileIO/TextureReaderKTX.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "PVRAssets/FileIO/TextureReaderKTX.h"
+#include "PVRCore/Texture/FileDefinesKTX.h"
+#include "PVRCore/Texture/TextureDefines.h"
 #include "PVRCore/Log.h"
+
+namespace {
+bool setopenGLFormat(pvr::TextureHeader& hd, pvr::uint32 glInternalFormat, pvr::uint32, pvr::uint32 glType)
+{
+	/*  Try to determine the format. This code is naive, and only checks the data that matters (e.g. glInternalFormat first, then glType
+	if it needs more information).
+	*/
+	switch (glInternalFormat)
+	{
+	//Unsized internal formats
+	case pvr::texture_ktx::OpenGLFormats::GL_RED:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		switch (glType)
+		{
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'r', 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::SignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'r', 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'r', 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'r', 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_INT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'r', 32>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_INT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'r', 32>::ID);
+			return true;
+		}
+		}
+		break;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		switch (glType)
+		{
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 8, 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::SignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 8, 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 16, 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 16, 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_INT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 32, 32>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_INT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 32, 32>::ID);
+			return true;
+		}
+		}
+		break;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		switch (glType)
+		{
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_BYTE_3_3_2:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 3, 3, 2>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::SignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_INT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_INT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_SHORT_5_6_5:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID);
+			return true;
+		}
+		}
+		break;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		switch (glType)
+		{
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::SignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_INT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_INT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_SHORT_5_5_5_1:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 5, 5, 5, 1>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_SHORT_4_4_4_4:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID);
+			return true;
+		}
+		}
+		break;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_BGRA:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		if (glType == pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_BYTE)
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType4<'b', 'g', 'r', 'a', 8, 8, 8, 8>::ID);
+			return true;
+		}
+		break;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE_ALPHA:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		switch (glType)
+		{
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'l', 'a', 8, 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::SignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'l', 'a', 8, 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'l', 'a', 16, 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'l', 'a', 16, 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_INT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'l', 'a', 32, 32>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_INT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType2<'l', 'a', 32, 32>::ID);
+			return true;
+		}
+		}
+		break;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		switch (glType)
+		{
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'l', 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::SignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'l', 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'l', 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'l', 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_INT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'l', 32>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_INT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'l', 32>::ID);
+			return true;
+		}
+		}
+		break;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_ALPHA:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		switch (glType)
+		{
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'a', 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_BYTE:
+		{
+			hd.setChannelType(pvr::VariableType::SignedByteNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'a', 8>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'a', 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_SHORT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedShortNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'a', 16>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_UNSIGNED_INT:
+		{
+			hd.setChannelType(pvr::VariableType::UnsignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'a', 32>::ID);
+			return true;
+		}
+		case pvr::texture_ktx::OpenGLFormats::GL_INT:
+		{
+			hd.setChannelType(pvr::VariableType::SignedIntegerNorm);
+			hd.setPixelFormat(pvr::GeneratePixelType1<'a', 32>::ID);
+			return true;
+		}
+		}
+		break;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_ALPHA8:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'a', 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_ALPHA8_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'a', 8>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_ALPHA16:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'a', 16>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_ALPHA16_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'a', 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_ALPHA16F_ARB:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'a', 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_ALPHA32F_ARB:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'a', 32>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE8:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'l', 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE8_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'l', 8>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE16:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'l', 16>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE16_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'l', 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE16F_ARB:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'l', 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE32F_ARB:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'l', 32>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE8_ALPHA8:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'l', 'a', 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE8_ALPHA8_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'l', 'a', 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE_ALPHA16F_ARB:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'l', 'a', 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_LUMINANCE_ALPHA32F_ARB:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'l', 'a', 32, 32>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R8:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R8_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 8>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R16:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 16>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R16_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedShortNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R16F:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R32F:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 32>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R8UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByte);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R8I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 8>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByte);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R16UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 16>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedShort);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R16I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedShort);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R32UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 32>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedInteger);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R32I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType1<'r', 32>::ID);
+		hd.setChannelType(pvr::VariableType::SignedInteger);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG8:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG8_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG16:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG16_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedShortNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG16F:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG32F:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 32, 32>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG8UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByte);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG8I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByte);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG16UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedShort);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG16I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedShort);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG32UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 32, 32>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedInteger);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RG32I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType2<'r', 'g', 32, 32>::ID);
+		hd.setChannelType(pvr::VariableType::SignedInteger);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R3_G3_B2:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 3, 3, 2>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB565:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 5, 6, 5>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB8:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB8_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_SRGB8:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::sRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB16:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB16_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedShortNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB10:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'x', 10, 10, 10, 2>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedIntegerNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_R11F_G11F_B10F:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 11, 11, 10>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB9_E5:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::SharedExponentR9G9B9E5);
+		hd.setChannelType(pvr::VariableType::UnsignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB16F:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB32F:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB8UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByte);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB8I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 8, 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByte);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB16UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedShort);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB16I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 16, 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedShort);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB32UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedInteger);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB32I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType3<'r', 'g', 'b', 32, 32, 32>::ID);
+		hd.setChannelType(pvr::VariableType::SignedInteger);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA8:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA8_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_SRGB8_ALPHA8:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::sRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA16:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA16_SNORM:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedShortNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB5_A1:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 5, 5, 5, 1>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA4:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 4, 4, 4, 4>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedShortNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB10_A2:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 10, 10, 10, 2>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedIntegerNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA16F:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA32F:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID);
+		hd.setChannelType(pvr::VariableType::SignedFloat);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA8UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedByte);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA8I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 8, 8, 8, 8>::ID);
+		hd.setChannelType(pvr::VariableType::SignedByte);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGB10_A2UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 10, 10, 10, 2>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedInteger);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA16UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedShort);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA16I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 16, 16, 16, 16>::ID);
+		hd.setChannelType(pvr::VariableType::SignedShort);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA32I:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID);
+		hd.setChannelType(pvr::VariableType::UnsignedInteger);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_RGBA32UI:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::GeneratePixelType4<'r', 'g', 'b', 'a', 32, 32, 32, 32>::ID);
+		hd.setChannelType(pvr::VariableType::SignedInteger);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::PVRTCI_2bpp_RGB);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::PVRTCI_2bpp_RGBA);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::PVRTCI_4bpp_RGB);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::PVRTCI_4bpp_RGBA);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGBA_PVRTC_2BPPV2_IMG:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::PVRTCII_2bpp);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGBA_PVRTC_4BPPV2_IMG:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::PVRTCII_4bpp);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_ETC1_RGB8_OES:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::ETC1);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::DXT1);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGBA_S3TC_DXT3_ANGLE:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::DXT3);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGBA_S3TC_DXT5_ANGLE:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::DXT5);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_SRGB8_ETC2:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::sRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::ETC2_RGB);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGB8_ETC2:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::ETC2_RGB);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::sRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::ETC2_RGBA);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGBA8_ETC2_EAC:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::ETC2_RGBA);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::sRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::ETC2_RGB_A1);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::lRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::ETC2_RGB_A1);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_SIGNED_R11_EAC:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::sRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::EAC_R11);
+		hd.setChannelType(pvr::VariableType::SignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_R11_EAC:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::sRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::EAC_R11);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_SIGNED_RG11_EAC:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::sRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::EAC_RG11);
+		hd.setChannelType(pvr::VariableType::SignedByteNorm);
+		return true;
+	}
+	case pvr::texture_ktx::OpenGLFormats::GL_COMPRESSED_RG11_EAC:
+	{
+		hd.setColorSpace(pvr::types::ColorSpace::sRGB);
+		hd.setPixelFormat(pvr::CompressedPixelFormat::EAC_RG11);
+		hd.setChannelType(pvr::VariableType::UnsignedByteNorm);
+		return true;
+	}
+	}
+
+	//Return false if format isn't found/valid.
+	return false;
+}
+}
+
 using std::vector;
 namespace pvr {
 namespace assets {
 namespace assetReaders {
-TextureReaderKTX::TextureReaderKTX() : m_texturesToLoad(true)
+TextureReaderKTX::TextureReaderKTX() : _texturesToLoad(true)
 {
 }
-TextureReaderKTX::TextureReaderKTX(Stream::ptr_type assetStream) : AssetReader<Texture>(assetStream), m_texturesToLoad(true)
+TextureReaderKTX::TextureReaderKTX(Stream::ptr_type assetStream) : AssetReader<Texture>(assetStream), _texturesToLoad(true)
 {
 }
 
 bool TextureReaderKTX::readNextAsset(Texture& asset)
 {
-	if (m_assetStream->getSize() < texture_ktx::c_expectedHeaderSize)
+	if (_assetStream->getSize() < texture_ktx::c_expectedHeaderSize)
 	{
 		return false;
 	}
@@ -29,10 +1057,10 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 	texture_ktx::FileHeader ktxFileHeader;
 
 	// Acknowledge that once this function has returned the user won't be able load a texture from the file.
-	m_texturesToLoad = false;
+	_texturesToLoad = false;
 
 	// Read the identifier
-	if (!m_assetStream->read(1, sizeof(ktxFileHeader.identifier), &ktxFileHeader.identifier, dataRead) || dataRead != sizeof(ktxFileHeader.identifier)) { return false; }
+	if (!_assetStream->read(1, sizeof(ktxFileHeader.identifier), &ktxFileHeader.identifier, dataRead) || dataRead != sizeof(ktxFileHeader.identifier)) { return false; }
 
 	// Check that the identifier matches
 	if (memcmp(ktxFileHeader.identifier, texture_ktx::c_identifier, sizeof(ktxFileHeader.identifier)) != 0)
@@ -41,7 +1069,7 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 	}
 
 	// Read the endianness
-	if (!m_assetStream->read(sizeof(ktxFileHeader.endianness), 1, &ktxFileHeader.endianness, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.endianness), 1, &ktxFileHeader.endianness, dataRead) || dataRead != 1) { return false; }
 
 	// Check the endianness of the file
 	if (ktxFileHeader.endianness != texture_ktx::c_endianReference)
@@ -50,40 +1078,40 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 	}
 
 	// Read the openGL type
-	if (!m_assetStream->read(sizeof(ktxFileHeader.glType), 1, &ktxFileHeader.glType, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.glType), 1, &ktxFileHeader.glType, dataRead) || dataRead != 1) { return false; }
 
 	// Read the openGL type size
-	if (!m_assetStream->read(sizeof(ktxFileHeader.glTypeSize), 1, &ktxFileHeader.glTypeSize, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.glTypeSize), 1, &ktxFileHeader.glTypeSize, dataRead) || dataRead != 1) { return false; }
 
 	// Read the openGL format
-	if (!m_assetStream->read(sizeof(ktxFileHeader.glFormat), 1, &ktxFileHeader.glFormat, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.glFormat), 1, &ktxFileHeader.glFormat, dataRead) || dataRead != 1) { return false; }
 
 	// Read the openGL internal format
-	if (!m_assetStream->read(sizeof(ktxFileHeader.glInternalFormat), 1, &ktxFileHeader.glInternalFormat, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.glInternalFormat), 1, &ktxFileHeader.glInternalFormat, dataRead) || dataRead != 1) { return false; }
 
 	// Read the openGL base (unsized) internal format
-	if (!m_assetStream->read(sizeof(ktxFileHeader.glBaseInternalFormat), 1, &ktxFileHeader.glBaseInternalFormat, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.glBaseInternalFormat), 1, &ktxFileHeader.glBaseInternalFormat, dataRead) || dataRead != 1) { return false; }
 
 	// Read the width
-	if (!m_assetStream->read(sizeof(ktxFileHeader.pixelWidth), 1, &ktxFileHeader.pixelWidth, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.pixelWidth), 1, &ktxFileHeader.pixelWidth, dataRead) || dataRead != 1) { return false; }
 
 	// Read the height
-	if (!m_assetStream->read(sizeof(ktxFileHeader.pixelHeight), 1, &ktxFileHeader.pixelHeight, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.pixelHeight), 1, &ktxFileHeader.pixelHeight, dataRead) || dataRead != 1) { return false; }
 
 	// Read the depth
-	if (!m_assetStream->read(sizeof(ktxFileHeader.pixelDepth), 1, &ktxFileHeader.pixelDepth, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.pixelDepth), 1, &ktxFileHeader.pixelDepth, dataRead) || dataRead != 1) { return false; }
 
 	// Read the number of array elements
-	if (!m_assetStream->read(sizeof(ktxFileHeader.numberOfArrayElements), 1, &ktxFileHeader.numberOfArrayElements, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.numberOfArrayElements), 1, &ktxFileHeader.numberOfArrayElements, dataRead) || dataRead != 1) { return false; }
 
 	// Read the number of faces
-	if (!m_assetStream->read(sizeof(ktxFileHeader.numberOfFaces), 1, &ktxFileHeader.numberOfFaces, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.numberOfFaces), 1, &ktxFileHeader.numberOfFaces, dataRead) || dataRead != 1) { return false; }
 
 	// Read the number of MIP Map levels
-	if (!m_assetStream->read(sizeof(ktxFileHeader.numberOfMipmapLevels), 1, &ktxFileHeader.numberOfMipmapLevels, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.numberOfMipmapLevels), 1, &ktxFileHeader.numberOfMipmapLevels, dataRead) || dataRead != 1) { return false; }
 
 	// Read the meta data size
-	if (!m_assetStream->read(sizeof(ktxFileHeader.bytesOfKeyValueData), 1, &ktxFileHeader.bytesOfKeyValueData, dataRead) || dataRead != 1) { return false; }
+	if (!_assetStream->read(sizeof(ktxFileHeader.bytesOfKeyValueData), 1, &ktxFileHeader.bytesOfKeyValueData, dataRead) || dataRead != 1) { return false; }
 
 	// Read the meta data
 	uint32 metaDataRead = 0;
@@ -99,13 +1127,13 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 		{
 			// Read the amount of meta data in this block.
 			uint32 keyAndValueSize = 0;
-			if (!m_assetStream->read(sizeof(keyAndValueSize), 1, &keyAndValueSize, dataRead) || dataRead != 1) { return false; }
+			if (!_assetStream->read(sizeof(keyAndValueSize), 1, &keyAndValueSize, dataRead) || dataRead != 1) { return false; }
 
 			// Allocate enough memory to read in the meta data.
 			UCharBuffer keyAndData; keyAndData.resize(keyAndValueSize);
 
 			// Read in the meta data.
-			if (!m_assetStream->read(1, keyAndValueSize, keyAndData.data(), dataRead) || dataRead != keyAndValueSize) { return false; }
+			if (!_assetStream->read(1, keyAndValueSize, keyAndData.data(), dataRead) || dataRead != keyAndValueSize) { return false; }
 
 			// Setup the key pointer
 			string keyString(reinterpret_cast<char8*>(keyAndData.data()));
@@ -145,12 +1173,12 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 			}
 
 			// Skip to the next meta data.
-			if (!m_assetStream->seek(padding, Stream::SeekOriginFromCurrent)) { return false; }
+			if (!_assetStream->seek(padding, Stream::SeekOriginFromCurrent)) { return false; }
 
 			// Increase the meta data read value
 			metaDataRead += keyAndValueSize + padding;
 		}
-		while (m_assetStream->getPosition() < (ktxFileHeader.bytesOfKeyValueData + texture_ktx::c_expectedHeaderSize));
+		while (_assetStream->getPosition() < (ktxFileHeader.bytesOfKeyValueData + texture_ktx::c_expectedHeaderSize));
 
 		// Make sure the meta data size wasn't completely wrong. If it was, there are no guarantees about the contents of the texture data.
 		if (metaDataRead > ktxFileHeader.bytesOfKeyValueData)
@@ -161,7 +1189,7 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 
 	// Construct the texture asset's header
 	TextureHeader textureHeader;
-	textureHeader.setopenGLFormat(ktxFileHeader.glInternalFormat, ktxFileHeader.glFormat, ktxFileHeader.glType);
+	setopenGLFormat(textureHeader, ktxFileHeader.glInternalFormat, ktxFileHeader.glFormat, ktxFileHeader.glType);
 	textureHeader.setWidth(ktxFileHeader.pixelWidth);
 	textureHeader.setHeight(ktxFileHeader.pixelHeight);
 	textureHeader.setDepth(ktxFileHeader.pixelDepth);
@@ -174,14 +1202,14 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 	asset = Texture(textureHeader, NULL);
 
 	// Seek to the start of the texture data, just in case.
-	if (!m_assetStream->seek(ktxFileHeader.bytesOfKeyValueData + texture_ktx::c_expectedHeaderSize, Stream::SeekOriginFromStart)) { return false; }
+	if (!_assetStream->seek(ktxFileHeader.bytesOfKeyValueData + texture_ktx::c_expectedHeaderSize, Stream::SeekOriginFromStart)) { return false; }
 
 	// Read in the texture data
 	for (uint32 mipMapLevel = 0; mipMapLevel < ktxFileHeader.numberOfMipmapLevels; ++mipMapLevel)
 	{
 		// Read the stored size of the MIP Map.
 		uint32 mipMapSize = 0;
-		if (!m_assetStream->read(sizeof(mipMapSize), 1, &mipMapSize, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(mipMapSize), 1, &mipMapSize, dataRead) || dataRead != 1) { return false; }
 
 		// Sanity check the size - regular cube maps are a slight exception
 		if (asset.getNumberOfFaces() == 6 && asset.getNumberOfArrayMembers() == 1)
@@ -215,13 +1243,13 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 				for (uint32 iFace = 0; iFace < asset.getNumberOfFaces(); ++iFace)
 				{
 					// Read in the texture data.
-					if (!m_assetStream->read(asset.getDataSize(mipMapLevel, false, false), 1,
+					if (!_assetStream->read(asset.getDataSize(mipMapLevel, false, false), 1,
 					                         asset.getDataPointer(mipMapLevel, iSurface, iFace), dataRead) || dataRead != 1) { return false; }
 
 					// Advance past the cube face padding
 					if (cubePadding && asset.getNumberOfFaces() == 6 && asset.getNumberOfArrayMembers() == 1)
 					{
-						if (m_assetStream->seek(cubePadding, Stream::SeekOriginFromCurrent) != true) { return false; }
+						if (_assetStream->seek(cubePadding, Stream::SeekOriginFromCurrent) != true) { return false; }
 					}
 				}
 			}
@@ -241,7 +1269,7 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 							uint64 scanLineOffset = (textureOffset3D(0, texHeight, texDepth, asset.getWidth(), asset.getHeight()) *
 							                         (asset.getBitsPerPixel() / 8));
 							// Read in the texture data for the current scan line.
-							if (!m_assetStream->read((asset.getBitsPerPixel() / 8) * asset.getWidth(mipMapLevel), 1,
+							if (!_assetStream->read((asset.getBitsPerPixel() / 8) * asset.getWidth(mipMapLevel), 1,
 							                         asset.getDataPointer(mipMapLevel, iSurface, iFace) + scanLineOffset, dataRead) || dataRead != 1) { return false; }
 
 							// Work out the amount of scan line padding.
@@ -251,7 +1279,7 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 							// Advance past the scan line padding
 							if (scanLinePadding)
 							{
-								if (!m_assetStream->seek(scanLinePadding, Stream::SeekOriginFromCurrent)) { return false; }
+								if (!_assetStream->seek(scanLinePadding, Stream::SeekOriginFromCurrent)) { return false; }
 							}
 						}
 					}
@@ -259,7 +1287,7 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 					// Advance past the cube face padding
 					if (cubePadding && asset.getNumberOfFaces() == 6 && asset.getNumberOfArrayMembers() == 1)
 					{
-						if (!m_assetStream->seek(cubePadding, Stream::SeekOriginFromCurrent)) { return false; }
+						if (!_assetStream->seek(cubePadding, Stream::SeekOriginFromCurrent)) { return false; }
 					}
 				}
 			}
@@ -271,7 +1299,7 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 		// Advance past the MIP Map padding if appropriate
 		if (mipMapPadding)
 		{
-			if (!m_assetStream->seek(mipMapPadding, Stream::SeekOriginFromCurrent)) { return false; }
+			if (!_assetStream->seek(mipMapPadding, Stream::SeekOriginFromCurrent)) { return false; }
 		}
 	}
 
@@ -281,7 +1309,7 @@ bool TextureReaderKTX::readNextAsset(Texture& asset)
 
 bool TextureReaderKTX::hasAssetsLeftToLoad()
 {
-	return m_texturesToLoad;
+	return _texturesToLoad;
 }
 
 bool TextureReaderKTX::canHaveMultipleAssets()

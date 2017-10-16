@@ -1,21 +1,24 @@
-/*!*********************************************************************************************************************
-\file         PVRNativeApi\OGLES\ShaderUtils.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Implementations of the shader utility functions
-***********************************************************************************************************************/
+/*!
+\brief Implementations of the shader utility functions
+\file PVRNativeApi/OGLES/ShaderUtils.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
-#include "PVRNativeApi/ShaderUtils.h"
+#include "PVRCore/Stream.h"
+#include "PVRCore/StringFunctions.h"
+#include "PVRNativeApi/OGLES/ShaderUtilsGles.h"
 #include "PVRNativeApi/OGLES/NativeObjectsGles.h"
 #include "PVRNativeApi/OGLES/OpenGLESBindings.h"
-#include "PVRNativeApi/ApiErrors.h"
+#include "PVRNativeApi/OGLES/ApiErrorsGles.h"
 
 namespace pvr {
-namespace utils {
+namespace nativeGles {
 
-bool loadShader(const native::HContext_& context, const Stream& shaderSource, types::ShaderType shaderType, const char* const* defines, uint32 defineCount,
+bool loadShader(const Stream& shaderSource, types::ShaderType shaderType, const char* const* defines, uint32 defineCount,
                 pvr::native::HShader_& outShader, const ApiCapabilities* contextCapabilities)
 {
+	logApiError("loadShader: Error on entry!");
 	if (!shaderSource.isopen() && !shaderSource.open())
 	{
 		Log(Log.Error, "loadShader: Could not open the shaderSource stream.");
@@ -120,7 +123,11 @@ bool loadShader(const native::HContext_& context, const Stream& shaderSource, ty
 	sourceDataStr.append(shaderSrc.begin() + versBegin + versEnd, shaderSrc.end());
 	const char* pSource = sourceDataStr.c_str();
 	gl::ShaderSource(outShader, 1, &pSource, NULL);
+	logApiError("CreateShader::glShaderSource error");
 	gl::CompileShader(outShader);
+
+	logApiError("CreateShader::glCompile error");
+
 	// error checking
 	GLint glRslt;
 	gl::GetShaderiv(outShader, GL_COMPILE_STATUS, &glRslt);
@@ -145,10 +152,11 @@ bool loadShader(const native::HContext_& context, const Stream& shaderSource, ty
 		                                        "==========Infolog:==========\n%s\n============================", typestring, pLog.data()).c_str());
 		return false;
 	}
+	logApiError("CreateShader::exit");
 	return true;
 }
 
-bool loadShader(const native::HContext_& context, Stream& shaderData, types::ShaderType shaderType,
+bool loadShader(Stream& shaderData, types::ShaderType shaderType,
                 types::ShaderBinaryFormat binaryFormat, pvr::native::HShader_& outShader,
                 const ApiCapabilities* contextCapabilities)
 {
@@ -184,16 +192,16 @@ bool createShaderProgram(pvr::native::HShader_ pShaders[], uint32 count,
                          const char** const sAttribs, pvr::uint16* attribIndex, uint32 attribCount, pvr::native::HPipeline_& outShaderProg,
                          string* infolog, const ApiCapabilities* contextCapabilities)
 {
-	pvr::api::logApiError("createShaderProgram begin");
+	pvr::nativeGles::logApiError("createShaderProgram begin");
 	if (!outShaderProg.handle)
 	{
 		outShaderProg = gl::CreateProgram();
 	}
 	for (uint32 i = 0; i < count; ++i)
 	{
-		pvr::api::logApiError("createShaderProgram begin AttachShader");
+		pvr::nativeGles::logApiError("createShaderProgram begin AttachShader");
 		gl::AttachShader(outShaderProg, pShaders[i].handle);
-		pvr::api::logApiError("createShaderProgram end AttachShader");
+		pvr::nativeGles::logApiError("createShaderProgram end AttachShader");
 	}
 	if (sAttribs && attribCount)
 	{
@@ -202,9 +210,9 @@ bool createShaderProgram(pvr::native::HShader_ pShaders[], uint32 count,
 			gl::BindAttribLocation(outShaderProg, attribIndex[i], sAttribs[i]);
 		}
 	}
-	pvr::api::logApiError("createShaderProgram begin linkProgram");
+	pvr::nativeGles::logApiError("createShaderProgram begin linkProgram");
 	gl::LinkProgram(outShaderProg);
-	pvr::api::logApiError("createShaderProgram end linkProgram");
+	pvr::nativeGles::logApiError("createShaderProgram end linkProgram");
 	//check for link sucess
 	GLint glStatus;
 	gl::GetProgramiv(outShaderProg, GL_LINK_STATUS, &glStatus);
@@ -220,7 +228,7 @@ bool createShaderProgram(pvr::native::HShader_ pShaders[], uint32 count,
 		}
 		return false;
 	}
-	pvr::api::logApiError("createShaderProgram end");
+	pvr::nativeGles::logApiError("createShaderProgram end");
 	return true;
 }
 

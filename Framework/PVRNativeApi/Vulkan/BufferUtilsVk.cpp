@@ -1,15 +1,15 @@
-/*!*********************************************************************************************************************
-\file         PVRNativeApi\Vulkan\BufferUtilsVk.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Implementations of functions for creating Vulkan Buffer object.
-***********************************************************************************************************************/
+/*!
+\brief Implementations of functions for creating Vulkan Buffer object.
+\file PVRNativeApi/Vulkan/BufferUtilsVk.cpp
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
 //!\cond NO_DOXYGEN
 #include "BufferUtilsVk.h"
-#include "PVRNativeApi/BufferUtils.h"
+#include "PVRNativeApi/Vulkan/BufferUtilsVk.h"
 #include "NativeObjectsVk.h"
-#include "PVRPlatformGlue/PlatformContext.h"
-#include "PVRPlatformGlue/Vulkan/PlatformHandlesVulkanGlue.h"
+#include "PVRNativeApi/PlatformContext.h"
+#include "PVRNativeApi/Vulkan/PlatformHandlesVulkanGlue.h"
 namespace {
 bool getMemoryTypeIndex(const VkPhysicalDeviceMemoryProperties& deviceMemProps,
                         pvr::uint32 typeBits, VkMemoryPropertyFlagBits properties,
@@ -32,6 +32,8 @@ bool getMemoryTypeIndex(const VkPhysicalDeviceMemoryProperties& deviceMemProps,
 }
 namespace pvr {
 namespace utils {
+
+namespace vulkan {
 bool createBuffer(IPlatformContext& context, types::BufferBindingUse usage,
                   pvr::uint32 size, bool memHostVisible, native::HBuffer_& outBuffer)
 {
@@ -40,8 +42,6 @@ bool createBuffer(IPlatformContext& context, types::BufferBindingUse usage,
 	                                     (memHostVisible ? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT : VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT),
 	                                     usage, size, outBuffer, NULL);
 }
-
-namespace vulkan {
 inline pvr::uint32 getVkBufferUsage(types::BufferBindingUse usage)
 {
 	pvr::uint32 vkBits = 0;
@@ -84,7 +84,7 @@ bool allocateBufferDeviceMemory(VkDevice device, const VkPhysicalDeviceMemoryPro
 	}
 	if (vk::AllocateMemory(device, &memAllocInfo, NULL, &inOutBuffer.memory) != VK_SUCCESS)
 	{
-		pvr::Log("Failed to allocate buffer's memory");
+		pvr::Log("Failed to allocate buffer's memory with allocation size %d", memAllocInfo.allocationSize);
 		return false;
 	}
 	if (vk::BindBufferMemory(device, inOutBuffer.buffer, inOutBuffer.memory, 0) != VK_SUCCESS)
@@ -105,7 +105,7 @@ bool createBufferAndMemory(VkDevice device, const VkPhysicalDeviceMemoryProperti
 	createInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	if (vk::CreateBuffer(device, &createInfo, NULL, &outBuffer.buffer) != VK_SUCCESS)
 	{
-		pvr::Log(pvr::Log.Error, "Failed to allocate Buffer");
+		pvr::Log(pvr::Log.Error, "Failed to create Buffer");
 		return false;
 	}
 	return allocateBufferDeviceMemory(device, deviceMemProperty, allocMemProperty, outBuffer, outMemRequirements);
