@@ -2,23 +2,23 @@
 GnomeHorde
 
 :ShortDescription:
-This demo shows a very efficient and elegant technique for multithreaded command buffer 
-generation and rendering.
+This demo shows a very efficient technique for multithreaded command buffer generation and rendering.
 
-:FullDescription:	
+:FullDescription:
 The GnomeHorde divides its world into tiles, each containing a small number of objects.
 It uses 3 groups of threads - the Main thread, which kicks all other tasks and does the
 actual command buffer submisison (rendering), a number of Visibility threads, each of 
 which processes large groups of tiles, and a number of Tile Processing threads, each of
-which generate command buffers for a tile, when required (i.e. when either the tile has
-just become visible, or when the tile's Level Of Detail has changed).
+which generate command buffers for a tile. Command buffers are created (when the tile has
+just become visible), recalculated (when the tile's Level Of Detail has changed) or 
+recycled (when the tile has just become nonvisible) as required.
 The communication of the threads is abstracted using Producer-Consumer Queues passing the
 coordinates of tiles as parameters.
 When all generation is done, the main thread collects all secondary command buffers and
-submits them to the GPU rendering Queue and allows the frame to proceed.
+submits them to the GPU rendering Queue.
 
 :APIS:
-Vulkan 1.0
+Vulkan
 
 :Controls:
 	-	Esc	-	Close

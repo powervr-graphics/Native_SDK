@@ -6,111 +6,97 @@
 \Description  Implements a deferred shading technique supporting point and directional lights.
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
-#include "PVRApi/PVRApi.h"
-#include "PVREngineUtils/PVREngineUtils.h"
-#include "PVREngineUtils/AssetStore.h"
+#include "PVRAssets/PVRAssets.h"
+#include "PVRUtils/PVRUtilsGles.h"
 
-using namespace pvr::types;
-namespace QuadAttributes {
-enum Enum
-{
-	Position = 0,
-	TexCoord = 2,
-};
-}
-
-namespace MeshAttributes {
-enum Enum
-{
-	PositionArray, NormalArray, TexCoordArray, TangentArray
-};
-}
-
+// Shader vertex Bindings
 const pvr::utils::VertexBindings_Name vertexBindings[] =
 {
-	{ "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoords" }, { "TANGENT", "inTangent" }
+	{ "POSITION", "inVertex" },
+	{ "NORMAL", "inNormal" },
+	{ "UV0", "inTexCoords" },
+	{ "TANGENT", "inTangent" }
 };
 
-namespace Fbo {
+namespace AttributeIndices {
 enum Enum
 {
-	Albedo = 0,
-	Normal,
-	Depth,
-	Count
+	VertexArray = 0,
+	NormalArray = 1,
+	TexCoordArray = 2,
+	TangentArray = 3
 };
 }
 
-namespace MeshNodes {
+const pvr::utils::VertexBindings_Name floorVertexBindings[] =
+{
+	{ "POSITION", "inVertex" },
+	{ "NORMAL", "inNormal" },
+	{ "UV0", "inTexCoords" }
+};
+
+namespace FloorAttributeIndices {
 enum Enum
+{
+	VertexArray = 0,
+	NormalArray = 1,
+	TexCoordArray = 2
+};
+}
+
+const pvr::utils::VertexBindings_Name pointLightVertexBindings[] =
+{
+	{ "POSITION", "inVertex" }
+};
+
+enum class pointLightAttributeIndices
+{
+	VertexArray = 0
+};
+
+namespace BufferBindings {
+enum Enum
+{
+	Matrices = 0,
+	Materials = 1,
+	DirectionalLightStaticData = 0,
+	DirectionalLightDynamicData = 1,
+	PointLightDynamicData = 0,
+	PointLightStaticData = 1,
+};
+}
+
+// Light mesh nodes
+enum class LightNodes
+{
+	PointLightMeshNode = 0,
+	NumberOfPointLightMeshNodes
+};
+
+enum class MeshNodes
 {
 	Satyr = 0,
 	Floor = 1,
 	NumberOfMeshNodes
 };
-}
 
-namespace EffectId {
-enum Enum
+// Structures used for storing the shared point light data for the point light passes
+struct PointLightPasses
 {
-	RenderGBuffer, RenderGBufferFloor, RenderPointLight, RenderDirLight, RenderSolidColor, RenderNullColor, WriteOutColorFromPls, Count
-};
-}
-
-const pvr::StringHash EffectNames[EffectId::Count] =
-{
-	"RenderGBuffer", "RenderGBufferFloor", "RenderPointLight", "RenderDirectionalLight", "RenderSolidColor", "RenderNullColor", "WriteOutColorFromPls"
-};
-namespace Semantics {
-enum Enum
-{
-	WorldView,//< world view
-	WorldViewProjection,//< world view projection
-	WorldViewIT, //< world view inverse transpose
-	WorldIT,//< world inverse transpose
-	MaterialColorAmbient,
-	LightColor,
-	CustomSemanticFarClipDist,
-	CustomSemanticSpecularStrength,
-	CustomSemanticDiffuseColor,
-	CustomSemanticPointLightViewPos,
-	CustomSemanticDirLightDirection,
-	Count
-};
-}
-
-const pvr::StringHash semanticsName[Semantics::Count] =
-{
-	pvr::StringHash("WORLDVIEW"),
-	pvr::StringHash("WORLDVIEWPROJECTION"),
-	pvr::StringHash("WORLDVIEWIT"),
-	pvr::StringHash("WORLDIT"),
-	pvr::StringHash("MATERIALCOLORAMBIENT"),
-	pvr::StringHash("LIGHTCOLOR"),
-	pvr::StringHash("CUSTOMSEMANTIC_FARCLIPDISTANCE"),
-	pvr::StringHash("CUSTOMSEMANTIC_SPECULARSTRENGTH"),
-	pvr::StringHash("CUSTOMSEMANTIC_DIFFUSECOLOUR"),
-	pvr::StringHash("CUSTOMSEMANTIC_POINTLIGHT_VIEWPOSITION"),
-	pvr::StringHash("CUSTOMSEMANTIC_DIRECTIONALLIGHT_DIRECTION")
-};
-
-struct DrawLightSources
-{
-	pvr::api::GraphicsPipeline pipeline;
-	EffectId::Enum effectId;
-	struct Uniforms
+	struct PointLightProperties
 	{
-		glm::mat4 worldViewProj;
-		glm::mat3 worldIT;
-		glm::vec4 color;
+		glm::mat4 worldViewProjectionMatrix;
+		glm::mat4 proxyWorldViewMatrix;
+		glm::mat4 proxyWorldViewProjectionMatrix;
+		glm::vec4 proxyViewSpaceLightPosition;
+		glm::vec4 lightColor;
+		glm::vec4 lightSourceColor;
+		float lightIntensity;
+		float lightRadius;
 	};
-	std::vector<Uniforms> uniforms;
-};
 
-struct DrawPointLightProxy
-{
-	pvr::api::GraphicsPipeline pipeline;
-	EffectId::Enum effectId;
+	std::vector<PointLightProperties> lightProperties;
+
 	struct InitialData
 	{
 		float radial_vel;
@@ -120,102 +106,188 @@ struct DrawPointLightProxy
 		float distance;
 		float height;
 	};
-	struct Uniforms
-	{
-		glm::mat4 worldView;
-		glm::mat4 worldViewProj;
-		glm::mat3 worldIT;
-		glm::vec3 lightPosView;
-		glm::vec3 lightIntensity;
-	};
-	std::vector<Uniforms> uniforms;
-	std::vector<InitialData> data;
+
+	std::vector<InitialData> initialData;
 };
 
-struct DrawPointLightGeom
+// structure used to draw the point light sources
+struct DrawPointLightSources
 {
-	pvr::api::GraphicsPipeline pipeline;
-	EffectId::Enum effectId;
-	struct Uniforms
-	{
-		glm::mat4 worldViewProj;
-		glm::vec4 color;
-	};
-	std::vector<Uniforms> uniforms;
+	GLuint program;
 };
 
+// structure used to draw the proxy point light
+struct DrawPointLightProxy
+{
+	GLuint program;
+	GLuint farClipDistanceLocation;
+};
+
+// structure used to fill the stencil buffer used for optimsing the the proxy point light pass
+struct PointLightGeometryStencil
+{
+	GLuint program;
+};
+
+// structure used to render directional lighting
+struct DrawDirectionalLight
+{
+	GLuint program;
+
+	struct DirectionalLightProperties
+	{
+		glm::vec4 lightIntensity;
+		glm::vec4 viewSpaceLightDirection;
+	};
+	std::vector<DirectionalLightProperties> lightProperties;
+};
+
+// structure used to blit the contents of pls.color to the main framebuffer
+struct BlitPlsToFbo
+{
+	GLuint program;
+};
+
+// structure used to fill the GBuffer
 struct DrawGBuffer
 {
 	struct Objects
 	{
-		pvr::api::GraphicsPipeline pipeline;
-		EffectId::Enum effectId;
+		GLuint program;
 		glm::mat4 world;
 		glm::mat4 worldView;
 		glm::mat4 worldViewProj;
-		glm::mat3 worldViewIT3x3;
+		glm::mat4 worldViewIT4x4;
+		GLuint farClipDistanceLocation;
 	};
 	std::vector<Objects> objects;
 };
 
-struct DrawDepthStencil
-{
-	pvr::api::GraphicsPipeline pipeline;
-	EffectId::Enum effectId;
-	struct Uniforms
-	{
-		glm::mat4 worldViewProj;
-		glm::vec4 color;
-	};
-	std::vector<Uniforms> uniforms;
-};
-
-struct DrawDirLight
-{
-	pvr::api::GraphicsPipeline pipeline;
-	EffectId::Enum effectId;
-	struct Uniforms
-	{
-		glm::vec3 lightIntensity;
-		glm::vec4 lightDirView;
-	};
-	std::vector<Uniforms> uniforms;
-};
-
-struct DrawQuad
-{
-	pvr::api::GraphicsPipeline pipeline;
-	EffectId::Enum effectId;
-};
-
+// structure used to hold the rendering information for the demo
 struct RenderData
 {
-	DrawLightSources pointLightSourcesPass;
-	DrawPointLightProxy pointLightProxyPass;
-	DrawPointLightGeom pointLightGeomPass;
-	DrawDirLight directionalLightPass;
-	DrawGBuffer storeRenderDataPass;
-	DrawDepthStencil depthStencilPass;
-	DrawQuad writePlsPass;
+	DrawGBuffer renderGBuffer; // pass 0
+	DrawDirectionalLight directionalLightPass; // pass 1
+	PointLightGeometryStencil pointLightGeometryStencilPass; // pass 1
+	DrawPointLightProxy pointLightProxyPass; // pass 1
+	DrawPointLightSources pointLightSourcesPass; // pass 1
+	PointLightPasses pointLightPasses; // holds point light data
+	BlitPlsToFbo writePlsToFbo; // blits the contents of pls.color to the main framebuffer
 };
 
+namespace UniformNames {
+const std::string FarClipDistance = "fFarClipDistance";
+const std::string DiffuseTexture = "sTexture";
+const std::string BumpmapTexture = "sBumpMap";
+}
+
+namespace TextureIndices {
+uint32_t DiffuseTexture = 0;
+uint32_t BumpmapTexture = 1;
+}
+
+namespace BufferIndices {
+uint32_t Matrices = 0;
+uint32_t Material = 1;
+uint32_t PointLightProperties = 1;
+uint32_t PointLightMatrices = 0;
+uint32_t DirectionalLightStatic = 0;
+uint32_t DirectionalLightDynamic = 1;
+}
+
+// Shader names for all of the demo passes
 namespace Files {
-const char* const PointLightModelFile = "pointlight.pod";
-const char* const SceneFile = "scene.pod";
-const char* const PfxSrcFile = "effect_MRT.pfx";
-const char* const PfxPlsSrcFile = "effect_PLS.pfx";
+const std::string PointLightModelFile = "pointlight.pod";
+const std::string SceneFile = "scene.pod";
+
+const std::string GBufferVertexShader = "GBufferVertexShader.vsh";
+const std::string GBufferFragmentShader = "GBufferFragmentShader.fsh";
+
+const std::string GBufferFloorVertexShader = "GBufferFloorVertexShader.vsh";
+const std::string GBufferFloorFragmentShader = "GBufferFloorFragmentShader.fsh";
+
+const std::string AttributelessVertexShader = "AttributelessVertexShader.vsh";
+
+const std::string WritePlsToFboShader = "WritePlsToFbo.fsh";
+
+const std::string DirectionalLightingFragmentShader = "DirectionalLightFragmentShader.fsh";
+
+const std::string PointLightPass1FragmentShader = "PointLightPass1FragmentShader.fsh";
+const std::string PointLightPass1VertexShader = "PointLightPass1VertexShader.vsh";
+
+const std::string PointLightPass2FragmentShader = "PointLightPass2FragmentShader.fsh";
+const std::string PointLightPass2VertexShader = "PointLightPass2VertexShader.vsh";
+
+const std::string PointLightPass3FragmentShader = "PointLightPass3FragmentShader.fsh";
+const std::string PointLightPass3VertexShader = "PointLightPass3VertexShader.vsh";
 }
 
-namespace Configuration {
-static pvr::int32 MaxScenePointLights = 5;
-static pvr::int32 NumProceduralPointLights = 10;
+namespace BufferEntryNames {
+namespace PerModelMaterial {
+const std::string SpecularStrength = "fSpecularStrength";
+const std::string DiffuseColor = "vDiffuseColor";
+}
+
+namespace PerModel {
+const std::string WorldViewProjectionMatrix = "mWorldViewProjectionMatrix";
+const std::string WorldViewMatrix = "mWorldViewMatrix";
+const std::string WorldViewITMatrix = "mWorldViewITMatrix";
+}
+
+namespace StaticDirectionalLight {
+const std::string LightIntensity = "vLightIntensity";
+const std::string AmbientLight = "vAmbientLight";
+}
+
+namespace DynamicDirectionalLight {
+const std::string ViewSpaceLightDirection = "vViewSpaceLightDirection";
+}
+
+namespace StaticPointLight {
+const std::string LightRadius = "fLightRadius";
+const std::string LightIntensity = "fLightIntensity";
+const std::string LightColor = "vLightColor";
+const std::string LightSourceColor = "vLightSourceColor";
+}
+
+namespace DynamicPointLight {
+const std::string WorldViewProjectionMatrix = "mWorldViewProjectionMatrix";
+const std::string ViewPosition = "vViewPosition";
+const std::string ProxyWorldViewProjectionMatrix = "mProxyWorldViewProjectionMatrix";
+const std::string ProxyWorldViewMatrix = "mProxyWorldViewMatrix";
+}
+}
+
+// Application wide configuration data
+namespace ApplicationConfiguration {
+const float FrameRate = 1.0f / 120.0f;
+}
+
+// Directional lighting configuration data
+namespace DirectionalLightConfiguration {
 static bool AdditionalDirectionalLight = true;
-const pvr::float32 FrameRate = 1.0f / 120.0f;
-pvr::float32 PointLightScale = 40.0f;
-pvr::float32 PointlightIntensity = 100.0f;
-const pvr::float32 DirLightIntensity = .2f;
+const float DirectionalLightIntensity = .2f;
+const glm::vec4 AmbientLightColor = glm::vec4(0.2f, 0.2f, 0.1f, 0.0f);
 }
 
+// Point lighting configuration data
+namespace PointLightConfiguration {
+int32_t MaxScenePointLights = 5;
+int32_t NumProceduralPointLights = 10;
+float LightMaxDistance = 40.f;
+float LightMinDistance = 20.f;
+float LightMinHeight = -30.f;
+float LightMaxHeight = 40.f;
+float LightAxialVelocityChange = .01f;
+float LightRadialVelocityChange = .003f;
+float LightVerticalVelocityChange = .01f;
+float LightMaxAxialVelocity = 5.f;
+float LightMaxRadialVelocity = 1.5f;
+float LightMaxVerticalVelocity = 5.f;
+float PointLightScale = 32.0f; // PointLightScale handles the size of the scaled light geometry. This effects the areas of the screen which will go through point light rendering
+float PointLightRadius = PointLightScale / 2.0f; // PointLightRadius handles the actual point light falloff. Modifying one of these requires also modifying the other
+float PointlightIntensity = 5.0f;
+}
 
 /*!*********************************************************************************************************************
 Class implementing the Shell functions.
@@ -225,136 +297,142 @@ class OGLESDeferredShading : public pvr::Shell
 public:
 	struct Material
 	{
-		pvr::api::GraphicsPipeline materialPipeline;
-		pvr::api::DescriptorSet materialDescriptorSet;
-		pvr::float32 specularStrength;
-		glm::vec3 diffuseColor;
+		GLuint diffuseTexture;
+		GLuint bumpmapTexture;
+
+		float specularStrength;
+		glm::vec4 diffuseColor;
+		Material() : diffuseTexture(-1), bumpmapTexture(-1) {}
 	};
-	pvr::GraphicsContext context;
-	struct ApiObjects
+	struct DeviceResources
 	{
-		// Handles for FBOs and surfaces
-		pvr::api::Fbo  onScreenFbo;
-		pvr::api::Fbo  gBufferFBO;
-		pvr::api::TextureView renderTextureViews[Fbo::Count];
+		pvr::EglContext context;
 
-		pvr::api::RenderPass gBufferRenderPass;
-		pvr::api::RenderPass defaultRenderPass;
+		GLuint modelMaterialUbo;
+		GLuint modelMatrixUbo;
+		pvr::utils::StructuredBufferView modelMatrixBufferView;
 
-		pvr::api::Buffer pointLightVbo;
-		pvr::api::Buffer pointLightIbo;
+		pvr::utils::StructuredBufferView modelMaterialBufferView;
 
-		// commandbuffers for each pass
-		pvr::api::CommandBuffer cmdBufferMain;
-		pvr::api::SecondaryCommandBuffer cmdBuffUIRenderer;
-		pvr::api::SecondaryCommandBuffer cmdBuffSceneGeometry;
-		pvr::api::SecondaryCommandBuffer cmdBuffRenderGbuffer;
-		pvr::api::SecondaryCommandBuffer cmdBuffLighting;
-		pvr::api::SecondaryCommandBuffer cmdBuffRenderDepthStencil;
+		GLuint pointLightPropertiesUbo;
+		GLuint pointLightMatrixUbo;
+		pvr::utils::StructuredBufferView staticDirectionalLightBufferView;
 
-		pvr::api::DescriptorSet pointLightDescriptorSet;
-		pvr::api::DescriptorSet directionalLightDescriptorSet;
+		pvr::utils::StructuredBufferView dynamicDirectionalLightBufferView;
 
-		//Layouts we will be needing
-		pvr::api::DescriptorSetLayout noSamplerLayout;
-		pvr::api::DescriptorSetLayout oneSamplerLayout;
-		pvr::api::DescriptorSetLayout twoSamplerLayout;
-		pvr::api::DescriptorSetLayout threeSamplerLayout;
-		pvr::api::DescriptorSetLayout fourSamplerLayout;
+		GLuint directionalLightStaticDataUbo;
+		GLuint directionalLightDynamicDataUbo;
+		pvr::utils::StructuredBufferView staticPointLightBufferView;
 
-		pvr::api::PipelineLayout pipeLayoutNoSamplers;
-		pvr::api::PipelineLayout pipeLayoutOneSampler;
-		pvr::api::PipelineLayout pipeLayoutTwoSamplers;
-		pvr::api::PipelineLayout pipeLayoutThreeSamplers;
-		pvr::api::PipelineLayout pipeLayoutFourSamplers;
+		pvr::utils::StructuredBufferView dynamicPointLightBufferView;
 
-		std::vector<pvr::api::Buffer> sceneVbos;
-		std::vector<pvr::api::Buffer> sceneIbos;
+		//Samplers
+		GLuint samplerTrilinear;
+
+		pvr::utils::VertexConfiguration sceneVertexConfigurations[static_cast<uint32_t>(MeshNodes::NumberOfMeshNodes)];
+		std::vector<GLuint> sceneVaos;
+		std::vector<GLuint> sceneVbos;
+		std::vector<GLuint> sceneIbos;
+
+		pvr::utils::VertexConfiguration pointLightVertexConfiguration;
+		GLuint pointLightVao;
+		GLuint pointLightVbo;
+		GLuint pointLightIbo;
 
 		std::vector<Material>materials;
-		pvr::ui::UIRenderer uiRenderer;
-
-		// The effect file handler
-<<<<<<< HEAD
-		std::vector<pvr::api::EffectApi> effects;
-=======
-		std::vector<pvr::legacyPfx::EffectApi> effects;
->>>>>>> 1776432f... 4.3
 
 		RenderData renderInfo;
+
+		GLint defaultFbo;
+
+		// UIRenderer used to display text
+		pvr::ui::UIRenderer uiRenderer;
 	};
 
 	//Putting all api objects into a pointer just makes it easier to release them all together with RAII
-	std::auto_ptr<ApiObjects> apiObj;
+	std::auto_ptr<DeviceResources> _deviceResources;
 
-	pvr::utils::AssetStore assetManager;
-
-	std::vector<std::map<pvr::int32, pvr::int32>/**/> uniformMapping;
+	// 3D Model
+	pvr::assets::ModelHandle _mainScene;
+	pvr::assets::ModelHandle _pointLightScene;
 
 	// Frame counters for animation
-	pvr::float32 frame;
-	bool         isPaused;
-	pvr::uint32  cameraId;
-	bool animateCamera;
+	float _frameNumber;
+	bool _isPaused;
+	uint32_t _cameraId;
+	bool _animateCamera;
+
+	uint32_t _numberOfPointLights;
+	uint32_t _numberOfDirectionalLights;
 
 	// Projection and Model View matrices
-	glm::vec3   cameraPosition;
-	glm::mat4   viewMtx;
-	glm::mat4   projMtx;
-	glm::mat4   viewProjMtx;
-	glm::mat4   invViewMtx;
-	pvr::float32   farClipDist;
+	glm::vec3 _cameraPosition;
+	glm::mat4 _viewMatrix;
+	glm::mat4 _projectionMatrix;
+	glm::mat4 _viewProjectionMatrix;
+	glm::mat4 _inverseViewMatrix;
+	float _farClipDistance;
 
-	pvr::int32   windowWidth, windowHeight, fboWidth, fboHeight;
-	pvr::int32   viewportOffsets[2];
+	int32_t _windowWidth;
+	int32_t _windowHeight;
 
-	// Light models
-	pvr::assets::ModelHandle pointLightModel;
-	// Object model
-	pvr::assets::ModelHandle scene;
+	bool _pixelLocalStorageSupported;
+	bool _pixelLocalStorage2Supported;
+	bool _bufferStorageExtSupported;
 
-	bool usePixelLocalStorage;
+	GLuint _sizeOfPixelLocationStorage;
 
-	OGLESDeferredShading() { animateCamera = false; isPaused = false; }
-<<<<<<< HEAD
-	//	Overriden from pvr::Shell
-=======
+	GLint _uniformAlignment;
+
+	glm::vec4 _clearColor;
+
+	OGLESDeferredShading() { _animateCamera = false; _isPaused = false; }
+
 	//  Overriden from pvr::Shell
->>>>>>> 1776432f... 4.3
 	virtual pvr::Result initApplication();
 	virtual pvr::Result initView();
 	virtual pvr::Result releaseView();
 	virtual pvr::Result quitApplication();
 	virtual pvr::Result renderFrame();
 
-	bool setUpRenderPass();
-	bool createPipelines();
-	bool createGBufferMRT();
-
-	void recordCommandBufferRenderGBuffer(pvr::api::SecondaryCommandBuffer& cmdBuffer);
-	void recordCommandBufferDepthStencil(pvr::api::SecondaryCommandBuffer& cmdBuffer);
-	void recordCommandsDirectionalLights(pvr::api::SecondaryCommandBuffer& cmdBuffer);
-	void recordCommandsPointLights(pvr::api::SecondaryCommandBuffer& cmdBuffer);
-	void recordCommandsMRT(pvr::api::CommandBuffer& cmdBuff);
-	void recordCommandsPLS(pvr::api::CommandBuffer& cmdBuff);
-	void recordCommandUIRenderer(pvr::api::SecondaryCommandBuffer& cmdBuffer);
-
-	void recordSecondaryCommandBuffers();
-
-	void allocateUniforms();
-
-	bool createMaterialsAndDescriptorSets();
-	bool loadVbos();
-	bool loadPFX();
-
-	void updateSceneUniforms();
-
+	bool createPrograms();
+	bool createModelPrograms();
+	bool createDirectionalLightingProgram();
+	bool createBlitPlsProgram();
+	bool createPointLightStencilProgram();
+	bool createPointLightProxyProgram();
+	bool createPointLightSourceProgram();
+	void uploadStaticData();
+	void uploadStaticModelData();
+	void uploadStaticDirectionalLightData();
+	void uploadStaticPointLightData();
+	void createBuffers();
+	void createGeometryBuffers();
+	void bindVertexSpecification(const pvr::assets::Mesh& mesh, const pvr::utils::VertexBindings_Name* const vertexBindingsName, const uint32_t numVertexBindings,
+	                             pvr::utils::VertexConfiguration& vertexConfiguration, GLuint& vao, GLuint& vbo, GLuint& ibo);
+	void createModelBuffers();
+	void createPointLightBuffers();
+	void createDirectionalLightBuffers();
+	void initialiseStaticLightProperties();
+	void allocateLights();
+	void updateDynamicSceneData();
+	void updateProceduralPointLight(PointLightPasses::InitialData& data,
+	                                PointLightPasses::PointLightProperties& pointLightProperties, bool initial);
+	bool createSamplers();
+	bool createMaterialTextures();
 	void updateAnimation();
 
-	void updateProceduralPointLight(DrawPointLightProxy::InitialData& data, DrawPointLightProxy::Uniforms& proxy,
-	                                DrawPointLightGeom::Uniforms& geom, DrawLightSources::Uniforms& source, bool initial);
-
-	bool setUpEffectHelper(EffectId::Enum effectId, const pvr::assets::PfxReader& reader);
+	void setDefaultStates();
+	void bindAndClearFramebuffer();
+	void endFramebuffer();
+	void renderGBuffer();
+	void renderDirectionalLights();
+	void renderPointLights();
+	void renderPointLightProxyGeometryIntoStencilBuffer(const uint32_t pointLight);
+	void renderPointLightProxy(const uint32_t pointLight);
+	void renderPointLightSources();
+	void renderPlsToFbo();
+	void renderUi();
 
 	void eventMappedInput(pvr::SimplifiedInput key)
 	{
@@ -362,604 +440,17 @@ public:
 		{
 		// Handle input
 		case pvr::SimplifiedInput::ActionClose: exitShell(); break;
-		case pvr::SimplifiedInput::Action1: isPaused = !isPaused; break;
-		case pvr::SimplifiedInput::Action2: animateCamera = !animateCamera; break;
+		case pvr::SimplifiedInput::Action1: _isPaused = !_isPaused; break;
+		case pvr::SimplifiedInput::Action2: _animateCamera = !_animateCamera; break;
 		}
 	}
 };
 
-/*!*********************************************************************************************************************
-\return Return true if no error occurred
-\brief  Loads the textures required for this example and sets up descriptorSets
-***********************************************************************************************************************/
-bool OGLESDeferredShading::createMaterialsAndDescriptorSets()
+/// <summary>This class is added as the Debug Callback. Redirects the debug output to the Log object.</summary>
+inline void GL_APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
+                                      const GLchar* message, const void* userParam)
 {
-	if (scene->getNumMaterials() == 0)
-	{
-		setExitMessage("ERROR: The scene does not contain any materials.");
-		return false;
-	}
-
-
-	//1: CREATE THE SAMPLERS
-	// create point sampler
-	pvr::assets::SamplerCreateParam samplerDesc;
-	samplerDesc.minificationFilter = SamplerFilter::Nearest;
-	samplerDesc.magnificationFilter = SamplerFilter::Nearest;
-	samplerDesc.wrapModeU = samplerDesc.wrapModeV = samplerDesc.wrapModeW = SamplerWrap::Repeat;
-	pvr::api::Sampler samplerNearest = context->createSampler(samplerDesc);
-
-	// create trilinear sampler
-	samplerDesc.minificationFilter = SamplerFilter::Linear;
-	samplerDesc.magnificationFilter = SamplerFilter::Linear;
-	samplerDesc.mipMappingFilter = SamplerFilter::Linear;
-	pvr::api::Sampler samplerTrilinear = context->createSampler(samplerDesc);
-
-
-	//2: CREATE THE DESCRIPTOR SET LAYOUTS
-	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
-
-	// no texture sampler layout
-	apiObj->noSamplerLayout = context->createDescriptorSetLayout(descSetLayoutInfo);
-
-	// Single texture sampler layout
-	descSetLayoutInfo.setBinding(0, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
-	apiObj->oneSamplerLayout = context->createDescriptorSetLayout(descSetLayoutInfo);
-
-	// Two textures sampler layout
-	descSetLayoutInfo.setBinding(1, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
-	apiObj->twoSamplerLayout = context->createDescriptorSetLayout(descSetLayoutInfo);
-
-	// Three textures sampler layout
-	descSetLayoutInfo.setBinding(2, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
-	apiObj->threeSamplerLayout = context->createDescriptorSetLayout(descSetLayoutInfo);
-
-	// Four textures sampler layout (for GBuffer rendering)
-	descSetLayoutInfo.setBinding(3, DescriptorType::CombinedImageSampler, 1, ShaderStageFlags::Fragment);
-	apiObj->fourSamplerLayout = context->createDescriptorSetLayout(descSetLayoutInfo);
-
-
-	//3: CREATE DESCRIPTOR SETS FOR EACH MATERIAL
-	apiObj->materials.resize(scene->getNumMaterials());
-	for (pvr::uint32 i = 0; i < scene->getNumMaterials(); ++i)
-	{
-		pvr::api::DescriptorSetUpdate descSetInfo;
-
-		pvr::api::TextureView diffuseMap;
-		pvr::api::TextureView bumpMap;
-
-		// get the current material
-		const pvr::assets::Model::Material& material = scene->getMaterial(i);
-
-		// get material properties
-		apiObj->materials[i].specularStrength = material.defaultSemantics().getShininess();
-		apiObj->materials[i].diffuseColor = material.defaultSemantics().getDiffuse();
-
-		int numTextures = 0;
-
-		if (material.defaultSemantics().getDiffuseTextureIndex() != -1)
-		{
-			// Load the diffuse texture map
-			if (!assetManager.getTextureWithCaching(getGraphicsContext(), scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName(), &(diffuseMap), NULL))
-			{
-				setExitMessage("ERROR: Failed to load texture %s", scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
-				return false;
-			}
-			descSetInfo.setCombinedImageSampler(0, diffuseMap, samplerTrilinear);
-			++numTextures;
-		}
-		if (material.defaultSemantics().getBumpMapTextureIndex() != -1)
-		{
-			// Load the bumpmap
-			if (!assetManager.getTextureWithCaching(getGraphicsContext(), scene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName(), &(bumpMap), NULL))
-			{
-				setExitMessage("ERROR: Failed to load texture %s", scene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName().c_str());
-				return false;
-			}
-			++numTextures;
-			descSetInfo.setCombinedImageSampler(1, bumpMap, samplerTrilinear);
-		}
-
-		// based on the number of textures select the correct descriptor set
-		switch (numTextures)
-		{
-		case 0: apiObj->materials[i].materialDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->noSamplerLayout); break;
-		case 1: apiObj->materials[i].materialDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->oneSamplerLayout); break;
-		case 2: apiObj->materials[i].materialDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->twoSamplerLayout); break;
-		case 3: apiObj->materials[i].materialDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->threeSamplerLayout); break;
-		case 4: apiObj->materials[i].materialDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->fourSamplerLayout); break;
-		default:
-			break;
-		}
-
-		apiObj->materials[i].materialDescriptorSet->update(descSetInfo);
-	}
-
-	// 3: CREATE DESCRIPTOR SET USED TO RENDER THE LIGHTS USING EITHER GBUFFER OR PLS AS INPUT
-	if (!usePixelLocalStorage)
-	{
-		// GBuffer with multiple render targets to sample from
-		pvr::api::DescriptorSetUpdate descSetInfo;
-		for (pvr::uint32 i = 0; i < Fbo::Count; ++i)
-		{
-			descSetInfo.setCombinedImageSampler(i, apiObj->renderTextureViews[i], samplerNearest);
-		}
-
-		apiObj->pointLightDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->threeSamplerLayout);
-		apiObj->pointLightDescriptorSet->update(descSetInfo);
-
-		{
-			// uses three texture and sampler descriptor setlayout
-			pvr::api::DescriptorSetUpdate descSetInfo;
-			descSetInfo.setCombinedImageSampler(0, apiObj->renderTextureViews[Fbo::Albedo], samplerNearest);
-			descSetInfo.setCombinedImageSampler(1, apiObj->renderTextureViews[Fbo::Normal], samplerNearest);
-			apiObj->directionalLightDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->twoSamplerLayout);
-			apiObj->directionalLightDescriptorSet->update(descSetInfo);
-		}
-	}
-	else
-	{
-		// Pixel Local Storage data directly available
-		pvr::api::DescriptorSetUpdate descSetInfo;
-		apiObj->pointLightDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->noSamplerLayout);
-		apiObj->pointLightDescriptorSet->update(descSetInfo);
-
-		apiObj->directionalLightDescriptorSet = context->createDescriptorSetOnDefaultPool(apiObj->noSamplerLayout);
-		apiObj->directionalLightDescriptorSet->update(descSetInfo);
-	}
-
-	return true;
-}
-
-/*!*********************************************************************************************************************
-\brief  Create the pipelines for this example
-\return Return true if no error occurred
-***********************************************************************************************************************/
-bool OGLESDeferredShading::createPipelines()
-{
-	using namespace pvr;
-	using namespace pvr::api;
-
-	// Set up a little bit in advance - we'll be reusing them for the actual object.
-	GraphicsPipelineCreateParam pipeInfo;
-	pipeInfo.rasterizer.setCullFace(Face::Back);
-
-	// enable depth testing and depth writing
-	pipeInfo.depthStencil.setDepthTestEnable(true);
-	pipeInfo.depthStencil.setDepthWrite(true);
-
-	// disable stencil test
-	pipeInfo.depthStencil.setStencilTest(false);
-
-	types::BlendingConfig colorAttachment;
-	colorAttachment.channelWriteMask = ColorChannel::All;
-	colorAttachment.blendEnable = false;
-
-	pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
-
-	//CREATING THE ACTUAL PIPELINES FOR EACH OF OUR PASSES:
-
-	// 1) RENDER TO EITHER GBUFFER USING MRTS OR INTO PIXEL LOCAL STORAGE
-	{
-		pipeInfo.vertexInput.clear();
-		pvr::utils::createInputAssemblyFromMeshAndEffect(scene->getMesh(0), apiObj->effects[EffectId::RenderGBuffer]->getEffectAsset(), pipeInfo);
-
-		// if using pixel local storage then merge passes 1 and 2
-		// Pixel local storage can be used on the default frame buffer object and therefore the stencil buffer can be shared between passes
-		// if using GBuffer approach the default fbo stencil buffer cannot be shared with the GBuffer fbo rendered into
-		if (usePixelLocalStorage)
-		{
-			// enable stencil testing only if pixel local storage is used
-			pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState stencilState;
-
-			// only replace stencil buffer when the depth test passes
-			stencilState.opStencilFail = StencilOp::Keep;
-			stencilState.opDepthFail = StencilOp::Keep;
-			stencilState.opDepthPass = StencilOp::Replace;
-
-			stencilState.compareOp = ComparisonMode::Always;
-
-			pipeInfo.depthStencil.setStencilTest(true);
-
-			pipeInfo.depthStencil.setStencilFront(stencilState);
-			pipeInfo.depthStencil.setStencilBack(stencilState);
-		}
-
-		// 2 mesh nodes are used in this scene (floor and Satyr model)
-		apiObj->renderInfo.storeRenderDataPass.objects.resize(scene->getNumMeshNodes());
-
-		// setup the MRT
-		apiObj->renderInfo.storeRenderDataPass.objects[MeshNodes::Satyr].pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderGBuffer]->getPipeline());
-		apiObj->renderInfo.storeRenderDataPass.objects[MeshNodes::Satyr].effectId = EffectId::RenderGBuffer;
-
-		apiObj->renderInfo.storeRenderDataPass.objects[MeshNodes::Floor].pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderGBufferFloor]->getPipeline());
-		apiObj->renderInfo.storeRenderDataPass.objects[MeshNodes::Floor].effectId = EffectId::RenderGBufferFloor;
-	}
-
-	// as discussed above the depth stencil pass can be avoided if pixel local storage is used
-	if (!usePixelLocalStorage)
-	{
-		// 2) DEPTH STENCIL PASS - That will draw the geometry in the stencil buffer so that we can skip lighting fragments that do not contain objects easier.
-		// This is an optimisation pass, could be omitted with a little restructuring but the directional pass would be slower
-		{
-			pipeInfo.vertexInput.clear();
-			pvr::utils::createInputAssemblyFromMeshAndEffect(scene->getMesh(0), apiObj->effects[EffectId::RenderNullColor]->getEffectAsset(), pipeInfo);
-
-			// write only into depth and stencil.
-			colorAttachment.channelWriteMask = types::ColorChannel(0);
-			pipeInfo.colorBlend.clearAttachments();
-
-			pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState stencilState;
-
-			// only replace stencil buffer when the depth test passes
-			stencilState.opStencilFail = StencilOp::Keep;
-			stencilState.opDepthFail = StencilOp::Keep;
-			stencilState.opDepthPass = StencilOp::Replace;
-
-			stencilState.compareOp = ComparisonMode::Always;
-
-			pipeInfo.depthStencil.setStencilTest(true);
-
-			pipeInfo.depthStencil.setStencilFront(stencilState);
-			pipeInfo.depthStencil.setStencilBack(stencilState);
-
-			pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
-
-			apiObj->renderInfo.depthStencilPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderNullColor]->getPipeline());
-			apiObj->renderInfo.depthStencilPass.effectId = EffectId::RenderNullColor;
-		}
-	}
-
-	// 3) DIRECTIONAL LIGHTING - A full-screen quad that will apply any global (ambient/directional) lighting
-	{
-		// disable the depth write as we do not want to modify the depth buffer while rendering directional lights
-		// Make use of the stencil buffer contents to only shade pixels where actual geometry is located.
-		pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState stencilState;
-
-		// keep the stencil states the same as the previous pass - THESE DON'T MATTER
-		stencilState.opStencilFail = StencilOp::Keep;
-		stencilState.opDepthFail = StencilOp::Keep;
-		stencilState.opDepthPass = StencilOp::Replace;
-
-		// if the stencil is equal to the value specified then stencil passes
-		stencilState.compareOp = ComparisonMode::Equal;
-
-		// disable depth writing and depth testing
-		pipeInfo.depthStencil.setDepthWrite(false);
-		pipeInfo.depthStencil.setDepthTestEnable(false);
-
-		// enable stencil testing
-		pipeInfo.depthStencil.setStencilTest(true);
-		pipeInfo.depthStencil.setStencilFront(stencilState);
-		pipeInfo.depthStencil.setStencilBack(stencilState);
-
-		// write in to the color
-		colorAttachment.channelWriteMask = ColorChannel::All;
-		colorAttachment.blendEnable = false;
-		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
-
-		//Rendering without attributes
-		pipeInfo.vertexInput.clear();
-
-		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
-
-		apiObj->renderInfo.directionalLightPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderDirLight]->getPipeline());
-		apiObj->renderInfo.directionalLightPass.effectId = EffectId::RenderDirLight;
-	}
-
-	// 4) POINT LIGHTS GEOMETRY STENCIL PASS
-	// Render the front face of each light volume
-	// Z function is set as Less/Equal
-	// Z test passes will leave the stencil as 0 i.e. the front of the light is infront of all geometry in the current pixel
-	//    This is the condition we want for determining whether the geometry can be affected by the point lights
-	// Z test fails will increment the stencil to 1. i.e. the front of the light is behind all of the geometry in the current pixel
-	//    Under this condition the current pixel cannot be affected by the current point light as the geometry is infront of the front of the point light
-	{
-		pipeInfo.vertexInput.clear();
-		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), apiObj->effects[EffectId::RenderNullColor]->getEffectAsset(), pipeInfo);
-
-		colorAttachment.channelWriteMask = types::ColorChannel(0);// write only in to depth and stencil buffer
-		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);// Additively blend the light contributions
-
-		pipeInfo.rasterizer.setCullFace(Face::Back);
-
-		// disable depth write
-		pipeInfo.depthStencil.setDepthWrite(false);
-
-		// set depth comparison to less/equal
-		pipeInfo.depthStencil.setDepthCompareFunc(pvr::types::ComparisonMode::LessEqual);
-		pipeInfo.depthStencil.setDepthTestEnable(true);
-		pipeInfo.depthStencil.setStencilTest(true);
-
-		// by setting the stencilOp we pick only the pixel of the objects which are inside a point light.
-		pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState stencilState;
-
-		stencilState.compareOp = ComparisonMode::Always;
-
-		// keep current value if the stencil test fails
-		stencilState.opStencilFail = StencilOp::Keep;
-
-		// if the depth test fails then increment wrap
-		stencilState.opDepthFail = StencilOp::IncrementWrap;
-		stencilState.opDepthPass = StencilOp::Keep;
-
-		pipeInfo.depthStencil.setStencilFront(stencilState);
-
-		stencilState.opDepthFail = StencilOp::Keep;
-		pipeInfo.depthStencil.setStencilBack(stencilState);
-
-		apiObj->renderInfo.pointLightGeomPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderNullColor]->getPipeline());
-		apiObj->renderInfo.pointLightGeomPass.effectId = EffectId::RenderNullColor;
-	}
-
-	// 5) POINT LIGHTS PROXIES - Actually light the pixels touched by a point light.
-	// Render the back faces of the light volumes
-	// Z function is set as Greater/Equal
-	// Z test passes signify that there is geometry infront of the back face of the light volume i.e. for the current pixel there is some geometry infront of the back face of the light volume
-	// Stencil function is Equal i.e. the stencil renference is set to 0
-	// Stencil passes signify that for the current pixel there exists a front face of a light volume infront of the current geometry
-	// Point light calculations occur every time a pixel passes both the stencil AND Z test
-	{
-		colorAttachment.channelWriteMask = ColorChannel::All;
-
-		pipeInfo.rasterizer.setCullFace(Face::Front);
-
-		pipeInfo.depthStencil.setStencilTest(true);
-
-		pipeInfo.depthStencil.setDepthTestEnable(true);
-		pipeInfo.depthStencil.setDepthCompareFunc(pvr::types::ComparisonMode::GreaterEqual);
-		pipeInfo.depthStencil.setDepthWrite(false);
-
-		pipeInfo.vertexInput.clear();
-		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), apiObj->effects[EffectId::RenderPointLight]->getEffectAsset(), pipeInfo);
-
-		// Set the stencil test to only shade the lit areas and re-enable color writes.
-		pipeInfo.depthStencil.setStencilTest(true);
-
-		if (!usePixelLocalStorage)
-		{
-			colorAttachment.blendEnable = true;
-			colorAttachment.srcBlendColor = BlendFactor::One;
-			colorAttachment.srcBlendAlpha = BlendFactor::One;
-			colorAttachment.destBlendColor = BlendFactor::One;
-			colorAttachment.destBlendAlpha = BlendFactor::One;
-		}
-
-		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
-
-		pvr::api::pipelineCreation::DepthStencilStateCreateParam::StencilState stencilState;
-		stencilState.compareOp = ComparisonMode::Always;
-		stencilState.reference = 0;
-
-		pipeInfo.depthStencil.setStencilFront(stencilState);
-		pipeInfo.depthStencil.setStencilBack(stencilState);
-
-		apiObj->renderInfo.pointLightProxyPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderPointLight]->getPipeline());
-		apiObj->renderInfo.pointLightProxyPass.effectId = EffectId::RenderPointLight;
-	}
-
-	// 6) LIGHT SOURCES : Rendering the "will-o-wisps" that are the sources of the light
-	{
-		pipeInfo.vertexInput.clear();
-		pvr::utils::createInputAssemblyFromMeshAndEffect(pointLightModel->getMesh(0), apiObj->effects[EffectId::RenderSolidColor]->getEffectAsset(), pipeInfo);
-
-		pipeInfo.rasterizer.setCullFace(Face::Back);
-
-		// disable stencil testing
-		pipeInfo.depthStencil.setStencilTest(false);
-
-		// re-enable depth testing and depth writing
-		pipeInfo.depthStencil.setDepthTestEnable(true);
-		pipeInfo.depthStencil.setDepthWrite(true);
-		pipeInfo.depthStencil.setDepthCompareFunc(ComparisonMode::LessEqual);
-
-		if (!usePixelLocalStorage)
-		{
-			// use blending
-			colorAttachment.blendEnable = true;
-			colorAttachment.srcBlendColor = BlendFactor::One;
-			colorAttachment.srcBlendAlpha = BlendFactor::One;
-			colorAttachment.destBlendColor = BlendFactor::One;
-			colorAttachment.destBlendAlpha = BlendFactor::One;
-		}
-
-		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
-
-		apiObj->renderInfo.pointLightSourcesPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::RenderSolidColor]->getPipeline());
-		apiObj->renderInfo.pointLightSourcesPass.effectId = EffectId::RenderSolidColor;
-	}
-
-	// &) WRITE OUT PIXEL LOCAL STORAGE: IF using pixel local storage, we need a final pass to write out from the pixel local storage colour to the FBO
-	if (usePixelLocalStorage)
-	{
-		// we don't need to check depth or stencil tests
-		pipeInfo.depthStencil.setDepthWrite(false);
-		pipeInfo.depthStencil.setDepthTestEnable(false);
-		pipeInfo.depthStencil.setStencilTest(false);
-
-		// write in to the color
-		colorAttachment.channelWriteMask = ColorChannel::All;
-		colorAttachment.blendEnable = false;
-		pipeInfo.colorBlend.setAttachmentState(0, colorAttachment);
-		pipeInfo.vertexInput.clear();
-		pipeInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
-
-		apiObj->renderInfo.writePlsPass.pipeline = context->createGraphicsPipeline(pipeInfo, apiObj->effects[EffectId::WriteOutColorFromPls]->getPipeline());
-		apiObj->renderInfo.writePlsPass.effectId = EffectId::WriteOutColorFromPls;
-	}
-
-	return true;
-}
-
-bool OGLESDeferredShading::setUpRenderPass()
-{
-	// Create on-screen-renderpass/fbo with its subpasses.
-	pvr::api::SubPass subPass0(PipelineBindPoint::Graphics);
-
-	// use the first color attachment
-	subPass0.setColorAttachment(0, 0);
-
-	pvr::api::RenderPassCreateParam renderPassInfo;
-	pvr::api::RenderPassDepthStencilInfo renderPassDepthStencilInfo = pvr::api::RenderPassDepthStencilInfo(
-	      getGraphicsContext()->getDepthStencilImageFormat(),
-	      LoadOp::Clear, StoreOp::Store, LoadOp::Clear, StoreOp::Store);
-	renderPassInfo.setDepthStencilInfo(renderPassDepthStencilInfo);
-	renderPassInfo.setColorInfo(0, pvr::api::RenderPassColorInfo(getGraphicsContext()->getPresentationImageFormat(), LoadOp::Clear));
-	renderPassInfo.setSubPass(0, subPass0);
-
-	// if using pls then add a second subpass
-	if (usePixelLocalStorage)
-	{
-		pvr::api::SubPass subPass1(PipelineBindPoint::Graphics);
-		renderPassInfo.setSubPass(1, subPass1);
-	}
-
-	apiObj->onScreenFbo = getGraphicsContext()->createOnScreenFboWithRenderPass(0, getGraphicsContext()->createRenderPass(renderPassInfo));
-
-	return true;
-}
-
-/*!*********************************************************************************************************************
-\brief  Loads the mesh data required for this example into vertex buffer objects
-\return Return true if no error occurred
-***********************************************************************************************************************/
-bool OGLESDeferredShading::loadVbos()
-{
-	pvr::utils::appendSingleBuffersFromModel(context, *scene, apiObj->sceneVbos, apiObj->sceneIbos);
-	pvr::utils::createSingleBuffersFromMesh(context, pointLightModel->getMesh(0), apiObj->pointLightVbo, apiObj->pointLightIbo);
-
-	if (!apiObj->sceneVbos.size() || !apiObj->sceneIbos.size() || apiObj->pointLightVbo.isNull() || apiObj->pointLightIbo.isNull())
-	{
-		setExitMessage("Invalid Scene Buffers");
-		return false;
-	}
-
-	return true;
-}
-
-
-/*!*********************************************************************************************************************
-\brief  Parse each effect in the PFX file, and set everything up, notably create the pvr::api::EffectApi objects that we will use for rendering.
-\return Return true if success
-\param  effectId Effect id to parse
-\param  reader Pfx Reader
-***********************************************************************************************************************/
-bool OGLESDeferredShading::setUpEffectHelper(EffectId::Enum effectId, const pvr::assets::PfxReader& reader)
-{
-	//STEP 1: Set up the basic pipeline state. It's pretty much the same for all effects - only the layouts will change.
-	pvr::api::GraphicsPipelineCreateParam pipeDesc;
-	pipeDesc.rasterizer.setCullFace(Face::Back);
-	pipeDesc.depthStencil.setDepthTestEnable(true);
-	pvr::types::BlendingConfig colorAttachment;
-	colorAttachment.blendEnable = false;
-	pipeDesc.colorBlend.setAttachmentState(0, colorAttachment);
-
-	//STEP 2: Load the effect from a file.
-	pvr::assets::Effect effectDesc;
-	if (!reader.getEffect(effectDesc, EffectNames[effectId])) { return false; }
-
-
-	//STEP 3: We have created in advance some Pipeline Layouts in order to be able to reuse them. So, we count the number of Texture Semantics
-	//for the effect, and select the relevant pipeline layout (that's the only difference between them at the moment).
-	//WARNING THIS IS BY CONVENTION ONLY - Texture Uniforms Semantics DO NOT have to start with TEXTURE.
-	int countTextures = 0;
-	for (auto it = effectDesc.uniforms.begin(); it != effectDesc.uniforms.end(); ++it)
-	{
-		if (pvr::strings::startsWith(it->semantic, "TEXTURE")) { ++countTextures; }
-	}
-
-	switch (countTextures)
-	{
-	case 0: pipeDesc.pipelineLayout = apiObj->pipeLayoutNoSamplers; break;
-	case 1: pipeDesc.pipelineLayout = apiObj->pipeLayoutOneSampler; break;
-	case 2: pipeDesc.pipelineLayout = apiObj->pipeLayoutTwoSamplers; break;
-	case 3: pipeDesc.pipelineLayout = apiObj->pipeLayoutThreeSamplers; break;
-	case 4: pipeDesc.pipelineLayout = apiObj->pipeLayoutFourSamplers; break;
-	default:
-		pvr::Log("Could not create Effect compatible with the code of this demo. No layout has been created for %d samplers.", countTextures);
-		return false;
-	}
-
-	pvr::assertion(effectId >= 0, "invalid effect id");
-
-	//STEP 5: Actually create the EffectAPI object from the EffectAPI object.
-<<<<<<< HEAD
-	apiObj->effects[effectId] = context->createEffectApi(effectDesc, pipeDesc, assetManager);
-=======
-	apiObj->effects[effectId] = pvr::legacyPfx::createEffectApi(context, effectDesc, pipeDesc, assetManager);
->>>>>>> 1776432f... 4.3
-
-	if (!apiObj->effects[effectId].isValid())
-	{
-		setExitMessage("Failed to load effect:%s file:%s ", effectDesc.getMaterial().getEffectName().c_str(), effectDesc.fileName.c_str());
-		return false;
-	}
-
-	//STEP 4: Assign the textures to texture units. These we will not usually be touching.
-	apiObj->cmdBufferMain->bindPipeline(apiObj->effects[effectId]->getPipeline());
-	for (int i = 0; i < 4; ++i)
-	{
-		int semanticId = effectDesc.getUniformSemanticId(pvr::strings::createFormatted("TEXTURE%d", i).c_str());
-		if (semanticId != -1)
-		{
-			pvr::uint32 uniformLoc = apiObj->effects[effectId]->getUniform(semanticId).location;
-<<<<<<< HEAD
-			apiObj->cmdBufferMain->setUniform<pvr::int32>(uniformLoc, i);
-=======
-			apiObj->cmdBufferMain->setUniform(uniformLoc, i);
->>>>>>> 1776432f... 4.3
-		}
-	}
-
-	//STEP 5: In general, deal with the uniforms. Also, put them in a map so we can reference them more easily
-	for (pvr::uint32 j = 0; j < Semantics::Count; ++j)
-	{
-		uniformMapping[effectId][j] = -1;
-		pvr::int32 tmpSemanticId = effectDesc.getUniformSemanticId(semanticsName[j]);
-		if (tmpSemanticId != -1) { uniformMapping[effectId][j] = apiObj->effects[effectId]->getUniform(tmpSemanticId).location; }
-	}
-	return true;
-}
-
-/*!*********************************************************************************************************************
-\return Return true if no error occurred
-\brief  Parses the entire PFX file to gather all effects that we will need to render.
-***********************************************************************************************************************/
-bool OGLESDeferredShading::loadPFX()
-{
-	pvr::assets::PfxReader  pfxParser;
-
-	pvr::string error;
-	// Parse the whole PFX and store all data.
-	// Setup all effects in the PFX file so we initialize the shaders and
-	// store uniforms and attributes locations.
-
-	if (!pfxParser.parseFromFile(getAssetStream(usePixelLocalStorage ? Files::PfxPlsSrcFile : Files::PfxSrcFile), error))
-	{
-		setExitMessage(error.c_str());
-		return false;
-	}
-
-	const pvr::uint32 numEffects = pfxParser.getNumberEffects();
-	apiObj->effects.resize(EffectId::Count);
-	uniformMapping.resize(numEffects);
-
-	apiObj->cmdBufferMain->beginRecording();
-
-	// create the pipeline layouts
-	for (pvr::int32 i = 0; i < EffectId::Count; ++i)
-	{
-		EffectId::Enum effectId = EffectId::Enum(i);
-		if (usePixelLocalStorage || effectId != EffectId::WriteOutColorFromPls)
-		{
-			if (!setUpEffectHelper(EffectId::Enum(effectId), pfxParser)) { return false; }
-		}
-	}
-
-	apiObj->cmdBufferMain->endRecording();
-	apiObj->cmdBufferMain->submit();
-
-	return true;
+	Log(LogLevel::Debug, "%s", message);
 }
 
 /*!*********************************************************************************************************************
@@ -971,43 +462,34 @@ If the rendering context is lost, initApplication() will not be called again.
 pvr::Result OGLESDeferredShading::initApplication()
 {
 	setStencilBitsPerPixel(8);
-	setMinApiType(pvr::Api::OpenGLES3);
 
-	frame = 0.0f;
-	isPaused = false;
-	cameraId = 0;
+	_frameNumber = 0.0f;
+	_isPaused = false;
+	_cameraId = 0;
 
-	//Prepare the asset manager for loading our objects
-	assetManager.init(*this);
+	_clearColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	//  Load the scene and the light
-	if (!assetManager.loadModel(Files::SceneFile, scene))
+	//  Load the _mainScene and the light
+	if (!pvr::utils::loadModel(*this, Files::SceneFile.c_str(), _mainScene))
 	{
-		setExitMessage("ERROR: Couldn't load the scene pod file %s\n", Files::SceneFile);
+		setExitMessage("ERROR: Couldn't load the _mainScene pod file %s\n", Files::SceneFile.c_str());
 		return pvr::Result::UnknownError;
 	}
 
-	if (scene->getNumCameras() == 0)
+	if (_mainScene->getNumCameras() == 0)
 	{
-		setExitMessage("ERROR: The main scene to display must contain a camera.\n");
-		return pvr::Result::InvalidData;
+		setExitMessage("ERROR: The main _mainScene to display must contain a camera.\n");
+		return pvr::Result::UnknownError;
 	}
 
 	//  Load light proxy geometry
-	if (!assetManager.loadModel(Files::PointLightModelFile, pointLightModel))
+	if (!pvr::utils::loadModel(*this, Files::PointLightModelFile.c_str(), _pointLightScene))
 	{
 		setExitMessage("ERROR: Couldn't load the point light proxy pod file\n");
-		return pvr::Result::UnableToOpen;
+		return pvr::Result::UnknownError;
 	}
 	return pvr::Result::Success;
 }
-
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
-If the rendering context is lost, QuitApplication() will not be called.x
-***********************************************************************************************************************/
-pvr::Result OGLESDeferredShading::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return Return pvr::Result::Success if no error occurred
@@ -1017,134 +499,140 @@ Used to initialize variables that are dependent on the rendering context (e.g. t
 pvr::Result OGLESDeferredShading::initView()
 {
 	srand((unsigned int)this->getTime());
+	_deviceResources.reset(new DeviceResources());
+	_deviceResources->context = pvr::createEglContext();
 
-	//Create the empty API objects.
-	apiObj.reset(new ApiObjects);
 
-	//Initialize free-floating objects (commandBuffers).
-	context = getGraphicsContext();
-
-	fboWidth = windowWidth = getWidth();
-	fboHeight = windowHeight = getHeight();
-
-	// Check if pixel local storage extension is supported
-	usePixelLocalStorage = getGraphicsContext()->hasApiCapability(pvr::ApiCapabilities::ShaderPixelLocalStorage);// use pixel local storage by default
-
-	const pvr::platform::CommandLine& cmdOptions = getCommandLine();
-
-	cmdOptions.getIntOption("-fbowidth", fboWidth);
-	fboWidth = glm::min<pvr::int32>(fboWidth, windowWidth);
-	cmdOptions.getIntOption("-fboheight", fboHeight);
-	fboHeight = glm::min<pvr::int32>(fboHeight, windowHeight);
-	cmdOptions.getBoolOptionSetTrueIfPresent("-forcepls", usePixelLocalStorage);
-	cmdOptions.getBoolOptionSetFalseIfPresent("-forcemrt", usePixelLocalStorage);
-	cmdOptions.getIntOption("-numlights", Configuration::NumProceduralPointLights);
-	cmdOptions.getFloatOption("-lightscale", Configuration::PointLightScale);
-	cmdOptions.getFloatOption("-lightintensity", Configuration::PointlightIntensity);
-
-	if (!usePixelLocalStorage)
+	if (!_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES31))
 	{
-		pvr::Log(pvr::Logger::Information, "Pixel local storage is not supported. fall back to MRT");
+		setExitMessage("OpenGLES31 context support is required for this demo.");
+		return pvr::Result::UnknownError;
+	}
+
+	// Check if pixel local storage extensions are supported
+	if (gl::isGlExtensionSupported("GL_KHR_debug"))
+	{
+		gl::ext::DebugMessageCallbackKHR(&debugCallback, NULL);
+	}
+
+	_pixelLocalStorageSupported = gl::isGlExtensionSupported("GL_EXT_shader_pixel_local_storage");
+	_pixelLocalStorage2Supported = gl::isGlExtensionSupported("GL_EXT_shader_pixel_local_storage2");
+
+	if (!gl::isGlExtensionSupported("GL_EXT_color_buffer_float"))
+	{
+		setExitMessage("Floating point framebuffer targets are not supported.");
+		return pvr::Result::UnknownError;
+	}
+
+	const pvr::CommandLine& commandOptions = getCommandLine();
+
+	commandOptions.getIntOption("-numlights", PointLightConfiguration::NumProceduralPointLights);
+	commandOptions.getFloatOption("-lightintensity", PointLightConfiguration::PointlightIntensity);
+
+	if (!_pixelLocalStorageSupported && !_pixelLocalStorage2Supported)
+	{
+		setExitMessage("Pixel local storage is not supported.");
+		return pvr::Result::UnknownError;
 	}
 	else
 	{
-		pvr::Log(pvr::Logger::Information, "Pixel local storage support detected. Will use Pixel Local Storage path.");
+		if (_pixelLocalStorage2Supported)
+		{
+			Log(LogLevel::Information, "Pixel local storage 2 is supported.");
+		}
+		else
+		{
+			Log(LogLevel::Information, "Pixel local storage is supported.");
+		}
 	}
-
-	setUpRenderPass();
 
 	// setup UI renderer
-	apiObj->uiRenderer.init(apiObj->onScreenFbo->getRenderPass(), 0);
-	apiObj->uiRenderer.getDefaultTitle()->setText("DeferredShading");
-	apiObj->uiRenderer.getDefaultTitle()->commitUpdates();
-	apiObj->uiRenderer.getDefaultControls()->setText("Action1: Pause\nAction2: Orbit Camera\n");
-	apiObj->uiRenderer.getDefaultControls()->commitUpdates();
-
-	// setup command buffers
-	apiObj->cmdBufferMain = context->createCommandBufferOnDefaultPool();
-	apiObj->cmdBuffSceneGeometry = context->createSecondaryCommandBufferOnDefaultPool();
-	apiObj->cmdBuffRenderGbuffer = context->createSecondaryCommandBufferOnDefaultPool();
-	apiObj->cmdBuffRenderDepthStencil = context->createSecondaryCommandBufferOnDefaultPool();
-	apiObj->cmdBuffLighting = context->createSecondaryCommandBufferOnDefaultPool();
-	apiObj->cmdBuffUIRenderer = context->createSecondaryCommandBufferOnDefaultPool();
-
-	viewportOffsets[0] = (windowWidth - fboWidth) / 2;
-	viewportOffsets[1] = (windowHeight - fboHeight) / 2;
-
-	pvr::Log(pvr::Log.Information, "FBO dimensions: %d x %d\n", fboWidth, fboHeight);
-	pvr::Log(pvr::Log.Information, "Onscreen Framebuffer dimensions: %d x %d\n", windowWidth, windowHeight);
-
-	// Only need to setup GBuffer if not using pixel local storage
-	if (!usePixelLocalStorage)
+	if (!_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen()))
 	{
-		//  Allocates the gbuffer buffer objects
-		if (!createGBufferMRT()) { return pvr::Result::NotInitialized; }
+		setExitMessage("Error: Failed to initialize the UIRenderer\n");
+		return pvr::Result::NotInitialized;
+	}
+	_deviceResources->uiRenderer.getDefaultTitle()->setText("DeferredShading");
+	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultControls()->setText(
+	  "Action1: Pause\n"
+	  "Action2: Orbit Camera\n"
+	);
+	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
+
+	_windowWidth = getWidth();
+	_windowHeight = getHeight();
+
+	// initialise the gbuffer renderpass list
+	_deviceResources->renderInfo.renderGBuffer.objects.resize(_mainScene->getNumMeshNodes());
+
+	Log(LogLevel::Information, "Onscreen Framebuffer dimensions: %d x %d\n", _windowWidth, _windowHeight);
+
+	// Load Samplers
+	if (!createSamplers())
+	{
+		return pvr::Result::NotInitialized;
 	}
 
-	//  Load textures
-	if (!createMaterialsAndDescriptorSets()) { return pvr::Result::NotInitialized; }
-
-	// create the pipeline layout
-	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
-	apiObj->pipeLayoutNoSamplers = context->createPipelineLayout(pipeLayoutInfo);
-
-	pipeLayoutInfo.setDescSetLayout(0, apiObj->oneSamplerLayout);
-	apiObj->pipeLayoutOneSampler = context->createPipelineLayout(pipeLayoutInfo);
-
-	pipeLayoutInfo.setDescSetLayout(0, apiObj->twoSamplerLayout);
-	apiObj->pipeLayoutTwoSamplers = context->createPipelineLayout(pipeLayoutInfo);
-
-	pipeLayoutInfo.setDescSetLayout(0, apiObj->threeSamplerLayout);
-	apiObj->pipeLayoutThreeSamplers = context->createPipelineLayout(pipeLayoutInfo);
-
-	pipeLayoutInfo.setDescSetLayout(0, apiObj->fourSamplerLayout);
-	apiObj->pipeLayoutFourSamplers = context->createPipelineLayout(pipeLayoutInfo);
+	//  Load material textures
+	if (!createMaterialTextures())
+	{
+		return pvr::Result::NotInitialized;
+	}
 
 	if (isScreenRotated() && isFullScreen())
 	{
-		projMtx = pvr::math::perspectiveFov(getApiType(), scene->getCamera(0).getFOV(), (pvr::float32)fboHeight, (pvr::float32)fboWidth, scene->getCamera(0).getNear(), scene->getCamera(0).getFar(),
-		                                    glm::pi<pvr::float32>() * .5f);
+		_projectionMatrix = pvr::math::perspectiveFov(pvr::Api::OpenGLES31, _mainScene->getCamera(0).getFOV(), (float)_windowHeight,
+		                    (float)_windowWidth, _mainScene->getCamera(0).getNear(), _mainScene->getCamera(0).getFar(), glm::pi<float>() * .5f);
 	}
 	else
 	{
-		projMtx = glm::perspectiveFov(scene->getCamera(0).getFOV(), (pvr::float32)fboWidth, (pvr::float32)fboHeight, scene->getCamera(0).getNear(), scene->getCamera(0).getFar());
+		_projectionMatrix = glm::perspectiveFov(_mainScene->getCamera(0).getFOV(), (float)_windowWidth, (float)_windowHeight,
+		                                        _mainScene->getCamera(0).getNear(), _mainScene->getCamera(0).getFar());
 	}
 
-	//  Load objects from the scene into VBOs
-	if (!loadVbos()) { return pvr::Result::UnknownError; }
-
-	//  Load and compile the shaders & link programs
-	if (!loadPFX()) { return pvr::Result::UnknownError; }
-
-	createPipelines();
-
-	allocateUniforms();
-
-	recordSecondaryCommandBuffers();
-
-	apiObj->cmdBufferMain->beginRecording();
-	if (usePixelLocalStorage)
+	// create the demo pipelines
+	if (!createPrograms())
 	{
-		recordCommandsPLS(apiObj->cmdBufferMain);
+		return pvr::Result::UnknownError;
 	}
-	else
+
+	// Initialise lighting structures
+	allocateLights();
+
+	// Create buffers used in the demo
+	createBuffers();
+
+	// Initialise the static light properties
+	initialiseStaticLightProperties();
+
+	// Upload static data
+	uploadStaticData();
+
+	setDefaultStates();
+
+	gl::GetIntegerv(GL_FRAMEBUFFER_BINDING, &_deviceResources->defaultFbo);
+
+	gl::Viewport(0, 0, _windowWidth, _windowHeight);
+
+	if (_pixelLocalStorage2Supported)
 	{
-		recordCommandsMRT(apiObj->cmdBufferMain);
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _deviceResources->defaultFbo);
+
+		// calculate the size in bytes of pixel local storage
+		_sizeOfPixelLocationStorage = 0;
+		_sizeOfPixelLocationStorage += 4; // albedo
+		_sizeOfPixelLocationStorage += 4; // normals
+		_sizeOfPixelLocationStorage += 4; // depth
+		_sizeOfPixelLocationStorage += 4; // color
+
+		// specifies the amount of storage required for pixel local variables whilst pls is enabled
+		gl::ext::FramebufferPixelLocalStorageSizeEXT(GL_DRAW_FRAMEBUFFER, _sizeOfPixelLocationStorage);
 	}
-	apiObj->cmdBufferMain->endRecording();
 
-	return pvr::Result::Success;
-}
-
-/*!*********************************************************************************************************************
-\return Return pvr::Result::Success if no error occurred
-\brief  Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.
-***********************************************************************************************************************/
-pvr::Result OGLESDeferredShading::releaseView()
-{
-	apiObj.reset(0);
-	assetManager.releaseAll();
-	context.release();
+	gl::ClearColor(_clearColor.r, _clearColor.g, _clearColor.b, _clearColor.a);
+	gl::ClearDepthf(1.0f);
+	gl::ClearStencil(0);
 
 	return pvr::Result::Success;
 }
@@ -1155,69 +643,588 @@ pvr::Result OGLESDeferredShading::releaseView()
 ***********************************************************************************************************************/
 pvr::Result OGLESDeferredShading::renderFrame()
 {
+	debugLogApiError("Frame begin");
+
 	//  Handle user input and update object animations
 	updateAnimation();
-	updateSceneUniforms();
-	apiObj->cmdBufferMain->submit();
+	updateDynamicSceneData();
+
+	gl::Enable(GL_DEPTH_TEST);
+
+	bindAndClearFramebuffer();
+
+	// enable pixel local storage
+	gl::Enable(GL_SHADER_PIXEL_LOCAL_STORAGE_EXT);
+
+	if (_pixelLocalStorage2Supported)
+	{
+		// clears pixel local storage to 0
+		gl::ext::ClearPixelLocalStorageuiEXT(0, _sizeOfPixelLocationStorage / 4, NULL);
+	}
+
+	// render the gbuffer
+	{
+		renderGBuffer();
+	}
+
+	// render directional light
+	{
+		renderDirectionalLights();
+	}
+
+	// render point light
+	{
+		renderPointLights();
+	}
+
+	// out PLS to Fbo
+	{
+		renderPlsToFbo();
+	}
+
+	// disable pixel local storage
+	gl::Disable(GL_SHADER_PIXEL_LOCAL_STORAGE_EXT);
+
+	{
+		renderUi();
+	}
+
+	endFramebuffer();
+
+	debugLogApiError("Frame end");
+
+	if (this->shouldTakeScreenshot())
+	{
+		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
+	}
+
+	_deviceResources->context->swapBuffers();
 
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-\brief  Allocates the required FBOs and buffer objects. Will not be needed for PLS
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in releaseView() will be called by PVRShell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
-bool OGLESDeferredShading::createGBufferMRT()
+pvr::Result OGLESDeferredShading::releaseView()
 {
-	//Sets up the RenderPass, FBO's, Textures for MRT rendering.
-	pvr::api::RenderPassCreateParam renderpassCreateParam;
-	pvr::api::FboCreateParam gbufferFboCreateParam;
-	pvr::api::SubPass subPassInfo;
-	const pvr::ImageStorageFormat internalsFormats[3] =
-	{
-		pvr::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),  // albedo
-		pvr::ImageStorageFormat(pvr::PixelFormat::RGB_888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),  // normal
-		pvr::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm),  // depth
-	};
+	_deviceResources.reset(0);
+	return pvr::Result::Success;
+}
 
-	// Allocate the render targets
-	for (pvr::uint32 i = 0; i < Fbo::Count; i++)
-	{
-		pvr::api::TextureStore renderTexure = context->createTexture();
-		renderTexure->allocate2D(internalsFormats[i], fboWidth, fboHeight);
-		apiObj->renderTextureViews[i] = context->createTextureView(renderTexure);
+/*!*********************************************************************************************************************
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.
+If the rendering context is lost, QuitApplication() will not be called.x
+***********************************************************************************************************************/
+pvr::Result OGLESDeferredShading::quitApplication() { return pvr::Result::Success; }
 
-		// setup the albedo, normal, depth attachment view
-		subPassInfo.setColorAttachment(i, i);
-		gbufferFboCreateParam.setColor(i, apiObj->renderTextureViews[i]);
-		renderpassCreateParam.setColorInfo(i, pvr::api::RenderPassColorInfo(internalsFormats[i], LoadOp::Clear, StoreOp::Store));
+void OGLESDeferredShading::bindAndClearFramebuffer()
+{
+	gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _deviceResources->defaultFbo);
+	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+}
+
+void OGLESDeferredShading::endFramebuffer()
+{
+	std::vector<GLenum> invalidateAttachments;
+	invalidateAttachments.push_back(GL_DEPTH);
+	invalidateAttachments.push_back(GL_STENCIL);
+
+	gl::InvalidateFramebuffer(GL_FRAMEBUFFER, (GLsizei)invalidateAttachments.size(), &invalidateAttachments[0]);
+}
+
+void OGLESDeferredShading::setDefaultStates()
+{
+	gl::BindFramebuffer(GL_FRAMEBUFFER, _deviceResources->context->getOnScreenFbo());
+	gl::UseProgram(0);
+
+	gl::Disable(GL_BLEND);
+
+	gl::Enable(GL_DEPTH_TEST); // depth test
+	gl::DepthMask(GL_TRUE); // depth write enabled
+	gl::DepthFunc(GL_LESS);
+
+	gl::Enable(GL_CULL_FACE);
+	gl::CullFace(GL_BACK);
+	gl::FrontFace(GL_CCW);
+
+	gl::Enable(GL_STENCIL_TEST);
+	gl::StencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	gl::StencilFunc(GL_ALWAYS, 0, 255);
+	gl::StencilMask(255);
+}
+
+void OGLESDeferredShading::renderGBuffer()
+{
+	DrawGBuffer& pass = _deviceResources->renderInfo.renderGBuffer;
+
+	gl::StencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	gl::StencilFunc(GL_ALWAYS, 1, 255);
+	gl::StencilMask(255);
+
+	for (uint32_t i = 0; i < _mainScene->getNumMeshNodes(); ++i)
+	{
+		gl::UseProgram(pass.objects[i].program);
+
+		const pvr::assets::Model::Node& node = _mainScene->getNode(i);
+		const pvr::assets::Mesh& mesh = _mainScene->getMesh(node.getObjectId());
+
+		const Material& material = _deviceResources->materials[node.getMaterialIndex()];
+
+		gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::Matrices, _deviceResources->modelMatrixUbo,
+		                    _deviceResources->modelMatrixBufferView.getDynamicSliceOffset(i), _deviceResources->modelMatrixBufferView.getDynamicSliceSize());
+
+		gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::Materials, _deviceResources->modelMaterialUbo,
+		                    _deviceResources->modelMaterialBufferView.getDynamicSliceOffset(i), _deviceResources->modelMaterialBufferView.getDynamicSliceSize());
+
+		if (material.diffuseTexture != -1)
+		{
+			gl::ActiveTexture(GL_TEXTURE0);
+			gl::BindSampler(0, _deviceResources->samplerTrilinear);
+			gl::BindTexture(GL_TEXTURE_2D, material.diffuseTexture);
+		}
+		if (material.bumpmapTexture != -1)
+		{
+			gl::ActiveTexture(GL_TEXTURE1);
+			gl::BindSampler(1, _deviceResources->samplerTrilinear);
+			gl::BindTexture(GL_TEXTURE_2D, material.bumpmapTexture);
+		}
+
+		gl::BindVertexArray(_deviceResources->sceneVaos[i]);
+
+		GLenum primitiveType = pvr::utils::convertToGles(mesh.getPrimitiveType());
+		if (mesh.getMeshInfo().isIndexed)
+		{
+			auto indextype = mesh.getFaces().getDataType();
+			GLenum indexgltype = (indextype == pvr::IndexType::IndexType16Bit ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT);
+			// Indexed Triangle list
+			gl::DrawElements(primitiveType, mesh.getNumFaces() * 3, indexgltype, 0);
+		}
+		else
+		{
+			// Non-Indexed Triangle list
+			gl::DrawArrays(primitiveType, 0, mesh.getNumFaces() * 3);
+		}
+	}
+}
+
+void OGLESDeferredShading::renderDirectionalLights()
+{
+	// DIRECTIONAL LIGHTING - A full-screen quad that will apply any global (ambient/directional) lighting
+	// disable the depth write as we do not want to modify the depth buffer while rendering directional lights
+
+	// set winding order
+	gl::FrontFace(GL_CW);
+
+	// enable front face culling
+	gl::CullFace(GL_FRONT);
+
+	// disable depth testing and depth writing
+	gl::Disable(GL_DEPTH_TEST);
+	gl::DepthMask(GL_FALSE);
+
+	// pass if the stencil equals 1 i.e. there is some geometry present
+	gl::StencilFunc(GL_EQUAL, 1, 255);
+	// disable stencil writes
+	gl::StencilMask(0);
+
+	// if for the current fragment the stencil has been filled then there is geometry present
+	// and directional lighting calculations should be carried out
+	gl::UseProgram(_deviceResources->renderInfo.directionalLightPass.program);
+
+	// Make use of the stencil buffer contents to only shade pixels where actual geometry is located.
+	for (uint32_t i = 0; i < _numberOfDirectionalLights; i++)
+	{
+		gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::DirectionalLightStaticData, _deviceResources->directionalLightStaticDataUbo,
+		                    _deviceResources->staticDirectionalLightBufferView.getDynamicSliceOffset(i), _deviceResources->staticDirectionalLightBufferView.getDynamicSliceSize());
+
+		gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::DirectionalLightDynamicData, _deviceResources->directionalLightDynamicDataUbo,
+		                    _deviceResources->dynamicDirectionalLightBufferView.getDynamicSliceOffset(i), _deviceResources->dynamicDirectionalLightBufferView.getDynamicSliceSize());
+
+		gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 	}
 
-	// create the depth stencil attachment
-	const pvr::ImageStorageFormat depthStencilFormat(pvr::PixelFormat::Depth24Stencil8, 1, ColorSpace::lRGB, pvr::VariableType::Float);
-	pvr::api::TextureStore gbufferDepthStencilTexure = context->createTexture();
-	gbufferDepthStencilTexure->allocate2D(depthStencilFormat, fboWidth, fboHeight);
-	pvr::api::TextureView gbufferDepthStencilView = context->createTextureView(gbufferDepthStencilTexure);
+	// reset winding order
+	gl::FrontFace(GL_CCW);
+	gl::StencilMask(255);
+}
 
-	// set up the depth stencil view
-	gbufferFboCreateParam.setDepthStencil(gbufferDepthStencilView);
+void OGLESDeferredShading::renderPointLights()
+{
+	gl::BindVertexArray(_deviceResources->pointLightVao);
 
-	pvr::api::RenderPassDepthStencilInfo renderPassDepthStencilInfo = pvr::api::RenderPassDepthStencilInfo(depthStencilFormat,
-	    LoadOp::Clear, StoreOp::Ignore, LoadOp::Clear, StoreOp::Ignore);
-	renderpassCreateParam.setDepthStencilInfo(renderPassDepthStencilInfo);
-
-	// add the sub pass information
-	renderpassCreateParam.setSubPass(0, subPassInfo);
-
-	// create the gBuffer render pass
-	apiObj->gBufferRenderPass = context->createRenderPass(renderpassCreateParam);
-
-	gbufferFboCreateParam.setRenderPass(apiObj->gBufferRenderPass);
-
-	// create the gbuffer fbo
-	apiObj->gBufferFBO = context->createFbo(gbufferFboCreateParam);
-	if (!apiObj->gBufferFBO.isValid())
+	for (uint32_t i = 0; i < _numberOfPointLights; i++)
 	{
-		this->setExitMessage("G-Buffer Fbo creation failed");
+		// clear the stencil buffer so that the point light passes can make use of it
+		gl::Clear(GL_STENCIL_BUFFER_BIT);
+
+		gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::PointLightDynamicData, _deviceResources->pointLightMatrixUbo,
+		                    _deviceResources->dynamicPointLightBufferView.getDynamicSliceOffset(i), _deviceResources->dynamicPointLightBufferView.getDynamicSliceSize());
+
+		renderPointLightProxyGeometryIntoStencilBuffer(i);
+		renderPointLightProxy(i);
+	}
+	renderPointLightSources();
+
+	gl::BindVertexArray(0);
+}
+
+void OGLESDeferredShading::renderPlsToFbo()
+{
+	// Output the contents of PLS to the main framebuffer - A full-screen quad will simply blit the contents of pls.color to the screen
+
+	// set winding order
+	gl::FrontFace(GL_CW);
+
+	// enable front face culling
+	gl::CullFace(GL_FRONT);
+
+	// disable depth testing and depth writing
+	gl::Disable(GL_DEPTH_TEST);
+	gl::DepthMask(GL_FALSE);
+
+	// disable stencil testing and stencil writing
+	gl::Disable(GL_STENCIL_TEST);
+	gl::StencilMask(0);
+
+	gl::UseProgram(_deviceResources->renderInfo.writePlsToFbo.program);
+
+	gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+}
+
+void OGLESDeferredShading::renderPointLightProxyGeometryIntoStencilBuffer(const uint32_t pointLight)
+{
+	// POINT LIGHTS GEOMETRY STENCIL PASS
+	// Render the front face of each light volume
+	// Z function is set as Less/Equal
+	// Z test passes will leave the stencil as 0 i.e. the front of the light is infront of all geometry in the current pixel
+	//    This is the condition we want for determining whether the geometry can be affected by the point lights
+	// Z test fails will increment the stencil to 1. i.e. the front of the light is behind all of the geometry in the current pixel
+	//    Under this condition the current pixel cannot be affected by the current point light as the geometry is infront of the front of the point light
+
+	// disable color writing
+	gl::ColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+	// enable back face culling
+	gl::CullFace(GL_BACK);
+
+	// enable depth testing
+	gl::Enable(GL_DEPTH_TEST);
+	// disable depth writing
+	gl::DepthMask(GL_FALSE);
+	// change the depth test function to less than or equal
+	gl::DepthFunc(GL_LEQUAL);
+
+	gl::StencilOp(GL_KEEP, GL_INCR, GL_KEEP);
+	gl::StencilFunc(GL_ALWAYS, 0, 255);
+
+	PointLightGeometryStencil& pointGeometryStencilPass = _deviceResources->renderInfo.pointLightGeometryStencilPass;
+	PointLightPasses& pointPasses = _deviceResources->renderInfo.pointLightPasses;
+
+	const pvr::assets::Mesh& mesh = _pointLightScene->getMesh(static_cast<uint32_t>(LightNodes::PointLightMeshNode));
+
+	gl::UseProgram(pointGeometryStencilPass.program);
+
+	GLenum primitiveType = pvr::utils::convertToGles(mesh.getPrimitiveType());
+	auto indextype = mesh.getFaces().getDataType();
+	GLenum indexgltype = (indextype == pvr::IndexType::IndexType16Bit ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT);
+	// Indexed Triangle list
+	gl::DrawElements(primitiveType, mesh.getNumFaces() * 3, indexgltype, 0);
+}
+
+void OGLESDeferredShading::renderPointLightProxy(const uint32_t pointLight)
+{
+	// POINT LIGHTS PROXIES - Actually light the pixels touched by a point light.
+	// Render the back faces of the light volumes
+	// Z function is set as Greater/Equal
+	// Z test passes signify that there is geometry infront of the back face of the light volume i.e. for the current pixel there is
+	// some geometry infront of the back face of the light volume
+	// Stencil function is Equal i.e. the stencil renference is set to 0
+	// Stencil passes signify that for the current pixel there exists a front face of a light volume infront of the current geometry
+	// Point light calculations occur every time a pixel passes both the stencil AND Z test
+
+	gl::ColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+	// enable front face culling - cull the front faces of the light sources
+	gl::CullFace(GL_FRONT);
+
+	// change depth function to greater than or equal
+	gl::DepthFunc(GL_GEQUAL);
+
+	// if stencil state equals 0 then the lighting should take place as there is geometry inside the point lights area
+	gl::StencilFunc(GL_EQUAL, 0, 255);
+	gl::StencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
+
+	DrawPointLightProxy& pointLightProxyPass = _deviceResources->renderInfo.pointLightProxyPass;
+	PointLightPasses& pointPasses = _deviceResources->renderInfo.pointLightPasses;
+
+	const pvr::assets::Mesh& mesh = _pointLightScene->getMesh(static_cast<uint32_t>(LightNodes::PointLightMeshNode));
+
+	gl::UseProgram(pointLightProxyPass.program);
+
+	gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::PointLightStaticData, _deviceResources->pointLightPropertiesUbo,
+	                    _deviceResources->staticPointLightBufferView.getDynamicSliceOffset(pointLight), _deviceResources->staticPointLightBufferView.getDynamicSliceSize());
+
+	GLenum primitiveType = pvr::utils::convertToGles(mesh.getPrimitiveType());
+	auto indextype = mesh.getFaces().getDataType();
+	GLenum indexgltype = (indextype == pvr::IndexType::IndexType16Bit ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT);
+	// Indexed Triangle list
+	gl::DrawElements(primitiveType, mesh.getNumFaces() * 3, indexgltype, 0);
+}
+
+void OGLESDeferredShading::renderPointLightSources()
+{
+	// LIGHT SOURCES : Rendering the "will-o-wisps" that are the sources of the light
+
+	// enable back face culling
+	gl::CullFace(GL_BACK);
+
+	// disable stencil testing
+	gl::Disable(GL_STENCIL_TEST);
+
+	gl::Enable(GL_DEPTH_TEST);
+	gl::DepthFunc(GL_LEQUAL);
+	// enable depth writes
+	gl::DepthMask(GL_TRUE);
+
+	DrawPointLightSources& pointLightSourcePass = _deviceResources->renderInfo.pointLightSourcesPass;
+	PointLightPasses& pointPasses = _deviceResources->renderInfo.pointLightPasses;
+
+	const pvr::assets::Mesh& mesh = _pointLightScene->getMesh(static_cast<uint32_t>(LightNodes::PointLightMeshNode));
+
+	gl::UseProgram(pointLightSourcePass.program);
+
+	for (uint32_t i = 0; i < _numberOfPointLights; i++)
+	{
+		gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::PointLightStaticData, _deviceResources->pointLightPropertiesUbo,
+		                    _deviceResources->staticPointLightBufferView.getDynamicSliceOffset(i), _deviceResources->staticPointLightBufferView.getDynamicSliceSize());
+
+		gl::BindBufferRange(GL_UNIFORM_BUFFER, BufferBindings::PointLightDynamicData, _deviceResources->pointLightMatrixUbo,
+		                    _deviceResources->dynamicPointLightBufferView.getDynamicSliceOffset(i), _deviceResources->dynamicPointLightBufferView.getDynamicSliceSize());
+
+		GLenum primitiveType = pvr::utils::convertToGles(mesh.getPrimitiveType());
+		auto indextype = mesh.getFaces().getDataType();
+		GLenum indexgltype = (indextype == pvr::IndexType::IndexType16Bit ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT);
+		// Indexed Triangle list
+		gl::DrawElements(primitiveType, mesh.getNumFaces() * 3, indexgltype, 0);
+	}
+}
+
+void OGLESDeferredShading::renderUi()
+{
+	_deviceResources->uiRenderer.beginRendering();
+	_deviceResources->uiRenderer.getSdkLogo()->render();
+	_deviceResources->uiRenderer.getDefaultTitle()->render();
+	_deviceResources->uiRenderer.getDefaultControls()->render();
+	_deviceResources->uiRenderer.endRendering();
+}
+
+bool OGLESDeferredShading::createSamplers()
+{
+	// create trilinear sampler
+	gl::GenSamplers(1, &_deviceResources->samplerTrilinear);
+
+	gl::SamplerParameteri(_deviceResources->samplerTrilinear, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	gl::SamplerParameteri(_deviceResources->samplerTrilinear, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	gl::SamplerParameteri(_deviceResources->samplerTrilinear, GL_TEXTURE_WRAP_R, GL_REPEAT);
+	gl::SamplerParameteri(_deviceResources->samplerTrilinear, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	gl::SamplerParameteri(_deviceResources->samplerTrilinear, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	return true;
+}
+
+/*!*********************************************************************************************************************
+\return Return true if no error occurred
+\brief  Loads the textures required for this example and sets up descriptorSets
+***********************************************************************************************************************/
+bool OGLESDeferredShading::createMaterialTextures()
+{
+	if (_mainScene->getNumMaterials() == 0)
+	{
+		setExitMessage("ERROR: The _mainScene does not contain any materials.");
+		return false;
+	}
+
+	// Load textures for each material
+	_deviceResources->materials.resize(_mainScene->getNumMaterials());
+	for (uint32_t i = 0; i < _mainScene->getNumMaterials(); ++i)
+	{
+		// get the current material
+		const pvr::assets::Model::Material& material = _mainScene->getMaterial(i);
+
+		// get material properties
+		_deviceResources->materials[i].specularStrength = material.defaultSemantics().getShininess();
+		_deviceResources->materials[i].diffuseColor = glm::vec4(material.defaultSemantics().getDiffuse(), 1.0f);
+
+		int numTextures = 0;
+
+		if (material.defaultSemantics().getDiffuseTextureIndex() != -1)
+		{
+			// load the diffuse texture
+			if (!pvr::utils::textureUpload(*this, _mainScene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str(),
+			                               _deviceResources->materials[i].diffuseTexture))
+			{
+				setExitMessage("FAILED to load texture %s.", _mainScene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
+				return false;
+			}
+
+			++numTextures;
+		}
+		if (material.defaultSemantics().getBumpMapTextureIndex() != -1)
+		{
+			// Load the bumpmap
+			if (!pvr::utils::textureUpload(*this, _mainScene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName().c_str(),
+			                               _deviceResources->materials[i].bumpmapTexture))
+			{
+				setExitMessage("FAILED to load texture %s.", _mainScene->getTexture(material.defaultSemantics().getBumpMapTextureIndex()).getName().c_str());
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool OGLESDeferredShading::createModelPrograms()
+{
+	{
+		const char* attributeNames[] = { vertexBindings[0].variableName.c_str(), vertexBindings[1].variableName.c_str(),
+		                                 vertexBindings[2].variableName.c_str(), vertexBindings[3].variableName.c_str()
+		                               };
+		const uint16_t attributeIndices[] = { static_cast<uint16_t>(AttributeIndices::VertexArray),
+		                                      static_cast<uint16_t>(AttributeIndices::NormalArray),
+		                                      static_cast<uint16_t>(AttributeIndices::TexCoordArray),
+		                                      static_cast<uint16_t>(AttributeIndices::TangentArray)
+		                                    };
+		const uint32_t numAttributes = 4;
+
+		if (!(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Satyr)].program =
+		        pvr::utils::createShaderProgram(*this, Files::GBufferVertexShader.c_str(), Files::GBufferFragmentShader.c_str(),
+		                                        attributeNames, attributeIndices, numAttributes)))
+		{
+			setExitMessage("Unable to create program (%s, %s)", Files::GBufferVertexShader.c_str(), Files::GBufferFragmentShader.c_str());
+			return false;
+		}
+
+		gl::ProgramUniform1i(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Satyr)].program,
+		                     gl::GetUniformLocation(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Satyr)].program,
+		                         UniformNames::DiffuseTexture.c_str()), TextureIndices::DiffuseTexture);
+		gl::ProgramUniform1i(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Satyr)].program,
+		                     gl::GetUniformLocation(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Satyr)].program,
+		                         UniformNames::BumpmapTexture.c_str()), TextureIndices::BumpmapTexture);
+
+		// Store the location of uniforms for later use
+		_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Satyr)].farClipDistanceLocation =
+		  gl::GetUniformLocation(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Satyr)].program, UniformNames::FarClipDistance.c_str());
+	}
+
+	{
+		const char* attributeNames[] = { floorVertexBindings[0].variableName.c_str(),
+		                                 floorVertexBindings[1].variableName.c_str(), floorVertexBindings[2].variableName.c_str()
+		                               };
+		const uint16_t attributeIndices[] = { static_cast<uint16_t>(FloorAttributeIndices::VertexArray),
+		                                      static_cast<uint16_t>(FloorAttributeIndices::NormalArray),
+		                                      static_cast<uint16_t>(FloorAttributeIndices::TexCoordArray)
+		                                    };
+		const uint32_t numAttributes = 3;
+
+		if (!(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Floor)].program =
+		        pvr::utils::createShaderProgram(*this, Files::GBufferFloorVertexShader.c_str(), Files::GBufferFloorFragmentShader.c_str(),
+		                                        attributeNames, attributeIndices, numAttributes)))
+		{
+			setExitMessage("Unable to create program (%s, %s)", Files::GBufferFloorVertexShader.c_str(), Files::GBufferFloorFragmentShader.c_str());
+			return false;
+		}
+		gl::ProgramUniform1i(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Floor)].program,
+		                     gl::GetUniformLocation(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Floor)].program,
+		                         UniformNames::DiffuseTexture.c_str()), TextureIndices::DiffuseTexture);
+
+		// Store the location of uniforms for later use
+		_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Floor)].farClipDistanceLocation =
+		  gl::GetUniformLocation(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Floor)].program, UniformNames::FarClipDistance.c_str());
+	}
+
+	return true;
+}
+
+bool OGLESDeferredShading::createDirectionalLightingProgram()
+{
+	if (!(_deviceResources->renderInfo.directionalLightPass.program =
+	        pvr::utils::createShaderProgram(*this, Files::AttributelessVertexShader.c_str(), Files::DirectionalLightingFragmentShader.c_str(),
+	                                        0, 0, 0)))
+	{
+		setExitMessage("Unable to create program (%s, %s)", Files::AttributelessVertexShader.c_str(), Files::DirectionalLightingFragmentShader.c_str());
+		return false;
+	}
+
+	return true;
+}
+
+bool OGLESDeferredShading::createBlitPlsProgram()
+{
+	if (!(_deviceResources->renderInfo.writePlsToFbo.program =
+	        pvr::utils::createShaderProgram(*this, Files::AttributelessVertexShader.c_str(), Files::WritePlsToFboShader.c_str(),
+	                                        0, 0, 0)))
+	{
+		setExitMessage("Unable to create program (%s, %s)", Files::AttributelessVertexShader.c_str(), Files::WritePlsToFboShader.c_str());
+		return false;
+	}
+
+	return true;
+}
+
+bool OGLESDeferredShading::createPointLightStencilProgram()
+{
+	const char* attributeNames[] = { pointLightVertexBindings[0].variableName.c_str() };
+	const uint16_t attributeIndices[] = { static_cast<uint16_t>(pointLightAttributeIndices::VertexArray) };
+	const uint32_t numAttributes = 1;
+
+	if (!(_deviceResources->renderInfo.pointLightGeometryStencilPass.program =
+	        pvr::utils::createShaderProgram(*this, Files::PointLightPass1VertexShader.c_str(), Files::PointLightPass1FragmentShader.c_str(),
+	                                        attributeNames, attributeIndices, numAttributes)))
+	{
+		setExitMessage("Unable to create program (%s, %s)", Files::PointLightPass1VertexShader.c_str(), Files::PointLightPass1FragmentShader.c_str());
+		return false;
+	}
+	return true;
+}
+
+bool OGLESDeferredShading::createPointLightProxyProgram()
+{
+	const char* attributeNames[] = { pointLightVertexBindings[0].variableName.c_str() };
+	const uint16_t attributeIndices[] = { static_cast<uint16_t>(pointLightAttributeIndices::VertexArray) };
+	const uint32_t numAttributes = 1;
+
+	if (!(_deviceResources->renderInfo.pointLightProxyPass.program =
+	        pvr::utils::createShaderProgram(*this, Files::PointLightPass2VertexShader.c_str(), Files::PointLightPass2FragmentShader.c_str(),
+	                                        attributeNames, attributeIndices, numAttributes)))
+	{
+		setExitMessage("Unable to create program (%s, %s)", Files::PointLightPass2VertexShader.c_str(), Files::PointLightPass2FragmentShader.c_str());
+		return false;
+	}
+
+	gl::UseProgram(_deviceResources->renderInfo.pointLightProxyPass.program);
+
+	// Store the location of uniforms for later use
+	_deviceResources->renderInfo.pointLightProxyPass.farClipDistanceLocation =
+	  gl::GetUniformLocation(_deviceResources->renderInfo.pointLightProxyPass.program, UniformNames::FarClipDistance.c_str());
+
+	return true;
+}
+
+bool OGLESDeferredShading::createPointLightSourceProgram()
+{
+	const char* attributeNames[] = { pointLightVertexBindings[0].variableName.c_str() };
+	const uint16_t attributeIndices[] = { static_cast<uint16_t>(pointLightAttributeIndices::VertexArray) };
+	const uint32_t numAttributes = 1;
+
+	if (!(_deviceResources->renderInfo.pointLightSourcesPass.program =
+	        pvr::utils::createShaderProgram(*this, Files::PointLightPass3VertexShader.c_str(), Files::PointLightPass3FragmentShader.c_str(),
+	                                        attributeNames, attributeIndices, numAttributes)))
+	{
+		setExitMessage("Unable to create program (%s, %s)", Files::PointLightPass3VertexShader.c_str(), Files::PointLightPass3FragmentShader.c_str());
 		return false;
 	}
 
@@ -1225,144 +1232,551 @@ bool OGLESDeferredShading::createGBufferMRT()
 }
 
 /*!*********************************************************************************************************************
-\brief  Draw deferred shading using pixel local storage
+\brief  Create the pipelines for this example
+\return Return true if no error occurred
 ***********************************************************************************************************************/
-void OGLESDeferredShading::updateSceneUniforms()
+bool OGLESDeferredShading::createPrograms()
 {
-	RenderData& pass = apiObj->renderInfo;
+	return createModelPrograms() &&
+	       createDirectionalLightingProgram() &&
+	       createPointLightStencilProgram() &&
+	       createPointLightProxyProgram() &&
+	       createPointLightSourceProgram() &&
+	       createBlitPlsProgram();
+}
 
-	//Update GBuffer uniforms
-	for (pvr::uint32 i = 0; i < scene->getNumMeshNodes(); ++i)
+/*!*********************************************************************************************************************
+\brief  Updates animation variables and camera matrices.
+***********************************************************************************************************************/
+void OGLESDeferredShading::updateAnimation()
+{
+	uint64_t deltaTime = getFrameTime();
+
+	if (!_isPaused)
 	{
-		const pvr::assets::Model::Node& node = scene->getNode(i);
-		pass.storeRenderDataPass.objects[i].world = scene->getWorldMatrix(node.getObjectId());
-		pass.storeRenderDataPass.objects[i].worldView = viewMtx * pass.storeRenderDataPass.objects[i].world;
-		pass.storeRenderDataPass.objects[i].worldViewProj = viewProjMtx * pass.storeRenderDataPass.objects[i].world;
-		pass.storeRenderDataPass.objects[i].worldViewIT3x3 = glm::inverseTranspose(glm::mat3(pass.storeRenderDataPass.objects[i].worldView));
+		_frameNumber += deltaTime * ApplicationConfiguration::FrameRate;
+		if (_frameNumber > _mainScene->getNumFrames() - 1) { _frameNumber = 0; }
+		_mainScene->setCurrentFrame(_frameNumber);
 	}
 
-	// Imprint a 1 into the stencil buffer to indicate where geometry is found.
-	// This optimizes the rendering of directional light sources as the shader then
-	// only has to be executed where necessary.
-	// Render the objects to the depth and stencil buffers but not to the framebuffer
-	static const glm::vec4 sRandColors[] =
+	glm::vec3 vTo, vUp;
+	float fov;
+	_mainScene->getCameraProperties(_cameraId, fov, _cameraPosition, vTo, vUp);
+
+	// Update camera matrices
+	static float angle = 0;
+	if (_animateCamera) { angle += getFrameTime() / 5000.f; }
+	_viewMatrix = glm::lookAt(glm::vec3(sin(angle) * 100.f + vTo.x, vTo.y + 30., cos(angle) * 100.f + vTo.z), vTo, vUp);
+	_viewProjectionMatrix = _projectionMatrix * _viewMatrix;
+	_inverseViewMatrix = glm::inverse(_viewMatrix);
+}
+
+void OGLESDeferredShading::createBuffers()
+{
+	// create the vaos, vbos and ibos
+	createGeometryBuffers();
+
+	_bufferStorageExtSupported = gl::isGlExtensionSupported("GL_EXT_buffer_storage");
+
+	// get the uniform buffer offset alignment value
+	gl::GetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &_uniformAlignment);
+
+	// create model buffers
+	createModelBuffers();
+
+	// create lighting buffers
+	createDirectionalLightBuffers();
+	createPointLightBuffers();
+}
+
+/*!*********************************************************************************************************************
+\brief  Creates the buffers used for rendering the models
+***********************************************************************************************************************/
+void OGLESDeferredShading::createModelBuffers()
+{
 	{
-		glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f),
-		glm::vec4(1.0f, 0.0f, 1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
-		glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.5f, 1.0f, 0.5f, 1.0f),
-	};
-	for (pvr::uint32 i = 0; i < scene->getNumMeshNodes(); ++i)
+		pvr::utils::StructuredMemoryDescription description;
+		description.addElement(BufferEntryNames::PerModelMaterial::SpecularStrength, pvr::GpuDatatypes::Float);
+		description.addElement(BufferEntryNames::PerModelMaterial::DiffuseColor, pvr::GpuDatatypes::vec4);
+		_deviceResources->modelMaterialBufferView.initDynamic(description, _mainScene->getNumMeshNodes(), pvr::BufferUsageFlags::UniformBuffer, _uniformAlignment);
+
+		gl::GenBuffers(1, &_deviceResources->modelMaterialUbo);
+		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->modelMaterialUbo);
+		gl::BufferData(GL_UNIFORM_BUFFER, _deviceResources->modelMaterialBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
+
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		if (_bufferStorageExtSupported)
+		{
+			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->modelMaterialUbo);
+			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, static_cast<GLsizei>(_deviceResources->modelMaterialBufferView.getSize()), 0,
+			                          GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+
+			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER,
+			                                  0, _deviceResources->modelMaterialBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			_deviceResources->modelMaterialBufferView.pointToMappedMemory(memory);
+		}
+	}
 	{
-		const pvr::assets::Model::Node& node = scene->getNode(i);
-		pass.depthStencilPass.uniforms[i].color = sRandColors[i % 9];
-		pass.depthStencilPass.uniforms[i].worldViewProj = viewProjMtx * scene->getWorldMatrix(node.getObjectId());
+		pvr::utils::StructuredMemoryDescription description;
+		description.addElement(BufferEntryNames::PerModel::WorldViewProjectionMatrix, pvr::GpuDatatypes::mat4x4);
+		description.addElement(BufferEntryNames::PerModel::WorldViewMatrix, pvr::GpuDatatypes::mat4x4);
+		description.addElement(BufferEntryNames::PerModel::WorldViewITMatrix, pvr::GpuDatatypes::mat4x4);
+		_deviceResources->modelMatrixBufferView.initDynamic(description, _mainScene->getNumMeshNodes(), pvr::BufferUsageFlags::UniformBuffer, _uniformAlignment);
+
+		gl::GenBuffers(1, &_deviceResources->modelMatrixUbo);
+		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->modelMatrixUbo);
+		gl::BufferData(GL_UNIFORM_BUFFER, _deviceResources->modelMatrixBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
+
+		if (_bufferStorageExtSupported)
+		{
+			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->modelMatrixUbo);
+			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, static_cast<GLsizei>(_deviceResources->modelMatrixBufferView.getSize()), 0,
+			                          GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+
+			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER,
+			                                  0, _deviceResources->modelMatrixBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			_deviceResources->modelMatrixBufferView.pointToMappedMemory(memory);
+		}
+	}
+}
+
+/*!*********************************************************************************************************************
+\brief  Upload the static data to the buffers which do not change per frame
+***********************************************************************************************************************/
+void OGLESDeferredShading::uploadStaticModelData()
+{
+	// static model buffer
+	if (!_bufferStorageExtSupported)
+	{
+		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->modelMaterialUbo);
+		void* memory = gl::MapBufferRange(GL_UNIFORM_BUFFER, 0,
+		                                  _deviceResources->modelMaterialBufferView.getSize(), GL_MAP_WRITE_BIT);
+
+		_deviceResources->modelMaterialBufferView.pointToMappedMemory(memory);
+	}
+	for (uint32_t i = 0; i < _mainScene->getNumMeshNodes(); ++i)
+	{
+		_deviceResources->modelMaterialBufferView.getElementByName(BufferEntryNames::PerModelMaterial::SpecularStrength, 0, i).setValue(&_deviceResources->materials[i].specularStrength);
+
+		_deviceResources->modelMaterialBufferView.getElementByName(BufferEntryNames::PerModelMaterial::DiffuseColor, 0, i).setValue(&_deviceResources->materials[i].diffuseColor);
+	}
+	if (!_bufferStorageExtSupported)
+	{
+		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
 	}
 
-	pvr::int32 pointLight = 0;
-	pvr::uint32 directionalLight = 0;
-	for (pvr::uint32 i = 0; i < scene->getNumLightNodes(); ++i)
+	_farClipDistance = _mainScene->getCamera(0).getFar();
+
+	gl::ProgramUniform1f(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Satyr)].program,
+	                     _deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Satyr)].farClipDistanceLocation, _farClipDistance);
+
+	gl::ProgramUniform1f(_deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Floor)].program,
+	                     _deviceResources->renderInfo.renderGBuffer.objects[static_cast<uint32_t>(MeshNodes::Floor)].farClipDistanceLocation, _farClipDistance);
+
+	gl::ProgramUniform1f(_deviceResources->renderInfo.pointLightProxyPass.program,
+	                     _deviceResources->renderInfo.pointLightProxyPass.farClipDistanceLocation, _farClipDistance);
+}
+
+void OGLESDeferredShading::uploadStaticDirectionalLightData()
+{
+	// static directional light buffer
+	if (!_bufferStorageExtSupported)
 	{
-		const pvr::assets::Node& lightNode = scene->getLightNode(i);
-		const pvr::assets::Light& light = scene->getLight(lightNode.getObjectId());
+		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->directionalLightStaticDataUbo);
+		void* memory = gl::MapBufferRange(GL_UNIFORM_BUFFER,
+		                                  0, _deviceResources->staticDirectionalLightBufferView.getSize(), GL_MAP_WRITE_BIT);
+		_deviceResources->staticDirectionalLightBufferView.pointToMappedMemory(memory);
+	}
+
+	for (uint32_t i = 0; i < _numberOfDirectionalLights; ++i)
+	{
+		_deviceResources->staticDirectionalLightBufferView.getElementByName(BufferEntryNames::StaticDirectionalLight::LightIntensity, 0, i).
+		setValue(&_deviceResources->renderInfo.directionalLightPass.lightProperties[i].lightIntensity);
+
+		_deviceResources->staticDirectionalLightBufferView.getElementByName(BufferEntryNames::StaticDirectionalLight::AmbientLight, 0, i).
+		setValue(&DirectionalLightConfiguration::AmbientLightColor);
+	}
+	if (!_bufferStorageExtSupported)
+	{
+		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
+	}
+}
+
+void OGLESDeferredShading::uploadStaticPointLightData()
+{
+	// static directional light buffer
+	if (!_bufferStorageExtSupported)
+	{
+		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->pointLightPropertiesUbo);
+		void* memory = gl::MapBufferRange(GL_UNIFORM_BUFFER,
+		                                  0, _deviceResources->staticPointLightBufferView.getSize(), GL_MAP_WRITE_BIT);
+		_deviceResources->staticPointLightBufferView.pointToMappedMemory(memory);
+	}
+
+	for (uint32_t i = 0; i < _numberOfPointLights; ++i)
+	{
+		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::StaticPointLight::LightIntensity, 0, i).
+		setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightIntensity);
+
+		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::StaticPointLight::LightRadius, 0, i).
+		setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightRadius);
+
+		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::StaticPointLight::LightColor, 0, i).
+		setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightColor);
+
+		_deviceResources->staticPointLightBufferView.getElementByName(BufferEntryNames::StaticPointLight::LightSourceColor, 0, i).
+		setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].lightSourceColor);
+	}
+	if (!_bufferStorageExtSupported)
+	{
+		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
+	}
+}
+
+/*!*********************************************************************************************************************
+\brief  Upload the static data to the buffers which do not change per frame
+***********************************************************************************************************************/
+void OGLESDeferredShading::uploadStaticData()
+{
+	uploadStaticModelData();
+	uploadStaticDirectionalLightData();
+	uploadStaticPointLightData();
+
+	gl::UseProgram(0);
+}
+
+/*!*********************************************************************************************************************
+\brief  Creates the buffers used for rendering the point lighting
+***********************************************************************************************************************/
+void OGLESDeferredShading::createPointLightBuffers()
+{
+	{
+		pvr::utils::StructuredMemoryDescription description;
+		description.addElement(BufferEntryNames::StaticPointLight::LightIntensity, pvr::GpuDatatypes::Float);
+		description.addElement(BufferEntryNames::StaticPointLight::LightRadius, pvr::GpuDatatypes::Float);
+		description.addElement(BufferEntryNames::StaticPointLight::LightColor, pvr::GpuDatatypes::vec4);
+		description.addElement(BufferEntryNames::StaticPointLight::LightSourceColor, pvr::GpuDatatypes::vec4);
+		_deviceResources->staticPointLightBufferView.initDynamic(description, _numberOfPointLights, pvr::BufferUsageFlags::UniformBuffer, _uniformAlignment);
+
+		gl::GenBuffers(1, &_deviceResources->pointLightPropertiesUbo);
+		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->pointLightPropertiesUbo);
+		gl::BufferData(GL_UNIFORM_BUFFER, _deviceResources->staticPointLightBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
+
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		if (_bufferStorageExtSupported)
+		{
+			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->pointLightPropertiesUbo);
+			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, static_cast<GLsizei>(_deviceResources->staticPointLightBufferView.getSize()), 0,
+			                          GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+
+			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER,
+			                                  0, _deviceResources->staticPointLightBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			_deviceResources->staticPointLightBufferView.pointToMappedMemory(memory);
+		}
+	}
+
+	{
+		pvr::utils::StructuredMemoryDescription description;
+		description.addElement(BufferEntryNames::DynamicPointLight::WorldViewProjectionMatrix, pvr::GpuDatatypes::mat4x4);
+		description.addElement(BufferEntryNames::DynamicPointLight::ViewPosition, pvr::GpuDatatypes::vec4);
+		description.addElement(BufferEntryNames::DynamicPointLight::ProxyWorldViewProjectionMatrix, pvr::GpuDatatypes::mat4x4);
+		description.addElement(BufferEntryNames::DynamicPointLight::ProxyWorldViewMatrix, pvr::GpuDatatypes::mat4x4);
+		_deviceResources->dynamicPointLightBufferView.initDynamic(description, _numberOfPointLights, pvr::BufferUsageFlags::UniformBuffer, _uniformAlignment);
+
+		gl::GenBuffers(1, &_deviceResources->pointLightMatrixUbo);
+		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->pointLightMatrixUbo);
+		gl::BufferData(GL_UNIFORM_BUFFER, _deviceResources->dynamicPointLightBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
+
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		if (_bufferStorageExtSupported)
+		{
+			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->pointLightMatrixUbo);
+			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, static_cast<GLsizei>(_deviceResources->dynamicPointLightBufferView.getSize()), 0,
+			                          GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+
+			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER,
+			                                  0, _deviceResources->dynamicPointLightBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			_deviceResources->dynamicPointLightBufferView.pointToMappedMemory(memory);
+		}
+	}
+}
+
+void OGLESDeferredShading::createDirectionalLightBuffers()
+{
+	{
+		pvr::utils::StructuredMemoryDescription description;
+		description.addElement(BufferEntryNames::StaticDirectionalLight::LightIntensity, pvr::GpuDatatypes::vec4);
+		description.addElement(BufferEntryNames::StaticDirectionalLight::AmbientLight, pvr::GpuDatatypes::vec4);
+		_deviceResources->staticDirectionalLightBufferView.initDynamic(description, _numberOfDirectionalLights, pvr::BufferUsageFlags::UniformBuffer, _uniformAlignment);
+
+		gl::GenBuffers(1, &_deviceResources->directionalLightStaticDataUbo);
+		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->directionalLightStaticDataUbo);
+		gl::BufferData(GL_UNIFORM_BUFFER, _deviceResources->staticDirectionalLightBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
+
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		if (_bufferStorageExtSupported)
+		{
+			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->directionalLightStaticDataUbo);
+			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, static_cast<GLsizei>(_deviceResources->staticDirectionalLightBufferView.getSize()), 0,
+			                          GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+
+			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER,
+			                                  0, _deviceResources->staticDirectionalLightBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			_deviceResources->staticDirectionalLightBufferView.pointToMappedMemory(memory);
+		}
+	}
+
+	{
+		pvr::utils::StructuredMemoryDescription description;
+		description.addElement(BufferEntryNames::DynamicDirectionalLight::ViewSpaceLightDirection, pvr::GpuDatatypes::vec4);
+		_deviceResources->dynamicDirectionalLightBufferView.initDynamic(description, _numberOfDirectionalLights, pvr::BufferUsageFlags::UniformBuffer, _uniformAlignment);
+
+		gl::GenBuffers(1, &_deviceResources->directionalLightDynamicDataUbo);
+		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->directionalLightDynamicDataUbo);
+		gl::BufferData(GL_UNIFORM_BUFFER, _deviceResources->dynamicDirectionalLightBufferView.getSize(), nullptr, GL_DYNAMIC_DRAW);
+
+		// if GL_EXT_buffer_storage is supported then map the buffer upfront and never upmap it
+		if (_bufferStorageExtSupported)
+		{
+			gl::BindBuffer(GL_COPY_READ_BUFFER, _deviceResources->directionalLightDynamicDataUbo);
+			gl::ext::BufferStorageEXT(GL_COPY_READ_BUFFER, static_cast<GLsizei>(_deviceResources->dynamicDirectionalLightBufferView.getSize()), 0,
+			                          GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+
+			void* memory = gl::MapBufferRange(GL_COPY_READ_BUFFER,
+			                                  0, _deviceResources->dynamicDirectionalLightBufferView.getSize(), GL_MAP_WRITE_BIT_EXT | GL_MAP_PERSISTENT_BIT_EXT | GL_MAP_COHERENT_BIT_EXT);
+			_deviceResources->dynamicDirectionalLightBufferView.pointToMappedMemory(memory);
+		}
+	}
+}
+
+void OGLESDeferredShading::bindVertexSpecification(const pvr::assets::Mesh& mesh,
+    const pvr::utils::VertexBindings_Name* const vertexBindingsName, const uint32_t numVertexBindings,
+    pvr::utils::VertexConfiguration& vertexConfiguration, GLuint& vao, GLuint& vbo, GLuint& ibo)
+{
+	vertexConfiguration = pvr::utils::createInputAssemblyFromMesh(mesh, vertexBindingsName, numVertexBindings);
+
+	gl::GenVertexArrays(1, &vao);
+	gl::BindVertexArray(vao);
+	gl::BindVertexBuffer(0, vbo, 0, mesh.getStride(0));
+	gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+	for (auto it = vertexConfiguration.attributes.begin(), end = vertexConfiguration.attributes.end(); it != end; ++it)
+	{
+		gl::EnableVertexAttribArray(it->index);
+		gl::VertexAttribBinding(it->index, 0);
+		gl::VertexAttribFormat(it->index, it->width, pvr::utils::convertToGles(it->format),
+		                       pvr::dataTypeIsNormalised(it->format), static_cast<intptr_t>(it->offsetInBytes));
+	}
+
+	gl::BindVertexArray(0);
+	for (auto it = vertexConfiguration.attributes.begin(), end = vertexConfiguration.attributes.end(); it != end; ++it)
+	{
+		gl::DisableVertexAttribArray(it->index);
+	}
+}
+
+void OGLESDeferredShading::createGeometryBuffers()
+{
+	// create the vbos and ibos for the objects in the main scene
+	pvr::utils::appendSingleBuffersFromModel(*_mainScene, _deviceResources->sceneVbos, _deviceResources->sceneIbos);
+	_deviceResources->sceneVaos.resize(_mainScene->getNumMeshNodes());
+
+	bindVertexSpecification(_mainScene->getMesh(static_cast<uint32_t>(MeshNodes::Satyr)), vertexBindings, 4,
+	                        _deviceResources->sceneVertexConfigurations[static_cast<uint32_t>(MeshNodes::Satyr)],
+	                        _deviceResources->sceneVaos[static_cast<uint32_t>(MeshNodes::Satyr)],
+	                        _deviceResources->sceneVbos[static_cast<uint32_t>(MeshNodes::Satyr)],
+	                        _deviceResources->sceneIbos[static_cast<uint32_t>(MeshNodes::Satyr)]);
+
+	bindVertexSpecification(_mainScene->getMesh(static_cast<uint32_t>(MeshNodes::Floor)), floorVertexBindings, 3,
+	                        _deviceResources->sceneVertexConfigurations[static_cast<uint32_t>(MeshNodes::Floor)],
+	                        _deviceResources->sceneVaos[static_cast<uint32_t>(MeshNodes::Floor)],
+	                        _deviceResources->sceneVbos[static_cast<uint32_t>(MeshNodes::Floor)],
+	                        _deviceResources->sceneIbos[static_cast<uint32_t>(MeshNodes::Floor)]);
+
+	// create the vbos and ibos for the point light sources
+	pvr::utils::createSingleBuffersFromModel(*_pointLightScene, &_deviceResources->pointLightVbo, &_deviceResources->pointLightIbo);
+
+	bindVertexSpecification(_pointLightScene->getMesh(static_cast<uint32_t>(LightNodes::PointLightMeshNode)), pointLightVertexBindings, 1,
+	                        _deviceResources->pointLightVertexConfiguration, _deviceResources->pointLightVao,
+	                        _deviceResources->pointLightVbo, _deviceResources->pointLightIbo);
+}
+
+/*!*********************************************************************************************************************
+\brief Allocate memory for Uniforms
+***********************************************************************************************************************/
+void OGLESDeferredShading::allocateLights()
+{
+	int32_t countPoint = 0;
+	uint32_t countDirectional = 0;
+	for (uint32_t i = 0; i < _mainScene->getNumLightNodes(); ++i)
+	{
+		switch (_mainScene->getLight(_mainScene->getLightNode(i).getObjectId()).getType())
+		{
+		case
+				pvr::assets::Light::Directional:
+			++countDirectional;
+			break;
+		case
+				pvr::assets::Light::Point:
+			++countPoint;
+			break;
+		default:
+			break;
+		}
+	}
+
+	if (DirectionalLightConfiguration::AdditionalDirectionalLight)
+	{
+		++countDirectional;
+	}
+
+	if (countPoint >= PointLightConfiguration::MaxScenePointLights)
+	{
+		countPoint = PointLightConfiguration::MaxScenePointLights;
+	}
+
+	countPoint += PointLightConfiguration::NumProceduralPointLights;
+
+	_numberOfPointLights = countPoint;
+
+	_numberOfDirectionalLights = countDirectional;
+
+	_deviceResources->renderInfo.directionalLightPass.lightProperties.resize(countDirectional);
+	_deviceResources->renderInfo.pointLightPasses.lightProperties.resize(countPoint);
+	_deviceResources->renderInfo.pointLightPasses.initialData.resize(countPoint);
+
+	for (int i = countPoint - PointLightConfiguration::NumProceduralPointLights; i < countPoint; ++i)
+	{
+		updateProceduralPointLight(_deviceResources->renderInfo.pointLightPasses.initialData[i], _deviceResources->renderInfo.pointLightPasses.lightProperties[i], true);
+	}
+}
+
+
+/*!*********************************************************************************************************************
+\brief  Initialise the static light properties
+***********************************************************************************************************************/
+void OGLESDeferredShading::initialiseStaticLightProperties()
+{
+	RenderData& pass = _deviceResources->renderInfo;
+
+	int32_t pointLight = 0;
+	uint32_t directionalLight = 0;
+	for (uint32_t i = 0; i < _mainScene->getNumLightNodes(); ++i)
+	{
+		const pvr::assets::Node& lightNode = _mainScene->getLightNode(i);
+		const pvr::assets::Light& light = _mainScene->getLight(lightNode.getObjectId());
 		switch (light.getType())
 		{
 		case pvr::assets::Light::Point:
 		{
-			if (pointLight >= Configuration::MaxScenePointLights) { continue; }
-			const glm::mat4& transMtx = scene->getWorldMatrix(scene->getNodeIdFromLightNodeId(i));
-			const glm::mat4& proxyScale = glm::scale(glm::vec3(Configuration::PointLightScale)) * Configuration::PointlightIntensity;
+			if (pointLight >= PointLightConfiguration::MaxScenePointLights)
+			{
+				continue;
+			}
+
+			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
+			const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightScale)) *
+			                              PointLightConfiguration::PointlightIntensity;
 			const glm::mat4 mWorldScale = transMtx * proxyScale;
 
 			//POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
-			pass.pointLightGeomPass.uniforms[pointLight].color = glm::vec4(light.getColor(), 1.f);
-			pass.pointLightGeomPass.uniforms[pointLight].worldViewProj = viewProjMtx * mWorldScale;
+			pass.pointLightPasses.lightProperties[pointLight].lightColor = glm::vec4(light.getColor(), 1.f);
 
 			//POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
-			pass.pointLightProxyPass.uniforms[pointLight].lightIntensity = light.getColor() * Configuration::PointlightIntensity;
-			pass.pointLightProxyPass.uniforms[pointLight].worldView = viewMtx * mWorldScale;
-			pass.pointLightProxyPass.uniforms[pointLight].worldViewProj = viewProjMtx * mWorldScale;
-			pass.pointLightProxyPass.uniforms[pointLight].worldIT = glm::mat3(glm::inverseTranspose(transMtx));
-			pass.pointLightProxyPass.uniforms[pointLight].lightPosView = glm::vec3((viewMtx * transMtx)[3]); //Translation component of the view matrix
+			pass.pointLightPasses.lightProperties[pointLight].lightIntensity = PointLightConfiguration::PointlightIntensity;
+
+			//POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
+			pass.pointLightPasses.lightProperties[pointLight].lightRadius = PointLightConfiguration::PointLightRadius;
 
 			//POINT LIGHT SOURCES : The little balls that we render to show the lights
-			pass.pointLightSourcesPass.uniforms[pointLight].color = glm::vec4(light.getColor(), .8f);
-			pass.pointLightSourcesPass.uniforms[pointLight].worldViewProj = viewProjMtx * transMtx;
-			pass.pointLightSourcesPass.uniforms[pointLight].worldIT = glm::inverseTranspose(glm::mat3(transMtx));
+			pass.pointLightPasses.lightProperties[pointLight].lightSourceColor = glm::vec4(light.getColor(), .8f);
 			++pointLight;
 		}
 		break;
 		case pvr::assets::Light::Directional:
 		{
-			const glm::mat4& transMtx = scene->getWorldMatrix(scene->getNodeIdFromLightNodeId(i));
-			pass.directionalLightPass.uniforms[directionalLight].lightIntensity = light.getColor() * Configuration::DirLightIntensity;
-			pass.directionalLightPass.uniforms[directionalLight].lightDirView = viewMtx * transMtx * glm::vec4(0.f, -1.f, 0.f, 0.f);
+			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
+			pass.directionalLightPass.lightProperties[directionalLight].lightIntensity = glm::vec4(light.getColor(), 1.0f) *
+			    DirectionalLightConfiguration::DirectionalLightIntensity;
 			++directionalLight;
 		}
 		break;
 		}
 	}
 	int numSceneLights = pointLight;
-	if (Configuration::AdditionalDirectionalLight)
+	if (DirectionalLightConfiguration::AdditionalDirectionalLight)
 	{
-		pass.directionalLightPass.uniforms[directionalLight].lightIntensity = glm::vec3(1, 1, 1) * Configuration::DirLightIntensity;
-		pass.directionalLightPass.uniforms[directionalLight].lightDirView = viewMtx * glm::vec4(0.f, -1.f, 0.f, 0.f);
+		pass.directionalLightPass.lightProperties[directionalLight].lightIntensity = glm::vec4(1, 1, 1, 1) *
+		    DirectionalLightConfiguration::DirectionalLightIntensity;
 		++directionalLight;
 	}
-	for (; pointLight < numSceneLights + Configuration::NumProceduralPointLights; ++pointLight)
-	{
-		updateProceduralPointLight(pass.pointLightProxyPass.data[pointLight], pass.pointLightProxyPass.uniforms[pointLight], pass.pointLightGeomPass.uniforms[pointLight],
-		                           pass.pointLightSourcesPass.uniforms[pointLight], false);
-	}
-
 }
 
-namespace Configuration {
-float LightMaxDistance = 40.f;
-float LightMinDistance = 20.f;
-float LightMinHeight = -30.f;
-float LightMaxHeight = 40.f;
-float LightAxialVelocityChange = .01f;
-float LightRadialVelocityChange = .003f;
-float LightVerticalVelocityChange = .01f;
-float LightMaxAxialVelocity = 5.f;
-float LightMaxRadialVelocity = 1.5f;
-float LightMaxVerticalVelocity = 5.f;
-}
-
-void OGLESDeferredShading::updateProceduralPointLight(DrawPointLightProxy::InitialData& data, DrawPointLightProxy::Uniforms& proxy,
-    DrawPointLightGeom::Uniforms& geom, DrawLightSources::Uniforms& source, bool initial)
+/*!*********************************************************************************************************************
+\brief  Update the procedural point lights
+***********************************************************************************************************************/
+void OGLESDeferredShading::updateProceduralPointLight(PointLightPasses::InitialData& data,
+    PointLightPasses::PointLightProperties& pointLightProperties, bool initial)
 {
 	if (initial)
 	{
-		data.distance = pvr::randomrange(Configuration::LightMinDistance, Configuration::LightMaxDistance);
-		data.angle = pvr::randomrange(-glm::pi<pvr::float32>(), glm::pi<pvr::float32>());
-		data.height = pvr::randomrange(Configuration::LightMinHeight, Configuration::LightMaxHeight);
-		data.axial_vel = pvr::randomrange(-Configuration::LightMaxAxialVelocity, Configuration::LightMaxAxialVelocity);
-		data.radial_vel = pvr::randomrange(-Configuration::LightMaxRadialVelocity, Configuration::LightMaxRadialVelocity);
-		data.vertical_vel = pvr::randomrange(-Configuration::LightMaxVerticalVelocity, Configuration::LightMaxVerticalVelocity);
+		data.distance = pvr::randomrange(PointLightConfiguration::LightMinDistance, PointLightConfiguration::LightMaxDistance);
+		data.angle = pvr::randomrange(-glm::pi<float>(), glm::pi<float>());
+		data.height = pvr::randomrange(PointLightConfiguration::LightMinHeight, PointLightConfiguration::LightMaxHeight);
+		data.axial_vel = pvr::randomrange(-PointLightConfiguration::LightMaxAxialVelocity, PointLightConfiguration::LightMaxAxialVelocity);
+		data.radial_vel = pvr::randomrange(-PointLightConfiguration::LightMaxRadialVelocity, PointLightConfiguration::LightMaxRadialVelocity);
+		data.vertical_vel = pvr::randomrange(-PointLightConfiguration::LightMaxVerticalVelocity, PointLightConfiguration::LightMaxVerticalVelocity);
 
 		glm::vec3 lightColor = glm::vec3(pvr::randomrange(0, 1), pvr::randomrange(0, 1), pvr::randomrange(0, 1));
 		lightColor / glm::max(glm::max(lightColor.x, lightColor.y), lightColor.z); //Have at least one component equal to 1... We want them bright-ish...
-		geom.color = glm::vec4(lightColor, 1.);//random-looking
-		proxy.lightIntensity = lightColor * Configuration::PointlightIntensity;
-		source.color = geom.color;
+		pointLightProperties.lightColor = glm::vec4(lightColor, 1.);//random-looking
+		pointLightProperties.lightSourceColor = glm::vec4(lightColor, 0.8);//random-looking
+		pointLightProperties.lightIntensity = PointLightConfiguration::PointlightIntensity;
+		pointLightProperties.lightRadius = PointLightConfiguration::PointLightRadius;
 	}
 
-	if (!initial && !isPaused) //Skip for the first frame, as sometimes this moves the light too far...
+	if (!initial && !_isPaused) //Skip for the first frameNumber, as sometimes this moves the light too far...
 	{
-		pvr::float32 dt = (pvr::float32)std::min(getFrameTime(), 30ull);
-		if (data.distance < Configuration::LightMinDistance) { data.axial_vel = glm::abs(data.axial_vel) + (Configuration::LightMaxAxialVelocity * dt * .001f); }
-		if (data.distance > Configuration::LightMaxDistance) { data.axial_vel = -glm::abs(data.axial_vel) - (Configuration::LightMaxAxialVelocity * dt * .001f); }
-		if (data.height < Configuration::LightMinHeight) { data.vertical_vel = glm::abs(data.vertical_vel) + (Configuration::LightMaxAxialVelocity * dt * .001f); }
-		if (data.height > Configuration::LightMaxHeight) { data.vertical_vel = -glm::abs(data.vertical_vel) - (Configuration::LightMaxAxialVelocity * dt * .001f); }
+		uint64_t maxFrameTime = 30;
+		float dt = (float)std::min(getFrameTime(), maxFrameTime);
+		if (data.distance < PointLightConfiguration::LightMinDistance)
+		{
+			data.axial_vel = glm::abs(data.axial_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
+		if (data.distance > PointLightConfiguration::LightMaxDistance)
+		{
+			data.axial_vel = -glm::abs(data.axial_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
+		if (data.height < PointLightConfiguration::LightMinHeight)
+		{
+			data.vertical_vel = glm::abs(data.vertical_vel) + (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
+		if (data.height > PointLightConfiguration::LightMaxHeight)
+		{
+			data.vertical_vel = -glm::abs(data.vertical_vel) - (PointLightConfiguration::LightMaxAxialVelocity * dt * .001f);
+		}
 
-		data.axial_vel += pvr::randomrange(-Configuration::LightAxialVelocityChange, Configuration::LightAxialVelocityChange) * dt;
-		data.radial_vel += pvr::randomrange(-Configuration::LightRadialVelocityChange, Configuration::LightRadialVelocityChange) * dt;
-		data.vertical_vel += pvr::randomrange(-Configuration::LightVerticalVelocityChange, Configuration::LightVerticalVelocityChange) * dt;
-		if (glm::abs(data.axial_vel) > Configuration::LightMaxAxialVelocity) { data.axial_vel *= .8; }
-		if (glm::abs(data.radial_vel) > Configuration::LightMaxRadialVelocity) { data.radial_vel *= .8; }
-		if (glm::abs(data.vertical_vel) > Configuration::LightMaxVerticalVelocity) { data.vertical_vel *= .8; }
+		data.axial_vel += pvr::randomrange(-PointLightConfiguration::LightAxialVelocityChange,
+		                                   PointLightConfiguration::LightAxialVelocityChange) * dt;
 
+		data.radial_vel += pvr::randomrange(-PointLightConfiguration::LightRadialVelocityChange,
+		                                    PointLightConfiguration::LightRadialVelocityChange) * dt;
+
+		data.vertical_vel += pvr::randomrange(-PointLightConfiguration::LightVerticalVelocityChange,
+		                                      PointLightConfiguration::LightVerticalVelocityChange) * dt;
+
+		if (glm::abs(data.axial_vel) > PointLightConfiguration::LightMaxAxialVelocity)
+		{
+			data.axial_vel *= .8;
+		}
+		if (glm::abs(data.radial_vel) > PointLightConfiguration::LightMaxRadialVelocity)
+		{
+			data.radial_vel *= .8;
+		}
+		if (glm::abs(data.vertical_vel) > PointLightConfiguration::LightMaxVerticalVelocity)
+		{
+			data.vertical_vel *= .8;
+		}
 
 		data.distance += data.axial_vel * dt * 0.001f;
 		data.angle += data.radial_vel * dt * 0.001f;
@@ -1374,437 +1788,163 @@ void OGLESDeferredShading::updateProceduralPointLight(DrawPointLightProxy::Initi
 	float y = data.height;
 
 	const glm::mat4& transMtx = glm::translate(glm::vec3(x, y, z));
-	const glm::mat4& proxyScale = glm::scale(glm::vec3(Configuration::PointLightScale)) * Configuration::PointlightIntensity;
+	const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightScale)) *
+	                              PointLightConfiguration::PointlightIntensity;
+
 	const glm::mat4 mWorldScale = transMtx * proxyScale;
 
-
 	//POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
-	geom.worldViewProj = viewProjMtx * mWorldScale;
+	pointLightProperties.proxyWorldViewProjectionMatrix = _viewProjectionMatrix * mWorldScale;
 
 	//POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
-
-	proxy.worldView = viewMtx * mWorldScale;
-	proxy.worldViewProj = viewProjMtx * mWorldScale;
-	proxy.worldIT = glm::mat3(glm::inverseTranspose(transMtx));
-	proxy.lightPosView = glm::vec3((viewMtx * transMtx)[3]); //Translation component of the view matrix
+	pointLightProperties.proxyWorldViewMatrix = _viewMatrix * mWorldScale;
+	pointLightProperties.proxyViewSpaceLightPosition = glm::vec4((_viewMatrix * transMtx)[3]); //Translation component of the view matrix
 
 	//POINT LIGHT SOURCES : The little balls that we render to show the lights
-	source.worldViewProj = viewProjMtx * transMtx;
-	source.worldIT = glm::inverseTranspose(glm::mat3(transMtx));
+	pointLightProperties.worldViewProjectionMatrix = _viewProjectionMatrix * transMtx;
 }
 
 /*!*********************************************************************************************************************
-\brief  Updates animation variables and camera matrices.
+\brief  Update the CPU visible buffers containing dynamic data
 ***********************************************************************************************************************/
-void OGLESDeferredShading::updateAnimation()
+void OGLESDeferredShading::updateDynamicSceneData()
 {
-	pvr::uint64 deltaTime = getFrameTime();
+	RenderData& pass = _deviceResources->renderInfo;
 
-	if (!isPaused)
 	{
-		frame += deltaTime * Configuration::FrameRate;
-		if (frame > scene->getNumFrames() - 1) { frame = 0; }
-		scene->setCurrentFrame(frame);
-	}
-
-	glm::vec3 vTo, vUp;
-	pvr::float32 fov;
-	scene->getCameraProperties(cameraId, fov, cameraPosition, vTo, vUp);
-
-	pvr::float32 nearClipDist = scene->getCamera(cameraId).getNear();
-	farClipDist = scene->getCamera(cameraId).getFar();
-	// Update camera matrices
-	static float angle = 0;
-	if (animateCamera) { angle += getFrameTime() / 1000.f; }
-	viewMtx = glm::lookAt(glm::vec3(sin(angle) * 100.f + vTo.x, vTo.y + 30., cos(angle) * 100.f + vTo.z), vTo, vUp);
-	viewProjMtx = projMtx * viewMtx;
-	invViewMtx = glm::inverse(viewMtx);
-}
-
-/*!*********************************************************************************************************************
-\brief  Record Pixel-Local-Storage rendering commands
-\param  cmdBuff Commandbuffer to record
-***********************************************************************************************************************/
-void OGLESDeferredShading::recordCommandsPLS(pvr::api::CommandBuffer& cmdBuff)
-{
-	pvr::Rectanglei renderArea(0, 0, windowWidth, windowHeight);
-	//WARNING
-	//Pixel local storage defines that the value of PLS variables are "a function of the clear value" if the FBO
-	//has been cleared, which is NOT necessarily the same value they were cleared to.
-	//Only clearing to the value 0.0f is guaranteed to leave the PLS store with the value 0.0f.
-	cmdBuff->beginRenderPass(apiObj->onScreenFbo, renderArea, false, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.f, 0);
-
-	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffRenderGbuffer);
-	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffLighting);
-
-	cmdBuff->bindPipeline(apiObj->renderInfo.writePlsPass.pipeline);
-	cmdBuff->drawArrays(0, 4);
-	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffUIRenderer);
-	cmdBuff->endRenderPass();
-}
-
-/*!*********************************************************************************************************************
-\brief  Record MRT rendering commands
-\param  cmdBuff CommandBuffer to record
-***********************************************************************************************************************/
-void OGLESDeferredShading::recordCommandsMRT(pvr::api::CommandBuffer& cmdBuff)
-{
-	pvr::Rectanglei renderArea(0, 0, fboWidth, fboHeight);
-
-	cmdBuff->beginRenderPass(apiObj->gBufferFBO, renderArea, false, glm::vec4(.0f, 0.0f, 0.0f, 1.0f), 1.f, 0);
-	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffRenderGbuffer);
-	cmdBuff->endRenderPass();
-
-	if ((fboWidth != windowWidth) || (fboHeight != windowHeight))
-	{
-		renderArea = pvr::Rectanglei(viewportOffsets[0], viewportOffsets[1], fboWidth, fboHeight);
-	}
-
-	//  Bind the main frame-buffer object, render the geometry to the depth and stencil buffers and
-	//  finally add the light contributions using the GBuffer.
-	//  At first render the directional light contributions, utilizing the stencil buffer to avoid executing
-	//  the shaders in areas that don't need to be lit (e.g. sky box).
-	//  After that render the point light source contributions; in order to limit the amount of shaded fragments
-	//  make use of the stencil buffer to imprint the areas that are actually affected by the light sources.
-	//  This is similar to the stencil buffer shadow algorithm which runs very efficiently on tile based renderer.
-	cmdBuff->beginRenderPass(apiObj->onScreenFbo, renderArea, false, glm::vec4(0.f, 0.f, 0.f, 1.0f), 1.f, 0);
-
-	if (!usePixelLocalStorage)
-	{
-		cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffRenderDepthStencil);
-	}
-
-	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffLighting);
-
-	cmdBuff->enqueueSecondaryCmds(apiObj->cmdBuffUIRenderer);
-	cmdBuff->endRenderPass();
-}
-
-/*!*********************************************************************************************************************
-\brief Allocate memory for Uniforms
-***********************************************************************************************************************/
-void OGLESDeferredShading::allocateUniforms()
-{
-	pvr::int32 countPoint = 0;
-	pvr::uint32 countDirectional = 0;
-	for (pvr::uint32 i = 0; i < scene->getNumLightNodes(); ++i)
-	{
-		switch (scene->getLight(scene->getLightNode(i).getObjectId()).getType())
+		// dynamic model buffer
+		if (!_bufferStorageExtSupported)
 		{
-		case pvr::assets::Light::Directional: ++countDirectional; break;
-		case pvr::assets::Light::Point: ++countPoint; break;
-		default: break;
+			gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->modelMatrixUbo);
+			void* memory = gl::MapBufferRange(GL_UNIFORM_BUFFER,
+			                                  0, _deviceResources->modelMatrixBufferView.getSize(), GL_MAP_WRITE_BIT);
+			_deviceResources->modelMatrixBufferView.pointToMappedMemory(memory);
+		}
+
+		for (uint32_t i = 0; i < _mainScene->getNumMeshNodes(); ++i)
+		{
+			const pvr::assets::Model::Node& node = _mainScene->getNode(i);
+			pass.renderGBuffer.objects[i].world = _mainScene->getWorldMatrix(node.getObjectId());
+			pass.renderGBuffer.objects[i].worldView = _viewMatrix * pass.renderGBuffer.objects[i].world;
+			pass.renderGBuffer.objects[i].worldViewProj = _viewProjectionMatrix * pass.renderGBuffer.objects[i].world;
+			pass.renderGBuffer.objects[i].worldViewIT4x4 = glm::inverseTranspose(pass.renderGBuffer.objects[i].worldView);
+
+			_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewMatrix, 0, i).
+			setValue(&pass.renderGBuffer.objects[i].worldView);
+			_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewProjectionMatrix, 0, i).
+			setValue(&pass.renderGBuffer.objects[i].worldViewProj);
+			_deviceResources->modelMatrixBufferView.getElementByName(BufferEntryNames::PerModel::WorldViewITMatrix, 0, i).
+			setValue(&pass.renderGBuffer.objects[i].worldViewIT4x4);
+		}
+		if (!_bufferStorageExtSupported)
+		{
+			gl::UnmapBuffer(GL_UNIFORM_BUFFER);
 		}
 	}
-	++countDirectional;
-	if (countPoint >= Configuration::MaxScenePointLights) { countPoint = Configuration::MaxScenePointLights; }
-	countPoint += Configuration::NumProceduralPointLights;
 
-	apiObj->renderInfo.directionalLightPass.uniforms.resize(countDirectional);
-	apiObj->renderInfo.pointLightGeomPass.uniforms.resize(countPoint);
-	apiObj->renderInfo.pointLightProxyPass.uniforms.resize(countPoint);
-	apiObj->renderInfo.pointLightProxyPass.data.resize(countPoint);
-	apiObj->renderInfo.pointLightSourcesPass.uniforms.resize(countPoint);
-	apiObj->renderInfo.depthStencilPass.uniforms.resize(scene->getNumMeshNodes());
-	apiObj->renderInfo.storeRenderDataPass.objects.resize(scene->getNumMeshNodes());
+	int32_t pointLight = 0;
+	uint32_t directionalLight = 0;
 
-	for (int i = countPoint - Configuration::NumProceduralPointLights; i < countPoint; ++i)
+	// update the lighting data
+	for (uint32_t i = 0; i < _mainScene->getNumLightNodes(); ++i)
 	{
-		updateProceduralPointLight(apiObj->renderInfo.pointLightProxyPass.data[i], apiObj->renderInfo.pointLightProxyPass.uniforms[i],
-		                           apiObj->renderInfo.pointLightGeomPass.uniforms[i], apiObj->renderInfo.pointLightSourcesPass.uniforms[i], true);
-	}
-}
-
-/*!*********************************************************************************************************************
-\brief  Record all the secondary command buffer for this scene
-***********************************************************************************************************************/
-void OGLESDeferredShading::recordSecondaryCommandBuffers()
-{
-	recordCommandUIRenderer(apiObj->cmdBuffUIRenderer);
-	recordCommandBufferRenderGBuffer(apiObj->cmdBuffRenderGbuffer);
-
-	if (!usePixelLocalStorage)
-	{
-		recordCommandBufferDepthStencil(apiObj->cmdBuffRenderDepthStencil);
-	}
-
-	pvr::Rectanglei renderArea(0, 0, fboWidth, fboHeight);
-	if ((fboWidth != windowWidth) || (fboHeight != windowHeight))
-	{
-		renderArea = pvr::Rectanglei(viewportOffsets[0], viewportOffsets[1], fboWidth, fboHeight);
-	}
-
-	apiObj->cmdBuffLighting->beginRecording(apiObj->defaultRenderPass);
-	recordCommandsDirectionalLights(apiObj->cmdBuffLighting);
-
-	// clear stencil to 0's to make use of it again for point lights
-	apiObj->cmdBuffLighting->clearStencilAttachment(renderArea, 0);
-
-	recordCommandsPointLights(apiObj->cmdBuffLighting);
-	apiObj->cmdBuffLighting->endRecording();
-}
-
-
-/*!*********************************************************************************************************************
-\brief Record rendering G-Buffer commands
-\param cmdBuffer Commandbuffer to record
-***********************************************************************************************************************/
-void OGLESDeferredShading::recordCommandBufferRenderGBuffer(pvr::api::SecondaryCommandBuffer& cmdBuffer)
-{
-	DrawGBuffer& pass = apiObj->renderInfo.storeRenderDataPass;
-
-	if (usePixelLocalStorage)
-	{
-		cmdBuffer->beginRecording(apiObj->defaultRenderPass);
-	}
-	else
-	{
-		cmdBuffer->beginRecording(apiObj->gBufferRenderPass);
-	}
-
-	// write 1 to the stencil buffer when the stencil passes
-
-	for (pvr::uint32 i = 0; i < scene->getNumMeshNodes(); ++i)
-	{
-		cmdBuffer->bindPipeline(pass.objects[i].pipeline);
-		if (usePixelLocalStorage)
+		const pvr::assets::Node& lightNode = _mainScene->getLightNode(i);
+		const pvr::assets::Light& light = _mainScene->getLight(lightNode.getObjectId());
+		switch (light.getType())
 		{
-			// set stencil reference to 1
-			cmdBuffer->setStencilReference(StencilFace::FrontBack, 1);
+		case pvr::assets::Light::Point:
+		{
+			if (pointLight >= PointLightConfiguration::MaxScenePointLights) { continue; }
 
-			// enable stencil writing
-			cmdBuffer->setStencilWriteMask(pvr::types::StencilFace::FrontBack, 0xFF);
+			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
+			const glm::mat4& proxyScale = glm::scale(glm::vec3(PointLightConfiguration::PointLightScale)) * PointLightConfiguration::PointlightIntensity;
+			const glm::mat4 mWorldScale = transMtx * proxyScale;
+
+			//POINT LIGHT GEOMETRY : The spheres that will be used for the stencil pass
+			pass.pointLightPasses.lightProperties[pointLight].proxyWorldViewProjectionMatrix = _viewProjectionMatrix * mWorldScale;
+
+			//POINT LIGHT PROXIES : The "drawcalls" that will perform the actual rendering
+			pass.pointLightPasses.lightProperties[pointLight].proxyWorldViewMatrix = _viewMatrix * mWorldScale;
+			pass.pointLightPasses.lightProperties[pointLight].proxyViewSpaceLightPosition = glm::vec4((_viewMatrix * transMtx)[3]); //Translation component of the view matrix
+
+			//POINT LIGHT SOURCES : The little balls that we render to show the lights
+			pass.pointLightPasses.lightProperties[pointLight].worldViewProjectionMatrix = _viewProjectionMatrix * transMtx;
+			++pointLight;
 		}
-		pvr::int32 effectId = pass.objects[i].effectId;
-		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::CustomSemanticFarClipDist], 1, &farClipDist);
-
-		const pvr::assets::Model::Node& node = scene->getNode(i);
-		const pvr::assets::Mesh& mesh = scene->getMesh(node.getObjectId());
-
-		const Material& material = apiObj->materials[node.getMaterialIndex()];
-		// bind the material descriptor sets (diffuse and bumpmap)
-		cmdBuffer->bindDescriptorSet(pass.objects[i].pipeline->getPipelineLayout(),
-		                             0, apiObj->materials[node.getMaterialIndex()].materialDescriptorSet, 0);
-
-		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::WorldView], 1, &pass.objects[i].worldView);
-		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::WorldViewProjection], 1, &pass.objects[i].worldViewProj);
-		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::WorldViewIT], 1, &pass.objects[i].worldViewIT3x3);
-		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::CustomSemanticSpecularStrength], 1, &material.specularStrength);
-		cmdBuffer->setUniformPtr(uniformMapping[effectId][Semantics::CustomSemanticDiffuseColor], 1, &material.diffuseColor);
-
-		cmdBuffer->bindVertexBuffer(apiObj->sceneVbos[node.getObjectId()], 0, 0);
-		cmdBuffer->bindIndexBuffer(apiObj->sceneIbos[node.getObjectId()], 0, mesh.getFaces().getDataType());
-		cmdBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
+		break;
+		case pvr::assets::Light::Directional:
+		{
+			const glm::mat4& transMtx = _mainScene->getWorldMatrix(_mainScene->getNodeIdFromLightNodeId(i));
+			pass.directionalLightPass.lightProperties[directionalLight].viewSpaceLightDirection = _viewMatrix * transMtx * glm::vec4(0.f, -1.f, 0.f, 0.f);
+			++directionalLight;
+		}
+		break;
+		}
 	}
-	cmdBuffer->endRecording();
-}
-
-
-/*!*********************************************************************************************************************
-\brief  Record UIRenderer commands
-\param  cmdBuff Commandbuffer to record
-***********************************************************************************************************************/
-void OGLESDeferredShading::recordCommandUIRenderer(pvr::api::SecondaryCommandBuffer& cmdBuff)
-{
-	cmdBuff->beginRecording(apiObj->defaultRenderPass);
-	apiObj->uiRenderer.beginRendering(cmdBuff);
-	apiObj->uiRenderer.getDefaultTitle()->render();
-	apiObj->uiRenderer.getDefaultControls()->render();
-	apiObj->uiRenderer.getSdkLogo()->render();
-	apiObj->uiRenderer.endRendering();
-	cmdBuff->endRecording();
-}
-
-/*!*********************************************************************************************************************
-\brief  Record draw scene into depth and stencil commands
-\param  cmdBuffer Commandbuffer to record
-***********************************************************************************************************************/
-void OGLESDeferredShading::recordCommandBufferDepthStencil(pvr::api::SecondaryCommandBuffer& cmdBuffer)
-{
-	DrawDepthStencil& pass = apiObj->renderInfo.depthStencilPass;
-	apiObj->cmdBuffRenderDepthStencil->beginRecording(apiObj->defaultRenderPass);
-	// Imprint a 1 into the stencil buffer to indicate where geometry is found.
-	// This optimizes the rendering of directional light sources as the shader then only has to be executed where necessary.
-	cmdBuffer->bindPipeline(pass.pipeline);
-	cmdBuffer->setStencilReference(StencilFace::FrontBack, 1);
-
-	// enable stencil writing
-	cmdBuffer->setStencilWriteMask(pvr::types::StencilFace::FrontBack, 0xFF);
-	for (pvr::uint32 i = 0; i < scene->getNumMeshNodes(); ++i)
+	int numSceneLights = pointLight;
+	if (DirectionalLightConfiguration::AdditionalDirectionalLight)
 	{
-		const pvr::uint32 meshId = scene->getNode(i).getObjectId();
-		const pvr::assets::Mesh& mesh = scene->getMesh(meshId);
-
-		cmdBuffer->setUniformPtr(uniformMapping[pass.effectId][Semantics::WorldViewProjection], 1, &pass.uniforms[i].worldViewProj);
-
-		cmdBuffer->bindVertexBuffer(apiObj->sceneVbos[meshId], 0, 0);
-		cmdBuffer->bindIndexBuffer(apiObj->sceneIbos[meshId], 0, mesh.getFaces().getDataType());
-		// Indexed Triangle list
-		cmdBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
-		cmdBuffer->setUniformPtr(uniformMapping[pass.effectId][Semantics::MaterialColorAmbient], 1, &pass.uniforms[i].color);
+		pass.directionalLightPass.lightProperties[directionalLight].viewSpaceLightDirection = _viewMatrix * glm::vec4(0.f, -1.f, 0.f, 0.f);
+		++directionalLight;
 	}
-	apiObj->cmdBuffRenderDepthStencil->endRecording();
-}
 
-/*!*********************************************************************************************************************
-\brief  Record directional light draw commands
-\param  cmdBuffer Commandbuffer to record
-***********************************************************************************************************************/
-void OGLESDeferredShading::recordCommandsDirectionalLights(pvr::api::SecondaryCommandBuffer& cmdBuffer)
-{
-	DrawDirLight& pass = apiObj->renderInfo.directionalLightPass;
-
-	//The "uniforms" variable is one per directional light...
-	if (pass.uniforms.empty()) { return; }
-	cmdBuffer->bindPipeline(pass.pipeline);
-
-	cmdBuffer->setStencilReference(pvr::types::StencilFace::FrontBack, 1);
-
-	// disable stencil writing
-	cmdBuffer->setStencilWriteMask(pvr::types::StencilFace::FrontBack, 0x00);
-
-	// Make use of the stencil buffer contents to only shade pixels where actual geometry is located.
-	// Reset the stencil buffer to 0 at the same time to avoid the stencil clear operation afterwards.
-	// bind the albedo and normal textures from the gbuffer
-	cmdBuffer->bindDescriptorSet(apiObj->renderInfo.directionalLightPass.pipeline->getPipelineLayout(), 0, apiObj->directionalLightDescriptorSet, 0);
-	for (size_t i = 0; i < pass.uniforms.size(); i++)
+	for (; pointLight < numSceneLights + PointLightConfiguration::NumProceduralPointLights; ++pointLight)
 	{
-		cmdBuffer->setUniformPtr(uniformMapping[pass.effectId][Semantics::LightColor], 1, &pass.uniforms[i].lightIntensity);
-		cmdBuffer->setUniformPtr(uniformMapping[pass.effectId][Semantics::CustomSemanticDirLightDirection], 1, &pass.uniforms[i].lightDirView);
-		// Draw a quad
-		cmdBuffer->drawArrays(0, 4);
+		updateProceduralPointLight(pass.pointLightPasses.initialData[pointLight],
+		                           _deviceResources->renderInfo.pointLightPasses.lightProperties[pointLight], false);
+	}
+
+	{
+		// dynamic directional light buffer
+		if (!_bufferStorageExtSupported)
+		{
+
+			gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->directionalLightDynamicDataUbo);
+			void* memory = gl::MapBufferRange(GL_UNIFORM_BUFFER,
+			                                  0, _deviceResources->dynamicDirectionalLightBufferView.getSize(), GL_MAP_WRITE_BIT);
+
+			_deviceResources->dynamicDirectionalLightBufferView.pointToMappedMemory(memory);
+		}
+		for (uint32_t i = 0; i < _numberOfDirectionalLights; ++i)
+		{
+			_deviceResources->dynamicDirectionalLightBufferView.getElementByName(BufferEntryNames::DynamicDirectionalLight::ViewSpaceLightDirection,
+			    0, i).setValue(&_deviceResources->renderInfo.directionalLightPass.lightProperties[i].viewSpaceLightDirection);
+		}
+		if (!_bufferStorageExtSupported)
+		{
+			gl::UnmapBuffer(GL_UNIFORM_BUFFER);
+		}
+	}
+
+	// dynamic point light buffer
+	if (!_bufferStorageExtSupported)
+	{
+		gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->pointLightMatrixUbo);
+		void* memory = gl::MapBufferRange(GL_UNIFORM_BUFFER,
+		                                  0, _deviceResources->dynamicPointLightBufferView.getSize(), GL_MAP_WRITE_BIT);
+		_deviceResources->dynamicPointLightBufferView.pointToMappedMemory(memory);
+	}
+
+	for (uint32_t i = 0; i < _numberOfPointLights; ++i)
+	{
+		_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::DynamicPointLight::WorldViewProjectionMatrix, 0, i).
+		setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].worldViewProjectionMatrix);
+		_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::DynamicPointLight::ViewPosition, 0, i).
+		setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyViewSpaceLightPosition);
+		_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::DynamicPointLight::ProxyWorldViewProjectionMatrix, 0, i).
+		setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyWorldViewProjectionMatrix);
+		_deviceResources->dynamicPointLightBufferView.getElementByName(BufferEntryNames::DynamicPointLight::ProxyWorldViewMatrix, 0, i).
+		setValue(&_deviceResources->renderInfo.pointLightPasses.lightProperties[i].proxyWorldViewMatrix);
+	}
+	if (!_bufferStorageExtSupported)
+	{
+		gl::UnmapBuffer(GL_UNIFORM_BUFFER);
 	}
 }
 
 /*!*********************************************************************************************************************
-\brief  Record point lights draw commands
-\param  cmdBuffer Commandbuffer to record
-***********************************************************************************************************************/
-void OGLESDeferredShading::recordCommandsPointLights(pvr::api::SecondaryCommandBuffer& cmdBuffer)
-{
-	//Any of the geompointlightpass, lightsourcepointlightpass or pointlightproxiepass's uniforms have the same number of elements
-	if (apiObj->renderInfo.pointLightProxyPass.uniforms.empty()) { return; }
-
-	const pvr::assets::Mesh& mesh = pointLightModel->getMesh(0);
-
-	cmdBuffer->setStencilReference(StencilFace::FrontBack, 0);
-
-	//POINT LIGHTS: 1) Draw stencil to discard useless pixels
-	cmdBuffer->bindPipeline(apiObj->renderInfo.pointLightGeomPass.pipeline);
-	// Bind the vertex and index buffer for the point light
-	cmdBuffer->bindVertexBuffer(apiObj->pointLightVbo, 0, 0);
-	cmdBuffer->bindIndexBuffer(apiObj->pointLightIbo, 0, IndexType::IndexType16Bit);
-
-	for (size_t i = 0; i < apiObj->renderInfo.pointLightGeomPass.uniforms.size(); i++)
-	{
-<<<<<<< HEAD
-		cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[apiObj->renderInfo.pointLightGeomPass.effectId][Semantics::WorldViewProjection], 1, &apiObj->renderInfo.pointLightGeomPass.uniforms[i].worldViewProj);
-		cmdBuffer->setUniformPtr<glm::vec4>(uniformMapping[apiObj->renderInfo.pointLightGeomPass.effectId][Semantics::MaterialColorAmbient], 1, &apiObj->renderInfo.pointLightGeomPass.uniforms[i].color);
-=======
-		cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightGeomPass.effectId][Semantics::WorldViewProjection], 1, &apiObj->renderInfo.pointLightGeomPass.uniforms[i].worldViewProj);
-		cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightGeomPass.effectId][Semantics::MaterialColorAmbient], 1, &apiObj->renderInfo.pointLightGeomPass.uniforms[i].color);
->>>>>>> 1776432f... 4.3
-		cmdBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
-	}
-
-	//POINT LIGHTS: 2) Lighting
-	cmdBuffer->bindDescriptorSet(apiObj->renderInfo.pointLightProxyPass.pipeline->getPipelineLayout(), 0, apiObj->pointLightDescriptorSet, 0);
-
-	cmdBuffer->bindPipeline(apiObj->renderInfo.pointLightProxyPass.pipeline);
-	if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticFarClipDist] >= 0)
-	{
-<<<<<<< HEAD
-		cmdBuffer->setUniformPtr<pvr::float32>(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticFarClipDist], 1, &farClipDist);
-=======
-		cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticFarClipDist], 1, &farClipDist);
->>>>>>> 1776432f... 4.3
-	}
-
-	// Bind the vertex and index buffer for the point light
-	cmdBuffer->bindVertexBuffer(apiObj->pointLightVbo, 0, 0);
-	cmdBuffer->bindIndexBuffer(apiObj->pointLightIbo, 0, mesh.getFaces().getDataType());
-
-	for (pvr::uint32 i = 0; i < apiObj->renderInfo.pointLightProxyPass.uniforms.size(); ++i)
-	{
-		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::LightColor] >= 0)
-		{
-<<<<<<< HEAD
-			cmdBuffer->setUniformPtr<glm::vec3>(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::LightColor], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].lightIntensity);
-		}
-		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldViewProjection] >= 0)
-		{
-			cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldViewProjection], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].worldViewProj);
-		}
-		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldView] >= 0)
-		{
-			cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldView], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].worldView);
-		}
-		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldIT] >= 0)
-		{
-			cmdBuffer->setUniformPtr<glm::mat3>(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldIT], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].worldIT);
-		}
-		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticPointLightViewPos] >= 0)
-		{
-			cmdBuffer->setUniformPtr<glm::vec3>(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticPointLightViewPos], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].lightPosView);
-=======
-			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::LightColor], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].lightIntensity);
-		}
-		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldViewProjection] >= 0)
-		{
-			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldViewProjection], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].worldViewProj);
-		}
-		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldView] >= 0)
-		{
-			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldView], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].worldView);
-		}
-		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldIT] >= 0)
-		{
-			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::WorldIT], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].worldIT);
-		}
-		if (uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticPointLightViewPos] >= 0)
-		{
-			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightProxyPass.effectId][Semantics::CustomSemanticPointLightViewPos], 1, &apiObj->renderInfo.pointLightProxyPass.uniforms[i].lightPosView);
->>>>>>> 1776432f... 4.3
-		}
-		cmdBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
-	}
-
-	//POINT LIGHTS: 3) Light sources
-	cmdBuffer->bindPipeline(apiObj->renderInfo.pointLightSourcesPass.pipeline);
-	cmdBuffer->bindVertexBuffer(apiObj->pointLightVbo, 0, 0);
-	cmdBuffer->bindIndexBuffer(apiObj->pointLightIbo, 0, mesh.getFaces().getDataType());
-
-	for (pvr::uint32 i = 0; i < apiObj->renderInfo.pointLightSourcesPass.uniforms.size(); ++i)
-	{
-<<<<<<< HEAD
-		cmdBuffer->setUniformPtr<glm::mat4>(uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::WorldViewProjection], 1, &apiObj->renderInfo.pointLightSourcesPass.uniforms[i].worldViewProj);
-
-		if (uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::WorldIT] >= 0)
-		{
-			cmdBuffer->setUniformPtr<glm::mat3>(uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::WorldIT], 1, &apiObj->renderInfo.pointLightSourcesPass.uniforms[i].worldIT);
-		}
-		if (uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::MaterialColorAmbient] >= 0)
-		{
-			cmdBuffer->setUniformPtr<glm::vec4>(uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::MaterialColorAmbient], 1, &apiObj->renderInfo.pointLightSourcesPass.uniforms[i].color);
-=======
-		cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::WorldViewProjection], 1, &apiObj->renderInfo.pointLightSourcesPass.uniforms[i].worldViewProj);
-
-		if (uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::WorldIT] >= 0)
-		{
-			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::WorldIT], 1, &apiObj->renderInfo.pointLightSourcesPass.uniforms[i].worldIT);
-		}
-		if (uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::MaterialColorAmbient] >= 0)
-		{
-			cmdBuffer->setUniformPtr(uniformMapping[apiObj->renderInfo.pointLightSourcesPass.effectId][Semantics::MaterialColorAmbient], 1, &apiObj->renderInfo.pointLightSourcesPass.uniforms[i].color);
->>>>>>> 1776432f... 4.3
-		}
-		cmdBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
-	}
-}
-
-/*!*********************************************************************************************************************
-\return Return an auto_ptr to a new Demo class, supplied by the user
+\return Return an unique_ptr to a new Demo class, supplied by the user
 \brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the
 behaviour of the application.
 ***********************************************************************************************************************/
-std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new OGLESDeferredShading()); }
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::unique_ptr<pvr::Shell>(new OGLESDeferredShading()); }

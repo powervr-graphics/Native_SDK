@@ -1,9 +1,11 @@
 var searchData=
 [
-  ['offsetx',['offsetX',['../structpvr_1_1types_1_1_generic_offset2_d.html#ad8e62f4fb7799b766faa7cbf4fe42629',1,'pvr::types::GenericOffset2D']]],
-  ['offsety',['offsetY',['../structpvr_1_1types_1_1_generic_offset2_d.html#ab4d1cfdcf3e299cc37bf43b43ef6e746',1,'pvr::types::GenericOffset2D']]],
-  ['offsetz',['offsetZ',['../structpvr_1_1types_1_1_generic_offset3_d.html#a806d29b095634d8b27ead92f35c3b3c8',1,'pvr::types::GenericOffset3D']]],
-  ['opdepthfail',['opDepthFail',['../structpvr_1_1types_1_1_stencil_state.html#aa4b11d3050091860349f5a8eb233ff18',1,'pvr::types::StencilState']]],
-  ['opdepthpass',['opDepthPass',['../structpvr_1_1types_1_1_stencil_state.html#aa96d49006ac4394a3e875318db9518a9',1,'pvr::types::StencilState']]],
-  ['opstencilfail',['opStencilFail',['../structpvr_1_1types_1_1_stencil_state.html#a9c19ab8f63ea1ec1f19ddda917fedc0b',1,'pvr::types::StencilState']]]
+  ['offset',['offset',['../structpvr_1_1_vertex_attribute_layout.html#a062438a82089454fefdc07a4ab108ebd',1,'pvr::VertexAttributeLayout']]],
+  ['offsetinbytes',['offsetInBytes',['../structpvr_1_1_vertex_attribute_info.html#ac172aa45e5d07a082b897ced3850bdd5',1,'pvr::VertexAttributeInfo']]],
+  ['offsetx',['offsetx',['../structpvr_1_1_texture_area.html#a4005c74e1d846e8e55eae2e38cafa60f',1,'pvr::TextureArea']]],
+  ['offsety',['offsety',['../structpvr_1_1_texture_area.html#ae7d6d49ad843cb366cba3b285fa69377',1,'pvr::TextureArea']]],
+  ['offsetz',['offsetz',['../structpvr_1_1_texture_area.html#af1f2a9f1ee842c0c14748f71c897c760',1,'pvr::TextureArea']]],
+  ['opdepthfail',['opDepthFail',['../structpvr_1_1_stencil_state.html#a553d2ef51e7749e350e9cc33daf77b2a',1,'pvr::StencilState']]],
+  ['opdepthpass',['opDepthPass',['../structpvr_1_1_stencil_state.html#a695d05ac5f7824fee0cd12b312289458',1,'pvr::StencilState']]],
+  ['opstencilfail',['opStencilFail',['../structpvr_1_1_stencil_state.html#a9a301ecb162bb1df26b47ba219850aa3',1,'pvr::StencilState']]]
 ];

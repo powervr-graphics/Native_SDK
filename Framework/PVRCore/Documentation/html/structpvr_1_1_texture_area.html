@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -82,6 +82,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structpvr_1_1_texture_area-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::TextureArea Struct Reference</div>  </div>
@@ -96,33 +97,84 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae3cfe5b67e8c8ba34906ad899e87bdaf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#ae3cfe5b67e8c8ba34906ad899e87bdaf">TextureArea</a> ()</td></tr>
 <tr class="memdesc:ae3cfe5b67e8c8ba34906ad899e87bdaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty texture area object <a href="#ae3cfe5b67e8c8ba34906ad899e87bdaf">More...</a><br/></td></tr>
 <tr class="separator:ae3cfe5b67e8c8ba34906ad899e87bdaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56d470e3c52223edb1fb9afdc7d1330e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a56d470e3c52223edb1fb9afdc7d1330e">TextureArea</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> width, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> height)</td></tr>
-<tr class="memdesc:a56d470e3c52223edb1fb9afdc7d1330e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a texture area representing the most common case (zero-offset for a 2d uncompressed texture, z-dimension 1) <a href="#a56d470e3c52223edb1fb9afdc7d1330e">More...</a><br/></td></tr>
-<tr class="separator:a56d470e3c52223edb1fb9afdc7d1330e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f6c6d2e356a1b5798e8a0f7b5ae1536"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a4f6c6d2e356a1b5798e8a0f7b5ae1536">setArraySlice</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> arrayIndex)</td></tr>
-<tr class="memdesc:a4f6c6d2e356a1b5798e8a0f7b5ae1536"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the array slice of an array texture that the <a class="el" href="structpvr_1_1_texture_area.html" title="Class used by texture update functions. Represents an area of the texture to be updated. Default value: width=1, height=1, (depth=1), offsetx=0,offsety=0,offsetz=0, arrayslice=0, cubeface=0, miplevel=0">TextureArea</a> represents (initial value 0) <a href="#a4f6c6d2e356a1b5798e8a0f7b5ae1536">More...</a><br/></td></tr>
-<tr class="separator:a4f6c6d2e356a1b5798e8a0f7b5ae1536"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada32fd2a7d3a78962a55dd28d3d1f549"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#ada32fd2a7d3a78962a55dd28d3d1f549">setCompressedSize</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> compressedSize)</td></tr>
-<tr class="memdesc:ada32fd2a7d3a78962a55dd28d3d1f549"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the size of a compressed texture. For a compressed texture, the dimensions cannot be used directly. <a href="#ada32fd2a7d3a78962a55dd28d3d1f549">More...</a><br/></td></tr>
-<tr class="separator:ada32fd2a7d3a78962a55dd28d3d1f549"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a465f45e25c7641fffdd7f33b661be393"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a465f45e25c7641fffdd7f33b661be393">setCubeFace</a> (types::CubeFace cubeFace)</td></tr>
-<tr class="memdesc:a465f45e25c7641fffdd7f33b661be393"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Cube face of a Cube <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> that the area represents (initial value CubeFacePositiveX)  <a href="#a465f45e25c7641fffdd7f33b661be393">More...</a><br/></td></tr>
-<tr class="separator:a465f45e25c7641fffdd7f33b661be393"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac459d29c99ed67f5b9531844a3737ee8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#ac459d29c99ed67f5b9531844a3737ee8">setDimensions</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> width, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> height, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> depth=1)</td></tr>
-<tr class="memdesc:ac459d29c99ed67f5b9531844a3737ee8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the basic dimensions of the texture area (width/x,height/y,depth/z) in texels <a href="#ac459d29c99ed67f5b9531844a3737ee8">More...</a><br/></td></tr>
-<tr class="separator:ac459d29c99ed67f5b9531844a3737ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba01be2a667495fdba902d084cc3b651"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#aba01be2a667495fdba902d084cc3b651">TextureArea</a> (uint32_t <a class="el" href="structpvr_1_1_texture_area.html#a1ff7e8bfbaed7f9865101dda3b8cf650">width</a>, uint32_t <a class="el" href="structpvr_1_1_texture_area.html#a939bf14cae70ab8bfe64d0416c3b7a20">height</a>)</td></tr>
+<tr class="memdesc:aba01be2a667495fdba902d084cc3b651"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a texture area representing the most common case (zero-offset for a 2d uncompressed texture, z-dimension 1) <a href="#aba01be2a667495fdba902d084cc3b651">More...</a><br/></td></tr>
+<tr class="separator:aba01be2a667495fdba902d084cc3b651"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedcf8b9b5443baa889e84545a80cbcc7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#aedcf8b9b5443baa889e84545a80cbcc7">setArraySlice</a> (uint32_t myarrayIndex)</td></tr>
+<tr class="memdesc:aedcf8b9b5443baa889e84545a80cbcc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the array slice of an array texture that the <a class="el" href="structpvr_1_1_texture_area.html" title="Class used by texture update functions. Represents an area of the texture to be updated. Default value: width=1, height=1, (depth=1), offsetx=0,offsety=0,offsetz=0, arrayslice=0, cubeface=0, miplevel=0">TextureArea</a> represents (initial value 0) <a href="#aedcf8b9b5443baa889e84545a80cbcc7">More...</a><br/></td></tr>
+<tr class="separator:aedcf8b9b5443baa889e84545a80cbcc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15e6b58efb96bedba0d49428e172c6a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a15e6b58efb96bedba0d49428e172c6a3">setCompressedSize</a> (uint32_t mycompressedSize)</td></tr>
+<tr class="memdesc:a15e6b58efb96bedba0d49428e172c6a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the size of a compressed texture. For a compressed texture, the dimensions cannot be used directly. <a href="#a15e6b58efb96bedba0d49428e172c6a3">More...</a><br/></td></tr>
+<tr class="separator:a15e6b58efb96bedba0d49428e172c6a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5c26c755e72a06f08c47020c2cbdb1e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#ab5c26c755e72a06f08c47020c2cbdb1e">setCubeFace</a> (<a class="el" href="namespacepvr.html#a87b409df225dee78541eb74988f4e20c">CubeFace</a> mycubeFace)</td></tr>
+<tr class="memdesc:ab5c26c755e72a06f08c47020c2cbdb1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Cube face of a Cube <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> that the area represents (initial value CubeFacePositiveX)  <a href="#ab5c26c755e72a06f08c47020c2cbdb1e">More...</a><br/></td></tr>
+<tr class="separator:ab5c26c755e72a06f08c47020c2cbdb1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e688f8732b8e7208fd214a719a475f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a2e688f8732b8e7208fd214a719a475f9">setDimensions</a> (uint32_t mywidth, uint32_t myheight, uint32_t mydepth=1)</td></tr>
+<tr class="memdesc:a2e688f8732b8e7208fd214a719a475f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the basic dimensions of the texture area (width/x,height/y,depth/z) in texels <a href="#a2e688f8732b8e7208fd214a719a475f9">More...</a><br/></td></tr>
+<tr class="separator:a2e688f8732b8e7208fd214a719a475f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac797ceb7a76e40432a62a4db5abdd3b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#aac797ceb7a76e40432a62a4db5abdd3b">setDimensions</a> (const glm::uvec3 &amp;size=glm::uvec3(1, 1, 1))</td></tr>
 <tr class="memdesc:aac797ceb7a76e40432a62a4db5abdd3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the basic dimensions of the texture area, in pixels (width/x,height/y,depth/z) <a href="#aac797ceb7a76e40432a62a4db5abdd3b">More...</a><br/></td></tr>
 <tr class="separator:aac797ceb7a76e40432a62a4db5abdd3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d161f1e64c46aa4eb39863571ed249c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a4d161f1e64c46aa4eb39863571ed249c">setMipLevel</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> mipLevel)</td></tr>
-<tr class="memdesc:a4d161f1e64c46aa4eb39863571ed249c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the mipmap level that the area represents (initial value 0) <a href="#a4d161f1e64c46aa4eb39863571ed249c">More...</a><br/></td></tr>
-<tr class="separator:a4d161f1e64c46aa4eb39863571ed249c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8da0839381634abf97214cf9114117ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a8da0839381634abf97214cf9114117ae">setOffset</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> offsetx, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> offsety, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> offsetz=0)</td></tr>
-<tr class="memdesc:a8da0839381634abf97214cf9114117ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the offset of the texture area is the distance along each direction from (0,0,0), in texels  <a href="#a8da0839381634abf97214cf9114117ae">More...</a><br/></td></tr>
-<tr class="separator:a8da0839381634abf97214cf9114117ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51d847084b0e5a52d95fafad0f384654"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a51d847084b0e5a52d95fafad0f384654">setMipLevel</a> (uint32_t mymipLevel)</td></tr>
+<tr class="memdesc:a51d847084b0e5a52d95fafad0f384654"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the mipmap level that the area represents (initial value 0) <a href="#a51d847084b0e5a52d95fafad0f384654">More...</a><br/></td></tr>
+<tr class="separator:a51d847084b0e5a52d95fafad0f384654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40ab50e403fdd5bc8592f5ac81091a50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a40ab50e403fdd5bc8592f5ac81091a50">setOffset</a> (uint32_t myoffsetx, uint32_t myoffsety, uint32_t myoffsetz=0)</td></tr>
+<tr class="memdesc:a40ab50e403fdd5bc8592f5ac81091a50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the offset of the texture area is the distance along each direction from (0,0,0), in texels <a href="#a40ab50e403fdd5bc8592f5ac81091a50">More...</a><br/></td></tr>
+<tr class="separator:a40ab50e403fdd5bc8592f5ac81091a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61a87f1f0b7417ed1f0c6ad0ac78cadc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a61a87f1f0b7417ed1f0c6ad0ac78cadc">setOffset</a> (const glm::uvec3 &amp;offset=glm::uvec3(0, 0, 0))</td></tr>
 <tr class="memdesc:a61a87f1f0b7417ed1f0c6ad0ac78cadc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the offset of the texture area is the distance along each direction from (0,0,0), in texels. Initial value (initial value 0,0,0) <a href="#a61a87f1f0b7417ed1f0c6ad0ac78cadc">More...</a><br/></td></tr>
 <tr class="separator:a61a87f1f0b7417ed1f0c6ad0ac78cadc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a8d2eaf2352d37b51d5d791ff6963f2e2"><td class="memItemLeft" >union {</td></tr>
+<tr class="memitem:aeae863977ab5f0f098165477fd05c31b"><td class="memItemLeft" ><a class="anchor" id="a81a6331dbe9143ee3e9d399d40c3d67b"></a>
+&#160;&#160;&#160;uint16_t&#160;&#160;&#160;<a class="el" href="structpvr_1_1_texture_area.html#a81a6331dbe9143ee3e9d399d40c3d67b">arraySize</a></td></tr>
+<tr class="memdesc:aeae863977ab5f0f098165477fd05c31b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of array slices of the area. IGNORED for non-array textures. <br/></td></tr>
+<tr class="separator:aeae863977ab5f0f098165477fd05c31b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bdf66979dcb66f3072c84d65aa34d04"><td class="memItemLeft" ><a class="anchor" id="a56658493192055a7e2c01533d8febd77"></a>
+&#160;&#160;&#160;uint32_t&#160;&#160;&#160;<a class="el" href="structpvr_1_1_texture_area.html#a56658493192055a7e2c01533d8febd77">depth</a></td></tr>
+<tr class="memdesc:a3bdf66979dcb66f3072c84d65aa34d04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Z-axis size (depth) of the area of the texture to update. Default 1. At least 1. IGNORED for 2D Textures. <br/></td></tr>
+<tr class="separator:a3bdf66979dcb66f3072c84d65aa34d04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d2eaf2352d37b51d5d791ff6963f2e2"><td class="memItemLeft" valign="top">};&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="memdesc:a8d2eaf2352d37b51d5d791ff6963f2e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unnamed union for storing the 3rd SIZE coodinate: either Depth axis or Array Size <a href="#a8d2eaf2352d37b51d5d791ff6963f2e2">More...</a><br/></td></tr>
+<tr class="separator:a8d2eaf2352d37b51d5d791ff6963f2e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76cf122741c9e513738781d34e174901"><td class="memItemLeft" >union {</td></tr>
+<tr class="memitem:ab1443c7c57627767dc263ac42b204913"><td class="memItemLeft" ><a class="anchor" id="a4f31360bc0c5fa56d6f0386bad728d8e"></a>
+&#160;&#160;&#160;uint16_t&#160;&#160;&#160;<a class="el" href="structpvr_1_1_texture_area.html#a4f31360bc0c5fa56d6f0386bad728d8e">arrayIndex</a></td></tr>
+<tr class="memdesc:ab1443c7c57627767dc263ac42b204913"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array index of the starting array slice of the area. IGNORED for non-array textures. <br/></td></tr>
+<tr class="separator:ab1443c7c57627767dc263ac42b204913"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69218939f0db1f384846045f491275af"><td class="memItemLeft" ><a class="anchor" id="af1f2a9f1ee842c0c14748f71c897c760"></a>
+&#160;&#160;&#160;uint32_t&#160;&#160;&#160;<a class="el" href="structpvr_1_1_texture_area.html#af1f2a9f1ee842c0c14748f71c897c760">offsetz</a></td></tr>
+<tr class="memdesc:a69218939f0db1f384846045f491275af"><td class="mdescLeft">&#160;</td><td class="mdescRight">z-coordinate of the start point of the area of the texture to update. IGNORED for 2D Textures. Default 0. <br/></td></tr>
+<tr class="separator:a69218939f0db1f384846045f491275af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76cf122741c9e513738781d34e174901"><td class="memItemLeft" valign="top">};&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="memdesc:a76cf122741c9e513738781d34e174901"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unnamed union for storing the 3rd OFFSET coodinate: either Offset along Z or Array Index offset <a href="#a76cf122741c9e513738781d34e174901">More...</a><br/></td></tr>
+<tr class="separator:a76cf122741c9e513738781d34e174901"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b61fe6ea7673c631182f38bfae44421"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3b61fe6ea7673c631182f38bfae44421"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a3b61fe6ea7673c631182f38bfae44421">compressedSize</a></td></tr>
+<tr class="memdesc:a3b61fe6ea7673c631182f38bfae44421"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the actual data that will be provided for updating a compressed texture. IGNORED for uncompressed textures. <br/></td></tr>
+<tr class="separator:a3b61fe6ea7673c631182f38bfae44421"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbea30e4b178b38b854f75f674e4f6b8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abbea30e4b178b38b854f75f674e4f6b8"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#abbea30e4b178b38b854f75f674e4f6b8">cubeFace</a></td></tr>
+<tr class="memdesc:abbea30e4b178b38b854f75f674e4f6b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which face of the Cube texture to update. IGNORED for non-cube textures. <br/></td></tr>
+<tr class="separator:abbea30e4b178b38b854f75f674e4f6b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a939bf14cae70ab8bfe64d0416c3b7a20"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a939bf14cae70ab8bfe64d0416c3b7a20">height</a></td></tr>
+<tr class="separator:a939bf14cae70ab8bfe64d0416c3b7a20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ea8095af5c7c4b465624274a9d72542"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6ea8095af5c7c4b465624274a9d72542"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a6ea8095af5c7c4b465624274a9d72542">mipLevel</a></td></tr>
+<tr class="memdesc:a6ea8095af5c7c4b465624274a9d72542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which mipmap level of the texture to update. Default 0;. <br/></td></tr>
+<tr class="separator:a6ea8095af5c7c4b465624274a9d72542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4005c74e1d846e8e55eae2e38cafa60f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4005c74e1d846e8e55eae2e38cafa60f"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a4005c74e1d846e8e55eae2e38cafa60f">offsetx</a></td></tr>
+<tr class="memdesc:a4005c74e1d846e8e55eae2e38cafa60f"><td class="mdescLeft">&#160;</td><td class="mdescRight">x-coordinate of the start point of the area of the texture to update. Default 0. <br/></td></tr>
+<tr class="separator:a4005c74e1d846e8e55eae2e38cafa60f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7d6d49ad843cb366cba3b285fa69377"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#ae7d6d49ad843cb366cba3b285fa69377">offsety</a></td></tr>
+<tr class="separator:ae7d6d49ad843cb366cba3b285fa69377"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ff7e8bfbaed7f9865101dda3b8cf650"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1ff7e8bfbaed7f9865101dda3b8cf650"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_texture_area.html#a1ff7e8bfbaed7f9865101dda3b8cf650">width</a></td></tr>
+<tr class="memdesc:a1ff7e8bfbaed7f9865101dda3b8cf650"><td class="mdescLeft">&#160;</td><td class="mdescRight">X-axis size (width) of the area of the texture to update. Default 1. At least 1. <br/></td></tr>
+<tr class="separator:a1ff7e8bfbaed7f9865101dda3b8cf650"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class used by texture update functions. Represents an area of the texture to be updated. Default value: width=1, height=1, (depth=1), offsetx=0,offsety=0,offsetz=0, arrayslice=0, cubeface=0, miplevel=0</p>
@@ -152,7 +204,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a56d470e3c52223edb1fb9afdc7d1330e"></a>
+<a class="anchor" id="aba01be2a667495fdba902d084cc3b651"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -162,13 +214,13 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">pvr::TextureArea::TextureArea </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>width</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>height</em>&#160;</td>
         </tr>
         <tr>
@@ -196,7 +248,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a4f6c6d2e356a1b5798e8a0f7b5ae1536"></a>
+<a class="anchor" id="aedcf8b9b5443baa889e84545a80cbcc7"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -206,8 +258,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::TextureArea::setArraySlice </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>arrayIndex</em></td><td>)</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>myarrayIndex</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -221,14 +273,14 @@ Public Member Functions</h2></td></tr>
 <p>Set the array slice of an array texture that the <a class="el" href="structpvr_1_1_texture_area.html" title="Class used by texture update functions. Represents an area of the texture to be updated. Default value: width=1, height=1, (depth=1), offsetx=0,offsety=0,offsetz=0, arrayslice=0, cubeface=0, miplevel=0">TextureArea</a> represents (initial value 0)</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">arrayIndex</td><td>The array slice that the area represents</td></tr>
+    <tr><td class="paramname">myarrayIndex</td><td>The array slice that the area represents</td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ada32fd2a7d3a78962a55dd28d3d1f549"></a>
+<a class="anchor" id="a15e6b58efb96bedba0d49428e172c6a3"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -238,8 +290,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::TextureArea::setCompressedSize </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>compressedSize</em></td><td>)</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mycompressedSize</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -253,14 +305,14 @@ Public Member Functions</h2></td></tr>
 <p>Sets the size of a compressed texture. For a compressed texture, the dimensions cannot be used directly.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">compressedSize</td><td>The size, in bytes, of the texture.</td></tr>
+    <tr><td class="paramname">mycompressedSize</td><td>The size, in bytes, of the texture.</td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="a465f45e25c7641fffdd7f33b661be393"></a>
+<a class="anchor" id="ab5c26c755e72a06f08c47020c2cbdb1e"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -270,8 +322,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::TextureArea::setCubeFace </td>
           <td>(</td>
-          <td class="paramtype">types::CubeFace&#160;</td>
-          <td class="paramname"><em>cubeFace</em></td><td>)</td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a87b409df225dee78541eb74988f4e20c">CubeFace</a>&#160;</td>
+          <td class="paramname"><em>mycubeFace</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -285,14 +337,14 @@ Public Member Functions</h2></td></tr>
 <p>Set the Cube face of a Cube <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> that the area represents (initial value CubeFacePositiveX) </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">cubeFace</td><td>The cube face that the area represents</td></tr>
+    <tr><td class="paramname">mycubeFace</td><td>The cube face that the area represents</td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ac459d29c99ed67f5b9531844a3737ee8"></a>
+<a class="anchor" id="a2e688f8732b8e7208fd214a719a475f9"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -302,20 +354,20 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::TextureArea::setDimensions </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>width</em>, </td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mywidth</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>height</em>, </td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>myheight</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>depth</em> = <code>1</code>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mydepth</em> = <code>1</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -333,9 +385,9 @@ Public Member Functions</h2></td></tr>
 <p>Set the basic dimensions of the texture area (width/x,height/y,depth/z) in texels</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">width</td><td>The size of the textureArea along the x-direction, in texels</td></tr>
-    <tr><td class="paramname">height</td><td>The size of the textureArea along the y-direction, in texels</td></tr>
-    <tr><td class="paramname">depth</td><td>The size of the textureArea along the z-direction (default 1),in texels</td></tr>
+    <tr><td class="paramname">mywidth</td><td>The size of the textureArea along the x-direction, in texels</td></tr>
+    <tr><td class="paramname">myheight</td><td>The size of the textureArea along the y-direction, in texels</td></tr>
+    <tr><td class="paramname">mydepth</td><td>The size of the textureArea along the z-direction (default 1),in texels</td></tr>
   </table>
   </dd>
 </dl>
@@ -374,7 +426,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a4d161f1e64c46aa4eb39863571ed249c"></a>
+<a class="anchor" id="a51d847084b0e5a52d95fafad0f384654"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -384,8 +436,8 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::TextureArea::setMipLevel </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>mipLevel</em></td><td>)</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mymipLevel</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -399,14 +451,14 @@ Public Member Functions</h2></td></tr>
 <p>Set the mipmap level that the area represents (initial value 0)</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mipLevel</td><td>The mipmap level that the area represents</td></tr>
+    <tr><td class="paramname">mymipLevel</td><td>The mipmap level that the area represents</td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="a8da0839381634abf97214cf9114117ae"></a>
+<a class="anchor" id="a40ab50e403fdd5bc8592f5ac81091a50"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -416,20 +468,20 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::TextureArea::setOffset </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>offsetx</em>, </td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>myoffsetx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>offsety</em>, </td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>myoffsety</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
-          <td class="paramname"><em>offsetz</em> = <code>0</code>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>myoffsetz</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -444,12 +496,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Set the offset of the texture area is the distance along each direction from (0,0,0), in texels </p>
+<p>Set the offset of the texture area is the distance along each direction from (0,0,0), in texels</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">offsetx</td><td>The distance along the x-axis of the leftmost extent of the area from the left</td></tr>
-    <tr><td class="paramname">offsety</td><td>The distance along the y-axis of the topmost extent of the area from the top</td></tr>
-    <tr><td class="paramname">offsetz</td><td>The distance along the z-axis of the foremost extent of the area from the front</td></tr>
+    <tr><td class="paramname">myoffsetx</td><td>The distance along the x-axis of the leftmost extent of the area from the left</td></tr>
+    <tr><td class="paramname">myoffsety</td><td>The distance along the y-axis of the topmost extent of the area from the top</td></tr>
+    <tr><td class="paramname">myoffsetz</td><td>The distance along the z-axis of the foremost extent of the area from the front</td></tr>
   </table>
   </dd>
 </dl>
@@ -485,6 +537,61 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a8d2eaf2352d37b51d5d791ff6963f2e2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">union { ... } </td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unnamed union for storing the 3rd SIZE coodinate: either Depth axis or Array Size</p>
+
+</div>
+</div>
+<a class="anchor" id="a76cf122741c9e513738781d34e174901"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">union { ... } </td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unnamed union for storing the 3rd OFFSET coodinate: either Offset along Z or Array Index offset</p>
+
+</div>
+</div>
+<a class="anchor" id="a939bf14cae70ab8bfe64d0416c3b7a20"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::TextureArea::height</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Y-axis size (height) of the area of the texture to update. Default 1. At least 1. </p>
+
+</div>
+</div>
+<a class="anchor" id="ae7d6d49ad843cb366cba3b285fa69377"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::TextureArea::offsety</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>y-coordinate of the start point of the area of the texture to update. Default 0. </p>
 
 </div>
 </div>

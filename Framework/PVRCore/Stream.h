@@ -12,12 +12,12 @@ namespace pvr {
 /// stream is considered something that can be read or written from. Specializations for many different types of
 /// streams are provided by the PowerVR Framework, the most commonly used ones being Files and Memory. The common
 /// interface and pointer types allow the Stream to abstract data in a very useful manner. Use the Stream::ptr_type
-/// to pass abstract streams around (it is actually an std::auto_ptr)</summary>
+/// to pass abstract streams around (it is actually an std::unique_ptr)</summary>
 class Stream
 {
 public:
-	typedef std::auto_ptr<Stream> ptr_type;
-	typedef std::auto_ptr<const Stream> const_ptr_type;
+	/// <summary>The pointer type of the stream. This is the main handle used to pass nullable streams around.</summary>
+	typedef std::unique_ptr<Stream> ptr_type;
 	/// <summary>When seeking, select if your offset should be considered to be from the Start of the stream, the
 	/// Current point in the stream or the End of the stream.</summary>
 	enum SeekOrigin
@@ -27,6 +27,7 @@ public:
 		SeekOriginFromEnd
 	};
 
+	/// <summary>Destructor (virtual, this class can and should be used polymorphically).</summary>
 	virtual ~Stream() {}
 
 	/// <summary>Return true if this stream can be read from.</summary>
@@ -37,44 +38,31 @@ public:
 	/// <returns>True if this stream can be written to.</returns>
 	bool isWritable() const { return _isWritable; }
 
-	/// <summary>Get the filename of the file that this string represents, if such exists. Otherwise, empty string.
+	/// <summary>Get the filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.
 	/// </summary>
-	/// <returns>The filename of the file that this string represents, if such exists. Otherwise, empty string.
+	/// <returns>The filename of the file that this std::string represents, if such exists. Otherwise, empty std::string.
 	/// </returns>
 	const std::string& getFileName() const { return _fileName; }
 
 public:
 	/// <summary>Main read function. Read up to a specified amount of items into the provided buffer.</summary>
 	/// <param name="elementSize">The size of each element that will be read.</param>
-	/// <param name="elementCount">The maximum number of elements to read.</param>
+	/// <param name="numElements">The maximum number of elements to read.</param>
 	/// <param name="buffer">The buffer into which to write the data.</param>
 	/// <param name="dataRead">After returning, will contain the number of items that were actually read</param>
 	/// <returns>Success if successful, error code otherwise.</returns>
-	virtual bool read(size_t elementSize, size_t elementCount, void* buffer, size_t& dataRead) const = 0;
+	virtual bool read(size_t elementSize, size_t numElements, void* buffer, size_t& dataRead) const = 0;
 
-<<<<<<< HEAD
-	/*!********************************************************************************************************
-	\brief    Main write function. Write into the stream the specified amount of items from a provided buffer.
-	\param[in]  elementSize  The size of each element that will be written.
-	\param[in]  elementCount  The number of elements to write.
-	\param[in]  buffer  The buffer from which to read the data. If the buffer is smaller than
-	            elementSize * elementCount bytes, result is undefined.
-	\param[out]  dataWritten  After returning, will contain the number of items that were actually written. Will
-	            contain elementCount unless an error has occured.
-	\return   Success if successful, error code otherwise.
-	**********************************************************************************************************/
-=======
 	/// <summary>Main write function. Write into the stream the specified amount of items from a provided buffer.
 	/// </summary>
 	/// <param name="elementSize">The size of each element that will be written.</param>
-	/// <param name="elementCount">The number of elements to write.</param>
+	/// <param name="numElements">The number of elements to write.</param>
 	/// <param name="buffer">The buffer from which to read the data. If the buffer is smaller than elementSize *
-	/// elementCount bytes, result is undefined.</param>
+	/// numElements bytes, result is undefined.</param>
 	/// <param name="dataWritten">After returning, will contain the number of items that were actually written. Will
-	/// contain elementCount unless an error has occured.</param>
+	/// contain numElements unless an error has occured.</param>
 	/// <returns>Success if successful, error code otherwise.</returns>
->>>>>>> 1776432f... 4.3
-	virtual bool write(size_t elementSize, size_t elementCount, const void* buffer, size_t& dataWritten) = 0;
+	virtual bool write(size_t elementSize, size_t numElements, const void* buffer, size_t& dataWritten) = 0;
 
 	/// <summary>Seek a specific point for random access streams. After successful call, subsequent operation will
 	/// happen in the specified point.</summary>
@@ -111,6 +99,10 @@ public:
 	template<typename Type_> std::vector<Type_> readToEnd() const
 	{
 		std::vector<Type_> ret;
+		if (!open())
+		{
+			return ret;
+		}
 		size_t mySize = getSize() - getPosition();
 		size_t myElements = mySize / sizeof(Type_);
 		ret.resize(mySize);
@@ -152,18 +144,19 @@ public:
 	/// <summary>Convenience function that reads all data in the stream into a raw, contiguous block of memory. Requires
 	/// random-access stream.</summary>
 	/// <returns>A std::vector<char> that will contain all data in the stream.</returns>
-	std::vector<char8> readChars() const
+	std::vector<char> readChars() const
 	{
-		std::vector<char8> pData;
+		std::vector<char> pData;
 		readIntoCharBuffer(pData);
 		return pData;
 	}
 
 	/// <summary>Convenience function that reads all data in the stream into a std::string</summary>
+	/// <param name="outString">The string where the stream's data will all be saved</param>
 	/// <returns>A std::string that will contain all data in the stream.</returns>
 	bool readIntoString(std::string& outString) const
 	{
-		std::vector<char8> pData;
+		std::vector<char> pData;
 		bool rslt = readIntoCharBuffer(pData);
 		outString.clear();
 		outString.append(pData.data());
@@ -171,10 +164,13 @@ public:
 	}
 
 protected:
-	Stream(const string& fileName) : _isReadable(false), _isWritable(false), _fileName(fileName) {}
-	bool _isReadable;
-	bool _isWritable;
-	string _fileName;
+	/// <summary>Constructor. Open a stream to a new filename. Must be overriden as it only sets the filename.</summary>
+	/// <param name="fileName">Commmonly the filename, but may be any type of resource identifier (such as Windows
+	/// Embedded Resource id)</param>
+	Stream(const std::string& fileName) : _isReadable(false), _isWritable(false), _fileName(fileName) {}
+	bool _isReadable; ///< True if the stream can be read
+	bool _isWritable; ///< True if the stream can be written
+	std::string _fileName; ///< The filename (conceptually, a resource identifier as there may be other sources for the stream)
 
 private:
 	// Disable copying and assign.

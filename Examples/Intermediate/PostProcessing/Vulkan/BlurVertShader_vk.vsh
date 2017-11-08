@@ -12,15 +12,7 @@
 // reduced to three. To calculate the offset, use this formula:
 // d = w1 / (w1 + w2),  whereas w1 and w2 denote the filter kernel weights
 
-const highp vec2 positions[4] = vec2[4]
-                                (
-                                  vec2(-1., -1.),
-                                  vec2(-1., 1.),
-                                  vec2(1., -1.),
-                                  vec2(1., 1.)
-                                );
-
-layout(set = 1, binding = 0) uniform TexOffsets
+layout(std140, set = 1, binding = 0) uniform TexOffsets
 {
 	mediump float TexelOffsetX;
 	mediump float TexelOffsetY;
@@ -32,14 +24,13 @@ layout(location = 2) out mediump vec2 TexCoord2;
 
 void main()
 {
-	highp vec2 position = positions[gl_VertexIndex];
+	highp vec2 texcoord = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);
+	gl_Position = vec4(texcoord * 2.0 + -1.0, 0.0, 1.0);
 
-	gl_Position = vec4(position, 0.5, 1.);
+	highp vec2 vTexCoord = texcoord;
 
 	// Calculate texture offsets and pass through
 	mediump vec2 offset = vec2(TexelOffsetX, TexelOffsetY);
-
-	highp vec2 vTexCoord = position * .5 + .5; //Map -1..1->0..1
 
 	TexCoord0 = vTexCoord - offset;
 	TexCoord1 = vTexCoord;

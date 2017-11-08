@@ -5,18 +5,18 @@ ASSETDIR := $(PVRSDKDIR)/Examples/Intermediate/MultiviewVR/OGLES/Build/Android/a
 
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRShell
+# Prebuilt module PVRUtilsGles
 include $(CLEAR_VARS)
-LOCAL_MODULE := PVRShell
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRShell.a
+LOCAL_MODULE := PVRUtilsGles
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRUtilsGles.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRNativeGles
+# Prebuilt module PVRShell
 include $(CLEAR_VARS)
-LOCAL_MODULE := PVRNativeGles
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRNativeGles.a
+LOCAL_MODULE := PVRShell
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRShell.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
@@ -50,11 +50,11 @@ LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework \
 
 
 
-LOCAL_LDLIBS := -latomic \
-                -llog \
+LOCAL_LDLIBS := -llog \
+                -latomic \
                 -landroid
 
-LOCAL_STATIC_LIBRARIES := PVRNativeGles PVRAssets PVRCore android_native_app_glue
+LOCAL_STATIC_LIBRARIES := PVRUtilsGles PVRAssets PVRCore android_native_app_glue
 
 
 LOCAL_CFLAGS += $(SDK_BUILD_FLAGS)

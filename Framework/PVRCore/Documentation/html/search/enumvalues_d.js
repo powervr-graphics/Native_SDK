@@ -1,11 +1,14 @@
 var searchData=
 [
-  ['sampler',['Sampler',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a2f1c8d79e1e6faeae11d0da1f3c75b96',1,'pvr::ApiCapabilities']]],
-  ['scenegenerator',['SceneGenerator',['../namespacepvr.html#a62a6e9db5b1a2dfe5d226b836305ca1badd4c3a0262992b448aaf8d22de6428e0',1,'pvr']]],
-  ['shaderattributeexplicitbind',['ShaderAttributeExplicitBind',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2ace956b9b23417098b53fe6813eed802f',1,'pvr::ApiCapabilities']]],
-  ['shaderattributereflection',['ShaderAttributeReflection',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2aa665f3a93d2c92c0c6b8e0ca537493e7',1,'pvr::ApiCapabilities']]],
-  ['shaderpixellocalstorage',['ShaderPixelLocalStorage',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a232925785ba75d1efee0c475eece6c2f',1,'pvr::ApiCapabilities']]],
-  ['shaderpixellocalstorage2',['ShaderPixelLocalStorage2',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a74e8b936b2d90e3442435ca4fba80bd9',1,'pvr::ApiCapabilities']]],
-  ['shadowsamplers',['ShadowSamplers',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2acae01e2a13776597a05538b751561ed9',1,'pvr::ApiCapabilities']]],
-  ['ssbo',['Ssbo',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a9dbf6f988713ddee86ed5032bf6ffae9',1,'pvr::ApiCapabilities']]]
+  ['off',['Off',['../namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8ad15305d7a4e34e02489c74a5ef542f36',1,'pvr']]],
+  ['on',['On',['../namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8a521c36a31c2762741cf0f8890cbe05e3',1,'pvr']]],
+  ['one',['One',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386a06c2cea18679d64399783748fa367bdd',1,'pvr']]],
+  ['oneminusconstantalpha',['OneMinusConstantAlpha',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386a9a1874144125c69e93ec99f17e985e41',1,'pvr']]],
+  ['oneminusconstantcolor',['OneMinusConstantColor',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386a13ab8deb1c606ab17745354b4e92f43a',1,'pvr']]],
+  ['oneminusdstalpha',['OneMinusDstAlpha',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386a4132e4b87a8d461be2c6ee8fc620cfb2',1,'pvr']]],
+  ['oneminusdstcolor',['OneMinusDstColor',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386a09f1a054ebd4d3850fd248bd2fa7b325',1,'pvr']]],
+  ['oneminussrc1alpha',['OneMinusSrc1Alpha',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386a88dfdcc65a80f412d0330f00579ab7f2',1,'pvr']]],
+  ['oneminussrc1color',['OneMinusSrc1Color',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386ac1686472488cf32c06cc257f4e8ac04f',1,'pvr']]],
+  ['oneminussrcalpha',['OneMinusSrcAlpha',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386ac00a6016489cff63d50d489ce52254cc',1,'pvr']]],
+  ['oneminussrccolor',['OneMinusSrcColor',['../namespacepvr.html#afc560f133c0bcec5adff02183b4a9386a09d3240b4e2481b1a729da24e9bfddf7',1,'pvr']]]
 ];

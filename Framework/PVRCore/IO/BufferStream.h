@@ -12,7 +12,8 @@ namespace pvr {
 class BufferStream : public Stream
 {
 public:
-	typedef std::auto_ptr<BufferStream> ptr_type;
+	/// <summary>The pointer type normally used to wrap a Stream interface.</summary>
+	typedef std::unique_ptr<BufferStream> ptr_type;
 	/// <summary>Create a BufferStream from a buffer and associate it with an (arbitrary) filename.</summary>
 	/// <param name="fileName">The created stream will have this filename. Arbitrary - not used to access anything.
 	/// </param>
@@ -21,8 +22,15 @@ public:
 	/// <param name="bufferSize">The size, in bytes, of the buffer</param>
 	/// <param name="setWritable">Allow writing for this stream. Default true.</param>
 	/// <param name="setReadable">Allow reading for this stream. Default true.</param>
-	BufferStream(const std::basic_string<char8>& fileName, void* buffer, size_t bufferSize, bool setWritable = true,
+	BufferStream(const std::string& fileName, void* buffer, size_t bufferSize, bool setWritable = true,
 	             bool setReadable = true);
+
+	~BufferStream()
+	{
+		close();
+	}
+
+
 	/// <summary>Create a BufferStream from a read only buffer and associate it with an (arbitrary) filename. Read only.
 	/// </summary>
 	/// <param name="fileName">The created stream will have this filename. Arbitrary - not used to access anything.
@@ -30,26 +38,26 @@ public:
 	/// <param name="buffer">Pointer to the memory that this stream will be used to access. Must be kept live from the
 	/// point the stream is opened until the stream is closed</param>
 	/// <param name="bufferSize">The size, in bytes, of the buffer</param>
-	BufferStream(const std::basic_string<char8>& fileName, const void* buffer, size_t bufferSize);
+	BufferStream(const std::string& fileName, const void* buffer, size_t bufferSize);
 
 	/// <summary>Main read function. Read up to a specified amount of items into the provided buffer.</summary>
 	/// <param name="elementSize">The size of each element that will be read.</param>
-	/// <param name="elementCount">The maximum number of elements to read.</param>
+	/// <param name="numElements">The maximum number of elements to read.</param>
 	/// <param name="buffer">The buffer into which to write the data.</param>
 	/// <param name="dataRead">After returning, will contain the number of items that were actually read</param>
 	/// <returns>Success if successful, error code otherwise.</returns>
-	virtual bool read(size_t elementSize, size_t elementCount, void* buffer, size_t& dataRead) const;
+	virtual bool read(size_t elementSize, size_t numElements, void* buffer, size_t& dataRead) const;
 
 	/// <summary>Main write function. Write into the stream the specified amount of items from a provided buffer.
 	/// </summary>
 	/// <param name="elementSize">The size of each element that will be written.</param>
-	/// <param name="elementCount">The number of elements to write.</param>
+	/// <param name="numElements">The number of elements to write.</param>
 	/// <param name="buffer">The buffer from which to read the data. If the buffer is smaller than elementSize *
-	/// elementCount bytes, result is undefined.</param>
+	/// numElements bytes, result is undefined.</param>
 	/// <param name="dataWritten">After returning, will contain the number of items that were actually written. Will
-	/// contain elementCount unless an error has occured.</param>
+	/// contain numElements unless an error has occured.</param>
 	/// <returns>Success if successful, error code otherwise.</returns>
-	virtual bool write(size_t elementSize, size_t elementCount, const void* buffer, size_t& dataWritten);
+	virtual bool write(size_t elementSize, size_t numElements, const void* buffer, size_t& dataWritten);
 
 	/// <summary>Seek a specific point for random access streams. After successful call, subsequent operation will
 	/// happen in the specified point.</summary>
@@ -79,7 +87,9 @@ public:
 	virtual size_t getSize() const;
 
 protected:
-	BufferStream(const std::basic_string<char8>& fileName);
+	/// <summary>Constructor. Constructs with a specified resource identifier.</summary>
+	/// <param name="resourceName">A resource identifier (conceptually, a "Filename" without a file)</param>
+	BufferStream(const std::string& resourceName);
 	const void* _originalData; //!<The original pointer of the memory this stream accesses
 	mutable void* _currentPointer; //!<Pointer to the current position in the stream
 	mutable size_t _bufferSize; //!<The size of this stream

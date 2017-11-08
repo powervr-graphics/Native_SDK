@@ -23,7 +23,6 @@ PLAT_CFLAGS   += -Wno-psabi
 
 PLAT_SUFFIX = $(patsubst Linux_%,%,$(PLATFORM))
 include $(SDKDIR)/Builds/Linux/$(PLAT_SUFFIX)/platform.mak
-include $(SDKDIR)/Builds/Linux/$(PLAT_SUFFIX)/api.mak
 
 API_INC ?= $(APIS)
 
@@ -64,7 +63,7 @@ PLAT_INC  	 += $(SDKDIR)/Builds/Include
 PLAT_INC     += $(SDKDIR)/Framework
 PLAT_INC     += ../../..
 
-#BUILDING AND LINKING PROJECT DEPENDENCIES: PVRCore, PVRAssets, PVRShell, PVR[API], PVREngineUtils
+#BUILDING AND LINKING PROJECT DEPENDENCIES: PVRCore, PVRAssets, PVRShell, PVR[API], PVRUtils
 
 .PHONY: clean cleanexample $(CLEAN_FRAMEWORK)
 
@@ -80,23 +79,18 @@ PVRAssets:
 	$(MAKE) -C $(SDKDIR)/Framework/PVRAssets/Build/LinuxGeneric/
 PVRShell:
 	$(MAKE) -C $(SDKDIR)/Framework/PVRShell/Build/LinuxGeneric/
-PVRGles:
-	$(MAKE) -C $(SDKDIR)/Framework/PVRApi/OGLES/Build/LinuxGeneric/
-PVRVulkan:
-	$(MAKE) -C $(SDKDIR)/Framework/PVRApi/Vulkan/Build/LinuxGeneric/
-PVRNativeVulkan:
-	$(MAKE) -C $(SDKDIR)/Framework/PVRNativeApi/Vulkan/Build/LinuxGeneric/
-<<<<<<< HEAD
-PVRVulkanGlue:
-	$(MAKE) -C $(SDKDIR)/Framework/PVRPlatformGlue/Vulkan/Build/LinuxGeneric/
-=======
->>>>>>> 1776432f... 4.3
-PVRNativeGlesRT:
-	$(MAKE) -C $(SDKDIR)/Framework/PVRNativeApi/OGLESRT/Build/LinuxGeneric/
-PVRNativeGles:
-	$(MAKE) -C $(SDKDIR)/Framework/PVRNativeApi/OGLES/Build/LinuxGeneric/
-PVREngineUtils:
-	$(MAKE) -C $(SDKDIR)/Framework/PVREngineUtils/Build/LinuxGeneric/
+PVRVk:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRVk/Build/LinuxGeneric/
+PVRVkRT:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRVk/BuildRT/LinuxGeneric/
+PVRUtilsGles:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRUtils/OGLES/Build/LinuxGeneric/
+PVRUtilsGlesRT:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRUtils/OGLESRT/Build/LinuxGeneric/
+PVRUtilsVk:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRUtils/Vulkan/Build/LinuxGeneric/
+PVRUtilsVkRT:
+	$(MAKE) -C $(SDKDIR)/Framework/PVRUtils/Vulkan/BuildRT/LinuxGeneric/
 PVRCamera:
 	$(MAKE) -C $(SDKDIR)/Framework/PVRCamera/Build/LinuxGeneric/
 
@@ -106,23 +100,18 @@ CLEAN_PVRAssets:
 	$(MAKE) clean -C $(SDKDIR)/Framework/PVRAssets/Build/LinuxGeneric/
 CLEAN_PVRShell:
 	$(MAKE) clean -C $(SDKDIR)/Framework/PVRShell/Build/LinuxGeneric/
-CLEAN_PVRGles:
-	$(MAKE) clean -C $(SDKDIR)/Framework/PVRApi/OGLES/Build/LinuxGeneric/
-CLEAN_PVRVulkan:
-	$(MAKE) clean -C $(SDKDIR)/Framework/PVRApi/Vulkan/Build/LinuxGeneric/
-CLEAN_PVRNativeVulkan:
-	$(MAKE) clean -C $(SDKDIR)/Framework/PVRNativeApi/Vulkan/Build/LinuxGeneric/
-<<<<<<< HEAD
-CLEAN_PVRVulkanGlue:
-	$(MAKE) clean -C $(SDKDIR)/Framework/PVRPlatformGlue/Vulkan/Build/LinuxGeneric/
-=======
->>>>>>> 1776432f... 4.3
-CLEAN_PVRNativeGlesRT:
-	$(MAKE) clean -C $(SDKDIR)/Framework/PVRNativeApi/OGLESRT/Build/LinuxGeneric/
-CLEAN_PVRNativeGles:
-	$(MAKE) clean -C $(SDKDIR)/Framework/PVRNativeApi/OGLES/Build/LinuxGeneric/
-CLEAN_PVREngineUtils:
-	$(MAKE) clean -C $(SDKDIR)/Framework/PVREngineUtils/Build/LinuxGeneric/
+CLEAN_PVRVk:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRVk/Build/LinuxGeneric/
+CLEAN_PVRVkRT:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRVk/BuildRT/LinuxGeneric/	
+CLEAN_PVRUtilsGles:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRUtils/OGLES/Build/LinuxGeneric/
+CLEAN_PVRUtilsGlesRT:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRUtils/OGLESRT/Build/LinuxGeneric
+CLEAN_PVRUtilsVk:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRUtils/Vulkan/Build/LinuxGeneric/
+CLEAN_PVRUtilsVkRT:
+	$(MAKE) clean -C $(SDKDIR)/Framework/PVRUtils/Vulkan/BuildRT/LinuxGeneric/
 CLEAN_PVRCamera:
 	$(MAKE) clean -C $(SDKDIR)/Framework/PVRCamera/Build/LinuxGeneric/
 

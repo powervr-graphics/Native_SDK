@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['val',['val',['../structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html#a3add1f9cf48224f18e40a0b88f42ace1',1,'pvr::platform::CommandLineParser::ParsedCommandLine::Option']]]
+  ['mainlooptimer',['mainLoopTimer',['../interface_app_controller.html#acee3167c31565783aec7bbe3b59ad4bb',1,'AppController']]],
+  ['movable',['movable',['../structpvr_1_1platform_1_1_shell_o_s_1_1_capabilities.html#aeddf4adcf512898d44b8a6723456f677',1,'pvr::platform::ShellOS::Capabilities']]]
 ];

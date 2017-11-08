@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanMultiSampling
-DEPENDS =  PVRCore PVRShell PVRAssets PVRNativeVulkan PVRVulkan PVREngineUtils
-LIBRARIES =  PVREngineUtils PVRVulkan PVRNativeVulkan PVRAssets PVRShell PVRCore
+DEPENDS =  PVRCore PVRShell PVRAssets PVRVk PVRUtilsVk
+LIBRARIES =  PVRUtilsVk PVRVk PVRAssets PVRShell PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
@@ -27,6 +27,8 @@ COMMON_RESOURCES += \
            DarkWood.pvr\
            ClearWood.pvr\
            GnomeToy.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

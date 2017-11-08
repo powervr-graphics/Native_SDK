@@ -9,13 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanGnomeHorde
-<<<<<<< HEAD
-DEPENDS =  PVRCore PVRAssets PVRVulkanGlue PVRNativeVulkan PVRVulkan PVRShell PVRUIRenderer
-LIBRARIES =  PVRUIRenderer PVRShell PVRVulkan PVRNativeVulkan PVRVulkanGlue PVRAssets PVRCore
-=======
-DEPENDS =  PVRCore PVRAssets PVRNativeVulkan PVRVulkan PVRShell PVREngineUtils
-LIBRARIES =  PVREngineUtils PVRShell PVRVulkan PVRNativeVulkan PVRAssets PVRCore
->>>>>>> 1776432f... 4.3
+DEPENDS =  PVRCore PVRAssets PVRVk PVRShell PVRUtilsVk
+LIBRARIES =  PVRUtilsVk PVRShell PVRVk PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
@@ -59,6 +54,8 @@ COMMON_RESOURCES += \
            mushroom1.pod\
            mushroom_shadow0.pod\
            rocks0.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

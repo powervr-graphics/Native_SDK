@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpvr_1_1_palette_expander-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::PaletteExpander Class Reference</div>  </div>
@@ -89,9 +90,99 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p>Internally used by some texture readers. 
  <a href="classpvr_1_1_palette_expander.html#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:af014f47e30f8e819460cd2b558249b90"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_palette_expander.html#af014f47e30f8e819460cd2b558249b90">PaletteExpander</a> (const uint8_t *paletteData, uint32_t paletteSize, uint32_t bytesPerEntry)</td></tr>
+<tr class="memdesc:af014f47e30f8e819460cd2b558249b90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Initialized with new palette data <a href="#af014f47e30f8e819460cd2b558249b90">More...</a><br/></td></tr>
+<tr class="separator:af014f47e30f8e819460cd2b558249b90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af43f8bfbd107fe0b1c4ebed781e1248c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_palette_expander.html#af43f8bfbd107fe0b1c4ebed781e1248c">getColorFromIndex</a> (uint32_t index, unsigned char *outputData) const </td></tr>
+<tr class="memdesc:af43f8bfbd107fe0b1c4ebed781e1248c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a color for the specified index. <a href="#af43f8bfbd107fe0b1c4ebed781e1248c">More...</a><br/></td></tr>
+<tr class="separator:af43f8bfbd107fe0b1c4ebed781e1248c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Internally used by some texture readers.</p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="af014f47e30f8e819460cd2b558249b90"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::PaletteExpander::PaletteExpander </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>paletteData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>paletteSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>bytesPerEntry</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor. Initialized with new palette data</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">paletteData</td><td>The palette data</td></tr>
+    <tr><td class="paramname">paletteSize</td><td>The size of the palete data</td></tr>
+    <tr><td class="paramname">bytesPerEntry</td><td>The number of bytes each entry takes</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="af43f8bfbd107fe0b1c4ebed781e1248c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::PaletteExpander::getColorFromIndex </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned char *&#160;</td>
+          <td class="paramname"><em>outputData</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets a color for the specified index.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>The index of the entry to retrieve. Checked so that it does not overrun the palette</td></tr>
+    <tr><td class="paramname">outputData</td><td>Output. The palette color for the specified index is returned here.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if index was in range, false if index was out of range. </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>/usr/buildxl/buildroot/sdk/branch/Framework/PVRAssets/FileIO/<a class="el" href="_palette_expander_8h_source.html">PaletteExpander.h</a></li>
 </ul>
 </div><!-- contents -->

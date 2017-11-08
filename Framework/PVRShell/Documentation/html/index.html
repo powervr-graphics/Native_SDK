@@ -89,9 +89,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="textblock"><h1><a class="anchor" id="overview"></a>
 Overview</h1>
-<p>PVRShell will usually be the foundation on top of which an application is written. This library abstracts the system and contains, among others, the application’s entry point (main(), android_main() or other, depending on the platform), command line arguments, events, main loop, etc., effectively abstracting the native platform.</p>
+<p>PVRShell will usually be the foundation on top of which an application is written. This library abstracts the system and contains, among others, the application’s entry point (<a class="el" href="_n_s_application_main_2main_8m.html#a0ddf1224851353fc92bfbff6f499fa97" title="Application entry point for the OSX Appkit. Forwards to NSApplicationMain">main()</a>, android_main() or other, depending on the platform), command line arguments, events, main loop, etc., effectively abstracting the native platform.</p>
 <p>Also, PVRShell will create and teardown the window, initialize and de-initialize the graphics system, swap the buffers at the end of every frame, search platform-specific methods and file system storage (file system, assets, bundle, etc.).</p>
-<p>PVRShell directly depends on PVRCore and PVRNativeApi, and needs the presence of PVRApi (or technically another library that provides a <span class="code">createGraphicsContext</span> library returning an <span class="code">IGraphicsContext</span>). Normally, PVRShell is used as the first step of every PowerVR SDK application.</p>
+<p>PVRShell directly depends on PVRCore. Normally, PVRShell is used as the first step of every PowerVR SDK application.</p>
 <p>PVRShell source can be found in the <a href="../../">PVRShell</a> folder in the SDK package.</p>
 <h1><a class="anchor" id="usage"></a>
 Using PVRShell</h1>
@@ -107,21 +107,15 @@ The library to link against directly (windows/android/linux makefiles) (.so etc.
 </ul>
 </li>
 <li>
-In your main code file, include <span class="code"><a class="el" href="_p_v_r_shell_8h.html" title="Include this file if you wish to use the PVRShell functionality. Also see PVRShellNoPVRApi.h. ">PVRShell/PVRShell.h</a></span> </li>
+In your main code file, include <span class="code"><a class="el" href="_p_v_r_shell_8h.html" title="Include this file if you wish to use the PVRShell functionality. ">PVRShell/PVRShell.h</a></span> </li>
 <li>
-Also link against the PowerVR Framework dependencies of PVRShell: (PVRCore, PVRPlatformGlue, usually PVRApi) </li>
-<li>
-Note: If not linking against a PVRApi library, include the file <span class="code"><a class="el" href="_p_v_r_shell_no_p_v_r_api_8h.html" title="Include this file if you wish to use the PVRShell functionality, but you will NOT be linking with a P...">PVRShell/PVRShellNoPVRApi.h</a></span> <b>once</b>, in <b>one</b> source file of your application. In other places where you need to use the Shell class, include this file as normal. If you use PVRShell without PVRApi, all PVRShell functions that query or modify graphics contexts cannot be called. </li>
-<li>
-In your application, write a class inheriting from PVRShell </li>
-<li>
-Write a function <span class="code"><a class="el" href="namespacepvr.html#aacdfd9cc3d99a51f4b534c2b75f40920" title="—IMPLEMENT THIS FUNCTION IN YOUR MAIN CODE FILE TO POWER YOUR APPLICATION—">pvr::newDemo()</a></span> that returns a <span class="code">std::auto_ptr</span> to a created instance of your class (refer to the bottom of any example) </li>
+Write a function <span class="code"><a class="el" href="namespacepvr.html#a15d374c8fd1cd116fb0e98111335a0a5" title="—IMPLEMENT THIS FUNCTION IN YOUR MAIN CODE FILE TO POWER YOUR APPLICATION—">pvr::newDemo()</a></span> that returns a <span class="code">std::unique_ptr</span> to a created instance of your class (refer to the bottom of any example) </li>
 <li>
 Implement the pure virtual functions of <span class="code">pvr::Shell</span> in your own class (<span class="code">initApplication</span>, <span class="code">initView</span>, <span class="code">renderFrame</span>, <span class="code">releaseView</span>, <span class="code">quitApplication</span>) </li>
 <li>
 Write an application class inheriting from <span class="code">pvr::Shell</span> </li>
 <li>
-Implement a simple function <span class="code"><a class="el" href="namespacepvr.html#aacdfd9cc3d99a51f4b534c2b75f40920" title="—IMPLEMENT THIS FUNCTION IN YOUR MAIN CODE FILE TO POWER YOUR APPLICATION—">pvr::newDemo()</a></span> returning an <span class="code">auto_ptr</span> to an instance of your application class </li>
+Implement a simple function <span class="code"><a class="el" href="namespacepvr.html#a15d374c8fd1cd116fb0e98111335a0a5" title="—IMPLEMENT THIS FUNCTION IN YOUR MAIN CODE FILE TO POWER YOUR APPLICATION—">pvr::newDemo()</a></span> returning an <span class="code">unique_ptr</span> to an instance of your application class </li>
 </ul>
 <ul>
 <li>
@@ -179,7 +173,7 @@ Code Examples</h1>
 </div><!-- fragment --><div class="fragment"><div class="line">this-&gt;getAssetStream(“Texture.pvr”); <span class="comment">// Will look everywhere for assets: Files, then Windows //Resources(.rc)/iOS bundled resources/Android assets</span></div>
 </div><!-- fragment --><div class="fragment"><div class="line"><span class="keywordtype">void</span> MyApplication::eventMappedInput(SimplifiedInput::Actions evt){ <span class="comment">//Abstracts/simplifies</span></div>
 <div class="line"><span class="keywordflow">switch</span> (evt){<span class="keywordflow">case</span> MappedInputEvent::Action1: pauseDemo();<span class="keywordflow">break</span>; <span class="keywordflow">case</span> MappedInputEvent::Left: showPreviousPage(); <span class="keywordflow">break</span>; <span class="keywordflow">case</span> MappedInputEvent::Quit: <span class="keywordflow">if</span> (showExitDialogue()) exitShell(); <span class="keywordflow">break</span>;}}</div>
-</div><!-- fragment --><div class="fragment"><div class="line"><span class="keywordtype">void</span> MyApplication::eventKeyUp(<a class="code" href="namespacepvr.html#af625e736c31479793aa44c254ee30f34">Keys</a> key){} <span class="comment">// Or, detailed keyboard/mouse/touch input</span></div>
+</div><!-- fragment --><div class="fragment"><div class="line"><span class="keywordtype">void</span> MyApplication::eventKeyUp(<a class="code" href="namespacepvr.html#aae1e7e12498a4bbe055ddce646b8ac46">Keys</a> key){} <span class="comment">// Or, detailed keyboard/mouse/touch input</span></div>
 </div><!-- fragment --><h1><a class="anchor" id="cmd"></a>
 Command-Line Arguments</h1>
 <p>PVRShell takes a set of command-line arguments which allow items like the position and size of the example to be controlled. The table below identifies these options. </p>

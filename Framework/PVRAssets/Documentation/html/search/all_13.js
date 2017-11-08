@@ -1,21 +1,13 @@
 var searchData=
 [
-  ['variablename',['variableName',['../structpvr_1_1assets_1_1_effect_semantic.html#aa6a22c5fce0bc60e59483fcc8681bd5c',1,'pvr::assets::EffectSemantic']]],
-  ['vertexattributedata',['VertexAttributeData',['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html',1,'pvr::assets::Mesh']]],
-  ['vertexattributedata',['VertexAttributeData',['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#aa58043e55d7756f12fa87a2cadc21097',1,'pvr::assets::Mesh::VertexAttributeData::VertexAttributeData()'],['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a04b302dde5c5dbff91c5cde0fa8bf94e',1,'pvr::assets::Mesh::VertexAttributeData::VertexAttributeData(const StringHash &amp;semantic, types::DataType type, uint8 n, uint16 offset, uint16 dataIndex)']]],
-  ['vertexattributedatablocks',['vertexAttributeDataBlocks',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#a5d2f0580de35b72681aa664cf8e032b1',1,'pvr::assets::Mesh::InternalData']]],
-  ['vertexattributes',['vertexAttributes',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#a484f9a8fc8e5e346bd258286e05179ef',1,'pvr::assets::Mesh::InternalData']]],
-  ['vertexcolor',['VertexColor',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a3a79754a16fbb21da443d99f1fbb150b',1,'pvr::assets::PVRShamanSemantics']]],
-  ['vertexindexread',['VertexIndexRead',['../namespacepvr.html#ae558fc5547da737e038b1c2ea09b1fc3',1,'pvr']]],
-  ['vertexread',['VertexRead',['../namespacepvr.html#a683944ff99e5f359f136687ec6bfcdb4',1,'pvr']]],
-  ['vertexshader',['vertexShader',['../structpvr_1_1assets_1_1_effect.html#ac981d0d7028f5f81e918aa24eb81db16',1,'pvr::assets::Effect']]],
-  ['view',['View',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926ae52a8e23e1d269f4add46d7cb30ab5ad',1,'pvr::assets::PVRShamanSemantics']]],
-  ['viewi',['ViewI',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a876f2738c58a169d7f92ec3c1519c058',1,'pvr::assets::PVRShamanSemantics']]],
-  ['viewit',['ViewIT',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926ac3fc014620b9b90dfb850401977082cc',1,'pvr::assets::PVRShamanSemantics']]],
-  ['viewport',['viewport',['../structpvr_1_1assets_1_1_effect.html#aa840956b39f46346d7b28ccae90e5779',1,'pvr::assets::Effect']]],
-  ['viewportclipping',['ViewportClipping',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a72f800b231657925921b1c68cbb9f96f',1,'pvr::assets::PVRShamanSemantics']]],
-  ['viewportpixelsize',['ViewportPixelSize',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a1d023ff122b423652c544dc27ad6a968',1,'pvr::assets::PVRShamanSemantics']]],
-  ['viewprojection',['ViewProjection',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a3c4cd4c2ab46e95f56eb4ee2bd2dddd1',1,'pvr::assets::PVRShamanSemantics']]],
-  ['viewprojectioni',['ViewProjectionI',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a251690f305cc95f4a7b57a288d7f500e',1,'pvr::assets::PVRShamanSemantics']]],
-  ['viewprojectionit',['ViewProjectionIT',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a939ff3082a69ef3ee587be95dde02b58',1,'pvr::assets::PVRShamanSemantics']]]
+  ['uniformrequired',['UniformRequired',['../structpvr_1_1assets_1_1effect_1_1_pipeline_condition.html#a6fec8ab23f2e6e96cce92553a2d6f4bbac17035b12c07c05c8e6395ada123cb04',1,'pvr::assets::effect::PipelineCondition']]],
+  ['uniformrequiredno',['UniformRequiredNo',['../structpvr_1_1assets_1_1effect_1_1_pipeline_condition.html#a6fec8ab23f2e6e96cce92553a2d6f4bba141cdc75bed6c3fe878bb546620d612d',1,'pvr::assets::effect::PipelineCondition']]],
+  ['uniforms',['uniforms',['../structpvr_1_1assets_1_1effect_1_1_pipeline_definition.html#a6a155a700665e1fdc48f18738b8cac93',1,'pvr::assets::effect::PipelineDefinition']]],
+  ['uniformsemantic',['UniformSemantic',['../structpvr_1_1assets_1_1effect_1_1_uniform_semantic.html',1,'pvr::assets::effect']]],
+  ['units',['units',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a5080ae5ce7dad75fbb01e97334c52c19',1,'pvr::assets::Mesh::MeshInfo::units()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a2e9fcb42e24137acf05768f5dc11e6c8',1,'pvr::assets::Model::InternalData::units()']]],
+  ['unknown',['Unknown',['../namespacepvr.html#a7449705e04c8fe948e390ea793106107a88183b946cc5f0e8c96b2e66e1c74a7e',1,'pvr']]],
+  ['unpackmatrix',['unpackMatrix',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#a04e91786b4c0b0beac25a18fc61fd9f1',1,'pvr::assets::Mesh::InternalData']]],
+  ['usedepthstencil',['useDepthStencil',['../structpvr_1_1assets_1_1effect_1_1_subpass.html#a925c912aa63251e3d9bb18f565e9573f',1,'pvr::assets::effect::Subpass']]],
+  ['userdata',['userData',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#aa806e568e8f9adee167c9fa759a0d003',1,'pvr::assets::Model::Node::InternalData::userData()'],['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a6667891ee136b12b0753e61eb986140d',1,'pvr::assets::Model::Material::InternalData::userData()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a6daf41fe67611b85376b306cec3cf133',1,'pvr::assets::Model::InternalData::userData()']]],
+  ['userdataptr',['userDataPtr',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#af1563815f92a828077fe66985b0660d0',1,'pvr::assets::Mesh::InternalData::userDataPtr()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a62093d8a85f55125408b6b5a4b028e6a',1,'pvr::assets::Model::InternalData::userDataPtr()']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['_7ecamerainterface',['~CameraInterface',['../classpvr_1_1_camera_interface.html#aff48c01d6b8b562d9e98956a3fafc228',1,'pvr::CameraInterface']]]
+  ['initializesession',['initializeSession',['../classpvr_1_1_camera_interface.html#a6b87146861e45d21ab1ff4aa41fe2cd8',1,'pvr::CameraInterface']]]
 ];

@@ -11,14 +11,14 @@
 namespace pvr {
 namespace pod {
 
-	enum PodTagConstants :uint32
+	enum PodTagConstants :uint32_t
 	{
 		c_startTagMask = 0x00000000,
 		c_endTagMask = 0x80000000,
 		c_TagMash = 0x80000000,
 		c_PODFormatVersionLength = 11
 	};
-static const char8* const c_PODFormatVersion = "AB.POD.2.0";
+static const char* const c_PODFormatVersion = "AB.POD.2.0";
 
 /// <summary>Enum for the identifiers in the pod blocks.</summary>
 enum PODIdentifiers

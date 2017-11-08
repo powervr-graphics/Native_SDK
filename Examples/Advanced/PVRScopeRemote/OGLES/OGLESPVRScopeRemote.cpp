@@ -6,10 +6,10 @@
 \brief      Shows how to use our example PVRScope graph code.
 ***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
-#include "PVRApi/PVRApi.h"
-#include "PVREngineUtils/PVREngineUtils.h"
+#include "PVRUtils/PVRUtilsGles.h"
 #include "PVRScopeComms.h"
-
+#include "PVRAssets/Helper.h"
+#include "PVRAssets/Shader.h"
 // Source and binary shaders
 const char FragShaderSrcFile[] = "FragShader.fsh";
 const char VertShaderSrcFile[] = "VertShader.vsh";
@@ -17,7 +17,7 @@ const char VertShaderSrcFile[] = "VertShader.vsh";
 // PVR texture files
 const char TextureFile[] = "Marble.pvr";
 
-// POD scene files
+// POD _scene files
 const char SceneFile[] = "scene.pod";
 namespace CounterDefs {
 enum Enum
@@ -26,47 +26,56 @@ enum Enum
 };
 }
 const char* FrameDefs[CounterDefs::NumCounter] = { "Frames", "Frames10" };
-using namespace pvr;
+
 /*!*********************************************************************************************************************
 \brief Class implementing the PVRShell functions.
 ***********************************************************************************************************************/
 class OGLESPVRScopeRemote : public pvr::Shell
 {
-	struct ApiObjects
+	struct DeviceResources
 	{
-		pvr::api::GraphicsPipeline pipeline;
-		pvr::api::TextureView texture;
-		std::vector<pvr::api::Buffer> vbos;
-		std::vector<pvr::api::Buffer> ibos;
-		pvr::api::DescriptorSet  descriptorSet;
-		pvr::api::DescriptorSetLayout descriptorSetLayout;
-		pvr::api::CommandBuffer commandBuffer;
-		pvr::api::Fbo onScreenFbo;
+		GLuint program;
+		GLuint texture;
+		std::vector<GLuint> vbos;
+		std::vector<GLuint> ibos;
+		GLuint onScreenFbo;
+
+		GLuint shaders[2];
+
+		pvr::EglContext context;
+
+		// UIRenderer used to display text
+		pvr::ui::UIRenderer uiRenderer;
+
+		DeviceResources() : program(0), texture(0), vbos(0), ibos(0)
+		{
+		}
+
+		~DeviceResources()
+		{
+			gl::DeleteProgram(program);
+			gl::DeleteTextures(1, &texture);
+			gl::DeleteBuffers(vbos.size(), vbos.data());
+			gl::DeleteBuffers(ibos.size(), ibos.data());
+		}
 	};
-	std::auto_ptr<ApiObjects> deviceResource;
-	// Print3D class used to display text
-	pvr::ui::UIRenderer uiRenderer;
 
-	// OpenGL handles for shaders, textures and VBOs
-	pvr::GraphicsContext _context;
-
+	std::unique_ptr<DeviceResources> _deviceResources;
 	// 3D Model
-	pvr::assets::ModelHandle scene;
-	pvr::utils::AssetStore assetStore;
+	pvr::assets::ModelHandle _scene;
 	// Projection and view matrices
-
 
 	// Group shader programs and their uniform locations together
 	struct
 	{
-		pvr::int32 mvpMtx;
-		pvr::int32 mvITMtx;
-		pvr::int32 lightDirView;
-		pvr::int32 albedo;
-		pvr::int32 specularExponent;
-		pvr::int32 metallicity;
-		pvr::int32 reflectivity;
-	} uniformLocations;
+		int32_t mvpMtx;
+		int32_t mvITMtx;
+		int32_t lightDirView;
+		int32_t albedo;
+		int32_t specularExponent;
+		int32_t metallicity;
+		int32_t reflectivity;
+	} _uniformLocations;
 
 	struct Uniforms
 	{
@@ -76,40 +85,40 @@ class OGLESPVRScopeRemote : public pvr::Shell
 		glm::mat4 mvMatrix;
 		glm::mat3 mvITMatrix;
 		glm::vec3 lightDirView;
-		pvr::float32 specularExponent;
-		pvr::float32 metallicity;
-		pvr::float32 reflectivity;
+		float specularExponent;
+		float metallicity;
+		float reflectivity;
 		glm::vec3    albedo;
-	} progUniforms;
+	} _progUniforms;
 
 	// The translation and Rotate parameter of Model
-	pvr::float32 angleY;
+	float _angleY;
 
 	// Data connection to PVRPerfServer
-	bool hasCommunicationError;
-	SSPSCommsData*  spsCommsData;
-	SSPSCommsLibraryTypeFloat commsLibSpecularExponent;
-	SSPSCommsLibraryTypeFloat commsLibMetallicity;
-	SSPSCommsLibraryTypeFloat commsLibReflectivity;
-	SSPSCommsLibraryTypeFloat commsLibAlbedoR;
-	SSPSCommsLibraryTypeFloat commsLibAlbedoG;
-	SSPSCommsLibraryTypeFloat commsLibAlbedoB;
+	bool _hasCommunicationError;
+	SSPSCommsData* _spsCommsData;
+	SSPSCommsLibraryTypeFloat _commsLibSpecularExponent;
+	SSPSCommsLibraryTypeFloat _commsLibMetallicity;
+	SSPSCommsLibraryTypeFloat _commsLibReflectivity;
+	SSPSCommsLibraryTypeFloat _commsLibAlbedoR;
+	SSPSCommsLibraryTypeFloat _commsLibAlbedoG;
+	SSPSCommsLibraryTypeFloat _commsLibAlbedoB;
 
-
-	std::vector<char> vertShaderSrc;
-	std::vector<char> fragShaderSrc;
-	pvr::uint32 frameCounter;
-	pvr::uint32 frame10Counter;
-	pvr::uint32 counterReadings[CounterDefs::NumCounter];
+	std::vector<char> _vertShaderSrc;
+	std::vector<char> _fragShaderSrc;
+	uint32_t _frameCounter;
+	uint32_t _frame10Counter;
+	uint32_t _counterReadings[CounterDefs::NumCounter];
+	pvr::utils::VertexConfiguration _vertexConfiguration;
 public:
 	virtual pvr::Result initApplication();
 	virtual pvr::Result initView();
 	virtual pvr::Result releaseView();
 	virtual pvr::Result quitApplication();
 	virtual pvr::Result renderFrame();
-	void recordCommandBuffer();
-	bool createTexSamplerDescriptorSet();
-	bool createPipeline(const char* const pszFrag, const char* const pszVert);
+	void executeCommands();
+	bool createSamplerTexture();
+	bool createProgram(const char* const pszFrag, const char* const pszVert, bool recompile = false);
 	void loadVbos();
 	void drawMesh(int i32NodeIndex);
 };
@@ -118,34 +127,26 @@ public:
 \return Return true if no error occurred
 \brief  Loads the textures required for this training course
 ***********************************************************************************************************************/
-bool OGLESPVRScopeRemote::createTexSamplerDescriptorSet()
+bool OGLESPVRScopeRemote::createSamplerTexture()
 {
-	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
-
-	if (!assetStore.getTextureWithCaching(getGraphicsContext(), TextureFile, &deviceResource->texture, NULL))
+	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
+	auto texStream = getAssetStream(TextureFile);
+	pvr::Texture tex;
+	if (!pvr::assets::textureLoad(texStream, pvr::TextureFileFormat::PVR, tex))
 	{
-		pvr::Log("ERROR: Failed to load texture.");
 		return false;
 	}
-
-	pvr::assets::SamplerCreateParam samplerDesc;
-	samplerDesc.minificationFilter = types::SamplerFilter::Linear;
-	samplerDesc.mipMappingFilter = types::SamplerFilter::Nearest;
-	samplerDesc.magnificationFilter = types::SamplerFilter::Linear;
-	pvr::api::Sampler bilinearSampler = _context->createSampler(samplerDesc);
-
-	pvr::api::DescriptorSetLayoutCreateParam descSetLayoutInfo;
-	descSetLayoutInfo.setBinding(0, types::DescriptorType::CombinedImageSampler, 1, types::ShaderStageFlags::Fragment);
-<<<<<<< HEAD
-	m_deviceResource->descriptorSetLayout = m_context->createDescriptorSetLayout(descSetLayoutInfo);
-=======
-	deviceResource->descriptorSetLayout = _context->createDescriptorSetLayout(descSetLayoutInfo);
->>>>>>> 1776432f... 4.3
-
-	pvr::api::DescriptorSetUpdate descriptorSetUpdate;
-	descriptorSetUpdate.setCombinedImageSampler(0, deviceResource->texture, bilinearSampler);
-	deviceResource->descriptorSet = _context->createDescriptorSetOnDefaultPool(deviceResource->descriptorSetLayout);
-	deviceResource->descriptorSet->update(descriptorSetUpdate);
+	pvr::utils::TextureUploadResults uploadResults = pvr::utils::textureUpload(tex, _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2, true);
+	if (!uploadResults.successful)
+	{
+		Log("ERROR: Failed to load texture.");
+		return false;
+	}
+	_deviceResources->texture = uploadResults.image;
+	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->texture);
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+	gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	gl::BindTexture(GL_TEXTURE_2D, 0);
 	return true;
 }
 
@@ -153,74 +154,52 @@ bool OGLESPVRScopeRemote::createTexSamplerDescriptorSet()
 \return Return true if no error occurred
 \brief  Loads and compiles the shaders and links the shader programs required for this training course
 ***********************************************************************************************************************/
-bool OGLESPVRScopeRemote::createPipeline(const char* const fragShaderSource, const char* const vertShaderSource)
+bool OGLESPVRScopeRemote::createProgram(const char* const fragShaderSource, const char* const vertShaderSource, bool recompile)
 {
 	//Mapping of mesh semantic names to shader variables
-	pvr::utils::VertexBindings_Name vertexBindings[] =
+	const char* vertexBindings[] =
 	{
-		{ "POSITION", "inVertex" },
-		{ "NORMAL", "inNormal" },
-		{ "UV0", "inTexCoord" }
+		"inVertex",
+		"inNormal",
+		"inTexCoord"
 	};
+	const uint16_t attribIndices[3] = {0, 1, 2};
+	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__,
+	    static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
-	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
 
-	pvr::api::PipelineLayoutCreateParam pipeLayoutInfo;
-	pipeLayoutInfo.addDescSetLayout(deviceResource->descriptorSetLayout);
-
-	// set the pipeline configurations
-	pvr::api::GraphicsPipelineCreateParam pipeDesc;
 	/* Load and compile the shaders from files. */
 	pvr::BufferStream vertexShaderStream("", vertShaderSource, strlen(vertShaderSource));
 	pvr::BufferStream fragShaderStream("", fragShaderSource, strlen(fragShaderSource));
-	pipeDesc.rasterizer.setCullFace(pvr::types::Face::Back).setFrontFaceWinding(pvr::types::PolygonWindingOrder::FrontFaceCCW);
-	pipeDesc.depthStencil.setDepthTestEnable(true);
-<<<<<<< HEAD
-	pipeDesc.vertexShader.setShader(m_context->createShader(vertexShaderStream, types::ShaderType::VertexShader));
-	pipeDesc.fragmentShader.setShader(m_context->createShader(fragShaderStream, types::ShaderType::FragmentShader));
-	pipeDesc.pipelineLayout = m_context->createPipelineLayout(pipeLayoutInfo);
-=======
-	pipeDesc.vertexShader.setShader(_context->createShader(vertexShaderStream, types::ShaderType::VertexShader));
-	pipeDesc.fragmentShader.setShader(_context->createShader(fragShaderStream, types::ShaderType::FragmentShader));
-	pipeDesc.pipelineLayout = _context->createPipelineLayout(pipeLayoutInfo);
->>>>>>> 1776432f... 4.3
-	pipeDesc.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
-	pvr::utils::createInputAssemblyFromMesh(scene->getMesh(0), vertexBindings, 3, pipeDesc);
+	if (recompile)
+	{
+		gl::DetachShader(_deviceResources->program, _deviceResources->shaders[0]);
+		gl::DetachShader(_deviceResources->program, _deviceResources->shaders[1]);
+	}
+	pvr::utils::loadShader(vertexShaderStream, pvr::ShaderType::VertexShader, nullptr, 0, _deviceResources->shaders[0]);
+	pvr::utils::loadShader(fragShaderStream, pvr::ShaderType::FragmentShader, nullptr, 0, _deviceResources->shaders[1]);
 
-	pvr::api::GraphicsPipeline tmpPipeline = _context->createGraphicsPipeline(pipeDesc);
-	pvr::Log(pvr::Log.Debug, "Created pipeline...");
-	if (!tmpPipeline.isValid()) { pvr::Log(pvr::Log.Debug, "Pipeline Failure."); return false; }
-	deviceResource->pipeline = tmpPipeline;
-	pvr::Log(pvr::Log.Debug, "Pipeline Success.");
+	if (!pvr::utils::createShaderProgram(_deviceResources->shaders, ARRAY_SIZE(_deviceResources->shaders),
+	                                     vertexBindings, attribIndices, ARRAY_SIZE(attribIndices), _deviceResources->program))
+	{
+		Log(LogLevel::Debug, "Failed to Created pipeline...");
+		return false;
+	}
 
 	// Set the sampler2D variable to the first texture unit
-	deviceResource->commandBuffer->beginRecording();
-	deviceResource->commandBuffer->bindPipeline(deviceResource->pipeline);
+	gl::UseProgram(_deviceResources->program);
+	gl::Uniform1i(gl::GetUniformLocation(_deviceResources->program, "sTexture"), 0);
+	gl::UseProgram(0);
 
-	deviceResource->commandBuffer->setUniform(deviceResource->pipeline-> getUniformLocation("sTexture"), 0);
-
-	deviceResource->commandBuffer->endRecording();
-	deviceResource->commandBuffer->submit();
 	// Store the location of uniforms for later use
-<<<<<<< HEAD
-	uniformLocations.mvpMtx = m_deviceResource->pipeline->getUniformLocation("MVPMatrix");
-	uniformLocations.mvITMtx = m_deviceResource->pipeline->getUniformLocation("MVITMatrix");
-	uniformLocations.lightDirView = m_deviceResource->pipeline->getUniformLocation("ViewLightDirection");
+	_uniformLocations.mvpMtx = gl::GetUniformLocation(_deviceResources->program, "MVPMatrix");
+	_uniformLocations.mvITMtx = gl::GetUniformLocation(_deviceResources->program, "MVITMatrix");
+	_uniformLocations.lightDirView = gl::GetUniformLocation(_deviceResources->program, "ViewLightDirection");
 
-	uniformLocations.specularExponent = m_deviceResource->pipeline->getUniformLocation("SpecularExponent");
-	uniformLocations.metallicity = m_deviceResource->pipeline->getUniformLocation("Metallicity");
-	uniformLocations.reflectivity = m_deviceResource->pipeline->getUniformLocation("Reflectivity");
-	uniformLocations.albedo = m_deviceResource->pipeline->getUniformLocation("AlbedoModulation");
-=======
-	uniformLocations.mvpMtx = deviceResource->pipeline->getUniformLocation("MVPMatrix");
-	uniformLocations.mvITMtx = deviceResource->pipeline->getUniformLocation("MVITMatrix");
-	uniformLocations.lightDirView = deviceResource->pipeline->getUniformLocation("ViewLightDirection");
-
-	uniformLocations.specularExponent = deviceResource->pipeline->getUniformLocation("SpecularExponent");
-	uniformLocations.metallicity = deviceResource->pipeline->getUniformLocation("Metallicity");
-	uniformLocations.reflectivity = deviceResource->pipeline->getUniformLocation("Reflectivity");
-	uniformLocations.albedo = deviceResource->pipeline->getUniformLocation("AlbedoModulation");
->>>>>>> 1776432f... 4.3
+	_uniformLocations.specularExponent = gl::GetUniformLocation(_deviceResources->program, "SpecularExponent");
+	_uniformLocations.metallicity = gl::GetUniformLocation(_deviceResources->program, "Metallicity");
+	_uniformLocations.reflectivity = gl::GetUniformLocation(_deviceResources->program, "Reflectivity");
+	_uniformLocations.albedo = gl::GetUniformLocation(_deviceResources->program, "AlbedoModulation");
 	return true;
 }
 
@@ -229,19 +208,15 @@ bool OGLESPVRScopeRemote::createPipeline(const char* const fragShaderSource, con
 ***********************************************************************************************************************/
 void OGLESPVRScopeRemote::loadVbos()
 {
-	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__,
-	    static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
+	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__,
+	    static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
-	//  Load vertex data of all meshes in the scene into VBOs
+	//  Load vertex data of all meshes in the _scene into VBOs
 	//  The meshes have been exported with the "Interleave Vectors" option,
 	//  so all data is interleaved in the buffer at pMesh->pInterleaved.
 	//  Interleaving data improves the memory access pattern and cache efficiency,
 	//  thus it can be read faster by the hardware.
-<<<<<<< HEAD
-	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *scene, m_deviceResource->vbos, m_deviceResource->ibos);
-=======
-	pvr::utils::appendSingleBuffersFromModel(getGraphicsContext(), *scene, deviceResource->vbos, deviceResource->ibos);
->>>>>>> 1776432f... 4.3
+	pvr::utils::appendSingleBuffersFromModel(*_scene, _deviceResources->vbos, _deviceResources->ibos);
 }
 
 /*!*********************************************************************************************************************
@@ -252,178 +227,25 @@ void OGLESPVRScopeRemote::loadVbos()
 ***********************************************************************************************************************/
 pvr::Result OGLESPVRScopeRemote::initApplication()
 {
-	assetStore.init(*this);
-	// Load the scene
-	if (!assetStore.loadModel(SceneFile, scene))
+	// Load the _scene
+	if (!pvr::assets::helper::loadModel(*this, SceneFile, _scene))
 	{
 		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
 		return pvr::Result::NotInitialized;
 	}
-	// We want a data connection to PVRPerfServer
-	{
-		spsCommsData = pplInitialise("PVRScopeRemote", 14);
-		hasCommunicationError = false;
+	pvr::utils::VertexBindings_Name vertexBindings[] = { { "POSITION", "inVertex" }, { "NORMAL", "inNormal" }, { "UV0", "inTexCoord" } };
+	_vertexConfiguration = createInputAssemblyFromMesh(_scene->getMesh(0), vertexBindings, 3);
 
-		// Demonstrate that there is a good chance of the initial data being
-		// lost - the connection is normally completed asynchronously.
-		pplSendMark(spsCommsData, "lost", static_cast<pvr::uint32>(strlen("lost")));
-
-		// This is entirely optional. Wait for the connection to succeed, it will
-		// timeout if e.g. PVRPerfServer is not running.
-		int isConnected;
-		pplWaitForConnection(spsCommsData, &isConnected, 1, 200);
-	}
-	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
-
-	progUniforms.specularExponent = 5.f;            // Width of the specular highlights (using low exponent for a brushed metal look)
-	progUniforms.albedo = glm::vec3(1.f, .77f, .33f); // Overall color
-	progUniforms.metallicity = 1.f;                 // Is the color of the specular white (nonmetallic), or coloured by the object(metallic)
-	progUniforms.reflectivity = .8f;                // Percentage of contribution of diffuse / specular
-	frameCounter = 0;
-	frame10Counter = 0;
-
-	// Get and set the read path for content files
-	// Get and set the load/release functions for loading external files.
-	// In the majority of cases the PVRShell will return NULL function pointers implying that
-	// nothing special is required to load external files.
-	// Load the scene
-	if (!assetStore.loadModel(SceneFile, scene))
-	{
-		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
-		return pvr::Result::NotInitialized;
-	}
+	_progUniforms.specularExponent = 5.f;            // Width of the specular highlights (using low exponent for a brushed metal look)
+	_progUniforms.albedo = glm::vec3(1.f, .77f, .33f); // Overall color
+	_progUniforms.metallicity = 1.f;                 // Is the color of the specular white (nonmetallic), or coloured by the object(metallic)
+	_progUniforms.reflectivity = .8f;                // Percentage of contribution of diffuse / specular
+	_frameCounter = 0;
+	_frame10Counter = 0;
 
 	// set angle of rotation
-	angleY = 0.0f;
+	_angleY = 0.0f;
 
-	//  Remotely editable library items
-	if (spsCommsData)
-	{
-		std::vector<SSPSCommsLibraryItem> communicableItems;
-		size_t dataRead;
-		//  Editable shaders
-		pvr::assets::ShaderFile fileVersioning;
-		fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
-		pvr::Stream::ptr_type FragShaderFile = fileVersioning.getBestStreamForApi(getMaxApiLevel());
-
-		fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
-		pvr::Stream::ptr_type VertShaderFile = fileVersioning.getBestStreamForApi(getMaxApiLevel());
-		struct SLibList
-		{
-			const char* const pszName;
-			const pvr::Stream::ptr_type file;
-		}
-		aShaders[2] =
-		{
-			{ FragShaderSrcFile, FragShaderFile },
-			{ VertShaderSrcFile, VertShaderFile }
-		};
-
-		std::vector<char> data[sizeof(aShaders) / sizeof(*aShaders)];
-		for (pvr::uint32 i = 0; i < sizeof(aShaders) / sizeof(*aShaders); ++i)
-		{
-			if (aShaders[i].file->open())
-			{
-				communicableItems.push_back(SSPSCommsLibraryItem());
-				communicableItems.back().pszName = aShaders[i].pszName;
-				communicableItems.back().nNameLength = (pvr::uint32)strlen(aShaders[i].pszName);
-				communicableItems.back().eType = eSPSCommsLibTypeString;
-				data[i].resize(aShaders[i].file->getSize());
-				aShaders[i].file->read(aShaders[i].file->getSize(), 1, &data[i][0], dataRead);
-				communicableItems.back().pData = &data[i][0];
-				communicableItems.back().nDataLength = (pvr::uint32)aShaders[i].file->getSize();
-			}
-		}
-
-		// Editable: Specular Exponent
-		communicableItems.push_back(SSPSCommsLibraryItem());
-		commsLibSpecularExponent.fCurrent = progUniforms.specularExponent;
-		commsLibSpecularExponent.fMin = 1.1f;
-		commsLibSpecularExponent.fMax = 300.0f;
-		communicableItems.back().pszName = "Specular Exponent";
-		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
-		communicableItems.back().eType = eSPSCommsLibTypeFloat;
-		communicableItems.back().pData = (const char*)&commsLibSpecularExponent;
-		communicableItems.back().nDataLength = sizeof(commsLibSpecularExponent);
-
-		communicableItems.push_back(SSPSCommsLibraryItem());
-		// Editable: Metallicity
-		commsLibMetallicity.fCurrent = progUniforms.metallicity;
-		commsLibMetallicity.fMin = 0.0f;
-		commsLibMetallicity.fMax = 1.0f;
-		communicableItems.back().pszName = "Metallicity";
-		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
-		communicableItems.back().eType = eSPSCommsLibTypeFloat;
-		communicableItems.back().pData = (const char*)&commsLibMetallicity;
-		communicableItems.back().nDataLength = sizeof(commsLibMetallicity);
-
-		// Editable: Reflectivity
-		communicableItems.push_back(SSPSCommsLibraryItem());
-		commsLibReflectivity.fCurrent = progUniforms.reflectivity;
-		commsLibReflectivity.fMin = 0.;
-		commsLibReflectivity.fMax = 1.;
-		communicableItems.back().pszName = "Reflectivity";
-		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
-		communicableItems.back().eType = eSPSCommsLibTypeFloat;
-		communicableItems.back().pData = (const char*)&commsLibReflectivity;
-		communicableItems.back().nDataLength = sizeof(commsLibReflectivity);
-
-
-		// Editable: Albedo R channel
-		communicableItems.push_back(SSPSCommsLibraryItem());
-		commsLibAlbedoR.fCurrent = progUniforms.albedo.r;
-		commsLibAlbedoR.fMin = 0.0f;
-		commsLibAlbedoR.fMax = 1.0f;
-		communicableItems.back().pszName = "Albedo R";
-		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
-		communicableItems.back().eType = eSPSCommsLibTypeFloat;
-		communicableItems.back().pData = (const char*)&commsLibAlbedoR;
-		communicableItems.back().nDataLength = sizeof(commsLibAlbedoR);
-
-		// Editable: Albedo R channel
-		communicableItems.push_back(SSPSCommsLibraryItem());
-		commsLibAlbedoG.fCurrent = progUniforms.albedo.g;
-		commsLibAlbedoG.fMin = 0.0f;
-		commsLibAlbedoG.fMax = 1.0f;
-		communicableItems.back().pszName = "Albedo G";
-		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
-		communicableItems.back().eType = eSPSCommsLibTypeFloat;
-		communicableItems.back().pData = (const char*)&commsLibAlbedoG;
-		communicableItems.back().nDataLength = sizeof(commsLibAlbedoG);
-
-		// Editable: Albedo R channel
-		communicableItems.push_back(SSPSCommsLibraryItem());
-		commsLibAlbedoB.fCurrent = progUniforms.albedo.b;
-		commsLibAlbedoB.fMin = 0.0f;
-		commsLibAlbedoB.fMax = 1.0f;
-		communicableItems.back().pszName = "Albedo B";
-		communicableItems.back().nNameLength = (pvr::uint32)strlen(communicableItems.back().pszName);
-		communicableItems.back().eType = eSPSCommsLibTypeFloat;
-		communicableItems.back().pData = (const char*)&commsLibAlbedoB;
-		communicableItems.back().nDataLength = sizeof(commsLibAlbedoB);
-
-		// Ok, submit our library
-		if (!pplLibraryCreate(spsCommsData, communicableItems.data(), (unsigned int)communicableItems.size()))
-		{
-			pvr::Log(pvr::Log.Debug, "PVRScopeRemote: pplLibraryCreate() failed\n");
-		}
-	}
-
-	// User defined counters
-	if (spsCommsData)
-	{
-		SSPSCommsCounterDef counterDefines[CounterDefs::NumCounter];
-		for (pvr::uint32 i = 0; i < CounterDefs::NumCounter; ++i)
-		{
-			counterDefines[i].pszName = FrameDefs[i];
-			counterDefines[i].nNameLength = (pvr::uint32)strlen(FrameDefs[i]);
-		}
-
-		if (!pplCountersCreate(spsCommsData, counterDefines, CounterDefs::NumCounter))
-		{
-			pvr::Log(pvr::Log.Debug, "PVRScopeRemote: pplCountersCreate() failed\n");
-		}
-	}
 	return pvr::Result::Success;
 }
 
@@ -434,19 +256,20 @@ pvr::Result OGLESPVRScopeRemote::initApplication()
 ***********************************************************************************************************************/
 pvr::Result OGLESPVRScopeRemote::quitApplication()
 {
-	if (spsCommsData)
+	if (_spsCommsData)
 	{
-		hasCommunicationError |= !pplSendProcessingBegin(spsCommsData, __FUNCTION__,  static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
+		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, __FUNCTION__,
+		                          static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
 		// Close the data connection to PVRPerfServer
-		for (pvr::uint32 i = 0; i < 40; ++i)
+		for (uint32_t i = 0; i < 40; ++i)
 		{
 			char buf[128];
 			const int nLen = sprintf(buf, "test %u", i);
-			hasCommunicationError |= !pplSendMark(spsCommsData, buf, nLen);
+			_hasCommunicationError |= !pplSendMark(_spsCommsData, buf, nLen);
 		}
-		hasCommunicationError |= !pplSendProcessingEnd(spsCommsData);
-		pplShutdown(spsCommsData);
+		_hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData);
+		pplShutdown(_spsCommsData);
 	}
 	return pvr::Result::Success;
 }
@@ -458,83 +281,216 @@ pvr::Result OGLESPVRScopeRemote::quitApplication()
 ***********************************************************************************************************************/
 pvr::Result OGLESPVRScopeRemote::initView()
 {
-	_context = getGraphicsContext();
-	deviceResource.reset(new ApiObjects());
-	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
-<<<<<<< HEAD
-	m_deviceResource->onScreenFbo = m_context->createOnScreenFbo(0);
-	m_deviceResource->commandBuffer = m_context->createCommandBufferOnDefaultPool();
-=======
-	deviceResource->onScreenFbo = _context->createOnScreenFbo(0);
-	deviceResource->commandBuffer = _context->createCommandBufferOnDefaultPool();
->>>>>>> 1776432f... 4.3
+	_deviceResources.reset(new DeviceResources());
+
+	_deviceResources->context = pvr::createEglContext();
+	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), this->getMinApi(), this->getMaxApi());
+
+	_deviceResources->shaders[0] = 0;
+	_deviceResources->shaders[1] = 0;
+
+	// We want a data connection to PVRPerfServer
+	{
+		_spsCommsData = pplInitialise("PVRScopeRemote", 14);
+		_hasCommunicationError = false;
+
+		// Demonstrate that there is a good chance of the initial data being
+		// lost - the connection is normally completed asynchronously.
+		pplSendMark(_spsCommsData, "lost", static_cast<uint32_t>(strlen("lost")));
+
+		// This is entirely optional. Wait for the connection to succeed, it will
+		// timeout if e.g. PVRPerfServer is not running.
+		int isConnected;
+		pplWaitForConnection(_spsCommsData, &isConnected, 1, 200);
+	}
+	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__,
+	    static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
+
+	//  Remotely editable library items
+	if (_spsCommsData)
+	{
+		std::vector<SSPSCommsLibraryItem> communicableItems;
+		size_t dataRead;
+		//  Editable shaders
+		pvr::assets::ShaderFile vertShaderVersioning;
+		pvr::assets::ShaderFile fragShaderVersioning;
+		vertShaderVersioning.populateValidVersions(FragShaderSrcFile, *this);
+		fragShaderVersioning.populateValidVersions(VertShaderSrcFile, *this);
+
+		const std::pair<const char*, pvr::Stream::ptr_type> aShaders[2] =
+		{
+			{ FragShaderSrcFile, vertShaderVersioning.getBestStreamForApi(_deviceResources->context->getApiVersion()) },
+			{ VertShaderSrcFile, fragShaderVersioning.getBestStreamForApi(_deviceResources->context->getApiVersion()) }
+		};
+
+		std::vector<char> data[sizeof(aShaders) / sizeof(*aShaders)];
+		for (uint32_t i = 0; i < sizeof(aShaders) / sizeof(*aShaders); ++i)
+		{
+			if (aShaders[i].second->open())
+			{
+				communicableItems.push_back(SSPSCommsLibraryItem());
+				communicableItems.back().pszName = aShaders[i].first;
+				communicableItems.back().nNameLength = static_cast<uint32_t>(strlen(aShaders[i].first));
+				communicableItems.back().eType = eSPSCommsLibTypeString;
+				data[i].resize(aShaders[i].second->getSize());
+				aShaders[i].second->read(aShaders[i].second->getSize(), 1, &data[i][0], dataRead);
+				communicableItems.back().pData = &data[i][0];
+				communicableItems.back().nDataLength = static_cast<uint32_t>(aShaders[i].second->getSize());
+			}
+		}
+
+		// Editable: Specular Exponent
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		_commsLibSpecularExponent.fCurrent = _progUniforms.specularExponent;
+		_commsLibSpecularExponent.fMin = 1.1f;
+		_commsLibSpecularExponent.fMax = 300.0f;
+		communicableItems.back().pszName = "Specular Exponent";
+		communicableItems.back().nNameLength = static_cast<uint32_t>(strlen(communicableItems.back().pszName));
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&_commsLibSpecularExponent;
+		communicableItems.back().nDataLength = sizeof(_commsLibSpecularExponent);
+
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		// Editable: Metallicity
+		_commsLibMetallicity.fCurrent = _progUniforms.metallicity;
+		_commsLibMetallicity.fMin = 0.0f;
+		_commsLibMetallicity.fMax = 1.0f;
+		communicableItems.back().pszName = "Metallicity";
+		communicableItems.back().nNameLength = static_cast<uint32_t>(strlen(communicableItems.back().pszName));
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&_commsLibMetallicity;
+		communicableItems.back().nDataLength = sizeof(_commsLibMetallicity);
+
+		// Editable: Reflectivity
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		_commsLibReflectivity.fCurrent = _progUniforms.reflectivity;
+		_commsLibReflectivity.fMin = 0.;
+		_commsLibReflectivity.fMax = 1.;
+		communicableItems.back().pszName = "Reflectivity";
+		communicableItems.back().nNameLength = static_cast<uint32_t>(strlen(communicableItems.back().pszName));
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&_commsLibReflectivity;
+		communicableItems.back().nDataLength = sizeof(_commsLibReflectivity);
+
+		// Editable: Albedo R channel
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		_commsLibAlbedoR.fCurrent = _progUniforms.albedo.r;
+		_commsLibAlbedoR.fMin = 0.0f;
+		_commsLibAlbedoR.fMax = 1.0f;
+		communicableItems.back().pszName = "Albedo R";
+		communicableItems.back().nNameLength = static_cast<uint32_t>(strlen(communicableItems.back().pszName));
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&_commsLibAlbedoR;
+		communicableItems.back().nDataLength = sizeof(_commsLibAlbedoR);
+
+		// Editable: Albedo R channel
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		_commsLibAlbedoG.fCurrent = _progUniforms.albedo.g;
+		_commsLibAlbedoG.fMin = 0.0f;
+		_commsLibAlbedoG.fMax = 1.0f;
+		communicableItems.back().pszName = "Albedo G";
+		communicableItems.back().nNameLength = static_cast<uint32_t>(strlen(communicableItems.back().pszName));
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&_commsLibAlbedoG;
+		communicableItems.back().nDataLength = sizeof(_commsLibAlbedoG);
+
+		// Editable: Albedo R channel
+		communicableItems.push_back(SSPSCommsLibraryItem());
+		_commsLibAlbedoB.fCurrent = _progUniforms.albedo.b;
+		_commsLibAlbedoB.fMin = 0.0f;
+		_commsLibAlbedoB.fMax = 1.0f;
+		communicableItems.back().pszName = "Albedo B";
+		communicableItems.back().nNameLength = static_cast<uint32_t>(strlen(communicableItems.back().pszName));
+		communicableItems.back().eType = eSPSCommsLibTypeFloat;
+		communicableItems.back().pData = (const char*)&_commsLibAlbedoB;
+		communicableItems.back().nDataLength = sizeof(_commsLibAlbedoB);
+
+		// Ok, submit our library
+		if (!pplLibraryCreate(_spsCommsData, communicableItems.data(), (unsigned int)communicableItems.size()))
+		{
+			Log(LogLevel::Debug, "PVRScopeRemote: pplLibraryCreate() failed\n");
+		}
+		// User defined counters
+
+
+		SSPSCommsCounterDef counterDefines[CounterDefs::NumCounter];
+		for (uint32_t i = 0; i < CounterDefs::NumCounter; ++i)
+		{
+			counterDefines[i].pszName = FrameDefs[i];
+			counterDefines[i].nNameLength = static_cast<uint32_t>(strlen(FrameDefs[i]));
+		}
+
+		if (!pplCountersCreate(_spsCommsData, counterDefines, CounterDefs::NumCounter))
+		{
+			Log(LogLevel::Debug, "PVRScopeRemote: pplCountersCreate() failed\n");
+		}
+	}
+	_deviceResources->onScreenFbo = _deviceResources->context->getOnScreenFbo();
+
 	//  Initialize VBO data
 	loadVbos();
-
+	debugLogApiError("initView loadVbos");
 	//  Load textures
-	if (!createTexSamplerDescriptorSet())
+	if (!createSamplerTexture())
 	{
 		setExitMessage("ERROR:Failed to create DescriptorSets.");
 		return pvr::Result::NotInitialized;
 	}
-
+	debugLogApiError("initView createSamplerTexture");
 	size_t dataRead;
 	pvr::assets::ShaderFile shaderVersioning;
 	// Take our initial vertex shader source
 	{
 		shaderVersioning.populateValidVersions(VertShaderSrcFile, *this);
-		pvr::Stream::ptr_type vertShader = shaderVersioning.getBestStreamForApi(_context->getApiType());
-		vertShaderSrc.resize(vertShader->getSize() + 1, 0);
-		vertShader->read(vertShader->getSize(), 1, &vertShaderSrc[0], dataRead);
+		pvr::Stream::ptr_type vertShader = shaderVersioning.getBestStreamForApi(_deviceResources->context->getApiVersion());
+		_vertShaderSrc.resize(vertShader->getSize() + 1, 0);
+		vertShader->read(vertShader->getSize(), 1, &_vertShaderSrc[0], dataRead);
 	}
 	// Take our initial fragment shader source
 	{
 		shaderVersioning.populateValidVersions(FragShaderSrcFile, *this);
-		pvr::Stream::ptr_type fragShader = shaderVersioning.getBestStreamForApi(_context->getApiType());
-		fragShaderSrc.resize(fragShader->getSize() + 1, 0);
-		fragShader->read(fragShader->getSize(), 1, &fragShaderSrc[0], dataRead);
+		pvr::Stream::ptr_type fragShader = shaderVersioning.getBestStreamForApi(_deviceResources->context->getApiVersion());
+		_fragShaderSrc.resize(fragShader->getSize() + 1, 0);
+		fragShader->read(fragShader->getSize(), 1, &_fragShaderSrc[0], dataRead);
 	}
 
 	// create the pipeline
-	if (!createPipeline(&fragShaderSrc[0], &vertShaderSrc[0]))
+	if (!createProgram(&_fragShaderSrc[0], &_vertShaderSrc[0], false))
 	{
 		setExitMessage("ERROR:Failed to create pipelines.");
 		return pvr::Result::NotInitialized;
 	}
-
+	debugLogApiError("createProgram");
 	//  Initialize the UI Renderer
-<<<<<<< HEAD
-	if (uiRenderer.init(m_deviceResource->onScreenFbo->getRenderPass(), 0) != pvr::Result::Success)
-=======
-	if (uiRenderer.init(deviceResource->onScreenFbo->getRenderPass(), 0) != pvr::Result::Success)
->>>>>>> 1776432f... 4.3
+	if (!_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->context->getApiVersion() == pvr::Api::OpenGLES2))
 	{
 		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
 		return pvr::Result::NotInitialized;
 	}
 
 	// create the pvrscope connection pass and fail text
-	uiRenderer.getDefaultTitle()->setText("PVRScopeRemote");
-	uiRenderer.getDefaultTitle()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultTitle()->setText("PVRScopeRemote");
+	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
 
-	uiRenderer.getDefaultDescription()->setScale(glm::vec2(.5, .5));
-	uiRenderer.getDefaultDescription()->setText("Use PVRTune to remotely control the parameters of this application.");
-	uiRenderer.getDefaultDescription()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultDescription()->setScale(glm::vec2(.5, .5));
+	_deviceResources->uiRenderer.getDefaultDescription()->setText("Use PVRTune to remotely control the parameters of this application.");
+	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 
 	// Calculate the projection and view matrices
 	// Is the screen rotated?
 	bool isRotated = this->isScreenRotated() && this->isFullScreen();
 	if (isRotated)
 	{
-		progUniforms.projectionMtx = pvr::math::perspectiveFov(getApiType(), glm::pi<pvr::float32>() / 6, (pvr::float32)getHeight(),
-		                             (pvr::float32)getWidth(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar(), glm::pi<pvr::float32>() * .5f);
+		_progUniforms.projectionMtx = pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::pi<float>() / 6, (float)getHeight(),
+		                              (float)getWidth(), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(), glm::pi<float>() * .5f);
 	}
 	else
 	{
-		progUniforms.projectionMtx = glm::perspectiveFov(glm::pi<pvr::float32>() / 6, (pvr::float32)getWidth(),
-		                             (pvr::float32)getHeight(), scene->getCamera(0).getNear(), scene->getCamera(0).getFar());
+		_progUniforms.projectionMtx = pvr::math::perspectiveFov(_deviceResources->context->getApiVersion(), glm::pi<float>() / 6, (float)getWidth(),
+		                              (float)getHeight(), _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar());
 	}
-	recordCommandBuffer();
+	gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _deviceResources->onScreenFbo);
+	gl::ClearColor(0.00f, 0.70f, 0.67f, 1.0f);
 	return pvr::Result::Success;
 }
 
@@ -544,11 +500,10 @@ pvr::Result OGLESPVRScopeRemote::initView()
 ***********************************************************************************************************************/
 pvr::Result OGLESPVRScopeRemote::releaseView()
 {
-	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
+	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 	// Release UIRenderer
-	uiRenderer.release();
-	assetStore.releaseAll();
-	deviceResource.reset();
+	_deviceResources->uiRenderer.release();
+	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
@@ -558,38 +513,38 @@ pvr::Result OGLESPVRScopeRemote::releaseView()
 ***********************************************************************************************************************/
 pvr::Result OGLESPVRScopeRemote::renderFrame()
 {
-	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
-	bool currCommunicationErr = hasCommunicationError;
-	if (spsCommsData)
+	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
+	bool currCommunicationErr = _hasCommunicationError;
+	if (_spsCommsData)
 	{
 		// mark every N frames
-		if (!(frameCounter % 100))
+		if (!(_frameCounter % 100))
 		{
 			char buf[128];
-			const int nLen = sprintf(buf, "frame %u", frameCounter);
-			hasCommunicationError |= !pplSendMark(spsCommsData, buf, nLen);
+			const int nLen = sprintf(buf, "frame %u", _frameCounter);
+			_hasCommunicationError |= !pplSendMark(_spsCommsData, buf, nLen);
 		}
 
 		// Check for dirty items
-		hasCommunicationError |= !pplSendProcessingBegin(spsCommsData, "dirty", static_cast<pvr::uint32>(strlen("dirty")), frameCounter);
+		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "dirty", static_cast<uint32_t>(strlen("dirty")), _frameCounter);
 		{
-			pvr::uint32 nItem, nNewDataLen;
+			uint32_t nItem, nNewDataLen;
 			const char* pData;
 			bool recompile = false;
-			while (pplLibraryDirtyGetFirst(spsCommsData, &nItem, &nNewDataLen, &pData))
+			while (pplLibraryDirtyGetFirst(_spsCommsData, &nItem, &nNewDataLen, &pData))
 			{
-				pvr::Log(pvr::Log.Debug, "dirty item %u %u 0x%08x\n", nItem, nNewDataLen, pData);
+				(LogLevel::Debug, "dirty item %u %u 0x%08x\n", nItem, nNewDataLen, pData);
 				switch (nItem)
 				{
 				case 0:
-					fragShaderSrc.assign(pData, pData + nNewDataLen);
-					fragShaderSrc.push_back(0);
+					_fragShaderSrc.assign(pData, pData + nNewDataLen);
+					_fragShaderSrc.push_back(0);
 					recompile = true;
 					break;
 
 				case 1:
-					vertShaderSrc.assign(pData, pData + nNewDataLen);
-					vertShaderSrc.push_back(0);
+					_vertShaderSrc.assign(pData, pData + nNewDataLen);
+					_vertShaderSrc.push_back(0);
 					recompile = true;
 					break;
 
@@ -597,48 +552,48 @@ pvr::Result OGLESPVRScopeRemote::renderFrame()
 					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
 					{
 						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						progUniforms.specularExponent = psData->fCurrent;
-						pvr::Log(pvr::Log.Information, "Setting Specular Exponent to value [%6.2f]", progUniforms.specularExponent);
+						_progUniforms.specularExponent = psData->fCurrent;
+						Log(LogLevel::Information, "Setting Specular Exponent to value [%6.2f]", _progUniforms.specularExponent);
 					}
 					break;
 				case 3:
 					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
 					{
 						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						progUniforms.metallicity = psData->fCurrent;
-						pvr::Log(pvr::Log.Information, "Setting Metallicity to value [%3.2f]", progUniforms.metallicity);
+						_progUniforms.metallicity = psData->fCurrent;
+						Log(LogLevel::Information, "Setting Metallicity to value [%3.2f]", _progUniforms.metallicity);
 					}
 					break;
 				case 4:
 					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
 					{
 						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						progUniforms.reflectivity = psData->fCurrent;
-						pvr::Log(pvr::Log.Information, "Setting Reflectivity to value [%3.2f]", progUniforms.reflectivity);
+						_progUniforms.reflectivity = psData->fCurrent;
+						Log(LogLevel::Information, "Setting Reflectivity to value [%3.2f]", _progUniforms.reflectivity);
 					}
 					break;
 				case 5:
 					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
 					{
 						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						progUniforms.albedo.r = psData->fCurrent;
-						pvr::Log(pvr::Log.Information, "Setting Albedo Red channel to value [%3.2f]", progUniforms.albedo.r);
+						_progUniforms.albedo.r = psData->fCurrent;
+						Log(LogLevel::Information, "Setting Albedo Red channel to value [%3.2f]", _progUniforms.albedo.r);
 					}
 					break;
 				case 6:
 					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
 					{
 						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						progUniforms.albedo.g = psData->fCurrent;
-						pvr::Log(pvr::Log.Information, "Setting Albedo Green channel to value [%3.2f]", progUniforms.albedo.g);
+						_progUniforms.albedo.g = psData->fCurrent;
+						Log(LogLevel::Information, "Setting Albedo Green channel to value [%3.2f]", _progUniforms.albedo.g);
 					}
 					break;
 				case 7:
 					if (nNewDataLen == sizeof(SSPSCommsLibraryTypeFloat))
 					{
 						const SSPSCommsLibraryTypeFloat* const psData = (SSPSCommsLibraryTypeFloat*)pData;
-						progUniforms.albedo.b = psData->fCurrent;
-						pvr::Log(pvr::Log.Information, "Setting Albedo Blue channel to value [%3.2f]", progUniforms.albedo.b);
+						_progUniforms.albedo.b = psData->fCurrent;
+						Log(LogLevel::Information, "Setting Albedo Blue channel to value [%3.2f]", _progUniforms.albedo.b);
 					}
 					break;
 				}
@@ -646,72 +601,81 @@ pvr::Result OGLESPVRScopeRemote::renderFrame()
 
 			if (recompile)
 			{
-				if (!createPipeline(&fragShaderSrc[0], &vertShaderSrc[0]))
+				if (!createProgram(&_fragShaderSrc[0], &_vertShaderSrc[0], true))
 				{
-					pvr::Log(pvr::Log.Error, "*** Could not recompile the shaders passed from PVRScopeCommunication ****");
+					Log(LogLevel::Error, "*** Could not recompile the shaders passed from PVRScopeCommunication ****");
 				}
 			}
 		}
-		hasCommunicationError |= !pplSendProcessingEnd(spsCommsData);
+		_hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData);
 	}
 
-	if (spsCommsData)
+	if (_spsCommsData)
 	{
-		hasCommunicationError |= !pplSendProcessingBegin(spsCommsData, "draw", static_cast<pvr::uint32>(strlen("draw")), frameCounter);
+		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "draw", static_cast<uint32_t>(strlen("draw")), _frameCounter);
 	}
 
 // Rotate and Translation the model matrix
-	glm::mat4 modelMtx = glm::rotate(angleY, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(0.6f)) * scene->getWorldMatrix(0);
-	angleY += (2 * glm::pi<glm::float32>() * getFrameTime() / 1000) / 10;
+	glm::mat4 modelMtx = glm::rotate(_angleY, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(0.6f)) * _scene->getWorldMatrix(0);
+	_angleY += (2 * glm::pi<float>() * getFrameTime() / 1000) / 10;
 
-	progUniforms.viewMtx = glm::lookAt(glm::vec3(0.f, 0.f, 75.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	_progUniforms.viewMtx = glm::lookAt(glm::vec3(0.f, 0.f, 75.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
 // Set model view projection matrix
-	progUniforms.mvMatrix = progUniforms.viewMtx * modelMtx;
-	progUniforms.mvpMatrix = progUniforms.projectionMtx * progUniforms.mvMatrix;
+	_progUniforms.mvMatrix = _progUniforms.viewMtx * modelMtx;
+	_progUniforms.mvpMatrix = _progUniforms.projectionMtx * _progUniforms.mvMatrix;
 
-	progUniforms.mvITMatrix = glm::inverseTranspose(glm::mat3(progUniforms.mvMatrix));
+	_progUniforms.mvITMatrix = glm::inverseTranspose(glm::mat3(_progUniforms.mvMatrix));
 
 	// Set light direction in model space
-	progUniforms.lightDirView = glm::normalize(glm::vec3(1., 1., -1.));
+	_progUniforms.lightDirView = glm::normalize(glm::vec3(1., 1., -1.));
 
 	// Set eye position in model space
 	// Now that the uniforms are set, call another function to actually draw the mesh.
-	if (spsCommsData)
+	if (_spsCommsData)
 	{
-		hasCommunicationError |= !pplSendProcessingEnd(spsCommsData);
+		_hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData);
 
-		hasCommunicationError |= !pplSendProcessingBegin(spsCommsData, "Print3D", static_cast<pvr::uint32>(strlen("Print3D")), frameCounter);
+		_hasCommunicationError |= !pplSendProcessingBegin(_spsCommsData, "UIRenderer",
+		                          static_cast<uint32_t>(strlen("UIRenderer")), _frameCounter);
 	}
 
-	if (hasCommunicationError)
+	if (_hasCommunicationError)
 	{
-		uiRenderer.getDefaultControls()->setText("Communication Error:\nPVRScopeComms failed\n"
+		_deviceResources->uiRenderer.getDefaultControls()->setText("Communication Error:\nPVRScopeComms failed\n"
 		    "Is PVRPerfServer connected?");
-		uiRenderer.getDefaultControls()->setColor(glm::vec4(.8f, .3f, .3f, 1.0f));
-		uiRenderer.getDefaultControls()->commitUpdates();
-		recordCommandBuffer();
-		hasCommunicationError = false;
+		_deviceResources->uiRenderer.getDefaultControls()->setColor(glm::vec4(.8f, .3f, .3f, 1.0f));
+		_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
+		executeCommands();
+		_hasCommunicationError = false;
 	}
 	else
 	{
-		uiRenderer.getDefaultControls()->setText("PVRScope Communication established.");
-		uiRenderer.getDefaultControls()->setColor(glm::vec4(1.f));
-		uiRenderer.getDefaultControls()->commitUpdates();
-		recordCommandBuffer();
+		_deviceResources->uiRenderer.getDefaultControls()->setText("PVRScope Communication established.");
+		_deviceResources->uiRenderer.getDefaultControls()->setColor(glm::vec4(1.f));
+		_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
+		executeCommands();
 	}
 
-	if (spsCommsData) { hasCommunicationError |= !pplSendProcessingEnd(spsCommsData); }
+	if (_spsCommsData) { _hasCommunicationError |= !pplSendProcessingEnd(_spsCommsData); }
 
 	// send counters
-	counterReadings[CounterDefs::Counter] = frameCounter;
-	counterReadings[CounterDefs::Counter10] = frame10Counter;
-	if (spsCommsData) { hasCommunicationError |= !pplCountersUpdate(spsCommsData, counterReadings); }
+	_counterReadings[CounterDefs::Counter] = _frameCounter;
+	_counterReadings[CounterDefs::Counter10] = _frame10Counter;
+	if (_spsCommsData) { _hasCommunicationError |= !pplCountersUpdate(_spsCommsData, _counterReadings); }
 
 	// update some counters
-	++frameCounter;
-	if (0 == (frameCounter / 10) % 10) { frame10Counter += 10; }
-	deviceResource->commandBuffer->submit();
+	++_frameCounter;
+	if (0 == (_frameCounter / 10) % 10) { _frame10Counter += 10; }
+	executeCommands();
+
+	if (this->shouldTakeScreenshot())
+	{
+		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
+	}
+
+	_deviceResources->context->swapBuffers();
+
 	return pvr::Result::Success;
 }
 
@@ -721,13 +685,26 @@ pvr::Result OGLESPVRScopeRemote::renderFrame()
 ***********************************************************************************************************************/
 void OGLESPVRScopeRemote::drawMesh(int nodeIndex)
 {
-	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
+	debugLogApiError("draw mesh");
+	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__, static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
-	pvr::int32 meshIndex = scene->getNode(nodeIndex).getObjectId();
-	const pvr::assets::Mesh& mesh = scene->getMesh(meshIndex);
+	int32_t meshIndex = _scene->getNode(nodeIndex).getObjectId();
+	const pvr::assets::Mesh& mesh = _scene->getMesh(meshIndex);
 	// bind the VBO for the mesh
-	deviceResource->commandBuffer->bindVertexBuffer(deviceResource->vbos[meshIndex], 0, 0);
+	gl::BindBuffer(GL_ARRAY_BUFFER, _deviceResources->vbos[meshIndex]);
+	debugLogApiError("draw mesh");
+	for (int i = 0; i < 3; ++i)
+	{
+		auto& attrib = _vertexConfiguration.attributes[i];
+		auto& binding = _vertexConfiguration.bindings[0];
+		gl::EnableVertexAttribArray(attrib.index);
+		gl::VertexAttribPointer(attrib.index, attrib.width, pvr::utils::convertToGles(attrib.format),
+		                        dataTypeIsNormalised(attrib.format), binding.strideInBytes,
+		                        reinterpret_cast<const void*>(static_cast<uintptr_t>(attrib.offsetInBytes)));
+		debugLogApiError("draw mesh");
+	}
 
+	debugLogApiError("draw mesh");
 
 	//  The geometry can be exported in 4 ways:
 	//  - Indexed Triangle list
@@ -736,91 +713,90 @@ void OGLESPVRScopeRemote::drawMesh(int nodeIndex)
 	//  - Non-Indexed Triangle strips
 	if (mesh.getNumStrips() == 0)
 	{
-		if (deviceResource->ibos[meshIndex].isValid())
+		if (_deviceResources->ibos[meshIndex])
 		{
 			// Indexed Triangle list
-			deviceResource->commandBuffer->bindIndexBuffer(deviceResource->ibos[meshIndex], 0, types::IndexType::IndexType16Bit);
-			deviceResource->commandBuffer->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
+			gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _deviceResources->ibos[meshIndex]);
+			gl::DrawElements(GL_TRIANGLES, mesh.getNumFaces() * 3, GL_UNSIGNED_SHORT, nullptr);
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			deviceResource->commandBuffer->drawArrays(0, mesh.getNumFaces(), 0, 1);
+			gl::DrawArrays(GL_TRIANGLES, 0, mesh.getNumFaces());
 		}
 	}
 	else
 	{
-		for (pvr::int32 i = 0; i < (pvr::int32)mesh.getNumStrips(); ++i)
+		for (int32_t i = 0; i < (int32_t)mesh.getNumStrips(); ++i)
 		{
 			int offset = 0;
-			if (deviceResource->ibos[meshIndex].isValid())
+			if (_deviceResources->ibos[meshIndex])
 			{
-				deviceResource->commandBuffer->bindIndexBuffer(deviceResource->ibos[meshIndex], 0, types::IndexType::IndexType16Bit);
-
 				// Indexed Triangle strips
-				deviceResource->commandBuffer->drawIndexed(0, mesh.getStripLength(i) + 2, offset * 2, 0, 1);
+				gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _deviceResources->ibos[meshIndex]);
+				gl::DrawElements(GL_TRIANGLE_STRIP, mesh.getStripLength(i) + 2, GL_UNSIGNED_SHORT, 0);
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				deviceResource->commandBuffer->drawArrays(0, mesh.getStripLength(i) + 2, 0, 1);
+				gl::DrawArrays(GL_TRIANGLE_STRIP, 0, mesh.getStripLength(i) + 2);
 			}
 			offset += mesh.getStripLength(i) + 2;
 		}
+	}
+	for (int i = 0; i < 3; ++i)
+	{
+		auto& attrib = _vertexConfiguration.attributes[i];
+		gl::DisableVertexAttribArray(attrib.index);
 	}
 }
 
 /*!*********************************************************************************************************************
 \brief  pre-record the rendering the commands
 ***********************************************************************************************************************/
-void OGLESPVRScopeRemote::recordCommandBuffer()
+void OGLESPVRScopeRemote::executeCommands()
 {
-	CPPLProcessingScoped PPLProcessingScoped(spsCommsData, __FUNCTION__, static_cast<pvr::uint32>(strlen(__FUNCTION__)), frameCounter);
-	deviceResource->commandBuffer->beginRecording();
+	debugLogApiError("executeCommands");
+	CPPLProcessingScoped PPLProcessingScoped(_spsCommsData, __FUNCTION__,
+	    static_cast<uint32_t>(strlen(__FUNCTION__)), _frameCounter);
 
-	deviceResource->commandBuffer->beginRenderPass(deviceResource->onScreenFbo, pvr::Rectanglei(0, 0, getWidth(), getHeight()), true, glm::vec4(0.00, 0.70, 0.67, 1.0f));
-
-	// Use shader program
-	deviceResource->commandBuffer->bindPipeline(deviceResource->pipeline);
-	// Bind texture
-	deviceResource->commandBuffer->bindDescriptorSet(deviceResource->pipeline->getPipelineLayout(), 0, deviceResource->descriptorSet, 0);
-
-<<<<<<< HEAD
-	m_deviceResource->commandBuffer->setUniformPtr<glm::vec3>(uniformLocations.lightDirView, 1, &progUniforms.lightDirView);
-	m_deviceResource->commandBuffer->setUniformPtr<glm::mat4>(uniformLocations.mvpMtx, 1, &progUniforms.mvpMatrix);
-	m_deviceResource->commandBuffer->setUniformPtr<glm::mat3>(uniformLocations.mvITMtx, 1, &progUniforms.mvITMatrix);
-	m_deviceResource->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.specularExponent, 1, &progUniforms.specularExponent);
-	m_deviceResource->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.metallicity, 1, &progUniforms.metallicity);
-	m_deviceResource->commandBuffer->setUniformPtr<pvr::float32>(uniformLocations.reflectivity, 1, &progUniforms.reflectivity);
-	m_deviceResource->commandBuffer->setUniformPtr<glm::vec3>(uniformLocations.albedo, 1, &progUniforms.albedo);
-=======
-	deviceResource->commandBuffer->setUniformPtr(uniformLocations.lightDirView, 1, &progUniforms.lightDirView);
-	deviceResource->commandBuffer->setUniformPtr(uniformLocations.mvpMtx, 1, &progUniforms.mvpMatrix);
-	deviceResource->commandBuffer->setUniformPtr(uniformLocations.mvITMtx, 1, &progUniforms.mvITMatrix);
-	deviceResource->commandBuffer->setUniformPtr(uniformLocations.specularExponent, 1, &progUniforms.specularExponent);
-	deviceResource->commandBuffer->setUniformPtr(uniformLocations.metallicity, 1, &progUniforms.metallicity);
-	deviceResource->commandBuffer->setUniformPtr(uniformLocations.reflectivity, 1, &progUniforms.reflectivity);
-	deviceResource->commandBuffer->setUniformPtr(uniformLocations.albedo, 1, &progUniforms.albedo);
->>>>>>> 1776432f... 4.3
-
+	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	gl::UseProgram(_deviceResources->program);
+	debugLogApiError("executeCommands");
+	gl::BindTexture(GL_TEXTURE_2D, _deviceResources->texture);
+	debugLogApiError("executeCommands");
+	gl::CullFace(GL_BACK);
+	gl::FrontFace(GL_CCW);
+	gl::Enable(GL_DEPTH_TEST);
+	debugLogApiError("executeCommands");
+	gl::Uniform3fv(_uniformLocations.lightDirView, 1, glm::value_ptr(_progUniforms.lightDirView));
+	debugLogApiError("executeCommands");
+	gl::UniformMatrix4fv(_uniformLocations.mvpMtx, 1, false, glm::value_ptr(_progUniforms.mvpMatrix));
+	debugLogApiError("executeCommands");
+	gl::UniformMatrix3fv(_uniformLocations.mvITMtx, 1, false, glm::value_ptr(_progUniforms.mvITMatrix));
+	debugLogApiError("executeCommands");
+	gl::Uniform1fv(_uniformLocations.specularExponent, 1, &_progUniforms.specularExponent);
+	debugLogApiError("executeCommands");
+	gl::Uniform1fv(_uniformLocations.metallicity, 1, &_progUniforms.metallicity);
+	debugLogApiError("executeCommands");
+	gl::Uniform1fv(_uniformLocations.reflectivity, 1, &_progUniforms.reflectivity);
+	debugLogApiError("executeCommands");
+	gl::Uniform3fv(_uniformLocations.albedo, 1, glm::value_ptr(_progUniforms.albedo));
+	debugLogApiError("executeCommands");
 	drawMesh(0);
 
-	pvr::api::SecondaryCommandBuffer uicmd = _context->createSecondaryCommandBufferOnDefaultPool();
-	uiRenderer.beginRendering(uicmd);
+	_deviceResources->uiRenderer.beginRendering();
 	// Displays the demo name using the tools. For a detailed explanation, see the example
-	// IntroUIRenderer
-	uiRenderer.getDefaultTitle()->render();
-	uiRenderer.getDefaultDescription()->render();
-	uiRenderer.getSdkLogo()->render();
-	uiRenderer.getDefaultControls()->render();
-	uiRenderer.endRendering();
-	deviceResource->commandBuffer->enqueueSecondaryCmds(uicmd);
-	deviceResource->commandBuffer->endRenderPass();
-	deviceResource->commandBuffer->endRecording();
+	// IntroducingUIRenderer
+	_deviceResources->uiRenderer.getDefaultTitle()->render();
+	_deviceResources->uiRenderer.getDefaultDescription()->render();
+	_deviceResources->uiRenderer.getSdkLogo()->render();
+	_deviceResources->uiRenderer.getDefaultControls()->render();
+	_deviceResources->uiRenderer.endRendering();
 }
 
 /*!*********************************************************************************************************************
 \return Return auto ptr to the demo supplied by the user
 \brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the behavior of the application.
 ***********************************************************************************************************************/
-std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new OGLESPVRScopeRemote()); }
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::unique_ptr<pvr::Shell>(new OGLESPVRScopeRemote()); }

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['bicubicfiltering',['BicubicFiltering',['../structpvr_1_1_api_capabilities.html#abb9320fb33b0f72d6a9097abb1c72eb2a91f8a63537a34ecf13daf939097993ef',1,'pvr::ApiCapabilities']]]
+  ['b',['B',['../namespacepvr.html#a675b14a2f2079f7f72e7f2ad35d13de7a9d5ed678fe57bcca610140957afab571',1,'pvr']]],
+  ['back',['Back',['../namespacepvr.html#a1ca56afd652113209f2535e7688a4189a0557fa923dcee4d0f86b1409f5c2167f',1,'pvr']]]
 ];

@@ -7,33 +7,28 @@
 //       |
 //      texel center
 //
-// 
+//
 // Using hardware texture filtering, the amount of samples can be
 // reduced to three. To calculate the offset, use this formula:
 // d = w1 / (w1 + w2),  whereas w1 and w2 denote the filter kernel weights
 
-#define AXIS_ALIGNED_QUAD_VERTEX_ARRAY	0
-#define AXIS_ALIGNED_QUAD_TEXCOORD_ARRAY	1
-
-layout (location = AXIS_ALIGNED_QUAD_VERTEX_ARRAY) in highp vec3	inVertex;
-layout (location = AXIS_ALIGNED_QUAD_TEXCOORD_ARRAY) in mediump vec2	inTexCoord;
-
 uniform mediump float  TexelOffsetX;
 uniform mediump float  TexelOffsetY;
-uniform mediump mat4 MVPMatrix;
 out mediump vec2  TexCoord0;
 out mediump vec2  TexCoord1;
 out mediump vec2  TexCoord2;
 
 void main()
 {
-	// Pass through vertex
-	gl_Position = MVPMatrix * vec4(inVertex, 1.0);
-	
-	// Calculate texture offsets and pass through	
+	highp vec2 texcoord = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2);
+	gl_Position = vec4(texcoord * 2.0 + -1.0, 0.0, 1.0);
+
+	highp vec2 vTexCoord = texcoord;
+
+	// Calculate texture offsets and pass through
 	mediump vec2 offset = vec2(TexelOffsetX, TexelOffsetY);
-  
-    TexCoord0 = inTexCoord - offset;
-    TexCoord1 = inTexCoord;
-    TexCoord2 = inTexCoord + offset;    
+
+	TexCoord0 = vTexCoord - offset;
+	TexCoord1 = vTexCoord;
+	TexCoord2 = vTexCoord + offset;
 }

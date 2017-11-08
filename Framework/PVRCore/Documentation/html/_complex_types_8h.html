@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -83,6 +83,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">ComplexTypes.h File Reference</div>  </div>
@@ -99,89 +100,65 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_bitfield.html">pvr::Bitfield&lt; Storage_ &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class wrapping an arithmetic type and providing bitwise operation for its bits <a href="classpvr_1_1_bitfield.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_blending_config.html">pvr::types::BlendingConfig</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add blending configuration for a color attachment. Some API's only support one blending state for all attachments, in which case the 1st such configuration will be used for all. <a href="structpvr_1_1types_1_1_blending_config.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_blending_config.html">pvr::BlendingConfig</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add blending configuration for a color attachment. Some API's only support one blending state for all attachments, in which case the 1st such configuration will be used for all. <a href="structpvr_1_1_blending_config.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_buffer_image_copy.html">pvr::types::BufferImageCopy</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains the data for copying between a buffer and an image <a href="structpvr_1_1types_1_1_buffer_image_copy.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_cmd_draw_indexed_indirect.html">pvr::CmdDrawIndexedIndirect</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The DrawIndexedIndirectCmd struct. The structure contains the data for drawIndexedInsdirect command buffer <a href="structpvr_1_1_cmd_draw_indexed_indirect.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_cmd_draw_indexed_indirect.html">pvr::types::CmdDrawIndexedIndirect</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The DrawIndexedIndirectCmd struct. The structure contains the data for drawIndexedInsdirect command buffer <a href="structpvr_1_1types_1_1_cmd_draw_indexed_indirect.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_cmd_draw_indirect.html">pvr::CmdDrawIndirect</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The DrawIndirectCmd struct. The structure contains the data for drawIndirect command buffer  <a href="structpvr_1_1_cmd_draw_indirect.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_cmd_draw_indirect.html">pvr::types::CmdDrawIndirect</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The DrawIndirectCmd struct. The structure contains the data for drawIndirect command buffer  <a href="structpvr_1_1types_1_1_cmd_draw_indirect.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_display_attributes.html">pvr::DisplayAttributes</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains display configuration information (width, height, position, title, bpp etc.). <a href="classpvr_1_1_display_attributes.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_descriptor_binding_layout.html">pvr::types::DescriptorBindingLayout</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A binding layout for a descriptor <a href="structpvr_1_1types_1_1_descriptor_binding_layout.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_generic_extent2_d.html">pvr::GenericExtent2D&lt; T &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains a 2d Integer size (width, height) <a href="structpvr_1_1_generic_extent2_d.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1types_1_1_descriptor_binding_store.html">pvr::types::DescriptorBindingStore&lt; DescriptorTypeBinding &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A store for a set of descriptor item bindings <a href="classpvr_1_1types_1_1_descriptor_binding_store.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_generic_extent3_d.html">pvr::GenericExtent3D&lt; Txy, Tz &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains a 3D Integer size (width, height, depth) <a href="structpvr_1_1_generic_extent3_d.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_descriptor_item_binding.html">pvr::types::DescriptorItemBinding&lt; _Binding &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An item binding for a descriptor <a href="structpvr_1_1types_1_1_descriptor_item_binding.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_generic_offset2_d.html">pvr::GenericOffset2D&lt; T &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="structpvr_1_1_generic_offset2_d.html" title="The GenericOffset2D contains a 16-bit 2D offset (offsetX, offsetY)">GenericOffset2D</a> contains a 16-bit 2D offset (offsetX, offsetY) <a href="structpvr_1_1_generic_offset2_d.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1types_1_1_descriptor_layout_binding_store.html">pvr::types::DescriptorLayoutBindingStore</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A store for a set of descriptor layout bindings <a href="classpvr_1_1types_1_1_descriptor_layout_binding_store.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_generic_offset3_d.html">pvr::GenericOffset3D&lt; Txy, Tz &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="structpvr_1_1_generic_offset3_d.html" title="The GenericOffset3D contains the offsets in 3 dimension (offsetX, offsetY, offsetZ)">GenericOffset3D</a> contains the offsets in 3 dimension (offsetX, offsetY, offsetZ) <a href="structpvr_1_1_generic_offset3_d.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_descriptor_type_binding.html">pvr::types::DescriptorTypeBinding</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for a descriptor type binding <a href="structpvr_1_1types_1_1_descriptor_type_binding.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_layers_size.html">pvr::ImageLayersSize</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure describes the number of array levels and mip levels an image contains <a href="structpvr_1_1_image_layers_size.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1types_1_1_descriptor_update_binding_store.html">pvr::types::DescriptorUpdateBindingStore&lt; _BindingType &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A store for a set of descriptor item bindings <a href="classpvr_1_1types_1_1_descriptor_update_binding_store.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_range.html">pvr::ImageRange</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a specific 3-D range in an image (an orthogonal cuboid anywhere in the image) <a href="structpvr_1_1_image_range.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_generic_extent2_d.html">pvr::types::GenericExtent2D&lt; T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains a 2d integer size (width, height) <a href="structpvr_1_1types_1_1_generic_extent2_d.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_resolve_range.html">pvr::ImageResolveRange</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an image resolve operation <a href="structpvr_1_1_image_resolve_range.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_generic_extent3_d.html">pvr::types::GenericExtent3D&lt; Txy, Tz &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains a 3D integer size (width, height, depth) <a href="structpvr_1_1types_1_1_generic_extent3_d.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_subresource.html">pvr::ImageSubresource</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes a single "layer" of an image: a single array layer of a single mip level, or the offset of a layer range. <a href="structpvr_1_1_image_subresource.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_generic_offset2_d.html">pvr::types::GenericOffset2D&lt; T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="structpvr_1_1types_1_1_generic_offset2_d.html" title="The GenericOffset2D contains a 16-bit 2D offset (offsetX, offsetY)">GenericOffset2D</a> contains a 16-bit 2D offset (offsetX, offsetY) <a href="structpvr_1_1types_1_1_generic_offset2_d.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_subresource_layers.html">pvr::ImageSubresourceLayers</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a specific subresource layer: A specified Array Layer and Mipmap level of specific aspect of an image <a href="structpvr_1_1_image_subresource_layers.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_generic_offset3_d.html">pvr::types::GenericOffset3D&lt; Txy, Tz &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="structpvr_1_1types_1_1_generic_offset3_d.html" title="The GenericOffset3D contains the offsets in 3 dimension (offsetX, offsetY, offsetZ)">GenericOffset3D</a> contains the offsets in 3 dimension (offsetX, offsetY, offsetZ) <a href="structpvr_1_1types_1_1_generic_offset3_d.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_image_subresource_range.html">pvr::ImageSubresourceRange</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a subresource range: A specified range of Array Layers and Mipmap levels of specific aspect of an image <a href="structpvr_1_1_image_subresource_range.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_image_area.html">pvr::types::ImageArea</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an exact range on an image: both a range of array and mipmap layers, and a geometric range (offset and size in x-y-z) <a href="structpvr_1_1types_1_1_image_area.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_stencil_state.html">pvr::StencilState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline Stencil state <a href="structpvr_1_1_stencil_state.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_image_area_offset.html">pvr::types::ImageAreaOffset</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the geometric offset (distance from 0,0,0 in x-y-z) and offset of array and mipmap layers of an image. <a href="structpvr_1_1types_1_1_image_area_offset.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_swizzle_channels.html">pvr::SwizzleChannels</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="structpvr_1_1_swizzle_channels.html" title="The SwizzleChannels struct">SwizzleChannels</a> struct <a href="structpvr_1_1_swizzle_channels.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_image_area_size.html">pvr::types::ImageAreaSize</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the geometric size (number of rows/columns/slices in x-y-z) and number of array and mipmap layers of an image. <a href="structpvr_1_1types_1_1_image_area_size.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_vertex_attribute_info.html">pvr::VertexAttributeInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains a full description of a Vertex Attribute: Index, format, number of elements, offset in the buffer, optionally name. All values (except attributeName) must be set explicitly. <a href="structpvr_1_1_vertex_attribute_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_image_aspect_range.html">pvr::types::ImageAspectRange</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a single aspect of an image (Color, Depth, Stencil, Depth/Stencil) <a href="structpvr_1_1types_1_1_image_aspect_range.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_vertex_attribute_info_with_binding.html">pvr::VertexAttributeInfoWithBinding</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A container struct carrying Vertex Attribute information (vertex layout, plus binding point) <a href="structpvr_1_1_vertex_attribute_info_with_binding.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_image_blit_range.html">pvr::types::ImageBlitRange</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a blit operation through source and destination offsets <a href="structpvr_1_1types_1_1_image_blit_range.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_vertex_attribute_layout.html">pvr::VertexAttributeLayout</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class contains all the information of a Vertex Attribute's layout inside a block of memory, typically a Vertex Buffer Object. This informations is normally the DataType of the attribute, the Offset (from the beginning of the array) and the width (how many values of type DataType form an attribute). <a href="structpvr_1_1_vertex_attribute_layout.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_image_layers_size.html">pvr::types::ImageLayersSize</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure describes the number of array levels and mip levels an image contains <a href="structpvr_1_1types_1_1_image_layers_size.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_image_range.html">pvr::types::ImageRange</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a specific 3-D range in an image (an orthogonal cuboid anywhere in the image) <a href="structpvr_1_1types_1_1_image_range.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_image_subresource.html">pvr::types::ImageSubresource</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes a single "layer" of an image: a single array layer of a single mip level, or the offset of a layer range. <a href="structpvr_1_1types_1_1_image_subresource.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_image_sub_resource_layers.html">pvr::types::ImageSubResourceLayers</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a specific subresource layer: A specified Array Layer and Mipmap level of specific aspect of an image <a href="structpvr_1_1types_1_1_image_sub_resource_layers.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_image_subresource_range.html">pvr::types::ImageSubresourceRange</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a subresource range: A specified range of Array Layers and Mipmap levels of specific aspect of an image <a href="structpvr_1_1types_1_1_image_subresource_range.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_sampler_create_param.html">pvr::types::SamplerCreateParam</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Object describing the state of a sampler. Also used to construct a full-blown Sampler object. <a href="structpvr_1_1types_1_1_sampler_create_param.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_stencil_state.html">pvr::types::StencilState</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pipeline Stencil state <a href="structpvr_1_1types_1_1_stencil_state.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_swizzle_channels.html">pvr::types::SwizzleChannels</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="structpvr_1_1types_1_1_swizzle_channels.html" title="The SwizzleChannels struct">SwizzleChannels</a> struct <a href="structpvr_1_1types_1_1_swizzle_channels.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1types_1_1_vertex_attribute_layout.html">pvr::types::VertexAttributeLayout</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class contains all the information of a Vertex Attribute's layout inside a block of memory, typically a Vertex Buffer Object. This informations is normally the DataType of the attribute, the Offset (from the beginning of the array) and the width (how many values of type DataType form an attribute). <a href="structpvr_1_1types_1_1_vertex_attribute_layout.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_vertex_input_binding_info.html">pvr::VertexInputBindingInfo</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information about a Buffer binding: Binding index, stride, (instance) step rate. <a href="structpvr_1_1_vertex_input_binding_info.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -190,11 +167,66 @@ Namespaces</h2></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main PowerVR Framework Namespace<br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a065d965f04c53d6e94e0e56a34289090"><td class="memItemLeft" align="right" valign="top">typedef GenericExtent2D&lt; uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a065d965f04c53d6e94e0e56a34289090">pvr::Extent2D</a></td></tr>
+<tr class="memdesc:a065d965f04c53d6e94e0e56a34289090"><td class="mdescLeft">&#160;</td><td class="mdescRight">A 2D, integer Extent typically used for Images <a href="#a065d965f04c53d6e94e0e56a34289090">More...</a><br/></td></tr>
+<tr class="separator:a065d965f04c53d6e94e0e56a34289090"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc7deef434e373b18abd3b929c31e9aa"><td class="memItemLeft" align="right" valign="top">typedef GenericExtent3D<br class="typebreak"/>
+&lt; uint32_t, uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#abc7deef434e373b18abd3b929c31e9aa">pvr::Extent3D</a></td></tr>
+<tr class="memdesc:abc7deef434e373b18abd3b929c31e9aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">A 3D, integer Extent typically used for 3D Images <a href="#abc7deef434e373b18abd3b929c31e9aa">More...</a><br/></td></tr>
+<tr class="separator:abc7deef434e373b18abd3b929c31e9aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c68f9a2f58eb4afee65dee64a84ec60"><td class="memItemLeft" align="right" valign="top">typedef GenericOffset2D&lt; int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a3c68f9a2f58eb4afee65dee64a84ec60">pvr::Offset2D</a></td></tr>
+<tr class="memdesc:a3c68f9a2f58eb4afee65dee64a84ec60"><td class="mdescLeft">&#160;</td><td class="mdescRight">A 2D, integer Offset typically used for Images <a href="#a3c68f9a2f58eb4afee65dee64a84ec60">More...</a><br/></td></tr>
+<tr class="separator:a3c68f9a2f58eb4afee65dee64a84ec60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c82b565cdd75fbf396893a67ce24f4d"><td class="memItemLeft" align="right" valign="top">typedef GenericOffset3D<br class="typebreak"/>
+&lt; int32_t, int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a9c82b565cdd75fbf396893a67ce24f4d">pvr::Offset3D</a></td></tr>
+<tr class="memdesc:a9c82b565cdd75fbf396893a67ce24f4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">A 3D, integer Offset typically used for 3D Images <a href="#a9c82b565cdd75fbf396893a67ce24f4d">More...</a><br/></td></tr>
+<tr class="separator:a9c82b565cdd75fbf396893a67ce24f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedeecfbbd5f300d790a94b7f47277582"><td class="memItemLeft" align="right" valign="top">typedef void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#aedeecfbbd5f300d790a94b7f47277582">pvr::OSApplication</a></td></tr>
+<tr class="memdesc:aedeecfbbd5f300d790a94b7f47277582"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native application type. <a href="#aedeecfbbd5f300d790a94b7f47277582">More...</a><br/></td></tr>
+<tr class="separator:aedeecfbbd5f300d790a94b7f47277582"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6f2b93a38b04d593e40fb33ac919de9"><td class="memItemLeft" align="right" valign="top">typedef void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ac6f2b93a38b04d593e40fb33ac919de9">pvr::OSDATA</a></td></tr>
+<tr class="memdesc:ac6f2b93a38b04d593e40fb33ac919de9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native application data type. <a href="#ac6f2b93a38b04d593e40fb33ac919de9">More...</a><br/></td></tr>
+<tr class="separator:ac6f2b93a38b04d593e40fb33ac919de9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb92095259cdb0e0a5013d243b8cdcad"><td class="memItemLeft" align="right" valign="top">typedef void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#aeb92095259cdb0e0a5013d243b8cdcad">pvr::OSDisplay</a></td></tr>
+<tr class="memdesc:aeb92095259cdb0e0a5013d243b8cdcad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native display type. <a href="#aeb92095259cdb0e0a5013d243b8cdcad">More...</a><br/></td></tr>
+<tr class="separator:aeb92095259cdb0e0a5013d243b8cdcad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a3c2268d5e5b11e1bc9cf97d7c337e8"><td class="memItemLeft" align="right" valign="top">typedef void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a4a3c2268d5e5b11e1bc9cf97d7c337e8">pvr::OSWindow</a></td></tr>
+<tr class="memdesc:a4a3c2268d5e5b11e1bc9cf97d7c337e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native window type. <a href="#a4a3c2268d5e5b11e1bc9cf97d7c337e8">More...</a><br/></td></tr>
+<tr class="separator:a4a3c2268d5e5b11e1bc9cf97d7c337e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:af87b066cc124fdd27933b442ca02ff61"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>Swizzle</b> : uint8 </td></tr>
-<tr class="memdesc:af87b066cc124fdd27933b442ca02ff61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of texture Swizzle mask channels. <a href="namespacepvr_1_1types.html#af87b066cc124fdd27933b442ca02ff61">More...</a><br/></td></tr>
-<tr class="separator:af87b066cc124fdd27933b442ca02ff61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab74a3e033b17a2d3f50ee6d0299eb195"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ab74a3e033b17a2d3f50ee6d0299eb195">pvr::Swizzle</a> : uint8_t { <br/>
+&#160;&#160;<b>Identity</b> = 0, 
+<b>Zero</b> = 1, 
+<b>One</b> = 2, 
+<b>R</b> = 3, 
+<br/>
+&#160;&#160;<b>G</b> = 4, 
+<b>B</b> = 5, 
+<b>A</b> = 6, 
+<b>Red</b> = R, 
+<br/>
+&#160;&#160;<b>Green</b> = G, 
+<b>Blue</b> = B, 
+<b>Alpha</b> = A
+<br/>
+ }</td></tr>
+<tr class="memdesc:ab74a3e033b17a2d3f50ee6d0299eb195"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of texture Swizzle mask channels. <a href="namespacepvr.html#ab74a3e033b17a2d3f50ee6d0299eb195">More...</a><br/></td></tr>
+<tr class="separator:ab74a3e033b17a2d3f50ee6d0299eb195"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f3166dd9130684c23ff89682e4b38c8"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8">pvr::VsyncMode</a> { <br/>
+&#160;&#160;<a class="el" href="namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8ad15305d7a4e34e02489c74a5ef542f36">pvr::VsyncMode::Off</a>, 
+<a class="el" href="namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8a521c36a31c2762741cf0f8890cbe05e3">pvr::VsyncMode::On</a>, 
+<a class="el" href="namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8a4160be5df3fc34c3b165f28616f1bd16">pvr::VsyncMode::Relaxed</a>, 
+<a class="el" href="namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8a2dcff8c037093c5d3552ad532e603f9f">pvr::VsyncMode::Mailbox</a>, 
+<br/>
+&#160;&#160;<a class="el" href="namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8ac48615a1bc4197056d522af276aa5a85">pvr::VsyncMode::Half</a>
+<br/>
+ }</td></tr>
+<tr class="memdesc:a7f3166dd9130684c23ff89682e4b38c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Vertical Synchronization (or lack thereof) modes, A.K.A. Presentation mode. <a href="namespacepvr.html#a7f3166dd9130684c23ff89682e4b38c8">More...</a><br/></td></tr>
+<tr class="separator:a7f3166dd9130684c23ff89682e4b38c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains structures, classes and enums used throughout the framework. Conceptually sits higher than <a class="el" href="_types_8h.html" title="Basic file used in the PowerVR Framework. Defines several types used throughout the Framework (sized ...">Types.h</a>. </p>

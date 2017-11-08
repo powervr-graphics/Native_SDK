@@ -106,58 +106,59 @@ Public Types</h2></td></tr>
 <a class="el" href="classpvr_1_1assets_1_1_animation.html#a9abff7d20fb7b87dc30184d4292fb7e3a9b72d779e733bca5d7b77d634b1d8537">HasScaleAnimation</a> = 0x04, 
 <a class="el" href="classpvr_1_1assets_1_1_animation.html#a9abff7d20fb7b87dc30184d4292fb7e3a501d2cc6e93e916fd608ef50270fa5d8">HasMatrixAnimation</a> = 0x08
  }</td></tr>
+<tr class="memdesc:a9abff7d20fb7b87dc30184d4292fb7e3"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1assets_1_1_animation.html" title="Represents an Animation that can be applied to different objects.">Animation</a> flags (presence of position, rotation, scale or full matrices <a href="classpvr_1_1assets_1_1_animation.html#a9abff7d20fb7b87dc30184d4292fb7e3">More...</a><br/></td></tr>
 <tr class="separator:a9abff7d20fb7b87dc30184d4292fb7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a69d2b864758b85f6affb061534d8fb5e"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a69d2b864758b85f6affb061534d8fb5e">getFlags</a> () const </td></tr>
-<tr class="memdesc:a69d2b864758b85f6affb061534d8fb5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the flags data on this animation. <a href="#a69d2b864758b85f6affb061534d8fb5e">More...</a><br/></td></tr>
-<tr class="separator:a69d2b864758b85f6affb061534d8fb5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a873b7224790d06029184451a841f7601"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a873b7224790d06029184451a841f7601">getFlags</a> () const </td></tr>
+<tr class="memdesc:a873b7224790d06029184451a841f7601"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the flags data on this animation. <a href="#a873b7224790d06029184451a841f7601">More...</a><br/></td></tr>
+<tr class="separator:a873b7224790d06029184451a841f7601"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5fd202efce013dbae8cf2c6445f4a46d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1assets_1_1_animation_1_1_internal_data.html">InternalData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a5fd202efce013dbae8cf2c6445f4a46d">getInternalData</a> ()</td></tr>
 <tr class="memdesc:a5fd202efce013dbae8cf2c6445f4a46d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a direct, modifiable pointer to the data representation of this object. Advanced tasks only.  <a href="#a5fd202efce013dbae8cf2c6445f4a46d">More...</a><br/></td></tr>
 <tr class="separator:a5fd202efce013dbae8cf2c6445f4a46d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b2478548a604ad5124daab4d0bbeeab"><td class="memItemLeft" align="right" valign="top">const float32 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a1b2478548a604ad5124daab4d0bbeeab">getMatrices</a> () const </td></tr>
-<tr class="memdesc:a1b2478548a604ad5124daab4d0bbeeab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the transformation matrices of this animation. <a href="#a1b2478548a604ad5124daab4d0bbeeab">More...</a><br/></td></tr>
-<tr class="separator:a1b2478548a604ad5124daab4d0bbeeab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fd973babd14f0911543fcc7323714e1"><td class="memItemLeft" align="right" valign="top">const uint32 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a7fd973babd14f0911543fcc7323714e1">getMatrixIndices</a> () const </td></tr>
-<tr class="memdesc:a7fd973babd14f0911543fcc7323714e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the indexes of the transformation matrices of this animation. <a href="#a7fd973babd14f0911543fcc7323714e1">More...</a><br/></td></tr>
-<tr class="separator:a7fd973babd14f0911543fcc7323714e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c2a22a81436c902c6e41fb3e585d39c"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a6c2a22a81436c902c6e41fb3e585d39c">getNumFrames</a> () const </td></tr>
-<tr class="memdesc:a6c2a22a81436c902c6e41fb3e585d39c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of frames in this animation. <a href="#a6c2a22a81436c902c6e41fb3e585d39c">More...</a><br/></td></tr>
-<tr class="separator:a6c2a22a81436c902c6e41fb3e585d39c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb17081a6d80be2a7285f51b00450cfc"><td class="memItemLeft" align="right" valign="top">const uint32 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#acb17081a6d80be2a7285f51b00450cfc">getPositionIndices</a> () const </td></tr>
-<tr class="memdesc:acb17081a6d80be2a7285f51b00450cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the indexes of the position data of this animation. <a href="#acb17081a6d80be2a7285f51b00450cfc">More...</a><br/></td></tr>
-<tr class="separator:acb17081a6d80be2a7285f51b00450cfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbde7cfaa9bd6005229afb9baabfa5a2"><td class="memItemLeft" align="right" valign="top">const float32 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#adbde7cfaa9bd6005229afb9baabfa5a2">getPositions</a> () const </td></tr>
-<tr class="memdesc:adbde7cfaa9bd6005229afb9baabfa5a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the position data of this animation. <a href="#adbde7cfaa9bd6005229afb9baabfa5a2">More...</a><br/></td></tr>
-<tr class="separator:adbde7cfaa9bd6005229afb9baabfa5a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e95c6aa0acccebc865e7a647f0aa27b"><td class="memItemLeft" align="right" valign="top">const uint32 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a8e95c6aa0acccebc865e7a647f0aa27b">getRotationIndices</a> () const </td></tr>
-<tr class="memdesc:a8e95c6aa0acccebc865e7a647f0aa27b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the indexes of the rotation data of this animation. <a href="#a8e95c6aa0acccebc865e7a647f0aa27b">More...</a><br/></td></tr>
-<tr class="separator:a8e95c6aa0acccebc865e7a647f0aa27b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af91dc5a35e758f208ea4e906315814f6"><td class="memItemLeft" align="right" valign="top">const float32 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#af91dc5a35e758f208ea4e906315814f6">getRotations</a> () const </td></tr>
-<tr class="memdesc:af91dc5a35e758f208ea4e906315814f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the rotation data of this animation (normally quaternions). <a href="#af91dc5a35e758f208ea4e906315814f6">More...</a><br/></td></tr>
-<tr class="separator:af91dc5a35e758f208ea4e906315814f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08ff180c39501364449cda7f94025d27"><td class="memItemLeft" align="right" valign="top">const uint32 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a08ff180c39501364449cda7f94025d27">getScaleIndices</a> () const </td></tr>
-<tr class="memdesc:a08ff180c39501364449cda7f94025d27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the indexes of the Scale data. <a href="#a08ff180c39501364449cda7f94025d27">More...</a><br/></td></tr>
-<tr class="separator:a08ff180c39501364449cda7f94025d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad58141e4ad983cabdc415161214812fd"><td class="memItemLeft" align="right" valign="top">const float32 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#ad58141e4ad983cabdc415161214812fd">getScales</a> () const </td></tr>
-<tr class="memdesc:ad58141e4ad983cabdc415161214812fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the Scale data of this animation. <a href="#ad58141e4ad983cabdc415161214812fd">More...</a><br/></td></tr>
-<tr class="separator:ad58141e4ad983cabdc415161214812fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a2f0f6b7edd5dc6f6d3ea8e75bc6d9d"><td class="memItemLeft" align="right" valign="top">glm::mat4x4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a8a2f0f6b7edd5dc6f6d3ea8e75bc6d9d">getTransformationMatrix</a> (uint32 frame=0, float32 interp=0) const </td></tr>
-<tr class="memdesc:a8a2f0f6b7edd5dc6f6d3ea8e75bc6d9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the transformation matrix of specific frame and amount of interpolation. <a href="#a8a2f0f6b7edd5dc6f6d3ea8e75bc6d9d">More...</a><br/></td></tr>
-<tr class="separator:a8a2f0f6b7edd5dc6f6d3ea8e75bc6d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8c79e034cecde233c2e598880060245"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#ae8c79e034cecde233c2e598880060245">setMatrices</a> (uint32 numFrames, const float32 *const data, const uint32 *const indices=0)</td></tr>
-<tr class="memdesc:ae8c79e034cecde233c2e598880060245"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the transformation matrices data for this animation. <a href="#ae8c79e034cecde233c2e598880060245">More...</a><br/></td></tr>
-<tr class="separator:ae8c79e034cecde233c2e598880060245"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a53ad533ca0fd6ecd59de105eea303f7a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a53ad533ca0fd6ecd59de105eea303f7a">setPositions</a> (uint32 numFrames, const float32 *data, const uint32 *indices=NULL)</td></tr>
-<tr class="memdesc:a53ad533ca0fd6ecd59de105eea303f7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the position transformation data for this animation. <a href="#a53ad533ca0fd6ecd59de105eea303f7a">More...</a><br/></td></tr>
-<tr class="separator:a53ad533ca0fd6ecd59de105eea303f7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbf04b90bee499e7386dc51b7e0e51da"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#adbf04b90bee499e7386dc51b7e0e51da">setRotations</a> (uint32 numFrames, const float32 *const data, const uint32 *const indices=0)</td></tr>
-<tr class="memdesc:adbf04b90bee499e7386dc51b7e0e51da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the rotation transformation data for this animation. <a href="#adbf04b90bee499e7386dc51b7e0e51da">More...</a><br/></td></tr>
-<tr class="separator:adbf04b90bee499e7386dc51b7e0e51da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e4d9bad42a7f8d58934ef71841c7472"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a9e4d9bad42a7f8d58934ef71841c7472">setScales</a> (uint32 numFrames, const float32 *const data, const uint32 *const indices=0)</td></tr>
-<tr class="memdesc:a9e4d9bad42a7f8d58934ef71841c7472"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the scale transformation data for this animation. <a href="#a9e4d9bad42a7f8d58934ef71841c7472">More...</a><br/></td></tr>
-<tr class="separator:a9e4d9bad42a7f8d58934ef71841c7472"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b43367662098f4ced6312c3ab7a1419"><td class="memItemLeft" align="right" valign="top">const float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a6b43367662098f4ced6312c3ab7a1419">getMatrices</a> () const </td></tr>
+<tr class="memdesc:a6b43367662098f4ced6312c3ab7a1419"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the transformation matrices of this animation. <a href="#a6b43367662098f4ced6312c3ab7a1419">More...</a><br/></td></tr>
+<tr class="separator:a6b43367662098f4ced6312c3ab7a1419"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25102ebdab8dcdfaed0382c647423a2f"><td class="memItemLeft" align="right" valign="top">const uint32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a25102ebdab8dcdfaed0382c647423a2f">getMatrixIndices</a> () const </td></tr>
+<tr class="memdesc:a25102ebdab8dcdfaed0382c647423a2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the indices of the transformation matrices of this animation. <a href="#a25102ebdab8dcdfaed0382c647423a2f">More...</a><br/></td></tr>
+<tr class="separator:a25102ebdab8dcdfaed0382c647423a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefc14e875382ba0ece24dc32c7999880"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#aefc14e875382ba0ece24dc32c7999880">getNumFrames</a> () const </td></tr>
+<tr class="memdesc:aefc14e875382ba0ece24dc32c7999880"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of frames in this animation. <a href="#aefc14e875382ba0ece24dc32c7999880">More...</a><br/></td></tr>
+<tr class="separator:aefc14e875382ba0ece24dc32c7999880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b37ec71613ad620d5589fb2da781fd8"><td class="memItemLeft" align="right" valign="top">const uint32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a4b37ec71613ad620d5589fb2da781fd8">getPositionIndices</a> () const </td></tr>
+<tr class="memdesc:a4b37ec71613ad620d5589fb2da781fd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the indices of the position data of this animation. <a href="#a4b37ec71613ad620d5589fb2da781fd8">More...</a><br/></td></tr>
+<tr class="separator:a4b37ec71613ad620d5589fb2da781fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc77d62817f58f72d4ddfcc190f62f6a"><td class="memItemLeft" align="right" valign="top">const float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#afc77d62817f58f72d4ddfcc190f62f6a">getPositions</a> () const </td></tr>
+<tr class="memdesc:afc77d62817f58f72d4ddfcc190f62f6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the position data of this animation. <a href="#afc77d62817f58f72d4ddfcc190f62f6a">More...</a><br/></td></tr>
+<tr class="separator:afc77d62817f58f72d4ddfcc190f62f6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a186237ea39b263debe64b8bcadfd59d1"><td class="memItemLeft" align="right" valign="top">const uint32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a186237ea39b263debe64b8bcadfd59d1">getRotationIndices</a> () const </td></tr>
+<tr class="memdesc:a186237ea39b263debe64b8bcadfd59d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the indices of the rotation data of this animation. <a href="#a186237ea39b263debe64b8bcadfd59d1">More...</a><br/></td></tr>
+<tr class="separator:a186237ea39b263debe64b8bcadfd59d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6843b8427bf10b8a9eee802d339d820"><td class="memItemLeft" align="right" valign="top">const float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#ac6843b8427bf10b8a9eee802d339d820">getRotations</a> () const </td></tr>
+<tr class="memdesc:ac6843b8427bf10b8a9eee802d339d820"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the rotation data of this animation (normally quaternions). <a href="#ac6843b8427bf10b8a9eee802d339d820">More...</a><br/></td></tr>
+<tr class="separator:ac6843b8427bf10b8a9eee802d339d820"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cdcc083470fc8f8224d86a0a2a3cf34"><td class="memItemLeft" align="right" valign="top">const uint32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a9cdcc083470fc8f8224d86a0a2a3cf34">getScaleIndices</a> () const </td></tr>
+<tr class="memdesc:a9cdcc083470fc8f8224d86a0a2a3cf34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the indices of the Scale data. <a href="#a9cdcc083470fc8f8224d86a0a2a3cf34">More...</a><br/></td></tr>
+<tr class="separator:a9cdcc083470fc8f8224d86a0a2a3cf34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae23921234d59a10ac5015f7da603731f"><td class="memItemLeft" align="right" valign="top">const float *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#ae23921234d59a10ac5015f7da603731f">getScales</a> () const </td></tr>
+<tr class="memdesc:ae23921234d59a10ac5015f7da603731f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the Scale data of this animation. <a href="#ae23921234d59a10ac5015f7da603731f">More...</a><br/></td></tr>
+<tr class="separator:ae23921234d59a10ac5015f7da603731f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d93ea172ed645c2307973936e094d5e"><td class="memItemLeft" align="right" valign="top">glm::mat4x4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a7d93ea172ed645c2307973936e094d5e">getTransformationMatrix</a> (uint32_t frame=0, float interp=0) const </td></tr>
+<tr class="memdesc:a7d93ea172ed645c2307973936e094d5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the transformation matrix of specific frame and amount of interpolation. <a href="#a7d93ea172ed645c2307973936e094d5e">More...</a><br/></td></tr>
+<tr class="separator:a7d93ea172ed645c2307973936e094d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a881c47f93a58f142ff95023f8f1547b8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a881c47f93a58f142ff95023f8f1547b8">setMatrices</a> (uint32_t numFrames, const float *const data, const uint32_t *const indices=0)</td></tr>
+<tr class="memdesc:a881c47f93a58f142ff95023f8f1547b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the transformation matrices data for this animation. <a href="#a881c47f93a58f142ff95023f8f1547b8">More...</a><br/></td></tr>
+<tr class="separator:a881c47f93a58f142ff95023f8f1547b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a134209c703c8825fefb8aec010b857af"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a134209c703c8825fefb8aec010b857af">setPositions</a> (uint32_t numFrames, const float *data, const uint32_t *indices=NULL)</td></tr>
+<tr class="memdesc:a134209c703c8825fefb8aec010b857af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the position transformation data for this animation. <a href="#a134209c703c8825fefb8aec010b857af">More...</a><br/></td></tr>
+<tr class="separator:a134209c703c8825fefb8aec010b857af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e9fac773787a294f5ecee8e7f1f3237"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#a1e9fac773787a294f5ecee8e7f1f3237">setRotations</a> (uint32_t numFrames, const float *const data, const uint32_t *const indices=0)</td></tr>
+<tr class="memdesc:a1e9fac773787a294f5ecee8e7f1f3237"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the rotation transformation data for this animation. <a href="#a1e9fac773787a294f5ecee8e7f1f3237">More...</a><br/></td></tr>
+<tr class="separator:a1e9fac773787a294f5ecee8e7f1f3237"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac513c0e9b77ff1ff843744fa9a89ab05"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_animation.html#ac513c0e9b77ff1ff843744fa9a89ab05">setScales</a> (uint32_t numFrames, const float *const data, const uint32_t *const indices=0)</td></tr>
+<tr class="memdesc:ac513c0e9b77ff1ff843744fa9a89ab05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the scale transformation data for this animation. <a href="#ac513c0e9b77ff1ff843744fa9a89ab05">More...</a><br/></td></tr>
+<tr class="separator:ac513c0e9b77ff1ff843744fa9a89ab05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents an <a class="el" href="classpvr_1_1assets_1_1_animation.html" title="Represents an Animation that can be applied to different objects.">Animation</a> that can be applied to different objects.</p>
@@ -171,6 +172,8 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p><a class="el" href="classpvr_1_1assets_1_1_animation.html" title="Represents an Animation that can be applied to different objects.">Animation</a> flags (presence of position, rotation, scale or full matrices</p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a9abff7d20fb7b87dc30184d4292fb7e3a394cdd98eccfe3148112c40a9446afca"></a>HasPositionAnimation</em>&#160;</td><td class="fielddoc">
 <p>position animation data </p>
@@ -189,12 +192,12 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a69d2b864758b85f6affb061534d8fb5e"></a>
+<a class="anchor" id="a873b7224790d06029184451a841f7601"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Animation::getFlags </td>
+          <td class="memname">uint32_t pvr::assets::Animation::getFlags </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -203,6 +206,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the flags data on this animation.</p>
+<dl class="section return"><dt>Returns</dt><dd>The flags</dd></dl>
 
 </div>
 </div>
@@ -220,15 +224,16 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets a direct, modifiable pointer to the data representation of this object. Advanced tasks only. </p>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the internal structure of this object</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a1b2478548a604ad5124daab4d0bbeeab"></a>
+<a class="anchor" id="a6b43367662098f4ced6312c3ab7a1419"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const float32* pvr::assets::Animation::getMatrices </td>
+          <td class="memname">const float* pvr::assets::Animation::getMatrices </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -237,15 +242,16 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get a pointer to the transformation matrices of this animation.</p>
+<dl class="section return"><dt>Returns</dt><dd>Matrices - null if indexed</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a7fd973babd14f0911543fcc7323714e1"></a>
+<a class="anchor" id="a25102ebdab8dcdfaed0382c647423a2f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const uint32* pvr::assets::Animation::getMatrixIndices </td>
+          <td class="memname">const uint32_t* pvr::assets::Animation::getMatrixIndices </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -253,16 +259,17 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get a pointer to the indexes of the transformation matrices of this animation.</p>
+<p>Get a pointer to the indices of the transformation matrices of this animation.</p>
+<dl class="section return"><dt>Returns</dt><dd>Matrix indexes - null if not indexed</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a6c2a22a81436c902c6e41fb3e585d39c"></a>
+<a class="anchor" id="aefc14e875382ba0ece24dc32c7999880"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Animation::getNumFrames </td>
+          <td class="memname">uint32_t pvr::assets::Animation::getNumFrames </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -271,15 +278,16 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get number of frames in this animation.</p>
+<dl class="section return"><dt>Returns</dt><dd>The number of frames</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="acb17081a6d80be2a7285f51b00450cfc"></a>
+<a class="anchor" id="a4b37ec71613ad620d5589fb2da781fd8"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const uint32* pvr::assets::Animation::getPositionIndices </td>
+          <td class="memname">const uint32_t* pvr::assets::Animation::getPositionIndices </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -287,16 +295,17 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get a pointer to the indexes of the position data of this animation.</p>
+<p>Get a pointer to the indices of the position data of this animation.</p>
+<dl class="section return"><dt>Returns</dt><dd>Position indexes - null if not indexed</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="adbde7cfaa9bd6005229afb9baabfa5a2"></a>
+<a class="anchor" id="afc77d62817f58f72d4ddfcc190f62f6a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const float32* pvr::assets::Animation::getPositions </td>
+          <td class="memname">const float* pvr::assets::Animation::getPositions </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -305,15 +314,16 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get a pointer to the position data of this animation.</p>
+<dl class="section return"><dt>Returns</dt><dd>Position data - null if indexed</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a8e95c6aa0acccebc865e7a647f0aa27b"></a>
+<a class="anchor" id="a186237ea39b263debe64b8bcadfd59d1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const uint32* pvr::assets::Animation::getRotationIndices </td>
+          <td class="memname">const uint32_t* pvr::assets::Animation::getRotationIndices </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -321,16 +331,17 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get a pointer to the indexes of the rotation data of this animation.</p>
+<p>Get a pointer to the indices of the rotation data of this animation.</p>
+<dl class="section return"><dt>Returns</dt><dd>Rotation indexes - null if not indexed</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="af91dc5a35e758f208ea4e906315814f6"></a>
+<a class="anchor" id="ac6843b8427bf10b8a9eee802d339d820"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const float32* pvr::assets::Animation::getRotations </td>
+          <td class="memname">const float* pvr::assets::Animation::getRotations </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -339,15 +350,16 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get a pointer to the rotation data of this animation (normally quaternions).</p>
+<dl class="section return"><dt>Returns</dt><dd>Rotation data - null if indexed</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a08ff180c39501364449cda7f94025d27"></a>
+<a class="anchor" id="a9cdcc083470fc8f8224d86a0a2a3cf34"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const uint32* pvr::assets::Animation::getScaleIndices </td>
+          <td class="memname">const uint32_t* pvr::assets::Animation::getScaleIndices </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -355,16 +367,17 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get a pointer to the indexes of the Scale data.</p>
+<p>Get a pointer to the indices of the Scale data.</p>
+<dl class="section return"><dt>Returns</dt><dd>Scale indexes - null if not indexed</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ad58141e4ad983cabdc415161214812fd"></a>
+<a class="anchor" id="ae23921234d59a10ac5015f7da603731f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const float32* pvr::assets::Animation::getScales </td>
+          <td class="memname">const float* pvr::assets::Animation::getScales </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -373,23 +386,24 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get a pointer to the Scale data of this animation.</p>
+<dl class="section return"><dt>Returns</dt><dd>Scales - null if indexed</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a8a2f0f6b7edd5dc6f6d3ea8e75bc6d9d"></a>
+<a class="anchor" id="a7d93ea172ed645c2307973936e094d5e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">glm::mat4x4 pvr::assets::Animation::getTransformationMatrix </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>frame</em> = <code>0</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float32&#160;</td>
+          <td class="paramtype">float&#160;</td>
           <td class="paramname"><em>interp</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
@@ -413,26 +427,26 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ae8c79e034cecde233c2e598880060245"></a>
+<a class="anchor" id="a881c47f93a58f142ff95023f8f1547b8"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">bool pvr::assets::Animation::setMatrices </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>numFrames</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float32 *const&#160;</td>
+          <td class="paramtype">const float *const&#160;</td>
           <td class="paramname"><em>data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const uint32 *const&#160;</td>
+          <td class="paramtype">const uint32_t *const&#160;</td>
           <td class="paramname"><em>indices</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
@@ -456,26 +470,26 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a53ad533ca0fd6ecd59de105eea303f7a"></a>
+<a class="anchor" id="a134209c703c8825fefb8aec010b857af"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">bool pvr::assets::Animation::setPositions </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>numFrames</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float32 *&#160;</td>
+          <td class="paramtype">const float *&#160;</td>
           <td class="paramname"><em>data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const uint32 *&#160;</td>
+          <td class="paramtype">const uint32_t *&#160;</td>
           <td class="paramname"><em>indices</em> = <code>NULL</code>&#160;</td>
         </tr>
         <tr>
@@ -499,26 +513,26 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="adbf04b90bee499e7386dc51b7e0e51da"></a>
+<a class="anchor" id="a1e9fac773787a294f5ecee8e7f1f3237"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">bool pvr::assets::Animation::setRotations </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>numFrames</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float32 *const&#160;</td>
+          <td class="paramtype">const float *const&#160;</td>
           <td class="paramname"><em>data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const uint32 *const&#160;</td>
+          <td class="paramtype">const uint32_t *const&#160;</td>
           <td class="paramname"><em>indices</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
@@ -542,26 +556,26 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a9e4d9bad42a7f8d58934ef71841c7472"></a>
+<a class="anchor" id="ac513c0e9b77ff1ff843744fa9a89ab05"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">bool pvr::assets::Animation::setScales </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>numFrames</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const float32 *const&#160;</td>
+          <td class="paramtype">const float *const&#160;</td>
           <td class="paramname"><em>data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const uint32 *const&#160;</td>
+          <td class="paramtype">const uint32_t *const&#160;</td>
           <td class="paramname"><em>indices</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>

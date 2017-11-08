@@ -30,7 +30,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\PVRScopeGraph.h">
+    <ClInclude Include="..\..\PVRScopeGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\Builds\Windows\Resources\resource.h">
@@ -49,7 +49,7 @@
     <ClCompile Include="..\..\OGLESPVRScopeExample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\PVRScopeGraph.cpp">
+    <ClCompile Include="..\..\PVRScopeGraph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

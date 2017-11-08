@@ -82,6 +82,20 @@ FileCollection assetFiles = files(
 "${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass2VertexShader.vsh.spv",
 "${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass3FragmentShader.fsh.spv",
 "${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass3VertexShader.vsh.spv",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/AttributelessVertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/GBufferFragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/GBufferVertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/GBufferFloorFragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/GBufferFloorVertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/DirectionalLightFragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass1FragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass1VertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass2FragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass2VertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass3FragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/PointLightPass3VertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/recompile.sh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/recompile.bat",
 "${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/ProcessedAssets/scene.pod",
 "${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/ProcessedAssets/pointlight.pod",
 "${pvrSdkDir}/Examples/Advanced/DeferredShadingPFX/Vulkan/effect_MRT_PFX3.pfx",
@@ -123,10 +137,9 @@ FileCollection assetFiles = files(
     def ndkDependencies=[
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
     ["PVRAssets", "${pvrSdkDir}/Framework/PVRAssets/Build/Android"],
-    ["PVRNativeVulkan", "${pvrSdkDir}/Framework/PVRNativeApi/Vulkan/Build/Android"],
-    ["PVRVulkan", "${pvrSdkDir}/Framework/PVRApi/Vulkan/Build/Android"],
+    ["PVRVk", "${pvrSdkDir}/Framework/PVRVk/Build/Android"],
     ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
-    ["PVREngineUtils", "${pvrSdkDir}/Framework/PVREngineUtils/Build/Android"]
+    ["PVRUtilsVk", "${pvrSdkDir}/Framework/PVRUtils/Vulkan/Build/Android"]
     ]
 
 	//Create and configure a task for each combination of build type (debug/release or clean) and dependency

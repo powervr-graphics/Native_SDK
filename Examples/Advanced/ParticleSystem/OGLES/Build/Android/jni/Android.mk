@@ -5,10 +5,10 @@ ASSETDIR := $(PVRSDKDIR)/Examples/Advanced/ParticleSystem/OGLES/Build/Android/as
 
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVREngineUtils
+# Prebuilt module PVRUtilsGles
 include $(CLEAR_VARS)
-LOCAL_MODULE := PVREngineUtils
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVREngineUtils.a
+LOCAL_MODULE := PVRUtilsGles
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRUtilsGles.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
@@ -17,22 +17,6 @@ ifneq "$(MAKECMDGOALS)" "clean"
 include $(CLEAR_VARS)
 LOCAL_MODULE := PVRShell
 LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRShell.a
-include $(PREBUILT_STATIC_LIBRARY)
-endif
-
-ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRGles
-include $(CLEAR_VARS)
-LOCAL_MODULE := PVRGles
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRGles.a
-include $(PREBUILT_STATIC_LIBRARY)
-endif
-
-ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRNativeGles
-include $(CLEAR_VARS)
-LOCAL_MODULE := PVRNativeGles
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRNativeGles.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
@@ -59,25 +43,18 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := OGLESParticleSystem
 
 ### Add all source file names to be included in lib separated by a whitespace
-LOCAL_SRC_FILES  := OGLESParticleSystem.cpp \
-                    ParticleSystemGPU.cpp
+LOCAL_SRC_FILES  := OGLESParticleSystem.cpp
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/. \
-                    $(PVRSDKDIR)/Framework \
+LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework \
                     $(PVRSDKDIR)/Builds/Include
 
 
 
-<<<<<<< HEAD
 LOCAL_LDLIBS := -llog \
                 -latomic \
-=======
-LOCAL_LDLIBS := -latomic \
-                -llog \
->>>>>>> 1776432f... 4.3
                 -landroid
 
-LOCAL_STATIC_LIBRARIES := PVREngineUtils PVRGles PVRNativeGles PVRAssets PVRCore android_native_app_glue
+LOCAL_STATIC_LIBRARIES := PVRUtilsGles PVRAssets PVRCore android_native_app_glue
 
 
 LOCAL_CFLAGS += $(SDK_BUILD_FLAGS)

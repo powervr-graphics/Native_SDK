@@ -63,10 +63,43 @@
   <None Include="..\..\..\ProcessedAssets\MarbleNormalMap.pvr">
       <Filter>Content Files\Textures</Filter>
   </None>
-  <None Include="..\..\effect_MRT.pfx">
+  <None Include="..\..\AttributelessVertexShader.vsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\effect_PLS.pfx">
+  <None Include="..\..\DirectionalLightFragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\GBufferFloorFragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\GBufferFloorVertexShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\GBufferFragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\GBufferVertexShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass1FragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass1VertexShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass2FragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass2VertexShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass3FragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass3VertexShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\WritePlsToFbo.fsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
   </ItemGroup>

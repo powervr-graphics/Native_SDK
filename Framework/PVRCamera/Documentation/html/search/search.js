@@ -7,12 +7,14 @@
 
 var indexSectionsWithContent =
 {
-  0: "cdghipu~",
+  0: "bcdefghipu~",
   1: "c",
   2: "p",
   3: "cp",
   4: "cdghiu~",
-  5: "p"
+  5: "e",
+  6: "bf",
+  7: "p"
 };
 
 var indexSectionNames =
@@ -22,7 +24,9 @@ var indexSectionNames =
   2: "namespaces",
   3: "files",
   4: "functions",
-  5: "pages"
+  5: "enums",
+  6: "enumvalues",
+  7: "pages"
 };
 
 function convertToId(search)

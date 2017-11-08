@@ -104,8 +104,7 @@ FileCollection assetFiles = files(
 
     def ndkDependencies=[
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
-    ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
-    ["PVRNativeGles", "${pvrSdkDir}/Framework/PVRNativeApi/OGLES/Build/Android"]
+    ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"]
     ]
 
 	//Create and configure a task for each combination of build type (debug/release or clean) and dependency

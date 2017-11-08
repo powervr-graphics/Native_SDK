@@ -36,7 +36,7 @@ extern "C" {
 ** Khronos $Revision$ on $Date$
 */
 
-#include <GLES3/gl3platform.h>
+#include "GLES3/gl3platform.h"
 
 #ifndef GL_APIENTRYP
 #define GL_APIENTRYP GL_APIENTRY*

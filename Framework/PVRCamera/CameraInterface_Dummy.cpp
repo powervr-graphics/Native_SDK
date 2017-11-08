@@ -5,33 +5,30 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #include "PVRCamera/CameraInterface.h"
-#include "PVRApi/Api.h"
-#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
-#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
-#include "PVRApi/OGLES/TextureGles.h"
+//!\cond NO_DOXYGEN
+
 namespace pvr {
 class CameraInterfaceImpl
 {
 public:
-	native::HTexture_ myTexture;
+	GLuint myTexture;
 	int height, width;
-	CameraInterfaceImpl() : myTexture(0, 0), height(512), width(512) {}
+	CameraInterfaceImpl() : myTexture(0), height(512), width(512) {}
 	bool generateTexture()
 	{
-		if (myTexture.handle)
-		{
-			destroyTexture();
-		}
-		gl::GetError();
-		gl::GenTextures(1, &myTexture.handle);
-		myTexture.target = GL_TEXTURE_2D;
 
-		gl::BindTexture(GL_TEXTURE_2D, myTexture.handle);
+		if (!myTexture)
+		{
+			gl::GetError();
+			gl::GenTextures(1, &myTexture);
+		}
+
+		gl::BindTexture(GL_TEXTURE_2D, myTexture);
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		std::vector<pvr::uint32> rawBuffer; rawBuffer.resize(height * width);
+		std::vector<uint32_t> rawBuffer; rawBuffer.resize(height * width);
 		bool one = false, two = false;
 		int hfheight = height / 2, hfwidth = width / 2;
 		for (int j = 0; j < height; ++j)
@@ -64,17 +61,17 @@ public:
 		GLint err = gl::GetError();
 		if (err != GL_NO_ERROR)
 		{
-			Log(Log.Error, "PVRCamera, Dummy version - Error while generating the dummy camera texture. Possible bug.");
+			Log("PVRCamera, Dummy version - Error while generating the dummy camera texture. Possible bug.");
 			return false;
 		}
 		return true;
 	}
 	void destroyTexture()
 	{
-		gl::DeleteTextures(1, &myTexture.handle);
-		myTexture.handle = 0;
+		gl::DeleteTextures(1, &myTexture);
+		myTexture = 0;
 	}
-	const native::HTexture_& getRgbTexture()
+	const GLuint& getRgbTexture()
 	{
 		return myTexture;
 	}
@@ -91,7 +88,7 @@ CameraInterface::~CameraInterface()
 
 bool CameraInterface::initializeSession(HWCamera::Enum eCamera, int preferredResX, int preferredResY)
 {
-	Log(Log.Verbose, "PVRCamera: Initialising session.");
+	Log("PVRCamera: Initialising session.");
 	static_cast<CameraInterfaceImpl*>(pImpl)->width = preferredResX ? preferredResX : 512;
 	static_cast<CameraInterfaceImpl*>(pImpl)->height = preferredResY ? preferredResY : 512;
 	return static_cast<CameraInterfaceImpl*>(pImpl)->generateTexture();
@@ -106,21 +103,19 @@ const glm::mat4& CameraInterface::getProjectionMatrix()
 	static const glm::mat4 proj(1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1.); return proj;
 }
 
-const native::HTexture_& CameraInterface::getRgbTexture()
+GLuint CameraInterface::getRgbTexture()
 {
 	return static_cast<CameraInterfaceImpl*>(pImpl)->getRgbTexture();
 }
 
-static pvr::native::HTexture_ dummy_tex(0, 0);
-
-const native::HTexture_& CameraInterface::getLuminanceTexture()
+GLuint CameraInterface::getLuminanceTexture()
 {
-	return dummy_tex;
+	return 0;
 }
 
-const native::HTexture_& CameraInterface::getChrominanceTexture()
+GLuint CameraInterface::getChrominanceTexture()
 {
-	return dummy_tex;
+	return 0;
 }
 
 void CameraInterface::destroySession() { static_cast<CameraInterfaceImpl*>(pImpl)->destroyTexture(); }
@@ -139,14 +134,5 @@ bool CameraInterface::hasLumaChromaTextures()
 {
 	return false;
 }
-
-api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& context, const native::HTexture_& cameraTexture)
-{
-	Log(Log.Verbose, "Camera interface util: Handle %d, Target 0x%08X", cameraTexture.handle, cameraTexture.target);
-
-	api::TextureStore texStore = context->createTexture();
-	static_cast<native::HTexture_&>(api::native_cast(*texStore)) = cameraTexture;
-	return context->createTextureView(texStore);
 }
-
-}
+//!\endcond

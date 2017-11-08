@@ -4,7 +4,7 @@ uniform sampler2D  sTexture;
 in highp    float       LightIntensity;
 in mediump vec2         TexCoord;
 
-layout (location = 0) out lowp vec4 oColor;
+layout (location = 0) out highp vec4 oColor;
 
 void main()
 {

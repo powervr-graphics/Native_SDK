@@ -7,13 +7,10 @@
               Entry Point: WinMain
 ***********************************************************************************************************************/
 
-#include <windows.h>
-#include <stdio.h>
+#define DYNAMICGLES_NO_NAMESPACE
+#define DYNAMICEGL_NO_NAMESPACE
+#include <DynamicGles.h>
 #include <tchar.h>
-
-#define GL_GLEXT_PROTOTYPES
-#include <EGL/egl.h>
-#include <GLES2/gl2.h>
 #include <vector>
 
 // Windows class name to register
@@ -184,25 +181,25 @@ bool createWindowAndDisplay(HINSTANCE applicationInstance, HWND& nativeWindow, H
 
 /*!*********************************************************************************************************************
 \param		deviceContext               The device context used by the application
-\param[out]	eglDisplay				    EGLDisplay created from deviceContext
+\param[out]	display				    EGLDisplay created from deviceContext
 \return	Whether the function succeeded or not.
 \brief	Creates an EGLDisplay from a native device context, and initializes it.
 ***********************************************************************************************************************/
-bool createEGLDisplay(HDC deviceContext, EGLDisplay& eglDisplay)
+bool createEGLDisplay(HDC deviceContext, EGLDisplay& display)
 {
 	//	Get an EGL display.
 	//	EGL uses the concept of a "display" which in most environments corresponds to a single physical screen. After creating a native
 	//	display for a given windowing system, EGL can use this handle to get a corresponding EGLDisplay handle to it for use in rendering.
 	//	Should this fail, EGL is usually able to provide access to a default display.
 
-	eglDisplay = eglGetDisplay(deviceContext);
-	if (eglDisplay == EGL_NO_DISPLAY)
+	display = eglGetDisplay(deviceContext);
+	if (display == EGL_NO_DISPLAY)
 	{
-		eglDisplay = eglGetDisplay((EGLNativeDisplayType) EGL_DEFAULT_DISPLAY);
+		display = eglGetDisplay((EGLNativeDisplayType) EGL_DEFAULT_DISPLAY);
 	}
 
 	// If a display still couldn't be obtained, return an error.
-	if (eglDisplay == EGL_NO_DISPLAY)
+	if (display == EGL_NO_DISPLAY)
 	{
 		MessageBox(0, _T("Failed to get an EGLDisplay"), ERROR_TITLE, MB_OK | MB_ICONEXCLAMATION);
 		return false;
@@ -215,7 +212,7 @@ bool createEGLDisplay(HDC deviceContext, EGLDisplay& eglDisplay)
 	//	are queried here for illustration purposes.
 
 	EGLint eglMajorVersion, eglMinorVersion;
-	if (!eglInitialize(eglDisplay, &eglMajorVersion, &eglMinorVersion))
+	if (!eglInitialize(display, &eglMajorVersion, &eglMinorVersion))
 	{
 		MessageBox(0, _T("Failed to initialize the EGLDisplay"), ERROR_TITLE, MB_OK | MB_ICONEXCLAMATION);
 		return false;
@@ -224,12 +221,12 @@ bool createEGLDisplay(HDC deviceContext, EGLDisplay& eglDisplay)
 }
 
 /*!*********************************************************************************************************************
-\param		eglDisplay                  The EGLDisplay used by the application
-\param[out]	eglConfig                   The EGLConfig chosen by the function
+\param		display                  The EGLDisplay used by the application
+\param[out]	config                   The EGLConfig chosen by the function
 \return	Whether the function succeeded or not.
 \brief	Chooses an appropriate EGLConfig and return it.
 ***********************************************************************************************************************/
-bool chooseEGLConfig(EGLDisplay eglDisplay, EGLConfig& eglConfig)
+bool chooseEGLConfig(EGLDisplay display, EGLConfig& config)
 {
 
 	//	Specify the required configuration attributes.
@@ -256,7 +253,7 @@ bool chooseEGLConfig(EGLDisplay eglDisplay, EGLConfig& eglConfig)
 	//	its needs perfectly, so we limit it to returning a single EGLConfig.
 
 	EGLint configsReturned;
-	if (!eglChooseConfig(eglDisplay, configurationAttributes, &eglConfig, 1, &configsReturned) || (configsReturned != 1))
+	if (!eglChooseConfig(display, configurationAttributes, &config, 1, &configsReturned) || (configsReturned != 1))
 	{
 		MessageBox(0, _T("eglChooseConfig() failed."), ERROR_TITLE, MB_OK | MB_ICONEXCLAMATION);
 		return false;
@@ -266,17 +263,17 @@ bool chooseEGLConfig(EGLDisplay eglDisplay, EGLConfig& eglConfig)
 
 /*!*********************************************************************************************************************
 \param		nativeWindow                A native window that's been created
-\param		eglDisplay                  The EGLDisplay used by the application
-\param		eglConfig                   An EGLConfig chosen by the application
-\param[out]	eglSurface					The EGLSurface created from the native window.
+\param		display                  The EGLDisplay used by the application
+\param		config                   An EGLConfig chosen by the application
+\param[out]	surface					The EGLSurface created from the native window.
 \return	Whether the function succeeds or not.
 \brief	Creates an EGLSurface from a native window
 ***********************************************************************************************************************/
-bool createEGLSurface(HWND nativeWindow, EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface& eglSurface)
+bool createEGLSurface(HWND nativeWindow, EGLDisplay display, EGLConfig config, EGLSurface& surface)
 {
 
 	//	Create an EGLSurface for rendering.
-	//	Using a native window created earlier and a suitable eglConfig, a surface is created that can be used to render OpenGL ES calls to.
+	//	Using a native window created earlier and a suitable config, a surface is created that can be used to render OpenGL ES calls to.
 	//	There are three main surface types in EGL, which can all be used in the same way once created but work slightly differently:
 	//	 - Window Surfaces  - These are created from a native window and are drawn to the screen.
 	//	 - Pixmap Surfaces  - These are created from a native windowing system as well, but are offscreen and are not displayed to the user.
@@ -284,11 +281,11 @@ bool createEGLSurface(HWND nativeWindow, EGLDisplay eglDisplay, EGLConfig eglCon
 	//	The offscreen surfaces are useful for non-rendering contexts and in certain other scenarios, but for most applications the main
 	//	surface used will be a window surface as performed below.
 
-	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, nativeWindow, NULL);
-	if (eglSurface == EGL_NO_SURFACE)
+	surface = eglCreateWindowSurface(display, config, nativeWindow, NULL);
+	if (surface == EGL_NO_SURFACE)
 	{
 		eglGetError(); // Clear error
-		eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, NULL, NULL);
+		surface = eglCreateWindowSurface(display, config, NULL, NULL);
 	}
 
 	// Check for any EGL Errors
@@ -297,15 +294,15 @@ bool createEGLSurface(HWND nativeWindow, EGLDisplay eglDisplay, EGLConfig eglCon
 }
 
 /*!*********************************************************************************************************************
-\param			eglDisplay                  The EGLDisplay used by the application
-\param			eglConfig                   An EGLConfig chosen by the application
-\param			eglSurface					The EGLSurface created from the native window.
-\param[out] 	eglContext                  The EGLContext created by this function
+\param			display                  The EGLDisplay used by the application
+\param			config                   An EGLConfig chosen by the application
+\param			surface					The EGLSurface created from the native window.
+\param[out] 	context                  The EGLContext created by this function
 \param			nativeWindow                A native window, used to display error messages
 \return	Whether the function succeeds or not.
 \brief	Sets up the EGLContext, creating it and then installing it to the current thread.
 ***********************************************************************************************************************/
-bool setupEGLContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface eglSurface, EGLContext& eglContext, HWND nativeWindow)
+bool setupEGLContext(EGLDisplay display, EGLConfig config, EGLSurface surface, EGLContext& context, HWND nativeWindow)
 {
 	//	Make OpenGL ES the current API.
 	//	EGL needs a way to know that any subsequent EGL calls are going to be affecting OpenGL ES,
@@ -327,7 +324,7 @@ bool setupEGLContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface eglS
 	};
 
 	// Create the context with the context attributes supplied
-	eglContext = eglCreateContext(eglDisplay, eglConfig, NULL, contextAttributes);
+	context = eglCreateContext(display, config, NULL, contextAttributes);
 	if (!testEGLError(nativeWindow, "eglCreateContext")) {	return false;	}
 
 	//	Bind the context to the current thread.
@@ -335,7 +332,7 @@ bool setupEGLContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLSurface eglS
 	//	context. Specifically, make current will bind the context to the thread it's called from, and unbind it from any others. To use
 	//	multiple contexts at the same time, users should use multiple threads and synchronise between them.
 
-	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
+	eglMakeCurrent(display, surface, surface, context);
 	if (!testEGLError(nativeWindow, "eglMakeCurrent")) {	return false; }
 	return true;
 }
@@ -542,13 +539,13 @@ bool initializeShaders(GLuint& fragmentShader, GLuint& vertexShader, GLuint& sha
 
 /*!*********************************************************************************************************************
 \param	shaderProgram   The shader program used to render the scene
-\param	eglDisplay      The EGLDisplay used by the application
-\param	eglSurface		The EGLSurface created from the native window.
+\param	display      The EGLDisplay used by the application
+\param	surface		The EGLSurface created from the native window.
 \param	nativeWindow    A native window, used to display error messages
 \return	Whether the function succeeds or not.
 \brief	Renders the scene to the framebuffer. Usually called within a loop.
 ***********************************************************************************************************************/
-bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurface, HWND nativeWindow)
+bool renderScene(GLuint shaderProgram, EGLDisplay display, EGLSurface surface, HWND nativeWindow)
 {
 	// The message handler setup for the window system will signal this variable when the window is closed, so close the application.
 	if (HasUserQuit) {	return false;	}
@@ -604,13 +601,33 @@ bool renderScene(GLuint shaderProgram, EGLDisplay eglDisplay, EGLSurface eglSurf
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	if (!testGLError(nativeWindow, "glDrawArrays")) { return false; }
 
+	// Invalidate the contents of the specified buffers for the framebuffer to allow the implementation further optimization opportunities.
+	// The following is taken from https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_discard_framebuffer.txt
+	// Some OpenGL ES implementations cache framebuffer images in a small pool of fast memory.  Before rendering, these implementations must load the
+	// existing contents of one or more of the logical buffers (color, depth, stencil, etc.) into this memory.  After rendering, some or all of these
+	// buffers are likewise stored back to external memory so their contents can be used again in the future.  In many applications, some or all of the
+	// logical buffers  are cleared at the start of rendering.  If so, the effort to load or store those buffers is wasted.
+
+	// Even without this extension, if a frame of rendering begins with a full-screen Clear, an OpenGL ES implementation may optimize away the loading
+	// of framebuffer contents prior to rendering the frame.  With this extension, an application can use DiscardFramebufferEXT to signal that framebuffer
+	// contents will no longer be needed.  In this case an OpenGL ES implementation may also optimize away the storing back of framebuffer contents after rendering the frame.
+	if(isGlExtensionSupported("GL_EXT_discard_framebuffer"))
+	{
+		GLenum invalidateAttachments[2];
+		invalidateAttachments[0] = GL_DEPTH_EXT;
+		invalidateAttachments[1] = GL_STENCIL_EXT;
+		
+		glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, &invalidateAttachments[0]);
+		if (!testGLError(nativeWindow, "glDiscardFramebufferEXT")) {	return false;	}
+	}
+
 	//	Present the display data to the screen.
 	//	When rendering to a Window surface, OpenGL ES is double buffered. This means that OpenGL ES renders directly to one frame buffer,
 	//	known as the back buffer, whilst the display reads from another - the front buffer. eglSwapBuffers signals to the windowing system
 	//	that OpenGL ES 2.0 has finished rendering a scene, and that the display should now draw to the screen from the new data. At the same
 	//	time, the front buffer is made available for OpenGL ES 2.0 to start rendering to. In effect, this call swaps the front and back
 	//	buffers.
-	if (!eglSwapBuffers(eglDisplay, eglSurface))
+	if (!eglSwapBuffers(display, surface))
 	{
 		testEGLError(nativeWindow, "eglSwapBuffers");
 		return false;
@@ -643,16 +660,16 @@ void deInitializeGLState(GLuint fragmentShader, GLuint vertexShader, GLuint shad
 }
 
 /*!*********************************************************************************************************************
-\param			eglDisplay  The EGLDisplay used by the application
+\param			display  The EGLDisplay used by the application
 \brief	Releases all resources allocated by EGL
 ***********************************************************************************************************************/
-void releaseEGLState(EGLDisplay eglDisplay)
+void releaseEGLState(EGLDisplay display)
 {
 	// To release the resources in the context, first the context has to be released from its binding with the current thread.
-	eglMakeCurrent(eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+	eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
 	// Terminate the display, and any resources associated with it (including the EGLContext)
-	eglTerminate(eglDisplay);
+	eglTerminate(display);
 }
 
 /*!*********************************************************************************************************************
@@ -672,7 +689,7 @@ void releaseWindowAndDisplay(HWND nativeWindow, HDC deviceContext)
 /*!*********************************************************************************************************************
 \param			applicationInstance         Application instance created by the Operating System
 \param			previousInstance            Always NULL
-\param			commandLineString           Command line string passed from the Operating System, ignored.
+\param			commandLineString           Command line std::string passed from the Operating System, ignored.
 \param			showCommand                 Specifies how the window is to be shown, ignored.
 \return	Result code to send to the Operating System
 \brief	Main function of the program, executes other functions.
@@ -684,10 +701,10 @@ int WINAPI WinMain(HINSTANCE applicationInstance, HINSTANCE previousInstance, TC
 	HDC					deviceContext = NULL;
 
 	// EGL variables
-	EGLDisplay			eglDisplay = NULL;
-	EGLConfig			eglConfig = NULL;
-	EGLSurface			eglSurface = NULL;
-	EGLContext			eglContext = NULL;
+	EGLDisplay			display = NULL;
+	EGLConfig			config = NULL;
+	EGLSurface			surface = NULL;
+	EGLContext			context = NULL;
 
 	// Handles for the two shaders used to draw the triangle, and the program handle which combines them.
 	GLuint fragmentShader = 0, vertexShader = 0;
@@ -700,16 +717,16 @@ int WINAPI WinMain(HINSTANCE applicationInstance, HINSTANCE previousInstance, TC
 	if (!createWindowAndDisplay(applicationInstance, nativeWindow, deviceContext)) {	goto cleanup; }
 
 	// Create and Initialize an EGLDisplay from the native display
-	if (!createEGLDisplay(deviceContext, eglDisplay)) { goto cleanup; }
+	if (!createEGLDisplay(deviceContext, display)) { goto cleanup; }
 
 	// Choose an EGLConfig for the application, used when setting up the rendering surface and EGLContext
-	if (!chooseEGLConfig(eglDisplay, eglConfig)) { goto cleanup; }
+	if (!chooseEGLConfig(display, config)) { goto cleanup; }
 
 	// Create an EGLSurface for rendering from the native window
-	if (!createEGLSurface(nativeWindow, eglDisplay, eglConfig, eglSurface)) { goto cleanup; }
+	if (!createEGLSurface(nativeWindow, display, config, surface)) { goto cleanup; }
 
 	// Setup the EGL Context from the other EGL constructs created so far, so that the application is ready to submit OpenGL ES commands
-	if (!setupEGLContext(eglDisplay, eglConfig, eglSurface, eglContext, nativeWindow)) { goto cleanup; }
+	if (!setupEGLContext(display, config, surface, context, nativeWindow)) { goto cleanup; }
 
 	// Initialize the vertex data in the application
 	if (!initializeBuffer(vertexBuffer, nativeWindow)) { goto cleanup; }
@@ -720,7 +737,7 @@ int WINAPI WinMain(HINSTANCE applicationInstance, HINSTANCE previousInstance, TC
 	// Renders a triangle for 800 frames using the state setup in the previous function
 	for (int i = 0; i < 800; ++i)
 	{
-		if (!renderScene(shaderProgram, eglDisplay, eglSurface, nativeWindow))	{	break;	}
+		if (!renderScene(shaderProgram, display, surface, nativeWindow))	{	break;	}
 	}
 
 	// Release any resources we created in the Initialize functions
@@ -728,7 +745,7 @@ int WINAPI WinMain(HINSTANCE applicationInstance, HINSTANCE previousInstance, TC
 
 cleanup:
 	// Release the EGL State
-	releaseEGLState(eglDisplay);
+	releaseEGLState(display);
 	// Release the windowing system resources
 	releaseWindowAndDisplay(nativeWindow, deviceContext);
 	// Destroy the eglWindow

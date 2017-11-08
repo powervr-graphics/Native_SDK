@@ -15,7 +15,7 @@ class AssetWriter
 {
 public:
 	/// <summary>Default constructor.</summary>
-	AssetWriter() : _assetStream(NULL) {}
+	AssetWriter() {}
 
 public:
 	/// <summary>Open an asset stream for writing. Implement this in your concrete AssetWriter implementation.
@@ -51,7 +51,7 @@ public:
 	/// <summary>Get the number of assets that have been added for writing. Implement this in your concrete
 	/// AssetWriter implementation.</summary>
 	/// <returns>The number of assets that have been added for writing.</returns>
-	virtual uint32 assetsAddedSoFar() = 0;
+	virtual uint32_t assetsAddedSoFar() = 0;
 
 	/// <summary>Query if this writer supports multiple assets for writing. Implement this in your concrete AssetWriter
 	/// implementation.</summary>
@@ -67,19 +67,19 @@ public:
 	/// <summary>Get a list of supported file extensions. Implement this in your concrete AssetWriter implementation.
 	/// </summary>
 	/// <returns>The list of supported file extensions.</returns>
-	virtual std::vector<string> getSupportedFileExtensions() = 0;
+	virtual std::vector<std::string> getSupportedFileExtensions() = 0;
 
 	/// <summary>Get the name of this writer. Implement this in your concrete AssetWriter implementation.</summary>
 	/// <returns>writer name</returns>
-	virtual string getWriterName() = 0;
+	virtual std::string getWriterName() = 0;
 
 	/// <summary>Get the version of this writer. Implement this in your concrete AssetWriter implementation.
 	/// </summary>
 	/// <returns>writer version</returns>
-	virtual string getWriterVersion() = 0;
+	virtual std::string getWriterVersion() = 0;
 
 protected:
-	std::auto_ptr<Stream>                 _assetStream; //!< The Stream that this writer uses
+	std::unique_ptr<Stream>                 _assetStream; //!< The Stream that this writer uses
 	std::vector<const AssetType*> _assetsToWrite;  //!< The list of assets to write so far
 };
 }

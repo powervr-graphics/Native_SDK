@@ -28,7 +28,9 @@ void swap(RingBuffer<Item>& left, RingBuffer<Item>& right);
 /// <typeparam name="ItemType">The type of the items stored in the RingBuffer</typeparam>
 template<typename ItemType> class RingBuffer
 {
+	//!\cond NO_DOXYGEN
 	template<typename> friend void swap(RingBuffer<ItemType>, RingBuffer<ItemType>);
+	//!\endcond
 	size_t getIndex(size_t item)const
 	{
 		size_t idx = _first + item;
@@ -38,19 +40,19 @@ template<typename ItemType> class RingBuffer
 public:
 	/// <summary>Get the item at the head of the ringbuffer.</summary>
 	/// <returns>The item at the head of the ringbuffer.</returns>
-	ItemType& front(){	return _store[_first];	}
+	ItemType& front() { return _store[_first];  }
 
 	/// <summary>Get the item at the head of the ringbuffer. (const)</summary>
 	/// <returns>The item at the head of the ringbuffer. (const)</returns>
-	const ItemType& front() const{	return _store[_first];	}
-	
+	const ItemType& front() const { return _store[_first];  }
+
 	/// <summary>Get the item at the tail of the ringbuffer.</summary>
 	/// <returns>The item at the tail of the ringbuffer.</returns>
-	ItemType& back(){	return _store[getIndex(_size - 1)];	}
-	
+	ItemType& back() {  return _store[getIndex(_size - 1)]; }
+
 	/// <summary>Get the item at the tail of the ringbuffer. const</summary>
 	/// <returns>The item at the tail of the ringbuffer. const</returns>
-	const ItemType& back() const{	return _store[getIndex(_size - 1)];	}
+	const ItemType& back() const {  return _store[getIndex(_size - 1)]; }
 
 	/// <summary>Logical indexing. 0 is the head, size()-1 is the tail (const)</summary>
 	/// <param name="idx">The index of the item to get. Index is always the logical index in the buffer (0:head,
@@ -75,10 +77,10 @@ public:
 	}
 	/// <summary>Constructor</summary>
 	RingBuffer() : _store(NULL), _first(0), _size(0), _capacity(0) {}
-	
+
 	/// <summary>Copy constructor. Does a deep copy of the contents.</summary>
 	/// <param name="rhs">The item to copy</param>
-	RingBuffer(const RingBuffer& rhs) : _store(static_cast<ItemType*>(malloc(rhs._capacity* sizeof(ItemType)))), _first(0), _size(rhs._size),
+	RingBuffer(const RingBuffer& rhs) : _store(static_cast<ItemType*>(malloc(rhs._capacity * sizeof(ItemType)))), _first(0), _size(rhs._size),
 		_capacity(rhs._capacity)
 	{
 		copy_items<false>(rhs._store, _store, rhs._size, rhs._first, rhs._capacity);
@@ -95,13 +97,13 @@ public:
 	/// <param name="rhs">The object to copy.</param>
 	/// <returns>Reference of this object.</returns>
 	/// <remarks>Utilizes copy-and-swap. Self-assignment safe.</remarks>
-	RingBuffer& operator=(RingBuffer rhs){	swap(*this, rhs); return *this;	}
-	
+	RingBuffer& operator=(RingBuffer rhs) { swap(*this, rhs); return *this; }
+
 	/// <summary>Move ssignment operator. Will take the resources of the right hand side.</summary>
 	/// <param name="rhs">The object to move.</param>
 	/// <returns>Reference of this object.</returns>
 	/// <remarks>Utilizes copy-and-swap. Self-assignment safe.</remarks>
-	RingBuffer&& operator=(RingBuffer && rhs)
+	RingBuffer&& operator=(RingBuffer&& rhs)
 	{
 		clear(); free(_store);
 		_store = rhs._store; rhs._store = NULL;
@@ -122,7 +124,7 @@ public:
 	}
 
 	/// <summary>dtor</summary>
-	~RingBuffer(){ clear(); free(_store); }
+	~RingBuffer() { clear(); free(_store); }
 
 	/// <summary>Add an item to the back of the buffer. Auto grows.</summary>
 	/// <param name="item">The item to add to the buffer.</param>
@@ -173,12 +175,14 @@ public:
 
 	/// <summary>Reserve at least size items of internal space for the ring buffer. Efficient if the number of items that
 	/// the buffer needs to accomodate is known in advance.</summary>
+	/// <param name=size> The size to reserve at (least). If capacity is less than this number, it will be increased to at
+	/// least this number (normally, exactly)</param>
 	void reserve(size_t size)
 	{
 		if (size > _capacity)
 		{
 			ItemType* old = _store;
-			_store = (ItemType*)malloc(size * sizeof(ItemType));
+			_store = static_cast<ItemType*>(malloc(size * sizeof(ItemType)));
 			copy_items<true>(old, _store, _capacity, _first, _capacity);
 			_first = 0;
 			free(old);
@@ -205,17 +209,17 @@ private:
 
 	void construct(const ItemType& item, size_t position)
 	{
-		new(_store + position) ItemType(item);
+		new (_store + position) ItemType(item);
 	}
 
-	void destroy(size_t position){	_store[position].~ItemType();	}
+	void destroy(size_t position) { _store[position].~ItemType(); }
 
 	template<bool move>
 	static void copy_items(ItemType* from, ItemType* to, size_t number, size_t from_start, size_t from_capacity)
 	{
 		for (size_t i = 0; i < number; ++i)
 		{
-			new(to + i)ItemType(from[from_start]);
+			new (to + i)ItemType(from[from_start]);
 
 			if (move)
 			{

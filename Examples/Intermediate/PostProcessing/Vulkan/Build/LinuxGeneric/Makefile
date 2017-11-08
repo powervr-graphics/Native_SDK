@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanPostProcessing
-DEPENDS =  PVRCore PVRAssets PVRNativeVulkan PVRVulkan PVRShell PVREngineUtils
-LIBRARIES =  PVREngineUtils PVRShell PVRVulkan PVRNativeVulkan PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRVk PVRShell PVRUtilsVk
+LIBRARIES =  PVRUtilsVk PVRShell PVRVk PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
@@ -37,6 +37,8 @@ RESOURCES += \
 COMMON_RESOURCES += \
            Marble.pvr\
            scene.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

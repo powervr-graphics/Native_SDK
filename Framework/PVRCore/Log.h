@@ -1,57 +1,124 @@
 /*!
-\brief This file contains Logging functionality. Look here if plan to use custom logging. Default logging accessed
-through the global Log functor (Log("a message")).
+\brief This file contains Logging functionality.
 \file PVRCore/Log.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
+#ifndef _PVR_LOG_H
+#define _PVR_LOG_H
+#include <string>
+#include <assert.h>
 #pragma once
-#include "PVRCore/Logging/ConsoleMessenger.h"
-namespace pvr {
+#include <cstdlib>
+#include <cstdarg>
+#include <cstring>
+#include <cstdio>
 
+#if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#endif
+#include <Windows.h>
+#define vsnprintf _vsnprintf
+#endif
+
+#if defined(__ANDROID__)
+#include <android/log.h>
+static const android_LogPriority messageTypes[] =
+{
+	ANDROID_LOG_VERBOSE,
+	ANDROID_LOG_DEBUG,
+	ANDROID_LOG_INFO,
+	ANDROID_LOG_WARN,
+	ANDROID_LOG_ERROR,
+	ANDROID_LOG_FATAL,
+};
+#elif defined(__QNXNTO__)
+#include <sys/slog.h>
+static const int messageTypes[] =
+{
+	_SLOG_DEBUG1,
+	_SLOG_DEBUG1,
+	_SLOG_INFO,
+	_SLOG_WARNING,
+	_SLOG_ERROR,
+	_SLOG_CRITICAL
+};
+#else
+static const char* messageTypes[] =
+{
+	"VERBOSE: ",
+	"DEBUG: ",
+	"INFORMATION: ",
+	"WARNING: ",
+	"ERROR: ",
+	"CRITICAL: ",
+};
+#endif
+
+//!\cond NO_DOXYGEN
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(__ANDROID__)
+#define PVR_PLATFORM_IS_MOBILE 1
+#else
+#define PVR_PLATFORM_IS_DESKTOP 1
+#endif
+//!\endcond
+
+
+
+/// <summary>Enumerates possible severities from Critical down to Debug.</summary>
+enum class LogLevel
+{
+	Verbose = 0,
+	Debug = 1,
+	Information = 2,
+	Warning = 3,
+	Error = 4,
+	Critical = 5,
+	None = 100,
+};
 /// <summary>Represents an object capable of providing Logging functionality. This class is normally instantiated and
 /// configured, not inherited from. The components providing the Logging capability are contained in this class
 /// through interfaces, and as such can be replaced with custom components.</summary>
 class Logger
 {
-private:
-<<<<<<< HEAD
-	static platform::ConsoleMessenger m_defaultMessageHandler;
-	platform::Messenger* m_messageHandler;
-
-=======
-	static platform::ConsoleMessenger _defaultMessageHandler;
-	platform::Messenger* _messageHandler;
->>>>>>> 1776432f... 4.3
 public:
-	/// <summary>Enumerates possible severities from Critical down to Debug.</summary>
-	enum Severity
-	{
-<<<<<<< HEAD
-=======
-		None = platform::Messenger::None,
->>>>>>> 1776432f... 4.3
-		Debug = platform::Messenger::Debug,
-		Verbose = platform::Messenger::Verbose,
-		Information = platform::Messenger::Information,
-		Warning = platform::Messenger::Warning,
-		Error = platform::Messenger::Error,
-		Critical = platform::Messenger::Critical,
-	};
+	/// <summary>Set the verbosity threshold below which messages will not be output.</summary>
+	/// <param name="minimumLevelToOutput">The minimum level to actually output.</param>
+	/// <remarks>Messages with a severity less than this will be silently discarded. For example, if using a "Warning"
+	/// level, Critical, Error and Warning will be displayed, while Information, Verbose and Debug will be discarded.
+	/// </remarks>
+	void setVerbosity(const LogLevel minimumLevelToOutput) { _verbosityThreshold = minimumLevelToOutput; }
+	/// <summary>Get the verbosity threshold below which messages will not be output.</summary>
+	/// <returns>The minimum level that is currently output.</returns>
+	/// <remarks>Messages with a severity less than this will be silently discarded. For example, if using a "Warning"
+	/// level, Critical, Error and Warning will be displayed, while Information, Verbose and Debug will be discarded.
+	/// </remarks>
+	LogLevel getVerbosity() const { return _verbosityThreshold; }
 
-	/// <summary>Default constructor. Will construct a logger using the Default message handler. The default message
-	/// handler uses suitable system-specific output: Console output for console systems and debug environments,
-	/// system logging for mobile systems, file output for consoleless desktop.</summary>
-	Logger() : _messageHandler(&_defaultMessageHandler) {}
+
+	Logger()
+	{
+#if defined(PVR_PLATFORM_IS_DESKTOP) && !defined(TARGET_OS_MAC)
+		FILE* truncateme = fopen("log.txt", "w");
+
+		if (truncateme)
+		{
+			fclose(truncateme);
+		}
+#endif
+	}
 
 	/// <summary>Functor operator used to allow an instance of this class to be called as a function. Logs a message using
 	/// this logger's message handler.</summary>
 	/// <param name="severity">The severity of the message. Apart from being output into the message, the severity is
 	/// used by the logger to discard log events less than a specified threshold. See setVerbosity(...)</param>
-	/// <param name="formatString">A printf-style format string</param>
-	/// <param name="...">Variable arguments for the format string. Printf-style rules</param>
-	void operator()(Severity severity, const char8* const formatString, ...)
+	/// <param name="formatString">A printf-style format std::string</param>
+	/// <param name="...">Variable arguments for the format std::string. Printf-style rules</param>
+	void operator()(LogLevel severity, const char* const formatString, ...)const
 	{
+		if (severity < _verbosityThreshold) { return; }
 		va_list argumentList;
 		va_start(argumentList, formatString);
 		vaOutput(severity, formatString, argumentList);
@@ -60,181 +127,242 @@ public:
 
 	/// <summary>Functor operator used to allow an instance of this class to be called as a function. Logs a message using
 	/// this logger's message handler. Severity is fixed to "Error".</summary>
-	/// <param name="formatString">A printf-style format string</param>
-	/// <param name="...">Variable arguments for the format string. Printf-style rules</param>
-	void operator()(const char8* const formatString, ...)
+	/// <param name="formatString">A printf-style format std::string</param>
+	/// <param name="...">Variable arguments for the format std::string. Printf-style rules</param>
+	void operator()(const char* const formatString, ...)const
 	{
+		if (LogLevel::Error < _verbosityThreshold) { return; }
 		va_list argumentList;
 		va_start(argumentList, formatString);
-		vaOutput(Error, formatString, argumentList);
+		vaOutput(LogLevel::Error, formatString, argumentList);
 		va_end(argumentList);
 	}
 
 	/// <summary>Logs a message using this logger's message handler.</summary>
 	/// <param name="severity">The severity of the message. Apart from being output into the message, the severity is
 	/// used by the logger to discard log events less than a specified threshold. See setVerbosity(...)</param>
-	/// <param name="formatString">A printf-style format string</param>
-	/// <param name="...">Variable arguments for the format string. Printf-style rules</param>
-	void output(Severity severity, const char8* const formatString, ...)
+	/// <param name="formatString">A printf-style format std::string</param>
+	/// <param name="...">Variable arguments for the format std::string. Printf-style rules</param>
+	void output(LogLevel severity, const char* formatString, ...) const
 	{
+		if (severity < _verbosityThreshold) { return; }
 		va_list argumentList;
 		va_start(argumentList, formatString);
 		vaOutput(severity, formatString, argumentList);
 		va_end(argumentList);
 	}
-
-	/// <summary>Logs a message using the Default message handler.</summary>
-	/// <param name="severity">The severity of the message.</param>
-	/// <param name="formatString">A printf-style format string</param>
-	/// <param name="...">Variable arguments for the format string. Printf-style rules</param>
-	static void static_output(Severity severity, const char8* const formatString, ...)
+	/// <summary>Logs a message using this logger's message handler.</summary>
+	/// <param name="formatString">A printf-style format std::string</param>
+	/// <param name="...">Variable arguments for the format std::string. Printf-style rules</param>
+	void output(const char* formatString, ...) const
 	{
+		if (LogLevel::Error < _verbosityThreshold) { return; }
 		va_list argumentList;
 		va_start(argumentList, formatString);
-		static_vaOutput(severity, formatString, argumentList);
+		vaOutput(LogLevel::Error, formatString, argumentList);
 		va_end(argumentList);
 	}
 
 	/// <summary>Varargs version of the "output" function.</summary>
-	void vaOutput(Severity severity, const char8* const formatString, va_list argumentList)
+	/// <param name="severity">The severity of the message. Apart from being output into the message, the severity is
+	/// used by the logger to discard log events less than a specified threshold. See setVerbosity(...)</param>
+	/// <param name="formatString">A printf-style format std::string</param>
+	/// <param name="argumentList">Variable arguments list for the format std::string. Printf-style rules</param>
+	void vaOutput(LogLevel severity, const char* formatString, va_list argumentList) const
 	{
-		if (_messageHandler)
+#ifndef DEBUG
+		if (severity > LogLevel::Debug)
+#endif
 		{
-<<<<<<< HEAD
-			m_messageHandler->output(static_cast<platform::Messenger::Severity>(severity), formatString, argumentList);
-=======
-			_messageHandler->output(static_cast<platform::Messenger::Severity>(severity), formatString, argumentList);
->>>>>>> 1776432f... 4.3
+#if defined(__ANDROID__)
+			// Note: There may be issues displaying 64bits values with this function
+			// Note: This function will truncate long messages
+			__android_log_vprint(messageTypes[(int)severity], "com.powervr.Example", formatString, argumentList);
+#elif defined(__QNXNTO__)
+			vslogf(1, messageTypes[(int)severity], formatString, argumentList);
+#else //Not android Not QNX
+			static char buffer[4096];
+			va_list tempList;
+			memset(buffer, 0, sizeof(buffer));
+#if (defined _MSC_VER) // Pre VS2013
+			tempList = argumentList;
+#else
+			va_copy(tempList, argumentList);
+#endif
+			vsnprintf(buffer, 4095, formatString, argumentList);
+
+#if defined(_WIN32) && !defined(_CONSOLE)
+			if (IsDebuggerPresent())
+			{
+				OutputDebugString(messageTypes[static_cast<int>(severity)]);
+				OutputDebugString(buffer);
+				OutputDebugString("\n");
+			}
+#else
+			vprintf(formatString, tempList);
+			printf("\n");
+#endif
+#if defined(PVR_PLATFORM_IS_DESKTOP) && !defined(TARGET_OS_MAC)
+			{
+				FILE* file = fopen("log.txt", "a");
+				if (file)
+				{
+					fwrite(messageTypes[static_cast<int>(severity)], 1, strlen(messageTypes[static_cast<int>(severity)]), file);
+					fwrite(buffer, 1, strlen(buffer), file);
+					fwrite("\n", 1, 1, file);
+					fclose(file);
+				}
+			}
+#endif
+#endif
 		}
 	}
 
-	/// <summary>Varargs version of the "static_output" function.</summary>
-	static void static_vaOutput(Severity severity, const char8* const formatString, va_list argumentList)
-	{
-<<<<<<< HEAD
-		m_defaultMessageHandler.output(static_cast<platform::Messenger::Severity>(severity), formatString, argumentList);
-	}
-
-	/*!****************************************************************************************************************
-	\return     The Messenger object that acts as this Logger's message handler.
-	*******************************************************************************************************************/
-=======
-		_defaultMessageHandler.output(static_cast<platform::Messenger::Severity>(severity), formatString, argumentList);
-	}
-
-	/// <summary>Get the Messenger object that acts as this Logger's message handler.</summary>
-	/// <returns>The Messenger object that acts as this Logger's message handler.</returns>
->>>>>>> 1776432f... 4.3
-	const platform::Messenger* getMessageHandler()
-	{
-		return _messageHandler;
-	}
-
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief     Sets the Messenger object that acts as this Logger's message handler.
-	\param     messageHandler The Messenger object that is to act as this Logger's message handler.
-	*******************************************************************************************************************/
-=======
-	/// <summary>Sets the Messenger object that acts as this Logger's message handler.</summary>
-	/// <param name="messageHandler">The Messenger object that is to act as this Logger's message handler.</param>
->>>>>>> 1776432f... 4.3
-	void setMessageHandler(platform::Messenger* messageHandler)
-	{
-		Logger::_messageHandler = messageHandler;
-	}
-
-	/// <summary>Get the Verbosity threshold of this Logger.</summary>
-	/// <returns>The Verbosity threshold of this Logger.</returns>
-	Severity getVerbosity()
-	{
-		return static_cast<Logger::Severity>(_messageHandler->getVerbosity());
-	}
-
-	/// <summary>Sets the Verbosity threshold of this Logger.</summary>
-	/// <param name="verbosity">The Verbosity threshold that is to be set to this Logger.</param>
-	void setVerbosity(const Severity verbosity)
-	{
-<<<<<<< HEAD
-		m_messageHandler->setVerbosity((platform::Messenger::Severity)verbosity);
-	}
-
-	/*!****************************************************************************************************************
-	\brief      Use this function to convert a Result into a string that is suitable for outputting.
-	\return     A string suitable for writing out that represents this Result
-	*******************************************************************************************************************/
-=======
-		_messageHandler->setVerbosity((platform::Messenger::Severity)verbosity);
-	}
-
-	/// <summary>Use this function to convert a Result into a string that is suitable for outputting.</summary>
-	/// <returns>A string suitable for writing out that represents this Result</returns>
->>>>>>> 1776432f... 4.3
-	static const char* getResultCodeString(Result result)
-	{
-		switch (result)
-		{
-		case Result::Success: return "Success";
-		case Result::UnknownError: return"Unknown Error";
-		case Result::OutOfMemory: return"Out Of Memory";
-		case Result::InvalidArgument: return"Invalid Argument";
-		case Result::AlreadyInitialized: return"Already Initialized";
-		case Result::NotInitialized: return"Not Initialized";
-		case Result::UnsupportedRequest: return"Unsupported Request";
-		case Result::FileVersionMismatch: return"File Version Mismatch";
-		case Result::NotReadable: return"Not Readable";
-		case Result::NotWritable: return"Not Writable";
-		case Result::EndOfStream: return"End Of Stream";
-		case Result::UnableToOpen: return"Unable To Open";
-		case Result::NoData: return"No Data";
-		case Result::OutOfBounds: return"Out Of Bounds";
-		case Result::NotFound: return"Not Found";
-		case Result::KeyAlreadyExists: return"Key Already Exists";
-		case Result::ExitRenderFrame: return"Exit Render Scene";
-		case Result::InvalidData: return"Invalid Data";
-		default: return"UNRECOGNIZED CODE";
-		}
-	}
-	void initializeMessenger() { _messageHandler->initialize(); }
+private:
+	LogLevel _verbosityThreshold;
 };
 
-/// <summary>--- GLOBAL OBJECT THAT IS NORMALLY THE DEFAULT LOG --- Use to log your issues.</summary>
-/// <remarks>Normally used as a functor: Log(Log.Warning, "This is warning number %d", 42)</remarks>
-extern ::pvr::Logger Log;
+/// <summary>Returns the default logger object. This is the only way to get that object. Is global.</summary>
+/// <returns>The default logger global logger.</returns>
+inline Logger DefaultLogger()
+{
+	static Logger logger;
+	return logger;
+}
 
-/// <summary>Callback used for some classes to allow them to log errors. static_output follows this signature.
-/// </summary>
-typedef void(*ErrorLogger)(Logger::Severity severity, const char8*, ...);
 
+/// <summary>Logs a message using the default logger.</summary>
+/// <param name="severity">The severity of the message. Apart from being output into the message, the severity is
+/// used by the logger to discard log events less than a specified threshold. See setVerbosity(...)</param>
+/// <param name="formatString">A printf-style format std::string</param>
+/// <param name="...">Variable arguments for the format std::string. Printf-style rules</param>
+inline void Log(LogLevel severity, const char* formatString, ...)
+{
+	va_list argumentList;
+	va_start(argumentList, formatString);
+	DefaultLogger().vaOutput(severity, formatString, argumentList);
+	va_end(argumentList);
+}
 
+/// <summary>Logs a message with severity "ERROR" using the default logger (same as calling Log(LogLevel::Error, ...)</summary>
+/// <param name="formatString">Printf-style format string for the varargs that follow.</param>
+/// <param name="...">Variable arguments for the format std::string. Printf-style rules</param>
+inline void Log(const char* formatString, ...)
+{
+	va_list argumentList;
+	va_start(argumentList, formatString);
+	DefaultLogger().vaOutput(LogLevel::Error, formatString, argumentList);
+	va_end(argumentList);
+}
 
+/// <summary>If supported on the platform, makes the debugger break at this line. Used for Assertions on Visual Studio</summary>
+inline void debuggerBreak()
+{
+#ifdef _MSC_VER
+	__debugbreak();
+#endif
+}
+
+/// <summary>If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion.
+/// If you wish to completely compile it out on release, use the macro debug_assertion.</summary>
+/// <param name="condition">Pass the condition to assert here. If true, nothing happens. If false, asserts</param>
+/// <param name="message">The message that will be logged if the asserted condition is false.</param>
 inline void assertion(bool condition, const std::string& message)
 {
 	if (!condition)
 	{
-		Log(Log.Critical, ("ASSERTION FAILED: " + message).c_str());
-		PVR_ASSERTION(0);
+		Log(LogLevel::Critical, ("ASSERTION FAILED: " + message).c_str());
+		debuggerBreak();
+		assert(0);
+	}
+}
+//!\cond NO_DOXYGEN
+#define SLASH(s) /##s
+#define COMMENT SLASH(/)
+//!\endcond
+
+#ifdef DEBUG
+
+/// <summary>Logs a debug message using the default logger. Compiled out on release</summary>
+/// <param name="message">A message</param>
+#define DebugLog(message) Log(LogLevel::Debug, message)
+#else
+/// <summary>Logs a debug message using the default logger. Compiled out on release</summary>
+/// <param name="message">A message</param>
+#define DebugLog(message) void(0)
+#endif
+
+
+
+#ifdef DEBUG
+/// <summary>An assertion that gets completely compiled out in release  builds.
+/// Anything inside a macro will be removed, so you may want to put expensive
+/// operations for the assert directly here.</summary>
+/// <param name="condition">Pass the condition to assert here. Is completely compiled out in release, so this
+/// can be taken advantage of by doing potentially expensive operations inline in the function call.</param>
+/// <param name="message">The message that will be logged if the asserted condition is false. Is completely
+/// compiled out in release, so thiscan be taken advantage of by doing potentially expensive operations
+/// such as building the message string inline here.</param>
+#define debug_assertion(condition, message) assertion(condition, message)
+#else
+/// <summary>An assertion that gets completely compiled out in release  builds.
+/// Anything inside a macro will be removed, so you may want to put expensive
+/// operations for the assert directly here.</summary>
+/// <param name="condition">Pass the condition to assert here. Is completely compiled out in release, so this
+/// can be taken advantage of by doing potentially expensive operations inline in the function call.</param>
+/// <param name="message">The message that will be logged if the asserted condition is false. Is completely
+/// compiled out in release, so thiscan be taken advantage of by doing potentially expensive operations
+/// such as building the message string inline here.</param>
+#define debug_assertion(condition, message) ((void)0)
+#endif
+#ifdef DEBUG
+/// <summary>In debug builds only, log a warning if the condition is false.</summary>
+/// <param name="condition">Pass the condition to assert here. If true, nothing happens. If false, log warning.</param>
+/// <param name="message">The message that will be logged if the asserted condition is false.</param>
+#define debug_warning(condition, message) assert_warning(condition, message)
+#else
+/// <summary>An assertion that gets completely compiled out in debug builds.
+/// Anything inside a macro will be removed, so you may want to put expensive
+/// operations for the assert directly here.</summary>
+/// <param name="condition">Pass the condition to assert here. If true, nothing happens. If false, asserts</param>
+/// <param name="message">The message that will be logged if the asserted condition is false.</param>
+#define debug_warning(condition, message) ((void)0)
+#endif
+
+
+
+/// <summary>If condition is false, logs a warning.</summary>
+/// <param name="condition">Pass the condition to assert here. If true, nothing happens. If false, logs warning.</param>
+/// <param name="msg">The message that will be logged if the asserted condition is false.</param>
+inline void assert_warning(bool condition, const char* msg)
+{
+	if (!condition)
+	{
+		Log(LogLevel::Warning, msg);
 	}
 }
 
-#define SLASH(s) /##s
-#define COMMENT SLASH(/)
-
-#ifdef DEBUG
-#define debug_assertion(condition, message) assertion(condition, message)
-#else
-#define debug_assertion(condition, message) ((void)0)
-#endif
+/// <summary>If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion.
+/// If you wish to completely compile it out on release, use the macro debug_assertion.</summary>
+/// <param name="condition">Pass the condition to assert here. If true, nothing happens. If false, asserts</param>
+/// <param name="msg">The message that will be logged if the asserted condition is false.</param>
 inline void assertion(bool condition, const char* msg)
 {
 	if (!condition)
 	{
-		assertion(condition, std::string(msg));
+		Log(LogLevel::Critical, "ASSERTION FAILED: ", msg);
+		debuggerBreak();
+		assert(0);
 	}
 }
 
+
+
+/// <summary>If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throws an assertion.
+/// If you wish to completely compile it out on release, use the macro debug_assertion.</summary>
+/// <param name="condition">Pass the condition to assert here. If true, nothing happens. If false, asserts.</param>
 inline void assertion(bool condition)
 {
 	assertion(condition, "");
 }
-}
+#endif

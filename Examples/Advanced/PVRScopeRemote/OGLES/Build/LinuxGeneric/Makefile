@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESPVRScopeRemote
-DEPENDS =  PVRCore PVRAssets PVRNativeGles PVRGles PVRShell PVREngineUtils
-LIBRARIES =  PVRScopeDeveloper pthread rt dl PVREngineUtils PVRShell PVRGles PVRNativeGles PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRShell PVRUtilsGles
+LIBRARIES =  PVRScopeDeveloper pthread rt dl PVRUtilsGles PVRShell PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS) ../../../../../../Builds/Linux/$(PLAT_SUFFIX)/Lib
 
 OBJECTS +=	\
@@ -25,6 +25,8 @@ RESOURCES += \
 COMMON_RESOURCES += \
            Marble.pvr\
            scene.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

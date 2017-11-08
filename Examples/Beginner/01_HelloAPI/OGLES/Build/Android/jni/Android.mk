@@ -1,4 +1,5 @@
 LOCAL_PATH := $(call my-dir)/../../..
+PVRSDKDIR := $(realpath $(call my-dir)/../../../../../../..)
 
 # Module OGLESHelloAPI
 include $(CLEAR_VARS)
@@ -10,9 +11,10 @@ LOCAL_SRC_FILES  := OGLESHelloAPI_Android.cpp
 
 
 LOCAL_LDLIBS := -llog \
-                -landroid \
-                -lEGL \
-                -lGLESv2
+                -landroid
+
+
+LOCAL_C_INCLUDES := $(PVRSDKDIR)/Builds/Include
 
 LOCAL_STATIC_LIBRARIES := android_native_app_glue
 

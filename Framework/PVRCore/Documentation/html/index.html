@@ -66,7 +66,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -88,12 +88,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="textblock"><h1><a class="anchor" id="overview"></a>
 Overview</h1>
-<p>PVRCore is the supporting code of the library that you can leverage for your own use. PVRCore is also used by the rest of the Framework and because of that, all examples using any other part of the Framework should link with PVRCore. An example of code that can be found in PVRCore: </p>
+<p>PVRCore is a collection of supporting code for the PowerVR Framework. Code using other modules of the Framework should link with PVRCore. An example of code that can be found in PVRCore: </p>
 <ul>
 <li>
-Interfaces that bind other modules together (e.g. <span class="code">GraphicsContext.h</span>, <span class="code"><a class="el" href="_o_s_manager_8h.html" title="Contains the OSManager interface. ">OSManager.h</a></span>) </li>
-<li>
-Utility classes and specialized data structures used by the Framework (<span class="code"><a class="el" href="_ring_buffer_8h.html" title="Contains a RingBuffer data structure implementation. ">RingBuffer.h</a></span>, <span class="code"><a class="el" href="_list_of_interfaces_8h.html" title="Specialized data structure required by the PVRApi CommandBuffer. ">ListOfInterfaces.h</a></span>) </li>
+Utility classes and specialized data structures used by the Framework (<span class="code"><a class="el" href="_ring_buffer_8h.html" title="Contains a RingBuffer data structure implementation. ">RingBuffer.h</a></span>, <span class="code"><a class="el" href="_contiguous_map_8h.html" title="Contains a map implementation based on contiguous storage, optimised for retrieval and iteration...">ContiguousMap.h</a></span>) </li>
 <li>
 The main Smart Pointer class used by the Framework (<span class="code"><a class="el" href="_ref_counted_8h.html" title="A smart pointer implementation very close to the spec of std::shared_ptr but with some differences an...">RefCounted.h</a></span>) </li>
 <li>
@@ -101,9 +99,17 @@ Data streams (e.g. <span class="code"><a class="el" href="_file_stream_8h.html" 
 <li>
 Logging and error reporting (<span class="code"><a class="el" href="_log_8h.html" title="This file contains the Multi&lt;T&gt; class template, which is the usual container for objects that must be...">Log.h</a></span>) </li>
 <li>
-Special math (bounding boxes, shadow volumes) </li>
+Special math (projection matrix calculations, bounding boxes, shadow volumes) </li>
 </ul>
-<p>In general, you have to include files from here only if you wish to utilise a specific functionality (most commonly Streams, Log or Refcounted). That said, most of that functionality is core to the rest of the Framework and at least the basic classes would be exposed. Unlike our old Framework, PVRCore uses the Standard Template Library and Generalized Linear Models. It is also completely API agnostic, and mostly platform agnostic (it retains some platform dependence so as to create the platform abstractions).</p>
+<p>PVRCore is API agnostic, and generally either platform agnostic or actually abstracting the platform (e.g. Log). You would usually not have to include files from here if you wish to utilize specific functionality, as most functionality is already included by the rest of the Framework, so that - even though you can - you will normally not need to include PVRCore files. PVRCore heavily uses the Standard Template Library. PVRCore uses the following external modules (bundled under [SDKROOT]/External): </p>
+<ul>
+<li>
+GLM for linear algebra and generally math </li>
+<li>
+PugiXML for reading XML files </li>
+<li>
+ConcurrentQueue for multithreaded queues </li>
+</ul>
 <p>PVRCore source can be found in the &lt;a href="../../&gt;PVRCore folder in the SDK package.</p>
 <h1><a class="anchor" id="usage"></a>
 Using PVRCore</h1>
@@ -118,19 +124,19 @@ A library to link against (linux makefiles) (.so etc. in <span class="code">Fram
 </ol>
 </li>
 <li>
-Most commonly used files will already be included if you use the "main" modules of the PowerVR Framework (PVRShell/PVRApi etc) </li>
+Most commonly used files will already be included if you use the "main" modules of the PowerVR Framework (PVRShell/PVRUtils etc) </li>
 <li>
-Otherwise, include <span class="code"><a class="el" href="_p_v_r_core_8h_source.html">Framework/PVRCore/PVRCore.h</a></span> or the specific files containing the functionality you require </li>
+Otherwise, include <span class="code"><a class="el" href="_p_v_r_core_8h.html" title="Include this file if you wish to use the PVRCore functionality. ">Framework/PVRCore/PVRCore.h</a></span> or the specific files containing the functionality you require </li>
 </ul>
 <h1><a class="anchor" id="code"></a>
 Code Examples</h1>
-<div class="fragment"><div class="line"><a class="code" href="classpvr_1_1_file_stream.html">pvr::FileStream</a> myTexture(“BodyNormalMap.pvr”); </div>
-<div class="line"><a class="code" href="classpvr_1_1_buffer_stream.html">pvr::BufferStream</a> myTexture(myTextureInMemory); </div>
-</div><!-- fragment --><p>Everything that deals with file/asset data uses streams. Also includes <span class="code">WindowsResourceStream</span>, <span class="code">AndroidAssetStream</span></p>
-<div class="fragment"><div class="line"><a class="code" href="classpvr_1_1_logger.html">pvr::Logger</a> myLog; </div>
+<div class="fragment"><div class="line"><a class="code" href="classpvr_1_1_file_stream.html">pvr::FileStream</a> myTexture(“BodyNormalMap.pvr”);</div>
+<div class="line"><a class="code" href="classpvr_1_1_buffer_stream.html">pvr::BufferStream</a> myTexture(myTextureInMemory);</div>
+</div><!-- fragment --><p>Everything that deals with file/asset data uses streams. Also check <span class="code">WindowsResourceStream</span>, <span class="code">AndroidAssetStream</span></p>
+<div class="fragment"><div class="line">pvr::Logger myLog;</div>
 <div class="line">myLog.setMessenger(myCustomFileLoggingMessenger);</div>
 <div class="line">myLog(“I am logging <span class="keyword">this</span> in my custom logger”);</div>
-<div class="line"><a class="code" href="namespacepvr.html#a3c0ab02bcc448423ae5efc03f357d75c">pvr::Log</a>(<a class="code" href="namespacepvr.html#a3c0ab02bcc448423ae5efc03f357d75c">Log</a>.Verbose, “Usually I will just be <span class="keyword">using</span> the global PowerVR <a class="code" href="namespacepvr.html#a3c0ab02bcc448423ae5efc03f357d75c">Log</a> <span class="keywordtype">object</span>. Nobody likes globals, except <span class="keywordflow">for</span> logging…”);</div>
+<div class="line"><a class="code" href="_log_8h.html#a49209d4079b083831638df881b307b68">Log</a>(Log::Verbose, “Usually I will just be <span class="keyword">using</span> the global PowerVR <a class="code" href="_log_8h.html#a49209d4079b083831638df881b307b68">Log</a> <span class="keyword">function</span>. Nobody likes globals, except <span class="keywordflow">for</span> logging…”);</div>
 </div><!-- fragment --> </div></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

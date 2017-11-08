@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-/*!*********************************************************************************************************************
-\file         PVRShell\OS\Windows\WindowsOSData.h
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Contains implementation details required by the Microsoft Windows version of PVRShell.
-***********************************************************************************************************************/
-#pragma once
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-namespace pvr {
-namespace platform {
-/*!**********************************************************************************************************
-\brief OS specific data for windows
-************************************************************************************************************/
-struct WindowsOSData
-{
-	int cmdShow;
-
-	WindowsOSData() : cmdShow(SW_SHOW)
-	{
-	}
-};
-}
-=======
 /*!
 \brief Contains implementation details required by the Microsoft Windows version of PVRShell.
 \file PVRShell/OS/Windows/WindowsOSData.h
@@ -37,6 +12,7 @@ namespace platform {
 /// <summary>OS specific data for windows</summary>
 struct WindowsOSData
 {
+	/// <summary>The mode that this window should be shown with (minimized, maximized etc.)</summary>
 	int cmdShow;
 
 	WindowsOSData() : cmdShow(SW_SHOW)
@@ -44,5 +20,4 @@ struct WindowsOSData
 	}
 };
 }
->>>>>>> 1776432f... 4.3
 }

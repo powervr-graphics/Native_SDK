@@ -9,34 +9,27 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESPostProcessing
-DEPENDS =  PVRCore PVRAssets PVRNativeGles PVRGles PVRShell PVREngineUtils
-LIBRARIES =  PVREngineUtils PVRShell PVRGles PVRNativeGles PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRShell PVRUtilsGles
+LIBRARIES =  PVRUtilsGles PVRShell PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
            OGLES/OGLESPostProcessing.o
 
 RESOURCES += \
-           PostBloomFragShader_ES2.fsh\
-           PostBloomFragShader_ES3.fsh\
-           PostBloomVertShader_ES2.vsh\
-           PostBloomVertShader_ES3.vsh\
-           PreBloomFragShader_ES2.fsh\
-           PreBloomFragShader_ES3.fsh\
-           PreBloomVertShader_ES2.vsh\
-           PreBloomVertShader_ES3.vsh\
-           BlurFragShader_ES2.fsh\
            BlurFragShader_ES3.fsh\
-           BlurVertShader_ES2.vsh\
            BlurVertShader_ES3.vsh\
-           FragShader_ES2.fsh\
            FragShader_ES3.fsh\
-           VertShader_ES2.vsh\
+           PostBloomFragShader_ES3.fsh\
+           PreBloomFragShader_ES3.fsh\
+           QuadVertShader_ES3.vsh\
            VertShader_ES3.vsh\
 
 COMMON_RESOURCES += \
            Marble.pvr\
            scene.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

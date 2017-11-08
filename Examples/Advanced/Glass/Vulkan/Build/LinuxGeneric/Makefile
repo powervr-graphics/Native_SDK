@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanGlass
-DEPENDS =  PVRCore PVRAssets PVRNativeVulkan PVRVulkan PVRShell PVREngineUtils
-LIBRARIES =  PVREngineUtils PVRShell PVRVulkan PVRNativeVulkan PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRVk PVRShell PVRUtilsVk
+LIBRARIES =  PVRUtilsVk PVRShell PVRVk PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
@@ -54,6 +54,8 @@ COMMON_RESOURCES += \
            SkyboxTex.pvr\
            Balloon.pod\
            scene.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

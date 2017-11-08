@@ -54,49 +54,22 @@
   <None Include="..\..\..\ProcessedAssets\Marble.pvr">
       <Filter>Content Files\Textures</Filter>
   </None>
-  <None Include="..\..\PostBloomFragShader_ES2.fsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\PostBloomFragShader_ES3.fsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\PostBloomVertShader_ES2.vsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\PostBloomVertShader_ES3.vsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\PreBloomFragShader_ES2.fsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\PreBloomFragShader_ES3.fsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\PreBloomVertShader_ES2.vsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\PreBloomVertShader_ES3.vsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\BlurFragShader_ES2.fsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
   <None Include="..\..\BlurFragShader_ES3.fsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\BlurVertShader_ES2.vsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
   <None Include="..\..\BlurVertShader_ES3.vsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\FragShader_ES2.fsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
   <None Include="..\..\FragShader_ES3.fsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\VertShader_ES2.vsh">
+  <None Include="..\..\PostBloomFragShader_ES3.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PreBloomFragShader_ES3.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\QuadVertShader_ES3.vsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
   <None Include="..\..\VertShader_ES3.vsh">

@@ -9,13 +9,12 @@
 #include "PVRCore/Log.h"
 using std::vector;
 namespace pvr {
-using namespace types;
 namespace assets {
 namespace assetReaders {
 TextureReaderPVR::TextureReaderPVR() : _texturesToLoad(true)
 { }
 
-TextureReaderPVR::TextureReaderPVR(Stream::ptr_type assetStream) : AssetReader<Texture>(assetStream), _texturesToLoad(true)
+TextureReaderPVR::TextureReaderPVR(Stream::ptr_type assetStream) : AssetReader<Texture>(std::move(assetStream)), _texturesToLoad(true)
 { }
 
 bool TextureReaderPVR::readNextAsset(Texture& asset)
@@ -30,7 +29,7 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 	size_t dataRead = 0;
 
 	// Read the texture header version
-	uint32 version;
+	uint32_t version;
 	if (!_assetStream->read(sizeof(version), 1, &version, dataRead) || dataRead != 1) { return false; }
 
 	if (version == TextureHeader::Header::PVRv3)
@@ -57,18 +56,18 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 		if (!_assetStream->read(sizeof(textureFileHeader.depth), 1, &textureFileHeader.depth, dataRead) || dataRead != 1) { return false; }
 
 		// Read the number of surfaces
-		if (!_assetStream->read(sizeof(textureFileHeader.numberOfSurfaces), 1, &textureFileHeader.numberOfSurfaces, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.numSurfaces), 1, &textureFileHeader.numSurfaces, dataRead) || dataRead != 1) { return false; }
 
 		// Read the number of faces
-		if (!_assetStream->read(sizeof(textureFileHeader.numberOfFaces), 1, &textureFileHeader.numberOfFaces, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.numFaces), 1, &textureFileHeader.numFaces, dataRead) || dataRead != 1) { return false; }
 
 		// Read the number of MIP maps
-		if (!_assetStream->read(sizeof(textureFileHeader.mipMapCount), 1, &textureFileHeader.mipMapCount, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(textureFileHeader.numMipMaps), 1, &textureFileHeader.numMipMaps, dataRead) || dataRead != 1) { return false; }
 
 
 
 		// Read the meta data size, but store it for now.
-		uint32 tempMetaDataSize = 0;
+		uint32_t tempMetaDataSize = 0;
 		if (!_assetStream->read(sizeof(tempMetaDataSize), 1, &tempMetaDataSize, dataRead) || dataRead != 1) { return false; }
 		// Construct a texture header.
 		// Set the meta data size to 0
@@ -77,7 +76,7 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 
 		asset.initializeWithHeader(textureHeader);
 		// Read the meta data
-		uint32 metaDataRead = 0;
+		uint32_t metaDataRead = 0;
 		while (metaDataRead < tempMetaDataSize)
 		{
 			TextureMetaData metaDataBlock;
@@ -104,7 +103,7 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 		if (!_assetStream->read(1, asset.getDataSize(), asset.getDataPointer(), dataRead) || dataRead != asset.getDataSize()) { return false; }
 	}
 	else if (version == texture_legacy::c_headerSizeV1 ||
-			 version == texture_legacy::c_headerSizeV2)
+	         version == texture_legacy::c_headerSizeV2)
 	{
 		// Read a V2 legacy header
 		texture_legacy::HeaderV2 legacyHeader;
@@ -119,7 +118,7 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 		if (!_assetStream->read(sizeof(legacyHeader.width), 1, &legacyHeader.width, dataRead) || dataRead != 1) { return false; }
 
 		// Read the MIP map count
-		if (!_assetStream->read(sizeof(legacyHeader.mipMapCount), 1, &legacyHeader.mipMapCount, dataRead) || dataRead != 1) { return false; }
+		if (!_assetStream->read(sizeof(legacyHeader.numMipMaps), 1, &legacyHeader.numMipMaps, dataRead) || dataRead != 1) { return false; }
 
 		// Read the texture flags
 		if (!_assetStream->read(sizeof(legacyHeader.pixelFormatAndFlags), 1, &legacyHeader.pixelFormatAndFlags, dataRead) || dataRead != 1) { return false; }
@@ -148,12 +147,12 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 			if (!_assetStream->read(sizeof(legacyHeader.pvrMagic), 1, &legacyHeader.pvrMagic, dataRead) || dataRead != 1) { return false; }
 
 			// Read the number of surfaces
-			if (!_assetStream->read(sizeof(legacyHeader.numberOfSurfaces), 1, &legacyHeader.numberOfSurfaces, dataRead) || dataRead != 1) { return false; }
+			if (!_assetStream->read(sizeof(legacyHeader.numSurfaces), 1, &legacyHeader.numSurfaces, dataRead) || dataRead != 1) { return false; }
 		}
 		else
 		{
 			legacyHeader.pvrMagic = texture_legacy::c_identifierV2;
-			legacyHeader.numberOfSurfaces = 1;
+			legacyHeader.numSurfaces = 1;
 		}
 
 		// Construct a texture header by converting the old one
@@ -168,16 +167,16 @@ bool TextureReaderPVR::readNextAsset(Texture& asset)
 		asset.initializeWithHeader(textureHeader);
 
 		// Write the texture data
-		for (uint32 surface = 0; surface < asset.getNumberOfArrayMembers(); ++surface)
+		for (uint32_t surface = 0; surface < asset.getNumArrayMembers(); ++surface)
 		{
-			for (uint32 depth = 0; depth < asset.getDepth(); ++depth)
+			for (uint32_t depth = 0; depth < asset.getDepth(); ++depth)
 			{
-				for (uint32 face = 0; face < asset.getNumberOfFaces(); ++face)
+				for (uint32_t face = 0; face < asset.getNumFaces(); ++face)
 				{
-					for (uint32 mipMap = 0; mipMap < asset.getNumberOfMIPLevels(); ++mipMap)
+					for (uint32_t mipMap = 0; mipMap < asset.getNumMipMapLevels(); ++mipMap)
 					{
-						uint32 surfaceSize = asset.getDataSize(mipMap, false, false) / asset.getDepth();
-						byte* surfacePointer = asset.getDataPointer(mipMap, surface, face) + depth * surfaceSize;
+						uint32_t surfaceSize = asset.getDataSize(mipMap, false, false) / asset.getDepth();
+						unsigned char* surfacePointer = asset.getDataPointer(mipMap, surface, face) + depth * surfaceSize;
 
 						// Write each surface, one at a time
 						if (!_assetStream->read(1, surfaceSize, surfacePointer, dataRead) || dataRead != surfaceSize) { return false; }
@@ -216,42 +215,42 @@ bool TextureReaderPVR::isSupportedFile(Stream& assetStream)
 	}
 
 	// Read the identifier
-	texture_legacy::HeaderV2 header;
+        texture_legacy::HeaderV2 header;
 	size_t dataRead;
-	result = assetStream.read(1, texture_legacy::c_headerSizeV2,
-							  &header, dataRead);
+        result = assetStream.read(1, texture_legacy::c_headerSizeV2,
+                                                          &header, dataRead);
 
-	assetStream.close();
+        assetStream.close();
 	// Make sure it read ok, if not it's probably not a usable stream.
-	if (!result)
+        if (!result)
 	{
 		return false;
 	}
 
 	// Check that the identifier matches one of the accepted formats.
-	switch (header.headerSize)
+        switch (header.headerSize)
 	{
-		case texture_legacy::c_headerSizeV1:
-			return dataRead >= texture_legacy::c_headerSizeV1;
+                case texture_legacy::c_headerSizeV1:
+                        return dataRead >= texture_legacy::c_headerSizeV1;
 
-		case texture_legacy::c_headerSizeV2:
-			return dataRead == texture_legacy::c_headerSizeV2 &&
-				header.pvrMagic == texture_legacy::c_identifierV2;
+                case texture_legacy::c_headerSizeV2:
+                        return dataRead == texture_legacy::c_headerSizeV2 &&
+                                header.pvrMagic == texture_legacy::c_identifierV2;
 
-		case TextureHeader::Header::PVRv3:
-			return dataRead >= std::min(
-						texture_legacy::c_headerSizeV2,
-						uint32(TextureHeader::Header::SizeOfHeader));
+                case TextureHeader::Header::PVRv3:
+                        return dataRead >= std::min(
+                                                texture_legacy::c_headerSizeV2,
+                                                static_cast<uint32_t>(TextureHeader::Header::SizeOfHeader));
 	}
 
-	return false;
+        return false;
 }
 
-vector<string> TextureReaderPVR::getSupportedFileExtensions()
+vector<std::string> TextureReaderPVR::getSupportedFileExtensions()
 {
-	vector<string> extensions;
+	vector<std::string> extensions;
 	extensions.push_back("pvr");
-	return vector<string>(extensions);
+	return vector<std::string>(extensions);
 }
 
 bool TextureReaderPVR::convertTextureHeader2To3(const texture_legacy::HeaderV2& legacyHeader, TextureHeader& newHeader)
@@ -259,7 +258,7 @@ bool TextureReaderPVR::convertTextureHeader2To3(const texture_legacy::HeaderV2& 
 	// Pixel type variables to obtain from the old header's information
 	bool isPremultiplied;
 	PixelFormat pixelType;
-	types::ColorSpace colorSpace;
+	ColorSpace colorSpace;
 	VariableType channelType;
 
 	// Map the old enum to the new format.
@@ -288,27 +287,27 @@ bool TextureReaderPVR::convertTextureHeader2To3(const texture_legacy::HeaderV2& 
 	// Set the number of surfaces and the depth
 	if ((legacyHeader.pixelFormatAndFlags & texture_legacy::c_flagVolumeTexture) != 0)
 	{
-		pvrTextureHeaderV3.depth = legacyHeader.numberOfSurfaces / (isCubeMap ? 6 : 1);
-		pvrTextureHeaderV3.numberOfSurfaces = 1;
+		pvrTextureHeaderV3.depth = legacyHeader.numSurfaces / (isCubeMap ? 6 : 1);
+		pvrTextureHeaderV3.numSurfaces = 1;
 	}
 	else
 	{
 		pvrTextureHeaderV3.depth = 1;
-		pvrTextureHeaderV3.numberOfSurfaces = legacyHeader.numberOfSurfaces / (isCubeMap ? 6 : 1);
+		pvrTextureHeaderV3.numSurfaces = legacyHeader.numSurfaces / (isCubeMap ? 6 : 1);
 	}
 
 
 	//Check for the elusive "PVR!\0" no surfaces bug, and attempt to correct
-	if (pvrTextureHeaderV3.numberOfSurfaces == 0)
+	if (pvrTextureHeaderV3.numSurfaces == 0)
 	{
-		pvrTextureHeaderV3.numberOfSurfaces = 1;
+		pvrTextureHeaderV3.numSurfaces = 1;
 	}
 
 	// Turn the original flag into a number of faces.
-	pvrTextureHeaderV3.numberOfFaces = (isCubeMap ? 6 : 1);
+	pvrTextureHeaderV3.numFaces = (isCubeMap ? 6 : 1);
 
 	// Legacy headers have a MIP Map count of 0 if there is only the top level. New Headers have a count of 1, so add 1.
-	pvrTextureHeaderV3.mipMapCount = (legacyHeader.mipMapCount + 1);
+	pvrTextureHeaderV3.numMipMaps = (legacyHeader.numMipMaps + 1);
 
 	// Initialize the header with no meta data
 	pvrTextureHeaderV3.metaDataSize = 0;
@@ -342,7 +341,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 	case texture_legacy::MGL_ARGB_4444:
 	{
 		pixelType = GeneratePixelType4<'a', 'r', 'g', 'b', 4, 4, 4, 4>::ID;
-		colorSpace = types::ColorSpace::lRGB;
+		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedShortNorm;
 		break;
 	}
@@ -413,7 +412,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::MGL_1_BPP:
 	{
-		pixelType = (uint64)CompressedPixelFormat::BW1bpp;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::BW1bpp);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -421,7 +420,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::MGL_VY1UY0:
 	{
-		pixelType = (uint64)CompressedPixelFormat::YUY2;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::YUY2);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -429,7 +428,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::MGL_Y1VY0U:
 	{
-		pixelType = (uint64)CompressedPixelFormat::UYVY;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::UYVY);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -437,7 +436,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::MGL_PVRTC2:
 	{
-		pixelType = (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGBA);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -445,7 +444,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::MGL_PVRTC4:
 	{
-		pixelType = (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGBA);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -517,7 +516,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::GL_PVRTC2:
 	{
-		pixelType = (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGBA);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -525,7 +524,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::GL_PVRTC4:
 	{
-		pixelType = (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGBA);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -549,7 +548,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::GL_PVRTCII4:
 	{
-		pixelType = (uint64)CompressedPixelFormat::PVRTCII_4bpp;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_4bpp);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -557,7 +556,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::GL_PVRTCII2:
 	{
-		pixelType = (uint64)CompressedPixelFormat::PVRTCII_2bpp;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_2bpp);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -565,7 +564,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_DXT1:
 	{
-		pixelType = (uint64)CompressedPixelFormat::DXT1;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::DXT1);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -573,7 +572,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_DXT2:
 	{
-		pixelType = (uint64)CompressedPixelFormat::DXT2;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::DXT2);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		isPremultiplied = true;
@@ -590,7 +589,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_DXT4:
 	{
-		pixelType = (uint64)CompressedPixelFormat::DXT4;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::DXT4);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		isPremultiplied = true;
@@ -599,7 +598,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_DXT5:
 	{
-		pixelType = (uint64)CompressedPixelFormat::DXT5;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::DXT5);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -791,7 +790,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_UYVY:
 	{
-		pixelType = (uint64)CompressedPixelFormat::UYVY;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::UYVY);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -799,7 +798,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::D3D_YUY2:
 	{
-		pixelType = (uint64)CompressedPixelFormat::YUY2;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::YUY2);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -1159,7 +1158,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_R1_UNORM:
 	{
-		pixelType = (uint64)CompressedPixelFormat::BW1bpp;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::BW1bpp);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
@@ -1167,7 +1166,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_R9G9B9E5_SHAREDEXP:
 	{
-		pixelType = (uint64)CompressedPixelFormat::SharedExponentR9G9B9E5;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::SignedFloat;
 		break;
@@ -1175,21 +1174,21 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_R8G8_B8G8_UNORM:
 	{
-		pixelType = (uint64)CompressedPixelFormat::RGBG8888;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::RGBG8888);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
 	}
 	case texture_legacy::DXGI_G8R8_G8B8_UNORM:
 	{
-		pixelType = (uint64)CompressedPixelFormat::GRGB8888;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::GRGB8888);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedByteNorm;
 		break;
 	}
 	case texture_legacy::DXGI_BC1_UNORM:
 	{
-		pixelType = (uint64)CompressedPixelFormat::DXT1;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::DXT1);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedIntegerNorm;
 		break;
@@ -1197,7 +1196,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_BC1_UNORM_SRGB:
 	{
-		pixelType = (uint64)CompressedPixelFormat::DXT1;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::DXT1);
 		colorSpace = ColorSpace::sRGB;
 		channelType = VariableType::UnsignedIntegerNorm;
 		break;
@@ -1205,7 +1204,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_BC2_UNORM:
 	{
-		pixelType = (uint64)CompressedPixelFormat::DXT3;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::DXT3);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedIntegerNorm;
 		break;
@@ -1213,7 +1212,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_BC2_UNORM_SRGB:
 	{
-		pixelType = (uint64)CompressedPixelFormat::DXT1;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::DXT1);
 		colorSpace = ColorSpace::sRGB;
 		channelType = VariableType::UnsignedIntegerNorm;
 		break;
@@ -1221,7 +1220,7 @@ bool TextureReaderPVR::mapLegacyEnumToNewFormat(const texture_legacy::PixelForma
 
 	case texture_legacy::DXGI_BC3_UNORM:
 	{
-		pixelType =(uint64) CompressedPixelFormat::DXT5;
+		pixelType = static_cast<uint64_t>(CompressedPixelFormat::DXT5);
 		colorSpace = ColorSpace::lRGB;
 		channelType = VariableType::UnsignedIntegerNorm;
 		break;

@@ -18,6 +18,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\EglContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\Builds\Windows\Resources\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -32,6 +35,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\OGLESIntroducingPVRShell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\EglContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

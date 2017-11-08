@@ -98,15 +98,21 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacepvr"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html">pvr</a></td></tr>
 <tr class="memdesc:namespacepvr"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main namespace of the PowerVR Framework.<br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacepvr_1_1assets"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1assets.html">pvr::assets</a></td></tr>
+<tr class="memdesc:namespacepvr_1_1assets"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main namespace of the PVRAssets library.<br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae558fc5547da737e038b1c2ea09b1fc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ae558fc5547da737e038b1c2ea09b1fc3">pvr::VertexIndexRead</a> (const byte *const data, const types::IndexType type, uint32 *const out)</td></tr>
-<tr class="memdesc:ae558fc5547da737e038b1c2ea09b1fc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read vertex index data into uin32 buffer. <a href="#ae558fc5547da737e038b1c2ea09b1fc3">More...</a><br/></td></tr>
-<tr class="separator:ae558fc5547da737e038b1c2ea09b1fc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a683944ff99e5f359f136687ec6bfcdb4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a683944ff99e5f359f136687ec6bfcdb4">pvr::VertexRead</a> (const byte *const data, const types::DataType type, uint32 count, float32 *out)</td></tr>
-<tr class="memdesc:a683944ff99e5f359f136687ec6bfcdb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read vertex data into float32 buffer. <a href="#a683944ff99e5f359f136687ec6bfcdb4">More...</a><br/></td></tr>
-<tr class="separator:a683944ff99e5f359f136687ec6bfcdb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91e1a4f2c164fc94d082d9671de02d14"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::assets::helper::loadModel</b> (IAssetProvider &amp;assetProvider, const char *filename, assets::ModelHandle &amp;outModel)</td></tr>
+<tr class="memdesc:a91e1a4f2c164fc94d082d9671de02d14"><td class="mdescLeft">&#160;</td><td class="mdescRight">loads a model from the provided file and fill out the model. <a href="#a91e1a4f2c164fc94d082d9671de02d14">More...</a><br/></td></tr>
+<tr class="separator:a91e1a4f2c164fc94d082d9671de02d14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a944de153a66de30f064da0d2439104b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::assets::helper::VertexIndexRead</b> (const uint8_t *data, const IndexType type, uint32_t *const out)</td></tr>
+<tr class="memdesc:a944de153a66de30f064da0d2439104b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read vertex index data into uin32 buffer. <a href="#a944de153a66de30f064da0d2439104b7">More...</a><br/></td></tr>
+<tr class="separator:a944de153a66de30f064da0d2439104b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca5d71de2e90ad1e4477079434126b1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>pvr::assets::helper::VertexRead</b> (const uint8_t *data, const DataType type, uint32_t count, float *out)</td></tr>
+<tr class="memdesc:aca5d71de2e90ad1e4477079434126b1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read vertex data into float buffer. <a href="#aca5d71de2e90ad1e4477079434126b1c">More...</a><br/></td></tr>
+<tr class="separator:aca5d71de2e90ad1e4477079434126b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Internal helper classes. </p>

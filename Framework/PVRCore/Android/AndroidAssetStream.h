@@ -20,7 +20,12 @@ namespace pvr
 class AndroidAssetStream : public Stream
 {
 public:
-	AndroidAssetStream(AAssetManager* const assetManager, const string& filename);
+	/// <summary>Constructor from Android NDK Asset manager and a filename</summary>
+	/// <param name="assetManager">The Android Asset manager object the app will use</param>
+	/// <param name="filename">The file (asset) to open</param>
+	AndroidAssetStream(AAssetManager* assetManager, const std::string& filename);
+	
+	/// <summary>Destructor. Releases this object</summary>
 	~AndroidAssetStream();
 	bool read(size_t size, size_t count, void* const outData, size_t& outElementsRead) const;
 	bool write(size_t size, size_t count, const void* data, size_t& dataWritten);

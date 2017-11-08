@@ -1,4 +1,8 @@
 var searchData=
 [
-  ['renderpass',['RenderPass',['../namespacepvr_1_1api.html#aee83fa35189bd63f8782d17405b68916',1,'pvr::api']]]
+  ['rectangle3df',['Rectangle3Df',['../namespacepvr.html#afc19de2d5b6952c2d5471033aa4f2563',1,'pvr']]],
+  ['rectangle3di',['Rectangle3Di',['../namespacepvr.html#a799b34b4c6caf281d54db6a9756dc39d',1,'pvr']]],
+  ['rectanglef',['Rectanglef',['../namespacepvr.html#aba0728db2b6aa21ad82b263a102fec44',1,'pvr']]],
+  ['rectanglei',['Rectanglei',['../namespacepvr.html#a779802ae077693e9183007cfbedf47d4',1,'pvr']]],
+  ['reverse_5fiterator',['reverse_iterator',['../classpvr_1_1_contiguous_map.html#aba6eb7e767be3fcc3deb785a7af11897',1,'pvr::ContiguousMap']]]
 ];

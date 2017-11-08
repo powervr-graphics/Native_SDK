@@ -42,7 +42,7 @@ extern "C" {
 #define GL_APIENTRYP GL_APIENTRY*
 #endif
 
-#ifndef GL_GLES_PROTOTYPES
+#ifdef GL_PROTOTYPES
 #define GL_GLES_PROTOTYPES 1
 #endif
 

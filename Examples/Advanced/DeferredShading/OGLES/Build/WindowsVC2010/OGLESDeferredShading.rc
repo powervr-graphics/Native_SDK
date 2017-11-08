@@ -62,10 +62,21 @@ END
 scene.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\scene.pod"
 pointlight.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\pointlight.pod"
 
+// RCDATA: Shaders
+AttributelessVertexShader.vsh		RCDATA		"..\\..\\AttributelessVertexShader.vsh"
+DirectionalLightFragmentShader.fsh		RCDATA		"..\\..\\DirectionalLightFragmentShader.fsh"
+GBufferFloorFragmentShader.fsh		RCDATA		"..\\..\\GBufferFloorFragmentShader.fsh"
+GBufferFloorVertexShader.vsh		RCDATA		"..\\..\\GBufferFloorVertexShader.vsh"
+GBufferFragmentShader.fsh		RCDATA		"..\\..\\GBufferFragmentShader.fsh"
+GBufferVertexShader.vsh		RCDATA		"..\\..\\GBufferVertexShader.vsh"
+PointLightPass1FragmentShader.fsh		RCDATA		"..\\..\\PointLightPass1FragmentShader.fsh"
+PointLightPass1VertexShader.vsh		RCDATA		"..\\..\\PointLightPass1VertexShader.vsh"
+PointLightPass2FragmentShader.fsh		RCDATA		"..\\..\\PointLightPass2FragmentShader.fsh"
+PointLightPass2VertexShader.vsh		RCDATA		"..\\..\\PointLightPass2VertexShader.vsh"
+PointLightPass3FragmentShader.fsh		RCDATA		"..\\..\\PointLightPass3FragmentShader.fsh"
+PointLightPass3VertexShader.vsh		RCDATA		"..\\..\\PointLightPass3VertexShader.vsh"
+WritePlsToFbo.fsh		RCDATA		"..\\..\\WritePlsToFbo.fsh"
 
-// RCDATA: Effects
-effect_MRT.pfx		RCDATA		"..\\..\\effect_MRT.pfx"
-effect_PLS.pfx		RCDATA		"..\\..\\effect_PLS.pfx"
 // RCDATA: Textures
 Table.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\Table.pvr"
 Marble.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\Marble.pvr"

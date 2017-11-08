@@ -10,6 +10,7 @@
 #include "PVRCore/IO/AssetWriter.h"
 #include "PVRCore/Texture/FileDefinesDDS.h"
 
+//!\cond NO_DOXYGEN
 namespace pvr {
 namespace assets {
 /// <summary>Contains experimental serialization classes whose purpose is to write PVRAssets classes (Texture, Model,
@@ -21,7 +22,7 @@ class TextureWriterDDS : public AssetWriter < Texture >
 public:
 	virtual bool writeAllAssets();
 
-	virtual uint32 assetsAddedSoFar();
+	virtual uint32_t assetsAddedSoFar();
 	virtual bool supportsMultipleAssets();
 
 	virtual bool canWriteAsset(const Texture& asset);
@@ -38,3 +39,4 @@ private:
 }
 }
 }
+//!\endcond

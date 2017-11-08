@@ -15,9 +15,9 @@ class TextureMetaData
 {
 public:
 
-	//  Values for each meta data type that we know about. Texture arrays hinge on each surface being identical in all but content,
-	//  including meta data. If the meta data varies even slightly then a new texture should be used. It is possible to write your own
-	//  extension to get around this however.
+	/// <summary> Values for each meta data type that we know about. Texture arrays hinge on each surface being identical in all but content,
+	///  including meta data. If the meta data varies even slightly then a new texture should be used. It is possible to write your own
+	///  extension to get around this however.</summary>
 	enum Identifier
 	{
 		IdentifierTextureAtlasCoords = 0,
@@ -29,7 +29,7 @@ public:
 		IdentifierNumMetaDataTypes
 	};
 
-	//Axes, used to query orientations.
+	/// <summary>Axes, used to query orientations.</summary>
 	enum Axis
 	{
 		AxisAxisX = 0,
@@ -37,7 +37,7 @@ public:
 		AxisAxisZ = 2
 	};
 
-	//Orientations of various axes.
+	/// <summary>Orientations of various axes.</summary>
 	enum AxisOrientation
 	{
 		AxisOrientationLeft  = 1 << AxisAxisX,
@@ -49,12 +49,27 @@ public:
 	};
 
 public:
+	/// <summary>Constructor</summary>
 	TextureMetaData();
-	TextureMetaData(uint32 fourCC, uint32 key, uint32 dataSize, const byte* data);
+
+	/// <summary>Constructor</summary>
+	/// <param name="fourCC">FourCC of the metadata</param>
+	/// <param name="key">Key of the metadata</param>
+	/// <param name="dataSize">The total size of the payload of the metadata</param>
+	/// <param name="data">A pointer to the actual data</param>
+	TextureMetaData(uint32_t fourCC, uint32_t key, uint32_t dataSize, const char* data);
+
+	/// <summary>Copy Constructor</summary>
+	/// <param name="rhs">Copy from this object</param>
 	TextureMetaData(const TextureMetaData& rhs);
+
+	/// <summary>Destructor</summary>
 	~TextureMetaData();
 
-	TextureMetaData&      operator=(const TextureMetaData& rhs);
+	/// <summary>Copy assignment operator</summary>
+	/// <param name="rhs">Copy from this object</param>
+	/// <returns>This object</returns>
+	TextureMetaData& operator=(const TextureMetaData& rhs);
 
 	/// <summary>Load the this texture meta data from a stream</summary>
 	/// <param name="stream">Stream to load the meta data from</param>
@@ -69,31 +84,31 @@ public:
 	/// <summary>Get the 4cc descriptor of the data type's creator. Values equating to values between 'P' 'V' 'R' 0
 	/// and 'P' 'V' 'R' 255 will be used by our headers.</summary>
 	/// <returns>Return 4cc descriptor of the data type's creator.</returns>
-	uint32 getFourCC() const;
+	uint32_t getFourCC() const;
 
 	/// <summary>Get the data size of this meta data</summary>
 	/// <returns>Return the size of the meta data</returns>
-	uint32 getDataSize() const;
+	uint32_t getDataSize() const;
 
 	/// <summary>Get the enumeration key identifying the data type.</summary>
 	/// <returns>Return the enumeration key.</returns>
-	uint32 getKey() const;
+	uint32_t getKey() const;
 
 	/// <summary>Get the data, can be absolutely anything, the loader needs to know how to handle it based on fourCC
 	/// and key.</summary>
 	/// <returns>Return the data</returns>
-	const uint8* getData() const;
+	const uint8_t* getData() const;
 
 
 	/// <summary>Get the data total size in memory</summary>
 	/// <returns>Return the data total size in memory</returns>
-	uint32 getTotalSizeInMemory() const;
+	uint32_t getTotalSizeInMemory() const;
 
 private:
-	uint32 _fourCC;   // A 4cc descriptor of the data type's creator.
+	uint32_t _fourCC;   // A 4cc descriptor of the data type's creator.
 	// Values equating to values between 'P' 'V' 'R' 0 and 'P' 'V' 'R' 255 will be used by our headers.
-	uint32  _key;      // Enumeration key identifying the data type.
-	uint32  _dataSize;  // Size of attached data.
-	uint8*  _data;     // Data array, can be absolutely anything, the loader needs to know how to handle it based on fourCC and key.
+	uint32_t  _key;      // Enumeration key identifying the data type.
+	uint32_t  _dataSize;  // Size of attached data.
+	uint8_t*  _data;     // Data array, can be absolutely anything, the loader needs to know how to handle it based on fourCC and key.
 };
 }

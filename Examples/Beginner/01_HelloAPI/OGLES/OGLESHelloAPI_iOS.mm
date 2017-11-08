@@ -7,6 +7,10 @@
               Entry Point: main
 ***********************************************************************************************************************/
 
+#define DYNAMICGLES_NO_NAMESPACE
+#define DYNAMICEGL_NO_NAMESPACE
+#include "DynamicGles.h"
+
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 #import <OpenGLES/EAGL.h>
@@ -479,6 +483,27 @@ bool testGlError(const char* functionLastCalled)
 	// a version of glDrawElements which allows a user to restrict the actual indices accessed.
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	testGlError("glDrawArrays");
+
+	// Invalidate the contents of the specified buffers for the framebuffer to allow the implementation further optimization opportunities.
+	// The following is taken from https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_discard_framebuffer.txt
+	// Some OpenGL ES implementations cache framebuffer images in a small pool of fast memory.  Before rendering, these implementations must load the
+	// existing contents of one or more of the logical buffers (color, depth, stencil, etc.) into this memory.  After rendering, some or all of these
+	// buffers are likewise stored back to external memory so their contents can be used again in the future.  In many applications, some or all of the
+	// logical buffers  are cleared at the start of rendering.  If so, the effort to load or store those buffers is wasted.
+
+	// Even without this extension, if a frame of rendering begins with a full-screen Clear, an OpenGL ES implementation may optimize away the loading
+	// of framebuffer contents prior to rendering the frame.  With this extension, an application can use DiscardFramebufferEXT to signal that framebuffer
+	// contents will no longer be needed.  In this case an OpenGL ES implementation may also optimize away the storing back of framebuffer contents after rendering the frame.
+	GLenum invalidateAttachments[2];
+	invalidateAttachments[0] = GL_DEPTH_EXT;
+	invalidateAttachments[1] = GL_STENCIL_EXT;
+
+	if(isGlExtensionSupported("GL_EXT_discard_framebuffer"))
+	{
+		glDiscardFramebufferEXT(GL_FRAMEBUFFER, 2, &invalidateAttachments[0]);
+		testGlError("glDiscardFramebufferEXT");
+	}
+
 
 	// Present the display data to the screen.
 	// When rendering to a Window surface, OpenGL ES is double buffered. This means that OpenGL ES renders directly to one frame buffer,

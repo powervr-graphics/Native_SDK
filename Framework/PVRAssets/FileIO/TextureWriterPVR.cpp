@@ -30,7 +30,7 @@ bool TextureWriterPVR::writeAllAssets()
 
 	// Check the size of data written.
 	size_t dataWritten = 0;
-	uint32 version = TextureHeader::Header::PVRv3;
+	uint32_t version = TextureHeader::Header::PVRv3;
 
 	// Write the texture header version
 	if (!_assetStream->write(sizeof(version), 1, &version, dataWritten) || dataWritten != 1) { return false; }
@@ -57,24 +57,24 @@ bool TextureWriterPVR::writeAllAssets()
 	if (!_assetStream->write(sizeof(textureHeader.depth), 1, &textureHeader.depth, dataWritten) || dataWritten != 1) { return false; }
 
 	// Write the number of surfaces
-	if (!_assetStream->write(sizeof(textureHeader.numberOfSurfaces), 1, &textureHeader.numberOfSurfaces, dataWritten) || dataWritten != 1) { return false; }
+	if (!_assetStream->write(sizeof(textureHeader.numSurfaces), 1, &textureHeader.numSurfaces, dataWritten) || dataWritten != 1) { return false; }
 
 	// Write the number of faces
-	if (!_assetStream->write(sizeof(textureHeader.numberOfFaces), 1, &textureHeader.numberOfFaces, dataWritten) || dataWritten != 1) { return false; }
+	if (!_assetStream->write(sizeof(textureHeader.numFaces), 1, &textureHeader.numFaces, dataWritten) || dataWritten != 1) { return false; }
 
 	// Write the number of MIP maps
-	if (!_assetStream->write(sizeof(textureHeader.mipMapCount), 1, &textureHeader.mipMapCount, dataWritten) || dataWritten != 1) { return false; }
+	if (!_assetStream->write(sizeof(textureHeader.numMipMaps), 1, &textureHeader.numMipMaps, dataWritten) || dataWritten != 1) { return false; }
 
 	// Write the meta data size
 	if (!_assetStream->write(sizeof(textureHeader.metaDataSize), 1, &textureHeader.metaDataSize, dataWritten) || dataWritten != 1) { return false; }
 
 	// Write the meta data
-	const map<uint32, map<uint32, TextureMetaData> >* metaDataMap = _assetsToWrite[0]->getMetaDataMap();
-	map<uint32, map<uint32, TextureMetaData> >::const_iterator walkMetaDataMap = metaDataMap->begin();
+	const map<uint32_t, map<uint32_t, TextureMetaData>>* metaDataMap = _assetsToWrite[0]->getMetaDataMap();
+	map<uint32_t, map<uint32_t, TextureMetaData>>::const_iterator walkMetaDataMap = metaDataMap->begin();
 	for (; walkMetaDataMap != metaDataMap->end(); ++walkMetaDataMap)
 	{
-		const map<uint32, TextureMetaData>& currentDevMetaDataMap = walkMetaDataMap->second;
-		map<uint32, TextureMetaData>::const_iterator walkCurDevMetaMap = currentDevMetaDataMap.begin();
+		const map<uint32_t, TextureMetaData>& currentDevMetaDataMap = walkMetaDataMap->second;
+		map<uint32_t, TextureMetaData>::const_iterator walkCurDevMetaMap = currentDevMetaDataMap.begin();
 		for (; walkCurDevMetaMap != currentDevMetaDataMap.end(); ++walkCurDevMetaMap)
 		{
 			if (!walkCurDevMetaMap->second.writeToStream(*_assetStream)) { return false; }
@@ -87,9 +87,9 @@ bool TextureWriterPVR::writeAllAssets()
 	return true;
 }
 
-uint32 TextureWriterPVR::assetsAddedSoFar()
+uint32_t TextureWriterPVR::assetsAddedSoFar()
 {
-	return (uint32)_assetsToWrite.size();
+	return static_cast<uint32_t>(_assetsToWrite.size());
 }
 
 bool TextureWriterPVR::supportsMultipleAssets()
@@ -103,19 +103,19 @@ bool TextureWriterPVR::canWriteAsset(const Texture&)
 	return true;
 }
 
-vector<string> TextureWriterPVR::getSupportedFileExtensions()
+vector<std::string> TextureWriterPVR::getSupportedFileExtensions()
 {
-	vector<string> extensions;
+	vector<std::string> extensions;
 	extensions.push_back("pvr");
-	return vector<string>(extensions);
+	return vector<std::string>(extensions);
 }
 
-string TextureWriterPVR::getWriterName()
+std::string TextureWriterPVR::getWriterName()
 {
 	return "PowerVR Texture Writer";
 }
 
-string TextureWriterPVR::getWriterVersion()
+std::string TextureWriterPVR::getWriterVersion()
 {
 	return "1.0.0";
 }

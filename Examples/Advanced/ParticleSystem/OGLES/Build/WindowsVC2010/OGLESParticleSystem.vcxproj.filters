@@ -26,9 +26,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\ParticleSystemGPU.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\Builds\Windows\Resources\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,27 +42,24 @@
     <ClCompile Include="..\..\OGLESParticleSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ParticleSystemGPU.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 <ItemGroup>
     <None Include="..\..\..\ProcessedAssets\sphere.pod">
       <Filter>Content Files\Scene Files</Filter>
     </None>
-  <None Include="..\..\FragShader_ES31.fsh">
+  <None Include="..\..\FragShader.fsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\VertShader_ES31.vsh">
+  <None Include="..\..\VertShader.vsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\ParticleFragShader_ES31.fsh">
+  <None Include="..\..\ParticleFragShader.fsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\ParticleVertShader_ES31.vsh">
+  <None Include="..\..\ParticleVertShader.vsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\ParticleSolver_ES31.csh">
+  <None Include="..\..\ParticleSolver.csh">
       <Filter>Content Files\Shaders</Filter>
   </None>
   </ItemGroup>

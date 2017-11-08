@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_command_pool__.html" title="Vulkan implementation of the Command Pool class. Destroying the commandpool will also destroys the co..." alt="" coords="197,5,384,32"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_descriptor_pool__.html" title="A descriptor pool &#45; an object used to allocate (and recycle) Descriptor Sets." alt="" coords="197,56,384,83"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device__.html" title="GpuDevice implementation that supports Vulkan" alt="" coords="219,107,362,133"/>
+<area shape="rect" id="node5" href="$classpvrvk_1_1impl_1_1_instance__.html" title="The Instance is a system&#45;wide vulkan &quot;implementation&quot;, similar in concept to the &quot;installation&quot; of Vu..." alt="" coords="215,157,366,184"/>
+<area shape="rect" id="node6" href="$classpvrvk_1_1impl_1_1_physical_device__.html" title="The representation of an entire actual, physical GPU device (as opposed to Device, which is a local, logical part of it). A Physical device is &quot;determined&quot;, or &quot;found&quot;, or &quot;enumerated&quot;, (while a logical device is &quot;created&quot;). You can use the physical device to create logical Devices, determine Extensions etc. See Vulkan spec. " alt="" coords="195,208,387,235"/>
+</map>

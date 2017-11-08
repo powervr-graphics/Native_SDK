@@ -9,5 +9,5 @@ pvr::Shell.
 #include "PVRCore/CoreIncludes.h"
 #include "PVRCore/Stream.h"
 #include "PVRCore/Base/Time_.h"
-#include "PVRCore/Interfaces.h"
+#include "PVRCore/Interfaces/IAssetProvider.h"
 #include <queue>

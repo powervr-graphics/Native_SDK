@@ -14,9 +14,6 @@
     <ClInclude Include="..\..\CameraInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CameraInterfacePVRApi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\PVRCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -1,7 +1,7 @@
 /*!
 \brief Implementation of a special kind of map that stores the data in a linear, contiguous store (std::vector interface),
 but additionally contains an Index to them (std::map interface). Supports custom association of names with
-values, and retrieval of indexes by name or values by index.
+values, and retrieval of indices by name or values by index.
 \file         PVRCore/DataStructures/IndexedArray.h
 \author       PowerVR by Imagination, Developer Technology Team.
 \copyright    Copyright (c) Imagination Technologies Limited.
@@ -22,7 +22,7 @@ namespace pvr {
 /// default-constructed object will still exist. Performing insert() after removing an item will use the place of a
 /// previously deleted item, if it exists. CAUTION: If remove() has been called, the vector no longer guarantees
 /// contiguousness until compact() is called. CAUTION: To manually reclaim all memory and guarantee contiguous
-/// allocation, call compact(). Calling compact invalidates all indexes, which must then be retrieved anew by
+/// allocation, call compact(). Calling compact invalidates all indices, which must then be retrieved anew by
 /// "getInxdex". Calling getIndex on an unknown key returns (size_t)(-1) Accessing an unknown item by index is
 /// undefined. Accessing an index not retrieved by getIndex since the last compact() operation is undefined.
 /// </remarks>
@@ -62,9 +62,11 @@ public:
 		StorageItem_* start;
 		size_t current;
 		size_t size; // required for out-of-bounds checks when skipping empty...
-		iterator(StorageItem_* start, size_t size, size_t current = 0) : start(start), current(current), size(size){ }
+		iterator(StorageItem_* start, size_t size, size_t current = 0) : start(start), current(current), size(size) { }
 	public:
-		iterator(const const_iterator& rhs) : start(rhs.start), size(rhs.size), current(rhs.current){ }
+		/// <summary>Copy constructor</summary>
+		/// <param name="rhs">Object to copy</param>
+		iterator(const const_iterator& rhs) : start(rhs.start), size(rhs.size), current(rhs.current) { }
 
 		/// <summary>operator *</summary>
 		/// <returns>Return this</returns>
@@ -72,19 +74,22 @@ public:
 
 		/// <summary>operator -></summary>
 		/// <returns>Return this</returns>
-		DictionaryEntry* operator->(){ return (start + current); }
+		DictionaryEntry* operator->() { return (start + current); }
 
-		/// <summary>Get current index</summary>
+		/// <summary>Get the current index of the pointed-to item</summary>
+		/// <returns>Current index</returns>
 		size_t getItemIndex() { return current; }
 
-		/// <summary>operator ++</summary>
+		/// <summary>prefix operator ++</summary>
+		/// <returns>This</returns>
 		iterator& operator++()
 		{
 			while ((start + (++current))->isUnused && current != size) {} //skip empty values
 			return *this;
 		}
 
-		/// <summary>operator ++</summary>
+		/// <summary>postfix operator ++</summary>
+		/// <returns>The value of this iterator prior to incrementing</returns>
 		iterator operator++(int)
 		{
 			iterator ret = *this;
@@ -93,7 +98,8 @@ public:
 			return ret;
 		}
 
-		/// <summary>operator --</summary>
+		/// <summary>prefix operator --</summary>
+		/// <returns>This</returns>
 		iterator& operator--()
 		{
 			while ((start + (--current))->isUnused
@@ -101,7 +107,8 @@ public:
 			return *this;
 		}
 
-		/// <summary>operator --</summary>
+		/// <summary>postfix operator --</summary>
+		/// <returns>The value of this iterator prior to decrementing</returns>
 		iterator operator--(int)
 		{
 			iterator ret = *this;
@@ -110,14 +117,16 @@ public:
 		}
 
 		/// <summary>operator !=</summary>
-		/// <param name="rhs"></param>
+		/// <param name="rhs">Right hand side</param>
+		/// <returns>True if this is not equal to rhs</returns>
 		bool operator!=(const iterator& rhs)
 		{
 			return this->current != rhs.current;
 		}
 
 		/// <summary>operator ==</summary>
-		/// <param name="rhs"></param>
+		/// <param name="rhs">Right hand side</param>
+		/// <returns>True if this is equal to rhs</returns>
 		bool operator==(const iterator& rhs)
 		{
 			return !((*this) != rhs);
@@ -133,45 +142,68 @@ public:
 		size_t size; // required for out-of-bounds checks when skipping empty...
 		const_iterator(const StorageItem_* start, size_t size, size_t current = 0) : start(start), size(size), current(current) { }
 	public:
-
+		/// <summary>Dereferencing operator: Return the object this iterator currently points to</summary>
+		/// <returns>The object this iterator currently points to</returns>
 		const DictionaryEntry& operator*()
 		{
 			return *(start + current);
 		}
+		/// <summary>Dereferencing operator: Access the members of the object this iterator currently points to</summary>
+		/// <returns>A pointer to the object this iterator currently points to</returns>
 		const DictionaryEntry* operator->()
 		{
 			return (start + current);
 		}
+		/// <summary>The index of the item where this iterator points</summary>
+		/// <returns>The index of the item where this iterator points</returns>
 		size_t getItemIndex()
 		{
 			return current;
 		}
+		/// <summary>prefix operator ++</summary>
+		/// <returns>This</returns>
 		const_iterator& operator++()
 		{
 			while (++current < size && (start + current)->isUnused) {} //skip empty values
 			return *this;
 		}
+
+		/// <summary>postfix operator ++</summary>
+		/// <returns>This</returns>
 		const_iterator operator++(int)
 		{
 			const_iterator ret = *this;
 			++(*this);
 			return ret;
 		}
+		/// <summary>prefix operator --</summary>
+		/// <returns>This</returns>
 		const_iterator& operator--()
 		{
 			while (--current != static_cast<size_t>(-1) && (start + current)->isUnused) {}  //CAREFUL! this is a size_t, which means it WILL eventually overflow.
 			return *this;
 		}
+
+		/// <summary>postfix operator --</summary>
+		/// <returns>This</returns>
 		const_iterator operator--(int)
 		{
 			iterator ret = *this;
 			--(*this);
 			return ret;
 		}
+
+		/// <summary>Inequality.</summary>
+		/// <param name="rhs">Right hand side of the operation</param>
+		/// <returns>True if the items are not equal, otherwise false</returns>
 		bool operator!=(const const_iterator& rhs)
 		{
 			return this->current != rhs.current;
 		}
+
+		/// <summary>Equality.</summary>
+		/// <param name="rhs">Right hand side of the operation</param>
+		/// <returns>True if the items are not equal, otherwise false</returns>
 		bool operator==(const const_iterator& rhs)
 		{
 			return !((*this) != rhs);
@@ -186,6 +218,7 @@ public:
 	typedef typename maptype_::const_iterator const_index_iterator;
 
 	/// <summary>Return a Linear iterator to the first non-deleted item in the backing store.</summary>
+	/// <returns>A Linear iterator to the first non-deleted item in the backing store.</returns>
 	iterator begin()
 	{
 		if (!mystorage.empty())
@@ -204,6 +237,7 @@ public:
 	}
 
 	/// <summary>Return a Linear const_iterator to the first non-deleted item in the backing store.</summary>
+	/// <returns>A Linear const_iterator to the first non-deleted item in the backing store.</returns>
 	const_iterator begin() const
 	{
 		if (!mystorage.empty())
@@ -218,48 +252,58 @@ public:
 		}
 	}
 
-	/// <summary>Return an indexed_iterator by finding the provided key Indexing map.</summary>
+	/// <summary>Return an indexed iterator by finding the provided key Indexing map.</summary>
+	/// <param name="key">The key with which to lookup.</param>
+	/// <returns>An indexed_iterator</returns>
 	typename maptype_::iterator indexed_find(const IndexType_& key)
 	{
 		return myindex.find(key);
 	}
 
-	/// <summary>Return an indexed_iterator by finding the provided key Indexing map.</summary>
+	/// <summary>Return a const indexed iterator by finding the provided key Indexing map.</summary>
+	/// <param name="key">The key with which to lookup.</param>
+	/// <returns>A const indexed iterator</returns>
 	typename maptype_::const_iterator indexed_find(const IndexType_& key)const
 	{
 		return myindex.find(key);
 	}
 
 	/// <summary>Return an indexed_const_iterator to the first item in the map.</summary>
+	/// <returns>An indexed iterator to the beginning</returns>
 	typename maptype_::iterator indexed_begin()
 	{
 		return myindex.begin();
 	}
 	/// <summary>Return a indexed_const_iterator to the first item in the map.</summary>
+	/// <returns>A constant indexed iterator to the beginning</returns>
 	typename maptype_::const_iterator indexed_begin() const
 	{
 		return myindex.begin();
 	}
 
 	/// <summary>Return an indexed_iterator pointing one item past the last item in the map.</summary>
+	/// <returns>An indexed iterator to the end</returns>
 	typename maptype_::iterator indexed_end()
 	{
 		return myindex.end();
 	}
 
 	/// <summary>Return an indexed_const_iterator pointing one item past the last item in the map.</summary>
+	/// <returns>A const indexed iterator to the end</returns>
 	typename maptype_::const_iterator indexed_end() const
 	{
 		return myindex.end();
 	}
 
 	/// <summary>Return an iterator pointing one item past the last item in the backing array.</summary>
+	/// <returns>An iterator to the end of the backing array</returns>
 	iterator end()
 	{
 		return mystorage.empty() ? iterator(NULL, 0) : iterator(&mystorage.front(), mystorage.size(), mystorage.size());
 	}
 
 	/// <summary>Return a const_iterator pointing one item past the last item in the backing array.</summary>
+	/// <returns>An iterator to the end of the backing array</returns>
 	const_iterator end() const
 	{
 		return mystorage.empty() ? const_iterator(NULL, 0) : const_iterator(&mystorage.front(), mystorage.size(), mystorage.size());
@@ -277,9 +321,10 @@ public:
 		}
 	}
 
-	/// <summary>Insert an item at the first possible spot in the backing array.</summary>
+	/// <summary>Insert an item at the first possible spot in the backing array. If key exists, will update the value.</summary>
 	/// <param name="key">The Key of the new item</param>
 	/// <param name="val">The Value of the new item</param>
+	/// <returns>The index, in the backing array, of the inserted/updated item</returns>
 	size_t insert(const IndexType_& key, const ValueType_ & val)
 	{
 		std::pair<typename maptype_::iterator, bool> found = myindex.insert(std::make_pair(key, 0));
@@ -296,6 +341,8 @@ public:
 
 	/// <summary>Get the index of a specific key in the backing array. Valid until a reshuffling of the array is done
 	/// via insert, compact or similar operation.</summary>
+	/// <param name="key">The Key of the item to find</param>
+	/// <returns>The index of <paramRef name="key"/>, -1 if key does not exist.</returns>
 	size_t getIndex(const IndexType_& key) const
 	{
 		typename maptype_::const_iterator found = myindex.find(key);
@@ -303,12 +350,13 @@ public:
 		{
 			return found->second;
 		}
-		return static_cast<size_t>(-1);// == static_cast<size_t>(-1)
+		return static_cast<size_t>(-1);
 	}
 
 	/// <summary>Removes the item with the specified key from the IndexedArray.</summary>
+	/// <param name="key">The Key of the item to erase</param>
 	/// <remarks>This method will find the entry with specified key and remove it. It will not invalidata existing
-	/// indices, but it will voids the contiguousness guarantee the backing array normally has. Call compact()
+	/// indices, but it will void the contiguousness guarantee the backing array normally has. Call compact()
 	/// afterwards to make the vector contiguous again (but invalidate existing indices).</remarks>
 	void erase(const IndexType_& key)
 	{
@@ -328,27 +376,36 @@ public:
 		}
 	}
 
-	/// <summary>Array indexing operator. Use getIndex to get the indexes of specific items. If idx points to a deleted
-	/// item or past the last item, the behaviour is undefined.</summary>
+	/// <summary>Array indexing operator. Constant time. Use getIndex to get the indices of specific items.
+	/// If idx points to a deleted item or past the last item, the behaviour is undefined.</summary>
+	/// <param name="idx">The backing index to retrieve.</param>
+	/// <returns>Reference to the item at specified index</returns>
 	ValueType_& operator[](size_t idx)
 	{
 		return mystorage[idx].value;
 	}
-	/// <summary>Const array indexing operator. Use getIndex to get the indexes of specific items. If idx points to a
+	/// <summary>Const array indexing operator. Use getIndex to get the indices of specific items. If idx points to a
 	/// deleted item or past the last item, the behaviour is undefined.</summary>
+	/// <param name="idx">The backing index to retrieve.</param>
+	/// <returns>Const Reference to the item at specified index</returns>
 	const ValueType_& operator[](size_t idx)const
 	{
 		return mystorage[idx].value;
 	}
 
-	/// <summary>Indexed indexing operator. Uses std::map binary search to find and retrieve the specified value. If the
-	/// key does not exist, behaviour is undefined.</summary>
+	/// <summary>Indexed indexing operator. Uses std::map find to retrieve the specified value. If the
+	/// key does not exist, it will be inserted.</summary>
+	/// <param name="key">The key to find.</param>
+	/// <returns> Reference to the item at specified index</returns>
 	ValueType_& operator[](const IndexType_& key)
 	{
 		return mystorage[myindex.find(key)->second].value;
 	}
-	/// <summary>Const Indexed indexing operator. Uses std::map binary search to find and retrieve the specified value.
-	/// If the key does not exist, behaviour is undefined.</summary>
+
+	/// <summary>Indexed indexing operator. Uses std::map find to retrieve the specified value. If the
+	/// key does not exist, it will be inserted.</summary>
+	/// <param name="key">The key to find.</param>
+	/// <returns> Reference to the item at specified index</returns>
 	const ValueType_& operator[](const IndexType_& key)const
 	{
 		return mystorage[myindex.find(key)->second].value;
@@ -356,7 +413,7 @@ public:
 
 	/// <summary>Compacts the backing array by removing existing items from the end of the vector and putting them in the
 	/// place of deleted items, and then updating their index, until no more positions marked as deleted are left.
-	/// Will ensure the contiguousness of the backing vector, but will invalidate previously gotten item indexes.
+	/// Will ensure the contiguousness of the backing vector, but will invalidate previously gotten item indices.
 	/// </summary>
 	void compact()
 	{
@@ -401,17 +458,11 @@ public:
 					//ii. The unused spot is not out of bounds of the vector
 					//iii.
 					//Copy by hand(as we have not defined a move assignment operator for compatibility reasons.
-					//Also, since the string does not throw, this makes easier to reason about exceptions.
-#ifdef PVR_SUPPORT_MOVE_SEMANTICS
+					//Also, since the std::string does not throw, this makes easier to reason about exceptions.
+
 					mystorage[*unused_spot].value = std::move(mystorage[last].value);
 					mystorage[*unused_spot].key = std::move(mystorage[last].key);
-#else
-					mystorage[*unused_spot].value = mystorage[last].value;
-					mystorage[last].value.ValueType_::~ValueType_();
-					new(&mystorage[last].value) ValueType_();
-					mystorage[*unused_spot].key = mystorage[last].key;
-					mystorage[last].key.clear();
-#endif
+
 					mystorage[*unused_spot].isUnused = false;
 					myindex[mystorage[*unused_spot].key] = *unused_spot;
 					mystorage.pop_back();
@@ -459,6 +510,8 @@ public:
 
 	/// <summary>Move a specific item (identified by a key) to a specific index in the list. If an item is already in
 	/// this spot in the list, their positions are swapped.</summary>
+	/// <param name="key">The key of the item to relocate.</param>
+	/// <param name="index">The index where to relocate the item.</param>
 	/// <returns>False if the specified key was not found in the index.</returns>
 	bool relocate(const IndexType_& key, size_t index)
 	{
@@ -533,7 +586,7 @@ private:
 			myDeletedItems.push_front(index);
 			mystorage[index].isUnused = true;
 			mystorage[index].value.ValueType_::~ValueType_();
-			new(&mystorage[index].value) ValueType_;
+			new (&mystorage[index].value) ValueType_;
 		}
 	}
 };

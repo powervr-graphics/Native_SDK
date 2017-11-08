@@ -64,7 +64,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -81,7 +81,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">CameraInterface.h File Reference</div>  </div>
 </div><!--header-->
@@ -106,9 +107,14 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacepvr_1_1_h_w_camera"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1_h_w_camera.html">pvr::HWCamera</a></td></tr>
 <tr class="memdesc:namespacepvr_1_1_h_w_camera"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of the possible hardware cameras present (front, back)<br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepvr_1_1native"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1native.html">pvr::native</a></td></tr>
-<tr class="memdesc:namespacepvr_1_1native"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains objects representing the low-level native API objects. For PVRCamera, that is the Texture handle <br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a77929091f777ed468df6cb128dbfdb08"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr_1_1_h_w_camera.html#a77929091f777ed468df6cb128dbfdb08">pvr::HWCamera::Enum</a> { <a class="el" href="namespacepvr_1_1_h_w_camera.html#a77929091f777ed468df6cb128dbfdb08a83c1b67664991132d74ab949f2bbf2ba">pvr::HWCamera::Front</a>, 
+<a class="el" href="namespacepvr_1_1_h_w_camera.html#a77929091f777ed468df6cb128dbfdb08a7fecbd7b4c773cae530c4a3b1676ed01">pvr::HWCamera::Back</a>
+ }</td></tr>
+<tr class="memdesc:a77929091f777ed468df6cb128dbfdb08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of the possible hardware cameras present (front, back) <a href="namespacepvr_1_1_h_w_camera.html#a77929091f777ed468df6cb128dbfdb08">More...</a><br/></td></tr>
+<tr class="separator:a77929091f777ed468df6cb128dbfdb08"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Common interfaceof the PVRCamera camera streaming interface. </p>

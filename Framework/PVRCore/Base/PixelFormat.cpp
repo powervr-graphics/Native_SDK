@@ -24,7 +24,6 @@ const PixelFormat PixelFormat::RG_3232('r', 'g', '\0', '\0', 32, 32, 0, 0);
 const PixelFormat PixelFormat::RGB_323232('r', 'g', 'b', '\0', 32, 32, 32, 0);
 const PixelFormat PixelFormat::RGBA_32323232('r', 'g', 'b', 'a', 32, 32, 32, 32);
 
-
 const PixelFormat PixelFormat::RGB_565('r', 'g', 'b', '\0', 5, 6, 5, 0);
 const PixelFormat PixelFormat::RGBA_4444('r', 'g', 'b', 'a', 4, 4, 4, 4);
 const PixelFormat PixelFormat::RGBA_5551('r', 'g', 'b', 'a', 5, 5, 5, 1);

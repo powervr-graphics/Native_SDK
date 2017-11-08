@@ -1,18 +1,15 @@
 var searchData=
 [
-  ['facedata',['FaceData',['../classpvr_1_1assets_1_1_mesh_1_1_face_data.html',1,'pvr::assets::Mesh']]],
-  ['faces',['faces',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#aee521e2671ae6b5ef1ef87c42b0be73d',1,'pvr::assets::Mesh::InternalData']]],
-  ['falloffangle',['falloffAngle',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html#a7ce618923b7661cd44de9f996f326a51',1,'pvr::assets::Light::InternalData']]],
-  ['falloffexponent',['falloffExponent',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html#aeefaa53ac0703bda61da971d5ee1ec4d',1,'pvr::assets::Light::InternalData']]],
-  ['farclip',['farClip',['../structpvr_1_1assets_1_1_camera_1_1_internal_data.html#aae515416fda414413850e636a72c26ec',1,'pvr::assets::Camera::InternalData']]],
-  ['filename',['fileName',['../structpvr_1_1assets_1_1_effect_texture.html#aaaa8b8a4957c9053baf148e0179bb161',1,'pvr::assets::EffectTexture::fileName()'],['../structpvr_1_1assets_1_1_effect.html#a38be04a254d30ec9121a18fa77843385',1,'pvr::assets::Effect::fileName()']]],
-  ['findtexturebyname',['findTextureByName',['../classpvr_1_1assets_1_1_pfx_reader.html#a5288ecf4b27f16bb55e3db4ad9128d8b',1,'pvr::assets::PfxReader']]],
-  ['findtextureindex',['findTextureIndex',['../classpvr_1_1assets_1_1_pfx_reader.html#a31db348bbeba7deae98ee839be6de627',1,'pvr::assets::PfxReader']]],
-  ['findvertexshader',['findVertexShader',['../classpvr_1_1assets_1_1_pfx_reader.html#ace8f897d0a0807216ad00fc2f0fbc5b0',1,'pvr::assets::PfxReader']]],
-  ['firstlinenumpos',['firstLineNumPos',['../structpvr_1_1assets_1_1_effect_shader.html#a3d4c64fd7ad478b34a2f6143765f2613',1,'pvr::assets::EffectShader']]],
-  ['flags',['Flags',['../classpvr_1_1assets_1_1_animation.html#a9abff7d20fb7b87dc30184d4292fb7e3',1,'pvr::assets::Animation::Flags()'],['../classpvr_1_1_shadow_volume.html#a26e4418ab016fa8dd0e2d2cea9b5a52e',1,'pvr::ShadowVolume::Flags()'],['../structpvr_1_1assets_1_1_animation_1_1_internal_data.html#ab12553d1a89372fdea303780b992db0f',1,'pvr::assets::Animation::InternalData::flags()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a20df94ecf29da2ebb1c2d443e3bff7bb',1,'pvr::assets::Model::InternalData::flags()']]],
-  ['flushcache',['flushCache',['../classpvr_1_1assets_1_1_model.html#a6829a4d9579d6c9c27d07e6f6d58081a',1,'pvr::assets::Model']]],
-  ['fovs',['FOVs',['../structpvr_1_1assets_1_1_camera_1_1_internal_data.html#a92c083852c508de7ded359faa899fa70',1,'pvr::assets::Camera::InternalData']]],
-  ['fps',['FPS',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a540fda2c300c6ac851f585ac58a8536f',1,'pvr::assets::Model::InternalData']]],
-  ['fragmentshader',['fragmentShader',['../structpvr_1_1assets_1_1_effect.html#a69cbe0fab7e322ed5d01c21cc537107a',1,'pvr::assets::Effect']]]
+  ['edgeindices',['edgeIndices',['../structpvr_1_1_volume_1_1_volume_triangle.html#ad1e88d50328ef10838b54dbc520922de',1,'pvr::Volume::VolumeTriangle']]],
+  ['effect',['Effect',['../structpvr_1_1assets_1_1effect_1_1_effect.html',1,'pvr::assets::effect']]],
+  ['effect',['Effect',['../namespacepvr_1_1assets.html#abd827b732f970f200387b2f13c959c4f',1,'pvr::assets::Effect()'],['../namespacepvr.html#a7449705e04c8fe948e390ea793106107aa62d22910732d5343689f5117999abfa',1,'pvr::Effect()']]],
+  ['effect_5f2_2eh',['Effect_2.h',['../_effect__2_8h.html',1,'']]],
+  ['effectfile',['effectFile',['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#aa9f40a95824c89894ba631a591a5e1b3',1,'pvr::assets::Model::Material::InternalData']]],
+  ['effectname',['effectName',['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a054cac2180a500dbe2bc36f7bde864bd',1,'pvr::assets::Model::Material::InternalData']]],
+  ['enabledepthtest',['enableDepthTest',['../structpvr_1_1assets_1_1effect_1_1_pipeline_definition.html#aedcecfc93a59714c9fb0a810c0039f2a',1,'pvr::assets::effect::PipelineDefinition']]],
+  ['enabledepthwrite',['enableDepthWrite',['../structpvr_1_1assets_1_1effect_1_1_pipeline_definition.html#a9e3feaee3c9a167b7671df77ae82787b',1,'pvr::assets::effect::PipelineDefinition']]],
+  ['enablestenciltest',['enableStencilTest',['../structpvr_1_1assets_1_1effect_1_1_pipeline_definition.html#a71e9af618bebc3df3022dbed1570d36b',1,'pvr::assets::effect::PipelineDefinition']]],
+  ['endmeshes',['endMeshes',['../classpvr_1_1assets_1_1_model.html#a60dfb1ff94b791bd1b6372c69616468f',1,'pvr::assets::Model::endMeshes()'],['../classpvr_1_1assets_1_1_model.html#a7b49a9866a99113358744701066a6821',1,'pvr::assets::Model::endMeshes() const ']]],
+  ['entries',['entries',['../structpvr_1_1assets_1_1effect_1_1_buffer_definition.html#a24ea6d16ace8e7165873382c2c68e8b0',1,'pvr::assets::effect::BufferDefinition']]],
+  ['entry',['Entry',['../structpvr_1_1assets_1_1effect_1_1_buffer_definition_1_1_entry.html',1,'pvr::assets::effect::BufferDefinition']]]
 ];

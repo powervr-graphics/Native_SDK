@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanDeferredShadingPFX
-DEPENDS =  PVRCore PVRAssets PVRNativeVulkan PVRVulkan PVRShell PVREngineUtils
-LIBRARIES =  PVREngineUtils PVRShell PVRVulkan PVRNativeVulkan PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRVk PVRShell PVRUtilsVk
+LIBRARIES =  PVRUtilsVk PVRShell PVRVk PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
@@ -29,6 +29,20 @@ RESOURCES += \
            PointLightPass2VertexShader.vsh.spv\
            PointLightPass3FragmentShader.fsh.spv\
            PointLightPass3VertexShader.vsh.spv\
+           AttributelessVertexShader.vsh\
+           GBufferFragmentShader.fsh\
+           GBufferVertexShader.vsh\
+           GBufferFloorFragmentShader.fsh\
+           GBufferFloorVertexShader.vsh\
+           DirectionalLightFragmentShader.fsh\
+           PointLightPass1FragmentShader.fsh\
+           PointLightPass1VertexShader.vsh\
+           PointLightPass2FragmentShader.fsh\
+           PointLightPass2VertexShader.vsh\
+           PointLightPass3FragmentShader.fsh\
+           PointLightPass3VertexShader.vsh\
+           recompile.sh\
+           recompile.bat\
            effect_MRT_PFX3.pfx\
 
 COMMON_RESOURCES += \
@@ -37,6 +51,8 @@ COMMON_RESOURCES += \
            Table.pvr\
            scene.pod\
            pointlight.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

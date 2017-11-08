@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['readnextasset',['readNextAsset',['../classpvr_1_1assets_1_1pfx_1_1_pfx_parser.html#abe65e50e7f1a584c062701a96d39ddf9',1,'pvr::assets::pfx::PfxParser']]],
-  ['releasevolume',['releaseVolume',['../classpvr_1_1_shadow_volume.html#aef5e0374e52909a6b8838aa5e7ee732c',1,'pvr::ShadowVolume']]],
-  ['removeallvertexattributes',['removeAllVertexAttributes',['../classpvr_1_1assets_1_1_mesh.html#aa152493dd41858114743bff0f435ae8a',1,'pvr::assets::Mesh']]],
-  ['removedata',['removeData',['../classpvr_1_1assets_1_1_mesh.html#a6ae1cb101e4555f20cbaacb1f5b1af50',1,'pvr::assets::Mesh']]],
-  ['removevertexattribute',['removeVertexAttribute',['../classpvr_1_1assets_1_1_mesh.html#aede8af714093e8affa635c468a791730',1,'pvr::assets::Mesh']]],
-  ['retreivesorteddependencylist',['RetreiveSortedDependencyList',['../classpvr_1_1_skip_graph_root.html#a83f4087d4362366e89b0d471598475f1',1,'pvr::SkipGraphRoot']]],
-  ['retrieverenderpassdependencies',['retrieveRenderPassDependencies',['../classpvr_1_1assets_1_1_pfx_reader.html#a341235db655e1839a8794de38d4d10f0',1,'pvr::assets::PfxReader']]]
+  ['paletteexpander',['PaletteExpander',['../classpvr_1_1_palette_expander.html#af014f47e30f8e819460cd2b558249b90',1,'pvr::PaletteExpander']]],
+  ['pfxparser',['PfxParser',['../classpvr_1_1assets_1_1pfx_1_1_pfx_parser.html#ae1a0eb8d7bbf478832a3cfbc50fe7c1d',1,'pvr::assets::pfx::PfxParser::PfxParser(const std::string &amp;pfxFilename, IAssetProvider *assetsProvider)'],['../classpvr_1_1assets_1_1pfx_1_1_pfx_parser.html#ae33a50665c2cd340893bd6c04dcdd28d',1,'pvr::assets::pfx::PfxParser::PfxParser(Stream::ptr_type pfxStream, IAssetProvider *assetsProvider)']]],
+  ['pipelinedefinition',['PipelineDefinition',['../structpvr_1_1assets_1_1effect_1_1_pipeline_definition.html#a82682c7bddc11b35f47a37a02c76bbc9',1,'pvr::assets::effect::PipelineDefinition']]],
+  ['pipelinevertexbinding',['PipelineVertexBinding',['../structpvr_1_1assets_1_1effect_1_1_pipeline_vertex_binding.html#ae6e1401d8d828dc270b254cfcd71dd43',1,'pvr::assets::effect::PipelineVertexBinding::PipelineVertexBinding()'],['../structpvr_1_1assets_1_1effect_1_1_pipeline_vertex_binding.html#ab76dba05287ae862fe58e3ed091ebb71',1,'pvr::assets::effect::PipelineVertexBinding::PipelineVertexBinding(uint32_t index, StepRate stepRate)']]],
+  ['podreader',['PODReader',['../classpvr_1_1assets_1_1_p_o_d_reader.html#a1cac81e80dc2f5e0c556aefd4ca9367a',1,'pvr::assets::PODReader::PODReader()'],['../classpvr_1_1assets_1_1_p_o_d_reader.html#aa221af12341e9b655902d5f81b0e2b69',1,'pvr::assets::PODReader::PODReader(Stream::ptr_type assetStream)']]],
+  ['populatevalidversions',['populateValidVersions',['../classpvr_1_1assets_1_1_shader_file.html#a30d118191a36fa09880fcd29272a4fb5',1,'pvr::assets::ShaderFile']]],
+  ['projectsilhouette',['projectSilhouette',['../classpvr_1_1_shadow_volume.html#af0253009d5bd543576e694a2ca7cd272',1,'pvr::ShadowVolume']]]
 ];

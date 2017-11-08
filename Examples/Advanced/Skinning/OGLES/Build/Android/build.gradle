@@ -73,16 +73,11 @@ FileCollection assetFiles = files(
 "${pvrSdkDir}/Examples/Advanced/Skinning/ProcessedAssets/RobotDiffuse.pvr",
 "${pvrSdkDir}/Examples/Advanced/Skinning/ProcessedAssets/RobotNormal.pvr",
 "${pvrSdkDir}/Examples/Advanced/Skinning/ProcessedAssets/Tiles.pvr",
-"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/DefaultVertShader_ES2.vsh",
-"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/DefaultFragShader_ES2.fsh",
-"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/DefaultVertShader_ES3.vsh",
-"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/DefaultFragShader_ES3.fsh",
-"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/SkinnedVertShader_ES2.vsh",
-"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/SkinnedFragShader_ES2.fsh",
-"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/SkinnedVertShader_ES3.vsh",
-"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/SkinnedFragShader_ES3.fsh",
+"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/DefaultVertShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/DefaultFragShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/SkinnedVertShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/SkinnedFragShader.fsh",
 "${pvrSdkDir}/Examples/Advanced/Skinning/ProcessedAssets/Robot.pod",
-"${pvrSdkDir}/Examples/Advanced/Skinning/OGLES/Skinning_es.pfx",
 
 )
 
@@ -121,10 +116,8 @@ FileCollection assetFiles = files(
     def ndkDependencies=[
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
     ["PVRAssets", "${pvrSdkDir}/Framework/PVRAssets/Build/Android"],
-    ["PVRNativeGles", "${pvrSdkDir}/Framework/PVRNativeApi/OGLES/Build/Android"],
-    ["PVRGles", "${pvrSdkDir}/Framework/PVRApi/OGLES/Build/Android"],
     ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
-    ["PVREngineUtils", "${pvrSdkDir}/Framework/PVREngineUtils/Build/Android"]
+    ["PVRUtilsGles", "${pvrSdkDir}/Framework/PVRUtils/OGLES/Build/Android"]
     ]
 
 	//Create and configure a task for each combination of build type (debug/release or clean) and dependency

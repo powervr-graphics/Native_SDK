@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpvr_1_1platform_1_1_state_machine-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -95,9 +96,29 @@ Inheritance diagram for pvr::platform::StateMachine:</div>
 <div class="dyncontent">
 <div class="center"><img src="classpvr_1_1platform_1_1_state_machine__inherit__graph.png" border="0" usemap="#pvr_1_1platform_1_1_state_machine_inherit__map" alt="Inheritance graph"/></div>
 <map name="pvr_1_1platform_1_1_state_machine_inherit__map" id="pvr_1_1platform_1_1_state_machine_inherit__map">
-<area shape="rect" id="node2" href="classpvr_1_1platform_1_1_shell_o_s.html" title="Implements a lot of the functionality and forwards to the platform from PVRShell. Users don&#39;t use dir..." alt="" coords="21,5,171,32"/></map>
+<area shape="rect" id="node2" href="classpvr_1_1platform_1_1_shell_o_s.html" title="Internal class Implements a lot of the functionality and forwards to the platform from PVRShell..." alt="" coords="21,5,171,32"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a1ad8cfbd46921c044897d844eafbd04c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a> { <br/>
+&#160;&#160;<a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04cadaea162bc0290cc22e706f7accec9ac7">StateNotInitialized</a>, 
+<a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04caee9805f5683eae2214ce317f0c55e6fd">StateInitApplication</a>, 
+<a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04ca7254b58157d8a9c28e26fc069f75bb47">StateInitWindow</a>, 
+<a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04ca481da8e5133d7eabfe8dfea47f0c8b1d">StateInitView</a>, 
+<br/>
+&#160;&#160;<a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04caedadc56cd639cae7dec3adf411a2ed4e">StateRenderScene</a>, 
+<a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04caed988beb79a884a40269d57cb4a9a639">StateReleaseView</a>, 
+<a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04ca4e535950d9843b733b7950b286bb5a30">StateReleaseWindow</a>, 
+<a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04cae7dfa2eed050171787e70c6505a49cd7">StateQuitApplication</a>, 
+<br/>
+&#160;&#160;<a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04ca1235427c14f42f58a967ac3220dec3bd">StatePreExit</a>, 
+<a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04cadaf6bbb6cf9f04ec22f658ca24049333">StateExit</a>
+<br/>
+ }</td></tr>
+<tr class="memdesc:a1ad8cfbd46921c044897d844eafbd04c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Possible States of the <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a>&lt;/summary&lt;  <a href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">More...</a><br/></td></tr>
+<tr class="separator:a1ad8cfbd46921c044897d844eafbd04c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6cb429ae5ab63e81b8cf587d107f32da"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a6cb429ae5ab63e81b8cf587d107f32da">StateMachine</a> (OSApplication instance, <a class="el" href="classpvr_1_1platform_1_1_command_line_parser.html">platform::CommandLineParser</a> &amp;commandLine, OSDATA osdata)</td></tr>
@@ -109,13 +130,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abe0b141d27c80ae22f68676c6c82c7d4"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#abe0b141d27c80ae22f68676c6c82c7d4">executeOnce</a> ()</td></tr>
 <tr class="memdesc:abe0b141d27c80ae22f68676c6c82c7d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called internally by the state machine. <a href="#abe0b141d27c80ae22f68676c6c82c7d4">More...</a><br/></td></tr>
 <tr class="separator:abe0b141d27c80ae22f68676c6c82c7d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8a49e3f00302adc3fbe4eae2ec3f594"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#ab8a49e3f00302adc3fbe4eae2ec3f594">executeOnce</a> (const State state)</td></tr>
-<tr class="memdesc:ab8a49e3f00302adc3fbe4eae2ec3f594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called internally by the state machine. <a href="#ab8a49e3f00302adc3fbe4eae2ec3f594">More...</a><br/></td></tr>
+<tr class="memitem:ab8a49e3f00302adc3fbe4eae2ec3f594"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#ab8a49e3f00302adc3fbe4eae2ec3f594">executeOnce</a> (const <a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a> state)</td></tr>
+<tr class="memdesc:ab8a49e3f00302adc3fbe4eae2ec3f594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called internally by the state machine. Executes a specific state code path once. <a href="#ab8a49e3f00302adc3fbe4eae2ec3f594">More...</a><br/></td></tr>
 <tr class="separator:ab8a49e3f00302adc3fbe4eae2ec3f594"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fec54fc1350baad6b33770d38a49a2f"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a9fec54fc1350baad6b33770d38a49a2f">executeUpTo</a> (const State state)</td></tr>
-<tr class="memdesc:a9fec54fc1350baad6b33770d38a49a2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called internally by the state machine. <a href="#a9fec54fc1350baad6b33770d38a49a2f">More...</a><br/></td></tr>
+<tr class="memitem:a9fec54fc1350baad6b33770d38a49a2f"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a9fec54fc1350baad6b33770d38a49a2f">executeUpTo</a> (const <a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a> state)</td></tr>
+<tr class="memdesc:a9fec54fc1350baad6b33770d38a49a2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called internally by the state machine. Executes all code paths between current state and the state requested (naturally reaching that state). For example, executeUpTo(QuitApplication) when current state is RenderFrame, will execute ReleaseView, ReleaseWindow, QuitApplication <a href="#a9fec54fc1350baad6b33770d38a49a2f">More...</a><br/></td></tr>
 <tr class="separator:a9fec54fc1350baad6b33770d38a49a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f480f8e863540d11a5f6e0286bd2181"><td class="memItemLeft" align="right" valign="top">State&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a7f480f8e863540d11a5f6e0286bd2181">getState</a> () const </td></tr>
+<tr class="memitem:a4b5d6b68cf8f2b3229c7411420d49991"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a4b5d6b68cf8f2b3229c7411420d49991">getCurrentState</a> () const </td></tr>
+<tr class="memdesc:a4b5d6b68cf8f2b3229c7411420d49991"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current state of the state machine. <a href="#a4b5d6b68cf8f2b3229c7411420d49991">More...</a><br/></td></tr>
+<tr class="separator:a4b5d6b68cf8f2b3229c7411420d49991"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f480f8e863540d11a5f6e0286bd2181"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a7f480f8e863540d11a5f6e0286bd2181">getState</a> () const </td></tr>
 <tr class="memdesc:a7f480f8e863540d11a5f6e0286bd2181"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the current state of the <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a>. <a href="#a7f480f8e863540d11a5f6e0286bd2181">More...</a><br/></td></tr>
 <tr class="separator:a7f480f8e863540d11a5f6e0286bd2181"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade72bccc6af2450806ff50e66ce1a3ee"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#ade72bccc6af2450806ff50e66ce1a3ee">init</a> ()</td></tr>
@@ -133,7 +157,54 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a> controlling the PowerVR <a class="el" href="classpvr_1_1platform_1_1_shell.html" title="The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from...">Shell</a>. Provides the application main loop and callbacks. </p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">pvr::platform::StateMachine::State</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Possible States of the <a class="el" href="classpvr_1_1platform_1_1_state_machine.html" title="The StateMachine controlling the PowerVR Shell. Provides the application main loop and callbacks...">StateMachine</a>&lt;/summary&lt; </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04cadaea162bc0290cc22e706f7accec9ac7"></a>StateNotInitialized</em>&#160;</td><td class="fielddoc">
+<p>First: The State Machine is not yet initialized. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04caee9805f5683eae2214ce317f0c55e6fd"></a>StateInitApplication</em>&#160;</td><td class="fielddoc">
+<p>Second: The State Machine is initialized and is initializing the application (calls initApplication) </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04ca7254b58157d8a9c28e26fc069f75bb47"></a>StateInitWindow</em>&#160;</td><td class="fielddoc">
+<p>Third: Creating the Window. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04ca481da8e5133d7eabfe8dfea47f0c8b1d"></a>StateInitView</em>&#160;</td><td class="fielddoc">
+<p>Fourth: Signals the application that the window is created and should initialize itself (calls initView) </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04caedadc56cd639cae7dec3adf411a2ed4e"></a>StateRenderScene</em>&#160;</td><td class="fielddoc">
+<p>Fifth: The Main Loop - repeatedly calls renderScene until signalled to stop. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04caed988beb79a884a40269d57cb4a9a639"></a>StateReleaseView</em>&#160;</td><td class="fielddoc">
+<p>Sixth: Signals the application that the application window is about to be torn down/lost (calls releaseView) </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04ca4e535950d9843b733b7950b286bb5a30"></a>StateReleaseWindow</em>&#160;</td><td class="fielddoc">
+<p>Seventh: Tears dow the window. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04cae7dfa2eed050171787e70c6505a49cd7"></a>StateQuitApplication</em>&#160;</td><td class="fielddoc">
+<p>Eighth: Signals the applications that the program is exiting. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04ca1235427c14f42f58a967ac3220dec3bd"></a>StatePreExit</em>&#160;</td><td class="fielddoc">
+<p>Ninth: Is exiting. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a1ad8cfbd46921c044897d844eafbd04cadaf6bbb6cf9f04ec22f658ca24049333"></a>StateExit</em>&#160;</td><td class="fielddoc">
+<p>Exits. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a6cb429ae5ab63e81b8cf587d107f32da"></a>
 <div class="memitem">
 <div class="memproto">
@@ -165,6 +236,14 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Constructor. Called by the application's entry point (main).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">instance</td><td>Platform-specific object containing pointer/s to the application instance.</td></tr>
+    <tr><td class="paramname">commandLine</td><td>The command line arguments passed by the user.</td></tr>
+    <tr><td class="paramname">osdata</td><td>Platform specific data passed in by the system</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -183,6 +262,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Called by the application's entry point (main).</p>
+<dl class="section return"><dt>Returns</dt><dd>pvr::Result::Success if successful, otherwise error code.</dd></dl>
 
 </div>
 </div>
@@ -200,6 +280,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Called internally by the state machine.</p>
+<dl class="section return"><dt>Returns</dt><dd>pvr::Result::Success if successful, otherwise error code.</dd></dl>
 
 </div>
 </div>
@@ -210,14 +291,21 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">Result pvr::platform::StateMachine::executeOnce </td>
           <td>(</td>
-          <td class="paramtype">const State&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a>&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Called internally by the state machine.</p>
+<p>Called internally by the state machine. Executes a specific state code path once.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">state</td><td>The state to execute</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>pvr::Result::Success if successful, otherwise error code.</dd></dl>
 
 </div>
 </div>
@@ -228,14 +316,47 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">Result pvr::platform::StateMachine::executeUpTo </td>
           <td>(</td>
-          <td class="paramtype">const State&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a>&#160;</td>
           <td class="paramname"><em>state</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Called internally by the state machine.</p>
+<p>Called internally by the state machine. Executes all code paths between current state and the state requested (naturally reaching that state). For example, executeUpTo(QuitApplication) when current state is RenderFrame, will execute ReleaseView, ReleaseWindow, QuitApplication</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">state</td><td>The state to execute</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>pvr::Result::Success if successful, otherwise error code.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a4b5d6b68cf8f2b3229c7411420d49991"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a> pvr::platform::StateMachine::getCurrentState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the current state of the state machine.</p>
+<dl class="section return"><dt>Returns</dt><dd>The current state of the state machine</dd></dl>
 
 </div>
 </div>
@@ -247,7 +368,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">State pvr::platform::StateMachine::getState </td>
+          <td class="memname"><a class="el" href="classpvr_1_1platform_1_1_state_machine.html#a1ad8cfbd46921c044897d844eafbd04c">State</a> pvr::platform::StateMachine::getState </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -279,6 +400,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Called by the application's entry point (main).</p>
+<dl class="section return"><dt>Returns</dt><dd>pvr::Result::Success if successful, otherwise error code.</dd></dl>
 
 </div>
 </div>

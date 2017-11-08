@@ -19,27 +19,27 @@ public:
 	/// <param name="flags">fopen-style flags.</param>
 	/// <remarks>Possible flags: 'r':read,'w':truncate/write, 'a':append/write, r+: read/write, w+:truncate/read/write,
 	/// a+:append/read/write</remarks>
-	FileStream(const std::basic_string<char8>& filePath, const std::basic_string<char8>& flags);
+	FileStream(const std::string& filePath, const std::string& flags);
 	~FileStream() { close(); }
 
 	/// <summary>Main read function. Read up to a specified amount of items into the provided buffer.</summary>
 	/// <param name="elementSize">The size of each element that will be read.</param>
-	/// <param name="elementCount">The maximum number of elements to read.</param>
+	/// <param name="numElements">The maximum number of elements to read.</param>
 	/// <param name="buffer">The buffer into which to write the data.</param>
 	/// <param name="dataRead">After returning, will contain the number of items that were actually read.</param>
 	/// <returns>Success if successful, error code otherwise.</returns>
-	virtual bool read(size_t elementSize, size_t elementCount, void* buffer, size_t& dataRead) const;
+	virtual bool read(size_t elementSize, size_t numElements, void* buffer, size_t& dataRead) const;
 
 	/// <summary>Main write function. Write into the stream the specified amount of items from a provided buffer.
 	/// </summary>
 	/// <param name="elementSize">The size of each element that will be written.</param>
-	/// <param name="elementCount">The number of elements to write.</param>
+	/// <param name="numElements">The number of elements to write.</param>
 	/// <param name="buffer">The buffer from which to read the data. If the buffer is smaller than elementSize *
-	/// elementCount bytes, result is undefined.</param>
+	/// numElements bytes, result is undefined.</param>
 	/// <param name="dataWritten">After returning, will contain the number of items that were actually written. Will
-	/// contain elementCount unless an error has occured.</param>
+	/// contain numElements unless an error has occured.</param>
 	/// <returns>Success if successful, error code otherwise.</returns>
-	virtual bool write(size_t elementSize, size_t elementCount, const void* buffer, size_t& dataWritten);
+	virtual bool write(size_t elementSize, size_t numElements, const void* buffer, size_t& dataWritten);
 
 	/// <summary>Seek a specific point for random access streams. After successful call, subsequent operation will
 	/// happen in the specified point.</summary>
@@ -86,8 +86,8 @@ public:
 	}
 
 protected:
-	mutable FILE* _file;
-	std::string _flags;
+	mutable FILE* _file; //!< The underlying C FILE object
+	std::string _flags; //!< The C flags used when opening the file
 };
 
 }

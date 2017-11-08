@@ -30,7 +30,6 @@
 
 /* Begin PBXFileReference section */
 		0E3504411BF6533600EC0B4E /* PVRShell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShell.h; path = ../../PVRShell.h; sourceTree = "<group>"; };
-		0E3504421BF6533B00EC0B4E /* PVRShellNoPVRApi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRShellNoPVRApi.h; path = ../../PVRShellNoPVRApi.h; sourceTree = "<group>"; };
 		0E787AB51ABADA2100BF9C85 /* ShellIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShellIncludes.h; path = ../../ShellIncludes.h; sourceTree = "<group>"; };
 		3E6C07BE19C6FAA700D712E5 /* libPVRShell.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVRShell.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E6C07C119C6FAA700D712E5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -98,7 +97,6 @@
 				3E6C07E819C6FAE800D712E5 /* CommandLine.cpp */,
 				3E6C07E919C6FAE800D712E5 /* CommandLine.h */,
 				0E3504411BF6533600EC0B4E /* PVRShell.h */,
-				0E3504421BF6533B00EC0B4E /* PVRShellNoPVRApi.h */,
 				3E6C07EC19C6FAE800D712E5 /* Shell.cpp */,
 				3E6C07ED19C6FAE800D712E5 /* Shell.h */,
 				3E6C07EE19C6FAE800D712E5 /* ShellData.h */,

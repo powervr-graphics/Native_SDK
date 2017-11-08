@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -92,33 +92,33 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">// Khronos texture file header</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">struct </span>FileHeader</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <a class="code" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a>  identifier[12];</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> endianness;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> glType;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> glTypeSize;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> glFormat;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> glInternalFormat;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> glBaseInternalFormat;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pixelWidth;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pixelHeight;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pixelDepth;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numberOfArrayElements;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numberOfFaces;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numberOfMipmapLevels;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> bytesOfKeyValueData;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    uint8_t  identifier[12];</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    uint32_t endianness;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    uint32_t glType;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    uint32_t glTypeSize;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    uint32_t glFormat;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    uint32_t glInternalFormat;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    uint32_t glBaseInternalFormat;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    uint32_t pixelWidth;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    uint32_t pixelHeight;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    uint32_t pixelDepth;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    uint32_t numArrayElements;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    uint32_t numFaces;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    uint32_t numMipmapLevels;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    uint32_t bytesOfKeyValueData;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">// Magic identifier</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a>  c_identifier[] = { 0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A };</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint8_t  c_identifier[] = { 0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A };</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">// Reference number to verify endianness of a file</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_endianReference = 0x04030201;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_endianReference = 0x04030201;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">// Expected size of a header in file</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_expectedHeaderSize = 64;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_expectedHeaderSize = 64;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">// Identifier for the orientation meta data</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a>  c_orientationMetaDataKey[] = <span class="stringliteral">&quot;KTXOrientation&quot;</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span>  c_orientationMetaDataKey[] = <span class="stringliteral">&quot;KTXOrientation&quot;</span>;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">namespace </span>OpenGLFormats {</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">enum</span> Enum</div>
@@ -367,9 +367,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;}</div>
 <div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;}</div>
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="comment">//!\endcond</span></div>
-<div class="ttc" id="namespacepvr_html_a02a97b530ff9cb298a9077ad7b4ee556"><div class="ttname"><a href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">pvr::uint32</a></div><div class="ttdeci">unsigned int uint32</div><div class="ttdoc">32-bit unsigned integer.</div><div class="ttdef"><b>Definition:</b> Types.h:119</div></div>
-<div class="ttc" id="namespacepvr_html_ac3509eed37537ef511f3ae29ee9ad3fc"><div class="ttname"><a href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">pvr::char8</a></div><div class="ttdeci">char char8</div><div class="ttdoc">Character type. 8-bit integer signed type on all currently supported platforms.</div><div class="ttdef"><b>Definition:</b> Types.h:73</div></div>
-<div class="ttc" id="namespacepvr_html_a693aadd10412283ed1afd703dc83560a"><div class="ttname"><a href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">pvr::uint8</a></div><div class="ttdeci">unsigned char uint8</div><div class="ttdoc">8-bit unsigned integer.</div><div class="ttdef"><b>Definition:</b> Types.h:113</div></div>
 <div class="ttc" id="_core_includes_8h_html"><div class="ttname"><a href="_core_includes_8h.html">CoreIncludes.h</a></div><div class="ttdoc">Commonly included files from other PVRCore files. To include PVRCore functionality, use PVRCore.h instead. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

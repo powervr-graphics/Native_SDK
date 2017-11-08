@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['hwcamera',['HWCamera',['../namespacepvr_1_1_h_w_camera.html',1,'pvr']]],
-  ['pvrcamera',['PVRCamera',['../index.html',1,'']]],
-  ['native',['native',['../namespacepvr_1_1native.html',1,'pvr']]],
-  ['pvr',['pvr',['../namespacepvr.html',1,'']]],
-  ['pvrcamera_2eh',['PVRCamera.h',['../_p_v_r_camera_8h.html',1,'']]]
+  ['getcameraresolution',['getCameraResolution',['../classpvr_1_1_camera_interface.html#a93ddfaad383afaed150e063c2e0da71d',1,'pvr::CameraInterface']]],
+  ['getchrominancetexture',['getChrominanceTexture',['../classpvr_1_1_camera_interface.html#a4575d5a32b80297c64527b9cefc9620d',1,'pvr::CameraInterface']]],
+  ['getluminancetexture',['getLuminanceTexture',['../classpvr_1_1_camera_interface.html#a4e545097168ae04627140fc9e41a908a',1,'pvr::CameraInterface']]],
+  ['getprojectionmatrix',['getProjectionMatrix',['../classpvr_1_1_camera_interface.html#af31c44f34a780a6f51e884e149037c4e',1,'pvr::CameraInterface']]],
+  ['getrgbtexture',['getRgbTexture',['../classpvr_1_1_camera_interface.html#a5f8b3717c0e207de6ae024f921a83c19',1,'pvr::CameraInterface']]]
 ];

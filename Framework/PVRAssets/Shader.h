@@ -9,11 +9,6 @@ of an API. A useful helper for automatically selecting shader versions based on 
 #include "PVRAssets/AssetIncludes.h"
 #include "PVRCore/Interfaces/IAssetProvider.h"
 #include "PVRCore/StringFunctions.h"
-<<<<<<< HEAD
-#include "PVRCore/IGraphicsContext.h"
-=======
-#include "PVRCore/Interfaces/IGraphicsContext.h"
->>>>>>> 1776432f... 4.3
 namespace pvr {
 namespace assets {
 
@@ -27,11 +22,7 @@ class ShaderFile
 	{
 		Api api;
 		ApiComparatorNotLessThan(Api api) : api(api) {}
-<<<<<<< HEAD
-		bool operator()(const std::pair<pvr::Api, std::string>& lhs) {	return lhs.first >= api; }
-=======
 		bool operator()(const std::pair<pvr::Api, std::string>& lhs) {  return lhs.first >= api; }
->>>>>>> 1776432f... 4.3
 	};
 	//Use this with std::lower bound and reverse iterators to get the first item that is Not Greater than.
 	//Useful to get the "best match" file
@@ -39,37 +30,26 @@ class ShaderFile
 	{
 		Api api;
 		ApiComparatorNotGreaterThan(Api api) : api(api) {}
-<<<<<<< HEAD
-		bool operator()(const std::pair<pvr::Api, std::string>& lhs) {	return lhs.first <= api; }
-	};
-	std::vector<std::pair<pvr::Api, std::string>/**/> m_filenames;
-	IAssetProvider* m_assetProvider;
-=======
 		bool operator()(const std::pair<pvr::Api, std::string>& lhs) {  return lhs.first <= api; }
 	};
 	std::vector<std::pair<pvr::Api, std::string>/**/> _filenames;
 	IAssetProvider* _assetProvider;
->>>>>>> 1776432f... 4.3
 public:
+	/// <summary>Constructor, empty shader</summary>
 	ShaderFile() : empty_string("") {}
+	/// <summary>Construct which immediately populates the specified filename</summary>
+	/// <param name="filename">The filename to use to populate</param>
+	/// <param name="assetProvider">The assetProvider to use to get asset streams for the filename</param>
 	ShaderFile(const std::string& filename, IAssetProvider& assetProvider) : empty_string("")
 	{
 		populateValidVersions(filename, assetProvider);
 	}
 
 
-<<<<<<< HEAD
-	/*!*******************************************************************************************************************************
-	\brief	Get a stream object of this shader file for specific api
-	\return Return stream object of this shader, else NULL object if no valid shader is found for given api
-	\param	api Specific api requested for this shader file
-	**********************************************************************************************************************************/
-=======
 	/// <summary>Get a stream object of this shader file for specific api</summary>
 	/// <param name="api">Specific api requested for this shader file</param>
 	/// <returns>Return stream object of this shader, else NULL object if no valid shader is found for given api
 	/// </returns>
->>>>>>> 1776432f... 4.3
 	Stream::ptr_type getStreamForSpecificApi(Api api)const
 	{
 		auto it = std::find_if(_filenames.begin(), _filenames.end(), ApiComparatorNotLessThan(api));
@@ -80,18 +60,10 @@ public:
 		return _assetProvider->getAssetStream(it->second);
 	}
 
-<<<<<<< HEAD
-	/*!*******************************************************************************************************************************
-	\brief	Get the file name of this shader for specific api
-	\return	Return a string of a file name for given api, else empty string if the shader is not supported for the given api
-	\param	api Specific api requested for this shader file
-	**********************************************************************************************************************************/
-=======
 	/// <summary>Get the file name of this shader for specific api</summary>
 	/// <param name="api">Specific api requested for this shader file</param>
-	/// <returns>Return a string of a file name for given api, else empty string if the shader is not supported for the
+	/// <returns>Return a std::string of a file name for given api, else empty std::string if the shader is not supported for the
 	/// given api</returns>
->>>>>>> 1776432f... 4.3
 	const std::string& getFilenameForSpecificApi(Api api)const
 	{
 		auto it = std::find_if(_filenames.begin(), _filenames.end(), ApiComparatorNotLessThan(api));
@@ -99,21 +71,12 @@ public:
 		return it->second;
 	}
 
-<<<<<<< HEAD
-	/*!*******************************************************************************************************************************
-	\brief	Get a best stream for the given api.
-	\description The return stream may not be the exact one for the given api, but the one still supported by the api.
-	\return	Return stream object of this shader, else NULL object if no valid shader is found for given api
-	\param	api Specific api requested for this shader file
-	**********************************************************************************************************************************/
-=======
 	/// <summary>Get a best stream for the given api.</summary>
 	/// <param name="api">Specific api requested for this shader file</param>
 	/// <returns>Return stream object of this shader, else NULL object if no valid shader is found for given api
 	/// </returns>
 	/// <remarks>The return stream may not be the exact one for the given api, but the one still supported by the api.
 	/// </remarks>
->>>>>>> 1776432f... 4.3
 	Stream::ptr_type getBestStreamForApi(Api api = Api::OpenGLESMaxVersion)const
 	{
 		auto it = std::find_if(_filenames.rbegin(), _filenames.rend(), ApiComparatorNotGreaterThan(api));
@@ -124,37 +87,12 @@ public:
 		return Stream::ptr_type();
 	}
 
-	/// <summary>Get a best stream for the given context</summary>
-	/// <param name="context">Specific context requested for this shader file</param>
-	/// <returns>Return stream object of this shader, else NULL object if no valid shader is found for given context
-	/// </returns>
-	/// <remarks>The return stream may not be the exact one for the given context, but the one still supported by the
-	/// context.</remarks>
-	Stream::ptr_type getBestStreamForContext(const GraphicsContext& context)const
-	{
-		auto it = std::find_if(_filenames.rbegin(), _filenames.rend(), ApiComparatorNotGreaterThan(context->getApiType()));
-		if (it != _filenames.rend()) //Will find the first filename that is not more than supported
-		{
-			return _assetProvider->getAssetStream(it->second);
-		}
-		return Stream::ptr_type();
-	}
-
-<<<<<<< HEAD
-	/*!*******************************************************************************************************************************
-	\brief	Get the best shader file name for the given api
-	\description The return file name may not be the exact one for the given api, but the one still supported by the api.
-	\return	Return a string of a file name for given api, else empty string if the shader is not supported for the given api
-	\param	api Specific api requested for this shader file
-	**********************************************************************************************************************************/
-=======
 	/// <summary>Get the best shader file name for the given api</summary>
 	/// <param name="api">Specific api requested for this shader file</param>
-	/// <returns>Return a string of a file name for given api, else empty string if the shader is not supported for the
+	/// <returns>Return a std::string of a file name for given api, else empty std::string if the shader is not supported for the
 	/// given api</returns>
 	/// <remarks>The return file name may not be the exact one for the given api, but the one still supported by the
 	/// api.</remarks>
->>>>>>> 1776432f... 4.3
 	const std::string& getBestFilenameForApi(Api api)const
 	{
 		auto it = std::find_if(_filenames.rbegin(), _filenames.rend(), ApiComparatorNotGreaterThan(api));
@@ -162,42 +100,18 @@ public:
 		return empty_string;
 	}
 
-<<<<<<< HEAD
-	/*!*******************************************************************************************************************************
-	\brief	Get list of api versions supported
-	\return	Return a list of supported version
-	**********************************************************************************************************************************/
-	std::vector<pvr::Api> getApiVersionsSupported() const
-	{
-		std::vector<pvr::Api> retval;
-		for (auto it = m_filenames.begin(); it != m_filenames.end(); ++it)
-=======
 	/// <summary>Get list of api versions supported</summary>
 	/// <returns>Return a list of supported version</returns>
 	std::vector<pvr::Api> getApiVersionsSupported() const
 	{
 		std::vector<pvr::Api> retval;
 		for (auto it = _filenames.begin(); it != _filenames.end(); ++it)
->>>>>>> 1776432f... 4.3
 		{
 			retval.push_back(it->first);
 		}
 		return retval;
 	}
 
-<<<<<<< HEAD
-	/*!*******************************************************************************************************************************
-	\brief	Get list of all supported api files for this shader
-	\return	Return list of all api shader files
-	**********************************************************************************************************************************/
-	std::vector<std::pair<pvr::Api, std::string>/**/>& getAllFiles() { return m_filenames; }
-
-	/*!*******************************************************************************************************************************
-	\brief	Set the shader file for specific api
-	\param	filename shader file name
-	\param	api specific api
-	**********************************************************************************************************************************/
-=======
 	/// <summary>Get list of all supported api files for this shader</summary>
 	/// <returns>Return list of all api shader files</returns>
 	std::vector<std::pair<pvr::Api, std::string>/**/>& getAllFiles() { return _filenames; }
@@ -205,7 +119,6 @@ public:
 	/// <summary>Set the shader file for specific api</summary>
 	/// <param name="filename">shader file name</param>
 	/// <param name="api">specific api</param>
->>>>>>> 1776432f... 4.3
 	void setFileForApi(const std::string& filename, Api api)
 	{
 		auto it = std::find_if(_filenames.begin(), _filenames.end(), ApiComparatorNotLessThan(api));
@@ -236,7 +149,7 @@ public:
 		//is found, stop. We won't bother with others.
 		std::string name, extension;
 		strings::getFileNameAndExtension(filename, name, extension);
-		for (int i = 1; i < (int)Api::Count; ++i)
+		for (int i = 1; i < (int)Api::NumApis; ++i)
 		{
 			if (strings::endsWith(name, apiCode(Api(i))))
 			{
@@ -253,15 +166,11 @@ public:
 
 		//Being here means that the filename did not have an API suffix. Which is the main case: Load everything you find.
 		//So now do the main work: Test all possible Apis...
-		for (int i = 1; i < (int)Api::Count; ++i)
+		for (int i = 1; i < (int)Api::NumApis; ++i)
 		{
-			string file1 = name + "_" + apiCode(Api(i)) + (extension.size() ? "." + extension : "");
+			std::string file1 = name + "_" + apiCode(Api(i)) + (extension.size() ? "." + extension : "");
 			if (i == (int)Api::Vulkan) { file1 += ".spv"; }
-<<<<<<< HEAD
-			Stream::ptr_type str = m_assetProvider->getAssetStream(file1, false);
-=======
 			Stream::ptr_type str = _assetProvider->getAssetStream(file1, false);
->>>>>>> 1776432f... 4.3
 			if (str.get())
 			{
 				setFileForApi(file1, Api(i));
@@ -269,11 +178,7 @@ public:
 				continue;
 			}
 			file1 = name + apiCode(Api(i)) + (extension.size() ? "." + extension : "");
-<<<<<<< HEAD
-			str = m_assetProvider->getAssetStream(file1, false);
-=======
 			str = _assetProvider->getAssetStream(file1, false);
->>>>>>> 1776432f... 4.3
 			if (str.get())
 			{
 				setFileForApi(file1, Api(i));
@@ -294,7 +199,7 @@ public:
 		}
 		if (count == 0)
 		{
-			Log(Log.Error, "ShaderFile::populateValidVersions: No valid files found for filename [%s]", filename.c_str());
+			Log(LogLevel::Error, "ShaderFile::populateValidVersions: No valid files found for filename [%s]", filename.c_str());
 		}
 		return count;
 	}

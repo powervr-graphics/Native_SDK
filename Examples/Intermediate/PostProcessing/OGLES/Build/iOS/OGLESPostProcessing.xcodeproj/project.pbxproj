@@ -9,10 +9,8 @@
 /* Begin PBXBuildFile section */
 		1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000F1A5C0 /* libPVRCore.a */; };
 		1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000A55E75 /* libPVRAssets.a */; };
-		1100B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a */; };
-		1100B16BADC0DE00FEA51B1E /* libPVRGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE00FEA51B1E /* libPVRGles.a */; };
 		1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0005EAF00D /* libPVRShell.a */; };
-		1100B16BADC0DE0000FACADE /* libPVREngineUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */; };
+		1100B16BADC0DE0000FACADE /* libPVRUtilsGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000FACADE /* libPVRUtilsGles.a */; };
 		1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -33,21 +31,12 @@
 		F8B00EBC9A7E9651A16784F5 /* OGLESPostProcessing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8A77F7D9F52F8C0524446F9 /* OGLESPostProcessing.cpp */; };
 		F80E639778A5DE2FA4B14675 /* scene.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8D31226EDA7FE33522B6749 /* scene.pod */; };
 		F83A3E639C13CDBACC378654 /* Marble.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8FC36E60F2F3D66EE5242CC /* Marble.pvr */; };
-		F8336E790F76FC07D0D97883 /* PostBloomFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8546BCFBF46792321561FDC /* PostBloomFragShader_ES2.fsh */; };
-		F87FB74213B7EE7652E8543E /* PostBloomFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F81DA85534A99937363CB4C7 /* PostBloomFragShader_ES3.fsh */; };
-		F86CC34C288410C74A266290 /* PostBloomVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8142CC337B9F44829CA456F /* PostBloomVertShader_ES2.vsh */; };
-		F8E14C97DD3AC4BAA2979073 /* PostBloomVertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F86BAEF88D45E2196D13DA66 /* PostBloomVertShader_ES3.vsh */; };
-		F828C4E91A01EBE9373B9FEB /* PreBloomFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F849A444983824C4EF3D7360 /* PreBloomFragShader_ES2.fsh */; };
-		F84B252DD7975A9BC13A95C6 /* PreBloomFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8A412A3F537C5B6BF3FBB01 /* PreBloomFragShader_ES3.fsh */; };
-		F86A46AD9302E4A6C7B8EF04 /* PreBloomVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8D9F7D540E5AB9D5C32987B /* PreBloomVertShader_ES2.vsh */; };
-		F8809ED913018252A06D571E /* PreBloomVertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F84A4950966F4237A519B0D2 /* PreBloomVertShader_ES3.vsh */; };
-		F8C895D393C98CC575AAEE1F /* BlurFragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F887D25FC45850E2F774D13E /* BlurFragShader_ES2.fsh */; };
 		F8A68BB7861EA17AA381F54F /* BlurFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8FE6FDB9D3065629367DA6F /* BlurFragShader_ES3.fsh */; };
-		F892E4B8FA3BE88D6A9DA41E /* BlurVertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8FDB5B2A564FB5F878E4D94 /* BlurVertShader_ES2.vsh */; };
 		F8430F18C5BF8D1B09CB862D /* BlurVertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F87B5CABF222D8C1F7583618 /* BlurVertShader_ES3.vsh */; };
-		F80349FDD3732CE0B2F99430 /* FragShader_ES2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8EAC636AED3997E7F6C6051 /* FragShader_ES2.fsh */; };
 		F8275C81FB76017154924E92 /* FragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */; };
-		F83EA4C919E336C9F1D708CC /* VertShader_ES2.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8972EC8877C4D3A9E983285 /* VertShader_ES2.vsh */; };
+		F87FB74213B7EE7652E8543E /* PostBloomFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F81DA85534A99937363CB4C7 /* PostBloomFragShader_ES3.fsh */; };
+		F84B252DD7975A9BC13A95C6 /* PreBloomFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8A412A3F537C5B6BF3FBB01 /* PreBloomFragShader_ES3.fsh */; };
+		F81372C4A5865559E052B3D6 /* QuadVertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8586F0731D6C51FD3F63336 /* QuadVertShader_ES3.vsh */; };
 		F8C99D4319A45CC4793F62F7 /* VertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */; };
 /* End PBXBuildFile section */
 
@@ -80,34 +69,6 @@
 			remoteGlobalIDString = 9900B16BADC0DE0000A55E75;
 			remoteInfo = PVRAssets;
 		};
-		3300B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9800B16BADC0DE00BAC1BO4E;
-			remoteInfo = PVRNativeGles;
-		};
-		6600B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9900B16BADC0DE00BAC1BO4E;
-			remoteInfo = PVRNativeGles;
-		};
-		3300B16BADC0DE00FEA51B1E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9800B16BADC0DE00FEA51B1E;
-			remoteInfo = PVRGles;
-		};
-		6600B16BADC0DE00FEA51B1E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9900B16BADC0DE00FEA51B1E;
-			remoteInfo = PVRGles;
-		};
 		3300B16BADC0DE0005EAF00D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */;
@@ -124,17 +85,17 @@
 		};
 		3300B16BADC0DE0000FACADE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
+			containerPortal = 4400B16BADC0DE0000FACADE /* PVRUtilsGles.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 9800B16BADC0DE0000FACADE;
-			remoteInfo = PVREngineUtils;
+			remoteInfo = PVRUtilsGles;
 		};
 		6600B16BADC0DE0000FACADE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
+			containerPortal = 4400B16BADC0DE0000FACADE /* PVRUtilsGles.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9900B16BADC0DE0000FACADE;
-			remoteInfo = PVREngineUtils;
+			remoteInfo = PVRUtilsGles;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -174,10 +135,8 @@
 /* Begin PBXFileReference section */
 		4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRCore.xcodeproj; path = ../../../../../../Framework/PVRCore/Build/iOS/PVRCore.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRAssets.xcodeproj; path = ../../../../../../Framework/PVRAssets/Build/iOS/PVRAssets.xcodeproj; sourceTree = "<group>"; };
-		4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRNativeGles.xcodeproj; path = ../../../../../../Framework/PVRNativeApi/OGLES/Build/iOS/PVRNativeGles.xcodeproj; sourceTree = "<group>"; };
-		4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRGles.xcodeproj; path = ../../../../../../Framework/PVRApi/OGLES/Build/iOS/PVRGles.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRShell.xcodeproj; path = ../../../../../../Framework/PVRShell/Build/iOS/PVRShell.xcodeproj; sourceTree = "<group>"; };
-		4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVREngineUtils.xcodeproj; path = ../../../../../../Framework/PVREngineUtils/Build/iOS/PVREngineUtils.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE0000FACADE /* PVRUtilsGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRUtilsGles.xcodeproj; path = ../../../../../../Framework/PVRUtils/OGLES/Build/iOS/PVRUtilsGles.xcodeproj; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* OGLESPostProcessing.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLESPostProcessing.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -201,21 +160,12 @@
 		F8A77F7D9F52F8C0524446F9 /* OGLESPostProcessing.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESPostProcessing.cpp; path = ../../OGLESPostProcessing.cpp; sourceTree = SOURCE_ROOT; };
 		F8D31226EDA7FE33522B6749 /* scene.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = scene.pod; path = ../../../ProcessedAssets/scene.pod; sourceTree = SOURCE_ROOT; };
 		F8FC36E60F2F3D66EE5242CC /* Marble.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = Marble.pvr; path = ../../../ProcessedAssets/Marble.pvr; sourceTree = SOURCE_ROOT; };
-		F8546BCFBF46792321561FDC /* PostBloomFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PostBloomFragShader_ES2.fsh; path = ../../PostBloomFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
-		F81DA85534A99937363CB4C7 /* PostBloomFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PostBloomFragShader_ES3.fsh; path = ../../PostBloomFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
-		F8142CC337B9F44829CA456F /* PostBloomVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PostBloomVertShader_ES2.vsh; path = ../../PostBloomVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
-		F86BAEF88D45E2196D13DA66 /* PostBloomVertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PostBloomVertShader_ES3.vsh; path = ../../PostBloomVertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
-		F849A444983824C4EF3D7360 /* PreBloomFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PreBloomFragShader_ES2.fsh; path = ../../PreBloomFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
-		F8A412A3F537C5B6BF3FBB01 /* PreBloomFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PreBloomFragShader_ES3.fsh; path = ../../PreBloomFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
-		F8D9F7D540E5AB9D5C32987B /* PreBloomVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PreBloomVertShader_ES2.vsh; path = ../../PreBloomVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
-		F84A4950966F4237A519B0D2 /* PreBloomVertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PreBloomVertShader_ES3.vsh; path = ../../PreBloomVertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
-		F887D25FC45850E2F774D13E /* BlurFragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BlurFragShader_ES2.fsh; path = ../../BlurFragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
 		F8FE6FDB9D3065629367DA6F /* BlurFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BlurFragShader_ES3.fsh; path = ../../BlurFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
-		F8FDB5B2A564FB5F878E4D94 /* BlurVertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BlurVertShader_ES2.vsh; path = ../../BlurVertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
 		F87B5CABF222D8C1F7583618 /* BlurVertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = BlurVertShader_ES3.vsh; path = ../../BlurVertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
-		F8EAC636AED3997E7F6C6051 /* FragShader_ES2.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES2.fsh; path = ../../FragShader_ES2.fsh; sourceTree = SOURCE_ROOT; };
 		F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES3.fsh; path = ../../FragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
-		F8972EC8877C4D3A9E983285 /* VertShader_ES2.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES2.vsh; path = ../../VertShader_ES2.vsh; sourceTree = SOURCE_ROOT; };
+		F81DA85534A99937363CB4C7 /* PostBloomFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PostBloomFragShader_ES3.fsh; path = ../../PostBloomFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8A412A3F537C5B6BF3FBB01 /* PreBloomFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = PreBloomFragShader_ES3.fsh; path = ../../PreBloomFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8586F0731D6C51FD3F63336 /* QuadVertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = QuadVertShader_ES3.vsh; path = ../../QuadVertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
 		F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES3.vsh; path = ../../VertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -226,10 +176,8 @@
 			files = (
 				1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */,
 				1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */,
-				1100B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a in Frameworks */,
-				1100B16BADC0DE00FEA51B1E /* libPVRGles.a in Frameworks */,
 				1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */,
-				1100B16BADC0DE0000FACADE /* libPVREngineUtils.a in Frameworks */,
+				1100B16BADC0DE0000FACADE /* libPVRUtilsGles.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */,
@@ -257,22 +205,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		5500B16BADC0DE00BAC1BO4E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2200B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		5500B16BADC0DE00FEA51B1E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2200B16BADC0DE00FEA51B1E /* libPVRGles.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		5500B16BADC0DE0005EAF00D /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -284,7 +216,7 @@
 		5500B16BADC0DE0000FACADE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */,
+				2200B16BADC0DE0000FACADE /* libPVRUtilsGles.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -343,10 +275,8 @@
 			children = (
 				4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */,
 				4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */,
-				4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */,
-				4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */,
 				4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */,
-				4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */,
+				4400B16BADC0DE0000FACADE /* PVRUtilsGles.xcodeproj */,
 				BA240AC10FEFE77A00DE852D /* OpenGLES.framework */,
 				1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */,
 				2D500B990D5A79CF00DBA0E3 /* QuartzCore.framework */,
@@ -409,21 +339,12 @@
 		F8E27FF71004EDC30006BBB4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F8546BCFBF46792321561FDC /* PostBloomFragShader_ES2.fsh */,
-				F81DA85534A99937363CB4C7 /* PostBloomFragShader_ES3.fsh */,
-				F8142CC337B9F44829CA456F /* PostBloomVertShader_ES2.vsh */,
-				F86BAEF88D45E2196D13DA66 /* PostBloomVertShader_ES3.vsh */,
-				F849A444983824C4EF3D7360 /* PreBloomFragShader_ES2.fsh */,
-				F8A412A3F537C5B6BF3FBB01 /* PreBloomFragShader_ES3.fsh */,
-				F8D9F7D540E5AB9D5C32987B /* PreBloomVertShader_ES2.vsh */,
-				F84A4950966F4237A519B0D2 /* PreBloomVertShader_ES3.vsh */,
-				F887D25FC45850E2F774D13E /* BlurFragShader_ES2.fsh */,
 				F8FE6FDB9D3065629367DA6F /* BlurFragShader_ES3.fsh */,
-				F8FDB5B2A564FB5F878E4D94 /* BlurVertShader_ES2.vsh */,
 				F87B5CABF222D8C1F7583618 /* BlurVertShader_ES3.vsh */,
-				F8EAC636AED3997E7F6C6051 /* FragShader_ES2.fsh */,
 				F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */,
-				F8972EC8877C4D3A9E983285 /* VertShader_ES2.vsh */,
+				F81DA85534A99937363CB4C7 /* PostBloomFragShader_ES3.fsh */,
+				F8A412A3F537C5B6BF3FBB01 /* PreBloomFragShader_ES3.fsh */,
+				F8586F0731D6C51FD3F63336 /* QuadVertShader_ES3.vsh */,
 				F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */,
 			);
 			name = Shaders;
@@ -448,8 +369,6 @@
 			dependencies = (
 				7700B16BADC0DE0000F1A5C0 /* PBXTargetDependency */,
 				7700B16BADC0DE0000A55E75 /* PBXTargetDependency */,
-				7700B16BADC0DE00BAC1BO4E /* PBXTargetDependency */,
-				7700B16BADC0DE00FEA51B1E /* PBXTargetDependency */,
 				7700B16BADC0DE0005EAF00D /* PBXTargetDependency */,
 				7700B16BADC0DE0000FACADE /* PBXTargetDependency */,
 			);
@@ -485,20 +404,12 @@
 					ProjectRef = 4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */;
 				},
 				{
-					ProductGroup = 5500B16BADC0DE00BAC1BO4E /* Products */;
-					ProjectRef = 4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */;
-				},
-				{
-					ProductGroup = 5500B16BADC0DE00FEA51B1E /* Products */;
-					ProjectRef = 4400B16BADC0DE00FEA51B1E /* PVRGles.xcodeproj */;
-				},
-				{
 					ProductGroup = 5500B16BADC0DE0005EAF00D /* Products */;
 					ProjectRef = 4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */;
 				},
 				{
 					ProductGroup = 5500B16BADC0DE0000FACADE /* Products */;
-					ProjectRef = 4400B16BADC0DE0000FACADE /* PVREngineUtils.xcodeproj */;
+					ProjectRef = 4400B16BADC0DE0000FACADE /* PVRUtilsGles.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -523,20 +434,6 @@
 			remoteRef = 3300B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2200B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libPVRNativeGles.a;
-			remoteRef = 3300B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2200B16BADC0DE00FEA51B1E /* libPVRGles.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libPVRGles.a;
-			remoteRef = 3300B16BADC0DE00FEA51B1E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		2200B16BADC0DE0005EAF00D /* libPVRShell.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -544,10 +441,10 @@
 			remoteRef = 3300B16BADC0DE0005EAF00D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2200B16BADC0DE0000FACADE /* libPVREngineUtils.a */ = {
+		2200B16BADC0DE0000FACADE /* libPVRUtilsGles.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libPVREngineUtils.a;
+			path = libPVRUtilsGles.a;
 			remoteRef = 3300B16BADC0DE0000FACADE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -572,21 +469,12 @@
 				594B97D116D39E3D002ED79F /* Default-568h@2x.png in Resources */,
 				F80E639778A5DE2FA4B14675 /* scene.pod in Resources */,
 				F83A3E639C13CDBACC378654 /* Marble.pvr in Resources */,
-				F8336E790F76FC07D0D97883 /* PostBloomFragShader_ES2.fsh in Resources */,
-				F87FB74213B7EE7652E8543E /* PostBloomFragShader_ES3.fsh in Resources */,
-				F86CC34C288410C74A266290 /* PostBloomVertShader_ES2.vsh in Resources */,
-				F8E14C97DD3AC4BAA2979073 /* PostBloomVertShader_ES3.vsh in Resources */,
-				F828C4E91A01EBE9373B9FEB /* PreBloomFragShader_ES2.fsh in Resources */,
-				F84B252DD7975A9BC13A95C6 /* PreBloomFragShader_ES3.fsh in Resources */,
-				F86A46AD9302E4A6C7B8EF04 /* PreBloomVertShader_ES2.vsh in Resources */,
-				F8809ED913018252A06D571E /* PreBloomVertShader_ES3.vsh in Resources */,
-				F8C895D393C98CC575AAEE1F /* BlurFragShader_ES2.fsh in Resources */,
 				F8A68BB7861EA17AA381F54F /* BlurFragShader_ES3.fsh in Resources */,
-				F892E4B8FA3BE88D6A9DA41E /* BlurVertShader_ES2.vsh in Resources */,
 				F8430F18C5BF8D1B09CB862D /* BlurVertShader_ES3.vsh in Resources */,
-				F80349FDD3732CE0B2F99430 /* FragShader_ES2.fsh in Resources */,
 				F8275C81FB76017154924E92 /* FragShader_ES3.fsh in Resources */,
-				F83EA4C919E336C9F1D708CC /* VertShader_ES2.vsh in Resources */,
+				F87FB74213B7EE7652E8543E /* PostBloomFragShader_ES3.fsh in Resources */,
+				F84B252DD7975A9BC13A95C6 /* PreBloomFragShader_ES3.fsh in Resources */,
+				F81372C4A5865559E052B3D6 /* QuadVertShader_ES3.vsh in Resources */,
 				F8C99D4319A45CC4793F62F7 /* VertShader_ES3.vsh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -615,16 +503,6 @@
 			name = PVRAssets;
 			targetProxy = 6600B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
 		};
-		7700B16BADC0DE00BAC1BO4E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = PVRNativeGles;
-			targetProxy = 6600B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */;
-		};
-		7700B16BADC0DE00FEA51B1E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = PVRGles;
-			targetProxy = 6600B16BADC0DE00FEA51B1E /* PBXContainerItemProxy */;
-		};
 		7700B16BADC0DE0005EAF00D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = PVRShell;
@@ -632,7 +510,7 @@
 		};
 		7700B16BADC0DE0000FACADE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = PVREngineUtils;
+			name = PVRUtilsGles;
 			targetProxy = 6600B16BADC0DE0000FACADE /* PBXContainerItemProxy */;
 		};
 

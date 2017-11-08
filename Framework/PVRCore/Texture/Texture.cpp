@@ -15,9 +15,9 @@ TextureFileFormat getTextureFormatFromFilename(const char* assetname)
 	std::string file(assetname);
 
 	size_t period = file.rfind(".");
-	if (period != string::npos)
+	if (period != std::string::npos)
 	{
-		string s = file.substr(period + 1);
+		std::string s = file.substr(period + 1);
 		std::transform(s.begin(), s.end(), s.begin(), tolower);
 		if (!s.compare("pvr")) { return TextureFileFormat::PVR; }
 		if (!s.compare("tga")) { return TextureFileFormat::TGA; }
@@ -29,11 +29,11 @@ TextureFileFormat getTextureFormatFromFilename(const char* assetname)
 	return TextureFileFormat::UNKNOWN;
 }
 
-uint8 Texture::getPixelSize()const { return _header.pixelFormat.getBitsPerPixel() / 8; }
+uint8_t Texture::getPixelSize()const { return _header.pixelFormat.getBitsPerPixel() / 8; }
 
 Texture::Texture() {	_pTextureData.resize(getDataSize()); }
 
-Texture::Texture(const TextureHeader& sHeader, const byte* pData)
+Texture::Texture(const TextureHeader& sHeader, const char* pData)
 	: TextureHeader(sHeader)
 {
 	//Allocate new memory for the texture.
@@ -53,13 +53,13 @@ void Texture::initializeWithHeader(const TextureHeader& sHeader)
 	_pTextureData.resize(getDataSize());
 }
 
-const byte* Texture::getDataPointer(uint32 mipMapLevel/*= 0*/, uint32 arrayMember/*= 0*/, uint32 face/*= 0*/) const
+const unsigned char* Texture::getDataPointer(uint32_t mipMapLevel/*= 0*/, uint32_t arrayMember/*= 0*/, uint32_t face/*= 0*/) const
 {
-	uint32 offSet = 0;
+	uint32_t offSet = 0;
 
-	if ((int32)mipMapLevel == pvrTextureAllMIPMaps) {	return NULL;	}
+	if (static_cast<int32_t>(mipMapLevel) == pvrTextureAllMipMaps) {	return NULL;	}
 
-	if (mipMapLevel >= getNumberOfMIPLevels() || arrayMember >= getNumberOfArrayMembers() || face >= getNumberOfFaces())
+	if (mipMapLevel >= getNumMipMapLevels() || arrayMember >= getNumArrayMembers() || face >= getNumFaces())
 	{
 		return NULL;
 	}
@@ -70,9 +70,9 @@ const byte* Texture::getDataPointer(uint32 mipMapLevel/*= 0*/, uint32 arrayMembe
 	if (mipMapLevel != 0)
 	{
 		//Get the size for all MIP Map levels up to this one.
-		for (uint32 uiCurrentMIPMap = 0; uiCurrentMIPMap < mipMapLevel; ++uiCurrentMIPMap)
+		for (uint32_t uiCurrentMipMap = 0; uiCurrentMipMap < mipMapLevel; ++uiCurrentMipMap)
 		{
-			offSet += getDataSize(uiCurrentMIPMap, true, true);
+			offSet += getDataSize(uiCurrentMipMap, true, true);
 		}
 	}
 
@@ -86,15 +86,15 @@ const byte* Texture::getDataPointer(uint32 mipMapLevel/*= 0*/, uint32 arrayMembe
 	return &_pTextureData[offSet];
 }
 
-byte* Texture::getDataPointer(uint32 mipMapLevel/*= 0*/, uint32 arrayMember/*= 0*/, uint32 face/*= 0*/)
+unsigned char* Texture::getDataPointer(uint32_t mipMapLevel/*= 0*/, uint32_t arrayMember/*= 0*/, uint32_t face/*= 0*/)
 {
 	//Initialize the offSet value.
-	uint32 offSet = 0;
+	uint32_t offSet = 0;
 
 	//Error checking
-	if ((int32)mipMapLevel == pvrTextureAllMIPMaps) {	return NULL;}
+	if (static_cast<int32_t>(mipMapLevel) == pvrTextureAllMipMaps) {	return NULL;}
 
-	if (mipMapLevel >= getNumberOfMIPLevels() || arrayMember >= getNumberOfArrayMembers() || face >= getNumberOfFaces())
+	if (mipMapLevel >= getNumMipMapLevels() || arrayMember >= getNumArrayMembers() || face >= getNumFaces())
 	{
 		return NULL;
 	}
@@ -105,9 +105,9 @@ byte* Texture::getDataPointer(uint32 mipMapLevel/*= 0*/, uint32 arrayMember/*= 0
 	if (mipMapLevel != 0)
 	{
 		//Get the size for all MIP Map levels up to this one.
-		for (uint32 uiCurrentMIPMap = 0; uiCurrentMIPMap < mipMapLevel; ++uiCurrentMIPMap)
+		for (uint32_t uiCurrentMipMap = 0; uiCurrentMipMap < mipMapLevel; ++uiCurrentMipMap)
 		{
-			offSet += getDataSize(uiCurrentMIPMap, true, true);
+			offSet += getDataSize(uiCurrentMipMap, true, true);
 		}
 	}
 
@@ -127,7 +127,7 @@ byte* Texture::getDataPointer(uint32 mipMapLevel/*= 0*/, uint32 arrayMember/*= 0
 	return &_pTextureData[offSet];
 }
 
-void Texture::addPaddingMetaData(uint32 paddingAlignment)
+void Texture::addPaddingMetaData(uint32_t paddingAlignment)
 {
 	//If the alignment is 0 or 1, return - as nothing is required
 	if (paddingAlignment <= 1)
@@ -136,10 +136,10 @@ void Texture::addPaddingMetaData(uint32 paddingAlignment)
 	}
 
 	//Set the meta data padding. The 12 is the size of an empty meta data block
-	uint32 unpaddedStartOfTextureData = (Header::SizeOfHeader + getMetaDataSize() + 12);
+	uint32_t unpaddedStartOfTextureData = (Header::SizeOfHeader + getMetaDataSize() + 12);
 
 	//Work out the value of the padding
-	uint32 paddingAmount = ((uint32(-1) * unpaddedStartOfTextureData) % paddingAlignment);
+	uint32_t paddingAmount = ((static_cast<uint32_t>(-1) * unpaddedStartOfTextureData) % paddingAlignment);
 
 	//Create the meta data
 	TextureMetaData metaPadding(Header::PVRv3, TextureMetaData::IdentifierPadding, paddingAmount, NULL);

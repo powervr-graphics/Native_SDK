@@ -82,37 +82,70 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classpvr_1_1assets_1_1_mesh_1_1_face_data-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::assets::Mesh::FaceData Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>The <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html" title="The FaceData class contains the information of the Indexes that defines the Faces of a Mesh...">FaceData</a> class contains the information of the Indexes that defines the Faces of a <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>.  
+<p>The <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html" title="The FaceData class contains the information of the Indices that defines the Faces of a Mesh...">FaceData</a> class contains the information of the Indices that defines the Faces of a <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>.  
  <a href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:acf30d04b26aa94f36d8721aadc6663e1"><td class="memItemLeft" align="right" valign="top">const byte *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#acf30d04b26aa94f36d8721aadc6663e1">getData</a> () const </td></tr>
-<tr class="memdesc:acf30d04b26aa94f36d8721aadc6663e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the actual face data. <a href="#acf30d04b26aa94f36d8721aadc6663e1">More...</a><br/></td></tr>
-<tr class="separator:acf30d04b26aa94f36d8721aadc6663e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a531aefa79294ce43308322e308802d"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#a8a531aefa79294ce43308322e308802d">getDataSize</a> () const </td></tr>
-<tr class="memdesc:a8a531aefa79294ce43308322e308802d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get total size of the face data. <a href="#a8a531aefa79294ce43308322e308802d">More...</a><br/></td></tr>
-<tr class="separator:a8a531aefa79294ce43308322e308802d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5cd1090421cdbbb76412af3cf6e73aea"><td class="memItemLeft" align="right" valign="top">types::IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#a5cd1090421cdbbb76412af3cf6e73aea">getDataType</a> () const </td></tr>
-<tr class="memdesc:a5cd1090421cdbbb76412af3cf6e73aea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the data type of the face data (16-bit or 32 bit integer). <a href="#a5cd1090421cdbbb76412af3cf6e73aea">More...</a><br/></td></tr>
-<tr class="separator:a5cd1090421cdbbb76412af3cf6e73aea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7dd350c5e92d473d9d9330eb97fbfaf4"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#a7dd350c5e92d473d9d9330eb97fbfaf4">getDataTypeSize</a> () const </td></tr>
-<tr class="memdesc:a7dd350c5e92d473d9d9330eb97fbfaf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the size of this face data type in Bits. <a href="#a7dd350c5e92d473d9d9330eb97fbfaf4">More...</a><br/></td></tr>
-<tr class="separator:a7dd350c5e92d473d9d9330eb97fbfaf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65faeeb7127c50897a06ed84f3f4e5d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#a65faeeb7127c50897a06ed84f3f4e5d1">setData</a> (const byte *data, uint32 size, const types::IndexType indexType=types::IndexType::IndexType16Bit)</td></tr>
-<tr class="memdesc:a65faeeb7127c50897a06ed84f3f4e5d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the data type of this instance. <a href="#a65faeeb7127c50897a06ed84f3f4e5d1">More...</a><br/></td></tr>
-<tr class="separator:a65faeeb7127c50897a06ed84f3f4e5d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa78afcb929e61d9ed264f4bd6818993d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#aa78afcb929e61d9ed264f4bd6818993d">FaceData</a> ()</td></tr>
+<tr class="memdesc:aa78afcb929e61d9ed264f4bd6818993d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor  <a href="#aa78afcb929e61d9ed264f4bd6818993d">More...</a><br/></td></tr>
+<tr class="separator:aa78afcb929e61d9ed264f4bd6818993d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0682b883558a2d50251aa253f1d2cdf8"><td class="memItemLeft" align="right" valign="top">const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#a0682b883558a2d50251aa253f1d2cdf8">getData</a> () const </td></tr>
+<tr class="memdesc:a0682b883558a2d50251aa253f1d2cdf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the actual face data. <a href="#a0682b883558a2d50251aa253f1d2cdf8">More...</a><br/></td></tr>
+<tr class="separator:a0682b883558a2d50251aa253f1d2cdf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a82089905aa5be739b2f4bac15f885e"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#a9a82089905aa5be739b2f4bac15f885e">getDataSize</a> () const </td></tr>
+<tr class="memdesc:a9a82089905aa5be739b2f4bac15f885e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get total size of the face data. <a href="#a9a82089905aa5be739b2f4bac15f885e">More...</a><br/></td></tr>
+<tr class="separator:a9a82089905aa5be739b2f4bac15f885e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af19b4fac2e060e607c06a438ac4644e7"><td class="memItemLeft" align="right" valign="top">IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#af19b4fac2e060e607c06a438ac4644e7">getDataType</a> () const </td></tr>
+<tr class="memdesc:af19b4fac2e060e607c06a438ac4644e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the data type of the face data (16-bit or 32 bit integer). <a href="#af19b4fac2e060e607c06a438ac4644e7">More...</a><br/></td></tr>
+<tr class="separator:af19b4fac2e060e607c06a438ac4644e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe358ef1ed19117e4c7d3f86a0afe04b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#afe358ef1ed19117e4c7d3f86a0afe04b">getDataTypeSize</a> () const </td></tr>
+<tr class="memdesc:afe358ef1ed19117e4c7d3f86a0afe04b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the size of this face data type in Bits. <a href="#afe358ef1ed19117e4c7d3f86a0afe04b">More...</a><br/></td></tr>
+<tr class="separator:afe358ef1ed19117e4c7d3f86a0afe04b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a486076303ee44be39228101e24eab033"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#a486076303ee44be39228101e24eab033">setData</a> (const uint8_t *data, uint32_t size, const IndexType indexType=IndexType::IndexType16Bit)</td></tr>
+<tr class="memdesc:a486076303ee44be39228101e24eab033"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set all the data of this instance. <a href="#a486076303ee44be39228101e24eab033">More...</a><br/></td></tr>
+<tr class="separator:a486076303ee44be39228101e24eab033"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a50d4daaf61fd06739f3a32e47476e189"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a50d4daaf61fd06739f3a32e47476e189"></a>
+UInt8Buffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#a50d4daaf61fd06739f3a32e47476e189">_data</a></td></tr>
+<tr class="memdesc:a50d4daaf61fd06739f3a32e47476e189"><td class="mdescLeft">&#160;</td><td class="mdescRight">The data. <br/></td></tr>
+<tr class="separator:a50d4daaf61fd06739f3a32e47476e189"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58367b2a5c3c39e49b1a94f0fe0ab0fc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58367b2a5c3c39e49b1a94f0fe0ab0fc"></a>
+IndexType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#a58367b2a5c3c39e49b1a94f0fe0ab0fc">_indexType</a></td></tr>
+<tr class="memdesc:a58367b2a5c3c39e49b1a94f0fe0ab0fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">The index type. <br/></td></tr>
+<tr class="separator:a58367b2a5c3c39e49b1a94f0fe0ab0fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html" title="The FaceData class contains the information of the Indexes that defines the Faces of a Mesh...">FaceData</a> class contains the information of the Indexes that defines the Faces of a <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="acf30d04b26aa94f36d8721aadc6663e1"></a>
+<div class="textblock"><p>The <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html" title="The FaceData class contains the information of the Indices that defines the Faces of a Mesh...">FaceData</a> class contains the information of the Indices that defines the Faces of a <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="aa78afcb929e61d9ed264f4bd6818993d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::assets::Mesh::FaceData::FaceData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a0682b883558a2d50251aa253f1d2cdf8"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -120,7 +153,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const byte* pvr::assets::Mesh::FaceData::getData </td>
+          <td class="memname">const uint8_t* pvr::assets::Mesh::FaceData::getData </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -134,10 +167,11 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get a pointer to the actual face data.</p>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the actual index data</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a8a531aefa79294ce43308322e308802d"></a>
+<a class="anchor" id="a9a82089905aa5be739b2f4bac15f885e"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -145,7 +179,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::FaceData::getDataSize </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::FaceData::getDataSize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -159,10 +193,11 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get total size of the face data.</p>
+<dl class="section return"><dt>Returns</dt><dd>The total size of the data</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a5cd1090421cdbbb76412af3cf6e73aea"></a>
+<a class="anchor" id="af19b4fac2e060e607c06a438ac4644e7"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -170,7 +205,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">types::IndexType pvr::assets::Mesh::FaceData::getDataType </td>
+          <td class="memname">IndexType pvr::assets::Mesh::FaceData::getDataType </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -184,10 +219,11 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the data type of the face data (16-bit or 32 bit integer).</p>
+<dl class="section return"><dt>Returns</dt><dd>The data type of index data</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a7dd350c5e92d473d9d9330eb97fbfaf4"></a>
+<a class="anchor" id="afe358ef1ed19117e4c7d3f86a0afe04b"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -195,7 +231,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::FaceData::getDataTypeSize </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::FaceData::getDataTypeSize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -209,30 +245,31 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the size of this face data type in Bits.</p>
+<dl class="section return"><dt>Returns</dt><dd>The size of each index, in Bits</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a65faeeb7127c50897a06ed84f3f4e5d1"></a>
+<a class="anchor" id="a486076303ee44be39228101e24eab033"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::assets::Mesh::FaceData::setData </td>
           <td>(</td>
-          <td class="paramtype">const byte *&#160;</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
           <td class="paramname"><em>data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const types::IndexType&#160;</td>
-          <td class="paramname"><em>indexType</em> = <code>types::IndexType::IndexType16Bit</code>&#160;</td>
+          <td class="paramtype">const IndexType&#160;</td>
+          <td class="paramname"><em>indexType</em> = <code>IndexType::IndexType16Bit</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -242,7 +279,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Set the data type of this instance.</p>
+<p>Set all the data of this instance.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>Pointer to the data. Will be copied</td></tr>
+    <tr><td class="paramname">size</td><td>The amount of data, in bytes, to copy from the pointer</td></tr>
+    <tr><td class="paramname">indexType</td><td>The type of index data (16/32 bit)</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

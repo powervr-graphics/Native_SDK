@@ -6,8 +6,9 @@
 */
 #import "AppController.h"
 
-//CONSTANTS:
+//!\cond NO_DOXYGEN
 const int kFPS = 60.0;
+//!\endcond
 
 // CLASS IMPLEMENTATION
 @implementation AppController
@@ -36,7 +37,7 @@ const int kFPS = 60.0;
 	commandLine.set([cl UTF8String]);
 	//[cl release];
 	
-	stateMachine = new pvr::platform::StateMachine((__bridge pvr::platform::OSApplication)self, commandLine,NULL);
+	stateMachine = new pvr::platform::StateMachine((__bridge pvr::OSApplication)self, commandLine,NULL);
 
 	if(!stateMachine)
 	{

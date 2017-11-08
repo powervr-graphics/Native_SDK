@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['extended',['Extended',['../namespacepvr.html#a62a6e9db5b1a2dfe5d226b836305ca1baf23578fcd2a868168854ab714e7de537',1,'pvr']]]
+  ['equal',['Equal',['../namespacepvr.html#a24a87498f839b45b6e1bc3c8b2ca20fcaf5f286e73bda105e538310b3190f75c5',1,'pvr']]]
 ];

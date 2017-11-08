@@ -5,10 +5,10 @@ ASSETDIR := $(PVRSDKDIR)/Examples/Intermediate/Multithreading/Vulkan/Build/Andro
 
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVREngineUtils
+# Prebuilt module PVRUtilsVk
 include $(CLEAR_VARS)
-LOCAL_MODULE := PVREngineUtils
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVREngineUtils.a
+LOCAL_MODULE := PVRUtilsVk
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRUtilsVk.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
@@ -21,18 +21,10 @@ include $(PREBUILT_STATIC_LIBRARY)
 endif
 
 ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRVulkan
+# Prebuilt module PVRVk
 include $(CLEAR_VARS)
-LOCAL_MODULE := PVRVulkan
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRVulkan.a
-include $(PREBUILT_STATIC_LIBRARY)
-endif
-
-ifneq "$(MAKECMDGOALS)" "clean"
-# Prebuilt module PVRNativeVulkan
-include $(CLEAR_VARS)
-LOCAL_MODULE := PVRNativeVulkan
-LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRNativeVulkan.a
+LOCAL_MODULE := PVRVk
+LOCAL_SRC_FILES := $(PVRSDKDIR)/Framework/Bin/Android/local/$(TARGET_ARCH_ABI)/libPVRVk.a
 include $(PREBUILT_STATIC_LIBRARY)
 endif
 
@@ -66,11 +58,11 @@ LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework \
 
 
 
-LOCAL_LDLIBS := -llog \
-                -latomic \
+LOCAL_LDLIBS := -latomic \
+                -llog \
                 -landroid
 
-LOCAL_STATIC_LIBRARIES := PVREngineUtils PVRVulkan PVRNativeVulkan PVRAssets PVRCore android_native_app_glue
+LOCAL_STATIC_LIBRARIES := PVRUtilsVk PVRVk PVRAssets PVRCore android_native_app_glue
 
 
 LOCAL_CFLAGS += $(SDK_BUILD_FLAGS)

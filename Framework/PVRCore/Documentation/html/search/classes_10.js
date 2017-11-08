@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['unicodeconverter',['UnicodeConverter',['../classpvr_1_1utils_1_1_unicode_converter.html',1,'pvr::utils']]]
+  ['windowsresourcestream',['WindowsResourceStream',['../classpvr_1_1_windows_resource_stream.html',1,'pvr']]]
 ];

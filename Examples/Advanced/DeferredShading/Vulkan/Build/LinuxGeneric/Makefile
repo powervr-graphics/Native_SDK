@@ -9,26 +9,40 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanDeferredShading
-DEPENDS =  PVRCore PVRAssets PVRNativeVulkan PVRVulkan PVRShell PVREngineUtils
-LIBRARIES =  PVREngineUtils PVRShell PVRVulkan PVRNativeVulkan PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRVk PVRShell PVRUtilsVk
+LIBRARIES =  PVRUtilsVk PVRShell PVRVk PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
            Vulkan/VulkanDeferredShading.o
 
 RESOURCES += \
-           AttributelessVertexShader.vsh.spv\
-           GBufferFragmentShader.fsh.spv\
-           GBufferVertexShader.vsh.spv\
-           GBufferFloorFragmentShader.fsh.spv\
-           GBufferFloorVertexShader.vsh.spv\
-           DirectionalLightFragmentShader.fsh.spv\
-           PointLightPass1FragmentShader.fsh.spv\
-           PointLightPass1VertexShader.vsh.spv\
-           PointLightPass2FragmentShader.fsh.spv\
-           PointLightPass2VertexShader.vsh.spv\
-           PointLightPass3FragmentShader.fsh.spv\
-           PointLightPass3VertexShader.vsh.spv\
+           AttributelessVertexShader_vk.vsh.spv\
+           GBufferFragmentShader_vk.fsh.spv\
+           GBufferVertexShader_vk.vsh.spv\
+           GBufferFloorFragmentShader_vk.fsh.spv\
+           GBufferFloorVertexShader_vk.vsh.spv\
+           DirectionalLightFragmentShader_vk.fsh.spv\
+           PointLightPass1FragmentShader_vk.fsh.spv\
+           PointLightPass1VertexShader_vk.vsh.spv\
+           PointLightPass2FragmentShader_vk.fsh.spv\
+           PointLightPass2VertexShader_vk.vsh.spv\
+           PointLightPass3FragmentShader_vk.fsh.spv\
+           PointLightPass3VertexShader_vk.vsh.spv\
+           AttributelessVertexShader_vk.vsh\
+           GBufferFragmentShader_vk.fsh\
+           GBufferVertexShader_vk.vsh\
+           GBufferFloorFragmentShader_vk.fsh\
+           GBufferFloorVertexShader_vk.vsh\
+           DirectionalLightFragmentShader_vk.fsh\
+           PointLightPass1FragmentShader_vk.fsh\
+           PointLightPass1VertexShader_vk.vsh\
+           PointLightPass2FragmentShader_vk.fsh\
+           PointLightPass2VertexShader_vk.vsh\
+           PointLightPass3FragmentShader_vk.fsh\
+           PointLightPass3VertexShader_vk.vsh\
+           recompile.sh\
+           recompile.bat\
 
 COMMON_RESOURCES += \
            Marble.pvr\
@@ -36,6 +50,8 @@ COMMON_RESOURCES += \
            Table.pvr\
            scene.pod\
            pointlight.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

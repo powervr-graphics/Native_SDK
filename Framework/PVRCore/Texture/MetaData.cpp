@@ -16,14 +16,14 @@ TextureMetaData::TextureMetaData() : _fourCC(0), _key(0), _dataSize(0), _data(NU
 {
 }
 
-TextureMetaData::TextureMetaData(uint32 fourCC, uint32 key, uint32 dataSize, const byte* data)
+TextureMetaData::TextureMetaData(uint32_t fourCC, uint32_t key, uint32_t dataSize, const char* data)
 	: _fourCC(0), _key(0), _dataSize(0), _data(NULL)
 {
 	//Copy the data across.
 	if (dataSize)
 	{
-		_data = new uint8[dataSize];
-		memset(_data, 0, sizeof(uint8)*dataSize);
+		_data = new uint8_t[dataSize];
+		memset(_data, 0, sizeof(uint8_t)*dataSize);
 	}
 	if (_data)
 	{
@@ -43,8 +43,8 @@ TextureMetaData::TextureMetaData(const TextureMetaData& rhs)
 	//Copy the data across.
 	if (rhs._dataSize)
 	{
-		_data = new uint8[rhs._dataSize];
-		memset(_data, 0, sizeof(uint8)*rhs._dataSize);
+		_data = new uint8_t[rhs._dataSize];
+		memset(_data, 0, sizeof(uint8_t)*rhs._dataSize);
 	}
 	if (_data)
 	{
@@ -86,7 +86,7 @@ TextureMetaData& TextureMetaData::operator=(const TextureMetaData& rhs)
 	}
 
 	// Copy the data across.
-	_data = new uint8[rhs._dataSize];
+	_data = new uint8_t[rhs._dataSize];
 	if (_data)
 	{
 		_fourCC = rhs._fourCC;
@@ -112,7 +112,7 @@ bool TextureMetaData::loadFromStream(Stream& stream)
 	if (!stream.read(sizeof(_dataSize), 1, &_dataSize, dataRead)) { return false; }
 
 	if (_dataSize <= 0) { return false; }
-	_data = new uint8[_dataSize];
+	_data = new uint8_t[_dataSize];
 
 	if (!stream.read(1, _dataSize, _data, dataRead)) { return false; }
 
@@ -133,27 +133,27 @@ bool TextureMetaData::writeToStream(Stream& stream) const
 	return true;
 }
 
-uint32 TextureMetaData::getFourCC() const
+uint32_t TextureMetaData::getFourCC() const
 {
 	return _fourCC;
 }
 
-uint32 TextureMetaData::getDataSize() const
+uint32_t TextureMetaData::getDataSize() const
 {
 	return _dataSize;
 }
 
-uint32 TextureMetaData::getKey() const
+uint32_t TextureMetaData::getKey() const
 {
 	return _key;
 }
 
-const uint8* TextureMetaData::getData() const
+const uint8_t* TextureMetaData::getData() const
 {
 	return _data;
 }
 
-uint32 TextureMetaData::getTotalSizeInMemory() const
+uint32_t TextureMetaData::getTotalSizeInMemory() const
 {
 	return sizeof(_fourCC) + sizeof(_key) + sizeof(_dataSize) + _dataSize;
 }

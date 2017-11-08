@@ -16,14 +16,18 @@ BUILDTOAPP ?= ../..
 
 #If COMPILE_ALL_CPP_IN_DIRECTORIES is defined then 
 ifdef COMPILE_ALL_CPP_IN_DIRECTORIES
+ifneq ($(COMPILE_ALL_CPP_IN_DIRECTORIES),0)
 COMPILE_SOURCES_FROM_DIRECTORIES := $(DIRECTORIES)
+endif
 endif
 
 DIRECTORIES := $(PLAT_OBJPATH)/BuildTemp/ $(addprefix $(PLAT_OBJPATH)/BuildTemp/, $(DIRECTORIES))
 
 #BUT it may also have been defined directly as a list of objects, relative to the project folder, so append, do not replace
 ifdef COMPILE_ALL_CPP_IN_DIRECTORIES
+ifneq ($(COMPILE_ALL_CPP_IN_DIRECTORIES),0)
 SRCs := $(patsubst %.cpp, %.o, $(wildcard $(BUILDTOAPP)/*.cpp))
+endif
 endif
 
 SKIP_FILES?=

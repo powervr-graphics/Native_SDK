@@ -13,30 +13,27 @@
 
 namespace pvr {
 namespace assets {
-
-
-
-void Model::allocCameras(uint32 no)
+void Model::allocCameras(uint32_t no)
 {
 	_data.cameras.resize(no);
 }
 
-void Model::allocLights(uint32 no)
+void Model::allocLights(uint32_t no)
 {
 	_data.lights.resize(no);
 }
 
-void Model::allocMeshes(uint32 no)
+void Model::allocMeshes(uint32_t no)
 {
 	_data.meshes.resize(no);
 }
 
-void Model::allocNodes(uint32 no)
+void Model::allocNodes(uint32_t no)
 {
 	_data.nodes.resize(no);
 }
 
-void Model::allocMeshNodes(uint32 no)
+void Model::allocMeshNodes(uint32_t no)
 {
 	allocNodes(no);
 	_data.numMeshNodes = no;
@@ -50,12 +47,12 @@ void Model::destroyCache()
 	_cache.cachedFrame.clear();
 }
 
-glm::mat4x4 Model::getBoneWorldMatrix(uint32 skinNodeID, uint32 boneID) const
+glm::mat4x4 Model::getBoneWorldMatrix(uint32_t skinNodeID, uint32_t boneID) const
 {
 #ifdef DEBUG
 	glm::mat4 tst = _cache.worldMatrixFrameZero[boneID] * _cache.worldMatrixFrameZero[skinNodeID];
 	assertion(tst[0][3] * tst[0][3] < 1e-15f && tst[1][3] * tst[1][3] < 1e-15f && tst[2][3] * tst[2][3] < 1e-15f,
-	    "getBoneWorldMatrix has unsupported skew parameters");
+	          "getBoneWorldMatrix has unsupported skew parameters");
 #endif
 
 	// Back transform bone from frame 0 position using the skin's transformation
@@ -66,7 +63,7 @@ glm::mat4x4 Model::getBoneWorldMatrix(uint32 skinNodeID, uint32 boneID) const
 	return getWorldMatrix(boneID) * matrix;
 }
 
-glm::mat4x4 Model::getWorldMatrix(uint32 id) const
+glm::mat4x4 Model::getWorldMatrix(uint32_t id) const
 {
 #ifdef DEBUG
 	++_cache.total;
@@ -92,7 +89,7 @@ glm::mat4x4 Model::getWorldMatrix(uint32 id) const
 	}
 	// Calculate the matrix and cache it
 	const Node& node = _data.nodes[id];
-	int32 parentID = _data.nodes[id].getParentID();
+	int32_t parentID = _data.nodes[id].getParentID();
 	if (parentID < 0)
 	{
 		_cache.worldMatrixFrameN[id] = node.getAnimation().getTransformationMatrix(_cache.frame, _cache.frameFraction);
@@ -109,22 +106,21 @@ glm::mat4x4 Model::getWorldMatrix(uint32 id) const
 	return _cache.worldMatrixFrameN[id];
 }
 
-glm::vec3 Model::getLightPosition(uint32 lightNodeId) const
+glm::vec3 Model::getLightPosition(uint32_t lightNodeId) const
 {
 	return glm::vec3(getWorldMatrix(getNodeIdFromLightNodeId(0))[3]);
 }
 
 
-glm::mat4x4 Model::getWorldMatrixNoCache(uint32 id) const
+glm::mat4x4 Model::getWorldMatrixNoCache(uint32_t id) const
 {
 	const Node& node = _data.nodes[id];
 	const PVR_ALIGNED glm::mat4x4& matrix = node.getAnimation().getTransformationMatrix(_cache.frame, _cache.frameFraction);
-	int32 parentID = node.getParentID();
+	int32_t parentID = node.getParentID();
 	if (parentID < 0)
 	{
 		return matrix;
 	}
-	//return internal::toMat4(internal::optimizedMat4(getWorldMatrixNoCache(parentID)) * internal::optimizedMat4(matrix));
 	return getWorldMatrixNoCache(parentID) * matrix;
 }
 
@@ -146,7 +142,7 @@ void Model::flushCache()
 	{
 		return;
 	}
-	for (uint32 i = 0; i < _data.nodes.size(); ++i)
+	for (uint32_t i = 0; i < _data.nodes.size(); ++i)
 	{
 		_cache.worldMatrixFrameZero[i] = getWorldMatrixNoCache(i);
 	}
@@ -159,12 +155,12 @@ void Model::flushCache()
 	memset(_cache.cachedFrame.data(), 0, _data.nodes.size() * sizeof(_cache.cachedFrame[0]));
 }
 
-float32 Model::getCurrentFrame()
+float Model::getCurrentFrame()
 {
 	return _data.currentFrame;
 }
 
-bool Model::setCurrentFrame(float32 frame)
+bool Model::setCurrentFrame(float frame)
 {
 	if (_data.numFrames)
 	{
@@ -172,21 +168,21 @@ bool Model::setCurrentFrame(float32 frame)
 		//	Example: If there are 100 frames of animation, the highest frame
 		//	number allowed is 98, since that will blend between frames 98 and
 		//	99. (99 being of course the 100th frame.)
-		if (frame >= static_cast<float32>(_data.numFrames - 1))
+		if (frame >= static_cast<float>(_data.numFrames - 1))
 		{
-			Log(Log.Error, "Model::setCurrentFrame out of bounds, set to frame %f out of %d", frame, _data.numFrames);
+			Log(LogLevel::Error, "Model::setCurrentFrame out of bounds, set to frame %f out of %d", frame, _data.numFrames);
 			assertion(0);
 			return false;
 		}
-		_cache.frame = static_cast<uint32>(frame);
+		_cache.frame = static_cast<uint32_t>(frame);
 		_cache.frameFraction = frame - _cache.frame;
 	}
 	else
 	{
 		assertion(frame == 0);
-		if (static_cast<uint32>(frame) != 0)
+		if (static_cast<uint32_t>(frame) != 0)
 		{
-			Log(Log.Error, "Model::setCurrentFrame out of bounds, set to frame %f out of %d", frame, _data.numFrames);
+			Log(LogLevel::Error, "Model::setCurrentFrame out of bounds, set to frame %f out of %d", frame, _data.numFrames);
 			assertion(0);
 			return false;
 		}
@@ -197,17 +193,17 @@ bool Model::setCurrentFrame(float32 frame)
 	return true;
 }
 
-void Model::setUserData(uint32 size, const byte* const data)
+void Model::setUserData(uint32_t size, const char* const data)
 {
 	_data.userData.resize(data ? size : 0);
 	if (data && size) { memcpy(_data.userData.data(), data, size); }
 }
 
-void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm::vec3& to, glm::vec3& up, float& nearClip, float& farClip) const
+void Model::getCameraProperties(int32_t index, float& fov, glm::vec3& from, glm::vec3& to, glm::vec3& up, float& nearClip, float& farClip) const
 {
-	if (static_cast<uint32>(index) >= _data.cameras.size())
+	if (static_cast<uint32_t>(index) >= _data.cameras.size())
 	{
-		Log(Log.Error, "Model::getCameraProperties out of bounds [%d]", index);
+		Log(LogLevel::Error, "Model::getCameraProperties out of bounds [%d]", index);
 		assertion(0);
 		return;
 	}
@@ -216,15 +212,15 @@ void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm:
 	return getCameraProperties(index, fov, from, to, up);
 }
 
-void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm::vec3& to, glm::vec3& up) const
+void Model::getCameraProperties(int32_t index, float& fov, glm::vec3& from, glm::vec3& to, glm::vec3& up) const
 {
-	if (static_cast<uint32>(index) >= _data.cameras.size())
+	if (static_cast<uint32_t>(index) >= _data.cameras.size())
 	{
 		assertion(0, "Model::getCameraProperties index out of range");
-		Log(Log.Error, "Model::getCameraProperties out of bounds [%d]", index);
+		Log(LogLevel::Error, "Model::getCameraProperties out of bounds [%d]", index);
 		return;
 	}
-	glm::mat4x4 matrix = getWorldMatrix(static_cast<uint32>(_data.numMeshNodes + _data.lights.size() + index));
+	glm::mat4x4 matrix = getWorldMatrix(static_cast<uint32_t>(_data.numMeshNodes + _data.lights.size() + index));
 	// View position is 0,0,0,1 transformed by world matrix
 	from.x = matrix[3][0];
 	from.y = matrix[3][1];
@@ -236,7 +232,6 @@ void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm:
 	up = glm::normalize(up);
 	const Camera& camera = getCamera(index);
 
-	// TODO: Check the below code as it is experimental but should allow us to calculate the up vector if this camera follows a target
 	if (camera.getTargetNodeIndex() != -1)
 	{
 		glm::vec3 atCurrent, atTarget;
@@ -250,7 +245,7 @@ void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm:
 		atCurrent = to - from;
 		glm::normalize(atCurrent);
 		glm::vec3 axis = glm::cross(atCurrent, atTarget);
-		float32 angle = glm::dot(atCurrent, atTarget);
+		float angle = glm::dot(atCurrent, atTarget);
 		glm::quat q = glm::angleAxis(angle, axis);
 		up = glm::mat3_cast(q) * up;
 		glm::normalize(up);
@@ -265,22 +260,18 @@ void Model::getCameraProperties(int32 index, float32& fov, glm::vec3& from, glm:
 	fov = camera.getFOV(_cache.frame, _cache.frameFraction);
 }
 
-void Model::getLightDirection(int32 lightNodeId, glm::vec3& direction) const
+void Model::getLightDirection(int32_t lightNodeId, glm::vec3& direction) const
 {
 	if (static_cast<size_t>(lightNodeId) >= getNumLightNodes())
 	{
 		assertion(0, "Model::getLightDirection out of bounds");
-		Log(Log.Error, "Model::getLightDirection out of bounds [%d]", lightNodeId);
+		Log(LogLevel::Error, "Model::getLightDirection out of bounds [%d]", lightNodeId);
 		assertion(0);
 		return;
 	}
-<<<<<<< HEAD
-	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + lightNodeId);
-=======
 	glm::mat4x4 matrix = getWorldMatrix(_data.numMeshNodes + lightNodeId);
->>>>>>> 1776432f... 4.3
 	const Light& light = getLight(lightNodeId);
-	int32 targetIndex = light.getTargetIdx();
+	int32_t targetIndex = light.getTargetIdx();
 	if (targetIndex != -1)
 	{
 		glm::mat4x4 targetMatrix = getWorldMatrix(targetIndex);
@@ -297,42 +288,30 @@ void Model::getLightDirection(int32 lightNodeId, glm::vec3& direction) const
 	}
 }
 
-void Model::getLightPosition(int32 lightNodeId, glm::vec3& position) const
+void Model::getLightPosition(int32_t lightNodeId, glm::vec3& position) const
 {
-	if (static_cast<uint32>(lightNodeId) >= getNumLightNodes())
+	if (static_cast<uint32_t>(lightNodeId) >= getNumLightNodes())
 	{
 		assertion(0, "Model::getLightPosition out of bounds");
-		Log(Log.Error, "Model::getLightPosition out of bounds [%d]", lightNodeId);
+		Log(LogLevel::Error, "Model::getLightPosition out of bounds [%d]", lightNodeId);
 		return;
 	}
-<<<<<<< HEAD
-	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + lightNodeId);
-=======
 	glm::mat4x4 matrix = getWorldMatrix(_data.numMeshNodes + lightNodeId);
->>>>>>> 1776432f... 4.3
 	position.x = matrix[3][0];
 	position.y = matrix[3][1];
 	position.z = matrix[3][2];
 }
 
-void Model::getLightPosition(int32 lightNodeId, glm::vec4& position) const
+void Model::getLightPosition(int32_t lightNodeId, glm::vec4& position) const
 {
-<<<<<<< HEAD
-	if (static_cast<uint32>(lightNodeId) >= m_data.lights.size())
-=======
-	if (static_cast<uint32>(lightNodeId) >= _data.lights.size())
->>>>>>> 1776432f... 4.3
+	if (static_cast<uint32_t>(lightNodeId) >= _data.lights.size())
 	{
 		assertion(0, "Model::getLightPosition out of bounds");
-		Log(Log.Error, "Model::getLightPosition out of bounds [%d]", lightNodeId);
+		Log(LogLevel::Error, "Model::getLightPosition out of bounds [%d]", lightNodeId);
 		assertion(0);
 		return;
 	}
-<<<<<<< HEAD
-	glm::mat4x4 matrix = getWorldMatrix(m_data.numMeshNodes + lightNodeId);
-=======
 	glm::mat4x4 matrix = getWorldMatrix(_data.numMeshNodes + lightNodeId);
->>>>>>> 1776432f... 4.3
 	position.x = matrix[3][0];
 	position.y = matrix[3][1];
 	position.z = matrix[3][2];

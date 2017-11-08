@@ -10,19 +10,12 @@
 
 using std::vector;
 namespace pvr {
-using namespace types;
-<<<<<<< HEAD
-namespace api {
-=======
-namespace nativeGles {
->>>>>>> 1776432f... 4.3
-namespace ConvertToGles {
-//CAUTION: This is a "hidden" dependency on PVRApi. If someone wants to use TextureWriterKTX without PVRApi, he would need to implement
-//and link in this function, otherwise there will be linker errors. The implementation can be found (and possibly copied from) PVRApi/TextureUtils.h
+namespace utils {
+//CAUTION: This is a "hidden" dependency on PVRGlesUtils. If someone wants to use TextureWriterKTX without PVRUtils, he would need to implement
+//and link in this function, otherwise there will be linker errors. The implementation can be found (and possibly copied from) PVRUtils/OGLES/TextureUtils.h
 bool getOpenGLFormat(PixelFormat pixelFormat, ColorSpace colorSpace, VariableType dataType,
-                     uint32& glInternalFormat, uint32& glFormat, uint32& glType, uint32& glTypeSize,
+                     uint32_t& glInternalFormat, uint32_t& glFormat, uint32_t& glType, uint32_t& glTypeSize,
                      bool& isCompressedFormat);
-}
 }
 namespace assets {
 namespace assetWriters {
@@ -45,7 +38,7 @@ bool TextureWriterKTX::addAssetToWrite(const Texture& asset)
 bool TextureWriterKTX::writeAllAssets()
 {
 	// Padding data zeroes that we can write later
-	const byte* paddingDataZeros[4] = {0, 0, 0, 0};
+	const char* paddingDataZeros[4] = {0, 0, 0, 0};
 
 	// Check the Result
 	bool result = true;
@@ -59,15 +52,10 @@ bool TextureWriterKTX::writeAllAssets()
 
 	bool isCompressed;
 	// Set the pixel format information
-<<<<<<< HEAD
-	api::ConvertToGles::getOpenGLFormat(m_assetsToWrite[0]->getPixelFormat(), m_assetsToWrite[0]->getColorSpace(),
-	                                    m_assetsToWrite[0]->getChannelType(),
-=======
-	nativeGles::ConvertToGles::getOpenGLFormat(_assetsToWrite[0]->getPixelFormat(), _assetsToWrite[0]->getColorSpace(),
-	                                    _assetsToWrite[0]->getChannelType(),
->>>>>>> 1776432f... 4.3
-	                                    ktxFileHeader.glInternalFormat, ktxFileHeader.glFormat, ktxFileHeader.glType,
-	                                    ktxFileHeader.glTypeSize, isCompressed);
+	utils::getOpenGLFormat(_assetsToWrite[0]->getPixelFormat(), _assetsToWrite[0]->getColorSpace(),
+	                                      _assetsToWrite[0]->getChannelType(),
+	                                      ktxFileHeader.glInternalFormat, ktxFileHeader.glFormat, ktxFileHeader.glType,
+	                                      ktxFileHeader.glTypeSize, isCompressed);
 
 	// Set the dimensions
 	ktxFileHeader.pixelWidth = _assetsToWrite[0]->getWidth();
@@ -75,13 +63,13 @@ bool TextureWriterKTX::writeAllAssets()
 	ktxFileHeader.pixelDepth = _assetsToWrite[0]->getDepth();
 
 	// Set the number of surfaces
-	ktxFileHeader.numberOfArrayElements = _assetsToWrite[0]->getNumberOfArrayMembers();
-	ktxFileHeader.numberOfFaces = _assetsToWrite[0]->getNumberOfFaces();
-	ktxFileHeader.numberOfMipmapLevels = _assetsToWrite[0]->getNumberOfMIPLevels();
+	ktxFileHeader.numArrayElements = _assetsToWrite[0]->getNumArrayMembers();
+	ktxFileHeader.numFaces = _assetsToWrite[0]->getNumFaces();
+	ktxFileHeader.numMipmapLevels = _assetsToWrite[0]->getNumMipMapLevels();
 
 	// Create the orientation meta data
-	string orientationIdentifier(texture_ktx::c_orientationMetaDataKey);
-	string orientationString;
+	std::string orientationIdentifier(texture_ktx::c_orientationMetaDataKey);
+	std::string orientationString;
 	orientationString.append("S=");
 	orientationString.push_back(_assetsToWrite[0]->getOrientation(TextureMetaData::AxisAxisX) == TextureMetaData::AxisOrientationLeft
 	                            ? 'l' : 'r');
@@ -96,10 +84,10 @@ bool TextureWriterKTX::writeAllAssets()
 	}
 
 	// Calculate the amount of orientation meta data (including 2 bytes for NULL characters and 4 bytes for the length of each meta data)
-	uint32 orientationMetaDataSize = (uint32)((orientationIdentifier.length() + 1) + (orientationString.length() + 1) + 4);
+	uint32_t orientationMetaDataSize = static_cast<uint32_t>((orientationIdentifier.length() + 1) + (orientationString.length() + 1) + 4);
 
 	// Make sure the length is including padded bytes
-	uint32 orientationPaddingSize = 0;
+	uint32_t orientationPaddingSize = 0;
 	if (orientationMetaDataSize % 4 != 0)
 	{
 		orientationPaddingSize = (4 - (orientationMetaDataSize % 4));
@@ -153,15 +141,15 @@ bool TextureWriterKTX::writeAllAssets()
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the number of array elements
-	result = _assetStream->write(sizeof(ktxFileHeader.numberOfArrayElements), 1, &ktxFileHeader.numberOfArrayElements, dataWritten);
+	result = _assetStream->write(sizeof(ktxFileHeader.numArrayElements), 1, &ktxFileHeader.numArrayElements, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the number of faces
-	result = _assetStream->write(sizeof(ktxFileHeader.numberOfFaces), 1, &ktxFileHeader.numberOfFaces, dataWritten);
+	result = _assetStream->write(sizeof(ktxFileHeader.numFaces), 1, &ktxFileHeader.numFaces, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the number of MIP Map levels
-	result = _assetStream->write(sizeof(ktxFileHeader.numberOfMipmapLevels), 1, &ktxFileHeader.numberOfMipmapLevels, dataWritten);
+	result = _assetStream->write(sizeof(ktxFileHeader.numMipmapLevels), 1, &ktxFileHeader.numMipmapLevels, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the meta data size
@@ -185,11 +173,11 @@ bool TextureWriterKTX::writeAllAssets()
 	if (!result || dataWritten != orientationPaddingSize) { return result; }
 
 	// Write the texture data
-	for (uint32 mipMapLevel = 0; mipMapLevel < ktxFileHeader.numberOfMipmapLevels; ++mipMapLevel)
+	for (uint32_t mipMapLevel = 0; mipMapLevel < ktxFileHeader.numMipmapLevels; ++mipMapLevel)
 	{
 		// Calculate the MIP map size - regular cube maps are a slight exception
-		uint32 mipMapSize = 0;
-		if (_assetsToWrite[0]->getNumberOfFaces() == 6 && _assetsToWrite[0]->getNumberOfArrayMembers() == 1)
+		uint32_t mipMapSize = 0;
+		if (_assetsToWrite[0]->getNumFaces() == 6 && _assetsToWrite[0]->getNumArrayMembers() == 1)
 		{
 			mipMapSize = _assetsToWrite[0]->getDataSize(mipMapLevel, false, false);
 		}
@@ -203,32 +191,27 @@ bool TextureWriterKTX::writeAllAssets()
 		if (!result || dataWritten != 1) { return result; }
 
 		// Work out the Cube Map padding.
-		uint32 cubePadding = 0;
+		uint32_t cubePadding = 0;
 		if (_assetsToWrite[0]->getDataSize(mipMapLevel, false, false) % 4)
 		{
 			cubePadding = 4 - (_assetsToWrite[0]->getDataSize(mipMapLevel, false, false) % 4);
 		}
 
 		// Compressed images are written without scan line padding, because there aren't necessarily any scan lines.
-<<<<<<< HEAD
-		if (m_assetsToWrite[0]->getPixelFormat().getPart().High == 0 &&
-		    m_assetsToWrite[0]->getPixelFormat().getPixelTypeId() != (uint64)CompressedPixelFormat::SharedExponentR9G9B9E5)
-=======
 		if (_assetsToWrite[0]->getPixelFormat().getPart().High == 0 &&
-		    _assetsToWrite[0]->getPixelFormat().getPixelTypeId() != (uint64)CompressedPixelFormat::SharedExponentR9G9B9E5)
->>>>>>> 1776432f... 4.3
+		    _assetsToWrite[0]->getPixelFormat().getPixelTypeId() != static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5))
 		{
-			for (uint32 iSurface = 0; iSurface < _assetsToWrite[0]->getNumberOfArrayMembers(); ++iSurface)
+			for (uint32_t iSurface = 0; iSurface < _assetsToWrite[0]->getNumArrayMembers(); ++iSurface)
 			{
-				for (uint32 iFace = 0; iFace < _assetsToWrite[0]->getNumberOfFaces(); ++iFace)
+				for (uint32_t iFace = 0; iFace < _assetsToWrite[0]->getNumFaces(); ++iFace)
 				{
 					// Write in the texture data.
 					result = _assetStream->write(_assetsToWrite[0]->getDataSize(mipMapLevel, false, false), 1,
-					                              _assetsToWrite[0]->getDataPointer(mipMapLevel, iSurface, iFace), dataWritten);
+					                             _assetsToWrite[0]->getDataPointer(mipMapLevel, iSurface, iFace), dataWritten);
 					if (!result || dataWritten != 1) { return result; }
 
 					// Advance past the cube face padding
-					if (cubePadding && _assetsToWrite[0]->getNumberOfFaces() == 6 && _assetsToWrite[0]->getNumberOfArrayMembers() == 1)
+					if (cubePadding && _assetsToWrite[0]->getNumFaces() == 6 && _assetsToWrite[0]->getNumArrayMembers() == 1)
 					{
 						result = _assetStream->write(1, cubePadding, paddingDataZeros, dataWritten);
 						if (!result || dataWritten != cubePadding) { return result; }
@@ -239,27 +222,27 @@ bool TextureWriterKTX::writeAllAssets()
 		// Uncompressed images have scan line padding.
 		else
 		{
-			for (uint32 iSurface = 0; iSurface < _assetsToWrite[0]->getNumberOfArrayMembers(); ++iSurface)
+			for (uint32_t iSurface = 0; iSurface < _assetsToWrite[0]->getNumArrayMembers(); ++iSurface)
 			{
-				for (uint32 iFace = 0; iFace < _assetsToWrite[0]->getNumberOfFaces(); ++iFace)
+				for (uint32_t iFace = 0; iFace < _assetsToWrite[0]->getNumFaces(); ++iFace)
 				{
-					for (uint32 texDepth = 0; texDepth < _assetsToWrite[0]->getDepth(); ++texDepth)
+					for (uint32_t texDepth = 0; texDepth < _assetsToWrite[0]->getDepth(); ++texDepth)
 					{
-						for (uint32 texHeight = 0; texHeight < _assetsToWrite[0]->getHeight(); ++texHeight)
+						for (uint32_t texHeight = 0; texHeight < _assetsToWrite[0]->getHeight(); ++texHeight)
 						{
 							// Calculate the data offset for the relevant scan line
-							uint64 scanLineOffset = (textureOffset3D(0, texHeight, texDepth, _assetsToWrite[0]->getWidth(),
-							                         _assetsToWrite[0]->getHeight()) * (_assetsToWrite[0]->getBitsPerPixel() / 8));
+							uint64_t scanLineOffset = (textureOffset3D(0, texHeight, texDepth, _assetsToWrite[0]->getWidth(),
+							                           _assetsToWrite[0]->getHeight()) * (_assetsToWrite[0]->getBitsPerPixel() / 8));
 							// Write in the texture data for the current scan line.
 							result = _assetStream->write((_assetsToWrite[0]->getBitsPerPixel() / 8) *
-							                              _assetsToWrite[0]->getWidth(mipMapLevel), 1,
-							                              _assetsToWrite[0]->getDataPointer(mipMapLevel, iSurface, iFace) +
-							                              scanLineOffset, dataWritten);
+							                             _assetsToWrite[0]->getWidth(mipMapLevel), 1,
+							                             _assetsToWrite[0]->getDataPointer(mipMapLevel, iSurface, iFace) +
+							                             scanLineOffset, dataWritten);
 							if (!result || dataWritten != 1) { return result; }
 
 							// Work out the amount of scan line padding.
-							uint32 scanLinePadding = (static_cast<uint32>(-1) * ((_assetsToWrite[0]->getBitsPerPixel() / 8) *
-							                          _assetsToWrite[0]->getWidth(mipMapLevel))) % 4;
+							uint32_t scanLinePadding = (static_cast<uint32_t>(-1) * ((_assetsToWrite[0]->getBitsPerPixel() / 8) *
+							                            _assetsToWrite[0]->getWidth(mipMapLevel))) % 4;
 
 							// Advance past the scan line padding
 							if (scanLinePadding)
@@ -271,7 +254,7 @@ bool TextureWriterKTX::writeAllAssets()
 					}
 
 					// Advance past the cube face padding
-					if (cubePadding && _assetsToWrite[0]->getNumberOfFaces() == 6 && _assetsToWrite[0]->getNumberOfArrayMembers() == 1)
+					if (cubePadding && _assetsToWrite[0]->getNumFaces() == 6 && _assetsToWrite[0]->getNumArrayMembers() == 1)
 					{
 						result = _assetStream->write(1, cubePadding, paddingDataZeros, dataWritten);
 						if (!result || dataWritten != cubePadding) { return result; }
@@ -281,7 +264,7 @@ bool TextureWriterKTX::writeAllAssets()
 		}
 
 		// Calculate the amount MIP Map padding.
-		uint32 mipMapPadding = (3 - ((mipMapSize + 3) % 4));
+		uint32_t mipMapPadding = (3 - ((mipMapSize + 3) % 4));
 
 		// Write MIP Map padding
 		if (mipMapPadding)
@@ -295,9 +278,9 @@ bool TextureWriterKTX::writeAllAssets()
 	return result;
 }
 
-uint32 TextureWriterKTX::assetsAddedSoFar()
+uint32_t TextureWriterKTX::assetsAddedSoFar()
 {
-	return (uint32)_assetsToWrite.size();
+	return static_cast<uint32_t>(_assetsToWrite.size());
 }
 
 bool TextureWriterKTX::supportsMultipleAssets()
@@ -311,27 +294,23 @@ bool TextureWriterKTX::canWriteAsset(const Texture& asset)
 	texture_ktx::FileHeader ktxFileHeader; bool isCompressed;
 
 	// Check if the pixel format is supported
-<<<<<<< HEAD
-	return api::ConvertToGles::getOpenGLFormat(asset.getPixelFormat(), asset.getColorSpace(), asset.getChannelType(), ktxFileHeader.glInternalFormat,
-=======
-	return nativeGles::ConvertToGles::getOpenGLFormat(asset.getPixelFormat(), asset.getColorSpace(), asset.getChannelType(), ktxFileHeader.glInternalFormat,
->>>>>>> 1776432f... 4.3
+	return utils::getOpenGLFormat(asset.getPixelFormat(), asset.getColorSpace(), asset.getChannelType(), ktxFileHeader.glInternalFormat,
 	       ktxFileHeader.glFormat, ktxFileHeader.glType, ktxFileHeader.glTypeSize, isCompressed);
 }
 
-vector<string> TextureWriterKTX::getSupportedFileExtensions()
+vector<std::string> TextureWriterKTX::getSupportedFileExtensions()
 {
-	vector<string> extensions;
+	vector<std::string> extensions;
 	extensions.push_back("ktx");
-	return vector<string>(extensions);
+	return vector<std::string>(extensions);
 }
 
-string TextureWriterKTX::getWriterName()
+std::string TextureWriterKTX::getWriterName()
 {
 	return "PowerVR Khronos Texture Writer";
 }
 
-string TextureWriterKTX::getWriterVersion()
+std::string TextureWriterKTX::getWriterVersion()
 {
 	return "1.0.0";
 }

@@ -1,13 +1,10 @@
 var searchData=
 [
-  ['world',['World',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a02a7c0986e5f6e151c64f26e0102d4d6',1,'pvr::assets::PVRShamanSemantics']]],
-  ['worldi',['WorldI',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a6865fbfe6b4e9fc2868496e1210b79e5',1,'pvr::assets::PVRShamanSemantics']]],
-  ['worldit',['WorldIT',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926ae20c09bd0fb7d698136e9f091955bd29',1,'pvr::assets::PVRShamanSemantics']]],
-  ['worldview',['WorldView',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926ac521c329935a67f706dcbae22a6b83d1',1,'pvr::assets::PVRShamanSemantics']]],
-  ['worldviewi',['WorldViewI',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a2904afea8c1462985e4aa219e0be76ac',1,'pvr::assets::PVRShamanSemantics']]],
-  ['worldviewit',['WorldViewIT',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926ad8ded833f3502c7a83e551723b8a29b9',1,'pvr::assets::PVRShamanSemantics']]],
-  ['worldviewprojection',['WorldViewProjection',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926abc3150391f4a422292571a69fe74c7c3',1,'pvr::assets::PVRShamanSemantics']]],
-  ['worldviewprojectioni',['WorldViewProjectionI',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a9a4241360ca5fed464ce69a76e6ccf90',1,'pvr::assets::PVRShamanSemantics']]],
-  ['worldviewprojectionit',['WorldViewProjectionIT',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a7be3d938d761aa4c36028510ba38b319',1,'pvr::assets::PVRShamanSemantics']]],
-  ['wrapr',['wrapR',['../structpvr_1_1assets_1_1_effect_texture.html#a69332ff8ca781af1331ffd5acc35ea23',1,'pvr::assets::EffectTexture::wrapR()'],['../structpvr_1_1assets_1_1effect_1_1_texture_reference.html#a254d7887eb2984f469fabe2d6ebad181',1,'pvr::assets::effect::TextureReference::wrapR()']]]
+  ['width',['width',['../structpvr_1_1assets_1_1effect_1_1_texture_definition.html#a87468abe8d9095a30b1af7ccd9cc45f4',1,'pvr::assets::effect::TextureDefinition']]],
+  ['winding',['winding',['../structpvr_1_1_volume_1_1_volume_triangle.html#a3ee78f2b8ba16e521c29c2bbe4a73b9d',1,'pvr::Volume::VolumeTriangle']]],
+  ['windingorder',['windingOrder',['../structpvr_1_1assets_1_1effect_1_1_pipeline_definition.html#a303506e0472516b4cdb5d4bce0ae50a0',1,'pvr::assets::effect::PipelineDefinition']]],
+  ['worksema',['workSema',['../structpvr_1_1async_1_1_texture_load_future__.html#a2e9ed85e6ad9daa3262945d16cc3b00b',1,'pvr::async::TextureLoadFuture_']]],
+  ['wrapr',['wrapR',['../structpvr_1_1assets_1_1effect_1_1_texture_reference.html#a8a4b7e79fdc9b0a76a9157a6819b14ae',1,'pvr::assets::effect::TextureReference']]],
+  ['wraps',['wrapS',['../structpvr_1_1assets_1_1effect_1_1_texture_reference.html#afb61b544e66afd1e25c488ac23a8fa8d',1,'pvr::assets::effect::TextureReference']]],
+  ['wrapt',['wrapT',['../structpvr_1_1assets_1_1effect_1_1_texture_reference.html#abf45eff676f16764f731a1b622f026a2',1,'pvr::assets::effect::TextureReference']]]
 ];

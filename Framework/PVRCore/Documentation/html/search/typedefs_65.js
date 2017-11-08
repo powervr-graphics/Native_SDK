@@ -1,10 +1,7 @@
 var searchData=
 [
-<<<<<<< HEAD
-  ['effectapi',['EffectApi',['../namespacepvr_1_1api.html#a24b17b0ebc4dac68845f79900e7ef20e',1,'pvr::api']]],
   ['elementtype',['ElementType',['../classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8',1,'pvr::Multi']]],
-=======
->>>>>>> 1776432f... 4.3
-  ['errorlogger',['ErrorLogger',['../namespacepvr.html#ac81f0f5584b71ee5b8cd3b28f16bd390',1,'pvr']]],
-  ['event',['Event',['../namespacepvr_1_1api.html#a94baf10f2da82553416f2798f7a91a31',1,'pvr::api']]]
+  ['entrytype',['EntryType',['../classpvr_1_1_contiguous_map.html#a6c4a880b42921b6b6885bbc8bfec332a',1,'pvr::ContiguousMap']]],
+  ['extent2d',['Extent2D',['../namespacepvr.html#a065d965f04c53d6e94e0e56a34289090',1,'pvr']]],
+  ['extent3d',['Extent3D',['../namespacepvr.html#abc7deef434e373b18abd3b929c31e9aa',1,'pvr']]]
 ];

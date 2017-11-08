@@ -56,11 +56,11 @@ static const utf32 c_utf32MinimumValues[4] =
 	0x00010000,		// 3 tail bytes
 };
 
-uint32 UnicodeConverter::unicodeCount(const utf8* unicodeString)
+uint32_t UnicodeConverter::unicodeCount(const utf8* unicodeString)
 {
 	const utf8* currentCharacter = unicodeString;
 
-	uint32 characterCount = 0;
+	uint32_t characterCount = 0;
 	while (*currentCharacter)
 	{
 		// Quick optimisation for ASCII characters
@@ -85,7 +85,7 @@ uint32 UnicodeConverter::unicodeCount(const utf8* unicodeString)
 				currentCharacter++;
 				break;
 			default:
-				//Invalid tail byte
+				//Invalid tail char
 				return 0;
 			}
 
@@ -98,10 +98,10 @@ uint32 UnicodeConverter::unicodeCount(const utf8* unicodeString)
 	return characterCount;
 }
 
-uint32 UnicodeConverter::unicodeCount(const utf16* unicodeString)
+uint32_t UnicodeConverter::unicodeCount(const utf16* unicodeString)
 {
 	const utf16* currentCharacter = unicodeString;
-	uint32 characterCount = 0;
+	uint32_t characterCount = 0;
 	while (*currentCharacter)
 	{
 		if (currentCharacter[0] >= UTF16_SURG_H_MARK && currentCharacter[0] <= UTF16_SURG_H_END &&
@@ -120,9 +120,9 @@ uint32 UnicodeConverter::unicodeCount(const utf16* unicodeString)
 	return characterCount;
 }
 
-uint32 UnicodeConverter::unicodeCount(const utf32* unicodeString)
+uint32_t UnicodeConverter::unicodeCount(const utf32* unicodeString)
 {
-	uint32 characterCount = 0;
+	uint32_t characterCount = 0;
 	const utf32* currentCharacter = unicodeString;
 	while (*currentCharacter != 0)
 	{
@@ -133,76 +133,35 @@ uint32 UnicodeConverter::unicodeCount(const utf32* unicodeString)
 	return characterCount;
 }
 
-Result UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, vector<utf8>& unicodeString)
+bool UnicodeConverter::convertAsciiToUnicode(const char* asciiString, vector<utf8>& unicodeString)
 {
-	Result result = Result::Success;
-	uint32 stringLength = static_cast<uint32>(strlen(asciiString));
-
+	uint32_t stringLength = static_cast<uint32_t>(strlen(asciiString));
 	if (isAsciiChar(asciiString) == true)
 	{
 		//Make sure to include the NULL terminator.
 		unicodeString.resize(stringLength + 1);
-		if (result == Result::Success)
+		for (uint32_t i = 0; i < stringLength; ++i)
 		{
-			for (uint32 i = 0; i < stringLength; ++i)
-			{
-				unicodeString[i] = asciiString[i];
-			}
+			unicodeString[i] = asciiString[i];
 		}
+		return true;
 	}
-	else
-	{
-		result = Result::InvalidArgument;
-	}
-
-	return result;
+	return false;
 }
 
-Result UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, vector<utf16>& unicodeString)
+bool UnicodeConverter::convertUTF8ToUTF16(const utf8* /*unicodeString*/, vector<utf16>& /*unicodeStringOut*/)
 {
-	Result result = Result::Success;
-
-	if (isAsciiChar(asciiString))
-	{
-		result = convertUTF8ToUTF16((utf8*)asciiString, unicodeString);
-	}
-	else
-	{
-		result = Result::InvalidArgument;
-	}
-
-	return result;
+	assertion(false,  "UTF8 to UTF16 conversion not implmented");
+	return false;
 }
 
-Result UnicodeConverter::convertAsciiToUnicode(const char8* asciiString, vector<utf32>& unicodeString)
+bool UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<utf32>& unicodeStringOut)
 {
-	Result result = Result::Success;
+	bool result = true;
 
-	if (isAsciiChar(asciiString))
-	{
-		result = convertUTF8ToUTF32((utf8*)asciiString, unicodeString);
-	}
-	else
-	{
-		result = Result::InvalidArgument;
-	}
-
-	return result;
-}
-
-Result UnicodeConverter::convertUTF8ToUTF16(const utf8* /*unicodeString*/, vector<utf16>& /*unicodeStringOut*/)
-{
-	assertion(false ,  "UTF8 to UTF16 conversion not implmented");
-	return Result::UnknownError;
-}
-
-Result UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<utf32>& unicodeStringOut)
-{
-	Result result = Result::Success;
-
-	uint32 stringLength = static_cast<uint32>(strlen((const char*)unicodeString));
+	uint32_t stringLength = static_cast<uint32_t>(strlen(reinterpret_cast<const char*>(unicodeString)));
 	const utf8* currentCharacter = unicodeString;
-	while (*currentCharacter && result == Result::Success)
+	while (*currentCharacter && result)
 	{
 		// Quick optimisation for ASCII characters
 		while (*currentCharacter && isAsciiChar(*currentCharacter))
@@ -216,7 +175,7 @@ Result UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<ut
 		{
 			//Get the tail length and current character
 			utf32 codePoint = *currentCharacter;
-			uint32 tailLength = c_utf8TailLengths[codePoint];
+			uint32_t tailLength = c_utf8TailLengths[codePoint];
 
 			//Increment the character
 			++currentCharacter;
@@ -225,23 +184,23 @@ Result UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<ut
 			// Also check to make sure the tail length is inside the provided buffer.
 			if (tailLength != 0 && (currentCharacter + tailLength <= unicodeString + stringLength))
 			{
-				//Get the data out of the first byte. This depends on the length of the tail.
+				//Get the data out of the first char. This depends on the length of the tail.
 				codePoint &= (TAIL_MASK >> tailLength);
 
-				//Get the data out of each tail byte
-				for (uint32 i = 0; i < tailLength; ++i)
+				//Get the data out of each tail char
+				for (uint32_t i = 0; i < tailLength; ++i)
 				{
 					// Check for invalid tail bytes
 					if ((currentCharacter[i] & 0xC0) != 0x80)
 					{
-						//Invalid tail byte.
-						result = Result::InvalidArgument;
+						//Invalid tail char.
+						result = false;
 					}
 
 					codePoint = (codePoint << BYTES_PER_TAIL) + (currentCharacter[i] & TAIL_MASK);
 				}
 
-				if (result == Result::Success)
+				if (result)
 				{
 					currentCharacter += tailLength;
 
@@ -254,51 +213,49 @@ Result UnicodeConverter::convertUTF8ToUTF32(const utf8* unicodeString, vector<ut
 						}
 						else
 						{
-							result = Result::InvalidArgument;
+							result  = false;
 						}
 					}
 					else
 					{
 						//Overlong!
-						result = Result::InvalidArgument;
+						result = false;
 					}
 				}
 			}
 			else
 			{
-				result = Result::OutOfBounds;
+				result = false;
 			}
-
-
 		}
 	}
 
 	return result;
 }
 
-Result UnicodeConverter::convertUTF16ToUTF8(const utf16* /*unicodeString*/, vector<utf8>& /*unicodeStringOut*/)
+bool UnicodeConverter::convertUTF16ToUTF8(const utf16* /*unicodeString*/, vector<utf8>& /*unicodeStringOut*/)
 {
-	assertion(false ,  "UTF16 to UTF8 conversion not implmented");
-	return Result::UnknownError;
+	assertion(false,  "UTF16 to UTF8 conversion not implmented");
+	return false;
 }
 
-Result UnicodeConverter::convertUTF16ToUTF32(const utf16* unicodeString, vector<utf32>& unicodeStringOut)
+bool UnicodeConverter::convertUTF16ToUTF32(const utf16* unicodeString, vector<utf32>& unicodeStringOut)
 {
-	Result result = Result::Success;
+	bool result = true;
 
-	const uint16* currentCharacter = unicodeString;
+	const uint16_t* currentCharacter = unicodeString;
 
 	// Determine the number of shorts
 	while (*++currentCharacter);
-	unsigned int uiBufferLen = (unsigned int)(currentCharacter - unicodeString);
+	unsigned int uiBufferLen = static_cast<unsigned int>(currentCharacter - unicodeString);
 
 	// Reset to start.
 	currentCharacter = unicodeString;
 
-	while (*currentCharacter && result == Result::Success)
+	while (*currentCharacter && result)
 	{
 		// Straight copy. We'll check for surrogate pairs next...
-		uint32 codePoint = *currentCharacter;
+		uint32_t codePoint = *currentCharacter;
 		++currentCharacter;
 
 		// Check for a surrogate pair indicator.
@@ -315,16 +272,16 @@ Result UnicodeConverter::convertUTF16ToUTF32(const utf16* unicodeString, vector<
 				}
 				else
 				{
-					result = Result::InvalidArgument;
+					result = false;
 				}
 			}
 			else
 			{
-				result = Result::OutOfBounds;
+				result = false;
 			}
 		}
 
-		if (result == Result::Success)
+		if (result)
 		{
 			//Check that the code point is valid
 			if (isValidCodePoint(codePoint))
@@ -333,29 +290,28 @@ Result UnicodeConverter::convertUTF16ToUTF32(const utf16* unicodeString, vector<
 			}
 			else
 			{
-				result = Result::InvalidArgument;
+				result = false;
 			}
 		}
 	}
-
 	return result;
 }
 
-Result UnicodeConverter::convertUTF32ToUTF8(const utf32* /*unicodeString*/, vector<utf8>& /*unicodeStringOut*/)
+bool UnicodeConverter::convertUTF32ToUTF8(const utf32* /*unicodeString*/, vector<utf8>& /*unicodeStringOut*/)
 {
-	assertion(false ,  "UTF32 to UTF8 conversion not implmented");
-	return Result::UnknownError;
+	assertion(false,  "UTF32 to UTF8 conversion not implmented");
+	return false;
 }
 
-Result UnicodeConverter::convertUTF32ToUTF16(const utf32* /*unicodeString*/, vector<utf16>& /*unicodeStringOut*/)
+bool UnicodeConverter::convertUTF32ToUTF16(const utf32* /*unicodeString*/, vector<utf16>& /*unicodeStringOut*/)
 {
-	assertion(false ,  "UTF32 to UTF16 conversion not implmented");
-	return Result::UnknownError;
+	assertion(false,  "UTF32 to UTF16 conversion not implmented");
+	return false;
 }
 
-bool UnicodeConverter::isAsciiChar(char8 asciiChar)
+bool UnicodeConverter::isAsciiChar(char asciiChar)
 {
-	//Make sure that the ascii string is limited to encodings with the first 7 bits. Any outside of this range are part of the system's locale.
+	//Make sure that the ascii std::string is limited to encodings with the first 7 bits. Any outside of this range are part of the system's locale.
 	if ((asciiChar & VALID_ASCII) != 0)
 	{
 		return false;
@@ -364,11 +320,11 @@ bool UnicodeConverter::isAsciiChar(char8 asciiChar)
 	return true;
 }
 
-bool UnicodeConverter::isAsciiChar(const char8* asciiString)
+bool UnicodeConverter::isAsciiChar(const char* asciiString)
 {
-	uint32 stringLength = static_cast<uint32>(strlen(asciiString));
+	uint32_t stringLength = static_cast<uint32_t>(strlen(asciiString));
 
-	for (uint32 i = 0; i < stringLength; ++i)
+	for (uint32_t i = 0; i < stringLength; ++i)
 	{
 		if (!isAsciiChar(asciiString[i]))
 		{
@@ -381,12 +337,12 @@ bool UnicodeConverter::isAsciiChar(const char8* asciiString)
 
 bool UnicodeConverter::isValidUnicode(const utf8* unicodeString)
 {
-	uint32 stringLength = unicodeCount(unicodeString);
+	uint32_t stringLength = unicodeCount(unicodeString);
 	const utf8* currentCharacter = unicodeString;
 	while (*currentCharacter != 0)
 	{
 		//Quick optimisation for ASCII characters - these are always valid.
-		while (*currentCharacter && isAsciiChar((char8)*currentCharacter))
+		while (*currentCharacter && isAsciiChar(static_cast<char>(*currentCharacter)))
 		{
 			currentCharacter++;
 		}
@@ -401,7 +357,7 @@ bool UnicodeConverter::isValidUnicode(const utf8* unicodeString)
 			++currentCharacter;
 
 			//Get the tail length for this codepoint
-			uint32 tailLength = c_utf8TailLengths[codePoint];
+			uint32_t tailLength = c_utf8TailLengths[codePoint];
 
 			//Check for invalid tail length, characters - there are only a few possibilities here due to the lookup table.
 			//Also check to make sure the tail length is inside the provided buffer.
@@ -410,11 +366,11 @@ bool UnicodeConverter::isValidUnicode(const utf8* unicodeString)
 				return false;
 			}
 
-			// Get the data out of the first byte. This depends on the length of the tail.
+			// Get the data out of the first char. This depends on the length of the tail.
 			codePoint &= (TAIL_MASK >> tailLength);
 
-			// Get the data out of each tail byte, making sure that the tail is valid unicode.
-			for (uint32 i = 0; i < tailLength; ++i)
+			// Get the data out of each tail char, making sure that the tail is valid unicode.
+			for (uint32_t i = 0; i < tailLength; ++i)
 			{
 				// Check for invalid tail bytes
 				if ((currentCharacter[i] & 0xC0) != 0x80)
@@ -445,11 +401,11 @@ bool UnicodeConverter::isValidUnicode(const utf8* unicodeString)
 
 bool UnicodeConverter::isValidUnicode(const utf16* unicodeString)
 {
-	const uint16* currentCharacter = unicodeString;
+	const uint16_t* currentCharacter = unicodeString;
 
 	// Determine the number of shorts
 	while (*++currentCharacter);
-	unsigned int uiBufferLen = (unsigned int)(currentCharacter - unicodeString);
+	unsigned int uiBufferLen = static_cast<unsigned int>(currentCharacter - unicodeString);
 
 	// Reset to start.
 	currentCharacter = unicodeString;
@@ -457,7 +413,7 @@ bool UnicodeConverter::isValidUnicode(const utf16* unicodeString)
 	while (*currentCharacter)
 	{
 		// Straight copy. We'll check for surrogate pairs next...
-		uint32 codePoint = *currentCharacter;
+		uint32_t codePoint = *currentCharacter;
 		++currentCharacter;
 
 		// Check for a surrogate pair indicator.
@@ -495,9 +451,9 @@ bool UnicodeConverter::isValidUnicode(const utf16* unicodeString)
 
 bool UnicodeConverter::isValidUnicode(const utf32* unicodeString)
 {
-	uint32 stringLength = unicodeCount(unicodeString);
+	uint32_t stringLength = unicodeCount(unicodeString);
 
-	for (uint32 i = 0; i < stringLength; ++i)
+	for (uint32_t i = 0; i < stringLength; ++i)
 	{
 		if (!isValidCodePoint(unicodeString[i]))
 		{
@@ -508,7 +464,7 @@ bool UnicodeConverter::isValidUnicode(const utf32* unicodeString)
 	return true;
 }
 
- bool UnicodeConverter::isValidCodePoint(utf32 codePoint)
+bool UnicodeConverter::isValidCodePoint(utf32 codePoint)
 {
 	// Check that this value isn't a UTF16 surrogate mask.
 	if (codePoint >= UTF16_SURG_H_MARK && codePoint <= UTF16_SURG_L_END)

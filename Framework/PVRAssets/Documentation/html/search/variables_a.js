@@ -1,9 +1,7 @@
 var searchData=
 [
-  ['material',['material',['../structpvr_1_1assets_1_1_effect.html#afc44a1be8a962d738211dcd013461fe9',1,'pvr::assets::Effect']]],
-  ['materialindex',['materialIndex',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#a6c09729fcdc66dfd8f0ed0d393cb71c8',1,'pvr::assets::Model::Node::InternalData']]],
-  ['materials',['materials',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a18183da6521248d8a1fa9b015f240124',1,'pvr::assets::Model::InternalData']]],
-  ['matrices',['matrices',['../structpvr_1_1assets_1_1_animation_1_1_internal_data.html#a60ea04d571671f311e00a0be1bf1ee61',1,'pvr::assets::Animation::InternalData']]],
-  ['meshes',['meshes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a40d5c82fbb363a37df29551b727fbcd6',1,'pvr::assets::Model::InternalData']]],
-  ['mipfilter',['mipFilter',['../structpvr_1_1assets_1_1_effect_texture.html#a1e2dfd450d9a5bbf05efc07645c65dbf',1,'pvr::assets::EffectTexture']]]
+  ['lights',['lights',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a05b696b896e046f94fdbd0c7af675b18',1,'pvr::assets::Model::InternalData']]],
+  ['linearattenuation',['linearAttenuation',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html#adedba0ef0b8bf613bcf7c7bb80fd3b6d',1,'pvr::assets::Light::InternalData']]],
+  ['loader',['loader',['../structpvr_1_1async_1_1_texture_load_future__.html#ac6dfaf430f539cc483da22998ff5ac24',1,'pvr::async::TextureLoadFuture_']]],
+  ['location',['location',['../structpvr_1_1assets_1_1effect_1_1_attribute_semantic.html#ad745c546f863b3cdddbc755e4252087a',1,'pvr::assets::effect::AttributeSemantic']]]
 ];

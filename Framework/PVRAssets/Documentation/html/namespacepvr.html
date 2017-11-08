@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">pvr Namespace Reference</div>  </div>
 </div><!--header-->
@@ -108,20 +108,29 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_root.html">SkipGraphRoot</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class is the entry point for creating and accessing the elements of a skip graph. It uses a hash table to store the nodes of the structure and a hash value that allows fast searching of the skip graph.  <a href="classpvr_1_1_skip_graph_root.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_volume.html">Volume</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents data for handling volumes of a single Mesh. <a href="classpvr_1_1_volume.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:ae558fc5547da737e038b1c2ea09b1fc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ae558fc5547da737e038b1c2ea09b1fc3">VertexIndexRead</a> (const byte *const data, const types::IndexType type, uint32 *const out)</td></tr>
-<tr class="memdesc:ae558fc5547da737e038b1c2ea09b1fc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read vertex index data into uin32 buffer. <a href="#ae558fc5547da737e038b1c2ea09b1fc3">More...</a><br/></td></tr>
-<tr class="separator:ae558fc5547da737e038b1c2ea09b1fc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a683944ff99e5f359f136687ec6bfcdb4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a683944ff99e5f359f136687ec6bfcdb4">VertexRead</a> (const byte *const data, const types::DataType type, uint32 count, float32 *out)</td></tr>
-<tr class="memdesc:a683944ff99e5f359f136687ec6bfcdb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read vertex data into float32 buffer. <a href="#a683944ff99e5f359f136687ec6bfcdb4">More...</a><br/></td></tr>
-<tr class="separator:a683944ff99e5f359f136687ec6bfcdb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a7449705e04c8fe948e390ea793106107"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107">VariableScope</a> { <br/>
+&#160;&#160;<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107a88183b946cc5f0e8c96b2e66e1c74a7e">VariableScope::Unknown</a>, 
+<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107a086247a9b57fde6eefee2a0c4752242d">VariableScope::Automatic</a>, 
+<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107aa559b87068921eec05086ce5485e9784">VariableScope::Model</a>, 
+<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107aa62d22910732d5343689f5117999abfa">VariableScope::Effect</a>, 
+<br/>
+&#160;&#160;<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107a6c3a6944a808a7c0bbb6788dbec54a9f">VariableScope::Node</a>, 
+<a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107aa65c9562b8c9e07299be6bc0b4f3a072">VariableScope::BoneBatch</a>
+<br/>
+ }</td></tr>
+<tr class="memdesc:a7449705e04c8fe948e390ea793106107"><td class="mdescLeft">&#160;</td><td class="mdescRight">The possible scope, or frequency of change, of a variable <a href="namespacepvr.html#a7449705e04c8fe948e390ea793106107">More...</a><br/></td></tr>
+<tr class="separator:a7449705e04c8fe948e390ea793106107"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Main namespace of the PowerVR Framework.</p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ae558fc5547da737e038b1c2ea09b1fc3"></a>
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<a class="anchor" id="a7449705e04c8fe948e390ea793106107"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -129,102 +138,37 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void pvr::VertexIndexRead </td>
-          <td>(</td>
-          <td class="paramtype">const byte *const&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const types::IndexType&#160;</td>
-          <td class="paramname"><em>type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32 *const&#160;</td>
-          <td class="paramname"><em>out</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
+          <td class="memname">enum <a class="el" href="namespacepvr.html#a7449705e04c8fe948e390ea793106107">pvr::VariableScope</a></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Read vertex index data into uin32 buffer.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">data</td><td>Data to read from</td></tr>
-    <tr><td class="paramname">type</td><td>Index type to read</td></tr>
-    <tr><td class="paramname">out</td><td>of index data read</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="a683944ff99e5f359f136687ec6bfcdb4"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void pvr::VertexRead </td>
-          <td>(</td>
-          <td class="paramtype">const byte *const&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const types::DataType&#160;</td>
-          <td class="paramname"><em>type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32&#160;</td>
-          <td class="paramname"><em>count</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">float32 *&#160;</td>
-          <td class="paramname"><em>out</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
+<p>The possible scope, or frequency of change, of a variable</p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107a88183b946cc5f0e8c96b2e66e1c74a7e"></a>Unknown</em>&#160;</td><td class="fielddoc">
+<p>Scope is unknown, undefined, or custom. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107a086247a9b57fde6eefee2a0c4752242d"></a>Automatic</em>&#160;</td><td class="fielddoc">
+<p>Scope is being inferred from use. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107aa559b87068921eec05086ce5485e9784"></a>Model</em>&#160;</td><td class="fielddoc">
+<p>The variable is per model (stays constant for a given model, for example, ViewMatrix) </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107aa62d22910732d5343689f5117999abfa"></a>Effect</em>&#160;</td><td class="fielddoc">
+<p>The variable is per effect (stays constant for a given effect, for example, directional light intensity) </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107a6c3a6944a808a7c0bbb6788dbec54a9f"></a>Node</em>&#160;</td><td class="fielddoc">
+<p>The variable is per Mesh Node (stays constant for a given node of a model, for example, ModelViewProjection matrix) </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a7449705e04c8fe948e390ea793106107aa65c9562b8c9e07299be6bc0b4f3a072"></a>BoneBatch</em>&#160;</td><td class="fielddoc">
+<p>The variable is per Bone Batch (deprecated - stays constant for a given Bone Batch, for example, bones) </p>
+</td></tr>
 </table>
-</div><div class="memdoc">
-
-<p>Read vertex data into float32 buffer.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">data</td><td>Data to read from</td></tr>
-    <tr><td class="paramname">type</td><td>Data type of the vertex to read</td></tr>
-    <tr><td class="paramname">count</td><td>Number of vertices to read</td></tr>
-    <tr><td class="paramname">out</td><td>Array of vertex read</td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>

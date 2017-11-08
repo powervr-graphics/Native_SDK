@@ -95,20 +95,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Public Attributes</h2></td></tr>
 <tr class="memitem:aa9f40a95824c89894ba631a591a5e1b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa9f40a95824c89894ba631a591a5e1b3"></a>
 StringHash&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#aa9f40a95824c89894ba631a591a5e1b3">effectFile</a></td></tr>
-<tr class="memdesc:aa9f40a95824c89894ba631a591a5e1b3"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structpvr_1_1assets_1_1_effect.html" title="Represents the information of an entire Effect, all information required to set up rendering of a Mes...">Effect</a> filename if using an effect. <br/></td></tr>
+<tr class="memdesc:aa9f40a95824c89894ba631a591a5e1b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Effect filename if using an effect. <br/></td></tr>
 <tr class="separator:aa9f40a95824c89894ba631a591a5e1b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a054cac2180a500dbe2bc36f7bde864bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a054cac2180a500dbe2bc36f7bde864bd"></a>
 StringHash&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a054cac2180a500dbe2bc36f7bde864bd">effectName</a></td></tr>
-<tr class="memdesc:a054cac2180a500dbe2bc36f7bde864bd"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structpvr_1_1assets_1_1_effect.html" title="Represents the information of an entire Effect, all information required to set up rendering of a Mes...">Effect</a> name (in the filename) if using an effect. <br/></td></tr>
+<tr class="memdesc:a054cac2180a500dbe2bc36f7bde864bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Effect name (in the filename) if using an effect. <br/></td></tr>
 <tr class="separator:a054cac2180a500dbe2bc36f7bde864bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a726b866a03f9dc5aac904b3b074e870e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a726b866a03f9dc5aac904b3b074e870e"></a>
+std::map&lt; StringHash, FreeValue &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a726b866a03f9dc5aac904b3b074e870e">materialSemantics</a></td></tr>
+<tr class="memdesc:a726b866a03f9dc5aac904b3b074e870e"><td class="mdescLeft">&#160;</td><td class="mdescRight">storage for the per-material semantics <br/></td></tr>
+<tr class="separator:a726b866a03f9dc5aac904b3b074e870e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5b4bf55af616ee87ffed52fb056cbc5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac5b4bf55af616ee87ffed52fb056cbc5"></a>
 StringHash&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#ac5b4bf55af616ee87ffed52fb056cbc5">name</a></td></tr>
 <tr class="memdesc:ac5b4bf55af616ee87ffed52fb056cbc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the material. <br/></td></tr>
 <tr class="separator:ac5b4bf55af616ee87ffed52fb056cbc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afdad6b0e7e8fcb8000a73985119dcfd7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afdad6b0e7e8fcb8000a73985119dcfd7"></a>
-UCharBuffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#afdad6b0e7e8fcb8000a73985119dcfd7">userData</a></td></tr>
-<tr class="memdesc:afdad6b0e7e8fcb8000a73985119dcfd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw user data. <br/></td></tr>
-<tr class="separator:afdad6b0e7e8fcb8000a73985119dcfd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22273426e4d4deb919d77b6474c7163e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a22273426e4d4deb919d77b6474c7163e"></a>
+std::map&lt; StringHash, uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a22273426e4d4deb919d77b6474c7163e">textureIndices</a></td></tr>
+<tr class="memdesc:a22273426e4d4deb919d77b6474c7163e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map of texture (semantic) names to indexes. <br/></td></tr>
+<tr class="separator:a22273426e4d4deb919d77b6474c7163e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6667891ee136b12b0753e61eb986140d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6667891ee136b12b0753e61eb986140d"></a>
+UInt8Buffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#a6667891ee136b12b0753e61eb986140d">userData</a></td></tr>
+<tr class="memdesc:a6667891ee136b12b0753e61eb986140d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw user data. <br/></td></tr>
+<tr class="separator:a6667891ee136b12b0753e61eb986140d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Raw internal structure of the <a class="el" href="classpvr_1_1assets_1_1_model_1_1_material.html" title="Class which stores model material info.">Material</a>.</p>

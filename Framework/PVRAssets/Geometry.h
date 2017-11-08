@@ -15,6 +15,6 @@ namespace tool {
 	/// <param name="textureSize">size of the texture</param>
 	/// <param name="outVertices">array of generated vertices</param>
 	/// <param name="outUVs">array of generated UVs</param>
-    void createSkyBox(pvr::float32 scale, bool adjustUV, pvr::uint32 textureSize, std::vector<glm::vec3>& outVertices, std::vector<glm::vec2>& outUVs);
+    void createSkyBox(float scale, bool adjustUV, uint32_t textureSize, std::vector<glm::vec3>& outVertices, std::vector<glm::vec2>& outUVs);
 }
 }

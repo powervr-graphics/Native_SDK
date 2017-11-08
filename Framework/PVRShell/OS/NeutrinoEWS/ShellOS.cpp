@@ -19,8 +19,6 @@ Neutrino.
 #include <unistd.h>
 #include <cstdarg>
 
-
-using namespace pvr::types;
 namespace pvr {
 namespace platform {
 struct InternalOS
@@ -52,11 +50,11 @@ void ShellOS::updatePointingDeviceLocation()
 {
 }
 
-Result ShellOS::init(DisplayAttributes& data)
+bool ShellOS::init(DisplayAttributes& data)
 {
 	if (!_OSImplementation)
 	{
-		return Result::OutOfMemory;
+		return false;
 	}
 
 	// Construct our read and write path.
@@ -81,7 +79,7 @@ Result ShellOS::init(DisplayAttributes& data)
 
 		if (res < 0)
 		{
-			Log(Log.Warning, "Readlink %s failed. The application name, read path and write path have not been set.\n",
+			Log(LogLevel::Warning, "Readlink %s failed. The application name, read path and write path have not been set.\n",
 			    exePath);
 			break;
 		}
@@ -103,10 +101,10 @@ Result ShellOS::init(DisplayAttributes& data)
 
 	delete[] exePath;
 
-	return Result::Success;
+	return true;
 }
 
-Result ShellOS::initializeWindow(DisplayAttributes& data)
+bool ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	EWS_COORD windowPosition;
 	EWS_SIZE windowSize;
@@ -116,7 +114,6 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 	_OSImplementation->isInitialized = true;
 	data.fullscreen = true;
 	data.x = data.y = 0;
-	//data.width = data.height = 0; //TODO: Hmmm, there doesn't appear to be a way of getting the monitor resolution.
 	//We may have to rethink the returning of the width and height so you can only get the context width and height.
 	data.width = 1280;
 	data.height = 1024;
@@ -125,8 +122,8 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 
 	if (_OSImplementation->display == EWS_NO_DISPLAY)
 	{
-		Log(Log.Error, "EWSOpenDisplay failed (%s:%i)", __FILE__, __LINE__);
-		return Result::UnknownError;
+		Log(LogLevel::Error, "EWSOpenDisplay failed (%s:%i)", __FILE__, __LINE__);
+		return false;
 	}
 
 	switch (data.redBits + data.greenBits + data.blueBits + data.alphaBits)
@@ -154,12 +151,12 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 
 	if (_OSImplementation->window == EWS_NO_WINDOW)
 	{
-		Log(Log.Error, "EWSCreateWindow failed (%s:%i)", __FILE__, __LINE__);
+		Log(LogLevel::Error, "EWSCreateWindow failed (%s:%i)", __FILE__, __LINE__);
 		EWSCloseDisplay(_OSImplementation->display);
-		return Result::UnknownError;
+		return false;
 	}
 
-	return Result::Success;
+	return true;
 }
 
 void ShellOS::releaseWindow()
@@ -203,7 +200,7 @@ static Keys mapEwsKeyToPvrKey(int key)
 	}
 }
 
-Result ShellOS::handleOSEvents()
+bool ShellOS::handleOSEvents()
 {
 	EWS_EVENT sEvent;
 	while (EWSNextEventIfAvailable(&sEvent))
@@ -218,7 +215,7 @@ Result ShellOS::handleOSEvents()
 		}
 	}
 
-	return Result::Success;
+	return true;
 }
 
 bool ShellOS::isInitialized()
@@ -226,20 +223,20 @@ bool ShellOS::isInitialized()
 	return _OSImplementation && _OSImplementation->window;
 }
 
-Result ShellOS::popUpMessage(const char8* const title, const char8* const message, ...) const
+bool ShellOS::popUpMessage(const char* const title, const char* const message, ...) const
 {
 	if (!message)
 	{
-		return Result::NoData;
+		return false;
 	}
 
 	va_list arg;
 
 	va_start(arg, message);
-	Log.vaOutput(Log.Information, message, arg);
+	Log(LogLevel::Information, message, arg);
 	va_end(arg);
 
-	return Result::Success;
+	return true;
 }
 }
 }

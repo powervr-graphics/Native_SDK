@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['binormal',['Binormal',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a9c7fc25da85e52ac9030ba41dcbd5108',1,'pvr::assets::PVRShamanSemantics']]],
   ['blendfuncconstantalpha',['BlendFuncConstantAlpha',['../classpvr_1_1assets_1_1_model_1_1_material.html#a80058fe081fb36cb9a54c2b4cc609f07ad147bf9808bf8e5b1e1dfd8ebce59d1e',1,'pvr::assets::Model::Material']]],
   ['blendfuncconstantcolor',['BlendFuncConstantColor',['../classpvr_1_1assets_1_1_model_1_1_material.html#a80058fe081fb36cb9a54c2b4cc609f07a34b784749e4834c78bd4aa32baa8df96',1,'pvr::assets::Model::Material']]],
   ['blendfuncdstalpha',['BlendFuncDstAlpha',['../classpvr_1_1assets_1_1_model_1_1_material.html#a80058fe081fb36cb9a54c2b4cc609f07ac3d24b25fc1180e7e40b67f59c5c1193',1,'pvr::assets::Model::Material']]],
@@ -23,9 +22,5 @@ var searchData=
   ['blendopmin',['BlendOpMin',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1ab89bcd9b84ed7c1f710669dae302afac',1,'pvr::assets::Model::Material']]],
   ['blendopreversesubtract',['BlendOpReverseSubtract',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1a358e8cfd35f9a403f4ca08fbb25ce898',1,'pvr::assets::Model::Material']]],
   ['blendopsubtract',['BlendOpSubtract',['../classpvr_1_1assets_1_1_model_1_1_material.html#adc74eac948295f7211c8b6058006f6a1adb0c6374a15167c09a7ff38b11f55be0',1,'pvr::assets::Model::Material']]],
-  ['bonecount',['BoneCount',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a9fced9be6ff64baa9e1ddd07ea652d17',1,'pvr::assets::PVRShamanSemantics']]],
-  ['boneindex',['BoneIndex',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926ac802fb2c3b0abb0072402ce93f8a48f6',1,'pvr::assets::PVRShamanSemantics']]],
-  ['bonematrixarray',['BoneMatrixArray',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926aa86428acf365c402a41141bb940f58cf',1,'pvr::assets::PVRShamanSemantics']]],
-  ['bonematrixarrayit',['BoneMatrixArrayIT',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926acf8c02c3c5de362e4a8cc8bba65a862e',1,'pvr::assets::PVRShamanSemantics']]],
-  ['boneweight',['BoneWeight',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926aac96cce9904a8cab0bc75865414431c4',1,'pvr::assets::PVRShamanSemantics']]]
+  ['bonebatch',['BoneBatch',['../namespacepvr.html#a7449705e04c8fe948e390ea793106107aa65c9562b8c9e07299be6bc0b4f3a072',1,'pvr']]]
 ];

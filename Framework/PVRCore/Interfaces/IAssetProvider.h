@@ -9,7 +9,6 @@
 #include "PVRCore/Base/Defines.h"
 
 namespace pvr {
-class IGraphicsContext;
 class Stream;
 /// <summary>The IAssetProvider interface marks a class that provides the getAssetStream and getGraphicsContext
 /// methods.</summary>
@@ -26,7 +25,6 @@ public:
 	/// <remarks>If the file is not found, this function will return a NULL function pointer, and log an error. In
 	/// cases where file not found is to be expected (for example, testing for different files due to convention), set
 	/// logErrorOnNotFound to false to avoid cluttering the Log.</remarks>
-	virtual std::auto_ptr<Stream> getAssetStream(const string& filename, bool logErrorOnNotFound = true) = 0;
-
+	virtual std::unique_ptr<Stream> getAssetStream(const std::string& filename, bool logErrorOnNotFound = true) = 0;
 };
 }

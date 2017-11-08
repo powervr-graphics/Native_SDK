@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpvr_1_1_skip_graph_root-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -99,18 +100,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa56312ed223670757f26a3328db9cfdb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_root.html#aa56312ed223670757f26a3328db9cfdb">addNodeDependency</a> (const T &amp;nodeData, const T &amp;dependantData)</td></tr>
 <tr class="memdesc:aa56312ed223670757f26a3328db9cfdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a node dependency. <a href="#aa56312ed223670757f26a3328db9cfdb">More...</a><br/></td></tr>
 <tr class="separator:aa56312ed223670757f26a3328db9cfdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb28a8ee46757b2c36cfca6e1336dc82"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_root.html#aeb28a8ee46757b2c36cfca6e1336dc82">getNumNodes</a> () const </td></tr>
-<tr class="memdesc:aeb28a8ee46757b2c36cfca6e1336dc82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the total number of nodes in the skip graph. <a href="#aeb28a8ee46757b2c36cfca6e1336dc82">More...</a><br/></td></tr>
-<tr class="separator:aeb28a8ee46757b2c36cfca6e1336dc82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39b54367637bf4c4698b57b9c673c45e"><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_root.html#a39b54367637bf4c4698b57b9c673c45e">operator[]</a> (const uint32 ui32NodeID)</td></tr>
-<tr class="memdesc:a39b54367637bf4c4698b57b9c673c45e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overloads operator[] to returns a handle to the node data for the specified ID. <a href="#a39b54367637bf4c4698b57b9c673c45e">More...</a><br/></td></tr>
-<tr class="separator:a39b54367637bf4c4698b57b9c673c45e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0083dd1271768d6a17bf1074bbe0e20"><td class="memItemLeft" align="right" valign="top">const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_root.html#ae0083dd1271768d6a17bf1074bbe0e20">operator[]</a> (const uint32 ui32NodeID) const </td></tr>
-<tr class="memdesc:ae0083dd1271768d6a17bf1074bbe0e20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overloads operator[] to returns a const handle to the node data for the specified ID. <a href="#ae0083dd1271768d6a17bf1074bbe0e20">More...</a><br/></td></tr>
-<tr class="separator:ae0083dd1271768d6a17bf1074bbe0e20"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83f4087d4362366e89b0d471598475f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_root.html#a83f4087d4362366e89b0d471598475f1">RetreiveSortedDependencyList</a> (std::vector&lt; T &gt; &amp;aOutputArray, const uint32 nodeID)</td></tr>
-<tr class="memdesc:a83f4087d4362366e89b0d471598475f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a sorted list of dependencies for the specified node. The list is ordered with the leaf nodes at the front, followed by nodes that depend on them and so forth until the root node is reached and added at the end of the list. <a href="#a83f4087d4362366e89b0d471598475f1">More...</a><br/></td></tr>
-<tr class="separator:a83f4087d4362366e89b0d471598475f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a292a004fbaf33d3e82bed676b5f5d612"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_root.html#a292a004fbaf33d3e82bed676b5f5d612">getNumNodes</a> () const </td></tr>
+<tr class="memdesc:a292a004fbaf33d3e82bed676b5f5d612"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the total number of nodes in the skip graph. <a href="#a292a004fbaf33d3e82bed676b5f5d612">More...</a><br/></td></tr>
+<tr class="separator:a292a004fbaf33d3e82bed676b5f5d612"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e7a0d271d296ecf6438ccc955b62d6c"><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_root.html#a1e7a0d271d296ecf6438ccc955b62d6c">operator[]</a> (uint32_t nodeId)</td></tr>
+<tr class="memdesc:a1e7a0d271d296ecf6438ccc955b62d6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overloads operator[] to returns a handle to the node data for the specified ID. <a href="#a1e7a0d271d296ecf6438ccc955b62d6c">More...</a><br/></td></tr>
+<tr class="separator:a1e7a0d271d296ecf6438ccc955b62d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dc9b46a1e5833000d6f4c9938cee66b"><td class="memItemLeft" align="right" valign="top">const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_root.html#a4dc9b46a1e5833000d6f4c9938cee66b">operator[]</a> (uint32_t nodeId) const </td></tr>
+<tr class="memdesc:a4dc9b46a1e5833000d6f4c9938cee66b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overloads operator[] to returns a const handle to the node data for the specified ID. <a href="#a4dc9b46a1e5833000d6f4c9938cee66b">More...</a><br/></td></tr>
+<tr class="separator:a4dc9b46a1e5833000d6f4c9938cee66b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8844d21059d1c291150b6411f97b30a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_skip_graph_root.html#aa8844d21059d1c291150b6411f97b30a">RetreiveSortedDependencyList</a> (std::vector&lt; T &gt; &amp;aOutputArray, const uint32_t nodeID)</td></tr>
+<tr class="memdesc:aa8844d21059d1c291150b6411f97b30a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a sorted list of dependencies for the specified node. The list is ordered with the leaf nodes at the front, followed by nodes that depend on them and so forth until the root node is reached and added at the end of the list. <a href="#aa8844d21059d1c291150b6411f97b30a">More...</a><br/></td></tr>
+<tr class="separator:aa8844d21059d1c291150b6411f97b30a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;class T&gt;<br/>
@@ -122,7 +123,7 @@ class pvr::SkipGraphRoot&lt; T &gt;</h3>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T&gt; </div>
+template&lt;class T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -157,7 +158,7 @@ template&lt;class T&gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T&gt; </div>
+template&lt;class T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -199,17 +200,17 @@ template&lt;class T&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="aeb28a8ee46757b2c36cfca6e1336dc82"></a>
+<a class="anchor" id="a292a004fbaf33d3e82bed676b5f5d612"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T&gt; </div>
+template&lt;class T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 <a class="el" href="classpvr_1_1_skip_graph_root.html">pvr::SkipGraphRoot</a>&lt; T &gt;::getNumNodes </td>
+          <td class="memname">uint32_t <a class="el" href="classpvr_1_1_skip_graph_root.html">pvr::SkipGraphRoot</a>&lt; T &gt;::getNumNodes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -227,11 +228,11 @@ template&lt;class T&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a39b54367637bf4c4698b57b9c673c45e"></a>
+<a class="anchor" id="a1e7a0d271d296ecf6438ccc955b62d6c"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T&gt; </div>
+template&lt;class T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -239,8 +240,8 @@ template&lt;class T&gt; </div>
         <tr>
           <td class="memname">T&amp; <a class="el" href="classpvr_1_1_skip_graph_root.html">pvr::SkipGraphRoot</a>&lt; T &gt;::operator[] </td>
           <td>(</td>
-          <td class="paramtype">const uint32&#160;</td>
-          <td class="paramname"><em>ui32NodeID</em></td><td>)</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>nodeId</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -252,15 +253,21 @@ template&lt;class T&gt; </div>
 </div><div class="memdoc">
 
 <p>Overloads operator[] to returns a handle to the node data for the specified ID.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nodeId</td><td>The index of the node to retrieve</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>Return handle to the node data</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ae0083dd1271768d6a17bf1074bbe0e20"></a>
+<a class="anchor" id="a4dc9b46a1e5833000d6f4c9938cee66b"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T&gt; </div>
+template&lt;class T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -268,8 +275,8 @@ template&lt;class T&gt; </div>
         <tr>
           <td class="memname">const T&amp; <a class="el" href="classpvr_1_1_skip_graph_root.html">pvr::SkipGraphRoot</a>&lt; T &gt;::operator[] </td>
           <td>(</td>
-          <td class="paramtype">const uint32&#160;</td>
-          <td class="paramname"><em>ui32NodeID</em></td><td>)</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>nodeId</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -281,15 +288,21 @@ template&lt;class T&gt; </div>
 </div><div class="memdoc">
 
 <p>Overloads operator[] to returns a const handle to the node data for the specified ID.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nodeId</td><td>The index of the node to retrieve</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>Return handle to the node data</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a83f4087d4362366e89b0d471598475f1"></a>
+<a class="anchor" id="aa8844d21059d1c291150b6411f97b30a"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T&gt; </div>
+template&lt;class T &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -303,7 +316,7 @@ template&lt;class T&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const uint32&#160;</td>
+          <td class="paramtype">const uint32_t&#160;</td>
           <td class="paramname"><em>nodeID</em>&#160;</td>
         </tr>
         <tr>

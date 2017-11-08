@@ -9,13 +9,13 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESPVRScopeExample
-DEPENDS =  PVRCore PVRAssets PVRNativeGles PVRGles PVRShell PVREngineUtils
-LIBRARIES =  PVRScopeDeveloper dl PVREngineUtils PVRShell PVRGles PVRNativeGles PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRShell PVRUtilsGles
+LIBRARIES =  PVRScopeDeveloper dl PVRUtilsGles PVRShell PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS) ../../../../../../Builds/Linux/$(PLAT_SUFFIX)/Lib
 
 OBJECTS +=	\
            OGLES/OGLESPVRScopeExample.o	\
-           PVRScopeGraph.o
+           OGLES/PVRScopeGraph.o
 
 RESOURCES += \
            FragShader_ES2.fsh\
@@ -30,6 +30,8 @@ RESOURCES += \
 COMMON_RESOURCES += \
            Marble.pvr\
            scene.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

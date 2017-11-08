@@ -62,11 +62,11 @@ END
 sphere.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\sphere.pod"
 
 // RCDATA: Shaders
-FragShader_ES31.fsh		RCDATA		"..\\..\\FragShader_ES31.fsh"
-VertShader_ES31.vsh		RCDATA		"..\\..\\VertShader_ES31.vsh"
-ParticleFragShader_ES31.fsh		RCDATA		"..\\..\\ParticleFragShader_ES31.fsh"
-ParticleVertShader_ES31.vsh		RCDATA		"..\\..\\ParticleVertShader_ES31.vsh"
-ParticleSolver_ES31.csh		RCDATA		"..\\..\\ParticleSolver_ES31.csh"
+FragShader.fsh		RCDATA		"..\\..\\FragShader.fsh"
+VertShader.vsh		RCDATA		"..\\..\\VertShader.vsh"
+ParticleFragShader.fsh		RCDATA		"..\\..\\ParticleFragShader.fsh"
+ParticleVertShader.vsh		RCDATA		"..\\..\\ParticleVertShader.vsh"
+ParticleSolver.csh		RCDATA		"..\\..\\ParticleSolver.csh"
 
 
 

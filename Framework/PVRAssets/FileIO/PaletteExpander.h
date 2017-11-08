@@ -10,19 +10,27 @@
 
 namespace pvr {
 /// <summary>Internally used by some texture readers.</summary>
-	class PaletteExpander
+class PaletteExpander
 {
 public:
-	PaletteExpander(const byte* const paletteData, uint32 paletteSize, uint32 bytesPerEntry);
+	/// <summary>Constructor. Initialized with new palette data</summary>
+	/// <param name="paletteData">The palette data</param>
+	/// <param name="paletteSize">The size of the palete data</param>
+	/// <param name="bytesPerEntry">The number of bytes each entry takes</param>
+	PaletteExpander(const uint8_t* paletteData, uint32_t paletteSize, uint32_t bytesPerEntry);
 
-	bool getColorFromIndex(uint32 index, byte* outputData) const;
+	/// <summary>Gets a color for the specified index.</summary>
+	/// <param name="index">The index of the entry to retrieve. Checked so that it does not overrun the palette</param>
+	/// <param name="outputData">Output. The palette color for the specified index is returned here.</param>
+	/// <returns>True if index was in range, false if index was out of range.
+	bool getColorFromIndex(uint32_t index, unsigned char* outputData) const;
 
 private:
-	const byte* const _paletteData;
-	const uint32      _paletteSize;
-	const uint32      _bytesPerEntry;
+	const uint8_t* _paletteData;
+	const uint32_t      _paletteSize;
+	const uint32_t      _bytesPerEntry;
 
-	// Declare this as private to avoid warnings - the compiler can't generate it because of the const members.
+	// Declare this as private to avoid warnings - the compiler can't generate it because of the const members
 	const PaletteExpander& operator=(const PaletteExpander&);
 };
 }

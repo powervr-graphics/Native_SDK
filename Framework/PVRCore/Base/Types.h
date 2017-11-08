@@ -11,6 +11,35 @@ arithmetic types, enumerations, character types).
 #pragma warning(disable:4480)
 #pragma warning(disable:4100)
 
+//!\cond NO_DOXYGEN
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#ifndef GLM_FORCE_SSE2
+#define GLM_FORCE_SSE2
+#endif
+#endif
+#ifndef GLM_FORCE_RADIANS
+#define GLM_FORCE_RADIANS
+#endif
+//!\endcond
+
+#if defined (X11)
+// undef these macros from the xlib files, they are breaking the framework types.
+#undef Success
+#undef Enum
+#undef None
+#undef Always
+#undef byte
+#undef char8
+#undef ShaderStageFlags
+#undef capability
+#endif
+
 #include <vector>
 #include <array>
 #include <cmath>
@@ -24,114 +53,46 @@ arithmetic types, enumerations, character types).
 #include <string>
 #include <stdint.h>
 #include <limits>
-#include "PVRCore/Base/HalfFloat.h"
-#include "PVRCore/Base/Assert_.h"
+#include <assert.h>
 #include <type_traits>
 #include "../External/glm/glm.hpp"
-#if defined(_MSC_VER)
-#define PVR_THREAD_LOCAL __declspec(thread)
-#elif defined(__ANDROID__) //Unfortunately, no out-of-the box support for TLS on android.
-#define PVR_THREAD_LOCAL
-#elif true||defined(TARGET_OS_IPHONE)||defined(TARGET_IPHONE_SIMULATOR)
-#define PVR_THREAD_LOCAL
-#elif defined(__GNUC__) || defined(__clang__)
-#define PVR_THREAD_LOCAL __thread
-#elif (__cplusplus>=201103L)
-#define PVR_THREAD_LOCAL thread_local
-#else
-#error Could not detect compiler type, and compiler does not report C++11 compliance for thread local storage. Please edit this file to add the corresponding thread local storage keyword in this place.
-#endif
+#include "../External/glm/gtc/type_ptr.hpp"
+#include "../External/glm/gtc/matrix_inverse.hpp"
+#include "../External/glm/gtc/matrix_access.hpp"
+#include "../External/glm/gtx/quaternion.hpp"
+#include "../External/glm/gtx/transform.hpp"
+#include "../External/glm/gtx/transform.hpp"
+#include "../External/glm/gtx/simd_vec4.hpp"
+#include "../External/glm/gtx/simd_mat4.hpp"
+#include "../External/glm/gtx/fast_trigonometry.hpp"
 
-
-#define DEFINE_ENUM_OR_OPERATORS(type_) \
+/*! \brief Macro that defines all common bitwise operators for an enum-class */
+#define DEFINE_ENUM_OPERATORS(type_) \
 inline type_ operator | (type_ lhs, type_ rhs) \
 { \
-    return (type_)(static_cast<std::underlying_type<type_>::type/**/>(lhs) | static_cast<std::underlying_type<type_>::type/**/>(rhs)); \
+    return static_cast<type_>(static_cast<std::underlying_type<type_>::type/**/>(lhs) | static_cast<std::underlying_type<type_>::type/**/>(rhs)); \
 } \
 inline void operator |= (type_& lhs, type_ rhs) \
 { \
-    lhs = (type_)(static_cast<std::underlying_type<type_>::type/**/>(lhs) | static_cast<std::underlying_type<type_>::type/**/>(rhs)); \
-}
-
-#define DEFINE_ENUM_AND_OPERATORS(type_) \
+    lhs = static_cast<type_>(static_cast<std::underlying_type<type_>::type/**/>(lhs) | static_cast<std::underlying_type<type_>::type/**/>(rhs)); \
+} \
 inline type_ operator & (type_ lhs, type_ rhs) \
 { \
-    return (type_)(static_cast<std::underlying_type<type_>::type/**/>(lhs) & static_cast<std::underlying_type<type_>::type/**/>(rhs)); \
+    return static_cast<type_>(static_cast<std::underlying_type<type_>::type/**/>(lhs) & static_cast<std::underlying_type<type_>::type/**/>(rhs)); \
 } \
 inline void operator &= (type_& lhs, type_ rhs) \
 { \
-    lhs = (type_)(static_cast<std::underlying_type<type_>::type/**/>(lhs) & static_cast<std::underlying_type<type_>::type/**/>(rhs)); \
+    lhs = static_cast<type_>(static_cast<std::underlying_type<type_>::type/**/>(lhs) & static_cast<std::underlying_type<type_>::type/**/>(rhs)); \
 }
 
-
 namespace pvr {
-
-/// <summary>8-bit integer unsigned type.</summary>
-typedef unsigned char          byte;
-
-/// <summary>Character type. 8-bit integer signed type on all currently supported platforms.</summary>
-typedef char                   char8;
-
-/// <summary>Wide-character type. Platform dependent.</summary>
-typedef wchar_t                wchar;
-
-/// <summary>String of basic characters.</summary>
-typedef std::basic_string<char> string;
-
 //UTF types
-/// <summary>A UTF-8 (unsigned) character. 8-bit unsigned integer.</summary>
+/// <summary>A UTF-8 (unsigned) character. 8-bit unsigned Integer.</summary>
 typedef unsigned char          utf8;
-/// <summary>A UTF-16 (unsigned) character. 16-bit unsigned integer.</summary>
+/// <summary>A UTF-16 (unsigned) character. 16-bit unsigned Integer.</summary>
 typedef unsigned short         utf16;
-/// <summary>A UTF-32 (unsigned) character. 32-bit unsigned integer.</summary>
+/// <summary>A UTF-32 (unsigned) character. 32-bit unsigned Integer.</summary>
 typedef unsigned int           utf32;
-
-//Signed Integer Types
-/// <summary>8-bit signed integer.</summary>
-typedef signed char            int8;
-
-/// <summary>16-bit signed integer.</summary>
-typedef signed short           int16;
-
-/// <summary>32-bit signed integer.</summary>
-typedef signed int             int32;
-#if defined(_WIN32)
-
-/// <summary>64-bit signed integer.</summary>
-typedef signed __int64         int64;
-#elif defined(__GNUC__)
-__extension__
-/// <summary>64-bit signed integer.</summary>
-typedef signed long long       int64;
-#else
-/// <summary>64-bit signed integer.</summary>
-typedef signed long long       int64;
-#endif
-
-//Unsigned Integer Types
-/// <summary>8-bit unsigned integer.</summary>
-typedef unsigned char          uint8;
-
-/// <summary>16-bit unsigned integer.</summary>
-typedef unsigned short         uint16;
-
-/// <summary>32-bit unsigned integer.</summary>
-typedef unsigned int           uint32;
-//#if defined(_WIN32)
-//typedef unsigned __int64       uint64;
-//#else
-typedef unsigned long long     uint64;
-//#endif
-
-//Floating Point
-/// <summary>16-bit floating point number (half-float).</summary>
-typedef HalfFloat           float16;
-
-/// <summary>32-bit floating point number (single-precision float).</summary>
-typedef float                  float32;
-
-/// <summary>64-bit floating point number (double-precision float).</summary>
-typedef double                 float64;
 
 /// <summary>Enumeration of all API types supported by this implementation</summary>
 enum class Api
@@ -143,31 +104,11 @@ enum class Api
 	OpenGLES31,
 	OpenGLESMaxVersion = OpenGLES31,
 	Vulkan,
-	Count
+	NumApis
 };
 
-/// <summary>Enumeration of all API types supported by this implementation</summary>
-enum class BaseApi
-{
-	Unspecified = 0,
-	//OpenGL,
-	OpenGLES = 1,
-	Vulkan = 2
-
-};
-inline BaseApi baseApiFromApiType(Api api)
-{
-	switch (api)
-	{
-	case Api::Unspecified: return BaseApi::Unspecified;
-	case Api::Vulkan: return BaseApi::Vulkan;
-	default: return BaseApi::OpenGLES;
-	}
-}
-
-
-
-/// <summary>Get the api code</summary>
+/// <summary>Get a string of the specific api enum</summary>
+/// <param name="api">The api</param>
 /// <returns>Api code</returns>
 inline const char* apiCode(Api api)
 {
@@ -179,10 +120,12 @@ inline const char* apiCode(Api api)
 		"ES31",
 		"vk",
 	};
-	return ApiCodes[(int)api];
+	return ApiCodes[static_cast<int>(api)];
 }
 
-/// <summary>Get the api family min version</summary>
+/// <summary>Get minimum api that is the same family as the parameter. (e.g. Vulkan returns
+/// Vulkan, while OpenGLES31 returns OpenGLES2) api family min version</summary>
+/// <param name="api">The api</param>
 /// <returns>Api family min</returns>
 inline Api apiFamilyMin(Api api)
 {
@@ -194,10 +137,11 @@ inline Api apiFamilyMin(Api api)
 		Api::OpenGLES2,
 		Api::Vulkan,
 	};
-	return ApiCodes[(int)api];
+	return ApiCodes[static_cast<int>(api)];
 }
 
-/// <summary>Get the api family max version</summary>
+/// <summary>Get the highest api version that is of the same family as the parameter</summary>
+/// <param name="api">The api</param>
 /// <returns>Api family Max</returns>
 inline Api apiFamilyMax(Api api)
 {
@@ -209,11 +153,12 @@ inline Api apiFamilyMax(Api api)
 		Api::OpenGLES31,
 		Api::Vulkan,
 	};
-	return ApiCodes[(int)api];
+	return ApiCodes[static_cast<int>(api)];
 }
 
-/// <summary>Get the api name string of the given Enumeration</summary>
-/// <returns>Api name string</returns>
+/// <summary>Get the api name std::string of the given Enumeration</summary>
+/// <param name="api">The api</param>
+/// <returns>Api name std::string</returns>
 inline const char* apiName(Api api)
 {
 	static const char* ApiCodes[] =
@@ -224,62 +169,114 @@ inline const char* apiName(Api api)
 		"OpenGL ES 3.1",
 		"Vulkan",
 	};
-	return ApiCodes[(int)api];
+	return ApiCodes[static_cast<int>(api)];
 }
 
 
-namespace types {
-
-/// <summary>Enumeration containing all possible API object types (Images, Buffers etc.).</summary>
-enum class ApiObjectType
+/// <summary>Enumeration of all the different descriptor types.</summary>
+enum class DescriptorType : uint32_t
 {
-	UBO,
-	SSBO,
-	Texture,
-	Sampler,
-	Image,
-	TexBO,
-	ImageBO,
-	NumTypes
+	// DO NOT RE-ARRANGE THIS
+	Sampler, //!< A Sampler object
+	CombinedImageSampler, //!< A descriptor that contains both and image and its sampler
+	SampledImage, //!< Aka "Texture"
+	StorageImage, //!< Aka "Image for Image Load Store"
+	UniformTexelBuffer, //!< Aka Texture Buffer
+	StorageTexelBuffer, //!< Also known as TextureBuffer
+	UniformBuffer, //!< Aka UBO
+	StorageBuffer, //!< Aka SSBO
+	UniformBufferDynamic, //!< A UBO that can be bound one piece at a time
+	StorageBufferDynamic, //!< A SSBO that can be bound one piece at a time
+	InputAttachment, //!< An intermediate attachment that can be used between subpasses
+	Count = 12,
+	NumBits = 4
 };
+
+/// <summary>Enumeration of all supported buffer use types.</summary>
+enum class BufferUsageFlags  : uint32_t
+{
+	TransferSrc         = 0x00000001, //!< Transfer Source
+	TransferDest        = 0x00000002, //!< Transfer Destination
+	UniformTexelBuffer  = 0x00000004, //!< Uniform Texel Buffer
+	StorageTexelBuffer  = 0x00000008, //!< Storage Texel Buffer
+	UniformBuffer       = 0x00000010, //!< UBO
+	StorageBuffer       = 0x00000020, //!< SSBO
+	IndexBuffer         = 0x00000040, //!< IBO
+	VertexBuffer        = 0x00000080, //!< VBO
+	IndirectBuffer      = 0x00000100, //!< A buffer that contains Draw Indirect commands
+	Count               = 10
+};
+DEFINE_ENUM_OPERATORS(BufferUsageFlags)
+
+/// <summary>Infer the BufferUsageFlags that are suitable for the typical use of an object</summary>
+/// <param name="descType">A descriptor type</param>
+/// <returns>The typical usage flags for <paramref name="descType/></returns>
+inline BufferUsageFlags descriptorTypeToBufferUsage(DescriptorType descType)
+{
+	if (descType == DescriptorType::UniformBuffer || descType == DescriptorType::UniformBufferDynamic)
+	{
+		return BufferUsageFlags::UniformBuffer;
+	}
+	return BufferUsageFlags::StorageBuffer;
+}
+
+/// <summary>Checks if a descriptor type is dynamic (a dynamic UBO or dynamic SSBO)</summary>
+/// <param name="descType">A descriptor type</param>
+/// <returns>True if descType is UniformBufferDynamic or StorageBufferDynamic, otherwise false</returns>
+inline bool isDescriptorTypeDynamic(DescriptorType descType)
+{
+	return (descType == DescriptorType::UniformBufferDynamic || descType == DescriptorType::StorageBufferDynamic);
+}
+
+template<typename t1, typename t2>
+inline t1 align(t1 numberToAlign, t2 alignment)
+{
+	if (alignment)
+	{
+		t1 align1 = numberToAlign % (t1)alignment;
+		if (!align1) { align1 += (t1)alignment; }
+		numberToAlign += t1(alignment) - align1;
+	}
+	return numberToAlign;
+}
+
 
 /// <summary>An enumeration that defines data types used throughout the Framework. Commonly used in places where
 /// raw data are used to define the types actually contained.</summary>
 enum class DataType
 {
-	None,           //< none
-	Float32,//< float 1
-	Int32,//< integer 2
-	UInt16, //< unsigned short 3
-	RGBA,//< rgba 4
-	ARGB,//< argb 5
-	D3DCOLOR,//< d3d color 6
-	UBYTE4,//< unsigned 4 byte 7
-	DEC3N,
-	Fixed16_16,
-	UInt8,//< unsigned byte 10
-	Int16,//< short 11
-	Int16Norm,//< short normalized 12
-	Int8,//< byte 13
-	Int8Norm,//< byte normalized 14
-	UInt8Norm,//< unsigned byte normalized 15
-	UInt16Norm,//< unsigned short normalized
-	UInt32,//< unsigned int
-	ABGR,//< abgr
-	Float16,//< Half float
+	None,   //!< None, or unknown
+	Float32,//!< 32 bit floating point number
+	Int32,//!< 32 bit Integer
+	UInt16, //!< 16 bit Unsigned Integer (aka Unsigned Short)
+	RGBA,//!< 32 bit (4 channels x 8bpc), in Red,Green,Blue,Alpha order
+	ARGB,//!< 32 bit (4 channels x 8bpc), in Alpha,Red,Green,Blue order
+	D3DCOLOR,//!< Direct3D color format
+	UBYTE4,//!< Direct3D UBYTE4 format
+	DEC3N,//!< Direct3D DEC3N format
+	Fixed16_16, //!< 32 bit Fixed Point (16 + 16)
+	UInt8,//!< Unsigned 8 bit integer (aka unsigned char/byte)
+	Int16,//!< Signed 16 bit integer (aka short)
+	Int16Norm,//!< Signed 16 bit integer scaled to a value from -1..1 (aka normalized short)
+	Int8,//!< Signed 8 bit integer (aka char / byte)
+	Int8Norm,//!< Signed 8 bit integer, interpreted by scaling to -1..1 (aka normalized byte)
+	UInt8Norm,//!< Unsigned 8 bit integer,  interpreted by scaling to 0..1 (aka unsigned normalized byte)
+	UInt16Norm,//!< Unsigned 16 bit integer,  interpreted by scaling to 0..1 (aka unsigned normalized short)
+	UInt32,//!< Unsigned 32 bit integer (aka Unsigned Int)
+	ABGR,//!< 32 bit (4 channels x 8 bpc), in Alpha,Blue,Green,Red order
+	Float16,//!< 16 bit  IEEE 754-2008 floating point number (aka Half)
 	Custom = 1000
-
 };
 
 /// <summary>Return the Size of a DataType.</summary>
 /// <param name="type">The Data type</param>
 /// <returns>The size of the Datatype in bytes.</returns>
-inline uint32 dataTypeSize(DataType type)
+inline uint32_t dataTypeSize(DataType type)
 {
 	switch (type)
 	{
 	default:
-		PVR_ASSERTION(false);
+		assert(false);
 		return 0;
 	case DataType::Float32:
 	case DataType::Int32:
@@ -305,15 +302,14 @@ inline uint32 dataTypeSize(DataType type)
 }
 /// <summary>Return the number of components in a datatype.</summary>
 /// <param name="type">The datatype</param>
-/// <returns>The number of components (e.g. float32 is 1, vec3 is 3)</returns>
-inline uint32  dataTypeComponentCount(DataType type)
+/// <returns>The number of components (e.g. float is 1, vec3 is 3)</returns>
+inline uint32_t  numDataTypeComponents(DataType type)
 {
 	switch (type)
 	{
 	default:
-		PVR_ASSERTION(false);
+		assert(false);
 		return 0;
-
 	case DataType::Float32:
 	case DataType::Int32:
 	case DataType::UInt32:
@@ -326,10 +322,8 @@ inline uint32  dataTypeComponentCount(DataType type)
 	case DataType::UInt8:
 	case DataType::UInt8Norm:
 		return 1;
-
 	case DataType::DEC3N:
 		return 3;
-
 	case DataType::RGBA:
 	case DataType::ABGR:
 	case DataType::ARGB:
@@ -339,13 +333,12 @@ inline uint32  dataTypeComponentCount(DataType type)
 	}
 }
 
-
 /// <summary>Return if the format is Normalized (represents a range between 0..1 for unsigned types or between -1..1
 /// for signed types)</summary>
 /// <param name="type">The format to test.</param>
 /// <returns>True if the format is Normalised.</returns>
 /// <remarks>A Normalised format is a value that is stored as an Integer, but that actually represents a value
-/// from 0..1 or -1..1 instead of the numeric value of the integer. For example, for a normalised unsigned byte
+/// from 0..1 or -1..1 instead of the numeric value of the Integer. For example, for a normalised unsigned char
 /// value, the value 0 represents 0.0, the value 127 represents 0.5 and the value 255 represents 1.0.</remarks>
 inline bool  dataTypeIsNormalised(DataType type)
 {
@@ -356,535 +349,461 @@ inline bool  dataTypeIsNormalised(DataType type)
 /// <summary>Enumeration of Colorspaces (Linear, SRGB).</summary>
 enum class ColorSpace
 {
-	lRGB,
-	sRGB,
+	lRGB, //!< Linear RGB colorspace
+	sRGB, //!< sRGB colorspace
 	NumSpaces
 };
 
-namespace GpuDatatypes {
-enum class Standard { std140 };
-
-enum class BaseType  { Integer = 0, Float = 1 };
-enum class  VectorWidth {  Scalar = 0, Vec2 = 1, Vec3 = 2, Vec4 = 3, };
+/// <summary>Groups functionality that has to do with bit calculations/sizes/offsets of glsl types</summary>
+namespace GpuDatatypesHelper {
+/// <summary> A bit representing if a type is basically of integer or floating point format </summary>
+enum class BaseType { Integer = 0, Float = 1 };
+/// <summary> Two bits, representing the number of vector components (from scalar up to 4)</summary>
+enum class  VectorWidth { Scalar = 0, Vec2 = 1, Vec3 = 2, Vec4 = 3, };
+/// <summary> Three bits, representing the number of matrix columns (from not a matrix to 4)</summary>
 enum class  MatrixColumns { OneCol = 0, Mat2x = 1, Mat3x = 2, Mat4x = 3 };
 
-enum class Bits
+/// <summary> Contains bit enums for the expressiveness of the GpuDatatypes class' definition</summary>
+enum class Bits : uint32_t
 {
 	Integer = 0, Float = 1,
 	BitScalar = 0, BitVec2 = 2, BitVec3 = 4, BitVec4 = 6,
 	BitOneCol = 0, BitMat2x = 8, BitMat3x = 16, BitMat4x = 24,
-	ShiftType = 0, MaskType = 1, NotMaskType = ~MaskType,
-	ShiftVec = 1, MaskVec = (3 << ShiftVec), NotMaskVec = ~MaskVec,
-	ShiftCols = 3, MaskCols = (3 << ShiftCols), NotMaskCols = ~MaskCols
+	ShiftType = 0, MaskType = 1, NotMaskType = static_cast<uint32_t>(~MaskType),
+	ShiftVec = 1, MaskVec = (3 << ShiftVec), NotMaskVec = static_cast<uint32_t>(~MaskVec),
+	ShiftCols = 3, MaskCols = (3 << ShiftCols), NotMaskCols = static_cast<uint32_t>(~MaskCols)
 };
-DEFINE_ENUM_OR_OPERATORS(Bits)
-
-enum Enum
-{
-	integer = (uint32)Bits::Integer | (uint32)Bits::BitScalar | (uint32)Bits::BitOneCol, uinteger = integer, boolean = integer,
-	ivec2 = (uint32)Bits::Integer | (uint32)Bits::BitVec2 | (uint32)Bits::BitOneCol, uvec2 = ivec2, bvec2 = ivec2,
-	ivec3 = (uint32)Bits::Integer | (uint32)Bits::BitVec3 | (uint32)Bits::BitOneCol, uvec3 = ivec3, bvec3 = ivec3,
-	ivec4 = (uint32)Bits::Integer | (uint32)Bits::BitVec4 | (uint32)Bits::BitOneCol, uvec4 = ivec4, bvec4 = ivec4,
-	float32 = (uint32)Bits::Float | (uint32)Bits::BitScalar | (uint32)Bits::BitOneCol,
-	vec2 = (uint32)Bits::Float | (uint32)Bits::BitVec2 | (uint32)Bits::BitOneCol,
-	vec3 = (uint32)Bits::Float | (uint32)Bits::BitVec3 | (uint32)Bits::BitOneCol,
-	vec4 = (uint32)Bits::Float | (uint32)Bits::BitVec4 | (uint32)Bits::BitOneCol,
-	mat2x2 = (uint32)Bits::Float | (uint32)Bits::BitVec2 | (uint32)Bits::BitMat2x,
-	mat2x3 = (uint32)Bits::Float | (uint32)Bits::BitVec3 | (uint32)Bits::BitMat2x,
-	mat2x4 = (uint32)Bits::Float | (uint32)Bits::BitVec4 | (uint32)Bits::BitMat2x,
-	mat3x2 = (uint32)Bits::Float | (uint32)Bits::BitVec2 | (uint32)Bits::BitMat3x,
-	mat3x3 = (uint32)Bits::Float | (uint32)Bits::BitVec3 | (uint32)Bits::BitMat3x,
-	mat3x4 = (uint32)Bits::Float | (uint32)Bits::BitVec4 | (uint32)Bits::BitMat3x,
-	mat4x2 = (uint32)Bits::Float | (uint32)Bits::BitVec2 | (uint32)Bits::BitMat4x,
-	mat4x3 = (uint32)Bits::Float | (uint32)Bits::BitVec3 | (uint32)Bits::BitMat4x,
-	mat4x4 = (uint32)Bits::Float | (uint32)Bits::BitVec4 | (uint32)Bits::BitMat4x,
-	none = 0xFFFFFFFF
+DEFINE_ENUM_OPERATORS(Bits)
 };
 
-inline GpuDatatypes::Enum operator & (GpuDatatypes::Enum lhs, Bits rhs)
+/// <summary>A (normally hardware-supported) GPU datatype (e.g. vec4 etc.)</summary>
+enum class GpuDatatypes : uint32_t
 {
-	return (GpuDatatypes::Enum)(uint32(lhs) & uint32(rhs));
+	Integer = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Integer) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitScalar) |
+	          static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol), uinteger = Integer, boolean = Integer,
+	Float = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitScalar) |
+	        static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol),
+	ivec2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Integer) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) |
+	        static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol), uvec2 = ivec2, bvec2 = ivec2,
+	ivec3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Integer) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) |
+	        static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol), uvec3 = ivec3, bvec3 = ivec3,
+	ivec4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Integer) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) |
+	        static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol), uvec4 = ivec4, bvec4 = ivec4,
+	vec2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) |
+	       static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol),
+	vec3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) |
+	       static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol),
+	vec4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) |
+	       static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitOneCol),
+	mat2x2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) |
+	         static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat2x),
+	mat2x3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) |
+	         static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat2x),
+	mat2x4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) |
+	         static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat2x),
+	mat3x2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) |
+	         static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat3x),
+	mat3x3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) |
+	         static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat3x),
+	mat3x4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) |
+	         static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat3x),
+	mat4x2 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) |
+	         static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat4x),
+	mat4x3 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec3) |
+	         static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat4x),
+	mat4x4 = static_cast<uint32_t>(GpuDatatypesHelper::Bits::Float) | static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec4) |
+	         static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitMat4x),
+	none = 0xFFFFFFFF,
+	structure = none
+};
+/// <summary>Bitwise operator AND. Typical semantics. Allows AND between GpuDatatypes and Bits</summary>
+/// <param name="lhs">Left hand side</param>
+/// <param name="rhs">Right hand side</param>
+/// <returns>lhs AND rhs</returns>
+inline GpuDatatypes operator & (GpuDatatypes lhs, GpuDatatypesHelper::Bits rhs)
+{
+	return static_cast<GpuDatatypes>(static_cast<uint32_t>(lhs) & static_cast<uint32_t>(rhs));
 }
 
-inline GpuDatatypes::Enum operator >> (GpuDatatypes::Enum lhs, Bits rhs)
+/// <summary>Bitwise operator RIGHT SHIFT. Typical semantics. Allows RIGHT SHIFT of GpuDatatypes by Bits</summary>
+/// <param name="lhs">Left hand side</param>
+/// <param name="rhs">Right hand side</param>
+/// <returns>lhs RIGHT SHIFT rhs</returns>
+inline GpuDatatypes operator >> (GpuDatatypes lhs, GpuDatatypesHelper::Bits rhs)
 {
-	return (GpuDatatypes::Enum)(uint32(lhs) >> uint32(rhs));
+	return static_cast<GpuDatatypes>(static_cast<uint32_t>(lhs) >> static_cast<uint32_t>(rhs));
 }
 
-inline GpuDatatypes::Enum operator << (GpuDatatypes::Enum lhs, Bits rhs)
+/// <summary>Bitwise operator LEFT SHIFT. Typical semantics. Allows LEFT SHIFT of GpuDatatypes by Bits</summary>
+/// <param name="lhs">Left hand side</param>
+/// <param name="rhs">Right hand side</param>
+/// <returns>lhs LEFT SHIFT rhs</returns>
+inline GpuDatatypes operator << (GpuDatatypes lhs, GpuDatatypesHelper::Bits rhs)
 {
-	return (GpuDatatypes::Enum)(uint32(lhs) << uint32(rhs));
+	return static_cast<GpuDatatypes>(static_cast<uint32_t>(lhs) << static_cast<uint32_t>(rhs));
 }
 
-inline uint32 getNumVecElements(GpuDatatypes::Enum type)
+/// <summary>Get the number of colums (1..4) of the type</summary>
+/// <param name="type">The datatype to test</param>
+/// <returns>The number of matrix colums (1..4) of the type. 1 implies not a matrix</returns>
+inline uint32_t getNumMatrixColumns(GpuDatatypes type)
 {
-	return (uint32)VectorWidth((uint32)((type & Bits::MaskVec) >> Bits::ShiftVec) + 1);
+	return static_cast<uint32_t>(GpuDatatypesHelper::MatrixColumns(static_cast<uint32_t>((type & GpuDatatypesHelper::Bits::MaskCols) >> GpuDatatypesHelper::Bits::ShiftCols) + 1));
 }
 
-inline uint32 getNumMatrixColumns(GpuDatatypes::Enum type)
+/// <summary>Get required alignment of this type as demanded by std140 rules</summary>
+/// <param name="type">The datatype to test</param>
+/// <returns>The required alignment of the type based on std140 (see the GLSL spec)</returns>
+inline uint32_t getAlignment(GpuDatatypes type)
 {
-	return (uint32)MatrixColumns((uint32)((type & Bits::MaskCols) >> Bits::ShiftCols) + 1);
+	uint32_t vectype = static_cast<uint32_t>(type & GpuDatatypesHelper::Bits::MaskVec);
+	return (vectype == static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitScalar) ? 4 : vectype == static_cast<uint32_t>(GpuDatatypesHelper::Bits::BitVec2) ? 8 : 16);
 }
 
-inline uint32 getAlignment(GpuDatatypes::Enum type)
-{
-	uint32 vectype = type & Bits::MaskVec;
-	return (vectype == (uint32)Bits::BitScalar ? 4 : vectype == (uint32)Bits::BitVec2 ? 8 : 16);
-}
-
-inline uint32 getVectorSelfAlignedSize(GpuDatatypes::Enum type)
+/// <summary>Get the size of a type, including padding, assuming the next item is of the same type</summary>
+/// <param name="type">The datatype to test</param>
+/// <returns>The size plus padding of this type</returns>
+inline uint32_t getVectorSelfAlignedSize(GpuDatatypes type)
 {
 	return getAlignment(type);
 }
 
-inline uint32 getVectorUnalignedSize(GpuDatatypes::Enum type)
+/// <summary>Get the number of vector elements (i.e. Rows) of a type. (e.g. vec2=>2)</summary>
+/// <param name="type">The datatype to test</param>
+/// <returns>The number of vector elements.</returns>
+inline uint32_t getNumVecElements(GpuDatatypes type)
+{
+	return static_cast<uint32_t>(GpuDatatypesHelper::VectorWidth(static_cast<uint32_t>((type & GpuDatatypesHelper::Bits::MaskVec) >> GpuDatatypesHelper::Bits::ShiftVec) + 1));
+}
+
+/// <summary>Get the cpu-packed size of each vector element a type (disregarding matrix columns if they exist)</summary>
+/// <param name="type">The datatype to test</param>
+/// <returns>The size that a single column of <paramRef name="type"/> would take on the CPU</returns>
+inline uint32_t getVectorUnalignedSize(GpuDatatypes type)
 {
 	return 4 * getNumVecElements(type);
 }
 
-inline BaseType getBaseType(GpuDatatypes::Enum type)
+/// <summary>Get the underlying element of a type (integer or float)</summary>
+/// <param name="type">The datatype to test</param>
+/// <returns>A BaseType enum (integer or float)</returns>
+inline GpuDatatypesHelper::BaseType getBaseType(GpuDatatypes type)
 {
-	return BaseType(type & 1);
+	return GpuDatatypesHelper::BaseType(static_cast<uint32_t>(type) & 1);
 }
 
-// Returns a datatype that has:
-// 1) The most permissive base type (float>int)
-// 2) The largest of the two vector widths
-// 3) The most of the two matrix colums heighs
-inline GpuDatatypes::Enum mergeDatatypesBigger(GpuDatatypes::Enum type1, GpuDatatypes::Enum type2)
+/// <summary>Returns a datatype that is larger or equal to both of two types:
+/// 1) Has the most permissive base type (float>int)
+/// 2) Has the largest of the two vector widths
+/// 3) Has the most of the two matrix colums heights</summary>
+/// <param name="type1">The first type</param>
+/// <param name="type2">The second type</param>
+/// <returns>A type that can fit either of type1 or type1</returns>
+inline GpuDatatypes mergeDatatypesBigger(GpuDatatypes type1, GpuDatatypes type2)
 {
-	uint32 baseTypeBits = (std::max)(type1 & Bits::MaskType, type2 & Bits::MaskType);
-	uint32 vectorWidthBits = (std::max)(type1 & Bits::MaskVec, type2 & Bits::MaskVec);
-	uint32 matrixColBits = (std::max)(type1 & Bits::MaskCols, type2 & Bits::MaskCols);
-	return GpuDatatypes::Enum(baseTypeBits | vectorWidthBits | matrixColBits);
+	uint32_t baseTypeBits = static_cast<uint32_t>((::std::max)(type1 & GpuDatatypesHelper::Bits::MaskType, type2 & GpuDatatypesHelper::Bits::MaskType));
+	uint32_t vectorWidthBits = static_cast<uint32_t>((::std::max)(type1 & GpuDatatypesHelper::Bits::MaskVec, type2 & GpuDatatypesHelper::Bits::MaskVec));
+	uint32_t matrixColBits = static_cast<uint32_t>((::std::max)(type1 & GpuDatatypesHelper::Bits::MaskCols, type2 & GpuDatatypesHelper::Bits::MaskCols));
+	return GpuDatatypes(baseTypeBits | vectorWidthBits | matrixColBits);
 }
 
-// Returns a datatype that has:
-// 1) The most permissive base type (float>int)
-// 2) The smaller of the two vector widths
-// 3) The less of the two matrix colums heighs
-inline GpuDatatypes::Enum mergeDatatypesSmaller(GpuDatatypes::Enum type1, GpuDatatypes::Enum type2)
+/// <summary>Returns a datatype that is smaller or equal to both of two types:
+/// 1) Has the most permissive base type (float>int)
+/// 2) Has the smaller of the two vector widths
+/// 3) Has the least of the two matrix colums heights</summary>
+/// <param name="type1">The first type</param>
+/// <param name="type2">The second type</param>
+/// <returns>A type that will truncate everything the two types don't share</returns>
+inline GpuDatatypes mergeDatatypesSmaller(GpuDatatypes type1, GpuDatatypes type2)
 {
-	uint32 baseTypeBits = (std::max)(type1 & Bits::MaskType, type2 & Bits::MaskType);
-	uint32 vectorWidthBits = (std::min)(type1 & Bits::MaskVec, type2 & Bits::MaskVec);
-	uint32 matrixColBits = (std::min)(type1 & Bits::MaskCols, type2 & Bits::MaskCols);
-	return GpuDatatypes::Enum(baseTypeBits | vectorWidthBits | matrixColBits);
+	uint32_t baseTypeBits = static_cast<uint32_t>((::std::max)(type1 & GpuDatatypesHelper::Bits::MaskType, type2 & GpuDatatypesHelper::Bits::MaskType));
+	uint32_t vectorWidthBits = static_cast<uint32_t>((::std::min)(type1 & GpuDatatypesHelper::Bits::MaskVec, type2 & GpuDatatypesHelper::Bits::MaskVec));
+	uint32_t matrixColBits = static_cast<uint32_t>((::std::min)(type1 & GpuDatatypesHelper::Bits::MaskCols, type2 & GpuDatatypesHelper::Bits::MaskCols));
+	return GpuDatatypes(baseTypeBits | vectorWidthBits | matrixColBits);
 }
 
-inline uint32 getSelfAlignedSize(GpuDatatypes::Enum type)
+/// <summary>Returns "how many bytes will an object of this type take", if not an array.</summary>
+/// <param name="type">The datatype to test</param>
+/// <returns>The size of this type, aligned to its own alignment restrictions</returns>
+inline uint32_t getSelfAlignedSize(GpuDatatypes type)
 {
-	uint32 isMatrix = (getNumMatrixColumns(type) > 1);
+	uint32_t isMatrix = (getNumMatrixColumns(type) > 1);
 
-	return (std::max)(getVectorSelfAlignedSize(type), 16u * isMatrix) * getNumMatrixColumns(type);
+	return (::std::max)(getVectorSelfAlignedSize(type), static_cast<uint32_t>(16) * isMatrix) * getNumMatrixColumns(type);
 }
 
-inline uint32 getSelfAlignedArraySize(GpuDatatypes::Enum type)
+/// <summary>Returns "how many bytes will an object of this type take", if it is an array member (arrays have potentially stricter requirements).</summary>
+/// <param name="type">The datatype to test</param>
+/// <returns>The size of this type, aligned to max array alignment restrictions</returns>
+inline uint32_t getSelfAlignedArraySize(GpuDatatypes type)
 {
-	return (std::max)(getVectorSelfAlignedSize(type), 16u) * getNumMatrixColumns(type);
+	return (::std::max)(getVectorSelfAlignedSize(type), static_cast<uint32_t>(16)) * getNumMatrixColumns(type);
 }
 
-inline uint32 getSize(GpuDatatypes::Enum type, uint32 arrayElements = 1)
+/// <summary>Returns how many bytes an array of n objects of this type take, but arrayElements = 1
+/// is NOT considered an array (is aligned as a single object, NOT an array of 1)</summary>
+/// <param name="type">The datatype to test</param>
+/// <param name="arrayElements">The number of array elements. 1 is NOT considered an array.</param>
+/// <returns>The size of X elements takes</returns>
+inline uint64_t getSize(GpuDatatypes type, uint32_t arrayElements = 1)
 {
-	uint32 numElements = getNumMatrixColumns(type) * arrayElements;
+	uint64_t numElements = getNumMatrixColumns(type) * arrayElements;
 
-	PVR_ASSERTION(numElements > 0);
-	uint32 selfAlign = (std::max)(getVectorSelfAlignedSize(type), 16u) * numElements * (numElements > 1); //Equivalent to: if (arrayElements!=0) selfAlign = getSelfAl... else selfAlign=0
-	uint32 unaligned = getVectorUnalignedSize(type) * (numElements == 1);//Equivalent to: if (arrayElements==0) unaligned = getUnaligned....
-
+	assert(numElements > 0);
+	uint64_t selfAlign = (::std::max)(static_cast<uint64_t>(getVectorSelfAlignedSize(type)), static_cast<uint64_t>(16)) * numElements * (numElements > 1); //Equivalent to: if (arrayElements!=0) selfAlign = getVectorSelfAlignedSize(...) else selfAlign=0;
+	uint64_t unaligned = getVectorUnalignedSize(type) * (numElements == 1);//Equivalent to: if (arrayElements==0) unaligned = getVectorUnalignedSize(...) else unaligned = 0;
 	return selfAlign + unaligned;
+
+	// *** THIS IS A BRANCHLESS EQUIVALENT OF THE FOLLOWING CODE ***
+	//if (numElements > 1)
+	//{
+	// return (std::max)(getVectorSelfAlignedSize(type), 16u) * numElements;
+	//}
+	//else
+	//{
+	// return getVectorUnalignedSize(type);
+	//}
 }
 
-inline uint32 getCpuPackedSize(GpuDatatypes::Enum type, uint32 arrayElements = 1)
+/// <summary>Get a string with the glsl variable name of a type</summary>
+/// <param name="type">The datatype to test</param>
+/// <returns>A c-style string with the glsl variable keyword of <paramRef name="type"/></returns>
+inline const char* toString(GpuDatatypes type)
+{
+	switch (type)
+	{
+	case GpuDatatypes::Integer: return "int";
+	case GpuDatatypes::ivec2: return "ivec2";
+	case GpuDatatypes::ivec3: return "ivec3";
+	case GpuDatatypes::ivec4: return "ivec4";
+	case GpuDatatypes::Float: return "float";
+	case GpuDatatypes::vec2: return "vec2";
+	case GpuDatatypes::vec3: return "vec3";
+	case GpuDatatypes::vec4: return "vec4";
+	case GpuDatatypes::mat2x2: return "mat2x2";
+	case GpuDatatypes::mat2x3: return "mat2x3";
+	case GpuDatatypes::mat2x4: return "mat2x4";
+	case GpuDatatypes::mat3x2: return "mat3x2";
+	case GpuDatatypes::mat3x3: return "mat3x3";
+	case GpuDatatypes::mat3x4: return "mat3x4";
+	case GpuDatatypes::mat4x2: return "mat4x2";
+	case GpuDatatypes::mat4x3: return "mat4x3";
+	case GpuDatatypes::mat4x4: return "mat4x4";
+	case GpuDatatypes::none: return "NONE";
+	default: return "UNKNOWN";
+	}
+}
+
+/// <summary>Get the size of n array members of a type, packed in CPU</summary>
+/// <param name="type">The datatype to test</param>
+/// <param name="arrayElements">The number of array elements</param>
+/// <returns>The base size of the type multiplied by arrayElements</returns>
+inline uint64_t getCpuPackedSize(GpuDatatypes type, uint32_t arrayElements = 1)
 {
 	return getVectorUnalignedSize(type) * getNumMatrixColumns(type) * arrayElements;
 }
 
-/**********************************************************************************************
-\brief    Aligns an offset (previousTotalSize) with the alignment of a type. It's called
-getOffsetAfter, because it is commonly used to find the offset of an item when the previous
-total size is known (i.e. align a vec4 to a struct whose previous size was 30 bytes? returns
-32 bytes...)
-**********************************************************************************************/
-inline uint32 getOffsetAfter(GpuDatatypes::Enum type, uint32 previousTotalSize)
+/// <summary>Aligns an address/offset with the alignment of a type -- equivalently,
+/// assuming you want to place a type after a known offset (i.e. calculating the
+/// offset of an item inside a struct having already calculated its previous element)
+/// (i.e. aligning a vec4 after an item that ends at 30 bytes returns 32 bytes...)
+/// </summary>
+/// <param name="type">The datatype to test</param>
+/// <param name="previousTotalSize">The address/offset to align for that type</param>
+/// <returns><paramRef name="previousTotalSize"/> aligned to the requirements of
+/// <paramRef name="type"/></returns>
+inline uint32_t getOffsetAfter(GpuDatatypes type, uint64_t previousTotalSize)
 {
-	uint32 align = getAlignment(type);
+	uint32_t align = getAlignment(type);
 
-	uint32 diff = previousTotalSize % align;
+	uint32_t diff = previousTotalSize % align;
 	diff += (align * (diff == 0)); // REMOVE BRANCHING -- equal to : if(diff==0) { diff+=8 }
-	return previousTotalSize - diff + align;
+	return static_cast<uint32_t>(previousTotalSize) - diff + align;
 }
 
-/**********************************************************************************************
-\brief    Returns the new size of a hypothetical struct whose old size was previousTotalSize,
-and to which "arrayElement" new items of type "type" are added
-**********************************************************************************************/
-inline uint32 getTotalSizeAfter(GpuDatatypes::Enum type, uint32 arrayElements, uint32 previousTotalSize)
+/// <summary>Returns the new size of a hypothetical struct whose old size was previousTotalSize,
+/// and to which "arrayElement" new items of type "type" are added</summary>
+/// <param name="type">The datatype to add</param>
+/// <param name="arrayElements">The number of items of type <paramRef name="type"/> to add</param>
+/// <param name="previousTotalSize">The address/offset to align for that type</param>
+/// <returns>The new size</returns>
+inline uint64_t getTotalSizeAfter(GpuDatatypes type, uint32_t arrayElements, uint64_t previousTotalSize)
 {
-	PVR_ASSERTION(arrayElements > 0);
+	assert(arrayElements > 0);
 	// Arrays pads their last element to their alignments. Standalone objects do not. vec3[3] is NOT the same as vec3;vec3;vec3;
-	uint32 selfAlignedSize = getSelfAlignedArraySize(type) * arrayElements * (arrayElements != 1); //Equivalent to: if (arrayElements!=1) selfAlign = getSelfAl... else selfAlign=0
+	uint64_t selfAlignedSize = getSelfAlignedArraySize(type) * arrayElements * (arrayElements != 1); //Equivalent to: if (arrayElements!=1) selfAlign = getSelfAl... else selfAlign=0
 	// Other elements do not.
-	uint32 unalignedSize = getSize(type) * (arrayElements == 1);//Equivalent to: if (arrayElements==1) unaligned = getUnaligned.... else unaligned=0
+	uint64_t unalignedSize = getSize(type) * (arrayElements == 1);//Equivalent to: if (arrayElements==1) unaligned = getUnaligned.... else unaligned=0
 
 	return getOffsetAfter(type, previousTotalSize) + selfAlignedSize + unalignedSize;
 }
 
-inline DataType toDataType(GpuDatatypes::Enum type)
+/// <summary>Get the Cpu Datatype <paramRef name="type"/> refers to (i.e. which CPU datatype must you
+/// load in the data you upload to the GPU to correctly upload the same value  in the shader).</summary>
+/// <param name="type">The type to convert</param>
+/// <returns>A CPU type that has the same bit representation as one scalar element of type (i.e. mat4x4 returns "float")</returns>
+inline DataType toDataType(GpuDatatypes type)
 {
-	return getBaseType(type) == BaseType::Float ? DataType::Float32 : DataType::Int32;
+	return getBaseType(type) == GpuDatatypesHelper::BaseType::Float ? DataType::Float32 : DataType::Int32;
 }
 
-
+namespace GpuDatatypesHelper {
 template<typename T> struct Metadata; // Template specializations in FreeValue.h
-
 }
 
 /// <summary>Enumeration containing all possible Primitive topologies (Point, line trianglelist etc.).</summary>
-enum class PrimitiveTopology : uint32
+enum class PrimitiveTopology : uint32_t
 {
-	//POSITION-SENSITIVE. Do not renumber unless also refactoring ConvertToVkTypes, ConvertToGlesTypes.
-	PointList,
-	LineList,
-	LineStrip,
-	LineLoop, // line loop. Supported only for ES
-	TriangleList, //< triangle list
-	TriangleStrip,//< triangle strip
-	TriangleFan,//< triangle fan
-	LineListWithAdjacency,
-	LineStripWithAdjacency,
-	TriangleListWithAdjacency,
-	TriangleStripWithAdjacency,
-	TriPatchList,//< triangle patch list
-	QuadPatchList,//< quad patch list};
-	IsoLineList,//< isoline list};
-	None
-};
-
-
-/// <summary>Enumeration all possible values of operations to be performed on initially Loading a Framebuffer Object.
-/// </summary>
-enum class LoadOp : uint32
-{
-	Load,  //< Load the contents from the fbo from previous
-	Clear, //< Clear the fbo
-	Ignore, //< Ignore writing to the fbo and keep old data
-};
-
-
-/// <summary>Enumerates all possible values of operations to be performed when Storing to a Framebuffer Object.
-/// </summary>
-enum class StoreOp : uint32
-{
-	Store,//< write the source to the destination
-	Ignore,//< don't write the source to the destination
-};
-
-
-
-/// <summary>Enumeration of the "aspect" (or "semantics") of an image: Color, Depth, Stencil.</summary>
-enum class ImageAspect : uint32
-{
-
-	Color = 0x1,
-	Depth = 0x2,
-	Stencil = 0x4,
-	Metadata = 0x8,
-	DepthAndStencil = Depth | Stencil,
-};
-DEFINE_ENUM_OR_OPERATORS(ImageAspect)
-
-/// <summary>Enumeration of the possible types of a Pipeline Binding point (Graphics, Compute, RayTracing, SceneGenerator).</summary>
-enum class PipelineBindPoint : uint32
-{
-	Graphics,
-	Compute,
-	RayTracing = 1000068008,
-	SceneGenerator = 1000068009,
-	None = ~0u
-};
-
-/// <summary>Enumeration of the possible way of recording commands for each subpasses of the render pass (Inline,
-/// SecondaryCommandBuffer).</summary>
-enum class RenderPassContents : uint32
-{
-	Inline,//< commands are recorded within the command buffer for the subpass
-	SecondaryCommandBuffers//< commands are recorded in the secondary commandbuffer for the subpass
-};
-
-
-/// <summary>Enumeration of the possible binding points of a Framebuffer Object (Read, Write, ReadWrite).</summary>
-enum class FboBindingTarget : uint32
-{
-	Read = 1, //< bind Fbo for read
-	Write = 2, //< bind fbo for write
-	ReadWrite = 3 //< bind fbo for read and write
-};
-
-
-/// <summary>Logic operations (toggle, clear, and etc.).</summary>
-enum class LogicOp : uint32
-{
-	//DO NOT REARRANGE - Direct mapping with VkLogicOp. See ConvertToVk::logicOp
-	Clear,
-	And,
-	AndReverse,
-	Copy,
-	AndInverted,
-	NoOp5,
-	Xor,
-	Or,
-	Nor,
-	Equiv,
-	Invert0,
-	OrReverse,
-	CopyInverted,
-	OrInverted,
-	Nand,
-	Set,
+	//POSITION-SENSITIVE. Do not renumber unless also refactoring ConvertToVkTypes.
+	PointList, //!< Renders poins
+	LineList, //!< Each two items render a separate line segment
+	LineStrip, //!< Renders one continuous polyline (n vertices represent n-1 lines)
+	TriangleList, //!< Each 3 vertices render one triangle
+	TriangleStrip, //!< Renders one continuous triangle strip, (n vertices represent n-2 triangles in a strip configuration)
+	TriangleFan, //!< Renders one continuous triangle fan (n vertices represent n-2 triangles in a fan configuration)
+	LineListWithAdjacency, //!< Represents a list of lines, but contains adjacency info (2 additional vertices per 2 vertices: 4 vertices per line segment)
+	LineStripWithAdjacency, //!< Represents a continuous strip of lines, but contains adjacency info (2 additional vertices: the vertex before the first and the vertex after the last line segment)
+	TriangleListWithAdjacency, //!< Represents a triangle list with adjacency info (6 vertices per primitive).
+	TriangleStripWithAdjacency,//!< Represents a triangle strip with adjacency info (1 additional adjacency vertex per triangle, plus the adjacent vertices of the first and last triangle sides of the list).
+	PatchList,//!< A list of Patches, intended for tessellation
 	Count
 };
 
 /// <summary>ChannelWriteMask enable/ disable writting to channel bits.</summary>
-enum class ColorChannel : uint32
+enum class ColorChannelFlags : uint32_t
 {
 	//DO NOT REARRANGE - Direct mapping to Vulkan
-	R = 0x01, //< write to red channel
-	G = 0x02, //< write to green channel
-	B = 0x04, //< write to blue channel
-	A = 0x08, //< write to alpha channel
-	None = 0, //< don't write to any channel
-	All = R | G | B | A //< write to all channel
+	R       = 0x01, //!< write to red channel
+	G       = 0x02, //!< write to green channel
+	B       = 0x04, //!< write to blue channel
+	A       = 0x08, //!< write to alpha channel
+	None    = 0, //!< don't write to any channel
+	All     = R | G | B | A //< write to all channel
 };
-DEFINE_ENUM_OR_OPERATORS(ColorChannel)
-DEFINE_ENUM_AND_OPERATORS(ColorChannel)
+DEFINE_ENUM_OPERATORS(ColorChannelFlags)
 
 /// <summary>Step rate for a vertex attribute when drawing: Per vertex, per instance, per draw.</summary>
-enum class StepRate : uint32
+enum class StepRate : uint32_t
 {
-	Vertex, //< Step rate Per vertex
-	Instance,//< Step rate per instance
+	Vertex, //!< Step rate Per vertex
+	Instance,//!< Step rate per instance
 	Default = Vertex
 };
 
-
-/// <summary>Enumeration of Provoking Vertex modes.</summary>
-enum class ProvokingVertex : uint32
-{
-	First,
-	Last,
-	Default = First
-};
-
-
-/// <summary>Enumeration of all FrameBufferObject texture targets.</summary>
-enum class FboTextureTarget : uint32
-{
-
-	TextureTarget2d,
-	TextureTargetCubeMapPositiveX,
-	TextureTargetCubeMapNegativeX,
-	TextureTargetCubeMapPositiveY,
-	TextureTargetCubeMapNegativeY,
-	TextureTargetCubeMapPositiveZ,
-	TextureTargetCubeMapNegativeZ,
-	Unknown
-};
-
-
-/// <summary>Enumeration of polygon filling modes.</summary>
-enum class FillMode : uint32
-{
-	Fill,///< enum value. fill polygon front, solid
-	WireFrame,///< fill front, wireframe
-	Points,///< fill back wireframe
-	NumFillMode,
-};
-
-
 /// <summary>Enumeration of Face facing (front, back...).</summary>
-enum class Face : uint32
+enum class Face : uint32_t
 {
 	//DO NOT REARRANGE - DIRECT TO VULKAN
-	None = 0,
-	Front = 1,
-	Back = 2,
-	FrontBack = 3,
+	None = 0, //!< No faces
+	Front = 1, //!< The front face
+	Back = 2, //!< The back face
+	FrontAndBack = 3, //!< Both faces
 	Default = None
 };
 
-
 /// <summary>Enumeration of the six faces of a Cube</summary>
-enum class CubeFace : uint32
+enum class CubeFace : uint32_t
 {
-	PositiveX = 0,
-	NegativeX,
-	PositiveY,
-	NegativeY,
-	PositiveZ,
-	NegativeZ
+	PositiveX = 0, //!<+x
+	NegativeX, //!<-x
+	PositiveY,//!<+y
+	NegativeY,//!<-y
+	PositiveZ,//!<+z
+	NegativeZ//!<-z
 };
-
-/// <summary>Enumeration of Face facing (front, back...).</summary>
-enum class StencilFace : uint32
-{
-	//DO NOT REARRANGE - DIRECT TO VULKAN
-	Front = 1,
-	Back = 2,
-	FrontBack = 3,
-};
-
 
 /// <summary>Enumeration of the blend operations (determine how a new pixel (source color) is combined with a pixel
 /// already in the framebuffer (destination color).</summary>
-enum class BlendOp : uint32
+enum class BlendOp : uint32_t
 {
-	//DO NOT REARRANGE - Direct mapping to Vulkan. See ConvertToVk::BlendOp
-	Add,
-	Subtract,
-	ReverseSubtract,
-	Min,
-	Max,
+	//DO NOT REARRANGE - Direct mapping to Vulkan. See convertToVk
+	Add, //!<Addition
+	Subtract, //!<Subtraction second from first
+	ReverseSubtract, //!< Subtract first from second
+	Min, //!< Minimum of the two
+	Max, //!< Maximum of the two
 	NumBlendFunc,
 	Default = Add
 };
 
-
-/// <summary>Buffer mapping flags.</summary>
-enum class MapBufferFlags : uint32
-{
-	Read = 1, Write = 2, Unsynchronised = 4, None = 5
-};
-
-DEFINE_ENUM_OR_OPERATORS(MapBufferFlags)
-DEFINE_ENUM_AND_OPERATORS(MapBufferFlags)
-
 /// <summary>Specfies how the rgba blending facors are computed for source and destination fragments.</summary>
-enum class  BlendFactor : uint8
+enum class  BlendFactor : uint8_t
 {
-	Zero,
-	One,
-	SrcColor,
-	OneMinusSrcColor,
-	DstColor,
-	OneMinusDstColor,
-	SrcAlpha,
-	OneMinusSrcAlpha,
-	DstAlpha,
-	OneMinusDstAlpha,
-	ConstantColor,
-	OneMinusConstantColor,
-	ConstantAlpha,
-	OneMinusConstantAlpha,
-	Src1Color,
-	OneMinusSrc1Color,
-	Src1Alpha,
-	OneMinusSrc1Alpha,
+	Zero, //!<Zero
+	One, //!<One
+	SrcColor, //!<The colour of the incoming fragment
+	OneMinusSrcColor, //!< 1 - (SourceColor)
+	DstColor, //!< The color of the pixel already in the framebuffer
+	OneMinusDstColor, //!< 1 - (Destination Color)
+	SrcAlpha, //!< The alpha of the incoming fragment
+	OneMinusSrcAlpha, //!< 1- (Source Alpha)
+	DstAlpha, //!< The alpha of the pixel already in the framebuffer (requires an alpha channel)
+	OneMinusDstAlpha, //!< 1- (Destination Alpha)
+	ConstantColor, //!< A constant color provided by the api
+	OneMinusConstantColor, //!< 1- (Constant Color)
+	ConstantAlpha, //!< A constant alpha value provided by the api
+	OneMinusConstantAlpha, //!< 1- (ConstantAlpha)
+	Src1Color, //!< Source Color 1
+	OneMinusSrc1Color, //!< 1 - (Source Color 1)
+	Src1Alpha, //!< Source Alpha 1
+	OneMinusSrc1Alpha, //!< 1 - (Source Alpha 1)
 	NumBlendFactor,
 	DefaultSrcRgba = One,
 	DefaultDestRgba = Zero
 };
 
-/// <summary>Enumeration of Visible Face (front, back...).</summary>
-enum class VisibleFace : uint32
-{
-	//DO NOT REARRANGE - DIRECT TO VULKAN
-	Front = 0,
-	Back = 1,
-	FrontBack = 2,
-};
-
-enum class DynamicState : uint32
-{
-	//DO NOT REARRANGE - Direct mapping to Vulkan
-	Viewport = 0,
-	Scissor = 1,
-	LineWidth = 2,
-	DepthBias = 3,
-	BlendConstants = 4,
-	DepthBounds = 5,
-	StencilCompareMask = 6,
-	StencilWriteMask = 7,
-	StencilReference = 8,
-	Count
-};
-
-
-/// <summary>Enumeration of Interpolation types for Samplers (nearest, linear).</summary>
-enum class InterpolationMode : uint8
-{
-	Nearest, Linear
-};
-
 /// <summary>Enumeration of the different front face to winding order correlations.</summary>
-enum class PolygonWindingOrder : uint8
+enum class PolygonWindingOrder : uint8_t
 {
 //DO NOT REARRANGE - VULKAN DIRECT MAPPING
-	FrontFaceCCW, FrontFaceCW, Default = FrontFaceCCW
+	FrontFaceCCW, //!< Front face is the Counter Clockwise face
+	FrontFaceCW,  //!< Front face is the Clockwise face
+	Default = FrontFaceCCW
 };
 
 /// <summary>Enumeration of the different stencil operations.</summary>
-enum class StencilOp : uint8
+enum class StencilOp : uint8_t
 {
 	//DO NOT REARRANGE - VULKAN DIRECT MAPPING
-	Keep,
-	Zero,
-	Replace,
-	IncrementClamp,
-	DecrementClamp,
-	Invert,
-	IncrementWrap,
-	DecrementWrap,
+	Keep, //!< Keep existing value
+	Zero, //!< Set to zero
+	Replace, //!< Replace value with Ref
+	IncrementClamp, //!< Increment until max value
+	DecrementClamp, //!< Decrement until min value
+	Invert, //!< Bitwise-not the existing value
+	IncrementWrap, //!< Increment the existing value, wrap if >max
+	DecrementWrap, //!< Decrement the existing value, wrap if <min
 	NumStencilOp,
 
 	// Defaults
 	Default = Keep,
 };
 
-/// <summary>Enumeration of all the different descriptor types.</summary>
-enum class DescriptorType : uint32
+/// <summary>Capability supported values.</summary>
+enum class Capability : uint8_t
 {
-	// DO NOT RE-ARRANGE THIS
-	Sampler,
-	CombinedImageSampler,
-	SampledImage,
-	StorageImage,
-	UniformTexelBuffer,
-	StorageTexelBuffer,
-	UniformBuffer, //< uniform buffer
-	StorageBuffer,//< storagebuffer
-	UniformBufferDynamic, //< uniform buffer's range can be offseted when binding descriptor set.
-	StorageBufferDynamic, //< storage buffer's range can be offseted when binding descriptor set.
-	InputAttachment,
-	IndirectRayPipeline = 1000068007,
-	Count = 12,
-	numBits = 4
-};
-
-/// <summary>Pre-defined Capability presense values.</summary>
-enum class Capability : uint8
-{
-	Unsupported,
-	Immutable,
-	Mutable
+	Unsupported, //!< The capability is unsupported
+	Immutable, //!< The capability exists but cannot be changed
+	Mutable //!< The capability is supported and can be changed
 };
 
 /// <summary>An enumeration that defines a type that can use as an index, typically 16 or 32 bit int. Especially
 /// used in Model classes.</summary>
-enum class IndexType : uint32
+enum class IndexType : uint32_t
 {
-	IndexType16Bit = (uint32)DataType::UInt16,//< 16 bit face data
-	IndexType32Bit = (uint32)DataType::UInt32//< 32 bit face data
+	IndexType16Bit = static_cast<uint32_t>(DataType::UInt16),//!< 16 bit index
+	IndexType32Bit = static_cast<uint32_t>(DataType::UInt32)//!< 32 bit index
 };
 
 /// <summary>Return the Size of an IndexType in bytes.</summary>
 /// <param name="type">The Index type</param>
-/// <returns>uint32</returns>
-inline uint32 indexTypeSizeInBytes(const IndexType type)
+/// <returns>The number of bytes in an index type</returns>
+inline uint32_t indexTypeSizeInBytes(const IndexType type)
 {
 	switch (type)
 	{
 	default:
-		PVR_ASSERTION(false);
+		assert(false);
 		return false;
 	case IndexType::IndexType16Bit: return 2;
 	case IndexType::IndexType32Bit: return 4;
@@ -893,18 +812,17 @@ inline uint32 indexTypeSizeInBytes(const IndexType type)
 
 /// <summary>An enumeration that defines Comparison operations (equal, less or equal etc.). Especially used in
 /// API classes for functions like depth testing.</summary>
-enum class ComparisonMode : uint32
+enum class CompareOp : uint32_t
 {
 	//DIRECT MAPPING FOR VULKAN - DO NOT REARRANGE
-	Never = 0,
-	Less = 1,
-	Equal = 2,
-	LessEqual = 3,
-	Greater = 4,
-	NotEqual = 5,
-	GreaterEqual = 6,
-	Always = 7,
-	None = 8,
+	Never = 0, //!< Always false
+	Less = 1,  //!< True if lhs<rhs
+	Equal = 2,  //!< True if lhs==rhs
+	LessEqual = 3,  //!< True if lhs<=rhs
+	Greater = 4,  //!< True if lhs>rhs
+	NotEqual = 5,  //!< True if lhs!=rhs
+	GreaterEqual = 6,  //!< True if lhs>=rhs
+	Always = 7,   //!< Always true
 	NumComparisonMode,
 	DefaultDepthFunc = Less,
 	DefaultStencilFunc = Always,
@@ -912,115 +830,123 @@ enum class ComparisonMode : uint32
 
 /// <summary>Enumeration describing a filtering type of a specific dimension. In order to describe the filtering mode
 /// properly, you would have to define a Minification filter, a Magnification filter and a Mipmapping minification
-/// filter. Possible values: Nearest, Linear, None.</summary>
-enum class SamplerFilter : uint8
+/// filter. Possible values: Nearest, Linear, Cubic, None.</summary>
+enum class Filter : uint8_t
 {
-	Nearest,//< nearest filter
-	Linear,//< linear filter
-	None,//< no filter
-	Cubic,//< cubic filter
+	Nearest,//!< Nearest neighbour
+	Linear,//< Linear (average weighted by distance)
+	None,//!< No filtering
+	Cubic,//!< Bicubic filtering (IMG extension)
 	Default = Linear,
 	MipDefault = Linear,
 	Size = 4
 };
 
-enum PackedSamplerFilter : int8
+/// <summary>Enumeration for defining texture wrapping mode: Repeat, Mirror, Clamp, Border.</summary>
+enum class SamplerAddressMode  : uint8_t
+{
+	Repeat,//!< repeat
+	MirrorRepeat,//!< mirror repeat
+	ClampToEdge,//!< clamp
+	ClampToBorder,//!< border
+	MirrorClampToEdge,//!< mirror clamp
+	Size,
+	Default = Repeat
+};
+
+/// <summary> Enumeration of mipmap modes supported for a sampler</summary>
+enum class SamplerMipmapMode : uint8_t
+{
+	Nearest, //!< Nearest neighbour
+	Linear, //!< Linear
+	Count
+};
+
+/// <summary> This enum is made to pack all sampler filtering info in 8 bits for specific uses. Use "packSamplerFilter" and "unpackSamplerFilter".
+/// NOTE: The defined values are only the most common cases - other 8 bit values are also valid (for example, different minification and magnification filters)</summary>
+enum PackedSamplerFilter : int8_t
 {
 	PackNone,//< no filter
-	PackNearestMipNone = (uint8)((uint8)SamplerFilter::Nearest | ((uint8)SamplerFilter::Nearest << 2) | ((uint8)SamplerFilter::None << 4)), //<
-	PackNearestMipNearest = (uint8)((uint8)SamplerFilter::Nearest | ((uint8)SamplerFilter::Nearest << 2) | ((uint8)SamplerFilter::Nearest << 4)), //<
-	PackNearestMipLinear = (uint8)((uint8)SamplerFilter::Nearest | ((uint8)SamplerFilter::Nearest << 2) | ((uint8)SamplerFilter::Linear << 4)), //<
-	PackLinearMipNone = (uint8)((uint8)SamplerFilter::Linear | ((uint8)SamplerFilter::Linear << 2) | ((uint8)SamplerFilter::None << 4)), //<
-	PackLinearMipNearest = (uint8)((uint8)SamplerFilter::Linear | ((uint8)SamplerFilter::Linear << 2) | ((uint8)SamplerFilter::Nearest << 4)), //<
-	PackTrilinear = (uint8)((uint8)SamplerFilter::Linear | ((uint8)SamplerFilter::Linear << 2) | ((uint8)SamplerFilter::Linear << 4)), //<
+	PackNearestMipNone = static_cast<uint8_t>(static_cast<uint8_t>(Filter::Nearest) | (static_cast<uint8_t>(Filter::Nearest) << 2) | (static_cast<uint8_t>(SamplerMipmapMode::Nearest) << 4)), //<Nearest Neighbour, no mipmap use
+	PackNearestMipNearest = static_cast<uint8_t>(static_cast<uint8_t>(Filter::Nearest) | (static_cast<uint8_t>(Filter::Nearest) << 2) | (static_cast<uint8_t>(SamplerMipmapMode::Nearest) << 4)), //<Nearest Neighbour per mipmap, nearest neighbour between mipmaps
+	PackNearestMipLinear = static_cast<uint8_t>(static_cast<uint8_t>(Filter::Nearest) | (static_cast<uint8_t>(Filter::Nearest) << 2) | (static_cast<uint8_t>(SamplerMipmapMode::Linear) << 4)), //<Nearest Neighbour, linearly interpolate between mipmaps (OpenGL Default)
+	PackLinearMipNone = static_cast<uint8_t>(static_cast<uint8_t>(Filter::Linear) | (static_cast<uint8_t>(Filter::Linear) << 2) | (static_cast<uint8_t>(SamplerMipmapMode::Nearest) << 4)), //< Bilinear, no mipmap use
+	PackLinearMipNearest = static_cast<uint8_t>(static_cast<uint8_t>(Filter::Linear) | (static_cast<uint8_t>(Filter::Linear) << 2) | (static_cast<uint8_t>(SamplerMipmapMode::Nearest) << 4)), //< Bilinear, nearest neighbour between mipmaps
+	PackTrilinear = static_cast<uint8_t>(static_cast<uint8_t>(Filter::Linear) | (static_cast<uint8_t>(Filter::Linear) << 2) | (static_cast<uint8_t>(SamplerMipmapMode::Linear) << 4)), //< Full Trilinear (bilinear, linearly interpolate between mipmaps)
 	Size, //< number of supported filter
 	PackDefault = PackTrilinear//< default filter
 };
 
-inline PackedSamplerFilter packSamplerFilter(SamplerFilter mini, SamplerFilter magni, SamplerFilter mip)
+/// <summary>Pack a minification filter, a magnification filter and a mipmap filter into an 8 bit value</summary>
+/// <param name="mini">The filtering mode that should be used for minification</param>
+/// <param name="magni">The filtering mode that should be used for magnification</param>
+/// <param name="mip">The filtering mode that should be used for mipmapping</param>
+/// <returns>An 8 bit value representing the described sampler</returns>
+inline PackedSamplerFilter packSamplerFilter(Filter mini, Filter magni, SamplerMipmapMode mip)
 {
-	return PackedSamplerFilter((PackedSamplerFilter)mini + ((PackedSamplerFilter)magni << 2) + ((PackedSamplerFilter)mip << 4));
+	return PackedSamplerFilter(static_cast<PackedSamplerFilter>(mini) + (static_cast<PackedSamplerFilter>(magni) << 2) + (static_cast<PackedSamplerFilter>(mip) << 4));
 }
 
-inline void unpackSamplerFilter(PackedSamplerFilter packed, SamplerFilter& mini, SamplerFilter& magni, SamplerFilter& mip)
+/// <summary>Unpack a 8 bit PackedSamplerFilter value into a minification, magnification and mip filter mode</summary>
+/// <param name="packed">The packed sampler filter to unpack</param>
+/// <param name="mini">The filtering mode that should be used for minification</param>
+/// <param name="magni">The filtering mode that should be used for magnification</param>
+/// <param name="mip">The filtering mode that should be used for mipmapping</param>
+/// <returns>An 8 bit value representing the described sampler</returns>
+inline void unpackSamplerFilter(PackedSamplerFilter packed, Filter& mini, Filter& magni, SamplerMipmapMode& mip)
 {
-	mini = (SamplerFilter)(packed & 3);
-	magni = (SamplerFilter)((packed >> 2) & 3);
-	mip = (SamplerFilter)(packed >> 4);
+	mini = static_cast<Filter>(packed & 3);
+	magni = static_cast<Filter>((packed >> 2) & 3);
+	mip = static_cast<SamplerMipmapMode>(packed >> 4);
 }
 
-/// <summary>Enumeration describing default border colors for textures.</summary>
-enum class BorderColor : uint8
+/// <summary>The dimension of an image.</summary>
+enum class ImageType
 {
-	TransparentBlack, //< Black Border with alpha 0 : (0,0,0,0)
-	OpaqueBlack, //< Black border with alpha 1 : (0,0,0,1)
-	OpaqueWhite, //< white border with alpha 1: (1,1,1,1)
-	Count
+	Image1D, //!<One-dimensional image
+	Image2D, //!<Two-dimensional image
+	Image3D, //!<Three-dimensional image
+	Unallocated, //!<An image that has not been allocated yet
+	Unknown,     //!<An image of unknown dimensions
+	Count = Image3D + 1
 };
-
-
-/// <summary>Enumeration for defining texture wrapping mode: Repeat, Mirror, Clamp, Border.</summary>
-enum class SamplerWrap  : uint8
-{
-	Repeat,//< repeat
-	MirrorRepeat,//< mirror repeat
-	Clamp,//< clamp
-	Border,//< border
-	MirrorClamp,//< mirror clamp
-	Size,//< number of support sampler wrap
-	Default = Repeat //< default wrap
-};
-
-
-enum class ImageBaseType { Image1D, Image2D, Image3D, Unallocated, Unknown, Count = Image3D + 1 };
-
 
 /// <summary>Enumeration of Texture dimensionalities.</summary>
 enum class ImageViewType
 {
-	Unallocated,
 	ImageView1D,            //!< 1 dimensional Image View
 	ImageView2D,            //!< 2 dimensional Image View
 	ImageView3D,            //!< 3 dimensional Image View
 	ImageView2DCube,        //!< cube texture
-	ImageView1DArray,           //!< 1 dimensional Image View
+	ImageView1DArray,       //!< 1 dimensional Image View
 	ImageView2DArray,       //!< 2 dimensional Image View
-	ImageView3DArray,       //!< 3 dimensional Image View
 	ImageView2DCubeArray,   //!< 2 dimensional Image View
 	ImageViewUnknown,       //!< 3 dimensional Image View
 };
 
-inline ImageBaseType imageViewTypeToImageBaseType(ImageViewType viewtype)
+/// <summary> Map an ImageViewType (2dCube etc) to its base type (1d/2d/3d)</summary>
+/// <param name="viewtype">The ImageViewType</param>
+/// <returns>The base type</returns>
+inline ImageType imageViewTypeToImageBaseType(ImageViewType viewtype)
 {
 	switch (viewtype)
 	{
 	case ImageViewType::ImageView1D:
 	case ImageViewType::ImageView1DArray:
-		return ImageBaseType::Image1D;
+		return ImageType::Image1D;
 
 	case ImageViewType::ImageView2D:
 	case ImageViewType::ImageView2DCube:
 	case ImageViewType::ImageView2DArray:
 	case ImageViewType::ImageView2DCubeArray:
-		return ImageBaseType::Image2D;
+		return ImageType::Image2D;
 
 	case ImageViewType::ImageView3D:
-	case ImageViewType::ImageView3DArray:
-		return ImageBaseType::Image3D;
+		return ImageType::Image3D;
 
-	default: return ImageBaseType::Unallocated;
+	default: return ImageType::Unallocated;
 	}
 }
-
-/// <summary>Enumeration of the binary shader formats.</summary>
-enum class ShaderBinaryFormat
-{
-	ImgSgx,
-	Spv,
-	Unknown,
-	None
-};
-
 
 /// <summary>Enumeration of all supported shader types.</summary>
 enum class ShaderType
@@ -1031,410 +957,76 @@ enum class ShaderType
 	ComputeShader,//!< compute shader
 	TessControlShader,
 	TessEvaluationShader,
-	FrameShader,//!< frame shader
-	RayShader,//!< ray shader
 	GeometryShader,
+	RayShader,
+	FrameShader,
 	Count
 };
 
-/// <summary>Enumeration of Descriptor Set use types (once, dynamic).</summary>
-enum class DescriptorSetUsage
+/// <summary>Enumeration of the "aspect" (or "semantics") of an image: Color, Depth, Stencil.</summary>
+enum class ImageAspectFlags : uint32_t
 {
-	OneShot,
-	Static
+	Color           = 0x1,
+	Depth           = 0x2,
+	Stencil         = 0x4,
+	Metadata        = 0x8,
+	DepthAndStencil = Depth | Stencil,
 };
+DEFINE_ENUM_OPERATORS(ImageAspectFlags)
 
-
-/// <summary>Enumeration of all shader stages.</summary>
-
-enum class ShaderStageFlags : uint32
-{
-	Vertex = 0x00000001, //< Vertex Shader stage
-	TesselationControl = 0x00000002,
-	TesselationEvaluation = 0x00000004,
-	Geometry = 0x00000008,
-	Fragment = 0x00000010,//< Fragment Shader stage
-	Compute = 0x00000020,//< Compute Shader stage
-	Frame = 0x00000040,//< Frame Shader stage
-	Ray = 0x00000080,//< Ray Shader stage
-	AllGraphicsStages = 0x0000001F,//< Vertex + Fragment shader stage
-	AllStages = 0x7FFFFFFF
-};
-DEFINE_ENUM_OR_OPERATORS(ShaderStageFlags)
-DEFINE_ENUM_AND_OPERATORS(ShaderStageFlags)
-
-/// <summary>Enumeration of all Pipeline stages.</summary>
-
-enum class PipelineStageFlags : uint32
-{
-	TopOfPipeline = 0x00000001,
-	DrawIndirect = 0x00000002,
-	VertexInput = 0x00000004,
-	VertexShader = 0x00000008,
-	TessellationControl = 0x00000010,
-	TessellationEvaluation = 0x00000020,
-	GeometryShader = 0x00000040,
-	FragmentShader = 0x00000080,
-	EarlyFragmentTests = 0x00000100,
-	LateFragmentTests = 0x00000200,
-	ColorAttachmentOutput = 0x00000400,
-	ComputeShader = 0x00000800,
-	Transfer = 0x00001000,
-	BottomOfPipeline = 0x00002000,
-	Host = 0x00004000,
-	AllGraphics = 0x00008000,
-	AllCommands = 0x00010000,
-	FrameShader = 0x00020000,
-	RayShader = 0x00040000,
-	SceneHierarchyBuild = 0x00080000,
-	SceneHierarchyMerge = 0x00100000,
-};
-DEFINE_ENUM_OR_OPERATORS(PipelineStageFlags)
-DEFINE_ENUM_AND_OPERATORS(PipelineStageFlags)
-
-enum class AccessFlags : uint32
-{
-	IndirectCommandRead = 0x00000001,
-	IndexRead = 0x00000002,
-	VertexAttributeRead = 0x00000004,
-	UniformRead = 0x00000008,
-	InputAttachmentRead = 0x00000010,
-	ShaderRead = 0x00000020,
-	ShaderWrite = 0x00000040,
-	ColorAttachmentRead = 0x00000080,
-	ColorAttachmentWrite = 0x00000100,
-	DepthStencilAttachmentRead = 0x00000200,
-	DepthStencilAttachmentWrite = 0x00000400,
-	TransferRead = 0x00000800,
-	TransferWrite = 0x00001000,
-	HostRead = 0x00002000,
-	HostWrite = 0x00004000,
-	MemoryRead = 0x00008000,
-	MemoryWrite = 0x00010000,
-};
-DEFINE_ENUM_OR_OPERATORS(AccessFlags)
-DEFINE_ENUM_AND_OPERATORS(AccessFlags)
-
-
-enum class SampleCount : uint32
-{
-	Count1  = 0x00000001,
-	Count2  = 0x00000002,
-	Count4  = 0x00000004,
-	Count8  = 0x00000008,
-	Count16 = 0x00000010,
-	Count32 = 0x00000020,
-	Count64 = 0x00000040,
-	Default = Count1
-};
-DEFINE_ENUM_OR_OPERATORS(SampleCount)
-DEFINE_ENUM_AND_OPERATORS(SampleCount)
-
-enum class ImageUsageFlags : uint32
-{
-	// DO NOT REORDER THIS.
-	TransferSrc = 0x00000001,
-	TransferDest = 0x00000002,
-	Sampled = 0x00000004,
-	Storage = 0x00000008,
-	ColorAttachment = 0x00000010,
-	DepthStencilAttachment = 0x00000020,
-	TransientAttachment = 0x00000040,
-	InputAttachment = 0x00000080,
-};
-
-DEFINE_ENUM_OR_OPERATORS(ImageUsageFlags)
-DEFINE_ENUM_AND_OPERATORS(ImageUsageFlags)
-
-const uint32 SubpassExternal = ~0u;
-
-enum class ImageLayout  : uint32
-{
-	Undefined = 0,
-	General = 1,
-	ColorAttachmentOptimal = 2,
-	DepthStencilAttachmentOptimal = 3,
-	DepthStencilReadOnlyOptimal = 4,
-	ShaderReadOnlyOptimal = 5,
-	TransferSrcOptimal = 6,
-	TransferDstOptimal = 7,
-	Preinitialized = 8,
-	PresentSrc = 1000001002,
-};
-
-/// <summary>Enumeration of all supported buffer use types.</summary>
-enum class BufferBindingUse  : uint32
-{
-	TransferSrc = 0x00000001,
-	TransferDest = 0x00000002,
-	UniformTexelBuffer = 0x00000004,
-	StorageTexelBuffer = 0x00000008,
-	UniformBuffer = 0x00000010,
-	StorageBuffer = 0x00000020,
-	IndexBuffer = 0x00000040,
-	VertexBuffer = 0x00000080,
-	IndirectBuffer = 0x00000100,
-	Count = 10
-};
-
-inline BufferBindingUse descriptorTypeToBufferBindingUse(DescriptorType descType)
-{
-	if (descType == DescriptorType::UniformBuffer || descType == DescriptorType::UniformBufferDynamic)
-	{
-		return BufferBindingUse::UniformBuffer;
-	}
-	return BufferBindingUse::StorageBuffer;
-}
-
-inline bool isDescriptorTypeDynamic(DescriptorType descType)
-{
-	return (descType == DescriptorType::UniformBufferDynamic || descType == DescriptorType::StorageBufferDynamic);
-}
-
-DEFINE_ENUM_OR_OPERATORS(BufferBindingUse)
-DEFINE_ENUM_AND_OPERATORS(BufferBindingUse)
-
-namespace PipelineDefaults {
-/// <summary>Enumeration used for enabling/disabling depth and stencil states</summary>
-namespace DepthStencilStates {
-static const bool DepthTestEnabled = false;
-static const bool DepthWriteEnabled = true;
-static const bool StencilTestEnabled = false;
-static const bool DepthBoundTestEnabled = false;
-static const bool UseDepthStencil = true;
-static const uint32 ComparisonMask = 0xff;
-static const uint32 StencilReadMask = 0xff;
-static const uint32 StencilWriteMask = 0xff;
-static const uint32 StencilReference = 0;
-static const int32 StencilClearValue = 0;
-static const float32 DepthClearValue = 1.f;
-static const float32 DepthMin = 0.f;
-static const float32 DepthMax = 1.f;
-}
-
-namespace Rasterizer {
-static const bool RasterizerDiscardEnabled = false;
-static const bool ProgramPointSizeEnabled = false;
-static const bool DepthClipEnabled = true;
-static const bool DepthBiasEnabled = false;
-static const bool DepthBiasClampEnabled = false;
-static const Face CullFace = pvr::types::Face::None;
-static const PolygonWindingOrder WindingOrder = pvr::types::PolygonWindingOrder::FrontFaceCCW;
-static const types::FillMode FillMode = pvr::types::FillMode::Fill;
-static const types::ProvokingVertex ProvokingVertex = pvr::types::ProvokingVertex::First;
-static const float32 LineWidth = 1.0f;
-}
-
-/// <summary>Enumeration used for setting tesselation defaults</summary>
-namespace Tesselation {
-static const pvr::uint32 NumControlPoints = 3;
-}
-
-/// <summary>Stores defaults values used for initialising vertex attributes</summary>
-namespace VertexAttributeInfo {
-static const pvr::uint16 Index = 0;
-static const pvr::types::DataType Format = pvr::types::DataType::None;
-static const pvr::uint8 Width = 0;
-static const pvr::uint32 OffsetInBytes = 0;
-static const pvr::string AttribName = "";
-static const pvr::uint32 MaxVertexAttributes = 8;
-}
-
-/// <summary>Stores defaults values used for initialising vertex input bindings</summary>
-namespace VertexInput {
-static const pvr::uint16 StrideInBytes = 0;
-static const pvr::string AttribName = "";
-static const pvr::uint32 MaxVertexBindings = 8;
-}
-
-/// <summary>Stores defaults values used for initialising vertex attributes</summary>
-namespace ViewportScissor {
-static const pvr::int32 OffsetX = 0;
-static const pvr::int32 OffsetY = 0;
-static const pvr::int32 Width = 0;
-static const pvr::int32 Height = 0;
-
-static const pvr::float32 MinDepth = 0.0f;
-static const pvr::float32 MaxDepth = 1.0f;
-static const bool ScissorTestEnabled = false;
-static const pvr::uint32 MaxScissorRegions = 8;
-static const pvr::uint32 MaxViewportRegions = 8;
-static const pvr::uint32 MaxScissorViewports = 8;
-static const glm::ivec2 SurfaceDimensions = glm::ivec2(std::numeric_limits<int>::max());
-}
-
-namespace TextureUnitBindings {
-static const pvr::uint32 MaxOGLES2TextureUnitBindings = 8;
-}
-
-/// <summary>Stores defaults values used for initialising input assembler state</summary>
-namespace InputAssembler {
-static const pvr::types::PrimitiveTopology Topology = pvr::types::PrimitiveTopology::TriangleList;
-static const bool DisableVertexReuse = true;
-static const bool PrimitiveRestartEnabled = false;
-static const pvr::uint32 PrimitiveRestartIndex = 0xFFFFFFFF;
-}
-
-/// <summary>Stores defaults values used for initialising color blend states</summary>
-namespace ColorBlend {
-static const bool AlphaCoverageEnable = false;
-static const bool LogicOpEnable = false;
-static const pvr::types::LogicOp LogicOp = pvr::types::LogicOp::Set;
-static const glm::vec4 BlendConstantRGBA(0.f);
-static const bool BlendEnabled = false;
-static const pvr::uint32 MaxBlendAttachments = 8;
-}
-
-/// <summary>Stores defaults values used for initialising color channel writes</summary>
-namespace ColorWrite {
-// enable writing to all channels
-static const bool ColorMaskR = true;
-static const bool ColorMaskG = true;
-static const bool ColorMaskB = true;
-static const bool ColorMaskA = true;
-}
-
-/// <summary>Stores defaults values used for initialising dynamic states</summary>
-namespace DynamicStates {
-static const pvr::uint32 MaxDynamicStates = 8;
-}
-
-/// <summary>Stores defaults values used for initialising specialisation states</summary>
-namespace SpecialisationStates {
-static const pvr::uint32 MaxSpecialisationInfos = 10;
-static const pvr::uint32 MaxSpecialisationInfoDataSize = 1024;
-static const pvr::uint32 MaxSpecialisationMapEntries = 8;
-}
-
-/// <summary>Stores defaults values used for initialising multi sample states</summary>
-namespace MultiSample {
-static const bool Enabled = false;
-static const bool SampleShading = false;
-static const bool AlphaToCoverageEnable = false;
-static const bool AlphaToOnEnable = false;
-static const pvr::types::SampleCount RasterizationSamples = pvr::types::SampleCount::Count1;
-static const pvr::float32 MinSampleShading = 0.0f;
-static const pvr::uint32 SampleMask = 0xffffffff;
-}
-
-/// <summary>Stores defaults values used for initialising shader stage states</summary>
-namespace ShaderStage {
-static const pvr::uint32 MaxDistinctRayShaders = 8;
-static const pvr::uint32 MaxDistinctEntryPointsPerRayShader = 8;
-static const pvr::string EntryPoint = "main";
-static const pvr::uint32 MaxRayTypes = 8;
-}
-}// namespace pipelineDefaults
-
-/// <summary>Stores defaults values used for initialising descriptor bindings</summary>
-namespace DescriptorBindingDefaults {
-static const pvr::int16 BindingId = -1;
-static const pvr::int16 ArraySize = -1;
-static const pvr::types::DescriptorType Type = pvr::types::DescriptorType::Count;
-static const pvr::types::ShaderStageFlags ShaderStage = types::ShaderStageFlags::AllStages;
-}
-
-/// <summary>Provides abstract type used for storing descriptors</summary>
-enum class DescriptorBindingType
-{
-	Image,
-	UniformBuffer,
-	StorageBuffer,
-	IndirectRayPipeline
-};
-
-/// <summary>Converts between pvr::types::DescriptorType and abstract pvr::types::DescriptorBindingType</summary>
-inline pvr::types::DescriptorBindingType getDescriptorTypeBinding(pvr::types::DescriptorType descType)
-{
-	switch (descType)
-	{
-	case pvr::types::DescriptorType::CombinedImageSampler:
-	case pvr::types::DescriptorType::InputAttachment:
-	case pvr::types::DescriptorType::SampledImage:
-	case pvr::types::DescriptorType::StorageImage:
-	case pvr::types::DescriptorType::Sampler:
-		return pvr::types::DescriptorBindingType::Image;
-		break;
-	case pvr::types::DescriptorType::StorageBuffer:
-	case pvr::types::DescriptorType::StorageBufferDynamic:
-	case pvr::types::DescriptorType::StorageTexelBuffer:
-		return pvr::types::DescriptorBindingType::StorageBuffer;
-		break;
-	case pvr::types::DescriptorType::UniformBuffer:
-	case pvr::types::DescriptorType::UniformBufferDynamic:
-	case pvr::types::DescriptorType::UniformTexelBuffer:
-		return pvr::types::DescriptorBindingType::UniformBuffer;
-		break;
-	case pvr::types::DescriptorType::IndirectRayPipeline:
-		return pvr::types::DescriptorBindingType::IndirectRayPipeline;
-		break;
-	default:
-		assert(false);
-	}
-
-	return pvr::types::DescriptorBindingType(-1);
-}
-
-}// namespace types
 
 /// <summary>Pre-defined Result codes (success and generic errors).</summary>
 enum class Result
 {
 	Success,
 	UnknownError,
-
-	//Generic Errors
-	OutOfMemory,
-	InvalidArgument,
-	AlreadyInitialized,
 	NotInitialized,
-	UnsupportedRequest,
-	FileVersionMismatch,
-
-	//Stream Errors
-	NotReadable,
-	NotWritable,
-	EndOfStream,
-	UnableToOpen,
-	NoData,
-
-	//Array Errors
-	OutOfBounds,
-	NotFound,
-
-	//Map Errors
-	KeyAlreadyExists,
-
 	//Shell Error
+	InitializationError,
+	UnsupportedRequest,
+
 	ExitRenderFrame, // Used to exit the renderscene loop in the shell
-
-	//Resource Error
-	InvalidData,
 };
-
-
-/// <summary>Represents a buffer of Unsigned Bytes. Used to store raw data.</summary>
-typedef std::vector<byte> UCharBuffer;
-
-/// <summary>Represents a buffer of Signed Bytes. Used to store raw data.</summary>
-typedef std::vector<char8> CharBuffer;
-
-/// <summary>Representation of raw data. Used to store raw data that is logically grouped in blocks with a stride.</summary>
-class StridedBuffer : public UCharBuffer { public: uint16 stride; };
-
-/// <summary>Return a random Number between min and max</summary>
-/// <returns>Random number</returns>
-inline float32 randomrange(float32 min, float32 max)
+/// <summary>Use this function to convert a Result into a std::string that is suitable for outputting.</summary>
+/// <param name="result">The result</param>
+/// <returns>A std::string suitable for writing out that represents this Result</returns>
+inline const char* getResultCodeString(Result result)
 {
-	float32 zero_to_one = float32(float64(rand()) / float64(RAND_MAX));
-	float32 diff = max - min;
-	return zero_to_one * diff + min;
+	switch (result)
+	{
+	case Result::Success: return "Success";
+	case Result::UnknownError: return"Unknown Error";
+	case Result::ExitRenderFrame: return"Exit Render Scene";
+	case Result::NotInitialized: return"Not initialized";
+	case Result::InitializationError: return"Error while initializing";
+	default: return"UNRECOGNIZED CODE";
+	}
 }
 
+/// <summary>Represents a buffer of Unsigned Bytes. Used to store raw data.</summary>
+typedef ::std::vector<uint8_t> UInt8Buffer;
 
+/// <summary>Represents a buffer of Unsigned Bytes. Used to store raw data.</summary>
+typedef ::std::vector<char> CharBuffer;
 
-#define BIT(shift)((1) << (shift))
-#define BITS_TO_BYTE(bit)((bit) / (sizeof(pvr::byte)))
+/// <summary>Representation of raw data. Used to store raw data that is logically grouped in blocks with a stride.</summary>
+class StridedBuffer : public UInt8Buffer
+{
+public:
+	uint16_t stride; //!< The stride of the buffer
+};
+
+/// <summary>Get a random Number between min and max</summary>
+/// <param name="min">Minimum number (inclusive)</param>
+/// <param name="max">Maximum number (inclusive)</param>
+/// <returns>Random number</returns>
+inline float randomrange(float min, float max)
+{
+	float zero_to_one = static_cast<float>(double(rand()) / double(RAND_MAX));
+	float diff = max - min;
+	return zero_to_one * diff + min;
+}
+//!\cond NO_DOXYGEN
 #if defined(_MSC_VER)
 #define PVR_ALIGNED __declspec(align(16))
 #elif defined(__GNUC__) || defined (__clang__)
@@ -1442,8 +1034,11 @@ inline float32 randomrange(float32 min, float32 max)
 #else
 #define PVR_ALIGNED alignas(16)
 #endif
+//!\endcond
 }
 
-// ARRAY_SIZE(a) is a compile-time constant which represents the number of elements of the given
-// array. ONLY use ARRAY_SIZE for statically allocated arrays.
+/// <summary>ARRAY_SIZE(a) is a compile-time constant which represents the number of elements of the given
+/// array. ONLY use ARRAY_SIZE for statically allocated arrays.</summary>
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
+
+#undef DEFINE_ENUM_OPERATORS

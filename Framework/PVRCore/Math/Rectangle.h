@@ -7,7 +7,6 @@
 #pragma once
 #include "PVRCore/Base/Types.h"
 #include "PVRCore/Base/ComplexTypes.h"
-#include "../External/glm/glm.hpp"
 namespace pvr {
 /// <summary>A class representing an axis-aligned rectangle. Internal representation TopLeft and size.
 /// </summary>
@@ -20,17 +19,30 @@ struct Rectangle
 	TYPE width; //!<The width of the rectangle
 	TYPE height; //!<The height of the rectangle
 
-	glm::detail::tvec2<TYPE, glm::highp> offset()const { return glm::detail::tvec2<TYPE, glm::highp>(x, y); }
-	glm::detail::tvec2<TYPE, glm::highp> extent()const { return glm::detail::tvec2<TYPE, glm::highp>(width, height); }
-	glm::detail::tvec2<TYPE, glm::highp> center()const { return offset() + extent() / TYPE(2); }
+	/// <summary>Get the offset of the rectangle, i.e. the position of its minimum (bottom-left) vertex</summary>
+	/// <returns>The position of its minimum (bottom-left) vertex</returns>
+	glm::detail::tvec2<TYPE, glm::highp> offset() const { return glm::detail::tvec2<TYPE, glm::highp>(x, y); }
+
+	/// <summary>Get the extent (i.e. size) of the rectangle</summary>
+	/// <returns>A vec2 containing the sizes per component (width in x, height in y)</returns>
+	glm::detail::tvec2<TYPE, glm::highp> extent() const { return glm::detail::tvec2<TYPE, glm::highp>(width, height); }
+
+	/// <summary>Get the position of the center of the rectangle</summary>
+	/// <returns>The position of the center of the rectangle</returns>
+	glm::detail::tvec2<TYPE, glm::highp> center() const { return offset() + extent() / TYPE(2); }
+	
 	/// <summary>Create a rectangle with uninitialized values.</summary>
 	Rectangle() {}
 
-	Rectangle(const types::GenericOffset2D<TYPE>& offset0, const types::GenericOffset2D<TYPE>& offset1)
+	/// <summary>Copy construct a rectangle from two corners as offsets. It is an error and will have undefined results
+	/// for any component (x or y) of offset1 to be less than the corresponding component of offset0</summary>
+	/// <param name="offset0">Minimum (lesser value for both axes, usually means bottom-left) corner of the new rectangle</param>
+	/// <param name="offset1">Maximum (greater value for both axes, usually means top-right) corner of the rectangle</param>
+	Rectangle(const GenericOffset2D<TYPE>& offset0, const GenericOffset2D<TYPE>& offset1)
 	{
-		x = offset0.offsetX; y = offset0.offsetY;
-		width = offset1.offsetX - x;
-		height = offset1.offsetY - y;
+		x = offset0.x; y = offset0.y;
+		width = offset1.x - x;
+		height = offset1.y - y;
 	}
 
 	/// <summary>Create a rectangle with initial values.</summary>
@@ -47,42 +59,46 @@ struct Rectangle
 	/// <param name="bottomLeft">The bottom-left corner of the rectangle (bottom, left)</param>
 	/// <param name="dimensions">The dimensions(width, height)</param>
 	Rectangle(glm::detail::tvec2<TYPE, glm::precision::defaultp> bottomLeft,
-	    glm::detail::tvec2<TYPE, glm::precision::defaultp> dimensions) :
+	          glm::detail::tvec2<TYPE, glm::precision::defaultp> dimensions) :
 		x(bottomLeft.x), y(bottomLeft.y), width(dimensions.x), height(dimensions.y)
 	{
 	}
 
+	/// <summary>Test equality.</summary>
+	/// <param name="rhs">Rectangle to test against.</param>
+	/// <returns>True if rectangles are exactly equal (corners completely coincide), otherwise false.</returns>
 	bool operator==(const Rectangle& rhs)const
 	{
 		return (x == rhs.x) && (y == rhs.y) && (width == rhs.width) && (height == rhs.height);
 	}
 
+	/// <summary>Test equality.</summary>
+	/// <param name="rhs">Rectangle to test against.</param>
+	/// <returns>True if rectangles are not exactly equal (at least one corner different), otherwise false.</returns>
 	bool operator!=(const Rectangle& rhs)const { return !(*this == rhs); }
 
-	/// <summary>Expand this rectangle which will also contains the given rectangle.</summary>
+	/// <summary>Expand this rectangle so that it also contains the given rectangle. Equivalently: Set this
+	/// rectangle's min corner to the min of this and rect min corner, and the max corner to the max of this
+	/// and rect's max corner.</summary>
+	/// <param name="rect">The other rectangle to extend.</param>
 	void expand(const Rectangle& rect)
 	{
-		x = glm::min(x, rect.x);
-		y = glm::min(y, rect.y);
-		width = glm::max(width, rect.width);
-		height = glm::max(height, rect.height);
+		auto minx = glm::min(x, rect.x);
+		auto miny = glm::min(y, rect.y);
+		auto maxx = glm::max(x + height, rect.x + rect.width);
+		auto maxy = glm::max(y + height, rect.y + rect.width);
+
+		x = minx;
+		y = miny;
+		width = maxx - minx;
+		height = maxy - miny;
 	}
 
 };
 
-template<typename TYPE>
-Rectangle<TYPE> operator *(const glm::mat4& xform, const Rectangle<TYPE>& rect)
-{
-	// transform the rectangle
-	glm::detail::tvec4<TYPE, glm::precision::defaultp> xform0(xform *
-	    glm::detail::tvec4<TYPE, glm::precision::defaultp>(rect.x, rect.y, 0.0f, 1.0f));
+/// <summary>An integer 2D rectangle</summary>
+typedef Rectangle<int32_t> Rectanglei;
 
-	glm::detail::tvec4<TYPE, glm::precision::defaultp> xform1 =
-	  glm::detail::tvec2<TYPE, glm::precision::defaultp>(xform * glm::vec4(rect.x + rect.width, rect.height, 0.0f, 1.0f));
-
-	return Rectangle<TYPE>(glm::detail::tvec2<TYPE, glm::precision::defaultp>(xform0, xform1 - xform0));
-}
-
-typedef Rectangle<int32> Rectanglei;
-typedef Rectangle<float32> Rectanglef;
+/// <summary>A floating point 2D rectangle</summary>
+typedef Rectangle<float> Rectanglef;
 }

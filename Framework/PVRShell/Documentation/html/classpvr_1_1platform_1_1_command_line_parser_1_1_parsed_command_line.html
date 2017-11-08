@@ -96,7 +96,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html">Option</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A c-style string name-value pair that represents command line argument (arg: name, val: value)  <a href="structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A c-style std::string name-value pair that represents command line argument (arg: name, val: value)  <a href="structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -114,20 +114,20 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5c97bc56c982c6d8c19e0d697dd5e44c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#a5c97bc56c982c6d8c19e0d697dd5e44c">getBoolOptionSetTrueIfPresent</a> (const char *name, bool &amp;outValue) const </td></tr>
 <tr class="memdesc:a5c97bc56c982c6d8c19e0d697dd5e44c"><td class="mdescLeft">&#160;</td><td class="mdescRight">If a specific argument was present, set outValue to True. <a href="#a5c97bc56c982c6d8c19e0d697dd5e44c">More...</a><br/></td></tr>
 <tr class="separator:a5c97bc56c982c6d8c19e0d697dd5e44c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac028f65cf2bea18a2b15e325936c42cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#ac028f65cf2bea18a2b15e325936c42cc">getFloatOption</a> (const char *name, float32 &amp;outValue) const </td></tr>
-<tr class="memdesc:ac028f65cf2bea18a2b15e325936c42cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an argument's value as a float value. Returns false and leaves the value unchanged if the value is not present, allowing very easy use of default arguments. <a href="#ac028f65cf2bea18a2b15e325936c42cc">More...</a><br/></td></tr>
-<tr class="separator:ac028f65cf2bea18a2b15e325936c42cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77c1404f43b918c26a7cd8f62587a744"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#a77c1404f43b918c26a7cd8f62587a744">getIntOption</a> (const char *name, int32 &amp;outValue) const </td></tr>
-<tr class="memdesc:a77c1404f43b918c26a7cd8f62587a744"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an argument's value as an integer value. Returns false and leaves the value unchanged if the value is not present, allowing very easy use of default arguments. <a href="#a77c1404f43b918c26a7cd8f62587a744">More...</a><br/></td></tr>
-<tr class="separator:a77c1404f43b918c26a7cd8f62587a744"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8aadc47e170152031318390edf8faac4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#a8aadc47e170152031318390edf8faac4">getFloatOption</a> (const char *name, float &amp;outValue) const </td></tr>
+<tr class="memdesc:a8aadc47e170152031318390edf8faac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an argument's value as a float value. Returns false and leaves the value unchanged if the value is not present, allowing very easy use of default arguments. <a href="#a8aadc47e170152031318390edf8faac4">More...</a><br/></td></tr>
+<tr class="separator:a8aadc47e170152031318390edf8faac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4acf484395d53bcc16711b096f6a317"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#ac4acf484395d53bcc16711b096f6a317">getIntOption</a> (const char *name, int32_t &amp;outValue) const </td></tr>
+<tr class="memdesc:ac4acf484395d53bcc16711b096f6a317"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an argument's value as an integer value. Returns false and leaves the value unchanged if the value is not present, allowing very easy use of default arguments. <a href="#ac4acf484395d53bcc16711b096f6a317">More...</a><br/></td></tr>
+<tr class="separator:ac4acf484395d53bcc16711b096f6a317"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7590dd064364a718a8cf097f1dfd19cf"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#a3cb03162778bf1485327438ac3607c55">Options</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#a7590dd064364a718a8cf097f1dfd19cf">getOptionsList</a> () const </td></tr>
-<tr class="memdesc:a7590dd064364a718a8cf097f1dfd19cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all command line options as a list of c-string name/value pairs <a href="#a7590dd064364a718a8cf097f1dfd19cf">More...</a><br/></td></tr>
+<tr class="memdesc:a7590dd064364a718a8cf097f1dfd19cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all command line options as a list of name/value pairs (c-strings) <a href="#a7590dd064364a718a8cf097f1dfd19cf">More...</a><br/></td></tr>
 <tr class="separator:a7590dd064364a718a8cf097f1dfd19cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2d41b15234a501d1d0de441637e845a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#ac2d41b15234a501d1d0de441637e845a">getStringOption</a> (const char *name, std::string &amp;outValue) const </td></tr>
-<tr class="memdesc:ac2d41b15234a501d1d0de441637e845a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an argument as a string value. Returns false and leaves the value unchanged if the value is not present, allowing very easy use of default arguments. <a href="#ac2d41b15234a501d1d0de441637e845a">More...</a><br/></td></tr>
+<tr class="memdesc:ac2d41b15234a501d1d0de441637e845a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an argument as a std::string value. Returns false and leaves the value unchanged if the value is not present, allowing very easy use of default arguments. <a href="#ac2d41b15234a501d1d0de441637e845a">More...</a><br/></td></tr>
 <tr class="separator:ac2d41b15234a501d1d0de441637e845a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57dfd2cd746bfdb8cdcb18a61255bc5a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line.html#a57dfd2cd746bfdb8cdcb18a61255bc5a">hasOption</a> (const char *name) const </td></tr>
-<tr class="memdesc:a57dfd2cd746bfdb8cdcb18a61255bc5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if a specific argument name exists <a href="#a57dfd2cd746bfdb8cdcb18a61255bc5a">More...</a><br/></td></tr>
+<tr class="memdesc:a57dfd2cd746bfdb8cdcb18a61255bc5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if a specific argument name exists (regardless of the presence of a value or not). For example, if the command line was "myapp.exe -fps", the query hasOption("fps") will return true. <a href="#a57dfd2cd746bfdb8cdcb18a61255bc5a">More...</a><br/></td></tr>
 <tr class="separator:a57dfd2cd746bfdb8cdcb18a61255bc5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -205,7 +205,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ac028f65cf2bea18a2b15e325936c42cc"></a>
+<a class="anchor" id="a8aadc47e170152031318390edf8faac4"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -218,7 +218,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float32 &amp;&#160;</td>
+          <td class="paramtype">float &amp;&#160;</td>
           <td class="paramname"><em>outValue</em>&#160;</td>
         </tr>
         <tr>
@@ -241,7 +241,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a77c1404f43b918c26a7cd8f62587a744"></a>
+<a class="anchor" id="ac4acf484395d53bcc16711b096f6a317"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -254,7 +254,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int32 &amp;&#160;</td>
+          <td class="paramtype">int32_t &amp;&#160;</td>
           <td class="paramname"><em>outValue</em>&#160;</td>
         </tr>
         <tr>
@@ -290,7 +290,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get all command line options as a list of c-string name/value pairs</p>
+<p>Get all command line options as a list of name/value pairs (c-strings)</p>
+<dl class="section return"><dt>Returns</dt><dd>The command line options</dd></dl>
 
 </div>
 </div>
@@ -318,7 +319,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Get an argument as a string value. Returns false and leaves the value unchanged if the value is not present, allowing very easy use of default arguments.</p>
+<p>Get an argument as a std::string value. Returns false and leaves the value unchanged if the value is not present, allowing very easy use of default arguments.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">name</td><td>The command line argument (e.g. "-captureFrames")</td></tr>
@@ -344,7 +345,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Query if a specific argument name exists</p>
+<p>Query if a specific argument name exists (regardless of the presence of a value or not). For example, if the command line was "myapp.exe -fps", the query hasOption("fps") will return true.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The argument name to test</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the argument name was passed through the command line , otherwise false.</dd></dl>
 
 </div>
 </div>

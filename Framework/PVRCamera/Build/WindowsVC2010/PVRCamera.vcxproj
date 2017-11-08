@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CameraInterface.h" />
-    <ClInclude Include="..\..\CameraInterfacePVRApi.h" />
     <ClInclude Include="..\..\PVRCamera.h" />
   </ItemGroup>
   <ItemGroup>

@@ -12,33 +12,33 @@ namespace texture_ktx {
 // Khronos texture file header
 struct FileHeader
 {
-	uint8  identifier[12];
-	uint32 endianness;
-	uint32 glType;
-	uint32 glTypeSize;
-	uint32 glFormat;
-	uint32 glInternalFormat;
-	uint32 glBaseInternalFormat;
-	uint32 pixelWidth;
-	uint32 pixelHeight;
-	uint32 pixelDepth;
-	uint32 numberOfArrayElements;
-	uint32 numberOfFaces;
-	uint32 numberOfMipmapLevels;
-	uint32 bytesOfKeyValueData;
+	uint8_t  identifier[12];
+	uint32_t endianness;
+	uint32_t glType;
+	uint32_t glTypeSize;
+	uint32_t glFormat;
+	uint32_t glInternalFormat;
+	uint32_t glBaseInternalFormat;
+	uint32_t pixelWidth;
+	uint32_t pixelHeight;
+	uint32_t pixelDepth;
+	uint32_t numArrayElements;
+	uint32_t numFaces;
+	uint32_t numMipmapLevels;
+	uint32_t bytesOfKeyValueData;
 };
 
 // Magic identifier
-static const uint8  c_identifier[] = { 0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A };
+static const uint8_t  c_identifier[] = { 0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A };
 
 // Reference number to verify endianness of a file
-static const uint32 c_endianReference = 0x04030201;
+static const uint32_t c_endianReference = 0x04030201;
 
 // Expected size of a header in file
-static const uint32 c_expectedHeaderSize = 64;
+static const uint32_t c_expectedHeaderSize = 64;
 
 // Identifier for the orientation meta data
-static const char8  c_orientationMetaDataKey[] = "KTXOrientation";
+static const char  c_orientationMetaDataKey[] = "KTXOrientation";
 
 namespace OpenGLFormats {
 enum Enum

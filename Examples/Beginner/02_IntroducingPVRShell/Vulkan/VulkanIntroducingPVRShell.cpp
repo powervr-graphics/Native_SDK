@@ -1,325 +1,920 @@
-/*
-Copyright (c) 2015 Imagination Technologies Ltd.
+/*!*********************************************************************************************************************
+\File         VulkanIntroducingPVRUtils.cpp
+\Title        Introducing the PowerVR Framework
+\Author       PowerVR by Imagination, Developer Technology Team
+\Copyright    Copyright (c) Imagination Technologies Limited.
+\brief        Introduction to the PVRShell library. Shows how to get started using the PVRShell library.
+***********************************************************************************************************************/
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and/or associated documentation files (the
-"Materials"), to deal in the Materials without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Materials, and to
-permit persons to whom the Materials are furnished to do so, subject to
-the following conditions:
-
-The above copyright notice(s) and this permission notice shall be included
-in all copies or substantial portions of the Materials.
-
-
-The Materials are Confidential Information as defined by the
-Khronos Membership Agreement until designated non-confidential by Khronos,
-at which point this condition clause shall be removed.
-
-
-THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
-*/
-
-#if defined(ANDROID)
-#define VK_USE_PLATFORM_ANDROID_KHR
-#endif
-#define VK_PROTOTYPES
-#include <algorithm>
-#include <cstdlib>
+#include "vk_getProcAddrs.h"
+#include "PVRCore/PVRCore.h"
 #include "PVRShell/PVRShell.h"
-#include "PVRNativeApi/Vulkan/VulkanBindings.h"
-#include "PVRNativeApi/Vulkan/PlatformHandlesVulkanGlue.h"
-#include "PVRNativeApi/Vulkan/BufferUtilsVk.h"
-void vulkanSuccessOnDie(VkResult result, const char* msg)
+
+#ifdef Success
+#undef Success
+#endif
+
+/*!*********************************************************************************************************************
+Content file names
+***********************************************************************************************************************/
+const char* VertShaderName = "VertShader_vk.spv";
+const char* FragShaderName = "FragShader_vk.spv";
+
+
+void vulkanSuccessOrDie(VkResult result, const char* msg)
 {
 	if (result != VK_SUCCESS)
 	{
-		pvr::Log("%s Vulkan Raised an error", msg);
+		("%s Vulkan Raised an error", msg);
 		exit(0);
 	}
 }
-const char* VertShaderName = "VertShader_vk.spv";
-const char* FragShaderName = "FragShader_vk.spv";
-class App;
-typedef std::vector<VkFramebuffer> MultiFbo;
-using namespace pvr;
 
-struct GraphicsPipelineCreate
+const uint32_t MaxSwapchains = 4;
+
+struct Buffer
 {
-	enum ShaderStage
-	{
-		Vertex, Fragment
-	};
-	VkShaderModule fs;
-	VkShaderModule vs;
-	VkGraphicsPipelineCreateInfo vkPipeInfo;
-	VkPipelineShaderStageCreateInfo shaderStages[2];
-	VkPipelineColorBlendStateCreateInfo cb;
-	VkPipelineInputAssemblyStateCreateInfo ia;
-	VkPipelineDepthStencilStateCreateInfo ds;
-	VkPipelineVertexInputStateCreateInfo vi;
-	VkPipelineViewportStateCreateInfo vp;
-	VkPipelineMultisampleStateCreateInfo ms;
-	VkPipelineRasterizationStateCreateInfo rs;
-
-	void reset()
-	{
-		memset(&vkPipeInfo, 0, sizeof(vkPipeInfo));
-		memset(&shaderStages, 0, sizeof(shaderStages));
-		memset(&cb, 0, sizeof(cb));
-		memset(&ia, 0, sizeof(ia));
-		memset(&ds, 0, sizeof(ds));
-		memset(&vi, 0, sizeof(vi));
-		memset(&vp, 0, sizeof(vp));
-		cb.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-		ia.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		vi.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vp.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-
-		shaderStages[ShaderStage::Vertex].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		shaderStages[ShaderStage::Vertex].stage = VK_SHADER_STAGE_VERTEX_BIT;
-
-		shaderStages[ShaderStage::Fragment].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		shaderStages[ShaderStage::Fragment].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-		ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		ia.primitiveRestartEnable = VK_FALSE;
-
-		vi.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vi.pNext = NULL;
-		vi.flags = 0;
-		vi.vertexBindingDescriptionCount = 0;
-		vi.vertexAttributeDescriptionCount = 0;
-
-		cb.attachmentCount = 1;
-		cb.pNext = NULL;
-		cb.flags = 0;
-		cb.logicOp = VK_LOGIC_OP_COPY;
-		cb.logicOpEnable = VK_FALSE;
-
-		vkPipeInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-		vkPipeInfo.pColorBlendState = &cb;
-		vkPipeInfo.pDepthStencilState = &ds;
-		vkPipeInfo.pInputAssemblyState = &ia;
-		vkPipeInfo.pMultisampleState = &ms;
-		vkPipeInfo.pRasterizationState = &rs;
-		vkPipeInfo.pTessellationState = NULL;
-		vkPipeInfo.pVertexInputState = &vi;
-		vkPipeInfo.pViewportState = &vp;
-		vkPipeInfo.pDynamicState = NULL;
-		vkPipeInfo.pStages = shaderStages;
-		vkPipeInfo.stageCount = 2;
-		resetDepthStencil().resetRasterizer().resetMultisample();
-
-	}
-	GraphicsPipelineCreate() { reset(); }
-
-	GraphicsPipelineCreate& resetRasterizer()
-	{
-		memset(&rs, 0, sizeof(rs));
-		rs.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-		rs.cullMode = VK_CULL_MODE_BACK_BIT;
-		rs.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-		rs.polygonMode = VK_POLYGON_MODE_FILL;
-		rs.lineWidth = 1.0;
-		return *this;
-	}
-
-	GraphicsPipelineCreate& resetMultisample()
-	{
-		memset(&ms, 0, sizeof(ms));
-		ms.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-		ms.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-		ms.minSampleShading = 0.0f;
-		return *this;
-	}
-
-	GraphicsPipelineCreate& resetDepthStencil()
-	{
-		memset(&ds, 0, sizeof(ds));
-		ds.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-		ds.depthTestEnable = VK_TRUE;
-		ds.depthWriteEnable = VK_TRUE;
-		ds.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
-		ds.front.compareMask = 0xff;
-		ds.front.compareOp = VK_COMPARE_OP_ALWAYS;
-		ds.front.depthFailOp = ds.front.passOp = ds.front.failOp = VK_STENCIL_OP_KEEP;
-		ds.back = ds.front;
-		return *this;
-	}
+	VkBuffer buffer;
+	VkDeviceMemory memory;
+	Buffer() : buffer(VK_NULL_HANDLE), memory(VK_NULL_HANDLE) {}
 };
 
-class App : public pvr::Shell
+/*!*********************************************************************************************************************
+Class implementing the pvr::Shell functions.
+***********************************************************************************************************************/
+class VulkanIntroducingPVRShell : public pvr::Shell
 {
 	struct Vertex
 	{
 		float x, y, z, w;
 	};
 
-	VkRenderPass		renderPass;
-	VkCommandBuffer		cmdBuffer[8];
-	MultiFbo			framebuffer;
-	VkPipelineLayout	emptyPipelayout;
-	VkPipeline			opaquePipeline;
+	VkInstance _instance;
+	VkPhysicalDevice _physicalDevice;
+	VkSurfaceKHR _surface;
+	VkDevice _device;
+	Buffer _vbo;
 
-	native::HBuffer_	vertexBuffer;
+	struct Swapchain
+	{
+		VkSwapchainKHR swapchainVk;
+		VkExtent2D dimension;
+		VkImageView swapchainImages[MaxSwapchains];
+		uint32_t numSwapchains;
+		VkFormat colorFormat;
+		uint32_t swapchainIndex;
 
-	pvr::IPlatformContext* platformContext;
-	VkCommandPool cmdPool;
+		Swapchain() : swapchainVk(VK_NULL_HANDLE)
+		{
+			memset(swapchainImages, VK_NULL_HANDLE, sizeof(swapchainImages));
+		}
+	} _swapchain;
 
-	pvr::Result initApplication() {	return pvr::Result::Success;	}
+	struct Framebuffer
+	{
+		VkFramebuffer framebufferVk;
+		VkImageView depthStencilImages;
+		Framebuffer() : framebufferVk(VK_NULL_HANDLE), depthStencilImages(VK_NULL_HANDLE) {}
+	};
 
-	MultiFbo createOnScreenFbo(VkRenderPass& renderPass);
+	VkRenderPass _renderPass;
+	Framebuffer _framebuffers[MaxSwapchains];
+	VkSemaphore _semaphoresImageAcquire[MaxSwapchains];
+	VkSemaphore _semaphoresPresent[MaxSwapchains];
+	VkFence _fencesPerFrameAcquire[MaxSwapchains];
+	VkFence _fencesCommandBuffer[MaxSwapchains];
+	uint32_t _currentFrameIndex;
+	VkQueue _queue;
+	VkCommandBuffer _commandBuffers[MaxSwapchains];
+	VkPipelineLayout _emptyPipelayout;
+	VkPipeline _opaquePipeline;
+	uint32_t _graphicsQueueFamilyIndex;
+	VkCommandPool _commandPool;
 
-	void initColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& state);
-
-	VkRenderPass createOnScreenRenderPass(VkAttachmentLoadOp colorLoad = VK_ATTACHMENT_LOAD_OP_CLEAR,
-	                                      VkAttachmentStoreOp colorStore = VK_ATTACHMENT_STORE_OP_STORE,
-	                                      VkAttachmentLoadOp dsLoad = VK_ATTACHMENT_LOAD_OP_CLEAR,
-	                                      VkAttachmentStoreOp dsStore = VK_ATTACHMENT_STORE_OP_DONT_CARE);
-
-	VkDevice& getDevice() { return platformContext->getNativePlatformHandles().context.device; }
-
+public:
+	pvr::Result initApplication();
 	pvr::Result initView();
-
 	pvr::Result releaseView();
-
-	pvr::Result quitApplication() {	return pvr::Result::Success;	}
-
+	pvr::Result quitApplication();
 	pvr::Result renderFrame();
 
+	void initColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& state);
+	bool createFramebufferAndRenderpass();
+	bool createSynchronisationPrimitives();
+	VkDevice& getDevice() { return _device; }
 	bool loadShader(pvr::Stream::ptr_type stream, VkShaderModule& outShader);
-
 	void recordCommandBuffer();
-
-	void createPipeline();
-
-	void writeVertexBuffer();
-
+	bool createPipeline(uint32_t width, uint32_t height);
+	bool initVbo();
 	void setupVertexAttribs(VkVertexInputBindingDescription* bindings, VkVertexInputAttributeDescription* attributes,
 	                        VkPipelineVertexInputStateCreateInfo& createInfo);
-
-	bool createBuffer(pvr::uint32 size, types::BufferBindingUse usage, native::HBuffer_& outBuffer);
+	bool createPhysicalDevice();
+	bool createInstance();
+	bool createSurface(void* display, void* window);
+	bool createDevice(VkSurfaceKHR _surface);
+	bool createSwapchain(VkSurfaceKHR _surface, uint32_t width, uint32_t height);
+	bool createBufferAndMemory(VkDeviceSize size, VkBufferUsageFlags usageFlags,
+	                           VkMemoryPropertyFlags memFlags, Buffer& outBuffer);
+	int32_t getCompatibleQueueFamilies(VkSurfaceKHR _surface);
 };
 
-pvr::Result App::initView()
+namespace Extensions {
+const char* InstanceExtensions[] =
 {
-	platformContext = &getPlatformContext();
-	vk::initVk(platformContext->getNativePlatformHandles().context.instance,
-	           platformContext->getNativePlatformHandles().context.device);
-	{
-		VkCommandPoolCreateInfo cmdPoolCreateInfo = {};
-		cmdPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		cmdPoolCreateInfo.pNext = NULL;
-		cmdPoolCreateInfo.queueFamilyIndex = platformContext->getNativePlatformHandles().universalQueueIndex;
-		vk::CreateCommandPool(platformContext->getNativePlatformHandles().context.device, &cmdPoolCreateInfo, NULL, &cmdPool);
-	}
-	// create the renderpass and framebuffer
-	renderPass = createOnScreenRenderPass();
-	framebuffer = createOnScreenFbo(renderPass);
+	"VK_KHR_surface",
+	"VK_KHR_display",
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+	"VK_KHR_win32_surface",
+#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
+	"VK_KHR_android_surface",
+#elif defined(VK_USE_PLATFORM_XLIB_KHR)
+	"VK_KHR_xlib_surface",
+#elif  defined(VK_USE_PLATFORM_WAYLAND_KHR)
+	"VK_KHR_wayland_surface",
+#endif
+	"VK_KHR_get_physical_device_properties2"
+};
 
-	createPipeline();
-	createBuffer(4096, types::BufferBindingUse::VertexBuffer, vertexBuffer);
-	writeVertexBuffer();
+const char* DeviceExtensions[] =
+{
+	"VK_KHR_swapchain",
+};
+}
+
+namespace Layers {
+const char* InstanceLayers[] =
+{
+#ifdef DEBUG
+	"VK_LAYER_LUNARG_standard_validation"
+#else
+	""
+#endif
+};
+}
+
+/*!*********************************************************************************************************************
+\brief  Filters the extensions to be used in this demo
+***********************************************************************************************************************/
+std::vector<std::string> filterExtensions(const std::vector<VkExtensionProperties>& extensionProperties,
+    const char** extensionsToEnable, uint32_t numExtensions)
+{
+	std::vector<std::string> outExtensions;
+	for (uint32_t i = 0; i < extensionProperties.size(); ++i)
+	{
+		for (uint32_t j = 0; j < numExtensions; ++j)
+		{
+			if (!strcmp(extensionsToEnable[j], extensionProperties[i].extensionName))
+			{
+				outExtensions.push_back(extensionsToEnable[j]);
+				break;
+			}
+		}
+	}
+	return outExtensions;
+}
+
+/*!*********************************************************************************************************************
+\brief  Filters the layers to be used in this demo
+***********************************************************************************************************************/
+std::vector<std::string> filterLayers(const std::vector<VkLayerProperties>& layerProperties, const char** layersToEnable,
+                                      uint32_t layersCount)
+{
+	std::vector<std::string> outLayers;
+	for (uint32_t i = 0; i < layerProperties.size(); ++i)
+	{
+		for (uint32_t j = 0; j < layersCount; ++j)
+		{
+			if (!strcmp(layersToEnable[j], layerProperties[i].layerName))
+			{
+				outLayers.push_back(layersToEnable[j]);
+			}
+		}
+	}
+	return outLayers;
+}
+
+/*!*********************************************************************************************************************
+\brief  Create our Vulkan application instance
+***********************************************************************************************************************/
+bool VulkanIntroducingPVRShell::createInstance()
+{
+	vk::initVulkan();
+	VkApplicationInfo appInfo = {};
+	appInfo.pApplicationName = "VulkanIntroducingPVRShell";
+	appInfo.applicationVersion = 1;
+	appInfo.engineVersion = 1;
+	appInfo.pEngineName = "VulkanIntroducingPVRShell";
+	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+	appInfo.apiVersion = VK_MAKE_VERSION(1, 0, 0);
+
+	// Here we create our Instance Info and assign our app info to it
+	// along with our _instance layers and extensions.
+	VkInstanceCreateInfo instanceInfo = {};
+	instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	instanceInfo.pApplicationInfo = &appInfo;
+
+	uint32_t numExtensions = 0;
+	vk::EnumerateInstanceExtensionProperties(nullptr, &numExtensions, nullptr);
+	std::vector<VkExtensionProperties> extensiosProps(numExtensions);
+	vk::EnumerateInstanceExtensionProperties(nullptr, &numExtensions, extensiosProps.data());
+
+	std::vector<std::string> enabledExtensionNames = filterExtensions(extensiosProps, Extensions::InstanceExtensions, ARRAY_SIZE(Extensions::InstanceExtensions));
+
+	uint32_t numLayers = 0;
+	vk::EnumerateInstanceLayerProperties(&numLayers, nullptr);
+	std::vector<VkLayerProperties> layerProps(numLayers);
+	vk::EnumerateInstanceLayerProperties(&numLayers, layerProps.data());
+
+	std::vector<std::string> enabledLayerNames = filterLayers(layerProps, Layers::InstanceLayers, ARRAY_SIZE(Layers::InstanceLayers));
+
+	std::vector<const char*> enabledExtensions;
+	std::vector<const char*> enableLayers;
+
+	enabledExtensions.resize(enabledExtensionNames.size());
+	for (uint32_t i = 0; i < enabledExtensionNames.size(); ++i)
+	{
+		enabledExtensions[i] = enabledExtensionNames[i].c_str();
+	}
+
+	instanceInfo.enabledExtensionCount = static_cast<uint32_t>(enabledExtensions.size());
+	instanceInfo.ppEnabledExtensionNames = enabledExtensions.data();
+
+	enableLayers.resize(enabledLayerNames.size());
+	for (uint32_t i = 0; i < enabledLayerNames.size(); ++i)
+	{
+		enableLayers[i] = enabledLayerNames[i].c_str();
+	}
+
+	instanceInfo.enabledLayerCount = static_cast<uint32_t>(enableLayers.size());
+	instanceInfo.ppEnabledLayerNames = enableLayers.data();
+
+	// Create our Vulkan Application Instance.
+	if (vk::CreateInstance(&instanceInfo, nullptr, &_instance) != VK_SUCCESS)
+	{
+		return false;
+	}
+	// Initialize the Function pointers that require the Instance address
+	return vk::initVulkanInstance(_instance);
+}
+
+/*!*********************************************************************************************************************
+\brief  Find a physical device and create a Vulkan handle for it.
+***********************************************************************************************************************/
+bool VulkanIntroducingPVRShell::createPhysicalDevice()
+{
+	uint32_t gpuCount;
+
+	// we query for the number of GPUs available.
+	VkResult result = vk::EnumeratePhysicalDevices(_instance, &gpuCount, nullptr);
+	if (gpuCount == 0)
+	{
+		return false;
+	}
+	vk::EnumeratePhysicalDevices(_instance, &gpuCount, &_physicalDevice);
+	return true;
+}
+
+/*!*********************************************************************************************************************
+\brief  Create the surface we'll present on. Differs based on platform.
+***********************************************************************************************************************/
+bool VulkanIntroducingPVRShell::createSurface(void* display, void* window)
+{
+	VkResult result = VK_SUCCESS;
+#ifdef VK_USE_PLATFORM_WIN32_KHR
+	VkWin32SurfaceCreateInfoKHR surfaceInfo = {};
+	surfaceInfo.hinstance = (HINSTANCE)GetModuleHandle(NULL);
+	surfaceInfo.hwnd = (HWND)window;
+	surfaceInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	// we create the _surface we'll be rendering on.
+	result = vk::CreateWin32SurfaceKHR(_instance, &surfaceInfo, nullptr, &_surface);
+#endif
+
+#ifdef VK_USE_PLATFORM_XLIB_KHR
+	VkXlibSurfaceCreateInfoKHR surfaceInfo = {};
+	surfaceInfo.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
+	surfaceInfo.dpy = (Display*)display;
+	surfaceInfo.window = (Window)window;
+	// we create the _surface we'll be rendering on.
+	result = vk::CreateXlibSurfaceKHR(_instance, &surfaceInfo, nullptr, &_surface);
+#endif
+
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
+	VkAndroidSurfaceCreateInfoKHR surfaceInfo = {};
+	surfaceInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+	surfaceInfo.window = (ANativeWindow*)window;
+	result = vk::CreateAndroidSurfaceKHR(_instance, &surfaceInfo, nullptr, &_surface);
+#endif
+
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+	VkWaylandSurfaceCreateInfoKHR surface_info = {};
+	surface_info.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+	surface_info.display = (wl_display*)display;
+	surface_info.surface = (wl_surface*)window;
+	result = vk::CreateWaylandSurfaceKHR(_instance, &surface_info, NULL, &_surface);
+#endif
+
+#ifdef VK_USE_PLATFORM_NULLWS
+	VkDisplayPropertiesKHR properties;
+	uint32_t propertiesCount = 1;
+	if (vk::GetPhysicalDeviceDisplayPropertiesKHR)
+	{
+		vk::GetPhysicalDeviceDisplayPropertiesKHR(_physicalDevice, &propertiesCount, &properties);
+	}
+
+	VkDisplayKHR nativeDisplay = properties.display;
+
+	uint32_t modeCount = 0;
+	vk::GetDisplayModePropertiesKHR(_physicalDevice, nativeDisplay, &modeCount, NULL);
+	std::vector<VkDisplayModePropertiesKHR> modeProperties;
+	modeProperties.resize(modeCount);
+	vk::GetDisplayModePropertiesKHR(_physicalDevice, nativeDisplay, &modeCount, modeProperties.data());
+
+	VkDisplaySurfaceCreateInfoKHR surface_info = {};
+
+	surface_info.sType = VK_STRUCTURE_TYPE_DISPLAY_SURFACE_CREATE_INFO_KHR;
+	surface_info.pNext = NULL;
+
+	surface_info.displayMode = modeProperties[0].displayMode;
+	surface_info.planeIndex = 0;
+	surface_info.planeStackIndex = 0;
+	surface_info.transform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+	surface_info.globalAlpha = 0.0f;
+	surface_info.alphaMode = VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR;
+	surface_info.imageExtent = modeProperties[0].parameters.visibleRegion;
+
+	result = vk::CreateDisplayPlaneSurfaceKHR(_instance, &surface_info, NULL, &_surface);
+#endif
+
+	return result == VK_SUCCESS;
+}
+
+/*!*********************************************************************************************************************
+\brief  get the compatible queue families from the device we selected.
+***********************************************************************************************************************/
+int32_t VulkanIntroducingPVRShell::getCompatibleQueueFamilies(VkSurfaceKHR _surface)
+{
+	// Check which _queue Family supports both graphics and presentation for the given _surface
+	uint32_t queueFamilyCount;
+	// Get the count of _queue Families the physical device supports.
+	vk::GetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, nullptr);
+	std::vector<VkQueueFamilyProperties> queueFamilyProps(queueFamilyCount);
+	// Load the _queue families data from the phydevice to the list.
+	vk::GetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &queueFamilyCount, queueFamilyProps.data());
+
+	VkBool32 supportPresent;
+	int32_t i = 0;
+	for (; i < (int32_t)queueFamilyCount; ++i)
+	{
+		vk::GetPhysicalDeviceSurfaceSupportKHR(_physicalDevice, i, _surface, &supportPresent);
+		if (queueFamilyProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT && supportPresent)
+		{
+			break;
+		}
+	}
+	if (i == queueFamilyCount)
+	{
+		return -1;
+	}
+	return i;
+}
+
+/*!*********************************************************************************************************************
+\brief  Create the logical device.
+***********************************************************************************************************************/
+bool VulkanIntroducingPVRShell::createDevice(VkSurfaceKHR _surface)
+{
+	// Check which _queue family supports both Graphics and presentation
+	const int32_t queueFamiltIndex = getCompatibleQueueFamilies(_surface);
+	if (queueFamiltIndex == -1) { return false; }
+	_graphicsQueueFamilyIndex = queueFamiltIndex;
+	// This is a priority for _queue (it ranges from 0 - 1) in this case we only have one so it doesn't matter.
+	float queue_priorities[1] = { 1.0f };
+
+	// Lets set up the device _queue information.
+	VkDeviceQueueCreateInfo queueInfo = {};
+	queueInfo.queueFamilyIndex = _graphicsQueueFamilyIndex;
+	queueInfo.pQueuePriorities = queue_priorities;
+	queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	queueInfo.queueCount = 1;
+
+	// Our actual logical device information.
+	VkDeviceCreateInfo deviceInfo = {};
+	deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	deviceInfo.enabledLayerCount = 0;
+	deviceInfo.ppEnabledLayerNames = nullptr;
+	deviceInfo.enabledExtensionCount = ARRAY_SIZE(Extensions::DeviceExtensions);
+	deviceInfo.ppEnabledExtensionNames = Extensions::DeviceExtensions;
+	deviceInfo.queueCreateInfoCount = 1;
+	deviceInfo.pQueueCreateInfos = &queueInfo;
+
+	VkPhysicalDeviceFeatures deviceFeatures;
+	vk::GetPhysicalDeviceFeatures(_physicalDevice, &deviceFeatures);
+	deviceFeatures.robustBufferAccess = false;
+	deviceInfo.pEnabledFeatures = &deviceFeatures;
+	// Create the logical device.
+	if (vk::CreateDevice(_physicalDevice, &deviceInfo, nullptr, &_device) != VK_SUCCESS)
+	{
+		return false;
+	}
+	// Initialize the Function pointers that require the Device address
+	vk::initVulkanDevice(_device);
+
+	// Get our queue
+	vk::GetDeviceQueue(_device, queueInfo.queueFamilyIndex, 0, &_queue);
+	return true;
+}
+
+/*!*********************************************************************************************************************
+\brief  Get the correct screen extents.
+***********************************************************************************************************************/
+VkExtent2D getCorrectExtent(const VkSurfaceCapabilitiesKHR& surfaceCapabilities, uint32_t width, uint32_t height)
+{
+	// The width and height of the Swapchain are either both 0xFFFFFFFF (Max value for uint_32t)
+	// or they are both NOT 0xFFFFFFFF
+	if (surfaceCapabilities.currentExtent.width == std::numeric_limits<uint32_t>::max())
+	{
+		VkExtent2D currentExtent = {width , height};
+		// The _swapchain extent width and height cannot be less then the minimum _surface capability
+		// Also The _swapchain extent width and height cannot be greater then the maximum _surface capability
+		if (width < surfaceCapabilities.minImageExtent.width)
+		{
+			currentExtent.width = surfaceCapabilities.minImageExtent.width;
+		}
+		else if (width > surfaceCapabilities.maxImageExtent.width)
+		{
+			currentExtent.width = surfaceCapabilities.maxImageExtent.width;
+		}
+
+		if (height < surfaceCapabilities.minImageExtent.height)
+		{
+			currentExtent.height = surfaceCapabilities.minImageExtent.height;
+		}
+		else if (height > surfaceCapabilities.maxImageExtent.height)
+		{
+			currentExtent.height = surfaceCapabilities.maxImageExtent.height;
+		}
+		return currentExtent;
+	}
+	else
+	{
+		return surfaceCapabilities.currentExtent;
+	}
+}
+
+/*!*********************************************************************************************************************
+\brief  Select the present mode to be used with the swapchain and surface.
+***********************************************************************************************************************/
+VkPresentModeKHR selectPresentMode(std::vector<VkPresentModeKHR>& modes)
+{
+	const VkPresentModeKHR preferredPresentMode[] =
+	{
+		VK_PRESENT_MODE_FIFO_KHR,
+		VK_PRESENT_MODE_MAILBOX_KHR,
+		VK_PRESENT_MODE_IMMEDIATE_KHR,
+	};
+
+	for (uint32_t i = 0; i < ARRAY_SIZE(preferredPresentMode); ++i)
+	{
+		for (uint32_t j = 0; j < modes.size(); ++j)
+		{
+			if (preferredPresentMode[i] == modes[j]) { return preferredPresentMode[i];}
+		}
+	}
+	return VK_PRESENT_MODE_MAX_ENUM_KHR;
+}
+
+/*!*********************************************************************************************************************
+\brief  Creates swapchain to present images on the surface.
+***********************************************************************************************************************/
+bool VulkanIntroducingPVRShell::createSwapchain(VkSurfaceKHR _surface, uint32_t width, uint32_t height)
+{
+	uint32_t formatCount;
+
+	// we get the count of the formats.
+	VkResult result = vk::GetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice, _surface, &formatCount, nullptr);
+	// We get the format count.
+	std::vector<VkSurfaceFormatKHR> formats(formatCount);
+	result = vk::GetPhysicalDeviceSurfaceFormatsKHR(_physicalDevice, _surface, &formatCount, formats.data());
+
+	VkSurfaceFormatKHR surfaceFormat;
+
+	// if the first format is undefined we pick a default one, else we go with the first one.
+	if (formatCount == 1 && formats[0].format == VK_FORMAT_UNDEFINED)
+	{
+		surfaceFormat.format = VK_FORMAT_B8G8R8A8_UNORM;
+	}
+	else
+	{
+		surfaceFormat = formats[0];
+	}
+
+	_swapchain.colorFormat = surfaceFormat.format;// This Format is always supported.
+	// We get the _surface capabilities from the _surface and physical device.
+	VkSurfaceCapabilitiesKHR surfaceCaps;
+	if (vk::GetPhysicalDeviceSurfaceCapabilitiesKHR(_physicalDevice, _surface, &surfaceCaps) != VK_SUCCESS)
+	{
+		return false;
+	}
+
+	uint32_t numPresentMode;
+
+	// Get the present mode
+	result = vk::GetPhysicalDeviceSurfacePresentModesKHR(_physicalDevice, _surface, &numPresentMode, nullptr);
+	if (result != VK_SUCCESS || numPresentMode == 0)
+	{
+		return false;
+	}
+	std::vector<VkPresentModeKHR> presentModes(numPresentMode);
+	result = vk::GetPhysicalDeviceSurfacePresentModesKHR(_physicalDevice, _surface, &numPresentMode, presentModes.data());
+	if (result != VK_SUCCESS)
+	{
+		return false;
+	}
+
+	VkPresentModeKHR presentMode = selectPresentMode(presentModes);
+	if (presentMode == VK_PRESENT_MODE_MAX_ENUM_KHR)
+	{
+		return false;
+	}
+
+	// Get the correct extent (size) of the _surface
+	_swapchain.dimension = getCorrectExtent(surfaceCaps, width, height);
+
+	uint32_t surfaceImageCount = 2;
+
+	// we create the _swapchain info to create our _swapchain
+	VkSwapchainCreateInfoKHR swapChainInfo = {};
+	swapChainInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+	swapChainInfo.surface = _surface;
+	swapChainInfo.imageFormat = _swapchain.colorFormat;
+	swapChainInfo.preTransform = surfaceCaps.currentTransform;
+	swapChainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	swapChainInfo.presentMode = presentMode;
+	swapChainInfo.minImageCount = surfaceImageCount;
+	swapChainInfo.clipped = VK_TRUE;
+	swapChainInfo.imageExtent.width = _swapchain.dimension.width;
+	swapChainInfo.imageExtent.height = _swapchain.dimension.height;
+	swapChainInfo.imageArrayLayers = 1;
+	swapChainInfo.imageColorSpace = surfaceFormat.colorSpace;
+	swapChainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	swapChainInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	swapChainInfo.queueFamilyIndexCount = 1;
+	swapChainInfo.pQueueFamilyIndices = &_graphicsQueueFamilyIndex;
+
+	// here we check if the present _queue and the graphic _queue are the same
+	// if not we go for a sharing mode.
+
+	// we create the _swapchain proper here.
+	if (vk::CreateSwapchainKHR(_device, &swapChainInfo, nullptr, &_swapchain.swapchainVk) != VK_SUCCESS)
+	{
+		return false;
+	}
+
+	// Create the image view
+	VkImage swapchainImage[4] = {};
+	vk::GetSwapchainImagesKHR(_device, _swapchain.swapchainVk, &_swapchain.numSwapchains, nullptr);
+
+	if (_swapchain.numSwapchains == 0 || _swapchain.numSwapchains > 4)
+	{
+		return false;
+	}
+
+	vk::GetSwapchainImagesKHR(_device, _swapchain.swapchainVk, &_swapchain.numSwapchains, swapchainImage);
+
+	VkImageViewCreateInfo viewInfo = {};
+	viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+	viewInfo.format = _swapchain.colorFormat;
+	viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+	viewInfo.components = VkComponentMapping
+	{
+		VK_COMPONENT_SWIZZLE_R,
+		VK_COMPONENT_SWIZZLE_G,
+		VK_COMPONENT_SWIZZLE_B,
+		VK_COMPONENT_SWIZZLE_A,
+	};
+
+	viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	viewInfo.subresourceRange.baseMipLevel = 0;
+	viewInfo.subresourceRange.levelCount = 1;
+	viewInfo.subresourceRange.baseArrayLayer = 0;
+	viewInfo.subresourceRange.layerCount = 1;
+
+	for (uint32_t i = 0; i < _swapchain.numSwapchains; ++i)
+	{
+		viewInfo.image = swapchainImage[i];
+		if (vk::CreateImageView(_device, &viewInfo, nullptr, &_swapchain.swapchainImages[i]) != VK_SUCCESS)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+/*!*********************************************************************************************************************
+\brief  Extrapolate the memory type from the device properties.
+***********************************************************************************************************************/
+bool memory_type_from_properties(const VkPhysicalDeviceMemoryProperties& memProperties,
+                                 uint32_t typeBits, VkMemoryPropertyFlags requirements_mask, uint32_t* typeIndex)
+{
+	// Search memtypes to find first index with those properties
+	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+	{
+		if ((typeBits & 1) == 1)
+		{
+			// Type is available, does it match user properties?
+			if ((memProperties.memoryTypes[i].propertyFlags & requirements_mask) == requirements_mask)
+			{
+				*typeIndex = i;
+				return true;
+			}
+		}
+		typeBits >>= 1;
+	}
+	// No memory types matched, return failure
+	return false;
+}
+
+/*!*********************************************************************************************************************
+\brief  Creates Buffer and Memory for the vertex buffer used in this demo.
+***********************************************************************************************************************/
+bool VulkanIntroducingPVRShell::createBufferAndMemory(VkDeviceSize size, VkBufferUsageFlags usageFlags,
+    VkMemoryPropertyFlags memFlags, Buffer& outBuffer)
+{
+	VkBufferCreateInfo bufferInfo = {};
+	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	bufferInfo.pQueueFamilyIndices = &_graphicsQueueFamilyIndex;
+	bufferInfo.queueFamilyIndexCount = 1;
+	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	bufferInfo.size = size;
+	bufferInfo.usage = usageFlags;
+	Buffer buffer;
+	if (vk::CreateBuffer(_device, &bufferInfo, nullptr, &buffer.buffer) != VK_SUCCESS)
+	{
+		return false;
+	}
+
+	// Allocate memory
+	VkMemoryRequirements memReq;
+	VkMemoryAllocateInfo memAllocateInfo = {};
+	vk::GetBufferMemoryRequirements(_device, buffer.buffer, &memReq);
+	VkPhysicalDeviceMemoryProperties memProps;
+	vk::GetPhysicalDeviceMemoryProperties(_physicalDevice, &memProps);
+	memory_type_from_properties(memProps, memReq.memoryTypeBits, memFlags, &memAllocateInfo.memoryTypeIndex);
+	memAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	memAllocateInfo.allocationSize = memReq.size;
+
+	if (vk::AllocateMemory(_device, &memAllocateInfo, nullptr, &buffer.memory) != VK_SUCCESS)
+	{
+		return false;
+	}
+
+	if (vk::BindBufferMemory(_device, buffer.buffer, buffer.memory, 0) != VK_SUCCESS)
+	{
+		return false;
+	}
+
+	outBuffer = buffer;
+	return true;
+}
+
+
+/*!*********************************************************************************************************************
+\return Result::Success if no error occurred
+\brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
+Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.). If the rendering
+context is lost, initApplication() will not be called again.
+***********************************************************************************************************************/
+pvr::Result VulkanIntroducingPVRShell::initApplication()
+{
+	return pvr::Result::Success;
+}
+
+/*!*********************************************************************************************************************
+\return Result::Success if no error occurred
+\brief  Code in quitApplication() will be called by pvr::Shell once per run, just before exiting the program.
+If the rendering context is lost, quitApplication() will not be called.
+***********************************************************************************************************************/
+pvr::Result VulkanIntroducingPVRShell::quitApplication()
+{
+	return pvr::Result::Success;
+}
+
+/*!*********************************************************************************************************************
+\return Result::Success if no error occurred
+\brief  Code in initView() will be called by Shell upon initialization or after a change  in the rendering context.
+Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
+***********************************************************************************************************************/
+pvr::Result VulkanIntroducingPVRShell::initView()
+{
+	_currentFrameIndex = 0;
+	_instance = VK_NULL_HANDLE;
+	_physicalDevice = VK_NULL_HANDLE;
+	_surface = VK_NULL_HANDLE;
+	_device = VK_NULL_HANDLE;
+	_renderPass  = VK_NULL_HANDLE;
+	_queue = VK_NULL_HANDLE;
+	memset(_commandBuffers, 0, sizeof(_commandBuffers));
+	_emptyPipelayout = VK_NULL_HANDLE;
+	_opaquePipeline = VK_NULL_HANDLE;
+	_commandPool = VK_NULL_HANDLE;
+
+	if (!createInstance())
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	if (!createPhysicalDevice())
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	if (!createSurface(getDisplay(), getWindow()))
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	if (!createDevice(_surface))
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	if (!createSwapchain(_surface, getWidth(), getHeight()))
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	if (!createFramebufferAndRenderpass())
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	if (!createSynchronisationPrimitives())
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	VkCommandPoolCreateInfo commandPoolCreateInfo = {};
+	commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	commandPoolCreateInfo.queueFamilyIndex = _graphicsQueueFamilyIndex;
+	vk::CreateCommandPool(_device, &commandPoolCreateInfo, nullptr, &_commandPool);
+
+	if (!createPipeline(_swapchain.dimension.width, _swapchain.dimension.height))
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	if (!initVbo())
+	{
+		return pvr::Result::UnknownError;
+	}
 	recordCommandBuffer();
 	return pvr::Result::Success;
 }
 
-pvr::Result App::releaseView()
+/*!*********************************************************************************************************************
+\return Result::Success if no error occurred
+\brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
+***********************************************************************************************************************/
+pvr::Result VulkanIntroducingPVRShell::releaseView()
 {
-	auto& handles = platformContext->getNativePlatformHandles();
-<<<<<<< HEAD
-	vk::QueueWaitIdle(handles.graphicsQueue);
-=======
-	vk::QueueWaitIdle(handles.mainQueue());
->>>>>>> 1776432f... 4.3
-	for (uint32 i = 0; i < getSwapChainLength(); ++i)
+	// wait for the device to finsish with the resources
+	vk::DeviceWaitIdle(_device);
+
+	// Release the resources
+	vk::DestroyCommandPool(_device, _commandPool, nullptr);
+
+	for (uint32_t i = 0; i < _swapchain.numSwapchains; ++i)
 	{
-		vk::DestroyFramebuffer(getDevice(), framebuffer[i], NULL);
+		vk::DestroySemaphore(_device, _semaphoresImageAcquire[i], nullptr);
+		vk::DestroySemaphore(_device, _semaphoresPresent[i], nullptr);
+
+		vk::WaitForFences(_device, 1, &_fencesPerFrameAcquire[i], true, uint64_t(-1));
+		vk::ResetFences(_device, 1, &_fencesPerFrameAcquire[i]);
+		vk::WaitForFences(_device, 1, &_fencesCommandBuffer[i], true, uint64_t(-1));
+		vk::ResetFences(_device, 1, &_fencesCommandBuffer[i]);
+
+		vk::DestroyFence(_device, _fencesPerFrameAcquire[i], nullptr);
+		vk::DestroyFence(_device, _fencesCommandBuffer[i], nullptr);
+
+		_semaphoresImageAcquire[i] = VK_NULL_HANDLE;
+		_semaphoresPresent[i] = VK_NULL_HANDLE;
+		_fencesPerFrameAcquire[i] = VK_NULL_HANDLE;
+		_fencesCommandBuffer[i] = VK_NULL_HANDLE;
+
+		vk::DestroyImageView(_device, _swapchain.swapchainImages[i], nullptr);
+
+		vk::DestroyFramebuffer(_device, _framebuffers[i].framebufferVk, nullptr);
+		vk::DestroyImageView(_device, _framebuffers[i].depthStencilImages, nullptr);
 	}
-	vk::DestroyRenderPass(getDevice(), renderPass, NULL);
-	vk::DestroyPipelineLayout(getDevice(), emptyPipelayout, NULL);
-	vk::DestroyPipeline(getDevice(), opaquePipeline, NULL);
-	vk::DestroyBuffer(getDevice(), vertexBuffer.buffer, NULL);
-	vk::FreeMemory(getDevice(), vertexBuffer.memory, NULL);
-	vk::FreeCommandBuffers(getDevice(), cmdPool, platformContext->getSwapChainLength(), cmdBuffer);
-	vk::DestroyCommandPool(getDevice(), cmdPool, NULL);
+	vk::DestroyRenderPass(getDevice(), _renderPass, nullptr);
+	vk::DestroyPipelineLayout(getDevice(), _emptyPipelayout, nullptr);
+	vk::DestroyPipeline(getDevice(), _opaquePipeline, nullptr);
+	vk::DestroyBuffer(getDevice(), _vbo.buffer, nullptr);
+	vk::FreeMemory(getDevice(), _vbo.memory, nullptr);
+	vk::DestroySwapchainKHR(_device, _swapchain.swapchainVk, nullptr);
+	vk::DestroySurfaceKHR(_instance, _surface, nullptr);
+	vk::DestroyDevice(_device, nullptr);
+	vk::DestroyInstance(_instance, nullptr);
 	return pvr::Result::Success;
 }
 
-inline static void submit_command_buffers(
-  VkQueue queue, VkCommandBuffer* cmdBuffs,
-    pvr::uint32 numCmdBuffs = 1, VkSemaphore* waitSems = NULL, pvr::uint32 numWaitSems = 0,
-    VkSemaphore* signalSems = NULL, pvr::uint32 numSignalSems = 0, VkFence fence = VK_NULL_HANDLE)
+/*!*********************************************************************************************************************
+\return Result::Success if no error occurred
+\brief  Main rendering loop function of the program. The shell will call this function every _frame.
+***********************************************************************************************************************/
+pvr::Result VulkanIntroducingPVRShell::renderFrame()
 {
-	VkPipelineStageFlags pipeStageFlags = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-	VkSubmitInfo nfo={};
-	nfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	nfo.waitSemaphoreCount = numWaitSems;
-	nfo.pWaitSemaphores = waitSems;
-	nfo.pWaitDstStageMask = &pipeStageFlags;
-	nfo.pCommandBuffers = cmdBuffs;
-	nfo.commandBufferCount = numCmdBuffs;
-	nfo.pSignalSemaphores = signalSems;
-	nfo.signalSemaphoreCount = numSignalSems;
-	vulkanSuccessOnDie(vk::QueueSubmit(queue, 1, &nfo, fence), "CommandBufferBase::submitCommandBuffers failed");
-}
+	// This example uses 3 virtual frames. The virtual frameid will be incremented on each frame and then wrapped.
+	// At each call, we use different semaphores and  fence to synchronise the _queue submission between GPU-GPU and
+	// GPU-CPU.
 
-pvr::Result App::renderFrame()
-{
-	auto& handles = platformContext->getNativePlatformHandles();
-	pvr::uint32 swapchainindex = getPlatformContext().getSwapChainIndex();
-<<<<<<< HEAD
-	submit_command_buffers(handles.graphicsQueue, &cmdBuffer[swapchainindex], 1,
-=======
-	submit_command_buffers(handles.mainQueue(), &cmdBuffer[swapchainindex], 1,
->>>>>>> 1776432f... 4.3
-	                       &handles.semaphoreCanBeginRendering[swapchainindex], handles.semaphoreCanBeginRendering[swapchainindex] != 0,
-	                       &handles.semaphoreFinishedRendering[swapchainindex], handles.semaphoreFinishedRendering[swapchainindex] != 0,
-	                       handles.fenceRender[swapchainindex]);
+	// Wait for the virtual frame fence to make sure that commandbuffers and the swapchain are free from previous use.
+	// This waits for the previous frame submission(2 frame earlier hence we use 3 virtual frames.)
+	vk::WaitForFences(_device, 1, &_fencesPerFrameAcquire[_currentFrameIndex], true, uint64_t(-1));
+	vk::ResetFences(_device, 1, &_fencesPerFrameAcquire[_currentFrameIndex]);
+
+	// The semaphore which will get signaled by acquire swapchain and the queue submit will wait on
+	VkSemaphore* semAcquire = &_semaphoresImageAcquire[_currentFrameIndex];
+
+	VkFence* fenceImageAcquired = &_fencesPerFrameAcquire[_currentFrameIndex];
+
+	// The semaphore which will get signaled by queue submit and the presentation will wait on.
+	VkSemaphore* semPresent = &_semaphoresPresent[_currentFrameIndex];
+
+	// Get the index of the next available _swapchain image:
+	// NOTE: The Presentation Engine might still be using the image so the following queue submit
+	// MUST wait on the semaphore which gets signaled when the presentation engine done with it.
+	vk::AcquireNextImageKHR(_device, _swapchain.swapchainVk, uint64_t(-1), *semAcquire, *fenceImageAcquired, &_swapchain.swapchainIndex);
+
+	// wait for the command buffer from swapChainLength frames ago to be completed
+	vk::WaitForFences(_device, 1, &_fencesCommandBuffer[_swapchain.swapchainIndex], true, uint64_t(-1));
+	vk::ResetFences(_device, 1, &_fencesCommandBuffer[_swapchain.swapchainIndex]);
+
+	// SUBMIT
+	VkSubmitInfo submitInfo = {};
+	VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.pCommandBuffers = &_commandBuffers[_swapchain.swapchainIndex];
+	submitInfo.pWaitSemaphores = semAcquire;// wait for the image acuire to finish
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = semPresent;// signal submit
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pWaitDstStageMask = &waitStage;
+	submitInfo.commandBufferCount = 1;
+	vk::QueueSubmit(_queue, 1, &submitInfo, _fencesCommandBuffer[_swapchain.swapchainIndex]);
+
+	// PRESENT
+	VkPresentInfoKHR present = {};
+	VkResult result;
+	present.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	present.pImageIndices = &_swapchain.swapchainIndex;
+	present.swapchainCount = 1;
+	present.pSwapchains = &_swapchain.swapchainVk;
+	present.pWaitSemaphores = semPresent;// wait for the queue submit to finish
+	present.waitSemaphoreCount = 1;
+	present.pResults = &result;
+	vk::QueuePresentKHR(_queue, &present);
+	if (result != VK_SUCCESS)
+	{
+		return pvr::Result::UnknownError;
+	}
+	_currentFrameIndex = (_currentFrameIndex + 1) % _swapchain.numSwapchains;
 	return pvr::Result::Success;
 }
 
-bool App::loadShader(pvr::Stream::ptr_type stream, VkShaderModule& outShader)
+/*!*********************************************************************************************************************
+\brief  Load the shader files and create shader modules.
+***********************************************************************************************************************/
+bool VulkanIntroducingPVRShell::loadShader(pvr::Stream::ptr_type stream, VkShaderModule& outShader)
 {
-	pvr::assertion(stream.get() != NULL && "Invalid Shader source");
+	assertion(stream.get() != nullptr && "Invalid Shader source");
 	VkShaderModuleCreateInfo shaderInfo = {};
 	shaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	std::vector<pvr::uint32> readData(stream->getSize());
+	std::vector<uint32_t> readData(stream->getSize());
 	size_t read;
 	stream->read(stream->getSize(), 1, readData.data(), read);
 	shaderInfo.codeSize = stream->getSize();
 	shaderInfo.pCode = readData.data();
-	vulkanSuccessOnDie(vk::CreateShaderModule(getDevice(), &shaderInfo, NULL, &outShader),
+	vulkanSuccessOrDie(vk::CreateShaderModule(getDevice(), &shaderInfo, nullptr, &outShader),
 	                   "Failed to create the shader");
 	return true;
 }
 
-void App::recordCommandBuffer()
+/*!*********************************************************************************************************************
+\brief  Pre-record the rendering commands.
+***********************************************************************************************************************/
+void VulkanIntroducingPVRShell::recordCommandBuffer()
 {
-	uint32_t dynamicOffset = 0;
-	VkCommandBufferAllocateInfo sAllocateInfo;
-
+	VkCommandBufferAllocateInfo sAllocateInfo = {};
 	sAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	sAllocateInfo.pNext = NULL;
-	sAllocateInfo.commandPool = cmdPool;
+	sAllocateInfo.commandPool = _commandPool;
 	sAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	sAllocateInfo.commandBufferCount = 1;
 
-	VkCommandBufferBeginInfo cmdBufferBeginInfo;
-	cmdBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	cmdBufferBeginInfo.pNext = NULL;
-	cmdBufferBeginInfo.flags = 0;
-	cmdBufferBeginInfo.pInheritanceInfo = NULL;
+	VkCommandBufferBeginInfo commandBufferBeginInfo = {};
+	commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-	VkRenderPassBeginInfo renderPassBeginInfo;
 	VkClearValue clearVals[2] = { 0 };
 	clearVals[0].color.float32[0] = 0.00f;
 	clearVals[0].color.float32[1] = 0.70f;
@@ -327,203 +922,234 @@ void App::recordCommandBuffer()
 	clearVals[0].color.float32[3] = 1.0f;
 	clearVals[1].depthStencil.depth = 1.0f;
 	clearVals[1].depthStencil.stencil = 0xFF;
-	for (pvr::uint32 i = 0; i < platformContext->getSwapChainLength(); ++i)
+
+	VkRenderPassBeginInfo renderPassBeginInfo = {};
+	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	renderPassBeginInfo.renderPass = _renderPass;
+	renderPassBeginInfo.renderArea.offset.x = 0;
+	renderPassBeginInfo.renderArea.offset.y = 0;
+	renderPassBeginInfo.renderArea.extent = _swapchain.dimension;
+	renderPassBeginInfo.clearValueCount = 2;
+	renderPassBeginInfo.pClearValues = &clearVals[0];
+	for (uint32_t i = 0; i < _swapchain.numSwapchains; ++i)
 	{
-		vk::AllocateCommandBuffers(getDevice(), &sAllocateInfo, &cmdBuffer[i]);
-		VkCommandBuffer cmd = cmdBuffer[i];
-		vk::BeginCommandBuffer(cmd, &cmdBufferBeginInfo);
+		vk::AllocateCommandBuffers(getDevice(), &sAllocateInfo, &_commandBuffers[i]);
+		VkCommandBuffer command = _commandBuffers[i];
+		vk::BeginCommandBuffer(command, &commandBufferBeginInfo);
 
-		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassBeginInfo.pNext = NULL;
-		renderPassBeginInfo.renderPass = renderPass;
-		renderPassBeginInfo.framebuffer = framebuffer[i];
-		renderPassBeginInfo.renderArea.offset.x = 0;
-		renderPassBeginInfo.renderArea.offset.y = 0;
-		renderPassBeginInfo.renderArea.extent = { getWidth(), getHeight() };
-		renderPassBeginInfo.clearValueCount = 2;
-		renderPassBeginInfo.pClearValues = &clearVals[0];
-		vk::CmdBeginRenderPass(cmd, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+		renderPassBeginInfo.framebuffer = _framebuffers[i].framebufferVk;
+		vk::CmdBeginRenderPass(command, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		vk::CmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, opaquePipeline);
+		vk::CmdBindPipeline(command, VK_PIPELINE_BIND_POINT_GRAPHICS, _opaquePipeline);
 		VkDeviceSize vertexOffset = 0;
-		vk::CmdBindVertexBuffers(cmd, 0, 1, &vertexBuffer.buffer, &vertexOffset);
-		vk::CmdDraw(cmd, 3, 1, 0, 0);
-		vk::CmdEndRenderPass(cmd);
-		vk::EndCommandBuffer(cmd);
+		vk::CmdBindVertexBuffers(command, 0, 1, &_vbo.buffer, &vertexOffset);
+		vk::CmdDraw(command, 3, 1, 0, 0);
+		vk::CmdEndRenderPass(command);
+		vk::EndCommandBuffer(command);
 	}
 }
 
-void App::createPipeline()
+/*!*********************************************************************************************************************
+\brief  Creates the graphics pipeline used in the demo.
+***********************************************************************************************************************/
+bool VulkanIntroducingPVRShell::createPipeline(uint32_t width, uint32_t height)
 {
-	//The various CreateInfos needed for a graphics pipeline
-	GraphicsPipelineCreate pipeCreate;
+	// This is simple pipeline which takes one vertex attribute(position) and writes in to one color attachment
+	// and depth stencil attachment. Multisampling and tesselation are disabled.
 
-	//These arrays is pointed to by the vertexInput create struct:
+	VkGraphicsPipelineCreateInfo vkPipeInfo = {};
+	VkPipelineShaderStageCreateInfo shaderStages[2] = {};
+	VkPipelineColorBlendStateCreateInfo cb = {};
+	VkPipelineInputAssemblyStateCreateInfo ia = {};
+	VkPipelineDepthStencilStateCreateInfo ds = {};
+	VkPipelineVertexInputStateCreateInfo vi = {};
+	VkPipelineViewportStateCreateInfo vp = {};
+	VkPipelineMultisampleStateCreateInfo ms = {};
+	VkPipelineRasterizationStateCreateInfo rs = {};
+
+	// reset:
+	{
+		cb.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		ia.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		vi.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vp.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+
+		shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+
+		shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		ia.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		ia.primitiveRestartEnable = VK_FALSE;
+
+		vi.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vi.vertexBindingDescriptionCount = 0;
+		vi.vertexAttributeDescriptionCount = 0;
+
+		cb.attachmentCount = 1;
+
+		rs.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		rs.cullMode = VK_CULL_MODE_BACK_BIT;
+		rs.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+		rs.polygonMode = VK_POLYGON_MODE_FILL;
+		rs.lineWidth = 1.0;
+
+		ms.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		ms.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+		ms.minSampleShading = 0.0f;
+
+		// DISABLE DEPTH STATE
+		ds.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		ds.depthTestEnable = VK_FALSE;
+		ds.depthWriteEnable = VK_FALSE;
+
+		vkPipeInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		vkPipeInfo.pColorBlendState = &cb;
+		vkPipeInfo.pDepthStencilState = &ds;
+		vkPipeInfo.pInputAssemblyState = &ia;
+		vkPipeInfo.pMultisampleState = &ms;
+		vkPipeInfo.pRasterizationState = &rs;
+		vkPipeInfo.pVertexInputState = &vi;
+		vkPipeInfo.pViewportState = &vp;
+		vkPipeInfo.pStages = shaderStages;
+		vkPipeInfo.stageCount = 2;
+	}
+	// These arrays is pointed to by the vertexInput create struct:
 	VkVertexInputAttributeDescription attributes[16];
 	VkVertexInputBindingDescription bindings[16];
 
-	pipeCreate.vi.pVertexAttributeDescriptions = attributes;
-	pipeCreate.vi.pVertexBindingDescriptions = bindings;
+	vi.pVertexAttributeDescriptions = attributes;
+	vi.pVertexBindingDescriptions = bindings;
 
-	//This array is pointed to by the cb create struct
+	// This array is pointed to by the cb create struct
 	VkPipelineColorBlendAttachmentState attachments[1];
 
-	pipeCreate.cb.pAttachments = attachments;
+	cb.pAttachments = attachments;
 
-	//Set up the pipeline state
-	pipeCreate.vkPipeInfo.pNext = NULL;
-
-	//CreateInfos for the SetLayouts and PipelineLayouts
-	VkPipelineLayoutCreateInfo sPipelineLayoutCreateInfo;
+	// CreateInfos for the SetLayouts and PipelineLayouts
+	VkPipelineLayoutCreateInfo sPipelineLayoutCreateInfo = {};
 	sPipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	sPipelineLayoutCreateInfo.pNext = NULL;
-	sPipelineLayoutCreateInfo.flags = 0;
-	sPipelineLayoutCreateInfo.pushConstantRangeCount = 0;
-	sPipelineLayoutCreateInfo.pPushConstantRanges = NULL;
-	sPipelineLayoutCreateInfo.setLayoutCount = 0;
-	sPipelineLayoutCreateInfo.pSetLayouts = NULL;
-	vk::CreatePipelineLayout(getDevice(), &sPipelineLayoutCreateInfo, NULL, &emptyPipelayout);
+	vk::CreatePipelineLayout(getDevice(), &sPipelineLayoutCreateInfo, nullptr, &_emptyPipelayout);
 
-	static VkSampleMask sampleMask = 0xffffffff;
-	pipeCreate.ms.pSampleMask = &sampleMask;
+	const VkSampleMask sampleMask = 0xffffffff;
+	ms.pSampleMask = &sampleMask;
 	initColorBlendAttachmentState(attachments[0]);
-	setupVertexAttribs(bindings, attributes, pipeCreate.vi);
+	setupVertexAttribs(bindings, attributes, vi);
 
-	VkRect2D scissors[1];
-	VkViewport viewports[1];
+	VkRect2D scissors;
 
-	scissors[0].offset.x = 0;
-	scissors[0].offset.y = 0;
-	scissors[0].extent = { getWidth(), getHeight() };
+	scissors.offset.x = 0;
+	scissors.offset.y = 0;
+	scissors.extent = { width, height};
 
-	pipeCreate.vp.pScissors = scissors;
+	vp.pScissors = &scissors;
 
-	viewports[0].minDepth = 0.0f;
-	viewports[0].maxDepth = 1.0f;
-	viewports[0].x = 0;
-	viewports[0].y = 0;
-	viewports[0].width = static_cast<pvr::float32>(getWidth());
-	viewports[0].height = static_cast<pvr::float32>(getHeight());
+	VkViewport viewports;
+	viewports.minDepth = 0.0f;
+	viewports.maxDepth = 1.0f;
+	viewports.x = 0;
+	viewports.y = 0;
+	viewports.width = static_cast<float>(width);
+	viewports.height = static_cast<float>(height);
 
-	pipeCreate.vp.pViewports = viewports;
-	pipeCreate.vp.viewportCount = 1;
-	pipeCreate.vp.scissorCount = 1;
-	//These are only required to create the graphics pipeline, so we create and destroy them locally
+	vp.pViewports = &viewports;
+	vp.viewportCount = 1;
+	vp.scissorCount = 1;
+	// These are only required to create the graphics pipeline, so we create and destroy them locally
 	VkShaderModule vertexShaderModule; loadShader(getAssetStream(VertShaderName), vertexShaderModule);
 	VkShaderModule fragmentShaderModule; loadShader(getAssetStream(FragShaderName), fragmentShaderModule);
 
-	pipeCreate.vkPipeInfo.layout = emptyPipelayout;
-	pipeCreate.vkPipeInfo.renderPass = renderPass;
-	pipeCreate.vkPipeInfo.subpass = 0;
-	pipeCreate.shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-	pipeCreate.shaderStages[0].module = vertexShaderModule;
-	pipeCreate.shaderStages[0].pName = "main";
-	pipeCreate.shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	pipeCreate.shaderStages[1].module = fragmentShaderModule;
-	pipeCreate.shaderStages[1].pName = "main";
+	vkPipeInfo.layout = _emptyPipelayout;
+	vkPipeInfo.renderPass = _renderPass;
+	vkPipeInfo.subpass = 0;
+	shaderStages[0].module = vertexShaderModule;
+	shaderStages[0].pName = "main";
+	shaderStages[1].module = fragmentShaderModule;
+	shaderStages[1].pName = "main";
 	attachments[0].blendEnable = VK_FALSE;
-	vulkanSuccessOnDie(vk::CreateGraphicsPipelines(getDevice(), VK_NULL_HANDLE, 1, &pipeCreate.vkPipeInfo, NULL, &opaquePipeline), "Failed to create the pipeline");
-	vk::DestroyShaderModule(getDevice(), vertexShaderModule, NULL);
-	vk::DestroyShaderModule(getDevice(), fragmentShaderModule, NULL);
+	VkResult result = vk::CreateGraphicsPipelines(getDevice(), VK_NULL_HANDLE, 1,
+	                  &vkPipeInfo, nullptr, &_opaquePipeline);
+
+	// Destroy the shader modules, don't need them.
+	vk::DestroyShaderModule(getDevice(), vertexShaderModule, nullptr);
+	vk::DestroyShaderModule(getDevice(), fragmentShaderModule, nullptr);
+	return result == VK_SUCCESS;
 }
 
-void App::writeVertexBuffer()
+/*!*********************************************************************************************************************
+\brief  Initializes the vertex buffer objects used in the demo.
+***********************************************************************************************************************/
+bool VulkanIntroducingPVRShell::initVbo()
 {
+	const uint32_t vboSize  = sizeof(float) * 4 * 3;
+	// Create a vertex buffer with memory backing from host visible pool so that
+	// we can map and unmap.
+	if (!createBufferAndMemory(vboSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+	                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, _vbo))
+	{
+		return false;
+	}
+
 	Vertex* ptr = 0;
 
-	vk::MapMemory(getDevice(), vertexBuffer.memory, 0, 4096, 0, (void**)&ptr);
+	vk::MapMemory(_device, _vbo.memory, 0, vboSize, 0, (void**)&ptr);
 
 	// triangle
-	ptr->x = -.4; ptr->y = .4; ptr->z = 0; ptr->w = 1;
+	ptr->x = -.4; ptr->y = .4; ptr->z = 0; ptr->w = 1;// bottom left
 	ptr++;
 
-	ptr->x = .4; ptr->y = .4; ptr->z = 0; ptr->w = 1;
+	ptr->x = .4; ptr->y = .4; ptr->z = 0; ptr->w = 1; // bottom right
 	ptr++;
 
-	ptr->x = 0; ptr->y = -.4; ptr->z = 0; ptr->w = 1;
+	ptr->x = 0; ptr->y = -.4; ptr->z = 0; ptr->w = 1;// center top
 	ptr++;
-	vk::UnmapMemory(getDevice(), vertexBuffer.memory);
+	vk::UnmapMemory(_device, _vbo.memory);
+	return true;
 }
 
-
-void App::setupVertexAttribs(VkVertexInputBindingDescription* bindings, VkVertexInputAttributeDescription* attributes, VkPipelineVertexInputStateCreateInfo& createInfo)
+/*!*********************************************************************************************************************
+\brief  Set up the vertex attributes to be added used by the pipeline.
+***********************************************************************************************************************/
+void VulkanIntroducingPVRShell::setupVertexAttribs(VkVertexInputBindingDescription* bindings,
+    VkVertexInputAttributeDescription* attributes, VkPipelineVertexInputStateCreateInfo& createInfo)
 {
-	VkFormat sAttributeFormat;
-
-	sAttributeFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-
+	VkFormat sAttributeFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	bindings[0].binding = 0;
 	bindings[0].stride = sizeof(Vertex);
 	bindings[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
 	attributes[0].location = 0;
 	attributes[0].binding = 0;
-	attributes[0].offset = 0 * 4 * 4;
+	attributes[0].offset = 0;
 	attributes[0].format = sAttributeFormat;
 	createInfo.vertexBindingDescriptionCount = 1;
 	createInfo.vertexAttributeDescriptionCount = 1;
 }
 
-bool App::createBuffer(pvr::uint32 size, types::BufferBindingUse usage, native::HBuffer_& outBuffer)
+/*!*********************************************************************************************************************
+\brief  Creates the Frame buffer objects and Renderpass used in this demo.
+***********************************************************************************************************************/
+bool VulkanIntroducingPVRShell::createFramebufferAndRenderpass()
 {
-	return pvr::utils::vulkan::createBufferAndMemory(getDevice(), getPlatformContext().getNativePlatformHandles().deviceMemProperties,
-	       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, usage, size, outBuffer, NULL);
-}
-
-
-MultiFbo App::createOnScreenFbo(VkRenderPass& renderPass)
-{
-	MultiFbo outFbo(platformContext->getSwapChainLength());
-	VkFramebufferCreateInfo fboInfo = {};
-	fboInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-	fboInfo.flags = 0;
-	fboInfo.width = platformContext->getNativeDisplayHandle().displayExtent.width;
-	fboInfo.height = platformContext->getNativeDisplayHandle().displayExtent.height;
-	fboInfo.layers = 1;
-	fboInfo.renderPass = renderPass;
-	fboInfo.attachmentCount = 2;
-	for (pvr::uint32 i = 0; i < platformContext->getSwapChainLength(); ++i)
-	{
-		VkImageView imageViews[] =
-		{
-			platformContext->getNativeDisplayHandle().onscreenFbo.colorImageViews[i],
-			platformContext->getNativeDisplayHandle().onscreenFbo.depthStencilImageView[i]
-		};
-		fboInfo.pAttachments = imageViews;
-		vulkanSuccessOnDie(vk::CreateFramebuffer(getDevice(), &fboInfo, NULL, &outFbo[i]), "Failed to create the fbo");
-	}
-	return outFbo;
-}
-
-VkRenderPass App::createOnScreenRenderPass(VkAttachmentLoadOp colorLoad, VkAttachmentStoreOp colorStore,
-    VkAttachmentLoadOp dsLoad, VkAttachmentStoreOp dsStore)
-{
+	// This is an simple framebuffer with 1 color attachment (_swapchain image) with no depth stencil.
 	VkRenderPassCreateInfo renderPassInfo = {};
-	VkAttachmentDescription attachmentDesc[2] = {0};
+	VkAttachmentDescription attachmentDesc = {};
 	VkSubpassDescription subpass = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = 2;
-	renderPassInfo.pAttachments = attachmentDesc;
+	renderPassInfo.attachmentCount = 1;
+	renderPassInfo.pAttachments = &attachmentDesc;
 	renderPassInfo.pSubpasses = &subpass;
 	renderPassInfo.subpassCount = 1;
 
-	attachmentDesc[0].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	attachmentDesc[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	attachmentDesc[0].samples = VK_SAMPLE_COUNT_1_BIT;
-	attachmentDesc[0].format = platformContext->getNativeDisplayHandle().onscreenFbo.colorFormat;
-	attachmentDesc[0].loadOp = colorLoad;
-	attachmentDesc[0].storeOp = colorStore;
-	attachmentDesc[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	attachmentDesc[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-
-	attachmentDesc[1].initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	attachmentDesc[1].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	attachmentDesc[1].samples = VK_SAMPLE_COUNT_1_BIT;
-	attachmentDesc[1].format = platformContext->getNativeDisplayHandle().onscreenFbo.depthStencilFormat;
-	attachmentDesc[1].loadOp = dsLoad;
-	attachmentDesc[1].storeOp = dsStore;
-	attachmentDesc[1].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	attachmentDesc[1].stencilStoreOp =  VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	attachmentDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	attachmentDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+	attachmentDesc.format = _swapchain.colorFormat;
+	attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachmentDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	attachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachmentDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
 	VkAttachmentReference attachmentRef[2] =
 	{
@@ -534,18 +1160,108 @@ VkRenderPass App::createOnScreenRenderPass(VkAttachmentLoadOp colorLoad, VkAttac
 	// setup subpass descriptio
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = attachmentRef;
-	subpass.pDepthStencilAttachment = &attachmentRef[1];
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	VkRenderPass outRenderpass;
-	vulkanSuccessOnDie(vk::CreateRenderPass(platformContext->getNativePlatformHandles().context.device, &renderPassInfo, NULL, &outRenderpass), "Failed to create renderpass");
-	return outRenderpass;
+
+	// WE NEED TWO DEPENDECY HERE
+	// 1: Dependecy between the external and the first subpass
+	// 2: Dependency between the subpass and the external
+	VkSubpassDependency dependencies[] =
+	{
+		{
+			VK_SUBPASS_EXTERNAL,
+			0,
+			VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			VK_ACCESS_MEMORY_READ_BIT,
+			VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+			VK_DEPENDENCY_BY_REGION_BIT
+		},
+		{
+			0,
+			VK_SUBPASS_EXTERNAL,
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+			VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+			VK_ACCESS_MEMORY_READ_BIT,
+			VK_DEPENDENCY_BY_REGION_BIT
+		},
+	};
+	renderPassInfo.pDependencies = dependencies;
+	renderPassInfo.dependencyCount = 2;
+	if (vk::CreateRenderPass(_device, &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS)
+	{
+		return false;
+	}
+
+	// Create the framebuffer
+	VkFramebufferCreateInfo framebufferInfo = {};
+	framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+	framebufferInfo.width = _swapchain.dimension.width;
+	framebufferInfo.height = _swapchain.dimension.height;
+	framebufferInfo.layers = 1;
+	framebufferInfo.renderPass = _renderPass;
+	framebufferInfo.attachmentCount = 1;
+	for (uint32_t i = 0; i < _swapchain.numSwapchains; ++i)
+	{
+		// create the depthstencil images
+		VkImageView imageViews[] =
+		{
+			_swapchain.swapchainImages[i],
+			_framebuffers[i].depthStencilImages
+		};
+		framebufferInfo.pAttachments = imageViews;
+
+		if (vk::CreateFramebuffer(getDevice(), &framebufferInfo, nullptr, &_framebuffers[i].framebufferVk) != VK_SUCCESS)
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
-
-
-void App::initColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& state)
+/*!*********************************************************************************************************************
+\brief  Creates Fences and Semaphores to set up synchronisation for this demo.
+***********************************************************************************************************************/
+bool VulkanIntroducingPVRShell::createSynchronisationPrimitives()
 {
-	state.blendEnable = VK_TRUE;
+	VkSemaphoreCreateInfo sci = {};
+	sci.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+	VkFenceCreateInfo fci = {};
+	fci.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	fci.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+	for (uint32_t i = 0; i < _swapchain.numSwapchains; ++i)
+	{
+		if (vk::CreateFence(getDevice(), &fci, nullptr, &_fencesPerFrameAcquire[i]) != VK_SUCCESS)
+		{
+			return false;
+		}
+
+		if (vk::CreateFence(getDevice(), &fci, nullptr, &_fencesCommandBuffer[i]) != VK_SUCCESS)
+		{
+			return false;
+		}
+
+		if (vk::CreateSemaphore(getDevice(), &sci, nullptr, &_semaphoresImageAcquire[i]) != VK_SUCCESS)
+		{
+			return false;
+		}
+
+		if (vk::CreateSemaphore(getDevice(), &sci, nullptr, &_semaphoresPresent[i]) != VK_SUCCESS)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+/*!*********************************************************************************************************************
+\brief  Initialize Color blend attachments used in this demo.
+***********************************************************************************************************************/
+void VulkanIntroducingPVRShell::initColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& state)
+{
+	state.blendEnable = VK_FALSE;
 	state.colorWriteMask = 0xf;
 
 	state.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
@@ -557,11 +1273,8 @@ void App::initColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& sta
 	state.alphaBlendOp = VK_BLEND_OP_ADD;
 }
 
-pvr::GraphicsContextStrongReference pvr::createGraphicsContext()
-{
-	return pvr::GraphicsContextStrongReference();
-}
-std::auto_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::auto_ptr<pvr::Shell>(new App);
-}
+/*!********************************************************************************************************************
+\brief  This function must be implemented by the user of the shell. The user should return its pvr::Shell object defining the behaviour of the application.
+\return Return an auto ptr to the demo supplied by the user
+***********************************************************************************************************************/
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::unique_ptr<pvr::Shell>(new VulkanIntroducingPVRShell()); }

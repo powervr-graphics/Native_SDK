@@ -17,7 +17,6 @@ WS_INC += /usr/include
 endif
 
 else
-
 ifeq "$(EWSBUILD)" "1"
 
 PLAT_CFLAGS += -DEWS
@@ -27,7 +26,6 @@ WS=EWS
 PLAT_LINK += -L"$(SDKDIR)/Builds/Linux/x86_32/Lib"
 
 else
-
 ifeq "$(DRMBUILD)" "1"
 
 WS_LIBS = -L$(DRMROOT)/lib -ldrm -lgbm -ludev -ldl -Wl,--rpath-link,$(DRMROOT)/lib
@@ -35,16 +33,20 @@ WS_INC = $(DRMROOT)/include $(DRMROOT)/include/libdrm $(DRMROOT)/include/gbm
 WS=DRM
 
 else
+   ifeq "$(WAYLANDBUILD)" "1"
 
+    WS_LIBS = -L$(WAYLANDROOT)/lib -lwayland-egl -lwayland-client -lffi
+    WS_INC  = $(WAYLANDROOT)/include
+    WS = Wayland
+    PLAT_CFLAGS += -DWAYLAND
+    WS_INC += /usr/include
+else
 WS_LIBS =
 WS_INC  =
 WS = NullWS
-
 endif
-
 endif
-
 endif
-
+endif
 PLAT_LINK += $(WS_LIBS)
 PLAT_INC  += $(WS_INC)

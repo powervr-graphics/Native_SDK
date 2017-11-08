@@ -34,14 +34,10 @@ struct InternalOS
 }
 }
 
-pvr::int16 g_cursorX, g_cursorY;
+int16_t g_cursorX, g_cursorY;
 
 // Setup the capabilities
-<<<<<<< HEAD
-const pvr::platform::ShellOS::Capabilities pvr::platform::ShellOS::m_capabilities = { pvr::types::Capability::Immutable, pvr::types::Capability::Immutable };
-=======
-const pvr::platform::ShellOS::Capabilities pvr::platform::ShellOS::_capabilities = { pvr::types::Capability::Immutable, pvr::types::Capability::Immutable };
->>>>>>> 1776432f... 4.3
+const pvr::platform::ShellOS::Capabilities pvr::platform::ShellOS::_capabilities = { pvr::Capability::Immutable, pvr::Capability::Immutable };
 
 ShellOS::ShellOS(/*NSObject<NSApplicationDelegate>*/void* hInstance, OSDATA osdata) : _instance(hInstance)
 {
@@ -53,10 +49,10 @@ ShellOS::~ShellOS()
 	delete _OSImplementation;
 }
 
-pvr::Result ShellOS::init(DisplayAttributes &data)
+bool ShellOS::init(DisplayAttributes &data)
 {
 	if(!_OSImplementation)
-		return pvr::Result::OutOfMemory;
+		return false;
 	// Setup read and write paths
 	NSString* readPath = [NSString stringWithFormat:@"%@%@", [[NSBundle mainBundle] resourcePath], @"/"];
 	//_Strings[eReadPath] = [readPath UTF8String];
@@ -67,7 +63,7 @@ pvr::Result ShellOS::init(DisplayAttributes &data)
     NSString* name = [[NSProcessInfo processInfo] processName];
     
     _AppName =[name UTF8String];
-	return pvr::Result::Success;
+	return true;
 }
 
 
@@ -76,7 +72,7 @@ void ShellOS::updatePointingDeviceLocation()
     _shell->updatePointerPosition(PointerLocation(g_cursorX, g_cursorY));
 }
 
-pvr::Result ShellOS::initializeWindow(pvr::platform::DisplayAttributes &data)
+bool ShellOS::initializeWindow(DisplayAttributes &data)
 {
 	 // Now create our window
     NSRect frame;
@@ -109,7 +105,7 @@ pvr::Result ShellOS::initializeWindow(pvr::platform::DisplayAttributes &data)
     if(!_OSImplementation->window)
     {
         NSLog(@"Failed to allocated the window.");
-        return pvr::Result::UnknownError;
+        return false;
     }
     _OSImplementation->window.eventQueue = _shell.get();
 	
@@ -126,7 +122,7 @@ pvr::Result ShellOS::initializeWindow(pvr::platform::DisplayAttributes &data)
     
     if(!_OSImplementation->view)
     {
-        return pvr::Result::UnknownError;
+        return false;
     }
     
     // Add our view to our window
@@ -140,7 +136,7 @@ pvr::Result ShellOS::initializeWindow(pvr::platform::DisplayAttributes &data)
     }
 
     [_OSImplementation->window makeKeyAndOrderFront:nil];
-	return pvr::Result::Success;
+	return true;
 }
 
 void ShellOS::releaseWindow()
@@ -151,25 +147,25 @@ void ShellOS::releaseWindow()
 	}
 }
 
-OSApplication ShellOS::getApplication() const
+pvr::OSApplication ShellOS::getApplication() const
 {
 	return NULL;
 }
 
-OSDisplay ShellOS::getDisplay() const
+pvr::OSDisplay ShellOS::getDisplay() const
 {
 	return NULL;
 }
 
-OSWindow ShellOS::getWindow() const
+pvr::OSWindow ShellOS::getWindow() const
 {
 	return (__bridge OSWindow)_OSImplementation->view;
 }
 
-pvr::Result ShellOS::handleOSEvents()
+bool ShellOS::handleOSEvents()
 {
 	// Nothing to do
-	return pvr::Result::Success;
+	return true;
 }
 
 bool ShellOS::isInitialized()
@@ -177,11 +173,7 @@ bool ShellOS::isInitialized()
 	return _OSImplementation && _OSImplementation->window;
 }
 
-<<<<<<< HEAD
-pvr::Result ShellOS::popUpMessage(const pvr::tchar *const title, const pvr::tchar *const message, ...)const
-=======
-pvr::Result ShellOS::popUpMessage(const pvr::char8 *const title, const pvr::char8 *const message, ...)const
->>>>>>> 1776432f... 4.3
+bool ShellOS::popUpMessage(const char *const title, const char *const message, ...)const
 {
     if(title && message)
     {
@@ -199,7 +191,7 @@ pvr::Result ShellOS::popUpMessage(const pvr::char8 *const title, const pvr::char
         [alert runModal];
     }
     
-    return Result::Success;
+    return true;
 }
 
 static pvr::Keys mapNSKeyToPvrKey(unsigned short keyCode)

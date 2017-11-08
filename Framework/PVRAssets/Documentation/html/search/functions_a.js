@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['operator_5b_5d',['operator[]',['../classpvr_1_1_skip_graph_root.html#a39b54367637bf4c4698b57b9c673c45e',1,'pvr::SkipGraphRoot::operator[](const uint32 ui32NodeID)'],['../classpvr_1_1_skip_graph_root.html#ae0083dd1271768d6a17bf1074bbe0e20',1,'pvr::SkipGraphRoot::operator[](const uint32 ui32NodeID) const ']]]
+  ['material',['Material',['../classpvr_1_1assets_1_1_model_1_1_material.html#a8453456d586952692e46495b0670aceb',1,'pvr::assets::Model::Material']]],
+  ['mergebonebatches',['mergeBoneBatches',['../classpvr_1_1assets_1_1_mesh.html#a12bcecb68bbf030852edd91a31498160',1,'pvr::assets::Mesh']]],
+  ['meshinfo',['MeshInfo',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a8e26b4540200cce2ee93b04cec953d8b',1,'pvr::assets::Mesh::MeshInfo']]]
 ];

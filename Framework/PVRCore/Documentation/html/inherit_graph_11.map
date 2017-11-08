@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classpvr_1_1_generate_pixel_type3.html" title="Use this template class to generate a 3 channel PixelID." alt="" coords="5,4,216,60"/>
+<area shape="rect" id="node1" href="$structpvr_1_1_compressed_image_data_format.html" title="Describes a Compressed format. Compressed formats provide less information than the uncompressed form..." alt="" coords="5,5,192,46"/>
+<area shape="rect" id="node2" href="$structpvr_1_1_image_storage_format_compressed.html" title="Describes a Compressed format. Compressed formats provide less information than the uncompressed form..." alt="" coords="241,12,485,39"/>
 </map>

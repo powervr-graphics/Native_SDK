@@ -7,247 +7,36 @@ insertion& removal)
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
+#include <map>
 #include <vector>
 #include <algorithm>
 
 namespace pvr {
 
-template<typename T_>
-class Deque
-{
-public:
-	typedef T_ ElementType;
-private:
-	enum
-	{
-		ChunkTargetSize = 512,
-		MapChunkSize = 16,
-		NumItemsChunk = sizeof(T_) > 256 ? 1 : sizeof(T_) > 128 ? 2 : sizeof(T_) > 64 ? 4 : sizeof(T_) > 32 ? 8 : sizeof(T_) > 16 ? 16 : sizeof(T_) > 8 ? 32 : sizeof(T_) > 4 ? 64 : sizeof(T_) > 2 ? 128 : sizeof(T_) > 1 ? 256 : 512,
-		ShiftNumItemsChunk = sizeof(T_) > 256 ? 0 : sizeof(T_) > 128 ? 1 : sizeof(T_) > 64 ? 2 : sizeof(T_) > 32 ? 3 : sizeof(T_) > 16 ? 4 : sizeof(T_) > 8 ? 5 : sizeof(T_) > 4 ? 6 : sizeof(T_) > 2 ? 7 : sizeof(T_) > 1 ? 8 : 9,
-		ModNumItemsChunk = sizeof(T_) > 256 ? 1 : sizeof(T_) > 128 ? 3 : sizeof(T_) > 64 ? 7 : sizeof(T_) > 32 ? 15 : sizeof(T_) > 16 ? 31 : sizeof(T_) > 8 ? 63 : sizeof(T_) > 4 ? 127 : sizeof(T_) > 2 ? 255 : sizeof(T_) > 1 ? 511 : 1023,
-		ChunkSize = NumItemsChunk * sizeof(T_)
-	};
-	ElementType** _map;
-	ElementType* _static_map[MapChunkSize];
-	struct Position
-	{
-		size_t block;
-		size_t offset;
-		Position() {}
-		Position(size_t block, size_t offset) : block(block), offset(offset) {}
-		Position& operator +=(size_t rhs)
-		{
-			size_t tmp = flatten() + rhs;
-			block = tmp / NumItemsChunk;
-			offset = tmp % NumItemsChunk;
-			return *this;
-		}
-
-		Position& operator +=(const Position& rhs)
-		{
-			size_t tmp = (block + rhs.block) * NumItemsChunk + offset + rhs.offset;
-			block = tmp / NumItemsChunk;
-			offset = tmp % NumItemsChunk;
-			return *this;
-		}
-		Position& operator ++()
-		{
-			if (++offset == NumItemsChunk)
-			{
-				offset = 0;
-				++block;
-			}
-			return *this;
-		}
-		Position operator ++(int)
-		{
-			Position pos(*this);
-			++(*this);
-			return pos;
-		}
-		Position& operator --()
-		{
-			if (offset == 0) //wrap
-			{
-				offset = NumItemsChunk - 1;
-				--block;
-			}
-			return *this;
-		}
-		Position operator --(int)
-		{
-			Position pos(*this);
-			--(*this);
-			return pos;
-		}
-		Position operator +(const Position& rhs) const
-		{
-			return Position(*this) += rhs;
-		}
-		Position& operator -=(size_t rhs)
-		{
-			size_t tmp = flatten() - rhs;
-			block = tmp / NumItemsChunk;
-			offset = tmp % NumItemsChunk;
-			return *this;
-		}
-		Position& operator -=(const Position& rhs)
-		{
-			size_t tmp = (block - rhs.block) * NumItemsChunk + offset - rhs.offset;
-			block = tmp / NumItemsChunk;
-			offset = tmp % NumItemsChunk;
-			return *this;
-		}
-		Position operator -(const Position& rhs) const
-		{
-			return Position(*this) -= rhs;
-		}
-		ptrdiff_t diff(const Position& rhs) const
-		{
-			return (block - rhs.block) * NumItemsChunk + offset - rhs.offset;
-		}
-		ptrdiff_t diff(size_t rhs) const
-		{
-			return flatten() - rhs;
-		}
-		ptrdiff_t sum(const Position& rhs) const
-		{
-			return (block + rhs.block) * NumItemsChunk + offset + rhs.offset;
-		}
-		ptrdiff_t sum(const size_t rhs) const
-		{
-			return flatten() + rhs;
-		}
-
-		size_t flatten()
-		{
-			return block * NumItemsChunk + offset;
-		}
-	};
-	size_t _map_size;
-	Position _first_item;
-	Position _first_empty;
-
-public:
-	Deque() : _map(_static_map), _map_size(MapChunkSize), _first_item(7, NumItemsChunk / 2), _first_empty(7, NumItemsChunk / 2) {}
-
-	size_t has_space_back()
-	{
-		return _first_empty.offset < MapChunkSize;
-	}
-	size_t has_space_front()
-	{
-		return _first_item.offset > 0;
-	}
-	size_t has_map_space_back()
-	{
-		return _first_empty.block < _map_size;
-	}
-	size_t has_map_space_front()
-	{
-		return _first_item.block > 0;
-	}
-
-	size_t size() const
-	{
-		return _first_empty.diff(_first_item);
-	}
-
-	void grow_map()
-	{
-		size_t newsize = _map_size + (_map_size >> 1); //50% grow
-		ElementType** newmap = new ElementType*[newsize];
-		memcpy(newmap + (_map_size >> 2), _map, _map_size * sizeof(ElementType*));
-		if (_map_size != MapChunkSize)
-		{
-			delete[] _map;
-		}
-		_map = newmap;
-		++_map_size;
-	}
-
-	void move_map(int offset)
-	{
-		ptrdiff_t step = offset > 0 ? 1 : -1;
-		ptrdiff_t first = offset >= 0 ? _first_item.block : _first_empty.block;
-		ptrdiff_t last = offset >= 0 ? _first_empty.block : _first_item.block;
-		for (ptrdiff_t i = first; i < last; i += step)
-		{
-			_map[i + offset] = _map[i];
-		}
-		_first_item.block += offset;
-		_first_empty.block += offset;
-	}
-
-	void reserve_map_space()
-	{
-		size_t offset1 = _first_item.block;
-		size_t offset2 = _map_size - _first_empty.block;
-		ptrdiff_t offset = (ptrdiff_t)offset2 - (ptrdiff_t)offset1;
-		offset >>= 1;
-		if (offset) //can gain something...
-		{
-			move_map(offset);
-			assertion(_first_item.block > 0);
-			//
-		}
-		else
-		{
-			grow_map();
-		}
-	}
-
-	void reserve_back()
-	{
-		if (has_space_back()) { return; }
-
-		reserve_map_space();
-
-	}
-
-	void reserve_front()
-	{
-		if (has_space_back()) { return; }
-
-		reserve_map_space();
-	}
-
-
-	ElementType* get(size_t chunk, size_t offset)
-	{
-		return _map[chunk] + offset;
-	}
-
-	ElementType* find_item(size_t position)
-	{
-		size_t chunk = position / NumItemsChunk;
-		size_t offset = position % NumItemsChunk;
-		return get(chunk, offset);
-	}
-
-	void push_back()
-	{
-		reserve_back();
-	}
-};
-
-
+/// <summary> A map that uses a std::vector as an underlying sparse storage and uses
+/// binary search for logarithmic time key lookup or indexing for constant time lookup.
+/// a) it can be indexed either by index in constant time, or by key in logarithmic time.
+/// b) Guaranteed to have contiguous storage
+/// c) If items are removed, iterators are invalidated.</summary>
 template<typename Key_, typename Value_, typename Comparator = std::less<Key_>/**/>
 class ContiguousMap
 {
 public:
-	typedef Key_ KeyType;
-	typedef Value_ ValueType;
-	typedef std::pair<KeyType, ValueType> EntryType;
-	typedef std::vector<EntryType> StorageType;
-	typedef typename StorageType::iterator iterator;
-	typedef typename StorageType::const_iterator const_iterator;
-	typedef typename StorageType::reverse_iterator reverse_iterator;
-	typedef typename StorageType::const_reverse_iterator const_reverse_iterator;
+	typedef Key_ KeyType; //!< The type of the Key stored in the map
+	typedef Value_ ValueType; //!< The type of the Value stored in the map
+	typedef std::pair<KeyType, ValueType> EntryType; //!< The type of the map entry (key, value) used in the map
+	typedef std::vector<EntryType> StorageType; //!< The type of the contiguous backing store of the map
+	typedef typename StorageType::iterator iterator; //!< The type of the (linear) iterator of the map
+	typedef typename StorageType::const_iterator const_iterator; //!< The type of the (linear) const iterator of the map
+	typedef typename StorageType::reverse_iterator reverse_iterator; //!< The type of the (linear) reverse iterator of the map
+	typedef typename StorageType::const_reverse_iterator const_reverse_iterator; //!< The type of the (linear) reverse const iterator of the map
 private:
 	StorageType _storage;
 
 public:
+	/// <summary>Copy assignment operator from std::map</summary>
+	/// <param name="initialmap">std::map whose items will be used to initialize this map</param>
+	/// <returns>This object</returns>
 	ContiguousMap& operator=(const std::map<Key_, Value_>& initialmap)
 	{
 		assign(initialmap.begin(), initialmap.end());
@@ -256,7 +45,7 @@ public:
 	/// <summary>Assign elements in this container</summary>
 	/// <param name="beginIt">Begin iterator</param>
 	/// <param name="endIt">End iterator</param>
-	/// <returns>Return this object</returns>
+	/// <returns>This object</returns>
 	template<typename new_iterator>
 	ContiguousMap& assign(new_iterator beginIt, new_iterator endIt)
 	{
@@ -297,28 +86,36 @@ public:
 		return it == end() ? end() : it->first == key ? it : end();
 	}
 
-	/// <summary>Return a iterator to tbe begining of the container</summary>
+	/// <summary>Return an iterator to tbe begining of the container</summary>
+	/// <returns>An iterator to the beginning of the backing store</returns>
 	iterator begin() { return _storage.begin(); }
 
 	/// <summary>Return a iterator to tbe begining of the container (const).</summary>
+	/// <returns>A const iterator to the beginning of the backing store</returns>
 	const_iterator begin() const { return _storage.begin(); }
 
 	/// <summary>Returns a reverse iterator to the beginning</summary>
+	/// <returns>A reverse iterator to the beginning of the backing store</returns>
 	reverse_iterator rbegin() { return _storage.rbegin(); }
 
 	/// <summary>Returns a reverse iterator to the beginning (const)</summary>
+	/// <returns>A const reverse iterator to the beginning of the backing store</returns>
 	const_reverse_iterator rbegin() const { return _storage.rbegin(); }
 
 	/// <summary>Returns a iterator to the end of the container.</summary>
+	/// <returns>An iterator to the end of the backing store</returns>
 	iterator end() { return _storage.end(); }
 
 	/// <summary>Returns a const iterator to the end of the container.</summary>
+	/// <returns>A const iterator to the end of the backing store</returns>
 	const_iterator end() const { return _storage.end(); }
 
 	/// <summary>Returns a reverse iterator to the end</summary>
+	/// <returns>A reverse iterator to the end of the backing store</returns>
 	reverse_iterator rend() { return _storage.rend(); }
 
 	/// <summary>Returns a const reverse iterator to the end</summary>
+	/// <returns>A const reverse iterator to the end of the backing store</returns>
 	const_reverse_iterator rend() const { return _storage.rend(); }
 
 	/// <summary>operator []. Reference to the mapped value of the new element if no element with key existed. Otherwise a
@@ -384,10 +181,10 @@ private:
 	iterator myBinarySearch(iterator begin, iterator end, KeyType value)
 	{
 		Comparator compare;
-		pvr::int32 diff = (int32)(end - begin);
+		int32_t diff = static_cast<int32_t>(end - begin);
 		while (0 < diff)
 		{
-			pvr::int32 halfdiff = diff >> 1;
+			int32_t halfdiff = diff >> 1;
 			iterator mid = begin;
 			mid += halfdiff;
 
@@ -406,10 +203,10 @@ private:
 	const_iterator myBinarySearch(const_iterator begin, const_iterator end, KeyType value)const
 	{
 		Comparator compare;
-		pvr::int32 diff = int32(end - begin);
+		int32_t diff = static_cast<int32_t>(end - begin);
 		while (0 < diff)
 		{
-			pvr::int32 halfdiff = diff >> 1;
+			int32_t halfdiff = diff >> 1;
 			const_iterator mid = begin;
 			mid += halfdiff;
 

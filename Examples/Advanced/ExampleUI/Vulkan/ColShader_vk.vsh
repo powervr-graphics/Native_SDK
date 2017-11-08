@@ -1,15 +1,14 @@
 #version 450
 
 #define VERTEX_ARRAY	0
-layout (location = VERTEX_ARRAY) in highp vec3 inVertex;
+layout(location = VERTEX_ARRAY) in highp vec4 inVertex;
 
-layout(set=0, binding=0) uniform MVP
+layout(set = 0, binding = 0) uniform MVP
 {
-	mediump mat4 MVPMatrix;
+	highp mat4 MVPMatrix;
 };
-
 
 void main()
 {
-	gl_Position = MVPMatrix * vec4(inVertex, 1.0);
+	gl_Position = MVPMatrix * vec4(inVertex.rgb, 1.0);
 }

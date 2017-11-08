@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000F1A5C0 /* libPVRCore.a */; };
 		1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0005EAF00D /* libPVRShell.a */; };
-		1100B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a */; };
 		1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -28,6 +27,7 @@
 		F8205A92130408E100253AE7 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F8205A89130408E100253AE7 /* Icon@2x.png */; };
 		F8205A93130408E100253AE7 /* iTunesArtwork in Resources */ = {isa = PBXBuildFile; fileRef = F8205A8A130408E100253AE7 /* iTunesArtwork */; };
 		F80E5DA8E131F154CDB09509 /* OGLESIntroducingPVRShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F86C5D5E260B0379EDFA904B /* OGLESIntroducingPVRShell.cpp */; };
+		F825BB916438CE17EF7F17F8 /* EaglContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = F8A53233EE93C743BED1BC92 /* EaglContext.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,20 +58,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 9900B16BADC0DE0005EAF00D;
 			remoteInfo = PVRShell;
-		};
-		3300B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9800B16BADC0DE00BAC1BO4E;
-			remoteInfo = PVRNativeGles;
-		};
-		6600B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9900B16BADC0DE00BAC1BO4E;
-			remoteInfo = PVRNativeGles;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -111,7 +97,6 @@
 /* Begin PBXFileReference section */
 		4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRCore.xcodeproj; path = ../../../../../../Framework/PVRCore/Build/iOS/PVRCore.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRShell.xcodeproj; path = ../../../../../../Framework/PVRShell/Build/iOS/PVRShell.xcodeproj; sourceTree = "<group>"; };
-		4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRNativeGles.xcodeproj; path = ../../../../../../Framework/PVRNativeApi/OGLES/Build/iOS/PVRNativeGles.xcodeproj; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* OGLESIntroducingPVRShell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLESIntroducingPVRShell.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,6 +118,7 @@
 		5911E5FD16D39DAD00155177 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
 		594B97CF16D39E37002ED79F /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../../../../../../Builds/iOS/Resources/Default@2x.png"; sourceTree = SOURCE_ROOT; };
 		F86C5D5E260B0379EDFA904B /* OGLESIntroducingPVRShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESIntroducingPVRShell.cpp; path = ../../OGLESIntroducingPVRShell.cpp; sourceTree = SOURCE_ROOT; };
+		F8A53233EE93C743BED1BC92 /* EaglContext.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = EaglContext.mm; path = ../../EaglContext.mm; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,7 +128,6 @@
 			files = (
 				1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */,
 				1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */,
-				1100B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				1D3623EC0D0F72F000981E51 /* CoreGraphics.framework in Frameworks */,
@@ -166,14 +151,6 @@
 			isa = PBXGroup;
 			children = (
 				2200B16BADC0DE0005EAF00D /* libPVRShell.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		5500B16BADC0DE00BAC1BO4E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2200B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -232,7 +209,6 @@
 			children = (
 				4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */,
 				4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */,
-				4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */,
 				BA240AC10FEFE77A00DE852D /* OpenGLES.framework */,
 				1D3623EB0D0F72F000981E51 /* CoreGraphics.framework */,
 				2D500B990D5A79CF00DBA0E3 /* QuartzCore.framework */,
@@ -265,6 +241,7 @@
 			isa = PBXGroup;
 			children = (
 				F86C5D5E260B0379EDFA904B /* OGLESIntroducingPVRShell.cpp */,
+				F8A53233EE93C743BED1BC92 /* EaglContext.mm */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -316,7 +293,6 @@
 			dependencies = (
 				7700B16BADC0DE0000F1A5C0 /* PBXTargetDependency */,
 				7700B16BADC0DE0005EAF00D /* PBXTargetDependency */,
-				7700B16BADC0DE00BAC1BO4E /* PBXTargetDependency */,
 			);
 			name = "OGLESIntroducingPVRShell";
 			productName = foo;
@@ -349,10 +325,6 @@
 					ProductGroup = 5500B16BADC0DE0005EAF00D /* Products */;
 					ProjectRef = 4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */;
 				},
-				{
-					ProductGroup = 5500B16BADC0DE00BAC1BO4E /* Products */;
-					ProjectRef = 4400B16BADC0DE00BAC1BO4E /* PVRNativeGles.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -374,13 +346,6 @@
 			fileType = archive.ar;
 			path = libPVRShell.a;
 			remoteRef = 3300B16BADC0DE0005EAF00D /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2200B16BADC0DE00BAC1BO4E /* libPVRNativeGles.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libPVRNativeGles.a;
-			remoteRef = 3300B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -413,6 +378,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F80E5DA8E131F154CDB09509 /* OGLESIntroducingPVRShell.cpp in Sources */,
+				F825BB916438CE17EF7F17F8 /* EaglContext.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,11 +394,6 @@
 			isa = PBXTargetDependency;
 			name = PVRShell;
 			targetProxy = 6600B16BADC0DE0005EAF00D /* PBXContainerItemProxy */;
-		};
-		7700B16BADC0DE00BAC1BO4E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = PVRNativeGles;
-			targetProxy = 6600B16BADC0DE00BAC1BO4E /* PBXContainerItemProxy */;
 		};
 
 /* End PBXTargetDependency section */
@@ -484,7 +445,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Framework";
+				USER_HEADER_SEARCH_PATHS = "OGLES ../../../../../../Builds/Include ../../../../../../Framework";
 			};
 			name = Debug;
 		};
@@ -511,7 +472,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Framework";
+				USER_HEADER_SEARCH_PATHS = "OGLES ../../../../../../Builds/Include ../../../../../../Framework";
 			};
 			name = Release;
 		};
@@ -535,7 +496,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include ../../../../../../Framework";
+				USER_HEADER_SEARCH_PATHS = "OGLES ../../../../../../Builds/Include ../../../../../../Framework";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Distribution;

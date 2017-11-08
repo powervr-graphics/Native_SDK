@@ -4,21 +4,14 @@
 \Copyright    Copyright (c) Imagination Technologies Limited.
 \brief      Shows how to perform skinning combined with Dot3 (normal-mapped) lighting
 ***********************************************************************************************************************/
-#include "PVRApi/PVRApi.h"
 #include "PVRShell/PVRShell.h"
-<<<<<<< HEAD
-#include "PVRUIRenderer/UIRenderer.h"
-#include "PVRApi/RenderManager.h"
-=======
-#include "PVREngineUtils/PVREngineUtils.h"
->>>>>>> 1776432f... 4.3
-
-using namespace pvr;
-using namespace pvr::types;
+#include "PVRUtils/PVRUtilsVk.h"
 
 namespace Configuration {
-const char EffectFile[] = "Skinning_vk.pfx";
-const char SceneFile[] = "Robot.pod";// POD scene files
+const char EffectFile[] = "Skinning.pfx";
+
+// POD scene files
+const char SceneFile[] = "Robot.pod";
 }
 
 /*!*********************************************************************************************************************
@@ -29,30 +22,50 @@ class VulkanSkinning : public pvr::Shell
 	//Put all API managed objects in a struct so that we can one-line free them...
 	struct DeviceResource
 	{
+		pvrvk::Instance instance;
+		pvrvk::Device device;
+
 		// Rendering manager, putting together Effects with Models to render things
-		utils::RenderManager mgr;
-		// Print3D class used to display text
-		pvr::ui::UIRenderer uiRenderer;
+		pvr::utils::RenderManager mgr;
 		// Asset loader
-<<<<<<< HEAD
-		pvr::api::AssetStore assetManager;
-=======
-		pvr::utils::AssetStore assetManager;
->>>>>>> 1776432f... 4.3
+		pvr::Multi<pvrvk::CommandBuffer> commandBuffers;
+		pvrvk::Swapchain swapchain;
+		pvrvk::CommandPool commandPool;
+		pvrvk::DescriptorPool descriptorPool;
+		pvrvk::Queue queue;
 
-		pvr::api::CommandBuffer cmdBuffers[4];
+		pvrvk::Surface surface;
+
+		std::vector<pvr::utils::ImageUploadResults> imageUploadResults;
+		pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+		pvr::Multi<pvrvk::ImageView> depthStencilImages;
+		pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+		pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+		pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+		pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+
+		// UIRenderer used to display text
+		pvr::ui::UIRenderer uiRenderer;
+		~DeviceResource()
+		{
+			if (device.isValid())
+			{
+				device->waitIdle();
+			}
+		}
 	};
-	std::auto_ptr<DeviceResource> devObj;
+	std::unique_ptr<DeviceResource> _deviceResources;
 
+	uint32_t _frameId;
 	// 3D Model
-	pvr::assets::ModelHandle scene;
+	pvr::assets::ModelHandle _scene;
 
-	bool isPaused;
+	bool _isPaused;
 
 	// Variables to handle the animation in a time-based manner
-	float currentFrame;
+	float _currentFrame;
 public:
-	VulkanSkinning() : isPaused(false), currentFrame(0) {}
+	VulkanSkinning() : _isPaused(false), _currentFrame(0) {}
 
 	pvr::Result initApplication();
 	pvr::Result initView();
@@ -60,7 +73,7 @@ public:
 	pvr::Result quitApplication();
 	pvr::Result renderFrame();
 
-	void recordCommandBuffer(api::FboSet& fbo);
+	void recordCommandBuffer();
 	void eventMappedInput(pvr::SimplifiedInput action);
 };
 
@@ -75,88 +88,149 @@ void VulkanSkinning::eventMappedInput(pvr::SimplifiedInput action)
 	case pvr::SimplifiedInput::Action1:
 	case pvr::SimplifiedInput::Action2:
 	case pvr::SimplifiedInput::Action3:
-		isPaused = !isPaused; break;
+		_isPaused = !_isPaused; break;
 	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
 	default: break;
 	}
 }
 
 /*!*********************************************************************************************************************
-<<<<<<< HEAD
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in initApplication() will be called by Shell once per run, before the rendering context is created.
-=======
 \return Return pvr::Result::Success if no error occurred
 \brief  Code in initApplication() will be called by Shell once per run, before the rendering context is created.
->>>>>>> 1776432f... 4.3
 Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
 If the rendering context is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
 pvr::Result VulkanSkinning::initApplication()
 {
+	this->setStencilBitsPerPixel(0);
 	pvr::assets::PODReader podReader(getAssetStream(Configuration::SceneFile));
-	if ((scene = pvr::assets::Model::createWithReader(podReader)).isNull())
+	if ((_scene = pvr::assets::Model::createWithReader(podReader)).isNull())
 	{
-		setExitMessage("Error: Could not create the scene file %s.", Configuration::SceneFile);
-		return pvr::Result::NoData;
+		setExitMessage("Error: Could not create the _scene file %s.", Configuration::SceneFile);
+		return pvr::Result::InitializationError;
 	}
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-<<<<<<< HEAD
-\return	Return Result::Success if no error occurred
-\brief	Code in quitApplication() will be called by Shell once per run, just before exiting the program.
-=======
-\return Return Result::Success if no error occurred
+\return Return pvr::Result::Success if no error occurred
 \brief  Code in quitApplication() will be called by Shell once per run, just before exiting the program.
->>>>>>> 1776432f... 4.3
 If the rendering context is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
 pvr::Result VulkanSkinning::quitApplication()
 {
-	scene.reset();
-	devObj.reset();
+	_scene.reset();
+	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-<<<<<<< HEAD
-\return	Return Result::Success if no error occurred
-\brief	Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
-=======
-\return Return Result::Success if no error occurred
+\return Return pvr::Result::Success if no error occurred
 \brief  Code in initView() will be called by Shell upon initialization or after a change in the rendering context.
->>>>>>> 1776432f... 4.3
 Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
 pvr::Result VulkanSkinning::initView()
 {
-	devObj.reset(new DeviceResource);
-	devObj->assetManager.init(*this);
-	api::FboSet fboOnScreen = getGraphicsContext()->createOnScreenFboSet();
-	currentFrame = 0.;
+	_frameId = 0;
+	_deviceResources.reset(new DeviceResource);
 
+	// create instance, Surface and Logical Device
+	if (!pvr::utils::createInstanceAndSurface(this->getApplicationName(), this->getWindow(), this->getDisplay(), _deviceResources->instance, _deviceResources->surface))
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	// look for graphics queue with presentation support for the given surface
+
+	const pvr::utils::QueuePopulateInfo queueCreateInfo =
+	{
+		VkQueueFlags::e_GRAPHICS_BIT | VkQueueFlags::e_COMPUTE_BIT, _deviceResources->surface,
+	};
+
+	pvr::utils::QueueAccessInfo queueAccessInfo;
+
+	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queueCreateInfo, 1, &queueAccessInfo);
+
+	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+
+	if (!_deviceResources->device.isValid())
+	{
+		setExitMessage("failed to create Logical device");
+		return pvr::Result::UnknownError;
+	}
+
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
+
+	// validate the supported swapchain image usage
+	VkImageUsageFlags swapchainImageUsage = VkImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
+	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, VkImageUsageFlags::e_TRANSFER_SRC_BIT))
+	{
+		swapchainImageUsage |= VkImageUsageFlags::e_TRANSFER_SRC_BIT;
+	}
+
+	// create the swapchain
+	if (!pvr::utils::createSwapchainAndDepthStencilImageView(_deviceResources->device,
+	    _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain, _deviceResources->depthStencilImages, swapchainImageUsage))
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	_currentFrame = 0.;
+
+	// Setup the effect
 	pvr::assets::pfx::PfxParser rd(Configuration::EffectFile, this);
 
-	devObj->mgr.addEffect(*rd.getAssetHandle(), getGraphicsContext(), devObj->assetManager);
-	devObj->mgr.addModelForAllPasses(scene);
-	devObj->mgr.buildRenderObjects();
-	scene->releaseVertexData();
-	devObj->mgr.createAutomaticSemantics();
+	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(
+	                                     pvrvk::DescriptorPoolCreateInfo()
+	                                     .addDescriptorInfo(VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
+	                                     .addDescriptorInfo(VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 128)
+	                                     .addDescriptorInfo(VkDescriptorType::e_UNIFORM_BUFFER, 128)
+	                                     .setMaxDescriptorSets(256));
 
-<<<<<<< HEAD
-	// Under the hood, the above line will do the following:
-	//for (auto& pipe : devObj->mgr.toSubpass(0, 0, 0).pipelines) // actually, for all subpasses, but we only have 1
-	//{
-	//	pipe.createAutomaticModelSemantics();
-	//}
+	if (!_deviceResources->descriptorPool.isValid())
+	{
+		setExitMessage("Failed to create Descriptor pool");
+		return pvr::Result::UnknownError;
+	}
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(_deviceResources->queue->getQueueFamilyId(),
+	                                VkCommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
 
-	//for (auto& node : devObj->mgr.renderables())
-	//{
-	//	node.createAutomaticSemantics();
-	//}
-=======
+	// create the commandbuffers, semaphores & the fence
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	{
+		_deviceResources->commandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(VkFenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameAcquireFence[i] = _deviceResources->device->createFence(VkFenceCreateFlags::e_SIGNALED_BIT);
+	}
+
+	_deviceResources->mgr.init(*this, _deviceResources->swapchain, _deviceResources->descriptorPool);
+	_deviceResources->commandBuffers[0]->begin();
+	std::vector<pvr::utils::ImageUploadResults> uploadResult;
+	_deviceResources->mgr.addEffect(*rd.getAssetHandle(), _deviceResources->commandBuffers[0], uploadResult);
+	_deviceResources->mgr.addModelForAllPasses(_scene);
+	_deviceResources->mgr.buildRenderObjects(_deviceResources->commandBuffers[0], uploadResult);
+	_scene->releaseVertexData();
+	_deviceResources->mgr.createAutomaticSemantics();
+
+	// set the initial layout of the framebuffer from undefined to Present
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	{
+		pvrvk::Framebuffer framebuffer =  _deviceResources->mgr.toPass(0, 0).getFramebuffer(i);
+		if (framebuffer->getAttachment(0).isValid())
+		{
+			pvr::utils::setImageLayout(framebuffer->getAttachment(0)->getImage(),
+			                           VkImageLayout::e_UNDEFINED, VkImageLayout::e_PRESENT_SRC_KHR, _deviceResources->commandBuffers[0]);
+		}
+		if (framebuffer->getAttachment(1).isValid())
+		{
+			pvr::utils::setImageLayout(framebuffer->getAttachment(1)->getImage(),
+			                           VkImageLayout::e_UNDEFINED, VkImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+			                           _deviceResources->commandBuffers[0]);
+		}
+	}
+
 	/***************************************************************
 	**** Under the hood, the above line will do the following: *****
 
@@ -170,89 +244,74 @@ pvr::Result VulkanSkinning::initView()
 	  node.createAutomaticSemantics();
 	}
 	***************************************************************/
->>>>>>> 1776432f... 4.3
 
 	pvr::Result result = pvr::Result::Success;
-	result = devObj->uiRenderer.init(fboOnScreen[0]->getRenderPass(), 0);
-	if (result != pvr::Result::Success) { return result; }
 
-	devObj->uiRenderer.getDefaultTitle()->setText("Skinning");
-	devObj->uiRenderer.getDefaultTitle()->commitUpdates();
-	devObj->uiRenderer.getDefaultDescription()->setText("Skinning with Normal Mapped Per Pixel Lighting");
-<<<<<<< HEAD
-=======
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->mgr.toPass(0, 0).getFramebuffer(0)->getRenderPass(),
+	                                  0, _deviceResources->commandPool, _deviceResources->queue);
 
->>>>>>> 1776432f... 4.3
-	devObj->uiRenderer.getDefaultDescription()->commitUpdates();
-	devObj->uiRenderer.getDefaultControls()->setText("Any Action Key : Pause");
-	devObj->uiRenderer.getDefaultControls()->commitUpdates();
-	devObj->uiRenderer.getSdkLogo()->setColor(1.0f, 1.0f, 1.0f, 1.f);
-	devObj->uiRenderer.getSdkLogo()->commitUpdates();
-	recordCommandBuffer(fboOnScreen);
-	getGraphicsContext()->waitIdle();
+	_deviceResources->commandBuffers[0]->end();
+	pvrvk::SubmitInfo submitInfo;
+	submitInfo.commandBuffers = &_deviceResources->commandBuffers[0];
+	submitInfo.numCommandBuffers = 1;
+	_deviceResources->perFrameAcquireFence[0]->reset();
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameAcquireFence[0]);
+	_deviceResources->perFrameAcquireFence[0]->wait();
+	_deviceResources->imageUploadResults.clear();
+
+	_deviceResources->uiRenderer.getDefaultTitle()->setText("Skinning");
+	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultDescription()->setText("Skinning with Normal Mapped Per Pixel Lighting");
+
+	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultControls()->setText("Any Action Key : Pause");
+	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
+	_deviceResources->uiRenderer.getSdkLogo()->setColor(1.0f, 1.0f, 1.0f, 1.f);
+	_deviceResources->uiRenderer.getSdkLogo()->commitUpdates();
+	recordCommandBuffer();
 	return result;
 }
 
 /*!*********************************************************************************************************************
-\return Return Result::Success if no error occurred
+\return Return pvr::Result::Success if no error occurred
 \brief  Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
 pvr::Result VulkanSkinning::releaseView()
 {
-	devObj.reset(0);
+	_deviceResources.reset(0);
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-<<<<<<< HEAD
-\return	Return pvr::Result::Success if no error occurred
-\brief	Main rendering loop function of the program. The shell will call this function every frame.
-=======
 \return Return pvr::Result::Success if no error occurred
 \brief  Main rendering loop function of the program. The shell will call this function every frame.
->>>>>>> 1776432f... 4.3
 ***********************************************************************************************************************/
 pvr::Result VulkanSkinning::renderFrame()
 {
-	//Calculates the frame number to animate in a time-based manner.
-	//Uses the shell function this->getTime() to get the time in milliseconds.
+	_deviceResources->perFrameAcquireFence[_frameId]->wait();
+	_deviceResources->perFrameAcquireFence[_frameId]->reset();
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[_frameId], _deviceResources->perFrameAcquireFence[_frameId]);
 
-	float32 fDelta = (float32)getFrameTime();
+	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+
+	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->wait();
+	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->reset();
+
+	const float fDelta = (float)getFrameTime();
 	if (fDelta > 0.0001f)
 	{
-		if (!isPaused) { currentFrame += fDelta / scene->getFPS(); }
+		if (!_isPaused) { _currentFrame += fDelta / _scene->getFPS(); }
 
 		// Wrap the Frame number back to Start
-		while (currentFrame >= scene->getNumFrames() - 1) { currentFrame -= (scene->getNumFrames() - 1); }
+		while (_currentFrame >= _scene->getNumFrames() - 1)
+		{
+			_currentFrame -= (_scene->getNumFrames() - 1);
+		}
 	}
-	// Set the scene animation to the current frame
 
-<<<<<<< HEAD
-	devObj->mgr.toSubpassModel(0, 0, 0, 0).updateFrame(currentFrame);
-
-	devObj->mgr.updateAutomaticSemantics(getSwapChainIndex());
-
-	// Under the hood, the above line will do the following:
-
-	////Get a new worldview camera and light position
-	//auto& pipeline = devObj->mgr.toPipeline(0, 0, 0, 0);
-	//pipeline.updateAutomaticModelSemantics(getSwapChainIndex());
-
-	//// Update all node-specific matrices (Worldview, bone array etc).
-	//pvr::uint32 swapChainIndex = getGraphicsContext()->getPlatformContext().getSwapChainIndex();
-
-	//// Should be called before updating anything to optimise map/unmap. Suggest call once per frame.
-	//devObj->mgr.toEffect(0).beginBufferUpdates(swapChainIndex);
-
-	//for (auto& rendernode : devObj->mgr.renderables()) { rendernode.updateAutomaticSemantics(swapChainIndex); }
-
-	//// Must be called if beginBufferUpdates were previously called (performs the buffer->unmap calls)
-	//devObj->mgr.toEffect(0).endBufferUpdates(swapChainIndex);
-
-=======
-	devObj->mgr.toSubpassGroupModel(0, 0, 0, 0, 0).updateFrame(currentFrame);
-
-	devObj->mgr.updateAutomaticSemantics(getSwapChainIndex());
+	// Set the _scene animation to the current frame
+	_deviceResources->mgr.toSubpassGroupModel(0, 0, 0, 0, 0).updateFrame(_currentFrame);
+	_deviceResources->mgr.updateAutomaticSemantics(swapchainIndex);
 
 	/***************************************************************
 	**** Under the hood, the above line will do the following: *****
@@ -262,7 +321,7 @@ pvr::Result VulkanSkinning::renderFrame()
 	pipeline.updateAutomaticModelSemantics(getSwapChainIndex());
 
 	// Update all node-specific matrices (Worldview, bone array etc).
-	pvr::uint32 swapChainIndex = getGraphicsContext()->getPlatformContext().getSwapChainIndex();
+	uint32_t swapChainIndex = getGraphicsContext()->getPlatformContext().getSwapChainIndex();
 
 	// Should be called before updating anything to optimise map/unmap. Suggest call once per frame.
 	devObj->mgr.toEffect(0).beginBufferUpdates(swapChainIndex);
@@ -273,29 +332,63 @@ pvr::Result VulkanSkinning::renderFrame()
 	devObj->mgr.toEffect(0).endBufferUpdates(swapChainIndex);
 
 	***************************************************************/
->>>>>>> 1776432f... 4.3
 
 	//Update all the bones matrices
-	devObj->cmdBuffers[getSwapChainIndex()]->submit();
+	pvrvk::SubmitInfo submitInfo;
+	VkPipelineStageFlags pipeWaitStageFlags = VkPipelineStageFlags::e_ALL_GRAPHICS_BIT;
+	submitInfo.commandBuffers = &_deviceResources->commandBuffers[swapchainIndex];
+	submitInfo.numCommandBuffers = 1;
+	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[_frameId];
+	submitInfo.numWaitSemaphores = 1;
+	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	submitInfo.numSignalSemaphores = 1;
+	submitInfo.waitDestStages = &pipeWaitStageFlags;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[swapchainIndex]);
+
+	if (this->shouldTakeScreenshot())
+	{
+		if (_deviceResources->swapchain->supportsUsage(VkImageUsageFlags::e_TRANSFER_SRC_BIT))
+		{
+			pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex,
+			                           _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName());
+		}
+		else
+		{
+			Log(LogLevel::Warning, "Could not take screenshot as the swapchain does not support TRANSFER_SRC_BIT");
+		}
+	}
+
+	pvrvk::PresentInfo presentInfo;
+	presentInfo.swapchains = &_deviceResources->swapchain;
+	presentInfo.numSwapchains = 1;
+	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	presentInfo.numWaitSemaphores = 1;
+	presentInfo.imageIndices = &swapchainIndex;
+	_deviceResources->queue->present(presentInfo);
+
+	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+
+
+	//std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	return pvr::Result::Success;
 }
 
-inline std::vector<StringHash> generateBonesList(const char* base, uint32 numBones)
+inline std::vector<pvr::StringHash> generateBonesList(const char* base, uint32_t numBones)
 {
-	std::vector<StringHash> boneSemantics;
+	std::vector<pvr::StringHash> boneSemantics;
 	char buffer[255];
 	assertion(strlen(base) < 240);
 	strcpy(buffer, base);
 	char* ptr = buffer + strlen(base);
-	int32 decades = numBones / 10;
-	int32 units = numBones % 10;
-	for (pvr::int32 decade = 0; decade < decades; ++decade)
+	int32_t decades = numBones / 10;
+	int32_t units = numBones % 10;
+	for (int32_t decade = 0; decade < decades; ++decade)
 	{
-		for (pvr::int32 unit = 0; unit < 10; ++unit)
+		for (int32_t unit = 0; unit < 10; ++unit)
 		{
 			*ptr = '0' + unit;
 			ptr[1] = '\0';
-			boneSemantics.push_back(StringHash(buffer));
+			boneSemantics.push_back(pvr::StringHash(buffer));
 		}
 		if (decade == 0)
 		{
@@ -305,53 +398,58 @@ inline std::vector<StringHash> generateBonesList(const char* base, uint32 numBon
 	}
 
 	//0, 1, 2, 3, 4, 5, 6, 7
-	for (pvr::int32 unit = 0; unit < units; ++unit)
+	for (int32_t unit = 0; unit < units; ++unit)
 	{
 		*ptr = '0' + unit;
 		ptr[1] = '\0';
-		boneSemantics.push_back(StringHash(buffer));
+		boneSemantics.push_back(pvr::StringHash(buffer));
 	}
 
 	return boneSemantics;
 }
 
-
-
 /*!*********************************************************************************************************************
 \brief  pre-record the rendering commands
 ***********************************************************************************************************************/
-void VulkanSkinning::recordCommandBuffer(api::FboSet& fbo)
+inline void VulkanSkinning::recordCommandBuffer()
 {
-	for (pvr::uint32 swapidx = 0; swapidx < getSwapChainLength(); ++swapidx)
-	{
-		devObj->cmdBuffers[swapidx] = getGraphicsContext()->createCommandBufferOnDefaultPool();
-		devObj->cmdBuffers[swapidx]->beginRecording();
-		// Clear the color and depth buffer automatically.
-		devObj->cmdBuffers[swapidx]->beginRenderPass(fbo[swapidx], true, glm::vec4(.2f, .3f, .4f, 1.f));
 
-		devObj->mgr.toPass(0, 0).recordRenderingCommands(devObj->cmdBuffers[swapidx], swapidx, false);
+	const pvrvk::ClearValue clearValues[2] =
+	{
+		pvrvk::ClearValue(0.f, 0.f, 0.f, 1.f),
+		pvrvk::ClearValue(1.f, 0u),
+	};
+	for (uint32_t swapidx = 0; swapidx < _deviceResources->swapchain->getSwapchainLength(); ++swapidx)
+	{
+		_deviceResources->commandBuffers[swapidx]->begin();
+		// Clear the color and depth buffer automatically.
+
+		pvr::utils::setImageLayout(_deviceResources->mgr.toPass(0, 0).getFramebuffer(swapidx)->getAttachment(0)->getImage(),
+		                           VkImageLayout::e_PRESENT_SRC_KHR, VkImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, _deviceResources->commandBuffers[swapidx]);
+
+		_deviceResources->commandBuffers[swapidx]->beginRenderPass(_deviceResources->mgr.toPass(0, 0).getFramebuffer(swapidx), true, clearValues, ARRAY_SIZE(clearValues));
+		_deviceResources->mgr.toPass(0, 0).recordRenderingCommands(_deviceResources->commandBuffers[swapidx], swapidx, false);
 
 		//// PART 3 :  UIRenderer
-		devObj->uiRenderer.beginRendering(devObj->cmdBuffers[swapidx]);
-		devObj->uiRenderer.getDefaultDescription()->render();
-		devObj->uiRenderer.getDefaultTitle()->render();
-		devObj->uiRenderer.getSdkLogo()->render();
-		devObj->uiRenderer.getDefaultControls()->render();
-		devObj->uiRenderer.endRendering();
+		_deviceResources->uiRenderer.beginRendering(_deviceResources->commandBuffers[swapidx]);
+		_deviceResources->uiRenderer.getDefaultDescription()->render();
+		_deviceResources->uiRenderer.getDefaultTitle()->render();
+		_deviceResources->uiRenderer.getSdkLogo()->render();
+		_deviceResources->uiRenderer.getDefaultControls()->render();
+		_deviceResources->uiRenderer.endRendering();
 
 		///// PART 4 : End the RenderePass
-		devObj->cmdBuffers[swapidx]->endRenderPass();
-		devObj->cmdBuffers[swapidx]->endRecording();
+		_deviceResources->commandBuffers[swapidx]->endRenderPass();
+		// prepare image for presentation
+		pvr::utils::setImageLayout(_deviceResources->mgr.toPass(0, 0).getFramebuffer(swapidx)->getAttachment(0)->getImage(),
+		                           VkImageLayout::e_COLOR_ATTACHMENT_OPTIMAL, VkImageLayout::e_PRESENT_SRC_KHR, _deviceResources->commandBuffers[swapidx]);
+		_deviceResources->commandBuffers[swapidx]->end();
 	}
 }
 
 /*!*********************************************************************************************************************
 \return Return auto ptr to the demo supplied by the user
-<<<<<<< HEAD
-\brief	This function must be implemented by the user of the shell. The user should return its Shell object defining the behaviour
-=======
 \brief  This function must be implemented by the user of the shell. The user should return its Shell object defining the behaviour
->>>>>>> 1776432f... 4.3
 of the application.
 ***********************************************************************************************************************/
-std::auto_ptr<pvr::Shell> pvr::newDemo() { return std::auto_ptr<pvr::Shell>(new VulkanSkinning()); }
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::unique_ptr<pvr::Shell>(new VulkanSkinning()); }

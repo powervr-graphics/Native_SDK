@@ -7,7 +7,6 @@
 #
 
 CROSS_COMPILE ?= arm-linux-gnueabi-
-
 ifdef TOOLCHAIN
 PLAT_CC  = $(TOOLCHAIN)/bin/$(CROSS_COMPILE)gcc
 PLAT_CPP = $(TOOLCHAIN)/bin/$(CROSS_COMPILE)g++

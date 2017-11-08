@@ -28,7 +28,6 @@
 		0E35043F1BF652FD00EC0B4E /* PVRCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PVRCamera.h; path = ../../PVRCamera.h; sourceTree = "<group>"; };
 		0E669E471B9F1A9500845F65 /* CameraInterface_iOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CameraInterface_iOS.mm; path = ../../CameraInterface_iOS.mm; sourceTree = "<group>"; };
 		0E669E481B9F1A9500845F65 /* CameraInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraInterface.h; path = ../../CameraInterface.h; sourceTree = "<group>"; };
-		0E669E491B9F1A9500845F65 /* CameraInterfacePVRApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraInterfacePVRApi.h; path = ../../CameraInterfacePVRApi.h; sourceTree = "<group>"; };
 		0E669E581B9F2E5E00845F65 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		3E6C070619C6F72F00D712E5 /* libPVRCamera.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVRCamera.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E6C070919C6F72F00D712E5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -79,7 +78,6 @@
 				0E35043F1BF652FD00EC0B4E /* PVRCamera.h */,
 				0E669E471B9F1A9500845F65 /* CameraInterface_iOS.mm */,
 				0E669E481B9F1A9500845F65 /* CameraInterface.h */,
-				0E669E491B9F1A9500845F65 /* CameraInterfacePVRApi.h */,
 			);
 			name = Sources;
 			sourceTree = "<group>";

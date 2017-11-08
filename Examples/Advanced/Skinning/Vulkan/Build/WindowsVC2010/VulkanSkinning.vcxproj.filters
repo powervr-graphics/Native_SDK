@@ -93,7 +93,7 @@
   <None Include="..\..\SkinnedFragShader_vk.spv">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\Skinning_vk.pfx">
+  <None Include="..\..\Skinning.pfx">
       <Filter>Content Files\Shaders</Filter>
   </None>
   </ItemGroup>

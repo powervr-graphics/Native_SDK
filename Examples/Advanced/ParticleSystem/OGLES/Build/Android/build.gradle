@@ -67,11 +67,11 @@ android {
 //Copy all our asset files into the android assets folder.
 //Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
 FileCollection assetFiles = files(
-"${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/FragShader_ES31.fsh",
-"${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/VertShader_ES31.vsh",
-"${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/ParticleFragShader_ES31.fsh",
-"${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/ParticleVertShader_ES31.vsh",
-"${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/ParticleSolver_ES31.csh",
+"${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/FragShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/VertShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/ParticleFragShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/ParticleVertShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/ParticleSystem/OGLES/ParticleSolver.csh",
 "${pvrSdkDir}/Examples/Advanced/ParticleSystem/ProcessedAssets/sphere.pod",
 
 )
@@ -111,10 +111,8 @@ FileCollection assetFiles = files(
     def ndkDependencies=[
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
     ["PVRAssets", "${pvrSdkDir}/Framework/PVRAssets/Build/Android"],
-    ["PVRNativeGles", "${pvrSdkDir}/Framework/PVRNativeApi/OGLES/Build/Android"],
-    ["PVRGles", "${pvrSdkDir}/Framework/PVRApi/OGLES/Build/Android"],
     ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
-    ["PVREngineUtils", "${pvrSdkDir}/Framework/PVREngineUtils/Build/Android"]
+    ["PVRUtilsGles", "${pvrSdkDir}/Framework/PVRUtils/OGLES/Build/Android"]
     ]
 
 	//Create and configure a task for each combination of build type (debug/release or clean) and dependency

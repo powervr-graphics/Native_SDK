@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000F1A5C0 /* libPVRCore.a */; };
 		1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000A55E75 /* libPVRAssets.a */; };
-		1100B16BADC0DE00BAC5B07E /* libPVRNativeGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE00BAC5B07E /* libPVRNativeGles.a */; };
 		1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0005EAF00D /* libPVRShell.a */; };
+		1100B16BADC0DE0000FACADE /* libPVRUtilsGles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2200B16BADC0DE0000FACADE /* libPVRUtilsGles.a */; };
 		AC2A37F31A0A675B0093C884 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A37F21A0A675B0093C884 /* Cocoa.framework */; };
 		AC2A38491A0A68920093C884 /* libEGL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A38471A0A68920093C884 /* libEGL.dylib */; };
 		AC2A384A1A0A68920093C884 /* libGLESv2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2A38481A0A68920093C884 /* libGLESv2.dylib */; };
@@ -19,15 +19,16 @@
 		AC2A38671A0A6BD80093C884 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC2A38641A0A6BD80093C884 /* Info.plist */; };
 		AC2A386E1A0A6BE10093C884 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386B1A0A6BE10093C884 /* InfoPlist.strings */; };
 		AC2A38711A0A6BE70093C884 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC2A386F1A0A6BE70093C884 /* MainMenu.xib */; };
-		F8B469765F5DA01ED4B36D65 /* OGLESMultiviewVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8C54982137BA6061EE2275F /* OGLESMultiviewVR.cpp */; };
-		F865BD586B1E437C21BD059D /* GnomeToy.pod in Resources */ = {isa = PBXBuildFile; fileRef = F88B3A25819F6070B6F52E27 /* GnomeToy.pod */; };
-		F80F85B31A82D95240C7FC18 /* GnomeWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */; };
-		F8EE4D05F9CB49F44068B9D2 /* DarkWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */; };
-		F88DCB8438E405666A2192F7 /* ClearWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8EB813261D4F268F63A078F /* ClearWood.pvr */; };
-		F8275C81FB76017154924E92 /* FragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */; };
-		F8C99D4319A45CC4793F62F7 /* VertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */; };
-		F815B672A84A40B86D3FBBA2 /* TexQuadFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8808F4F094B5ACDA7FA66FD /* TexQuadFragShader_ES3.fsh */; };
-		F82D018A4DCD22B1A42A7AAF /* TexQuadVertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B97897BF2649D2140DDF4F /* TexQuadVertShader_ES3.vsh */; };
+		DB81212C1F4AF14400519019 /* IMG.icns in Resources */ = {isa = PBXBuildFile; fileRef = DB81212B1F4AF14400519019 /* IMG.icns */; };
+		F8B469765F5DA01ED4B36D65 /* OGLESMultiviewVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F8B9A467A9E1A6AD135D8939 /* OGLESMultiviewVR.cpp */; };
+		F865BD586B1E437C21BD059D /* GnomeToy.pod in Resources */ = {isa = PBXBuildFile; fileRef = F8A548544F0FD7393BAF3890 /* GnomeToy.pod */; };
+		F80F85B31A82D95240C7FC18 /* GnomeWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F83987E258B3C65E6C071245 /* GnomeWood.pvr */; };
+		F8EE4D05F9CB49F44068B9D2 /* DarkWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8826308A580B4D8F1B0870D /* DarkWood.pvr */; };
+		F88DCB8438E405666A2192F7 /* ClearWood.pvr in Resources */ = {isa = PBXBuildFile; fileRef = F8C4D699C2E947AE6615C20E /* ClearWood.pvr */; };
+		F8275C81FB76017154924E92 /* FragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F8E7D1E37A98B91558A902F8 /* FragShader_ES3.fsh */; };
+		F8C99D4319A45CC4793F62F7 /* VertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8B497A9C452E44B18F68260 /* VertShader_ES3.vsh */; };
+		F815B672A84A40B86D3FBBA2 /* TexQuadFragShader_ES3.fsh in Resources */ = {isa = PBXBuildFile; fileRef = F88E40CD200C40EE50817FE8 /* TexQuadFragShader_ES3.fsh */; };
+		F82D018A4DCD22B1A42A7AAF /* TexQuadVertShader_ES3.vsh in Resources */ = {isa = PBXBuildFile; fileRef = F8D6B71764DAF29ED9B2988E /* TexQuadVertShader_ES3.vsh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,20 +60,6 @@
 			remoteGlobalIDString = 9900B16BADC0DE0000A55E75;
 			remoteInfo = PVRAssets;
 		};
-		3300B16BADC0DE00BAC5B07E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 9800B16BADC0DE00BAC5B07E;
-			remoteInfo = PVRNativeGles;
-		};
-		6600B16BADC0DE00BAC5B07E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 9900B16BADC0DE00BAC5B07E;
-			remoteInfo = PVRNativeGles;
-		};
 		3300B16BADC0DE0005EAF00D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */;
@@ -86,6 +73,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 9900B16BADC0DE0005EAF00D;
 			remoteInfo = PVRShell;
+		};
+		3300B16BADC0DE0000FACADE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000FACADE /* PVRUtilsGles.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9800B16BADC0DE0000FACADE;
+			remoteInfo = PVRUtilsGles;
+		};
+		6600B16BADC0DE0000FACADE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4400B16BADC0DE0000FACADE /* PVRUtilsGles.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9900B16BADC0DE0000FACADE;
+			remoteInfo = PVRUtilsGles;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -106,8 +107,8 @@
 /* Begin PBXFileReference section */
 		4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRCore.xcodeproj; path = ../../../../../../Framework/PVRCore/Build/OSX/PVRCore.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRAssets.xcodeproj; path = ../../../../../../Framework/PVRAssets/Build/OSX/PVRAssets.xcodeproj; sourceTree = "<group>"; };
-		4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRNativeGles.xcodeproj; path = ../../../../../../Framework/PVRNativeApi/OGLES/Build/OSX/PVRNativeGles.xcodeproj; sourceTree = "<group>"; };
 		4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRShell.xcodeproj; path = ../../../../../../Framework/PVRShell/Build/OSX/PVRShell.xcodeproj; sourceTree = "<group>"; };
+		4400B16BADC0DE0000FACADE /* PVRUtilsGles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PVRUtilsGles.xcodeproj; path = ../../../../../../Framework/PVRUtils/OGLES/Build/OSX/PVRUtilsGles.xcodeproj; sourceTree = "<group>"; };
 		AC2A37EF1A0A675B0093C884 /* OGLESMultiviewVR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLESMultiviewVR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC2A37F21A0A675B0093C884 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		AC2A37F51A0A675B0093C884 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -119,15 +120,16 @@
 		AC2A38661A0A6BD80093C884 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AC2A386C1A0A6BE10093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
 		AC2A38701A0A6BE70093C884 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
-		F8C54982137BA6061EE2275F /* OGLESMultiviewVR.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESMultiviewVR.cpp; path = ../../OGLESMultiviewVR.cpp; sourceTree = SOURCE_ROOT; };
-		F88B3A25819F6070B6F52E27 /* GnomeToy.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeToy.pod; path = ../../../ProcessedAssets/GnomeToy.pod; sourceTree = SOURCE_ROOT; };
-		F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeWood.pvr; path = ../../../ProcessedAssets/GnomeWood.pvr; sourceTree = SOURCE_ROOT; };
-		F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = DarkWood.pvr; path = ../../../ProcessedAssets/DarkWood.pvr; sourceTree = SOURCE_ROOT; };
-		F8EB813261D4F268F63A078F /* ClearWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = ClearWood.pvr; path = ../../../ProcessedAssets/ClearWood.pvr; sourceTree = SOURCE_ROOT; };
-		F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES3.fsh; path = ../../FragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
-		F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES3.vsh; path = ../../VertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
-		F8808F4F094B5ACDA7FA66FD /* TexQuadFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexQuadFragShader_ES3.fsh; path = ../../TexQuadFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
-		F8B97897BF2649D2140DDF4F /* TexQuadVertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexQuadVertShader_ES3.vsh; path = ../../TexQuadVertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
+		DB81212B1F4AF14400519019 /* IMG.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = IMG.icns; path = ../../../../../../Builds/OSX/Resources/IMG.icns; sourceTree = "<group>"; };
+		F8B9A467A9E1A6AD135D8939 /* OGLESMultiviewVR.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = OGLESMultiviewVR.cpp; path = ../../OGLESMultiviewVR.cpp; sourceTree = SOURCE_ROOT; };
+		F8A548544F0FD7393BAF3890 /* GnomeToy.pod */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeToy.pod; path = ../../../ProcessedAssets/GnomeToy.pod; sourceTree = SOURCE_ROOT; };
+		F83987E258B3C65E6C071245 /* GnomeWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = GnomeWood.pvr; path = ../../../ProcessedAssets/GnomeWood.pvr; sourceTree = SOURCE_ROOT; };
+		F8826308A580B4D8F1B0870D /* DarkWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = DarkWood.pvr; path = ../../../ProcessedAssets/DarkWood.pvr; sourceTree = SOURCE_ROOT; };
+		F8C4D699C2E947AE6615C20E /* ClearWood.pvr */ = {isa = PBXFileReference; lastKnownFileType = file; name = ClearWood.pvr; path = ../../../ProcessedAssets/ClearWood.pvr; sourceTree = SOURCE_ROOT; };
+		F8E7D1E37A98B91558A902F8 /* FragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = FragShader_ES3.fsh; path = ../../FragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8B497A9C452E44B18F68260 /* VertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = VertShader_ES3.vsh; path = ../../VertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
+		F88E40CD200C40EE50817FE8 /* TexQuadFragShader_ES3.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexQuadFragShader_ES3.fsh; path = ../../TexQuadFragShader_ES3.fsh; sourceTree = SOURCE_ROOT; };
+		F8D6B71764DAF29ED9B2988E /* TexQuadVertShader_ES3.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = TexQuadVertShader_ES3.vsh; path = ../../TexQuadVertShader_ES3.vsh; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,8 +139,8 @@
 			files = (
 				1100B16BADC0DE0000F1A5C0 /* libPVRCore.a in Frameworks */,
 				1100B16BADC0DE0000A55E75 /* libPVRAssets.a in Frameworks */,
-				1100B16BADC0DE00BAC5B07E /* libPVRNativeGles.a in Frameworks */,
 				1100B16BADC0DE0005EAF00D /* libPVRShell.a in Frameworks */,
+				1100B16BADC0DE0000FACADE /* libPVRUtilsGles.a in Frameworks */,
 				AC2A37F31A0A675B0093C884 /* Cocoa.framework in Frameworks */,
 				AC2A384A1A0A68920093C884 /* libGLESv2.dylib in Frameworks */,
 				AC2A38491A0A68920093C884 /* libEGL.dylib in Frameworks */,
@@ -164,18 +166,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		5500B16BADC0DE00BAC5B07E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2200B16BADC0DE00BAC5B07E /* libPVRNativeGles.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		5500B16BADC0DE0005EAF00D /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				2200B16BADC0DE0005EAF00D /* libPVRShell.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5500B16BADC0DE0000FACADE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2200B16BADC0DE0000FACADE /* libPVRUtilsGles.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -206,8 +208,8 @@
 			children = (
 				4400B16BADC0DE0000F1A5C0 /* PVRCore.xcodeproj */,
 				4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */,
-				4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */,
 				4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */,
+				4400B16BADC0DE0000FACADE /* PVRUtilsGles.xcodeproj */,
 				AC2A37F21A0A675B0093C884 /* Cocoa.framework */,
 				AC2A37F41A0A675B0093C884 /* Other Frameworks */,
 			);
@@ -239,7 +241,7 @@
 		AC2A37F81A0A675B0093C884 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				F8C54982137BA6061EE2275F /* OGLESMultiviewVR.cpp */,
+				F8B9A467A9E1A6AD135D8939 /* OGLESMultiviewVR.cpp */,
 			);
 			name = Sources;
 			path = OSX;
@@ -248,6 +250,7 @@
 		AC2A38591A0A69410093C884 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				DB81212B1F4AF14400519019 /* IMG.icns */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -282,7 +285,7 @@
 		AC2A385C1A0A697E0093C884 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F88B3A25819F6070B6F52E27 /* GnomeToy.pod */,
+				F8A548544F0FD7393BAF3890 /* GnomeToy.pod */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -290,9 +293,9 @@
 		AC2A385D1A0A69850093C884 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
-				F8D94F8E1B764449220CD9F1 /* GnomeWood.pvr */,
-				F84F0B5CEFA47AE465CCE9D4 /* DarkWood.pvr */,
-				F8EB813261D4F268F63A078F /* ClearWood.pvr */,
+				F83987E258B3C65E6C071245 /* GnomeWood.pvr */,
+				F8826308A580B4D8F1B0870D /* DarkWood.pvr */,
+				F8C4D699C2E947AE6615C20E /* ClearWood.pvr */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -300,10 +303,10 @@
 		AC2A385E1A0A698B0093C884 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				F82C5924D596C2925E2004F8 /* FragShader_ES3.fsh */,
-				F8DFC7A6E2AC76335D66CB02 /* VertShader_ES3.vsh */,
-				F8808F4F094B5ACDA7FA66FD /* TexQuadFragShader_ES3.fsh */,
-				F8B97897BF2649D2140DDF4F /* TexQuadVertShader_ES3.vsh */,
+				F8E7D1E37A98B91558A902F8 /* FragShader_ES3.fsh */,
+				F8B497A9C452E44B18F68260 /* VertShader_ES3.vsh */,
+				F88E40CD200C40EE50817FE8 /* TexQuadFragShader_ES3.fsh */,
+				F8D6B71764DAF29ED9B2988E /* TexQuadVertShader_ES3.vsh */,
 			);
 			name = Shaders;
 			sourceTree = "<group>";
@@ -325,8 +328,8 @@
 			dependencies = (
 				7700B16BADC0DE0000F1A5C0 /* PBXTargetDependency */,
 				7700B16BADC0DE0000A55E75 /* PBXTargetDependency */,
-				7700B16BADC0DE00BAC5B07E /* PBXTargetDependency */,
 				7700B16BADC0DE0005EAF00D /* PBXTargetDependency */,
+				7700B16BADC0DE0000FACADE /* PBXTargetDependency */,
 			);
 			name = "OGLESMultiviewVR";
 			productName = "OGLESMultiviewVR";
@@ -362,12 +365,12 @@
 					ProjectRef = 4400B16BADC0DE0000A55E75 /* PVRAssets.xcodeproj */;
 				},
 				{
-					ProductGroup = 5500B16BADC0DE00BAC5B07E /* Products */;
-					ProjectRef = 4400B16BADC0DE00BAC5B07E /* PVRNativeGles.xcodeproj */;
-				},
-				{
 					ProductGroup = 5500B16BADC0DE0005EAF00D /* Products */;
 					ProjectRef = 4400B16BADC0DE0005EAF00D /* PVRShell.xcodeproj */;
+				},
+				{
+					ProductGroup = 5500B16BADC0DE0000FACADE /* Products */;
+					ProjectRef = 4400B16BADC0DE0000FACADE /* PVRUtilsGles.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -392,18 +395,18 @@
 			remoteRef = 3300B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2200B16BADC0DE00BAC5B07E /* libPVRNativeGles.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libPVRNativeGles.a;
-			remoteRef = 3300B16BADC0DE00BAC5B07E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		2200B16BADC0DE0005EAF00D /* libPVRShell.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libPVRShell.a;
 			remoteRef = 3300B16BADC0DE0005EAF00D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2200B16BADC0DE0000FACADE /* libPVRUtilsGles.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPVRUtilsGles.a;
+			remoteRef = 3300B16BADC0DE0000FACADE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -413,6 +416,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB81212C1F4AF14400519019 /* IMG.icns in Resources */,
 				AC2A38671A0A6BD80093C884 /* Info.plist in Resources */,
 				AC2A386E1A0A6BE10093C884 /* InfoPlist.strings in Resources */,
 				AC2A38711A0A6BE70093C884 /* MainMenu.xib in Resources */,
@@ -451,15 +455,15 @@
 			name = PVRAssets;
 			targetProxy = 6600B16BADC0DE0000A55E75 /* PBXContainerItemProxy */;
 		};
-		7700B16BADC0DE00BAC5B07E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = PVRNativeGles;
-			targetProxy = 6600B16BADC0DE00BAC5B07E /* PBXContainerItemProxy */;
-		};
 		7700B16BADC0DE0005EAF00D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = PVRShell;
 			targetProxy = 6600B16BADC0DE0005EAF00D /* PBXContainerItemProxy */;
+		};
+		7700B16BADC0DE0000FACADE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PVRUtilsGles;
+			targetProxy = 6600B16BADC0DE0000FACADE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

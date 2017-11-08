@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['messenger',['Messenger',['../classpvr_1_1platform_1_1_messenger.html',1,'pvr::platform']]],
-  ['multi',['Multi',['../classpvr_1_1_multi.html',1,'pvr']]]
+  ['metadata',['Metadata',['../structpvr_1_1_gpu_datatypes_helper_1_1_metadata.html',1,'pvr::GpuDatatypesHelper']]],
+  ['multi',['Multi',['../classpvr_1_1_multi.html',1,'pvr']]],
+  ['mutex',['Mutex',['../classpvr_1_1async_1_1_mutex.html',1,'pvr::async']]]
 ];

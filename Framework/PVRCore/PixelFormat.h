@@ -78,7 +78,6 @@ enum class CompressedPixelFormat
 	NumCompressedPFs
 };
 
-
 /// <summary>Enumeration of Datatypes.</summary>
 enum class VariableType
 {
@@ -99,34 +98,41 @@ enum class VariableType
 	UnsignedFloat,
 	NumVarTypes
 };
-inline bool isVariableTypeSigned(VariableType item) { return (uint32)item < 11 ? (uint32)item & 1 : (uint32)item != 13; }
-inline bool isVariableTypeNormalized(VariableType item) { return ((uint32)item < 10) && !((uint32)item & 2); }
 
+/// <summary>Check if a variable type is a Signed type</summary>
+/// <param name="item">The variable to check</param>
+/// <returns>True if item is a signed type (signed integer, signed float etc), otherwise false</returns>
+inline bool isVariableTypeSigned(VariableType item) { return static_cast<uint32_t>(item) < 11 ? static_cast<uint32_t>(item) & 1 : static_cast<uint32_t>(item) != 13; }
+
+/// <summary>Check if a variable type is a Normalizedtype</summary>
+/// <param name="item">The variable to check</param>
+/// <returns>True if item is a normalized type (nomralized short, normalized integer etc)</returns>
+inline bool isVariableTypeNormalized(VariableType item) { return (static_cast<uint32_t>(item) < 10) && !(static_cast<uint32_t>(item) & 2); }
 
 /// <summary>The PixelFormat class fully defines a Pixel Format (channels, format, compression, bit width etc.).
 /// </summary>
 class PixelFormat
 {
 public:
-	/// <summary>64 bit integer representation as 32 lower bits and 32 higher bits</summary>
+	/// <summary>64 bit Integer representation as 32 lower bits and 32 higher bits</summary>
 	struct LowHigh
 	{
-		uint32  Low;
-		uint32  High;
+		uint32_t Low; //!<  Lower 32-bits of the pixel format storage
+		uint32_t High; //!<  Higher 32-bits of the pixel format storage
 	};
 
 	/// <summary>Default Constructor. Creates an empty pixeltype.</summary>
 	PixelFormat() {}
 
-	/// <summary>Initializes a new pixel type from a 64 bit integer value.</summary>
+	/// <summary>Initializes a new pixel type from a 64 bit Integer value.</summary>
 	/// <param name="type">Pixel format type</param>
 	/// <returns>Return a new PixelFormat</returns>
-	PixelFormat(uint64 type): _format(type) { }
+	PixelFormat(uint64_t type): _format(type) { }
 
 	/// <summary>Initializes a new pixel type from a CompressedPixelFormat type.</summary>
 	/// <param name="type">Compressed Pixel Format type</param>
 	/// <returns>Return a new PixelFormat</returns>
-	PixelFormat(CompressedPixelFormat type) : _format((uint64)type) {}
+	PixelFormat(CompressedPixelFormat type) : _format(static_cast<uint64_t>(type)) {}
 
 
 	/// <summary>Construct a Pixel format from the given channels which takes up to 4 characters (CnName) and 4 values
@@ -140,8 +146,8 @@ public:
 	/// <param name="C3Bits">number of bits in channel 3</param>
 	/// <param name="C4Bits">number of bits in channel 4</param>
 	/// <remarks>For example: PixelFormat('r','g','b',0,8,8,8,0);</remarks>
-	PixelFormat(uint8 C1Name, uint8 C2Name, uint8 C3Name, uint8 C4Name,
-	            uint8 C1Bits, uint8 C2Bits, uint8 C3Bits, uint8 C4Bits) :
+	PixelFormat(uint8_t C1Name, uint8_t C2Name, uint8_t C3Name, uint8_t C4Name,
+	            uint8_t C1Bits, uint8_t C2Bits, uint8_t C3Bits, uint8_t C4Bits) :
 		_format(C1Name, C2Name, C3Name, C4Name, C1Bits, C2Bits, C3Bits, C4Bits) {}
 
 	/// <summary>Returns the "content", or "name" of a channel, as a character. (normally r,g,b,a,d,s,l,i)</summary>
@@ -149,7 +155,7 @@ public:
 	/// <returns>Return a character describing the channel contents</returns>
 	/// <remarks>For example, the format d24s8 would return 'd' for channel:0, 's' for channel:1, NULL otherwise
 	/// </remarks>
-	char getChannelContent(uint8 channel)
+	char getChannelContent(uint8_t channel)const
 	{
 		if (channel >= 4) { return 0; }
 		return _format._pixelTypeChar[channel];
@@ -158,7 +164,7 @@ public:
 	/// <summary>Get the width of the specified channel</summary>
 	/// <param name="channel">The zero-indexed channel of the texture(0, 1, 2, 3)</param>
 	/// <returns>Return The number of bits the specified channel takes up.</returns>
-	uint8 getChannelBits(uint8 channel)
+	uint8_t getChannelBits(uint8_t channel)const
 	{
 		if (channel >= 4) { return 0; }
 		return _format._pixelTypeChar[channel + 4];
@@ -166,7 +172,7 @@ public:
 
 	/// <summary>Get the number of channels in the format.</summary>
 	/// <returns>Return the number of channels in the format.</returns>
-	uint8 getNumberOfChannels()
+	uint8_t getNumChannels() const
 	{
 		return
 		  _format._pixelTypeChar[7] ? 4 :
@@ -178,30 +184,33 @@ public:
 	/// <summary>Returns true if the format is a "normal" compressed format, i.e. the format is not regular (channel type/
 	/// bitrate combination), but excludes some special packed formats that are not compressed, such as shared
 	/// exponent formats.</summary>
-	uint8 isCompressedFormat()
+	/// <returns>True if it is a compressed format, otherwise false</returns>
+	bool isCompressedFormat() const
 	{
-		return (_format.Part.High == 0) && (_format.Part.Low != (uint32)CompressedPixelFormat::SharedExponentR9G9B9E5);
+		return ((_format.Part.High == 0) && (_format.Part.Low != static_cast<uint32_t>(CompressedPixelFormat::SharedExponentR9G9B9E5))) != 0;
 	}
 
 	/// <summary>Returns if the format is some kind of directly supported format that is not regular (i.e. channel type/
 	/// channel bitrate combination). I.e. returns true if the format is any of the formats described in the supported
 	/// "compressed" formats enumeration.</summary>
-	uint8 isIrregularFormat()
+	/// <returns>True if it is a "simple", "regular" format (i.e. 1-4 channels of some bit width), i.e. neither a "compressed"
+	/// format nor a "special" format such as shared exponents etc.</returns>
+	uint8_t isIrregularFormat() const
 	{
 		return _format.Part.High == 0;
 	}
 
 	/// <summary>Get the pixel type id</summary>
 	/// <returns>Return the pixel type id</returns>
-	uint64 getPixelTypeId()const { return _format._pixelTypeID; }
+	uint64_t getPixelTypeId()const { return _format._pixelTypeID; }
 
 	/// <summary>Get a const pointer to the pixel type char</summary>
 	/// <returns>Return a const pointer to the pixel type char</returns>
-	const uint8* getPixelTypeChar()const { return _format._pixelTypeChar; }
+	const uint8_t* getPixelTypeChar()const { return _format._pixelTypeChar; }
 
 	/// <summary>Get a pointer to the pixel type char</summary>
 	/// <returns>Return a pointer to the pixel type char</returns>
-	uint8* getPixelTypeChar() { return _format._pixelTypeChar; }
+	uint8_t* getPixelTypeChar() { return _format._pixelTypeChar; }
 
 	/// <summary>Get the pixel format's low and high part</summary>
 	/// <returns>Return pixel format's low and high part</returns>
@@ -209,7 +218,7 @@ public:
 
 	/// <summary>Get the number of bits per pixel</summary>
 	/// <returns>Return the number of bits per pixel</returns>
-	uint8 getBitsPerPixel() const
+	uint8_t getBitsPerPixel() const
 	{
 		return _format._pixelTypeChar[4] + _format._pixelTypeChar[5] + _format._pixelTypeChar[6] + _format._pixelTypeChar[7];
 	}
@@ -232,11 +241,11 @@ private:
 		/// <returns>A new PixelFormat</returns>
 		PixelFormatImpl() : _pixelTypeID(0) { }
 
-		/// <summary>Initializes a new pixel type from a 64 bit integer value.</summary>
-		/// <param name="type">The pixel format represented as a 64 bit integer. The value is the same as if you get
+		/// <summary>Initializes a new pixel type from a 64 bit Integer value.</summary>
+		/// <param name="type">The pixel format represented as a 64 bit Integer. The value is the same as if you get
 		/// _pixelTypeID of this class.</param>
 		/// <returns>A new PixelFormat</returns>
-		PixelFormatImpl(uint64 type) : _pixelTypeID(type) { }
+		PixelFormatImpl(uint64_t type) : _pixelTypeID(type) { }
 
 		/************************************************************************
 		\brief  Takes up to 4 characters (CnName) and 4 values (CnBits)
@@ -252,8 +261,8 @@ private:
 		  \param[in]      C4Bits
 		  \return   A new PixelFormat
 		*************************************************************************/
-		PixelFormatImpl(uint8 C1Name, uint8 C2Name, uint8 C3Name, uint8 C4Name,
-		                uint8 C1Bits, uint8 C2Bits, uint8 C3Bits, uint8 C4Bits)
+		PixelFormatImpl(uint8_t C1Name, uint8_t C2Name, uint8_t C3Name, uint8_t C4Name,
+		                uint8_t C1Bits, uint8_t C2Bits, uint8_t C3Bits, uint8_t C4Bits)
 		{
 			_pixelTypeChar[0] = C1Name;
 			_pixelTypeChar[1] = C2Name;
@@ -267,8 +276,8 @@ private:
 
 
 		LowHigh Part;
-		uint64  _pixelTypeID;
-		uint8 _pixelTypeChar[8];
+		uint64_t  _pixelTypeID;
+		uint8_t _pixelTypeChar[8];
 
 	};
 	PixelFormatImpl _format;
@@ -278,27 +287,21 @@ public:
 	// List of common used pixel formats
 	static const PixelFormat Intensity8; //!< Intensity8
 
-	static const PixelFormat RGB_888;//!<
+	static const PixelFormat RGB_888;//!< R8 G8 B8
 	static const PixelFormat RGBA_8888; //!< R8 G8 B8 A8
 
-    static const PixelFormat R_8;//!< R8
+	static const PixelFormat R_8;//!< R8
 
-    static const PixelFormat R_16;//!< R16
+	static const PixelFormat R_16;//!< R16
 
 	static const PixelFormat R_32;//!< R32
 
-    static const PixelFormat RG_1616;//!< R32
+	static const PixelFormat RG_1616;//!< R32
 	static const PixelFormat RG_3232;//!< R32
 	static const PixelFormat RGB_323232;//!< R32 G32 B32
 	static const PixelFormat RGBA_32323232;//!< R32 G32 B32 A32
 
 	static const PixelFormat RGBA_16161616;//!< R16 G16 B16 A16
-
-
-
-
-
-
 
 
 	static const PixelFormat RG_88;//!< R8 G8
@@ -308,10 +311,10 @@ public:
 	static const PixelFormat RGBA_4444;//!< R4 G4 B4 A4
 	static const PixelFormat RGBA_5551;//!< R5 G5 B5 A1
 
-	static const PixelFormat BGR_888;//!<
-	static const PixelFormat BGRA_8888;//!<
+	static const PixelFormat BGR_888;//!< B8 G8 R8
+	static const PixelFormat BGRA_8888;//!< B8 G8 R8 A8
 
-    static const PixelFormat ABGR_8888;//!<
+	static const PixelFormat ABGR_8888;//!< A8 B8 G8 R8
 
 	static const PixelFormat Depth8;//!< Depth8
 	static const PixelFormat Depth16;//!< Depth16
@@ -322,9 +325,9 @@ public:
 	static const PixelFormat Depth32Stencil8;//!< Depth32 ,Stencil8
 	static const PixelFormat Stencil8;//!< Stencil8
 
-	static const PixelFormat L_32;// !< Luminance32
-	static const PixelFormat LA_1616;// !< Luminance16, Alpha16
-	static const PixelFormat LA_3232;// !< Luminance32, Alpha32
+	static const PixelFormat L_32;//!< Luminance32
+	static const PixelFormat LA_1616;//!< Luminance16, Alpha16
+	static const PixelFormat LA_3232;//!< Luminance32, Alpha32
 
 	static const PixelFormat Unknown;//!< Unknown
 };
@@ -341,18 +344,19 @@ public:
 /// <param name="C4Bits">The number of bits of the 4th channel</param>
 /// <remarks>Use this template class to generate a 4 channel PixelID (64-bit identifier for a pixel format used
 /// throughout PVR Assets from the channel information. Simply define the template parameters for your class and
-/// get the ID member. EXAMPLE USE: <code>uint64 myPixelID = GeneratePixelType4&lt;'b','g','r','a',8,8,8,8&gt;::ID;
+/// get the ID member. EXAMPLE USE: <code>uint64_t myPixelID = GeneratePixelType4&lt;'b','g','r','a',8,8,8,8&gt;::ID;
 /// </code></remarks>
-template <char8 C1Name, char8 C2Name, char8 C3Name, char8 C4Name,
-          uint8 C1Bits, uint8 C2Bits, uint8 C3Bits, uint8 C4Bits>
+template <char C1Name, char C2Name, char C3Name, char C4Name,
+          uint8_t C1Bits, uint8_t C2Bits, uint8_t C3Bits, uint8_t C4Bits>
 class GeneratePixelType4
 {
 public:
-	static const uint64 ID =
-	  (static_cast<uint64>(C1Name) + (static_cast<uint64>(C2Name) << 8) +
-	   (static_cast<uint64>(C3Name) << 16) + (static_cast<uint64>(C4Name) << 24) +
-	   (static_cast<uint64>(C1Bits) << 32) + (static_cast<uint64>(C2Bits) << 40) +
-	   (static_cast<uint64>(C3Bits) << 48) + (static_cast<uint64>(C4Bits) << 56));
+	/// <summary>A 64 bit integer uniquely representing this pixel type</summary>
+	static const uint64_t ID =
+	  (static_cast<uint64_t>(C1Name) + (static_cast<uint64_t>(C2Name) << 8) +
+	   (static_cast<uint64_t>(C3Name) << 16) + (static_cast<uint64_t>(C4Name) << 24) +
+	   (static_cast<uint64_t>(C1Bits) << 32) + (static_cast<uint64_t>(C2Bits) << 40) +
+	   (static_cast<uint64_t>(C3Bits) << 48) + (static_cast<uint64_t>(C4Bits) << 56));
 };
 
 /// <summary>Use this template class to generate a 3 channel PixelID.</summary>
@@ -364,15 +368,16 @@ public:
 /// <param name="C3Bits">The number of bits of the 3rd channel</param>
 /// <remarks>Use this template class to generate a 3 channel PixelID (64-bit identifier for a pixel format used
 /// throughout PVR Assets from the channel information. Simply define the template parameters for your class and
-/// get the ID member. EXAMPLE USE: <code>uint64 myPixelID = GeneratePixelType3&lt;'r','g','b',8,8,8&gt;::ID; </code>
+/// get the ID member. EXAMPLE USE: <code>uint64_t myPixelID = GeneratePixelType3&lt;'r','g','b',8,8,8&gt;::ID; </code>
 /// </remarks>
-template <char8 C1Name, char8 C2Name, char8 C3Name, uint8 C1Bits, uint8 C2Bits, uint8 C3Bits>
+template <char C1Name, char C2Name, char C3Name, uint8_t C1Bits, uint8_t C2Bits, uint8_t C3Bits>
 class GeneratePixelType3
 {
 public:
-	static const uint64 ID = (static_cast<uint64>(C1Name) + (static_cast<uint64>(C2Name) << 8) + (static_cast<uint64>(C3Name) << 16) +
-	                          (static_cast<uint64>(0) << 24) + (static_cast<uint64>(C1Bits) << 32) + (static_cast<uint64>(C2Bits) << 40) +
-	                          (static_cast<uint64>(C3Bits) << 48) + (static_cast<uint64>(0) << 56));
+	/// <summary>A 64 bit integer uniquely representing this pixel type</summary>
+	static const uint64_t ID = (static_cast<uint64_t>(C1Name) + (static_cast<uint64_t>(C2Name) << 8) + (static_cast<uint64_t>(C3Name) << 16) +
+	                            (static_cast<uint64_t>(0) << 24) + (static_cast<uint64_t>(C1Bits) << 32) + (static_cast<uint64_t>(C2Bits) << 40) +
+	                            (static_cast<uint64_t>(C3Bits) << 48) + (static_cast<uint64_t>(0) << 56));
 };
 
 /// <summary>Use this template class to generate a 2 channel PixelID.</summary>
@@ -382,16 +387,17 @@ public:
 /// <param name="C2Bits">The number of bits of the 2nd channel</param>
 /// <remarks>Use this template class to generate a 2 channel PixelID (64-bit identifier for a pixel format used
 /// throughout PVR Assets from the channel information. Simply define the template parameters for your class and
-/// get the ID member. EXAMPLE USE: <code>uint64 myPixelID = GeneratePixelType2&lt;'r', 'a', 8, 8&gt;::ID; </code>
+/// get the ID member. EXAMPLE USE: <code>uint64_t myPixelID = GeneratePixelType2&lt;'r', 'a', 8, 8&gt;::ID; </code>
 /// </remarks>
-template <char8 C1Name, char8 C2Name, uint8 C1Bits, uint8 C2Bits>
+template <char C1Name, char C2Name, uint8_t C1Bits, uint8_t C2Bits>
 class GeneratePixelType2
 {
 public:
-	static const uint64 ID =
-	  (static_cast<uint64>(C1Name) + (static_cast<uint64>(C2Name) << 8) + (static_cast<uint64>(0) << 16) +
-	   (static_cast<uint64>(0) << 24) + (static_cast<uint64>(C1Bits) << 32) + (static_cast<uint64>(C2Bits) << 40) +
-	   (static_cast<uint64>(0) << 48) + (static_cast<uint64>(0) << 56));
+	/// <summary>A 64 bit integer uniquely representing this pixel type</summary>
+	static const uint64_t ID =
+	  (static_cast<uint64_t>(C1Name) + (static_cast<uint64_t>(C2Name) << 8) + (static_cast<uint64_t>(0) << 16) +
+	   (static_cast<uint64_t>(0) << 24) + (static_cast<uint64_t>(C1Bits) << 32) + (static_cast<uint64_t>(C2Bits) << 40) +
+	   (static_cast<uint64_t>(0) << 48) + (static_cast<uint64_t>(0) << 56));
 };
 
 /// <summary>Use this template class to generate a 1 channel PixelID.</summary>
@@ -399,14 +405,14 @@ public:
 /// <param name="C1Bits">The number of bits of the 1st channel</param>
 /// <remarks>Use this template class to generate a 1 channel PixelID (64-bit identifier for a pixel format used
 /// throughout PVR Assets from the channel information. Simply define the template parameters for your class and
-/// get the ID member. EXAMPLE USE: <code>uint64 myPixelID = GeneratePixelType1&lt;'r',8&gt;::ID; </code></remarks>
-template <char8 C1Name, uint8 C1Bits>
+/// get the ID member. EXAMPLE USE: <code>uint64_t myPixelID = GeneratePixelType1&lt;'r',8&gt;::ID; </code></remarks>
+template <char C1Name, uint8_t C1Bits>
 class GeneratePixelType1
 {
 public:
-	static const uint64 ID = (static_cast<uint64>(C1Name) + (static_cast<uint64>(0) << 8) + (static_cast<uint64>(0) << 16) +
-	                          (static_cast<uint64>(0) << 24) + (static_cast<uint64>(C1Bits) << 32) + (static_cast<uint64>(0) << 40) +
-	                          (static_cast<uint64>(0) << 48) + (static_cast<uint64>(0) << 56));
+	/// <summary>A 64 bit integer uniquely representing this pixel type</summary>
+	static const uint64_t ID = (static_cast<uint64_t>(C1Name) + (static_cast<uint64_t>(0) << 8) + (static_cast<uint64_t>(0) << 16) +
+	                            (static_cast<uint64_t>(0) << 24) + (static_cast<uint64_t>(C1Bits) << 32) + (static_cast<uint64_t>(0) << 40) +
+	                            (static_cast<uint64_t>(0) << 48) + (static_cast<uint64_t>(0) << 56));
 };
-
 }

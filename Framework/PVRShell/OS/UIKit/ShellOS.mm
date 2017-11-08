@@ -31,12 +31,12 @@ struct InternalOS
 };
 }
 }
-pvr::int16 g_cursorX, g_cursorY;
+int16_t g_cursorX, g_cursorY;
 
 namespace pvr{
 namespace platform{
 // Setup the capabilities
-const ShellOS::Capabilities ShellOS::_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
+const ShellOS::Capabilities ShellOS::_capabilities = { Capability::Immutable, Capability::Immutable };
 
 ShellOS::ShellOS(/*NSObject<NSApplicationDelegate>*/void* hInstance, OSDATA osdata) : _instance(hInstance)
 {
@@ -53,10 +53,10 @@ void ShellOS::updatePointingDeviceLocation()
     _shell->updatePointerPosition(PointerLocation(g_cursorX, g_cursorY));
 }
 
-Result ShellOS::init(DisplayAttributes &data)
+bool ShellOS::init(DisplayAttributes &data)
 {
 	if(!_OSImplementation)
-		return Result::OutOfMemory;
+		return false;
 
 	// Setup read and write paths
 	NSString* readPath = [NSString stringWithFormat:@"%@%@", [[NSBundle mainBundle] resourcePath], @"/"];
@@ -70,10 +70,10 @@ Result ShellOS::init(DisplayAttributes &data)
     NSString* name = [[NSProcessInfo processInfo] processName];
     _AppName =[name UTF8String];
     
-	return Result::Success;
+	return true;
 }
 
-Result ShellOS::initializeWindow(DisplayAttributes &data)
+bool ShellOS::initializeWindow(DisplayAttributes &data)
 {
 	CGFloat scale = 1.0;
 	
@@ -96,7 +96,7 @@ Result ShellOS::initializeWindow(DisplayAttributes &data)
 
     _OSImplementation->window = [[AppWindow alloc] initWithFrame:frame];
     
-    if(!_OSImplementation->window) {  return Result::UnknownError;   }
+    if(!_OSImplementation->window) {  return false;   }
     
     // pass the shell as the event queue
     _OSImplementation->window.eventQueue = _shell.get();
@@ -105,7 +105,7 @@ Result ShellOS::initializeWindow(DisplayAttributes &data)
 	[_OSImplementation->window setScreenScale:scale];
 	[_OSImplementation->window makeKeyAndVisible];
 	
-	return Result::Success;
+	return true;
 }
 
 void ShellOS::releaseWindow()
@@ -132,10 +132,10 @@ OSWindow ShellOS::getWindow() const
 	return (__bridge OSWindow)_OSImplementation->window;
 }
 
-Result ShellOS::handleOSEvents()
+bool ShellOS::handleOSEvents()
 {
 	// Nothing to do
-	return Result::Success;
+	return true;
 }
 
 bool ShellOS::isInitialized()
@@ -143,11 +143,7 @@ bool ShellOS::isInitialized()
 	return _OSImplementation && _OSImplementation->window;
 }
 
-<<<<<<< HEAD
-Result ShellOS::popUpMessage(const tchar * const title, const tchar * const message, ...) const
-=======
-Result ShellOS::popUpMessage(const char8 * const title, const char8 * const message, ...) const
->>>>>>> 1776432f... 4.3
+bool ShellOS::popUpMessage(const char * const title, const char * const message, ...) const
 {
     if(title && message)
     {
@@ -168,7 +164,7 @@ Result ShellOS::popUpMessage(const char8 * const title, const char8 * const mess
       //  [alert release];
     }
     
-    return Result::Success;
+    return true;
 }
 }
 }
@@ -183,7 +179,7 @@ Result ShellOS::popUpMessage(const char8 * const title, const char8 * const mess
 
 - (void)sendEvent:(UIEvent *)event 
 {
-    pvr::assertion(eventQueue != NULL, "Event Queue Is NULL");
+    assertion(eventQueue != NULL, "Event Queue Is NULL");
     if(event.type == UIEventTypeTouches) 
 	{
         for(UITouch * t in [event allTouches]) 

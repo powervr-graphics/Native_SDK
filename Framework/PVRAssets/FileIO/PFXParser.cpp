@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of methods of the PFXReader class.
-\file PVRAssets/FileIO/PFXReader.cpp
+\file PVRAssets/FileIO/PFXParser.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -15,11 +15,7 @@
 namespace pvr {
 namespace assets {
 namespace pfx {
-
-
 namespace {
-using namespace ::pvr::types;
-
 ImageDataFormat getFormat(const pugi::xml_attribute& attr)
 {
 	struct ImageFormat
@@ -29,60 +25,53 @@ ImageDataFormat getFormat(const pugi::xml_attribute& attr)
 	};
 	static const ImageFormat bufferFormats[] =
 	{
-	//	ImageFormat{ StringHash("r5g6b5_unorm"),			ImageDataFormat(PixelFormat::RGB_565,     false) },
-	//	ImageFormat{ StringHash("a1r5g6b5_unorm"),     ImageDataFormat(PixelFormat,  VariableType::   false) },
+		ImageFormat{ StringHash("r8_unorm"),        ImageDataFormat(PixelFormat::R_8, VariableType::UnsignedByteNorm, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r8_uint"),         ImageDataFormat(PixelFormat::R_8, VariableType::UnsignedByte, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r8_sint"),         ImageDataFormat(PixelFormat::R_8,  VariableType::SignedByte,      ColorSpace::lRGB) },
 
-		ImageFormat{ StringHash("r8_unorm"),				ImageDataFormat(PixelFormat::R_8, VariableType::UnsignedByteNorm,types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r8_uint"),					ImageDataFormat(PixelFormat::R_8, VariableType::UnsignedByte,types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r8_sint"),					ImageDataFormat(PixelFormat::R_8,  VariableType::SignedByte,      types::ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r8g8_unorm"),        ImageDataFormat(PixelFormat::RG_88, VariableType::UnsignedByteNorm,       ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r8g8_uint"),       ImageDataFormat(PixelFormat::RG_88,  VariableType::UnsignedByte,      ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r8g8_sint"),       ImageDataFormat(PixelFormat::RG_88, VariableType::SignedByte,       ColorSpace::lRGB) },
 
-		ImageFormat{ StringHash("r8g8_unorm"),				ImageDataFormat(PixelFormat::RG_88, VariableType::UnsignedByteNorm,       types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r8g8_uint"),				ImageDataFormat(PixelFormat::RG_88,  VariableType::UnsignedByte,      types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r8g8_sint"),				ImageDataFormat(PixelFormat::RG_88, VariableType::SignedByte,       types::ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r8g8b8a8_unorm"),      ImageDataFormat(PixelFormat::RGBA_8888, VariableType::UnsignedByteNorm, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r8g8b8a8_uint"),     ImageDataFormat(PixelFormat::RGBA_8888, VariableType::UnsignedByte, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r8g8b8a8_sint"),     ImageDataFormat(PixelFormat::RGBA_8888, VariableType::SignedByte, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r8g8b8a8_unorm_srgb"),   ImageDataFormat(PixelFormat::RGBA_8888, VariableType::UnsignedByteNorm, ColorSpace::sRGB) },
 
-		ImageFormat{ StringHash("r8g8b8a8_unorm"),			ImageDataFormat(PixelFormat::RGBA_8888, VariableType::UnsignedByteNorm,types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r8g8b8a8_uint"),			ImageDataFormat(PixelFormat::RGBA_8888, VariableType::UnsignedByte,types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r8g8b8a8_sint"),			ImageDataFormat(PixelFormat::RGBA_8888, VariableType::SignedByte,types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r8g8b8a8_unorm_srgb"),		ImageDataFormat(PixelFormat::RGBA_8888, VariableType::UnsignedByteNorm,types::ColorSpace::sRGB) },
+		ImageFormat{ StringHash("b8g8r8a8_unorm"),      ImageDataFormat(PixelFormat::BGRA_8888, VariableType::UnsignedByteNorm, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("b8g8r8a8_unorm_srgb"),   ImageDataFormat(PixelFormat::BGRA_8888, VariableType::UnsignedByteNorm, ColorSpace::sRGB) },
 
-		ImageFormat{ StringHash("b8g8r8a8_unorm"),			ImageDataFormat(PixelFormat::BGRA_8888, VariableType::UnsignedByteNorm,types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("b8g8r8a8_unorm_srgb"),		ImageDataFormat(PixelFormat::BGRA_8888, VariableType::UnsignedByteNorm,types::ColorSpace::sRGB) },
+		ImageFormat{ StringHash("a8b8g8r8_unorm"),      ImageDataFormat(PixelFormat::ABGR_8888, VariableType::UnsignedByteNorm, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("a8b8g8r8_uint"),     ImageDataFormat(PixelFormat::ABGR_8888, VariableType::UnsignedByte, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("a8b8g8r8_sint"),     ImageDataFormat(PixelFormat::ABGR_8888, VariableType::SignedByteNorm, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("a8b8g8r8_unorm_srgb"),   ImageDataFormat(PixelFormat::ABGR_8888, VariableType::UnsignedByteNorm, ColorSpace::sRGB) },
 
-		ImageFormat{ StringHash("a8b8g8r8_unorm"),			ImageDataFormat(PixelFormat::ABGR_8888, VariableType::UnsignedByteNorm,types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("a8b8g8r8_uint"),			ImageDataFormat(PixelFormat::ABGR_8888, VariableType::UnsignedByte,types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("a8b8g8r8_sint"),			ImageDataFormat(PixelFormat::ABGR_8888, VariableType::SignedByteNorm,types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("a8b8g8r8_unorm_srgb"),		ImageDataFormat(PixelFormat::ABGR_8888, VariableType::UnsignedByteNorm,types::ColorSpace::sRGB) },
+		ImageFormat{ StringHash("r16_uint"),        ImageDataFormat(PixelFormat::R_16, VariableType::UnsignedShort, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r16_sint"),        ImageDataFormat(PixelFormat::R_16, VariableType::SignedShort, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r16_sfloat"),        ImageDataFormat(PixelFormat::R_16, VariableType::SignedFloat, ColorSpace::lRGB) },
 
-		//ImageFormat{ StringHash("a2b10g10r10_unorm"),		ImageDataFormat(PixelFormat::RGBA_8888, VariableType::,types::ColorSpace::lRGB) },
-		//ImageFormat{ StringHash("a2b10g10r10_uint"),		ImageDataFormat(PixelFormat::R_8,        false) },
+		ImageFormat{ StringHash("r16g16_uint"),       ImageDataFormat(PixelFormat::RG_1616, VariableType::UnsignedShort, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r16g16_sint"),       ImageDataFormat(PixelFormat::RG_1616, VariableType::SignedShort, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r16g16_sfloat"),     ImageDataFormat(PixelFormat::RG_1616, VariableType::SignedFloat, ColorSpace::lRGB) },
 
-		ImageFormat{ StringHash("r16_uint"),				ImageDataFormat(PixelFormat::R_16, VariableType::UnsignedShort, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r16_sint"),				ImageDataFormat(PixelFormat::R_16, VariableType::SignedShort, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r16_sfloat"),				ImageDataFormat(PixelFormat::R_16, VariableType::SignedFloat, types::ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r16g16b16a16_uint"),   ImageDataFormat(PixelFormat::RGBA_16161616, VariableType::UnsignedShort, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r16g16b16a16_sint"),   ImageDataFormat(PixelFormat::RGBA_16161616, VariableType::SignedShort, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r16g16b16a16_sfloat"),   ImageDataFormat(PixelFormat::RGBA_16161616, VariableType::SignedFloat, ColorSpace::lRGB) },
 
-		ImageFormat{ StringHash("r16g16_uint"),				ImageDataFormat(PixelFormat::RG_1616, VariableType::UnsignedShort, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r16g16_sint"),				ImageDataFormat(PixelFormat::RG_1616, VariableType::SignedShort, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r16g16_sfloat"),			ImageDataFormat(PixelFormat::RG_1616, VariableType::SignedFloat, types::ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r32_uint"),        ImageDataFormat(PixelFormat::R_32, VariableType::UnsignedInteger, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r32_sint"),        ImageDataFormat(PixelFormat::R_32, VariableType::SignedInteger, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r32_sfloat"),        ImageDataFormat(PixelFormat::R_32, VariableType::SignedFloat, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r32g32_uint"),       ImageDataFormat(PixelFormat::RG_3232, VariableType::UnsignedInteger, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r32g32_sint"),       ImageDataFormat(PixelFormat::RG_3232, VariableType::SignedInteger, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r32g32_sfloat"),     ImageDataFormat(PixelFormat::RG_3232, VariableType::SignedFloat, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r32g32b32a32_uint"),   ImageDataFormat(PixelFormat::RGBA_32323232, VariableType::UnsignedInteger, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r32g32b32a32_sint"),   ImageDataFormat(PixelFormat::RGBA_32323232, VariableType::SignedInteger, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("r32g32b32a32_sfloat"),   ImageDataFormat(PixelFormat::RGBA_32323232, VariableType::SignedFloat, ColorSpace::lRGB) },
 
-		ImageFormat{ StringHash("r16g16b16a16_uint"),		ImageDataFormat(PixelFormat::RGBA_16161616, VariableType::UnsignedShort, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r16g16b16a16_sint"),		ImageDataFormat(PixelFormat::RGBA_16161616, VariableType::SignedShort, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r16g16b16a16_sfloat"),		ImageDataFormat(PixelFormat::RGBA_16161616, VariableType::SignedFloat, types::ColorSpace::lRGB) },
-
-
-		ImageFormat{ StringHash("r32_uint"),				ImageDataFormat(PixelFormat::R_32, VariableType::UnsignedInteger, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r32_sint"),				ImageDataFormat(PixelFormat::R_32, VariableType::SignedInteger, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r32_sfloat"),				ImageDataFormat(PixelFormat::R_32, VariableType::SignedFloat, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r32g32_uint"),				ImageDataFormat(PixelFormat::RG_3232, VariableType::UnsignedInteger, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r32g32_sint"),				ImageDataFormat(PixelFormat::RG_3232, VariableType::SignedInteger, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r32g32_sfloat"),			ImageDataFormat(PixelFormat::RG_3232, VariableType::SignedFloat, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r32g32b32a32_uint"),		ImageDataFormat(PixelFormat::RGBA_32323232, VariableType::UnsignedInteger, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r32g32b32a32_sint"),		ImageDataFormat(PixelFormat::RGBA_32323232, VariableType::SignedInteger, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("r32g32b32a32_sfloat"),		ImageDataFormat(PixelFormat::RGBA_32323232, VariableType::SignedFloat, types::ColorSpace::lRGB) },
-
-		ImageFormat{ StringHash("d16"),						ImageDataFormat(PixelFormat::Depth16,     VariableType::UnsignedShort, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("d24"),						ImageDataFormat(PixelFormat::Depth24,     VariableType::UnsignedInteger, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("d24s32"),					ImageDataFormat( PixelFormat::Depth24Stencil8, VariableType::UnsignedInteger, types::ColorSpace::lRGB) },
-		ImageFormat{ StringHash("d32"),						ImageDataFormat(PixelFormat::Depth32,     VariableType::UnsignedInteger, types::ColorSpace::lRGB) },
+		ImageFormat{ StringHash("d16"),           ImageDataFormat(PixelFormat::Depth16,     VariableType::UnsignedShort, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("d24"),           ImageDataFormat(PixelFormat::Depth24,     VariableType::UnsignedInteger, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("d24s8"),          ImageDataFormat(PixelFormat::Depth24Stencil8, VariableType::UnsignedInteger, ColorSpace::lRGB) },
+		ImageFormat{ StringHash("d32"),           ImageDataFormat(PixelFormat::Depth32,     VariableType::UnsignedInteger, ColorSpace::lRGB) },
 	};
 
 	ImageDataFormat retval;
@@ -100,78 +89,79 @@ ImageDataFormat getFormat(const pugi::xml_attribute& attr)
 		}
 		if (retval.format.getPixelTypeId() == 0)
 		{
-			Log(Log.Warning, "PfxParser: 'format' attribute of <texture> "
-			"element was provided, but the format %s not recognized. Defaulting to RGBA8888.",attr.value());
+			Log(LogLevel::Warning, "PfxParser: 'format' attribute of <texture> "
+			    "element was provided, but the format %s not recognized. Defaulting to RGBA8888.", attr.value());
 			retval = ImageDataFormat();
 		}
 	}
 	return retval;
 }
 
-std::map<std::string, types::GpuDatatypes::Enum> datatype_strings;
+std::map<std::string, GpuDatatypes> datatype_strings;
 
 inline bool static_call_only_once_initialize_map()
 {
 	datatype_strings.clear();
-	datatype_strings["mat2"] = types::GpuDatatypes::mat2x2;
-	datatype_strings["mat2x2"] = types::GpuDatatypes::mat2x2;
-	datatype_strings["mat2x3"] = types::GpuDatatypes::mat2x3;
-	datatype_strings["mat2x4"] = types::GpuDatatypes::mat2x4;
-	datatype_strings["mat3"] = types::GpuDatatypes::mat3x3;
-	datatype_strings["mat3x2"] = types::GpuDatatypes::mat3x2;
-	datatype_strings["mat3x3"] = types::GpuDatatypes::mat3x3;
-	datatype_strings["mat3x4"] = types::GpuDatatypes::mat3x4;
-	datatype_strings["mat4"] = types::GpuDatatypes::mat4x4;
-	datatype_strings["mat4x2"] = types::GpuDatatypes::mat4x2;
-	datatype_strings["mat4x3"] = types::GpuDatatypes::mat4x3;
-	datatype_strings["mat4x4"] = types::GpuDatatypes::mat4x4;
-	datatype_strings["vec2"] = types::GpuDatatypes::vec2;
-	datatype_strings["vec3"] = types::GpuDatatypes::vec3;
-	datatype_strings["vec4"] = types::GpuDatatypes::vec4;
-	datatype_strings["ivec2"] = types::GpuDatatypes::ivec2;
-	datatype_strings["ivec3"] = types::GpuDatatypes::ivec3;
-	datatype_strings["ivec4"] = types::GpuDatatypes::ivec4;
-	datatype_strings["uvec2"] = types::GpuDatatypes::uvec2;
-	datatype_strings["uvec3"] = types::GpuDatatypes::uvec3;
-	datatype_strings["uvec4"] = types::GpuDatatypes::uvec4;
-	datatype_strings["bvec2"] = types::GpuDatatypes::bvec2;
-	datatype_strings["bvec3"] = types::GpuDatatypes::bvec3;
-	datatype_strings["bvec4"] = types::GpuDatatypes::bvec4;
-	datatype_strings["float"] = types::GpuDatatypes::float32;
-	datatype_strings["float32"] = types::GpuDatatypes::float32;
-	datatype_strings["int"] = types::GpuDatatypes::integer;
-	datatype_strings["int8"] = types::GpuDatatypes::integer;
-	datatype_strings["int16"] = types::GpuDatatypes::integer;
-	datatype_strings["int32"] = types::GpuDatatypes::integer;
-	datatype_strings["uint"] = types::GpuDatatypes::uinteger;
-	datatype_strings["uint8"] = types::GpuDatatypes::uinteger;
-	datatype_strings["uint16"] = types::GpuDatatypes::uinteger;
-	datatype_strings["uint32"] = types::GpuDatatypes::uinteger;
-	datatype_strings["bool"] = types::GpuDatatypes::boolean;
+	datatype_strings["mat2"] = GpuDatatypes::mat2x2;
+	datatype_strings["mat2x2"] = GpuDatatypes::mat2x2;
+	datatype_strings["mat2x3"] = GpuDatatypes::mat2x3;
+	datatype_strings["mat2x4"] = GpuDatatypes::mat2x4;
+	datatype_strings["mat3"] = GpuDatatypes::mat3x3;
+	datatype_strings["mat3x2"] = GpuDatatypes::mat3x2;
+	datatype_strings["mat3x3"] = GpuDatatypes::mat3x3;
+	datatype_strings["mat3x4"] = GpuDatatypes::mat3x4;
+	datatype_strings["mat4"] = GpuDatatypes::mat4x4;
+	datatype_strings["mat4x2"] = GpuDatatypes::mat4x2;
+	datatype_strings["mat4x3"] = GpuDatatypes::mat4x3;
+	datatype_strings["mat4x4"] = GpuDatatypes::mat4x4;
+	datatype_strings["vec2"] = GpuDatatypes::vec2;
+	datatype_strings["vec3"] = GpuDatatypes::vec3;
+	datatype_strings["vec4"] = GpuDatatypes::vec4;
+	datatype_strings["ivec2"] = GpuDatatypes::ivec2;
+	datatype_strings["ivec3"] = GpuDatatypes::ivec3;
+	datatype_strings["ivec4"] = GpuDatatypes::ivec4;
+	datatype_strings["uvec2"] = GpuDatatypes::uvec2;
+	datatype_strings["uvec3"] = GpuDatatypes::uvec3;
+	datatype_strings["uvec4"] = GpuDatatypes::uvec4;
+	datatype_strings["bvec2"] = GpuDatatypes::bvec2;
+	datatype_strings["bvec3"] = GpuDatatypes::bvec3;
+	datatype_strings["bvec4"] = GpuDatatypes::bvec4;
+	datatype_strings["float"] = GpuDatatypes::Float;
+	datatype_strings["float"] = GpuDatatypes::Float;
+	datatype_strings["int"] = GpuDatatypes::Integer;
+	datatype_strings["int8_t"] = GpuDatatypes::Integer;
+	datatype_strings["int16_t"] = GpuDatatypes::Integer;
+	datatype_strings["int32_t"] = GpuDatatypes::Integer;
+	datatype_strings["uint"] = GpuDatatypes::uinteger;
+	datatype_strings["uint8_t"] = GpuDatatypes::uinteger;
+	datatype_strings["uint16_t"] = GpuDatatypes::uinteger;
+	datatype_strings["uint32_t"] = GpuDatatypes::uinteger;
+	datatype_strings["bool"] = GpuDatatypes::boolean;
 
 	return true;
 }
 
-inline types::GpuDatatypes::Enum dataTypeFromString(const std::string& mystr)
+inline GpuDatatypes dataTypeFromString(const std::string& mystr)
 {
-	static bool initialize_map = static_call_only_once_initialize_map(); (void)initialize_map; // bypass the warning.
+	// bypass the warning
+	static bool initialize_map = static_call_only_once_initialize_map(); (void)initialize_map;
 	auto it = datatype_strings.find(strings::toLower(mystr));
 
 	if (it == datatype_strings.end())
 	{
-		Log(Log.Warning, "Unrecognized datatype [%s] reading PFX file", mystr.c_str());
+		Log(LogLevel::Warning, "Unrecognized datatype [%s] reading PFX file", mystr.c_str());
 	}
-	return it == datatype_strings.end() ? types::GpuDatatypes::none : it->second;
+	return it == datatype_strings.end() ? GpuDatatypes::none : it->second;
 }
 
-const string uniform_str("uniform");
-const string storage_str("storage");
-const string uniformdynamic_str("uniformdynamic");
-const string storagedynamic_str("storagedynamic");
-const string dynamicuniform_str("dynamicuniform");
-const string dynamicstorage_str("dynamicstorage");
+const std::string uniform_str("uniform");
+const std::string storage_str("storage");
+const std::string uniformdynamic_str("uniformdynamic");
+const std::string storagedynamic_str("storagedynamic");
+const std::string dynamicuniform_str("dynamicuniform");
+const std::string dynamicstorage_str("dynamicstorage");
 
-inline types::DescriptorType bufferDescriptorTypeFromString(const std::string& mystr)
+inline DescriptorType bufferDescriptorTypeFromString(const std::string& mystr)
 {
 	const std::string str = strings::toLower(mystr);
 	if (str == uniform_str) { return DescriptorType::UniformBuffer; }
@@ -183,48 +173,64 @@ inline types::DescriptorType bufferDescriptorTypeFromString(const std::string& m
 	return DescriptorType::UniformBuffer;
 }
 
-const string nearest_str("nearest");
-const string linear_str("linear");
-const string none_str("none");
-inline types::SamplerFilter filterFromAttribute(const pugi::xml_attribute& attr, types::SamplerFilter default_value)
+const std::string nearest_str("nearest");
+const std::string linear_str("linear");
+const std::string cubic_str("cubic");
+const std::string none_str("none");
+inline Filter filterFromAttribute(const pugi::xml_attribute& attr, Filter default_value)
 {
-	types::SamplerFilter ret = default_value;
+	Filter ret = default_value;
 	if (!attr.empty())
 	{
-		const string value = strings::toLower(attr.value());
-		if (value == nearest_str) { ret = types::SamplerFilter::Nearest; }
-		else if (value == linear_str) { ret = types::SamplerFilter::Linear; }
-		else if (value == none_str) { ret = types::SamplerFilter::None; }
+		const std::string value = strings::toLower(attr.value());
+		if (value == nearest_str) { ret = Filter::Nearest; }
+		else if (value == linear_str) { ret = Filter::Linear; }
+		else if (value == cubic_str) { ret = Filter::Cubic; }
+		else if (value == none_str) { ret = Filter::None; }
 	}
 	return ret;
 }
 
-const string clamp_str("clamp");
-const string repeat_str("repeat");
-inline types::SamplerWrap wrapFromAttribute(const pugi::xml_attribute& attr, types::SamplerWrap default_value)
+inline SamplerMipmapMode mipMapModeFromAttribute(
+  const pugi::xml_attribute& attr, SamplerMipmapMode default_value)
 {
-	types::SamplerWrap ret = default_value;
+	SamplerMipmapMode ret = default_value;
 	if (!attr.empty())
 	{
-		const string value = strings::toLower(attr.value());
-		if (value == clamp_str) { ret = types::SamplerWrap::Clamp; }
-		else if (value == repeat_str) { ret = types::SamplerWrap::Repeat; }
+		const std::string value = strings::toLower(attr.value());
+		if (value == nearest_str) { ret = SamplerMipmapMode::Nearest; }
+		else if (value == linear_str) { ret = SamplerMipmapMode::Linear; }
 	}
 	return ret;
 }
 
-const string requiresUniformSemantic_str("requiresuniformsemantic");
-const string requiresUniformSemanticNotPresent_str("requiresuniformsemanticnotpresent");
-const string requiresUniformSemanticPresent_str("requiresuniformsemanticpresent");
-const string requiresAttributeSemantic_str("requiresattributesemantic");
-const string requiresAttributeSemanticPresent_str("requiresattributesemanticpresent");
-const string requiresAttributeSemanticNotPresent_str("requiresattributesemanticnotpresent");
+const std::string clamp_str("clamp");
+const std::string repeat_str("repeat");
+inline SamplerAddressMode wrapFromAttribute(
+  const pugi::xml_attribute& attr, SamplerAddressMode default_value)
+{
+	SamplerAddressMode ret = default_value;
+	if (!attr.empty())
+	{
+		const std::string value = strings::toLower(attr.value());
+		if (value == clamp_str) { ret = SamplerAddressMode::ClampToEdge; }
+		else if (value == repeat_str) { ret = SamplerAddressMode::Repeat; }
+	}
+	return ret;
+}
+
+const std::string requiresUniformSemantic_str("requiresuniformsemantic");
+const std::string requiresUniformSemanticNotPresent_str("requiresuniformsemanticnotpresent");
+const std::string requiresUniformSemanticPresent_str("requiresuniformsemanticpresent");
+const std::string requiresAttributeSemantic_str("requiresattributesemantic");
+const std::string requiresAttributeSemanticPresent_str("requiresattributesemanticpresent");
+const std::string requiresAttributeSemanticNotPresent_str("requiresattributesemanticnotpresent");
 inline effect::PipelineCondition::ConditionType conditionFromAttribute(const pugi::xml_attribute& attr)
 {
 	effect::PipelineCondition::ConditionType ret = effect::PipelineCondition::Always;
 	if (!attr.empty())
 	{
-		const string value = strings::toLower(attr.value());
+		const std::string value = strings::toLower(attr.value());
 		if (value == requiresUniformSemantic_str) { ret = effect::PipelineCondition::UniformRequired; }
 		else if (value == requiresUniformSemanticNotPresent_str) { ret = effect::PipelineCondition::UniformRequiredNo; }
 		else if (value == requiresAttributeSemantic_str) { ret = effect::PipelineCondition::AttributeRequired; }
@@ -235,47 +241,47 @@ inline effect::PipelineCondition::ConditionType conditionFromAttribute(const pug
 	return ret;
 }
 
-const string vertex_str("vertex");
-const string fragment_str("fragment");
-const string geometry_str("geometry");
-const string tessControl_str("tesscontrol");
-const string tessellationControl_str("tessellationcontrol");
-const string tessEvaluation_str("tessevaluation");
-const string tessellationEvaluation_str("tessellationevaluation");
-inline types::ShaderType shaderTypeFromString(pugi::xml_attribute& attr)
+const std::string vertex_str("vertex");
+const std::string fragment_str("fragment");
+const std::string geometry_str("geometry");
+const std::string tessControl_str("tesscontrol");
+const std::string tessellationControl_str("tessellationcontrol");
+const std::string tessEvaluation_str("tessevaluation");
+const std::string tessellationEvaluation_str("tessellationevaluation");
+inline ShaderType shaderTypeFromString(pugi::xml_attribute& attr)
 {
-	types::ShaderType ret = types::ShaderType::UnknownShader;
+	ShaderType ret = ShaderType::UnknownShader;
 	if (!attr.empty())
 	{
-		const string value = strings::toLower(attr.value());
-		if (value == vertex_str) { ret = types::ShaderType::VertexShader; }
-		else if (value == fragment_str) { ret = types::ShaderType::FragmentShader; }
-		else if (value == geometry_str) { ret = types::ShaderType::GeometryShader; }
-		else if (value == tessControl_str) { ret = types::ShaderType::TessControlShader; }
-		else if (value == tessellationControl_str) { ret = types::ShaderType::TessControlShader; }
-		else if (value == tessEvaluation_str) { ret = types::ShaderType::TessEvaluationShader; }
-		else if (value == tessellationEvaluation_str) { ret = types::ShaderType::TessEvaluationShader; }
+		const std::string value = strings::toLower(attr.value());
+		if (value == vertex_str) { ret = ShaderType::VertexShader; }
+		else if (value == fragment_str) { ret = ShaderType::FragmentShader; }
+		else if (value == geometry_str) { ret = ShaderType::GeometryShader; }
+		else if (value == tessControl_str) { ret = ShaderType::TessControlShader; }
+		else if (value == tessellationControl_str) { ret = ShaderType::TessControlShader; }
+		else if (value == tessEvaluation_str) { ret = ShaderType::TessEvaluationShader; }
+		else if (value == tessellationEvaluation_str) { ret = ShaderType::TessEvaluationShader; }
 	}
 	return ret;
 }
 
-const string model_str("model");
-const string node_str("node");
-const string effect_str("effect");
-const string bonebatch_str("bonebatch");
-const string automatic_str("automatic");
-const string auto_str("auto");
-inline types::VariableScope scopeFromString(const pugi::xml_attribute& attr)
+const std::string model_str("model");
+const std::string node_str("node");
+const std::string effect_str("effect");
+const std::string bonebatch_str("bonebatch");
+const std::string automatic_str("automatic");
+const std::string auto_str("auto");
+inline VariableScope scopeFromString(const pugi::xml_attribute& attr)
 {
-	types::VariableScope ret = types::VariableScope::Effect;
+	VariableScope ret = VariableScope::Effect;
 	if (!attr.empty())
 	{
-		const string value = strings::toLower(attr.value());
-		if (value == automatic_str || value == auto_str) { ret = types::VariableScope::Automatic; }
-		else if (value == effect_str) { ret = types::VariableScope::Effect; }
-		else if (value == model_str) { ret = types::VariableScope::Model; }
-		else if (value == node_str) { ret = types::VariableScope::Node; }
-		else if (value == bonebatch_str) { ret = types::VariableScope::BoneBatch; }
+		const std::string value = strings::toLower(attr.value());
+		if (value == automatic_str || value == auto_str) { ret = VariableScope::Automatic; }
+		else if (value == effect_str) { ret = VariableScope::Effect; }
+		else if (value == model_str) { ret = VariableScope::Model; }
+		else if (value == node_str) { ret = VariableScope::Node; }
+		else if (value == bonebatch_str) { ret = VariableScope::BoneBatch; }
 		else
 		{
 			Log("PFXParser: Type '%s' for buffer or uniform scope was not recognized. Valid values: 'model', 'node', 'effect'", attr.value());
@@ -284,99 +290,99 @@ inline types::VariableScope scopeFromString(const pugi::xml_attribute& attr)
 	return ret;
 }
 
-const string blend_factor_str[] =
+const std::string blend_factor_str[] =
 {
 	"zero",
-	"one" ,
-	"srccolor" ,
-	"oneminussrccolor" ,
-	"dstcolor" ,
-	"oneminusdstcolor" ,
-	"srcalpha" ,
-	"oneminussrcalpha" ,
-	"dstalpha" ,
-	"oneminusdstalpha" ,
+	"one",
+	"srccolor",
+	"oneminussrccolor",
+	"dstcolor",
+	"oneminusdstcolor",
+	"srcalpha",
+	"oneminussrcalpha",
+	"dstalpha",
+	"oneminusdstalpha",
 	"constantcolor",
-	"oneminusconstantcolor" ,
-	"constantalpha" ,
-	"oneminusconstantalpha" ,
-	"src1color" ,
-	"oneminussrc1color" ,
-	"src1alpha" ,
+	"oneminusconstantcolor",
+	"constantalpha",
+	"oneminusconstantalpha",
+	"src1color",
+	"oneminussrc1color",
+	"src1alpha",
 	"oneminussrc1alpha"
 };
 
-static_assert(ARRAY_SIZE(blend_factor_str) == (uint32)types::BlendFactor::NumBlendFactor,
-              "Number blendfactor strings must be same as the types::BlendFactor::NumBlendFactor");
+static_assert(ARRAY_SIZE(blend_factor_str) == static_cast<uint32_t>(BlendFactor::NumBlendFactor),
+              "Number blendfactor strings must be same as the BlendFactor::NumBlendFactor");
 
-inline types::BlendFactor blendFactorFromString(const char* val, types::BlendFactor defaultBlend)
+inline BlendFactor blendFactorFromString(const char* val, BlendFactor defaultBlend)
 {
-	types::BlendFactor ret = defaultBlend;
-	const string value = strings::toLower(val);
-	for (uint32 i = 0; i < (uint32)types::BlendFactor::NumBlendFactor; ++i)
+	BlendFactor ret = defaultBlend;
+	const std::string value = strings::toLower(val);
+	for (uint32_t i = 0; i < static_cast<uint32_t>(BlendFactor::NumBlendFactor); ++i)
 	{
-		if (value == blend_factor_str[i]) { ret = types::BlendFactor(i); break ; }
+		if (value == blend_factor_str[i]) { ret = BlendFactor(i); break ; }
 	}
 	return ret;
 }
 
 // BlendOps
-const string blend_op_str[]  =
+const std::string blend_op_str[]  =
 {
 	"add", "subtract", "reversesubtract", "min", "max"
 };
 
-static_assert(ARRAY_SIZE(blend_op_str) == (uint32)types::BlendOp::NumBlendFunc,
-              "Number blendop strings must be same as the types::BlendOp::NumBlendFunc");
+static_assert(ARRAY_SIZE(blend_op_str) == static_cast<uint32_t>(BlendOp::NumBlendFunc),
+              "Number blendop strings must be same as the BlendOp::NumBlendFunc");
 
-inline types::BlendOp blendOpFromString(const pugi::xml_attribute& attr)
+inline BlendOp blendOpFromString(const pugi::xml_attribute& attr)
 {
-	types::BlendOp ret = types::BlendOp::Default;
-	const string value = strings::toLower(attr.value());
+	BlendOp ret = BlendOp::Default;
+	const std::string value = strings::toLower(attr.value());
 	if (!value.empty())
 	{
-		if (value == blend_op_str[0])       { ret = types::BlendOp::Add; }
-		else if (value == blend_op_str[1])  { ret = types::BlendOp::Subtract; }
-		else if (value == blend_op_str[2])  { ret = types::BlendOp::ReverseSubtract; }
-		else if (value == blend_op_str[3])  { ret = types::BlendOp::Min; }
-		else if (value == blend_op_str[4])  { ret = types::BlendOp::Max; }
+		if (value == blend_op_str[0])       { ret = BlendOp::Add; }
+		else if (value == blend_op_str[1])  { ret = BlendOp::Subtract; }
+		else if (value == blend_op_str[2])  { ret = BlendOp::ReverseSubtract; }
+		else if (value == blend_op_str[3])  { ret = BlendOp::Min; }
+		else if (value == blend_op_str[4])  { ret = BlendOp::Max; }
 		else
 		{
-			Log("PFXParser: Type '%s' for BlendOp as not recognized. using the default %s", attr.value(), blend_op_str[(uint32)ret].c_str());
+			Log("PFXParser: Type '%s' for BlendOp as not recognized. using the default %s", attr.value(), blend_op_str[static_cast<uint32_t>(ret)].c_str());
 		}
 	}
 	return ret;
 }
 
-types::ColorChannel blendChannelWriteMaskFromString(const pugi::xml_attribute& attr)
+ColorChannelFlags blendChannelWriteMaskFromString(const pugi::xml_attribute& attr)
 {
-	if (strlen(attr.value()) == 0) { return types::ColorChannel::All; }
+	if (strlen(attr.value()) == 0) { return ColorChannelFlags::All; }
 	const std::string value(strings::toLower(attr.value()));
 
-	if (value == "none") { return types::ColorChannel::None; }
+	if (value == "none") { return ColorChannelFlags::None; }
 
-	types::ColorChannel bits = types::ColorChannel(0);
-	if (value.find_first_of('r') != string::npos) { bits |= types::ColorChannel::R; }
-	if (value.find_first_of('g') != string::npos) { bits |= types::ColorChannel::G; }
-	if (value.find_first_of('b') != string::npos) { bits |= types::ColorChannel::B; }
-	if (value.find_first_of('a') != string::npos) { bits |= types::ColorChannel::A; }
+	ColorChannelFlags bits = ColorChannelFlags(0);
+	if (value.find_first_of('r') != std::string::npos) { bits |= ColorChannelFlags::R; }
+	if (value.find_first_of('g') != std::string::npos) { bits |= ColorChannelFlags::G; }
+	if (value.find_first_of('b') != std::string::npos) { bits |= ColorChannelFlags::B; }
+	if (value.find_first_of('a') != std::string::npos) { bits |= ColorChannelFlags::A; }
 	return bits;
 }
 
 const char* comparison_mode_str[] =
 {
-	"never", "less", "equal", "lequal", "greater", "notequal", "gequal", "always", "none"
+	"never", "less", "equal", "lequal", "greater", "notequal", "gequal", "always",
 };
-static_assert(ARRAY_SIZE(comparison_mode_str) == (uint32)ComparisonMode::NumComparisonMode,
+static_assert(ARRAY_SIZE(comparison_mode_str) == static_cast<uint32_t>(CompareOp::NumComparisonMode),
               "Number comparison_mode_str strings must be same as the ComparisonMode::NumComparisonMode");
 
-inline types::ComparisonMode comparisonModeFromString(const char* value, types::ComparisonMode dflt)
+inline CompareOp comparisonModeFromString(const char* value, CompareOp dflt)
 {
-	const string val(strings::toLower(value));
-	types::ComparisonMode rtn = dflt;
-	for (uint32 i = 0; i < (uint32)types::ComparisonMode::NumComparisonMode; ++i)
+	const std::string val(strings::toLower(value));
+	CompareOp rtn = dflt;
+	for (uint32_t i = 0; i < static_cast<uint32_t>(CompareOp::NumComparisonMode); ++i)
 	{
-		if (strcmp(val.c_str(), comparison_mode_str[i]) == 0) { rtn = types::ComparisonMode(i); break ; }
+		if (strcmp(val.c_str(), comparison_mode_str[i]) == 0) { rtn = CompareOp(i); break ; }
 	}
 	return rtn;
 }
@@ -415,7 +421,7 @@ void addBuffers(effect::Effect& effect, pugi::xml_named_node_iterator begin, pug
 		effect::BufferDefinition buff;
 		buff.name = it->attribute("name") ? it->attribute("name").value() : StringHash();
 
-		buff.scope = it->attribute("scope") ? scopeFromString(it->attribute("scope")) : types::VariableScope::Effect;
+		buff.scope = it->attribute("scope") ? scopeFromString(it->attribute("scope")) : VariableScope::Effect;
 
 		buff.multibuffering = it->attribute("multibuffering").as_bool();
 
@@ -450,8 +456,8 @@ bool addFileCodeSourceToVector(std::vector<char>& shaderSource, const char* file
 	return str->readIntoBuffer(shaderSource);
 }
 
-void addShaderCodeToVectors(const StringHash& /*name*/, types::ShaderType shaderType,
-                            std::map<StringHash, std::pair<types::ShaderType, std::vector<char>/**/>/**/>& versionedShaders,
+void addShaderCodeToVectors(const StringHash& /*name*/, ShaderType shaderType,
+                            std::map<StringHash, std::pair<ShaderType, std::vector<char>/**/>/**/>& versionedShaders,
                             const pugi::xml_node& node, const StringHash& apiVersion, bool isFile,  bool addToAll, IAssetProvider* assetProvider)
 {
 	//The next two lines will select either running the for-loop just once for the value matching versionedShaders,
@@ -473,7 +479,7 @@ void addShaderCodeToVectors(const StringHash& /*name*/, types::ShaderType shader
 		}
 		else
 		{
-			Log(Log.Warning, "PfxParser: Found <file> element in <shader>, but no 'path' attribute."
+			Log(LogLevel::Warning, "PfxParser: Found <file> element in <shader>, but no 'path' attribute."
 			    " Skipping. Syntax should be <file path=\"pathname...\".");
 		}
 	}
@@ -502,20 +508,20 @@ void addShaders(effect::Effect& theEffect, pugi::xml_named_node_iterator begin, 
 	//For each shader element, we will create one per version...
 	for (auto shader = begin; shader != end; ++shader)
 	{
-		std::map<StringHash, std::pair<types::ShaderType, std::vector<char>/**/>/**/> versionedShaders;
+		std::map<StringHash, std::pair<ShaderType, std::vector<char>/**/>/**/> versionedShaders;
 		StringHash shaderName;
 
-		types::ShaderType shaderType = types::ShaderType::UnknownShader;
+		ShaderType shaderType = ShaderType::UnknownShader;
 		//Get its name
 		for (auto it2 = shader->attributes_begin(); it2 != shader->attributes_end(); ++it2)
 		{
-			if (string(it2->name()) == string("name")) { shaderName = it2->value(); }
-			if (string(it2->name()) == string("type"))
+			if (std::string(it2->name()) == std::string("name")) { shaderName = it2->value(); }
+			if (std::string(it2->name()) == std::string("type"))
 			{
 				shaderType = shaderTypeFromString(*it2);
 			}
 		}
-		if (shaderType == types::ShaderType::UnknownShader)
+		if (shaderType == ShaderType::UnknownShader)
 		{
 			Log("PFXReader: Shader with name [%s] was defined without the [type] attribute, or value was unrecognised.", shaderName.c_str());
 			continue;
@@ -547,7 +553,7 @@ void addShaders(effect::Effect& theEffect, pugi::xml_named_node_iterator begin, 
 		for (auto child = shader->children().begin(); child != shader->children().end(); ++child)
 		{
 			const auto& apiVersionAttr = child->attribute("apiVersion");
-			bool isFile = string(child->name()) == string("file"), isCode = string(child->name()) == string("code");
+			bool isFile = std::string(child->name()) == std::string("file"), isCode = std::string(child->name()) == std::string("code");
 
 			if (isFile || isCode)    //NoCode!
 			{
@@ -563,14 +569,14 @@ void addShaders(effect::Effect& theEffect, pugi::xml_named_node_iterator begin, 
 			}
 			else
 			{
-				Log(Log.Warning, "PfxParser: Found node that was neither <code> nor <file> while parsing a <shader>. Skipping.");
+				Log(LogLevel::Warning, "PfxParser: Found node that was neither <code> nor <file> while parsing a <shader>. Skipping.");
 			}
 		}
 		//One last bit! Actually add them to the effect. Note - they are character arrays without null-terminators...
 		for (auto entry = versionedShaders.begin(); entry != versionedShaders.end(); ++entry)
 		{
 			theEffect.addShader(entry->first, effect::Shader(StringHash(shaderName), entry->second.first,
-			                    string(entry->second.second.begin(), entry->second.second.end())));
+			                    std::string(entry->second.second.begin(), entry->second.second.end())));
 		}
 	}
 }
@@ -580,10 +586,10 @@ void addPipelineAttribute(effect::Effect&, const StringHash&, effect::PipelineDe
 {
 	effect::AttributeSemantic semantic;
 	semantic.dataType = dataTypeFromString(attribute_element.attribute("dataType").value());
-	semantic.location = attribute_element.attribute("location").as_int();
+	semantic.location = static_cast<uint8_t>(attribute_element.attribute("location").as_int());
 	semantic.semantic = attribute_element.attribute("semantic").value();
 	semantic.variableName = attribute_element.attribute("variable").value();
-	semantic.vboBinding = attribute_element.attribute("vboBinding").as_int();
+	semantic.vboBinding = static_cast<uint8_t>(attribute_element.attribute("vboBinding").as_int());
 	pipeline.attributes.push_back(std::move(semantic));
 }
 
@@ -597,8 +603,8 @@ void addPipelineUniform(effect::Effect&, const StringHash&, effect::PipelineDefi
 	semantic.semantic = attribute_element.attribute("semantic").value();
 	semantic.variableName = attribute_element.attribute("variable").value();
 	semantic.scope = scopeFromString(attribute_element.attribute("scope"));
-	semantic.set = attribute_element.attribute("set").as_int();
-	semantic.binding = attribute_element.attribute("binding").as_int();
+	semantic.set = static_cast<uint8_t>(attribute_element.attribute("set").as_int());
+	semantic.binding = static_cast<uint8_t>(attribute_element.attribute("binding").as_int());
 	pipeline.uniforms.push_back(semantic);
 }
 
@@ -616,12 +622,12 @@ void addPipelineShader(effect::Effect& effect, const StringHash& apiName,
 	{
 		if (!apiName.empty())
 		{
-			Log(Log.Warning, "PFXParser: Could not find shader with name [%s] referenced in pipeline [%s] for api [%s]",
+			Log(LogLevel::Warning, "PFXParser: Could not find shader with name [%s] referenced in pipeline [%s] for api [%s]",
 			    shader.name.c_str(), pipeline.name.c_str(), apiName.c_str());
 		}
 		else
 		{
-			Log(Log.Warning, "PFXParser: Could not find shader with name [%s] referenced in pipeline [%s] for api unspecified.",
+			Log(LogLevel::Warning, "PFXParser: Could not find shader with name [%s] referenced in pipeline [%s] for api unspecified.",
 			    shader.name.c_str(), pipeline.name.c_str());
 		}
 	}
@@ -635,13 +641,13 @@ void addPipelineBuffer(effect::Effect& effect, const StringHash&, effect::Pipeli
 	if (it != effect.buffers.end())
 	{
 		effect::BufferRef ref;
-		ref.binding = attribute_element.attribute("binding").as_int();
-		ref.set = attribute_element.attribute("set").as_int();
+		ref.binding = static_cast<int8_t>(attribute_element.attribute("binding").as_int());
+		ref.set = static_cast<int8_t>(attribute_element.attribute("set").as_int());
 		ref.semantic = attribute_element.attribute("semantic").value();
 		ref.type = bufferDescriptorTypeFromString(attribute_element.attribute("type").value());
 		ref.bufferName = name;
-		it->second.allSupportedBindings = it->second.allSupportedBindings | descriptorTypeToBufferBindingUse(ref.type);
-		it->second.isDynamic = pvr::types::isDescriptorTypeDynamic(ref.type);
+		it->second.allSupportedBindings = it->second.allSupportedBindings |  descriptorTypeToBufferUsage(ref.type);
+		it->second.isDynamic = pvr::isDescriptorTypeDynamic(ref.type);
 		pipeline.buffers.push_back(ref);
 	}
 	else
@@ -653,9 +659,9 @@ void addPipelineBuffer(effect::Effect& effect, const StringHash&, effect::Pipeli
 void addPipelineInputAttachment(effect::Effect&, const StringHash&, effect::PipelineDefinition& pipeline, pugi::xml_node& attribute_element)
 {
 	effect::InputAttachmentRef ref;
-	ref.binding = attribute_element.attribute("binding").as_int();
-	ref.set = attribute_element.attribute("set").as_int(-1);
-	ref.targetIndex = attribute_element.attribute("targetIndex").as_int(-1);
+	ref.binding = static_cast<int8_t>(attribute_element.attribute("binding").as_int());
+	ref.set = static_cast<int8_t>(attribute_element.attribute("set").as_int(-1));
+	ref.targetIndex = static_cast<int8_t>(attribute_element.attribute("targetIndex").as_int(-1));
 	pipeline.inputAttachments.push_back(ref);
 }
 
@@ -666,15 +672,15 @@ void addPipelineTexture(effect::Effect& effect, const StringHash&, effect::Pipel
 
 
 	effect::TextureReference ref;
-	ref.binding = attribute_element.attribute("binding").as_int();
-	ref.set = attribute_element.attribute("set").as_int(-1);
+	ref.binding = static_cast<int8_t>(attribute_element.attribute("binding").as_int());
+	ref.set = static_cast<int8_t>(attribute_element.attribute("set").as_int(-1));
 	ref.semantic = attribute_element.attribute("semantic").value();
-	ref.samplerFilter = packSamplerFilter(filterFromAttribute(attribute_element.attribute("minification"), types::SamplerFilter::Nearest),
-	                                      filterFromAttribute(attribute_element.attribute("magnification"), types::SamplerFilter::Nearest),
-	                                      filterFromAttribute(attribute_element.attribute("mipmap"), types::SamplerFilter::None));
-	ref.wrapR = wrapFromAttribute(attribute_element.attribute("wrap_r"), types::SamplerWrap::Clamp);
-	ref.wrapS = wrapFromAttribute(attribute_element.attribute("wrap_s"), types::SamplerWrap::Clamp);
-	ref.wrapT = wrapFromAttribute(attribute_element.attribute("wrap_t"), types::SamplerWrap::Clamp);
+	ref.samplerFilter = packSamplerFilter(filterFromAttribute(attribute_element.attribute("minification"), Filter::Nearest),
+	                                      filterFromAttribute(attribute_element.attribute("magnification"), Filter::Nearest),
+	                                      mipMapModeFromAttribute(attribute_element.attribute("mipmap"), SamplerMipmapMode::Nearest));
+	ref.wrapR = wrapFromAttribute(attribute_element.attribute("wrap_r"), SamplerAddressMode::ClampToEdge);
+	ref.wrapS = wrapFromAttribute(attribute_element.attribute("wrap_s"), SamplerAddressMode::ClampToEdge);
+	ref.wrapT = wrapFromAttribute(attribute_element.attribute("wrap_t"), SamplerAddressMode::ClampToEdge);
 	ref.wrapR = wrapFromAttribute(attribute_element.attribute("wrap_u"), ref.wrapR);
 	ref.wrapS = wrapFromAttribute(attribute_element.attribute("wrap_v"), ref.wrapS);
 	ref.wrapT = wrapFromAttribute(attribute_element.attribute("wrap_w"), ref.wrapT);
@@ -690,29 +696,28 @@ void addPipelineBlending(effect::Effect&, const StringHash&, effect::PipelineDef
 {
 	pipeline.blending.blendEnable = attribute_element.attribute("enabled").as_bool();
 	pipeline.blending.srcBlendColor = blendFactorFromString(attribute_element.attribute("srcColorFactor").as_string(),
-	                                  types::BlendFactor::DefaultSrcRgba);
+	                                  BlendFactor::DefaultSrcRgba);
 	pipeline.blending.srcBlendAlpha = blendFactorFromString(attribute_element.attribute("srcAlphaFactor").as_string(),
-	                                  types::BlendFactor::DefaultSrcRgba);
-	pipeline.blending.destBlendColor = blendFactorFromString(attribute_element.attribute("dstColorFactor").as_string(),
-	                                   types::BlendFactor::DefaultDestRgba);
-	pipeline.blending.destBlendAlpha = blendFactorFromString(attribute_element.attribute("dstAlphaFactor").as_string(),
-	                                   types::BlendFactor::DefaultDestRgba);
+	                                  BlendFactor::DefaultSrcRgba);
+	pipeline.blending.dstBlendColor = blendFactorFromString(attribute_element.attribute("dstColorFactor").as_string(),
+	                                  BlendFactor::DefaultDestRgba);
+	pipeline.blending.dstBlendAlpha = blendFactorFromString(attribute_element.attribute("dstAlphaFactor").as_string(),
+	                                  BlendFactor::DefaultDestRgba);
 	pipeline.blending.blendOpColor = blendOpFromString(attribute_element.attribute("colorBlendOp"));
 	pipeline.blending.blendOpAlpha = blendOpFromString(attribute_element.attribute("alphaBlendOp"));
 	pipeline.blending.channelWriteMask = blendChannelWriteMaskFromString(attribute_element.attribute("writeMask"));
 }
 
-
-inline types::StencilOp stencilOpFromString(const std::string& str, types::StencilOp dflt)
+inline StencilOp stencilOpFromString(const std::string& str, StencilOp dflt)
 {
-	if (str == "keep")                  { return types::StencilOp::Keep; }
-	else if (str == "zero")             { return types::StencilOp::Zero; }
-	else if (str == "replace")          { return types::StencilOp::Replace; }
-	else if (str == "incrementclamp")   { return types::StencilOp::IncrementClamp; }
-	else if (str == "decrementclamp")   { return types::StencilOp::DecrementClamp; }
-	else if (str == "invert")           { return types::StencilOp::Invert; }
-	else if (str == "incrementwrap")    { return types::StencilOp::IncrementWrap; }
-	else if (str == "decrementwrap")    { return types::StencilOp::DecrementWrap; }
+	if (str == "keep")                  { return StencilOp::Keep; }
+	else if (str == "zero")             { return StencilOp::Zero; }
+	else if (str == "replace")          { return StencilOp::Replace; }
+	else if (str == "incrementclamp")   { return StencilOp::IncrementClamp; }
+	else if (str == "decrementclamp")   { return StencilOp::DecrementClamp; }
+	else if (str == "invert")           { return StencilOp::Invert; }
+	else if (str == "incrementwrap")    { return StencilOp::IncrementWrap; }
+	else if (str == "decrementwrap")    { return StencilOp::DecrementWrap; }
 	else                                { return dflt; }
 }
 
@@ -721,7 +726,7 @@ void addPipelineDepthStencil(effect::Effect&, const StringHash&, effect::Pipelin
 {
 	//--- Depth
 	pipeline.depthCmpFunc = comparisonModeFromString(attribute_element.attribute("depthFunc").as_string(""),
-	                        types::ComparisonMode::DefaultDepthFunc);
+	                        CompareOp::DefaultDepthFunc);
 
 	pipeline.enableDepthTest = attribute_element.attribute("depthTest").as_bool("false");
 	pipeline.enableDepthWrite = attribute_element.attribute("depthWrite").as_bool("true");
@@ -730,19 +735,19 @@ void addPipelineDepthStencil(effect::Effect&, const StringHash&, effect::Pipelin
 
 	//---- Stencil, check for common
 	pipeline.stencilFront.opDepthFail = stencilOpFromString(strings::toLower(
-	                                      attribute_element.attribute("stencilOpDepthFail").as_string("")), types::StencilOp::Keep);
+	                                      attribute_element.attribute("stencilOpDepthFail").as_string("")), StencilOp::Keep);
 
 	pipeline.stencilFront.opDepthPass = stencilOpFromString(strings::toLower(
-	                                      attribute_element.attribute("stencilOpDepthPass").as_string("")), types::StencilOp::Keep);
+	                                      attribute_element.attribute("stencilOpDepthPass").as_string("")), StencilOp::Keep);
 
 	pipeline.stencilFront.opStencilFail = stencilOpFromString(strings::toLower(
-	                                        attribute_element.attribute("stencilOpStencilFail").as_string("")), types::StencilOp::Keep);
+	                                        attribute_element.attribute("stencilOpStencilFail").as_string("")), StencilOp::Keep);
 
 	pipeline.stencilFront.compareMask = attribute_element.attribute("stencilCompareMask").as_uint(0xff);
 	pipeline.stencilFront.writeMask = attribute_element.attribute("stencilWriteMask").as_uint(0xff);
 	pipeline.stencilFront.reference = attribute_element.attribute("stencilReference").as_uint(0);
 	pipeline.stencilFront.compareOp = comparisonModeFromString(attribute_element.attribute(
-	                                    "stencilFunc").as_string(""), types::ComparisonMode::DefaultStencilFunc);
+	                                    "stencilFunc").as_string(""), CompareOp::DefaultStencilFunc);
 
 	pipeline.stencilBack =  pipeline.stencilFront;
 
@@ -780,38 +785,37 @@ void addPipelineDepthStencil(effect::Effect&, const StringHash&, effect::Pipelin
 	                                 pipeline.stencilBack.compareOp);
 }
 
-
-inline types::Face faceFromString(const std::string& str, types::Face defaultFace)
+inline Face faceFromString(const std::string& str, Face defaultFace)
 {
 	if (str.empty()) { return defaultFace; }
-	else if ("none" == str) { return types::Face::None; }
-	else if ("front" == str) { return types::Face::Front;}
-	else if ("back" == str) { return types::Face::Back;}
+	else if ("none" == str) { return Face::None; }
+	else if ("front" == str) { return Face::Front;}
+	else if ("back" == str) { return Face::Back;}
 	else if ("frontback" == str || "front_and_back" == str || "frontandback" == str)
 	{
-		return types::Face::FrontBack;
+		return Face::FrontAndBack;
 	}
 	return defaultFace;
 }
 
-inline types::StepRate stepRateFromString(const char* str, types::StepRate defaultStepRate)
+inline StepRate stepRateFromString(const char* str, StepRate defaultStepRate)
 {
 	const std::string str_l(strings::toLower(str));
-	if (str_l == "vertex") { return types::StepRate::Vertex; }
-	else if (str_l == "instance") { return types::StepRate::Instance; }
+	if (str_l == "vertex") { return StepRate::Vertex; }
+	else if (str_l == "instance") { return StepRate::Instance; }
 	return defaultStepRate;
 }
 
-inline types::PolygonWindingOrder polygonWindingOrderFromString(const std::string& str)
+inline PolygonWindingOrder polygonWindingOrderFromString(const std::string& str)
 {
-	if (str == "cw" || str == "clockwise") { return types::PolygonWindingOrder::FrontFaceCW; }
-	else if (str == "ccw" || str == "counterclockwise") {  return types::PolygonWindingOrder::FrontFaceCCW; }
-	return types::PolygonWindingOrder::FrontFaceCCW;
+	if (str == "cw" || str == "clockwise") { return PolygonWindingOrder::FrontFaceCW; }
+	else if (str == "ccw" || str == "counterclockwise") {  return PolygonWindingOrder::FrontFaceCCW; }
+	return PolygonWindingOrder::FrontFaceCCW;
 }
 
 void addPipelineRasterization(effect::Effect&, const StringHash&, effect::PipelineDefinition& pipeline, pugi::xml_node& attribute_element)
 {
-	pipeline.cullFace = faceFromString(attribute_element.attribute("faceCulling").as_string(), types::Face::Default);
+	pipeline.cullFace = faceFromString(attribute_element.attribute("faceCulling").as_string(), Face::Default);
 	pipeline.windingOrder = polygonWindingOrderFromString(attribute_element.attribute("frontFaceWinding").as_string("ccw"));
 }
 
@@ -819,7 +823,7 @@ void addPipelineVertexInputBinding(effect::Effect&, const StringHash&, effect::P
 {
 	pipeline.vertexBinding.push_back(assets::effect::PipelineVertexBinding(
 	                                   attribute_element.attribute("index").as_uint(), stepRateFromString(
-	                                     attribute_element.attribute("stepRate").as_string(""), types::StepRate::Vertex)));
+	                                     attribute_element.attribute("stepRate").as_string(""), StepRate::Vertex)));
 }
 
 typedef void (*pfn_add_element)(effect::Effect&, const StringHash&, effect::PipelineDefinition&, pugi::xml_node&);
@@ -951,7 +955,7 @@ void addPipelines(effect::Effect& effect, pugi::xml_named_node_iterator begin, p
 		//Get its name
 		for (auto it2 = pipe_element->attributes_begin(); it2 != pipe_element->attributes_end(); ++it2)
 		{
-			if (string(it2->name()) == string("name")) { pipelineName = it2->value(); }
+			if (std::string(it2->name()) == std::string("name")) { pipelineName = it2->value(); }
 		}
 		processPipeline(effect, *pipe_element, pipelineName);
 	}
@@ -959,16 +963,16 @@ void addPipelines(effect::Effect& effect, pugi::xml_named_node_iterator begin, p
 
 void addSubpassGroup(effect::SubpassGroup& outGroup, pugi::xml_node& subpassgroup_element)
 {
-	uint32 pipe_counter = 0;
+	uint32_t pipe_counter = 0;
 	outGroup.name = subpassgroup_element.attribute("name").as_string("");
-	outGroup.pipelines.resize(static_cast<pvr::uint32>(subpassgroup_element.select_nodes("pipeline").size()));
+	outGroup.pipelines.resize(static_cast<uint32_t>(subpassgroup_element.select_nodes("pipeline").size()));
 	pipe_counter = 0;
 	for (auto pipeline = subpassgroup_element.children("pipeline").begin();
 	     pipeline != subpassgroup_element.children("pipeline").end(); ++pipeline)
 	{
 		effect::PipelineReference& ref = outGroup.pipelines[pipe_counter++];
 		ref.pipelineName = pipeline->attribute("name").value();
-		int32 counter = 0;
+		int32_t counter = 0;
 		auto condition_begin = pipeline->children("condition").begin();
 		auto condition_end = pipeline->children("condition").end();
 		//unfortunately no operator "-" exists for those iterators - they are not random access, so we'll traverse twice. No big deal.
@@ -1022,7 +1026,7 @@ void addSubpass(effect::Subpass& outSubPass, pugi::xml_node& subpass_element)
 	else
 	{
 		outSubPass.groups.resize(subpass_element.select_nodes("subpassgroup").size());
-		uint32 groupIndex = 0;
+		uint32_t groupIndex = 0;
 		for (auto walk = subpass_element.children("subpassgroup").begin();
 		     walk != subpass_element.children("subpassgroup").end(); ++walk, ++groupIndex)
 		{
@@ -1032,19 +1036,32 @@ void addSubpass(effect::Subpass& outSubPass, pugi::xml_node& subpass_element)
 
 }
 
-void addPass(effect::Effect& effect, pugi::xml_node& pass_element)
+void addPass(effect::Effect& effect, pugi::xml_node& pass_element, bool& depthStencilCreated)
 {
 	effect.passes.resize(effect.passes.size() + 1);
 	effect::Pass& pass = effect.passes.back();
 
 	pass.name = pass_element.attribute("name").as_string("");
-	pass.targetDepthStencil = pass_element.attribute("targetDepthStencil").as_string("");//TODO
-
-
+	pass.targetDepthStencil = pass_element.attribute("targetDepthStencil").as_string("");
+	if (pass.targetDepthStencil.empty())
+	{
+		pass.targetDepthStencil = "PfxDefaultDepthBuffer";
+		if (!depthStencilCreated) //Create a depth buffer if needed
+		{
+			effect::TextureDefinition tex;
+			tex.name = "PfxDefaultDepthBuffer";
+			tex.path = StringHash();
+			tex.height = 0;
+			tex.width = 0;
+			tex.fmt = ImageDataFormat(PixelFormat::Depth32, VariableType::UnsignedInteger, ColorSpace::lRGB);
+			effect.addTexture(std::move(tex));
+			depthStencilCreated = true;
+		}
+	}
 	// do the subpasses
 	auto subpass_begin = pass_element.children("subpass").begin();
 	auto subpass_end = pass_element.children("subpass").end();
-	uint32 size = static_cast<pvr::uint32>(pass_element.select_nodes("subpass").size());
+	uint32_t size = static_cast<uint32_t>(pass_element.select_nodes("subpass").size());
 	size = (size ? size : 1);
 	pass.subpasses.resize(size);
 
@@ -1065,26 +1082,27 @@ void addPass(effect::Effect& effect, pugi::xml_node& pass_element)
 
 void addEffects(effect::Effect& effect, pugi::xml_named_node_iterator begin, pugi::xml_named_node_iterator end)
 {
+	bool depthStencilCreated = false;
 	//Each effect element...
 	for (auto effect_element = begin; effect_element != end; ++effect_element)
 	{
 		//Get its name
 		for (auto it2 = effect_element->attributes_begin(); it2 != effect_element->attributes_end(); ++it2)
 		{
-			if (string(it2->name()) == string("name")) { effect.name = it2->value(); }
+			if (std::string(it2->name()) == std::string("name")) { effect.name = it2->value(); }
 		}
 
 		auto pass_begin = effect_element->children("pass").begin();
 		auto pass_end = effect_element->children("pass").end();
 		if (pass_begin == pass_end) //If there is only one pass, it is allowed skip the "pass" elements and put the rest straight into the pass.
 		{
-			addPass(effect, *effect_element);
+			addPass(effect, *effect_element, depthStencilCreated);
 		}
 		else
 		{
 			for (auto pass = pass_begin; pass != pass_end; ++pass)
 			{
-				addPass(effect, *pass);
+				addPass(effect, *pass, depthStencilCreated);
 			}
 		}
 	}
@@ -1122,7 +1140,7 @@ PfxParser::PfxParser(const std::string& pfxFilename, IAssetProvider* assetProvid
 {
 	if (!assetProvider)
 	{
-		Log(Log.Warning, "PfxParser: Asset provider was not passed on construction, so a fallback path that can only "
+		Log(LogLevel::Warning, "PfxParser: Asset provider was not passed on construction, so a fallback path that can only "
 		    "create FileStreams is used. This is not enough to function on many mobile platforms. "
 		    "You should pass the Application class (itself deriving from pvr::Shell, which is an IAssetProvider "
 		    "as the asset provider, otherwise consider writing a custom pvr::IAssetProvider.");
@@ -1131,7 +1149,7 @@ PfxParser::PfxParser(const std::string& pfxFilename, IAssetProvider* assetProvid
 	Stream::ptr_type stream(getStream(pfxFilename, assetProvider));
 	if (stream.get())
 	{
-		newAssetStream(stream);
+		newAssetStream(std::move(stream));
 	}
 	else
 	{
@@ -1145,14 +1163,14 @@ PfxParser::PfxParser(Stream::ptr_type pfxStream, IAssetProvider* assetProvider) 
 {
 	if (!assetProvider)
 	{
-		Log(Log.Warning, "PfxParser: Asset provider was not passed on construction, so a fallback path that can only "
+		Log(LogLevel::Warning, "PfxParser: Asset provider was not passed on construction, so a fallback path that can only "
 		    "create FileStreams is used. This is not enough to function on many mobile platforms. "
 		    "You should pass the Application class (itself deriving from pvr::Shell, which is an IAssetProvider "
 		    "as the asset provider, otherwise consider writing a custom pvr::IAssetProvider.");
 	}
 	if (pfxStream.get())
 	{
-		newAssetStream(pfxStream);
+		newAssetStream(std::move(pfxStream));
 	}
 	else
 	{
@@ -1172,7 +1190,7 @@ bool PfxParser::readNextAsset(effect::Effect& asset)
 	{
 		Log("Failed to parse PFX file - not valid XML"); return false;
 	}
-	if (!doc.root().first_child() || string(doc.root().first_child().name()) != string("pfx"))
+	if (!doc.root().first_child() || std::string(doc.root().first_child().name()) != std::string("pfx"))
 	{
 		Log("Failed to parse PFX file: root <pfx> element not found");
 	}

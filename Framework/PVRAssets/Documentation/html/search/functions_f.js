@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['vertexattributedata',['VertexAttributeData',['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#aa58043e55d7756f12fa87a2cadc21097',1,'pvr::assets::Mesh::VertexAttributeData::VertexAttributeData()'],['../classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a04b302dde5c5dbff91c5cde0fa8bf94e',1,'pvr::assets::Mesh::VertexAttributeData::VertexAttributeData(const StringHash &amp;semantic, types::DataType type, uint8 n, uint16 offset, uint16 dataIndex)']]],
-  ['vertexindexread',['VertexIndexRead',['../namespacepvr.html#ae558fc5547da737e038b1c2ea09b1fc3',1,'pvr']]],
-  ['vertexread',['VertexRead',['../namespacepvr.html#a683944ff99e5f359f136687ec6bfcdb4',1,'pvr']]]
+  ['texturedefinition',['TextureDefinition',['../structpvr_1_1assets_1_1effect_1_1_texture_definition.html#ae817e56ac172f0fc7cfcfe5e05a79ec0',1,'pvr::assets::effect::TextureDefinition::TextureDefinition()'],['../structpvr_1_1assets_1_1effect_1_1_texture_definition.html#ab64412887387519199eea963cd3b7a7a',1,'pvr::assets::effect::TextureDefinition::TextureDefinition(const StringHash &amp;name, const StringHash &amp;path, uint32_t width, uint32_t height, const ImageDataFormat &amp;fmt)']]],
+  ['textureload',['textureLoad',['../namespacepvr_1_1assets.html#ac88dc0e4cd5f3ddc4df51bef91e2f418',1,'pvr::assets']]],
+  ['textureref',['TextureRef',['../structpvr_1_1assets_1_1effect_1_1_texture_ref.html#aef8a8566d4f53e41d9c1c0c49a86a291',1,'pvr::assets::effect::TextureRef::TextureRef()'],['../structpvr_1_1assets_1_1effect_1_1_texture_ref.html#a2cde30b528a0f662ba2a9eef356ac26f',1,'pvr::assets::effect::TextureRef::TextureRef(StringHash textureName, uint8_t set, uint8_t binding, StringHash variableName)']]],
+  ['toworldmatrix',['toWorldMatrix',['../classpvr_1_1assets_1_1_model.html#a12448e1f020a38195dc4bc2675776064',1,'pvr::assets::Model']]]
 ];

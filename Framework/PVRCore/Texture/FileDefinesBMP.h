@@ -11,64 +11,64 @@ namespace pvr {
 namespace texture_bmp {
 struct FileHeader
 {
-	uint16	signature;
-	uint32	fileSize;
-	uint16	reserved1;
-	uint16	reserved2;
-	uint32	pixelOffset;
+	uint16_t signature;
+	uint32_t fileSize;
+	uint16_t reserved1;
+	uint16_t reserved2;
+	uint32_t pixelOffset;
 };
 
 struct CoreHeader
 {
-	uint32	headerSize;
-	uint16	width;
-	uint16	height;
-	uint16	numberOfPlanes;
-	uint16	bitsPerPixel;
+	uint32_t headerSize;
+	uint16_t width;
+	uint16_t height;
+	uint16_t numPlanes;
+	uint16_t bitsPerPixel;
 };
 
 struct InfoHeader1
 {
-	uint32 headerSize;
-	int32  width;
-	int32  height;
-	uint16 numberOfPlanes;
-	uint16 bitsPerPixel;
-	uint32 compressionType;
-	uint32 imageSize;
-	int32  horizontalPixelsPerMeter;
-	int32  verticalPixelsPerMeter;
-	uint32 numberOfColorsInTable;
-	uint32 numberOfImportantColors;
+	uint32_t headerSize;
+	int32_t  width;
+	int32_t  height;
+	uint16_t numPlanes;
+	uint16_t bitsPerPixel;
+	uint32_t compressionType;
+	uint32_t imageSize;
+	int32_t  horizontalPixelsPerMeter;
+	int32_t  verticalPixelsPerMeter;
+	uint32_t numColorsInTable;
+	uint32_t numImportantColors;
 };
 
 struct InfoHeader2 : public InfoHeader1   //Adobe Specific
 {
-	uint32 redMask;
-	uint32 greenMask;
-	uint32 blueMask;
+	uint32_t redMask;
+	uint32_t greenMask;
+	uint32_t blueMask;
 };
 
 struct InfoHeader3 : public InfoHeader2   //Adobe Specific
 {
-	uint32 alphaMask;
+	uint32_t alphaMask;
 };
 
 struct InfoHeader4 : public InfoHeader3
 {
-	int32   colorSpace;
+	int32_t   colorSpace;
 	glm::ivec3 xyzEndPoints[3];
-	uint32  gammaRed;
-	uint32  gammaGreen;
-	uint32  gammaBlue;
+	uint32_t  gammaRed;
+	uint32_t  gammaGreen;
+	uint32_t  gammaBlue;
 };
 
 struct InfoHeader5 : public InfoHeader4
 {
-	uint32 intent;
-	uint32 profileData;
-	uint32 profileSize;
-	uint32	reserved;
+	uint32_t intent;
+	uint32_t profileData;
+	uint32_t profileSize;
+	uint32_t	reserved;
 };
 
 
@@ -110,7 +110,7 @@ enum Enum
 };
 }
 
-static const uint16 Identifier = 0x4d42; // 'B' 'M' in ASCII
+static const uint16_t Identifier = 0x4d42; // 'B' 'M' in ASCII
 }
 }
 //!\endcond

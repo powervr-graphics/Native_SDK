@@ -25,18 +25,18 @@ enum
 
 struct Pixel32
 {
-	uint8 red, green, blue, alpha;
+	uint8_t red, green, blue, alpha;
 };
 
 struct Pixel128S
 {
-	int32 red, green, blue, alpha;
+	int32_t red, green, blue, alpha;
 };
 
 struct PVRTCWord
 {
-	uint32 u32ModulationData;
-	uint32 u32ColorData;
+	uint32_t u32ModulationData;
+	uint32_t u32ColorData;
 };
 
 struct PVRTCWordIndices
@@ -44,69 +44,69 @@ struct PVRTCWordIndices
 	int P[2], Q[2], R[2], S[2];
 };
 
-static Pixel32 getColorA(uint32 u32ColorData)
+static Pixel32 getColorA(uint32_t u32ColorData)
 {
 	Pixel32 color;
 
 	// Opaque Color Mode - RGB 554
 	if ((u32ColorData & 0x8000) != 0)
 	{
-		color.red   = (uint8)((u32ColorData & 0x7c00) >> 10); // 5->5 bits
-		color.green = (uint8)((u32ColorData & 0x3e0)  >> 5); // 5->5 bits
-		color.blue  = (uint8)(u32ColorData  & 0x1e) | ((u32ColorData & 0x1e) >> 4); // 4->5 bits
-		color.alpha = (uint8)0xf;// 0->4 bits
+		color.red   = static_cast<uint8_t>((u32ColorData & 0x7c00) >> 10); // 5->5 bits
+		color.green = static_cast<uint8_t>((u32ColorData & 0x3e0)  >> 5); // 5->5 bits
+		color.blue  = static_cast<uint8_t>(u32ColorData  & 0x1e) | ((u32ColorData & 0x1e) >> 4); // 4->5 bits
+		color.alpha = static_cast<uint8_t>(0xf);// 0->4 bits
 	}
 	// Transparent Color Mode - ARGB 3443
 	else
 	{
-		color.red   = (uint8)((u32ColorData & 0xf00)  >> 7) | ((u32ColorData & 0xf00) >> 11); // 4->5 bits
-		color.green = (uint8)((u32ColorData & 0xf0)   >> 3) | ((u32ColorData & 0xf0)  >> 7); // 4->5 bits
-		color.blue  = (uint8)((u32ColorData & 0xe)    << 1) | ((u32ColorData & 0xe)   >> 2); // 3->5 bits
-		color.alpha = (uint8)((u32ColorData & 0x7000) >> 11);// 3->4 bits - note 0 at right
+		color.red   = static_cast<uint8_t>((u32ColorData & 0xf00)  >> 7) | ((u32ColorData & 0xf00) >> 11); // 4->5 bits
+		color.green = static_cast<uint8_t>((u32ColorData & 0xf0)   >> 3) | ((u32ColorData & 0xf0)  >> 7); // 4->5 bits
+		color.blue  = static_cast<uint8_t>((u32ColorData & 0xe)    << 1) | ((u32ColorData & 0xe)   >> 2); // 3->5 bits
+		color.alpha = static_cast<uint8_t>((u32ColorData & 0x7000) >> 11);// 3->4 bits - note 0 at right
 	}
 
 	return color;
 }
 
-static Pixel32 getColorB(uint32 u32ColorData)
+static Pixel32 getColorB(uint32_t u32ColorData)
 {
 	Pixel32 color;
 
 	// Opaque Color Mode - RGB 555
 	if (u32ColorData & 0x80000000)
 	{
-		color.red   = (uint8)((u32ColorData & 0x7c000000) >> 26); // 5->5 bits
-		color.green = (uint8)((u32ColorData & 0x3e00000)  >> 21); // 5->5 bits
-		color.blue  = (uint8)((u32ColorData & 0x1f0000)   >> 16); // 5->5 bits
-		color.alpha = (uint8)0xf;// 0 bits
+		color.red   = static_cast<uint8_t>((u32ColorData & 0x7c000000) >> 26); // 5->5 bits
+		color.green = static_cast<uint8_t>((u32ColorData & 0x3e00000)  >> 21); // 5->5 bits
+		color.blue  = static_cast<uint8_t>((u32ColorData & 0x1f0000)   >> 16); // 5->5 bits
+		color.alpha = static_cast<uint8_t>(0xf);// 0 bits
 	}
 	// Transparent Color Mode - ARGB 3444
 	else
 	{
-		color.red   = (uint8)(((u32ColorData & 0xf000000)  >> 23) | ((u32ColorData & 0xf000000) >> 27)); // 4->5 bits
-		color.green = (uint8)(((u32ColorData & 0xf00000)   >> 19) | ((u32ColorData & 0xf00000)  >> 23)); // 4->5 bits
-		color.blue  = (uint8)(((u32ColorData & 0xf0000)    >> 15) | ((u32ColorData & 0xf0000)   >> 19)); // 4->5 bits
-		color.alpha = (uint8)((u32ColorData & 0x70000000) >> 27);// 3->4 bits - note 0 at right
+		color.red   = static_cast<uint8_t>(((u32ColorData & 0xf000000)  >> 23) | ((u32ColorData & 0xf000000) >> 27)); // 4->5 bits
+		color.green = static_cast<uint8_t>(((u32ColorData & 0xf00000)   >> 19) | ((u32ColorData & 0xf00000)  >> 23)); // 4->5 bits
+		color.blue  = static_cast<uint8_t>(((u32ColorData & 0xf0000)    >> 15) | ((u32ColorData & 0xf0000)   >> 19)); // 4->5 bits
+		color.alpha = static_cast<uint8_t>((u32ColorData & 0x70000000) >> 27);// 3->4 bits - note 0 at right
 	}
 
 	return color;
 }
 
 static void interpolateColors(Pixel32 P, Pixel32 Q, Pixel32 R, Pixel32 S,
-                              Pixel128S* pPixel, uint8 ui8Bpp)
+                              Pixel128S* pPixel, uint8_t ui8Bpp)
 {
-	uint32 ui32WordWidth = 4;
-	uint32 ui32WordHeight = 4;
+	uint32_t ui32WordWidth = 4;
+	uint32_t ui32WordHeight = 4;
 	if (ui8Bpp == 2)
 	{
 		ui32WordWidth = 8;
 	}
 
 	//Convert to int 32.
-	Pixel128S hP = {(int32)P.red, (int32)P.green, (int32)P.blue, (int32)P.alpha};
-	Pixel128S hQ = {(int32)Q.red, (int32)Q.green, (int32)Q.blue, (int32)Q.alpha};
-	Pixel128S hR = {(int32)R.red, (int32)R.green, (int32)R.blue, (int32)R.alpha};
-	Pixel128S hS = {(int32)S.red, (int32)S.green, (int32)S.blue, (int32)S.alpha};
+	Pixel128S hP = {static_cast<int32_t>(P.red), static_cast<int32_t>(P.green), static_cast<int32_t>(P.blue), static_cast<int32_t>(P.alpha)};
+	Pixel128S hQ = {static_cast<int32_t>(Q.red), static_cast<int32_t>(Q.green), static_cast<int32_t>(Q.blue), static_cast<int32_t>(Q.alpha)};
+	Pixel128S hR = {static_cast<int32_t>(R.red), static_cast<int32_t>(R.green), static_cast<int32_t>(R.blue), static_cast<int32_t>(R.alpha)};
+	Pixel128S hS = {static_cast<int32_t>(S.red), static_cast<int32_t>(S.green), static_cast<int32_t>(S.blue), static_cast<int32_t>(S.alpha)};
 
 	//Get vectors.
 	Pixel128S QminusP = {hQ.red - hP.red, hQ.green - hP.green, hQ.blue - hP.blue, hQ.alpha - hP.alpha};
@@ -132,10 +132,10 @@ static void interpolateColors(Pixel32 P, Pixel32 Q, Pixel32 R, Pixel32 S,
 
 			for (unsigned int y = 0; y < ui32WordHeight; y++)
 			{
-				pPixel[y * ui32WordWidth + x].red = (int32)((result.red >> 7) + (result.red >> 2));
-				pPixel[y * ui32WordWidth + x].green = (int32)((result.green >> 7) + (result.green >> 2));
-				pPixel[y * ui32WordWidth + x].blue = (int32)((result.blue >> 7) + (result.blue >> 2));
-				pPixel[y * ui32WordWidth + x].alpha = (int32)((result.alpha >> 5) + (result.alpha >> 1));
+				pPixel[y * ui32WordWidth + x].red = static_cast<int32_t>((result.red >> 7) + (result.red >> 2));
+				pPixel[y * ui32WordWidth + x].green = static_cast<int32_t>((result.green >> 7) + (result.green >> 2));
+				pPixel[y * ui32WordWidth + x].blue = static_cast<int32_t>((result.blue >> 7) + (result.blue >> 2));
+				pPixel[y * ui32WordWidth + x].alpha = static_cast<int32_t>((result.alpha >> 5) + (result.alpha >> 1));
 
 				result.red += dY.red;
 				result.green += dY.green;
@@ -164,10 +164,10 @@ static void interpolateColors(Pixel32 P, Pixel32 Q, Pixel32 R, Pixel32 S,
 
 			for (unsigned int x = 0; x < ui32WordWidth; x++)
 			{
-				pPixel[y * ui32WordWidth + x].red   = (int32)((result.red   >> 6) + (result.red   >> 1));
-				pPixel[y * ui32WordWidth + x].green = (int32)((result.green >> 6) + (result.green >> 1));
-				pPixel[y * ui32WordWidth + x].blue  = (int32)((result.blue  >> 6) + (result.blue  >> 1));
-				pPixel[y * ui32WordWidth + x].alpha = (int32)((result.alpha >> 4) + (result.alpha));
+				pPixel[y * ui32WordWidth + x].red   = static_cast<int32_t>((result.red   >> 6) + (result.red   >> 1));
+				pPixel[y * ui32WordWidth + x].green = static_cast<int32_t>((result.green >> 6) + (result.green >> 1));
+				pPixel[y * ui32WordWidth + x].blue  = static_cast<int32_t>((result.blue  >> 6) + (result.blue  >> 1));
+				pPixel[y * ui32WordWidth + x].alpha = static_cast<int32_t>((result.alpha >> 4) + (result.alpha));
 
 				result.red += dY.red;
 				result.green += dY.green;
@@ -188,11 +188,11 @@ static void interpolateColors(Pixel32 P, Pixel32 Q, Pixel32 R, Pixel32 S,
 	}
 }
 
-static void unpackModulations(const PVRTCWord& word, int offsetX, int offsetY, int32 i32ModulationValues[16][8],
-                              int32 i32ModulationModes[16][8], uint8 ui8Bpp)
+static void unpackModulations(const PVRTCWord& word, int offsetX, int offsetY, int32_t i32ModulationValues[16][8],
+                              int32_t i32ModulationModes[16][8], uint8_t ui8Bpp)
 {
-	uint32 WordModMode = word.u32ColorData & 0x1;
-	uint32 ModulationBits = word.u32ModulationData;
+	uint32_t WordModMode = word.u32ColorData & 0x1;
+	uint32_t ModulationBits = word.u32ModulationData;
 
 	// Unpack differently depending on 2bpp or 4bpp modes.
 	if (ui8Bpp == 2)
@@ -328,8 +328,8 @@ static void unpackModulations(const PVRTCWord& word, int offsetX, int offsetY, i
 	}
 }
 
-static int32 getModulationValues(int32 i32ModulationValues[16][8], int32 i32ModulationModes[16][8], uint32 xPos, uint32 yPos,
-                                 uint8 ui8Bpp)
+static int32_t getModulationValues(int32_t i32ModulationValues[16][8], int32_t i32ModulationModes[16][8], uint32_t xPos, uint32_t yPos,
+                                   uint8_t ui8Bpp)
 {
 	if (ui8Bpp == 2)
 	{
@@ -382,18 +382,18 @@ static int32 getModulationValues(int32 i32ModulationValues[16][8], int32 i32Modu
 static void pvrtcGetDecompressedPixels(const PVRTCWord& P, const PVRTCWord& Q,
                                        const PVRTCWord& R, const PVRTCWord& S,
                                        Pixel32* pColorData,
-                                       uint8 ui8Bpp)
+                                       uint8_t ui8Bpp)
 {
 	//4bpp only needs 8*8 values, but 2bpp needs 16*8, so rather than wasting processor time we just statically allocate 16*8.
-	int32 i32ModulationValues[16][8];
+	int32_t i32ModulationValues[16][8];
 	//Only 2bpp needs this.
-	int32 i32ModulationModes[16][8];
+	int32_t i32ModulationModes[16][8];
 	//4bpp only needs 16 values, but 2bpp needs 32, so rather than wasting processor time we just statically allocate 32.
 	Pixel128S upscaledColorA[32];
 	Pixel128S upscaledColorB[32];
 
-	uint32 ui32WordWidth = 4;
-	uint32 ui32WordHeight = 4;
+	uint32_t ui32WordWidth = 4;
+	uint32_t ui32WordHeight = 4;
 	if (ui8Bpp == 2)
 	{
 		ui32WordWidth = 8;
@@ -417,7 +417,7 @@ static void pvrtcGetDecompressedPixels(const PVRTCWord& P, const PVRTCWord& Q,
 	{
 		for (unsigned int x = 0; x < ui32WordWidth; x++)
 		{
-			int32 mod = getModulationValues(i32ModulationValues, i32ModulationModes, x + ui32WordWidth / 2, y + ui32WordHeight / 2, ui8Bpp);
+			int32_t mod = getModulationValues(i32ModulationValues, i32ModulationModes, x + ui32WordWidth / 2, y + ui32WordHeight / 2, ui8Bpp);
 			bool punchthroughAlpha = false;
 			if (mod > 10)
 			{
@@ -436,17 +436,17 @@ static void pvrtcGetDecompressedPixels(const PVRTCWord& P, const PVRTCWord& Q,
 			//Convert the 32bit precision Result to 8 bit per channel color.
 			if (ui8Bpp == 2)
 			{
-				pColorData[y * ui32WordWidth + x].red = (uint8)result.red;
-				pColorData[y * ui32WordWidth + x].green = (uint8)result.green;
-				pColorData[y * ui32WordWidth + x].blue = (uint8)result.blue;
-				pColorData[y * ui32WordWidth + x].alpha = (uint8)result.alpha;
+				pColorData[y * ui32WordWidth + x].red = static_cast<uint8_t>(result.red);
+				pColorData[y * ui32WordWidth + x].green = static_cast<uint8_t>(result.green);
+				pColorData[y * ui32WordWidth + x].blue = static_cast<uint8_t>(result.blue);
+				pColorData[y * ui32WordWidth + x].alpha = static_cast<uint8_t>(result.alpha);
 			}
 			else if (ui8Bpp == 4)
 			{
-				pColorData[y + x * ui32WordHeight].red = (uint8)result.red;
-				pColorData[y + x * ui32WordHeight].green = (uint8)result.green;
-				pColorData[y + x * ui32WordHeight].blue = (uint8)result.blue;
-				pColorData[y + x * ui32WordHeight].alpha = (uint8)result.alpha;
+				pColorData[y + x * ui32WordHeight].red = static_cast<uint8_t>(result.red);
+				pColorData[y + x * ui32WordHeight].green = static_cast<uint8_t>(result.green);
+				pColorData[y + x * ui32WordHeight].blue = static_cast<uint8_t>(result.blue);
+				pColorData[y + x * ui32WordHeight].alpha = static_cast<uint8_t>(result.alpha);
 			}
 		}
 	}
@@ -457,9 +457,9 @@ static unsigned int wrapWordIndex(unsigned int numWords, int word)
 	return ((word + numWords) % numWords);
 }
 
-/// <summary>Check that a number is an integer power of two, i.e.: 1, 2, 4, 8, ... etc.</summary>
+/// <summary>Check that a number is an Integer power of two, i.e.: 1, 2, 4, 8, ... etc.</summary>
 /// <param name="input">Value to be checked</param>
-/// <returns>true if the number is a non-zero, integer power of two, else false.</returns>
+/// <returns>true if the number is a non-zero, Integer power of two, else false.</returns>
 static bool isPowerOf2(unsigned int input)
 {
 	unsigned int minus1;
@@ -470,14 +470,14 @@ static bool isPowerOf2(unsigned int input)
 	return ((input | minus1) == (input ^ minus1));
 }
 
-static uint32 TwiddleUV(uint32 XSize, uint32 YSize, uint32 XPos, uint32 YPos)
+static uint32_t TwiddleUV(uint32_t XSize, uint32_t YSize, uint32_t XPos, uint32_t YPos)
 {
 	//Initially assume X is the larger size.
-	uint32 MinDimension = XSize;
-	uint32 MaxValue = YPos;
-	uint32 Twiddled = 0;
-	uint32 SrcBitPos = 1;
-	uint32 DstBitPos = 1;
+	uint32_t MinDimension = XSize;
+	uint32_t MaxValue = YPos;
+	uint32_t Twiddled = 0;
+	uint32_t SrcBitPos = 1;
+	uint32_t DstBitPos = 1;
 	int ShiftCount = 0;
 
 	//Check the sizes are valid.
@@ -521,10 +521,10 @@ static uint32 TwiddleUV(uint32 XSize, uint32 YSize, uint32 XPos, uint32 YPos)
 static void mapDecompressedData(Pixel32* pOutput, int width,
                                 const Pixel32* pWord,
                                 const PVRTCWordIndices& words,
-                                uint8 ui8Bpp)
+                                uint8_t ui8Bpp)
 {
-	uint32 ui32WordWidth = 4;
-	uint32 ui32WordHeight = 4;
+	uint32_t ui32WordWidth = 4;
+	uint32_t ui32WordHeight = 4;
 	if (ui8Bpp == 2)
 	{
 		ui32WordWidth = 8;
@@ -548,30 +548,30 @@ static void mapDecompressedData(Pixel32* pOutput, int width,
 		}
 	}
 }
-static int pvrtcDecompress(uint8* pCompressedData,
+static int pvrtcDecompress(uint8_t* pCompressedData,
                            Pixel32* pDecompressedData,
-                           uint32 ui32Width,
-                           uint32 ui32Height,
-                           uint8 ui8Bpp)
+                           uint32_t ui32Width,
+                           uint32_t ui32Height,
+                           uint8_t ui8Bpp)
 {
-	uint32 ui32WordWidth = 4;
-	uint32 ui32WordHeight = 4;
+	uint32_t ui32WordWidth = 4;
+	uint32_t ui32WordHeight = 4;
 	if (ui8Bpp == 2)
 	{
 		ui32WordWidth = 8;
 	}
 
-	uint32* pWordMembers = (uint32*)pCompressedData;
+	uint32_t* pWordMembers = (uint32_t*)pCompressedData;
 	Pixel32* pOutData = pDecompressedData;
 
 	// Calculate number of words
-	int i32NumXWords = (int)(ui32Width / ui32WordWidth);
-	int i32NumYWords = (int)(ui32Height / ui32WordHeight);
+	int i32NumXWords = static_cast<int>(ui32Width / ui32WordWidth);
+	int i32NumYWords = static_cast<int>(ui32Height / ui32WordHeight);
 
 	// Structs used for decompression
 	PVRTCWordIndices indices;
 	Pixel32* pPixels;
-	pPixels = (Pixel32*)malloc(ui32WordWidth * ui32WordHeight * sizeof(Pixel32));
+	pPixels = static_cast<Pixel32*>(malloc(ui32WordWidth * ui32WordHeight * sizeof(Pixel32)));
 
 	// For each row of words
 	for (int wordY = -1; wordY < i32NumYWords - 1; wordY++)
@@ -589,7 +589,7 @@ static int pvrtcDecompress(uint8* pCompressedData,
 			indices.S[1] = wrapWordIndex(i32NumYWords, wordY + 1);
 
 			//Work out the offsets into the twiddle structs, multiply by two as there are two members per word.
-			uint32 WordOffsets[4] =
+			uint32_t WordOffsets[4] =
 			{
 				TwiddleUV(i32NumXWords, i32NumYWords, indices.P[0], indices.P[1]) * 2,
 				TwiddleUV(i32NumXWords, i32NumYWords, indices.Q[0], indices.Q[1]) * 2,
@@ -599,14 +599,14 @@ static int pvrtcDecompress(uint8* pCompressedData,
 
 			//Access individual elements to fill out PVRTCWord
 			PVRTCWord P, Q, R, S;
-			P.u32ColorData = pWordMembers[WordOffsets[0] + 1];
-			P.u32ModulationData = pWordMembers[WordOffsets[0]];
-			Q.u32ColorData = pWordMembers[WordOffsets[1] + 1];
-			Q.u32ModulationData = pWordMembers[WordOffsets[1]];
-			R.u32ColorData = pWordMembers[WordOffsets[2] + 1];
-			R.u32ModulationData = pWordMembers[WordOffsets[2]];
-			S.u32ColorData = pWordMembers[WordOffsets[3] + 1];
-			S.u32ModulationData = pWordMembers[WordOffsets[3]];
+			P.u32ColorData = static_cast<uint32_t>(pWordMembers[WordOffsets[0] + 1]);
+			P.u32ModulationData = static_cast<uint32_t>(pWordMembers[WordOffsets[0]]);
+			Q.u32ColorData = static_cast<uint32_t>(pWordMembers[WordOffsets[1] + 1]);
+			Q.u32ModulationData = static_cast<uint32_t>(pWordMembers[WordOffsets[1]]);
+			R.u32ColorData = static_cast<uint32_t>(pWordMembers[WordOffsets[2] + 1]);
+			R.u32ModulationData = static_cast<uint32_t>(pWordMembers[WordOffsets[2]]);
+			S.u32ColorData = static_cast<uint32_t>(pWordMembers[WordOffsets[3] + 1]);
+			S.u32ModulationData = static_cast<uint32_t>(pWordMembers[WordOffsets[3]]);
 
 			// assemble 4 words into struct to get decompressed pixels from
 			pvrtcGetDecompressedPixels(P, Q, R, S, pPixels, ui8Bpp);
@@ -617,14 +617,14 @@ static int pvrtcDecompress(uint8* pCompressedData,
 
 	free(pPixels);
 	//Return the data size
-	return ui32Width * ui32Height / (uint32)(ui32WordWidth / 2);
+	return ui32Width * ui32Height / static_cast<uint32_t>((ui32WordWidth / 2));
 }
 
 int PVRTDecompressPVRTC(const void* pCompressedData,
                         int Do2bitMode,
                         int XDim,
                         int YDim,
-                        unsigned char* pResultImage)
+                        uint8_t* pResultImage)
 {
 	//Cast the output buffer to a Pixel32 pointer.
 	Pixel32* pDecompressedData = (Pixel32*)pResultImage;
@@ -636,11 +636,11 @@ int PVRTDecompressPVRTC(const void* pCompressedData,
 	//If the dimensions aren't correct, we need to create a new buffer instead of just using the provided one, as the buffer will overrun otherwise.
 	if (XTrueDim != XDim || YTrueDim != YDim)
 	{
-		pDecompressedData = (Pixel32*)malloc(XTrueDim * YTrueDim * sizeof(Pixel32));
+		pDecompressedData = static_cast<Pixel32*>(malloc(XTrueDim * YTrueDim * sizeof(Pixel32)));
 	}
 
 	//Decompress the surface.
-	int retval = pvrtcDecompress((uint8*)pCompressedData, pDecompressedData, XTrueDim, YTrueDim, (Do2bitMode == 1 ? 2 : 4));
+	int retval = pvrtcDecompress((uint8_t*)pCompressedData, pDecompressedData, XTrueDim, YTrueDim, (Do2bitMode == 1 ? 2 : 4));
 
 	//If the dimensions were too small, then copy the new buffer back into the output buffer.
 	if (XTrueDim != XDim || YTrueDim != YDim)
@@ -697,9 +697,11 @@ static unsigned int modifyPixel(int red, int green, int blue, int x, int y, unsi
 	return ((red << 16) + (green << 8) + blue) | 0xff000000;
 }
 
-static int ETCTextureDecompress(const void* pSrcData, int x, int y, const void* pDestData, int /*nMode*/)
+static int ETCTextureDecompress(const void* pSrcData, int x, int y, void* pDestData, int /*nMode*/)
 {
-	unsigned int blockTop, blockBot, *input = (unsigned int*)pSrcData, *output;
+	unsigned int* output;
+	unsigned int blockTop, blockBot;
+	const unsigned int* input = static_cast<const unsigned int*>(pSrcData);
 	unsigned char red1, green1, blue1, red2, green2, blue2;
 	bool bFlip, bDiff;
 	int modtable1, modtable2;
@@ -721,18 +723,18 @@ static int ETCTextureDecompress(const void* pSrcData, int x, int y, const void* 
 			{
 				// differential mode 5 color bits + 3 difference bits
 				// get base color for subblock 1
-				blue1 = (unsigned char)((blockTop & 0xf80000) >> 16);
-				green1 = (unsigned char)((blockTop & 0xf800) >> 8);
-				red1 = (unsigned char)(blockTop & 0xf8);
+				blue1 = static_cast<unsigned char>((blockTop & 0xf80000) >> 16);
+				green1 = static_cast<unsigned char>((blockTop & 0xf800) >> 8);
+				red1 = static_cast<unsigned char>(blockTop & 0xf8);
 
 				// get differential color for subblock 2
-				signed char blues = (signed char)(blue1 >> 3) + ((signed char)((blockTop & 0x70000) >> 11) >> 5);
-				signed char greens = (signed char)(green1 >> 3) + ((signed char)((blockTop & 0x700) >> 3) >> 5);
-				signed char reds = (signed char)(red1 >> 3) + ((signed char)((blockTop & 0x7) << 5) >> 5);
+				signed char blues = static_cast<signed char>(blue1 >> 3) + (static_cast<signed char>((blockTop & 0x70000) >> 11) >> 5);
+				signed char greens = static_cast<signed char>(green1 >> 3) + (static_cast<signed char>((blockTop & 0x700) >> 3) >> 5);
+				signed char reds = static_cast<signed char>(red1 >> 3) + (static_cast<signed char>((blockTop & 0x7) << 5) >> 5);
 
-				blue2 = (unsigned char)blues;
-				green2 = (unsigned char)greens;
-				red2 = (unsigned char)reds;
+				blue2 = static_cast<unsigned char>(blues);
+				green2 = static_cast<unsigned char>(greens);
+				red2 = static_cast<unsigned char>(reds);
 
 				red1 = red1 + (red1 >> 5);  // copy bits to lower sig
 				green1 = green1 + (green1 >> 5);  // copy bits to lower sig
@@ -746,19 +748,19 @@ static int ETCTextureDecompress(const void* pSrcData, int x, int y, const void* 
 			{
 				// individual mode 4 + 4 color bits
 				// get base color for subblock 1
-				blue1 = (unsigned char)((blockTop & 0xf00000) >> 16);
+				blue1 = static_cast<unsigned char>((blockTop & 0xf00000) >> 16);
 				blue1 = blue1 + (blue1 >> 4); // copy bits to lower sig
-				green1 = (unsigned char)((blockTop & 0xf000) >> 8);
+				green1 = static_cast<unsigned char>((blockTop & 0xf000) >> 8);
 				green1 = green1 + (green1 >> 4);  // copy bits to lower sig
-				red1 = (unsigned char)(blockTop & 0xf0);
+				red1 = static_cast<unsigned char>(blockTop & 0xf0);
 				red1 = red1 + (red1 >> 4);  // copy bits to lower sig
 
 				// get base color for subblock 2
-				blue2 = (unsigned char)((blockTop & 0xf0000) >> 12);
+				blue2 = static_cast<unsigned char>((blockTop & 0xf0000) >> 12);
 				blue2 = blue2 + (blue2 >> 4); // copy bits to lower sig
-				green2 = (unsigned char)((blockTop & 0xf00) >> 4);
+				green2 = static_cast<unsigned char>((blockTop & 0xf00) >> 4);
 				green2 = green2 + (green2 >> 4);  // copy bits to lower sig
-				red2 = (unsigned char)((blockTop & 0xf) << 4);
+				red2 = static_cast<unsigned char>((blockTop & 0xf) << 4);
 				red2 = red2 + (red2 >> 4);  // copy bits to lower sig
 			}
 			// get the modtables for each subblock
@@ -808,14 +810,14 @@ int PVRTDecompressETC(const void* pSrcData,
 	if (x < ETC_MIN_TEXWIDTH || y < ETC_MIN_TEXHEIGHT)
 	{
 		// decompress into a buffer big enough to take the minimum size
-		char* pTempBuffer = (char*)malloc(std::max<uint32>(x, ETC_MIN_TEXWIDTH) * std::max<uint32>(y, ETC_MIN_TEXHEIGHT) * 4);
-		i32read = ETCTextureDecompress(pSrcData, std::max<uint32>(x, ETC_MIN_TEXWIDTH), std::max<uint32>(y, ETC_MIN_TEXHEIGHT),
+		char* pTempBuffer = static_cast<char*>(malloc(std::max<uint32_t>(x, ETC_MIN_TEXWIDTH) * std::max<uint32_t>(y, ETC_MIN_TEXHEIGHT) * 4));
+		i32read = ETCTextureDecompress(pSrcData, std::max<uint32_t>(x, ETC_MIN_TEXWIDTH), std::max<uint32_t>(y, ETC_MIN_TEXHEIGHT),
 		                               pTempBuffer, nMode);
 
 		for (unsigned int i = 0; i < y; i++)
 		{
 			// copy from larger temp buffer to output data
-			memcpy((char*)(pDestData) + i * x * 4, pTempBuffer + std::max<uint32>(x, ETC_MIN_TEXWIDTH) * 4 * i, x * 4);
+			memcpy(static_cast<char*>(pDestData) + i * x * 4, pTempBuffer + std::max<uint32_t>(x, ETC_MIN_TEXWIDTH) * 4 * i, x * 4);
 		}
 
 		if (pTempBuffer) { free(pTempBuffer); }
@@ -826,7 +828,7 @@ int PVRTDecompressETC(const void* pSrcData,
 	}
 
 	// swap r and b channels
-	unsigned char* pSwap = (unsigned char*)pDestData, swap;
+	unsigned char* pSwap = static_cast<unsigned char*>(pDestData), swap;
 
 	for (unsigned int i = 0; i < y; i++)
 		for (unsigned int j = 0; j < x; j++)

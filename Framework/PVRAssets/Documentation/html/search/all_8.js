@@ -1,20 +1,14 @@
 var searchData=
 [
-  ['init',['init',['../classpvr_1_1_shadow_volume.html#a320fe9344c4ddf5084d0264f9963ec01',1,'pvr::ShadowVolume::init(const assets::Mesh &amp;mesh)'],['../classpvr_1_1_shadow_volume.html#a5673a414846d9ecb35085891aefc75db',1,'pvr::ShadowVolume::init(const byte *const data, uint32 numVertices, uint32 verticesStride, types::DataType vertexType, const byte *const faceData, uint32 numFaces, types::IndexType indexType)']]],
-  ['initcache',['initCache',['../classpvr_1_1assets_1_1_model.html#ab78c62c58d34db54afab9b9349bb29b7',1,'pvr::assets::Model']]],
-  ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_animation_1_1_internal_data.html',1,'pvr::assets::Animation']]],
-  ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html',1,'pvr::assets::Mesh']]],
-  ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_camera_1_1_internal_data.html',1,'pvr::assets::Camera']]],
-  ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html',1,'pvr::assets::Model']]],
-  ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a1bc4a9755a0dcddd6deb8b92735d1fe4',1,'pvr::assets::Model::InternalData']]],
-  ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_light_1_1_internal_data.html',1,'pvr::assets::Light']]],
-  ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html',1,'pvr::assets::Model::Material']]],
-  ['internaldata',['InternalData',['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html',1,'pvr::assets::Model::Node']]],
-  ['internaltype',['internalType',['../structpvr_1_1assets_1_1_effect_semantic_default_data_type_info.html#adca0e525f69bad11bc754e29f2bdabc7',1,'pvr::assets::EffectSemanticDefaultDataTypeInfo']]],
-  ['isindexdatainternal',['isIndexDataInternal',['../classpvr_1_1_shadow_volume.html#a40ffb015b1dd79b7bb42c483fa2e6d4e',1,'pvr::ShadowVolume']]],
-  ['isindexed',['isIndexed',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a6782580344ae20c13f045dde1cde2f0b',1,'pvr::assets::Mesh::MeshInfo']]],
-  ['isskinned',['isSkinned',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#ab8cb1a4aa1566cc2baa514eee5d3cbc4',1,'pvr::assets::Mesh::MeshInfo']]],
-  ['issupportedfile',['isSupportedFile',['../classpvr_1_1assets_1_1_p_o_d_reader.html#aaa32cd7609ce8ecd11597d8705878775',1,'pvr::assets::PODReader::isSupportedFile()'],['../classpvr_1_1assets_1_1asset_readers_1_1_texture_reader_p_v_r.html#a4ef054ea4a9f088528692a1a179d60c8',1,'pvr::assets::assetReaders::TextureReaderPVR::isSupportedFile()']]],
-  ['isvertexdatainternal',['isVertexDataInternal',['../classpvr_1_1_shadow_volume.html#a7f86cf53e2b01dddc022164f34666bf6',1,'pvr::ShadowVolume']]],
-  ['isvisible',['isVisible',['../classpvr_1_1_shadow_volume.html#a6a8b6d72d67fb9686000b3d8df1219f5',1,'pvr::ShadowVolume']]]
+  ['hasassetslefttoload',['hasAssetsLeftToLoad',['../classpvr_1_1assets_1_1pfx_1_1_pfx_parser.html#a7d384ea19998b8d6129595cd17f73d68',1,'pvr::assets::pfx::PfxParser::hasAssetsLeftToLoad()'],['../classpvr_1_1assets_1_1_p_o_d_reader.html#a5284298775be4f4b444347c4a4b2e516',1,'pvr::assets::PODReader::hasAssetsLeftToLoad()']]],
+  ['hasmaterialattribute',['hasMaterialAttribute',['../classpvr_1_1assets_1_1_model_1_1_material.html#a1b9a6d5dce40b967d8ee7596ed7f44ae',1,'pvr::assets::Model::Material']]],
+  ['hasmaterialtexture',['hasMaterialTexture',['../classpvr_1_1assets_1_1_model_1_1_material.html#a02708b93b06106e3e7e6d8cba41709a9',1,'pvr::assets::Model::Material']]],
+  ['hasmatrixanimation',['HasMatrixAnimation',['../classpvr_1_1assets_1_1_animation.html#a9abff7d20fb7b87dc30184d4292fb7e3a501d2cc6e93e916fd608ef50270fa5d8',1,'pvr::assets::Animation']]],
+  ['haspositionanimation',['HasPositionAnimation',['../classpvr_1_1assets_1_1_animation.html#a9abff7d20fb7b87dc30184d4292fb7e3a394cdd98eccfe3148112c40a9446afca',1,'pvr::assets::Animation']]],
+  ['hasrotationanimation',['HasRotationAnimation',['../classpvr_1_1assets_1_1_animation.html#a9abff7d20fb7b87dc30184d4292fb7e3afc4af834eaa3ee164c86e63889319414',1,'pvr::assets::Animation']]],
+  ['hasscaleanimation',['HasScaleAnimation',['../classpvr_1_1assets_1_1_animation.html#a9abff7d20fb7b87dc30184d4292fb7e3a9b72d779e733bca5d7b77d634b1d8537',1,'pvr::assets::Animation']]],
+  ['hassemantic',['hasSemantic',['../classpvr_1_1assets_1_1_model_1_1_material.html#a8ba859891790c0a1f4ef12a95fecd7e3',1,'pvr::assets::Model::Material']]],
+  ['headerattributes',['headerAttributes',['../structpvr_1_1assets_1_1effect_1_1_effect.html#a79ddc2057f6ad9c654da87f5ca9306af',1,'pvr::assets::effect::Effect']]],
+  ['height',['height',['../structpvr_1_1assets_1_1effect_1_1_texture_definition.html#a9ac06c4ac72e397027a65c4d4a50fdaf',1,'pvr::assets::effect::TextureDefinition']]],
+  ['helper_2eh',['Helper.h',['../_helper_8h.html',1,'']]]
 ];

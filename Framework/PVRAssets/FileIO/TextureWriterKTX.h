@@ -9,6 +9,8 @@
 #include "PVRCore/Texture.h"
 #include "PVRCore/IO/AssetWriter.h"
 #include "PVRCore/Texture/FileDefinesKTX.h"
+
+//!\cond NO_DOXYGEN
 namespace pvr {
 namespace assets {
 namespace assetWriters {
@@ -18,16 +20,17 @@ class TextureWriterKTX : public AssetWriter<Texture>
 public:
 	virtual bool writeAllAssets();
 
-	virtual uint32 assetsAddedSoFar();
+	virtual uint32_t assetsAddedSoFar();
 	virtual bool supportsMultipleAssets();
 
 	virtual bool                 canWriteAsset(const Texture& asset);
-	virtual std::vector<string> getSupportedFileExtensions();
-	virtual string              getWriterName();
-	virtual string              getWriterVersion();
+	virtual std::vector<std::string> getSupportedFileExtensions();
+	virtual std::string              getWriterName();
+	virtual std::string              getWriterVersion();
 private:
 	virtual bool addAssetToWrite(const Texture& asset);
 };
 }
 }
 }
+//!\endcond

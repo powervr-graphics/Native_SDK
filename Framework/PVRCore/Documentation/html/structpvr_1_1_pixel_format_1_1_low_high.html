@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -81,16 +81,29 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structpvr_1_1_pixel_format_1_1_low_high-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::PixelFormat::LowHigh Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>64 bit integer representation as 32 lower bits and 32 higher bits 
+<p>64 bit Integer representation as 32 lower bits and 32 higher bits 
  <a href="structpvr_1_1_pixel_format_1_1_low_high.html#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:ad82dc30eb3b8107138ccf824d6dba69d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad82dc30eb3b8107138ccf824d6dba69d"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_pixel_format_1_1_low_high.html#ad82dc30eb3b8107138ccf824d6dba69d">High</a></td></tr>
+<tr class="memdesc:ad82dc30eb3b8107138ccf824d6dba69d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Higher 32-bits of the pixel format storage. <br/></td></tr>
+<tr class="separator:ad82dc30eb3b8107138ccf824d6dba69d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8f0b5db541d8728199922f8a149758e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad8f0b5db541d8728199922f8a149758e"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_pixel_format_1_1_low_high.html#ad8f0b5db541d8728199922f8a149758e">Low</a></td></tr>
+<tr class="memdesc:ad8f0b5db541d8728199922f8a149758e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lower 32-bits of the pixel format storage. <br/></td></tr>
+<tr class="separator:ad8f0b5db541d8728199922f8a149758e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>64 bit integer representation as 32 lower bits and 32 higher bits</p>
+<div class="textblock"><p>64 bit Integer representation as 32 lower bits and 32 higher bits</p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/usr/buildxl/buildroot/sdk/branch/Framework/PVRCore/<a class="el" href="_pixel_format_8h_source.html">PixelFormat.h</a></li>
 </ul>

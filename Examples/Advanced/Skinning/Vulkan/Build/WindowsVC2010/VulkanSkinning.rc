@@ -71,7 +71,7 @@ DefaultFragShader_vk.spv		RCDATA		"..\\..\\DefaultFragShader_vk.spv"
 SkinnedVertShader_vk.spv		RCDATA		"..\\..\\SkinnedVertShader_vk.spv"
 SkinnedFragShader_vk.spv		RCDATA		"..\\..\\SkinnedFragShader_vk.spv"
 // RCDATA: Effects
-Skinning_vk.pfx		RCDATA		"..\\..\\Skinning_vk.pfx"
+Skinning.pfx		RCDATA		"..\\..\\Skinning.pfx"
 // RCDATA: Textures
 Tiles.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\Tiles.pvr"
 RobotDiffuse.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\RobotDiffuse.pvr"

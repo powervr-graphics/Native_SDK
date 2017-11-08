@@ -20,6 +20,7 @@
 	pvr::platform::CommandLineParser commandLine;    //!< Command line options passed on app launch
 }
 
+/// <summary>Terminates the application</summary>
 - (void) terminateApp;
 
 @end

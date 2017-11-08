@@ -104,47 +104,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
 <div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_node.html#a256148493d81740c594d10dc288e8d0c">   30</a></span>&#160;    <a class="code" href="classpvr_1_1_skip_graph_node.html#a256148493d81740c594d10dc288e8d0c">~SkipGraphNode</a>() { }</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_node.html#afa4afeb1cf784ae2d8adc2e43703d0ee">   34</a></span>&#160;    uint32 <a class="code" href="classpvr_1_1_skip_graph_node.html#afa4afeb1cf784ae2d8adc2e43703d0ee">getNumDependencies</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (uint32)_apDependencies.size(); }</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_node.html#a804ff8502a47fa3c61ebf554f88f33e0">   34</a></span>&#160;    uint32_t <a class="code" href="classpvr_1_1_skip_graph_node.html#a804ff8502a47fa3c61ebf554f88f33e0">getNumDependencies</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(_apDependencies.size()); }</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<<<<<<< HEAD
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">    \brief          Destructor.</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="code" href="classpvr_1_1_skip_graph_node.html#a256148493d81740c594d10dc288e8d0c">   39</a></span>&#160;    <a class="code" href="classpvr_1_1_skip_graph_node.html#a256148493d81740c594d10dc288e8d0c" title="Destructor. ">~SkipGraphNode</a>() { }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">    \return         Return number of dependencies</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">    \brief          Returns the number of dependencies referenced by this node.</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="code" href="classpvr_1_1_skip_graph_node.html#afa4afeb1cf784ae2d8adc2e43703d0ee">   45</a></span>&#160;    uint32 <a class="code" href="classpvr_1_1_skip_graph_node.html#afa4afeb1cf784ae2d8adc2e43703d0ee" title="Returns the number of dependencies referenced by this node. ">getNumDependencies</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> (uint32)m_apDependencies.size(); }</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">    \param[in]      id dependency id</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">    \return         Return a reference to dependency</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">    \brief          Get given dependency.</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="code" href="classpvr_1_1_skip_graph_node.html#a6e94f04fc6302116558b0ccaa02d3007">   52</a></span>&#160;    <a class="code" href="classpvr_1_1_skip_graph_node.html" title="Stores a pointer to the node&#39;s data and also uses a dynamic array to store pointer to nodes this node...">SkipGraphNode</a>&amp; <a class="code" href="classpvr_1_1_skip_graph_node.html#a6e94f04fc6302116558b0ccaa02d3007" title="Get given dependency. ">getDependency</a>(uint32 <span class="keywordtype">id</span>)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        assertion(<span class="keywordtype">id</span> &lt; (uint32)m_apDependencies.size(), <span class="stringliteral">&quot;SkipGraph::getDependency id out of range&quot;</span>);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordflow">return</span> *m_apDependencies[id];</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
-=======
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_node.html#a6e94f04fc6302116558b0ccaa02d3007">   39</a></span>&#160;    <a class="code" href="classpvr_1_1_skip_graph_node.html">SkipGraphNode</a>&amp; <a class="code" href="classpvr_1_1_skip_graph_node.html#a6e94f04fc6302116558b0ccaa02d3007">getDependency</a>(uint32 <span class="keywordtype">id</span>)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_node.html#a8097ef3c9e17339be75d79b96dfcd2e6">   39</a></span>&#160;    <a class="code" href="classpvr_1_1_skip_graph_node.html">SkipGraphNode</a>&amp; <a class="code" href="classpvr_1_1_skip_graph_node.html#a8097ef3c9e17339be75d79b96dfcd2e6">getDependency</a>(uint32_t <span class="keywordtype">id</span>)<span class="keyword"> const</span></div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        assertion(<span class="keywordtype">id</span> &lt; (uint32)_apDependencies.size(), <span class="stringliteral">&quot;SkipGraph::getDependency id out of range&quot;</span>);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        assertion(<span class="keywordtype">id</span> &lt; static_cast&lt;uint32_t&gt;(_apDependencies.size()), <span class="stringliteral">&quot;SkipGraph::getDependency id out of range&quot;</span>);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">return</span> *_apDependencies[id];</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
 <div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_node.html#af0fd74d7032c3c117b86ca2c7fc4227e">   49</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1_skip_graph_node.html#af0fd74d7032c3c117b86ca2c7fc4227e">addDependency</a>(<a class="code" href="classpvr_1_1_skip_graph_node.html">SkipGraphNode</a>* pDependentNode)</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        uint32 ui(0);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        uint32_t ui(0);</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordflow">if</span> (pDependentNode == <span class="keyword">this</span>)</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        {</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        }</div>
->>>>>>> 1776432f... 4.3
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordflow">if</span> (!pDependentNode)</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        {</div>
@@ -152,7 +128,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        }</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="comment">//Check the dependency doesn&#39;t already exist</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keywordflow">for</span> (ui = 0; ui &lt; (uint32)_apDependencies.size(); ++ui)</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keywordflow">for</span> (ui = 0; ui &lt; static_cast&lt;uint32_t&gt;(_apDependencies.size()); ++ui)</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        {</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;            <span class="keywordflow">if</span> (_apDependencies[ui] == pDependentNode)</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            {</div>
@@ -172,11 +148,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordtype">bool</span> addDependent(<a class="code" href="classpvr_1_1_skip_graph_node.html">SkipGraphNode</a>* pDependencyNode)</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    {</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        uint32 ui(0);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        uint32_t ui(0);</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <span class="keywordflow">if</span> (!pDependencyNode) { <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="comment">//  Check the dependency doesn&#39;t already exist.</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <span class="keywordflow">for</span> (ui = 0; ui &lt; (uint32)_apDependents.size(); ++ui)</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <span class="keywordflow">for</span> (ui = 0; ui &lt; static_cast&lt;uint32_t&gt;(_apDependents.size()); ++ui)</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        {</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;            <span class="keywordflow">if</span> (_apDependencies[ui] == pDependencyNode) { <span class="keywordflow">return</span> <span class="keyword">true</span>;  }</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        }</div>
@@ -218,7 +194,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
 <div class="line"><a name="l00152"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_root.html#a73624ca438a7739274fcafc32697a12f">  152</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1_skip_graph_root.html#a73624ca438a7739274fcafc32697a12f">addNode</a>(<span class="keyword">const</span> T&amp; data)</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    {</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <span class="keywordtype">size_t</span> hashed = hash&lt;string&gt;()(data-&gt;toString());</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <span class="keywordtype">size_t</span> hashed = hash&lt;std::string&gt;()(data-&gt;toString());</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        <span class="comment">//  First, search the hash table to see</span></div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        <span class="comment">//  if the node already exists.</span></div>
@@ -242,172 +218,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;        <a class="code" href="classpvr_1_1_skip_graph_node.html">SkipGraphNode&lt;T&gt;</a>* pNode(NULL);</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;        <a class="code" href="classpvr_1_1_skip_graph_node.html">SkipGraphNode&lt;T&gt;</a>* pDependantNode(NULL);</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;</div>
-<<<<<<< HEAD
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="comment">     \param[in] data The data of the node to be added</span></div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="comment">     \return    Return true if the node was found or was created successfully.</span></div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="comment">     \brief     Searches through the hash table to see if the added node already</span></div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="comment">                exists. If it doesn&#39;t, it creates a node.</span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno"><a class="code" href="classpvr_1_1_skip_graph_root.html#a73624ca438a7739274fcafc32697a12f">  188</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1_skip_graph_root.html#a73624ca438a7739274fcafc32697a12f" title="Searches through the hash table to see if the added node already exists. If it doesn&#39;t, it creates a node. ">addNode</a>(<span class="keyword">const</span> T&amp; data)</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    {</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        <span class="keywordtype">size_t</span> hashed = hash&lt;string&gt;()(data-&gt;toString());</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        <span class="comment">//  First, search the hash table to see</span></div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        <span class="comment">//  if the node already exists.</span></div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        <a class="code" href="classpvr_1_1_skip_graph_node.html" title="Stores a pointer to the node&#39;s data and also uses a dynamic array to store pointer to nodes this node...">SkipGraphNode&lt;T&gt;</a>* skipGraphNode(findNode(hashed));</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        <span class="keywordflow">if</span> (skipGraphNode == NULL)</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        {</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;            <span class="comment">//  The node wasn&#39;t found, so a new node needs to be</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;            <span class="comment">//  created.</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;            m_aHashTable.push_back(HashElement(hashed, data));</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;            ptrdiff_t iArrayElement = m_aHashTable.size() - 1;</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;            <span class="comment">//  Now point to the new instance.</span></div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;            skipGraphNode = &amp;m_aHashTable[iArrayElement].getNode();</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        }</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        <span class="keywordflow">return</span> skipGraphNode ? <span class="keyword">true</span> : <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    }</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="comment">    \brief          Adds a node dependency.</span></div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;<span class="comment">    \param[in]      nodeData data of the node to add dependency to</span></div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="comment">    \param[in]      dependantData dependency data to add</span></div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="comment">    \return         Return true if the node dependency has been added</span></div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00215"></a><span class="lineno"><a class="code" href="classpvr_1_1_skip_graph_root.html#aa56312ed223670757f26a3328db9cfdb">  215</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classpvr_1_1_skip_graph_root.html#aa56312ed223670757f26a3328db9cfdb" title="Adds a node dependency. ">addNodeDependency</a>(<span class="keyword">const</span> T&amp; nodeData, <span class="keyword">const</span> T&amp; dependantData)</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    {</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;        <a class="code" href="classpvr_1_1_skip_graph_node.html" title="Stores a pointer to the node&#39;s data and also uses a dynamic array to store pointer to nodes this node...">SkipGraphNode&lt;T&gt;</a>* pNode(NULL);</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        <a class="code" href="classpvr_1_1_skip_graph_node.html" title="Stores a pointer to the node&#39;s data and also uses a dynamic array to store pointer to nodes this node...">SkipGraphNode&lt;T&gt;</a>* pDependantNode(NULL);</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        pNode = findNode(nodeData);</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="keywordflow">if</span> (!pNode) { <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        pDependantNode = findNode(dependantData);</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        <span class="keywordflow">if</span> (!pDependantNode) {  <span class="keywordflow">return</span> <span class="keyword">false</span>;   }</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        <span class="comment">//  Nodes are not allowed to self reference</span></div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        <span class="keywordflow">if</span> (pNode == pDependantNode) {  <span class="keywordflow">return</span> <span class="keyword">false</span>;  }</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        pNode-&gt;<a class="code" href="classpvr_1_1_skip_graph_node.html#af0fd74d7032c3c117b86ca2c7fc4227e" title="Adds a dependency to this node. ">addDependency</a>(pDependantNode);</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    }</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="comment">     \brief     Get the total number of nodes in the skip graph.</span></div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="comment">     \return    Return the total number of nodes</span></div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno"><a class="code" href="classpvr_1_1_skip_graph_root.html#aeb28a8ee46757b2c36cfca6e1336dc82">  236</a></span>&#160;    uint32 <a class="code" href="classpvr_1_1_skip_graph_root.html#aeb28a8ee46757b2c36cfca6e1336dc82" title="Get the total number of nodes in the skip graph. ">getNumNodes</a>()<span class="keyword"> const </span>{    <span class="keywordflow">return</span> (uint32)m_aHashTable.size(); }</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="comment">     \brief Returns a sorted list of dependencies for the specified node.</span></div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="comment">            The list is ordered with the leaf nodes at the front, followed by nodes</span></div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="comment">            that depend on them and so forth until the root node is reached and added</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="comment">            at the end of the list.</span></div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="comment">     \param[in] aOutputArray    The dynamic array to store the sorted results in</span></div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="comment">     \param[in] nodeID  The ID of the root node for the dependency search</span></div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00246"></a><span class="lineno"><a class="code" href="classpvr_1_1_skip_graph_root.html#a83f4087d4362366e89b0d471598475f1">  246</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_skip_graph_root.html#a83f4087d4362366e89b0d471598475f1" title="Returns a sorted list of dependencies for the specified node. The list is ordered with the leaf nodes...">RetreiveSortedDependencyList</a>(std::vector&lt;T&gt;&amp; aOutputArray,</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;                                      <span class="keyword">const</span> uint32 nodeID)</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    {</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        assertion(nodeID &lt; (uint32)m_aHashTable.size(), <span class="stringliteral">&quot;SkipGraph::RetreiveSortedDependencyList nodeId out of range&quot;</span>);</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        recursiveSortedListAdd(aOutputArray, m_aHashTable[nodeID].getNode());</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    }</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="comment">     \brief Overloads operator[] to returns a handle to the node data for the specified ID.</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="comment">     \return Return handle to the node data</span></div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno"><a class="code" href="classpvr_1_1_skip_graph_root.html#a39b54367637bf4c4698b57b9c673c45e">  257</a></span>&#160;    T&amp; <a class="code" href="classpvr_1_1_skip_graph_root.html#a39b54367637bf4c4698b57b9c673c45e" title="Overloads operator[] to returns a handle to the node data for the specified ID. ">operator[]</a>(<span class="keyword">const</span> uint32 ui32NodeID) {    <span class="keywordflow">return</span> *(getNodeData(ui32NodeID));  }</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="comment">     \brief Overloads operator[] to returns a const handle to the node data for the specified ID.</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="comment">     \return Return handle to the node data</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno"><a class="code" href="classpvr_1_1_skip_graph_root.html#ae0083dd1271768d6a17bf1074bbe0e20">  263</a></span>&#160;    <span class="keyword">const</span> T&amp; <a class="code" href="classpvr_1_1_skip_graph_root.html#ae0083dd1271768d6a17bf1074bbe0e20" title="Overloads operator[] to returns a const handle to the node data for the specified ID...">operator[]</a>(<span class="keyword">const</span> uint32 ui32NodeID)<span class="keyword"> const </span>{    <span class="keywordflow">return</span> *(getNodeData(ui32NodeID));      }</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="comment">//-------------------------------------------------------------------------//</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="comment">     \brief     Recursively adds node dependencies to aOutputArray.</span></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="comment">                By doing so, aOutputArray will be ordered from leaf nodes to the root node</span></div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<span class="comment">                that started the recursive chain.</span></div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="comment">     \param[out] aOutputArray   The dynamic array to store the sorted results in</span></div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="comment">     \param[in] currentNode     The current node to process</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="keywordtype">void</span> recursiveSortedListAdd(std::vector&lt;T&gt;&amp; aOutputArray, <a class="code" href="classpvr_1_1_skip_graph_node.html" title="Stores a pointer to the node&#39;s data and also uses a dynamic array to store pointer to nodes this node...">SkipGraphNode&lt;T&gt;</a>&amp; currentNode)</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    {</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;        uint32 ui(0);</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;        <span class="comment">//  Recursively add dependancies first</span></div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;        <span class="keywordflow">for</span> (ui = 0; ui &lt; currentNode.<a class="code" href="classpvr_1_1_skip_graph_node.html#afa4afeb1cf784ae2d8adc2e43703d0ee" title="Returns the number of dependencies referenced by this node. ">getNumDependencies</a>(); ++ui)</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;        {</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;            recursiveSortedListAdd(aOutputArray, currentNode.<a class="code" href="classpvr_1_1_skip_graph_node.html#a6e94f04fc6302116558b0ccaa02d3007" title="Get given dependency. ">getDependency</a>(ui));</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        }</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;        <span class="comment">//  Then add this node to the array</span></div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;        aOutputArray.push_back(currentNode.<a class="code" href="classpvr_1_1_skip_graph_node.html#a9c807fe4d3e505969c528a155bb232c0" title="Get the data associated with this node. ">getData</a>());</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    }</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="comment">     \brief  Retrieve a handle to the specified node&#39;s data.</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="comment">     \param[in]     nodeID      The node&#39;s ID</span></div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="comment">     \return Return a handle to node&#39;s data, else return NULL if node not found</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    T* getNodeData(uint32 nodeID)</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    {</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;        assertion(nodeID &lt; (uint32)m_aHashTable.size(), <span class="stringliteral">&quot;SkipGraph::getNodeData nodeId out of range&quot;</span>);</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        <span class="keywordflow">return</span> &amp;m_aHashTable[nodeID].getNode().getData();</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    }</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="comment">     \brief Use the input hash to search the hash table and see if the</span></div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="comment">            node already exists. If it does, the function returns a pointer</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="comment">            to the node. If it doesn&#39;t, it returns NULL.</span></div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="comment">     \param[in] hash    The hash value to search with</span></div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;<span class="comment">     \return Return a handle to the found node, else return NULL</span></div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    SkipGraphNode&lt;T&gt;* findNode(<span class="keyword">const</span> <span class="keywordtype">size_t</span> hash)</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    {</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        <span class="keywordtype">int</span> i(0);</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        <span class="keywordtype">int</span> i32HashTableSize((int32)m_aHashTable.size());</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;        <span class="comment">//  A NULL hash means the node has not initialized</span></div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        <span class="comment">//  correctly.</span></div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        <span class="keywordflow">if</span> (hash == 0) { <span class="keywordflow">return</span> NULL; }</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;        <span class="comment">//  NOTE:</span></div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        <span class="comment">//  In the future, the hash table could be sorted from</span></div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        <span class="comment">//  lowest hash value to highest so that binary search could</span></div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;        <span class="comment">//  be used to find a given node. It should be possible to</span></div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        <span class="comment">//  use a bool (or some other mechanism) to toggle this form of search</span></div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        <span class="comment">//  (if the skip graph is small, it might be faster to just use a brute</span></div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        <span class="comment">//  force for loop to search through).</span></div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        <span class="keywordflow">for</span> (i = 0; i &lt; i32HashTableSize; ++i)</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        {</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;            <span class="keywordflow">if</span> (m_aHashTable[i].getHash()) {    <span class="keywordflow">return</span> &amp;m_aHashTable[i].getNode();  }</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        }</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;        <span class="comment">//  The element wasn&#39;t found, so return null.</span></div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;        <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    }</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    <span class="comment">/*!***************************************************************************</span></div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;<span class="comment">     \brief Use the input data to generate a hash and then search the hash table</span></div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="comment">            and see if the node already exists. If it does, the function returns a pointer.</span></div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;<span class="comment">            to the node. If it doesn&#39;t, it returns NULL.</span></div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="comment">     \param[in] data Data to use as a source for the hash</span></div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<span class="comment">     \return Return a handle to the found node, else return NULL</span></div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="comment">    *****************************************************************************/</span></div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    SkipGraphNode&lt;T&gt;* findNode(<span class="keyword">const</span> T&amp; data)</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    {</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        <span class="keywordflow">return</span> findNode(hash&lt;string&gt;()(data-&gt;toString()));</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    }</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;};</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;}</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;</div>
-=======
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        pNode = findNode(nodeData);</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;        <span class="keywordflow">if</span> (!pNode) { <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;</div>
@@ -420,90 +230,89 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    }</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
-<div class="line"><a name="l00196"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_root.html#aeb28a8ee46757b2c36cfca6e1336dc82">  196</a></span>&#160;    uint32 <a class="code" href="classpvr_1_1_skip_graph_root.html#aeb28a8ee46757b2c36cfca6e1336dc82">getNumNodes</a>()<span class="keyword"> const </span>{  <span class="keywordflow">return</span> (uint32)_aHashTable.size();  }</div>
+<div class="line"><a name="l00196"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_root.html#a292a004fbaf33d3e82bed676b5f5d612">  196</a></span>&#160;    uint32_t <a class="code" href="classpvr_1_1_skip_graph_root.html#a292a004fbaf33d3e82bed676b5f5d612">getNumNodes</a>()<span class="keyword"> const </span>{  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(_aHashTable.size());  }</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;</div>
-<div class="line"><a name="l00203"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_root.html#a83f4087d4362366e89b0d471598475f1">  203</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_skip_graph_root.html#a83f4087d4362366e89b0d471598475f1">RetreiveSortedDependencyList</a>(std::vector&lt;T&gt;&amp; aOutputArray,</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;                                      <span class="keyword">const</span> uint32 nodeID)</div>
+<div class="line"><a name="l00203"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_root.html#aa8844d21059d1c291150b6411f97b30a">  203</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_skip_graph_root.html#aa8844d21059d1c291150b6411f97b30a">RetreiveSortedDependencyList</a>(std::vector&lt;T&gt;&amp; aOutputArray,</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;                                      <span class="keyword">const</span> uint32_t nodeID)</div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    {</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        assertion(nodeID &lt; (uint32)_aHashTable.size(), <span class="stringliteral">&quot;SkipGraph::RetreiveSortedDependencyList nodeId out of range&quot;</span>);</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        assertion(nodeID &lt; static_cast&lt;uint32_t&gt;(_aHashTable.size()), <span class="stringliteral">&quot;SkipGraph::RetreiveSortedDependencyList nodeId out of range&quot;</span>);</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        recursiveSortedListAdd(aOutputArray, _aHashTable[nodeID].getNode());</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    }</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
-<div class="line"><a name="l00212"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_root.html#a39b54367637bf4c4698b57b9c673c45e">  212</a></span>&#160;    T&amp; <a class="code" href="classpvr_1_1_skip_graph_root.html#a39b54367637bf4c4698b57b9c673c45e">operator[]</a>(<span class="keyword">const</span> uint32 ui32NodeID) {  <span class="keywordflow">return</span> *(getNodeData(ui32NodeID));  }</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;</div>
-<div class="line"><a name="l00216"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_root.html#ae0083dd1271768d6a17bf1074bbe0e20">  216</a></span>&#160;    <span class="keyword">const</span> T&amp; <a class="code" href="classpvr_1_1_skip_graph_root.html#ae0083dd1271768d6a17bf1074bbe0e20">operator[]</a>(<span class="keyword">const</span> uint32 ui32NodeID)<span class="keyword"> const </span>{  <span class="keywordflow">return</span> *(getNodeData(ui32NodeID));    }</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="comment">//-------------------------------------------------------------------------//</span></div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    <span class="keywordtype">void</span> recursiveSortedListAdd(std::vector&lt;T&gt;&amp; aOutputArray, <a class="code" href="classpvr_1_1_skip_graph_node.html">SkipGraphNode&lt;T&gt;</a>&amp; currentNode)</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    {</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        uint32 ui(0);</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        <span class="comment">//  Recursively add dependancies first</span></div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        <span class="keywordflow">for</span> (ui = 0; ui &lt; currentNode.<a class="code" href="classpvr_1_1_skip_graph_node.html#afa4afeb1cf784ae2d8adc2e43703d0ee">getNumDependencies</a>(); ++ui)</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        {</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;            recursiveSortedListAdd(aOutputArray, currentNode.<a class="code" href="classpvr_1_1_skip_graph_node.html#a6e94f04fc6302116558b0ccaa02d3007">getDependency</a>(ui));</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        }</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;        <span class="comment">//  Then add this node to the array</span></div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;        aOutputArray.push_back(currentNode.<a class="code" href="classpvr_1_1_skip_graph_node.html#a9c807fe4d3e505969c528a155bb232c0">getData</a>());</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    }</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    T* getNodeData(uint32 nodeID)</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    {</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        assertion(nodeID &lt; (uint32)_aHashTable.size(), <span class="stringliteral">&quot;SkipGraph::getNodeData nodeId out of range&quot;</span>);</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        <span class="keywordflow">return</span> &amp;_aHashTable[nodeID].getNode().getData();</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    }</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    SkipGraphNode&lt;T&gt;* findNode(<span class="keyword">const</span> <span class="keywordtype">size_t</span> hash)</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    {</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        <span class="keywordtype">int</span> i(0);</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        <span class="keywordtype">int</span> i32HashTableSize((int32)_aHashTable.size());</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        <span class="comment">//  A NULL hash means the node has not initialized</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        <span class="comment">//  correctly.</span></div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        <span class="keywordflow">if</span> (hash == 0) { <span class="keywordflow">return</span> NULL; }</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        <span class="comment">//  NOTE:</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        <span class="comment">//  In the future, the hash table could be sorted from</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        <span class="comment">//  lowest hash value to highest so that binary search could</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        <span class="comment">//  be used to find a given node. It should be possible to</span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        <span class="comment">//  use a bool (or some other mechanism) to toggle this form of search</span></div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="comment">//  (if the skip graph is small, it might be faster to just use a brute</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        <span class="comment">//  force for loop to search through).</span></div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        <span class="keywordflow">for</span> (i = 0; i &lt; i32HashTableSize; ++i)</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        {</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;            <span class="keywordflow">if</span> (_aHashTable[i].getHash()) { <span class="keywordflow">return</span> &amp;_aHashTable[i].getNode(); }</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        }</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        <span class="comment">//  The element wasn&#39;t found, so return null.</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;        <span class="keywordflow">return</span> NULL;</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    }</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    SkipGraphNode&lt;T&gt;* findNode(<span class="keyword">const</span> T&amp; data)</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;    {</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        <span class="keywordflow">return</span> findNode(hash&lt;string&gt;()(data-&gt;toString()));</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    }</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;};</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;}</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;</div>
+<div class="line"><a name="l00213"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_root.html#a1e7a0d271d296ecf6438ccc955b62d6c">  213</a></span>&#160;    T&amp; <a class="code" href="classpvr_1_1_skip_graph_root.html#a1e7a0d271d296ecf6438ccc955b62d6c">operator[]</a>(uint32_t nodeId) {  <span class="keywordflow">return</span> *(getNodeData(nodeId));  }</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;</div>
+<div class="line"><a name="l00218"></a><span class="lineno"><a class="line" href="classpvr_1_1_skip_graph_root.html#a4dc9b46a1e5833000d6f4c9938cee66b">  218</a></span>&#160;    <span class="keyword">const</span> T&amp; <a class="code" href="classpvr_1_1_skip_graph_root.html#a4dc9b46a1e5833000d6f4c9938cee66b">operator[]</a>(uint32_t nodeId)<span class="keyword"> const </span>{  <span class="keywordflow">return</span> *(getNodeData(nodeId)); }</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;<span class="comment">//-------------------------------------------------------------------------//</span></div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    <span class="keywordtype">void</span> recursiveSortedListAdd(std::vector&lt;T&gt;&amp; aOutputArray, <a class="code" href="classpvr_1_1_skip_graph_node.html">SkipGraphNode&lt;T&gt;</a>&amp; currentNode)</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    {</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        uint32_t ui(0);</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        <span class="comment">//  Recursively add dependancies first</span></div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        <span class="keywordflow">for</span> (ui = 0; ui &lt; currentNode.<a class="code" href="classpvr_1_1_skip_graph_node.html#a804ff8502a47fa3c61ebf554f88f33e0">getNumDependencies</a>(); ++ui)</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        {</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;            recursiveSortedListAdd(aOutputArray, currentNode.<a class="code" href="classpvr_1_1_skip_graph_node.html#a8097ef3c9e17339be75d79b96dfcd2e6">getDependency</a>(ui));</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;        }</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;        <span class="comment">//  Then add this node to the array</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        aOutputArray.push_back(currentNode.<a class="code" href="classpvr_1_1_skip_graph_node.html#a9c807fe4d3e505969c528a155bb232c0">getData</a>());</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    }</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    T* getNodeData(uint32_t nodeID)</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    {</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        assertion(nodeID &lt; static_cast&lt;uint32_t&gt;(_aHashTable.size()), <span class="stringliteral">&quot;SkipGraph::getNodeData nodeId out of range&quot;</span>);</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        <span class="keywordflow">return</span> &amp;_aHashTable[nodeID].getNode().getData();</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    }</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    SkipGraphNode&lt;T&gt;* findNode(<span class="keyword">const</span> <span class="keywordtype">size_t</span> hash)</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    {</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        <span class="keywordtype">int</span> i(0);</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        <span class="keywordtype">int</span> i32HashTableSize(static_cast&lt;int32_t&gt;(_aHashTable.size()));</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        <span class="comment">//  A NULL hash means the node has not initialized</span></div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        <span class="comment">//  correctly.</span></div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        <span class="keywordflow">if</span> (hash == 0) { <span class="keywordflow">return</span> NULL; }</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        <span class="comment">//  NOTE:</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        <span class="comment">//  In the future, the hash table could be sorted from</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        <span class="comment">//  lowest hash value to highest so that binary search could</span></div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="comment">//  be used to find a given node. It should be possible to</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        <span class="comment">//  use a bool (or some other mechanism) to toggle this form of search</span></div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        <span class="comment">//  (if the skip graph is small, it might be faster to just use a brute</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        <span class="comment">//  force for loop to search through).</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        <span class="keywordflow">for</span> (i = 0; i &lt; i32HashTableSize; ++i)</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        {</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;            <span class="keywordflow">if</span> (_aHashTable[i].getHash()) { <span class="keywordflow">return</span> &amp;_aHashTable[i].getNode(); }</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        }</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        <span class="comment">//  The element wasn&#39;t found, so return null.</span></div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;        <span class="keywordflow">return</span> NULL;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    }</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    SkipGraphNode&lt;T&gt;* findNode(<span class="keyword">const</span> T&amp; data)</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    {</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;        <span class="keywordflow">return</span> findNode(hash&lt;std::string&gt;()(data-&gt;toString()));</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    }</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;};</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;}</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;</div>
 <div class="ttc" id="classpvr_1_1_skip_graph_node_html_af0fd74d7032c3c117b86ca2c7fc4227e"><div class="ttname"><a href="classpvr_1_1_skip_graph_node.html#af0fd74d7032c3c117b86ca2c7fc4227e">pvr::SkipGraphNode::addDependency</a></div><div class="ttdeci">bool addDependency(SkipGraphNode *pDependentNode)</div><div class="ttdoc">Adds a dependency to this node.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:49</div></div>
 <div class="ttc" id="classpvr_1_1_skip_graph_root_html"><div class="ttname"><a href="classpvr_1_1_skip_graph_root.html">pvr::SkipGraphRoot</a></div><div class="ttdoc">This class is the entry point for creating and accessing the elements of a skip graph. It uses a hash table to store the nodes of the structure and a hash value that allows fast searching of the skip graph. </div><div class="ttdef"><b>Definition:</b> SkipGraph.h:108</div></div>
+<div class="ttc" id="classpvr_1_1_skip_graph_root_html_a4dc9b46a1e5833000d6f4c9938cee66b"><div class="ttname"><a href="classpvr_1_1_skip_graph_root.html#a4dc9b46a1e5833000d6f4c9938cee66b">pvr::SkipGraphRoot::operator[]</a></div><div class="ttdeci">const T &amp; operator[](uint32_t nodeId) const </div><div class="ttdoc">Overloads operator[] to returns a const handle to the node data for the specified ID...</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:218</div></div>
 <div class="ttc" id="classpvr_1_1_skip_graph_node_html_a2d543f106e7c7cc0babe657accec67c9"><div class="ttname"><a href="classpvr_1_1_skip_graph_node.html#a2d543f106e7c7cc0babe657accec67c9">pvr::SkipGraphNode::SkipGraphNode</a></div><div class="ttdeci">SkipGraphNode(const T &amp;data)</div><div class="ttdoc">Overloaded constructor.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:27</div></div>
-<div class="ttc" id="classpvr_1_1_skip_graph_root_html_a39b54367637bf4c4698b57b9c673c45e"><div class="ttname"><a href="classpvr_1_1_skip_graph_root.html#a39b54367637bf4c4698b57b9c673c45e">pvr::SkipGraphRoot::operator[]</a></div><div class="ttdeci">T &amp; operator[](const uint32 ui32NodeID)</div><div class="ttdoc">Overloads operator[] to returns a handle to the node data for the specified ID.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:212</div></div>
-<div class="ttc" id="classpvr_1_1_skip_graph_root_html_aeb28a8ee46757b2c36cfca6e1336dc82"><div class="ttname"><a href="classpvr_1_1_skip_graph_root.html#aeb28a8ee46757b2c36cfca6e1336dc82">pvr::SkipGraphRoot::getNumNodes</a></div><div class="ttdeci">uint32 getNumNodes() const </div><div class="ttdoc">Get the total number of nodes in the skip graph.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:196</div></div>
-<div class="ttc" id="classpvr_1_1_skip_graph_node_html_a6e94f04fc6302116558b0ccaa02d3007"><div class="ttname"><a href="classpvr_1_1_skip_graph_node.html#a6e94f04fc6302116558b0ccaa02d3007">pvr::SkipGraphNode::getDependency</a></div><div class="ttdeci">SkipGraphNode &amp; getDependency(uint32 id) const </div><div class="ttdoc">Get given dependency.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:39</div></div>
-<div class="ttc" id="classpvr_1_1_skip_graph_node_html_afa4afeb1cf784ae2d8adc2e43703d0ee"><div class="ttname"><a href="classpvr_1_1_skip_graph_node.html#afa4afeb1cf784ae2d8adc2e43703d0ee">pvr::SkipGraphNode::getNumDependencies</a></div><div class="ttdeci">uint32 getNumDependencies() const </div><div class="ttdoc">Returns the number of dependencies referenced by this node.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:34</div></div>
 <div class="ttc" id="classpvr_1_1_skip_graph_node_html"><div class="ttname"><a href="classpvr_1_1_skip_graph_node.html">pvr::SkipGraphNode</a></div><div class="ttdoc">Stores a pointer to the node&#39;s data and also uses a dynamic array to store pointer to nodes this node...</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:14</div></div>
-<div class="ttc" id="classpvr_1_1_skip_graph_root_html_a83f4087d4362366e89b0d471598475f1"><div class="ttname"><a href="classpvr_1_1_skip_graph_root.html#a83f4087d4362366e89b0d471598475f1">pvr::SkipGraphRoot::RetreiveSortedDependencyList</a></div><div class="ttdeci">void RetreiveSortedDependencyList(std::vector&lt; T &gt; &amp;aOutputArray, const uint32 nodeID)</div><div class="ttdoc">Returns a sorted list of dependencies for the specified node. The list is ordered with the leaf nodes...</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:203</div></div>
 <div class="ttc" id="classpvr_1_1_skip_graph_root_html_aa56312ed223670757f26a3328db9cfdb"><div class="ttname"><a href="classpvr_1_1_skip_graph_root.html#aa56312ed223670757f26a3328db9cfdb">pvr::SkipGraphRoot::addNodeDependency</a></div><div class="ttdeci">bool addNodeDependency(const T &amp;nodeData, const T &amp;dependantData)</div><div class="ttdoc">Adds a node dependency.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:177</div></div>
+<div class="ttc" id="classpvr_1_1_skip_graph_root_html_a292a004fbaf33d3e82bed676b5f5d612"><div class="ttname"><a href="classpvr_1_1_skip_graph_root.html#a292a004fbaf33d3e82bed676b5f5d612">pvr::SkipGraphRoot::getNumNodes</a></div><div class="ttdeci">uint32_t getNumNodes() const </div><div class="ttdoc">Get the total number of nodes in the skip graph.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:196</div></div>
 <div class="ttc" id="classpvr_1_1_skip_graph_node_html_a1ad2b152cae6f895dcb69806f8d08a34"><div class="ttname"><a href="classpvr_1_1_skip_graph_node.html#a1ad2b152cae6f895dcb69806f8d08a34">pvr::SkipGraphNode::SkipGraphNode</a></div><div class="ttdeci">SkipGraphNode()</div><div class="ttdoc">Constructor.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:23</div></div>
 <div class="ttc" id="_asset_includes_8h_html"><div class="ttname"><a href="_asset_includes_8h.html">AssetIncludes.h</a></div><div class="ttdoc">Includes files commonly required for PVRAssets code files. Include PVRAssets.h instead to use PVRAsse...</div></div>
 <div class="ttc" id="classpvr_1_1_skip_graph_node_html_a9c807fe4d3e505969c528a155bb232c0"><div class="ttname"><a href="classpvr_1_1_skip_graph_node.html#a9c807fe4d3e505969c528a155bb232c0">pvr::SkipGraphNode::getData</a></div><div class="ttdeci">T &amp; getData()</div><div class="ttdoc">Get the data associated with this node.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:81</div></div>
-<div class="ttc" id="classpvr_1_1_skip_graph_root_html_ae0083dd1271768d6a17bf1074bbe0e20"><div class="ttname"><a href="classpvr_1_1_skip_graph_root.html#ae0083dd1271768d6a17bf1074bbe0e20">pvr::SkipGraphRoot::operator[]</a></div><div class="ttdeci">const T &amp; operator[](const uint32 ui32NodeID) const </div><div class="ttdoc">Overloads operator[] to returns a const handle to the node data for the specified ID...</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:216</div></div>
+<div class="ttc" id="classpvr_1_1_skip_graph_node_html_a804ff8502a47fa3c61ebf554f88f33e0"><div class="ttname"><a href="classpvr_1_1_skip_graph_node.html#a804ff8502a47fa3c61ebf554f88f33e0">pvr::SkipGraphNode::getNumDependencies</a></div><div class="ttdeci">uint32_t getNumDependencies() const </div><div class="ttdoc">Returns the number of dependencies referenced by this node.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:34</div></div>
+<div class="ttc" id="classpvr_1_1_skip_graph_root_html_aa8844d21059d1c291150b6411f97b30a"><div class="ttname"><a href="classpvr_1_1_skip_graph_root.html#aa8844d21059d1c291150b6411f97b30a">pvr::SkipGraphRoot::RetreiveSortedDependencyList</a></div><div class="ttdeci">void RetreiveSortedDependencyList(std::vector&lt; T &gt; &amp;aOutputArray, const uint32_t nodeID)</div><div class="ttdoc">Returns a sorted list of dependencies for the specified node. The list is ordered with the leaf nodes...</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:203</div></div>
+<div class="ttc" id="classpvr_1_1_skip_graph_root_html_a1e7a0d271d296ecf6438ccc955b62d6c"><div class="ttname"><a href="classpvr_1_1_skip_graph_root.html#a1e7a0d271d296ecf6438ccc955b62d6c">pvr::SkipGraphRoot::operator[]</a></div><div class="ttdeci">T &amp; operator[](uint32_t nodeId)</div><div class="ttdoc">Overloads operator[] to returns a handle to the node data for the specified ID.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:213</div></div>
 <div class="ttc" id="classpvr_1_1_skip_graph_root_html_a73624ca438a7739274fcafc32697a12f"><div class="ttname"><a href="classpvr_1_1_skip_graph_root.html#a73624ca438a7739274fcafc32697a12f">pvr::SkipGraphRoot::addNode</a></div><div class="ttdeci">bool addNode(const T &amp;data)</div><div class="ttdoc">Searches through the hash table to see if the added node already exists. If it doesn&#39;t, it creates a node. </div><div class="ttdef"><b>Definition:</b> SkipGraph.h:152</div></div>
+<div class="ttc" id="classpvr_1_1_skip_graph_node_html_a8097ef3c9e17339be75d79b96dfcd2e6"><div class="ttname"><a href="classpvr_1_1_skip_graph_node.html#a8097ef3c9e17339be75d79b96dfcd2e6">pvr::SkipGraphNode::getDependency</a></div><div class="ttdeci">SkipGraphNode &amp; getDependency(uint32_t id) const </div><div class="ttdoc">Get given dependency.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:39</div></div>
 <div class="ttc" id="classpvr_1_1_skip_graph_node_html_a256148493d81740c594d10dc288e8d0c"><div class="ttname"><a href="classpvr_1_1_skip_graph_node.html#a256148493d81740c594d10dc288e8d0c">pvr::SkipGraphNode::~SkipGraphNode</a></div><div class="ttdeci">~SkipGraphNode()</div><div class="ttdoc">Destructor.</div><div class="ttdef"><b>Definition:</b> SkipGraph.h:30</div></div>
->>>>>>> 1776432f... 4.3
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

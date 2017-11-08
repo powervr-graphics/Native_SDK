@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>The PowerVR SDK Browser</title>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="./images/img-icon.png">
+</head>
+
+<body>
+	<div id="GlobalHeaderContainer">
+		<div id="GlobalHeader">
+			<div class="logo">
+				<a href="http://www.powervrinsider.com" target="_blank"><img src="./images/PVRlogo.png" width="40%" height="40%" /></a>
+            </div>
+			<div class="sitetitle">PowerVR SDK Browser</div>
+		</div>
+	</div>
+	<div id="NavContainer">
+		<nav>
+			<div class="navlink">
+				<a href="Home.html">Home</a>
+			</div>
+			<div class="navlink">
+				<a href="GettingStarted.html" class="current">Getting Started</a>
+			</div>
+			<div class="navlink">
+				<a href="Examples.html">Examples</a>
+			</div>
+			<div class="navlink">
+				<a href="Framework.html">Framework</a>
+			</div>
+			<div class="navlink">
+				<a href="Documentation.html">Documentation</a>
+			</div>
+			<div class="navlink">
+				<a href="PowerVRTools.html">PowerVR Tools</a>
+			</div>
+			<div class="navlink">
+				<a href="Licence.html">EULA</a>
+			</div>
+			<div class="navlink">
+				<a href="Contact.html">Contact Us</a>
+			</div>
+		</nav>
+	</div>
+	
+<!--API_TAB-->
+<div id="SubNavContainer"><nav><div class="subnavlink"><a href="./Android.html">Android</a></div>
+<div class="subnavlink"><a href="./iOS.html">iOS</a></div>
+<div class="subnavlink"><a href="./Windows.html">Windows</a></div>
+<div class="subnavlink"><a href="./OSX.html">OS X</a></div>
+<div class="subnavlink"><a href="./Linux.html">Linux</a></div>
+<div class="subnavlink"><a href="./WebGL.html">WebGL</a></div>
+</nav></div>
+
+	<div class="content">
+		<div id="windows">
+		<div id="webgl">
+		<h1>WebGL</h1>	
+			<p>The steps below highlight the procedure for setting up the WebGL SDK:</p>
+			<ol>
+				<li>
+				<p>To host and run the WebGL SDK you will need a web server. Since the WebGL SDK only uses HTML5 and JavaScript (no dynamically generated content) any web server capable of serving HTML is suitable for hosting it. The WebGL SDK does not require building.</p>
+				</li>
+				<li>
+				<p>To use the WebGL SDK, copy across the contents of the WebGL package to an appropriate location in your web server tree (in some cases, also configure your web server to serve it), keeping the folder structure intact.</p> 
+				</li>
+				<li>
+				<p>You can then navigate to and launch the required example from the SDK Browser.</p>
+				</li>
+			</ol>
+			<p><em><strong>Note:</strong> If you do not have a web server available, you will need to install and configure one, as appropriate. For example, on Windows, IIS is usually built in and may require to be enabled and configured. On OS X, Apache may require to be enabled and configured. Most Linux distributions will contain a web server such as Apache. Alternatively, you may want to download, install and configure another web server depending on what your specific needs are. A useful <a href="http://en.wikipedia.org/wiki/Comparison_of_web_server_software" target="_blank">comparison of web server software</a> is available in Wikipedia.</em></p>
+		</div>
+		
+</body>
+
+</html>

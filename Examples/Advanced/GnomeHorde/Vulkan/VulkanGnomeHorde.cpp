@@ -1,7 +1,14 @@
-#include "PVRApi/PVRApi.h"
-#include "PVRCore/Threading.h"
+/*!*********************************************************************************************************************
+\File         VulkanGnomeHorde.cpp
+\Title        GnomeHorde
+\Author       PowerVR by Imagination, Developer Technology Team
+\Copyright    Copyright (c) Imagination Technologies Limited.
+\brief        Multithreaded command buffer generation. Requires the PVRShell.
+***********************************************************************************************************************/
 #include "PVRShell/PVRShell.h"
-#include "PVREngineUtils/PVREngineUtils.h"
+#include "PVRVk/ApiObjectsVk.h"
+#include "PVRUtils/PVRUtilsVk.h"
+#include "PVRCore/Threading.h"
 
 /*///////////////////////////////////////////////////////////////////////////////
 THE GNOME HORDE - MULTITHREADED RENDERING ON THE VULKAN API USING THE POWERVR
@@ -36,8 +43,6 @@ using glm::ivec3;
 using glm::ivec4;
 using glm::mat3;
 using glm::mat4;
-
-using namespace pvr;
 
 enum CONSTANTS
 {
@@ -74,22 +79,31 @@ const std::array<AppModeParameter, 4> DemoModes =
 	}
 };
 
+struct TileProcessingResult
+{
+	int itemsDiscarded;
+	ivec2 itemToDraw;
+	TileProcessingResult() : itemToDraw(-1, -1), itemsDiscarded(0) {}
+	void reset() { itemToDraw = ivec2(-1, -1); itemsDiscarded = 0; }
+};
+
 class VulkanGnomeHorde;
 //This queue is to enqueue tasks used for the "determine visibility" producer queues
 //There, our "task" granularity is a "line" of tiles to process.
-typedef LockedQueue<int32> LineTasksQueue;
+typedef pvr::LockedQueue<int32_t> LineTasksQueue;
 
 //This queue is used to create command buffers, so its task granularity is a tile.
 //It is Used for the "create command buffers for tile XXX" queues
-typedef LockedQueue<glm::ivec2> TileTasksQueue;
+typedef pvr::LockedQueue<TileProcessingResult> TileResultsQueue;
 
 class GnomeHordeWorkerThread
 {
 public:
 	GnomeHordeWorkerThread() : id(-1), running(false) {}
+	std::string myType;
 	std::thread thread;
 	VulkanGnomeHorde* app;
-	volatile uint8 id;
+	volatile uint8_t id;
 	volatile bool running;
 	void addlog(const std::string& str);
 	void run();
@@ -99,54 +113,57 @@ public:
 class GnomeHordeTileThreadData : public GnomeHordeWorkerThread
 {
 public:
-	struct ApiObjects
+	struct ThreadApiObjects
 	{
-		std::vector<api::CommandPool> cmdPools;
-		TileTasksQueue::ConsumerToken processQConsumerToken;
-		TileTasksQueue::ProducerToken drawQProducerToken;
-		uint8 lastSwapIndex;
-		std::array<std::vector<api::SecondaryCommandBuffer>, MAX_NUMBER_OF_SWAP_IMAGES> preFreeCmdBuffers;
-		std::array<std::vector<api::SecondaryCommandBuffer>, MAX_NUMBER_OF_SWAP_IMAGES> freeCmdBuffers;
-		ApiObjects(TileTasksQueue& processQ, TileTasksQueue& drawQ) :
+		std::vector<pvrvk::CommandPool> commandPools;
+		std::mutex poolMutex;
+		TileResultsQueue::ConsumerToken processQConsumerToken;
+		TileResultsQueue::ProducerToken drawQProducerToken;
+		uint8_t lastSwapIndex;
+		std::array<std::vector<pvrvk::SecondaryCommandBuffer>, MAX_NUMBER_OF_SWAP_IMAGES> preFreeCmdBuffers;
+		std::array<std::vector<pvrvk::SecondaryCommandBuffer>, MAX_NUMBER_OF_SWAP_IMAGES> freeCmdBuffers;
+		ThreadApiObjects(TileResultsQueue& processQ, TileResultsQueue& drawQ) :
 			processQConsumerToken(processQ.getConsumerToken()), drawQProducerToken(drawQ.getProducerToken()), lastSwapIndex(-1)
 		{
 		}
 	};
-	std::mutex cmdMutex;
-	std::auto_ptr<ApiObjects> apiObj;
+	GnomeHordeTileThreadData() { myType = "Tile Thread"; }
+	std::auto_ptr<ThreadApiObjects> threadApiObj;
 
 	bool doWork();
 
-	api::SecondaryCommandBuffer getFreeCommandBuffer(uint8 swapIndex);
+	pvrvk::SecondaryCommandBuffer getFreeCommandBuffer(uint8_t swapchainIndex);
 
-	void garbageCollectPreviousFrameFreeCommandBuffers(uint8 swapIndex);
+	void garbageCollectPreviousFrameFreeCommandBuffers(uint8_t swapchainIndex);
 
-	void freeCommandBuffer(const api::SecondaryCommandBuffer& cmdBuff, uint8 swapIndex);
+	void freeCommandBuffer(const pvrvk::SecondaryCommandBuffer& commandBuff, uint8_t swapchainIndex);
 
-	void generateTileBuffer(const ivec2* tiles, uint32 numTiles);
+	void generateTileBuffer(const TileProcessingResult* tiles, uint32_t numTiles);
 
 };
 
 class GnomeHordeVisibilityThreadData : public GnomeHordeWorkerThread
 {
 public:
-	struct ApiObjects
+	struct DeviceResources
 	{
 		LineTasksQueue::ConsumerToken linesQConsumerToken;
-		TileTasksQueue::ProducerToken processQproducerToken;
-		TileTasksQueue::ProducerToken drawQproducerToken;
-		ApiObjects(LineTasksQueue& linesQ, TileTasksQueue& processQ, TileTasksQueue& drawQ) :
+		TileResultsQueue::ProducerToken processQproducerToken;
+		TileResultsQueue::ProducerToken drawQproducerToken;
+		DeviceResources(LineTasksQueue& linesQ, TileResultsQueue& processQ, TileResultsQueue& drawQ) :
 			linesQConsumerToken(linesQ.getConsumerToken()), processQproducerToken(processQ.getProducerToken()), drawQproducerToken(drawQ.getProducerToken())
 		{ }
 	};
-	std::auto_ptr<ApiObjects> apiObj;
+	GnomeHordeVisibilityThreadData() { myType = "Visibility Thread"; }
+
+	std::unique_ptr<DeviceResources> _deviceResources;
 
 	bool doWork();
 
-	void determineLineVisibility(const int32* lines, uint32 numLines);
+	void determineLineVisibility(const int32_t* lines, uint32_t numLines);
 };
 
-utils::VertexBindings attributeBindings[] =
+pvr::utils::VertexBindings attributeBindings[] =
 {
 	{ "POSITION", 0 },
 	{ "NORMAL", 1 },
@@ -155,17 +172,15 @@ utils::VertexBindings attributeBindings[] =
 
 struct MultiBuffering
 {
-	pvr::api::CommandBuffer commandBuffer;
-	pvr::api::SecondaryCommandBuffer cmdBufferUI;
-	utils::StructuredMemoryView uboPerFrame;
-	api::DescriptorSet descSetPerFrame;
-	api::Fence fence;
+	pvrvk::CommandBuffer commandBuffer;
+	pvrvk::SecondaryCommandBuffer commandBufferUI;
+	pvrvk::DescriptorSet descSetPerFrame;
 };
 struct Mesh
 {
-	assets::MeshHandle mesh;
-	api::Buffer vbo;
-	api::Buffer ibo;
+	pvr::assets::MeshHandle mesh;
+	pvrvk::Buffer vbo;
+	pvrvk::Buffer ibo;
 };
 typedef std::vector<Mesh> MeshLod;
 
@@ -205,17 +220,17 @@ struct Meshes
 		clearApiMesh(bigMushroom, false);
 		clearApiMesh(bigMushroomShadow, false);
 	}
-	void createApiObjects(GraphicsContext& ctx)
+	void createApiObjects(pvrvk::Device& device)
 	{
-		createApiMesh(gnome, ctx);
-		createApiMesh(gnomeShadow, ctx);
-		createApiMesh(rock, ctx);
-		createApiMesh(fern, ctx);
-		createApiMesh(fernShadow, ctx);
-		createApiMesh(mushroom, ctx);
-		createApiMesh(mushroomShadow, ctx);
-		createApiMesh(bigMushroom, ctx);
-		createApiMesh(bigMushroomShadow, ctx);
+		createApiMesh(gnome, device);
+		createApiMesh(gnomeShadow, device);
+		createApiMesh(rock, device);
+		createApiMesh(fern, device);
+		createApiMesh(fernShadow, device);
+		createApiMesh(mushroom, device);
+		createApiMesh(mushroomShadow, device);
+		createApiMesh(bigMushroom, device);
+		createApiMesh(bigMushroomShadow, device);
 	}
 private:
 	static void clearApiMesh(MeshLod& mesh, bool deleteAll)
@@ -227,74 +242,73 @@ private:
 			if (deleteAll) { it->mesh.reset(); }
 		}
 	}
-	static void createApiMesh(MeshLod& mesh, GraphicsContext& ctx)
+	static void createApiMesh(MeshLod& mesh, pvrvk::Device& device)
 	{
 		for (MeshLod::iterator it = mesh.begin(); it != mesh.end(); ++it)
 		{
-			utils::createSingleBuffersFromMesh(ctx, *it->mesh, it->vbo, it->ibo);
+			pvr::utils::createSingleBuffersFromMesh(device, *it->mesh, it->vbo, it->ibo);
 		}
 	}
 };
 struct DescriptorSets
 {
-	api::DescriptorSet gnome;
-	api::DescriptorSet gnomeShadow;
-	api::DescriptorSet rock;
-	api::DescriptorSet fern;
-	api::DescriptorSet fernShadow;
-	api::DescriptorSet mushroom;
-	api::DescriptorSet mushroomShadow;
-	api::DescriptorSet bigMushroom;
-	api::DescriptorSet bigMushroomShadow;
+	pvrvk::DescriptorSet gnome;
+	pvrvk::DescriptorSet gnomeShadow;
+	pvrvk::DescriptorSet rock;
+	pvrvk::DescriptorSet fern;
+	pvrvk::DescriptorSet fernShadow;
+	pvrvk::DescriptorSet mushroom;
+	pvrvk::DescriptorSet mushroomShadow;
+	pvrvk::DescriptorSet bigMushroom;
+	pvrvk::DescriptorSet bigMushroomShadow;
 };
 
 struct Pipelines
 {
-	api::GraphicsPipeline solid;
-	api::GraphicsPipeline shadow;
-	api::GraphicsPipeline alphaPremul;
+	pvrvk::GraphicsPipeline solid;
+	pvrvk::GraphicsPipeline shadow;
+	pvrvk::GraphicsPipeline alphaPremul;
 };
 struct TileObject
 {
 	MeshLod* mesh;
-	api::DescriptorSet set;
-	api::GraphicsPipeline pipeline;
+	pvrvk::DescriptorSet set;
+	pvrvk::GraphicsPipeline pipeline;
 };
 
 struct TileInfo
 {
 	// Per tile info
 	std::array<TileObject, NUM_OBJECTS_PER_TILE> objects;
-	std::array<api::SecondaryCommandBuffer, MAX_NUMBER_OF_SWAP_IMAGES> cbs;
-	math::AxisAlignedBox aabb;
-	uint8 threadId;
-	uint8 lod;
-	uint8 oldLod;
+	std::array<std::pair<pvrvk::SecondaryCommandBuffer, std::mutex*>, MAX_NUMBER_OF_SWAP_IMAGES> cbs;
+	pvr::math::AxisAlignedBox aabb;
+	uint8_t threadId;
+	uint8_t lod;
+	uint8_t oldLod;
 	bool visibility;
 	bool oldVisibility;
 };
 
-struct ApiObjects
+struct DeviceResources
 {
-	pvr::GraphicsContext context;
-	pvr::Multi<pvr::api::Fbo> fboOnScreen;
-	utils::StructuredMemoryView uboPerObject;
-<<<<<<< HEAD
-	pvr::api::AssetStore assetManager;
-=======
-	pvr::utils::AssetStore assetManager;
->>>>>>> 1776432f... 4.3
-	pvr::ui::UIRenderer uiRenderer;
-	api::PipelineLayout pipeLayout;
-	// OpenGL handles for shaders and VBOs
+	pvrvk::Instance instance;
+	pvrvk::Device device;
+	pvrvk::Swapchain swapchain;
+	pvrvk::CommandPool commandPool;
+	pvrvk::DescriptorPool descriptorPool;
+	pvrvk::Queue queue;
+	pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
+	pvr::Multi<pvrvk::ImageView> depthStencilImages;
+	pvr::utils::StructuredBufferView uboPerObjectBufferView;
+	pvrvk::Buffer uboPerObject;
+	pvrvk::PipelineLayout pipeLayout;
 
-	api::Sampler trilinear;
-	api::Sampler nonMipmapped;
+	pvrvk::Sampler trilinear;
+	pvrvk::Sampler nonMipmapped;
 
-	api::DescriptorSet descSetAllObjects;
+	pvrvk::DescriptorSet descSetAllObjects;
 	DescriptorSets descSets;
 	Pipelines pipelines;
-
 
 	std::array<GnomeHordeTileThreadData, MAX_NUMBER_OF_THREADS> tileThreadData;
 	std::array<GnomeHordeVisibilityThreadData, MAX_NUMBER_OF_THREADS> visibilityThreadData;
@@ -302,42 +316,48 @@ struct ApiObjects
 	std::array<std::array<TileInfo, NUM_TILES_X>, NUM_TILES_Z> tileInfos;
 	MultiBuffering multiBuffering[MAX_NUMBER_OF_SWAP_IMAGES];
 
+	pvr::utils::StructuredBufferView uboBufferView;
+	pvrvk::Buffer ubo;
+
 	std::array<std::thread, 16> threads;
 	LineTasksQueue::ProducerToken lineQproducerToken;
-	TileTasksQueue::ConsumerToken drawQconsumerToken;
+	TileResultsQueue::ConsumerToken drawQconsumerToken;
 
-	ApiObjects(LineTasksQueue& lineQ, TileTasksQueue& drawQ)
+	pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+	pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+
+	// UIRenderer used to display text
+	pvr::ui::UIRenderer uiRenderer;
+
+	DeviceResources(LineTasksQueue& lineQ, TileResultsQueue& drawQ)
 		: lineQproducerToken(lineQ.getProducerToken()), drawQconsumerToken(drawQ.getConsumerToken())
 	{ }
 };
 
-class VulkanGnomeHorde : public Shell
+class VulkanGnomeHorde : public pvr::Shell
 {
 public:
 	std::deque<std::string> multiThreadLog;
 	std::mutex logMutex;
-	std::atomic<int32> itemsRemaining;
-	std::atomic<int32> itemsToDraw;
-	std::atomic<int32> itemsDrawn;
-	std::atomic<int32> poisonPill; //Technique used to break threads out of their waiting
-
-	uint32 numSwapImages;
+	uint32_t numSwapImages;
 	Meshes meshes;
-	std::auto_ptr<ApiObjects> apiObj;
-	LineTasksQueue linesToProcessQ;
-	TileTasksQueue tilesToProcessQ;
-	TileTasksQueue tilesToDrawQ;
+	std::unique_ptr<DeviceResources> _deviceResources;
 
-	uint32 allLines[NUM_TILES_Z]; //Stores the line #. Used to kick initial work in the visibility threads
-	//as each thread will be processing one line
+	LineTasksQueue linesToProcessQ;
+	TileResultsQueue tilesToProcessQ;
+	TileResultsQueue tilesToDrawQ;
+
+	uint32_t allLines[NUM_TILES_Z]; //Stores the line #. Used to kick all work in the visibility threads as each thread will be processing one line
 
 	volatile glm::vec3 cameraPosition;
-	volatile math::ViewingFrustum frustum;
-	volatile uint8 swapIndex;
-
+	volatile pvr::math::ViewingFrustum frustum;
+	volatile uint8_t swapchainIndex;
+	uint32_t frameId;
 	bool isPaused;
-	uint8 numVisibilityThreads;
-	uint8 numTileThreads;
+	uint8_t numVisibilityThreads;
+	uint8_t numTileThreads;
 	VulkanGnomeHorde() : isPaused(false), numVisibilityThreads(0), numTileThreads(0)
 	{
 		for (int i = 0; i < NUM_TILES_Z; ++i)
@@ -346,29 +366,51 @@ public:
 		}
 	}
 
-	Result initApplication();
-	Result initView();
-	Result releaseView();
-	Result quitApplication();
-	Result renderFrame();
+	pvr::Result initApplication();
+	pvr::Result initView();
+	pvr::Result releaseView();
+	pvr::Result quitApplication();
+	pvr::Result renderFrame();
 
 	void setUpUI();
 
-	api::DescriptorSet createDescriptorSetUtil(const api::DescriptorSetLayout&, const StringHash& texture, const api::Sampler& mipMapped, const api::Sampler& nonMipMapped);
+	pvrvk::DescriptorSet createDescriptorSetUtil(const pvrvk::DescriptorSetLayout&,
+	    const pvr::StringHash& texture, const pvrvk::Sampler& mipMapped,
+	    const pvrvk::Sampler& nonMipMapped,
+	    std::vector<pvr::utils::ImageUploadResults>& imageUploads,
+	    pvrvk::CommandBuffer& uploadCmdBuffer);
+
 	//// HELPERS ////
-	MeshLod loadLodMesh(const StringHash& filename, const StringHash& mesh, uint32_t max_lods);
+	MeshLod loadLodMesh(const pvr::StringHash& filename,
+	                    const pvr::StringHash& mesh, uint32_t max_lods);
+
 	AppModeParameter calcAnimationParameters();
 	void initUboStructuredObjects();
-	void createDescSetsAndTiles(const api::DescriptorSetLayout& layoutImage, const api::DescriptorSetLayout& layoutPerObject, const api::DescriptorSetLayout& layoutPerFrameUbo);
-	void kickReleaseCommandBuffers();
+
+	void createDescSetsAndTiles(const pvrvk::DescriptorSetLayout& layoutImage,
+	                            const pvrvk::DescriptorSetLayout& layoutPerObject,
+	                            const pvrvk::DescriptorSetLayout& layoutPerFrameUbo,
+	                            std::vector<pvr::utils::ImageUploadResults>& imageUploads,
+	                            pvrvk::CommandBuffer& uploadCmdBuffer);
+
 	void updateCameraUbo(const glm::mat4& matrix);
+
+	pvrvk::Device& getDevice()
+	{
+		return _deviceResources->device;
+	}
+
+	pvrvk::Queue& getQueue()
+	{
+		return _deviceResources->queue;
+	}
 
 	void printLog()
 	{
 		std::unique_lock<std::mutex> lock(logMutex);
 		while (!multiThreadLog.empty())
 		{
-			Log(Log.Information, multiThreadLog.front().c_str());
+			Log(LogLevel::Information, multiThreadLog.front().c_str());
 			multiThreadLog.pop_front();
 		}
 	}
@@ -376,8 +418,8 @@ public:
 	struct DemoDetails
 	{
 		// Time tracking
-		float32 logicTime; //!< Total time that has elapsed for the application (Conceptual: Clock at start - Clock time now - Paused time)
-		float32 gameTime; //!< Time that has elapsed for the application (Conceptual: Integration of logicTime * the demo's speed factor at each point)
+		float logicTime; //!< Total time that has elapsed for the application (Conceptual: Clock at start - Clock time now - Paused time)
+		float gameTime; //!< Time that has elapsed for the application (Conceptual: Integration of logicTime * the demo's speed factor at each point)
 		bool isManual;
 		uint32_t currentMode;
 		uint32_t previousMode;
@@ -386,145 +428,6 @@ public:
 	} animDetails;
 };
 
-void GnomeHordeTileThreadData::garbageCollectPreviousFrameFreeCommandBuffers(uint8 swapIndex)
-{
-	auto& freeCmd = apiObj->freeCmdBuffers[swapIndex];
-	auto& prefreeCmd = apiObj->preFreeCmdBuffers[swapIndex];
-
-	std::move(prefreeCmd.begin(), prefreeCmd.end(), std::back_inserter(freeCmd));
-	prefreeCmd.clear();
-	if (freeCmd.size() > 10)
-	{
-		freeCmd.clear();
-	}
-}
-
-api::SecondaryCommandBuffer GnomeHordeTileThreadData::getFreeCommandBuffer(uint8 swapIndex)
-{
-	{
-		std::unique_lock<std::mutex> lock(cmdMutex);
-		if (apiObj->lastSwapIndex != app->swapIndex)
-		{
-			apiObj->lastSwapIndex = app->swapIndex;
-			garbageCollectPreviousFrameFreeCommandBuffers(app->swapIndex);
-		}
-	}
-
-	api::SecondaryCommandBuffer retval;
-	{
-		std::unique_lock<std::mutex> lock(cmdMutex);
-		if (!apiObj->freeCmdBuffers[swapIndex].empty())
-		{
-			retval = apiObj->freeCmdBuffers[swapIndex].back();
-			apiObj->freeCmdBuffers[swapIndex].pop_back();
-		}
-	}
-	if (retval.isNull())
-	{
-		retval = apiObj->cmdPools.back()->allocateSecondaryCommandBuffer();
-		if (retval.isNull())
-		{
-			Log(Log.Error, "[THREAD %d] Command buffer allocation failed, . Trying to create additional command buffer pool.", id);
-			apiObj->cmdPools.push_back(app->getGraphicsContext()->createCommandPool());
-			retval = apiObj->cmdPools.back()->allocateSecondaryCommandBuffer();
-			if (retval.isNull())
-			{
-				Log(Log.Critical, "COMMAND BUFFER ALLOCATION FAILED ON FRESH COMMAND POOL.");
-			}
-		}
-	}
-	return retval;
-}
-
-void GnomeHordeTileThreadData::freeCommandBuffer(const api::SecondaryCommandBuffer& cmdBuff, uint8 swapIndex)
-{
-	std::unique_lock<std::mutex> lock(cmdMutex);
-	if (apiObj->lastSwapIndex != app->swapIndex)
-	{
-		apiObj->lastSwapIndex = app->swapIndex;
-		garbageCollectPreviousFrameFreeCommandBuffers(app->swapIndex);
-	}
-	apiObj->preFreeCmdBuffers[swapIndex].push_back(cmdBuff);
-}
-
-bool GnomeHordeTileThreadData::doWork()
-{
-	int32 batch_size = 4;
-	glm::ivec2 workItem[4];
-	int32 result;
-	if ((result = app->tilesToProcessQ.consume(apiObj->processQConsumerToken, workItem[0])))
-	{
-		generateTileBuffer(workItem, result);
-	}
-	return result != 0;
-}
-
-void GnomeHordeTileThreadData::generateTileBuffer(const ivec2* tileIdxs, uint32 numTiles)
-{
-	// Lambda to create the tiles secondary cmdbs
-	utils::StructuredMemoryView& uboAllObj = app->apiObj->uboPerObject;
-	const api::DescriptorSet& descSetAllObj = app->apiObj->descSetAllObjects;
-
-	for (uint32 tilenum = 0; tilenum < numTiles; ++tilenum)
-	{
-		ivec2 tileId2d = tileIdxs[tilenum];
-		uint32 x = tileId2d.x, y = tileId2d.y;
-		uint32 tileIdx = y * NUM_TILES_X + x;
-
-		TileInfo& tile = app->apiObj->tileInfos[y][x];
-
-		// Recreate the cmdb
-		for (uint32 swapIdx = 0; swapIdx < app->numSwapImages; ++swapIdx)
-		{
-			MultiBuffering& multi = app->apiObj->multiBuffering[swapIdx];
-			tile.cbs[swapIdx] = getFreeCommandBuffer(swapIdx);
-			tile.threadId = id;
-
-			auto& cb = tile.cbs[swapIdx];
-
-			cb->beginRecording(app->apiObj->fboOnScreen[swapIdx]);
-
-			for (uint32_t objId = 0; objId < NUM_OBJECTS_PER_TILE; ++objId)
-			{
-				TileObject& obj = tile.objects[objId];
-				uint32 lod = std::min<uint32>(static_cast<pvr::uint32>(obj.mesh->size()) - 1, tile.lod);
-
-				//Can it NOT be different than before? - Not in this demo.
-				cb->bindPipeline(obj.pipeline);
-
-				Mesh& mesh = (*obj.mesh)[lod];
-
-				uint32 offset = uboAllObj.getDynamicOffset(0, tileIdx * NUM_OBJECTS_PER_TILE + objId);
-
-				// Use the right texture and position - TEXTURES PER OBJECT (Can optimize to object type)
-				cb->bindDescriptorSet(app->apiObj->pipeLayout, 0, obj.set);
-				cb->bindDescriptorSet(app->apiObj->pipeLayout, 1, descSetAllObj, &offset, 1);
-				cb->bindDescriptorSet(app->apiObj->pipeLayout, 2, multi.descSetPerFrame, 0, 0);
-
-				//If different than before?
-				cb->bindVertexBuffer(mesh.vbo, 0, 0);
-				cb->bindIndexBuffer(mesh.ibo, 0, mesh.mesh->getFaces().getDataType());
-
-				// Offset in the per-object transformation matrices UBO - these do not change frame-to-frame
-				//getArrayOffset, will return the actual byte offset of item #(first param) that is in an
-				//array of items, at array index #(second param).
-				cb->drawIndexed(0, mesh.mesh->getNumIndices());
-			}
-			cb->endRecording();
-		}
-		app->tilesToDrawQ.produce(apiObj->drawQProducerToken, tileId2d);
-		++app->itemsToDraw;
-		//Add the item to the "processed" queue and mark the count. If it's the last item, mark that the main
-		//thread "must unblock"
-		if (--app->itemsRemaining == 0)
-		{
-			//For good measure... The above will unblock the main Q, but even though it appears that the main thread will
-			//be able to avoid it, we must still signal the "all done" for purposes of robustness.
-			++app->poisonPill;
-			app->tilesToDrawQ.unblockOne();
-		}
-	}
-}
 
 void GnomeHordeWorkerThread::addlog(const std::string& str)
 {
@@ -534,44 +437,624 @@ void GnomeHordeWorkerThread::addlog(const std::string& str)
 
 void GnomeHordeWorkerThread::run()
 {
-	addlog(strings::createFormatted("=== Tile Visibility Thread [%d] ===            Starting", id));
+	addlog(pvr::strings::createFormatted("=== [%s] [%d] ===            Starting", myType.c_str(), id));
 	running = true;
 	while (doWork()) { continue; } // grabs a piece of work as long as the queue is not empty.
 	running = false;
-	addlog(strings::createFormatted("=== Tile Visibility Thread [%d] ===            Exiting", id));
+	addlog(pvr::strings::createFormatted("=== [%s] [%d] ===            Exiting", myType.c_str(), id));
+}
+
+void GnomeHordeTileThreadData::garbageCollectPreviousFrameFreeCommandBuffers(uint8_t swapchainIndex)
+{
+	auto& freeCmd = threadApiObj->freeCmdBuffers[swapchainIndex];
+	auto& prefreeCmd = threadApiObj->preFreeCmdBuffers[swapchainIndex];
+
+	std::move(prefreeCmd.begin(), prefreeCmd.end(), std::back_inserter(freeCmd));
+	prefreeCmd.clear();
+	if (freeCmd.size() > 10)
+	{
+		freeCmd.clear();
+	}
+}
+
+pvrvk::SecondaryCommandBuffer GnomeHordeTileThreadData::getFreeCommandBuffer(uint8_t swapchainIndex)
+{
+	if (threadApiObj->lastSwapIndex != app->swapchainIndex)
+	{
+		threadApiObj->lastSwapIndex = app->swapchainIndex;
+		std::unique_lock<std::mutex> lock(threadApiObj->poolMutex);
+		garbageCollectPreviousFrameFreeCommandBuffers(app->swapchainIndex);
+	}
+
+	pvrvk::SecondaryCommandBuffer retval;
+	{
+		std::unique_lock<std::mutex> lock(threadApiObj->poolMutex);
+		if (!threadApiObj->freeCmdBuffers[swapchainIndex].empty())
+		{
+			retval = threadApiObj->freeCmdBuffers[swapchainIndex].back();
+			threadApiObj->freeCmdBuffers[swapchainIndex].pop_back();
+		}
+	}
+	if (retval.isNull())
+	{
+		if (threadApiObj->commandPools.size() == 0)
+		{
+			threadApiObj->commandPools.push_back(app->getDevice()->createCommandPool(
+			                                       app->getQueue()->getQueueFamilyId(),
+			                                       VkCommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+			addlog(pvr::strings::createFormatted("Created command pool %llu on thread %llu",
+			                                     threadApiObj->commandPools.back()->getNativeObject(), std::this_thread::get_id()));
+		}
+		{
+			std::unique_lock<std::mutex> lock(threadApiObj->poolMutex);
+			retval = threadApiObj->commandPools.back()->allocateSecondaryCommandBuffer();
+		}
+		if (retval.isNull())
+		{
+			Log(LogLevel::Error, "[THREAD %ull] Command buffer allocation failed, "
+			    ". Trying to create additional command buffer pool.", id);
+
+			threadApiObj->commandPools.push_back(app->getDevice()->createCommandPool(
+			                                       app->getQueue()->getQueueFamilyId(), VkCommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT));
+
+			addlog(pvr::strings::createFormatted(
+			         "Created command pool %d on thread %d", threadApiObj->commandPools.back()->getNativeObject(),
+			         std::this_thread::get_id()));
+			{
+				std::unique_lock<std::mutex> lock(threadApiObj->poolMutex);
+				retval = threadApiObj->commandPools.back()->allocateSecondaryCommandBuffer();
+			}
+			if (retval.isNull())
+			{
+				Log(LogLevel::Critical, "COMMAND BUFFER ALLOCATION FAILED ON FRESH COMMAND POOL.");
+			}
+		}
+	}
+	return retval;
+}
+
+void GnomeHordeTileThreadData::freeCommandBuffer(const pvrvk::SecondaryCommandBuffer& commandBuff, uint8_t swapchainIndex)
+{
+	std::unique_lock<std::mutex> lock(threadApiObj->poolMutex);
+	if (threadApiObj->lastSwapIndex != app->swapchainIndex)
+	{
+		threadApiObj->lastSwapIndex = app->swapchainIndex;
+		garbageCollectPreviousFrameFreeCommandBuffers(app->swapchainIndex);
+	}
+	threadApiObj->preFreeCmdBuffers[swapchainIndex].push_back(commandBuff);
+}
+
+///// UTILS (local) /////
+inline vec3 getTrackPosition(float time, const vec3& world_size)
+{
+	const float angle = time * 0.02f;
+	const vec3 centre = world_size * 0.5f;
+	const vec3 radius = world_size * 0.2f;
+	// Main circle
+	float a1 = time * 0.07f;
+	float a2 = time * 0.1f;
+	float a3 = angle;
+
+	const float h = glm::sin(a1) * 15.f + 100.f;
+	const float radius_factor = 0.95f + 0.1f * glm::sin(a2);
+	const glm::vec3 circle(glm::sin(a3)*radius.x * radius_factor, h, glm::cos(a3)*radius.z * radius_factor);
+
+	return centre + circle;
+}
+
+float initializeGridPosition(std::vector<float>& grid, uint32_t numItemsPerRow)
+{
+	//| x | x | x |
+	//| x | x | x |
+	//| x | x | x |
+	//Jittered Grid - each object is placed on the center of a normal grid, and then moved randomly around.
+	const float MIN_DISTANCE_FACTOR = -.2f; // Minimum item distance is 1/5 th their starting distance
+
+	grid.resize(numItemsPerRow);
+	float distance = 1.f / numItemsPerRow;
+	grid[0] = .5f * distance;
+	for (uint32_t i = 1; i < numItemsPerRow; ++i)
+	{
+		grid[i] = grid[i - 1] + distance;
+	}
+	float deviation = distance * .5f * (1.f - MIN_DISTANCE_FACTOR);
+	return deviation;
+}
+
+inline void generatePositions(vec3* points, vec3 minBound, vec3 maxBound)
+{
+	static std::vector<float> normalGridPositions;
+	static const uint32_t numItemsPerRow = static_cast<uint32_t>((sqrtf(NUM_UNIQUE_OBJECTS_PER_TILE)));
+	static const float deviation = initializeGridPosition(normalGridPositions, numItemsPerRow);
+
+	for (uint32_t y = 0; y < numItemsPerRow; ++y)
+	{
+		for (uint32_t x = 0; x < numItemsPerRow; ++x)
+		{
+			vec3 pos(normalGridPositions[x] + deviation * pvr::randomrange(-1.f, 1.f), 0.f,
+			         normalGridPositions[y] + deviation * pvr::randomrange(-1.f, 1.f));
+			vec3 mixed = glm::mix(minBound, maxBound, pos);
+
+			points[y * numItemsPerRow + x] = vec3(mixed.x, mixed.y, mixed.z);
+		}
+	}
+	for (int i = numItemsPerRow * numItemsPerRow; i < NUM_UNIQUE_OBJECTS_PER_TILE; ++i)
+	{
+		points[i] = glm::mix(minBound, maxBound, vec3(pvr::randomrange(-1.f, 1.f), 0, pvr::randomrange(-1.f, 1.f)));
+	}
+}
+
+
+/////////// CLASS VulkanGnomeHorde ///////////
+///// CALLBACKS - IMPLEMENTATION OF pvr::Shell /////
+pvr::Result VulkanGnomeHorde::initApplication()
+{
+	setPreferredSwapChainLength(3);
+	int num_cores = (int)std::thread::hardware_concurrency();
+	int THREAD_FACTOR_RELAXATION = 1;
+
+	int thread_factor = std::max(num_cores - THREAD_FACTOR_RELAXATION, 1);
+
+	numVisibilityThreads = std::min(thread_factor, (int)MAX_NUMBER_OF_THREADS);
+	numTileThreads = std::min(thread_factor, (int)MAX_NUMBER_OF_THREADS);
+	Log(LogLevel::Information,
+	    "Hardware concurreny reported: %u cores. Enabling %u visibility threads plus %u tile processing threads\n",
+	    num_cores, numVisibilityThreads, numTileThreads);
+
+	// Meshes
+	meshes.gnome = loadLodMesh(pvr::StringHash("gnome"), "body", 7);
+	meshes.gnomeShadow = loadLodMesh("gnome_shadow", "Plane001", 1);
+	meshes.fern = loadLodMesh("fern", "Plane006", 1);
+	meshes.fernShadow = loadLodMesh("fern_shadow", "Plane001", 1);
+	meshes.mushroom = loadLodMesh("mushroom", "Mushroom1", 2);
+	meshes.mushroomShadow = loadLodMesh("mushroom_shadow", "Plane001", 1);
+	meshes.bigMushroom = loadLodMesh("bigMushroom", "Mushroom1", 1);
+	meshes.bigMushroomShadow = loadLodMesh("bigMushroom_shadow", "Plane001", 1);
+	meshes.rock = loadLodMesh("rocks", "rock5", 1);
+
+	return pvr::Result::Success;
+}
+
+pvr::Result VulkanGnomeHorde::quitApplication()
+{
+	meshes.clearAll();
+	return pvr::Result::Success;
+}
+
+void VulkanGnomeHorde::setUpUI()
+{
+	_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(),
+	                                  _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
+	                                  _deviceResources->commandPool, _deviceResources->queue);
+
+	_deviceResources->uiRenderer.getDefaultTitle()->setText("Gnome Horde");
+	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultDescription()->setText("Multithreaded command buffer generation and rendering");
+	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
+
+	for (uint32_t i = 0; i < numSwapImages; ++i)
+	{
+		_deviceResources->multiBuffering[i].commandBufferUI = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		//UIRenderer - the easy stuff first, but we still must create one command buffer per frame.
+		_deviceResources->multiBuffering[i].commandBufferUI->begin(_deviceResources->onScreenFramebuffer[i], 0);
+		_deviceResources->uiRenderer.beginRendering(_deviceResources->multiBuffering[i].commandBufferUI);
+		_deviceResources->uiRenderer.getDefaultTitle()->render();
+		_deviceResources->uiRenderer.getDefaultDescription()->render();
+		_deviceResources->uiRenderer.getSdkLogo()->render();
+		_deviceResources->uiRenderer.endRendering();
+		_deviceResources->multiBuffering[i].commandBufferUI->end();
+	}
+}
+
+pvr::Result VulkanGnomeHorde::initView()
+{
+	frameId = 0;
+	_deviceResources.reset(new DeviceResources(linesToProcessQ, tilesToDrawQ));
+
+	// crate the vulkan instance
+	pvrvk::Surface surface;
+	if (!pvr::utils::createInstanceAndSurface(this->getApplicationName(), this->getWindow(), this->getDisplay(), _deviceResources->instance, surface))
+	{
+		return pvr::Result::UnknownError;
+	}
+	// create the surface
+
+	// create the device and the queue
+	// look for  a queue that supports graphics, transfer and presentation
+	pvr::utils::QueuePopulateInfo queuePopulateInfo =
+	{
+		VkQueueFlags::e_GRAPHICS_BIT | VkQueueFlags::e_TRANSFER_BIT, surface
+	};
+	pvr::utils::QueueAccessInfo queueAccessInfo;
+
+	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), &queuePopulateInfo, 1, &queueAccessInfo);
+
+	if (_deviceResources->device.isNull())
+	{
+		setExitMessage("Failed to create Logical Device");
+		return pvr::Result::UnknownError;
+	}
+
+	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(surface);
+
+	// validate the supported swapchain image usage
+	VkImageUsageFlags swapchainImageUsage = VkImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
+	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, VkImageUsageFlags::e_TRANSFER_SRC_BIT))
+	{
+		swapchainImageUsage |= VkImageUsageFlags::e_TRANSFER_SRC_BIT;
+	}
+
+	// create the swapchain
+	if (!pvr::utils::createSwapchainAndDepthStencilImageView(_deviceResources->device, surface,
+	    getDisplayAttributes(), _deviceResources->swapchain, _deviceResources->depthStencilImages, swapchainImageUsage))
+	{
+		setExitMessage("failed to create Swapchain image");
+		return pvr::Result::UnknownError;
+	}
+	numSwapImages = _deviceResources->swapchain->getSwapchainLength();
+
+	//--------------------
+	// Create the on screen framebuffer
+	if (!pvr::utils::createOnscreenFramebufferAndRenderpass(
+	      _deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer))
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	//--------------------
+	// Create the commandpool
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(
+	                                  _deviceResources->queue->getQueueFamilyId(), VkCommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+
+	//--------------------
+	// Create the DescriptorPool
+	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(
+	                                     pvrvk::DescriptorPoolCreateInfo()
+	                                     .addDescriptorInfo(VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, 32)
+	                                     .addDescriptorInfo(VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 32)
+	                                     .addDescriptorInfo(VkDescriptorType::e_UNIFORM_BUFFER, 32)
+	                                     .setMaxDescriptorSets(32));
+
+	if (_deviceResources->descriptorPool.isNull())
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	setUpUI();
+
+	//--------------------
+	// create per swapchain resources
+	for (uint32_t i = 0; i < numSwapImages; ++i)
+	{
+		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(VkFenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameAcquireFence[i] = _deviceResources->device->createFence(VkFenceCreateFlags::e_SIGNALED_BIT);
+
+		_deviceResources->multiBuffering[i].commandBuffer = _deviceResources->commandPool->allocateCommandBuffer();
+	}
+
+	initUboStructuredObjects();
+
+	//Create Descriptor set layouts
+	pvrvk::DescriptorSetLayoutCreateInfo imageDescParam;
+	imageDescParam.setBinding(0, VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, VkShaderStageFlags::e_FRAGMENT_BIT);
+
+	pvrvk::DescriptorSetLayout descLayoutImage =
+	  _deviceResources->device->createDescriptorSetLayout(imageDescParam);
+
+	pvrvk::DescriptorSetLayoutCreateInfo dynamicUboDescParam;
+	dynamicUboDescParam.setBinding(0, VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, VkShaderStageFlags::e_VERTEX_BIT);
+
+	pvrvk::DescriptorSetLayout descLayoutUboDynamic =
+	  _deviceResources->device->createDescriptorSetLayout(dynamicUboDescParam);
+
+	pvrvk::DescriptorSetLayoutCreateInfo uboDescParam;
+	uboDescParam.setBinding(0, VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, VkShaderStageFlags::e_VERTEX_BIT);
+
+	pvrvk::DescriptorSetLayout descLayoutUboStatic =
+	  _deviceResources->device->createDescriptorSetLayout(uboDescParam);
+
+	//Create Pipelines
+	{
+		_deviceResources->pipeLayout = _deviceResources->device->createPipelineLayout(
+		                                 pvrvk::PipelineLayoutCreateInfo()
+		                                 .setDescSetLayout(0, descLayoutImage)
+		                                 .setDescSetLayout(1, descLayoutUboDynamic)
+		                                 .setDescSetLayout(2, descLayoutUboStatic));
+
+		// Must not assume the cache will always work
+
+		pvrvk::Shader objectVsh = _deviceResources->device->createShader(getAssetStream("Object.vsh.spv")->readToEnd<uint32_t>());
+		pvrvk::Shader shadowVsh = _deviceResources->device->createShader(getAssetStream("Shadow.vsh.spv")->readToEnd<uint32_t>());
+		pvrvk::Shader solidFsh = _deviceResources->device->createShader(getAssetStream("Solid.fsh.spv")->readToEnd<uint32_t>());
+		pvrvk::Shader shadowFsh = _deviceResources->device->createShader(getAssetStream("Shadow.fsh.spv")->readToEnd<uint32_t>());
+		pvrvk::Shader premulFsh = _deviceResources->device->createShader(getAssetStream("Plant.fsh.spv")->readToEnd<uint32_t>());
+
+		pvrvk::GraphicsPipelineCreateInfo pipeCreate;
+		pvrvk::PipelineColorBlendAttachmentState cbStateNoBlend(false);
+
+		pvrvk::PipelineColorBlendAttachmentState cbStateBlend(true, VkBlendFactor::e_ONE_MINUS_SRC_ALPHA,
+		    VkBlendFactor::e_SRC_ALPHA, VkBlendOp::e_ADD);
+
+		pvrvk::PipelineColorBlendAttachmentState cbStatePremulAlpha(true,
+		    VkBlendFactor::e_ONE, VkBlendFactor::e_ONE_MINUS_SRC_ALPHA, VkBlendOp::e_ADD);
+
+		pvr::utils::populateInputAssemblyFromMesh(*meshes.gnome[0].mesh,
+		    &attributeBindings[0], 3, pipeCreate.vertexInput, pipeCreate.inputAssembler);
+
+		pipeCreate.rasterizer.setFrontFaceWinding(VkFrontFace::e_COUNTER_CLOCKWISE);
+		pipeCreate.rasterizer.setCullMode(VkCullModeFlags::e_BACK_BIT);
+		pipeCreate.depthStencil.enableDepthTest(true);
+		pipeCreate.depthStencil.setDepthCompareFunc(VkCompareOp::e_LESS);
+		pipeCreate.depthStencil.enableDepthWrite(true);
+		pipeCreate.renderPass = _deviceResources->onScreenFramebuffer[0]->getRenderPass();
+		pipeCreate.pipelineLayout = _deviceResources->pipeLayout;
+
+		pipeCreate.viewport.setViewportAndScissor(0,
+		    pvrvk::Viewport(0, 0, _deviceResources->swapchain->getDimension().width,
+		                    _deviceResources->swapchain->getDimension().height), pvrvk::Rect2Di(0, 0,
+		                        _deviceResources->swapchain->getDimension().width,
+		                        _deviceResources->swapchain->getDimension().height));
+
+		// create the solid pipeline
+		pipeCreate.vertexShader = objectVsh;
+		pipeCreate.fragmentShader = solidFsh;
+		pipeCreate.colorBlend.setAttachmentState(0, cbStateNoBlend);
+
+		if ((_deviceResources->pipelines.solid =
+		       _deviceResources->device->createGraphicsPipeline(pipeCreate)).isNull())
+		{
+			setExitMessage("Failed to create Opaque rendering pipeline");
+			return pvr::Result::UnknownError;
+		}
+
+		pipeCreate.depthStencil.enableDepthWrite(false);
+		// create the alpha pre-multiply pipeline
+		pipeCreate.vertexShader = objectVsh;
+		pipeCreate.fragmentShader = premulFsh;
+		pipeCreate.colorBlend.setAttachmentState(0, cbStatePremulAlpha);
+		if ((_deviceResources->pipelines.alphaPremul =
+		       _deviceResources->device->createGraphicsPipeline(pipeCreate)).isNull())
+		{
+			setExitMessage("Failed to create Premultiplied Alpha rendering pipeline");
+			return pvr::Result::UnknownError;
+		}
+
+		// create the shadow pipeline
+		pipeCreate.colorBlend.setAttachmentState(0, cbStateBlend);
+		pipeCreate.vertexShader = shadowVsh;
+		pipeCreate.fragmentShader = shadowFsh;
+
+		if ((_deviceResources->pipelines.shadow =
+		       _deviceResources->device->createGraphicsPipeline(pipeCreate)).isNull())
+		{
+			setExitMessage("Failed to create Shadow rendering pipeline");
+			return pvr::Result::UnknownError;
+		}
+	}
+
+	pvrvk::CommandBuffer cb = _deviceResources->commandPool->allocateCommandBuffer();
+	cb->begin();
+
+	std::vector<pvr::utils::ImageUploadResults> imageUploads;
+	createDescSetsAndTiles(descLayoutImage, descLayoutUboDynamic,
+	                       descLayoutUboStatic, imageUploads, cb);
+
+	//--------------------
+	// submit the initial commandbuffer
+	cb->end();
+	pvrvk::SubmitInfo submitInfo;
+	submitInfo.commandBuffers = &cb;
+	submitInfo.numCommandBuffers = 1;
+
+	_deviceResources->queue->submit(&submitInfo, 1);
+	_deviceResources->queue->waitIdle();//make sure the queue is finished
+
+	animDetails.logicTime = 0.f;
+	animDetails.gameTime = 0.f;
+	{
+		for (uint32_t i = 0; i < numVisibilityThreads; ++i)
+		{
+			_deviceResources->visibilityThreadData[i].id = i;
+			_deviceResources->visibilityThreadData[i].app = this;
+			_deviceResources->visibilityThreadData[i]._deviceResources.reset(
+			  new GnomeHordeVisibilityThreadData::DeviceResources(
+			    linesToProcessQ, tilesToProcessQ, tilesToDrawQ));
+
+			_deviceResources->visibilityThreadData[i].thread = std::thread(
+			      &GnomeHordeVisibilityThreadData::run,
+			      (GnomeHordeVisibilityThreadData*)&_deviceResources->visibilityThreadData[i]);
+		}
+		for (uint32_t i = 0; i < numTileThreads; ++i)
+		{
+			_deviceResources->tileThreadData[i].id = i;
+			_deviceResources->tileThreadData[i].app = this;
+			_deviceResources->tileThreadData[i].threadApiObj.reset(
+			  new GnomeHordeTileThreadData::ThreadApiObjects(tilesToProcessQ, tilesToDrawQ));
+
+			_deviceResources->tileThreadData[i].thread = std::thread(
+			      &GnomeHordeTileThreadData::run,
+			      (GnomeHordeTileThreadData*)&_deviceResources->tileThreadData[i]);
+		}
+	}
+	printLog();
+
+	// Map the memory of the camera. It is HOST_COHERENT so should be fine.
+	void* memory;
+	_deviceResources->ubo->getDeviceMemory()->map(&memory);
+	_deviceResources->uboBufferView.pointToMappedMemory(memory);
+
+
+	return pvr::Result::Success;
+}
+
+pvr::Result VulkanGnomeHorde::releaseView()
+{
+	Log(LogLevel::Information, "Signalling all worker threads: Signal drain empty queues...");
+	//Done will allow the queue to finish its work if it has any, but then immediately
+	//afterwards it will free any and all threads waiting. Any threads attempting to
+	//dequeue work from the queue will immediately return "false".
+	linesToProcessQ.done();
+	tilesToProcessQ.done();
+	tilesToDrawQ.done();
+
+	//waitIdle is being called to make sure the command buffers we will be destroying
+	//are not being referenced.
+	_deviceResources->device->waitIdle();
+
+	Log(LogLevel::Information, "Joining all worker threads...");
+
+	//Finally, tear down everything.
+	for (uint32_t i = 0; i < numVisibilityThreads; ++i)
+	{
+		_deviceResources->visibilityThreadData[i].thread.join();
+	}
+	for (uint32_t i = 0; i < numTileThreads; ++i)
+	{
+		_deviceResources->tileThreadData[i].thread.join();
+	}
+
+	//Clear all objects. This will also free the command buffers that were allocated
+	//from the worker thread's command pools, but are currently only held by the
+	//tiles.
+	meshes.clearApiObjects();
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); i++)
+	{
+		_deviceResources->perFrameAcquireFence[i]->wait();
+		_deviceResources->perFrameAcquireFence[i]->reset();
+
+		_deviceResources->perFrameCommandBufferFence[i]->wait();
+		_deviceResources->perFrameCommandBufferFence[i]->reset();
+	}
+	_deviceResources->device->waitIdle();
+	_deviceResources.reset();
+
+	Log(LogLevel::Information, "All worker threads done!");
+	return pvr::Result::Success;
+}
+
+bool GnomeHordeTileThreadData::doWork()
+{
+	TileProcessingResult workItem[4];
+	int32_t result;
+	if ((result = app->tilesToProcessQ.consume(threadApiObj->processQConsumerToken, workItem[0])))
+	{
+		generateTileBuffer(workItem, result);
+	}
+	return result != 0;
+}
+
+void GnomeHordeTileThreadData::generateTileBuffer(const TileProcessingResult* tileIdxs, uint32_t numTiles)
+{
+	// Lambda to create the tiles secondary commandbs
+	pvr::utils::StructuredBufferView& uboAllObj = app->_deviceResources->uboPerObjectBufferView;
+	const pvrvk::DescriptorSet& descSetAllObj = app->_deviceResources->descSetAllObjects;
+	pvr::utils::StructuredBufferView& uboCamera = app->_deviceResources->uboBufferView;
+
+	for (uint32_t tilenum = 0; tilenum < numTiles; ++tilenum)
+	{
+		const TileProcessingResult& tileInfo = tileIdxs[tilenum];
+		ivec2 tileId2d = tileInfo.itemToDraw;
+		if (tileId2d != ivec2(-1, -1))
+		{
+			uint32_t x = tileId2d.x, y = tileId2d.y;
+			uint32_t tileIdx = y * NUM_TILES_X + x;
+
+			TileInfo& tile = app->_deviceResources->tileInfos[y][x];
+
+			// Recreate the command buffer
+			for (uint32_t swapIdx = 0; swapIdx < app->numSwapImages; ++swapIdx)
+			{
+				MultiBuffering& multi = app->_deviceResources->multiBuffering[swapIdx];
+				tile.cbs[swapIdx].first = getFreeCommandBuffer(swapIdx);
+				tile.cbs[swapIdx].second = &threadApiObj->poolMutex;
+				tile.threadId = id;
+
+				auto& cb = tile.cbs[swapIdx];
+				std::unique_lock<std::mutex> lock(threadApiObj->poolMutex);
+				cb.first->begin(app->_deviceResources->onScreenFramebuffer[swapIdx], 0, VkCommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
+
+				for (uint32_t objId = 0; objId < NUM_OBJECTS_PER_TILE; ++objId)
+				{
+					TileObject& obj = tile.objects[objId];
+					uint32_t lod = std::min<uint32_t>(static_cast<uint32_t>(obj.mesh->size()) - 1, tile.lod);
+
+					//Can it NOT be different than before? - Not in this demo.
+					cb.first->bindPipeline(obj.pipeline);
+
+					Mesh& mesh = (*obj.mesh)[lod];
+
+					uint32_t offset = uboAllObj.getDynamicSliceOffset(tileIdx * NUM_OBJECTS_PER_TILE + objId);
+					uint32_t uboCameraOffset = uboCamera.getDynamicSliceOffset(swapIdx);
+
+					// Use the right texture and position - TEXTURES PER OBJECT (Can optimize to object type)
+					cb.first->bindDescriptorSet(VkPipelineBindPoint::e_GRAPHICS,
+					                            app->_deviceResources->pipeLayout, 0, obj.set);
+
+					cb.first->bindDescriptorSet(VkPipelineBindPoint::e_GRAPHICS,
+					                            app->_deviceResources->pipeLayout, 1, descSetAllObj, &offset, 1);
+
+					cb.first->bindDescriptorSet(VkPipelineBindPoint::e_GRAPHICS,
+					                            app->_deviceResources->pipeLayout, 2, multi.descSetPerFrame, &uboCameraOffset, 1);
+
+					//If different than before?
+					cb.first->bindVertexBuffer(mesh.vbo, 0, 0);
+					cb.first->bindIndexBuffer(mesh.ibo, 0, pvr::utils::convertToVk(mesh.mesh->getFaces().getDataType()));
+
+					// Offset in the per-object transformation matrices UBO - these do not change frame-to-frame
+					//getArrayOffset, will return the actual byte offset of item #(first param) that is in an
+					//array of items, at array index #(second param).
+					cb.first->drawIndexed(0, mesh.mesh->getNumIndices());
+				}
+				cb.first->end();
+			}
+		}
+		app->tilesToDrawQ.produce(threadApiObj->drawQProducerToken, tileInfo);
+	}
 }
 
 bool GnomeHordeVisibilityThreadData::doWork()
 {
-	int32 batch_size = 4;
-	int32 workItem[4];
-	int32 result;
-	if ((result = app->linesToProcessQ.consume(apiObj->linesQConsumerToken, workItem[0])))
+	int32_t workItem[4];
+	int32_t result;
+	if ((result = app->linesToProcessQ.consume(_deviceResources->linesQConsumerToken, workItem[0])))
 	{
 		determineLineVisibility(workItem, result);
 	}
 	return result != 0;
 }
 
-void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32* lineIdxs, uint32 numLines)
+void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32_t* lineIdxs, uint32_t numLines)
 {
-	auto& tileInfos = app->apiObj->tileInfos;
+	auto& tileInfos = app->_deviceResources->tileInfos;
 	//Local temporaries of the "global volatile" visibility variables. Memcpy used as they are declared "volatile"
 	//It is perfectly fine to use memcopy for these volatiles AT THIS TIME because we know certainly that MAIN thread
 	//has finished writing to them some time now and no race condition is possible (the calculations happen before the threads)
-	math::ViewingFrustum frustum; utils::memCopyFromVolatile(frustum, app->frustum);
-	glm::vec3 camPos; utils::memCopyFromVolatile(camPos, app->cameraPosition);
+	pvr::math::ViewingFrustum frustum;
+	pvr::utils::memCopyFromVolatile(frustum, app->frustum);
+	glm::vec3 camPos;
+	pvr::utils::memCopyFromVolatile(camPos, app->cameraPosition);
 
-	TileTasksQueue& processQ = app->tilesToProcessQ;
-	TileTasksQueue& drawQ = app->tilesToDrawQ;
+	TileResultsQueue& processQ = app->tilesToProcessQ;
+	TileResultsQueue& drawQ = app->tilesToDrawQ;
 
-	uint8 numSwapImages = app->numSwapImages;
-	for (uint32 line = 0; line < numLines; ++line)
+	uint8_t numSwapImages = app->numSwapImages;
+	TileProcessingResult retval;
+	int numItems = 0;
+	int numItems2 = 0;
+	int numItemsProcessed = 0;
+	int numItemsDrawn = 0;
+	int numItemsDiscarded = 0;
+	for (uint32_t line = 0; line < numLines; ++line)
 	{
 		glm::ivec2 id2d(0, lineIdxs[line]);
 		for (id2d.x = 0; id2d.x < NUM_TILES_X; ++id2d.x)
 		{
-			tileInfos[id2d.y][id2d.x].visibility = math::aabbInFrustum(tileInfos[id2d.y][id2d.x].aabb, frustum);
+			++numItems2;
+			tileInfos[id2d.y][id2d.x].visibility = pvr::math::aabbInFrustum(tileInfos[id2d.y][id2d.x].aabb, frustum);
 
 			TileInfo& tile = tileInfos[id2d.y][id2d.x];
 
@@ -583,359 +1066,76 @@ void GnomeHordeVisibilityThreadData::determineLineVisibility(const int32* lineId
 
 			if (tile.visibility != tile.oldVisibility || tile.lod != tile.oldLod) // The tile has some change. Will need to do something.
 			{
-				for (uint32 i = 0; i < numSwapImages; ++i) //First, free its pre-existing command buffers (just mark free)
+				for (uint32_t i = 0; i < numSwapImages; ++i) //First, free its pre-existing command buffers (just mark free)
 				{
-					if (tile.cbs[i].isValid())
+					if (tile.cbs[i].first.isValid())
 					{
-						app->apiObj->tileThreadData[tile.threadId].freeCommandBuffer(tile.cbs[i], i);
-						tile.cbs[i].reset();
+						app->_deviceResources->tileThreadData[tile.threadId].freeCommandBuffer(tile.cbs[i].first, i);
+						tile.cbs[i].first.reset();
 					}
 				}
-
-				//// PRODUCER CONSUMER QUEUE ////
-				if (tile.visibility) //If the tile is visible, it will need to be generated.
+				if (tile.visibility) //Item is visible, so must be recreated and drawn
 				{
-					// COMMAND BUFFER GENERATION BEGINS ** IMMEDIATELY ** on a worker thread
-					processQ.produce(apiObj->processQproducerToken, id2d);
-					//// PRODUCE ///
-					//The producer thread must signal the unblock...
-				}
-				//Otherwise, no further action is required.
+					retval.itemToDraw = id2d;
+					processQ.produce(_deviceResources->processQproducerToken, retval);
+					retval.reset();
+					numItems++;
+					numItemsProcessed++;
+				} //Otherwise, see below
 			}
 			else if (tile.visibility) // Tile had no change, but was visible - just add it to the drawing queue.
 			{
-				++app->itemsToDraw;
-				drawQ.produce(apiObj->drawQproducerToken, id2d);
-				//Add the item to the "processed" queue and mark the count. If it's the last item, mark that the main
-				//thread "must unblock"
-				if (--app->itemsRemaining == 0)
-				{
-					//Signal that we have unblocked the main thread
-					++app->poisonPill;
-					drawQ.unblockOne();
-				}
+				retval.itemToDraw = id2d;
+				drawQ.produce(_deviceResources->drawQproducerToken, retval);
+				retval.reset();
+				numItemsDrawn++;
+				numItems++;
+			}
+			if (!tile.visibility) // THIS IS NOT AN ELSE. All invisible items end up here
+			{
+				++retval.itemsDiscarded;
+				numItems++;
+				numItemsDiscarded++;
 			}
 
 			tile.oldVisibility = tile.visibility;
 			tile.oldLod = tile.lod;
-
-			if (!tile.visibility)
-			{
-				//Remove the item from the total expected number of items if it was not visible
-				//If it was the last one, make sure the main thread is not blocked forever. Since there is an actual race
-				//condition (but we wanted to avoid using very expensive synchronization for the exit condition), we are
-				//just making sure the main thread will not block forever (In a sort of "poison pill" technique - we are
-				//in a sense putting an item in the queue that will tell the main thread to stop).
-				if (--app->itemsRemaining == 0)
-				{
-					//Make sure the main thread does not remain blocked forever
-					++app->poisonPill;
-					drawQ.unblockOne();
-				}
-			}
 		}
 	}
-
-}
-
-///// UTILS (local) /////
-inline vec3 getTrackPosition(float32 time, const vec3& world_size)
-{
-	const float32 angle = time * 0.02f;
-	const vec3 centre = world_size * 0.5f;
-	const vec3 radius = world_size * 0.2f;
-	// Main circle
-	float a1 = time * 0.07f;
-	float a2 = time * 0.1f;
-	float a3 = angle;
-
-	const float32 h = glm::sin(a1) * 15.f + 100.f;
-	const float32 radius_factor = 0.95f + 0.1f * glm::sin(a2);
-	const glm::vec3 circle(glm::sin(a3)*radius.x * radius_factor, h, glm::cos(a3)*radius.z * radius_factor);
-
-	return centre + circle;
-}
-
-float32 initializeGridPosition(std::vector<float>& grid, uint32 numItemsPerRow)
-{
-	//| x | x | x |
-	//| x | x | x |
-	//| x | x | x |
-	//Jittered Grid - each object is placed on the center of a normal grid, and then moved randomly around.
-	const float32 MIN_DISTANCE_FACTOR = -.2f; // Minimum item distance is 1/5 th their starting distance
-
-	grid.resize(numItemsPerRow);
-	float32 distance = 1.f / numItemsPerRow;
-	grid[0] = .5f * distance;
-	for (uint32 i = 1; i < numItemsPerRow; ++i)
+	if (retval.itemsDiscarded != 0)
 	{
-		grid[i] = grid[i - 1] + distance;
-	}
-	float32 deviation = distance * .5f * (1.f - MIN_DISTANCE_FACTOR);
-	return deviation;
-}
-
-inline void generatePositions(vec3* points, vec3 minBound, vec3 maxBound)
-{
-	static std::vector<float> normalGridPositions;
-	static const uint32 numItemsPerRow = (uint32)(sqrtf(NUM_UNIQUE_OBJECTS_PER_TILE));
-	static const float deviation = initializeGridPosition(normalGridPositions, numItemsPerRow);
-
-	for (uint32 y = 0; y < numItemsPerRow; ++y)
-	{
-		for (uint32 x = 0; x < numItemsPerRow; ++x)
-		{
-			vec3 pos(normalGridPositions[x] + deviation * randomrange(-1.f, 1.f),
-			         0.f,
-			         normalGridPositions[y] + deviation * randomrange(-1.f, 1.f));
-			vec3 mixed = glm::mix(minBound, maxBound, pos);
-
-			points[y * numItemsPerRow + x] = vec3(mixed.x, mixed.y, mixed.z);
-		}
-	}
-	for (int i = numItemsPerRow * numItemsPerRow; i < NUM_UNIQUE_OBJECTS_PER_TILE; ++i)
-	{
-		points[i] = glm::mix(minBound, maxBound, vec3(randomrange(-1.f, 1.f), 0, randomrange(-1.f, 1.f)));
+		drawQ.produce(_deviceResources->drawQproducerToken, retval);
+		retval.reset();
 	}
 }
 
-
-/////////// CLASS VulkanGnomeHorde ///////////
-///// CALLBACKS - IMPLEMENTATION OF pvr::Shell /////
-Result VulkanGnomeHorde::initApplication()
+pvr::Result VulkanGnomeHorde::renderFrame()
 {
-	int num_cores = (int)std::thread::hardware_concurrency();
-	int THREAD_FACTOR_RELAXATION = 1;
-
-	int thread_factor = std::max(num_cores - THREAD_FACTOR_RELAXATION, 1);
-
-	numVisibilityThreads = std::min(thread_factor, (int)MAX_NUMBER_OF_THREADS);
-	numTileThreads = std::min(thread_factor, (int)MAX_NUMBER_OF_THREADS);
-	Log(Log.Information,
-	    "Hardware concurreny reported: %u cores. Enabling %u visibility threads plus %u tile processing threads\n",
-	    num_cores, numVisibilityThreads, numTileThreads);
-
-	// Meshes
-	meshes.gnome = loadLodMesh(StringHash("gnome"), "body", 7);
-	meshes.gnomeShadow = loadLodMesh("gnome_shadow", "Plane001", 1);
-	meshes.fern = loadLodMesh("fern", "Plane006", 1);
-	meshes.fernShadow = loadLodMesh("fern_shadow", "Plane001", 1);
-	meshes.mushroom = loadLodMesh("mushroom", "Mushroom1", 2);
-	meshes.mushroomShadow = loadLodMesh("mushroom_shadow", "Plane001", 1);
-	meshes.bigMushroom = loadLodMesh("bigMushroom", "Mushroom1", 1);
-	meshes.bigMushroomShadow = loadLodMesh("bigMushroom_shadow", "Plane001", 1);
-	meshes.rock = loadLodMesh("rocks", "rock5", 1);
-
-	return Result::Success;
-}
-
-Result VulkanGnomeHorde::quitApplication()
-{
-	meshes.clearAll();
-	return Result::Success;
-}
-
-void VulkanGnomeHorde::setUpUI()
-{
-	apiObj->uiRenderer.init(apiObj->fboOnScreen[0]->getRenderPass(), 0);
-
-	apiObj->uiRenderer.getDefaultTitle()->setText("Gnome Horde");
-	apiObj->uiRenderer.getDefaultTitle()->commitUpdates();
-	apiObj->uiRenderer.getDefaultDescription()->setText("Multithreaded command buffer generation and rendering");
-	apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
-
-	for (uint32 i = 0; i < numSwapImages; ++i)
+	const pvrvk::ClearValue clearVals[] =
 	{
-		apiObj->multiBuffering[i].cmdBufferUI = getGraphicsContext()->createSecondaryCommandBufferOnDefaultPool();
-		//UIRenderer - the easy stuff first, but we still must create one command buffer per frame.
+		pvrvk::ClearValue(.205f, 0.3f, 0.05f, 1.f),
+		pvrvk::ClearValue(1.f, 0u)
+	};
 
-		apiObj->uiRenderer.beginRendering(apiObj->multiBuffering[i].cmdBufferUI);
-		apiObj->uiRenderer.getDefaultTitle()->render();
-		apiObj->uiRenderer.getDefaultDescription()->render();
-		apiObj->uiRenderer.getSdkLogo()->render();
-		apiObj->uiRenderer.endRendering();
-	}
-}
+	_deviceResources->perFrameAcquireFence[frameId]->wait();
+	_deviceResources->perFrameAcquireFence[frameId]->reset();
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[frameId], _deviceResources->perFrameAcquireFence[frameId]);
 
-Result VulkanGnomeHorde::initView()
-{
-	apiObj.reset(new ApiObjects(linesToProcessQ, tilesToDrawQ));
-	apiObj->assetManager.init(*this);
+	swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->wait();
+	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->reset();
 
-	numSwapImages = getSwapChainLength();
-	GraphicsContext& ctx = apiObj->context = getGraphicsContext();
-	apiObj->fboOnScreen = apiObj->context->createOnScreenFboSet();
-
-	setUpUI();
-
-	for (uint32 i = 0; i < numSwapImages; ++i)
-	{
-		apiObj->multiBuffering[i].commandBuffer = ctx->createCommandBufferOnDefaultPool();
-		apiObj->multiBuffering[i].fence = ctx->createFence(true);
-	}
-
-	initUboStructuredObjects();
-
-	//Create Descriptor set layouts
-	api::DescriptorSetLayoutCreateParam imageDescParam;
-	imageDescParam.setBinding(0, types::DescriptorType::CombinedImageSampler, 1, types::ShaderStageFlags::Fragment);
-	api::DescriptorSetLayout descLayoutImage = ctx->createDescriptorSetLayout(imageDescParam);
-<<<<<<< HEAD
-
-	api::DescriptorSetLayoutCreateParam dynamicUboDescParam;
-	dynamicUboDescParam.setBinding(0, types::DescriptorType::UniformBufferDynamic, 1, types::ShaderStageFlags::Vertex);
-	api::DescriptorSetLayout descLayoutUboDynamic = ctx->createDescriptorSetLayout(dynamicUboDescParam);
-
-=======
-
-	api::DescriptorSetLayoutCreateParam dynamicUboDescParam;
-	dynamicUboDescParam.setBinding(0, types::DescriptorType::UniformBufferDynamic, 1, types::ShaderStageFlags::Vertex);
-	api::DescriptorSetLayout descLayoutUboDynamic = ctx->createDescriptorSetLayout(dynamicUboDescParam);
-
->>>>>>> 1776432f... 4.3
-	api::DescriptorSetLayoutCreateParam uboDescParam;
-	uboDescParam.setBinding(0, types::DescriptorType::UniformBuffer, 1, types::ShaderStageFlags::Vertex);
-	api::DescriptorSetLayout descLayoutUboStatic = ctx->createDescriptorSetLayout(uboDescParam);
-
-	//Create Pipelines
-	{
-		apiObj->pipeLayout = ctx->createPipelineLayout(
-		                       api::PipelineLayoutCreateParam()
-		                       .setDescSetLayout(0, descLayoutImage)
-		                       .setDescSetLayout(1, descLayoutUboDynamic)
-		                       .setDescSetLayout(2, descLayoutUboStatic));
-
-		// Must not assume the cache will always work
-
-		api::Shader objectVsh = ctx->createShader(*getAssetStream("Object.vsh.spv"), types::ShaderType::VertexShader);
-		api::Shader shadowVsh = ctx->createShader(*getAssetStream("Shadow.vsh.spv"), types::ShaderType::VertexShader);
-		api::Shader solidFsh = ctx->createShader(*getAssetStream("Solid.fsh.spv"), types::ShaderType::FragmentShader);
-		api::Shader shadowFsh = ctx->createShader(*getAssetStream("Shadow.fsh.spv"), types::ShaderType::FragmentShader);
-		api::Shader premulFsh = ctx->createShader(*getAssetStream("Plant.fsh.spv"), types::ShaderType::FragmentShader);
-
-		api::GraphicsPipelineCreateParam pipeCreate;
-		types::BlendingConfig cbStateNoBlend;
-		types::BlendingConfig cbStateBlend(true, types::BlendFactor::OneMinusSrcAlpha, types::BlendFactor::SrcAlpha, types::BlendOp::Add);
-		types::BlendingConfig cbStatePremulAlpha(true, types::BlendFactor::One, types::BlendFactor::OneMinusSrcAlpha, types::BlendOp::Add);
-
-		utils::createInputAssemblyFromMesh(*meshes.gnome[0].mesh, &attributeBindings[0], 3, pipeCreate);
-		pipeCreate.rasterizer.setFrontFaceWinding(types::PolygonWindingOrder::FrontFaceCCW);
-		pipeCreate.rasterizer.setCullFace(types::Face::Back);
-		pipeCreate.depthStencil.setDepthTestEnable(true);
-		pipeCreate.depthStencil.setDepthCompareFunc(pvr::types::ComparisonMode::Less);
-		pipeCreate.depthStencil.setDepthWrite(true);
-		pipeCreate.renderPass = apiObj->fboOnScreen[0]->getRenderPass();
-		pipeCreate.pipelineLayout = apiObj->pipeLayout;
-
-		// create the solid pipeline
-		pipeCreate.vertexShader = objectVsh;
-		pipeCreate.fragmentShader = solidFsh;
-		pipeCreate.colorBlend.setAttachmentState(0, cbStateNoBlend);
-<<<<<<< HEAD
-		assertRefcountValid(apiObj->pipelines.solid = ctx->createGraphicsPipeline(pipeCreate));
-=======
-		if ((apiObj->pipelines.solid = ctx->createGraphicsPipeline(pipeCreate)).isNull())
-		{
-			setExitMessage("Failed to create Opaque rendering pipeline");
-			return Result::UnknownError;
-		}
->>>>>>> 1776432f... 4.3
-
-		pipeCreate.depthStencil.setDepthWrite(false);
-		// create the alpha pre-multiply pipeline
-		pipeCreate.vertexShader = objectVsh;
-		pipeCreate.fragmentShader = premulFsh;
-		pipeCreate.colorBlend.setAttachmentState(0, cbStatePremulAlpha);
-		if ((apiObj->pipelines.alphaPremul = ctx->createGraphicsPipeline(pipeCreate)).isNull())
-		{
-			setExitMessage("Failed to create Premultiplied Alpha rendering pipeline");
-			return Result::UnknownError;
-		}
-
-		// create the shadow pipeline
-		pipeCreate.colorBlend.setAttachmentState(0, cbStateBlend);
-		pipeCreate.vertexShader = shadowVsh;
-		pipeCreate.fragmentShader = shadowFsh;
-		if ((apiObj->pipelines.shadow = ctx->createGraphicsPipeline(pipeCreate)).isNull())
-		{
-			setExitMessage("Failed to create Shadow rendering pipeline");
-			return Result::UnknownError;
-		}
-	}
-
-	createDescSetsAndTiles(descLayoutImage, descLayoutUboDynamic, descLayoutUboStatic);
-
-	animDetails.logicTime = 0.f;
-	animDetails.gameTime = 0.f;
-	{
-		for (uint32 i = 0; i < numVisibilityThreads; ++i)
-		{
-			apiObj->visibilityThreadData[i].id = i;
-			apiObj->visibilityThreadData[i].app = this;
-			apiObj->visibilityThreadData[i].apiObj.reset(new GnomeHordeVisibilityThreadData::ApiObjects(linesToProcessQ, tilesToProcessQ, tilesToDrawQ));
-			apiObj->visibilityThreadData[i].thread = std::thread(&GnomeHordeVisibilityThreadData::run, (GnomeHordeVisibilityThreadData*)&apiObj->visibilityThreadData[i]);
-		}
-		for (uint32 i = 0; i < numTileThreads; ++i)
-		{
-			apiObj->tileThreadData[i].id = i;
-			apiObj->tileThreadData[i].app = this;
-			apiObj->tileThreadData[i].apiObj.reset(new GnomeHordeTileThreadData::ApiObjects(tilesToProcessQ, tilesToDrawQ));
-			apiObj->tileThreadData[i].apiObj->cmdPools.clear();
-			apiObj->tileThreadData[i].apiObj->cmdPools.push_back(ctx->createCommandPool());
-			apiObj->tileThreadData[i].thread = std::thread(&GnomeHordeTileThreadData::run, (GnomeHordeTileThreadData*)&apiObj->tileThreadData[i]);
-		}
-	}
-	printLog();
-	return Result::Success;
-}
-
-Result VulkanGnomeHorde::releaseView()
-{
-	Log(Log.Information, "Signalling all worker threads: Signal drain empty queues...");
-	//Done will allow the queue to finish its work if it has any, but then immediately
-	//afterwards it will free any and all threads waiting. Any threads attempting to
-	//dequeue work from the queue will immediately return "false".
-	linesToProcessQ.done();
-	tilesToProcessQ.done();
-	tilesToDrawQ.done();
-
-	//waitIdle is being called to make sure the command buffers we will be destroying
-	//are not being referenced.
-	getGraphicsContext()->waitIdle();
-
-	Log(Log.Information, "Joining all worker threads...");
-
-	//Finally, tear down everything.
-	for (uint32 i = 0; i < numVisibilityThreads; ++i)
-	{
-		apiObj->visibilityThreadData[i].thread.join();
-	}
-	for (uint32 i = 0; i < numTileThreads; ++i)
-	{
-		apiObj->tileThreadData[i].thread.join();
-	}
-
-	//Clear all objects. This will also free the command buffers that were allocated
-	//from the worker thread's command pools, but are currently only held by the
-	//tiles.
-	apiObj.reset();
-	meshes.clearApiObjects();
-
-	Log(Log.Information, "All worker threads done!");
-	return Result::Success;
-}
-
-Result VulkanGnomeHorde::renderFrame()
-{
 	float dt = getFrameTime() * 0.001f;
 	animDetails.logicTime += dt;
-	if (animDetails.logicTime > 10000000) { animDetails.logicTime = 0; }
+	if (animDetails.logicTime > 10000000)
+	{
+		animDetails.logicTime = 0;
+	}
 
 	// Get the next free swapchain image
-	// We have implemented the application so that cmdb[0,1,2] points to swapchain fb[0,1,2]
-	// so we must submit the cmdb that this index points to.
-	// Applications that generate cmdbs on the fly may not need to do this.
-	swapIndex = getSwapChainIndex();
+	// We have implemented the application so that commandb[0,1,2] points to swapchain fb[0,1,2]
+	// so we must submit the commandb that this index points to.
+	// Applications that generate commandbs on the fly may not need to do this.
 
 	//Interpolate frame parameters
 	AppModeParameter parameters = calcAnimationParameters();
@@ -945,95 +1145,73 @@ Result VulkanGnomeHorde::renderFrame()
 
 	const vec3 worldSize = vec3(TILE_SIZE_X + TILE_GAP_X, TILE_SIZE_Y, TILE_SIZE_Z + TILE_GAP_Z) * vec3(NUM_TILES_X, 1, NUM_TILES_Z);
 	vec3 camPos = getTrackPosition(animDetails.gameTime, worldSize);
-	//cameraPosition is also used by the visibility threads. The "volatile" variable is to make sure it is visible to the threads
-	//we will be starting in a bit. For the moment, NO concurrent access happens (as the worker threads are inactive).
-	utils::memCopyToVolatile(cameraPosition, camPos);
-	vec3 camTarget = getTrackPosition(animDetails.gameTime + parameters.cameraForwardOffset, worldSize) + vec3(10.f, 10.f, 10.f);
+	// cameraPosition is also used by the visibility threads. The "volatile"
+	// variable is to make sure it is visible to the threads
+	// we will be starting in a bit. For the moment, NO concurrent access happens
+	// (as the worker threads are inactive).
+	pvr::utils::memCopyToVolatile(cameraPosition, camPos);
+	vec3 camTarget = getTrackPosition(animDetails.gameTime +
+	                                  parameters.cameraForwardOffset, worldSize) + vec3(10.f, 10.f, 10.f);
 	camTarget.y = 0.f;
 	camPos.y += parameters.cameraHeightOffset;
 
 	vec3 camUp = vec3(0.f, 1.f, 0.f);
 
-	mat4 cameraMat = math::perspectiveFov(pvr::Api::Vulkan, 1.1f, (pvr::float32)getWidth(), (pvr::float32)getHeight(), 10.0f, 5000.f) *
+	mat4 cameraMat = pvr::math::perspectiveFov(pvr::Api::Vulkan, 1.1f,
+	                 (float)getWidth(), (float)getHeight(), 10.0f, 5000.f) *
 	                 glm::lookAt(camPos, camTarget, camUp);
 
-	mat4 cameraMat2 = math::perspectiveFov(pvr::Api::Vulkan, 1.2f, (pvr::float32)getWidth(), (pvr::float32)getHeight(), 10.0f, 5000.f) *
+	mat4 cameraMat2 = pvr::math::perspectiveFov(pvr::Api::Vulkan, 1.2f,
+	                  (float)getWidth(), (float)getHeight(), 10.0f, 5000.f) *
 	                  glm::lookAt(camPos, camTarget, camUp);
 
 	updateCameraUbo(cameraMat);
 
-	math::ViewingFrustum frustumTmp;
-	math::getFrustumPlanes(cameraMat2, frustumTmp);
-	utils::memCopyToVolatile(frustum, frustumTmp);
+	pvr::math::ViewingFrustum frustumTmp;
+	pvr::math::getFrustumPlanes(cameraMat2, frustumTmp);
+	pvr::utils::memCopyToVolatile(frustum, frustumTmp);
+	linesToProcessQ.produceMultiple(_deviceResources->lineQproducerToken, allLines, NUM_TILES_Z);
 
-	itemsRemaining.store(NUM_TILES_X * NUM_TILES_Z);
-	itemsToDraw.store(0);
-	itemsDrawn.store(0);
-	poisonPill.store(0);
+	auto& cb = _deviceResources->multiBuffering[swapchainIndex].commandBuffer;
+	cb->begin();
 
-	linesToProcessQ.produceMultiple(apiObj->lineQproducerToken, allLines, NUM_TILES_Z);
+	cb->beginRenderPass(_deviceResources->onScreenFramebuffer[swapchainIndex], false, clearVals, ARRAY_SIZE(clearVals));
 
-	auto& cb = apiObj->multiBuffering[swapIndex].commandBuffer;
-	//if (tilesChanged)
-	{
-		cb->beginRecording();
-		cb->beginRenderPass(apiObj->fboOnScreen[swapIndex], Rectanglei(0, 0, getWidth(), getHeight()), false, glm::vec4(.205f, 0.3f, 0.05f, 1.f));
-	}
-	// Check culling and push the secondary cmdbs on to the primary cmdb
+	// Check culling and push the secondary command buffers on to the primary command buffer
 	enum ItemsTotal {itemsTotal = NUM_TILES_X * NUM_TILES_Z};
-
-	cb->enqueueSecondaryCmds_BeginMultiple(255);
 	//MAIN RENDER LOOP - Collect the work (tiles) as it is processed
 	{
-		// Consume extra CB's as they become ready
-		uint32 result;
-		glm::ivec2 tileId[256];
-
-		uint32 loop = 0;
+		// Consume extra command buffers as they become ready
+		uint32_t numItems;
+		TileProcessingResult results[256];
 
 		//We need some rather complex safeguards to make sure this thread does not wait forever.
 		//First - we must (using atomics) make sure that when we say we are done, i.e. no items are unaccounted for.
 		//Second, for the case where the main thread is waiting, but all remaining items are not visible, the last thread
 		//to process an item will trigger an additional "unblock" to the main thread.
-		while (itemsDrawn != itemsToDraw || itemsRemaining)
-		{
 
-			if ((itemsDrawn > itemsToDraw) && !itemsRemaining)
+		uint32_t numItemsToDraw = itemsTotal;
+
+		while (numItemsToDraw > 0)
+		{
+			numItems = static_cast<uint32_t>(tilesToDrawQ.consumeMultiple(_deviceResources->drawQconsumerToken, results, 256));
+			for (uint32_t i = 0; i < numItems; ++i)
 			{
-				if ((result == 0) && (loop > 0)) //NOT THE FIRST TIME?
+				numItemsToDraw -= results[i].itemsDiscarded;
+
+				ivec2 tileId = results[i].itemToDraw;
+				if (tileId != ivec2(-1, -1))
 				{
-					Log(Log.Error, "Blocking is not released");
-					poisonPill.store(0);
-					break;
+					--numItemsToDraw;
+					std::unique_lock<std::mutex> lock(*_deviceResources->tileInfos[tileId.y][tileId.x].cbs[swapchainIndex].second);
+					cb->executeCommands(&(_deviceResources->tileInfos[tileId.y][tileId.x].cbs[swapchainIndex].first), 1);
 				}
 			}
-
-
-			result = (uint32)tilesToDrawQ.consumeMultiple(apiObj->drawQconsumerToken, tileId, 256);
-			if (!result) { --poisonPill; }
-			itemsDrawn += result;
-			for (uint32 i = 0; i < result; ++i)
-			{
-				cb->enqueueSecondaryCmds_EnqueueMultiple(&(apiObj->tileInfos[tileId[i].y][tileId[i].x].cbs[swapIndex]), 1);
-			}
-		}
-
-		//The uirenderer should always be drawn last as it has (and checks) no depth
-		cb->enqueueSecondaryCmds_EnqueueMultiple(&apiObj->multiBuffering[swapIndex].cmdBufferUI, 1);
-
-		cb->enqueueSecondaryCmds_SubmitMultiple(); //SUBMIT THE WORK!
-		if (poisonPill >= 0)
-		{
-			while (poisonPill--)
-			{
-				tilesToDrawQ.consume(apiObj->drawQconsumerToken, tileId[255]); //Make sure it is in a consistent state
-			}
-		}
-		else
-		{
-			Log(Log.Error, "poisonPill is less than 0");
 		}
 	}
+
+	//The uirenderer should always be drawn last as it has (and checks) no depth
+	cb->executeCommands(_deviceResources->multiBuffering[swapchainIndex].commandBufferUI);
 
 	assertion(linesToProcessQ.isEmpty(), "Initial Line Processing Queue was not empty after work done!");
 	assertion(tilesToProcessQ.isEmpty(), "Worker Tile Processing Queue was not empty after work done!");
@@ -1041,45 +1219,99 @@ Result VulkanGnomeHorde::renderFrame()
 	//We do not need any additional syncing - we know all dispatched work is done.
 
 	cb->endRenderPass();
-	cb->endRecording();
-	cb->submit();
+	cb->end();
+	pvrvk::SubmitInfo submitInfo;
+	VkPipelineStageFlags waitStage = VkPipelineStageFlags::e_ALL_GRAPHICS_BIT;
+	submitInfo.commandBuffers = &cb;
+	submitInfo.numCommandBuffers = 1;
+	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[frameId];
+	submitInfo.numWaitSemaphores = 1;
+	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[frameId];
+	submitInfo.numSignalSemaphores = 1;
+	submitInfo.waitDestStages = &waitStage;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[swapchainIndex]);
+
+	if (this->shouldTakeScreenshot())
+	{
+		if (_deviceResources->swapchain->supportsUsage(VkImageUsageFlags::e_TRANSFER_SRC_BIT))
+		{
+			pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName());
+		}
+		else
+		{
+			Log(LogLevel::Warning, "Could not take screenshot as the swapchain does not support TRANSFER_SRC_BIT");
+		}
+	}
+
+
+	uint32_t swapIdx = swapchainIndex;
+	//--------------------
+	// Present
+	pvrvk::PresentInfo presentInfo;
+	presentInfo.swapchains = &_deviceResources->swapchain;
+	presentInfo.numSwapchains = 1;
+	presentInfo.imageIndices = &swapIdx;
+	presentInfo.numWaitSemaphores = 1;
+	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[frameId];
+	_deviceResources->queue->present(presentInfo);
 	printLog();
-
-	return Result::Success;
-}
-
-void VulkanGnomeHorde::kickReleaseCommandBuffers()
-{
+	frameId = (frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+	return pvr::Result::Success;
 }
 
 void VulkanGnomeHorde::updateCameraUbo(const glm::mat4& matrix)
 {
-	apiObj->multiBuffering[swapIndex].uboPerFrame.map(0);
-	apiObj->multiBuffering[swapIndex].uboPerFrame.setValue(0, matrix);
-	apiObj->multiBuffering[swapIndex].uboPerFrame.unmap(0);
+	_deviceResources->uboBufferView.getElement(0, 0, swapchainIndex).setValue(matrix);
 }
 
-void VulkanGnomeHorde::createDescSetsAndTiles(const api::DescriptorSetLayout& layoutImage, const api::DescriptorSetLayout& layoutPerObject,
-    const api::DescriptorSetLayout& layoutPerFrameUbo)
+void VulkanGnomeHorde::createDescSetsAndTiles(
+  const pvrvk::DescriptorSetLayout& layoutImage,
+  const pvrvk::DescriptorSetLayout& layoutPerObject,
+  const pvrvk::DescriptorSetLayout& layoutPerFrameUbo,
+  std::vector<pvr::utils::ImageUploadResults>& imageUploads,
+  pvrvk::CommandBuffer& uploadCmdBuffer)
 {
-	GraphicsContext& ctx = apiObj->context;
+	pvrvk::Device& device = _deviceResources->device;
 	{
-		//The objects could have been completely different - the fact that there are only a handful of different
+		//The objects could have been completely different -
+		//the fact that there are only a handful of different
 		//objects is coincidental and does not affect the demo.
-		auto& trilinear = apiObj->trilinear = ctx->createSampler(api::SamplerCreateParam(types::SamplerFilter::Linear, types::SamplerFilter::Linear, types::SamplerFilter::Linear));
-		auto& nonMipmapped = apiObj->nonMipmapped = ctx->createSampler(api::SamplerCreateParam(types::SamplerFilter::Linear, types::SamplerFilter::Linear, types::SamplerFilter::None));
+		auto& trilinear = _deviceResources->trilinear = device->createSampler(
+		                    pvrvk::SamplerCreateInfo(VkFilter::e_LINEAR,
+		                        VkFilter::e_LINEAR, VkSamplerMipmapMode::e_LINEAR));
 
-		apiObj->descSets.gnome = createDescriptorSetUtil(layoutImage, "gnome_texture.pvr", trilinear, nonMipmapped);
-		apiObj->descSets.gnomeShadow = createDescriptorSetUtil(layoutImage, "gnome_shadow.pvr", trilinear, nonMipmapped);
-		apiObj->descSets.rock = createDescriptorSetUtil(layoutImage, "rocks.pvr", trilinear, nonMipmapped);
-		apiObj->descSets.fern = createDescriptorSetUtil(layoutImage, "fern.pvr", trilinear, nonMipmapped);
-		apiObj->descSets.fernShadow = createDescriptorSetUtil(layoutImage, "fern_shadow.pvr", trilinear, nonMipmapped);
-		apiObj->descSets.mushroom = createDescriptorSetUtil(layoutImage, "mushroom_texture.pvr", trilinear, nonMipmapped);
-		apiObj->descSets.mushroomShadow = createDescriptorSetUtil(layoutImage, "mushroom_shadow.pvr", trilinear, nonMipmapped);
-		apiObj->descSets.bigMushroom = createDescriptorSetUtil(layoutImage, "bigMushroom_texture.pvr", trilinear, nonMipmapped);
-		apiObj->descSets.bigMushroomShadow = createDescriptorSetUtil(layoutImage, "bigMushroom_shadow.pvr", trilinear, nonMipmapped);
+		auto& nonMipmapped = _deviceResources->nonMipmapped = device->createSampler(
+		                       pvrvk::SamplerCreateInfo(VkFilter::e_LINEAR,
+		                           VkFilter::e_LINEAR, VkSamplerMipmapMode::e_NEAREST));
+
+		_deviceResources->descSets.gnome = createDescriptorSetUtil(
+		                                     layoutImage, "gnome_texture.pvr", trilinear, nonMipmapped, imageUploads, uploadCmdBuffer);
+
+		_deviceResources->descSets.gnomeShadow = createDescriptorSetUtil(
+		      layoutImage, "gnome_shadow.pvr", trilinear, nonMipmapped, imageUploads, uploadCmdBuffer);
+
+		_deviceResources->descSets.rock = createDescriptorSetUtil(
+		                                    layoutImage, "rocks.pvr", trilinear, nonMipmapped, imageUploads, uploadCmdBuffer);
+
+		_deviceResources->descSets.fern = createDescriptorSetUtil(
+		                                    layoutImage, "fern.pvr", trilinear, nonMipmapped, imageUploads, uploadCmdBuffer);
+
+		_deviceResources->descSets.fernShadow = createDescriptorSetUtil(
+		    layoutImage, "fern_shadow.pvr", trilinear, nonMipmapped, imageUploads, uploadCmdBuffer);
+
+		_deviceResources->descSets.mushroom = createDescriptorSetUtil(
+		                                        layoutImage, "mushroom_texture.pvr", trilinear, nonMipmapped, imageUploads, uploadCmdBuffer);
+
+		_deviceResources->descSets.mushroomShadow = createDescriptorSetUtil(
+		      layoutImage, "mushroom_shadow.pvr", trilinear, nonMipmapped, imageUploads, uploadCmdBuffer);
+
+		_deviceResources->descSets.bigMushroom = createDescriptorSetUtil(
+		      layoutImage, "bigMushroom_texture.pvr", trilinear, nonMipmapped, imageUploads, uploadCmdBuffer);
+
+		_deviceResources->descSets.bigMushroomShadow = createDescriptorSetUtil(
+		      layoutImage, "bigMushroom_shadow.pvr", trilinear, nonMipmapped, imageUploads, uploadCmdBuffer);
+
 	}
-
 
 	//The ::pvr::utils::StructuredMemoryView is a simple class that allows us easy access to update members of a buffer - it keeps track of offsets,
 	//datatypes and sizes of items in the buffer, allowing us to update them very easily. The connectWithBuffer method allows us to call the map/unmap functions
@@ -1091,107 +1323,99 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const api::DescriptorSetLayout& la
 	//CAUTION: The Range of the Buffer View for a Dynamic Uniform Buffer must be the BINDING size, not the TOTAL size, i.e. the size
 	//of the part of the buffer that will be bound each time, not the total size. That is why we cannot do a one-step creation (...createBufferAndView) like
 	//for static UBOs.
-	apiObj->uboPerObject.connectWithBuffer(
-	  0, ctx->createBufferView(
-	    ctx->createBuffer(apiObj->uboPerObject.getAlignedTotalSize(), types::BufferBindingUse::UniformBuffer, true),
-<<<<<<< HEAD
-	    0, apiObj->uboPerObject.getAlignedElementSize()), types::BufferViewTypes::UniformBufferDynamic);
-=======
-	    0, apiObj->uboPerObject.getAlignedElementSize()));
->>>>>>> 1776432f... 4.3
+	pvrvk::WriteDescriptorSet descSetWrites[pvrvk::FrameworkCaps::MaxSwapChains + 1];
+	_deviceResources->descSetAllObjects = _deviceResources->descriptorPool->allocateDescriptorSet(layoutPerObject);
+	descSetWrites[0].set(VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _deviceResources->descSetAllObjects, 0)
+	.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->uboPerObject, 0, _deviceResources->uboPerObjectBufferView.getDynamicSliceSize()));
 
-	apiObj->descSetAllObjects = ctx->createDescriptorSetOnDefaultPool(layoutPerObject);
-	apiObj->descSetAllObjects->update(api::DescriptorSetUpdate().setDynamicUbo(0, apiObj->uboPerObject.getConnectedBuffer(0)));
-
-	for (uint32 i = 0; i < numSwapImages; ++i)
+	for (uint32_t i = 0; i < numSwapImages; ++i)
 	{
-		//The uboPerFrame is a small UniformBuffer that contains the camera (World->Projection) matrix. Since it is updated every frame, it is multi-buffered to avoid
-		//stalling the GPU
-		auto& current = apiObj->multiBuffering[i];
-		current.descSetPerFrame = ctx->createDescriptorSetOnDefaultPool(layoutPerFrameUbo);
-		current.uboPerFrame.connectWithBuffer(0, ctx->createBufferAndView(current.uboPerFrame.getAlignedElementSize(),
-<<<<<<< HEAD
-		                                      types::BufferBindingUse::UniformBuffer, true), types::BufferViewTypes::UniformBuffer);
-=======
-		                                      types::BufferBindingUse::UniformBuffer, true));
->>>>>>> 1776432f... 4.3
-		current.descSetPerFrame->update(api::DescriptorSetUpdate().setUbo(0, current.uboPerFrame.getConnectedBuffer(0)));
+		//The uboPerFrame is a small UniformBuffer that contains the camera (World->Projection) matrix.
+		//Since it is updated every frame, it is multi-buffered to avoid stalling the GPU
+		auto& current = _deviceResources->multiBuffering[i];
+		current.descSetPerFrame = _deviceResources->descriptorPool->allocateDescriptorSet(layoutPerFrameUbo);
+
+		descSetWrites[i + 1] .set(VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, current.descSetPerFrame, 0)
+		.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->ubo, 0, _deviceResources->uboBufferView.getDynamicSliceSize()));
 	}
+	_deviceResources->device->updateDescriptorSets(descSetWrites, numSwapImages + 1, nullptr, 0);
 	//Create the UBOs/VBOs for the main objects. This automatically creates the VBOs.
-	meshes.createApiObjects(ctx);
+	meshes.createApiObjects(device);
 
 	//Using the StructuredMemoryView to update the objects
-	utils::StructuredMemoryView& perObj = apiObj->uboPerObject;
-	uint32 mvIndex = perObj.getIndex("modelView");
-	uint32 mvITIndex = perObj.getIndex("modelViewIT");
+	pvr::utils::StructuredBufferView& perObj = _deviceResources->uboPerObjectBufferView;
+	pvrvk::Buffer& perObjBuffer = _deviceResources->uboPerObject;
+	uint32_t mvIndex = perObj.getIndex("modelView");
+	uint32_t mvITIndex = perObj.getIndex("modelViewIT");
 
-	perObj.mapMultipleArrayElements(0, 0, TOTAL_NUMBER_OF_OBJECTS, types::MapBufferFlags::Write);
+	void* memory;
+	perObjBuffer->getDeviceMemory()->map(&memory);
+	perObj.pointToMappedMemory(memory);
 
-	for (uint32 y = 0; y < NUM_TILES_Z; ++y)
+	for (uint32_t y = 0; y < NUM_TILES_Z; ++y)
 	{
-		for (uint32 x = 0; x < NUM_TILES_X; ++x)
+		for (uint32_t x = 0; x < NUM_TILES_X; ++x)
 		{
 			vec3 tileBL(x * (TILE_SIZE_X + TILE_GAP_Z), TILE_SIZE_Y, y * (TILE_SIZE_Z + TILE_GAP_Z));
 			vec3 tileTR = tileBL + vec3(TILE_SIZE_X, 0, TILE_SIZE_Z);
 
-			TileInfo& thisTile = apiObj->tileInfos[y][x];
+			TileInfo& thisTile = _deviceResources->tileInfos[y][x];
 
 			thisTile.aabb.setMinMax(tileBL, tileTR);
 
 			thisTile.visibility = false;
-			thisTile.lod = uint8(0xFFu);
+			thisTile.lod = uint8_t(0xFFu);
 			thisTile.oldVisibility = false;
-			thisTile.oldLod = (uint8)0xFFu - (uint8)1;
-
+			thisTile.oldLod = (uint8_t)0xFFu - (uint8_t)1;
 
 			thisTile.objects[0].mesh = &meshes.gnome;
-			thisTile.objects[0].set = apiObj->descSets.gnome;
-			thisTile.objects[0].pipeline = apiObj->pipelines.solid;
+			thisTile.objects[0].set = _deviceResources->descSets.gnome;
+			thisTile.objects[0].pipeline = _deviceResources->pipelines.solid;
 
 			thisTile.objects[1].mesh = &meshes.gnomeShadow;
-			thisTile.objects[1].set = apiObj->descSets.gnomeShadow;
-			thisTile.objects[1].pipeline = apiObj->pipelines.shadow;
+			thisTile.objects[1].set = _deviceResources->descSets.gnomeShadow;
+			thisTile.objects[1].pipeline = _deviceResources->pipelines.shadow;
 
 			thisTile.objects[2].mesh = &meshes.mushroom;
-			thisTile.objects[2].set = apiObj->descSets.mushroom;
-			thisTile.objects[2].pipeline = apiObj->pipelines.solid;
+			thisTile.objects[2].set = _deviceResources->descSets.mushroom;
+			thisTile.objects[2].pipeline = _deviceResources->pipelines.solid;
 
 			thisTile.objects[3].mesh = &meshes.mushroomShadow;
-			thisTile.objects[3].set = apiObj->descSets.mushroomShadow;
-			thisTile.objects[3].pipeline = apiObj->pipelines.shadow;
+			thisTile.objects[3].set = _deviceResources->descSets.mushroomShadow;
+			thisTile.objects[3].pipeline = _deviceResources->pipelines.shadow;
 
 			thisTile.objects[4].mesh = &meshes.bigMushroom;
-			thisTile.objects[4].set = apiObj->descSets.bigMushroom;
-			thisTile.objects[4].pipeline = apiObj->pipelines.solid;
+			thisTile.objects[4].set = _deviceResources->descSets.bigMushroom;
+			thisTile.objects[4].pipeline = _deviceResources->pipelines.solid;
 
 			thisTile.objects[5].mesh = &meshes.bigMushroomShadow;
-			thisTile.objects[5].set = apiObj->descSets.bigMushroomShadow;
-			thisTile.objects[5].pipeline = apiObj->pipelines.shadow;
+			thisTile.objects[5].set = _deviceResources->descSets.bigMushroomShadow;
+			thisTile.objects[5].pipeline = _deviceResources->pipelines.shadow;
 
 			thisTile.objects[7].mesh = &meshes.fernShadow;
-			thisTile.objects[7].set = apiObj->descSets.fernShadow;
-			thisTile.objects[7].pipeline = apiObj->pipelines.shadow;
+			thisTile.objects[7].set = _deviceResources->descSets.fernShadow;
+			thisTile.objects[7].pipeline = _deviceResources->pipelines.shadow;
 
 			thisTile.objects[6].mesh = &meshes.fern;
-			thisTile.objects[6].set = apiObj->descSets.fern;
-			thisTile.objects[6].pipeline = apiObj->pipelines.alphaPremul;
+			thisTile.objects[6].set = _deviceResources->descSets.fern;
+			thisTile.objects[6].pipeline = _deviceResources->pipelines.alphaPremul;
 
 			thisTile.objects[8].mesh = &meshes.rock;
-			thisTile.objects[8].set = apiObj->descSets.rock;
-			thisTile.objects[8].pipeline = apiObj->pipelines.solid;
+			thisTile.objects[8].set = _deviceResources->descSets.rock;
+			thisTile.objects[8].pipeline = _deviceResources->pipelines.solid;
 
 			std::array<vec3, NUM_UNIQUE_OBJECTS_PER_TILE> points;
 			generatePositions(points.data(), tileBL, tileTR);
-			uint32 tileBaseIndex = (y * NUM_TILES_X + x) * NUM_OBJECTS_PER_TILE;
+			uint32_t tileBaseIndex = (y * NUM_TILES_X + x) * NUM_OBJECTS_PER_TILE;
 
-			for (uint32 halfobj = 0; halfobj < NUM_UNIQUE_OBJECTS_PER_TILE; ++halfobj)
+			for (uint32_t halfobj = 0; halfobj < NUM_UNIQUE_OBJECTS_PER_TILE; ++halfobj)
 			{
-				uint32 obj = halfobj * 2;
-				uint32 objShadow = obj + 1;
+				uint32_t obj = halfobj * 2;
+				uint32_t objShadow = obj + 1;
 				// Note: do not put these in-line with the function call because it seems that the nexus player
 				// swaps around the order that the parameters are evaluated compared to desktop
-				float32 rot = randomrange(-glm::pi<float32>(), glm::pi<float32>());
-				float32 s = randomrange(.8, 1.3);
+				float rot = pvr::randomrange(-glm::pi<float>(), glm::pi<float>());
+				float s = pvr::randomrange(.8, 1.3);
 
 				vec3 position = points[halfobj];
 				mat4 rotation = glm::rotate(rot, vec3(0.0f, 1.0f, 0.0f));
@@ -1199,23 +1423,21 @@ void VulkanGnomeHorde::createDescSetsAndTiles(const api::DescriptorSetLayout& la
 				mat4 xform = glm::translate(position) * rotation * scale;
 				mat4 xformIT = glm::transpose(glm::inverse(xform));
 
-				perObj.getDynamicOffset(mvITIndex, tileBaseIndex + obj);
-				perObj.setArrayValue(mvIndex, tileBaseIndex + obj, xform);
-				perObj.setArrayValue(mvITIndex, tileBaseIndex + obj, xformIT);
+				perObj.getElement(mvIndex, 0, tileBaseIndex + obj).setValue(xform);
+				perObj.getElement(mvITIndex, 0, tileBaseIndex + obj).setValue(xformIT);
 
 				if (objShadow != 9)
 				{
-					perObj.setArrayValue(mvIndex, tileBaseIndex + objShadow, xform);
-					perObj.setArrayValue(mvITIndex, tileBaseIndex + objShadow, xformIT);
+					perObj.getElement(mvIndex, 0, tileBaseIndex + objShadow).setValue(xform);
+					perObj.getElement(mvITIndex, 0, tileBaseIndex + objShadow).setValue(xformIT);
 				}
-
 			}
 		}
 	}
-	perObj.unmap(0);
+	perObjBuffer->getDeviceMemory()->unmap();
 }
 
-MeshLod VulkanGnomeHorde::loadLodMesh(const StringHash& filename, const StringHash& mesh, uint32_t num_lods)
+MeshLod VulkanGnomeHorde::loadLodMesh(const pvr::StringHash& filename, const pvr::StringHash& mesh, uint32_t num_lods)
 {
 	MeshLod meshLod;
 	meshLod.resize(num_lods);
@@ -1227,57 +1449,73 @@ MeshLod VulkanGnomeHorde::loadLodMesh(const StringHash& filename, const StringHa
 		ss << ".pod";
 
 		std::string path = filename.str() + ss.str();
-		Log(Log.Information, "Loading model:%s mesh:%s\n", path.c_str(), mesh.c_str());
-		pvr::assets::ModelHandle model;
-		Stream::ptr_type str = getAssetStream(path);
+		Log(LogLevel::Information, "Loading model:%s mesh:%s\n", path.c_str(), mesh.c_str());
+		pvr::assets::ModelHandle model =  pvr::assets::Model::createWithReader(pvr::assets::PODReader(getAssetStream(path)));
 
-		if ((model = pvr::assets::Model::createWithReader(pvr::assets::PODReader(str))).isNull())
+		if (model.isNull())
 		{
-			assertion(false, strings::createFormatted("Failed to load model file %s", path.c_str()).c_str());
+			assertion(false, pvr::strings::createFormatted("Failed to load model file %s", path.c_str()).c_str());
 		}
-		for (uint32 j = 0; j < model->getNumMeshNodes(); ++j)
+		for (uint32_t j = 0; j < model->getNumMeshNodes(); ++j)
 		{
 			if (model->getMeshNode(j).getName() == mesh)
 			{
-				uint32 meshId = model->getMeshNode(j).getObjectId();
-				meshLod[i].mesh = assets::getMeshHandle(model, meshId);
+				uint32_t meshId = model->getMeshNode(j).getObjectId();
+				meshLod[i].mesh = pvr::assets::getMeshHandle(model, meshId);
 				break;
 			}
-			if (j == model->getNumMeshNodes()) { assertion(false, strings::createFormatted("Could not find mesh %s in model file %s", mesh.c_str(), path.c_str()).c_str()); }
+			if (j == model->getNumMeshNodes()) { assertion(false, pvr::strings::createFormatted("Could not find mesh %s in model file %s", mesh.c_str(), path.c_str()).c_str()); }
 		}
 	}
 	return meshLod;
 }
 
-api::DescriptorSet VulkanGnomeHorde::createDescriptorSetUtil(const api::DescriptorSetLayout& layout, const StringHash& texture, const api::Sampler& mipMapped, const api::Sampler& nonMipMapped)
+pvrvk::DescriptorSet VulkanGnomeHorde::createDescriptorSetUtil(
+  const pvrvk::DescriptorSetLayout& layout,
+  const pvr::StringHash& texture, const pvrvk::Sampler& mipMapped,
+  const pvrvk::Sampler& nonMipMapped,
+  std::vector<pvr::utils::ImageUploadResults>& imageUploads,
+  pvrvk::CommandBuffer& uploadCmdBuffer)
 {
-	api::DescriptorSet tmp = apiObj->context->createDescriptorSetOnDefaultPool(layout);
-	api::TextureView tex;
-	apiObj->assetManager.getTextureWithCaching(apiObj->context, texture, &tex, NULL);
-	bool hasMipmaps = tex->getResource()->getFormat().mipmapLevels > 1;
-	api::DescriptorSetUpdate write;
-	write.setCombinedImageSampler(0, tex, hasMipmaps ? mipMapped : nonMipMapped);
-	tmp->update(write);
+	//--------------------
+	// Load the texture
+	imageUploads.push_back(pvr::utils::loadAndUploadImage(_deviceResources->device,
+	                       texture.c_str(), true, uploadCmdBuffer, *this));
+
+	pvrvk::ImageView tex = imageUploads.back().getImageView();
+	pvrvk::DescriptorSet tmp = _deviceResources->descriptorPool->allocateDescriptorSet(layout);
+	bool hasMipmaps = tex->getImage()->getNumMipMapLevels() > 1;
+	pvrvk::WriteDescriptorSet write(VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, tmp, 0);
+	write.setImageInfo(0, pvrvk::DescriptorImageInfo(tex, hasMipmaps ? mipMapped : nonMipMapped,
+	                   VkImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
+	_deviceResources->device->updateDescriptorSets(&write, 1, nullptr, 0);
 	return tmp;
 }
 
 void VulkanGnomeHorde::initUboStructuredObjects()
 {
-	for (uint32 i = 0; i < numSwapImages; ++i)
 	{
-		apiObj->multiBuffering[i].uboPerFrame.addEntryPacked("projectionMat", types::GpuDatatypes::mat4x4);
-<<<<<<< HEAD
+		pvr::utils::StructuredMemoryDescription desc;
+		desc.addElement("projectionMat", pvr::GpuDatatypes::mat4x4);
+
+		_deviceResources->uboBufferView.initDynamic(desc, numSwapImages, pvr::BufferUsageFlags::UniformBuffer,
+		    static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().limits.minUniformBufferOffsetAlignment));
+
+		_deviceResources->ubo = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->uboBufferView.getSize(),
+		                        VkBufferUsageFlags::e_UNIFORM_BUFFER_BIT, VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT | VkMemoryPropertyFlags::e_HOST_COHERENT_BIT);
 	}
-	apiObj->uboPerObject.setupDynamic(getGraphicsContext(), TOTAL_NUMBER_OF_OBJECTS, types::BufferViewTypes::UniformBufferDynamic);
-	apiObj->uboPerObject.addEntryPacked("modelView", types::GpuDatatypes::mat4x4);
-	apiObj->uboPerObject.addEntryPacked("modelViewIT", types::GpuDatatypes::mat4x4);
-=======
-		apiObj->multiBuffering[i].uboPerFrame.finalize(getGraphicsContext(), 1, types::BufferBindingUse::UniformBuffer);
+
+	{
+		pvr::utils::StructuredMemoryDescription desc;
+		desc.addElement("modelView", pvr::GpuDatatypes::mat4x4);
+		desc.addElement("modelViewIT", pvr::GpuDatatypes::mat4x4);
+
+		_deviceResources->uboPerObjectBufferView.initDynamic(desc, TOTAL_NUMBER_OF_OBJECTS, pvr::BufferUsageFlags::UniformBuffer,
+		    static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().limits.minUniformBufferOffsetAlignment));
+
+		_deviceResources->uboPerObject = pvr::utils::createBuffer(_deviceResources->device, _deviceResources->uboPerObjectBufferView.getSize(),
+		                                 VkBufferUsageFlags::e_UNIFORM_BUFFER_BIT, VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT | VkMemoryPropertyFlags::e_HOST_COHERENT_BIT);
 	}
-	apiObj->uboPerObject.addEntryPacked("modelView", types::GpuDatatypes::mat4x4);
-	apiObj->uboPerObject.addEntryPacked("modelViewIT", types::GpuDatatypes::mat4x4);
-	apiObj->uboPerObject.finalize(getGraphicsContext(), TOTAL_NUMBER_OF_OBJECTS, types::BufferBindingUse::UniformBuffer, true, false);
->>>>>>> 1776432f... 4.3
 }
 
 AppModeParameter VulkanGnomeHorde::calcAnimationParameters()
@@ -1289,7 +1527,7 @@ AppModeParameter VulkanGnomeHorde::calcAnimationParameters()
 		{
 			animDetails.previousMode = animDetails.currentMode;
 			animDetails.currentMode = (animDetails.currentMode + 1) % DemoModes.size();
-			Log(Log.Information, "Switching to mode: [%d]", animDetails.currentMode);
+			Log(LogLevel::Information, "Switching to mode: [%d]", animDetails.currentMode);
 			needsTransition = true;
 		}
 	}
@@ -1313,7 +1551,4 @@ AppModeParameter VulkanGnomeHorde::calcAnimationParameters()
 	return result;
 }
 
-std::auto_ptr<pvr::Shell> pvr::newDemo()
-{
-	return std::auto_ptr<pvr::Shell>(new VulkanGnomeHorde);
-}
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::unique_ptr<pvr::Shell>(new VulkanGnomeHorde);}

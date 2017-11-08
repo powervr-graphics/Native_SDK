@@ -61,14 +61,12 @@ END
 
 
 // RCDATA: Shaders
-TexColShader_vk.fsh		RCDATA		"..\\..\\TexColShader_vk.fsh"
-TexColShader_vk.vsh		RCDATA		"..\\..\\TexColShader_vk.vsh"
 ColShader_vk.fsh		RCDATA		"..\\..\\ColShader_vk.fsh"
 ColShader_vk.vsh		RCDATA		"..\\..\\ColShader_vk.vsh"
-TexColShader_vk.fsh.spv		RCDATA		"..\\..\\TexColShader_vk.fsh.spv"
-TexColShader_vk.vsh.spv		RCDATA		"..\\..\\TexColShader_vk.vsh.spv"
 ColShader_vk.fsh.spv		RCDATA		"..\\..\\ColShader_vk.fsh.spv"
 ColShader_vk.vsh.spv		RCDATA		"..\\..\\ColShader_vk.vsh.spv"
+recompile.sh		RCDATA		"..\\..\\recompile.sh"
+recompile.bat		RCDATA		"..\\..\\recompile.bat"
 
 // RCDATA: Textures
 weather-storm.pvr		RCDATA		"..\\..\\..\\ProcessedAssets\\weather-storm.pvr"

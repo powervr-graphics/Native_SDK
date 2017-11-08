@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['point',['Point',['../classpvr_1_1assets_1_1_light.html#a6c46cd62c805c31bdc99f79137e1421baa0244801b0e056f768687e509549c0fb',1,'pvr::assets::Light']]],
-  ['position',['Position',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a2be87408f3ff795edd9fc8432f3e5ebb',1,'pvr::assets::PVRShamanSemantics']]],
-  ['projection',['Projection',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a677c54e59afdbfb1ec923a76cf8a0414',1,'pvr::assets::PVRShamanSemantics']]],
-  ['projectioni',['ProjectionI',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a33f5838dae401d8b6fc0ce3e2f865519',1,'pvr::assets::PVRShamanSemantics']]],
-  ['projectionit',['ProjectionIT',['../classpvr_1_1assets_1_1_p_v_r_shaman_semantics.html#a69fd0de13403d2f9e14481bc66ee5926a3a3cb605dfb78e147ed131b756fac634',1,'pvr::assets::PVRShamanSemantics']]]
+  ['uniformrequired',['UniformRequired',['../structpvr_1_1assets_1_1effect_1_1_pipeline_condition.html#a6fec8ab23f2e6e96cce92553a2d6f4bbac17035b12c07c05c8e6395ada123cb04',1,'pvr::assets::effect::PipelineCondition']]],
+  ['uniformrequiredno',['UniformRequiredNo',['../structpvr_1_1assets_1_1effect_1_1_pipeline_condition.html#a6fec8ab23f2e6e96cce92553a2d6f4bba141cdc75bed6c3fe878bb546620d612d',1,'pvr::assets::effect::PipelineCondition']]],
+  ['unknown',['Unknown',['../namespacepvr.html#a7449705e04c8fe948e390ea793106107a88183b946cc5f0e8c96b2e66e1c74a7e',1,'pvr']]]
 ];

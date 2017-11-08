@@ -1,28 +1,19 @@
-<<<<<<< HEAD
-/*!*********************************************************************************************************************
-\file         PVRShell\OS\Android\ShellOS.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Contains the implementation for the pvr::platform::ShellOS class on Android systems.
- ***********************************************************************************************************************/
-=======
 /*!
 \brief Contains the implementation for the pvr::platform::ShellOS class on Android systems.
 \file PVRShell\OS/Android/ShellOS.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
->>>>>>> 1776432f... 4.3
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRCore/IO/FilePath.h"
 #include "PVRCore/Log.h"
-#include "PVRCore/Interfaces/IInputHandler.h"
 
 #include <android_native_app_glue.h>
 #include <android/sensor.h>
 #include <android/window.h>
 #include <unistd.h>
 
+//!\cond NO_DOXYGEN
 namespace pvr {
 namespace platform {
 struct InternalOS
@@ -254,7 +245,7 @@ static Keys keyboardKeyMap[]
 };
 
 
-static int16 cursor_x; static int16 cursor_y;
+static int16_t cursor_x; static int16_t cursor_y;
 void ShellOS::updatePointingDeviceLocation()
 {
 	_shell->updatePointerPosition(PointerLocation(cursor_x, cursor_y));
@@ -294,28 +285,25 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event)
 		}
 		case AINPUT_EVENT_TYPE_MOTION: // Handle touch events.
 		{
-			//float w = app->contentRect.right - app->contentRect.left;
-			//float h = app->contentRect.top - app->contentRect.bottom;
-
 			switch (AMotionEvent_getAction(event))
 			{
 			case AMOTION_EVENT_ACTION_DOWN:
 			{
-				cursor_x = (int16)AMotionEvent_getX(event, 0);
-				cursor_y = (int16)AMotionEvent_getY(event, 0);
+				cursor_x = static_cast<int16_t>(AMotionEvent_getX(event, 0));
+				cursor_y = static_cast<int16_t>(AMotionEvent_getY(event, 0));
 				theShell->onPointingDeviceDown(0);
 				break;
 			}
 			case AMOTION_EVENT_ACTION_MOVE:
 			{
-				cursor_x = (int16)AMotionEvent_getX(event, 0);
-				cursor_y = (int16)AMotionEvent_getY(event, 0);
+				cursor_x = static_cast<int16_t>(AMotionEvent_getX(event, 0));
+				cursor_y = static_cast<int16_t>(AMotionEvent_getY(event, 0));
 				break;
 			}
 			case AMOTION_EVENT_ACTION_UP:
 			{
-				cursor_x = (int16)AMotionEvent_getX(event, 0);
-				cursor_y = (int16)AMotionEvent_getY(event, 0);
+				cursor_x = static_cast<int16_t>(AMotionEvent_getX(event, 0));
+				cursor_y = static_cast<int16_t>(AMotionEvent_getY(event, 0));
 				theShell->onPointingDeviceUp(0);
 				break;
 			}
@@ -329,7 +317,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event)
 }
 
 // Setup the capabilities.
-const ShellOS::Capabilities ShellOS::_capabilities = { types::Capability::Unsupported, types::Capability::Unsupported };
+const ShellOS::Capabilities ShellOS::_capabilities = { Capability::Unsupported, Capability::Unsupported };
 
 ShellOS::ShellOS(void* hInstance, OSDATA osdata) : _instance(hInstance)
 {
@@ -350,14 +338,14 @@ ShellOS::ShellOS(void* hInstance, OSDATA osdata) : _instance(hInstance)
 
 ShellOS::~ShellOS()
 {
-	//delete _OSImplementation;
+	delete _OSImplementation;
 }
 
-Result ShellOS::init(DisplayAttributes& data)
+bool ShellOS::init(DisplayAttributes& data)
 {
 	if (!_OSImplementation)
 	{
-		return Result::OutOfMemory;
+		return false;
 	}
 
 	// Get PID (Process ID).
@@ -372,14 +360,14 @@ Result ShellOS::init(DisplayAttributes& data)
 		// Get the file size.
 		size_t size = 256;
 
-		pszAppName = (char*)malloc(size);
+		pszAppName = static_cast<char*>(malloc(size));
 
 		if (pszAppName)
 		{
 			char* ptr = pszAppName;
 			while (fread(ptr, 1, 256, pFile) == 256)
 			{
-				char* resized = (char*)realloc(pszAppName, size + 256);
+				char* resized = static_cast<char*>(realloc(pszAppName, size + 256));
 
 				if (!resized)
 				{
@@ -398,7 +386,7 @@ Result ShellOS::init(DisplayAttributes& data)
 
 	if (!pszAppName)
 	{
-		Log(Log.Debug, "Warning: Unable to set app name.\n");
+		Log(LogLevel::Debug, "Warning: Unable to set app name.\n");
 	}
 	else
 	{
@@ -409,35 +397,37 @@ Result ShellOS::init(DisplayAttributes& data)
 	// Setup the read/write path.
 	android_app* instance = static_cast<android_app*>(_instance);
 	// Construct the binary path for GetReadPath() and GetWritePath().
-	char* internalDataPath = (char*)instance->activity->internalDataPath;
+	const char* internalDataPath = static_cast<const char*>(instance->activity->internalDataPath);
 
 	if (!internalDataPath) // Due to a bug in Gingerbread this may be null.
 	{
-		Log(Log.Debug,
+		Log(LogLevel::Debug,
 		    "Warning: The internal data path returned from Android is null. Attempting to generate from the app name..\n");
 
+		char* dataPath = 0;
+			
 		if (!_AppName.empty())
 		{
 			size_t size = strlen("/data/data/") + _AppName.length() + 2;
 
-			internalDataPath = (char*)malloc(size);
+			dataPath = static_cast<char*>(malloc(size));
 
-			if (internalDataPath)
+			if (dataPath)
 			{
-				snprintf(internalDataPath, size, "/data/data/%s/", _AppName.c_str());
+				snprintf(dataPath, size, "/data/data/%s/", _AppName.c_str());
 			}
 		}
 
-		if (!internalDataPath)
+		if (!dataPath)
 		{
-			internalDataPath = (char*) "/sdcard/";
+			dataPath = const_cast<char*>("/sdcard/");
 		}
 
-		_WritePath = internalDataPath;
+		_WritePath = dataPath;
 
 		if (!_AppName.empty())
 		{
-			free(internalDataPath);
+			free(dataPath);
 		}
 	}
 	else
@@ -446,15 +436,15 @@ Result ShellOS::init(DisplayAttributes& data)
 	}
 
 	_ReadPaths.clear(); _ReadPaths.push_back(_WritePath);
-	return Result::Success;
+	return true;
 }
 
-Result ShellOS::initializeWindow(DisplayAttributes& data)
+bool ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	android_app* instance = static_cast<android_app*>(_instance);
 	if (!instance->window)
 	{
-		return Result::NotInitialized;
+		return false;
 	}
 
 	data.fullscreen = true;
@@ -462,7 +452,7 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 	data.y = instance->contentRect.bottom;
 	data.width = instance->contentRect.right - data.x;
 	data.height = instance->contentRect.top - data.y;
-	return Result::Success;
+	return true;
 }
 
 void ShellOS::releaseWindow()
@@ -484,24 +474,20 @@ OSWindow ShellOS::getWindow() const
 	return static_cast<android_app*>(_instance)->window;
 }
 
-Result ShellOS::handleOSEvents()
+bool ShellOS::handleOSEvents()
 {
 	// The OS events for Android are already handled externally.
-	return Result::Success;
+	return true;
 }
 
-<<<<<<< HEAD
-Result ShellOS::popUpMessage(const tchar* title, const tchar* message, ...) const
-=======
-Result ShellOS::popUpMessage(const char* title, const char* message, ...) const
->>>>>>> 1776432f... 4.3
+bool ShellOS::popUpMessage(const char* title, const char* message, ...) const
 {
 	if (!title && !message && _instance)
 	{
-		return Result::NoData;
+		return false;
 	}
 
-	Result result = Result::UnknownError;
+	bool result = false;
 
 	ANativeActivity* activity = static_cast<android_app*>(_instance)->activity;
 
@@ -526,7 +512,7 @@ Result ShellOS::popUpMessage(const char* title, const char* message, ...) const
 
 				jstring exitMsg = env->NewStringUTF(buf);
 				env->CallVoidMethod(activity->clazz, methodID, exitMsg);
-				result = Result::Success;
+				result = true;
 			}
 		}
 
@@ -537,3 +523,4 @@ Result ShellOS::popUpMessage(const char* title, const char* message, ...) const
 }
 }
 }
+//!\endcond

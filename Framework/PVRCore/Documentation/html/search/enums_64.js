@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['devicequeuetype',['DeviceQueueType',['../namespacepvr.html#a62a6e9db5b1a2dfe5d226b836305ca1b',1,'pvr']]]
+  ['datatype',['DataType',['../namespacepvr.html#a7924324f96dc973225ad3c532cc72309',1,'pvr']]],
+  ['descriptortype',['DescriptorType',['../namespacepvr.html#a3283c5c9822ac5135fefd45a7cdd5932',1,'pvr']]]
 ];

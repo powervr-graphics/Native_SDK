@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['arg',['arg',['../structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html#ac887f5e9879636cc4ec181fbd97def3b',1,'pvr::platform::CommandLineParser::ParsedCommandLine::Option']]]
+  ['_5fbuttons',['_buttons',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html#ad7de60e4bd3c72d45941259629c6508d',1,'pvr::platform::Shell::PointingDeviceState']]],
+  ['_5fdragstartlocation',['_dragStartLocation',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html#a361da3232c0819a50abd544f1dd18686',1,'pvr::platform::Shell::PointingDeviceState']]],
+  ['_5fpointerlocation',['_pointerLocation',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html#ab7bba9c7dce9cfc5a8c2a56a68434bec',1,'pvr::platform::Shell::PointingDeviceState']]]
 ];

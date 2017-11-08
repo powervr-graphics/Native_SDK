@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -100,22 +100,22 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a422bae6dd34100bbf3714ffee1f63afc"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a422bae6dd34100bbf3714ffee1f63afc">addAssetToWrite</a> (const AssetType &amp;asset)=0</td></tr>
 <tr class="memdesc:a422bae6dd34100bbf3714ffee1f63afc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add another asset to write. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation. <a href="#a422bae6dd34100bbf3714ffee1f63afc">More...</a><br/></td></tr>
 <tr class="separator:a422bae6dd34100bbf3714ffee1f63afc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f9d4277e679a4d65897ed61cd11a84b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a0f9d4277e679a4d65897ed61cd11a84b">assetsAddedSoFar</a> ()=0</td></tr>
-<tr class="memdesc:a0f9d4277e679a4d65897ed61cd11a84b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of assets that have been added for writing. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation. <a href="#a0f9d4277e679a4d65897ed61cd11a84b">More...</a><br/></td></tr>
-<tr class="separator:a0f9d4277e679a4d65897ed61cd11a84b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e9c6efcf7723b01603f3c55d7d27e11"><td class="memItemLeft" align="right" valign="top">virtual uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a4e9c6efcf7723b01603f3c55d7d27e11">assetsAddedSoFar</a> ()=0</td></tr>
+<tr class="memdesc:a4e9c6efcf7723b01603f3c55d7d27e11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of assets that have been added for writing. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation. <a href="#a4e9c6efcf7723b01603f3c55d7d27e11">More...</a><br/></td></tr>
+<tr class="separator:a4e9c6efcf7723b01603f3c55d7d27e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7adac83bde32692e5e4fdfecca643164"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a7adac83bde32692e5e4fdfecca643164">canWriteAsset</a> (const AssetType &amp;asset)=0</td></tr>
 <tr class="memdesc:a7adac83bde32692e5e4fdfecca643164"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query if this writer can write out the specified asset. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation. <a href="#a7adac83bde32692e5e4fdfecca643164">More...</a><br/></td></tr>
 <tr class="separator:a7adac83bde32692e5e4fdfecca643164"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a463a2a9c9534218fb789b8d7b564183b"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a463a2a9c9534218fb789b8d7b564183b">getSupportedFileExtensions</a> ()=0</td></tr>
-<tr class="memdesc:a463a2a9c9534218fb789b8d7b564183b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a list of supported file extensions. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation.  <a href="#a463a2a9c9534218fb789b8d7b564183b">More...</a><br/></td></tr>
-<tr class="separator:a463a2a9c9534218fb789b8d7b564183b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af3e7a7d013688c15f2ee57d465b51074"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#af3e7a7d013688c15f2ee57d465b51074">getWriterName</a> ()=0</td></tr>
-<tr class="memdesc:af3e7a7d013688c15f2ee57d465b51074"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the name of this writer. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation. <a href="#af3e7a7d013688c15f2ee57d465b51074">More...</a><br/></td></tr>
-<tr class="separator:af3e7a7d013688c15f2ee57d465b51074"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79d2da4746ff06735fe4a269957460fd"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a79d2da4746ff06735fe4a269957460fd">getWriterVersion</a> ()=0</td></tr>
-<tr class="memdesc:a79d2da4746ff06735fe4a269957460fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the version of this writer. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation.  <a href="#a79d2da4746ff06735fe4a269957460fd">More...</a><br/></td></tr>
-<tr class="separator:a79d2da4746ff06735fe4a269957460fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2e753b53183808d99f7d33b12e8ba70"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#ab2e753b53183808d99f7d33b12e8ba70">openAssetStream</a> (Stream::ptr_type assetStream)</td></tr>
+<tr class="memitem:a303862f876397c3e969169525f85a11f"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a303862f876397c3e969169525f85a11f">getSupportedFileExtensions</a> ()=0</td></tr>
+<tr class="memdesc:a303862f876397c3e969169525f85a11f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a list of supported file extensions. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation.  <a href="#a303862f876397c3e969169525f85a11f">More...</a><br/></td></tr>
+<tr class="separator:a303862f876397c3e969169525f85a11f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa2f3253fd8e38d8fd19843ba1f6546b"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#afa2f3253fd8e38d8fd19843ba1f6546b">getWriterName</a> ()=0</td></tr>
+<tr class="memdesc:afa2f3253fd8e38d8fd19843ba1f6546b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the name of this writer. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation. <a href="#afa2f3253fd8e38d8fd19843ba1f6546b">More...</a><br/></td></tr>
+<tr class="separator:afa2f3253fd8e38d8fd19843ba1f6546b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af32c1a1e1b5ebd474387df4d69887643"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#af32c1a1e1b5ebd474387df4d69887643">getWriterVersion</a> ()=0</td></tr>
+<tr class="memdesc:af32c1a1e1b5ebd474387df4d69887643"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the version of this writer. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation.  <a href="#af32c1a1e1b5ebd474387df4d69887643">More...</a><br/></td></tr>
+<tr class="separator:af32c1a1e1b5ebd474387df4d69887643"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2e753b53183808d99f7d33b12e8ba70"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#ab2e753b53183808d99f7d33b12e8ba70">openAssetStream</a> (<a class="el" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a> assetStream)</td></tr>
 <tr class="memdesc:ab2e753b53183808d99f7d33b12e8ba70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open an asset stream for writing. Implement this in your concrete <a class="el" href="classpvr_1_1_asset_writer.html" title="Base class for Classes that can be used to write back effects to disk.">AssetWriter</a> implementation.  <a href="#ab2e753b53183808d99f7d33b12e8ba70">More...</a><br/></td></tr>
 <tr class="separator:ab2e753b53183808d99f7d33b12e8ba70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abff543f963a5116d06aa0e217a55caf0"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#abff543f963a5116d06aa0e217a55caf0">supportsMultipleAssets</a> ()=0</td></tr>
@@ -131,10 +131,10 @@ Protected Attributes</h2></td></tr>
 std::vector&lt; const AssetType * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a2ca5b8a026f1f4e735c0d31a1be36730">_assetsToWrite</a></td></tr>
 <tr class="memdesc:a2ca5b8a026f1f4e735c0d31a1be36730"><td class="mdescLeft">&#160;</td><td class="mdescRight">The list of assets to write so far. <br/></td></tr>
 <tr class="separator:a2ca5b8a026f1f4e735c0d31a1be36730"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c4cf6bd02d90164c944531cb8e35abc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c4cf6bd02d90164c944531cb8e35abc"></a>
-std::auto_ptr&lt; <a class="el" href="classpvr_1_1_stream.html">Stream</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a9c4cf6bd02d90164c944531cb8e35abc">_assetStream</a></td></tr>
-<tr class="memdesc:a9c4cf6bd02d90164c944531cb8e35abc"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> that this writer uses. <br/></td></tr>
-<tr class="separator:a9c4cf6bd02d90164c944531cb8e35abc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92a322e4a022058c0c5115d044a6be13"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a92a322e4a022058c0c5115d044a6be13"></a>
+std::unique_ptr&lt; <a class="el" href="classpvr_1_1_stream.html">Stream</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_asset_writer.html#a92a322e4a022058c0c5115d044a6be13">_assetStream</a></td></tr>
+<tr class="memdesc:a92a322e4a022058c0c5115d044a6be13"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc...">Stream</a> that this writer uses. <br/></td></tr>
+<tr class="separator:a92a322e4a022058c0c5115d044a6be13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename AssetType&gt;<br/>
@@ -205,7 +205,7 @@ template&lt;typename AssetType &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a0f9d4277e679a4d65897ed61cd11a84b"></a>
+<a class="anchor" id="a4e9c6efcf7723b01603f3c55d7d27e11"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -215,7 +215,7 @@ template&lt;typename AssetType &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> <a class="el" href="classpvr_1_1_asset_writer.html">pvr::AssetWriter</a>&lt; AssetType &gt;::assetsAddedSoFar </td>
+          <td class="memname">virtual uint32_t <a class="el" href="classpvr_1_1_asset_writer.html">pvr::AssetWriter</a>&lt; AssetType &gt;::assetsAddedSoFar </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -268,7 +268,7 @@ template&lt;typename AssetType &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a463a2a9c9534218fb789b8d7b564183b"></a>
+<a class="anchor" id="a303862f876397c3e969169525f85a11f"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -278,7 +278,7 @@ template&lt;typename AssetType &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::vector&lt;<a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a>&gt; <a class="el" href="classpvr_1_1_asset_writer.html">pvr::AssetWriter</a>&lt; AssetType &gt;::getSupportedFileExtensions </td>
+          <td class="memname">virtual std::vector&lt;std::string&gt; <a class="el" href="classpvr_1_1_asset_writer.html">pvr::AssetWriter</a>&lt; AssetType &gt;::getSupportedFileExtensions </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -296,7 +296,7 @@ template&lt;typename AssetType &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="af3e7a7d013688c15f2ee57d465b51074"></a>
+<a class="anchor" id="afa2f3253fd8e38d8fd19843ba1f6546b"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -306,7 +306,7 @@ template&lt;typename AssetType &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a> <a class="el" href="classpvr_1_1_asset_writer.html">pvr::AssetWriter</a>&lt; AssetType &gt;::getWriterName </td>
+          <td class="memname">virtual std::string <a class="el" href="classpvr_1_1_asset_writer.html">pvr::AssetWriter</a>&lt; AssetType &gt;::getWriterName </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -324,7 +324,7 @@ template&lt;typename AssetType &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a79d2da4746ff06735fe4a269957460fd"></a>
+<a class="anchor" id="af32c1a1e1b5ebd474387df4d69887643"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -334,7 +334,7 @@ template&lt;typename AssetType &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a> <a class="el" href="classpvr_1_1_asset_writer.html">pvr::AssetWriter</a>&lt; AssetType &gt;::getWriterVersion </td>
+          <td class="memname">virtual std::string <a class="el" href="classpvr_1_1_asset_writer.html">pvr::AssetWriter</a>&lt; AssetType &gt;::getWriterVersion </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -364,7 +364,7 @@ template&lt;typename AssetType &gt; </div>
         <tr>
           <td class="memname">bool <a class="el" href="classpvr_1_1_asset_writer.html">pvr::AssetWriter</a>&lt; AssetType &gt;::openAssetStream </td>
           <td>(</td>
-          <td class="paramtype">Stream::ptr_type&#160;</td>
+          <td class="paramtype"><a class="el" href="classpvr_1_1_stream.html#aa0cecaaaa443ce5895d8c3d69dcdeec2">Stream::ptr_type</a>&#160;</td>
           <td class="paramname"><em>assetStream</em></td><td>)</td>
           <td></td>
         </tr>

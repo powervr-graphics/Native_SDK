@@ -9,18 +9,21 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanIntroducingPVRShell
-DEPENDS =  PVRCore PVRShell PVRNativeVulkan
-LIBRARIES =  PVRNativeVulkan PVRShell PVRCore
+DEPENDS =  PVRCore PVRShell
+LIBRARIES =  PVRShell PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
-           Vulkan/VulkanIntroducingPVRShell.o
+           Vulkan/VulkanIntroducingPVRShell.o	\
+           Vulkan/vk_getProcAddrs.o
 
 RESOURCES += \
            FragShader_vk.spv\
            VertShader_vk.spv\
            FragShader_vk.fsh\
            VertShader_vk.vsh\
+
+
 
 
 

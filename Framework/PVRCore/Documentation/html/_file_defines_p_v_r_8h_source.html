@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -94,24 +94,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">// Version 1 of the PVR file format</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">struct </span>HeaderV1</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  headerSize; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  height;      </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  width;      </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  mipMapCount;    </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  pixelFormatAndFlags; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  dataSize;       </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  bitCount;       </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  redBitMask;     </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  greenBitMask;   </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  blueBitMask;    </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  alphaBitMask;   </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    uint32_t  headerSize;   </div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    uint32_t  height;        </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    uint32_t  width;        </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    uint32_t  numMipMaps;   </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    uint32_t  pixelFormatAndFlags; </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    uint32_t  dataSize;     </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    uint32_t  bitCount;     </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    uint32_t  redBitMask;       </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    uint32_t  greenBitMask; </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    uint32_t  blueBitMask;  </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    uint32_t  alphaBitMask; </div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">// Version 2 of the PVR file format</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">struct </span>HeaderV2 : <span class="keyword">public</span> HeaderV1</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;{</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pvrMagic;                </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numberOfSurfaces;            </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    uint32_t pvrMagic;              </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    uint32_t numSurfaces;           </div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;};</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">// Pixel types</span></div>
@@ -307,30 +307,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;</div>
 <div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment">// Flags for Legacy TextureHeader versions</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_flagMIPMap          = (1 &lt;&lt; 8);  <span class="comment">// Texture has MIP Map levels</span></div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="comment">//  static const uint32 c_flagTwiddled        = (1&lt;&lt;9);    // Texture data is twiddled</span></div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_flagBumpMap         = (1 &lt;&lt; 10); <span class="comment">// Texture has normals encoded for a bump map</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="comment">//  static const uint32 c_flagTiledPVRTC      = (1&lt;&lt;11);   // Texture is bordered for tiled PVRTC</span></div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_flagCubeMap         = (1 &lt;&lt; 12); <span class="comment">// Texture is a cubemap/skybox</span></div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="comment">//  static const uint32 c_flagFalseColorMIPs = (1&lt;&lt;13);   // Texture has false colored MIP Map levels</span></div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_flagVolumeTexture   = (1 &lt;&lt; 14); <span class="comment">// Texture is a 3D texture</span></div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_flagHasAlpha        = (1 &lt;&lt; 15); <span class="comment">// Texture has transparency</span></div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_flagVerticalFlip    = (1 &lt;&lt; 16); <span class="comment">// Texture is vertically flipped</span></div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_flagMipMap          = (1 &lt;&lt; 8);  <span class="comment">// Texture has MIP Map levels</span></div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_flagBumpMap         = (1 &lt;&lt; 10); <span class="comment">// Texture has normals encoded for a bump map</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_flagCubeMap         = (1 &lt;&lt; 12); <span class="comment">// Texture is a cubemap/skybox</span></div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_flagVolumeTexture   = (1 &lt;&lt; 14); <span class="comment">// Texture is a 3D texture</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_flagHasAlpha        = (1 &lt;&lt; 15); <span class="comment">// Texture has transparency</span></div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_flagVerticalFlip    = (1 &lt;&lt; 16); <span class="comment">// Texture is vertically flipped</span></div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="comment">// Mask for the pixel type - always in the last 16bits of the flags in legacy headers.</span></div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_pixelTypeMask       = 0xff;</div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="comment">// Mask for the pixel type - always in the last 16bits of the flags in legacy headers.</span></div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_pixelTypeMask       = 0xff;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="comment">// The old PVR header identifier is the characters &#39;PVR!&#39;, V2 only. Usually ignored...</span></div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_identifierV2        = 0x21525650;</div>
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="comment">// The old PVR header identifier is the characters &#39;PVR!&#39;, V2 only. Usually ignored...</span></div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_identifierV2        = 0x21525650;</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;<span class="comment">// Header sizes, used as identifiers for previous versions of the header.</span></div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_headerSizeV1        = 44;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> c_headerSizeV2        = 52;</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;}</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;}</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="comment">//!\endcond</span></div>
-<div class="ttc" id="namespacepvr_html_a02a97b530ff9cb298a9077ad7b4ee556"><div class="ttname"><a href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">pvr::uint32</a></div><div class="ttdeci">unsigned int uint32</div><div class="ttdoc">32-bit unsigned integer.</div><div class="ttdef"><b>Definition:</b> Types.h:119</div></div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="comment">// Header sizes, used as identifiers for previous versions of the header.</span></div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_headerSizeV1        = 44;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t c_headerSizeV2        = 52;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;}</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;}</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="comment">//!\endcond</span></div>
 <div class="ttc" id="_core_includes_8h_html"><div class="ttname"><a href="_core_includes_8h.html">CoreIncludes.h</a></div><div class="ttdoc">Commonly included files from other PVRCore files. To include PVRCore functionality, use PVRCore.h instead. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->

@@ -8,11 +8,8 @@
 #include "PVRAssets/AssetIncludes.h"
 #include "PVRAssets/SkipGraph.h"
 #include "PVRAssets/Effect_2.h"
-#include "PVRCore/Interfaces/OSManager.h"
-
 
 #include "../External/pugixml/pugixml.hpp"
-
 
 namespace pvr {
 namespace assets {
@@ -25,10 +22,15 @@ class PfxParser : public AssetReader<effect::Effect>
 public:
 	/// <summary>Constructor. The OSManager is used to load files in a platform-specific way. If the OSManager is NULL, then
 	/// only a FileStreams from the current directory will be attempted to be loaded.</summary>
+	/// <param name="pfxFilename">The filename (or resource identifier) to read</param>
+	/// <param name="assetsProvider">The object providing the "getAssetStream" function to read the stream</param>
 	PfxParser(const std::string& pfxFilename, IAssetProvider* assetsProvider);
 
-	/// <summary>Constructor. The OSManager is used to load pfxFilename and any shader files in a platform-specific way. If the
+	/// <summary>Constructor. The OSManager is used to load any shader files in a platform-specific way. If the
 	/// OSManager is NULL, then only FileStreams will be attempted to be loaded.</summary>
+	/// <param name="pfxStream">The stream to read</param>
+	/// <param name="assetsProvider">The object providing the "getAssetStream" function to read streams, and which
+	/// will be used to read any shader files referenced in the PFX</param>
 	PfxParser(Stream::ptr_type pfxStream, IAssetProvider* assetsProvider);
 
 	/// <summary>Destructor.</summary>
@@ -52,7 +54,7 @@ public:
 	/// <returns>Return list of file extensions</returns>
 	virtual std::vector<std::string>  getSupportedFileExtensions()
 	{
-		static std::vector<string> extensions({ "pfx", "pfx3" });
+		static std::vector<std::string> extensions({ "pfx", "pfx3" });
 		return extensions;
 	}
 private:

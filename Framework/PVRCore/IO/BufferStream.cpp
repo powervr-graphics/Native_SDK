@@ -12,16 +12,16 @@
 #include "PVRCore/IO/BufferStream.h"
 
 namespace pvr {
-BufferStream::BufferStream(const string& fileName)
+BufferStream::BufferStream(const std::string& fileName)
 	: Stream(fileName), _originalData(0), _currentPointer(0), _bufferSize(0), _bufferPosition(0) { }
 
-BufferStream::BufferStream(const string& fileName, const void* buffer, size_t bufferSize)
+BufferStream::BufferStream(const std::string& fileName, const void* buffer, size_t bufferSize)
 	: Stream(fileName), _originalData(buffer), _currentPointer(NULL), _bufferSize(bufferSize), _bufferPosition(0)
 {
 	_isReadable = true;
 }
 
-BufferStream::BufferStream(const string& fileName, void* buffer, size_t bufferSize, bool setWritable/*=true*/,
+BufferStream::BufferStream(const std::string& fileName, void* buffer, size_t bufferSize, bool setWritable/*=true*/,
                            bool setReadable/*=true*/)
 	: Stream(fileName), _originalData(buffer), _currentPointer(NULL), _bufferSize(bufferSize), _bufferPosition(0)
 {
@@ -39,7 +39,7 @@ bool BufferStream::open()const
 
 void BufferStream::close()
 {
-	_currentPointer = NULL;
+	_currentPointer = nullptr;
 	_bufferPosition = 0;
 }
 
@@ -48,23 +48,23 @@ bool BufferStream::read(size_t size, size_t count, void* const data, size_t& dat
 	dataRead = 0;
 	if (!_isReadable)
 	{
-		assertion(0 ,  "Stream not readable");
-		Log(Log.Error, "Attempted to read non readable stream");
+		assertion(0,  "Stream not readable");
+		Log(LogLevel::Error, "Attempted to read non readable stream");
 		return false;
 	}
 	if (!data || !_currentPointer)
 	{
 		return false;
 	}
-	byte* dataCurrent = (byte*)data;
+	char* dataCurrent = static_cast<char*>(data);
 	//Make sure we don't read too much
 	for (size_t realcount = 0; realcount < count; ++realcount)
 	{
-		size_t realsize = (size_t)(std::min)(size, _bufferSize - _bufferPosition);
+		size_t realsize = static_cast<size_t>(std::min(size, _bufferSize - _bufferPosition));
 		memcpy(dataCurrent, _currentPointer, realsize);
 
 		_bufferPosition += realsize;
-		_currentPointer = (void*)(((byte*)_currentPointer) + realsize);
+		_currentPointer = static_cast<void*>(static_cast<char*>(_currentPointer) + realsize);
 		dataCurrent += realsize;
 
 		if (realsize == size)
@@ -95,15 +95,15 @@ bool BufferStream::write(size_t size, size_t count, const void* data, size_t& da
 	{
 		if (data && _currentPointer)
 		{
-			byte* dataCurrent = (byte*)data;
+			const unsigned char* dataCurrent = static_cast<const unsigned char*>(data);
 			//Make sure we don't read too much
 			for (size_t realcount = 0; realcount < count; ++realcount)
 			{
-				size_t realsize = (size_t)std::min<uint64>((uint64)size, _bufferSize - _bufferPosition);
+				size_t realsize = static_cast<size_t>(std::min<uint64_t>(static_cast<uint64_t>(size), _bufferSize - _bufferPosition));
 				memcpy(_currentPointer, dataCurrent, realsize);
 
 				_bufferPosition += realsize;
-				_currentPointer = (void*)(((byte*)_currentPointer) + realsize);
+				_currentPointer = static_cast<void*>(static_cast<char*>(_currentPointer) + realsize);
 				dataCurrent += realsize;
 
 				if (realsize == size)
@@ -152,7 +152,7 @@ bool BufferStream::seek(long offset, SeekOrigin origin) const
 	{
 		if (offset)
 		{
-			Log(Log.Error, "[BufferStream::seek] Attempt to seek from empty stream");
+			Log(LogLevel::Error, "[BufferStream::seek] Attempt to seek from empty stream");
 			result = false;
 		}
 	}
@@ -162,29 +162,29 @@ bool BufferStream::seek(long offset, SeekOrigin origin) const
 		{
 		case Stream::SeekOriginFromStart:
 		{
-			newOffset = (long)glm::clamp<int64>((int64)offset, 0, (int64)_bufferSize);
+			newOffset = static_cast<long>(glm::clamp<int64_t>(static_cast<int64_t>(offset), 0, static_cast<int64_t>(_bufferSize)));
 
 			_bufferPosition = newOffset;
-			_currentPointer = (void*)((byte*)_originalData + _bufferPosition);
+			_currentPointer = const_cast<void*>(static_cast<const void*>(static_cast<const unsigned char*>(_originalData) + _bufferPosition));
 			break;
 		}
 		case Stream::SeekOriginFromCurrent:
 		{
-			int64 maxOffset = _bufferSize - _bufferPosition;
-			int64 minOffset = -1 * (int64)_bufferPosition;
+			int64_t maxOffset = _bufferSize - _bufferPosition;
+			int64_t minOffset = -1 * static_cast<int64_t>(_bufferPosition);
 
-			newOffset = glm::clamp<long>(offset, (long)minOffset, (long)maxOffset);
+			newOffset = glm::clamp<long>(offset, static_cast<long>(minOffset), static_cast<long>(maxOffset));
 
 			_bufferPosition += newOffset;
-			_currentPointer = (void*)((byte*)_currentPointer + newOffset);
+			_currentPointer = static_cast<void*>(static_cast<char*>(_currentPointer) + newOffset);
 			break;
 		}
 		case Stream::SeekOriginFromEnd:
 		{
-			newOffset = (long)glm::clamp<int64>(offset, (long)(-1 * ((int64)_bufferPosition)), 0);
+			newOffset = static_cast<long>(glm::clamp<int64_t>(offset, static_cast<long>(-1 * (static_cast<int64_t>(_bufferPosition))), 0));
 
 			_bufferPosition = _bufferSize + newOffset;
-			_currentPointer = (void*)((byte*)_originalData + _bufferPosition);
+			_currentPointer = const_cast<void*>(static_cast<const void*>(static_cast<const unsigned char*>(_originalData) + _bufferPosition));
 			break;
 		}
 		}
@@ -192,7 +192,7 @@ bool BufferStream::seek(long offset, SeekOrigin origin) const
 
 	if (newOffset != offset)
 	{
-		Log(Log.Error, "[BufferStream::seek] Attempted to seek past the end of stream");
+		Log(LogLevel::Error, "[BufferStream::seek] Attempted to seek past the end of stream");
 		result = false;;
 	}
 

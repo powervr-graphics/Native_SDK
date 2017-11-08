@@ -1,5 +1,5 @@
 /*!
-\brief Include this file if you wish to use the PVRShell functionality. Also see PVRShellNoPVRApi.h.
+\brief Include this file if you wish to use the PVRShell functionality.
 \file PVRShell/PVRShell.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
@@ -7,7 +7,6 @@
 
 #pragma once
 #include "PVRShell/Shell.h"
-
 
 // MAIN DOCUMENTATION PAGE //
 
@@ -24,7 +23,7 @@ PVRShell will usually be the foundation on top of which an application is writte
 
 Also, PVRShell will create and teardown the window, initialize and de-initialize the graphics system, swap the buffers at the end of every frame, search platform-specific methods and file system storage (file system, assets, bundle, etc.).
 
-PVRShell directly depends on PVRCore and PVRNativeApi, and needs the presence of PVRApi (or technically another library that provides a <span class="code">createGraphicsContext</span> library returning an <span class="code">IGraphicsContext</span>). Normally, PVRShell is used as the first step of every PowerVR SDK application.
+PVRShell directly depends on PVRCore. Normally, PVRShell is used as the first step of every PowerVR SDK application.
 
 PVRShell source can be found in the <a href="../../">PVRShell</a> folder in the SDK package.
 
@@ -40,13 +39,10 @@ To use PVRShell:
 		</ul>
 	</li>
 	<li>In your main code file, include <span class="code">PVRShell/PVRShell.h</span></li>
-	<li>Also link against the PowerVR Framework dependencies of PVRShell: (PVRCore, PVRPlatformGlue, usually PVRApi)</li>
-	<li>Note: If not linking against a PVRApi library, include the file <span class="code">PVRShell/PVRShellNoPVRApi.h</span> <b>once</b>, in <b>one</b> source file of your application. In other places where you need to use the Shell class, include this file as normal. If you use PVRShell without PVRApi, all PVRShell functions that query or modify graphics contexts cannot be called.</li>
-	<li>In your application, write a class inheriting from PVRShell</li>
-	<li>Write a function <span class="code">pvr::newDemo()</span> that returns a <span class="code">std::auto_ptr</span> to a created instance of your class (refer to the bottom of any example)</li>
+	<li>Write a function <span class="code">pvr::newDemo()</span> that returns a <span class="code">std::unique_ptr</span> to a created instance of your class (refer to the bottom of any example)</li>
 	<li>Implement the pure virtual functions of <span class="code">pvr::Shell</span> in your own class (<span class="code">initApplication</span>, <span class="code">initView</span>, <span class="code">renderFrame</span>, <span class="code">releaseView</span>, <span class="code">quitApplication</span>)</li>
 	<li>Write an application class inheriting from <span class="code">pvr::Shell</span></li>
-	<li>Implement a simple function <span class="code">pvr::newDemo()</span> returning an <span class="code">auto_ptr</span> to an instance of your application class</li>
+	<li>Implement a simple function <span class="code">pvr::newDemo()</span> returning an <span class="code">unique_ptr</span> to an instance of your application class</li>
 </ul>
 <ul>
 <li>Implement <span class="code">pvr::Shell::initApplication()</span></li>

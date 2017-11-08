@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classpvr_1_1_generate_pixel_type3-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::GeneratePixelType3&lt; C1Name, C2Name, C3Name, C1Bits, C2Bits, C3Bits &gt; Class Template Reference</div>  </div>
@@ -89,8 +90,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p>Use this template class to generate a 3 channel PixelID. 
  <a href="classpvr_1_1_generate_pixel_type3.html#details">More...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a98b6c882ee09b7b91dc28aabae6cc0d5"><td class="memItemLeft" align="right" valign="top">static const uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_generate_pixel_type3.html#a98b6c882ee09b7b91dc28aabae6cc0d5">ID</a></td></tr>
+<tr class="memdesc:a98b6c882ee09b7b91dc28aabae6cc0d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">A 64 bit integer uniquely representing this pixel type <a href="#a98b6c882ee09b7b91dc28aabae6cc0d5">More...</a><br/></td></tr>
+<tr class="separator:a98b6c882ee09b7b91dc28aabae6cc0d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;char8 C1Name, char8 C2Name, char8 C3Name, uint8 C1Bits, uint8 C2Bits, uint8 C3Bits&gt;<br/>
+<div class="textblock"><h3>template&lt;char C1Name, char C2Name, char C3Name, uint8_t C1Bits, uint8_t C2Bits, uint8_t C3Bits&gt;<br/>
 class pvr::GeneratePixelType3&lt; C1Name, C2Name, C3Name, C1Bits, C2Bits, C3Bits &gt;</h3>
 
 <p>Use this template class to generate a 3 channel PixelID.</p>
@@ -106,8 +114,36 @@ class pvr::GeneratePixelType3&lt; C1Name, C2Name, C3Name, C1Bits, C2Bits, C3Bits
   </dd>
 </dl>
 <p>Use this template class to generate a 3 channel PixelID (64-bit identifier for a pixel format used throughout PVR Assets from the channel information. Simply define the template parameters for your class and get the ID member. EXAMPLE USE: </p>
-<div class="fragment"><div class="line">uint64 myPixelID = GeneratePixelType3&amp;lt;<span class="charliteral">&#39;r&#39;</span>,<span class="charliteral">&#39;g&#39;</span>,<span class="charliteral">&#39;b&#39;</span>,8,8,8&amp;gt;::ID; </div>
-</div><!-- fragment --> </div><hr/>The documentation for this class was generated from the following file:<ul>
+<div class="fragment"><div class="line">uint64_t myPixelID = GeneratePixelType3&amp;lt;<span class="charliteral">&#39;r&#39;</span>,<span class="charliteral">&#39;g&#39;</span>,<span class="charliteral">&#39;b&#39;</span>,8,8,8&amp;gt;<a class="code" href="classpvr_1_1_generate_pixel_type3.html#a98b6c882ee09b7b91dc28aabae6cc0d5">::ID</a>; </div>
+</div><!-- fragment --> </div><h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a98b6c882ee09b7b91dc28aabae6cc0d5"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;char C1Name, char C2Name, char C3Name, uint8_t C1Bits, uint8_t C2Bits, uint8_t C3Bits&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint64_t <a class="el" href="classpvr_1_1_generate_pixel_type3.html">pvr::GeneratePixelType3</a>&lt; C1Name, C2Name, C3Name, C1Bits, C2Bits, C3Bits &gt;::ID</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= (<span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(C1Name) + (static_cast&lt;uint64_t&gt;(C2Name) &lt;&lt; 8) + (static_cast&lt;uint64_t&gt;(C3Name) &lt;&lt; 16) +</div>
+<div class="line">                                (static_cast&lt;uint64_t&gt;(0) &lt;&lt; 24) + (static_cast&lt;uint64_t&gt;(C1Bits) &lt;&lt; 32) + (static_cast&lt;uint64_t&gt;(C2Bits) &lt;&lt; 40) +</div>
+<div class="line">                                (static_cast&lt;uint64_t&gt;(C3Bits) &lt;&lt; 48) + (static_cast&lt;uint64_t&gt;(0) &lt;&lt; 56))</div>
+</div><!-- fragment -->
+<p>A 64 bit integer uniquely representing this pixel type</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>/usr/buildxl/buildroot/sdk/branch/Framework/PVRCore/<a class="el" href="_pixel_format_8h_source.html">PixelFormat.h</a></li>
 </ul>
 </div><!-- contents -->

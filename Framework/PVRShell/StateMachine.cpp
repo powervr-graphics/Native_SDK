@@ -7,12 +7,13 @@
 //!\cond NO_DOXYGEN
 #include "PVRShell/StateMachine.h"
 #include "PVRShell/Shell.h"
-#include "PVRCore/Interfaces/IPlatformContext.h"
 #include "PVRCore/IO/FileStream.h"
 #include "PVRCore/Log.h"
 #include "PVRCore/Base/Time_.h"
 #include <cstdlib>
 #include <cmath>
+#include <sstream>
+#pragma warning(disable:4127)
 
 #if defined(_WIN32)
 #define strcasecmp(a,b) _stricmp(a,b)
@@ -23,28 +24,16 @@ using std::string;
 namespace pvr {
 namespace platform {
 
-<<<<<<< HEAD
-StateMachine::StateMachine(OSApplication instance, platform::CommandLineParser& commandLine, OSDATA osdata) : ShellOS(instance, osdata), m_currentState(StateNotInitialized),
-	m_pause(false)
-=======
 StateMachine::StateMachine(OSApplication instance, platform::CommandLineParser& commandLine, OSDATA osdata) : ShellOS(instance, osdata), _currentState(StateNotInitialized),
 	_pause(false)
->>>>>>> 1776432f... 4.3
 {
 	_shellData.os = this;
 	_shellData.commandLine = &commandLine;
-	Log.initializeMessenger();
 }
 
 Result StateMachine::init()
 {
-<<<<<<< HEAD
-	Result result = ShellOS::init(m_shellData.attributes);
-=======
-	Result result = ShellOS::init(_shellData.attributes);
->>>>>>> 1776432f... 4.3
-
-	if (result == Result::Success)
+	if (ShellOS::init(_shellData.attributes))
 	{
 		// Check for the existence of PVRShellCL.txt and load from it if it exists
 		std::string filepath;
@@ -58,22 +47,21 @@ Result StateMachine::init()
 			{
 				_shellData.commandLine->prefix(&file);
 				std::string info = "Command-line options have been loaded from file " + filepath;
-				Log(Log.Information, info.c_str());
+				Log(LogLevel::Information, info.c_str());
 				break;
 			}
 		}
 
 		// Build our windows title
-
-		_shellData.attributes.windowTitle = getApplicationName() + " - Build " +
-		                                    string(Shell::getSDKVersion());
+		_shellData.attributes.windowTitle = getApplicationName() + " - Build " + std::string(Shell::getSDKVersion());
 
 		// setup our state
 		_currentState = StateInitApplication;
+		return Result::Success;
 	}
 
 
-	return result;
+	return Result::UnknownError;
 }
 
 void StateMachine::readApiFromCommandLine()
@@ -88,356 +76,365 @@ void StateMachine::readApiFromCommandLine()
 
 		if (!arg) { continue; }
 
-		if (val && strcasecmp(arg, "-apitype") == 0)
-		{
-			if (!strcasecmp(val, "vulkan") || !strcasecmp(val, "vk"))
-			{
-				Log(Log.Information, "Base API type setting set to Vulkan. This will only take effect if PVRApi is linked dynamically.");
-				_shellData.baseContextType = BaseApi::Vulkan;
-			}
-			else if (!strcasecmp(val, "ogles") || !strcasecmp(val, "opengles") || !strcasecmp(val, "gles") || !strcasecmp(val, "es") || !strcasecmp(val, "gles"))
-			{
-				Log(Log.Information, "Base API type setting set to OpenGL ES. This will only take effect if PVRApi is linked dynamically.");
-				_shellData.baseContextType = BaseApi::OpenGLES;
-			}
-			else
-			{
-				Log(Log.Error, "Base API type setting '%s' set NOT RECOGNIZED. Default to unspecified.", val);
-			}
-		}
-		else if (strcasecmp(arg, "-apiversion") == 0)
+		if (strcasecmp(arg, "-apiversion") == 0)
 		{
 			if (!strcasecmp(val, "vulkan"))
 			{
-				Log(Log.Debug, "Base API type setting set to Vulkan. This will only take effect if PVRApi is linked dynamically.");
-				_shellData.baseContextType = BaseApi::Vulkan;
 				_shellData.minContextType = Api::Vulkan;
 				_shellData.contextType = Api::Vulkan;
 			}
 			else if (!strcasecmp(val, "ogles31") || !strcasecmp(val, "gles31") || !strcasecmp(val, "gl31") || !strcasecmp(val, "es31"))
 			{
-				Log(Log.Debug, "Base API type setting set to OpenGL ES. This will only take effect if PVRApi is linked dynamically.");
-				Log(Log.Information, "Api version forced to OpenGL ES 3.1");
-				_shellData.baseContextType = BaseApi::OpenGLES;
 				_shellData.minContextType = Api::OpenGLES31;
 				_shellData.contextType = Api::OpenGLES31;
 			}
 			else if (!strcasecmp(val, "ogles3") || !strcasecmp(val, "gles3") || !strcasecmp(val, "gl3") || !strcasecmp(val, "es3"))
 			{
-				Log(Log.Debug, "Base API type setting set to OpenGL ES. This will only take effect if PVRApi is linked dynamically.");
-				Log(Log.Information, "Api version forced to OpenGL ES 3.0");
-				_shellData.baseContextType = BaseApi::OpenGLES;
 				_shellData.minContextType = Api::OpenGLES3;
 				_shellData.contextType = Api::OpenGLES3;
 			}
 			else if (!strcasecmp(val, "ogles2") || !strcasecmp(val, "gles2") || !strcasecmp(val, "gl2") || !strcasecmp(val, "es2"))
 			{
-				Log(Log.Debug, "Base API type setting set to OpenGL ES. This will only take effect if PVRApi is linked dynamically.");
-				Log(Log.Information, "Api version forced to OpenGL ES 2.0");
-				_shellData.baseContextType = BaseApi::OpenGLES;
 				_shellData.minContextType = Api::OpenGLES2;
 				_shellData.contextType = Api::OpenGLES2;
 
 			}
 			else
 			{
-				Log(Log.Error, "Unrecognized command line value '%s' for command line argument '-apiversion'", val);
+				Log(LogLevel::Error, "Unrecognized command line value '%s' for command line argument '-apiversion'", val);
 			}
 		}
 		else if (strcasecmp(arg, "-minapiversion") == 0 || strcasecmp(arg, "-minapi") == 0)
 		{
 			if (!strcasecmp(val, "vulkan"))
 			{
-				Log(Log.Debug, "Base API type setting set to Vulkan. This will only take effect if PVRApi is linked dynamically.");
-				_shellData.baseContextType = BaseApi::Vulkan;
 				_shellData.minContextType = Api::Vulkan;
 			}
 			else if (!strcasecmp(val, "ogles31") || !strcasecmp(val, "gles31") || !strcasecmp(val, "gl31") || !strcasecmp(val, "es31"))
 			{
-				Log(Log.Debug, "Base API type setting set to OpenGL ES. This will only take effect if PVRApi is linked dynamically.");
-				Log(Log.Information, "Minimum api version set to OpenGL ES 3.1");
-				_shellData.baseContextType = BaseApi::OpenGLES;
 				_shellData.minContextType = Api::OpenGLES31;
 			}
 			else if (!strcasecmp(val, "ogles3") || !strcasecmp(val, "gles3") || !strcasecmp(val, "gl3") || !strcasecmp(val, "es3"))
 			{
-				Log(Log.Debug, "Base API type setting set to OpenGL ES. This will only take effect if PVRApi is linked dynamically.");
-				Log(Log.Information, "Minimum api version set to OpenGL ES 3.0");
-				_shellData.baseContextType = BaseApi::OpenGLES;
 				_shellData.minContextType = Api::OpenGLES3;
 			}
 			else if (!strcasecmp(val, "ogles2") || !strcasecmp(val, "gles2") || !strcasecmp(val, "gl2") || !strcasecmp(val, "es2"))
 			{
-				Log(Log.Debug, "Base API type setting set to OpenGL ES. This will only take effect if PVRApi is linked dynamically.");
-				Log(Log.Information, "Minimum api version set to OpenGL ES 2.0");
-				_shellData.baseContextType = BaseApi::OpenGLES;
 				_shellData.minContextType = Api::OpenGLES2;
 			}
 			else
 			{
-				Log(Log.Error, "Unrecognized command line value '%s' for command line argument '-minapiversion'", val);
+				Log(LogLevel::Error, "Unrecognized command line value '%s' for command line argument '-minapiversion'", val);
 			}
 		}
 	}
 }
 
+
+// == Functions to call for corresponding command line parameters ==
+namespace {
+typedef void(*SetShellParameterPtr)(Shell& shell, const char* arg, const char* val);
+#define WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val) if (!val) { Log(LogLevel::Warning, "PVRShell recognised command-line option '%s' is supported, but no parameter has been provided.", arg); return; }
+#define WARNING_UNSUPPORTED_OPTION(x) { Log(LogLevel::Warning, "PVRShell recognised command-line option '" x "' is unsupported in this application and has been ignored."); }
+void setWidth(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setDimensions(atoi(val), shell.getHeight());
+}
+void setHeight(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setDimensions(shell.getWidth(), atoi(val));
+}
+void setAasamples(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setAASamples(atoi(val));
+}
+void setFullScreen(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setFullscreen(atoi(val) != 0);
+}
+void setQuitAfterFrame(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setQuitAfterFrame(atoi(val));
+}
+void setQuitAfterTime(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setQuitAfterTime(static_cast<float>(atof(val)));
+}
+void setPosx(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	if (shell.setPosition(atoi(val), shell.getPositionY()) != Result::Success)
+	{
+		WARNING_UNSUPPORTED_OPTION("posx")
+	}
+}
+void setPosy(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	if (shell.setPosition(shell.getPositionX(), atoi(val)) != Result::Success)
+	{
+		WARNING_UNSUPPORTED_OPTION("posy")
+	}
+}
+void setSwapLength(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setPreferredSwapChainLength(atoi(val));
+}
+void setVsync(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	if (!strcasecmp(val, "on"))
+	{
+		shell.setVsyncMode(VsyncMode::On);
+		Log("On");
+	}
+	else if (!strcasecmp(val, "off"))
+	{
+		shell.setVsyncMode(VsyncMode::Off);
+		Log("Off");
+	}
+	else if (!strcasecmp(val, "relaxed"))
+	{
+		shell.setVsyncMode(VsyncMode::Relaxed);
+		Log("Relaxed");
+	}
+	else if (!strcasecmp(val, "mailbox"))
+	{
+		shell.setVsyncMode(VsyncMode::Mailbox);
+		Log("Mailbox");
+	}
+	else if (!strcasecmp(val, "half"))
+	{
+		shell.setVsyncMode(VsyncMode::Half);
+		Log("Half");
+	}
+	else
+	{
+		Log("Trying number");
+		char* converted;
+		int value = strtol(val, &converted, 0);
+		if (!*converted)
+		{
+			switch (value)
+			{
+			case 0: shell.setVsyncMode(VsyncMode::Off); break;
+			case 1: shell.setVsyncMode(VsyncMode::On); break;
+			case 2: shell.setVsyncMode(VsyncMode::Half); break;
+			case -1: shell.setVsyncMode(VsyncMode::Relaxed); break;
+			case -2: shell.setVsyncMode(VsyncMode::Mailbox); break;
+			default: break;
+			}
+		}
+	}
+	Log("%d", shell.getVsyncMode());
+}
+void setLogLevel(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	if (!strcasecmp(val, "critical"))
+	{
+		DefaultLogger().setVerbosity(LogLevel::Critical);
+	}
+	else if (!strcasecmp(val, "error"))
+	{
+		DefaultLogger().setVerbosity(LogLevel::Error);
+	}
+	else if (!strcasecmp(val, "warning"))
+	{
+		DefaultLogger().setVerbosity(LogLevel::Warning);
+	}
+	else if (!strcasecmp(val, "information"))
+	{
+		DefaultLogger().setVerbosity(LogLevel::Information);
+	}
+	else if (!strcasecmp(val, "info"))
+	{
+		DefaultLogger().setVerbosity(LogLevel::Information);
+	}
+	else if (!strcasecmp(val, "verbose"))
+	{
+		DefaultLogger().setVerbosity(LogLevel::Verbose);
+	}
+	else if (!strcasecmp(val, "debug"))
+	{
+		DefaultLogger().setVerbosity(LogLevel::Debug);
+	}
+	else
+	{
+		Log(LogLevel::Warning, "Unrecognized threshold '%s' for '-loglevel' command "
+		    "line parameter. Accepted values: [critical, error, warning, "
+		    "information(default for release build), debug(default for debug build), verbose");
+	}
+}
+void setColorBpp(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	switch (atoi(val))
+	{
+	case 16:
+		shell.setColorBitsPerPixel(5, 6, 5, 0);
+		break;
+	case 24:
+		shell.setColorBitsPerPixel(8, 8, 8, 0);
+		break;
+	case 32:
+		shell.setColorBitsPerPixel(8, 8, 8, 8);
+		break;
+	default:
+		Log(LogLevel::Warning,
+		    "PVRShell recognised command-line option 'set color bpp' set to unsupported value %hs. Supported values are (16, 24 and 32).", val);
+		break;
+	}
+}
+void setDepthBpp(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setDepthBitsPerPixel(atoi(val));
+}
+void setStencilBpp(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setStencilBitsPerPixel(atoi(val));
+}
+void setCaptureFrames(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	const char* pDash = strchr(val, '-');
+	uint32_t start(atoi(val)), stop(pDash ? atoi(pDash + 1) : start);
+	shell.setCaptureFrames(start, stop);
+}
+void setScreenshotScale(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setCaptureFrameScale(atoi(val));
+}
+void setContextPriority(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setContextPriority(atoi(val));
+}
+void setDesiredCconfigId(Shell& shell, const char* arg, const char* val)
+{
+	WARN_AND_QUIT_IF_PARAMETER_NOT_PROVIDED(arg, val);
+	shell.setDesiredConfig(atoi(val));
+}
+void setForceFrameTime(Shell& shell, const char* arg, const char* val)
+{
+	shell.setForceFrameTime(true);
+	if (val)
+	{
+		int value = atoi(val);
+		if (value)
+		{
+			shell.setFakeFrameTime(std::max(1, value));
+		}
+	}
+}
+void showVersion(Shell& shell, const char* /*arg*/, const char* /*val*/)
+{
+	Log(LogLevel::Information, "Version: '%hs'", shell.getSDKVersion());
+}
+void setShowFps(Shell& shell, const char* /*arg*/, const char* /*val*/)
+{
+	shell.setShowFPS(true);
+}
+void showInfo(Shell& shell, const char* /*arg*/, const char* /*val*/)
+{
+	shell.getOS()._shellData.outputInfo = true;
+}
+void showCommandLineOptions(Shell& shell, const char* arg, const char* val);
+}
+
+#undef WARNING_UNSUPPORTED_OPTION
+
+const std::map<std::string, SetShellParameterPtr> supportedCommandLineOptions
+{
+	std::make_pair("-width", &setWidth),
+	std::make_pair("-height", &setHeight),
+	std::make_pair("-aasamples", &setAasamples),
+	std::make_pair("-fullscreen", &setFullScreen),
+	std::make_pair("-quitafterframe", &setQuitAfterFrame),
+	std::make_pair("-qaf", &setQuitAfterFrame),
+	std::make_pair("-quitaftertime", &setQuitAfterTime),
+	std::make_pair("-qat", &setQuitAfterTime),
+	std::make_pair("-posx", &setPosx),
+	std::make_pair("-posy", &setPosy),
+	std::make_pair("-swaplength", &setSwapLength),
+	std::make_pair("-preferredswaplength", &setSwapLength),
+	std::make_pair("-vsync", &setVsync),
+	std::make_pair("-loglevel", &setLogLevel),
+	std::make_pair("-colorbpp", &setColorBpp),
+	std::make_pair("-colourbpp", &setColorBpp),
+	std::make_pair("-cbpp", &setColorBpp),
+	std::make_pair("-depthbpp", &setDepthBpp),
+	std::make_pair("-dbpp", &setDepthBpp),
+	std::make_pair("-stencilbpp", &setStencilBpp),
+	std::make_pair("-dbpp", &setStencilBpp),
+	std::make_pair("-c", &setCaptureFrames),
+	std::make_pair("-screenshotscale", &setScreenshotScale),
+	std::make_pair("-priority", &setContextPriority),
+	std::make_pair("-config", &setDesiredCconfigId),
+	std::make_pair("-forceframetime", &setForceFrameTime),
+	std::make_pair("-fft", &setForceFrameTime),
+	std::make_pair("-version", &showVersion),
+	std::make_pair("-fps", &setShowFps),
+	std::make_pair("-info", &showInfo),
+	std::make_pair("-h", &showCommandLineOptions),
+	std::make_pair("-help", &showCommandLineOptions)
+};
+
+namespace {
+void showCommandLineOptions(Shell& /*shell*/, const char* /*arg*/, const char* /*val*/)
+{
+	std::stringstream sstream;
+	sstream << "Supported Command-line options:";
+	auto it = supportedCommandLineOptions.begin(), end = supportedCommandLineOptions.end();
+	sstream << it->first;
+	++it;
+	for (; it != end; ++it)
+	{
+		sstream << ", " << it->first;
+	}
+	Log(LogLevel::Information, "%s", sstream.str().c_str());
+}
+}
+
 void StateMachine::applyCommandLine()
 {
+#define WARNING_UNKNOWN_OPTION(x) { Log(LogLevel::Warning, "PVRShell recognised command-line option '%s' is unsupported in this application and has been ignored.", x); }
 	const char* arg, *val;
-<<<<<<< HEAD
-	const platform::CommandLineParser::ParsedCommandLine& options = m_shellData.commandLine->getParsedCommandLine();
-=======
 	const platform::CommandLineParser::ParsedCommandLine& options = _shellData.commandLine->getParsedCommandLine();
->>>>>>> 1776432f... 4.3
 
-#define WARNING_UNSUPPORTED_OPTION(x) { Log(Log.Warning, "PVRShell recognised command-line option '" x "' is unsupported in this application and has been ignored."); }
-
+	bool has_unknown_options = false;
 	for (unsigned int i = 0; i < options.getOptionsList().size(); ++i)
 	{
 		arg = options.getOptionsList()[i].arg;
 		val = options.getOptionsList()[i].val;
-
-		if (!arg) {continue;  }
-
-		if (val)
+		if (!arg) { continue; }
+		auto it = supportedCommandLineOptions.find(arg);
+		if (it != supportedCommandLineOptions.end())
 		{
-			if (strcasecmp(arg, "-width") == 0)
-			{
-				_shell->setDimensions(atoi(val), _shell->getHeight());
-			}
-			else if (strcasecmp(arg, "-height") == 0)
-			{
-				_shell->setDimensions(_shell->getWidth(), atoi(val));
-			}
-			else if (strcasecmp(arg, "-aasamples") == 0)
-			{
-				_shell->setAASamples(atoi(val));
-			}
-			else if (strcasecmp(arg, "-fullscreen") == 0)
-			{
-				_shell->setFullscreen(atoi(val) != 0);
-			}
-			else if (strcasecmp(arg, "-quitafterframe") == 0 || strcasecmp(arg, "-qaf") == 0)
-			{
-				_shell->setQuitAfterFrame(atoi(val));
-			}
-			else if (strcasecmp(arg, "-quitaftertime") == 0 || strcasecmp(arg, "-qat") == 0)
-			{
-				_shell->setQuitAfterTime((float32)atof(val));
-			}
-			else if (strcasecmp(arg, "-posx") == 0)
-			{
-				if (_shell->setPosition(atoi(val), _shell->getPositionY()) == Result::UnsupportedRequest)
-				{
-					WARNING_UNSUPPORTED_OPTION("posx")
-				}
-			}
-			else if (strcasecmp(arg, "-posy") == 0)
-			{
-				if (_shell->setPosition(_shell->getPositionX(), atoi(val)) == Result::UnsupportedRequest)
-				{
-					WARNING_UNSUPPORTED_OPTION("posy")
-				}
-			}
-			else if (strcasecmp(arg, "-swaplength") == 0 || strcasecmp(arg, "-preferredswaplength") == 0)
-			{
-<<<<<<< HEAD
-				m_shell->setPreferredSwapChainLength(atoi(val));
-=======
-				_shell->setPreferredSwapChainLength(atoi(val));
->>>>>>> 1776432f... 4.3
-			}
-			else if (strcasecmp(arg, "-vsync") == 0)
-			{
-				if (!strcasecmp(val, "on"))
-				{
-<<<<<<< HEAD
-					m_shell->setVsyncMode(VsyncMode::On);
-=======
-					_shell->setVsyncMode(VsyncMode::On);
->>>>>>> 1776432f... 4.3
-					Log("On");
-				}
-				else if (!strcasecmp(val, "off"))
-				{
-<<<<<<< HEAD
-					m_shell->setVsyncMode(VsyncMode::Off);
-=======
-					_shell->setVsyncMode(VsyncMode::Off);
->>>>>>> 1776432f... 4.3
-					Log("Off");
-				}
-				else if (!strcasecmp(val, "relaxed"))
-				{
-<<<<<<< HEAD
-					m_shell->setVsyncMode(VsyncMode::Relaxed);
-=======
-					_shell->setVsyncMode(VsyncMode::Relaxed);
->>>>>>> 1776432f... 4.3
-					Log("Relaxed");
-				}
-				else if (!strcasecmp(val, "mailbox"))
-				{
-<<<<<<< HEAD
-					m_shell->setVsyncMode(VsyncMode::Mailbox);
-=======
-					_shell->setVsyncMode(VsyncMode::Mailbox);
->>>>>>> 1776432f... 4.3
-					Log("Mailbox");
-				}
-				else if (!strcasecmp(val, "half"))
-				{
-<<<<<<< HEAD
-					m_shell->setVsyncMode(VsyncMode::Half);
-=======
-					_shell->setVsyncMode(VsyncMode::Half);
->>>>>>> 1776432f... 4.3
-					Log("Half");
-				}
-				else
-				{
-					Log("Trying number");
-					char* converted;
-					int value = strtol(val, &converted, 0);
-					if (!*converted)
-					{
-						switch (value)
-						{
-						case 0: _shell->setVsyncMode(VsyncMode::Off); break;
-						case 1: _shell->setVsyncMode(VsyncMode::On); break;
-						case 2: _shell->setVsyncMode(VsyncMode::Half); break;
-						case -1: _shell->setVsyncMode(VsyncMode::Relaxed); break;
-						case -2: _shell->setVsyncMode(VsyncMode::Mailbox); break;
-						default: break;
-						}
-					}
-				}
-<<<<<<< HEAD
-				Log("%d", m_shell->getVsyncMode());
-=======
-				Log("%d", _shell->getVsyncMode());
->>>>>>> 1776432f... 4.3
-			}
-			else if (strcasecmp(arg, "-loglevel") == 0)
-			{
-				if (!strcasecmp(val, "critical"))
-				{
-					Log.setVerbosity(Log.Critical);
-				}
-				else if (!strcasecmp(val, "error"))
-				{
-					Log.setVerbosity(Log.Error);
-				}
-				else if (!strcasecmp(val, "warning"))
-				{
-					Log.setVerbosity(Log.Warning);
-				}
-				else if (!strcasecmp(val, "information"))
-				{
-					Log.setVerbosity(Log.Information);
-				}
-				else if (!strcasecmp(val, "info"))
-				{
-					Log.setVerbosity(Log.Information);
-				}
-				else if (!strcasecmp(val, "verbose"))
-				{
-					Log.setVerbosity(Log.Verbose);
-				}
-				else if (!strcasecmp(val, "debug"))
-				{
-					Log.setVerbosity(Log.Debug);
-				}
-				else
-				{
-					Log(Log.Warning, "Unrecognized threshold '%s' for '-loglevel' command line parameter. Accepted values: [critical, error, warning, information(default for release build), debug(default for debug build), verbose");
-				}
-			}
-			else if (strcasecmp(arg, "-colorbpp") == 0 || strcasecmp(arg, "-colourbpp") == 0
-			         || strcasecmp(arg, "-cbpp") == 0)
-			{
-				switch (atoi(val))
-				{
-				case 16:
-					_shell->setColorBitsPerPixel(5, 6, 5, 0);
-					break;
-				case 24:
-					_shell->setColorBitsPerPixel(8, 8, 8, 0);
-					break;
-				case 32:
-					_shell->setColorBitsPerPixel(8, 8, 8, 8);
-					break;
-				default:
-					Log(Log.Warning,
-					    "PVRShell recognised command-line option '%hs' set to unsupported value %hs. Supported values are (16, 24 and 32).",
-					    arg, val);
-					break;
-				}
-			}
-			else if (strcasecmp(arg, "-depthbpp") == 0 || strcasecmp(arg, "-dbpp") == 0)
-			{
-				_shell->setDepthBitsPerPixel(atoi(val));
-			}
-			else if (strcasecmp(arg, "-stencilbpp") == 0 || strcasecmp(arg, "-dbpp") == 0)
-			{
-				_shell->setStencilBitsPerPixel(atoi(val));
-			}
-			/*else if(strcasecmp(arg, "-rotatekeys") == 0)
-			{
-			_shell->PVRShellset(PVRShell::prefRotateKeys, atoi(val));
-			}*/
-			else if (strcasecmp(arg, "-c") == 0)
-			{
-				const char* pDash = strchr(val, '-');
-				uint32 start(atoi(val)), stop(pDash ? atoi(pDash + 1) : start);
-				_shell->setCaptureFrames(start, stop);
-			}
-			else if (strcasecmp(arg, "-screenshotscale") == 0)
-			{
-				_shell->setCaptureFrameScale(atoi(val));
-			}
-			else if (strcasecmp(arg, "-priority") == 0)
-			{
-				_shell->setContextPriority(atoi(val));
-			}
-			else if (strcasecmp(arg, "-config") == 0)
-			{
-				_shell->setDesiredConfig(atoi(val));
-			}
-			/*  else if(strcasecmp(arg, "-display") == 0)
-			{
-			// TODO:
-			_shell->PVRShellset(PVRShell::prefNativeDisplay, atoi(val));
-			}*/
-			else if (strcasecmp(arg, "-forceframetime") == 0 || strcasecmp(arg, "-fft") == 0)
-			{
-				_shell->setForceFrameTime(true);
-				int value = atoi(val);
-				_shell->setFakeFrameTime(std::max(1, value));
-			}
+			it->second(*_shell, arg, val);
+
 		}
 		else
 		{
-			if (strcasecmp(arg, "-version") == 0)
-			{
-				Log(Log.Information, "Version: '%hs'", _shell->getSDKVersion());
-			}
-			else if (strcasecmp(arg, "-fps") == 0)
-			{
-				_shell->setShowFPS(true);
-			}
-			else if (strcasecmp(arg, "-info") == 0)
-			{
-				_shellData.outputInfo = true;
-			}
-			else if (strcasecmp(arg, "-forceframetime") == 0 || strcasecmp(arg, "-fft") == 0)
-			{
-				_shell->setForceFrameTime(true);
-			}
+			has_unknown_options = true;
+			WARNING_UNKNOWN_OPTION(arg);
 		}
+#undef WARNING_UNKNOWN_OPTION
 	}
-
-#undef WARNING_UNSUPPORTED_OPTION
+	if (has_unknown_options)
+	{
+		showCommandLineOptions(*_shell, "-help", nullptr);
+	}
 }
 
 Result StateMachine::execute()
@@ -450,11 +447,7 @@ Result StateMachine::execute()
 		if (result != Result::Success)
 		{
 			if (result == Result::ExitRenderFrame) { result = Result::Success; }
-<<<<<<< HEAD
-			while (m_currentState != StateExit) { executeOnce(); }// Loop to tidy up
-=======
 			while (_currentState != StateExit) { executeOnce(); }// Loop to tidy up
->>>>>>> 1776432f... 4.3
 		}
 		if (_currentState == StateExit) { return result; }
 	}
@@ -462,13 +455,8 @@ Result StateMachine::execute()
 
 Result StateMachine::executeUpTo(const State state)
 {
-<<<<<<< HEAD
-	Result result = m_currentState > state ? Result::InvalidArgument : Result::Success;
-	while (result == Result::Success && m_currentState < state)
-=======
-	Result result = _currentState > state ? Result::InvalidArgument : Result::Success;
+	Result result = _currentState > state ? Result::UnknownError : Result::Success;
 	while (result == Result::Success && _currentState < state)
->>>>>>> 1776432f... 4.3
 	{
 		if (_currentState == StateRenderScene && state > StateRenderScene)
 		{
@@ -485,20 +473,11 @@ Result StateMachine::executeOnce(const State state)
 	return executeOnce();
 }
 
-<<<<<<< HEAD
-=======
-typedef std::auto_ptr<IPlatformContext>(*NativeContextCreatorFn)(OSManager& mgr);
-
->>>>>>> 1776432f... 4.3
 Result StateMachine::executeOnce()
 {
 	// don't handle the events while paused
 	Result result(Result::Success);
-<<<<<<< HEAD
-	if (m_pause) {  return result;   }
-=======
-	if (_pause) {  return result;   }
->>>>>>> 1776432f... 4.3
+	if (_pause) { return result; }
 
 	// Handle our state
 	switch (_currentState)
@@ -507,109 +486,14 @@ Result StateMachine::executeOnce()
 		return Result::NotInitialized;
 	case StateInitApplication:
 		_shell = newDemo();
-
 		{
 			readApiFromCommandLine();
 
 			result = Result::Success;
-			// DETECT LINKING - Is PVRApi linked in as a DLL or statically?
-			// createNativePlatformContext it either a Real function, provided by PVRNativeApi,
-			// or a dummy function, to avoid link errors, and the real one provided by PVRApi dynamically.
-			// If PVRAPI_DYNAMIC_LIBRARY is defined when building the Application, the dummy function will
-			// be used, and it will return a NULL pointer. In that case, we know that PVRNativeApi is NOT
-			// linked in, hence the relevant functions are provided by PVRApi.
-
-			NativeContextCreatorFn createNative = &pvr::createNativePlatformContext;
-			_shellData.platformContext = createNative(*_shell);
-			if (_shellData.platformContext.get())
-			{
-				// LINKING STATICALLY: Nothing to do. Keep walking.
-				_shellData.baseContextType = _shellData.platformContext->getBaseApi();
-				Log(Log.Information, "PVRApi static linking detected. Api mode '%s'. Application is built and running in Static linking mode.",
-				    _shellData.baseContextType == BaseApi::OpenGLES ? "OpenGL ES" : "Vulkan");
-			}
-			if (!_shellData.platformContext.get())
-			{
-				// LINKING DYNAMICALLY: Now, attempt to load a PVRApi library based on user preferences.
-#ifdef _WIN32
-#define PVR_VK_LIB_NAME "PVRVulkan.dll"
-#define PVR_GLES_LIB_NAME "PVRGles.dll"
-#elif defined(TARGET_OS_MAC)
-#define PVR_VK_LIB_NAME "libPVRVulkan.dylib"
-#define PVR_GLES_LIB_NAME "libPVRGles.dylib"
-#else
-#define PVR_VK_LIB_NAME "libPVRVulkan.so"
-#define PVR_GLES_LIB_NAME "libPVRGles.so"
-#endif
-				Log(Log.Information, "PVRApi dynamic linking detected.");
-				bool tryVulkan = true;
-				bool tryGles = true;
-				switch (_shellData.baseContextType)
-				{
-				case BaseApi::Unspecified: Log(Log.Information, "PVRApi base version was unspecified."
-					                               "Will try loading " PVR_VK_LIB_NAME " library first, otherwise " PVR_GLES_LIB_NAME " if that fails."); break;
-				case BaseApi::OpenGLES:
-					Log(Log.Information, "PVRApi base API type was set to OpenGL ES. "
-					    "Will load PVRGles dynamic library " PVR_GLES_LIB_NAME ".");
-					tryVulkan = false;
-					break;
-				case BaseApi::Vulkan:
-					tryGles = false;
-					Log(Log.Information, "PVRApi base API type was set to Vulkan. "
-					    "Will load PVRVulkan dynamic library " PVR_VK_LIB_NAME "."); break;
-				}
-
-				if (tryVulkan)
-				{
-					_shell->pvrapi.reset(new pvr::native::NativeLibrary(PVR_VK_LIB_NAME, Log.Debug));
-					if (_shell->pvrapi->LoadFailed())
-					{
-						Log(Log.Information, "Vulkan version of PVRApi not detected.");
-					}
-					else
-					{
-						Log(Log.Information, PVR_VK_LIB_NAME " library successfully loaded. Application will run in Vulkan mode.");
-						_shellData.baseContextType = BaseApi::Vulkan;
-					}
-				}
-				if (tryGles && (!tryVulkan || _shell->pvrapi->LoadFailed()))
-				{
-					_shell->pvrapi.reset(new pvr::native::NativeLibrary(PVR_GLES_LIB_NAME, Log.Debug));
-					if (_shell->pvrapi->LoadFailed())
-					{
-						Log(Log.Information, "PVRGles not detected.");
-						result = Result::UnableToOpen;
-					}
-					else
-					{
-						Log(Log.Information, "PVRGles library successfully loaded. Application will run in OpenGL ES mode.");
-						_shellData.baseContextType = BaseApi::Vulkan;
-					}
-				}
-				if (!_shell->pvrapi->LoadFailed())
-				{
-					createNative = _shell->pvrapi->getFunction<NativeContextCreatorFn>("createNativePlatformContextApi");
-					if (!createNative)
-					{
-						Log(Log.Critical, "createNativePlatformContextApi function not found in PVRApi library");
-						result = Result::UnableToOpen;
-					}
-				}
-				_shellData.platformContext = createNative(*_shell);
-			}
-#undef PVR_VK_LIB_NAME
-#undef PVR_GLES_LIB_NAME
 		}// End linking dynamically
 		if (result == Result::Success)
 		{
-			if (_shellData.platformContext.get())
-			{
-				result = _shell->init(&_shellData);
-			}
-			else
-			{
-				result = Result::UnableToOpen;
-			}
+			result = _shell->init(&_shellData) ? Result::Success : Result::InitializationError;
 		}
 
 		if (result == Result::Success)
@@ -626,8 +510,8 @@ Result StateMachine::executeOnce()
 
 				_currentState = StatePreExit;
 
-				string error = string("InitApplication() failed with pvr error '") + Log.getResultCodeString(result) + string("'\n");
-				Log(Log.Error, error.c_str());
+				std::string error = std::string("InitApplication() failed with pvr error '") + getResultCodeString(result) + std::string("'\n");
+				Log(LogLevel::Error, error.c_str());
 			}
 		}
 		else
@@ -635,52 +519,19 @@ Result StateMachine::executeOnce()
 			_shell.reset();
 
 			_currentState = StatePreExit; // If we have reached this point, then _shell has already been initialized.
-			string error = string("State Machine initialisation failed with error '") + Log.getResultCodeString(result) + string("'\n");
-			Log(Log.Error, error.c_str());
+			std::string error = std::string("State Machine initialisation failed with error '") + getResultCodeString(result) + std::string("'\n");
+			Log(LogLevel::Error, error.c_str());
 		}
 		break;
 	case StateInitWindow:
 	{
 		applyCommandLine();
 		// Initialize our window. On some platforms this will be a dummy function
-		result = ShellOS::initializeWindow(_shellData.attributes);
-		if (result == Result::Success) {  _currentState = StateInitAPI;}
-		else {  _currentState = StateQuitApplication; }
+		result = (ShellOS::initializeWindow(_shellData.attributes) ? Result::Success : Result::InitializationError);
+		if (result == Result::Success) { _currentState = StateInitView; }
+		else { _currentState = StateQuitApplication; }
 	}
 	break;
-	case StateInitAPI:
-		if (!_shellData.platformContext.get())
-		{
-			_currentState = StateReleaseWindow;
-			return Result::NotInitialized;
-		}
-		else
-		{
-			result = _shellData.platformContext->init();
-
-			if (result == Result::Success)
-			{
-				_shellData.platformContext->makeCurrent();
-				_currentState = StateInitView;
-			}
-			else
-			{
-				if (_shell->getApiTypeRequired() != Api::Unspecified)
-				{
-<<<<<<< HEAD
-					m_shell->setExitMessage("Requested Graphics context type %s was unsupported on this device.", apiName(m_shell->getApiTypeRequired()));
-=======
-					_shell->setExitMessage("Requested Graphics context type %s was unsupported on this device.", apiName(_shell->getApiTypeRequired()));
->>>>>>> 1776432f... 4.3
-				}
-				else
-				{
-					_shell->setExitMessage("Unable to create context. Unknown error. Examine log for details.");
-				}
-				_currentState = StateReleaseAPI;  // Though we failed to init the API we call ReleaseAPI to delete _pplatformContext.
-			}
-		}
-		break;
 	case StateInitView:
 		result = _shell->shellInitView();
 
@@ -693,8 +544,8 @@ Result StateMachine::executeOnce()
 		{
 			_currentState = StateReleaseView;
 
-			string error = string("InitView() failed with pvr error '") + Log.getResultCodeString(result) + string("'\n");
-			Log(Log.Error, error.c_str());
+			std::string error = std::string("InitView() failed with pvr error '") + getResultCodeString(result) + std::string("'\n");
+			Log(LogLevel::Error, error.c_str());
 		}
 
 		if (_shellData.outputInfo)
@@ -715,77 +566,45 @@ Result StateMachine::executeOnce()
 			result = Result::ExitRenderFrame;
 		}
 
-		if (result == Result::Success)
-		{
-			// Read from backbuffer before swapping - take screenshot if frame capture is enabled
-<<<<<<< HEAD
-			if ((static_cast<int32>(m_shellData.frameNo) >= m_shellData.captureFrameStart
-			     && static_cast<int32>(m_shellData.frameNo) <= m_shellData.captureFrameStop))
-			{
-				m_shell->takeScreenshot();
-=======
-			if ((static_cast<int32>(_shellData.frameNo) >= _shellData.captureFrameStart
-			     && static_cast<int32>(_shellData.frameNo) <= _shellData.captureFrameStop))
-			{
-				_shell->takeScreenshot();
->>>>>>> 1776432f... 4.3
-			}
-
-			// Swap buffers
-			result = (_shellData.presentBackBuffer && _shellData.platformContext->presentBackbuffer()) ? Result::Success : Result::UnknownError;
-
-			if (result != Result::Success)
-			{
-<<<<<<< HEAD
-				m_currentState = StateReleaseView;
-=======
-				_currentState = StateReleaseView;
->>>>>>> 1776432f... 4.3
-			}
-		}
-		else
+		if (result != Result::Success)
 		{
 			if (result != Result::Success && result != Result::ExitRenderFrame)
 			{
-				string error = string("renderFrame() failed with pvr error '") + Log.getResultCodeString(result) + string("'\n");
-				Log(Log.Error, error.c_str());
+				std::string error = std::string("renderFrame() failed with pvr error '") + getResultCodeString(result) + std::string("'\n");
+				Log(LogLevel::Error, error.c_str());
 			}
 			_currentState = StateReleaseView;
 		}
 
 		// Calculate our FPS
 		{
-			static uint64 prevTime(_shellData.timer.getCurrentTimeMilliSecs()), FPSFrameCount(0);
-			uint64 time(_shellData.timer.getCurrentTimeMilliSecs()), delta(time - prevTime);
+			static uint64_t prevTime(_shellData.timer.getCurrentTimeMilliSecs()), NumFPSFrames(0);
+			uint64_t time(_shellData.timer.getCurrentTimeMilliSecs()), delta(time - prevTime);
 
-			++FPSFrameCount;
+			++NumFPSFrames;
 
 			if (delta >= 1000)
 			{
-				_shellData.FPS = 1000.0f * FPSFrameCount / (float)delta;
+				_shellData.FPS = 1000.0f * NumFPSFrames / static_cast<float>(delta);
 
-				FPSFrameCount = 0;
+				NumFPSFrames = 0;
 				prevTime = time;
 
-<<<<<<< HEAD
-				if (m_shellData.showFPS)
-=======
 				if (_shellData.showFPS)
->>>>>>> 1776432f... 4.3
 				{
-					Log(Log.Information, "Frame %i, FPS %.2f", _shellData.frameNo, _shellData.FPS);
+					Log(LogLevel::Information, "Frame %i, FPS %.2f", _shellData.frameNo, _shellData.FPS);
 				}
 			}
 		}
 
 		// Have we reached the point where we need to die?
-		if ((_shellData.dieAfterFrame >= 0 && _shellData.frameNo >= static_cast<uint32>(_shellData.dieAfterFrame))
+		if ((_shellData.dieAfterFrame >= 0 && _shellData.frameNo >= static_cast<uint32_t>(_shellData.dieAfterFrame))
 		    || (_shellData.dieAfterTime >= 0 && ((_shellData.timer.getCurrentTimeMilliSecs() - _shellData.startTime) * 0.001f) > _shellData.dieAfterTime)
 		    || _shellData.forceReleaseInitCycle)
 		{
 			if (_shellData.forceReleaseInitCycle)
 			{
-				Log(Log.Information, "Reinit requested. Going through Reinitialization cycle. ReleaseView will be called next, and then InitView.");
+				Log(LogLevel::Information, "Reinit requested. Going through Reinitialization cycle. ReleaseView will be called next, and then InitView.");
 			}
 			_currentState = StateReleaseView;
 			break;
@@ -796,33 +615,19 @@ Result StateMachine::executeOnce()
 	}
 	break;
 	case StateReleaseView:
-		Log(Log.Debug, "ReleaseView");
+		Log(LogLevel::Debug, "ReleaseView");
 		result = _shell->shellReleaseView();
 
 		if (result != Result::Success)
 		{
-			string error = string("ReleaseView() failed with pvr error '") + Log.getResultCodeString(result) + string("'\n");
-			Log(Log.Error, error.c_str());
+			std::string error = std::string("ReleaseView() failed with pvr error '") + getResultCodeString(result) + std::string("'\n");
+			Log(LogLevel::Error, error.c_str());
 		}
 
-		_currentState = StateReleaseAPI;
-		break;
-	case StateReleaseAPI:
-		Log(Log.Debug, "ReleaseApi");
-		if (_shellData.graphicsContextStore.isValid())
-		{
-			_shellData.graphicsContextStore->release();
-			_shellData.graphicsContextStore.reset();
-		}
-		_shellData.graphicsContext.reset();
 		_currentState = StateReleaseWindow;
 		break;
 	case StateReleaseWindow:
-		Log(Log.Debug, "ReleaseWindow");
-		if (_shellData.platformContext.get())
-		{
-			_shellData.platformContext->release();
-		}
+		Log(LogLevel::Debug, "ReleaseWindow");
 		ShellOS::releaseWindow();
 
 		if (!_shellData.weAreDone && _shellData.forceReleaseInitCycle)
@@ -836,25 +641,24 @@ Result StateMachine::executeOnce()
 		}
 		break;
 	case StateQuitApplication:
-		Log(Log.Debug, "QuitApplication");
+		Log(LogLevel::Debug, "QuitApplication");
 		result = _shell->shellQuitApplication();
 
 		if (result != Result::Success)
 		{
-			string error = string("QuitApplication() failed with pvr error '") + Log.getResultCodeString(result) + string("'\n");
-			Log(Log.Error, error.c_str());
+			std::string error = std::string("QuitApplication() failed with pvr error '") + getResultCodeString(result) + std::string("'\n");
+			Log(LogLevel::Error, error.c_str());
 		}
 
 		_shell.reset();
 
 		_currentState = StatePreExit;
 	case StatePreExit:
-		Log(Log.Debug, "StateExit");
+		Log(LogLevel::Debug, "StateExit");
 		if (!_shellData.exitMessage.empty())
 		{
 			ShellOS::popUpMessage(ShellOS::getApplicationName().c_str(), _shellData.exitMessage.c_str());
 		}
-		_shellData.platformContext.reset();
 		_currentState = StateExit;
 	case StateExit:
 		break;

@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-/*!*********************************************************************************************************************
-\file         PVRShell\OS\X11\ShellOS.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief         Contains an implementation of pvr::platform::ShellOS for Linux X11 systems.
-***********************************************************************************************************************/
-=======
 /*!
 \brief Contains an implementation of pvr::platform::ShellOS for Linux X11 systems.
 \file PVRShell\OS/X11/ShellOS.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
->>>>>>> 1776432f... 4.3
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRCore/IO/FilePath.h"
@@ -209,7 +200,7 @@ static Keys X11_To_Keycode[255] =
 	Keys::Unknown,
 	Keys::Unknown,
 };
-static Keys getKeyFromX11Code(uint32 keycode)
+static Keys getKeyFromX11Code(uint32_t keycode)
 {
 	if (keycode >= sizeof(X11_To_Keycode) / sizeof(X11_To_Keycode[0])) { return Keys::Unknown; }
 	Keys key = X11_To_Keycode[keycode];
@@ -223,12 +214,12 @@ void ShellOS::updatePointingDeviceLocation()
 	Window child_return, root_return;
 	if (XQueryPointer(_OSImplementation->display, _OSImplementation->window, &root_return, &child_return, &x, &y, &dummy0, &dummy1, &dummy2))
 	{
-		_shell->updatePointerPosition(PointerLocation((int16)x, (int16)y));
+		_shell->updatePointerPosition(PointerLocation(static_cast<int16_t>(x), static_cast<int16_t>(y)));
 	}
 }
 
 // Setup the capabilities
-const ShellOS::Capabilities ShellOS::_capabilities = { types::Capability::Immutable, types::Capability::Immutable };
+const ShellOS::Capabilities ShellOS::_capabilities = { Capability::Immutable, Capability::Immutable };
 
 ShellOS::ShellOS(void* hInstance, OSDATA osdata) : _instance(hInstance)
 {
@@ -240,16 +231,12 @@ ShellOS::~ShellOS()
 	delete _OSImplementation;
 }
 
-Result ShellOS::init(DisplayAttributes& data)
+bool ShellOS::init(DisplayAttributes& data)
 {
 	(void)data;
-<<<<<<< HEAD
-	if (!m_OSImplementation)
-=======
 	if (!_OSImplementation)
->>>>>>> 1776432f... 4.3
 	{
-		return Result::OutOfMemory;
+        return false;
 	}
 
 	// Construct our read and write path
@@ -270,7 +257,8 @@ Result ShellOS::init(DisplayAttributes& data)
 
 		if (res < 0)
 		{
-			Log(Log.Warning, "Readlink %s failed. The application name, read path and write path have not been set.\n", exePath);
+            Log(LogLevel::Warning, "Readlink %s failed. The application name, "
+            "read path and write path have not been set.\n", exePath);
 			break;
 		}
 	}
@@ -285,12 +273,13 @@ Result ShellOS::init(DisplayAttributes& data)
 		_ReadPaths.clear();
 		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator());
 		_ReadPaths.push_back(std::string(".") + FilePath::getDirectorySeparator());
-		_ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() + "Assets" + FilePath::getDirectorySeparator());
+        _ReadPaths.push_back(filepath.getDirectory() + FilePath::getDirectorySeparator() +
+            "Assets" + FilePath::getDirectorySeparator());
 	}
 
 	delete[] exePath;
 
-	return Result::Success;
+    return true;
 }
 
 static Bool waitForMapNotify(Display* /*d*/, XEvent* e, char* arg)
@@ -298,14 +287,14 @@ static Bool waitForMapNotify(Display* /*d*/, XEvent* e, char* arg)
 	return (e->type == MapNotify) && (e->xmap.window == (Window)arg);
 }
 
-Result ShellOS::initializeWindow(DisplayAttributes& data)
+bool ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	Display* display = XOpenDisplay(NULL);
 
 	if (!display)
 	{
-		Log(Log.Error, "Unable to open X display (%s:%i)", __FILE__, __LINE__);
-		return Result::UnknownError;
+		Log(LogLevel::Error, "Unable to open X display (%s:%i)", __FILE__, __LINE__);
+        return false;
 	}
 
 	long screen = XDefaultScreen(display);
@@ -324,19 +313,19 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 	if (!data.fullscreen)
 	{
 		// Resize if the width and height if they're out of bounds
-		if (data.width > (uint32)display_width)
+		if (data.width > static_cast<uint32_t>(display_width))
 		{
 			data.width = display_width;
 		}
 
-		if (data.height > (uint32)display_height)
+		if (data.height > static_cast<uint32_t>(display_height))
 		{
 			data.height = display_height;
 		}
 	}
 
-	if (data.x == (uint32)DisplayAttributes::PosDefault) { data.x = 0; }
-	if (data.y == (uint32)DisplayAttributes::PosDefault) { data.y = 0; }
+	if (data.x == static_cast<uint32_t>(DisplayAttributes::PosDefault)) { data.x = 0; }
+	if (data.y == static_cast<uint32_t>(DisplayAttributes::PosDefault)) { data.y = 0; }
 
 	// Create the window
 	XSetWindowAttributes	WinAttibutes;
@@ -349,89 +338,14 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 
 	if (!visual)
 	{
-		Log(Log.Error, "Unable to acquire visual (%s:%i)", __FILE__, __LINE__);
-		return Result::UnknownError;
+		Log(LogLevel::Error, "Unable to acquire visual (%s:%i)", __FILE__, __LINE__);
+        return false;
 	}
 
 	Colormap colorMap = XCreateColormap(display, RootWindow(display, screen), visual->visual, AllocNone);
 
 	Window window;
-//#if defined(BUILDING_FOR_DESKTOP_GL)
-//	_i32OriginalModeDotClock = XF86VidModeBadClock;
-//
-//	if (data.fullScreen)
-//	{
-//		XF86VidModeModeInfo** modes;       // modes of display
-//		int numModes;                      // number of modes of display
-//		int chosenMode;
-//		int edimx, edimy;                   //established width and height of the chosen modeline
-//		int i;
-//
-//		// Get mode lines to see if there is requested modeline
-//		XF86VidModeGetAllModeLines(display, screen, &numModes, &modes);
-//
-//		// look for mode with requested resolution
-//		chosenMode = -1;
-//		i = 0;
-//		while ((chosenMode == -1) && (i < numModes))
-//		{
-//			if ((modes[i]->hdisplay == data.width) && (modes[i]->vdisplay == data.height))
-//			{
-//				chosenMode = i;
-//			}
-//			++i;
-//		}
-//
-//		// If there is no requested resolution among modelines then terminate
-//		if (chosenMode == -1)
-//		{
-//			LogError("Chosen resolution for fullscreen mode does not match any modeline available (%s:%i)", __FILE__, __LINE__);
-//			return false;
-//		}
-//
-//		// save desktop-resolution before switching modes
-//		XF86VidModeGetModeLine(display, screen, &_OSImplementation->originalModeDotClock, &_OSImplementation->originalMode);
-//
-//		XF86VidModeSwitchToMode(display, screen, modes[chosenMode]);
-//		XF86VidModeSetViewPort(display, screen, 0, 0);
-//		edimx = modes[chosenMode]->hdisplay;
-//		edimy = modes[chosenMode]->vdisplay;
-//		LogInfo("Fullscreen Resolution %d x %d (chosen mode = %d)", edimx, edimy, chosenMode);
-//		XFree(modes);
-//
-//		WinAttibutes.colormap = colorMap;
-//		WinAttibutes.background_pixel = 0xFFFFFFFF;
-//		WinAttibutes.border_pixel = 0;
-//		WinAttibutes.override_redirect = true;
-//
-//		// add to these for handling other events
-//		WinAttibutes.event_mask = StructureNotifyMask | ExposureMask | ButtonPressMask | ButtonReleaseMask | Button1MotionMask | KeyPressMask | KeyReleaseMask;
-//
-//		// The diffrence is that we want to ignore influence of window manager for our fullscreen window
-//		unsigned long mask = CWBackPixel | CWBorderPixel | CWEventMask | CWColormap | CWOverrideRedirect;
-//
-//		window = XCreateWindow(display, RootWindow(display, screen), 0, 0, edimx, edimy, 0, CopyFromParent, InputOutput, CopyFromParent, mask, &WinAttibutes);
-//
-//		// keeping the pointer of mouse and keyboard in window to prevent from scrolling the virtual screen
-//		XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
-//
-//		// Map and then wait till mapped, grabbing should be after mapping the window
-//		XMapWindow(display, window);
-//		XGrabKeyboard(display, window, True, GrabModeAsync, GrabModeAsync, CurrentTime);
-//		XGrabPointer(display, window, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, window, None, CurrentTime);
-//		XIfEvent(display, &event, waitForMapNotify, (char*)window);
-//	}
-//	else
-//#endif
 	{
-//#if !defined(BUILDING_FOR_DESKTOP_GL)
-//		if (data.fullscreen)
-//		{
-//			data.width = display_width;
-//			data.height = display_height;
-//			return Result::UnknownError;
-//		}
-//#endif
 		WinAttibutes.colormap = colorMap;
 		WinAttibutes.background_pixel = 0xFFFFFFFF;
 		WinAttibutes.border_pixel = 0;
@@ -463,7 +377,7 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 
 		// Map and then wait till mapped
 		XMapWindow(display, window);
-		XIfEvent(display, &event, waitForMapNotify, (char*)window);
+		XIfEvent(display, &event, waitForMapNotify, reinterpret_cast<char*>(window));
 
 		// An attempt to hide a border for fullscreen on non OGL apis (OGLES,OGLES2)
 		if (data.fullscreen)
@@ -495,7 +409,7 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 	_OSImplementation->window = window;
 	_OSImplementation->visual = visual;
 	_OSImplementation->colorMap = colorMap;
-	return Result::Success;
+    return true;
 }
 
 void ShellOS::releaseWindow()
@@ -527,7 +441,7 @@ OSWindow ShellOS::getWindow() const
 	return  reinterpret_cast<void*>(_OSImplementation->window);
 }
 
-Result ShellOS::handleOSEvents()
+bool ShellOS::handleOSEvents()
 {
 	XEvent	event;
 	char*		atoms;
@@ -579,29 +493,13 @@ Result ShellOS::handleOSEvents()
 			break;
 		}
 		case MotionNotify:
-		//{
-		//	XMotionEvent* motion_event = ((XMotionEvent*)&event);
-
-		//	Event e = EventTypeTouchMove;
-		//	e.touch.touchID = 0;
-
-		//	e.touch.x = motion_event->x / (float)XDisplayWidth(_OSImplementation->display, _OSImplementation->screen);
-		//	e.touch.y = motion_event->y / (float)XDisplayHeight(_OSImplementation->display, _OSImplementation->screen);
-
-		//	eventManager.submitEvent(e);
-		//	break;
-		//}
 		case KeyPress:
 		{
 			XKeyEvent* key_event = ((XKeyEvent*)&event);
-			Log(Log.Debug, "%d", key_event->keycode);
-			if (getKeyFromX11Code(key_event->keycode) == Keys::Escape) {Log(Log.Debug, "Escape");}
-			else {Log(Log.Debug, "???");}
-<<<<<<< HEAD
-			m_shell->onKeyDown(getKeyFromX11Code(key_event->keycode));
-=======
+			Log(LogLevel::Debug, "%d", key_event->keycode);
+			if (getKeyFromX11Code(key_event->keycode) == Keys::Escape) {Log(LogLevel::Debug, "Escape");}
+			else {Log(LogLevel::Debug, "???");}
 			_shell->onKeyDown(getKeyFromX11Code(key_event->keycode));
->>>>>>> 1776432f... 4.3
 		}
 		break;
 		case KeyRelease:
@@ -616,21 +514,21 @@ Result ShellOS::handleOSEvents()
 			static XConfigureEvent*  configure_event = NULL;
 			 configure_event = ((XConfigureEvent*)&event);
 			_shell->onConfigureEvent(
-						ConfigureEvent
-			            		{
-							configure_event->x,
-							configure_event->y,
-							configure_event->width,
-							configure_event->height,
-							configure_event->border_width
-						});
+                ConfigureEvent
+                {
+                    configure_event->x,
+                    configure_event->y,
+                    configure_event->width,
+                    configure_event->height,
+                    configure_event->border_width
+                });
 		}
 		default:
 			break;
 		}
 	}
 
-	return Result::Success;
+    return true;
 }
 
 
@@ -639,20 +537,20 @@ bool ShellOS::isInitialized()
 	return _OSImplementation && _OSImplementation->window;
 }
 
-Result ShellOS::popUpMessage(const char* title, const char* message, ...) const
+bool ShellOS::popUpMessage(const char* title, const char* message, ...) const
 {
 	if (!title && !message)
 	{
-		return Result::NoData;
+        return false;
 	}
 
 	va_list arg;
 
 	va_start(arg, message);
-	Log(Log.Information, message, arg);
+	Log(LogLevel::Information, message, arg);
 	va_end(arg);
 
-	return Result::Success;
+    return true;
 }
 }
 }

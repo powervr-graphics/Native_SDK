@@ -16,7 +16,6 @@
 using std::string;
 using std::map;
 namespace pvr {
-using namespace types;
 
 TextureHeader::TextureHeader()
 {
@@ -27,43 +26,41 @@ TextureHeader::TextureHeader()
 	_header.height           = 1;
 	_header.width            = 1;
 	_header.depth            = 1;
-	_header.numberOfSurfaces = 1;
-	_header.numberOfFaces    = 1;
-	_header.mipMapCount      = 1;
+	_header.numSurfaces = 1;
+	_header.numFaces    = 1;
+	_header.numMipMaps      = 1;
 	_header.metaDataSize     = 0;
 }
 
-
-
 TextureHeader::TextureHeader(TextureHeader::Header& header) : _header(header) {}
 
-TextureHeader::TextureHeader(Header fileHeader, uint32 metaDataCount, TextureMetaData* metaData)
+TextureHeader::TextureHeader(Header fileHeader, uint32_t numMetaData, TextureMetaData* metaData)
 	: _header(fileHeader)
 {
 	if (metaData)
 	{
-		for (uint32 i = 0; i < metaDataCount; ++i)
+		for (uint32_t i = 0; i < numMetaData; ++i)
 		{
 			addMetaData(metaData[i]);
 		}
 	}
 }
 
-TextureHeader::TextureHeader(PixelFormat pixelFormat, uint32 width, uint32 height, uint32 depth, uint32 mipMapCount,
-                             types::ColorSpace colorSpace, VariableType channelType, uint32 numberOfSurfaces, uint32 numberOfFaces,
-                             uint32 flags, TextureMetaData* metaData, uint32 metaDataSize)
+TextureHeader::TextureHeader(PixelFormat pixelFormat, uint32_t width, uint32_t height, uint32_t depth, uint32_t numMipMaps,
+                             ColorSpace colorSpace, VariableType channelType, uint32_t numSurfaces, uint32_t numFaces,
+                             uint32_t flags, TextureMetaData* metaData, uint32_t metaDataSize)
 {
 	_header.pixelFormat = pixelFormat;
 	_header.width = width, _header.height = height, _header.depth = depth;
-	_header.mipMapCount = mipMapCount;
+	_header.numMipMaps = numMipMaps;
 	_header.colorSpace = colorSpace;
 	_header.channelType = channelType;
-	_header.numberOfSurfaces = numberOfSurfaces;
-	_header.numberOfFaces = numberOfFaces;
+	_header.numSurfaces = numSurfaces;
+	_header.numFaces = numFaces;
 	_header.flags = flags;
 	if (metaData)
 	{
-		for (uint32 i = 0; i < metaDataSize; ++i)
+		for (uint32_t i = 0; i < metaDataSize; ++i)
 		{
 			addMetaData(metaData[i]);
 		}
@@ -71,42 +68,41 @@ TextureHeader::TextureHeader(PixelFormat pixelFormat, uint32 width, uint32 heigh
 }
 
 
-const string TextureHeader::getCubeMapOrder() const
+const std::string TextureHeader::getCubeMapOrder() const
 {
 	//Make sure the meta block exists
-	//uint32 fourCCIndex = _metaDataMap.find(Header::PVRv3);
-	map<uint32, map<uint32, TextureMetaData> >::const_iterator foundFourCC = _metaDataMap.find(Header::PVRv3);
-	if (getNumberOfFaces() > 1)
+	map<uint32_t, map<uint32_t, TextureMetaData>>::const_iterator foundFourCC = _metaDataMap.find(Header::PVRv3);
+	if (getNumFaces() > 1)
 	{
 		if (foundFourCC != _metaDataMap.end())
 		{
 
-			map<uint32, TextureMetaData>::const_iterator foundMetaData = (foundFourCC->second).find(
+			map<uint32_t, TextureMetaData>::const_iterator foundMetaData = (foundFourCC->second).find(
 			      TextureMetaData::IdentifierCubeMapOrder);
 			if (foundMetaData != (foundFourCC->second).end())
 			{
-				char8 cubeMapOrder[7];
+				char cubeMapOrder[7];
 				cubeMapOrder[6] = 0;
 				memcpy(cubeMapOrder, (foundMetaData->second).getData(), 6);
-				return string(cubeMapOrder);
+				return std::string(cubeMapOrder);
 			}
 		}
 
-		string defaultOrder("XxYyZz");
+		std::string defaultOrder("XxYyZz");
 
 		// Remove characters for faces that don't exist
-		defaultOrder.resize(defaultOrder.size() - 6 - getNumberOfFaces());
+		defaultOrder.resize(defaultOrder.size() - 6 - getNumFaces());
 
 		return defaultOrder;
 	}
 
-	return string("");
+	return std::string("");
 }
 
 
 
 
-uint32 TextureHeader::getBitsPerPixel() const
+uint32_t TextureHeader::getBitsPerPixel() const
 {
 	if (getPixelFormat().getPart().High != 0)
 	{
@@ -117,45 +113,44 @@ uint32 TextureHeader::getBitsPerPixel() const
 	{
 		switch (getPixelFormat().getPixelTypeId())
 		{
-		case (uint64)CompressedPixelFormat::BW1bpp:
+		case static_cast<uint64_t>(CompressedPixelFormat::BW1bpp):
 			return 1;
-		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGB:
-		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA:
-		case (uint64)CompressedPixelFormat::PVRTCII_2bpp:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGB):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGBA):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_2bpp):
 			return 2;
-		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGB:
-		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA:
-		case (uint64)CompressedPixelFormat::PVRTCII_4bpp:
-		case (uint64)CompressedPixelFormat::ETC1:
-		case (uint64)CompressedPixelFormat::EAC_R11:
-		case (uint64)CompressedPixelFormat::ETC2_RGB:
-		case (uint64)CompressedPixelFormat::ETC2_RGB_A1:
-		case (uint64)CompressedPixelFormat::DXT1:
-		case (uint64)CompressedPixelFormat::BC4:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGB):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGBA):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_4bpp):
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC1):
+		case static_cast<uint64_t>(CompressedPixelFormat::EAC_R11):
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB):
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB_A1):
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT1):
+		case static_cast<uint64_t>(CompressedPixelFormat::BC4):
 			return 4;
-		case (uint64)CompressedPixelFormat::DXT2:
-		case (uint64)CompressedPixelFormat::DXT3:
-		case (uint64)CompressedPixelFormat::DXT4:
-		case (uint64)CompressedPixelFormat::DXT5:
-		case (uint64)CompressedPixelFormat::BC5:
-		case (uint64)CompressedPixelFormat::EAC_RG11:
-		case (uint64)CompressedPixelFormat::ETC2_RGBA:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT2):
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT3):
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT4):
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT5):
+		case static_cast<uint64_t>(CompressedPixelFormat::BC5):
+		case static_cast<uint64_t>(CompressedPixelFormat::EAC_RG11):
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGBA):
 			return 8;
-		case (uint64)CompressedPixelFormat::YUY2:
-		case (uint64)CompressedPixelFormat::UYVY:
-		case (uint64)CompressedPixelFormat::RGBG8888:
-		case (uint64)CompressedPixelFormat::GRGB8888:
+		case static_cast<uint64_t>(CompressedPixelFormat::YUY2):
+		case static_cast<uint64_t>(CompressedPixelFormat::UYVY):
+		case static_cast<uint64_t>(CompressedPixelFormat::RGBG8888):
+		case static_cast<uint64_t>(CompressedPixelFormat::GRGB8888):
 			return 16;
-		case (uint64)CompressedPixelFormat::SharedExponentR9G9B9E5:
+		case static_cast<uint64_t>(CompressedPixelFormat::SharedExponentR9G9B9E5):
 			return 32;
 		default:
 			return 0;
 		}
 	}
-	return 0;
 }
 
-void TextureHeader::getMinDimensionsForFormat(uint32& minX, uint32& minY, uint32& minZ) const
+void TextureHeader::getMinDimensionsForFormat(uint32_t& minX, uint32_t& minY, uint32_t& minZ) const
 {
 	if (getPixelFormat().getPart().High != 0)
 	{
@@ -169,71 +164,71 @@ void TextureHeader::getMinDimensionsForFormat(uint32& minX, uint32& minY, uint32
 
 		switch (getPixelFormat().getPixelTypeId())
 		{
-		case (uint64)CompressedPixelFormat::DXT1:
-		case (uint64)CompressedPixelFormat::DXT2:
-		case (uint64)CompressedPixelFormat::DXT3:
-		case (uint64)CompressedPixelFormat::DXT4:
-		case (uint64)CompressedPixelFormat::DXT5:
-		case (uint64)CompressedPixelFormat::BC4:
-		case (uint64)CompressedPixelFormat::BC5:
-		case (uint64)CompressedPixelFormat::ETC1:
-		case (uint64)CompressedPixelFormat::ETC2_RGB:
-		case (uint64)CompressedPixelFormat::ETC2_RGBA:
-		case (uint64)CompressedPixelFormat::ETC2_RGB_A1:
-		case (uint64)CompressedPixelFormat::EAC_R11:
-		case (uint64)CompressedPixelFormat::EAC_RG11:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT1):
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT2):
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT3):
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT4):
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT5):
+		case static_cast<uint64_t>(CompressedPixelFormat::BC4):
+		case static_cast<uint64_t>(CompressedPixelFormat::BC5):
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC1):
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB):
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGBA):
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC2_RGB_A1):
+		case static_cast<uint64_t>(CompressedPixelFormat::EAC_R11):
+		case static_cast<uint64_t>(CompressedPixelFormat::EAC_RG11):
 			minX = 4;
 			minY = 4;
 			minZ = 1;
 			break;
-		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGB:
-		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGB):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGBA):
 			minX = 8;
 			minY = 8;
 			minZ = 1;
 			break;
-		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGB:
-		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGB):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGBA):
 			minX = 16;
 			minY = 8;
 			minZ = 1;
 			break;
-		case (uint64)CompressedPixelFormat::PVRTCII_4bpp:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_4bpp):
 			minX = 4;
 			minY = 4;
 			minZ = 1;
 			break;
-		case (uint64)CompressedPixelFormat::PVRTCII_2bpp:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_2bpp):
 			minX = 8;
 			minY = 4;
 			minZ = 1;
 			break;
-		case (uint64)CompressedPixelFormat::UYVY:
-		case (uint64)CompressedPixelFormat::YUY2:
-		case (uint64)CompressedPixelFormat::RGBG8888:
-		case (uint64)CompressedPixelFormat::GRGB8888:
+		case static_cast<uint64_t>(CompressedPixelFormat::UYVY):
+		case static_cast<uint64_t>(CompressedPixelFormat::YUY2):
+		case static_cast<uint64_t>(CompressedPixelFormat::RGBG8888):
+		case static_cast<uint64_t>(CompressedPixelFormat::GRGB8888):
 			minX = 2;
 			minY = 1;
 			minZ = 1;
 			break;
-		case (uint64)CompressedPixelFormat::BW1bpp:
+		case static_cast<uint64_t>(CompressedPixelFormat::BW1bpp):
 			minX = 8;
 			minY = 1;
 			minZ = 1;
 			break;
 		//Error
-		case (uint64)CompressedPixelFormat::NumCompressedPFs:
+		case static_cast<uint64_t>(CompressedPixelFormat::NumCompressedPFs):
 			break;
 		}
 	}
 }
 
-void TextureHeader::setBumpMap(float bumpScale, string bumpOrder)
+void TextureHeader::setBumpMap(float bumpScale, std::string bumpOrder)
 {
 	if (bumpOrder.find_first_not_of("xyzh") != std::string::npos)
 	{
-		assertion(false ,  "Invalid Bumpmap order string");
-		pvr::Log("Invalid Bumpmap order string");
+		assertion(false,  "Invalid Bumpmap order std::string");
+		Log("Invalid Bumpmap order std::string");
 		return;
 	}
 	//Get a reference to the meta data block.
@@ -246,7 +241,7 @@ void TextureHeader::setBumpMap(float bumpScale, string bumpOrder)
 	}
 
 	// Initialize and clear the bump map data
-	byte bumpData[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	char bumpData[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	//Copy the floating point scale and character order into the bumpmap data
 	memcpy(bumpData, &bumpScale, 4);
@@ -262,40 +257,38 @@ TextureMetaData::AxisOrientation TextureHeader::getOrientation(TextureMetaData::
 {
 	//Make sure the meta block exists
 
-	std::map<uint32, std::map<uint32, TextureMetaData> >::const_iterator foundIdentifer = _metaDataMap.find(Header::PVRv3);
+	std::map<uint32_t, std::map<uint32_t, TextureMetaData>>::const_iterator foundIdentifer = _metaDataMap.find(Header::PVRv3);
 	if (foundIdentifer != _metaDataMap.end())
 	{
-		std::map<uint32, TextureMetaData>::const_iterator foundTexMetaData = foundIdentifer->second.find(
+		std::map<uint32_t, TextureMetaData>::const_iterator foundTexMetaData = foundIdentifer->second.find(
 		      TextureMetaData::IdentifierTextureOrientation);
 		if (foundTexMetaData != foundIdentifer->second.end())
 		{
-			return (TextureMetaData::AxisOrientation)
-			       (foundTexMetaData->second.getData()[axis]);
+			return static_cast<TextureMetaData::AxisOrientation>(foundTexMetaData->second.getData()[axis]);
 		}
 	}
 
-
-	return (TextureMetaData::AxisOrientation)0; //Default is the flag values.
+	return static_cast<TextureMetaData::AxisOrientation>(0); //Default is the flag values.
 }
 
-bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
+bool TextureHeader::getDirectXGIFormat(uint32_t& dxgiFormat, bool& notAlpha) const
 {
 	// Default value in case of errors
 	dxgiFormat = texture_dds::DXGI_FORMAT_UNKNOWN;
 	notAlpha = false;
 	if (getPixelFormat().getPart().High == 0)
 	{
-		if (getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::RGBG8888)
+		if (getPixelFormat().getPixelTypeId() == static_cast<uint64_t>(CompressedPixelFormat::RGBG8888))
 		{
 			dxgiFormat = texture_dds::DXGI_FORMAT_R8G8_B8G8_UNORM;
 			return true;
 		}
-		if (getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::GRGB8888)
+		if (getPixelFormat().getPixelTypeId() == static_cast<uint64_t>(CompressedPixelFormat::GRGB8888))
 		{
 			dxgiFormat = texture_dds::DXGI_FORMAT_G8R8_G8B8_UNORM;
 			return true;
 		}
-		if (getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::BW1bpp)
+		if (getPixelFormat().getPixelTypeId() == static_cast<uint64_t>(CompressedPixelFormat::BW1bpp))
 		{
 			dxgiFormat = texture_dds::DXGI_FORMAT_R1_UNORM;
 			return true;
@@ -305,7 +298,7 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 		{
 			switch (getPixelFormat().getPixelTypeId())
 			{
-			case (uint64)CompressedPixelFormat::BC1:
+			case static_cast<uint64_t>(CompressedPixelFormat::BC1):
 				if (getColorSpace() == ColorSpace::sRGB)
 				{
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC1_UNORM_SRGB;
@@ -316,7 +309,7 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC1_UNORM;
 					return true;
 				}
-			case (uint64)CompressedPixelFormat::BC2:
+			case static_cast<uint64_t>(CompressedPixelFormat::BC2):
 				if (getColorSpace() == ColorSpace::sRGB)
 				{
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC2_UNORM_SRGB;
@@ -327,7 +320,7 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC2_UNORM;
 					return true;
 				}
-			case (uint64)CompressedPixelFormat::BC3:
+			case static_cast<uint64_t>(CompressedPixelFormat::BC3):
 				if (getColorSpace() == ColorSpace::sRGB)
 				{
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC3_UNORM_SRGB;
@@ -338,10 +331,10 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 					dxgiFormat = texture_dds::DXGI_FORMAT_BC3_UNORM;
 					return true;
 				}
-			case (uint64)CompressedPixelFormat::BC4:
+			case static_cast<uint64_t>(CompressedPixelFormat::BC4):
 				dxgiFormat = texture_dds::DXGI_FORMAT_BC4_UNORM;
 				return true;
-			case (uint64)CompressedPixelFormat::BC5:
+			case static_cast<uint64_t>(CompressedPixelFormat::BC5):
 				dxgiFormat = texture_dds::DXGI_FORMAT_BC5_UNORM;
 				return true;
 			}
@@ -349,12 +342,12 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 		else if (getChannelType() == VariableType::SignedIntegerNorm || getChannelType() == VariableType::SignedShortNorm ||
 		         getChannelType() == VariableType::SignedByteNorm)
 		{
-			if (getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::BC4)
+			if (getPixelFormat().getPixelTypeId() == static_cast<uint64_t>(CompressedPixelFormat::BC4))
 			{
 				dxgiFormat = texture_dds::DXGI_FORMAT_BC4_SNORM;
 				return true;
 			}
-			if (getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::BC5)
+			if (getPixelFormat().getPixelTypeId() == static_cast<uint64_t>(CompressedPixelFormat::BC5))
 			{
 				dxgiFormat = texture_dds::DXGI_FORMAT_BC5_SNORM;
 				return true;
@@ -673,7 +666,7 @@ bool TextureHeader::getDirectXGIFormat(uint32& dxgiFormat, bool& notAlpha) const
 	return false;
 }
 
-bool TextureHeader::getDirect3DFormat(uint32& d3dFormat) const
+bool TextureHeader::getDirect3DFormat(uint32_t& d3dFormat) const
 {
 	//Default return value if unrecognised
 	d3dFormat = texture_dds::D3DFMT_UNKNOWN;
@@ -682,39 +675,39 @@ bool TextureHeader::getDirect3DFormat(uint32& d3dFormat) const
 	{
 		switch (getPixelFormat().getPixelTypeId())
 		{
-		case (uint64)CompressedPixelFormat::DXT1:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT1):
 			d3dFormat = texture_dds::D3DFMT_DXT1;
 			return true;
-		case (uint64)CompressedPixelFormat::DXT2:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT2):
 			d3dFormat = texture_dds::D3DFMT_DXT2;
 			return true;
-		case (uint64)CompressedPixelFormat::DXT3:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT3):
 			d3dFormat = texture_dds::D3DFMT_DXT3;
 			return true;
-		case (uint64)CompressedPixelFormat::DXT4:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT4):
 			d3dFormat = texture_dds::D3DFMT_DXT4;
 			return true;
-		case (uint64)CompressedPixelFormat::DXT5:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT5):
 			d3dFormat = texture_dds::D3DFMT_DXT5;
 			return true;
-		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGB:
-		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGB):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGBA):
 			d3dFormat = texture_dds::D3DFMT_PVRTC2;
 			return true;
-		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGB:
-		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGB):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGBA):
 			d3dFormat = texture_dds::D3DFMT_PVRTC4;
 			return true;
-		case (uint64)CompressedPixelFormat::YUY2:
+		case static_cast<uint64_t>(CompressedPixelFormat::YUY2):
 			d3dFormat = texture_dds::D3DFMT_YUY2;
 			return true;
-		case (uint64)CompressedPixelFormat::UYVY:
+		case static_cast<uint64_t>(CompressedPixelFormat::UYVY):
 			d3dFormat = texture_dds::D3DFMT_UYVY;
 			return true;
-		case (uint64)CompressedPixelFormat::RGBG8888:
+		case static_cast<uint64_t>(CompressedPixelFormat::RGBG8888):
 			d3dFormat = texture_dds::D3DFMT_R8G8_B8G8;
 			return true;
-		case (uint64)CompressedPixelFormat::GRGB8888:
+		case static_cast<uint64_t>(CompressedPixelFormat::GRGB8888):
 			d3dFormat = texture_dds::D3DFMT_G8R8_G8B8;
 			return true;
 		}
@@ -905,27 +898,27 @@ bool TextureHeader::getDirect3DFormat(uint32& d3dFormat) const
 	return false;
 }
 
-uint32 TextureHeader::getDataSize(int32 iMipLevel, bool bAllSurfaces, bool bAllFaces) const
+uint32_t TextureHeader::getDataSize(int32_t iMipLevel, bool bAllSurfaces, bool bAllFaces) const
 {
 	//The smallest divisible sizes for a pixel format
-	uint32 uiSmallestWidth = 1;
-	uint32 uiSmallestHeight = 1;
-	uint32 uiSmallestDepth = 1;
+	uint32_t uiSmallestWidth = 1;
+	uint32_t uiSmallestHeight = 1;
+	uint32_t uiSmallestDepth = 1;
 
 	//Get the pixel format's minimum dimensions.
 	getMinDimensionsForFormat(uiSmallestWidth, uiSmallestHeight, uiSmallestDepth);
 
-	//Needs to be 64-bit integer to support 16kx16k and higher sizes.
-	uint64 uiDataSize = 0;
+	//Needs to be 64-bit Integer to support 16kx16k and higher sizes.
+	uint64_t uiDataSize = 0;
 	if (iMipLevel == -1)
 	{
-		for (uint32 uiCurrentMIP = 0; uiCurrentMIP < getNumberOfMIPLevels(); ++uiCurrentMIP)
+		for (uint32_t uiCurrentMipMap = 0; uiCurrentMipMap < getNumMipMapLevels(); ++uiCurrentMipMap)
 		{
 			//Get the dimensions of the current MIP Map level.
-			uint32 uiWidth = getWidth(uiCurrentMIP);
-			uint32 uiHeight = getHeight(uiCurrentMIP);
-			uint32 uiDepth = getDepth(uiCurrentMIP);
-			uint32  bpp = getBitsPerPixel();
+			uint32_t uiWidth = getWidth(uiCurrentMipMap);
+			uint32_t uiHeight = getHeight(uiCurrentMipMap);
+			uint32_t uiDepth = getDepth(uiCurrentMipMap);
+			uint32_t  bpp = getBitsPerPixel();
 
 
 			//If pixel format is compressed, the dimensions need to be padded.
@@ -938,15 +931,15 @@ uint32 TextureHeader::getDataSize(int32 iMipLevel, bool bAllSurfaces, bool bAllF
 
 			//Add the current MIP Map's data size to the total.
 
-			uiDataSize += bpp * (uint64)uiWidth * (uint64)uiHeight * (uint64)uiDepth;
+			uiDataSize += bpp * static_cast<uint64_t>(uiWidth) * static_cast<uint64_t>(uiHeight) * static_cast<uint64_t>(uiDepth);
 		}
 	}
 	else
 	{
 		//Get the dimensions of the specified MIP Map level.
-		uint32 uiWidth = getWidth(iMipLevel);
-		uint32 uiHeight = getHeight(iMipLevel);
-		uint32 uiDepth = getDepth(iMipLevel);
+		uint32_t uiWidth = getWidth(iMipLevel);
+		uint32_t uiHeight = getHeight(iMipLevel);
+		uint32_t uiDepth = getDepth(iMipLevel);
 
 		//If pixel format is compressed, the dimensions need to be padded.
 		if (getPixelFormat().getPart().High == 0)
@@ -957,29 +950,29 @@ uint32 TextureHeader::getDataSize(int32 iMipLevel, bool bAllSurfaces, bool bAllF
 		}
 
 		//Work out the specified MIP Map's data size
-		uiDataSize = (uint64)getBitsPerPixel() * (uint64)uiWidth * (uint64)uiHeight * (uint64)uiDepth;
+		uiDataSize = static_cast<uint64_t>(getBitsPerPixel()) * static_cast<uint64_t>(uiWidth) * static_cast<uint64_t>(uiHeight) * static_cast<uint64_t>(uiDepth);
 	}
 
 	//The number of faces/surfaces to register the size of.
-	uint32 numfaces = (bAllFaces ? getNumberOfFaces() : 1);
-	uint32 numsurfs = (bAllSurfaces ? getNumberOfArrayMembers() : 1);
+	uint32_t numfaces = (bAllFaces ? getNumFaces() : 1);
+	uint32_t numsurfs = (bAllSurfaces ? getNumArrayMembers() : 1);
 
 	//Multiply the data size by number of faces and surfaces specified, and return.
-	return (uint32)(uiDataSize / 8) * numsurfs * numfaces;
+	return static_cast<uint32_t>(uiDataSize / 8) * numsurfs * numfaces;
 }
 
-ptrdiff_t TextureHeader::getDataOffset(uint32 mipMapLevel/*= 0*/, uint32 arrayMember/*= 0*/, uint32 face/*= 0*/) const
+ptrdiff_t TextureHeader::getDataOffset(uint32_t mipMapLevel/*= 0*/, uint32_t arrayMember/*= 0*/, uint32_t face/*= 0*/) const
 {
 	//Initialize the offSet value.
-	uint32 uiOffSet = 0;
+	uint32_t uiOffSet = 0;
 
 	//Error checking
-	if ((int32)mipMapLevel == pvrTextureAllMIPMaps)
+	if (static_cast<int32_t>(mipMapLevel) == pvrTextureAllMipMaps)
 	{
 		return 0;
 	}
 
-	if (mipMapLevel >= getNumberOfMIPLevels() || arrayMember >= getNumberOfArrayMembers() || face >= getNumberOfFaces())
+	if (mipMapLevel >= getNumMipMapLevels() || arrayMember >= getNumArrayMembers() || face >= getNumFaces())
 	{
 		return 0;
 	}
@@ -990,9 +983,9 @@ ptrdiff_t TextureHeader::getDataOffset(uint32 mipMapLevel/*= 0*/, uint32 arrayMe
 	if (mipMapLevel != 0)
 	{
 		//Get the size for all MIP Map levels up to this one.
-		for (uint32 uiCurrentMIPMap = 0; uiCurrentMIPMap < mipMapLevel; ++uiCurrentMIPMap)
+		for (uint32_t uiCurrentMipMap = 0; uiCurrentMipMap < mipMapLevel; ++uiCurrentMipMap)
 		{
-			uiOffSet += getDataSize(uiCurrentMIPMap, true, true);
+			uiOffSet += getDataSize(uiCurrentMipMap, true, true);
 		}
 	}
 
@@ -1024,7 +1017,7 @@ void TextureHeader::setOrientation(TextureMetaData::AxisOrientation eAxisOrienta
 	}
 
 	// Set the orientation data
-	byte orientationData[3];
+	char orientationData[3];
 
 	//Check for left/right (x-axis) orientation
 	if ((eAxisOrientation & TextureMetaData::AxisOrientationLeft) > 0)
@@ -1072,12 +1065,12 @@ void TextureHeader::setOrientation(TextureMetaData::AxisOrientation eAxisOrienta
 	}
 }
 
-void TextureHeader::setCubeMapOrder(string cubeMapOrder)
+void TextureHeader::setCubeMapOrder(std::string cubeMapOrder)
 {
 	if (cubeMapOrder.find_first_not_of("xXyYzZ") != std::string::npos)
 	{
-		assertion(false , "Invalid cubemap order string");
-		pvr::Log("Invalid cubemap order string");
+		assertion(false, "Invalid cubemap order std::string");
+		Log("Invalid cubemap order std::string");
 		return;
 	}
 
@@ -1091,7 +1084,7 @@ void TextureHeader::setCubeMapOrder(string cubeMapOrder)
 	}
 
 	cubeOrderMetaData = TextureMetaData(Header::PVRv3, TextureMetaData::IdentifierCubeMapOrder,
-	                                    (std::min)((uint32)cubeMapOrder.length(), 6u), reinterpret_cast<const byte*>(cubeMapOrder.data()));
+	                                    (std::min)(static_cast<uint32_t>(cubeMapOrder.length()), 6u), reinterpret_cast<const char*>(cubeMapOrder.data()));
 
 	//Increment the meta data size.
 	_header.metaDataSize += cubeOrderMetaData.getTotalSizeInMemory();
@@ -1117,7 +1110,7 @@ void TextureHeader::addMetaData(const TextureMetaData& metaData)
 
 bool TextureHeader::isBumpMap()const
 {
-	const std::map<uint32, TextureMetaData>& dataMap = _metaDataMap.at(Header::PVRv3);
+	const std::map<uint32_t, TextureMetaData>& dataMap = _metaDataMap.at(Header::PVRv3);
 	return (dataMap.find(TextureMetaData::IdentifierBumpData) != dataMap.end());
 }
 

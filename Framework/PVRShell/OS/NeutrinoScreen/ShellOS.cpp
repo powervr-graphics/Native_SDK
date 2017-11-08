@@ -24,14 +24,13 @@
 #define KEYPAD_INPUT "/dev/con1"
 #endif
 
-using namespace pvr::types;
 namespace pvr {
 namespace platform {
 struct InternalOS
 {
 	bool isInitialised;
 
-	uint32 display;
+	uint32_t display;
 	screen_context_t context;
 	screen_window_t window;
 
@@ -73,11 +72,11 @@ void ShellOS::updatePointingDeviceLocation()
 	}
 }
 
-Result ShellOS::init(DisplayAttributes& data)
+bool ShellOS::init(DisplayAttributes& data)
 {
 	if (!_OSImplementation)
 	{
-		return Result::OutOfMemory;
+		return false;
 	}
 
 	//#if defined(__linux__)
@@ -88,7 +87,7 @@ Result ShellOS::init(DisplayAttributes& data)
 	// Keyboard handling.
 	if ((_OSImplementation->devfd = open(CONNAME, O_RDWR | O_NDELAY)) <= 0)
 	{
-		Log(Log.Warning, "Can't open tty '" CONNAME "'");
+		Log(LogLevel::Warning, "Can't open tty '" CONNAME "'");
 	}
 	else
 	{
@@ -101,44 +100,14 @@ Result ShellOS::init(DisplayAttributes& data)
 
 		if (tcsetattr(_OSImplementation->devfd, TCSANOW, &_OSImplementation->termio) == -1)
 		{
-			Log(Log.Warning, "Can't set tty attributes for '" CONNAME "'");
+			Log(LogLevel::Warning, "Can't set tty attributes for '" CONNAME "'");
 		}
 	}
 
 	// Keypad handling.
 	if ((_OSImplementation->keypad_fd = open(KEYPAD_INPUT, O_RDONLY | O_NDELAY)) <= 0)
 	{
-		Log(Log.Warning, "Can't open keypad input device (%s)\n", KEYPAD_INPUT);
-	}
-
-	// Keyboard handling.
-	// Get keyboard device file name.
-	// Uses the fact that all device information is shown in /proc/bus/input/devices and
-	// the keyboard device file should always have an EV of 120013.
-	static const char* command =
-	  "grep -E 'Handlers|EV' /proc/bus/input/devices |"
-	  "grep -B1 120013 |"
-	  "grep -Eo event[0-9]+ |"
-	  "tr '\\n' '\\0'";
-
-	FILE* pipe = popen(command, "r");
-	if (pipe == NULL)
-	{
-		Log(Log.Warning, "Can't find keyboard input device\n");
-	}
-
-	char devFilePath[20] = "/dev/input/";
-	char temp[9];
-	if (fgets(temp, 9, pipe));
-	pclose(pipe);
-
-	static char* keyboardDeviceFileName = strdup(strcat(devFilePath, temp));
-
-	_OSImplementation->keyboard_fd = open(keyboardDeviceFileName, O_RDONLY | O_NDELAY);
-	if (_OSImplementation->keyboard_fd <= 0)
-	{
-		Log(Log.Warning, "Can't open keyboard input device (%s)  -- (Code : %i - %s)\n", keyboardDeviceFileName, errno,
-		    strerror(errno));
+		Log(LogLevel::Warning, "Can't open keypad input device (%s)\n", KEYPAD_INPUT);
 	}
 
 	// Construct our read and write path.
@@ -163,7 +132,7 @@ Result ShellOS::init(DisplayAttributes& data)
 
 		if (res < 0)
 		{
-			Log(Log.Warning, "Readlink %s failed. The application name, read path and write path have not been set.\n", exePath);
+			Log(LogLevel::Warning, "Readlink %s failed. The application name, read path and write path have not been set.\n", exePath);
 			break;
 		}
 	}
@@ -209,10 +178,10 @@ Result ShellOS::init(DisplayAttributes& data)
 		fclose(tty);
 	}
 	//#endif
-	return Result::Success;
+	return true;
 }
 
-Result ShellOS::initializeWindow(DisplayAttributes& data)
+bool ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	int size[2];
 	int ePixelFormat;
@@ -228,8 +197,8 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 
 	if (screen_context == 0)
 	{
-		Log(Log.Error, "Failed to Create Screen Context(%s:%i)", __FILE__, __LINE__);
-		return Result::UnknownError;
+		Log(LogLevel::Error, "Failed to Create Screen Context(%s:%i)", __FILE__, __LINE__);
+		return false;
 	}
 
 	_OSImplementation->context = screen_context;
@@ -238,8 +207,8 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 
 	if (screen_window == 0)
 	{
-		Log(Log.Error, "Failed to Create Screen Window(%s:%i)", __FILE__, __LINE__);
-		return Result::UnknownError;
+		Log(LogLevel::Error, "Failed to Create Screen Window(%s:%i)", __FILE__, __LINE__);
+		return false;
 	}
 
 	_OSImplementation->window = screen_window;
@@ -266,11 +235,10 @@ Result ShellOS::initializeWindow(DisplayAttributes& data)
 	screen_set_window_property_iv(screen_window, SCREEN_PROPERTY_USAGE, &usage);
 	screen_create_window_buffers(screen_window, 2);
 
-	return Result::Success;
+	return true;
 
 }
 
-//TODO
 void ShellOS::releaseWindow()
 {
 	_OSImplementation->window = 0;
@@ -336,7 +304,7 @@ struct SpecialKeyCode
 
 // Some codes for F-keys can differ, depending on whether we are reading a
 // /dev/tty from within X or from a text console.
-// Some keys (e.g. Home, Delete) have multiple codes;
+// Some keys (e.g. Home, Delete) have multiple codes
 // one for the standard version and one for the numpad version.
 SpecialKeyCode terminalSpecialKeyMap[] =
 {
@@ -473,7 +441,7 @@ Keys InternalOS::getSpecialKey(Keys firstCharacter) const
 	}
 }
 
-Result ShellOS::handleOSEvents()
+bool ShellOS::handleOSEvents()
 {
 	// Check user input from the available input devices.
 
@@ -554,12 +522,6 @@ Result ShellOS::handleOSEvents()
 			switch (keyinfo.code)
 			{
 			case 22: case 64: case 107: key = Keys::Escape; break;// End call button on Zoom2
-			//case 37:
-			//case 65:
-			//{
-			//	_shell->onSystemEvent(SystemEvent::Screenshot);
-			//	break;
-			//}
 			case 28: key = Keys::Space; break; // Old Select
 			case 46: case 59: key = Keys::Key1; break;
 			case 60: key = Keys::Key2; break;
@@ -577,7 +539,7 @@ Result ShellOS::handleOSEvents()
 		}
 	}
 
-	return Result::Success;
+	return true;
 }
 
 bool ShellOS::isInitialized()
@@ -585,20 +547,20 @@ bool ShellOS::isInitialized()
 	return _OSImplementation && _OSImplementation->window;
 }
 
-Result ShellOS::popUpMessage(const char8* title, const char8* message, ...) const
+bool ShellOS::popUpMessage(const char* title, const char* message, ...) const
 {
 	if (!message)
 	{
-		return Result::NoData;
+		return false;
 	}
 
 	va_list arg;
 
 	va_start(arg, message);
-	Log.vaOutput(Log.Information, message, arg);
+	Log(LogLevel::Information, message, arg);
 	va_end(arg);
 
-	return Result::Success;
+	return true;
 }
 }
 }

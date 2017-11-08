@@ -43,12 +43,12 @@ Time::Time()
 #elif defined(__APPLE__)
 	_timeBaseInfo = new mach_timebase_info_data_t;
 	mach_timebase_info(_timeBaseInfo);
-	_timerFrequency = (uint64)((1.0e9 * (float64)_timeBaseInfo->numer) / (float64)_timeBaseInfo->denom);
+	_timerFrequency = static_cast<uint64_t>((1.0e9 * (double)_timeBaseInfo->numer) / (double)_timeBaseInfo->denom);
 #elif !defined(__QNX__)
 	timespec timerInfo;
 	if (clock_getres(PVR_TIMER_CLOCK, &timerInfo) != 0)
 	{
-		_timerFrequency = static_cast<uint64>(timerInfo.tv_sec);
+		_timerFrequency = static_cast<uint64_t>(timerInfo.tv_sec);
 	}
 #endif
 
@@ -69,50 +69,50 @@ void Time::Reset()
 	_startTime = getCurrentTimeNanoSecs();
 }
 
-uint64	Time::getElapsedNanoSecs()
+uint64_t	Time::getElapsedNanoSecs()
 {
 	return getCurrentTimeNanoSecs() - _startTime;
 }
 
-uint64 Time::getElapsedMicroSecs()
+uint64_t Time::getElapsedMicroSecs()
 {
 	return getElapsedNanoSecs() / 1000ull;
 }
 
-uint64 Time::getElapsedMilliSecs()
+uint64_t Time::getElapsedMilliSecs()
 {
 	return getElapsedNanoSecs() / 1000000ull;
 }
 
-uint64 Time::getElapsedSecs()
+uint64_t Time::getElapsedSecs()
 {
 	return getElapsedNanoSecs() / 1000000000ull;
 }
 
-uint64 Time::getElapsedMins()
+uint64_t Time::getElapsedMins()
 {
 	return getElapsedNanoSecs() / (1000000000ull * 60ull);
 }
 
-uint64 Time::getElapsedHours()
+uint64_t Time::getElapsedHours()
 {
 	return getElapsedNanoSecs() / (1000000000ull * 60ull * 60ull);
 }
 
 #if defined(_WIN32)
-static inline uint64 helperQueryPerformanceCounter()
+static inline uint64_t helperQueryPerformanceCounter()
 {
-	uint64 lastTime;
+	uint64_t lastTime;
 	QueryPerformanceCounter((LARGE_INTEGER*)&lastTime);
 	return lastTime;
 }
 #endif
 
-uint64 Time::getCurrentTimeNanoSecs() const
+uint64_t Time::getCurrentTimeNanoSecs() const
 {
-	uint64 currentTime;
+	uint64_t currentTime;
 #if defined(_WIN32)
-	static uint64 initialTime = helperQueryPerformanceCounter();
+	static uint64_t initialTime = helperQueryPerformanceCounter();
 	if (_highResolutionSupported)
 	{
 		QueryPerformanceCounter((LARGE_INTEGER*)&currentTime);
@@ -120,80 +120,80 @@ uint64 Time::getCurrentTimeNanoSecs() const
 	}
 	else
 	{
-		currentTime = static_cast<uint64>(GetTickCount64() * 1000000ull);
+		currentTime = static_cast<uint64_t>(GetTickCount64() * 1000000ull);
 	}
 
 #elif defined(__APPLE__)
 	uint64_t time = mach_absolute_time();
-	currentTime = static_cast<uint64>(time * (_timeBaseInfo->numer / _timeBaseInfo->denom));
+	currentTime = static_cast<uint64_t>(time * (_timeBaseInfo->numer / _timeBaseInfo->denom));
 #elif defined(__QNX__)
 	timeval tv;
 	gettimeofday(&tv,NULL);
-	currentTime =(uint64)((tv.tv_sec*(unsigned long)1000) + (tv.tv_usec/1000.0)) * 1000000;
+	currentTime = static_cast<uint64_t>((tv.tv_sec*(unsigned long)1000) + (tv.tv_usec/1000.0)) * 1000000;
 #else
 	timespec time;
 	clock_gettime(PVR_TIMER_CLOCK, &time);
-	currentTime = static_cast<uint64>(time.tv_nsec) +
+	currentTime = static_cast<uint64_t>(time.tv_nsec) +
 	              // convert seconds to ns and add
-	              1e9 * static_cast<uint64>(time.tv_sec);
+	              1e9 * static_cast<uint64_t>(time.tv_sec);
 #endif
 
 	return currentTime;
 }
 
-uint64 Time::getCurrentTimeMicroSecs() const
+uint64_t Time::getCurrentTimeMicroSecs() const
 {
 	return getCurrentTimeNanoSecs() / 1000ull;
 }
 
-uint64 Time::getCurrentTimeMilliSecs() const
+uint64_t Time::getCurrentTimeMilliSecs() const
 {
 	return getCurrentTimeNanoSecs() / 1000000ull;
 }
 
-uint64 Time::getCurrentTimeSecs() const
+uint64_t Time::getCurrentTimeSecs() const
 {
 	//For seconds we can be slightly more accurate than just dividing the nano second amounts, so we re-implement the function properly.
-	float64 retTime;
+	double retTime;
 #if defined(_WIN32)
 	if (_highResolutionSupported)
 	{
-		uint64 currentTime;
+		uint64_t currentTime;
 		QueryPerformanceCounter((LARGE_INTEGER*)&currentTime);
-		retTime = static_cast<float64>(_timerFrequency);
+		retTime = static_cast<double>(_timerFrequency);
 	}
 	else
 	{
-		retTime = (float64)(GetTickCount64()) / 1000.;
+		retTime = (double)(GetTickCount64()) / 1000.;
 	}
 
 #elif defined(__APPLE__)
 	uint64_t time = mach_absolute_time();
-	retTime = static_cast<float64>(time * _timerFrequency);
+	retTime = static_cast<double>(time * _timerFrequency);
 #elif defined(__QNX__)
-	static uint64 initialTime = clock();
-	uint64 currentTime = std::clock();
-	retTime = static_cast<float64>((currentTime - initialTime)) / CLOCKS_PER_SEC;
+	static uint64_t initialTime = clock();
+	uint64_t currentTime = std::clock();
+	retTime = static_cast<double>((currentTime - initialTime)) / CLOCKS_PER_SEC;
 #else
 	timespec time;
 	clock_gettime(PVR_TIMER_CLOCK, &time);
-	retTime = static_cast<float64>(time.tv_sec);
+	retTime = static_cast<double>(time.tv_sec);
 #endif
 
-	return static_cast<uint64>(retTime);
+	return static_cast<uint64_t>(retTime);
 }
 
-uint64 Time::getCurrentTimeMins() const
+uint64_t Time::getCurrentTimeMins() const
 {
 	return getCurrentTimeSecs() / 60ull;
 }
 
-uint64 Time::getCurrentTimeHours() const
+uint64_t Time::getCurrentTimeHours() const
 {
 	return getCurrentTimeSecs() / 3600ull;
 }
 
-uint64 Time::getTimerFrequencyHertz() const
+uint64_t Time::getTimerFrequencyHertz() const
 {
 	return _timerFrequency;
 }

@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['parseargv',['parseArgV',['../classpvr_1_1platform_1_1_command_line_parser.html#adc85c4109b8727ba907e66ae776af95f',1,'pvr::platform::CommandLineParser']]],
-  ['parsecmdline',['parseCmdLine',['../classpvr_1_1platform_1_1_command_line_parser.html#a421271433b47903d49e754158a450a85',1,'pvr::platform::CommandLineParser']]],
-  ['pause',['pause',['../classpvr_1_1platform_1_1_state_machine.html#a5f23cb83bded076c75de414d8e017da1',1,'pvr::platform::StateMachine']]],
-  ['pointingdevicestate',['PointingDeviceState',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html#a9850c339f9b459042cda837a8ea1a17d',1,'pvr::platform::Shell::PointingDeviceState']]],
-  ['position',['position',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html#a2fcfb4a27a2391b558d7863797ccbce7',1,'pvr::platform::Shell::PointingDeviceState']]],
-  ['prefix',['prefix',['../classpvr_1_1platform_1_1_command_line_parser.html#af5dfbbcdc3e370908ef37171e70f1266',1,'pvr::platform::CommandLineParser::prefix(const wchar_t *cmdLine)'],['../classpvr_1_1platform_1_1_command_line_parser.html#adcc8d409a04b5ef2c0eb914e4291455c',1,'pvr::platform::CommandLineParser::prefix(int argc, char **argv)'],['../classpvr_1_1platform_1_1_command_line_parser.html#af53a663dcf60703a7e16d5497e385a47',1,'pvr::platform::CommandLineParser::prefix(const char *cmdLine)'],['../classpvr_1_1platform_1_1_command_line_parser.html#a4da7cdcadcd5c6f45b1edad8b29d1280',1,'pvr::platform::CommandLineParser::prefix(Stream *const cmdLine)'],['../classpvr_1_1platform_1_1_command_line_parser.html#a615b0bb31e080af4c6cdf74297796516',1,'pvr::platform::CommandLineParser::prefix(const CommandLineParser &amp;cmdLine)']]]
+  ['onconfigureevent',['onConfigureEvent',['../classpvr_1_1platform_1_1_shell.html#a80dfb24016eb6aa37d01b422d4dee22f',1,'pvr::platform::Shell']]],
+  ['onkeydown',['onKeyDown',['../classpvr_1_1platform_1_1_shell.html#a56e93594310a55610c3b65252726051d',1,'pvr::platform::Shell']]],
+  ['onkeyup',['onKeyUp',['../classpvr_1_1platform_1_1_shell.html#af3cfca84a66074f6bad4ce6d14d60e94',1,'pvr::platform::Shell']]],
+  ['onpointingdevicedown',['onPointingDeviceDown',['../classpvr_1_1platform_1_1_shell.html#afbbc5912ee936c0da8d47a33631cdd77',1,'pvr::platform::Shell']]],
+  ['onpointingdeviceup',['onPointingDeviceUp',['../classpvr_1_1platform_1_1_shell.html#af5edfb7a5aa71ff6aade4b9876d356b3',1,'pvr::platform::Shell']]],
+  ['onsystemevent',['onSystemEvent',['../classpvr_1_1platform_1_1_shell.html#a1112fb5c192dcab32438f3a7df87febd',1,'pvr::platform::Shell']]],
+  ['operator_3d_3d',['operator==',['../structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html#a7d8f6ab26fb0cbd8bc7e0cb92e191a56',1,'pvr::platform::CommandLineParser::ParsedCommandLine::Option::operator==(const Option &amp;rhs) const '],['../structpvr_1_1platform_1_1_command_line_parser_1_1_parsed_command_line_1_1_option.html#a798302d2e5db4e7ca3c44826e2fa0a10',1,'pvr::platform::CommandLineParser::ParsedCommandLine::Option::operator==(const char *rhs) const ']]]
 ];

@@ -7,10 +7,8 @@
 ***********************************************************************************************************************/
 #include "ParticleSystemGPU.h"
 #include "PVRShell/PVRShell.h"
-#include "PVRApi/PVRApi.h"
-#include "PVREngineUtils/PVREngineUtils.h"
-using namespace pvr::types;
-using namespace pvr;
+#include "PVRUtils/PVRUtilsVk.h"
+
 namespace Files {
 // Asset files
 const char SphereModelFile[] = "sphere.pod";
@@ -46,24 +44,24 @@ const Sphere Spheres[] =
 	Sphere(glm::vec3(20.0f, 6.0f,  20.0f), 5.f),
 };
 
-BufferViewMapping SpherePipeUboMapping[] =
+const pvr::utils::StructuredMemoryDescription SpherePipeUboMapping("SpherePipelineUbo", 1,
 {
-	BufferViewMapping("uModelViewMatrix", pvr::types::GpuDatatypes::mat4x4),
-	BufferViewMapping("uModelViewProjectionMatrix", pvr::types::GpuDatatypes::mat4x4),
-	BufferViewMapping("uModelViewITMatrix", pvr::types::GpuDatatypes::mat3x3),
-};
+	{"uModelViewMatrix", pvr::GpuDatatypes::mat4x4},
+	{"uModelViewProjectionMatrix", pvr::GpuDatatypes::mat4x4},
+	{"uModelViewITMatrix", pvr::GpuDatatypes::mat3x3},
+});
 
 namespace SpherePipeDynamicUboElements {
 enum Enum { ModelViewMatrix, ModelViewProjectionMatrix, ModelViewITMatrix, Count };
 }
 
-BufferViewMapping FloorPipeUboMapping[] =
+const pvr::utils::StructuredMemoryDescription FloorPipeUboMapping("FloorPipelineUbo", 1,
 {
-	BufferViewMapping("uModelViewMatrix", pvr::types::GpuDatatypes::mat4x4),
-	BufferViewMapping("uModelViewProjectionMatrix", pvr::types::GpuDatatypes::mat4x4),
-	BufferViewMapping("uModelViewITMatrix", pvr::types::GpuDatatypes::mat3x3),
-	BufferViewMapping("uLightPos", pvr::types::GpuDatatypes::vec3),
-};
+	{"uModelViewMatrix", pvr::GpuDatatypes::mat4x4},
+	{"uModelViewProjectionMatrix", pvr::GpuDatatypes::mat4x4},
+	{"uModelViewITMatrix", pvr::GpuDatatypes::mat3x3},
+	{"uLightPos", pvr::GpuDatatypes::vec3},
+});
 
 namespace FloorPipeDynamicUboElements {
 enum Enum { ModelViewMatrix, ModelViewProjectionMatrix, ModelViewITMatrix, LightPos, Count };
@@ -71,7 +69,6 @@ enum Enum { ModelViewMatrix, ModelViewProjectionMatrix, ModelViewITMatrix, Light
 }
 
 // Index to bind the attributes to vertex shaders
-
 namespace Attributes {
 enum Enum
 {
@@ -87,63 +84,84 @@ Class implementing the PVRShell functions.
 class VulkanParticleSystem : public pvr::Shell
 {
 private:
-	pvr::assets::ModelHandle scene;
-	bool isCameraPaused;
-	pvr::uint8 currentBufferIdx;
-
-	// View matrix
-	glm::mat4 viewMtx, projMtx, viewProjMtx;
-	glm::mat3 viewIT;
-	glm::mat4 mLightView, mBiasMatrix;
-	glm::vec3 lightPos;
 	struct PassSphere
 	{
-		utils::StructuredMemoryView uboPerModel;// per swapchain
-		utils::StructuredMemoryView uboLightProp;// per swapchain
-		api::DescriptorSet	descriptoruboPerModel[MaxSwapChains];// per swapchains
-		api::DescriptorSet  descriptorLighProp[MaxSwapChains];
-		api::GraphicsPipeline pipeline;
-		pvr::api::Buffer vbo;
-		pvr::api::Buffer ibo;
+		pvr::utils::StructuredBufferView uboPerModelBufferView;
+		pvrvk::Buffer uboPerModel;
+		pvr::utils::StructuredBufferView uboLightPropBufferView;
+		pvrvk::Buffer uboLightProp;
+		pvrvk::DescriptorSet	descriptoruboPerModel[MaxSwapChains];// per swapchains
+		pvrvk::DescriptorSet  descriptorLighProp[MaxSwapChains];
+		pvrvk::GraphicsPipeline pipeline;
+		pvrvk::Buffer vbo;
+		pvrvk::Buffer ibo;
 	};
 
 	struct PassParticles
 	{
-		utils::StructuredMemoryView uboMvp;// per swapchain
-		api::DescriptorSet	descriptorMvp[MaxSwapChains];// per swapchains
-		api::GraphicsPipeline pipeline;
-
+		pvr::utils::StructuredBufferView uboMvpBufferView;
+		pvrvk::Buffer uboMvp;
+		pvrvk::DescriptorSet	descriptorMvp[MaxSwapChains];// per swapchains
+		pvrvk::GraphicsPipeline pipeline;
 	};
 
 	struct PassFloor
 	{
-		utils::StructuredMemoryView uboPerModel;// per swapchain
-		api::DescriptorSet	descriptorUbo[MaxSwapChains];// per swapchains
-		api::GraphicsPipeline pipeline;
-		pvr::api::Buffer vbo;
+		pvr::utils::StructuredBufferView uboPerModelBufferView;
+		pvrvk::Buffer uboPerModel;
+		pvrvk::DescriptorSet	descriptorUbo[MaxSwapChains];// per swapchains
+		pvrvk::GraphicsPipeline pipeline;
+		pvrvk::Buffer vbo;
 	};
 
-
-	struct ApiObjects
+	struct DeviceResources
 	{
-		// UIRenderer class used to display text
-		pvr::ui::UIRenderer uiRenderer;
+		pvrvk::Instance instance;
+		pvrvk::Device device;
+		pvrvk::Surface surface;
+		pvrvk::Swapchain swapchain;
+		pvrvk::Queue queue;
+		pvrvk::CommandPool commandPool;
+		pvrvk::DescriptorPool descriptorPool;
+		ParticleSystemGPU particleSystemGPU;
 
-		pvr::api::TextureView  particleTex;
-		pvr::api::CommandBuffer commandBuffers[MaxSwapChains];
-		pvr::GraphicsContext context;
-		api::FboSet onscreenFbo;
+		pvrvk::ImageView  particleTex;
+		pvrvk::CommandBuffer mainCommandBuffers[MaxSwapChains];
+		pvrvk::SecondaryCommandBuffer graphicsCommandBuffers[MaxSwapChains];
+		pvrvk::SecondaryCommandBuffer uiRendererCommandBuffers[MaxSwapChains];
+		pvr::Multi<pvrvk::ImageView> depthStencilImages;
+		pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 
 		PassSphere	passSphere;
 		PassParticles passParticles;
 		PassFloor passFloor;
-		api::DescriptorSetLayout descLayoutuboPerModel;
-		api::DescriptorSetLayout descLayoutUbo;
+		pvrvk::DescriptorSetLayout descLayoutUboPerModel;
+		pvrvk::DescriptorSetLayout descLayoutUbo;
 
-		ParticleSystemGPU particleSystemGPU;
-		ApiObjects(VulkanParticleSystem& thisApp) : particleSystemGPU(thisApp) { }
+		pvrvk::Semaphore semaphoreImageAcquired[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+		pvrvk::Fence perFrameAcquireFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+		pvrvk::Semaphore semaphorePresent[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+		pvrvk::Fence perFrameCommandBufferFence[static_cast<uint32_t>(pvrvk::FrameworkCaps::MaxSwapChains)];
+
+		// UIRenderer used to display text
+		pvr::ui::UIRenderer uiRenderer;
+
+		DeviceResources(VulkanParticleSystem& thisApp) : particleSystemGPU(thisApp) { }
 	};
-	std::auto_ptr<ApiObjects> apiObj;
+
+	std::unique_ptr<DeviceResources> _deviceResources;
+
+	pvr::assets::ModelHandle _scene;
+	bool _isCameraPaused;
+	uint8_t _currentBufferIdx;
+
+	// View matrix
+	glm::mat4 _viewMtx, _projMtx, _viewProjMtx;
+	glm::mat3 _viewIT;
+	glm::mat4 _mLightView, _mBiasMatrix;
+	glm::vec3 _lightPos;
+	uint32_t _frameId;
+
 public:
 	VulkanParticleSystem();
 
@@ -157,14 +175,13 @@ public:
 	bool createBuffers();
 	bool createPipelines();
 	void recordCommandBuffers();
-	void recordCommandBuffer(pvr::uint8 idx);
-	void recordCmdDrawFloor(pvr::uint8 idx);
-	void recordCmdDrawParticles(pvr::uint8 idx);
-	void recordCmdDrawSphere(pvr::uint32 sphereId, pvr::uint8 idx);
+	void recordCommandBuffer(uint8_t idx);
+	void recordCmdDrawFloor(uint8_t idx);
+	void recordCmdDrawParticles(uint8_t idx);
+	void recordCmdDrawSphere(uint32_t sphereId, uint8_t idx);
 	bool createDescriptors();
 	void updateFloor();
 	void updateSpheres();
-
 	void updateParticleUniforms();
 };
 
@@ -178,29 +195,31 @@ void VulkanParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 	{
 	case pvr::SimplifiedInput::Left:
 	{
-		unsigned int numParticles = apiObj->particleSystemGPU.getNumberOfParticles();
+		_deviceResources->queue->waitIdle();// wait for the queue to finish and update all the compute commandbuffers
+		unsigned int numParticles = _deviceResources->particleSystemGPU.getNumberOfParticles();
 		if (numParticles / 2 >= Configuration::MinNoParticles)
 		{
-			apiObj->context->waitIdle();
-			apiObj->particleSystemGPU.setNumberOfParticles(numParticles / 2);
-			apiObj->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", numParticles / 2));
-			apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
+			_deviceResources->particleSystemGPU.setNumberOfParticles(numParticles / 2, _deviceResources->queue);
+			_deviceResources->uiRenderer.getDefaultDescription()->setText(
+			  pvr::strings::createFormatted("No. of Particles: %d", numParticles / 2));
+			_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 			recordCommandBuffers();
 		}
 	} break;
 	case pvr::SimplifiedInput::Right:
 	{
-		unsigned int numParticles = apiObj->particleSystemGPU.getNumberOfParticles();
+		_deviceResources->queue->waitIdle();// wait for the queue to finish and to update all the compute commandbuffers
+		unsigned int numParticles = _deviceResources->particleSystemGPU.getNumberOfParticles();
 		if (numParticles * 2 <= Configuration::MaxNoParticles)
 		{
-			apiObj->context->waitIdle();
-			apiObj->particleSystemGPU.setNumberOfParticles(numParticles * 2);
-			apiObj->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", numParticles * 2));
-			apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
+			_deviceResources->particleSystemGPU.setNumberOfParticles(numParticles * 2, _deviceResources->queue);
+			_deviceResources->uiRenderer.getDefaultDescription()->setText(
+			  pvr::strings::createFormatted("No. of Particles: %d", numParticles * 2));
+			_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 			recordCommandBuffers();
 		}
 	} break;
-	case pvr::SimplifiedInput::Action1: isCameraPaused = !isCameraPaused; break;
+	case pvr::SimplifiedInput::Action1: _isCameraPaused = !_isCameraPaused; break;
 	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
 	}
 }
@@ -208,7 +227,7 @@ void VulkanParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 /*!*********************************************************************************************************************
 \brief ctor
 ***********************************************************************************************************************/
-VulkanParticleSystem::VulkanParticleSystem() : isCameraPaused(0) { }
+VulkanParticleSystem::VulkanParticleSystem() : _isCameraPaused(0) { }
 
 /*!*********************************************************************************************************************
 \brief	Loads the mesh data required for this training course into vertex buffer objects
@@ -217,10 +236,11 @@ VulkanParticleSystem::VulkanParticleSystem() : isCameraPaused(0) { }
 bool VulkanParticleSystem::createBuffers()
 {
 	// create the spheres vertex and index buffers
-	pvr::utils::createSingleBuffersFromMesh(getGraphicsContext(), scene->getMesh(0), apiObj->passSphere.vbo, apiObj->passSphere.ibo);
+	pvr::utils::createSingleBuffersFromMesh(
+	  _deviceResources->device, _scene->getMesh(0), _deviceResources->passSphere.vbo, _deviceResources->passSphere.ibo);
 
-	//Initialize the vertex buffer data for the floor - 3*Position data, 3* normal data
-	glm::vec2 maxCorner(40, 40);
+	//Initialize the vertex buffer data for the floor: 3*Position data, 3* normal data
+	const glm::vec2 maxCorner(40, 40);
 	const float afVertexBufferData[] =
 	{
 		-maxCorner.x, 0.0f, -maxCorner.y, 0.0f, 1.0f, 0.0f,
@@ -229,8 +249,10 @@ bool VulkanParticleSystem::createBuffers()
 		maxCorner.x, 0.0f, maxCorner.y, 0.0f, 1.0f, 0.0f
 	};
 
-	apiObj->passFloor.vbo = apiObj->context->createBuffer(sizeof(afVertexBufferData), BufferBindingUse::VertexBuffer, true);
-	apiObj->passFloor.vbo->update(afVertexBufferData, 0, sizeof(afVertexBufferData));
+	_deviceResources->passFloor.vbo = pvr::utils::createBuffer(_deviceResources->device,
+	                                    sizeof(afVertexBufferData), VkBufferUsageFlags::e_VERTEX_BUFFER_BIT,
+	                                    VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT);
+	pvr::utils::updateBuffer(_deviceResources->device, _deviceResources->passFloor.vbo, afVertexBufferData, 0, sizeof(afVertexBufferData), true);
 	return true;
 }
 
@@ -240,37 +262,42 @@ bool VulkanParticleSystem::createBuffers()
 ***********************************************************************************************************************/
 bool VulkanParticleSystem::createPipelines()
 {
-
-	const pvr::assets::Mesh& mesh = scene->getMesh(0);
-	pvr::api::Shader fragShader = apiObj->context->createShader(*getAssetStream(Files::FragShaderSrcFile),
-	                              ShaderType::FragmentShader);
+	pvrvk::Shader fragShader = _deviceResources->device->createShader(
+	                             getAssetStream(Files::FragShaderSrcFile)->readToEnd<uint32_t>());
 	// Sphere Pipeline
 	{
-		pvr::api::Shader vertShader = apiObj->context->createShader(*getAssetStream(Files::VertShaderSrcFile),
-		                              ShaderType::VertexShader);
-		pvr::utils::VertexBindings attributes[] =
+		pvrvk::Shader vertShader = _deviceResources->device->createShader(
+		                             getAssetStream(Files::VertShaderSrcFile)->readToEnd<uint32_t>());
+		const pvr::utils::VertexBindings attributes[] =
 		{
 			{ "POSITION", 0 }, { "NORMAL", 1}
 		};
-		const pvr::uint32 numSimpleAttribs = sizeof(attributes) / sizeof(attributes[0]);
-		pvr::api::GraphicsPipelineCreateParam pipeCreateInfo;
+		pvrvk::GraphicsPipelineCreateInfo pipeCreateInfo;
+		pipeCreateInfo.viewport.setViewportAndScissor(0,
+		    pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(_deviceResources->swapchain->getDimension().width),
+		                    static_cast<float>(_deviceResources->swapchain->getDimension().height)),
+		    pvrvk::Rect2Di(0, 0, _deviceResources->swapchain->getDimension().width,
+		                   _deviceResources->swapchain->getDimension().height));
+
 		pipeCreateInfo.vertexShader.setShader(vertShader);
 		pipeCreateInfo.fragmentShader.setShader(fragShader);
 
-		pipeCreateInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
-		pipeCreateInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
-		pipeCreateInfo.renderPass = apiObj->onscreenFbo[0]->getRenderPass();
-		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleList);
+		pipeCreateInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
+		pipeCreateInfo.depthStencil.enableDepthWrite(true).enableDepthTest(true);
+		pipeCreateInfo.renderPass = _deviceResources->onScreenFramebuffer[0]->getRenderPass();
+		pipeCreateInfo.inputAssembler.setPrimitiveTopology(VkPrimitiveTopology::e_TRIANGLE_LIST);
 
-		pvr::utils::createInputAssemblyFromMesh(scene->getMesh(0), attributes, sizeof(attributes) /
-		                                        sizeof(attributes[0]), pipeCreateInfo);
+		pvr::utils::populateInputAssemblyFromMesh(_scene->getMesh(0),
+		    attributes, sizeof(attributes) / sizeof(attributes[0]),
+		    pipeCreateInfo.vertexInput, pipeCreateInfo.inputAssembler);
 
-		pipeCreateInfo.pipelineLayout = apiObj->context->createPipelineLayout(pvr::api::PipelineLayoutCreateParam()
-		                                .addDescSetLayout(apiObj->descLayoutuboPerModel)
-		                                .addDescSetLayout(apiObj->descLayoutUbo));
+		pipeCreateInfo.pipelineLayout = _deviceResources->device
+		                                ->createPipelineLayout(pvrvk::PipelineLayoutCreateInfo()
+		                                    .addDescSetLayout(_deviceResources->descLayoutUboPerModel)
+		                                    .addDescSetLayout(_deviceResources->descLayoutUbo));
 
-		apiObj->passSphere.pipeline = apiObj->context->createGraphicsPipeline(pipeCreateInfo);
-		if (!apiObj->passSphere.pipeline.isValid())
+		_deviceResources->passSphere.pipeline = _deviceResources->device->createGraphicsPipeline(pipeCreateInfo);
+		if (!_deviceResources->passSphere.pipeline.isValid())
 		{
 			setExitMessage("Failed to create Sphere pipeline");
 			return false;
@@ -279,30 +306,39 @@ bool VulkanParticleSystem::createPipelines()
 
 	//	Floor Pipeline
 	{
-		pvr::api::Shader vertShader = apiObj->context->createShader(*getAssetStream(Files::FloorVertShaderSrcFile),
-		                              ShaderType::VertexShader);
-		pvr::api::VertexAttributeInfo attributes[] =
+		pvrvk::Shader vertShader = _deviceResources->device->createShader(
+		                             getAssetStream(Files::FloorVertShaderSrcFile)->readToEnd<uint32_t>());
+		const pvrvk::VertexInputAttributeDescription attributes[] =
 		{
-			pvr::api::VertexAttributeInfo(0, DataType::Float32, 3, 0, "inPosition"),
-			pvr::api::VertexAttributeInfo(1, DataType::Float32, 3, sizeof(pvr::float32) * 3, "inNormal")
+			pvrvk::VertexInputAttributeDescription(0, 0, VkFormat::e_R32G32B32_SFLOAT, 0),
+			pvrvk::VertexInputAttributeDescription(1, 0, VkFormat::e_R32G32B32_SFLOAT, sizeof(float) * 3)
 		};
-		pvr::api::GraphicsPipelineCreateParam pipeCreateInfo;
+		pvrvk::GraphicsPipelineCreateInfo pipeCreateInfo;
+		pipeCreateInfo.viewport.setViewportAndScissor(0,
+		    pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(_deviceResources->swapchain->getDimension().width),
+		                    static_cast<float>(_deviceResources->swapchain->getDimension().height)),
+		    pvrvk::Rect2Di(0, 0, _deviceResources->swapchain->getDimension().width, _deviceResources->swapchain->getDimension().height));
 		pipeCreateInfo.vertexShader.setShader(vertShader);
 		pipeCreateInfo.fragmentShader.setShader(fragShader);
 
-		pipeCreateInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
-		pipeCreateInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
-		pipeCreateInfo.renderPass = apiObj->onscreenFbo[0]->getRenderPass();
-		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
+		pipeCreateInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
+		pipeCreateInfo.depthStencil.enableDepthWrite(true).enableDepthTest(true);
+		pipeCreateInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
+		pipeCreateInfo.depthStencil.enableDepthWrite(true).enableDepthTest(true);
+		pipeCreateInfo.renderPass = _deviceResources->onScreenFramebuffer[0]->getRenderPass();
+		pipeCreateInfo.inputAssembler.setPrimitiveTopology(VkPrimitiveTopology::e_TRIANGLE_STRIP);
 		pipeCreateInfo.vertexInput
-		.addVertexAttributes(0, attributes, sizeof(attributes) / sizeof(attributes[0]))
-		.setInputBinding(0, sizeof(pvr::float32) * 6);
+		.addInputAttributes(attributes, sizeof(attributes) / sizeof(attributes[0]))
+		.addInputBinding(pvrvk::VertexInputBindingDescription(0, sizeof(float_t) * 6));
 
-		pipeCreateInfo.pipelineLayout = apiObj->context->createPipelineLayout(pvr::api::PipelineLayoutCreateParam()
-		                                .addDescSetLayout(apiObj->descLayoutUbo));
+		pipeCreateInfo.pipelineLayout =
+		  _deviceResources->device->createPipelineLayout(
+		    pvrvk::PipelineLayoutCreateInfo() .addDescSetLayout(_deviceResources->descLayoutUbo));
 
-		apiObj->passFloor.pipeline = apiObj->context->createGraphicsPipeline(pipeCreateInfo);
-		if (!apiObj->passFloor.pipeline.isValid())
+		pipeCreateInfo.subpass = 0;
+
+		_deviceResources->passFloor.pipeline = _deviceResources->device->createGraphicsPipeline(pipeCreateInfo);
+		if (!_deviceResources->passFloor.pipeline.isValid())
 		{
 			setExitMessage("Failed to create Floor pipeline");
 			return false;
@@ -311,34 +347,40 @@ bool VulkanParticleSystem::createPipelines()
 
 	//  Particle Pipeline
 	{
-		pvr::api::VertexAttributeInfo attributes[] =
+		const pvrvk::VertexInputAttributeDescription attributes[] =
 		{
-			pvr::api::VertexAttributeInfo(Attributes::ParticlePositionArray, DataType::Float32, 3, 0, "inPosition"),
-			pvr::api::VertexAttributeInfo(Attributes::ParticleLifespanArray, DataType::Float32, 1,
-			sizeof(glm::vec3) * 2 + sizeof(float32), "inLifespan")
+			pvrvk::VertexInputAttributeDescription(Attributes::ParticlePositionArray, 0, VkFormat::e_R32G32B32_SFLOAT, 0),
+			pvrvk::VertexInputAttributeDescription(Attributes::ParticleLifespanArray, 0, VkFormat::e_R32_SFLOAT,
+			                                       sizeof(float_t) * 3 * 2 + sizeof(float))
 		};
-		api::GraphicsPipelineCreateParam pipeCreateInfo;
-		pipeCreateInfo.colorBlend.setAttachmentState(0,  pvr::types::BlendingConfig(
-		      true, BlendFactor::SrcAlpha, BlendFactor::One, BlendOp::Add));
+		pvrvk::GraphicsPipelineCreateInfo pipeCreateInfo;
+		pipeCreateInfo.viewport.setViewportAndScissor(0,
+		    pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(_deviceResources->swapchain->getDimension().width),
+		                    static_cast<float>(_deviceResources->swapchain->getDimension().height)),
+		    pvrvk::Rect2Di(0, 0, _deviceResources->swapchain->getDimension().width, _deviceResources->swapchain->getDimension().height));
 
-		pipeCreateInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
+		pipeCreateInfo.colorBlend.setAttachmentState(0,  pvrvk::PipelineColorBlendAttachmentState(
+		      true, VkBlendFactor::e_SRC_ALPHA, VkBlendFactor::e_ONE, VkBlendOp::e_ADD));
 
-		pipeCreateInfo.vertexShader.setShader(apiObj->context->createShader(*getAssetStream(
-		                                        Files::ParticleShaderVertSrcFile), ShaderType::VertexShader));
+		pipeCreateInfo.depthStencil.enableDepthWrite(true).enableDepthTest(true);
 
-		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*getAssetStream(
-		    Files::ParticleShaderFragSrcFile), ShaderType::FragmentShader));
+		pipeCreateInfo.vertexShader.setShader(_deviceResources->device->createShader(
+		                                        getAssetStream(Files::ParticleShaderVertSrcFile)->readToEnd<uint32_t>()));
 
-		pipeCreateInfo.renderPass = apiObj->onscreenFbo[0]->getRenderPass();
-		pipeCreateInfo.vertexInput.addVertexAttribute(0, attributes[0]).addVertexAttribute(0, attributes[1])
-		.setInputBinding(0, sizeof(Particle));
+		pipeCreateInfo.fragmentShader.setShader(_deviceResources->device->createShader(getAssetStream(
+		    Files::ParticleShaderFragSrcFile)->readToEnd<uint32_t>()));
 
-		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::PointList);
-		pipeCreateInfo.pipelineLayout = apiObj->context->createPipelineLayout(pvr::api::PipelineLayoutCreateParam()
-		                                .addDescSetLayout(apiObj->descLayoutUbo));
-		apiObj->passParticles.pipeline = apiObj->context->createGraphicsPipeline(pipeCreateInfo);
+		pipeCreateInfo.renderPass = _deviceResources->onScreenFramebuffer[0]->getRenderPass();
+		pipeCreateInfo.vertexInput.addInputAttributes(attributes, sizeof(attributes) / sizeof(attributes[0]));
+		pipeCreateInfo.vertexInput.addInputBinding(pvrvk::VertexInputBindingDescription(0, sizeof(Particle)));
 
-		if (!apiObj->passParticles.pipeline.isValid())
+		pipeCreateInfo.inputAssembler.setPrimitiveTopology(VkPrimitiveTopology::e_POINT_LIST);
+		pipeCreateInfo.pipelineLayout = _deviceResources->device->createPipelineLayout(
+		                                  pvrvk::PipelineLayoutCreateInfo()
+		                                  .addDescSetLayout(_deviceResources->descLayoutUbo));
+		_deviceResources->passParticles.pipeline = _deviceResources->device->createGraphicsPipeline(pipeCreateInfo);
+
+		if (!_deviceResources->passParticles.pipeline.isValid())
 		{
 			setExitMessage("Failed to create Particle pipeline");
 			return false;
@@ -355,17 +397,15 @@ bool VulkanParticleSystem::createPipelines()
 ***********************************************************************************************************************/
 pvr::Result VulkanParticleSystem::initApplication()
 {
-	setDeviceQueueTypesRequired(pvr::DeviceQueueType::Compute);
-	setMinApiType(pvr::Api::OpenGLES31);
-	// Load the scene
-	scene.construct();
-	pvr::assets::PODReader(getAssetStream(Files::SphereModelFile)).readAsset(*scene);
+	// Load the _scene
+	_scene.construct();
+	pvr::assets::PODReader(getAssetStream(Files::SphereModelFile)).readAsset(*_scene);
 
-	for (pvr::uint32 i = 0; i < scene->getNumMeshes(); ++i)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); ++i)
 	{
-		scene->getMesh(i).setVertexAttributeIndex("POSITION0", Attributes::VertexArray);
-		scene->getMesh(i).setVertexAttributeIndex("NORMAL0", Attributes::NormalArray);
-		scene->getMesh(i).setVertexAttributeIndex("UV0", Attributes::TexCoordArray);
+		_scene->getMesh(i).setVertexAttributeIndex("POSITION0", Attributes::VertexArray);
+		_scene->getMesh(i).setVertexAttributeIndex("NORMAL0", Attributes::NormalArray);
+		_scene->getMesh(i).setVertexAttributeIndex("UV0", Attributes::TexCoordArray);
 	}
 
 	return pvr::Result::Success;
@@ -378,91 +418,110 @@ pvr::Result VulkanParticleSystem::initApplication()
 ***********************************************************************************************************************/
 pvr::Result VulkanParticleSystem::quitApplication() { return pvr::Result::Success; }
 
-
 bool VulkanParticleSystem::createDescriptors()
 {
-	pvr::api::DescriptorSetLayoutCreateParam descLayoutInfo;
+	pvrvk::DescriptorSetLayoutCreateInfo descLayoutInfo;
 	// create dynamic ubo descriptor set layout
 	{
-		descLayoutInfo.setBinding(0, DescriptorType::UniformBufferDynamic, 1, ShaderStageFlags::Vertex);
-		apiObj->descLayoutuboPerModel = apiObj->context->createDescriptorSetLayout(descLayoutInfo);
+		descLayoutInfo.setBinding(0,
+		                          VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, VkShaderStageFlags::e_VERTEX_BIT);
+		_deviceResources->descLayoutUboPerModel = _deviceResources->device->createDescriptorSetLayout(descLayoutInfo);
 	}
 	// create static ubo descriptor set layout
 	{
-		descLayoutInfo.setBinding(0, DescriptorType::UniformBuffer, 1, ShaderStageFlags::Vertex);
-		apiObj->descLayoutUbo = apiObj->context->createDescriptorSetLayout(descLayoutInfo);
+		descLayoutInfo.setBinding(0,
+		                          VkDescriptorType::e_UNIFORM_BUFFER, 1, VkShaderStageFlags::e_VERTEX_BIT);
+		_deviceResources->descLayoutUbo = _deviceResources->device->createDescriptorSetLayout(descLayoutInfo);
 	}
 
-	apiObj->passSphere.uboPerModel.addEntriesPacked(Configuration::SpherePipeUboMapping,
-	    Configuration::SpherePipeDynamicUboElements::Count);
-	apiObj->passSphere.uboPerModel.finalize(apiObj->context, Configuration::NumberOfSpheres,
-	                                        BufferBindingUse::UniformBuffer, true, false);
+	{
+		_deviceResources->passSphere.uboPerModelBufferView.initDynamic(Configuration::SpherePipeUboMapping,
+		    Configuration::NumberOfSpheres * _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+		    static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().limits.minUniformBufferOffsetAlignment));
+		_deviceResources->passSphere.uboPerModel = pvr::utils::createBuffer(_deviceResources->device,_deviceResources->passSphere.uboPerModelBufferView.getSize(),
+		    VkBufferUsageFlags::e_UNIFORM_BUFFER_BIT, VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT | VkMemoryPropertyFlags::e_HOST_COHERENT_BIT);
+	}
 
-	apiObj->passFloor.uboPerModel.addEntriesPacked(Configuration::FloorPipeUboMapping,
-	    Configuration::FloorPipeDynamicUboElements::Count);
-	apiObj->passFloor.uboPerModel.finalize(apiObj->context, 1, BufferBindingUse::UniformBuffer, false, false);
+	{
+		_deviceResources->passFloor.uboPerModelBufferView.initDynamic(Configuration::FloorPipeUboMapping, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+		    static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().limits.minUniformBufferOffsetAlignment));
+		_deviceResources->passFloor.uboPerModel = pvr::utils::createBuffer(_deviceResources->device,_deviceResources->passFloor.uboPerModelBufferView.getSize(),
+		    VkBufferUsageFlags::e_UNIFORM_BUFFER_BIT, VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT | VkMemoryPropertyFlags::e_HOST_COHERENT_BIT);
+	}
 
-	apiObj->passSphere.uboLightProp.addEntryPacked(pvr::StringHash("uLightPosition"), GpuDatatypes::vec3);
-	apiObj->passSphere.uboLightProp.finalize(apiObj->context, 1, BufferBindingUse::UniformBuffer, false, false);
+	{
+		pvr::utils::StructuredMemoryDescription desc;
+		desc.addElement("uLightPosition", pvr::GpuDatatypes::vec3);
 
-	apiObj->passParticles.uboMvp.addEntryPacked("uModelViewProjectionMatrix", GpuDatatypes::mat4x4);
-	apiObj->passParticles.uboMvp.finalize(apiObj->context, 1, BufferBindingUse::UniformBuffer, false, false);
+		_deviceResources->passSphere.uboLightPropBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+		    static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().limits.minUniformBufferOffsetAlignment));
+		_deviceResources->passSphere.uboLightProp = pvr::utils::createBuffer(_deviceResources->device,_deviceResources->passSphere.uboLightPropBufferView.getSize(),
+		    VkBufferUsageFlags::e_UNIFORM_BUFFER_BIT, VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT | VkMemoryPropertyFlags::e_HOST_COHERENT_BIT);
+	}
 
-	for (pvr::uint32 i = 0; i < getSwapChainLength(); ++i)
+	{
+		pvr::utils::StructuredMemoryDescription desc;
+		desc.addElement("uModelViewProjectionMatrix", pvr::GpuDatatypes::mat4x4);
+
+		_deviceResources->passParticles.uboMvpBufferView.initDynamic(desc, _deviceResources->swapchain->getSwapchainLength(), pvr::BufferUsageFlags::UniformBuffer,
+		    static_cast<uint32_t>(_deviceResources->device->getPhysicalDevice()->getProperties().limits.minUniformBufferOffsetAlignment));
+		_deviceResources->passParticles.uboMvp = pvr::utils::createBuffer(_deviceResources->device,_deviceResources->passParticles.uboMvpBufferView.getSize(),
+		    VkBufferUsageFlags::e_UNIFORM_BUFFER_BIT, VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT | VkMemoryPropertyFlags::e_HOST_COHERENT_BIT);
+	}
+
+	pvrvk::WriteDescriptorSet descSetWrites[pvrvk::FrameworkCaps::MaxSwapChains * 4];
+	const uint32_t swapchainLength = _deviceResources->swapchain->getSwapchainLength();
+	for (uint32_t i = 0; i < swapchainLength; ++i)
 	{
 		// sphere descriptors
 		{
-			// create the ubo dynamic buffer
-			apiObj->passSphere.uboPerModel.connectWithBuffer(i, apiObj->context->createBufferView(
-			      apiObj->context->createBuffer(apiObj->passSphere.uboPerModel.getAlignedTotalSize(),
-			                                    types::BufferBindingUse::UniformBuffer, true), 0, apiObj->passSphere.uboPerModel.getAlignedElementSize()));
-
 			// create the ubo dynamic descriptor set
-			apiObj->passSphere.descriptoruboPerModel[i] =
-			  apiObj->context->createDescriptorSetOnDefaultPool(apiObj->descLayoutuboPerModel);
-			apiObj->passSphere.descriptoruboPerModel[i]->update(api::DescriptorSetUpdate()
-			    .setDynamicUbo(0, apiObj->passSphere.uboPerModel.getConnectedBuffer(i)));
+			_deviceResources->passSphere.descriptoruboPerModel[i] =
+			  _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descLayoutUboPerModel);
 
-			apiObj->passSphere.uboLightProp.connectWithBuffer(i,
-			    apiObj->context->createBufferView(apiObj->context->createBuffer(
-			                                        apiObj->passSphere.uboLightProp.getAlignedTotalSize(), BufferBindingUse::UniformBuffer, true), 0,
-			                                      apiObj->passSphere.uboLightProp.getAlignedElementSize()));
+			descSetWrites[i * 4]
+			.set(VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC,
+			     _deviceResources->passSphere.descriptoruboPerModel[i], 0)
+			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->passSphere.uboPerModel, 0,
+			               _deviceResources->passSphere.uboPerModelBufferView.getDynamicSliceSize()));
 
 			// create the ubo static descriptor set
-			apiObj->passSphere.descriptorLighProp[i] =
-			  apiObj->context->createDescriptorSetOnDefaultPool(apiObj->descLayoutUbo);
-			apiObj->passSphere.descriptorLighProp[i]->update(api::DescriptorSetUpdate().setUbo(0,
-			    apiObj->passSphere.uboLightProp.getConnectedBuffer(i)));
+			_deviceResources->passSphere.descriptorLighProp[i] =
+			  _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descLayoutUbo);
+
+			descSetWrites[i * 4 + 1]
+			.set(VkDescriptorType::e_UNIFORM_BUFFER,
+			     _deviceResources->passSphere.descriptorLighProp[i], 0)
+			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(
+			                 _deviceResources->passSphere.uboLightProp, _deviceResources->passSphere.uboLightPropBufferView.getDynamicSliceOffset(i),
+			                 _deviceResources->passSphere.uboLightPropBufferView.getDynamicSliceSize()));
 		}
 
 		// particle descriptor
 		{
-			apiObj->passParticles.uboMvp.connectWithBuffer(i,
-			    apiObj->context->createBufferAndView(apiObj->passParticles.uboMvp.getAlignedElementSize(),
-			        BufferBindingUse::UniformBuffer, true));
+			_deviceResources->passParticles.descriptorMvp[i] =
+			  _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descLayoutUbo);
 
-			apiObj->passParticles.descriptorMvp[i] =
-			  apiObj->context->createDescriptorSetOnDefaultPool(apiObj->descLayoutUbo);
-			apiObj->passParticles.descriptorMvp[i]->update(api::DescriptorSetUpdate().setUbo(0,
-			    apiObj->passParticles.uboMvp.getConnectedBuffer(i)));
+			descSetWrites[i * 4 + 2]
+			.set(VkDescriptorType::e_UNIFORM_BUFFER,
+			     _deviceResources->passParticles.descriptorMvp[i], 0)
+			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(
+			                 _deviceResources->passParticles.uboMvp, _deviceResources->passParticles.uboMvpBufferView.getDynamicSliceOffset(i),
+			                 _deviceResources->passParticles.uboMvpBufferView.getDynamicSliceSize()));
 		}
 
 		// floor descriptors
 		{
-			// create the ubo dynamic buffer
-			api::Buffer buffer =
-			  apiObj->context->createBuffer(apiObj->passFloor.uboPerModel.getAlignedElementSize(),
-			                                types::BufferBindingUse::UniformBuffer, true);
-
-			apiObj->passFloor.uboPerModel.connectWithBuffer(i, apiObj->context->createBufferView(
-			      buffer, 0, apiObj->passFloor.uboPerModel.getAlignedElementSize()));
-
 			// create the ubo dynamic descriptor set
-			apiObj->passFloor.descriptorUbo[i] = apiObj->context->createDescriptorSetOnDefaultPool(apiObj->descLayoutUbo);
-			apiObj->passFloor.descriptorUbo[i]->update(api::DescriptorSetUpdate()
-			    .setUbo(0, apiObj->passFloor.uboPerModel.getConnectedBuffer(i)));
+			_deviceResources->passFloor.descriptorUbo[i] =
+			  _deviceResources->descriptorPool->allocateDescriptorSet(_deviceResources->descLayoutUbo);
+			descSetWrites[i * 4 + 3]
+			.set(VkDescriptorType::e_UNIFORM_BUFFER, _deviceResources->passFloor.descriptorUbo[i], 0)
+			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_deviceResources->passFloor.uboPerModel,
+			               _deviceResources->passFloor.uboPerModelBufferView.getDynamicSliceOffset(i), _deviceResources->passFloor.uboPerModelBufferView.getDynamicSliceSize()));
 		}
 	}
+	_deviceResources->device->updateDescriptorSets(descSetWrites, swapchainLength * 4, nullptr, 0);
 	return true;
 }
 
@@ -473,26 +532,103 @@ bool VulkanParticleSystem::createDescriptors()
 ***********************************************************************************************************************/
 pvr::Result VulkanParticleSystem::initView()
 {
-	srand((pvr::uint32)this->getTime());
+	srand(static_cast<uint32_t>(this->getTime()));
 
-	apiObj.reset(new ApiObjects(*this));
-	apiObj->context = getGraphicsContext();
-	for (pvr::uint8 i = 0; i < getSwapChainLength(); ++i)
+	_frameId = 0;
+	_deviceResources.reset(new DeviceResources(*this));
+
+	if (!pvr::utils::createInstanceAndSurface(this->getApplicationName(), this->getWindow(), this->getDisplay(), _deviceResources->instance, _deviceResources->surface))
 	{
-		apiObj->commandBuffers[i] = apiObj->context->createCommandBufferOnDefaultPool();
+		return pvr::Result::UnknownError;
 	}
 
-	apiObj->onscreenFbo = apiObj->context->createOnScreenFboSet();
+	const pvr::utils::QueuePopulateInfo queueFlags[] =
+	{
+		{ VkQueueFlags::e_GRAPHICS_BIT | VkQueueFlags::e_COMPUTE_BIT, _deviceResources->surface }// request for graphics, compute and presentation
+	};
 
-	// Initialize Print3D textures
-	if (apiObj->uiRenderer.init(apiObj->onscreenFbo[0]->getRenderPass(), 0) != Result::Success)
+	pvr::utils::QueueAccessInfo queueAccessInfo;
+	_deviceResources->device = pvr::utils::createDeviceAndQueues(_deviceResources->instance->getPhysicalDevice(0), queueFlags,
+	                           ARRAY_SIZE(queueFlags), &queueAccessInfo);
+
+	if (_deviceResources->device.isNull())
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	// get the queue
+	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+
+	if (_deviceResources->queue.isNull())
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	// create the commandpool
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(queueAccessInfo.familyId, VkCommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+
+	//create the descriptor pool
+	pvrvk::DescriptorPoolCreateInfo poolInfo;
+	poolInfo
+	.addDescriptorInfo(VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, 16)
+	.addDescriptorInfo(VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 16)
+	.addDescriptorInfo(VkDescriptorType::e_UNIFORM_BUFFER, 16)
+	.addDescriptorInfo(VkDescriptorType::e_STORAGE_BUFFER, 16)
+	.setMaxDescriptorSets(16);
+
+	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(poolInfo);
+	if (_deviceResources->descriptorPool.isNull())
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
+
+	// validate the supported swapchain image usage
+	VkImageUsageFlags swapchainImageUsage = VkImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
+	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, VkImageUsageFlags::e_TRANSFER_SRC_BIT))
+	{
+		swapchainImageUsage |= VkImageUsageFlags::e_TRANSFER_SRC_BIT;
+	}
+
+	// create the swapchain
+	if (!pvr::utils::createSwapchainAndDepthStencilImageView(_deviceResources->device, _deviceResources->surface, getDisplayAttributes(),
+	    _deviceResources->swapchain, _deviceResources->depthStencilImages, swapchainImageUsage))
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	// create the on screen framebuffer
+	if (!pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain, &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer))
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	// create the per swpapchain commandbuffers, semaphores and fence.
+	// trasform the swachain & depthstencil image initial layout.
+	for (uint8_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	{
+		_deviceResources->mainCommandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->graphicsCommandBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		_deviceResources->uiRendererCommandBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+
+		_deviceResources->semaphorePresent[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->semaphoreImageAcquired[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameCommandBufferFence[i] = _deviceResources->device->createFence(VkFenceCreateFlags::e_SIGNALED_BIT);
+		_deviceResources->perFrameAcquireFence[i] = _deviceResources->device->createFence(VkFenceCreateFlags::e_SIGNALED_BIT);
+	}
+
+	// Initialize UIRenderer textures
+	if (!_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(), _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0,
+	                                       _deviceResources->commandPool, _deviceResources->queue))
 	{
 		setExitMessage("Could not initialize UIRenderer");
 		return pvr::Result::UnknownError;
 	}
 
 	std::string errorStr;
-	if (!apiObj->particleSystemGPU.init(Configuration::MaxNoParticles, Configuration::Spheres, Configuration::NumberOfSpheres, errorStr))
+	if (!_deviceResources->particleSystemGPU.init(Configuration::MaxNoParticles, Configuration::Spheres, Configuration::NumberOfSpheres,
+	    _deviceResources->device, _deviceResources->commandPool, _deviceResources->descriptorPool, _deviceResources->swapchain->getSwapchainLength()))
 	{
 		setExitMessage(errorStr.c_str());
 		return pvr::Result::UnknownError;
@@ -501,36 +637,35 @@ pvr::Result VulkanParticleSystem::initView()
 	//	Create the Buffers
 	if (!createBuffers()) {	return pvr::Result::UnknownError;	}
 
-	if (!createDescriptors()) { return Result::UnknownError; }
+	if (!createDescriptors()) { return pvr::Result::UnknownError; }
 
 	//	Load and compile the shaders & link programs
 	if (!createPipelines())	{	return pvr::Result::UnknownError;	}
 
 	// Create view matrices
-	mLightView = glm::lookAt(glm::vec3(0.0f, 80.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+	_mLightView = glm::lookAt(glm::vec3(0.0f, 80.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 
 	// Creates the projection matrix.
-	projMtx = math::perspectiveFov(getApiType(), glm::pi<pvr::float32>() / 3.0f, (pvr::float32)getWidth(),
-	                               (pvr::float32)getHeight(), Configuration::CameraNear, Configuration::CameraFar);
+	_projMtx = pvr::math::perspectiveFov(pvr::Api::Vulkan, glm::pi<float>() / 3.0f, (float)getWidth(), (float)getHeight(), Configuration::CameraNear, Configuration::CameraFar);
 
 	// Create a bias matrix
-	mBiasMatrix = glm::mat4(0.5f, 0.0f, 0.0f, 0.0f,
-	                        0.0f, 0.5f, 0.0f, 0.0f,
-	                        0.0f, 0.0f, 0.5f, 0.0f,
-	                        0.5f, 0.5f, 0.5f, 1.0f);
+	_mBiasMatrix = glm::mat4(0.5f, 0.0f, 0.0f, 0.0f,
+	                         0.0f, 0.5f, 0.0f, 0.0f,
+	                         0.0f, 0.0f, 0.5f, 0.0f,
+	                         0.5f, 0.5f, 0.5f, 1.0f);
 
-	apiObj->particleSystemGPU.setGravity(glm::vec3(0.f, -9.81f, 0.f));
-	apiObj->particleSystemGPU.setNumberOfParticles(Configuration::InitialNoParticles);
+	_deviceResources->particleSystemGPU.setGravity(glm::vec3(0.f, -9.81f, 0.f));
+	_deviceResources->particleSystemGPU.setNumberOfParticles(Configuration::InitialNoParticles, _deviceResources->queue);
 
-	apiObj->uiRenderer.getDefaultTitle()->setText("Vulkan Compute Particle System");
-	apiObj->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d",
-	    Configuration::InitialNoParticles));
-	apiObj->uiRenderer.getDefaultControls()->setText("Action1: Pause rotation\nLeft: Decrease particles\n"
-	    "Right: Increase particles");
-	apiObj->uiRenderer.getDefaultTitle()->commitUpdates();
-	apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
-	apiObj->uiRenderer.getDefaultControls()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultTitle()->setText("Vulkan Compute Particle System");
+	_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", Configuration::InitialNoParticles));
+	_deviceResources->uiRenderer.getDefaultControls()->setText("Action1: Pause rotation\nLeft: Decrease particles\n" "Right: Increase particles");
+	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
+
 	recordCommandBuffers();
+
 	return pvr::Result::Success;
 }
 
@@ -540,8 +675,18 @@ pvr::Result VulkanParticleSystem::initView()
 ***********************************************************************************************************************/
 pvr::Result VulkanParticleSystem::releaseView()
 {
-	apiObj.reset();
-	scene.reset();
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); i++)
+	{
+		_deviceResources->perFrameAcquireFence[i]->wait();
+		_deviceResources->perFrameAcquireFence[i]->reset();
+
+		_deviceResources->perFrameCommandBufferFence[i]->wait();
+		_deviceResources->perFrameCommandBufferFence[i]->reset();
+	}
+
+	_deviceResources->device->waitIdle();
+	_deviceResources.reset();
+	_scene.reset();
 	return pvr::Result::Success;
 }
 
@@ -551,26 +696,75 @@ pvr::Result VulkanParticleSystem::releaseView()
 ***********************************************************************************************************************/
 pvr::Result VulkanParticleSystem::renderFrame()
 {
-	if (!isCameraPaused)
+	// wait & reset the fence for acquiring new image
+	_deviceResources->perFrameAcquireFence[_frameId]->wait();
+	_deviceResources->perFrameAcquireFence[_frameId]->reset();
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreImageAcquired[_frameId], _deviceResources->perFrameAcquireFence[_frameId]);
+
+	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+
+	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->wait();
+	_deviceResources->perFrameCommandBufferFence[swapchainIndex]->reset();
+
+	if (!_isCameraPaused)
 	{
 		static float angle = 0;
 		angle += getFrameTime() / 5000.0f;
 		glm::vec3 vFrom = glm::vec3(sinf(angle) * 50.0f, 30.0f, cosf(angle) * 50.0f);
 
-		viewMtx = glm::lookAt(vFrom, glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		viewIT = glm::inverseTranspose(glm::mat3(viewMtx));
-		lightPos = glm::vec3(viewMtx * glm::vec4(Configuration::LightPosition, 1.0f));
-		viewProjMtx = projMtx * viewMtx;
+		_viewMtx = glm::lookAt(vFrom, glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		_viewIT = glm::inverseTranspose(glm::mat3(_viewMtx));
+		_lightPos = glm::vec3(_viewMtx * glm::vec4(Configuration::LightPosition, 1.0f));
+		_viewProjMtx = _projMtx * _viewMtx;
 	}
 
 	// Render floor
 	updateParticleUniforms();
 	updateFloor();
 	updateSpheres();
-	// render compute
-	apiObj->particleSystemGPU.renderFrame(getSwapChainIndex());
-	apiObj->commandBuffers[getSwapChainIndex()]->submitEndOfFrame(
-	  apiObj->particleSystemGPU.getWaitSemaphore(getSwapChainIndex()));
+
+	// submit the compute
+	// the compute need to wait on the particle update
+	pvrvk::SubmitInfo submitInfo;
+	VkPipelineStageFlags pipeWaitStageFlags = VkPipelineStageFlags::e_ALL_GRAPHICS_BIT;
+	submitInfo.commandBuffers = &_deviceResources->mainCommandBuffers[swapchainIndex];
+	submitInfo.numCommandBuffers = 1;
+	submitInfo.waitSemaphores = &_deviceResources->semaphoreImageAcquired[_frameId];
+	submitInfo.numWaitSemaphores = 1;
+	submitInfo.signalSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	submitInfo.numSignalSemaphores = 1;
+	submitInfo.waitDestStages = &pipeWaitStageFlags;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameCommandBufferFence[swapchainIndex]);
+
+	if (this->shouldTakeScreenshot())
+	{
+		if (_deviceResources->swapchain->supportsUsage(VkImageUsageFlags::e_TRANSFER_SRC_BIT))
+		{
+			pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName());
+		}
+		else
+		{
+			Log(LogLevel::Warning, "Could not take screenshot as the swapchain does not support TRANSFER_SRC_BIT");
+		}
+	}
+
+	// present
+	pvrvk::PresentInfo presentInfo;
+	presentInfo.swapchains = &_deviceResources->swapchain;
+	presentInfo.numSwapchains = 1;
+	presentInfo.waitSemaphores = &_deviceResources->semaphorePresent[_frameId];
+	presentInfo.numWaitSemaphores = 1;
+	presentInfo.numSwapchains = 1;
+	presentInfo.imageIndices = &swapchainIndex;
+	VkResult result = _deviceResources->queue->present(presentInfo);
+
+	if (result != VkResult::e_SUCCESS)
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	_frameId = (_frameId + 1) % _deviceResources->swapchain->getSwapchainLength();
+
 	return pvr::Result::Success;
 }
 
@@ -581,25 +775,45 @@ pvr::Result VulkanParticleSystem::renderFrame()
 ***********************************************************************************************************************/
 void VulkanParticleSystem::updateSpheres()
 {
-	utils::StructuredMemoryView& bufferView = apiObj->passSphere.uboPerModel;
-	bufferView.mapMultipleArrayElements(getSwapChainIndex(), 0, Configuration::NumberOfSpheres, MapBufferFlags::Write);
-	glm::mat4 modelView;
-	for (uint32 i = 0; i < Configuration::NumberOfSpheres; ++i)
-	{
-		const glm::vec3& position = Configuration::Spheres[i].vPosition;
-		float32 radius = Configuration::Spheres[i].fRadius;
-		modelView = viewMtx * glm::translate(position) * glm::scale(glm::vec3(radius));
-		bufferView.setArrayValue(Configuration::SpherePipeDynamicUboElements::ModelViewMatrix, i, modelView);
-		bufferView.setArrayValue(Configuration::SpherePipeDynamicUboElements::ModelViewProjectionMatrix, i,
-		                         projMtx * modelView);
-		bufferView.setArrayValue(Configuration::SpherePipeDynamicUboElements::ModelViewITMatrix, i,
-		                         glm::mat3x4(glm::inverseTranspose(glm::mat3(modelView))));
-	}
-	bufferView.unmap(getSwapChainIndex());
+	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+	pvr::utils::StructuredBufferView& bufferView = _deviceResources->passSphere.uboPerModelBufferView;
+	pvrvk::Buffer& buffer = _deviceResources->passSphere.uboPerModel;
 
-	apiObj->passSphere.uboLightProp.map(getSwapChainIndex(), MapBufferFlags::Write);
-	apiObj->passSphere.uboLightProp.setValue(0, lightPos);
-	apiObj->passSphere.uboLightProp.unmap(getSwapChainIndex());
+	{
+		void* memory;
+		uint32_t mappedDynamicSlice = swapchainIndex * Configuration::NumberOfSpheres;
+
+		buffer->getDeviceMemory()->map(&memory, bufferView.getDynamicSliceOffset(mappedDynamicSlice),
+		                               bufferView.getDynamicSliceSize() * Configuration::NumberOfSpheres);
+		bufferView.pointToMappedMemory(memory, mappedDynamicSlice);
+
+		glm::mat4 modelView;
+		for (uint32_t i = 0; i < Configuration::NumberOfSpheres; ++i)
+		{
+			uint32_t dynamicSlice = i + mappedDynamicSlice;
+
+			const glm::vec3& position = Configuration::Spheres[i].vPosition;
+			float radius = Configuration::Spheres[i].fRadius;
+			modelView = _viewMtx * glm::translate(position) * glm::scale(glm::vec3(radius));
+			bufferView.getElement(Configuration::SpherePipeDynamicUboElements::ModelViewMatrix, 0,
+			                      dynamicSlice).setValue(modelView);
+			bufferView.getElement(Configuration::SpherePipeDynamicUboElements::ModelViewProjectionMatrix, 0,
+			                      dynamicSlice).setValue(_projMtx * modelView);
+			bufferView.getElement(Configuration::SpherePipeDynamicUboElements::ModelViewITMatrix, 0,
+			                      dynamicSlice).setValue(glm::mat3x4(glm::inverseTranspose(glm::mat3(modelView))));
+		}
+		buffer->getDeviceMemory()->unmap();
+	}
+
+	{
+		void* memory;
+		_deviceResources->passSphere.uboLightProp->getDeviceMemory()->map(&memory,
+		    _deviceResources->passSphere.uboLightPropBufferView.getDynamicSliceOffset(swapchainIndex),
+		    _deviceResources->passSphere.uboLightPropBufferView.getDynamicSliceSize());
+		_deviceResources->passSphere.uboLightPropBufferView.pointToMappedMemory(memory, swapchainIndex);
+		_deviceResources->passSphere.uboLightPropBufferView.getElement(0, 0, swapchainIndex).setValue(_lightPos);
+		_deviceResources->passSphere.uboLightProp->getDeviceMemory()->unmap();
+	}
 }
 
 /*!*********************************************************************************************************************
@@ -607,13 +821,18 @@ void VulkanParticleSystem::updateSpheres()
 ***********************************************************************************************************************/
 void VulkanParticleSystem::updateFloor()
 {
-	pvr::utils::StructuredMemoryView& uboView = apiObj->passFloor.uboPerModel;
-	uboView.map(getSwapChainIndex(), MapBufferFlags::Write);
-	uboView.setValue(Configuration::FloorPipeDynamicUboElements::ModelViewMatrix, viewMtx)
-	.setValue(Configuration::FloorPipeDynamicUboElements::ModelViewProjectionMatrix, viewProjMtx)
-	.setValue(Configuration::FloorPipeDynamicUboElements::ModelViewITMatrix, viewIT)
-	.setValue(Configuration::FloorPipeDynamicUboElements::LightPos, lightPos);
-	uboView.unmap(getSwapChainIndex());
+	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+	pvr::utils::StructuredBufferView& uboView = _deviceResources->passFloor.uboPerModelBufferView;
+	pvrvk::Buffer& ubo = _deviceResources->passFloor.uboPerModel;
+
+	void* memory;
+	ubo->getDeviceMemory()->map(&memory, uboView.getDynamicSliceOffset(swapchainIndex), uboView.getDynamicSliceSize());
+	uboView.pointToMappedMemory(memory, swapchainIndex);
+	uboView.getElement(Configuration::FloorPipeDynamicUboElements::ModelViewMatrix, 0, swapchainIndex).setValue(_viewMtx);
+	uboView.getElement(Configuration::FloorPipeDynamicUboElements::ModelViewProjectionMatrix, 0, swapchainIndex).setValue(_viewProjMtx);
+	uboView.getElement(Configuration::FloorPipeDynamicUboElements::ModelViewITMatrix, 0, swapchainIndex).setValue(_viewIT);
+	uboView.getElement(Configuration::FloorPipeDynamicUboElements::LightPos, 0, swapchainIndex).setValue(_lightPos);
+	ubo->getDeviceMemory()->unmap();
 }
 
 /*!*********************************************************************************************************************
@@ -622,23 +841,28 @@ void VulkanParticleSystem::updateFloor()
 ************************************************************************************************************************/
 void VulkanParticleSystem::updateParticleUniforms()
 {
+	uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
 	float step = (float)getFrameTime();
 
-	static pvr::float32 rot_angle = 0.0f;
+	static float rot_angle = 0.0f;
 	rot_angle += step / 500.0f;
-	pvr::float32 el_angle = (sinf(rot_angle / 4.0f) + 1.0f) * 0.2f + 0.2f;
+	float el_angle = (sinf(rot_angle / 4.0f) + 1.0f) * 0.2f + 0.2f;
 
 	glm::mat4 rot = glm::rotate(rot_angle, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 skew = glm::rotate(el_angle, glm::vec3(0.0f, 0.0f, 1.0f));
 
 	Emitter sEmitter(rot * skew, 1.3f, 1.0f);
 
-	apiObj->particleSystemGPU.setEmitter(sEmitter);
-	apiObj->particleSystemGPU.updateUniforms(getSwapChainIndex(), step);
+	_deviceResources->particleSystemGPU.setEmitter(sEmitter);
+	_deviceResources->particleSystemGPU.updateUniforms(swapchainIndex, step);
 
-	apiObj->passParticles.uboMvp.map(getSwapChainIndex(), MapBufferFlags::Write);
-	apiObj->passParticles.uboMvp.setValue(0, viewProjMtx);
-	apiObj->passParticles.uboMvp.unmap(getSwapChainIndex());
+	void* memory;
+	_deviceResources->passParticles.uboMvp->getDeviceMemory()->map(&memory,
+	    _deviceResources->passParticles.uboMvpBufferView.getDynamicSliceOffset(swapchainIndex),
+	    _deviceResources->passParticles.uboMvpBufferView.getDynamicSliceSize());
+	_deviceResources->passParticles.uboMvpBufferView.pointToMappedMemory(memory, swapchainIndex);
+	_deviceResources->passParticles.uboMvpBufferView.getElement(0, 0, swapchainIndex).setValue(_viewProjMtx);
+	_deviceResources->passParticles.uboMvp->getDeviceMemory()->unmap();
 }
 
 /*!*********************************************************************************************************************
@@ -646,56 +870,81 @@ void VulkanParticleSystem::updateParticleUniforms()
 ***********************************************************************************************************************/
 void VulkanParticleSystem::recordCommandBuffers()
 {
-	for (pvr::uint8 i = 0; i < getSwapChainLength(); ++i) { recordCommandBuffer(i); }
+	for (uint8_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	{
+		recordCommandBuffer(i);
+	}
 }
 
 /*!*********************************************************************************************************************
 \brief	Record the commands buffer
 \param	idx Commandbuffer index
 ***********************************************************************************************************************/
-void VulkanParticleSystem::recordCommandBuffer(pvr::uint8 swapchain)
+void VulkanParticleSystem::recordCommandBuffer(uint8_t swapchain)
 {
-	apiObj->commandBuffers[swapchain]->beginRecording();
-	pvr::api::MemoryBarrierSet memBarrierSet;
-	memBarrierSet.addBarrier(pvr::api::BufferRangeBarrier(pvr::types::AccessFlags::ShaderWrite,
-	                         pvr::types::AccessFlags::VertexAttributeRead, apiObj->particleSystemGPU.getParticleBufferView(), 0,
-	                         apiObj->particleSystemGPU.getParticleBufferView()->getSize()));
-	apiObj->commandBuffers[swapchain]->pipelineBarrier(PipelineStageFlags::AllCommands,
-	    PipelineStageFlags::TopOfPipeline, memBarrierSet, false);
-	apiObj->commandBuffers[swapchain]->beginRenderPass(apiObj->onscreenFbo[swapchain],
-	    pvr::Rectanglei(0, 0, getWidth(), getHeight()), true);
+	_deviceResources->graphicsCommandBuffers[swapchain]->begin(_deviceResources->onScreenFramebuffer[swapchain], 0, VkCommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
 
 	// Render floor
 	recordCmdDrawFloor(swapchain);
 	// render the spheres
-	apiObj->commandBuffers[swapchain]->bindPipeline(apiObj->passSphere.pipeline);
-	apiObj->commandBuffers[swapchain]->bindDescriptorSet(apiObj->passSphere.pipeline->getPipelineLayout(), 1,
-	    apiObj->passSphere.descriptorLighProp[0]);
-	for (pvr::uint32 i = 0; i < Configuration::NumberOfSpheres; i++) { recordCmdDrawSphere(i, swapchain); }
+	_deviceResources->graphicsCommandBuffers[swapchain]->bindPipeline(_deviceResources->passSphere.pipeline);
+	_deviceResources->graphicsCommandBuffers[swapchain]->bindDescriptorSet(VkPipelineBindPoint::e_GRAPHICS, _deviceResources->passSphere.pipeline->getPipelineLayout(),
+	    1, _deviceResources->passSphere.descriptorLighProp[0]);
+	for (uint32_t i = 0; i < Configuration::NumberOfSpheres; i++)
+	{
+		recordCmdDrawSphere(i, swapchain);
+	}
 
 	// Render particles
 	recordCmdDrawParticles(swapchain);
-	apiObj->uiRenderer.beginRendering(apiObj->commandBuffers[swapchain]);
-	apiObj->uiRenderer.getDefaultTitle()->render();
-	apiObj->uiRenderer.getDefaultDescription()->render();
-	apiObj->uiRenderer.getDefaultControls()->render();
-	apiObj->uiRenderer.getSdkLogo()->render();
-	apiObj->uiRenderer.endRendering();
-	apiObj->commandBuffers[swapchain]->endRenderPass();
-	apiObj->commandBuffers[swapchain]->endRecording();
+
+	_deviceResources->graphicsCommandBuffers[swapchain]->end();
+
+	_deviceResources->uiRendererCommandBuffers[swapchain]->begin(_deviceResources->onScreenFramebuffer[swapchain], 0, VkCommandBufferUsageFlags::e_RENDER_PASS_CONTINUE_BIT);
+	_deviceResources->uiRenderer.beginRendering(_deviceResources->uiRendererCommandBuffers[swapchain], _deviceResources->onScreenFramebuffer[swapchain], true);
+	_deviceResources->uiRenderer.getDefaultTitle()->render();
+	_deviceResources->uiRenderer.getDefaultDescription()->render();
+	_deviceResources->uiRenderer.getDefaultControls()->render();
+	_deviceResources->uiRenderer.getSdkLogo()->render();
+	_deviceResources->uiRenderer.endRendering();
+	_deviceResources->uiRendererCommandBuffers[swapchain]->end();
+
+	_deviceResources->mainCommandBuffers[swapchain]->begin();
+	_deviceResources->mainCommandBuffers[swapchain]->executeCommands(_deviceResources->particleSystemGPU.getCommandBuffer(swapchain));
+
+	pvrvk::MemoryBarrierSet memBarrierSet;
+	memBarrierSet.addBarrier(pvrvk::BufferMemoryBarrier(VkAccessFlags::e_SHADER_WRITE_BIT,
+	                         VkAccessFlags::e_VERTEX_ATTRIBUTE_READ_BIT, _deviceResources->particleSystemGPU.getParticleBufferView(), 0,
+	                         static_cast<uint32_t>(_deviceResources->particleSystemGPU.getParticleBufferView()->getSize())));
+	_deviceResources->mainCommandBuffers[swapchain]->pipelineBarrier(VkPipelineStageFlags::e_COMPUTE_SHADER_BIT, VkPipelineStageFlags::e_VERTEX_INPUT_BIT, memBarrierSet, false);
+
+	const pvrvk::ClearValue clearValues[] =
+	{
+		pvrvk::ClearValue(0, 0, 0, 1),
+		pvrvk::ClearValue::createDefaultDepthStencilClearValue()
+	};
+	_deviceResources->mainCommandBuffers[swapchain]->beginRenderPass(_deviceResources->onScreenFramebuffer[swapchain], pvrvk::Rect2Di(0, 0, getWidth(), getHeight()),
+	    false, clearValues, ARRAY_SIZE(clearValues));
+
+	_deviceResources->mainCommandBuffers[swapchain]->executeCommands(_deviceResources->graphicsCommandBuffers[swapchain]);
+
+	_deviceResources->mainCommandBuffers[swapchain]->executeCommands(_deviceResources->uiRendererCommandBuffers[swapchain]);
+
+	_deviceResources->mainCommandBuffers[swapchain]->endRenderPass();
+	_deviceResources->mainCommandBuffers[swapchain]->end();
 }
 
 /*!*********************************************************************************************************************
 \brief	Record the draw particles commands
 \param	idx Commandbuffer index
 ***********************************************************************************************************************/
-void VulkanParticleSystem::recordCmdDrawParticles(pvr::uint8 idx)
+void VulkanParticleSystem::recordCmdDrawParticles(uint8_t idx)
 {
-	apiObj->commandBuffers[idx]->bindPipeline(apiObj->passParticles.pipeline);
-	apiObj->commandBuffers[idx]->bindDescriptorSet(apiObj->passParticles.pipeline->getPipelineLayout(), 0,
-	    apiObj->passParticles.descriptorMvp[idx]);
-	apiObj->commandBuffers[idx]->bindVertexBuffer(apiObj->particleSystemGPU.getParticleBufferView(), 0, 0);
-	apiObj->commandBuffers[idx]->drawArrays(0, apiObj->particleSystemGPU.getNumberOfParticles(), 0, 1);
+	_deviceResources->graphicsCommandBuffers[idx]->bindPipeline(_deviceResources->passParticles.pipeline);
+	_deviceResources->graphicsCommandBuffers[idx]->bindDescriptorSet(VkPipelineBindPoint::e_GRAPHICS,
+	    _deviceResources->passParticles.pipeline->getPipelineLayout(), 0, _deviceResources->passParticles.descriptorMvp[idx]);
+	_deviceResources->graphicsCommandBuffers[idx]->bindVertexBuffer(_deviceResources->particleSystemGPU.getParticleBufferView(), 0, 0);
+	_deviceResources->graphicsCommandBuffers[idx]->draw(0, _deviceResources->particleSystemGPU.getNumberOfParticles(), 0, 1);
 }
 
 /*!*********************************************************************************************************************
@@ -703,39 +952,40 @@ void VulkanParticleSystem::recordCmdDrawParticles(pvr::uint8 idx)
 \param[in] passSphere Sphere draw pass
 \param[in] idx Commandbuffer index
 ***********************************************************************************************************************/
-void VulkanParticleSystem::recordCmdDrawSphere(pvr::uint32 sphereId, pvr::uint8 swapchain)
+void VulkanParticleSystem::recordCmdDrawSphere(uint32_t sphereId, uint8_t swapchain)
 {
-	static const pvr::assets::Mesh& mesh = scene->getMesh(0);
-	pvr::uint32 offset = apiObj->passSphere.uboPerModel.getAlignedElementArrayOffset(sphereId);
-	apiObj->commandBuffers[swapchain]->bindDescriptorSet(apiObj->passSphere.pipeline->getPipelineLayout(), 0,
-	    apiObj->passSphere.descriptoruboPerModel[swapchain], &offset, 1);
+	static const pvr::assets::Mesh& mesh = _scene->getMesh(0);
+	uint32_t offset = _deviceResources->passSphere.uboPerModelBufferView.getDynamicSliceOffset(sphereId + swapchain * Configuration::NumberOfSpheres);
+	_deviceResources->graphicsCommandBuffers[swapchain]->bindDescriptorSet(
+	  VkPipelineBindPoint::e_GRAPHICS, _deviceResources->passSphere.pipeline->getPipelineLayout(),
+	  0, _deviceResources->passSphere.descriptoruboPerModel[swapchain], &offset, 1);
 
-	apiObj->commandBuffers[swapchain]->bindVertexBuffer(apiObj->passSphere.vbo, 0, 0);
-	apiObj->commandBuffers[swapchain]->bindIndexBuffer(apiObj->passSphere.ibo, 0, mesh.getFaces().getDataType());
+	_deviceResources->graphicsCommandBuffers[swapchain]->bindVertexBuffer(_deviceResources->passSphere.vbo, 0, 0);
+	_deviceResources->graphicsCommandBuffers[swapchain]->bindIndexBuffer(_deviceResources->passSphere.ibo, 0, pvr::utils::convertToVk(mesh.getFaces().getDataType()));
 	// Indexed Triangle list
-	apiObj->commandBuffers[swapchain]->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
+	_deviceResources->graphicsCommandBuffers[swapchain]->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 }
 
 /*!*********************************************************************************************************************
 \brief	Renders the floor as a quad.
 \param idx Commandbuffer index
 ***********************************************************************************************************************/
-void VulkanParticleSystem::recordCmdDrawFloor(pvr::uint8 swapchain)
+void VulkanParticleSystem::recordCmdDrawFloor(uint8_t swapchain)
 {
 	// Enables depth testing
 	// We need to calculate the texture projection matrix. This matrix takes the pixels from world space to previously rendered light projection space
 	// where we can look up values from our saved depth buffer. The matrix is constructed from the light view and projection matrices as used for the previous render and
 	// then multiplied by the inverse of the current view matrix.
-	apiObj->commandBuffers[swapchain]->bindPipeline(apiObj->passFloor.pipeline);
-	apiObj->commandBuffers[swapchain]->bindDescriptorSet(apiObj->passFloor.pipeline->getPipelineLayout(), 0,
-	    apiObj->passFloor.descriptorUbo[swapchain]);
-	apiObj->commandBuffers[swapchain]->bindVertexBuffer(apiObj->passFloor.vbo, 0, 0);
+	_deviceResources->graphicsCommandBuffers[swapchain]->bindPipeline(_deviceResources->passFloor.pipeline);
+	_deviceResources->graphicsCommandBuffers[swapchain]->bindDescriptorSet(VkPipelineBindPoint::e_GRAPHICS,
+	    _deviceResources->passFloor.pipeline->getPipelineLayout(), 0, _deviceResources->passFloor.descriptorUbo[swapchain]);
+	_deviceResources->graphicsCommandBuffers[swapchain]->bindVertexBuffer(_deviceResources->passFloor.vbo, 0, 0);
 	// Draw the quad
-	apiObj->commandBuffers[swapchain]->drawArrays(0, 4);
+	_deviceResources->graphicsCommandBuffers[swapchain]->draw(0, 4);
 }
 
 /*!*********************************************************************************************************************
 \return Return a smart pointer to the application class.
 \brief	This function must be implemented by the user of the shell. It should return the Application class (a class inheriting from pvr::Shell.
 ***********************************************************************************************************************/
-std::auto_ptr<pvr::Shell> pvr::newDemo() {	return std::auto_ptr<pvr::Shell>(new VulkanParticleSystem());  }
+std::unique_ptr<pvr::Shell> pvr::newDemo() {	return std::unique_ptr<pvr::Shell>(new VulkanParticleSystem());  }

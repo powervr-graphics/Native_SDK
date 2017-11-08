@@ -70,10 +70,21 @@ FileCollection assetFiles = files(
 "${pvrSdkDir}/Examples/Advanced/DeferredShading/ProcessedAssets/Marble.pvr",
 "${pvrSdkDir}/Examples/Advanced/DeferredShading/ProcessedAssets/MarbleNormalMap.pvr",
 "${pvrSdkDir}/Examples/Advanced/DeferredShading/ProcessedAssets/Table.pvr",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/AttributelessVertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/DirectionalLightFragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/GBufferFloorFragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/GBufferFloorVertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/GBufferFragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/GBufferVertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/PointLightPass1FragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/PointLightPass1VertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/PointLightPass2FragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/PointLightPass2VertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/PointLightPass3FragmentShader.fsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/PointLightPass3VertexShader.vsh",
+"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/WritePlsToFbo.fsh",
 "${pvrSdkDir}/Examples/Advanced/DeferredShading/ProcessedAssets/scene.pod",
 "${pvrSdkDir}/Examples/Advanced/DeferredShading/ProcessedAssets/pointlight.pod",
-"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/effect_MRT.pfx",
-"${pvrSdkDir}/Examples/Advanced/DeferredShading/OGLES/effect_PLS.pfx",
 
 )
 
@@ -112,10 +123,8 @@ FileCollection assetFiles = files(
     def ndkDependencies=[
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
     ["PVRAssets", "${pvrSdkDir}/Framework/PVRAssets/Build/Android"],
-    ["PVRNativeGles", "${pvrSdkDir}/Framework/PVRNativeApi/OGLES/Build/Android"],
-    ["PVRGles", "${pvrSdkDir}/Framework/PVRApi/OGLES/Build/Android"],
     ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
-    ["PVREngineUtils", "${pvrSdkDir}/Framework/PVREngineUtils/Build/Android"]
+    ["PVRUtilsGles", "${pvrSdkDir}/Framework/PVRUtils/OGLES/Build/Android"]
     ]
 
 	//Create and configure a task for each combination of build type (debug/release or clean) and dependency

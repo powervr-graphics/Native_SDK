@@ -9,13 +9,13 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanPVRScopeExample
-DEPENDS =  PVRCore PVRAssets PVRNativeVulkan PVRVulkan PVRShell PVREngineUtils
-LIBRARIES =  PVRScopeDeveloper dl PVREngineUtils PVRShell PVRVulkan PVRNativeVulkan PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRVk PVRShell PVRUtilsVk
+LIBRARIES =  PVRScopeDeveloper dl PVRUtilsVk PVRShell PVRVk PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS) ../../../../../../Builds/Linux/$(PLAT_SUFFIX)/Lib
 
 OBJECTS +=	\
            Vulkan/VulkanPVRScopeExample.o	\
-           PVRScopeGraph.o
+           Vulkan/PVRScopeGraph.o
 
 RESOURCES += \
            FragShader_vk.fsh\
@@ -30,6 +30,8 @@ RESOURCES += \
 COMMON_RESOURCES += \
            Marble.pvr\
            scene.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

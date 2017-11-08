@@ -82,7 +82,7 @@ FileCollection assetFiles = files(
 "${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/SkinnedVertShader_vk.spv",
 "${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/SkinnedFragShader_vk.spv",
 "${pvrSdkDir}/Examples/Advanced/Skinning/ProcessedAssets/Robot.pod",
-"${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/Skinning_vk.pfx",
+"${pvrSdkDir}/Examples/Advanced/Skinning/Vulkan/Skinning.pfx",
 
 )
 
@@ -121,10 +121,9 @@ FileCollection assetFiles = files(
     def ndkDependencies=[
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
     ["PVRAssets", "${pvrSdkDir}/Framework/PVRAssets/Build/Android"],
-    ["PVRNativeVulkan", "${pvrSdkDir}/Framework/PVRNativeApi/Vulkan/Build/Android"],
-    ["PVRVulkan", "${pvrSdkDir}/Framework/PVRApi/Vulkan/Build/Android"],
+    ["PVRVk", "${pvrSdkDir}/Framework/PVRVk/Build/Android"],
     ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
-    ["PVREngineUtils", "${pvrSdkDir}/Framework/PVREngineUtils/Build/Android"]
+    ["PVRUtilsVk", "${pvrSdkDir}/Framework/PVRUtils/Vulkan/Build/Android"]
     ]
 
 	//Create and configure a task for each combination of build type (debug/release or clean) and dependency

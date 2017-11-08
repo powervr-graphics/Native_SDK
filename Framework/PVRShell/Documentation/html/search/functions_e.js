@@ -1,4 +1,30 @@
 var searchData=
 [
-  ['takescreenshot',['takeScreenshot',['../classpvr_1_1platform_1_1_shell.html#a621f7f15872e3573d2f005e010227658',1,'pvr::platform::Shell']]]
+  ['set',['set',['../classpvr_1_1platform_1_1_command_line_parser.html#a9a545af09de4a19aa48495628f102144',1,'pvr::platform::CommandLineParser::set(const wchar_t *cmdLine)'],['../classpvr_1_1platform_1_1_command_line_parser.html#a249f71f43dcc573b8a8a9879da6c6564',1,'pvr::platform::CommandLineParser::set(int argc, char **argv)'],['../classpvr_1_1platform_1_1_command_line_parser.html#a48f3f10e7457fede61cf1009b7de0813',1,'pvr::platform::CommandLineParser::set(const char *cmdLine)'],['../classpvr_1_1platform_1_1_command_line_parser.html#a56adbc7bd26523ea8a9bce9ab79f4d83',1,'pvr::platform::CommandLineParser::set(Stream *stream)'],['../classpvr_1_1platform_1_1_command_line_parser.html#a8ee5e39b74e2f4a5ac92e89cef40dda1',1,'pvr::platform::CommandLineParser::set(const CommandLineParser &amp;commandLine)']]],
+  ['setaasamples',['setAASamples',['../classpvr_1_1platform_1_1_shell.html#a8a3fea11c2afd9d517d73b9b24cc5413',1,'pvr::platform::Shell']]],
+  ['setapplicationname',['setApplicationName',['../classpvr_1_1platform_1_1_shell.html#a721ae2f199a6f58fd678819d147079ac',1,'pvr::platform::Shell']]],
+  ['setbackbuffercolorspace',['setBackBufferColorspace',['../classpvr_1_1platform_1_1_shell.html#a3c4e5b34aaa471ec416c940d54936c4e',1,'pvr::platform::Shell']]],
+  ['setcaptureframes',['setCaptureFrames',['../classpvr_1_1platform_1_1_shell.html#a19d12fe0fd1667553595ef0c052ba168',1,'pvr::platform::Shell']]],
+  ['setcaptureframescale',['setCaptureFrameScale',['../classpvr_1_1platform_1_1_shell.html#a30baa68e55618f673e3b83a773ea5f61',1,'pvr::platform::Shell']]],
+  ['setcolorbitsperpixel',['setColorBitsPerPixel',['../classpvr_1_1platform_1_1_shell.html#ad48af0cbd59cd0672d82b3a4821e3fa2',1,'pvr::platform::Shell']]],
+  ['setcontextpriority',['setContextPriority',['../classpvr_1_1platform_1_1_shell.html#a0ee62a0e4db43f2c735bdf592b3b80bf',1,'pvr::platform::Shell']]],
+  ['setdepthbitsperpixel',['setDepthBitsPerPixel',['../classpvr_1_1platform_1_1_shell.html#a223bc1c8fa124a04ce212e61c011497c',1,'pvr::platform::Shell']]],
+  ['setdesiredconfig',['setDesiredConfig',['../classpvr_1_1platform_1_1_shell.html#afacfeaa31b94649995237a25f1e499d5',1,'pvr::platform::Shell']]],
+  ['setdimensions',['setDimensions',['../classpvr_1_1platform_1_1_shell.html#ad3f63b6943c65466efbcf5ef5d5f7a1a',1,'pvr::platform::Shell']]],
+  ['setexitmessage',['setExitMessage',['../classpvr_1_1platform_1_1_shell.html#a38e14777e568449a366bc00dbb1daa80',1,'pvr::platform::Shell']]],
+  ['setfakeframetime',['setFakeFrameTime',['../classpvr_1_1platform_1_1_shell.html#ac65c620b25ceb162e6eb529912ad8fa7',1,'pvr::platform::Shell']]],
+  ['setforceframetime',['setForceFrameTime',['../classpvr_1_1platform_1_1_shell.html#a221f2df91b95f2c4c84367a4d2fe3c02',1,'pvr::platform::Shell']]],
+  ['setfullscreen',['setFullscreen',['../classpvr_1_1platform_1_1_shell.html#ae61ef050b4e5dfd2df56c8a0c0380f0b',1,'pvr::platform::Shell']]],
+  ['setposition',['setPosition',['../classpvr_1_1platform_1_1_shell.html#a6fa10bf4ee8f68e7a09243ebf514530b',1,'pvr::platform::Shell']]],
+  ['setpreferredswapchainlength',['setPreferredSwapChainLength',['../classpvr_1_1platform_1_1_shell.html#a567bef45518f3cf5f42cfe04ef4fdcf3',1,'pvr::platform::Shell']]],
+  ['setquitafterframe',['setQuitAfterFrame',['../classpvr_1_1platform_1_1_shell.html#aa34f32f4a0a5a74506a3cddf6de5a1ac',1,'pvr::platform::Shell']]],
+  ['setquitaftertime',['setQuitAfterTime',['../classpvr_1_1platform_1_1_shell.html#a2f0afd080b5acd4b244422d2e7a74649',1,'pvr::platform::Shell']]],
+  ['setshowfps',['setShowFPS',['../classpvr_1_1platform_1_1_shell.html#ad8304aca84d29e9d2b73de294c5d2141',1,'pvr::platform::Shell']]],
+  ['setstencilbitsperpixel',['setStencilBitsPerPixel',['../classpvr_1_1platform_1_1_shell.html#a1b44312671d27e254ea6cee92f4b7052',1,'pvr::platform::Shell']]],
+  ['settitle',['setTitle',['../classpvr_1_1platform_1_1_shell.html#a4e092886f625a95212cc51a23c2ce658',1,'pvr::platform::Shell']]],
+  ['setvsyncmode',['setVsyncMode',['../classpvr_1_1platform_1_1_shell.html#ac463c721743516e42c0df1df1b2a9a4d',1,'pvr::platform::Shell']]],
+  ['shell',['Shell',['../classpvr_1_1platform_1_1_shell.html#a8823ff36848a13ebad921e9d3b2aedeb',1,'pvr::platform::Shell']]],
+  ['shouldtakescreenshot',['shouldTakeScreenshot',['../classpvr_1_1platform_1_1_shell.html#ac47140ec1e71cc5b380457102fe421f3',1,'pvr::platform::Shell']]],
+  ['showoutputinfo',['showOutputInfo',['../classpvr_1_1platform_1_1_shell.html#a30bb9e4fe157fd5752bae827ab1f2b29',1,'pvr::platform::Shell']]],
+  ['statemachine',['StateMachine',['../classpvr_1_1platform_1_1_state_machine.html#a6cb429ae5ab63e81b8cf587d107f32da',1,'pvr::platform::StateMachine']]]
 ];

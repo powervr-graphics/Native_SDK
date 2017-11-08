@@ -9,10 +9,7 @@
 #include "PVRAssets/FileIO/PODDefines.h"
 #include "PVRAssets/Model.h"
 #include "PVRCore/Log.h"
-//#include "PVRAssets/assets::Model.h"
 #include "PVRAssets/Helper.h"
-//#include "PVRAssets/assets::Model/Light.h"
-//#include "PVRAssets/assets::Model/assets::Mesh.h"
 #include "PVRCore/Stream.h"
 #include <cstdio>
 #include <algorithm>
@@ -21,7 +18,6 @@ using std::vector;
 namespace { // LOCAL FUNCTIONS
 using namespace pvr;
 using namespace assets;
-using namespace pvr::types;
 template <typename T>
 bool readBytes(Stream& stream, T& data)
 {
@@ -30,9 +26,9 @@ bool readBytes(Stream& stream, T& data)
 }
 
 template <typename T>
-bool readByteArray(Stream& stream, T* data, uint32 count)
+bool readByteArray(Stream& stream, T* data, uint32_t count)
 {
-	for (uint32 i = 0; i < count; ++i)
+	for (uint32_t i = 0; i < count; ++i)
 	{
 		bool result = readBytes(stream, data[i]);
 		if (!result) { return result; }
@@ -41,16 +37,16 @@ bool readByteArray(Stream& stream, T* data, uint32 count)
 }
 
 template <typename T>
-bool readByteArrayIntoTypedMem(Stream& stream, TypedMem& mem, uint32 count)
+bool readByteArrayIntoTypedMem(Stream& stream, TypedMem& mem, uint32_t count)
 {
-	mem.allocate(GpuDatatypes::Metadata<T>::dataTypeOf(), count);
+	mem.allocate(GpuDatatypesHelper::Metadata<T>::dataTypeOf(), count);
 	return readByteArray(stream, mem.rawAs<T>(), count);
 }
 template <typename T>
-bool readByteArrayIntoFreeValue(Stream& stream, FreeValue& mem, uint32 count)
+bool readByteArrayIntoFreeValue(Stream& stream, FreeValue& mem, uint32_t count)
 {
 	debug_assertion(count * sizeof(T) <= 64, "PODReader: Error trying to read more than 64 bytes into FreeValue");
-	mem.setDataType(GpuDatatypes::Metadata<T>::dataTypeOf());
+	mem.setDataType(GpuDatatypesHelper::Metadata<T>::dataTypeOf());
 	return readByteArray(stream, mem.rawAs<T>(), count);
 }
 
@@ -74,21 +70,21 @@ bool read4Bytes(Stream& stream, T& data)
 template <typename T>
 bool read4BytesIntoFreeVal(Stream& stream, FreeValue& value)
 {
-	value.setDataType(GpuDatatypes::Metadata<T>::dataTypeOf());
+	value.setDataType(GpuDatatypesHelper::Metadata<T>::dataTypeOf());
 	return read4Bytes(stream, *value.rawAs<T>());
 }
 template <typename T>
 bool read4BytesIntoTypedMem(Stream& stream, TypedMem& value)
 {
-	value.allocate(GpuDatatypes::Metadata<T>::dataTypeOf());
+	value.allocate(GpuDatatypesHelper::Metadata<T>::dataTypeOf());
 	return read4Bytes(stream, value.rawAs<T>());
 }
 
 template <typename T>
-bool read4ByteArray(Stream& stream, T* data, uint32 count)
+bool read4ByteArray(Stream& stream, T* data, uint32_t count)
 {
 	//PVR_STATIC_ASSERT(read4ByteArraySizeAssert, sizeof(T) == 4)
-	for (uint32 i = 0; i < count; ++i)
+	for (uint32_t i = 0; i < count; ++i)
 	{
 		if (!read4Bytes(stream, data[i])) { return false; }
 	}
@@ -98,8 +94,8 @@ bool read4ByteArray(Stream& stream, T* data, uint32 count)
 template <typename VectorType>
 bool read4ByteArrayIntoGlmVector(Stream& stream, FreeValue& value)
 {
-	value.setDataType(GpuDatatypes::Metadata<VectorType>::dataTypeOf());
-	return read4ByteArray(stream, &(*static_cast<VectorType*>(value.raw()))[0], GpuDatatypes::getNumVecElements(value.dataType()));
+	value.setDataType(GpuDatatypesHelper::Metadata<VectorType>::dataTypeOf());
+	return read4ByteArray(stream, &(*static_cast<VectorType*>(value.raw()))[0], getNumVecElements(value.dataType()));
 }
 
 template <typename T>
@@ -118,10 +114,10 @@ bool read2Bytes(Stream& stream, T& data)
 }
 
 template <typename T>
-bool read2ByteArray(Stream& stream, T* data, uint32 count)
+bool read2ByteArray(Stream& stream, T* data, uint32_t count)
 {
 	//PVR_STATIC_ASSERT(read2ByteArraySizeAssert, sizeof(T) == 2)
-	for (uint32 i = 0; i < count; ++i)
+	for (uint32_t i = 0; i < count; ++i)
 	{
 		bool result = read2Bytes(stream, data[i]);
 		if (!result) { return result; }
@@ -130,43 +126,37 @@ bool read2ByteArray(Stream& stream, T* data, uint32 count)
 }
 
 template <typename T, typename vector_T>
-bool readByteArrayIntoVector(Stream& stream, std::vector<vector_T>& data, uint32 count)
+bool readByteArrayIntoVector(Stream& stream, std::vector<vector_T>& data, uint32_t count)
 {
 	assertion(sizeof(vector_T) <= sizeof(T));
 	data.resize(count * sizeof(T) / sizeof(vector_T));
 	return readByteArray<T>(stream, reinterpret_cast<T*>(data.data()), count);
 }
 template <typename T, typename vector_T>
-bool read2ByteArrayIntoVector(Stream& stream, std::vector<vector_T>& data, uint32 count)
+bool read2ByteArrayIntoVector(Stream& stream, std::vector<vector_T>& data, uint32_t count)
 {
 	assertion(sizeof(vector_T) <= sizeof(T));
 	data.resize(count * sizeof(T) / sizeof(vector_T));
 	return read2ByteArray<T>(stream, reinterpret_cast<T*>(data.data()), count);
 }
 template <typename T, typename vector_T>
-bool read4ByteArrayIntoVector(Stream& stream, std::vector<vector_T>& data, uint32 count)
+bool read4ByteArrayIntoVector(Stream& stream, std::vector<vector_T>& data, uint32_t count)
 {
 	assertion(sizeof(vector_T) <= sizeof(T));
 	data.resize(count * sizeof(T) / sizeof(vector_T));
 	return read4ByteArray<T>(stream, reinterpret_cast<T*>(data.data()), count);
 }
-//bool readByteArrayIntoString1(Stream& stream, std::string& data, uint32 count)
-//{
-//	std::vector<char8> data1; data1.resize(count);
-//	bool res = readByteArray(stream, reinterpret_cast<char8*>(data1.data()), count);
-//	data.assign(data1.data());
-//	return res;
-//}
 
-bool readByteArrayIntoStringHash(Stream& stream, StringHash& data, uint32 count)
+
+bool readByteArrayIntoStringHash(Stream& stream, StringHash& data, uint32_t count)
 {
-	std::vector<char8> data1; data1.resize(count);
-	bool res = readByteArray(stream, reinterpret_cast<char8*>(data1.data()), count);
+	std::vector<char> data1; data1.resize(count);
+	bool res = readByteArray(stream, reinterpret_cast<char*>(data1.data()), count);
 	data.assign(data1.data());
 	return res;
 }
 
-bool readTag(Stream& stream, uint32& identifier, uint32& dataLength)
+bool readTag(Stream& stream, uint32_t& identifier, uint32_t& dataLength)
 {
 	if (!read4Bytes(stream, identifier)) { return false; }
 	if (!read4Bytes(stream, dataLength)) { return false; }
@@ -177,10 +167,10 @@ bool readTag(Stream& stream, uint32& identifier, uint32& dataLength)
 bool readVertexIndexData(Stream& stream, assets::Mesh& mesh)
 {
 	bool result;
-	uint32 identifier, dataLength, size(0);
-	std::vector<byte> data;
+	uint32_t identifier, dataLength, size(0);
+	std::vector<uint8_t> data;
 	IndexType type(IndexType::IndexType16Bit);
-	while ((result = readTag(stream, identifier, dataLength)))
+	while ((result = readTag(stream, identifier, dataLength)) != 0)
 	{
 		if (identifier == (pod::e_meshVertexIndexList | pod::c_endTagMask))
 		{
@@ -191,7 +181,7 @@ bool readVertexIndexData(Stream& stream, assets::Mesh& mesh)
 		{
 		case pod::e_blockDataType:
 		{
-			uint32 tmp;
+			uint32_t tmp;
 			if (!read4Bytes(stream, tmp)) { return false; }
 			switch (static_cast<DataType >(tmp))
 			{
@@ -213,12 +203,12 @@ bool readVertexIndexData(Stream& stream, assets::Mesh& mesh)
 			{
 			case IndexType::IndexType16Bit:
 			{
-				result = read2ByteArrayIntoVector<uint16>(stream, data, dataLength / 2);
+				result = read2ByteArrayIntoVector<uint16_t>(stream, data, dataLength / 2);
 				break;
 			}
 			case IndexType::IndexType32Bit:
 			{
-				result = read4ByteArrayIntoVector<uint32>(stream, data, dataLength / 4);
+				result = read4ByteArrayIntoVector<uint32_t>(stream, data, dataLength / 4);
 				break;
 			}
 			}
@@ -236,10 +226,10 @@ bool readVertexIndexData(Stream& stream, assets::Mesh& mesh)
 	return result;
 }
 
-bool readVertexData(Stream& stream, assets::Mesh& mesh, const char8* const semanticName, uint32 blockIdentifier, int32 dataIndex, bool& existed)
+bool readVertexData(Stream& stream, assets::Mesh& mesh, const char* const semanticName, uint32_t blockIdentifier, int32_t dataIndex, bool& existed)
 {
 	existed = false;
-	uint32 identifier, dataLength, numComponents(0), stride(0), offset(0);
+	uint32_t identifier, dataLength, numComponents(0), stride(0), offset(0);
 	DataType type(DataType::None);
 	while (readTag(stream, identifier, dataLength))
 	{
@@ -261,7 +251,7 @@ bool readVertexData(Stream& stream, assets::Mesh& mesh, const char8* const seman
 		{
 		case pod::e_blockDataType:
 		{
-			uint32 tmp;
+			uint32_t tmp;
 			if (!read4Bytes(stream, tmp)) { return false; }
 			type = static_cast<DataType>(tmp);
 			continue;
@@ -275,28 +265,28 @@ bool readVertexData(Stream& stream, assets::Mesh& mesh, const char8* const seman
 		case pod::e_blockData:
 			if (dataIndex == -1)   // This POD file isn't using interleaved data so this data block must be valid vertex data
 			{
-				std::vector<byte> data;
+				std::vector<uint8_t> data;
 				switch (dataTypeSize(type))
 				{
 				case 1:
 				{
-					if (!readByteArrayIntoVector<byte>(stream, data, dataLength)) { return false; }
+					if (!readByteArrayIntoVector<uint8_t>(stream, data, dataLength)) { return false; }
 					break;
 				}
 				case 2:
 				{
-					if (!read2ByteArrayIntoVector<uint16>(stream, data, dataLength / 2)) { return false; }
+					if (!read2ByteArrayIntoVector<uint16_t>(stream, data, dataLength / 2)) { return false; }
 					break;
 				}
 				case 4:
 				{
-					if (!read2ByteArrayIntoVector<uint32>(stream, data, dataLength / 4)) { return false; }
+					if (!read2ByteArrayIntoVector<uint32_t>(stream, data, dataLength / 4)) { return false; }
 					break;
 				}
 				default:
 				{
 					assertion(false);
-					Log(Log.Error, "Unknown error reading POD file - data type width >4");
+					Log(LogLevel::Error, "Unknown error reading POD file - data type width >4");
 					return false;
 				}
 				}
@@ -320,14 +310,14 @@ bool readVertexData(Stream& stream, assets::Mesh& mesh, const char8* const seman
 
 bool readTextureIndex(Stream& stream, const StringHash& semantic, assets::Model::Material::InternalData& data)
 {
-	int32 tmp = -1;
-	if (!read4Bytes<int32>(stream, tmp))
+	int32_t tmp = -1;
+	if (!read4Bytes<int32_t>(stream, tmp))
 	{
 		return false;
 	}
 	if (tmp >= 0)
 	{
-		data.textureIndexes[semantic] = tmp;
+		data.textureIndices[semantic] = tmp;
 	}
 	return true;
 }
@@ -335,9 +325,9 @@ bool readTextureIndex(Stream& stream, const StringHash& semantic, assets::Model:
 bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 {
 	bool result;
-	uint32 identifier, dataLength;
+	uint32_t identifier, dataLength;
 	assets::Model::Material::InternalData& materialInternalData = material.getInternalData();
-	while ((result = readTag(stream, identifier, dataLength)))
+	while ((result = readTag(stream, identifier, dataLength)) != 0)
 	{
 		switch (identifier)
 		{
@@ -350,7 +340,7 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 		}
 		break;
 		case pod::e_materialOpacity | pod::c_startTagMask:
-			result = read4BytesIntoFreeVal<int32>(stream, materialInternalData.materialSemantics["OPACITY"]);
+			result = read4BytesIntoFreeVal<int32_t>(stream, materialInternalData.materialSemantics["OPACITY"]);
 			break;
 		case pod::e_materialAmbientColor | pod::c_startTagMask:
 			result = read4ByteArrayIntoGlmVector<glm::vec3>(stream, materialInternalData.materialSemantics["AMBIENT"]);
@@ -362,7 +352,7 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 			result = read4ByteArrayIntoGlmVector<glm::vec3>(stream, materialInternalData.materialSemantics["SPECULAR"]);
 			break;
 		case pod::e_materialShininess | pod::c_startTagMask:
-			result = read4BytesIntoFreeVal<float32>(stream, materialInternalData.materialSemantics["SHININESS"]);
+			result = read4BytesIntoFreeVal<float>(stream, materialInternalData.materialSemantics["SHININESS"]);
 			break;
 		case pod::e_materialEffectFile | pod::c_startTagMask:
 		{
@@ -408,7 +398,7 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 			break;
 		case pod::e_materialBlendingRGBSrc | pod::c_startTagMask:
 		{
-			uint32 tmp;
+			uint32_t tmp;
 			result = read4Bytes(stream, tmp);
 			if (!result) { return result; }
 			materialInternalData.materialSemantics["BLENDFUNCSRCCOLOR"].setValue(tmp);
@@ -416,7 +406,7 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 		}
 		case pod::e_materialBlendingAlphaSrc | pod::c_startTagMask:
 		{
-			uint32 tmp;
+			uint32_t tmp;
 			result = read4Bytes(stream, tmp);
 			if (!result) { return result; }
 			materialInternalData.materialSemantics["BLENDFUNCSRCALPHA"].setValue(tmp);
@@ -424,7 +414,7 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 		}
 		case pod::e_materialBlendingRGBDst | pod::c_startTagMask:
 		{
-			uint32 tmp;
+			uint32_t tmp;
 			result = read4Bytes(stream, tmp);
 			if (!result) { return result; }
 			materialInternalData.materialSemantics["BLENDFUNCDSTCOLOR"].setValue(tmp);
@@ -432,7 +422,7 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 		}
 		case pod::e_materialBlendingAlphaDst | pod::c_startTagMask:
 		{
-			uint32 tmp;
+			uint32_t tmp;
 			result = read4Bytes(stream, tmp);
 			if (!result) { return result; }
 			materialInternalData.materialSemantics["BLENDFUNCDSTALPHA"].setValue(tmp);
@@ -440,7 +430,7 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 		}
 		case pod::e_materialBlendingRGBOperation | pod::c_startTagMask:
 		{
-			uint32 tmp;
+			uint32_t tmp;
 			result = read4Bytes(stream, tmp);
 			if (!result) { return result; }
 			materialInternalData.materialSemantics["BLENDOPCOLOR"].setValue(tmp);
@@ -448,7 +438,7 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 		}
 		case pod::e_materialBlendingAlphaOperation | pod::c_startTagMask:
 		{
-			uint32 tmp;
+			uint32_t tmp;
 			result = read4Bytes(stream, tmp);
 			if (!result) { return result; }
 			materialInternalData.materialSemantics["BLENDOPALPHA"].setValue(tmp);
@@ -461,10 +451,10 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 			result = read4ByteArrayIntoGlmVector<glm::vec4>(stream, materialInternalData.materialSemantics["BLENDFACTOR"]);
 			break;
 		case pod::e_materialFlags | pod::c_startTagMask:
-			result = read4BytesIntoFreeVal<int32>(stream, materialInternalData.materialSemantics["FLAGS"]);
+			result = read4BytesIntoFreeVal<int32_t>(stream, materialInternalData.materialSemantics["FLAGS"]);
 			break;
 		case pod::e_materialUserData | pod::c_startTagMask:
-			result = readByteArrayIntoVector<byte>(stream, materialInternalData.userData, dataLength);
+			result = readByteArrayIntoVector<uint8_t>(stream, materialInternalData.userData, dataLength);
 			break;
 		default:
 			// Unhandled data, skip it
@@ -479,8 +469,8 @@ bool readMaterialBlock(Stream& stream, assets::Model::Material& material)
 bool readTextureBlock(Stream& stream, assets::Model::Texture& texture)
 {
 	bool result;
-	uint32 identifier, dataLength;
-	while ((result = readTag(stream, identifier, dataLength)))
+	uint32_t identifier, dataLength;
+	while ((result = readTag(stream, identifier, dataLength)) != 0)
 	{
 		switch (identifier)
 		{
@@ -509,7 +499,7 @@ bool readTextureBlock(Stream& stream, assets::Model::Texture& texture)
 bool readCameraBlock(Stream& stream, Camera& camera)
 {
 	bool result;
-	uint32 identifier, dataLength;
+	uint32_t identifier, dataLength;
 	Camera::InternalData& cameraInternalData = camera.getInternalData();
 	while ((result = readTag(stream, identifier, dataLength)) == true)
 	{
@@ -528,7 +518,7 @@ bool readCameraBlock(Stream& stream, Camera& camera)
 			}
 			else
 			{
-				result = read4ByteArrayIntoVector<float32, float32>(stream, cameraInternalData.FOVs, 1);
+				result = read4ByteArrayIntoVector<float, float>(stream, cameraInternalData.FOVs, 1);
 				if (!result) { return result; }
 			}
 			break;
@@ -541,7 +531,7 @@ bool readCameraBlock(Stream& stream, Camera& camera)
 			break;
 		case pod::e_cameraFOVAnimation | pod::c_startTagMask:
 		{
-			result = read4ByteArrayIntoVector<float32, float32>(stream, cameraInternalData.FOVs,
+			result = read4ByteArrayIntoVector<float, float>(stream, cameraInternalData.FOVs,
 			         dataLength / sizeof(*cameraInternalData.FOVs.data()));
 			if (!result) { return result; }
 			break;
@@ -560,9 +550,9 @@ bool readCameraBlock(Stream& stream, Camera& camera)
 bool readLightBlock(Stream& stream, Light& light)
 {
 	bool result;
-	uint32 identifier, dataLength;
+	uint32_t identifier, dataLength;
 	Light::InternalData& lightInternalData = light.getInternalData();
-	while ((result = readTag(stream, identifier, dataLength)))
+	while ((result = readTag(stream, identifier, dataLength)) != 0)
 	{
 		switch (identifier)
 		{
@@ -579,7 +569,7 @@ bool readLightBlock(Stream& stream, Light& light)
 			break;
 		case pod::e_lightType | pod::c_startTagMask:
 		{
-			uint32 tmp;
+			uint32_t tmp;
 			result = read4Bytes(stream, tmp);
 			if (!result) { return result; }
 			lightInternalData.type = static_cast<Light::LightType>(tmp);
@@ -614,16 +604,16 @@ bool readLightBlock(Stream& stream, Light& light)
 bool readNodeBlock(Stream& stream, assets::Model::Node& node)
 {
 	bool result;
-	uint32 identifier, dataLength;
+	uint32_t identifier, dataLength;
 	assets::Model::Node::InternalData& nodeInternData = node.getInternalData();
 	Animation::InternalData& animInternData = nodeInternData.animation.getInternalData();
-	animInternData.numberOfFrames = 0;
+	animInternData.numFrames = 0;
 	bool isOldFormat = false;
-	float32 pos[3] = { 0, 0, 0 };
-	float32 rotation[4] = { 0, 0, 0, 1 };
-	float32 scale[7] = { 1, 1, 1, 0, 0, 0, 0 };
-	float32 matrix[16] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
-	while ((result = readTag(stream, identifier, dataLength)))
+	float pos[3] = { 0, 0, 0 };
+	float rotation[4] = { 0, 0, 0, 1 };
+	float scale[7] = { 1, 1, 1, 0, 0, 0, 0 };
+	float matrix[16] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+	while ((result = readTag(stream, identifier, dataLength)) != 0)
 	{
 		switch (identifier)
 		{
@@ -639,7 +629,7 @@ bool readNodeBlock(Stream& stream, assets::Model::Node& node)
 				{
 					animInternData.positions.resize(3);
 					memcpy(animInternData.positions.data(), pos, sizeof(pos));
-					animInternData.numberOfFrames = (std::max)(animInternData.numberOfFrames, (uint32)animInternData.positions.size());
+					animInternData.numFrames = (std::max)(animInternData.numFrames, static_cast<uint32_t>(animInternData.positions.size()));
 				}
 				if (animInternData.rotations.size())
 				{
@@ -649,7 +639,7 @@ bool readNodeBlock(Stream& stream, assets::Model::Node& node)
 				{
 					animInternData.rotations.resize(4);
 					memcpy(animInternData.rotations.data(), rotation, sizeof(pos));
-					animInternData.numberOfFrames = (std::max)(animInternData.numberOfFrames, (uint32)animInternData.rotations.size());
+					animInternData.numFrames = (std::max)(animInternData.numFrames, static_cast<uint32_t>(animInternData.rotations.size()));
 				}
 				if (animInternData.scales.size())
 				{
@@ -660,7 +650,7 @@ bool readNodeBlock(Stream& stream, assets::Model::Node& node)
 					animInternData.scales.resize(7);
 					memcpy(animInternData.scales.data(), scale, sizeof(scale));
 				}
-				animInternData.numberOfFrames = (std::max)(animInternData.numberOfFrames, (uint32)animInternData.scales.size());
+				animInternData.numFrames = (std::max)(animInternData.numFrames, static_cast<uint32_t>(animInternData.scales.size()));
 				if (animInternData.matrices.size())
 				{
 					animInternData.flags |= Animation::HasMatrixAnimation;
@@ -670,7 +660,7 @@ bool readNodeBlock(Stream& stream, assets::Model::Node& node)
 					animInternData.matrices.resize(16);
 					memcpy(animInternData.matrices.data(), matrix, sizeof(matrix));
 				}
-				animInternData.numberOfFrames = (std::max)(animInternData.numberOfFrames, (uint32)animInternData.matrices.size());
+				animInternData.numFrames = (std::max)(animInternData.numFrames, static_cast<uint32_t>(animInternData.matrices.size()));
 			}
 			return true;
 		}
@@ -708,42 +698,42 @@ bool readNodeBlock(Stream& stream, assets::Model::Node& node)
 			break;
 		//END OLD FORMAT
 		case pod::e_nodeAnimationPosition | pod::c_startTagMask:
-			result = read4ByteArrayIntoVector<float32, float32>(stream, animInternData.positions, dataLength / sizeof(float32));
-			animInternData.numberOfFrames = std::max(animInternData.numberOfFrames, (uint32)animInternData.positions.size() / 3);
+			result = read4ByteArrayIntoVector<float, float>(stream, animInternData.positions, dataLength / sizeof(float));
+			animInternData.numFrames = std::max(animInternData.numFrames, static_cast<uint32_t>(animInternData.positions.size()) / 3);
 			break;
 		case pod::e_nodeAnimationRotation | pod::c_startTagMask:
-			result = read4ByteArrayIntoVector<float32, float32>(stream, animInternData.rotations, dataLength / sizeof(float32));
-			animInternData.numberOfFrames = std::max(animInternData.numberOfFrames, (uint32)animInternData.rotations.size() / 4);
+			result = read4ByteArrayIntoVector<float, float>(stream, animInternData.rotations, dataLength / sizeof(float));
+			animInternData.numFrames = std::max(animInternData.numFrames, static_cast<uint32_t>(animInternData.rotations.size()) / 4);
 			break;
 		case pod::e_nodeAnimationScale | pod::c_startTagMask:
-			result = read4ByteArrayIntoVector<float32, float32>(stream, animInternData.scales, dataLength / sizeof(float32));
-			animInternData.numberOfFrames = std::max(animInternData.numberOfFrames, (uint32)animInternData.scales.size() / 7);
+			result = read4ByteArrayIntoVector<float, float>(stream, animInternData.scales, dataLength / sizeof(float));
+			animInternData.numFrames = std::max(animInternData.numFrames, static_cast<uint32_t>(animInternData.scales.size()) / 7);
 			break;
 		case pod::e_nodeAnimationMatrix | pod::c_startTagMask:
-			result = read4ByteArrayIntoVector<float32, float32>(stream, animInternData.matrices, dataLength / sizeof(float32));
-			animInternData.numberOfFrames = std::max(animInternData.numberOfFrames, (uint32)animInternData.matrices.size() / 16);
+			result = read4ByteArrayIntoVector<float, float>(stream, animInternData.matrices, dataLength / sizeof(float));
+			animInternData.numFrames = std::max(animInternData.numFrames, static_cast<uint32_t>(animInternData.matrices.size()) / 16);
 			break;
 		case pod::e_nodeAnimationFlags | pod::c_startTagMask:
 			result = read4Bytes(stream, animInternData.flags);
 			break;
 		case pod::e_nodeAnimationPositionIndex | pod::c_startTagMask:
-			result = read4ByteArrayIntoVector<uint32, uint32>(stream, animInternData.positionIndices, dataLength / sizeof(uint32));
-			animInternData.numberOfFrames = std::max(animInternData.numberOfFrames, (uint32)animInternData.positionIndices.size());
+			result = read4ByteArrayIntoVector<uint32_t, uint32_t>(stream, animInternData.positionIndices, dataLength / sizeof(uint32_t));
+			animInternData.numFrames = std::max(animInternData.numFrames, static_cast<uint32_t>(animInternData.positionIndices.size()));
 			break;
 		case pod::e_nodeAnimationRotationIndex | pod::c_startTagMask:
-			result = read4ByteArrayIntoVector<uint32, uint32>(stream, animInternData.rotationIndices, dataLength / sizeof(uint32));
-			animInternData.numberOfFrames = std::max(animInternData.numberOfFrames, (uint32)animInternData.rotationIndices.size());
+			result = read4ByteArrayIntoVector<uint32_t, uint32_t>(stream, animInternData.rotationIndices, dataLength / sizeof(uint32_t));
+			animInternData.numFrames = std::max(animInternData.numFrames, static_cast<uint32_t>(animInternData.rotationIndices.size()));
 			break;
 		case pod::e_nodeAnimationScaleIndex | pod::c_startTagMask:
-			result = read4ByteArrayIntoVector<uint32, uint32>(stream, animInternData.scaleIndices, dataLength / sizeof(uint32));
-			animInternData.numberOfFrames = std::max(animInternData.numberOfFrames, (uint32)animInternData.scaleIndices.size());
+			result = read4ByteArrayIntoVector<uint32_t, uint32_t>(stream, animInternData.scaleIndices, dataLength / sizeof(uint32_t));
+			animInternData.numFrames = std::max(animInternData.numFrames, static_cast<uint32_t>(animInternData.scaleIndices.size()));
 			break;
 		case pod::e_nodeAnimationMatrixIndex | pod::c_startTagMask:
-			result = read4ByteArrayIntoVector<uint32, uint32>(stream, animInternData.matrixIndices, dataLength / sizeof(uint32));
-			animInternData.numberOfFrames = std::max(animInternData.numberOfFrames, (uint32)animInternData.matrixIndices.size());
+			result = read4ByteArrayIntoVector<uint32_t, uint32_t>(stream, animInternData.matrixIndices, dataLength / sizeof(uint32_t));
+			animInternData.numFrames = std::max(animInternData.numFrames, static_cast<uint32_t>(animInternData.matrixIndices.size()));
 			break;
 		case pod::e_nodeUserData | pod::c_startTagMask:
-			result = readByteArrayIntoVector<byte>(stream, nodeInternData.userData, dataLength);
+			result = readByteArrayIntoVector<uint8_t>(stream, nodeInternData.userData, dataLength);
 			if (!result) { return result; }
 			break;
 		default:
@@ -757,15 +747,15 @@ bool readNodeBlock(Stream& stream, assets::Model::Node& node)
 	return result;
 }
 
-static void fixInterleavedEndiannessUsingVertexData(StridedBuffer& interleaved, const assets::Mesh::VertexAttributeData& data, uint32 numVertices)
+static void fixInterleavedEndiannessUsingVertexData(StridedBuffer& interleaved, const assets::Mesh::VertexAttributeData& data, uint32_t numVertices)
 {
 	if (!data.getN())
 	{
 		return;
 	}
 	size_t ui32TypeSize = dataTypeSize(data.getVertexLayout().dataType);
-	unsigned char ub[4];
-	unsigned char* pData = interleaved.data() + static_cast<size_t>(data.getOffset());
+	char ub[4];
+	uint8_t* pData = interleaved.data() + static_cast<size_t>(data.getOffset());
 	switch (ui32TypeSize)
 	{
 	case 1:
@@ -807,7 +797,7 @@ static void fixInterleavedEndiannessUsingVertexData(StridedBuffer& interleaved, 
 	};
 }
 
-static void fixInterleavedEndianness(assets::Mesh::InternalData& data, int32 interleavedDataIndex)
+static void fixInterleavedEndianness(assets::Mesh::InternalData& data, int32_t interleavedDataIndex)
 {
 	if (interleavedDataIndex == -1 || utils::isLittleEndian())
 	{
@@ -818,7 +808,7 @@ static void fixInterleavedEndianness(assets::Mesh::InternalData& data, int32 int
 	for (; walk != data.vertexAttributes.end(); ++walk)
 	{
 		assets::Mesh::VertexAttributeData& vertexData = walk->value;
-		if (static_cast<int32>(vertexData.getDataIndex()) == interleavedDataIndex)   // It should do
+		if (static_cast<int32_t>(vertexData.getDataIndex()) == interleavedDataIndex)   // It should do
 		{
 			fixInterleavedEndiannessUsingVertexData(interleavedData, vertexData, data.primitiveData.numVertices);
 		}
@@ -829,10 +819,10 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 {
 	bool result;
 	bool exists = false;
-	uint32 identifier, dataLength, numUVWs(0), podUVWs(0), boneBatchesCount(0);
-	int32 interleavedDataIndex(-1);
+	uint32_t identifier, dataLength, numUVWs(0), podUVWs(0), numBoneBatches(0);
+	int32_t interleavedDataIndex(-1);
 	assets::Mesh::InternalData& meshInternalData = mesh.getInternalData();
-	meshInternalData.boneCount = 0;
+	meshInternalData.numBones = 0;
 	while ((result = readTag(stream, identifier, dataLength)) == true)
 	{
 		switch (identifier)
@@ -848,10 +838,6 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 			{
 				meshInternalData.primitiveData.primitiveType = PrimitiveTopology::TriangleList;
 			}
-			//if (numUVWs != podUVWs || numUVWs != mesh.getNumElementsOfSemantic("UV"))
-			//{
-			//  return false;
-			//}
 			fixInterleavedEndianness(meshInternalData, interleavedDataIndex);
 			return true;
 		}
@@ -866,35 +852,35 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 			break;
 		case pod::e_meshStripLength | pod::c_startTagMask:
 		{
-			result = read4ByteArrayIntoVector<uint32, uint32>(stream, meshInternalData.primitiveData.stripLengths,
+			result = read4ByteArrayIntoVector<uint32_t, uint32_t>(stream, meshInternalData.primitiveData.stripLengths,
 			         dataLength / sizeof(*meshInternalData.primitiveData.stripLengths.data()));
 			break;
 		}
 		case pod::e_meshNumStrips | pod::c_startTagMask:
 		{
-			int32 numstr(0);
+			int32_t numstr(0);
 			result = read4Bytes(stream, numstr);
 			assertion((size_t)numstr == meshInternalData.primitiveData.stripLengths.size());
 			break;
 		}
 		case pod::e_meshInterleavedDataList | pod::c_startTagMask:
 		{
-			UCharBuffer data;
-			result = readByteArrayIntoVector<byte>(stream, data, dataLength);
+			UInt8Buffer data;
+			result = readByteArrayIntoVector<uint8_t>(stream, data, dataLength);
 			if (!result) { return result; }
-			interleavedDataIndex = mesh.addData(data.data(), (uint32)data.size(), 0);
+			interleavedDataIndex = mesh.addData(data.data(), static_cast<uint32_t>(data.size()), 0);
 			break;
 		}
 		case pod::e_meshBoneBatchIndexList | pod::c_startTagMask:
-			result = read4ByteArrayIntoVector<uint32>(stream, meshInternalData.boneBatches.batches,
+			result = read4ByteArrayIntoVector<uint32_t>(stream, meshInternalData.boneBatches.batches,
 			         dataLength / sizeof(meshInternalData.boneBatches.batches[0]));
 			break;
 		case pod::e_meshNumBoneIndicesPerBatch | pod::c_startTagMask:
-			result = read4ByteArrayIntoVector<uint32>(stream, meshInternalData.boneBatches.boneCounts,
-			         dataLength / sizeof(meshInternalData.boneBatches.boneCounts[0]));
+			result = read4ByteArrayIntoVector<uint32_t>(stream, meshInternalData.boneBatches.numBones,
+			         dataLength / sizeof(meshInternalData.boneBatches.numBones[0]));
 			break;
 		case pod::e_meshBoneOffsetPerBatch | pod::c_startTagMask:
-			result = read4ByteArrayIntoVector<uint32>(stream, meshInternalData.boneBatches.offsets,
+			result = read4ByteArrayIntoVector<uint32_t>(stream, meshInternalData.boneBatches.offsets,
 			         dataLength / sizeof(meshInternalData.boneBatches.offsets[0]));
 			break;
 		case pod::e_meshMaxNumBonesPerBatch | pod::c_startTagMask:
@@ -902,7 +888,7 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 			break;
 		case pod::e_meshNumBoneBatches | pod::c_startTagMask:
 		{
-			result = read4Bytes(stream, boneBatchesCount);
+			result = read4Bytes(stream, numBoneBatches);
 			break;
 		}
 		case pod::e_meshUnpackMatrix | pod::c_startTagMask:
@@ -929,7 +915,7 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 			break;
 		case pod::e_meshUVWList | pod::c_startTagMask:
 		{
-			char8 semantic[256];
+			char semantic[256];
 			sprintf(semantic, "UV%i", numUVWs++);
 			result = readVertexData(stream, mesh, semantic, identifier, interleavedDataIndex, exists);
 			break;
@@ -946,7 +932,7 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 			if (exists)
 			{
 				meshInternalData.primitiveData.isSkinned = true;
-				meshInternalData.boneCount = mesh.getVertexAttributeByName("BONEWEIGHT")->getN();
+				meshInternalData.numBones = mesh.getVertexAttributeByName("BONEWEIGHT")->getN();
 			}
 			break;
 		default:
@@ -957,8 +943,8 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 		}
 		if (!result) { return result; }
 	}
-	assertion(0 ,  "NOT IMPLEMENTED YET");
-	if (meshInternalData.boneBatches.boneCounts.size() != boneBatchesCount)
+	assertion(0,  "NOT IMPLEMENTED YET");
+	if (meshInternalData.boneBatches.numBones.size() != numBoneBatches)
 	{
 		result = false;
 	}
@@ -968,9 +954,9 @@ bool readMeshBlock(Stream& stream, assets::Mesh& mesh)
 bool readSceneBlock(Stream& stream, assets::Model& model)
 {
 	bool result;
-	uint32 identifier, dataLength, temporaryInt;
+	uint32_t identifier, dataLength, temporaryInt;
 	assets::Model::InternalData& modelInternalData = model.getInternalData();
-	uint32 numCameras(0), numLights(0), numMaterials(0), numMeshes(0), numTextures(0), numNodes(0);
+	uint32_t numCameras(0), numLights(0), numMaterials(0), numMeshes(0), numTextures(0), numNodes(0);
 	while ((result = readTag(stream, identifier, dataLength)) == true)
 	{
 		switch (identifier)
@@ -979,32 +965,32 @@ bool readSceneBlock(Stream& stream, assets::Model& model)
 		{
 			if (numCameras != modelInternalData.cameras.size())
 			{
-				assertion(0 ,  "Unknown Error");
+				assertion(0,  "Unknown Error");
 				return false;
 			}
 			if (numLights != modelInternalData.lights.size())
 			{
-				assertion(0 ,  "Unknown Error");
+				assertion(0,  "Unknown Error");
 				return false;
 			}
 			if (numMaterials != modelInternalData.materials.size())
 			{
-				assertion(0 ,  "Unknown Error");
+				assertion(0,  "Unknown Error");
 				return false;
 			}
 			if (numMeshes != modelInternalData.meshes.size())
 			{
-				assertion(0 ,  "Unknown Error");
+				assertion(0,  "Unknown Error");
 				return false;
 			}
 			if (numTextures != modelInternalData.textures.size())
 			{
-				assertion(0 ,  "Unknown Error");
+				assertion(0,  "Unknown Error");
 				return false;
 			}
 			if (numNodes != modelInternalData.nodes.size())
 			{
-				assertion(0 ,  "Unknown Error");
+				assertion(0,  "Unknown Error");
 				return false;
 			}
 			return true;
@@ -1080,7 +1066,7 @@ bool readSceneBlock(Stream& stream, assets::Model& model)
 			result = read4Bytes(stream, modelInternalData.FPS);
 			break;
 		case pod::e_sceneUserData | pod::c_startTagMask:
-			result = readByteArrayIntoVector<byte>(stream, modelInternalData.userData, dataLength);
+			result = readByteArrayIntoVector<uint8_t>(stream, modelInternalData.userData, dataLength);
 			if (!result) { return result; }
 			break;
 		case pod::e_sceneUnits | pod::c_startTagMask:
@@ -1096,85 +1082,6 @@ bool readSceneBlock(Stream& stream, assets::Model& model)
 	}
 	return result;
 }
-//
-//bool getInformation(Stream& stream, string* history, string* options)
-//{
-//	if (history == NULL && options == NULL)
-//	{
-//		return true; // Nothing to do
-//	}
-//	bool result;
-//	if (!stream.isopen())
-//	{
-//		result = stream.open();
-//		if (!result) { return result; }
-//	}
-//	uint32 identifier, dataLength;
-//	size_t dataRead;
-//	bool needHistory = history != NULL;
-//	bool needOptions = options != NULL;
-//	while ((result = readTag(stream, identifier, dataLength)) == true)
-//	{
-//		switch (identifier)
-//		{
-//		case pod::PODFormatVersion | pod::c_startTagMask:
-//		{
-//			// Is the version string in the file the same length as ours?
-//			if (dataLength != pod::c_PODFormatVersionLength)
-//			{
-//				assertion(0, "POD FILE VERSION MISMATCH");
-//				return false;
-//			}
-//			// ... it is. Check to see if the string matches
-//			char8 filesVersion[pod::c_PODFormatVersionLength];
-//			result = stream.read(1, dataLength, &filesVersion[0], dataRead);
-//			if (!result) { return result; }
-//			if (strcmp(filesVersion, pod::c_PODFormatVersion) != 0)
-//			{
-//				assertion(0, "POD FILE VERSION MISMATCH");
-//				return false;
-//			}
-//		}
-//		continue;
-//		case pod::FileHistory | pod::c_startTagMask:
-//			if (needHistory)
-//			{
-//				std::string tempString;
-//				result = readByteArrayIntoString(stream, tempString, dataLength);
-//				if (result) { *history = tempString; }
-//				needHistory = false;
-//			}
-//			else
-//			{
-//				result = stream.seek(dataLength, Stream::SeekOriginFromCurrent);
-//			}
-//			break;
-//		case pod::ExportOptions | pod::c_startTagMask:
-//			if (needOptions)
-//			{
-//				std::string tempString = 0;
-//				result = readByteArrayIntoString(stream, tempString, dataLength);
-//				if (result) { *options = tempString; }
-//				needOptions = false;
-//			}
-//			else
-//			{
-//				result = stream.seek(dataLength, Stream::SeekOriginFromCurrent);
-//			}
-//			break;
-//		default:
-//			// Unhandled data, skip it
-//			result = stream.seek(dataLength, Stream::SeekOriginFromCurrent);
-//		}
-//		if (!result) { return result; }
-//		if (!needHistory && !needOptions)
-//		{
-//			return true;
-//		}
-//	}
-//	return false;
-//}
-
 }
 
 namespace pvr {
@@ -1186,7 +1093,7 @@ PODReader::PODReader() : _modelsToLoad(true)
 bool PODReader::readNextAsset(assets::Model& asset)
 {
 	bool result;
-	uint32 identifier, dataLength;
+	uint32_t identifier, dataLength;
 	size_t dataRead;
 	while ((result = readTag(*_assetStream, identifier, dataLength)) == true)
 	{
@@ -1194,19 +1101,19 @@ bool PODReader::readNextAsset(assets::Model& asset)
 		{
 		case pod::PODFormatVersion | pod::c_startTagMask:
 		{
-			// Is the version string in the file the same length as ours?
+			// Is the version std::string in the file the same length as ours?
 			if (dataLength != pod::c_PODFormatVersionLength)
 			{
-				assertion(0 ,  "FileVersionMismatch");
+				assertion(0,  "FileVersionMismatch");
 				return false;
 			}
-			// ... it is. Check to see if the string matches
-			char8 filesVersion[pod::c_PODFormatVersionLength];
+			// ... it is. Check to see if the std::string matches
+			char filesVersion[pod::c_PODFormatVersionLength];
 			result = _assetStream->read(1, dataLength, &filesVersion[0], dataRead);
 			if (!result) { return result; }
 			if (strcmp(filesVersion, pod::c_PODFormatVersion) != 0)
 			{
-				assertion(0 ,  "FileVersionMismatch");
+				assertion(0,  "FileVersionMismatch");
 				return false;
 			}
 		}
@@ -1239,7 +1146,7 @@ bool PODReader::isSupportedFile(Stream& assetStream)
 	{
 		if (assetStream.isopen() != true) { return false; }
 	}
-	uint32 identifier, dataLength;
+	uint32_t identifier, dataLength;
 	size_t dataRead;
 	while (readTag(assetStream, identifier, dataLength) == true)
 	{
@@ -1247,15 +1154,14 @@ bool PODReader::isSupportedFile(Stream& assetStream)
 		{
 		case pod::PODFormatVersion | pod::c_startTagMask:
 		{
-			// Is the version string in the file the same length as ours?
+			// Is the version std::string in the file the same length as ours?
 			if (dataLength != pod::c_PODFormatVersionLength) { return false; }
-			// ... it is. Check to see if the string matches
-			char8 filesVersion[pod::c_PODFormatVersionLength];
+			// ... it is. Check to see if the std::string matches
+			char filesVersion[pod::c_PODFormatVersionLength];
 			if (assetStream.read(1, dataLength, &filesVersion[0], dataRead) != true) { return false; }
 			if (strcmp(filesVersion, pod::c_PODFormatVersion) != 0) { return false; }
 			return true;
 		}
-		continue;
 		default:
 			// Unhandled data, skip it
 			assetStream.seek(dataLength, Stream::SeekOriginFromCurrent);
@@ -1264,11 +1170,11 @@ bool PODReader::isSupportedFile(Stream& assetStream)
 	return false;
 }
 
-vector<string> PODReader::getSupportedFileExtensions()
+vector<std::string> PODReader::getSupportedFileExtensions()
 {
-	vector<string> extensions;
+	vector<std::string> extensions;
 	extensions.push_back("pvr");
-	return vector<string>(extensions);
+	return vector<std::string>(extensions);
 }
 
 }

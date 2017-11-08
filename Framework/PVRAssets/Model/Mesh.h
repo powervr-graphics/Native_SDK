@@ -16,116 +16,49 @@ namespace assets {
 class Mesh
 {
 public:
+	/// <summary>Return the value of a Per-Mesh semantic as a FreeValue, null if it does not exist.</summary>
+	/// <param name="semantic">The semantic name to retrieve</param>
+	/// <returns>A pointer to a FreeValue containing the value of the semantic. If the semantic does not exist,
+	/// return NULL</returns>
 	const FreeValue* getMeshSemantic(const StringHash& semantic) const
 	{
-<<<<<<< HEAD
-		auto it = m_data.semantics.find(semantic);
-		if (it == m_data.semantics.end())
-=======
 		auto it = _data.semantics.find(semantic);
 		if (it == _data.semantics.end())
->>>>>>> 1776432f... 4.3
 		{
 			return NULL;
 		}
 		return &it->second;
 	}
+
+	/// <summary>Get the UserData of this mesh, if such user data exist.</summary>
+	/// <returns>A pointer to the UserData, as a Reference Counted Void pointer. Cast to appropriate (ref counted)type</returns>
 	const RefCountedResource<void>& getUserDataPtr() const
 	{
-<<<<<<< HEAD
-		return this->m_data.userDataPtr;
-	}
-	RefCountedResource<void> getUserDataPtr()
-	{
-		return this->m_data.userDataPtr;
-	}
-	void setUserDataPtr(const RefCountedResource<void>& ptr)
-	{
-		m_data.userDataPtr = ptr;
-	}
-	/*!*********************************************************************************************************************
-	\brief	Definition of a single VertexAttribute.
-	***********************************************************************************************************************/
-=======
 		return this->_data.userDataPtr;
 	}
+	/// <summary>Get the UserData of this mesh, if such user data exist.</summary>
+	/// <returns>A pointer to the UserData, as a Reference Counted Void pointer. Cast to appropriate (ref counted)type</returns>
 	RefCountedResource<void> getUserDataPtr()
 	{
 		return this->_data.userDataPtr;
 	}
+
+	/// <summary>Set the UserData of this mesh (wrap the data into a RefCountedResource and cast to Ref Counted void pointer.</summary>
+	/// <param name="ptr">The UserData. Must be wrapped in an appropriate RefCountedResource, and then cast into a RefCountedResource to void</param>
 	void setUserDataPtr(const RefCountedResource<void>& ptr)
 	{
 		_data.userDataPtr = ptr;
 	}
 	/// <summary>Definition of a single VertexAttribute.</summary>
->>>>>>> 1776432f... 4.3
 	class VertexAttributeData // Needs a better name
 	{
 	private:
 		StringHash _semantic;  // Semantic for this element
 		VertexAttributeLayout _layout;
-		uint16 _dataIndex;  // Getters, setters and constructors
+		uint16_t _dataIndex;  // Getters, setters and constructors
 	public:
-<<<<<<< HEAD
-		/*!*********************************************************************************************************************
-		\brief	Constructor.
-		***********************************************************************************************************************/
-		VertexAttributeData() : m_layout(types::DataType::None, (uint8)0, (uint16)0), m_dataIndex((uint16) - 1) { }
-
-		/*!*********************************************************************************************************************
-		\brief	Constructor.
-		\param	semantic The semantic that this Vertex Attribute represents.
-		\param	type The type of the data of this attribute.
-		\param	n The number of values of DataType that form each attribute
-		\param	offset The offset from the begining of its Buffer that this attribute begins
-		\param	dataIndex The index of this attribute
-		***********************************************************************************************************************/
-		VertexAttributeData(const StringHash& semantic, types::DataType type, uint8 n, uint16 offset, uint16 dataIndex)
-			: m_semantic(semantic), m_layout(type, n, offset), m_dataIndex(dataIndex) { }
-
-		/*!*********************************************************************************************************************
-		\brief	Get the semantic of this attribute.
-		***********************************************************************************************************************/
-		const StringHash& getSemantic() const  { return m_semantic; }
-
-		/*!*********************************************************************************************************************
-		\brief	Get the offset of this attribute.
-		***********************************************************************************************************************/
-		uint32 getOffset() const { return m_layout.offset; }
-
-		/*!*********************************************************************************************************************
-		\brief	Get the layout of this attribute.
-		***********************************************************************************************************************/
-		const VertexAttributeLayout& getVertexLayout() const { return m_layout; }
-
-
-		/*!*********************************************************************************************************************
-		\brief	Get number of values per vertex.
-		\return	uint32
-		***********************************************************************************************************************/
-		uint32 getN() const { return m_layout.width; }
-
-		/*!*********************************************************************************************************************
-		\brief	Get the index of this vertex attribute.
-		***********************************************************************************************************************/
-		int32	getDataIndex() const { return m_dataIndex; }
-
-		/*!*********************************************************************************************************************
-		\brief	Set the Semantic Name of this vertex attribute.
-		***********************************************************************************************************************/
-		void setSemantic(const StringHash& semantic) 	{ m_semantic = semantic; }
-
-		/*!*********************************************************************************************************************
-		\brief	Set the DataType of this vertex attribute.
-		***********************************************************************************************************************/
-		void setDataType(types::DataType type);
-
-		/*!*********************************************************************************************************************
-		\brief	Set the Offset of this vertex attribute.
-		***********************************************************************************************************************/
-=======
 		/// <summary>Constructor.</summary>
-		VertexAttributeData() : _layout(types::DataType::None, (uint8)0, (uint16)0), _dataIndex((uint16) - 1) { }
+		VertexAttributeData() : _layout(DataType::None, static_cast<uint8_t>(0), static_cast<uint16_t>(0)), _dataIndex(static_cast<uint16_t>(-1)) { }
 
 		/// <summary>Constructor.</summary>
 		/// <param name="semantic">The semantic that this Vertex Attribute represents.</param>
@@ -133,102 +66,99 @@ public:
 		/// <param name="n">The number of values of DataType that form each attribute</param>
 		/// <param name="offset">The offset from the begining of its Buffer that this attribute begins</param>
 		/// <param name="dataIndex">The index of this attribute</param>
-		VertexAttributeData(const StringHash& semantic, types::DataType type, uint8 n, uint16 offset, uint16 dataIndex)
+		VertexAttributeData(const StringHash& semantic, DataType type, uint8_t n, uint16_t offset, uint16_t dataIndex)
 			: _semantic(semantic), _layout(type, n, offset), _dataIndex(dataIndex) { }
 
 		/// <summary>Get the semantic of this attribute.</summary>
+		/// <returns>The semantic of this attribute</returns>
 		const StringHash& getSemantic() const  { return _semantic; }
 
 		/// <summary>Get the offset of this attribute.</summary>
-		uint32 getOffset() const { return _layout.offset; }
+		/// <returns>The offset of this attribute</returns>
+		uint32_t getOffset() const { return _layout.offset; }
 
 		/// <summary>Get the layout of this attribute.</summary>
+		/// <returns>The layout of this attribute</returns>
 		const VertexAttributeLayout& getVertexLayout() const { return _layout; }
 
 
 		/// <summary>Get number of values per vertex.</summary>
-		/// <returns>uint32</returns>
-		uint32 getN() const { return _layout.width; }
+		/// <returns>The number of values (aka width. For example, a vec4 would return 4)</returns>
+		uint32_t getN() const { return _layout.width; }
 
-		/// <summary>Get the index of this vertex attribute.</summary>
-		int32	getDataIndex() const { return _dataIndex; }
+		/// <summary>Get the index of the data for this attribute. Would only be different to 0 if the vertex
+		/// attributes were split into different data blocks. Each data block would normally map to a single VBO binding.</summary>
+		/// <returns>The index of the data block for this attribute.</returns>
+		int32_t getDataIndex() const { return _dataIndex; }
 
-		/// <summary>Set the Semantic Name of this vertex attribute.</summary>
-		void setSemantic(const StringHash& semantic) 	{ _semantic = semantic; }
+		/// <summary>Set the Semantic Name of this vertex attribute. A semantic name can take ANY value, but forms a "contract"
+		/// with users of this class, i.e. the application must be aware of them. There are also, by convention, some semantics
+		/// normally used, like "POSITION", "NORMAL", "UV0"-"UV9", "TANGENT", "BINORMAL", "BONEWEIGHT", "BONEINDEX"...</summary>
+		/// <param name="semantic">The semantic name to associate to this vertex attribute.</param>
+		void setSemantic(const StringHash& semantic)  { _semantic = semantic; }
 
 		/// <summary>Set the DataType of this vertex attribute.</summary>
-		void setDataType(types::DataType type);
+		/// <param name="type">The data type of this attribute</param>
+		void setDataType(DataType type);
 
 		/// <summary>Set the Offset of this vertex attribute.</summary>
->>>>>>> 1776432f... 4.3
-		void setOffset(uint32 offset);
+		/// <param name="offset">The offset from the beginning of the data block of the first item of this attribute</param>
+		void setOffset(uint32_t offset);
 
 		/// <summary>Set the number of values of each entry of this vertex attribute.</summary>
-		void setN(uint8 n);
+		/// <param name="n">The number of values (width) of this attribute</param>
+		void setN(uint8_t n);
 
 		/// <summary>Set the Index of this vertex attribute.</summary>
-		void setDataIndex(uint16 dataIndex);
+		/// <param name="dataIndex">The data block (binding id) of this attribute</param>
+		void setDataIndex(uint16_t dataIndex);
 
+		/// <summary>Checks if the semantics of the attributes test equal. DOES NOT CHECK ACTUAL DATA</summary>
+		/// <param name="rhs">The right hand side</param>
+		/// <returns>True if the semantics are equal, otherwise false</returns>
 		bool operator==(const VertexAttributeData& rhs) { return _semantic == rhs._semantic; }
+
+		/// <summary>Checks if the semantics of the left attribute test "less than" the right attribute.
+		/// USE FOR SORTING AND MAPS - DOES NOT CHECK ACTUAL DATA</summary>
+		/// <param name="rhs">The right hand side</param>
+		/// <returns>True if the semantic of lhs test less than rhs, otherwise false</returns>
 		bool operator<(const VertexAttributeData& rhs) { return _semantic < rhs._semantic; }
 	};
 
-	/// <summary>The FaceData class contains the information of the Indexes that defines the Faces of a Mesh.
+	/// <summary>The FaceData class contains the information of the Indices that defines the Faces of a Mesh.
 	/// </summary>
 	class FaceData
 	{
+		friend class Mesh;
 	protected:
-<<<<<<< HEAD
-		types::IndexType m_indexType;
-		UCharBuffer m_data;
-=======
-		types::IndexType _indexType;
-		UCharBuffer _data;
->>>>>>> 1776432f... 4.3
+		IndexType _indexType; //!< The index type
+		UInt8Buffer _data; //!< The data
 
 	public:
+		/// <summary> Constructor </summary>
 		FaceData();
 
-<<<<<<< HEAD
-		/*!*********************************************************************************************************************
-		\brief	Get the data type of the face data (16-bit or 32 bit integer).
-		***********************************************************************************************************************/
-		types::IndexType getDataType() const { return m_indexType; }
-
-		/*!*********************************************************************************************************************
-		\brief	Get a pointer to the actual face data.
-		***********************************************************************************************************************/
-		const byte* getData() const  { return m_data.data(); }
-
-		/*!*********************************************************************************************************************
-		\brief	Get total size of the face data.
-		***********************************************************************************************************************/
-		uint32 getDataSize() const { return (uint32)m_data.size(); }
-
-		/*!*********************************************************************************************************************
-		\brief	Get the size of this face data type in Bits.
-		***********************************************************************************************************************/
-		uint32 getDataTypeSize() const { return m_indexType == types::IndexType::IndexType16Bit ? 16 : 32; }
-
-		/*!*********************************************************************************************************************
-		\brief	Set the data type of this instance.
-		***********************************************************************************************************************/
-=======
 		/// <summary>Get the data type of the face data (16-bit or 32 bit integer).</summary>
-		types::IndexType getDataType() const { return _indexType; }
+		/// <returns>The data type of index data</returns>
+		IndexType getDataType() const { return _indexType; }
 
 		/// <summary>Get a pointer to the actual face data.</summary>
-		const byte* getData() const  { return _data.data(); }
+		/// <returns>A pointer to the actual index data</returns>
+		const uint8_t* getData() const  { return _data.data(); }
 
 		/// <summary>Get total size of the face data.</summary>
-		uint32 getDataSize() const { return (uint32)_data.size(); }
+		/// <returns>The total size of the data</returns>
+		uint32_t getDataSize() const { return static_cast<uint32_t>(_data.size()); }
 
 		/// <summary>Get the size of this face data type in Bits.</summary>
-		uint32 getDataTypeSize() const { return _indexType == types::IndexType::IndexType16Bit ? 16 : 32; }
+		/// <returns>The size of each index, in Bits</returns>
+		uint32_t getDataTypeSize() const { return _indexType == IndexType::IndexType16Bit ? 16 : 32; }
 
-		/// <summary>Set the data type of this instance.</summary>
->>>>>>> 1776432f... 4.3
-		void setData(const byte* data, uint32 size, const types::IndexType indexType = types::IndexType::IndexType16Bit);
+		/// <summary>Set all the data of this instance.</summary>
+		/// <param name="data">Pointer to the data. Will be copied</param>
+		/// <param name="size">The amount of data, in bytes, to copy from the pointer</param>
+		/// <param name="indexType">The type of index data (16/32 bit)</param>
+		void setData(const uint8_t* data, uint32_t size, const IndexType indexType = IndexType::IndexType16Bit);
 	};
 
 	/// <summary>This class is used to break meshes into different batches in order to avoid overflowing the number of
@@ -236,13 +166,14 @@ public:
 	struct BoneBatches
 	{
 		//BATCH STRIDE
-		uint32  boneBatchStride;			//!< Is the number of bones per batch.
-		std::vector<uint32> batches;		//!< Space for batchBoneMax bone indices, per batch
-		std::vector<uint32> boneCounts;		//!< Actual number of bone indices per batch
-		std::vector<uint32> offsets;		//!< Offset in triangle array per batch
+		uint32_t  boneBatchStride;      //!< Is the number of bones per batch.
+		std::vector<uint32_t> batches;    //!< Space for batchBoneMax bone indices, per batch
+		std::vector<uint32_t> numBones;   //!< Actual number of bone indices per batch
+		std::vector<uint32_t> offsets;    //!< Offset in triangle array per batch
 
 		/// <summary>Get number of bone indices of the batches.</summary>
-		uint16 getCount() const { return static_cast<uint16>(boneCounts.size()); }
+		/// <returns>The number of bone indices in the batches</returns>
+		uint16_t getNumBones() const { return static_cast<uint16_t>(numBones.size()); }
 
 		/// <summary>Default Constructor.</summary>
 		BoneBatches() : boneBatchStride(0) { }
@@ -251,39 +182,40 @@ public:
 	/// <summary>Contains mesh information.</summary>
 	struct MeshInfo
 	{
-		uint32 numVertices; //!< Number of vertices in this mesh
-		uint32 numFaces;    //!< Number of faces in this mesh
+		uint32_t numVertices; //!< Number of vertices in this mesh
+		uint32_t numFaces;    //!< Number of faces in this mesh
 
-		std::vector<uint32> stripLengths; //!< If triangle strips exist, the length of each. Otherwise empty.
+		std::vector<uint32_t> stripLengths; //!< If triangle strips exist, the length of each. Otherwise empty.
 
-		uint32 numPatchSubdivisions;      //!< Number of Patch subdivisions
-		uint32 numPatches;                //!< Number of Patches
-		uint32 numControlPointsPerPatch;  //!< Number of Control points per patch
+		uint32_t numPatchSubdivisions;      //!< Number of Patch subdivisions
+		uint32_t numPatches;                //!< Number of Patches
+		uint32_t numControlPointsPerPatch;  //!< Number of Control points per patch
 
-		float32 units;                    //!< Scaling of the units
-		types::PrimitiveTopology primitiveType; //!< Type of primitive in this Mesh
-		bool isIndexed;                   //!< Contains indexes (as opposed to being a flat list of vertices)
-		bool isSkinned;                   //!< Contains indexes (as opposed to being a flat list of vertices)
+		float units;                    //!< Scaling of the units
+		PrimitiveTopology primitiveType; //!< Type of primitive in this Mesh
+		bool isIndexed;                   //!< Contains indices (as opposed to being a flat list of vertices)
+		bool isSkinned;                   //!< Contains indices (as opposed to being a flat list of vertices)
 
+		/// <summary>Constructor</summary>
 		MeshInfo() : numVertices(0), numFaces(0), numPatchSubdivisions(0), numPatches(0), numControlPointsPerPatch(0), units(1.0f),
-			primitiveType(types::PrimitiveTopology::TriangleList), isIndexed(true), isSkinned(0) { }
+			primitiveType(PrimitiveTopology::TriangleList), isIndexed(true), isSkinned(0) { }
 	};
 
-	//This container should always be kept sorted so that binary search can be done.
+	/// <summary>This container is automatically kept sorted.</summary>
 	typedef IndexedArray<VertexAttributeData, StringHash> VertexAttributeContainer;
 
 	/// <summary>Raw internal structure of the Mesh.</summary>
 	struct InternalData
 	{
-		ContiguousMap<StringHash, FreeValue> semantics;
+		ContiguousMap<StringHash, FreeValue> semantics;       //!<Container that stores semantic values.
 		VertexAttributeContainer vertexAttributes;            //!<Contains information on the vertices, such as semantic names, strides etc.
 		std::vector<StridedBuffer> vertexAttributeDataBlocks; //!<Contains the actual raw data (as in, the bytes of information), plus
-		uint32 boneCount;          //!< Faces information
+		uint32_t numBones;          //!< Faces information
 
 		FaceData faces;            //!< Faces information
 		MeshInfo primitiveData;    //!< Primitive data information
 		BoneBatches boneBatches;   //!< Faces information
-		glm::mat4x4 unpackMatrix;  //!< This matrix is used to move from an int16 representation to a float
+		glm::mat4x4 unpackMatrix;  //!< This matrix is used to move from an int16_t representation to a float
 		RefCountedResource<void> userDataPtr; //!< This is a pointer that is in complete control of the user, used for per-mesh data.
 	};
 
@@ -292,10 +224,9 @@ private:
 	class PredicateVertAttribMinOffset
 	{
 	public:
-		PredicateVertAttribMinOffset& operator=(const PredicateVertAttribMinOffset&);
 		const VertexAttributeContainer& container;
 		PredicateVertAttribMinOffset(const VertexAttributeContainer& container) : container(container) {}
-		bool operator()(uint16 lhs, uint16 rhs)
+		bool operator()(uint16_t lhs, uint16_t rhs)
 		{ return container[lhs].getOffset() < container[rhs].getOffset(); }
 	};
 
@@ -306,7 +237,7 @@ public:
 	/// <param name="index">The ordinal of the data block (as it was defined by the addData call). If no block exists,
 	/// it will be created along with all the ones before it, as blocks are always assumed to be continuous</param>
 	/// <param name="stride">The stride that the block (index) will be set to.</param>
-	void setStride(uint32 index, uint32 stride);  // a size of 0 is supported
+	void setStride(uint32_t index, uint32_t stride);  // a size of 0 is supported
 
 
 	/// <summary>Implicitly append a block of vertex data to the mesh and (optionally) populate it with data.</summary>
@@ -320,7 +251,7 @@ public:
 	/// <remarks>With this call, a new data block will be appended to the end of the mesh, and will be populated with
 	/// (size) bytes of data copied from the (data) pointer. (stride) will be saved as metadata with the data of the
 	/// block and will be queriable with the (getStride) call with the same index as the data.</remarks>
-	int32 addData(const byte* const data, uint32 size, uint32 stride);  // a size of 0 is supported
+	int32_t addData(const uint8_t* data, uint32_t size, uint32_t stride);  // a size of 0 is supported
 
 	/// <summary>Add a block of vertex data to the mesh at the specified index and (optionally) populate it with data.
 	/// </summary>
@@ -335,11 +266,11 @@ public:
 	/// populated with (size) bytes of data copied from the (data) pointer. (stride) will be saved as metadata with
 	/// the data of the block and will be queriable with the (getStride) call with the same index as the data.
 	/// </remarks>
-	int32 addData(const byte* const data, uint32 size, uint32 stride, uint32 index);  // a size of 0 is supported
+	int32_t addData(const uint8_t* data, uint32_t size, uint32_t stride, uint32_t index);  // a size of 0 is supported
 
 	/// <summary>Delete a block of data.</summary>
 	/// <param name="index">The index of the block to delete</param>
-	void removeData(uint32 index); // Will update Vertex Attributes so they don't point at this data
+	void removeData(uint32_t index); // Will update Vertex Attributes so they don't point at this data
 
 	/// <summary>Remove all data blocks.</summary>
 	void clearAllData()
@@ -348,63 +279,32 @@ public:
 	}
 
 	/// <summary>Get a pointer to the data of a specified Data block. Read only overload.</summary>
+	/// <param name="index">The index of the data block</param>
 	/// <returns>A const pointer to the specified data block.</returns>
-	const void* getData(uint32 index) const
+	const void* getData(uint32_t index) const
 	{
 		return static_cast<const void*>(_data.vertexAttributeDataBlocks[index].data());
 	}
 
 	/// <summary>Get a pointer to the data of a specified Data block. Read/write overload.</summary>
+	/// <param name="index">The index of the data block</param>
 	/// <returns>A pointer to the specified data block.</returns>
-	byte* getData(uint32 index)
+	uint8_t* getData(uint32_t index)
 	{
 		return (index >= _data.vertexAttributeDataBlocks.size()) ? NULL : _data.vertexAttributeDataBlocks[index].data();
 	}
+
 	/// <summary>Get the size of the specified Data block.</summary>
+	/// <param name="index">The index of the data block</param>
 	/// <returns>The size in bytes of the specified Data block.</returns>
-	size_t getDataSize(uint32 index) const
+	size_t getDataSize(uint32_t index) const
 	{
-<<<<<<< HEAD
-		return m_data.vertexAttributeDataBlocks[index].size();
-	}
-	/*!*********************************************************************************************************************
-	\brief	Get distance in bytes from vertex in an array to the next.
-	\return	The distance in bytes from one array entry to the next.
-	***********************************************************************************************************************/
-	uint32 getStride(uint32 index) const  { return m_data.vertexAttributeDataBlocks[index].stride; }
-
-	/*!*********************************************************************************************************************
-	\brief	Add face information to the mesh.
-	\param data A pointer to the face data
-	\param size The size, in bytes, of the face data
-	\param indexType The actual datatype contained in (data). (16 or 32 bit)
-	***********************************************************************************************************************/
-	void addFaces(const byte* data, uint32 size, const types::IndexType indexType);
-
-	/*!*********************************************************************************************************************
-	\brief	Add a vertex attribute to the mesh.
-	\param element The vertex attribute to add
-	\param forceReplace If set to true, the element will be replaced if it already exists. Otherwise, the insertion will fail.
-	\return The index where the element was added (or where the already existing item was)
-	***********************************************************************************************************************/
-	int32 addVertexAttribute(const VertexAttributeData& element, bool forceReplace = false);
-
-	/*!*********************************************************************************************************************
-	\brief	Add a vertex attribute to the mesh.
-	\param semanticName The semantic that the vertex attribute to add represents
-	\param type The DataType of the Vertex Attribute
-	\param width The number of (type) values per Vertex Attribute
-	\param offset The Offset of this Vertex Attribute from the start of its DataBlock
-	\param dataIndex The DataBlock this Vertex Attribute belongs to
-	\param forceReplace force replace the attribute
-	\return The index where the element was added (or where the already existing item was)
-	***********************************************************************************************************************/
-=======
 		return _data.vertexAttributeDataBlocks[index].size();
 	}
 	/// <summary>Get distance in bytes from vertex in an array to the next.</summary>
+	/// <param name="index">The index of the data block whose stride to get</param>
 	/// <returns>The distance in bytes from one array entry to the next.</returns>
-	uint32 getStride(uint32 index) const
+	uint32_t getStride(uint32_t index) const
 	{
 		debug_assertion(index < _data.vertexAttributeDataBlocks.size(), "Stride index out of bound");
 		return _data.vertexAttributeDataBlocks[index].stride;
@@ -414,14 +314,14 @@ public:
 	/// <param name="data">A pointer to the face data</param>
 	/// <param name="size">The size, in bytes, of the face data</param>
 	/// <param name="indexType">The actual datatype contained in (data). (16 or 32 bit)</param>
-	void addFaces(const byte* data, uint32 size, const types::IndexType indexType);
+	void addFaces(const uint8_t* data, uint32_t size, const IndexType indexType);
 
 	/// <summary>Add a vertex attribute to the mesh.</summary>
 	/// <param name="element">The vertex attribute to add</param>
 	/// <param name="forceReplace">If set to true, the element will be replaced if it already exists. Otherwise, the
 	/// insertion will fail.</param>
 	/// <returns>The index where the element was added (or where the already existing item was)</returns>
-	int32 addVertexAttribute(const VertexAttributeData& element, bool forceReplace = false);
+	int32_t addVertexAttribute(const VertexAttributeData& element, bool forceReplace = false);
 
 	/// <summary>Add a vertex attribute to the mesh.</summary>
 	/// <param name="semanticName">The semantic that the vertex attribute to add represents</param>
@@ -431,110 +331,111 @@ public:
 	/// <param name="dataIndex">The DataBlock this Vertex Attribute belongs to</param>
 	/// <param name="forceReplace">force replace the attribute</param>
 	/// <returns>The index where the element was added (or where the already existing item was)</returns>
->>>>>>> 1776432f... 4.3
-	int32 addVertexAttribute(const StringHash& semanticName, const types::DataType& type, uint32 width,
-	                         uint32 offset, uint32 dataIndex, bool forceReplace = false);
+	int32_t addVertexAttribute(const StringHash& semanticName, const DataType& type, uint32_t width,
+	                           uint32_t offset, uint32_t dataIndex, bool forceReplace = false);
 
 	/// <summary>Remove a vertex attribute to the mesh.</summary>
 	/// <param name="semanticName">The semantic that the vertex attribute to remove has</param>
 	void removeVertexAttribute(const StringHash& semanticName);
 
 	/// <summary>Remove all vertex attribute to the mesh.</summary>
-	void removeAllVertexAttributes(void);
+	void removeAllVertexAttributes();
 
 	/// <summary>Get the number of vertices that comprise this mesh.</summary>
-	uint32 getNumVertices() const
+	/// <returns>The number of vertices</returns>
+	uint32_t getNumVertices() const
 	{
 		return _data.primitiveData.numVertices;
 	}
 
 	/// <summary>Get the number of faces that comprise this mesh.</summary>
-	uint32 getNumFaces() const
+	/// <returns>The number of faces</returns>
+	uint32_t getNumFaces() const
 	{
 		return _data.primitiveData.numFaces;
 	}
 
 	/// <summary>Get the number of faces that comprise the designated bonebatch.</summary>
-	uint32 getNumFaces(uint32 boneBatch) const;
+	/// <param name="boneBatch">The bone batch id</param>
+	/// <returns>The number of faces</returns>
+	uint32_t getNumFaces(uint32_t boneBatch) const;
 
-	/// <summary>Get the number of indexes that comprise this mesh. Takes TriangleStrips into consideration.
+	/// <summary>Get the number of indices that comprise this mesh. Takes TriangleStrips into consideration.
 	/// </summary>
-	uint32 getNumIndices() const
+	/// <returns>The number of indexes</returns>
+	uint32_t getNumIndices() const
 	{
-		return (uint32)(_data.primitiveData.stripLengths.size() ?
-		                _data.primitiveData.numFaces + (_data.primitiveData.stripLengths.size() * 2) :
-		                _data.primitiveData.numFaces * 3);
+		return static_cast<uint32_t>(_data.primitiveData.stripLengths.size() ?
+		                             _data.primitiveData.numFaces + (_data.primitiveData.stripLengths.size() * 2) :
+		                             _data.primitiveData.numFaces * 3);
 	}
 
 	/// <summary>Get the number of different vertex attributes that this mesh has.</summary>
-	uint32 getNumElements() const
+	/// <returns>The number of vertex attributes</returns>
+	uint32_t getNumElements() const
 	{
-		return (uint32)_data.vertexAttributes.size();
+		return static_cast<uint32_t>(_data.vertexAttributes.size());
 	}
 
 	/// <summary>Get the number of vertex data blocks that this mesh has.</summary>
-	uint32 getNumDataElements() const
+	/// <returns>The number of data blocks</returns>
+	uint32_t getNumDataElements() const
 	{
-		return (uint32)_data.vertexAttributeDataBlocks.size();
+		return static_cast<uint32_t>(_data.vertexAttributeDataBlocks.size());
 	}
 
 	/// <summary>Get the number of BoneBatches the bones of this mesh are organised into.</summary>
-	uint32 getNumBoneBatches() const
+	/// <returns>The number of bone batches</returns>
+	uint32_t getNumBoneBatches() const
 	{
-		return _data.primitiveData.isSkinned ? (_data.boneBatches.getCount() ? _data.boneBatches.getCount() : 1) : 0;
+		return _data.primitiveData.isSkinned ? (_data.boneBatches.getNumBones() ? _data.boneBatches.getNumBones() : 1) : 0;
 	}
 
 	/// <summary>Get the offset in the Faces data that the specified batch begins at.</summary>
 	/// <param name="batch">The index of a BoneBatch</param>
 	/// <returns>The offset, in bytes, in the Faces data that the specified batch begins at.</returns>
-	uint32 getBatchFaceOffset(uint32 batch) const
+	uint32_t getBatchFaceOffset(uint32_t batch) const
 	{
-		return batch < _data.boneBatches.getCount() ? _data.boneBatches.offsets[batch] : 0;
+		return batch < _data.boneBatches.getNumBones() ? _data.boneBatches.offsets[batch] : 0;
+	}
+
+	/// <summary>Get the offset in the Faces data that the specified batch begins at.</summary>
+	/// <param name="batch">The index of a BoneBatch</param>
+	/// <returns>The offset, in bytes, in the Faces data that the specified batch begins at.</returns>
+	uint32_t getBatchFaceOffsetBytes(uint32_t batch) const
+	{
+		return getBatchFaceOffset(batch) * 3 * (_data.faces.getDataType() == IndexType::IndexType16Bit ? 2 : 4);
 	}
 
 	/// <summary>Get how many bones the specified bone batch has.</summary>
 	/// <param name="batch">The index of a BoneBatch</param>
 	/// <returns>The number of bones in the batch with index (batch)</returns>
-	uint32 getBatchBoneCount(uint32 batch) const
+	uint32_t getNumBatchBones(uint32_t batch) const
 	{
-		return _data.boneBatches.boneCounts[batch];
+		return _data.boneBatches.numBones[batch];
 	}
 
 	/// <summary>Get the global index of a bone from its batch and index in the batch.</summary>
 	/// <param name="batch">The index of a BoneBatch</param>
 	/// <param name="bone">The index in the of a bone in the batch</param>
 	/// <returns>The index of the bone</returns>
-	uint32 getBatchBone(uint32 batch, uint32 bone) const
+	uint32_t getBatchBone(uint32_t batch, uint32_t bone) const
 	{
 		return _data.boneBatches.batches[batch * _data.boneBatches.boneBatchStride + bone];
 	}
 
-<<<<<<< HEAD
-	/*!*********************************************************************************************************************
-	\brief	Get the primitive topology that the data in this Mesh represent.
-	\return The primitive topology that the data in this Mesh represent (Triangles, TriangleStrips, TriangleFans, Patch etc.)
-	***********************************************************************************************************************/
-=======
 	/// <summary>Get the primitive topology that the data in this Mesh represent.</summary>
 	/// <returns>The primitive topology that the data in this Mesh represent (Triangles, TriangleStrips, TriangleFans,
 	/// Patch etc.)</returns>
->>>>>>> 1776432f... 4.3
-	types::PrimitiveTopology getPrimitiveType() const
+	PrimitiveTopology getPrimitiveType() const
 	{
 		return _data.primitiveData.primitiveType;
 	}
 
-<<<<<<< HEAD
-	/*!*********************************************************************************************************************
-	\brief	Set the primitive topology that the data in this Mesh represent.
-	\param type The primitive topology that the data in this Mesh will represent (Triangles, TriangleStrips, TriangleFans, Patch etc.)
-	***********************************************************************************************************************/
-=======
 	/// <summary>Set the primitive topology that the data in this Mesh represent.</summary>
 	/// <param name="type">The primitive topology that the data in this Mesh will represent (Triangles,
 	/// TriangleStrips, TriangleFans, Patch etc.)</param>
->>>>>>> 1776432f... 4.3
-	void setPrimitiveType(const types::PrimitiveTopology& type)
+	void setPrimitiveType(const PrimitiveTopology& type)
 	{
 		_data.primitiveData.primitiveType = type;
 	}
@@ -548,12 +449,14 @@ public:
 
 	/// <summary>Get the Unpack Matrix of this Mesh. The unpack matrix is used for some exotic types of vertex
 	/// position compression.</summary>
+	/// <returns>The unpack matrix</returns>
 	const glm::mat4x4& getUnpackMatrix() const
 	{
 		return _data.unpackMatrix;
 	}
 	/// <summary>Set the Unpack Matrix of this Mesh. The unpack matrix is used for some exotic types of vertex
 	/// position compression.</summary>
+	/// <param name="unpackMatrix">An unpack matrix</param>
 	void setUnpackMatrix(const glm::mat4x4& unpackMatrix)
 	{
 		_data.unpackMatrix = unpackMatrix;
@@ -562,61 +465,35 @@ public:
 	/// <summary>Get all DataBlocks of this Mesh.</summary>
 	/// <returns>The datablocks, as an std::vector of StridedBuffers that additionally have a stride member.
 	/// </returns>
-	/// <remarks>Use as byte arrays and additionally use the getStride() method to get the element stride</remarks>
+	/// <remarks>Use as char arrays and additionally use the getStride() method to get the element stride</remarks>
 	const std::vector<StridedBuffer>& getVertexData() const
 	{
 		return _data.vertexAttributeDataBlocks;
 	}
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief	Get all face data of this mesh.
-	*******************************************************************************************************************/
-	const FaceData& getFaces() const { return m_data.faces; }
-
-	/*!****************************************************************************************************************
-	\brief	Get all face data of this mesh.
-	*******************************************************************************************************************/
-	FaceData& getFaces() { return m_data.faces; }
-
-	/*!****************************************************************************************************************
-	\brief	Get the information of a VertexAttribute by its SemanticName.
-	\return	A VertexAttributeData object with information on this attribute. (layout, index etc.) Null if failed
-	\description This method does lookup in O(logN) time. Prefer to call the getVertexAttributeID and then use the
-	constant-time O(1) getVertexAttribute(int32) method
-	*******************************************************************************************************************/
-	uint32 getBoneCount() const
-	{
-		return m_data.boneCount;
-	}
-	/*!****************************************************************************************************************
-	\brief	Get the information of a VertexAttribute by its SemanticName.
-	\return	A VertexAttributeData object with information on this attribute. (layout, index etc.) Null if failed
-	\description This method does lookup in O(logN) time. Prefer to call the getVertexAttributeID and then use the
-	constant-time O(1) getVertexAttribute(int32) method
-	*******************************************************************************************************************/
-=======
 	/// <summary>Get all face data of this mesh.</summary>
+	/// <returns>A reference to the face data object of this mesh</returns>
 	const FaceData& getFaces() const { return _data.faces; }
 
 	/// <summary>Get all face data of this mesh.</summary>
+	/// <returns>A reference to the face data object of this mesh</returns>
 	FaceData& getFaces() { return _data.faces; }
 
 	/// <summary>Get the information of a VertexAttribute by its SemanticName.</summary>
 	/// <returns>A VertexAttributeData object with information on this attribute. (layout, index etc.) Null if
 	/// failed</returns>
 	/// <remarks>This method does lookup in O(logN) time. Prefer to call the getVertexAttributeID and then use the
-	/// constant-time O(1) getVertexAttribute(int32) method</remarks>
-	uint32 getBoneCount() const
+	/// constant-time O(1) getVertexAttribute(int32_t) method</remarks>
+	uint32_t getNumBones() const
 	{
-		return _data.boneCount;
+		return _data.numBones;
 	}
-	/// <summary>Get the information of a VertexAttribute by its SemanticName.</summary>
+	/// <summary>Get the information of a VertexAttribute by its SemanticName (return NULL if not exist)</summary>
+	/// <param name="semanticName">A semantic name with which to look for a vertex attribute.</summary>
 	/// <returns>A VertexAttributeData object with information on this attribute. (layout, index etc.) Null if
 	/// failed</returns>
 	/// <remarks>This method does lookup in O(logN) time. Prefer to call the getVertexAttributeID and then use the
-	/// constant-time O(1) getVertexAttribute(int32) method</remarks>
->>>>>>> 1776432f... 4.3
+	/// constant-time O(1) getVertexAttribute(int32_t) method</remarks>
 	const VertexAttributeData* getVertexAttributeByName(const StringHash& semanticName) const
 	{
 		VertexAttributeContainer::const_index_iterator found = _data.vertexAttributes.indexed_find(semanticName);
@@ -628,31 +505,34 @@ public:
 	}
 
 	/// <summary>Get the Index of a VertexAttribute by its SemanticName.</summary>
+	/// <param name="semanticName">A semantic name with which to look for a vertex attribute.</summary>
 	/// <returns>The Index of the vertexAttribute.</returns>
 	/// <remarks>Use this method to get the Index of a vertex attribute in O(logN) time and then be able to retrieve
 	/// it by index with getVertexAttribute in constant time</remarks>
-	int32 getVertexAttributeIndex(const char8* semanticName) const
+	int32_t getVertexAttributeIndex(const char* semanticName) const
 	{
-		return (int32)_data.vertexAttributes.getIndex(semanticName);
+		return static_cast<int32_t>(_data.vertexAttributes.getIndex(semanticName));
 	}
 
 	/// <summary>Get the information of a VertexAttribute by its SemanticName.</summary>
+	/// <param name="idx">A semantic id with which to retrieve a vertex attribute.</summary>
 	/// <returns>A VertexAttributeData object with information on this attribute. (layout, data index etc.) Null if
 	/// failed</returns>
 	/// <remarks>This method does lookup in constant O(1) time. Use the getVertexAttributeID to get the index to use
 	/// this method</remarks>
-	const VertexAttributeData* getVertexAttribute(int32 idx) const
+	const VertexAttributeData* getVertexAttribute(int32_t idx) const
 	{
-		return ((uint32)idx < _data.vertexAttributes.sizeWithDeleted() ? &_data.vertexAttributes[idx] : NULL);
+		return (static_cast<uint32_t>(idx) < _data.vertexAttributes.sizeWithDeleted() ? &_data.vertexAttributes[idx] : NULL);
 	}
 
 	/// <summary>Get number of vertex attributes.</summary>
-	uint32 getVertexAttributesSize() const {	return (uint32)(_data.vertexAttributes.size()); }
+	/// <returns>The number of vertex attributes</returns>
+	uint32_t getVertexAttributesSize() const {  return static_cast<uint32_t>(_data.vertexAttributes.size()); }
 
 	/// <summary>Locate the specified Attribute in a specific position in the vertex attribute array. Can be used to sort
 	/// the vertex attributes according to a specific order.</summary>
 	/// <param name="attributeName">The name of an attribute</param>
-	/// <param name="userIndex">The index to put this attribute to. If another attribute is there, indexes will be
+	/// <param name="userIndex">The index to put this attribute to. If another attribute is there, indices will be
 	/// swapped.</param>
 	void setVertexAttributeIndex(const char* attributeName, size_t userIndex)
 	{
@@ -676,22 +556,23 @@ public:
 	/// <summary>Get the number of Triangle Strips (if any) that comprise this Mesh.</summary>
 	/// <returns>The number of Triangle Strips (if any) that comprise this Mesh. 0 if the Mesh is not made of strips
 	/// </returns>
-	uint32 getNumStrips() const
+	uint32_t getNumStrips() const
 	{
-		return (uint32)_data.primitiveData.stripLengths.size();
+		return static_cast<uint32_t>(_data.primitiveData.stripLengths.size());
 	}
 
 	/// <summary>Get an array containing the Triangle Strip lengths.</summary>
 	/// <returns>An array of 32 bit values representing the Triangle Strip lengths. Use getNumStrips for the length
 	/// of the array.</returns>
-	const uint32* getStripLengths() const
+	const uint32_t* getStripLengths() const
 	{
 		return _data.primitiveData.stripLengths.data();
 	}
 
 	/// <summary>Get the length of the specified triangle strip.</summary>
+	/// <param name="strip">The index of the strip of which to return the length</param>
 	/// <returns>The length of the TriangleStrip with index (strip)</returns>
-	uint32 getStripLength(uint32 strip) const
+	uint32_t getStripLength(uint32_t strip) const
 	{
 		return _data.primitiveData.stripLengths[strip];
 	}
@@ -700,30 +581,36 @@ public:
 	/// <param name="numStrips">The number of TriangleStrips</param>
 	/// <param name="lengths">An array of size numStrips containing the length of each TriangleStrip, respectively
 	/// </param>
-	void setStripData(uint32 numStrips, const uint32* lengths)
+	void setStripData(uint32_t numStrips, const uint32_t* lengths)
 	{
 		_data.primitiveData.stripLengths.resize(numStrips);
 		_data.primitiveData.stripLengths.assign(lengths, lengths + numStrips);
 	}
 
 	/// <summary>Set the total number of vertices. Will not change the actual Vertex Data.</summary>
-	void setNumVertices(uint32 numVertices)
+	/// <param name="numVertices">Set the number of vertices</param>
+	void setNumVertices(uint32_t numVertices)
 	{
 		_data.primitiveData.numVertices = numVertices;
 	}
 
 	/// <summary>Set the total number of faces. Will not change the actual Face Data.</summary>
-	void setNumFaces(uint32 numFaces)
+	/// <param name="numFaces">Set the number of faces</param>
+	void setNumFaces(uint32_t numFaces)
 	{
 		_data.primitiveData.numFaces = numFaces;
 	}
 
 	/// <summary>Get a reference to the internal representation and data of this Mesh. Handle with care.</summary>
+	/// <returns>The internal representation of this object.</returns>
 	InternalData& getInternalData()
 	{
 		return _data;
 	}
 
+	/// <summary>Merge all bone batches into one, effectively re-merging the mesh into one draw call</summary>
+	/// <param name="boneIndexAttributeId">The Attribute ID of the Bone Index attribute of this mesh</param>
+	void mergeBoneBatches(uint32_t boneIndexAttributeId);
 };
 }
 }

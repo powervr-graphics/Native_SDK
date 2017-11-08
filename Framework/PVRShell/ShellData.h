@@ -6,8 +6,9 @@
 */
 #pragma once
 #include "PVRShell/CommandLine.h"
+#include "PVRCore/Base/ComplexTypes.h"
 
-/*! This file simply defines a version string. It can be commented out. */
+/*! This file simply defines a version std::string. It can be commented out. */
 #include "sdkver.h"
 #if !defined(PVRSDK_BUILD)
 #define PVRSDK_BUILD "n.n@nnnnnnn"
@@ -15,51 +16,44 @@
 
 /*! Define the txt file that we can load command-line options from. */
 #if !defined(PVRSHELL_COMMANDLINE_TXT_FILE)
-#define PVRSHELL_COMMANDLINE_TXT_FILE	"PVRShellCL.txt"
+#define PVRSHELL_COMMANDLINE_TXT_FILE "PVRShellCL.txt"
 #endif
 
 namespace pvr {
 namespace platform {
 class ShellOS;
 
-/// <summary>Contains and tracks internal data necessary to power the pvr::Shell.</summary>
+/// <summary>Internal. Contains and tracks internal data necessary to power the pvr::Shell.</summary>
 struct ShellData
 {
+	//!\cond NO_DOXYGEN
 	Time timer;
-	uint64 timeAtInitApplication;
-	uint64 lastFrameTime;
-	uint64 currentFrameTime;
-	string exitMessage;
+	uint64_t timeAtInitApplication;
+	uint64_t lastFrameTime;
+	uint64_t currentFrameTime;
+	std::string exitMessage;
 
 	ShellOS* os;
-	GraphicsContextStrongReference graphicsContextStore;
-	GraphicsContext graphicsContext;// So that we don't have to copy the reference every single get...
-	std::auto_ptr<IPlatformContext> platformContext;
 	DisplayAttributes attributes;
 
-<<<<<<< HEAD
-	platform::CommandLineParser* commandLine;
-=======
 	CommandLineParser* commandLine;
->>>>>>> 1776432f... 4.3
 
-	int32 captureFrameStart;
-	int32 captureFrameStop;
-	uint32 captureFrameScale;
+	int32_t captureFrameStart;
+	int32_t captureFrameStop;
+	uint32_t captureFrameScale;
 
 	bool trapPointerOnDrag;
 	bool forceFrameTime;
-	uint32 fakeFrameTime;
+	uint32_t fakeFrameTime;
 
-	bool presentBackBuffer;
 	bool exiting;
 
-	uint32 frameNo;
+	uint32_t frameNo;
 
 	bool forceReleaseInitCycle;
-	int32 dieAfterFrame;
-	float32 dieAfterTime;
-	int64 startTime;
+	int32_t dieAfterFrame;
+	float dieAfterTime;
+	int64_t startTime;
 
 	bool outputInfo;
 
@@ -70,13 +64,7 @@ struct ShellData
 
 	Api contextType;
 	Api minContextType;
-<<<<<<< HEAD
-=======
-	BaseApi baseContextType;
->>>>>>> 1776432f... 4.3
-	DeviceQueueType deviceQueueType;
-
-	ShellData() :	os(0),
+	ShellData() : os(0),
 		commandLine(0),
 		captureFrameStart(-1),
 		captureFrameStop(-1),
@@ -84,7 +72,6 @@ struct ShellData
 		trapPointerOnDrag(true),
 		forceFrameTime(false),
 		fakeFrameTime(16),
-		presentBackBuffer(true),
 		exiting(false),
 		frameNo(0),
 		forceReleaseInitCycle(false),
@@ -96,11 +83,11 @@ struct ShellData
 		FPS(0.0f),
 		showFPS(false),
 		contextType(Api::Unspecified),
-		minContextType(Api::Unspecified),
-		baseContextType(BaseApi::Unspecified),
-		deviceQueueType(DeviceQueueType::Graphics)
+		minContextType(Api::Unspecified)
 	{
 	};
+
+	//!\endcond
 };
 }
 }

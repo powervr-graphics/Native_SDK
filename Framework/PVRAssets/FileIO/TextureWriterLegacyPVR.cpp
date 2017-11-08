@@ -8,7 +8,6 @@
 #include "PVRAssets/FileIO/TextureWriterLegacyPVR.h"
 using std::vector;
 namespace pvr {
-using namespace types;
 namespace assets {
 namespace assetWriters {
 TextureWriterLegacyPVR::TextureWriterLegacyPVR() : _targetAPI(texture_legacy::ApiOGL)
@@ -61,7 +60,7 @@ bool TextureWriterLegacyPVR::writeAllAssets()
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the MIP map count
-	result = _assetStream->write(sizeof(textureHeader.mipMapCount), 1, &textureHeader.mipMapCount, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.numMipMaps), 1, &textureHeader.numMipMaps, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the texture flags
@@ -97,20 +96,20 @@ bool TextureWriterLegacyPVR::writeAllAssets()
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the number of surfaces
-	result = _assetStream->write(sizeof(textureHeader.numberOfSurfaces), 1, &textureHeader.numberOfSurfaces, dataWritten);
+	result = _assetStream->write(sizeof(textureHeader.numSurfaces), 1, &textureHeader.numSurfaces, dataWritten);
 	if (!result || dataWritten != 1) { return result; }
 
 	// Write the texture data
-	for (uint32 surface = 0; surface < currentTextureHeader.getNumberOfArrayMembers(); ++surface)
+	for (uint32_t surface = 0; surface < currentTextureHeader.getNumArrayMembers(); ++surface)
 	{
-		for (uint32 depth = 0; depth < currentTextureHeader.getDepth(); ++depth)
+		for (uint32_t depth = 0; depth < currentTextureHeader.getDepth(); ++depth)
 		{
-			for (uint32 face = 0; face < currentTextureHeader.getNumberOfFaces(); ++face)
+			for (uint32_t face = 0; face < currentTextureHeader.getNumFaces(); ++face)
 			{
-				for (uint32 mipMap = 0; mipMap < currentTextureHeader.getNumberOfMIPLevels(); ++mipMap)
+				for (uint32_t mipMap = 0; mipMap < currentTextureHeader.getNumMipMapLevels(); ++mipMap)
 				{
-					uint32 surfaceSize = _assetsToWrite[0]->getDataSize(mipMap, false, false) / _assetsToWrite[0]->getDepth();
-					const byte* surfacePointer = _assetsToWrite[0]->getDataPointer(mipMap, surface, face) + depth * surfaceSize;
+					uint32_t surfaceSize = _assetsToWrite[0]->getDataSize(mipMap, false, false) / _assetsToWrite[0]->getDepth();
+					const uint8_t* surfacePointer = _assetsToWrite[0]->getDataPointer(mipMap, surface, face) + depth * surfaceSize;
 
 					// Write each surface, one at a time
 					result = _assetStream->write(1, surfaceSize, surfacePointer, dataWritten);
@@ -122,9 +121,9 @@ bool TextureWriterLegacyPVR::writeAllAssets()
 	return result;
 }
 
-uint32 TextureWriterLegacyPVR::assetsAddedSoFar()
+uint32_t TextureWriterLegacyPVR::assetsAddedSoFar()
 {
-	return (uint32)_assetsToWrite.size();
+	return static_cast<uint32_t>(_assetsToWrite.size());
 }
 
 bool TextureWriterLegacyPVR::supportsMultipleAssets()
@@ -139,19 +138,19 @@ bool TextureWriterLegacyPVR::canWriteAsset(const Texture& asset)
 	return convertTextureHeader3To2(legacyHeader, asset);
 }
 
-vector<string> TextureWriterLegacyPVR::getSupportedFileExtensions()
+vector<std::string> TextureWriterLegacyPVR::getSupportedFileExtensions()
 {
-	vector<string> extensions;
+	vector<std::string> extensions;
 	extensions.push_back("pvr");
-	return vector<string>(extensions);
+	return vector<std::string>(extensions);
 }
 
-string TextureWriterLegacyPVR::getWriterName()
+std::string TextureWriterLegacyPVR::getWriterName()
 {
 	return "PowerVR Legacy Texture Writer";
 }
 
-string TextureWriterLegacyPVR::getWriterVersion()
+std::string TextureWriterLegacyPVR::getWriterVersion()
 {
 	return "1.0.0";
 }
@@ -178,10 +177,10 @@ bool TextureWriterLegacyPVR::convertTextureHeader3To2(texture_legacy::HeaderV2& 
 
 	// Setup the simple parts of the legacy header based on the data provided.
 	legacyHeader.headerSize = sizeof(texture_legacy::HeaderV2);
-	legacyHeader.pixelFormatAndFlags = static_cast<uint32>(legacyPixelType);
+	legacyHeader.pixelFormatAndFlags = static_cast<uint32_t>(legacyPixelType);
 	legacyHeader.height = newHeader.getHeight();
 	legacyHeader.width = newHeader.getWidth();
-	legacyHeader.mipMapCount = newHeader.getNumberOfMIPLevels() - 1;
+	legacyHeader.numMipMaps = newHeader.getNumMipMapLevels() - 1;
 	legacyHeader.dataSize = newHeader.getDataSize();
 	legacyHeader.bitCount = newHeader.getBitsPerPixel();
 	legacyHeader.redBitMask = 0;
@@ -191,12 +190,12 @@ bool TextureWriterLegacyPVR::convertTextureHeader3To2(texture_legacy::HeaderV2& 
 	legacyHeader.pvrMagic = texture_legacy::c_identifierV2;
 
 	// Set the number of surfaces
-	legacyHeader.numberOfSurfaces = newHeader.getDepth() * newHeader.getNumberOfArrayMembers() * newHeader.getNumberOfFaces();
+	legacyHeader.numSurfaces = newHeader.getDepth() * newHeader.getNumArrayMembers() * newHeader.getNumFaces();
 
 	// Set the MIP Map flag.
-	if (newHeader.getNumberOfMIPLevels() > 1)
+	if (newHeader.getNumMipMapLevels() > 1)
 	{
-		legacyHeader.pixelFormatAndFlags |= texture_legacy::c_flagMIPMap;
+		legacyHeader.pixelFormatAndFlags |= texture_legacy::c_flagMipMap;
 	}
 
 	// Set the volume texture flag. Arrays of 3D textures will effectively become just 3D textures.
@@ -207,15 +206,15 @@ bool TextureWriterLegacyPVR::convertTextureHeader3To2(texture_legacy::HeaderV2& 
 
 	// Set the alpha flag for PVRTC1 data if appropriate
 	if (newHeader.getPixelFormat().getPart().High == 0 &&
-	    (newHeader.getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA ||
-	     newHeader.getPixelFormat().getPixelTypeId() == (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA))
+	    (newHeader.getPixelFormat().getPixelTypeId() == static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGBA) ||
+	     newHeader.getPixelFormat().getPixelTypeId() == static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGBA)))
 	{
 		legacyHeader.pixelFormatAndFlags |= texture_legacy::c_flagHasAlpha;
 		legacyHeader.alphaBitMask = 1;
 	}
 
 	// Set the cube map flag if appropriate.
-	if (newHeader.getNumberOfFaces() == 6)
+	if (newHeader.getNumFaces() == 6)
 	{
 		legacyHeader.pixelFormatAndFlags |= texture_legacy::c_flagCubeMap;
 	}
@@ -245,8 +244,8 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 	{
 		switch (pixelType.getPart().Low)
 		{
-		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGB:
-		case (uint64)CompressedPixelFormat::PVRTCI_2bpp_RGBA:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGB):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_2bpp_RGBA):
 		{
 			switch (_targetAPI)
 			{
@@ -262,8 +261,8 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGB:
-		case (uint64)CompressedPixelFormat::PVRTCI_4bpp_RGBA:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGB):
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCI_4bpp_RGBA):
 		{
 			switch (_targetAPI)
 			{
@@ -279,47 +278,47 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::PVRTCII_2bpp:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_2bpp):
 		{
 			legacyPixelType = texture_legacy::GL_PVRTCII2;
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::PVRTCII_4bpp:
+		case static_cast<uint64_t>(CompressedPixelFormat::PVRTCII_4bpp):
 		{
 			legacyPixelType = texture_legacy::GL_PVRTCII4;
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::ETC1:
+		case static_cast<uint64_t>(CompressedPixelFormat::ETC1):
 		{
 			legacyPixelType = texture_legacy::e_etc_RGB_4BPP;
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::BW1bpp:
+		case static_cast<uint64_t>(CompressedPixelFormat::BW1bpp):
 		{
 			legacyPixelType = texture_legacy::VG_BW_1;
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::YUY2:
+		case static_cast<uint64_t>(CompressedPixelFormat::YUY2):
 		{
 			legacyPixelType = texture_legacy::D3D_YUY2;
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::UYVY:
+		case static_cast<uint64_t>(CompressedPixelFormat::UYVY):
 		{
 			legacyPixelType = texture_legacy::D3D_UYVY;
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::RGBG8888:
+		case static_cast<uint64_t>(CompressedPixelFormat::RGBG8888):
 		{
 			legacyPixelType = texture_legacy::DXGI_R8G8_B8G8_UNORM;
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::GRGB8888:
+		case static_cast<uint64_t>(CompressedPixelFormat::GRGB8888):
 		{
 			legacyPixelType = texture_legacy::DXGI_G8R8_G8B8_UNORM;
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::DXT1:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT1):
 		{
 			if (_targetAPI == texture_legacy::ApiDX10)
 			{
@@ -341,12 +340,12 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			break;
 		}
-		case (uint64)CompressedPixelFormat::DXT2:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT2):
 		{
 			legacyPixelType = texture_legacy::D3D_DXT2;
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::DXT3:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT3):
 		{
 			if (_targetAPI == texture_legacy::ApiDX10)
 			{
@@ -368,12 +367,12 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			break;
 		}
-		case (uint64)CompressedPixelFormat::DXT4:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT4):
 		{
 			legacyPixelType = texture_legacy::D3D_DXT4;
 			return true;
 		}
-		case (uint64)CompressedPixelFormat::DXT5:
+		case static_cast<uint64_t>(CompressedPixelFormat::DXT5):
 		{
 			if (_targetAPI == texture_legacy::ApiDX10)
 			{
@@ -395,7 +394,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			break;
 		}
-		case (uint64)CompressedPixelFormat::BC4:
+		case static_cast<uint64_t>(CompressedPixelFormat::BC4):
 		{
 			switch (channelType)
 			{
@@ -413,7 +412,7 @@ bool TextureWriterLegacyPVR::mapNewFormatToLegacyEnum(texture_legacy::PixelForma
 			}
 			break;
 		}
-		case (uint64)CompressedPixelFormat::BC5:
+		case static_cast<uint64_t>(CompressedPixelFormat::BC5):
 		{
 			switch (channelType)
 			{

@@ -96,38 +96,44 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa58043e55d7756f12fa87a2cadc21097"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#aa58043e55d7756f12fa87a2cadc21097">VertexAttributeData</a> ()</td></tr>
 <tr class="memdesc:aa58043e55d7756f12fa87a2cadc21097"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <a href="#aa58043e55d7756f12fa87a2cadc21097">More...</a><br/></td></tr>
 <tr class="separator:aa58043e55d7756f12fa87a2cadc21097"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04b302dde5c5dbff91c5cde0fa8bf94e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a04b302dde5c5dbff91c5cde0fa8bf94e">VertexAttributeData</a> (const StringHash &amp;semantic, types::DataType type, uint8 n, uint16 offset, uint16 dataIndex)</td></tr>
-<tr class="memdesc:a04b302dde5c5dbff91c5cde0fa8bf94e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <a href="#a04b302dde5c5dbff91c5cde0fa8bf94e">More...</a><br/></td></tr>
-<tr class="separator:a04b302dde5c5dbff91c5cde0fa8bf94e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a292998021373464e23aac9a34174b45d"><td class="memItemLeft" align="right" valign="top">int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a292998021373464e23aac9a34174b45d">getDataIndex</a> () const </td></tr>
-<tr class="memdesc:a292998021373464e23aac9a34174b45d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of this vertex attribute. <a href="#a292998021373464e23aac9a34174b45d">More...</a><br/></td></tr>
-<tr class="separator:a292998021373464e23aac9a34174b45d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68881d3b17cc21c160b0aa542fe456ae"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a68881d3b17cc21c160b0aa542fe456ae">getN</a> () const </td></tr>
-<tr class="memdesc:a68881d3b17cc21c160b0aa542fe456ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of values per vertex. <a href="#a68881d3b17cc21c160b0aa542fe456ae">More...</a><br/></td></tr>
-<tr class="separator:a68881d3b17cc21c160b0aa542fe456ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3544d43bb5d28230e5c0d1f5ca5ebb0"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#ae3544d43bb5d28230e5c0d1f5ca5ebb0">getOffset</a> () const </td></tr>
-<tr class="memdesc:ae3544d43bb5d28230e5c0d1f5ca5ebb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the offset of this attribute. <a href="#ae3544d43bb5d28230e5c0d1f5ca5ebb0">More...</a><br/></td></tr>
-<tr class="separator:ae3544d43bb5d28230e5c0d1f5ca5ebb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6029d78afa7fe7db486e1fd44aedd2e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#ad6029d78afa7fe7db486e1fd44aedd2e">VertexAttributeData</a> (const StringHash &amp;semantic, DataType type, uint8_t n, uint16_t offset, uint16_t dataIndex)</td></tr>
+<tr class="memdesc:ad6029d78afa7fe7db486e1fd44aedd2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <a href="#ad6029d78afa7fe7db486e1fd44aedd2e">More...</a><br/></td></tr>
+<tr class="separator:ad6029d78afa7fe7db486e1fd44aedd2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ce85246a8a49f73094c1998be995600"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a8ce85246a8a49f73094c1998be995600">getDataIndex</a> () const </td></tr>
+<tr class="memdesc:a8ce85246a8a49f73094c1998be995600"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of the data for this attribute. Would only be different to 0 if the vertex attributes were split into different data blocks. Each data block would normally map to a single VBO binding. <a href="#a8ce85246a8a49f73094c1998be995600">More...</a><br/></td></tr>
+<tr class="separator:a8ce85246a8a49f73094c1998be995600"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17d99a04841bba243fbf25bd7fc01404"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a17d99a04841bba243fbf25bd7fc01404">getN</a> () const </td></tr>
+<tr class="memdesc:a17d99a04841bba243fbf25bd7fc01404"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of values per vertex. <a href="#a17d99a04841bba243fbf25bd7fc01404">More...</a><br/></td></tr>
+<tr class="separator:a17d99a04841bba243fbf25bd7fc01404"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88df1234ac1168320b1ebb2d14d85ad5"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a88df1234ac1168320b1ebb2d14d85ad5">getOffset</a> () const </td></tr>
+<tr class="memdesc:a88df1234ac1168320b1ebb2d14d85ad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the offset of this attribute. <a href="#a88df1234ac1168320b1ebb2d14d85ad5">More...</a><br/></td></tr>
+<tr class="separator:a88df1234ac1168320b1ebb2d14d85ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08b821faf15d1f56b4f98e27ea239329"><td class="memItemLeft" align="right" valign="top">const StringHash &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a08b821faf15d1f56b4f98e27ea239329">getSemantic</a> () const </td></tr>
 <tr class="memdesc:a08b821faf15d1f56b4f98e27ea239329"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the semantic of this attribute. <a href="#a08b821faf15d1f56b4f98e27ea239329">More...</a><br/></td></tr>
 <tr class="separator:a08b821faf15d1f56b4f98e27ea239329"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16d1b7d62938593fb00c8a8ad5cfbe59"><td class="memItemLeft" align="right" valign="top">const VertexAttributeLayout &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a16d1b7d62938593fb00c8a8ad5cfbe59">getVertexLayout</a> () const </td></tr>
 <tr class="memdesc:a16d1b7d62938593fb00c8a8ad5cfbe59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the layout of this attribute. <a href="#a16d1b7d62938593fb00c8a8ad5cfbe59">More...</a><br/></td></tr>
 <tr class="separator:a16d1b7d62938593fb00c8a8ad5cfbe59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8a8134fd5b181330e805f648c428d73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#ad8a8134fd5b181330e805f648c428d73">setDataIndex</a> (uint16 dataIndex)</td></tr>
-<tr class="memdesc:ad8a8134fd5b181330e805f648c428d73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Index of this vertex attribute. <a href="#ad8a8134fd5b181330e805f648c428d73">More...</a><br/></td></tr>
-<tr class="separator:ad8a8134fd5b181330e805f648c428d73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61747eb6179717c3649f2d88833976b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a61747eb6179717c3649f2d88833976b6">setDataType</a> (types::DataType type)</td></tr>
-<tr class="memdesc:a61747eb6179717c3649f2d88833976b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the DataType of this vertex attribute. <a href="#a61747eb6179717c3649f2d88833976b6">More...</a><br/></td></tr>
-<tr class="separator:a61747eb6179717c3649f2d88833976b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2235c3dfffcc84c9bc9d7da444697f39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a2235c3dfffcc84c9bc9d7da444697f39">setN</a> (uint8 n)</td></tr>
-<tr class="memdesc:a2235c3dfffcc84c9bc9d7da444697f39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the number of values of each entry of this vertex attribute. <a href="#a2235c3dfffcc84c9bc9d7da444697f39">More...</a><br/></td></tr>
-<tr class="separator:a2235c3dfffcc84c9bc9d7da444697f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a822df697cc0004fd68ca4d87884e8033"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a822df697cc0004fd68ca4d87884e8033">setOffset</a> (uint32 offset)</td></tr>
-<tr class="memdesc:a822df697cc0004fd68ca4d87884e8033"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Offset of this vertex attribute. <a href="#a822df697cc0004fd68ca4d87884e8033">More...</a><br/></td></tr>
-<tr class="separator:a822df697cc0004fd68ca4d87884e8033"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c819b8531a4f6073f0b37c6eb60b780"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a4c819b8531a4f6073f0b37c6eb60b780">operator&lt;</a> (const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a> &amp;rhs)</td></tr>
+<tr class="memdesc:a4c819b8531a4f6073f0b37c6eb60b780"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the semantics of the left attribute test "less than" the right attribute. USE FOR SORTING AND MAPS - DOES NOT CHECK ACTUAL DATA <a href="#a4c819b8531a4f6073f0b37c6eb60b780">More...</a><br/></td></tr>
+<tr class="separator:a4c819b8531a4f6073f0b37c6eb60b780"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade6d53bfac8c77b54fd7294363e8a8b5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#ade6d53bfac8c77b54fd7294363e8a8b5">operator==</a> (const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a> &amp;rhs)</td></tr>
+<tr class="memdesc:ade6d53bfac8c77b54fd7294363e8a8b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the semantics of the attributes test equal. DOES NOT CHECK ACTUAL DATA <a href="#ade6d53bfac8c77b54fd7294363e8a8b5">More...</a><br/></td></tr>
+<tr class="separator:ade6d53bfac8c77b54fd7294363e8a8b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4263068a223e5bb417d478a08b5912d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#af4263068a223e5bb417d478a08b5912d">setDataIndex</a> (uint16_t dataIndex)</td></tr>
+<tr class="memdesc:af4263068a223e5bb417d478a08b5912d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Index of this vertex attribute. <a href="#af4263068a223e5bb417d478a08b5912d">More...</a><br/></td></tr>
+<tr class="separator:af4263068a223e5bb417d478a08b5912d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a298da49a40c5924342d5a3ab8cebe6e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a298da49a40c5924342d5a3ab8cebe6e0">setDataType</a> (DataType type)</td></tr>
+<tr class="memdesc:a298da49a40c5924342d5a3ab8cebe6e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the DataType of this vertex attribute. <a href="#a298da49a40c5924342d5a3ab8cebe6e0">More...</a><br/></td></tr>
+<tr class="separator:a298da49a40c5924342d5a3ab8cebe6e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2797f079ce4134a2eb7e40131daf0324"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a2797f079ce4134a2eb7e40131daf0324">setN</a> (uint8_t n)</td></tr>
+<tr class="memdesc:a2797f079ce4134a2eb7e40131daf0324"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the number of values of each entry of this vertex attribute. <a href="#a2797f079ce4134a2eb7e40131daf0324">More...</a><br/></td></tr>
+<tr class="separator:a2797f079ce4134a2eb7e40131daf0324"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1670c118671797007e65f88a8cedf37d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a1670c118671797007e65f88a8cedf37d">setOffset</a> (uint32_t offset)</td></tr>
+<tr class="memdesc:a1670c118671797007e65f88a8cedf37d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Offset of this vertex attribute. <a href="#a1670c118671797007e65f88a8cedf37d">More...</a><br/></td></tr>
+<tr class="separator:a1670c118671797007e65f88a8cedf37d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1adb7f1b363262c94718296fd38b4eff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#a1adb7f1b363262c94718296fd38b4eff">setSemantic</a> (const StringHash &amp;semantic)</td></tr>
-<tr class="memdesc:a1adb7f1b363262c94718296fd38b4eff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Semantic Name of this vertex attribute. <a href="#a1adb7f1b363262c94718296fd38b4eff">More...</a><br/></td></tr>
+<tr class="memdesc:a1adb7f1b363262c94718296fd38b4eff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Semantic Name of this vertex attribute. A semantic name can take ANY value, but forms a "contract" with users of this class, i.e. the application must be aware of them. There are also, by convention, some semantics normally used, like "POSITION", "NORMAL", "UV0"-"UV9", "TANGENT", "BINORMAL", "BONEWEIGHT", "BONEINDEX"... <a href="#a1adb7f1b363262c94718296fd38b4eff">More...</a><br/></td></tr>
 <tr class="separator:a1adb7f1b363262c94718296fd38b4eff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -158,7 +164,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a04b302dde5c5dbff91c5cde0fa8bf94e"></a>
+<a class="anchor" id="ad6029d78afa7fe7db486e1fd44aedd2e"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -174,25 +180,25 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">types::DataType&#160;</td>
+          <td class="paramtype">DataType&#160;</td>
           <td class="paramname"><em>type</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint8&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>n</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint16&#160;</td>
+          <td class="paramtype">uint16_t&#160;</td>
           <td class="paramname"><em>offset</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint16&#160;</td>
+          <td class="paramtype">uint16_t&#160;</td>
           <td class="paramname"><em>dataIndex</em>&#160;</td>
         </tr>
         <tr>
@@ -223,7 +229,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a292998021373464e23aac9a34174b45d"></a>
+<a class="anchor" id="a8ce85246a8a49f73094c1998be995600"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -231,7 +237,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int32 pvr::assets::Mesh::VertexAttributeData::getDataIndex </td>
+          <td class="memname">int32_t pvr::assets::Mesh::VertexAttributeData::getDataIndex </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -244,11 +250,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the index of this vertex attribute.</p>
+<p>Get the index of the data for this attribute. Would only be different to 0 if the vertex attributes were split into different data blocks. Each data block would normally map to a single VBO binding.</p>
+<dl class="section return"><dt>Returns</dt><dd>The index of the data block for this attribute.</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a68881d3b17cc21c160b0aa542fe456ae"></a>
+<a class="anchor" id="a17d99a04841bba243fbf25bd7fc01404"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -256,7 +263,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::VertexAttributeData::getN </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::VertexAttributeData::getN </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -270,11 +277,11 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get number of values per vertex.</p>
-<dl class="section return"><dt>Returns</dt><dd>uint32</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of values (aka width. For example, a vec4 would return 4)</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ae3544d43bb5d28230e5c0d1f5ca5ebb0"></a>
+<a class="anchor" id="a88df1234ac1168320b1ebb2d14d85ad5"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -282,7 +289,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::VertexAttributeData::getOffset </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::VertexAttributeData::getOffset </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -296,6 +303,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the offset of this attribute.</p>
+<dl class="section return"><dt>Returns</dt><dd>The offset of this attribute</dd></dl>
 
 </div>
 </div>
@@ -321,6 +329,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the semantic of this attribute.</p>
+<dl class="section return"><dt>Returns</dt><dd>The semantic of this attribute</dd></dl>
 
 </div>
 </div>
@@ -346,17 +355,84 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the layout of this attribute.</p>
+<dl class="section return"><dt>Returns</dt><dd>The layout of this attribute</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ad8a8134fd5b181330e805f648c428d73"></a>
+<a class="anchor" id="a4c819b8531a4f6073f0b37c6eb60b780"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::assets::Mesh::VertexAttributeData::operator&lt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the semantics of the left attribute test "less than" the right attribute. USE FOR SORTING AND MAPS - DOES NOT CHECK ACTUAL DATA</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rhs</td><td>The right hand side</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the semantic of lhs test less than rhs, otherwise false</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ade6d53bfac8c77b54fd7294363e8a8b5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::assets::Mesh::VertexAttributeData::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the semantics of the attributes test equal. DOES NOT CHECK ACTUAL DATA</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rhs</td><td>The right hand side</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the semantics are equal, otherwise false</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="af4263068a223e5bb417d478a08b5912d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::assets::Mesh::VertexAttributeData::setDataIndex </td>
           <td>(</td>
-          <td class="paramtype">uint16&#160;</td>
+          <td class="paramtype">uint16_t&#160;</td>
           <td class="paramname"><em>dataIndex</em></td><td>)</td>
           <td></td>
         </tr>
@@ -364,17 +440,23 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set the Index of this vertex attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dataIndex</td><td>The data block (binding id) of this attribute</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a class="anchor" id="a61747eb6179717c3649f2d88833976b6"></a>
+<a class="anchor" id="a298da49a40c5924342d5a3ab8cebe6e0"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::assets::Mesh::VertexAttributeData::setDataType </td>
           <td>(</td>
-          <td class="paramtype">types::DataType&#160;</td>
+          <td class="paramtype">DataType&#160;</td>
           <td class="paramname"><em>type</em></td><td>)</td>
           <td></td>
         </tr>
@@ -382,17 +464,23 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set the DataType of this vertex attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>The data type of this attribute</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a class="anchor" id="a2235c3dfffcc84c9bc9d7da444697f39"></a>
+<a class="anchor" id="a2797f079ce4134a2eb7e40131daf0324"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::assets::Mesh::VertexAttributeData::setN </td>
           <td>(</td>
-          <td class="paramtype">uint8&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>n</em></td><td>)</td>
           <td></td>
         </tr>
@@ -400,17 +488,23 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set the number of values of each entry of this vertex attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">n</td><td>The number of values (width) of this attribute</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a class="anchor" id="a822df697cc0004fd68ca4d87884e8033"></a>
+<a class="anchor" id="a1670c118671797007e65f88a8cedf37d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::assets::Mesh::VertexAttributeData::setOffset </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>offset</em></td><td>)</td>
           <td></td>
         </tr>
@@ -418,6 +512,12 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set the Offset of this vertex attribute.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">offset</td><td>The offset from the beginning of the data block of the first item of this attribute</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -443,7 +543,13 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Set the Semantic Name of this vertex attribute.</p>
+<p>Set the Semantic Name of this vertex attribute. A semantic name can take ANY value, but forms a "contract" with users of this class, i.e. the application must be aware of them. There are also, by convention, some semantics normally used, like "POSITION", "NORMAL", "UV0"-"UV9", "TANGENT", "BINORMAL", "BONEWEIGHT", "BONEINDEX"...</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">semantic</td><td>The semantic name to associate to this vertex attribute.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

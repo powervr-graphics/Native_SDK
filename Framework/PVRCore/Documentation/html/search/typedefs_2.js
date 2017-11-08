@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['descriptorpool',['DescriptorPool',['../namespacepvr_1_1api.html#a637551c1f687221f14122e0beeee2730',1,'pvr::api']]],
-  ['descriptorset',['DescriptorSet',['../namespacepvr_1_1api.html#adcc0a391e3ad0455b28b9ac4a1b2ec1a',1,'pvr::api']]],
-  ['descriptorsetlayout',['DescriptorSetLayout',['../namespacepvr_1_1api.html#a51521c1bf928b30d4cb74cbdafda3710',1,'pvr::api']]]
+  ['elementtype',['ElementType',['../classpvr_1_1_multi.html#ab99af96c2ba05abc0db8b9da127135c8',1,'pvr::Multi']]],
+  ['entrytype',['EntryType',['../classpvr_1_1_contiguous_map.html#a6c4a880b42921b6b6885bbc8bfec332a',1,'pvr::ContiguousMap']]],
+  ['extent2d',['Extent2D',['../namespacepvr.html#a065d965f04c53d6e94e0e56a34289090',1,'pvr']]],
+  ['extent3d',['Extent3D',['../namespacepvr.html#abc7deef434e373b18abd3b929c31e9aa',1,'pvr']]]
 ];

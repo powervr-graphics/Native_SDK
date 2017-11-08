@@ -6,11 +6,9 @@
 */
 
 #include "PVRCamera/CameraInterface.h"
-#include "PVRApi/Api.h"
-#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
-#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
-#include "PVRApi/OGLES/TextureGles.h"
 #include <jni.h>
+
+//!\cond NO_DOXYGEN
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,36 +34,35 @@ jmethodID   updateImageMID = 0;
 class pvr::CameraInterfaceImpl
 {
 public:
-	native::HTexture_ hTexture;
+	GLuint texture;
 	glm::mat4 projectionMatrix;
 	bool hasProjectionMatrixChanged;
 
-	CameraInterfaceImpl(): hTexture(0, GL_TEXTURE_EXTERNAL_OES), hasProjectionMatrixChanged(true)
+	CameraInterfaceImpl(): texture(0), hasProjectionMatrixChanged(true)
 	{
 		memset(glm::value_ptr(projectionMatrix), 0, sizeof(projectionMatrix));
 	}
-
 
 	bool initializeSession(HWCamera::Enum eCamera, int width, int height)
 	{
 		if (strstr((const char*)gl::GetString(GL_EXTENSIONS), "OES_EGL_image_external") == 0)
 		{
-			pvr::Log(pvr::Log.Critical, "CameraInterface - NativeExtension OES_EGL_image_external not found.\n");
+			Log(LogLevel::Critical, "CameraInterface - NativeExtension OES_EGL_image_external not found.\n");
 			return false;
 		}
 
 		// Create an EGLImage External texture
 		// Create a http://www.khronos.org/registry/gles/extensions/OES/OES_EGL_image_external.txt
-		gl::GenTextures(1, &hTexture.handle);
+		gl::GenTextures(1, &texture);
 
-		gl::BindTexture(GL_TEXTURE_EXTERNAL_OES, hTexture);
+		gl::BindTexture(GL_TEXTURE_EXTERNAL_OES, texture);
 
 		JNIEnv* env = 0;
 		jint res = cachedVM->AttachCurrentThread(&env, 0);
 
 		if ((res != 0) || (env == 0))
 		{
-			pvr::Log(pvr::Log.Debug, "CameraInterface - NativeAttachCurrentThread failed");
+			Log(LogLevel::Debug, "CameraInterface - NativeAttachCurrentThread failed");
 			return false;
 		}
 
@@ -73,7 +70,7 @@ public:
 		clazz = env->GetObjectClass(jobj);
 		if (clazz == 0)
 		{
-			pvr::Log(pvr::Log.Debug, "CameraInterface - NativeGetObjectClass failed");
+			Log(LogLevel::Debug, "CameraInterface - NativeGetObjectClass failed");
 			cachedVM->DetachCurrentThread();
 			return false;
 		}
@@ -81,12 +78,12 @@ public:
 		jmethodID createCameraMethod = env->GetMethodID(clazz, "createCamera", "(I)I");
 		if (createCameraMethod == 0)
 		{
-			pvr::Log(pvr::Log.Debug, "CameraInterface - NativeGetMethodID failed");
+			Log(LogLevel::Debug, "CameraInterface - NativeGetMethodID failed");
 			cachedVM->DetachCurrentThread();
 			return false;
 		}
 
-		int result = env->CallIntMethod(jobj, createCameraMethod, hTexture);
+		int result = env->CallIntMethod(jobj, createCameraMethod, texture);
 
 		env->DeleteLocalRef(clazz);
 		activeSession = this;
@@ -109,7 +106,7 @@ public:
 		{
 			if ((res != 0) || (env == 0))
 			{
-				pvr::Log(pvr::Log.Debug, "CameraInterface - NativeAttachCurrentThread failed");
+				Log(LogLevel::Debug, "CameraInterface - NativeAttachCurrentThread failed");
 				cachedVM->DetachCurrentThread();
 				return false;
 			}
@@ -118,7 +115,7 @@ public:
 			clazz = env->GetObjectClass(jobj);
 			if (clazz == 0)
 			{
-				pvr::Log(pvr::Log.Debug, "CameraInterface - NativeGetObjectClass failed");
+				Log(LogLevel::Debug, "CameraInterface - NativeGetObjectClass failed");
 				cachedVM->DetachCurrentThread();
 				return false;
 			}
@@ -127,7 +124,7 @@ public:
 			updateImageMID = env->GetMethodID(clazz, "updateImage", "()Z");
 			if (updateImageMID == 0)
 			{
-				pvr::Log(pvr::Log.Debug, "CameraInterface - NativeGetMethodID failed");
+				Log(LogLevel::Debug, "CameraInterface - NativeGetMethodID failed");
 				cachedVM->DetachCurrentThread();
 				return false;
 			}
@@ -148,7 +145,7 @@ public:
 
 		if ((res != 0) || (env == 0))
 		{
-			pvr::Log(pvr::Log.Debug, "CameraInterface - NativeAttachCurrentThread failed");
+			Log(LogLevel::Debug, "CameraInterface - NativeAttachCurrentThread failed");
 			cachedVM->DetachCurrentThread();
 			return;
 		}
@@ -157,7 +154,7 @@ public:
 		clazz = env->GetObjectClass(jobj);
 		if (clazz == 0)
 		{
-			pvr::Log(pvr::Log.Debug, "CameraInterface - NativeGetObjectClass failed");
+			Log(LogLevel::Debug, "CameraInterface - NativeGetObjectClass failed");
 			cachedVM->DetachCurrentThread();
 			return;
 		}
@@ -166,7 +163,7 @@ public:
 		jmethodID midx = env->GetMethodID(clazz, "getCameraResolutionX", "()I");
 		if (midx == 0)
 		{
-			pvr::Log(pvr::Log.Debug, "CameraInterface - NativeGetMethodID failed");
+			Log(LogLevel::Debug, "CameraInterface - NativeGetMethodID failed");
 			cachedVM->DetachCurrentThread();
 			return;
 		}
@@ -177,7 +174,7 @@ public:
 		jmethodID midy = env->GetMethodID(clazz, "getCameraResolutionY", "()I");
 		if (midy == 0)
 		{
-			pvr::Log(pvr::Log.Debug, "CameraInterface - NativeGetMethodID failed");
+			Log(LogLevel::Debug, "CameraInterface - NativeGetMethodID failed");
 			cachedVM->DetachCurrentThread();
 			return;
 		}
@@ -207,7 +204,7 @@ JNIEXPORT void JNICALL Java_com_powervr_PVRCamera_CameraInterface_setTexCoordsPr
 	if (activeSession)
 	{
 		memcpy(glm::value_ptr(activeSession->projectionMatrix), flt1, 16 * sizeof(float));
-		pvr::Log(pvr::Log.Debug, "CameraInterface - Projection matrix changed. Projection matrix is now\n%4.3f %4.3f %4.3f %4.3f\n%4.3f %4.3f %4.3f %4.3f\n%4.3f %4.3f %4.3f %4.3f\n%4.3f %4.3f %4.3f %4.3f",
+		Log(LogLevel::Debug, "CameraInterface - Projection matrix changed. Projection matrix is now\n%4.3f %4.3f %4.3f %4.3f\n%4.3f %4.3f %4.3f %4.3f\n%4.3f %4.3f %4.3f %4.3f\n%4.3f %4.3f %4.3f %4.3f",
 		         activeSession->projectionMatrix[0][0], activeSession->projectionMatrix[0][1], activeSession->projectionMatrix[0][2], activeSession->projectionMatrix[0][3],
 		         activeSession->projectionMatrix[1][0], activeSession->projectionMatrix[1][1], activeSession->projectionMatrix[1][2], activeSession->projectionMatrix[1][3],
 		         activeSession->projectionMatrix[2][0], activeSession->projectionMatrix[2][1], activeSession->projectionMatrix[2][2], activeSession->projectionMatrix[2][3],
@@ -228,7 +225,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
 	if ((vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) ||
 	    (env == 0))
 	{
-		pvr::Log(pvr::Log.Debug, "CameraInterface - NativeGetEnv failed");
+		Log(LogLevel::Debug, "CameraInterface - NativeGetEnv failed");
 		return -1;
 	}
 
@@ -270,17 +267,17 @@ void pvr::CameraInterface::destroySession()
 	activeSession = NULL;
 }
 
-const pvr::native::HTexture_& pvr::CameraInterface::getRgbTexture()
+GLuint pvr::CameraInterface::getRgbTexture()
 {
-	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->hTexture;
+	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->texture;
 }
 
-pvr::native::HTexture_ dummy_texture(0, 0);
-const pvr::native::HTexture_& pvr::CameraInterface::getLuminanceTexture()
+GLuint dummy_texture(0);
+GLuint pvr::CameraInterface::getLuminanceTexture()
 {
 	return dummy_texture;
 }
-const pvr::native::HTexture_& pvr::CameraInterface::getChrominanceTexture()
+GLuint pvr::CameraInterface::getChrominanceTexture()
 {
 	return dummy_texture;
 }
@@ -302,13 +299,4 @@ const glm::mat4& pvr::CameraInterface::getProjectionMatrix()
 	static_cast<pvr::CameraInterfaceImpl*>(pImpl)->hasProjectionMatrixChanged = false;
 	return static_cast<pvr::CameraInterfaceImpl*>(pImpl)->projectionMatrix;
 }
-
-namespace pvr {
-api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& context, const native::HTexture_& cameraTexture)
-{
-	Log(Log.Verbose, "Camera interface util: Handle %d, Target 0x%08X", cameraTexture.handle, cameraTexture.target);
-	api::TextureStore texStore = context->createTexture();
-	static_cast<native::HTexture_&>(api::native_cast(*texStore)) = cameraTexture;
-	return context->createTextureView(texStore);
-}
-}
+//!\endcond

@@ -68,21 +68,12 @@ android {
 //Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
 FileCollection assetFiles = files(
 "${pvrSdkDir}/Examples/Intermediate/PostProcessing/ProcessedAssets/Marble.pvr",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/PostBloomFragShader_ES2.fsh",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/PostBloomFragShader_ES3.fsh",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/PostBloomVertShader_ES2.vsh",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/PostBloomVertShader_ES3.vsh",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/PreBloomFragShader_ES2.fsh",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/PreBloomFragShader_ES3.fsh",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/PreBloomVertShader_ES2.vsh",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/PreBloomVertShader_ES3.vsh",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/BlurFragShader_ES2.fsh",
 "${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/BlurFragShader_ES3.fsh",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/BlurVertShader_ES2.vsh",
 "${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/BlurVertShader_ES3.vsh",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/FragShader_ES2.fsh",
 "${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/FragShader_ES3.fsh",
-"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/VertShader_ES2.vsh",
+"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/PostBloomFragShader_ES3.fsh",
+"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/PreBloomFragShader_ES3.fsh",
+"${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/QuadVertShader_ES3.vsh",
 "${pvrSdkDir}/Examples/Intermediate/PostProcessing/OGLES/VertShader_ES3.vsh",
 "${pvrSdkDir}/Examples/Intermediate/PostProcessing/ProcessedAssets/scene.pod",
 
@@ -123,10 +114,8 @@ FileCollection assetFiles = files(
     def ndkDependencies=[
     ["PVRCore", "${pvrSdkDir}/Framework/PVRCore/Build/Android"],
     ["PVRAssets", "${pvrSdkDir}/Framework/PVRAssets/Build/Android"],
-    ["PVRNativeGles", "${pvrSdkDir}/Framework/PVRNativeApi/OGLES/Build/Android"],
-    ["PVRGles", "${pvrSdkDir}/Framework/PVRApi/OGLES/Build/Android"],
     ["PVRShell", "${pvrSdkDir}/Framework/PVRShell/Build/Android"],
-    ["PVREngineUtils", "${pvrSdkDir}/Framework/PVREngineUtils/Build/Android"]
+    ["PVRUtilsGles", "${pvrSdkDir}/Framework/PVRUtils/OGLES/Build/Android"]
     ]
 
 	//Create and configure a task for each combination of build type (debug/release or clean) and dependency

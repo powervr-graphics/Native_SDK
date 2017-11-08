@@ -7,30 +7,8 @@ needs.
 */
 
 #pragma once
-#define GLM_FORCE_RADIANS
-
-#ifdef _WIN32
-#define GLM_FORCE_SSE2
-#endif
-
 #include <cmath>
-#include "../External/glm/glm.hpp"
-#include "../External/glm/gtc/type_ptr.hpp"
-#include "../External/glm/gtc/matrix_inverse.hpp"
-#include "../External/glm/gtc/matrix_access.hpp"
-#include "../External/glm/gtx/quaternion.hpp"
-#include "../External/glm/gtx/transform.hpp"
-#include "../External/glm/gtx/transform.hpp"
-#include "../External/glm/gtx/simd_vec4.hpp"
-#include "../External/glm/gtx/simd_mat4.hpp"
-#include "../External/glm/gtx/fast_trigonometry.hpp"
-#include "Base/Defines.h"
-#include "Math/AxisAlignedBox.h"
-#include "Math/BoundingSphere.h"
-#include "Math/Plane.h"
-#include "Math/Rectangle.h"
-
-
+#include "PVRCore/Base/Types.h"
 
 namespace pvr {
 //!\cond NO_DOXYGEN
@@ -44,6 +22,7 @@ inline glm::mat4x4 toMat4(const optimizedMat4& mat)
 }
 }
 #else
+
 namespace internal {
 typedef glm::mat4 optimizedMat4;
 typedef glm::vec4 optimizedVec4;
@@ -51,12 +30,21 @@ inline glm::mat4x4 toMat4(const optimizedMat4& mat)
 {
 	return mat;
 }
+
 }
 #endif
 //!\endcond
 
 namespace math {
 
+/// <summary>Calculate the Greatest Common Divisor of two numbers (the larger number that,
+/// if used to divide either value, has a remainder of zero. Order is irrelevant</summary>
+/// <typeparam name="T">The type of the values. Must have equality, assignment and modulo
+/// defined</typeparam>
+/// <param name="lhs">One of the input values</param>
+/// <param name="rhs">The other input values</param>
+/// <returns>The GCD. If the numbers are "coprime" (have no common divisor exept 1),
+/// the GCD is 1. </returns>
 template<typename T>
 inline T gcd(T lhs, T rhs)
 {
@@ -70,12 +58,30 @@ inline T gcd(T lhs, T rhs)
 	}
 }
 
+/// <summary>Calculate the Least Common Multiple of two numbers (the smaller integer that
+/// is a factor of both numbers). Order is irrelevant. If either of the numbers is 0, will
+/// return 0</summary>
+/// <typeparam name="T">The type of the values. Must have equality, assignment multiplication
+/// and either modulo or a gcd function defined</typeparam>
+/// <param name="lhs">One of the input values</param>
+/// <param name="rhs">The other input values</param>
+/// <returns>The LCM. If the inputs don't have any common factors (except 1), the LCM is
+/// equal to lhs * rhs. If either input is 0, returns 0.</returns>
 template<typename T>
 inline T lcm(T lhs, T rhs)
 {
 	return (lhs / gcd(lhs, rhs)) * rhs;
 }
 
+/// <summary>Calculate the Least Common Multiple of two numbers (the smaller integer that
+/// is a multiple of both numbers), but discards 0: If either number is 0, will return the
+/// other number</summary>
+/// <typeparam name="T">The type of the values. Must have equality, assignment multiplication
+/// and either modulo or a gcd function defined</typeparam>
+/// <param name="lhs">One of the input values</param>
+/// <param name="rhs">The other input values</param>
+/// <returns>The LCM. If the numbers don't have any common factors (except 1), the LCM is
+/// equal to lhs * rhs. If either input is 0, returns the other</returns>
 template<typename T>
 inline T lcm_with_max(T lhs, T rhs)
 {
@@ -87,31 +93,34 @@ inline T lcm_with_max(T lhs, T rhs)
 	return strict;
 }
 
-
-template<typename T>
-inline T roundAwayFromZero(T roundThis, T roundTo)
+/// <summary>Pack 4 values (red, green, blue, alpha) in the range of 0-255 into a single 32 bit unsigned Integer
+/// unsigned.</summary>
+/// <param name="r">Red channel (8 bit)</param>
+/// <param name="g">Blue channel (8 bit)</param>
+/// <param name="b">Red channel (8 bit)</param>
+/// <param name="a">Red channel (8 bit)</param>
+/// <returns>32 bit RGBA value</returns>
+inline uint32_t packRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
-	if (roundTo == 0) { return roundThis; }
-	T positive = T(roundThis >= 0);
-	return ((roundThis + (positive * (roundTo - 1))) / roundTo) * roundTo;
+	return (static_cast<uint32_t>(((a) << 24) | ((b) << 16) | ((g) << 8) | (r)));
 }
 
-/// <summary>Pack 4 values (red, green, blue, alpha) in the range of 0-255 into a single 32 bit unsigned integer
+/// <summary>Pack 4 values (red, green, blue, alpha) in the range of 0.0-1.0 into a single 32 bit unsigned Integer
 /// unsigned.</summary>
-inline uint32 packRGBA(uint8 r, uint8 g, uint8 b, uint8 a)
+/// <param name="r">Red channel (normalized 0.0-1.0)</param>
+/// <param name="g">Blue channel (normalized 0.0-1.0)</param>
+/// <param name="b">Red channel (normalized 0.0-1.0)</param>
+/// <param name="a">Red channel (normalized 0.0-1.0)</param>
+/// <returns>32 bit RGBA value</returns>
+inline uint32_t packRGBA(float r, float g, float b, float a)
 {
-	return ((uint32)(((a) << 24) | ((b) << 16) | ((g) << 8) | (r)));
-}
-
-/// <summary>Pack 4 values (red, green, blue, alpha) in the range of 0.0-1.0 into a single 32 bit unsigned integer
-/// unsigned.</summary>
-inline uint32 packRGBA(float32 r, float32 g, float32 b, float32 a)
-{
-	return packRGBA(uint8(r * 255), uint8(g * 255), uint8(b * 255), uint8(a * 255));
+	return packRGBA(static_cast<uint8_t>(r * 255), static_cast<uint8_t>(g * 255), static_cast<uint8_t>(b * 255), static_cast<uint8_t>(a * 255));
 }
 
 /// <summary>Return the smallest power of two that is greater than or equal to the provided value.</summary>
-inline int32 makePowerOfTwoHigh(int32 iVal)
+/// <param name="iVal">An integer value.</param>
+/// <returns>The smallest PoT that is greater or equal to iVal</returns>
+inline int32_t makePowerOfTwoHigh(int32_t iVal)
 {
 	int iTmp = 1;
 	do
@@ -123,7 +132,9 @@ inline int32 makePowerOfTwoHigh(int32 iVal)
 }
 
 /// <summary>Return the smallest power of two that is less than or equal to the provided value.</summary>
-inline int32 makePowerOfTwoLow(int32 iVal)
+/// <param name="iVal">An integer value.</param>
+/// <returns>The smallest PoT that is less or equal to iVal</returns>
+inline int32_t makePowerOfTwoLow(int32_t iVal)
 {
 	int iTmp = 1;
 	do
@@ -141,9 +152,9 @@ inline int32 makePowerOfTwoLow(int32 iVal)
 /// </param>
 /// <param name="screenSize">The size of the screen along the direction in question (same as ndc)</param>
 /// <returns>Pixel coordinates from normalized device coordinates</returns>
-inline pvr::int32 ndcToPixel(pvr::float32 ndc, pvr::int32 screenSize)
+inline int32_t ndcToPixel(float ndc, int32_t screenSize)
 {
-	return (int32)(ndc  * screenSize * .5f + screenSize * .5f);
+	return static_cast<int32_t>(ndc  * screenSize * .5f + screenSize * .5f);
 }
 
 
@@ -152,7 +163,7 @@ inline pvr::int32 ndcToPixel(pvr::float32 ndc, pvr::int32 screenSize)
 /// direction as screenSize)</param>
 /// <param name="screenSize">The size of the screen along the direction in question (same as pixelCoord)</param>
 /// <returns>Normalized device coordinates (number in the 0..1 range)</returns>
-inline pvr::float32 pixelToNdc(pvr::int32 pixelCoord, pvr::int32 screenSize)
+inline float pixelToNdc(int32_t pixelCoord, int32_t screenSize)
 {
 	return (2.f / screenSize) * (pixelCoord - screenSize * .5f);
 }
@@ -161,9 +172,10 @@ inline pvr::float32 pixelToNdc(pvr::int32 pixelCoord, pvr::int32 screenSize)
 /// </summary>
 /// <param name="start">The starting point.</param>
 /// <param name="end">The end point</param>
-/// <param name="factor">Interpolation factor. At 0, returns start. At 1, returns end. Closer to 0, the rate of change is
-/// faster, closer to 1 slower.</param>
-inline float quadraticEaseOut(pvr::float32 start, pvr::float32 end, pvr::float32 factor)
+/// <param name="factor">Current LINEAR interpolation factor, from 0..1</param>0
+/// <returns> For <paramRef name="factor"/>=0, returns <paramRef name="start"/>. For <paramRef name="factor"/>=1, returns <paramRef name="end"/>.
+/// Closer to 0, the rate of change is faster, closer to 1 slower.</param>
+inline float quadraticEaseOut(float start, float end, float factor)
 {
 	float fTInv = 1.0f - factor;
 	return ((start - end) * fTInv * fTInv) + end;
@@ -175,73 +187,66 @@ inline float quadraticEaseOut(pvr::float32 start, pvr::float32 end, pvr::float32
 /// <param name="end">The end point</param>
 /// <param name="factor">Interpolation factor. At 0, returns start. At 1, returns end. Closer to 0, the rate of change is
 /// slower, closer to 1 faster.</param>
-inline float quadraticEaseIn(pvr::float32 start, pvr::float32 end, pvr::float32 factor)
+/// <returns>The modified value to use, quadratically interpolated between start and end with factor factor.</returns>
+inline float quadraticEaseIn(float start, float end, float factor)
 {
 	return ((end - start) * factor * factor) + start;
 }
 
-
-/*!\cond NO_DOXYGEN
-//Bug fix for glm
-template <typename T, glm::precision P>
-GLM_FUNC_QUALIFIER glm::mat3 translate(glm::detail::tmat3x3<T, P> const& m, glm::detail::tvec2<T, P> const& v)
+/// <summary>Performs line -to - plane intersection </summary>
+/// <typeparam name="genType">A glm:: vector type. Otherwise, a type with the following
+/// operations defined: A typename member value_type (type of scalar), +/- (vector add/mul), / (divide
+/// by scalar), and a dot() function in either the global or glm:: namespace</typeparam>
+/// <param name="origin">The start point of the line</param>
+/// <param name="dir">The (positive) direction of the line</param>
+/// <param name="planeOrigin">Any point on the plane</param>
+/// <param name="planeNormal">The normal of the plane</param>
+/// <param name="intersectionDistance">Output parameter: If an intersection happens, this parameter
+/// will contain the signed distance from <paramRef name="origin"> towards <paramRef name="dir"> of
+/// the intersection point.</param>
+/// <param name="epsilon">For any comparison calculations, any value smaller than that will be considered
+/// zero (otherwise, if two numbers difference is smaller than this, they are considered equal) </param>
+/// <returns>True if the line and plane intersect, otherwise false</returns>
+template <typename genType> bool intersectLinePlane
+(
+  genType const& origin, genType const& dir,
+  genType const& planeOrigin, genType const& planeNormal,
+  typename genType::value_type& intersectionDistance,
+  typename genType::value_type epsilon = std::numeric_limits<typename genType::value_type>::epsilon()
+)
 {
-  glm::detail::tmat3x3<T, P> Result(m);
-  Result[2] = m[0] * v[0] + m[1] * v[1] + m[2];
-  return Result;
+	using namespace glm;
+	typename genType::value_type d = dot(dir, planeNormal);
+
+	if (glm::abs(d) > epsilon)
+	{
+		intersectionDistance = dot(planeOrigin - origin, planeNormal) / d;
+		return true;
+	}
+	return false;
 }
 
-template <typename T, glm::precision P>
-GLM_FUNC_QUALIFIER glm::detail::tmat3x3<T, P> translate(glm::detail::tvec2<T, P> const& v)
+/// <summary>Get a vector that is perpendicular to another vector</summary>
+/// <typeparam name="Vec2">A vector with two components that can be accessed through .x and .y</typeparam>
+/// <param name="aVector">A vector</param>
+/// <returns>A vector that is perpendicular to <paramRef name="aVector"/></returns>
+template <typename Vec2> Vec2 getPerpendicular
+(Vec2 const& aVector)
 {
-  return translate(glm::detail::tmat3x3<T, P>(1.0f), v);
+	return Vec2(aVector.y, -aVector.x);
 }
 
-template <typename T, glm::precision P>
-GLM_FUNC_QUALIFIER glm::detail::tmat3x3<T, P> scale(glm::detail::tmat3x3<T, P> const& m, glm::detail::tvec2<T, P> const& v)
-{
-  glm::detail::tmat3x3<T, P> Result(glm::detail::tmat3x3<T, P>::_null);
-  Result[0] = m[0] * v[0];
-  Result[1] = m[1] * v[1];
-  Result[2] = m[2];
-  return Result;
-}
-
-template <typename T, glm::precision P>
-GLM_FUNC_QUALIFIER glm::detail::tmat3x3<T, P> scale(glm::detail::tvec2<T, P> const& v)
-{
-  return scale(glm::detail::tmat3x3<T, P>(1.0f), v);
-}
-\endcond
-*/
-
-<<<<<<< HEAD
-/*!********************************************************************************************
-\brief Calculated a tilted projection matrix
-\param fovy The field of vision in the y axis
-\param aspect The aspect  of the viewport
-\param near1 The near clipping plane distance (name is not near to avoid clash with platform keywords)
-\param far1 The far clipping plane distance (name is not near to avoid clash with platform keywords)
-\param rotate Angle of tilt (rotation around the z axis), in radians
-\param api The graphics API for which this matrix will be created. It is used for things such
-as the Framebuffer coordinate conventions.
-\return	A projection matrix for the specified parameters, tilted by rotate
-***********************************************************************************************/
-=======
-/// <summary>Calculated a tilted projection matrix</summary>
+/// <summary>Calculated a tilted perspective projection matrix</summary>
+/// <param name="api">The graphics API for which this matrix will be created. It is used for the
+/// Framebuffer coordinate convention.</param>
 /// <param name="fovy">The field of vision in the y axis</param>
 /// <param name="aspect">The aspect of the viewport</param>
-/// <param name="near1">The near clipping plane distance (name is not near to avoid clash with platform keywords)
-/// </param>
-/// <param name="far1">The far clipping plane distance (name is not near to avoid clash with platform keywords)
-/// </param>
+/// <param name="near1">The near clipping plane distance (trailing 1 to avoid win32 keyword)</param>
+/// <param name="far1">The far clipping plane distance (trailing 1 to avoid win32 keyword)</param>
 /// <param name="rotate">Angle of tilt (rotation around the z axis), in radians</param>
-/// <param name="api">The graphics API for which this matrix will be created. It is used for things such as the
-/// Framebuffer coordinate conventions.</param>
 /// <returns>A projection matrix for the specified parameters, tilted by rotate</returns>
->>>>>>> 1776432f... 4.3
-inline glm::mat4 perspective(pvr::Api api, float32 fovy, float32 aspect, float32 near1,
-                             float32 far1, pvr::float32 rotate = .0f)
+inline glm::mat4 perspective(Api api, float fovy, float aspect, float near1,
+                             float far1, float rotate = .0f)
 {
 	glm::mat4 mat = glm::perspective(fovy, aspect, near1, far1);
 	if (api == Api::Vulkan)
@@ -251,21 +256,7 @@ inline glm::mat4 perspective(pvr::Api api, float32 fovy, float32 aspect, float32
 	return (rotate == 0.f ? mat : glm::rotate(rotate, glm::vec3(0.0f, 0.0f, 1.0f)) * mat);
 }
 
-<<<<<<< HEAD
-/*!********************************************************************************************
-\brief	Calculated a tilted projection matrix
-\param	fovy The field of vision in the y axis
-\param	width The width  of the viewport
-\param	height The height of the viewport
-\param	near1 The near clipping plane distance
-\param	far1 The far clipping plane distance
-\param	rotate Angle of tilt (rotation around the z axis), in radians
-\param api The graphics API for which this matrix will be created. It is used for things such
-as the Framebuffer coordinate conventions.
-\return	A projection matrix for the specified parameters, tilted by rotate
-***********************************************************************************************/
-=======
-/// <summary>Calculated a tilted projection matrix</summary>
+/// <summary>Calculated a tilted perspective projection matrix</summary>
 /// <param name="fovy">The field of vision in the y axis</param>
 /// <param name="width">The width of the viewport</param>
 /// <param name="height">The height of the viewport</param>
@@ -275,26 +266,31 @@ as the Framebuffer coordinate conventions.
 /// <param name="api">The graphics API for which this matrix will be created. It is used for things such as the
 /// Framebuffer coordinate conventions.</param>
 /// <returns>A projection matrix for the specified parameters, tilted by rotate</returns>
->>>>>>> 1776432f... 4.3
-inline glm::mat4 perspectiveFov(pvr::Api api, float32 fovy, float32 width, float32 height,
-                                float32 near1, float32 far1, pvr::float32 rotate = .0f)
+inline glm::mat4 perspectiveFov(Api api, float fovy, float width, float height,
+                                float near1, float far1, float rotate = .0f)
 {
 	return perspective(api, fovy, width / height, near1, far1, rotate);
 }
 
-inline glm::mat4 ortho(pvr::Api api, float32 left, float32 right, float32 bottom,
-                       float32 top, float32 rotate = 0.0f)
+/// <summary>Calculated an orthographic projection tilted projection matrix</summary>
+/// <param name="left">The x coordinate of the left clipping plane</param>
+/// <param name="right">The x coordinate of the right clipping plane</param>
+/// <param name="bottom">The y coordinate of the bottom clipping plane</param>
+/// <param name="top">The y coordinate of the bottom clipping plane</param>
+/// <param name="rotate">Angle of tilt (rotation around the z axis), in radians</param>
+/// <param name="api">The graphics API for which this matrix will be created. It is used for things such as the
+/// Framebuffer coordinate conventions.</param>
+/// <returns>An orthographic projection matrix for the specified parameters, tilted by rotate</returns>
+inline glm::mat4 ortho(Api api, float left, float right, float bottom,
+                       float top, float rotate = 0.0f)
 {
 	if (api == pvr::Api::Vulkan)
 	{
 		std::swap(bottom, top);// Vulkan origin y is top
 	}
-	glm::mat4 proj = glm::ortho<pvr::float32>(left, right, bottom, top);
+	glm::mat4 proj = glm::ortho<float>(left, right, bottom, top);
 	return (rotate == 0.0f ? proj : glm::rotate(rotate, glm::vec3(0.0f, 0.0f, 1.0f)) * proj);
 }
-
-
-
 
 }
 }

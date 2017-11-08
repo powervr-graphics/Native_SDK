@@ -18,7 +18,7 @@ namespace utils {
 /// <param name="offset_bytes">Offset to the vertex data</param>
 /// <param name="size_bytes">Data size</param>
 /// <returns>The Axis-aligned bounding box of the data</returns>
-inline math::AxisAlignedBox getBoundingBox(const byte* data, size_t stride_bytes, size_t offset_bytes, size_t size_bytes)
+inline math::AxisAlignedBox getBoundingBox(const char* data, size_t stride_bytes, size_t offset_bytes, size_t size_bytes)
 {
 	math::AxisAlignedBox aabb;
 	assertion(data);
@@ -55,7 +55,7 @@ inline math::AxisAlignedBox getBoundingBox(const Mesh& mesh, const char* positio
 	const Mesh::VertexAttributeData* vbo = mesh.getVertexAttributeByName(positionSemanticName);
 	if (vbo)
 	{
-		return getBoundingBox(static_cast<const byte*>(mesh.getData(vbo->getDataIndex())), vbo->getStride(), vbo->getOffset(),
+		return getBoundingBox(static_cast<const char*>(mesh.getData(vbo->getDataIndex())), vbo->getStride(), vbo->getOffset(),
 		                      mesh.getDataSize(vbo->getDataIndex()));
 	}
 }

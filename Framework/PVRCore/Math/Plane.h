@@ -20,7 +20,7 @@ public:
 	/// <param name="dist">The signed distance, along the plane's normal direction, between the coordinate start and
 	/// (0,0,0). This number is defined as the number that the normal must be multiplied with so that the normal's
 	/// coordinates define a point on the plane.</param>
-	Plane3d(const glm::vec3& normal, float32 dist) : _norm(normal), _dist(dist) {}
+	Plane3d(const glm::vec3& normal, float dist) : _norm(normal), _dist(dist) {}
 
 	/// <summary>Constructs a plane from normal and a point on this plane.</summary>
 	/// <param name="normal">The normal of this plane. If it is not normalized, unexpected results may occur.</param>
@@ -40,7 +40,7 @@ public:
 	/// <param name="dist">The signed distance, along the plane's normal direction, between the coordinate start and
 	/// (0,0,0). This number is defined as the number that the normal must be multiplied with so that the normal's
 	/// coordinates define a point on the plane.</param>
-	void set(const glm::vec3& normal, float32 dist) { set(normal, dist); }
+	void set(const glm::vec3& normal, float dist) { _norm = normal, _dist = dist; }
 
 	/// <summary>Sets a plane from normal and a point on this plane.</summary>
 	/// <param name="normal">The normal of this plane. If it is not normalized, unexpected results may occur.</param>
@@ -68,11 +68,11 @@ public:
 	/// negative means distance opposite to the normal's direction.</summary>
 	/// <param name="point">The point</param>
 	/// <returns>The signed distance between the point and this plane.</returns>
-	float32 distanceTo(const glm::vec3& point)	{ return glm::dot(_norm, point) - _dist; }
+	float distanceTo(const glm::vec3& point)	{ return glm::dot(_norm, point) - _dist; }
 
 	/// <summary>Get the distance of this plane to the coordinate start (0,0,0).</summary>
 	/// <returns>The distance of this plane to the coordinate start (0,0,0)</returns>
-	float32 getDistance()const { return _dist; }
+	float getDistance()const { return _dist; }
 
 	/// <summary>Get the normal of this plane.</summary>
 	/// <returns>The normal of this plane.</returns>
@@ -83,6 +83,6 @@ public:
 	void transform(glm::mat4& transMtx) {	glm::transpose(glm::inverse(transMtx)) * glm::vec4(_norm, _dist);	}
 private:
 	glm::vec3	_norm;
-	float32		_dist;
+	float		_dist;
 };
 }// namespace pvr

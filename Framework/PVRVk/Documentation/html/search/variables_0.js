@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['_5fcreateflags',['_createFlags',['../classpvrvk_1_1impl_1_1_image__.html#a0d6483f6c867d0a1c4612a5ab09a3415',1,'pvrvk::impl::Image_']]],
+  ['_5fdevice',['_device',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a86e1b4cc6a21665d524d41e661036e99',1,'pvrvk::impl::CommandBufferBase_']]],
+  ['_5fextents',['_extents',['../classpvrvk_1_1impl_1_1_image__.html#abc0ec798c9b233f089fd63e4e09dea46',1,'pvrvk::impl::Image_']]],
+  ['_5fformat',['_format',['../classpvrvk_1_1impl_1_1_image__.html#ab3ee0a65e704fde4bd5ebe7c8badb02e',1,'pvrvk::impl::Image_']]],
+  ['_5fimagetype',['_imageType',['../classpvrvk_1_1impl_1_1_image__.html#a2bbe90229b3739deb081ec9119bed661',1,'pvrvk::impl::Image_']]],
+  ['_5fisrecording',['_isRecording',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a759e4e7ca81cb8812048075ddcf274d6',1,'pvrvk::impl::CommandBufferBase_']]],
+  ['_5fistransient',['_isTransient',['../classpvrvk_1_1impl_1_1_image__.html#a4f2faa1b2d366a5d8695950d339d721f',1,'pvrvk::impl::Image_']]],
+  ['_5flastboundcomputepipe',['_lastBoundComputePipe',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a943d27103dec9450a0966c8352aef979',1,'pvrvk::impl::CommandBufferBase_']]],
+  ['_5flastboundgraphicspipe',['_lastBoundGraphicsPipe',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#aa0f1be52e5e2affe2a3f57ea68a8d036',1,'pvrvk::impl::CommandBufferBase_']]],
+  ['_5fmemory',['_memory',['../classpvrvk_1_1impl_1_1_image__.html#a5088814b6a07e1004ec1f57ebf9c1f90',1,'pvrvk::impl::Image_']]],
+  ['_5fmemreqs',['_memReqs',['../classpvrvk_1_1impl_1_1_image__.html#a32db62c99ebe08d860045b45ce665885',1,'pvrvk::impl::Image_']]],
+  ['_5fnumsamples',['_numSamples',['../classpvrvk_1_1impl_1_1_image__.html#a0be20a8ca5f1c6e881115e2bc8ea207c',1,'pvrvk::impl::Image_']]],
+  ['_5fobjectreferences',['_objectReferences',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a2c87869144c258a576df247c3555252d',1,'pvrvk::impl::CommandBufferBase_']]],
+  ['_5fpool',['_pool',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#adb4cc024978587b241ae65a8541d5815',1,'pvrvk::impl::CommandBufferBase_']]],
+  ['_5fusage',['_usage',['../classpvrvk_1_1impl_1_1_image__.html#aca27fdb78a2673db88f8a1de759f48e6',1,'pvrvk::impl::Image_']]],
+  ['_5fvkcmdbuffer',['_vkCmdBuffer',['../classpvrvk_1_1impl_1_1_command_buffer_base__.html#a7906881f09d2e7f2a137438771f53377',1,'pvrvk::impl::CommandBufferBase_']]],
+  ['_5fvkimage',['_vkImage',['../classpvrvk_1_1impl_1_1_image__.html#a4e48341c36cec9a177203fe690650b5c',1,'pvrvk::impl::Image_']]]
+];

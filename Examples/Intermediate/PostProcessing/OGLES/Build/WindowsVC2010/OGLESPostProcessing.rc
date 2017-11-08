@@ -62,21 +62,12 @@ END
 scene.pod		RCDATA		"..\\..\\..\\ProcessedAssets\\scene.pod"
 
 // RCDATA: Shaders
-PostBloomFragShader_ES2.fsh		RCDATA		"..\\..\\PostBloomFragShader_ES2.fsh"
-PostBloomFragShader_ES3.fsh		RCDATA		"..\\..\\PostBloomFragShader_ES3.fsh"
-PostBloomVertShader_ES2.vsh		RCDATA		"..\\..\\PostBloomVertShader_ES2.vsh"
-PostBloomVertShader_ES3.vsh		RCDATA		"..\\..\\PostBloomVertShader_ES3.vsh"
-PreBloomFragShader_ES2.fsh		RCDATA		"..\\..\\PreBloomFragShader_ES2.fsh"
-PreBloomFragShader_ES3.fsh		RCDATA		"..\\..\\PreBloomFragShader_ES3.fsh"
-PreBloomVertShader_ES2.vsh		RCDATA		"..\\..\\PreBloomVertShader_ES2.vsh"
-PreBloomVertShader_ES3.vsh		RCDATA		"..\\..\\PreBloomVertShader_ES3.vsh"
-BlurFragShader_ES2.fsh		RCDATA		"..\\..\\BlurFragShader_ES2.fsh"
 BlurFragShader_ES3.fsh		RCDATA		"..\\..\\BlurFragShader_ES3.fsh"
-BlurVertShader_ES2.vsh		RCDATA		"..\\..\\BlurVertShader_ES2.vsh"
 BlurVertShader_ES3.vsh		RCDATA		"..\\..\\BlurVertShader_ES3.vsh"
-FragShader_ES2.fsh		RCDATA		"..\\..\\FragShader_ES2.fsh"
 FragShader_ES3.fsh		RCDATA		"..\\..\\FragShader_ES3.fsh"
-VertShader_ES2.vsh		RCDATA		"..\\..\\VertShader_ES2.vsh"
+PostBloomFragShader_ES3.fsh		RCDATA		"..\\..\\PostBloomFragShader_ES3.fsh"
+PreBloomFragShader_ES3.fsh		RCDATA		"..\\..\\PreBloomFragShader_ES3.fsh"
+QuadVertShader_ES3.vsh		RCDATA		"..\\..\\QuadVertShader_ES3.vsh"
 VertShader_ES3.vsh		RCDATA		"..\\..\\VertShader_ES3.vsh"
 
 // RCDATA: Textures

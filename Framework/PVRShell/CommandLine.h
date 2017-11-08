@@ -20,16 +20,22 @@ public:
 	class ParsedCommandLine
 	{
 	public:
-		/// <summary>A c-style string name-value pair that represents command line argument (arg: name, val: value)
+		/// <summary>A c-style std::string name-value pair that represents command line argument (arg: name, val: value)
 		/// </summary>
 		struct Option
 		{
 			const char* arg; //!< Argument name (i.e. -Width)
 			const char* val; //!< Argument value (i.e. 640)
+			/// <summary>Equality</summary>
+			/// <param name="rhs">Right hand side of the operator</param>
+			/// <returns>True if left and right side are equal, otherwise false</returns>
 			bool operator==(const Option& rhs) const
 			{
 				return strcmp(arg, rhs.arg) == 0;
 			}
+			/// <summary>Equality to c-string</summary>
+			/// <param name="rhs">Right hand side of the operator</param>
+			/// <returns>True if left and right side are equal, otherwise false</returns>
 			bool operator==(const char* rhs) const
 			{
 				return strcmp(arg, rhs) == 0;
@@ -37,46 +43,30 @@ public:
 		};
 		typedef std::vector<Option> Options;//!< List of all options passed
 
-		/// <summary>Get all command line options as a list of c-string name/value pairs</summary>
+		/// <summary>Get all command line options as a list of name/value pairs (c-strings)</summary>
+		/// <returns>The command line options</returns>
 		const Options& getOptionsList() const;
 
-		/// <summary>Query if a specific argument name exists</summary>
+		/// <summary>Query if a specific argument name exists (regardless of the presence of a value or not). For
+		/// example, if the command line was "myapp.exe -fps", the query hasOption("fps") will return true.</summary>
+		/// <param name="name">The argument name to test</param>
+		/// <returns>True if the argument name was passed through the command line , otherwise false.</returns>
 		bool hasOption(const char* name) const;
 
-		/// <summary>Get an argument as a string value. Returns false and leaves the value unchanged if the value is not
+		/// <summary>Get an argument as a std::string value. Returns false and leaves the value unchanged if the value is not
 		/// present, allowing very easy use of default arguments.</summary>
 		/// <param name="name">The command line argument (e.g. "-captureFrames")</param>
 		/// <param name="outValue">The value passed with the argument (verbatim). If the name was not present, it remains
 		/// unchanged</param>
 		/// <returns>True if the argument "name" was present, false otherwise</returns>
 		bool getStringOption(const char* name, std::string& outValue) const;
-<<<<<<< HEAD
-		/*!*********************************************************************************************************************
-		\brief  Get an argument's value as a float value. Returns false and leaves the value unchanged if the value is not present,
-		allowing very easy use of default arguments.
-		\param[in]	name The command line argument (e.g. "-captureFrames")
-		\param[out]	outValue The value passed with the argument interpreted as a float. If the name was not present, it remains
-		unchanged. If it was not representing a float, it silently returns zero (0.0).
-		\return	True if the argument "name" was present, false otherwise
-		***********************************************************************************************************************/
-		bool getFloatOption(const char* name, float32& outValue) const;
-
-		/*!*********************************************************************************************************************
-		\brief  Get an argument's value as an integer value. Returns false and leaves the value unchanged if the value is not present,
-		allowing very easy use of default arguments.
-		\param[in]	name The command line argument (e.g. "-captureFrames")
-		\param[out]	outValue The value passed with the argument interpreted as an integer. If the name was not present, it remains
-		unchanged. If it was not representing a float, it silently returns zero (0).
-		\return	True if the argument "name" was present, false otherwise
-		***********************************************************************************************************************/
-=======
 		/// <summary>Get an argument's value as a float value. Returns false and leaves the value unchanged if the value
 		/// is not present, allowing very easy use of default arguments.</summary>
 		/// <param name="name">The command line argument (e.g. "-captureFrames")</param>
 		/// <param name="outValue">The value passed with the argument interpreted as a float. If the name was not present,
 		/// it remains unchanged. If it was not representing a float, it silently returns zero (0.0).</param>
 		/// <returns>True if the argument "name" was present, false otherwise</returns>
-		bool getFloatOption(const char* name, float32& outValue) const;
+		bool getFloatOption(const char* name, float& outValue) const;
 
 		/// <summary>Get an argument's value as an integer value. Returns false and leaves the value unchanged if the
 		/// value is not present, allowing very easy use of default arguments.</summary>
@@ -84,8 +74,7 @@ public:
 		/// <param name="outValue">The value passed with the argument interpreted as an integer. If the name was not
 		/// present, it remains unchanged. If it was not representing a float, it silently returns zero (0).</param>
 		/// <returns>True if the argument "name" was present, false otherwise</returns>
->>>>>>> 1776432f... 4.3
-		bool getIntOption(const char* name, int32& outValue) const;
+		bool getIntOption(const char* name, int32_t& outValue) const;
 
 		/// <summary>If a specific argument was present, set outValue to True.</summary>
 		/// <param name="name">The command line argument (e.g. "-captureFrames")</param>
@@ -108,11 +97,12 @@ public:
 	CommandLineParser();
 
 	/// <summary>Get a ParsedCommandLine option to inspect and use the command line arguments.</summary>
+	/// <returns>The processed command line object.</returns>
 	const ParsedCommandLine& getParsedCommandLine() const;
 
 
-	/// <summary>Set the command line to a new string (wide).</summary>
-	/// <param name="cmdLine">The new (wide) string to set the command line to</param>
+	/// <summary>Set the command line to a new std::string (wide).</summary>
+	/// <param name="cmdLine">The new (wide) std::string to set the command line to</param>
 	void set(const wchar_t* cmdLine);
 
 	/// <summary>Set the command line to a new list of arguments.</summary>
@@ -120,8 +110,8 @@ public:
 	/// <param name="argv">The list of arguments</param>
 	void set(int argc, char** argv);
 
-	/// <summary>Set the command line from a new string.</summary>
-	/// <param name="cmdLine">The new string to set the command line to</param>
+	/// <summary>Set the command line from a new std::string.</summary>
+	/// <param name="cmdLine">The new std::string to set the command line to</param>
 	void set(const char* cmdLine);
 
 	/// <summary>Set the command line from a stream.</summary>
@@ -133,7 +123,7 @@ public:
 	void set(const CommandLineParser& commandLine);
 
 	/// <summary>Prepend data to the command line.</summary>
-	/// <param name="cmdLine">A string containing the data to prepend to this command line</param>
+	/// <param name="cmdLine">A std::string containing the data to prepend to this command line</param>
 	void prefix(const wchar_t* cmdLine);
 
 	/// <summary>Prepend a new list of arguments to the command line.</summary>
@@ -141,8 +131,8 @@ public:
 	/// <param name="argv">The list of arguments</param>
 	void prefix(int argc, char** argv);
 
-	/// <summary>Prepend data from a string to the command line.</summary>
-	/// <param name="cmdLine">The string whose data to prepend to the command line</param>
+	/// <summary>Prepend data from a std::string to the command line.</summary>
+	/// <param name="cmdLine">The std::string whose data to prepend to the command line</param>
 	void prefix(const char* cmdLine);
 
 	/// <summary>Prepend data from a stream to the command line.</summary>
@@ -154,7 +144,7 @@ public:
 	void prefix(const CommandLineParser& cmdLine);
 
 	/// <summary>Append data to the command line.</summary>
-	/// <param name="cmdLine">A string containing the data to append to this command line</param>
+	/// <param name="cmdLine">A std::string containing the data to append to this command line</param>
 	void append(const wchar_t* cmdLine);
 
 	/// <summary>Append a new list of arguments to the command line.</summary>
@@ -162,8 +152,8 @@ public:
 	/// <param name="argv">The list of arguments</param>
 	void append(int argc, char** argv);
 
-	/// <summary>Append data from a string to the command line.</summary>
-	/// <param name="cmdLine">The string whose data to append to the command line</param>
+	/// <summary>Append data from a std::string to the command line.</summary>
+	/// <param name="cmdLine">The std::string whose data to append to the command line</param>
 	void append(const char* cmdLine);
 
 	/// <summary>Append data from a stream to the command line.</summary>
@@ -175,16 +165,16 @@ public:
 	void append(const CommandLineParser& cmdLine);
 
 protected:
-	/// <summary>Parse an entire string for command line data.</summary>
-	/// <param name="cmdLine">The string containing the command line data</param>
-	void parseCmdLine(const char8* const cmdLine);
+	/// <summary>Parse an entire std::string for command line data.</summary>
+	/// <param name="cmdLine">The std::string containing the command line data</param>
+	void parseCmdLine(const char* const cmdLine);
 
 	/// <summary>Parse a single argument as passed by the C/C++ style argc/argv command line format.</summary>
 	/// <param name="arg">A single element of the "argv" array of char*</param>
 	void parseArgV(char* arg);
 
 private:
-	uint32 findArg(const char* pArg) const;
+	uint32_t findArg(const char* pArg) const;
 	bool readFlag(const char* pArg, bool& bVal) const;
 	bool readUint(const char* pArg, unsigned int& uiVal) const;
 	bool readFloat(const char* pArg, float& fVal) const;
@@ -192,7 +182,7 @@ private:
 	ParsedCommandLine _commandLine;
 
 };
-typedef CommandLineParser::ParsedCommandLine CommandLine;
 }
-
+///<summary> Typedef of the CommandLine into the pvr namespace</summary>
+typedef platform::CommandLineParser::ParsedCommandLine CommandLine;
 }

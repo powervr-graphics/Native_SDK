@@ -99,6 +99,48 @@
   <None Include="..\..\PointLightPass3VertexShader.vsh.spv">
       <Filter>Content Files\Shaders</Filter>
   </None>
+  <None Include="..\..\AttributelessVertexShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\GBufferFragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\GBufferVertexShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\GBufferFloorFragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\GBufferFloorVertexShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\DirectionalLightFragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass1FragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass1VertexShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass2FragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass2VertexShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass3FragmentShader.fsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\PointLightPass3VertexShader.vsh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\recompile.sh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\recompile.bat">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
   <None Include="..\..\effect_MRT_PFX3.pfx">
       <Filter>Content Files\Shaders</Filter>
   </None>

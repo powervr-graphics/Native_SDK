@@ -10,6 +10,7 @@
 #include "PVRCore/Texture/FileDefinesDDS.h"
 #include "PVRCore/IO/AssetReader.h"
 
+//!\cond NO_DOXYGEN
 namespace pvr {
 namespace assets {
 namespace assetReaders {
@@ -27,9 +28,10 @@ public:
 	virtual std::vector<std::string> getSupportedFileExtensions();
 private:
 	virtual bool readNextAsset(Texture& asset);
-	uint32 getDirect3DFormatFromDDSHeader(texture_dds::FileHeader& textureFileHeader);
+	uint32_t getDirect3DFormatFromDDSHeader(texture_dds::FileHeader& textureFileHeader);
 	bool _texturesToLoad;
 };
 }
 }
 }
+//!\endcond

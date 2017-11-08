@@ -11,142 +11,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Model\Animation.h">
+    <ClInclude Include="..\..\AssetIncludes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Model\Camera.h">
+    <ClInclude Include="..\..\TextureLoadAsync.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Model\Light.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Model\Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\ShadowVolume.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Helper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="..\..\Texture\MetaData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Texture\PVRTDecompress.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Texture\Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Texture\TextureDefines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Texture\TextureFormats.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Texture\TextureHeader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Texture\TextureHeaderWithMetaData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-=======
->>>>>>> 1776432f... 4.3
-    <ClInclude Include="..\..\FileIO\FileDefinesPVR.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\TextureReaderPVR.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\TextureWriterPVR.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\PaletteExpander.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\FileDefinesTGA.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\TextureReaderTGA.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\FileDefinesKTX.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\TextureReaderKTX.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\TextureWriterKTX.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\FileDefinesBMP.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\TextureReaderBMP.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\FileDefinesDDS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\TextureReaderDDS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\TextureWriterDDS.h">
+    <ClInclude Include="..\..\TextureLoad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\SkipGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\FileIO\FileDefinesXNB.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\TextureReaderXNB.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\TextureWriterLegacyPVR.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\PODReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="..\..\AssetReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\AssetWriter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-=======
->>>>>>> 1776432f... 4.3
-    <ClInclude Include="..\..\FileIO\PODDefines.h">
+    <ClInclude Include="..\..\ShadowVolume.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ShaderDescription.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\AssetIncludes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Effect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\FileIO\PFXReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\BoundingBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="..\..\Asset.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-=======
->>>>>>> 1776432f... 4.3
-    <ClInclude Include="..\..\PVRShamanSemantics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Shader.h">
@@ -155,39 +35,99 @@
     <ClInclude Include="..\..\PVRAssets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="..\..\PixelFormat.h">
+    <ClInclude Include="..\..\Model\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-=======
->>>>>>> 1776432f... 4.3
+    <ClInclude Include="..\..\Model\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Model\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Model\Animation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\TextureWriterPVR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\TextureWriterLegacyPVR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\TextureWriterKTX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\TextureWriterDDS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\TextureReaderXNB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\TextureReaderTGA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\TextureReaderPVR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\TextureReaderKTX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\TextureReaderDDS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\TextureReaderBMP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\PaletteExpander.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\PODReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\FileIO\PODDefines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\FileIO\PFXParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Effect_2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-<<<<<<< HEAD
-=======
-    <ClInclude Include="..\..\TextureLoad.h">
+    <ClInclude Include="..\..\BoundingBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\TextureLoadAsync.h">
+    <ClInclude Include="..\..\Volume.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Geometry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
->>>>>>> 1776432f... 4.3
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Model\Mesh.cpp">
+    <ClCompile Include="..\..\FileIO\PaletteExpander.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FileIO\PODReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FileIO\PFXParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\FileIO\TextureWriterKTX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ShadowVolume.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Model\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Model\Animation.cpp">
+    <ClCompile Include="..\..\Model\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Model\Light.cpp">
@@ -196,49 +136,16 @@
     <ClCompile Include="..\..\Model\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ShadowVolume.cpp">
+    <ClCompile Include="..\..\Model\Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="..\..\Texture\MetaData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Texture\PVRTDecompress.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Texture\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Texture\TextureHeader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Texture\TextureHeaderWithMetaData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-=======
->>>>>>> 1776432f... 4.3
-    <ClCompile Include="..\..\FileIO\TextureReaderPVR.cpp">
+    <ClCompile Include="..\..\Geometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\FileIO\TextureWriterPVR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\FileIO\PaletteExpander.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\FileIO\TextureReaderTGA.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\FileIO\TextureReaderKTX.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\FileIO\TextureWriterKTX.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\FileIO\TextureReaderBMP.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\FileIO\TextureReaderDDS.cpp">
+    <ClCompile Include="..\..\FileIO\TextureWriterLegacyPVR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\FileIO\TextureWriterDDS.cpp">
@@ -247,26 +154,28 @@
     <ClCompile Include="..\..\FileIO\TextureReaderXNB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\FileIO\TextureWriterLegacyPVR.cpp">
+    <ClCompile Include="..\..\FileIO\TextureReaderTGA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\FileIO\PODReader.cpp">
+    <ClCompile Include="..\..\FileIO\TextureReaderPVR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\FileIO\PFXReader.cpp">
+    <ClCompile Include="..\..\FileIO\TextureReaderKTX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="..\..\PixelFormat.cpp">
+    <ClCompile Include="..\..\FileIO\TextureReaderDDS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\FileIO\PFXParser.cpp">
-=======
-    <ClCompile Include="..\..\FileIO\PFXParser.cpp">
+    <ClCompile Include="..\..\FileIO\TextureReaderBMP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Geometry.cpp">
->>>>>>> 1776432f... 4.3
+    <ClCompile Include="..\..\Volume.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\External\pugixml\pugixml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

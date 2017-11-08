@@ -9,23 +9,18 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESSkinning
-DEPENDS =  PVRCore PVRAssets PVRNativeGles PVRGles PVRShell PVREngineUtils
-LIBRARIES =  PVREngineUtils PVRShell PVRGles PVRNativeGles PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRShell PVRUtilsGles
+LIBRARIES =  PVRUtilsGles PVRShell PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
            OGLES/OGLESSkinning.o
 
 RESOURCES += \
-           DefaultVertShader_ES2.vsh\
-           DefaultFragShader_ES2.fsh\
-           DefaultVertShader_ES3.vsh\
-           DefaultFragShader_ES3.fsh\
-           SkinnedVertShader_ES2.vsh\
-           SkinnedFragShader_ES2.fsh\
-           SkinnedVertShader_ES3.vsh\
-           SkinnedFragShader_ES3.fsh\
-           Skinning_es.pfx\
+           DefaultVertShader.vsh\
+           DefaultFragShader.fsh\
+           SkinnedVertShader.vsh\
+           SkinnedFragShader.fsh\
 
 COMMON_RESOURCES += \
            Arm.pvr\
@@ -35,6 +30,8 @@ COMMON_RESOURCES += \
            RobotNormal.pvr\
            Tiles.pvr\
            Robot.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -91,64 +91,64 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>texture_bmp {</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">struct </span>FileHeader</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;{</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <a class="code" href="namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055">uint16</a>  signature;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  fileSize;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <a class="code" href="namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055">uint16</a>  reserved1;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <a class="code" href="namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055">uint16</a>  reserved2;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  pixelOffset;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    uint16_t signature;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    uint32_t fileSize;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    uint16_t reserved1;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    uint16_t reserved2;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    uint32_t pixelOffset;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;};</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">struct </span>CoreHeader</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;{</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  headerSize;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055">uint16</a>  width;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055">uint16</a>  height;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <a class="code" href="namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055">uint16</a>  numberOfPlanes;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055">uint16</a>  bitsPerPixel;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    uint32_t headerSize;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    uint16_t width;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    uint16_t height;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    uint16_t numPlanes;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    uint16_t bitsPerPixel;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;};</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">struct </span>InfoHeader1</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> headerSize;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">int32</a>  width;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">int32</a>  height;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <a class="code" href="namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055">uint16</a> numberOfPlanes;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <a class="code" href="namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055">uint16</a> bitsPerPixel;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> compressionType;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> imageSize;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">int32</a>  horizontalPixelsPerMeter;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">int32</a>  verticalPixelsPerMeter;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numberOfColorsInTable;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numberOfImportantColors;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    uint32_t headerSize;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    int32_t  width;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    int32_t  height;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    uint16_t numPlanes;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    uint16_t bitsPerPixel;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    uint32_t compressionType;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    uint32_t imageSize;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    int32_t  horizontalPixelsPerMeter;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    int32_t  verticalPixelsPerMeter;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    uint32_t numColorsInTable;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    uint32_t numImportantColors;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">struct </span>InfoHeader2 : <span class="keyword">public</span> InfoHeader1   <span class="comment">//Adobe Specific</span></div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;{</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> redMask;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> greenMask;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> blueMask;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    uint32_t redMask;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    uint32_t greenMask;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    uint32_t blueMask;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;};</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">struct </span>InfoHeader3 : <span class="keyword">public</span> InfoHeader2   <span class="comment">//Adobe Specific</span></div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;{</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> alphaMask;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    uint32_t alphaMask;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;};</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">struct </span>InfoHeader4 : <span class="keyword">public</span> InfoHeader3</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;{</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">int32</a>   colorSpace;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    int32_t   colorSpace;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    glm::ivec3 xyzEndPoints[3];</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  gammaRed;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  gammaGreen;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  gammaBlue;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    uint32_t  gammaRed;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    uint32_t  gammaGreen;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    uint32_t  gammaBlue;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;};</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">struct </span>InfoHeader5 : <span class="keyword">public</span> InfoHeader4</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;{</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> intent;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> profileData;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> profileSize;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>  reserved;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    uint32_t intent;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    uint32_t profileData;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    uint32_t profileSize;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    uint32_t    reserved;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;};</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
@@ -169,7 +169,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keyword">namespace </span>CompressionMethod {</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keyword">enum</span> Enum</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;{</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    None,</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <a class="code" href="namespacepvr.html#a7924324f96dc973225ad3c532cc72309a6adf97f83acf6453d4a6a4b1070f3754">None</a>,</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    RunLength8,</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    RunLength4,</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    Bitfields,</div>
@@ -179,25 +179,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;};</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;}</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="keyword">namespace </span>ColorSpace {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepvr.html#a1b94afe6b8a7c21e8f8ddee1f7b5cb91">ColorSpace</a> {</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="keyword">enum</span> Enum</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;{</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    CalibratedRGB = 0,          <span class="comment">// Gamma correction values are supplied.</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    sRGB = 0x42475273, <span class="comment">// &#39;sRGB&#39; in ASCII</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <a class="code" href="namespacepvr.html#a1b94afe6b8a7c21e8f8ddee1f7b5cb91a9ed33d9be17d174aeb4393a989586ed9">sRGB</a> = 0x42475273, <span class="comment">// &#39;sRGB&#39; in ASCII</span></div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    Windows = 0x206e6957, <span class="comment">// &#39;Win &#39; in ASCII</span></div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    ProfileLinked = 0x4b4e494c, <span class="comment">// &#39;LINK&#39; in ASCII</span></div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    ProfileEmbedded = 0x4445424d  <span class="comment">// &#39;MBED&#39; in ASCII</span></div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;};</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;}</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055">uint16</a> Identifier = 0x4d42; <span class="comment">// &#39;B&#39; &#39;M&#39; in ASCII</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint16_t Identifier = 0x4d42; <span class="comment">// &#39;B&#39; &#39;M&#39; in ASCII</span></div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;}</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="comment">//!\endcond</span></div>
-<div class="ttc" id="namespacepvr_html_a02a97b530ff9cb298a9077ad7b4ee556"><div class="ttname"><a href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">pvr::uint32</a></div><div class="ttdeci">unsigned int uint32</div><div class="ttdoc">32-bit unsigned integer.</div><div class="ttdef"><b>Definition:</b> Types.h:119</div></div>
-<div class="ttc" id="namespacepvr_html_a3f4ec5bdf3bb80dae0cb7fa12965c055"><div class="ttname"><a href="namespacepvr.html#a3f4ec5bdf3bb80dae0cb7fa12965c055">pvr::uint16</a></div><div class="ttdeci">unsigned short uint16</div><div class="ttdoc">16-bit unsigned integer.</div><div class="ttdef"><b>Definition:</b> Types.h:116</div></div>
+<div class="ttc" id="namespacepvr_html_a1b94afe6b8a7c21e8f8ddee1f7b5cb91"><div class="ttname"><a href="namespacepvr.html#a1b94afe6b8a7c21e8f8ddee1f7b5cb91">pvr::ColorSpace</a></div><div class="ttdeci">ColorSpace</div><div class="ttdoc">Enumeration of Colorspaces (Linear, SRGB).</div><div class="ttdef"><b>Definition:</b> Types.h:350</div></div>
 <div class="ttc" id="_core_includes_8h_html"><div class="ttname"><a href="_core_includes_8h.html">CoreIncludes.h</a></div><div class="ttdoc">Commonly included files from other PVRCore files. To include PVRCore functionality, use PVRCore.h instead. </div></div>
-<div class="ttc" id="namespacepvr_html_a496cd696ccb8dfabf94599ba8b21f00a"><div class="ttname"><a href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">pvr::int32</a></div><div class="ttdeci">signed int int32</div><div class="ttdoc">32-bit signed integer.</div><div class="ttdef"><b>Definition:</b> Types.h:97</div></div>
+<div class="ttc" id="namespacepvr_html_a7924324f96dc973225ad3c532cc72309a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespacepvr.html#a7924324f96dc973225ad3c532cc72309a6adf97f83acf6453d4a6a4b1070f3754">pvr::DataType::None</a></div><div class="ttdoc">None, or unknown. </div></div>
+<div class="ttc" id="namespacepvr_html_a1b94afe6b8a7c21e8f8ddee1f7b5cb91a9ed33d9be17d174aeb4393a989586ed9"><div class="ttname"><a href="namespacepvr.html#a1b94afe6b8a7c21e8f8ddee1f7b5cb91a9ed33d9be17d174aeb4393a989586ed9">pvr::ColorSpace::sRGB</a></div><div class="ttdoc">sRGB colorspace </div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

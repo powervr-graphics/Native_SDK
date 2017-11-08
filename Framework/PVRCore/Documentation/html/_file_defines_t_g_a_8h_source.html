@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -92,32 +92,32 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>texture_tga {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">struct </span>FileHeader</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <a class="code" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> identSize;          <span class="comment">// size of ID field that follows 18 byte header (0 usually)</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <a class="code" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> colorMapType;      <span class="comment">// type of color map 0=none, 1=has palette</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <a class="code" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> imageType;          <span class="comment">// type of image 0=none,1=indexed,2=rgb,3=grey,+8=rle packed</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="namespacepvr.html#a05b4c61ffca81d2117a06c9c30d3b0ec">int16</a> colorMapStart;     <span class="comment">// first color map entry in palette</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="namespacepvr.html#a05b4c61ffca81d2117a06c9c30d3b0ec">int16</a> colorMapLength;    <span class="comment">// number of colors in palette</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <a class="code" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> colorMapBits;      <span class="comment">// number of bits per palette entry 15,16,24,32</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <a class="code" href="namespacepvr.html#a05b4c61ffca81d2117a06c9c30d3b0ec">int16</a> xStart;             <span class="comment">// image x origin</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <a class="code" href="namespacepvr.html#a05b4c61ffca81d2117a06c9c30d3b0ec">int16</a> yStart;             <span class="comment">// image y origin</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="namespacepvr.html#a05b4c61ffca81d2117a06c9c30d3b0ec">int16</a> width;              <span class="comment">// image width in pixels</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="namespacepvr.html#a05b4c61ffca81d2117a06c9c30d3b0ec">int16</a> height;             <span class="comment">// image height in pixels</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> bits;               <span class="comment">// image bits per pixel 8,15,16,24,32</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <a class="code" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> descriptor;         <span class="comment">// image descriptor bits (vh flip bits)</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    uint8_t identSize;          <span class="comment">// size of ID field that follows 18 char header (0 usually)</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    uint8_t colorMapType;      <span class="comment">// type of color map 0=none, 1=has palette</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    uint8_t imageType;          <span class="comment">// type of image 0=none,1=indexed,2=rgb,3=grey,+8=rle packed</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    int16_t colorMapStart;     <span class="comment">// first color map entry in palette</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    int16_t colorMapLength;    <span class="comment">// number of colors in palette</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    uint8_t colorMapBits;      <span class="comment">// number of bits per palette entry 15,16,24,32</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    int16_t xStart;             <span class="comment">// image x origin</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    int16_t yStart;             <span class="comment">// image y origin</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    int16_t width;              <span class="comment">// image width in pixels</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    int16_t height;             <span class="comment">// image height in pixels</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    uint8_t bits;               <span class="comment">// image bits per pixel 8,15,16,24,32</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    uint8_t descriptor;         <span class="comment">// image descriptor bits (vh flip bits)</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;};</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">namespace </span>ColorMap {</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">enum</span> Enum</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    None,</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="namespacepvr.html#a7924324f96dc973225ad3c532cc72309a6adf97f83acf6453d4a6a4b1070f3754">None</a>,</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    Paletted</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;};</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;};</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">namespace </span>ImageType {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacepvr.html#ab98ea90165357c2f9030218c337f90bf">ImageType</a> {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">enum</span> Enum</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;{</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    None,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="namespacepvr.html#a7924324f96dc973225ad3c532cc72309a6adf97f83acf6453d4a6a4b1070f3754">None</a>,</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    Indexed,</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    RGB,</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    GreyScale,</div>
@@ -136,15 +136,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;};</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">// Expected size of a header in file</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> ExpectedHeaderSize = 18;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> uint32_t ExpectedHeaderSize = 18;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="comment">//!\endcond</span></div>
-<div class="ttc" id="namespacepvr_html_a02a97b530ff9cb298a9077ad7b4ee556"><div class="ttname"><a href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">pvr::uint32</a></div><div class="ttdeci">unsigned int uint32</div><div class="ttdoc">32-bit unsigned integer.</div><div class="ttdef"><b>Definition:</b> Types.h:119</div></div>
-<div class="ttc" id="namespacepvr_html_a693aadd10412283ed1afd703dc83560a"><div class="ttname"><a href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">pvr::uint8</a></div><div class="ttdeci">unsigned char uint8</div><div class="ttdoc">8-bit unsigned integer.</div><div class="ttdef"><b>Definition:</b> Types.h:113</div></div>
+<div class="ttc" id="namespacepvr_html_ab98ea90165357c2f9030218c337f90bf"><div class="ttname"><a href="namespacepvr.html#ab98ea90165357c2f9030218c337f90bf">pvr::ImageType</a></div><div class="ttdeci">ImageType</div><div class="ttdoc">The dimension of an image.</div><div class="ttdef"><b>Definition:</b> Types.h:904</div></div>
 <div class="ttc" id="_core_includes_8h_html"><div class="ttname"><a href="_core_includes_8h.html">CoreIncludes.h</a></div><div class="ttdoc">Commonly included files from other PVRCore files. To include PVRCore functionality, use PVRCore.h instead. </div></div>
-<div class="ttc" id="namespacepvr_html_a05b4c61ffca81d2117a06c9c30d3b0ec"><div class="ttname"><a href="namespacepvr.html#a05b4c61ffca81d2117a06c9c30d3b0ec">pvr::int16</a></div><div class="ttdeci">signed short int16</div><div class="ttdoc">16-bit signed integer.</div><div class="ttdef"><b>Definition:</b> Types.h:94</div></div>
+<div class="ttc" id="namespacepvr_html_a7924324f96dc973225ad3c532cc72309a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespacepvr.html#a7924324f96dc973225ad3c532cc72309a6adf97f83acf6453d4a6a4b1070f3754">pvr::DataType::None</a></div><div class="ttdoc">None, or unknown. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

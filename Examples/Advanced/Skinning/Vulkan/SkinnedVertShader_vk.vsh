@@ -36,29 +36,9 @@ layout(location = 6) in uvec4 inBoneIndex;
 // perframe / per mesh
 layout(std140,set = 1, binding = 0) uniform Dynamics
 {
-<<<<<<< HEAD
-	mat4 BoneMatrixArray0;
-    mat4 BoneMatrixArray1;
-    mat4 BoneMatrixArray2;
-    mat4 BoneMatrixArray3;
-    mat4 BoneMatrixArray4;
-    mat4 BoneMatrixArray5;
-    mat4 BoneMatrixArray6;
-    mat4 BoneMatrixArray7;
-    mat3x3 BoneMatrixArrayIT0;
-    mat3x3 BoneMatrixArrayIT1;
-    mat3x3 BoneMatrixArrayIT2;
-    mat3x3 BoneMatrixArrayIT3;
-    mat3x3 BoneMatrixArrayIT4;
-    mat3x3 BoneMatrixArrayIT5;
-    mat3x3 BoneMatrixArrayIT6;
-    mat3x3 BoneMatrixArrayIT7;
-    int	 BoneCount;
-=======
 	mat4 BoneMatrixArray[8];
     mat3x3 BoneMatrixArrayIT[8];
     int BoneCount;
->>>>>>> 1776432f... 4.3
 };
 
 // static throughout the lifetime

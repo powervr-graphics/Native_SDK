@@ -1,56 +1,82 @@
 #pragma once
-#include "../External/glm/glm.hpp"
 #include "PVRCore/Base/Types.h"
-#include "PVRCore/Base/Assert_.h"
 namespace pvr {
 namespace math {
 
+/// <summary>A class representing a sphere containing at least all points of an object</summary>
 class BoundingSphere
 {
 public:
+	/// <summary>Constructor. Non-initializing.</summary>
 	BoundingSphere() : _isValid(false) {}
+	/// <summary>Constructor. Creates a bounding sphere that contains an Axis Aligned Bounding Box.</summary>
+	/// <param name="aabbMin">The minimum (bottom-left-back) corner of the Bounding Box</param>
+	/// <param name="aabbMax">The maximum (top-right-forward) corner of the Bounding Box</param>
 	BoundingSphere(const glm::vec3& aabbMin, const glm::vec3 aabbMax)
 	{
 		expandRadius(aabbMin, aabbMax);
 	}
 
-
+	/// <summary>Get the center of the sphere</summary>
+	/// <returns>The center of the sphere</returns>
 	const glm::vec3& getCenter()const { return _center; }
 
-	float32 getRadius()const { return _radius; }
+	/// <summary>Get the radius of the sphere</summary>
+	/// <returns>The radius of the sphere</returns>
+	float getRadius()const { return _radius; }
 
-
-
-	void set(const glm::vec3& center, float32 radius)
+	/// <summary>Set the sphere from center and radius</summary>
+	/// <param name="center">The new center of the sphere</param>
+	/// <param name="radius">The new radius of the sphere</param>
+	void set(const glm::vec3& center, float radius)
 	{
-		PVR_ASSERTION(radius > 0);
+		assert(radius > 0);
 		_center = center;
 		_radius = radius;
 	}
 
+	/// <summary>Ensure that the sphere contains a point, expanding it as needed. If the
+	/// sphere already contains the point, do nothing. If the point is outside the sphere,
+	/// increase the radius of the sphere to exactly contain it.</summary>
+	/// <param name="point">The new point to include in the sphere</param>
 	void expandRadius(const glm::vec3& point)
 	{
-		float32 len = glm::length(point - _center);
+		float len = glm::length(point - _center);
 		_radius = (len > _radius ? len : _radius);
 	}
 
+	/// <summary>Test if a point is inside the sphere's radius</summary>
+	/// <param name="point">The point to test</param>
+	/// <returns>True if the point is inside of or on the sphere, otherwise false</returns>
 	bool isInside(const glm::vec3& point)const
 	{
 		const glm::vec3 v0(_center - point);
 		return (glm::dot(v0, v0) <= _radius * _radius);
 	}
 
-	void expandRadius(const glm::vec3* points, uint32 numPoints)
+	/// <summary>Ensure that the sphere contains a number of points, expanding it as needed.
+	/// If any point is outside the sphere, increase the radius of the sphere to exactly contain
+	/// it, while preserving the center of the sphere.</summary>
+	/// <param name="points">C-style array of the new points to include in the sphere</param>
+	/// <param name="numPoints">Size of the array (number of points)</param>
+	void expandRadius(const glm::vec3* points, uint32_t numPoints)
 	{
-		for (uint32 i = 0; i < numPoints; ++i) { expandRadius(points[i]); }
+		for (uint32_t i = 0; i < numPoints; ++i) { expandRadius(points[i]); }
 	}
 
+	/// <summary>Ensure that a bounding sphere is large enough to contain another sphere. Does not move
+	/// center, only expands radius. Will increase the radius (if needed) enough to exactly contain the
+	/// other sphere.</summary>
+	/// <param name="sphere">A bounding sphere to add to this sphere.</param>
 	void expandRadius(const BoundingSphere& sphere)
 	{
-		float32 r = glm::length(sphere.getCenter() - getCenter()) + sphere.getRadius();
+		float r = glm::length(sphere.getCenter() - getCenter()) + sphere.getRadius();
 		_radius = (r > _radius ? r : _radius);
 	}
 
+	/// <summary>Enure an AABB is completely enclosed in the sphere. If it isn't, expand the sphere to include it.</summary>
+	/// <param name="aabbMin">The minimum point (bottom-left-back corner) of the axis aligned box</param>
+	/// <param name="aabbMax">The maximum point (top-right-forward corner) of the axis aligned box</param>
 	void expandRadius(const glm::vec3& aabbMin, const glm::vec3 aabbMax)
 	{
 		//expand the 8 possible points
@@ -64,10 +90,11 @@ public:
 		expandRadius(glm::vec3(aabbMax.x, aabbMin.y, aabbMin.z));
 	}
 
-	/*!
-	\brief  expand the bounding sphere which includes the given point.
-			The center will be recalculated to include this new point and the previous point
-	*/
+	/// <summary>Expand the bounding sphere to includes the given point. If the point is not already
+	/// inside the sphere, increase the radius and move the center so that the new sphere contains both
+	/// the old one and the new point (the new sphere exactly contains the new point as is tangent to
+	/// the old sphere point at the point opposite to the new point in relation to the center)</summary>
+	/// <param name="point">The new point to include</param>
 	void expand(const glm::vec3& point)
 	{
 		if (_isValid)
@@ -89,7 +116,7 @@ public:
 
 private:
 	glm::vec3 _center;
-	float32 _radius;
+	float _radius;
 	bool _isValid;
 };
 

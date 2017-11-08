@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -83,7 +83,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">PixelFormat.h File Reference</div>  </div>
 </div><!--header-->
@@ -112,7 +113,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classpvr_1_1_pixel_format.html" title="The PixelFormat class fully defines a Pixel Format (channels, format, compression, bit width etc.). ">PixelFormat</a> class fully defines a Pixel Format (channels, format, compression, bit width etc.).  <a href="classpvr_1_1_pixel_format.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1_pixel_format_1_1_low_high.html">pvr::PixelFormat::LowHigh</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">64 bit integer representation as 32 lower bits and 32 higher bits <a href="structpvr_1_1_pixel_format_1_1_low_high.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">64 bit Integer representation as 32 lower bits and 32 higher bits <a href="structpvr_1_1_pixel_format_1_1_low_high.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
@@ -123,12 +124,112 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a7cfc7d042b44f46e4d5dfbb32d0f16b1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a7cfc7d042b44f46e4d5dfbb32d0f16b1">pvr::CompressedPixelFormat</a> </td></tr>
+<tr class="memitem:a7cfc7d042b44f46e4d5dfbb32d0f16b1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a7cfc7d042b44f46e4d5dfbb32d0f16b1">pvr::CompressedPixelFormat</a> { <br/>
+&#160;&#160;<b>PVRTCI_2bpp_RGB</b>, 
+<b>PVRTCI_2bpp_RGBA</b>, 
+<b>PVRTCI_4bpp_RGB</b>, 
+<b>PVRTCI_4bpp_RGBA</b>, 
+<br/>
+&#160;&#160;<b>PVRTCII_2bpp</b>, 
+<b>PVRTCII_4bpp</b>, 
+<b>ETC1</b>, 
+<b>DXT1</b>, 
+<br/>
+&#160;&#160;<b>DXT2</b>, 
+<b>DXT3</b>, 
+<b>DXT4</b>, 
+<b>DXT5</b>, 
+<br/>
+&#160;&#160;<b>BC1</b> = DXT1, 
+<b>BC2</b> = DXT3, 
+<b>BC3</b> = DXT5, 
+<b>BC4</b>, 
+<br/>
+&#160;&#160;<b>BC5</b>, 
+<b>BC6</b>, 
+<b>BC7</b>, 
+<b>UYVY</b>, 
+<br/>
+&#160;&#160;<b>YUY2</b>, 
+<b>BW1bpp</b>, 
+<b>SharedExponentR9G9B9E5</b>, 
+<b>RGBG8888</b>, 
+<br/>
+&#160;&#160;<b>GRGB8888</b>, 
+<b>ETC2_RGB</b>, 
+<b>ETC2_RGBA</b>, 
+<b>ETC2_RGB_A1</b>, 
+<br/>
+&#160;&#160;<b>EAC_R11</b>, 
+<b>EAC_RG11</b>, 
+<b>ASTC_4x4</b>, 
+<b>ASTC_5x4</b>, 
+<br/>
+&#160;&#160;<b>ASTC_5x5</b>, 
+<b>ASTC_6x5</b>, 
+<b>ASTC_6x6</b>, 
+<b>ASTC_8x5</b>, 
+<br/>
+&#160;&#160;<b>ASTC_8x6</b>, 
+<b>ASTC_8x8</b>, 
+<b>ASTC_10x5</b>, 
+<b>ASTC_10x6</b>, 
+<br/>
+&#160;&#160;<b>ASTC_10x8</b>, 
+<b>ASTC_10x10</b>, 
+<b>ASTC_12x10</b>, 
+<b>ASTC_12x12</b>, 
+<br/>
+&#160;&#160;<b>ASTC_3x3x3</b>, 
+<b>ASTC_4x3x3</b>, 
+<b>ASTC_4x4x3</b>, 
+<b>ASTC_4x4x4</b>, 
+<br/>
+&#160;&#160;<b>ASTC_5x4x4</b>, 
+<b>ASTC_5x5x4</b>, 
+<b>ASTC_5x5x5</b>, 
+<b>ASTC_6x5x5</b>, 
+<br/>
+&#160;&#160;<b>ASTC_6x6x5</b>, 
+<b>ASTC_6x6x6</b>, 
+<b>NumCompressedPFs</b>
+<br/>
+ }</td></tr>
 <tr class="memdesc:a7cfc7d042b44f46e4d5dfbb32d0f16b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of all known Compressed pixel formats. <a href="namespacepvr.html#a7cfc7d042b44f46e4d5dfbb32d0f16b1">More...</a><br/></td></tr>
 <tr class="separator:a7cfc7d042b44f46e4d5dfbb32d0f16b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f7777c11dfff8fcf4a03d85e5ab0b98"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98">pvr::VariableType</a> </td></tr>
+<tr class="memitem:a6f7777c11dfff8fcf4a03d85e5ab0b98"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98">pvr::VariableType</a> { <br/>
+&#160;&#160;<b>UnsignedByteNorm</b>, 
+<b>SignedByteNorm</b>, 
+<b>UnsignedByte</b>, 
+<b>SignedByte</b>, 
+<br/>
+&#160;&#160;<b>UnsignedShortNorm</b>, 
+<b>SignedShortNorm</b>, 
+<b>UnsignedShort</b>, 
+<b>SignedShort</b>, 
+<br/>
+&#160;&#160;<b>UnsignedIntegerNorm</b>, 
+<b>SignedIntegerNorm</b>, 
+<b>UnsignedInteger</b>, 
+<b>SignedInteger</b>, 
+<br/>
+&#160;&#160;<b>SignedFloat</b>, 
+<b>Float</b> = SignedFloat, 
+<b>UnsignedFloat</b>, 
+<b>NumVarTypes</b>
+<br/>
+ }</td></tr>
 <tr class="memdesc:a6f7777c11dfff8fcf4a03d85e5ab0b98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration of Datatypes. <a href="namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98">More...</a><br/></td></tr>
 <tr class="separator:a6f7777c11dfff8fcf4a03d85e5ab0b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a47994de10c19816f5b4f0351e265ead5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#a47994de10c19816f5b4f0351e265ead5">pvr::isVariableTypeNormalized</a> (VariableType item)</td></tr>
+<tr class="memdesc:a47994de10c19816f5b4f0351e265ead5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a variable type is a Normalizedtype <a href="#a47994de10c19816f5b4f0351e265ead5">More...</a><br/></td></tr>
+<tr class="separator:a47994de10c19816f5b4f0351e265ead5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8844086c38cb4b2dddc3317494b16ac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepvr.html#ad8844086c38cb4b2dddc3317494b16ac">pvr::isVariableTypeSigned</a> (VariableType item)</td></tr>
+<tr class="memdesc:ad8844086c38cb4b2dddc3317494b16ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a variable type is a Signed type <a href="#ad8844086c38cb4b2dddc3317494b16ac">More...</a><br/></td></tr>
+<tr class="separator:ad8844086c38cb4b2dddc3317494b16ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the definition of the PixelFormat class used throughout the PowerVR Framework. </p>

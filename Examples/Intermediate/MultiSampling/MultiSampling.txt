@@ -2,13 +2,13 @@
 MultiSampling
 
 :ShortDescription:
-Ρender a .pod scene using a .pfx effect file to a multisampling frame buffer object.
+Render a scene to a multisampling frame buffer object.
 
 :FullDescription:
-This training course demonstrates how to use the framework to render a scene using multisampling feature. Uses the PVREngineUtils library to display simple text on screen. Provided for Vulkan (with SpirV shaders) and OpenGL ES(version 2.x and 3.x shaders).
+This training course demonstrates how to use the framework to render a scene using multisampling feature. Provided for Vulkan (with SpirV shaders) and OpenGL ES 2.0+.
 
 :APIS:
-Vulkan 1.0, OpenGL ES 2.0/3.0
+Vulkan, OpenGL ES 2.0+
 
 :Controls:
 	-	Quit	-	Close the application

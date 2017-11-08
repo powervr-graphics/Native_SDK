@@ -10,7 +10,7 @@
 #include "PVRAssets/Model/Light.h"
 namespace pvr {
 namespace assets{
-int32 Light::getTargetIdx() const
+int32_t Light::getTargetIdx() const
 {
 	return _data.spotTargetNodeIdx;
 }
@@ -25,37 +25,37 @@ Light::LightType Light::getType() const
 	return _data.type;
 }
 
-float32 Light::getConstantAttenuation() const
+float Light::getConstantAttenuation() const
 {
 	return _data.constantAttenuation;
 }
 
-float32 Light::getLinearAttenuation() const
+float Light::getLinearAttenuation() const
 {
 	return _data.linearAttenuation;
 }
 
-float32 Light::getQuadraticAttenuation() const
+float Light::getQuadraticAttenuation() const
 {
 	return _data.quadraticAttenuation;
 }
 
-float32 Light::getFalloffAngle() const
+float Light::getFalloffAngle() const
 {
 	return _data.falloffAngle;
 }
 
-float32 Light::getFalloffExponent() const
+float Light::getFalloffExponent() const
 {
 	return _data.falloffExponent;
 }
 
-void Light::setTargetNodeIdx(int32 index)
+void Light::setTargetNodeIdx(int32_t index)
 {
 	_data.spotTargetNodeIdx = index;
 }
 
-void Light::setColor(float32 r, float32 g, float32 b)
+void Light::setColor(float r, float g, float b)
 {
 	_data.color[0] = r;
 	_data.color[1] = g;
@@ -67,27 +67,27 @@ void Light::setType(LightType t)
 	_data.type = t;
 }
 
-void Light::setConstantAttenuation(float32 c)
+void Light::setConstantAttenuation(float c)
 {
 	_data.constantAttenuation = c;
 }
 
-void Light::setLinearAttenuation(float32 l)
+void Light::setLinearAttenuation(float l)
 {
 	_data.linearAttenuation = l;
 }
 
-void Light::setQuadraticAttenuation(float32 q)
+void Light::setQuadraticAttenuation(float q)
 {
 	_data.quadraticAttenuation = q;
 }
 
-void Light::setFalloffAngle(float32 fa)
+void Light::setFalloffAngle(float fa)
 {
 	_data.falloffAngle = fa;
 }
 
-void Light::setFalloffExponent(float32 fe)
+void Light::setFalloffExponent(float fe)
 {
 	_data.falloffExponent = fe;
 }

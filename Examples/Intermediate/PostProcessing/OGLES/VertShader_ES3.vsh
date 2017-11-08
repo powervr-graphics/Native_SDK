@@ -23,13 +23,18 @@ void main()
 	// Pass through texcoords
 	TexCoord = inTexCoord;
 	
+	highp vec3 normnorm = normalize(inNormal);
+	
 	// Simple diffuse lighting in model space
-	LightIntensity = max(dot(inNormal, -LightDirection),0.0) + .2/*ambient*/;
+	LightIntensity = max(dot(normnorm, -LightDirection), 0.0)/*ambient*/;
     
+	LightIntensity += 0.005;
+	
     // if the light is behind no specular reflection
-    if(dot(normalize(inNormal),-LightDirection) > 0.0)
+    if(dot(normnorm, -LightDirection) > 0.0)
     {
-      vec3 viewDir = vec3(normalize((MVInv * vec4(0,0,0,1)) - vec4(inVertex,1.0)));
-        LightIntensity += Shininess * 2. * pow(max(0.0, dot(reflect(-LightDirection, inNormal), viewDir)),32.0);
-    } 
+      vec3 viewDir = -(vec3(normalize((MVInv * vec4(0,0,0,1)) - vec4(inVertex,1.0))));
+      LightIntensity += Shininess * 2. * pow(max(0.0, dot(reflect(-LightDirection, normnorm), viewDir)), 32.0);
+    }
+	LightIntensity *= 2.;
 }

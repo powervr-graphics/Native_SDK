@@ -12,14 +12,14 @@
 
 namespace pvr {
 namespace assets {
-glm::mat4x4 Animation::getTranslationMatrix(uint32 frame, float32 interp) const
+glm::mat4x4 Animation::getTranslationMatrix(uint32_t frame, float interp) const
 {
 	if (_data.positions.size())
 	{
 		if (_data.flags & Animation::HasPositionAnimation)
 		{
-			assertion(frame + 1 < _data.numberOfFrames);
-			uint32 index0, index1;
+			assertion(frame + 1 < _data.numFrames);
+			uint32_t index0, index1;
 			if (_data.positionIndices.size())
 			{
 				index0 = _data.positionIndices[frame + 0];
@@ -42,14 +42,14 @@ glm::mat4x4 Animation::getTranslationMatrix(uint32 frame, float32 interp) const
 	return glm::mat4x4(1.0f);
 }
 
-glm::mat4x4 Animation::getRotationMatrix(uint32 frame, float32 interp) const
+glm::mat4x4 Animation::getRotationMatrix(uint32_t frame, float interp) const
 {
 	if (_data.rotations.size())
 	{
 		if (_data.flags & Animation::HasRotationAnimation)
 		{
-			assertion(frame + 1 < _data.numberOfFrames);
-			uint32 index0, index1;
+			assertion(frame + 1 < _data.numFrames);
+			uint32_t index0, index1;
 			if (_data.rotationIndices.size())
 			{
 				index0 = _data.rotationIndices[frame + 0];
@@ -75,14 +75,14 @@ glm::mat4x4 Animation::getRotationMatrix(uint32 frame, float32 interp) const
 	return glm::mat4x4();
 }
 
-glm::mat4x4 Animation::getScalingMatrix(uint32 frame, float32 interp) const
+glm::mat4x4 Animation::getScalingMatrix(uint32_t frame, float interp) const
 {
 	if (_data.scales.size())
 	{
 		if (_data.flags & Animation::HasScaleAnimation)
 		{
-			assertion(frame + 1 < _data.numberOfFrames);
-			uint32 index0, index1;
+			assertion(frame + 1 < _data.numFrames);
+			uint32_t index0, index1;
 			if (_data.scaleIndices.size())
 			{
 				index0 = _data.scaleIndices[frame + 0];
@@ -105,14 +105,14 @@ glm::mat4x4 Animation::getScalingMatrix(uint32 frame, float32 interp) const
 	return glm::mat4x4();
 }
 
-glm::mat4x4 Animation::getTransformationMatrix(uint32 frame, float32 interp) const
+glm::mat4x4 Animation::getTransformationMatrix(uint32_t frame, float interp) const
 {
 	if (_data.matrices.size())
 	{
 		if (_data.flags & Animation::HasMatrixAnimation)
 		{
-			assertion(frame + 1 < _data.numberOfFrames);
-			uint32 index;
+			assertion(frame + 1 < _data.numFrames);
+			uint32_t index;
 			if (_data.matrixIndices.size())
 			{
 				index = _data.matrixIndices[frame];
@@ -158,28 +158,28 @@ glm::mat4x4 Animation::getTransformationMatrix(uint32 frame, float32 interp) con
 	}
 }
 
-bool Animation::setPositions(uint32 numFrames, const float32* const data, const uint32* const indices)
+bool Animation::setPositions(uint32_t numFrames, const float* const data, const uint32_t* const indices)
 {
 	_data.positions.resize(0);
 	_data.positionIndices.resize(0);
 	_data.flags |= ~HasPositionAnimation;
 
-	if (numFrames > 1 && _data.flags && numFrames != _data.numberOfFrames)
+	if (numFrames > 1 && _data.flags && numFrames != _data.numFrames)
 	{
 		// There is a mismatch in the number of frames between pos/rot/scale/matrix
-		pvr::Log(Log.Error, "Wrongly sized data passed to Animation::setPositions. The data must correspond to the number of frames.");
+		Log(LogLevel::Error, "Wrongly sized data passed to Animation::setPositions. The data must correspond to the number of frames.");
 		assertion(0, "Wrongly sized data passed to Animation::setPositions. The data must correspond to the number of frames.");
 		return false;
 	}
 	if (!data || !numFrames)
 	{
-		pvr::Log(Log.Warning, "Zero sized data passed to Animation::setPositions. No effect.");
+		Log(LogLevel::Warning, "Zero sized data passed to Animation::setPositions. No effect.");
 		return false;
 	}
-	uint32 dataSize = 0;
+	uint32_t dataSize = 0;
 	if (indices)
 	{
-		for (uint32 i = 0; i < numFrames; ++i)
+		for (uint32_t i = 0; i < numFrames; ++i)
 		{
 			if (indices[i] > dataSize)
 			{
@@ -206,27 +206,27 @@ bool Animation::setPositions(uint32 numFrames, const float32* const data, const 
 	return true;
 }
 
-bool Animation::setRotations(uint32 numFrames, const float32* const data, const uint32* const indices)
+bool Animation::setRotations(uint32_t numFrames, const float* const data, const uint32_t* const indices)
 {
 	_data.rotations.resize(0);
 	_data.rotationIndices.resize(0);
 	_data.flags |= ~HasRotationAnimation;
-	if (numFrames > 1 && _data.flags && numFrames != _data.numberOfFrames)
+	if (numFrames > 1 && _data.flags && numFrames != _data.numFrames)
 	{
 		// There is a mismatch in the number of frames between pos/rot/scale/matrix
-		pvr::Log(Log.Error, "Wrongly sized data passed to Animation::setRotations. The data must correspond to the number of frames.");
+		Log(LogLevel::Error, "Wrongly sized data passed to Animation::setRotations. The data must correspond to the number of frames.");
 		assertion(0, "Wrongly sized data passed to Animation::setRotations. The data must correspond to the number of frames.");
 		return false;
 	}
 	if (!data || !numFrames)
 	{
-		pvr::Log(Log.Warning, "Zero sized data passed to Animation::setRotations. No effect.");
+		Log(LogLevel::Warning, "Zero sized data passed to Animation::setRotations. No effect.");
 		return false;
 	}
-	uint32 dataSize = 0;
+	uint32_t dataSize = 0;
 	if (indices)
 	{
-		for (uint32 i = 0; i < numFrames; ++i)
+		for (uint32_t i = 0; i < numFrames; ++i)
 		{
 			if (indices[i] > dataSize)
 			{
@@ -253,27 +253,27 @@ bool Animation::setRotations(uint32 numFrames, const float32* const data, const 
 	return true;
 }
 
-bool Animation::setScales(uint32 numFrames, const float32* const data, const uint32* const indices)
+bool Animation::setScales(uint32_t numFrames, const float* const data, const uint32_t* const indices)
 {
 	_data.scales.resize(0);
 	_data.scaleIndices.resize(0);
 	_data.flags |= ~HasScaleAnimation;
-	if (numFrames > 1 && _data.flags && numFrames != _data.numberOfFrames)
+	if (numFrames > 1 && _data.flags && numFrames != _data.numFrames)
 	{
 		// There is a mismatch in the number of frames between pos/rot/scale/matrix
-		pvr::Log(Log.Error, "Wrongly sized data passed to Animation::setScales. The data must correspond to the number of frames.");
+		Log(LogLevel::Error, "Wrongly sized data passed to Animation::setScales. The data must correspond to the number of frames.");
 		assertion(0, "Wrongly sized data passed to Animation::setScales. The data must correspond to the number of frames.");
 		return false;
 	}
 	if (!data || !numFrames)
 	{
-		pvr::Log(Log.Warning, "Zero sized data passed to Animation::setScales. No effect.");
+		Log(LogLevel::Warning, "Zero sized data passed to Animation::setScales. No effect.");
 		return false;
 	}
-	uint32 dataSize = 0;
+	uint32_t dataSize = 0;
 	if (indices)
 	{
-		for (uint32 i = 0; i < numFrames; ++i)
+		for (uint32_t i = 0; i < numFrames; ++i)
 		{
 			if (indices[i] > dataSize)
 			{
@@ -300,27 +300,27 @@ bool Animation::setScales(uint32 numFrames, const float32* const data, const uin
 	return true;
 }
 
-bool Animation::setMatrices(uint32 numFrames, const float32* const data, const uint32* const indices)
+bool Animation::setMatrices(uint32_t numFrames, const float* const data, const uint32_t* const indices)
 {
 	_data.matrices.resize(0);
 	_data.matrixIndices.resize(0);
 	_data.flags |= ~HasMatrixAnimation;
-	if (numFrames > 1 && _data.flags && numFrames != _data.numberOfFrames)
+	if (numFrames > 1 && _data.flags && numFrames != _data.numFrames)
 	{
 		// There is a mismatch in the number of frames between pos/rot/scale/matrix
-		pvr::Log(Log.Error, "Wrongly sized datapassed to Animation::setMatrices. The data must correspond to the number of frames.");
+		Log(LogLevel::Error, "Wrongly sized datapassed to Animation::setMatrices. The data must correspond to the number of frames.");
 		assertion(0, "Wrongly sized datapassed to Animation::setMatrices. The data must correspond to the number of frames.");
 		return false;
 	}
 	if (!data || !numFrames)
 	{
-		pvr::Log(Log.Warning, "Zero sized data passed to Animation::setMatrices. No effect.");
+		Log(LogLevel::Warning, "Zero sized data passed to Animation::setMatrices. No effect.");
 		return false;
 	}
-	uint32 dataSize = 0;
+	uint32_t dataSize = 0;
 	if (indices)
 	{
-		for (uint32 i = 0; i < numFrames; ++i)
+		for (uint32_t i = 0; i < numFrames; ++i)
 		{
 			if (indices[i] > dataSize)
 			{
@@ -347,52 +347,52 @@ bool Animation::setMatrices(uint32 numFrames, const float32* const data, const u
 	return true;
 }
 
-uint32 Animation::getNumFrames() const
+uint32_t Animation::getNumFrames() const
 {
-	return _data.numberOfFrames;
+	return _data.numFrames;
 }
 
-const float32* Animation::getPositions() const
+const float* Animation::getPositions() const
 {
 	return _data.positions.data();
 }
 
-const uint32* Animation::getPositionIndices() const
+const uint32_t* Animation::getPositionIndices() const
 {
 	return _data.positionIndices.data();
 }
 
-const float32* Animation::getRotations() const
+const float* Animation::getRotations() const
 {
 	return _data.rotations.data();
 }
 
-const uint32* Animation::getRotationIndices() const
+const uint32_t* Animation::getRotationIndices() const
 {
 	return _data.rotationIndices.data();
 }
 
-const float32* Animation::getScales() const
+const float* Animation::getScales() const
 {
 	return _data.scales.data();
 }
 
-const uint32* Animation::getScaleIndices() const
+const uint32_t* Animation::getScaleIndices() const
 {
 	return _data.scaleIndices.data();
 }
 
-const float32* Animation::getMatrices() const
+const float* Animation::getMatrices() const
 {
 	return _data.matrices.data();
 }
 
-const uint32* Animation::getMatrixIndices() const
+const uint32_t* Animation::getMatrixIndices() const
 {
 	return _data.matrixIndices.data();
 }
 
-uint32 Animation::getFlags() const
+uint32_t Animation::getFlags() const
 {
 	return _data.flags;
 }

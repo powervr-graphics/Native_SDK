@@ -69,31 +69,16 @@
   <None Include="..\..\..\ProcessedAssets\Grid.pvr">
       <Filter>Content Files\Textures</Filter>
   </None>
-  <None Include="..\..\DefaultVertShader_ES2.vsh">
+  <None Include="..\..\DefaultVertShader.vsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\DefaultFragShader_ES2.fsh">
+  <None Include="..\..\DefaultFragShader.fsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\DefaultVertShader_ES3.vsh">
+  <None Include="..\..\SkinnedVertShader.vsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\DefaultFragShader_ES3.fsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\SkinnedVertShader_ES2.vsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\SkinnedFragShader_ES2.fsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\SkinnedVertShader_ES3.vsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\SkinnedFragShader_ES3.fsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\Skinning_es.pfx">
+  <None Include="..\..\SkinnedFragShader.fsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
   </ItemGroup>

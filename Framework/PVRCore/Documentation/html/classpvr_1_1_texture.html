@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -82,6 +82,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classpvr_1_1_texture-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">pvr::Texture Class Reference</div>  </div>
@@ -103,177 +104,170 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1d4ae5b8b2c94ca4cc26d84350c0073d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a1d4ae5b8b2c94ca4cc26d84350c0073d">Texture</a> ()</td></tr>
 <tr class="memdesc:a1d4ae5b8b2c94ca4cc26d84350c0073d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new empty texture. <a href="#a1d4ae5b8b2c94ca4cc26d84350c0073d">More...</a><br/></td></tr>
 <tr class="separator:a1d4ae5b8b2c94ca4cc26d84350c0073d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a84a23d9e1954f652b74bccd57633ff94"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a84a23d9e1954f652b74bccd57633ff94">Texture</a> (const <a class="el" href="classpvr_1_1_texture_header.html">TextureHeader</a> &amp;sHeader, const <a class="el" href="namespacepvr.html#aa90cd73f0aa3430b003b48d119e94f71">byte</a> *pData=NULL)</td></tr>
-<tr class="memdesc:a84a23d9e1954f652b74bccd57633ff94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a texture using the information from a <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> header and copy the actual data from a provided pointer. <a href="#a84a23d9e1954f652b74bccd57633ff94">More...</a><br/></td></tr>
-<tr class="separator:a84a23d9e1954f652b74bccd57633ff94"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a728551fb0796372ed9d3171ae29a8d49"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a728551fb0796372ed9d3171ae29a8d49">addPaddingMetaData</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> alignment)</td></tr>
-<tr class="memdesc:a728551fb0796372ed9d3171ae29a8d49"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function pads to a boundary value equal to "uiPadding". For example, setting alignment=8 will align the start of the texture data to an 8 byte boundary. <a href="#a728551fb0796372ed9d3171ae29a8d49">More...</a><br/></td></tr>
-<tr class="separator:a728551fb0796372ed9d3171ae29a8d49"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76961ba046070091ff295cc23aafded7"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr.html#aa90cd73f0aa3430b003b48d119e94f71">byte</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a76961ba046070091ff295cc23aafded7">getDataPointer</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> mipMapLevel=0, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> arrayMember=0, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> faceNumber=0) const </td></tr>
-<tr class="memdesc:a76961ba046070091ff295cc23aafded7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a (const) pointer into the raw texture's data. Can be offset to a specific array member, face and/or MIP Map levels. <a href="#a76961ba046070091ff295cc23aafded7">More...</a><br/></td></tr>
-<tr class="separator:a76961ba046070091ff295cc23aafded7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb544d6976846a1237f5f55a5cd38a48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#aa90cd73f0aa3430b003b48d119e94f71">byte</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#aeb544d6976846a1237f5f55a5cd38a48">getDataPointer</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> mipMapLevel=0, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> arrayMember=0, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> faceNumber=0)</td></tr>
-<tr class="memdesc:aeb544d6976846a1237f5f55a5cd38a48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer into the raw texture's data. Can be offset to a specific array member, face and/or MIP Map levels. <a href="#aeb544d6976846a1237f5f55a5cd38a48">More...</a><br/></td></tr>
-<tr class="separator:aeb544d6976846a1237f5f55a5cd38a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cef97d22e6cfac6d8c6ac6d60fbf503"><td class="memItemLeft" align="right" valign="top">types::ImageBaseType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a8cef97d22e6cfac6d8c6ac6d60fbf503">getDimension</a> () const </td></tr>
-<tr class="memdesc:a8cef97d22e6cfac6d8c6ac6d60fbf503"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the base dimensioning type of the image (3D, 2D, 1D). <a href="#a8cef97d22e6cfac6d8c6ac6d60fbf503">More...</a><br/></td></tr>
-<tr class="separator:a8cef97d22e6cfac6d8c6ac6d60fbf503"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a049bb43e31e75bfb38228bfbe29aa79a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1types_1_1_generic_extent3_d.html">types::Extent3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a049bb43e31e75bfb38228bfbe29aa79a">getDimensions</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> miplevel=0) const </td></tr>
-<tr class="memdesc:a049bb43e31e75bfb38228bfbe29aa79a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the texture's dimensions as a 3D extent (height, width, depth). <a href="#a049bb43e31e75bfb38228bfbe29aa79a">More...</a><br/></td></tr>
-<tr class="separator:a049bb43e31e75bfb38228bfbe29aa79a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f6418204403dc94b6aca003d62bcfed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1types_1_1_image_layers_size.html">types::ImageLayersSize</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a5f6418204403dc94b6aca003d62bcfed">getLayersSize</a> () const </td></tr>
-<tr class="memdesc:a5f6418204403dc94b6aca003d62bcfed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the texture's layer layout (miplevels, arraylevels). Faces are considered array levels, so a cube array has array x face array levels. <a href="#a5f6418204403dc94b6aca003d62bcfed">More...</a><br/></td></tr>
-<tr class="separator:a5f6418204403dc94b6aca003d62bcfed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a6093e2f3d6e0cbceb6d8e493cfdd3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#aa90cd73f0aa3430b003b48d119e94f71">byte</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a9a6093e2f3d6e0cbceb6d8e493cfdd3f">getPixelPointer</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> x, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> y, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> z=0, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> mipMapLevel=0, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> arrayMember=0, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> faceNumber=0)</td></tr>
-<tr class="memdesc:a9a6093e2f3d6e0cbceb6d8e493cfdd3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer into the raw texture's data, offset to a specific pixel. DOES NOT WORK FOR COMPRESSED TEXTURES. <a href="#a9a6093e2f3d6e0cbceb6d8e493cfdd3f">More...</a><br/></td></tr>
-<tr class="separator:a9a6093e2f3d6e0cbceb6d8e493cfdd3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13cfd0852221a1853911c112655f551f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a13cfd0852221a1853911c112655f551f">getPixelSize</a> () const </td></tr>
-<tr class="memdesc:a13cfd0852221a1853911c112655f551f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of bits size of each pixel in the texture. Not accurate for many compressed textures (e.g. ASTC) <a href="#a13cfd0852221a1853911c112655f551f">More...</a><br/></td></tr>
-<tr class="separator:a13cfd0852221a1853911c112655f551f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f67d1a139861e8f91f11d4fc913dfaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1types_1_1_image_area_size.html">types::ImageAreaSize</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a8f67d1a139861e8f91f11d4fc913dfaa">getTotalDimensions</a> () const </td></tr>
-<tr class="memdesc:a8f67d1a139861e8f91f11d4fc913dfaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the entire size of the image as an ImageAreaSize (height, width, depth, miplevels, arraylayers)  <a href="#a8f67d1a139861e8f91f11d4fc913dfaa">More...</a><br/></td></tr>
-<tr class="separator:a8f67d1a139861e8f91f11d4fc913dfaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8479201cf0729ed579b221c1cd609de5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a8479201cf0729ed579b221c1cd609de5">Texture</a> (const <a class="el" href="classpvr_1_1_texture_header.html">TextureHeader</a> &amp;sHeader, const char *pData=NULL)</td></tr>
+<tr class="memdesc:a8479201cf0729ed579b221c1cd609de5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a texture using the information from a <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> header and copy the actual data from a provided pointer. <a href="#a8479201cf0729ed579b221c1cd609de5">More...</a><br/></td></tr>
+<tr class="separator:a8479201cf0729ed579b221c1cd609de5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15c81430182569becd27c48dc12e9f36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a15c81430182569becd27c48dc12e9f36">addMetaData</a> (const <a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> &amp;metaData)</td></tr>
+<tr class="memdesc:a15c81430182569becd27c48dc12e9f36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an arbitrary piece of meta data. <a href="#a15c81430182569becd27c48dc12e9f36">More...</a><br/></td></tr>
+<tr class="separator:a15c81430182569becd27c48dc12e9f36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0eba5d93f2335cdb4085ad88b8e3a5cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a0eba5d93f2335cdb4085ad88b8e3a5cf">addPaddingMetaData</a> (uint32_t alignment)</td></tr>
+<tr class="memdesc:a0eba5d93f2335cdb4085ad88b8e3a5cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function pads to a boundary value equal to "uiPadding". For example, setting alignment=8 will align the start of the texture data to an 8 char boundary. <a href="#a0eba5d93f2335cdb4085ad88b8e3a5cf">More...</a><br/></td></tr>
+<tr class="separator:a0eba5d93f2335cdb4085ad88b8e3a5cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03be51a5ee0619d27d5cd4d5a89edf09"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a03be51a5ee0619d27d5cd4d5a89edf09">getBitsPerPixel</a> () const </td></tr>
+<tr class="memdesc:a03be51a5ee0619d27d5cd4d5a89edf09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the bits per pixel of the texture format. <a href="#a03be51a5ee0619d27d5cd4d5a89edf09">More...</a><br/></td></tr>
+<tr class="separator:a03be51a5ee0619d27d5cd4d5a89edf09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9915833ffc12d621f404db7f3adfcaa4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98">VariableType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a9915833ffc12d621f404db7f3adfcaa4">getChannelType</a> () const </td></tr>
+<tr class="memdesc:a9915833ffc12d621f404db7f3adfcaa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the channel type that the texture's data is stored in. <a href="#a9915833ffc12d621f404db7f3adfcaa4">More...</a><br/></td></tr>
+<tr class="separator:a9915833ffc12d621f404db7f3adfcaa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9facd1834d96237da556ae80c767b0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a1b94afe6b8a7c21e8f8ddee1f7b5cb91">ColorSpace</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#aa9facd1834d96237da556ae80c767b0b">getColorSpace</a> () const </td></tr>
+<tr class="memdesc:aa9facd1834d96237da556ae80c767b0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the color space of the texture. <a href="#aa9facd1834d96237da556ae80c767b0b">More...</a><br/></td></tr>
+<tr class="separator:aa9facd1834d96237da556ae80c767b0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7f3a0e6a241a373e9a9c4cfed6c5346"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ad7f3a0e6a241a373e9a9c4cfed6c5346">getCubeMapOrder</a> () const </td></tr>
+<tr class="memdesc:ad7f3a0e6a241a373e9a9c4cfed6c5346"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cube map face order. <a href="#ad7f3a0e6a241a373e9a9c4cfed6c5346">More...</a><br/></td></tr>
+<tr class="separator:ad7f3a0e6a241a373e9a9c4cfed6c5346"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c15051b3b6ad90a1716e5b54340535f"><td class="memItemLeft" align="right" valign="top">ptrdiff_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a5c15051b3b6ad90a1716e5b54340535f">getDataOffset</a> (uint32_t mipMapLevel=0, uint32_t arrayMember=0, uint32_t face=0) const </td></tr>
+<tr class="memdesc:a5c15051b3b6ad90a1716e5b54340535f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a offset in the data <a href="#a5c15051b3b6ad90a1716e5b54340535f">More...</a><br/></td></tr>
+<tr class="separator:a5c15051b3b6ad90a1716e5b54340535f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27807cdd0b4c909281e9fc7b32c9ee59"><td class="memItemLeft" align="right" valign="top">const unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a27807cdd0b4c909281e9fc7b32c9ee59">getDataPointer</a> (uint32_t mipMapLevel=0, uint32_t arrayMember=0, uint32_t faceNumber=0) const </td></tr>
+<tr class="memdesc:a27807cdd0b4c909281e9fc7b32c9ee59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a (const) pointer into the raw texture's data. Can be offset to a specific array member, face and/or MIP Map levels. <a href="#a27807cdd0b4c909281e9fc7b32c9ee59">More...</a><br/></td></tr>
+<tr class="separator:a27807cdd0b4c909281e9fc7b32c9ee59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33f7b902245f989a616a6f5e6f9b1187"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a33f7b902245f989a616a6f5e6f9b1187">getDataPointer</a> (uint32_t mipMapLevel=0, uint32_t arrayMember=0, uint32_t faceNumber=0)</td></tr>
+<tr class="memdesc:a33f7b902245f989a616a6f5e6f9b1187"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer into the raw texture's data. Can be offset to a specific array member, face and/or MIP Map levels. <a href="#a33f7b902245f989a616a6f5e6f9b1187">More...</a><br/></td></tr>
+<tr class="separator:a33f7b902245f989a616a6f5e6f9b1187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaf3f77da40c8245ea90df73ff1111e9"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#aeaf3f77da40c8245ea90df73ff1111e9">getDataSize</a> (int32_t mipLevel=pvrTextureAllMipMaps, bool allSurfaces=true, bool allFaces=true) const </td></tr>
+<tr class="memdesc:aeaf3f77da40c8245ea90df73ff1111e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size in BYTES of the texture, given various input parameters. <a href="#aeaf3f77da40c8245ea90df73ff1111e9">More...</a><br/></td></tr>
+<tr class="separator:aeaf3f77da40c8245ea90df73ff1111e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bc0d0046c69f2deaf016d7c7d70e4d2"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a2bc0d0046c69f2deaf016d7c7d70e4d2">getDepth</a> (uint32_t mipLevel=0) const </td></tr>
+<tr class="memdesc:a2bc0d0046c69f2deaf016d7c7d70e4d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the depth of the user specified MIP-Map level for the texture. <a href="#a2bc0d0046c69f2deaf016d7c7d70e4d2">More...</a><br/></td></tr>
+<tr class="separator:a2bc0d0046c69f2deaf016d7c7d70e4d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac58b84eb03e77cca96f35896eeb2517c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#ab98ea90165357c2f9030218c337f90bf">ImageType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#ac58b84eb03e77cca96f35896eeb2517c">getDimension</a> () const </td></tr>
+<tr class="memdesc:ac58b84eb03e77cca96f35896eeb2517c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the base dimensioning type of the image (3D, 2D, 1D). <a href="#ac58b84eb03e77cca96f35896eeb2517c">More...</a><br/></td></tr>
+<tr class="separator:ac58b84eb03e77cca96f35896eeb2517c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80faa021b0db33520f8c202f09436e28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#abc7deef434e373b18abd3b929c31e9aa">Extent3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a80faa021b0db33520f8c202f09436e28">getDimensions</a> (uint32_t miplevel=0) const </td></tr>
+<tr class="memdesc:a80faa021b0db33520f8c202f09436e28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the texture's dimensions as a 3D extent (height, width, depth). <a href="#a80faa021b0db33520f8c202f09436e28">More...</a><br/></td></tr>
+<tr class="separator:a80faa021b0db33520f8c202f09436e28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b4532fc36b0d70571d7916dd74deddb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a3b4532fc36b0d70571d7916dd74deddb">getDirect3DFormat</a> (uint32_t &amp;outD3dFormat) const </td></tr>
+<tr class="memdesc:a3b4532fc36b0d70571d7916dd74deddb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Direct3D equivalent format enumeration for this texture. <a href="#a3b4532fc36b0d70571d7916dd74deddb">More...</a><br/></td></tr>
+<tr class="separator:a3b4532fc36b0d70571d7916dd74deddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a141eeab2ece67bd6235e3659980bc68d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a141eeab2ece67bd6235e3659980bc68d">getDirectXGIFormat</a> (uint32_t &amp;outDxgiFormat, bool &amp;notAlpha) const </td></tr>
+<tr class="memdesc:a141eeab2ece67bd6235e3659980bc68d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the DirectXGI equivalent format enumeration for this texture. <a href="#a141eeab2ece67bd6235e3659980bc68d">More...</a><br/></td></tr>
+<tr class="separator:a141eeab2ece67bd6235e3659980bc68d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3f36bb369bdd8dbe49725cbb33559c8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structpvr_1_1_texture_header_1_1_header.html">Header</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#aa3f36bb369bdd8dbe49725cbb33559c8">getHeader</a> () const </td></tr>
+<tr class="memdesc:aa3f36bb369bdd8dbe49725cbb33559c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the file header structure. <a href="#aa3f36bb369bdd8dbe49725cbb33559c8">More...</a><br/></td></tr>
+<tr class="separator:aa3f36bb369bdd8dbe49725cbb33559c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae186c6406bdcfd645c598b5d5cf9aafb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1_texture_header_1_1_header.html">Header</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ae186c6406bdcfd645c598b5d5cf9aafb">getHeaderAccess</a> ()</td></tr>
+<tr class="memdesc:ae186c6406bdcfd645c598b5d5cf9aafb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the file header access. <a href="#ae186c6406bdcfd645c598b5d5cf9aafb">More...</a><br/></td></tr>
+<tr class="separator:ae186c6406bdcfd645c598b5d5cf9aafb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a582b5ab59735cba663f859449b330779"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a582b5ab59735cba663f859449b330779">getHeight</a> (uint32_t uiMipMapLevel=0) const </td></tr>
+<tr class="memdesc:a582b5ab59735cba663f859449b330779"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the height of the user specified MIP-Map level for the texture. <a href="#a582b5ab59735cba663f859449b330779">More...</a><br/></td></tr>
+<tr class="separator:a582b5ab59735cba663f859449b330779"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59977f127505485e4a941c649f136cbb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1_image_layers_size.html">ImageLayersSize</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a59977f127505485e4a941c649f136cbb">getLayersSize</a> () const </td></tr>
+<tr class="memdesc:a59977f127505485e4a941c649f136cbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the texture's layer layout (miplevels, arraylevels). Faces are considered array levels, so a cube array has array x face array levels. <a href="#a59977f127505485e4a941c649f136cbb">More...</a><br/></td></tr>
+<tr class="separator:a59977f127505485e4a941c649f136cbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21fd1add128b283865f83bc8a95d8319"><td class="memItemLeft" align="right" valign="top">const std::map&lt; uint32_t, <br class="typebreak"/>
+std::map&lt; uint32_t, <br class="typebreak"/>
+<a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> &gt; &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a21fd1add128b283865f83bc8a95d8319">getMetaDataMap</a> () const </td></tr>
+<tr class="memdesc:a21fd1add128b283865f83bc8a95d8319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer directly to the Meta Data Map, to allow users to read out data. <a href="#a21fd1add128b283865f83bc8a95d8319">More...</a><br/></td></tr>
+<tr class="separator:a21fd1add128b283865f83bc8a95d8319"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2fea881e745488b4c7dbf8a6a81f7df"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#af2fea881e745488b4c7dbf8a6a81f7df">getMetaDataSize</a> () const </td></tr>
+<tr class="memdesc:af2fea881e745488b4c7dbf8a6a81f7df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the total size of the meta data stored in the header. This includes the size of all information stored in all CPVRMetaDataBlocks. <a href="#af2fea881e745488b4c7dbf8a6a81f7df">More...</a><br/></td></tr>
+<tr class="separator:af2fea881e745488b4c7dbf8a6a81f7df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae452b3bf5cdda870c9568d7e02c01cb2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ae452b3bf5cdda870c9568d7e02c01cb2">getMinDimensionsForFormat</a> (uint32_t &amp;minX, uint32_t &amp;minY, uint32_t &amp;minZ) const </td></tr>
+<tr class="memdesc:ae452b3bf5cdda870c9568d7e02c01cb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the minimum dimensions that the texture format of this header can be. <a href="#ae452b3bf5cdda870c9568d7e02c01cb2">More...</a><br/></td></tr>
+<tr class="separator:ae452b3bf5cdda870c9568d7e02c01cb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad57b6598a8159b44cd10a6f1821b6fcf"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ad57b6598a8159b44cd10a6f1821b6fcf">getNumArrayMembers</a> () const </td></tr>
+<tr class="memdesc:ad57b6598a8159b44cd10a6f1821b6fcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of array members stored in this texture. <a href="#ad57b6598a8159b44cd10a6f1821b6fcf">More...</a><br/></td></tr>
+<tr class="separator:ad57b6598a8159b44cd10a6f1821b6fcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f8e6f8c50bae9008dcc655b0c846939"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a1f8e6f8c50bae9008dcc655b0c846939">getNumFaces</a> () const </td></tr>
+<tr class="memdesc:a1f8e6f8c50bae9008dcc655b0c846939"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of faces stored in this texture. <a href="#a1f8e6f8c50bae9008dcc655b0c846939">More...</a><br/></td></tr>
+<tr class="separator:a1f8e6f8c50bae9008dcc655b0c846939"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6471d15ead65b3251457f2a817d41c8b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a6471d15ead65b3251457f2a817d41c8b">getNumMipMapLevels</a> () const </td></tr>
+<tr class="memdesc:a6471d15ead65b3251457f2a817d41c8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of MIP-Map levels stored in this texture. <a href="#a6471d15ead65b3251457f2a817d41c8b">More...</a><br/></td></tr>
+<tr class="separator:a6471d15ead65b3251457f2a817d41c8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4aa518e82662bf007fe17f690053f21c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_texture_meta_data.html#a5acad07c0f0cc281a017cb56e7a92f5a">TextureMetaData::AxisOrientation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a4aa518e82662bf007fe17f690053f21c">getOrientation</a> (<a class="el" href="classpvr_1_1_texture_meta_data.html#ae6062237be958135b6d9cfc9fe0fb883">TextureMetaData::Axis</a> axis) const </td></tr>
+<tr class="memdesc:a4aa518e82662bf007fe17f690053f21c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the data orientation for this texture. <a href="#a4aa518e82662bf007fe17f690053f21c">More...</a><br/></td></tr>
+<tr class="separator:a4aa518e82662bf007fe17f690053f21c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cc8abcb39a043540ee5806b89294e84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a8cc8abcb39a043540ee5806b89294e84">getPixelFormat</a> () const </td></tr>
+<tr class="memdesc:a8cc8abcb39a043540ee5806b89294e84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the pixel type ID of the texture. <a href="#a8cc8abcb39a043540ee5806b89294e84">More...</a><br/></td></tr>
+<tr class="separator:a8cc8abcb39a043540ee5806b89294e84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abae2a69b2d557736af9ff050893d3a75"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#abae2a69b2d557736af9ff050893d3a75">getPixelPointer</a> (uint32_t x, uint32_t y, uint32_t z=0, uint32_t mipMapLevel=0, uint32_t arrayMember=0, uint32_t faceNumber=0)</td></tr>
+<tr class="memdesc:abae2a69b2d557736af9ff050893d3a75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer into the raw texture's data, offset to a specific pixel. DOES NOT WORK FOR COMPRESSED TEXTURES. <a href="#abae2a69b2d557736af9ff050893d3a75">More...</a><br/></td></tr>
+<tr class="separator:abae2a69b2d557736af9ff050893d3a75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a381d806b509c4b07cdb9229924fdf468"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#a381d806b509c4b07cdb9229924fdf468">getPixelSize</a> () const </td></tr>
+<tr class="memdesc:a381d806b509c4b07cdb9229924fdf468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of bytes size of each pixel in the texture. Not accurate for many compressed textures (e.g. ASTC) <a href="#a381d806b509c4b07cdb9229924fdf468">More...</a><br/></td></tr>
+<tr class="separator:a381d806b509c4b07cdb9229924fdf468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45e62a80b7ab6a069327509a38d54316"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a45e62a80b7ab6a069327509a38d54316">getTextureSize</a> (int32_t mipMapLevel=pvrTextureAllMipMaps, bool allSurfaces=true, bool allFaces=true) const </td></tr>
+<tr class="memdesc:a45e62a80b7ab6a069327509a38d54316"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size in PIXELS of the texture, given various input parameters. <a href="#a45e62a80b7ab6a069327509a38d54316">More...</a><br/></td></tr>
+<tr class="separator:a45e62a80b7ab6a069327509a38d54316"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade2e6da795c11aefc2bc8ae98f95ba25"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ade2e6da795c11aefc2bc8ae98f95ba25">getWidth</a> (uint32_t uiMipMapLevel=0) const </td></tr>
+<tr class="memdesc:ade2e6da795c11aefc2bc8ae98f95ba25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the width of the user specified MIP-Map level for the texture. <a href="#ade2e6da795c11aefc2bc8ae98f95ba25">More...</a><br/></td></tr>
+<tr class="separator:ade2e6da795c11aefc2bc8ae98f95ba25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5bda057c26fb767772415ed46c49998"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture.html#ac5bda057c26fb767772415ed46c49998">initializeWithHeader</a> (const <a class="el" href="classpvr_1_1_texture_header.html">TextureHeader</a> &amp;sHeader)</td></tr>
 <tr class="memdesc:ac5bda057c26fb767772415ed46c49998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a texture using the information from a <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> header and preallocate memory for its data.  <a href="#ac5bda057c26fb767772415ed46c49998">More...</a><br/></td></tr>
 <tr class="separator:ac5bda057c26fb767772415ed46c49998"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classpvr_1_1_texture_header"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpvr_1_1_texture_header')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpvr_1_1_texture_header.html">pvr::TextureHeader</a></td></tr>
-<tr class="memitem:aeb28e3c3a9f26529ff3fb001fe327f04 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#aeb28e3c3a9f26529ff3fb001fe327f04">TextureHeader</a> ()</td></tr>
-<tr class="memdesc:aeb28e3c3a9f26529ff3fb001fe327f04 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor for a <a class="el" href="classpvr_1_1_texture_header.html" title="A class mirroring the PVR Texture container format header, and which can in general represent any Tex...">TextureHeader</a>. Returns an empty header. <a href="#aeb28e3c3a9f26529ff3fb001fe327f04">More...</a><br/></td></tr>
-<tr class="separator:aeb28e3c3a9f26529ff3fb001fe327f04 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb5b259fd890f3d0a18182eef7ddda1e inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#aeb5b259fd890f3d0a18182eef7ddda1e">TextureHeader</a> (const <a class="el" href="classpvr_1_1_texture_header.html">TextureHeader</a> &amp;rhs)</td></tr>
-<tr class="memdesc:aeb5b259fd890f3d0a18182eef7ddda1e inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor <a href="#aeb5b259fd890f3d0a18182eef7ddda1e">More...</a><br/></td></tr>
-<tr class="separator:aeb5b259fd890f3d0a18182eef7ddda1e inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24d65e5620541bbb903391acc7a1773f inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a24d65e5620541bbb903391acc7a1773f">TextureHeader</a> (<a class="el" href="structpvr_1_1_texture_header_1_1_header.html">Header</a> &amp;header)</td></tr>
-<tr class="memdesc:a24d65e5620541bbb903391acc7a1773f inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct this from the given file header <a href="#a24d65e5620541bbb903391acc7a1773f">More...</a><br/></td></tr>
-<tr class="separator:a24d65e5620541bbb903391acc7a1773f inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57f9274ed3b9762e92a1e0e20042d3e4 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a57f9274ed3b9762e92a1e0e20042d3e4">TextureHeader</a> (<a class="el" href="structpvr_1_1_texture_header_1_1_header.html">Header</a> fileHeader, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> metaDataCount, <a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> *metaData)</td></tr>
-<tr class="memdesc:a57f9274ed3b9762e92a1e0e20042d3e4 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct this from file header and meta data <a href="#a57f9274ed3b9762e92a1e0e20042d3e4">More...</a><br/></td></tr>
-<tr class="separator:a57f9274ed3b9762e92a1e0e20042d3e4 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d553f5a71774f12b508bf33a64442bd inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a4d553f5a71774f12b508bf33a64442bd">TextureHeader</a> (<a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a> pixelFormat, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> width, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> height, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> depth=1, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> mipMapCount=1, types::ColorSpace colorSpace=types::ColorSpace::lRGB, <a class="el" href="namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98">VariableType</a> channelType=VariableType::UnsignedByteNorm, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numberOfSurfaces=1, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> numberOfFaces=1, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> flags=0, <a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> *metaData=NULL, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> metaDataSize=0)</td></tr>
-<tr class="memdesc:a4d553f5a71774f12b508bf33a64442bd inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <a href="#a4d553f5a71774f12b508bf33a64442bd">More...</a><br/></td></tr>
-<tr class="separator:a4d553f5a71774f12b508bf33a64442bd inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15c81430182569becd27c48dc12e9f36 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a15c81430182569becd27c48dc12e9f36">addMetaData</a> (const <a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> &amp;metaData)</td></tr>
-<tr class="memdesc:a15c81430182569becd27c48dc12e9f36 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds an arbitrary piece of meta data. <a href="#a15c81430182569becd27c48dc12e9f36">More...</a><br/></td></tr>
-<tr class="separator:a15c81430182569becd27c48dc12e9f36 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad62b61c16df58374013f50807457e9e0 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ad62b61c16df58374013f50807457e9e0">getBitsPerPixel</a> () const </td></tr>
-<tr class="memdesc:ad62b61c16df58374013f50807457e9e0 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the bits per pixel of the texture format. <a href="#ad62b61c16df58374013f50807457e9e0">More...</a><br/></td></tr>
-<tr class="separator:ad62b61c16df58374013f50807457e9e0 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9915833ffc12d621f404db7f3adfcaa4 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98">VariableType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a9915833ffc12d621f404db7f3adfcaa4">getChannelType</a> () const </td></tr>
-<tr class="memdesc:a9915833ffc12d621f404db7f3adfcaa4 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the channel type that the texture's data is stored in. <a href="#a9915833ffc12d621f404db7f3adfcaa4">More...</a><br/></td></tr>
-<tr class="separator:a9915833ffc12d621f404db7f3adfcaa4 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13f18ed15f2a8180e2a66b98c7954f3e inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">types::ColorSpace&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a13f18ed15f2a8180e2a66b98c7954f3e">getColorSpace</a> () const </td></tr>
-<tr class="memdesc:a13f18ed15f2a8180e2a66b98c7954f3e inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the color space of the texture. <a href="#a13f18ed15f2a8180e2a66b98c7954f3e">More...</a><br/></td></tr>
-<tr class="separator:a13f18ed15f2a8180e2a66b98c7954f3e inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7f3a0e6a241a373e9a9c4cfed6c5346 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ad7f3a0e6a241a373e9a9c4cfed6c5346">getCubeMapOrder</a> () const </td></tr>
-<tr class="memdesc:ad7f3a0e6a241a373e9a9c4cfed6c5346 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cube map face order. <a href="#ad7f3a0e6a241a373e9a9c4cfed6c5346">More...</a><br/></td></tr>
-<tr class="separator:ad7f3a0e6a241a373e9a9c4cfed6c5346 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9cc3792fd42b19c631bcb79f25f04097 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">ptrdiff_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a9cc3792fd42b19c631bcb79f25f04097">getDataOffset</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> mipMapLevel=0, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> arrayMember=0, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> face=0) const </td></tr>
-<tr class="memdesc:a9cc3792fd42b19c631bcb79f25f04097 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a offset in the data <a href="#a9cc3792fd42b19c631bcb79f25f04097">More...</a><br/></td></tr>
-<tr class="separator:a9cc3792fd42b19c631bcb79f25f04097 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85f3bfcd45947c46248048c32c627a13 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a85f3bfcd45947c46248048c32c627a13">getDataSize</a> (<a class="el" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">int32</a> mipLevel=pvrTextureAllMIPMaps, bool allSurfaces=true, bool allFaces=true) const </td></tr>
-<tr class="memdesc:a85f3bfcd45947c46248048c32c627a13 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size in BYTES of the texture, given various input parameters. <a href="#a85f3bfcd45947c46248048c32c627a13">More...</a><br/></td></tr>
-<tr class="separator:a85f3bfcd45947c46248048c32c627a13 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac188bf4a98cf109551bd1daa5be0f684 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ac188bf4a98cf109551bd1daa5be0f684">getDepth</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> mipLevel=0) const </td></tr>
-<tr class="memdesc:ac188bf4a98cf109551bd1daa5be0f684 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the depth of the user specified MIP-Map level for the texture. <a href="#ac188bf4a98cf109551bd1daa5be0f684">More...</a><br/></td></tr>
-<tr class="separator:ac188bf4a98cf109551bd1daa5be0f684 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4fa184df21de25c40903d5be3079023e inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a4fa184df21de25c40903d5be3079023e">getDirect3DFormat</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> &amp;outD3dFormat) const </td></tr>
-<tr class="memdesc:a4fa184df21de25c40903d5be3079023e inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Direct3D equivalent format enumeration for this texture. <a href="#a4fa184df21de25c40903d5be3079023e">More...</a><br/></td></tr>
-<tr class="separator:a4fa184df21de25c40903d5be3079023e inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada881b4d0e9befbcb9936effc933902b inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ada881b4d0e9befbcb9936effc933902b">getDirectXGIFormat</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> &amp;outDxgiFormat, bool &amp;notAlpha) const </td></tr>
-<tr class="memdesc:ada881b4d0e9befbcb9936effc933902b inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the DirectXGI equivalent format enumeration for this texture. <a href="#ada881b4d0e9befbcb9936effc933902b">More...</a><br/></td></tr>
-<tr class="separator:ada881b4d0e9befbcb9936effc933902b inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3f36bb369bdd8dbe49725cbb33559c8 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structpvr_1_1_texture_header_1_1_header.html">Header</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#aa3f36bb369bdd8dbe49725cbb33559c8">getHeader</a> () const </td></tr>
-<tr class="memdesc:aa3f36bb369bdd8dbe49725cbb33559c8 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the file header structure. <a href="#aa3f36bb369bdd8dbe49725cbb33559c8">More...</a><br/></td></tr>
-<tr class="separator:aa3f36bb369bdd8dbe49725cbb33559c8 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae186c6406bdcfd645c598b5d5cf9aafb inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpvr_1_1_texture_header_1_1_header.html">Header</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ae186c6406bdcfd645c598b5d5cf9aafb">getHeaderAccess</a> ()</td></tr>
-<tr class="memdesc:ae186c6406bdcfd645c598b5d5cf9aafb inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the file header access. <a href="#ae186c6406bdcfd645c598b5d5cf9aafb">More...</a><br/></td></tr>
-<tr class="separator:ae186c6406bdcfd645c598b5d5cf9aafb inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f3e965c2be719d990dd5945130d0f06 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a0f3e965c2be719d990dd5945130d0f06">getHeight</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> uiMipLevel=0) const </td></tr>
-<tr class="memdesc:a0f3e965c2be719d990dd5945130d0f06 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the height of the user specified MIP-Map level for the texture. <a href="#a0f3e965c2be719d990dd5945130d0f06">More...</a><br/></td></tr>
-<tr class="separator:a0f3e965c2be719d990dd5945130d0f06 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4da245ac3eb5ed7c427a2e19aec5b392 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">const std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>, <br class="typebreak"/>
-std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>, <br class="typebreak"/>
-<a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> &gt; &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a4da245ac3eb5ed7c427a2e19aec5b392">getMetaDataMap</a> () const </td></tr>
-<tr class="memdesc:a4da245ac3eb5ed7c427a2e19aec5b392 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer directly to the Meta Data Map, to allow users to read out data. <a href="#a4da245ac3eb5ed7c427a2e19aec5b392">More...</a><br/></td></tr>
-<tr class="separator:a4da245ac3eb5ed7c427a2e19aec5b392 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aefe50bf63696e5e1fd261fd54f48ef11 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#aefe50bf63696e5e1fd261fd54f48ef11">getMetaDataSize</a> () const </td></tr>
-<tr class="memdesc:aefe50bf63696e5e1fd261fd54f48ef11 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the total size of the meta data stored in the header. This includes the size of all information stored in all CPVRMetaDataBlocks. <a href="#aefe50bf63696e5e1fd261fd54f48ef11">More...</a><br/></td></tr>
-<tr class="separator:aefe50bf63696e5e1fd261fd54f48ef11 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab01657bae943993d3c4a04d8a5c4c803 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ab01657bae943993d3c4a04d8a5c4c803">getMinDimensionsForFormat</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> &amp;minX, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> &amp;minY, <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> &amp;minZ) const </td></tr>
-<tr class="memdesc:ab01657bae943993d3c4a04d8a5c4c803 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the minimum dimensions that the texture format of this header can be. <a href="#ab01657bae943993d3c4a04d8a5c4c803">More...</a><br/></td></tr>
-<tr class="separator:ab01657bae943993d3c4a04d8a5c4c803 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82abdc5c650f46d828e241f608841250 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a82abdc5c650f46d828e241f608841250">getNumberOfArrayMembers</a> () const </td></tr>
-<tr class="memdesc:a82abdc5c650f46d828e241f608841250 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of array members stored in this texture. <a href="#a82abdc5c650f46d828e241f608841250">More...</a><br/></td></tr>
-<tr class="separator:a82abdc5c650f46d828e241f608841250 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ef196e4cc0f8a150fade3012ce4d65a inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a0ef196e4cc0f8a150fade3012ce4d65a">getNumberOfFaces</a> () const </td></tr>
-<tr class="memdesc:a0ef196e4cc0f8a150fade3012ce4d65a inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of faces stored in this texture. <a href="#a0ef196e4cc0f8a150fade3012ce4d65a">More...</a><br/></td></tr>
-<tr class="separator:a0ef196e4cc0f8a150fade3012ce4d65a inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4042de983a1fdfec15c13fb71fd01d2b inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a4042de983a1fdfec15c13fb71fd01d2b">getNumberOfMIPLevels</a> () const </td></tr>
-<tr class="memdesc:a4042de983a1fdfec15c13fb71fd01d2b inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of MIP-Map levels stored in this texture. <a href="#a4042de983a1fdfec15c13fb71fd01d2b">More...</a><br/></td></tr>
-<tr class="separator:a4042de983a1fdfec15c13fb71fd01d2b inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4aa518e82662bf007fe17f690053f21c inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">TextureMetaData::AxisOrientation&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a4aa518e82662bf007fe17f690053f21c">getOrientation</a> (TextureMetaData::Axis axis) const </td></tr>
-<tr class="memdesc:a4aa518e82662bf007fe17f690053f21c inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the data orientation for this texture. <a href="#a4aa518e82662bf007fe17f690053f21c">More...</a><br/></td></tr>
-<tr class="separator:a4aa518e82662bf007fe17f690053f21c inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cc8abcb39a043540ee5806b89294e84 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a8cc8abcb39a043540ee5806b89294e84">getPixelFormat</a> () const </td></tr>
-<tr class="memdesc:a8cc8abcb39a043540ee5806b89294e84 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the pixel type ID of the texture. <a href="#a8cc8abcb39a043540ee5806b89294e84">More...</a><br/></td></tr>
-<tr class="separator:a8cc8abcb39a043540ee5806b89294e84 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d65fc586b570ecde2a11e85fc3ee102 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a9d65fc586b570ecde2a11e85fc3ee102">getTextureSize</a> (<a class="el" href="namespacepvr.html#a496cd696ccb8dfabf94599ba8b21f00a">int32</a> mipMapLevel=pvrTextureAllMIPMaps, bool allSurfaces=true, bool allFaces=true) const </td></tr>
-<tr class="memdesc:a9d65fc586b570ecde2a11e85fc3ee102 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size in PIXELS of the texture, given various input parameters. <a href="#a9d65fc586b570ecde2a11e85fc3ee102">More...</a><br/></td></tr>
-<tr class="separator:a9d65fc586b570ecde2a11e85fc3ee102 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65879da34f5bb2041d9abc93804313c1 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a65879da34f5bb2041d9abc93804313c1">getWidth</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> uiMipLevel=0) const </td></tr>
-<tr class="memdesc:a65879da34f5bb2041d9abc93804313c1 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the width of the user specified MIP-Map level for the texture. <a href="#a65879da34f5bb2041d9abc93804313c1">More...</a><br/></td></tr>
-<tr class="separator:a65879da34f5bb2041d9abc93804313c1 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65e47c2529adeb18f7f6c78dc7133598 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a65e47c2529adeb18f7f6c78dc7133598">isBumpMap</a> () const </td></tr>
-<tr class="memdesc:a65e47c2529adeb18f7f6c78dc7133598 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if this texture is bumpmap <a href="#a65e47c2529adeb18f7f6c78dc7133598">More...</a><br/></td></tr>
-<tr class="separator:a65e47c2529adeb18f7f6c78dc7133598 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5cff2e66e9eb6b951ec397bded48228 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#af5cff2e66e9eb6b951ec397bded48228">isFileCompressed</a> () const </td></tr>
-<tr class="memdesc:af5cff2e66e9eb6b951ec397bded48228 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether or not the texture is compressed using PVRTexLib's FILE compression - this is independent of any texture compression. <a href="#af5cff2e66e9eb6b951ec397bded48228">More...</a><br/></td></tr>
-<tr class="separator:af5cff2e66e9eb6b951ec397bded48228 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add4b350aeddec1229aadbe6d4f62c3dc inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#add4b350aeddec1229aadbe6d4f62c3dc">isPreMultiplied</a> () const </td></tr>
-<tr class="memdesc:add4b350aeddec1229aadbe6d4f62c3dc inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether or not the texture's color has been pre-multiplied by the alpha values. <a href="#add4b350aeddec1229aadbe6d4f62c3dc">More...</a><br/></td></tr>
-<tr class="separator:add4b350aeddec1229aadbe6d4f62c3dc inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0112d526c9778ab5b27329a6a590fd18 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a0112d526c9778ab5b27329a6a590fd18">setBumpMap</a> (float bumpScale, <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a> bumpOrder)</td></tr>
-<tr class="memdesc:a0112d526c9778ab5b27329a6a590fd18 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a texture's bump map data. <a href="#a0112d526c9778ab5b27329a6a590fd18">More...</a><br/></td></tr>
-<tr class="separator:a0112d526c9778ab5b27329a6a590fd18 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2b159d430023c0b9d1f3cf0b62164cfb inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a2b159d430023c0b9d1f3cf0b62164cfb">setChannelType</a> (<a class="el" href="namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98">VariableType</a> channelType)</td></tr>
-<tr class="memdesc:a2b159d430023c0b9d1f3cf0b62164cfb inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the channel type of this texture. <a href="#a2b159d430023c0b9d1f3cf0b62164cfb">More...</a><br/></td></tr>
-<tr class="separator:a2b159d430023c0b9d1f3cf0b62164cfb inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6567cd6054474b49d8a729c0e1e224ad inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a6567cd6054474b49d8a729c0e1e224ad">setColorSpace</a> (types::ColorSpace colorSpace)</td></tr>
-<tr class="memdesc:a6567cd6054474b49d8a729c0e1e224ad inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the color space for this texture. Default is lRGB. <a href="#a6567cd6054474b49d8a729c0e1e224ad">More...</a><br/></td></tr>
-<tr class="separator:a6567cd6054474b49d8a729c0e1e224ad inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ae0add42744eb80a320819c7a30ceba inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a6ae0add42744eb80a320819c7a30ceba">setCubeMapOrder</a> (std::string cubeMapOrder)</td></tr>
-<tr class="memdesc:a6ae0add42744eb80a320819c7a30ceba inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a texture's bump map data. <a href="#a6ae0add42744eb80a320819c7a30ceba">More...</a><br/></td></tr>
-<tr class="separator:a6ae0add42744eb80a320819c7a30ceba inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa55cdb75cb5ca2e7501dac0ccf7d36f8 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#aa55cdb75cb5ca2e7501dac0ccf7d36f8">setDepth</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> newDepth)</td></tr>
-<tr class="memdesc:aa55cdb75cb5ca2e7501dac0ccf7d36f8 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the texture depth. <a href="#aa55cdb75cb5ca2e7501dac0ccf7d36f8">More...</a><br/></td></tr>
-<tr class="separator:aa55cdb75cb5ca2e7501dac0ccf7d36f8 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc7b8dac2d29c7964d253b62caf34dc2 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#adc7b8dac2d29c7964d253b62caf34dc2">setHeight</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> newHeight)</td></tr>
-<tr class="memdesc:adc7b8dac2d29c7964d253b62caf34dc2 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the texture height. <a href="#adc7b8dac2d29c7964d253b62caf34dc2">More...</a><br/></td></tr>
-<tr class="separator:adc7b8dac2d29c7964d253b62caf34dc2 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2cee1199768def6a9748792eb5b0ccc3 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a2cee1199768def6a9748792eb5b0ccc3">setIsFileCompressed</a> (bool <a class="el" href="classpvr_1_1_texture_header.html#af5cff2e66e9eb6b951ec397bded48228">isFileCompressed</a>)</td></tr>
-<tr class="memdesc:a2cee1199768def6a9748792eb5b0ccc3 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether or not the texture is compressed using PVRTexLib's FILE compression - this is independent of any texture compression. Currently unsupported. <a href="#a2cee1199768def6a9748792eb5b0ccc3">More...</a><br/></td></tr>
-<tr class="separator:a2cee1199768def6a9748792eb5b0ccc3 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3edb013521dccb80f92759ab1c45f61b inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a3edb013521dccb80f92759ab1c45f61b">setIsPreMultiplied</a> (bool <a class="el" href="classpvr_1_1_texture_header.html#add4b350aeddec1229aadbe6d4f62c3dc">isPreMultiplied</a>)</td></tr>
-<tr class="memdesc:a3edb013521dccb80f92759ab1c45f61b inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether or not the texture's color has been pre-multiplied by the alpha values. <a href="#a3edb013521dccb80f92759ab1c45f61b">More...</a><br/></td></tr>
-<tr class="separator:a3edb013521dccb80f92759ab1c45f61b inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f1fee3b270f444e8a9237ddd6fe1f02 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a9f1fee3b270f444e8a9237ddd6fe1f02">setNumberOfArrayMembers</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> newNumMembers)</td></tr>
-<tr class="memdesc:a9f1fee3b270f444e8a9237ddd6fe1f02 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the number of arrays in this texture <a href="#a9f1fee3b270f444e8a9237ddd6fe1f02">More...</a><br/></td></tr>
-<tr class="separator:a9f1fee3b270f444e8a9237ddd6fe1f02 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a125e7ad1706f36041d385d91f0332d89 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a125e7ad1706f36041d385d91f0332d89">setNumberOfFaces</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> newNumFaces)</td></tr>
-<tr class="memdesc:a125e7ad1706f36041d385d91f0332d89 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the number of faces stored in this texture. <a href="#a125e7ad1706f36041d385d91f0332d89">More...</a><br/></td></tr>
-<tr class="separator:a125e7ad1706f36041d385d91f0332d89 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5c71b91b1b68218d92f7adf778274a0 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ad5c71b91b1b68218d92f7adf778274a0">setNumberOfMIPLevels</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> newNumMIPLevels)</td></tr>
-<tr class="memdesc:ad5c71b91b1b68218d92f7adf778274a0 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the number of MIP-Map levels in this texture. <a href="#ad5c71b91b1b68218d92f7adf778274a0">More...</a><br/></td></tr>
-<tr class="separator:ad5c71b91b1b68218d92f7adf778274a0 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaafee0c616f4217ebc193b0a4082a72f inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#aaafee0c616f4217ebc193b0a4082a72f">setOrientation</a> (TextureMetaData::AxisOrientation axisOrientation)</td></tr>
-<tr class="memdesc:aaafee0c616f4217ebc193b0a4082a72f inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the data orientation for a given axis in this texture. <a href="#aaafee0c616f4217ebc193b0a4082a72f">More...</a><br/></td></tr>
-<tr class="separator:aaafee0c616f4217ebc193b0a4082a72f inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac843ef8bfde1ea52d0aad891807c4ea2 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ac843ef8bfde1ea52d0aad891807c4ea2">setPixelFormat</a> (<a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a> uPixelFormat)</td></tr>
-<tr class="memdesc:ac843ef8bfde1ea52d0aad891807c4ea2 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the pixel format for this texture. <a href="#ac843ef8bfde1ea52d0aad891807c4ea2">More...</a><br/></td></tr>
-<tr class="separator:ac843ef8bfde1ea52d0aad891807c4ea2 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a26164e0c3c65664a71bd88ec788e4329 inherit pub_methods_classpvr_1_1_texture_header"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a26164e0c3c65664a71bd88ec788e4329">setWidth</a> (<a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> newWidth)</td></tr>
-<tr class="memdesc:a26164e0c3c65664a71bd88ec788e4329 inherit pub_methods_classpvr_1_1_texture_header"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the texture width. <a href="#a26164e0c3c65664a71bd88ec788e4329">More...</a><br/></td></tr>
-<tr class="separator:a26164e0c3c65664a71bd88ec788e4329 inherit pub_methods_classpvr_1_1_texture_header"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65e47c2529adeb18f7f6c78dc7133598"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a65e47c2529adeb18f7f6c78dc7133598">isBumpMap</a> () const </td></tr>
+<tr class="memdesc:a65e47c2529adeb18f7f6c78dc7133598"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if this texture is bumpmap <a href="#a65e47c2529adeb18f7f6c78dc7133598">More...</a><br/></td></tr>
+<tr class="separator:a65e47c2529adeb18f7f6c78dc7133598"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5cff2e66e9eb6b951ec397bded48228"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#af5cff2e66e9eb6b951ec397bded48228">isFileCompressed</a> () const </td></tr>
+<tr class="memdesc:af5cff2e66e9eb6b951ec397bded48228"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether or not the texture is compressed using PVRTexLib's FILE compression - this is independent of any texture compression. <a href="#af5cff2e66e9eb6b951ec397bded48228">More...</a><br/></td></tr>
+<tr class="separator:af5cff2e66e9eb6b951ec397bded48228"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add4b350aeddec1229aadbe6d4f62c3dc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#add4b350aeddec1229aadbe6d4f62c3dc">isPreMultiplied</a> () const </td></tr>
+<tr class="memdesc:add4b350aeddec1229aadbe6d4f62c3dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether or not the texture's color has been pre-multiplied by the alpha values. <a href="#add4b350aeddec1229aadbe6d4f62c3dc">More...</a><br/></td></tr>
+<tr class="separator:add4b350aeddec1229aadbe6d4f62c3dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28a015fac0ee35f2dbb69e079487309a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a28a015fac0ee35f2dbb69e079487309a">setBumpMap</a> (float bumpScale, std::string bumpOrder)</td></tr>
+<tr class="memdesc:a28a015fac0ee35f2dbb69e079487309a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a texture's bump map data. <a href="#a28a015fac0ee35f2dbb69e079487309a">More...</a><br/></td></tr>
+<tr class="separator:a28a015fac0ee35f2dbb69e079487309a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b159d430023c0b9d1f3cf0b62164cfb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a2b159d430023c0b9d1f3cf0b62164cfb">setChannelType</a> (<a class="el" href="namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98">VariableType</a> channelType)</td></tr>
+<tr class="memdesc:a2b159d430023c0b9d1f3cf0b62164cfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the channel type of this texture. <a href="#a2b159d430023c0b9d1f3cf0b62164cfb">More...</a><br/></td></tr>
+<tr class="separator:a2b159d430023c0b9d1f3cf0b62164cfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5740a75eaa57573a398d9c9fd48b99a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#af5740a75eaa57573a398d9c9fd48b99a">setColorSpace</a> (<a class="el" href="namespacepvr.html#a1b94afe6b8a7c21e8f8ddee1f7b5cb91">ColorSpace</a> colorSpace)</td></tr>
+<tr class="memdesc:af5740a75eaa57573a398d9c9fd48b99a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the color space for this texture. Default is lRGB. <a href="#af5740a75eaa57573a398d9c9fd48b99a">More...</a><br/></td></tr>
+<tr class="separator:af5740a75eaa57573a398d9c9fd48b99a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ae0add42744eb80a320819c7a30ceba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a6ae0add42744eb80a320819c7a30ceba">setCubeMapOrder</a> (std::string cubeMapOrder)</td></tr>
+<tr class="memdesc:a6ae0add42744eb80a320819c7a30ceba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a texture's bump map data. <a href="#a6ae0add42744eb80a320819c7a30ceba">More...</a><br/></td></tr>
+<tr class="separator:a6ae0add42744eb80a320819c7a30ceba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b7469359ed22b4c6bb41495d2fa2f4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a2b7469359ed22b4c6bb41495d2fa2f4e">setDepth</a> (uint32_t newDepth)</td></tr>
+<tr class="memdesc:a2b7469359ed22b4c6bb41495d2fa2f4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the texture depth. <a href="#a2b7469359ed22b4c6bb41495d2fa2f4e">More...</a><br/></td></tr>
+<tr class="separator:a2b7469359ed22b4c6bb41495d2fa2f4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fa1c1b7885a83633003f9bc88d5b218"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a2fa1c1b7885a83633003f9bc88d5b218">setHeight</a> (uint32_t newHeight)</td></tr>
+<tr class="memdesc:a2fa1c1b7885a83633003f9bc88d5b218"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the texture height. <a href="#a2fa1c1b7885a83633003f9bc88d5b218">More...</a><br/></td></tr>
+<tr class="separator:a2fa1c1b7885a83633003f9bc88d5b218"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cee1199768def6a9748792eb5b0ccc3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a2cee1199768def6a9748792eb5b0ccc3">setIsFileCompressed</a> (bool <a class="el" href="classpvr_1_1_texture_header.html#af5cff2e66e9eb6b951ec397bded48228">isFileCompressed</a>)</td></tr>
+<tr class="memdesc:a2cee1199768def6a9748792eb5b0ccc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether or not the texture is compressed using PVRTexLib's FILE compression - this is independent of any texture compression. Currently unsupported. <a href="#a2cee1199768def6a9748792eb5b0ccc3">More...</a><br/></td></tr>
+<tr class="separator:a2cee1199768def6a9748792eb5b0ccc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3edb013521dccb80f92759ab1c45f61b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a3edb013521dccb80f92759ab1c45f61b">setIsPreMultiplied</a> (bool <a class="el" href="classpvr_1_1_texture_header.html#add4b350aeddec1229aadbe6d4f62c3dc">isPreMultiplied</a>)</td></tr>
+<tr class="memdesc:a3edb013521dccb80f92759ab1c45f61b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether or not the texture's color has been pre-multiplied by the alpha values. <a href="#a3edb013521dccb80f92759ab1c45f61b">More...</a><br/></td></tr>
+<tr class="separator:a3edb013521dccb80f92759ab1c45f61b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a746d4244f009e9e13318710b5842fe9a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a746d4244f009e9e13318710b5842fe9a">setNumArrayMembers</a> (uint32_t numNewMembers)</td></tr>
+<tr class="memdesc:a746d4244f009e9e13318710b5842fe9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the number of arrays in this texture <a href="#a746d4244f009e9e13318710b5842fe9a">More...</a><br/></td></tr>
+<tr class="separator:a746d4244f009e9e13318710b5842fe9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9525ab8947e88b614c6e81b575d5c3c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a9525ab8947e88b614c6e81b575d5c3c9">setNumFaces</a> (uint32_t numNewFaces)</td></tr>
+<tr class="memdesc:a9525ab8947e88b614c6e81b575d5c3c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the number of faces stored in this texture. <a href="#a9525ab8947e88b614c6e81b575d5c3c9">More...</a><br/></td></tr>
+<tr class="separator:a9525ab8947e88b614c6e81b575d5c3c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c6fe8d132b26659e9072282dd037054"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a0c6fe8d132b26659e9072282dd037054">setNumMipMapLevels</a> (uint32_t numNewMipMapLevels)</td></tr>
+<tr class="memdesc:a0c6fe8d132b26659e9072282dd037054"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the number of MIP-Map levels in this texture. <a href="#a0c6fe8d132b26659e9072282dd037054">More...</a><br/></td></tr>
+<tr class="separator:a0c6fe8d132b26659e9072282dd037054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaafee0c616f4217ebc193b0a4082a72f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#aaafee0c616f4217ebc193b0a4082a72f">setOrientation</a> (<a class="el" href="classpvr_1_1_texture_meta_data.html#a5acad07c0f0cc281a017cb56e7a92f5a">TextureMetaData::AxisOrientation</a> axisOrientation)</td></tr>
+<tr class="memdesc:aaafee0c616f4217ebc193b0a4082a72f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the data orientation for a given axis in this texture. <a href="#aaafee0c616f4217ebc193b0a4082a72f">More...</a><br/></td></tr>
+<tr class="separator:aaafee0c616f4217ebc193b0a4082a72f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac843ef8bfde1ea52d0aad891807c4ea2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#ac843ef8bfde1ea52d0aad891807c4ea2">setPixelFormat</a> (<a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a> uPixelFormat)</td></tr>
+<tr class="memdesc:ac843ef8bfde1ea52d0aad891807c4ea2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the pixel format for this texture. <a href="#ac843ef8bfde1ea52d0aad891807c4ea2">More...</a><br/></td></tr>
+<tr class="separator:ac843ef8bfde1ea52d0aad891807c4ea2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b546b020e47df211588a983cc9872e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a4b546b020e47df211588a983cc9872e7">setWidth</a> (uint32_t newWidth)</td></tr>
+<tr class="memdesc:a4b546b020e47df211588a983cc9872e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the texture width. <a href="#a4b546b020e47df211588a983cc9872e7">More...</a><br/></td></tr>
+<tr class="separator:a4b546b020e47df211588a983cc9872e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a249d9911244024d2e531b4df1776a296"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a249d9911244024d2e531b4df1776a296"></a>
+<a class="el" href="structpvr_1_1_texture_header_1_1_header.html">Header</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a249d9911244024d2e531b4df1776a296">_header</a></td></tr>
+<tr class="memdesc:a249d9911244024d2e531b4df1776a296"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> header as laid out in a file. <br/></td></tr>
+<tr class="separator:a249d9911244024d2e531b4df1776a296"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a610b01b773fc32dd8b829e9dee05b0e2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a610b01b773fc32dd8b829e9dee05b0e2"></a>
+std::map&lt; uint32_t, std::map<br class="typebreak"/>
+&lt; uint32_t, <a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_header.html#a610b01b773fc32dd8b829e9dee05b0e2">_metaDataMap</a></td></tr>
+<tr class="memdesc:a610b01b773fc32dd8b829e9dee05b0e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map of all the meta data stored for a texture. <br/></td></tr>
+<tr class="separator:a610b01b773fc32dd8b829e9dee05b0e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A 2D <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> asset, together with Information, Metadata and actual Pixel data. Only represents the actual data, not the API objects that may be created from it.</p>
@@ -295,7 +289,7 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
 
 </div>
 </div>
-<a class="anchor" id="a84a23d9e1954f652b74bccd57633ff94"></a>
+<a class="anchor" id="a8479201cf0729ed579b221c1cd609de5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -308,7 +302,7 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="namespacepvr.html#aa90cd73f0aa3430b003b48d119e94f71">byte</a> *&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>pData</em> = <code>NULL</code>&#160;</td>
         </tr>
         <tr>
@@ -332,21 +326,53 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a728551fb0796372ed9d3171ae29a8d49"></a>
+<a class="anchor" id="a15c81430182569becd27c48dc12e9f36"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::addMetaData </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> &amp;&#160;</td>
+          <td class="paramname"><em>metaData</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Adds an arbitrary piece of meta data.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">metaData</td><td>Meta data block to be added.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a0eba5d93f2335cdb4085ad88b8e3a5cf"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::Texture::addPaddingMetaData </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>alignment</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>This function pads to a boundary value equal to "uiPadding". For example, setting alignment=8 will align the start of the texture data to an 8 byte boundary.</p>
+<p>This function pads to a boundary value equal to "uiPadding". For example, setting alignment=8 will align the start of the texture data to an 8 char boundary.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">alignment</td><td>The final alignment of the metadata</td></tr>
@@ -357,26 +383,182 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
 
 </div>
 </div>
-<a class="anchor" id="a76961ba046070091ff295cc23aafded7"></a>
+<a class="anchor" id="a03be51a5ee0619d27d5cd4d5a89edf09"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespacepvr.html#aa90cd73f0aa3430b003b48d119e94f71">byte</a>* pvr::Texture::getDataPointer </td>
+          <td class="memname">uint32_t pvr::TextureHeader::getBitsPerPixel </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the bits per pixel of the texture format.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return number of bits per pixel</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a9915833ffc12d621f404db7f3adfcaa4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98">VariableType</a> pvr::TextureHeader::getChannelType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the channel type that the texture's data is stored in.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return the enum representing the type of the texture.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aa9facd1834d96237da556ae80c767b0b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr.html#a1b94afe6b8a7c21e8f8ddee1f7b5cb91">ColorSpace</a> pvr::TextureHeader::getColorSpace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the color space of the texture.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return the ColorSpace enum representing color space.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ad7f3a0e6a241a373e9a9c4cfed6c5346"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string pvr::TextureHeader::getCubeMapOrder </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the cube map face order.</p>
+<dl class="section return"><dt>Returns</dt><dd>Returns cube map order.</dd></dl>
+<p>Returned std::string will be in the form "ZzXxYy" with capitals representing positive and small letters representing negative. I.e. Z=Z-Positive, z=Z-Negative.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5c15051b3b6ad90a1716e5b54340535f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ptrdiff_t pvr::TextureHeader::getDataOffset </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>mipMapLevel</em> = <code>0</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>arrayMember</em> = <code>0</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>face</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get a offset in the data</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mipMapLevel</td><td>The mip map level of the offset</td></tr>
+    <tr><td class="paramname">arrayMember</td><td>The array index of the offset</td></tr>
+    <tr><td class="paramname">face</td><td>The face of the offset</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Return data offset</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a27807cdd0b4c909281e9fc7b32c9ee59"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const unsigned char* pvr::Texture::getDataPointer </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mipMapLevel</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>arrayMember</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>faceNumber</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
@@ -401,26 +583,26 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
 
 </div>
 </div>
-<a class="anchor" id="aeb544d6976846a1237f5f55a5cd38a48"></a>
+<a class="anchor" id="a33f7b902245f989a616a6f5e6f9b1187"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr.html#aa90cd73f0aa3430b003b48d119e94f71">byte</a>* pvr::Texture::getDataPointer </td>
+          <td class="memname">unsigned char* pvr::Texture::getDataPointer </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>mipMapLevel</em> = <code>0</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>arrayMember</em> = <code>0</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>faceNumber</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
@@ -445,7 +627,7 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
 
 </div>
 </div>
-<a class="anchor" id="a8cef97d22e6cfac6d8c6ac6d60fbf503"></a>
+<a class="anchor" id="aeaf3f77da40c8245ea90df73ff1111e9"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -453,7 +635,92 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">types::ImageBaseType pvr::Texture::getDimension </td>
+          <td class="memname">uint32_t pvr::TextureHeader::getDataSize </td>
+          <td>(</td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>mipLevel</em> = <code>pvrTextureAllMipMaps</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>allSurfaces</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>allFaces</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the size in BYTES of the texture, given various input parameters.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mipLevel</td><td>Specifies a mip level to check, 'c_pvrTextureAllMIPMapLevels' can be passed to Get the size of all MIP levels.</td></tr>
+    <tr><td class="paramname">allSurfaces</td><td>The Size of all surfaces is calculated if true, only a single surface if false. </td></tr>
+    <tr><td class="paramname">allFaces</td><td>The Size of all faces is calculated if true, only a single face if false.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Return the size in BYTES of the specified texture area.</dd></dl>
+<p>User can retrieve the size of either all surfaces or a single surface, all faces or a single face and all MIP-Maps or a single specified MIP level.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2bc0d0046c69f2deaf016d7c7d70e4d2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::TextureHeader::getDepth </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>mipLevel</em> = <code>0</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the depth of the user specified MIP-Map level for the texture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mipLevel</td><td>MIP level that user is interested in.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Return the depth of the specified MIP-Map level.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac58b84eb03e77cca96f35896eeb2517c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepvr.html#ab98ea90165357c2f9030218c337f90bf">ImageType</a> pvr::Texture::getDimension </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -471,7 +738,7 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
 
 </div>
 </div>
-<a class="anchor" id="a049bb43e31e75bfb38228bfbe29aa79a"></a>
+<a class="anchor" id="a80faa021b0db33520f8c202f09436e28"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -479,9 +746,9 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structpvr_1_1types_1_1_generic_extent3_d.html">types::Extent3D</a> pvr::Texture::getDimensions </td>
+          <td class="memname"><a class="el" href="namespacepvr.html#abc7deef434e373b18abd3b929c31e9aa">Extent3D</a> pvr::Texture::getDimensions </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>miplevel</em> = <code>0</code></td><td>)</td>
           <td> const</td>
         </tr>
@@ -494,11 +761,17 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
 </div><div class="memdoc">
 
 <p>Return the texture's dimensions as a 3D extent (height, width, depth).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">miplevel</td><td>(Default 0) The mip level for which to get the dimensions</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>Return the texture's dimensions as a 3D extent (height, width, depth)</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a5f6418204403dc94b6aca003d62bcfed"></a>
+<a class="anchor" id="a3b4532fc36b0d70571d7916dd74deddb"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -506,7 +779,169 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structpvr_1_1types_1_1_image_layers_size.html">types::ImageLayersSize</a> pvr::Texture::getLayersSize </td>
+          <td class="memname">bool pvr::TextureHeader::getDirect3DFormat </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t &amp;&#160;</td>
+          <td class="paramname"><em>outD3dFormat</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the Direct3D equivalent format enumeration for this texture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outD3dFormat</td><td>Returned d3d format</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Return true on success, returns false if it cannot find a suitable type</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a141eeab2ece67bd6235e3659980bc68d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::TextureHeader::getDirectXGIFormat </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t &amp;&#160;</td>
+          <td class="paramname"><em>outDxgiFormat</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>notAlpha</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the DirectXGI equivalent format enumeration for this texture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">notAlpha</td><td>Return whether the <em>outDxgiFormat</em> is has alpha or not.</td></tr>
+    <tr><td class="paramname">outDxgiFormat</td><td>Returned dxgi format</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Return true on success, returns false if it cannot find a suitable type</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aa3f36bb369bdd8dbe49725cbb33559c8"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structpvr_1_1_texture_header_1_1_header.html">Header</a>&amp; pvr::TextureHeader::getHeader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the file header structure.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return the file header.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ae186c6406bdcfd645c598b5d5cf9aafb"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpvr_1_1_texture_header_1_1_header.html">Header</a>&amp; pvr::TextureHeader::getHeaderAccess </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the file header access.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return the file header.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a582b5ab59735cba663f859449b330779"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::TextureHeader::getHeight </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>uiMipMapLevel</em> = <code>0</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the height of the user specified MIP-Map level for the texture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uiMipMapLevel</td><td>MIP level that user is interested in.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Return the Height of the specified MIP-Map level.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a59977f127505485e4a941c649f136cbb"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpvr_1_1_image_layers_size.html">ImageLayersSize</a> pvr::Texture::getLayersSize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -524,7 +959,7 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
 
 </div>
 </div>
-<a class="anchor" id="a9a6093e2f3d6e0cbceb6d8e493cfdd3f"></a>
+<a class="anchor" id="a21fd1add128b283865f83bc8a95d8319"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -532,39 +967,278 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr.html#aa90cd73f0aa3430b003b48d119e94f71">byte</a>* pvr::Texture::getPixelPointer </td>
+          <td class="memname">const std::map&lt;uint32_t, std::map&lt;uint32_t, <a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a>&gt; &gt;* pvr::TextureHeader::getMetaDataMap </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get a pointer directly to the Meta Data Map, to allow users to read out data.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return a direct pointer to the MetaData map.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="af2fea881e745488b4c7dbf8a6a81f7df"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::TextureHeader::getMetaDataSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the total size of the meta data stored in the header. This includes the size of all information stored in all CPVRMetaDataBlocks.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return the size, in bytes, of the meta data stored in the header.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ae452b3bf5cdda870c9568d7e02c01cb2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::getMinDimensionsForFormat </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t &amp;&#160;</td>
+          <td class="paramname"><em>minX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t &amp;&#160;</td>
+          <td class="paramname"><em>minY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t &amp;&#160;</td>
+          <td class="paramname"><em>minZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the minimum dimensions that the texture format of this header can be.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">minX</td><td>Minimum width of the texture format.</td></tr>
+    <tr><td class="paramname">minY</td><td>Minimum height of the texture format.</td></tr>
+    <tr><td class="paramname">minZ</td><td>Minimum depth of the texture format.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ad57b6598a8159b44cd10a6f1821b6fcf"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::TextureHeader::getNumArrayMembers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the number of array members stored in this texture.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return the number of array members in this texture.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a1f8e6f8c50bae9008dcc655b0c846939"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::TextureHeader::getNumFaces </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the number of faces stored in this texture.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return the number of faces in this texture.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a6471d15ead65b3251457f2a817d41c8b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::TextureHeader::getNumMipMapLevels </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the number of MIP-Map levels stored in this texture.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return the number of MIP-Map levels in this texture.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a4aa518e82662bf007fe17f690053f21c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpvr_1_1_texture_meta_data.html#a5acad07c0f0cc281a017cb56e7a92f5a">TextureMetaData::AxisOrientation</a> pvr::TextureHeader::getOrientation </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpvr_1_1_texture_meta_data.html#ae6062237be958135b6d9cfc9fe0fb883">TextureMetaData::Axis</a>&#160;</td>
+          <td class="paramname"><em>axis</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the data orientation for this texture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">axis</td><td>The axis to examine.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Return the orientation of the axis.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a8cc8abcb39a043540ee5806b89294e84"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a> pvr::TextureHeader::getPixelFormat </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the pixel type ID of the texture.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return a 64-bit pixel type ID.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="abae2a69b2d557736af9ff050893d3a75"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char* pvr::Texture::getPixelPointer </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>x</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>y</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>z</em> = <code>0</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>mipMapLevel</em> = <code>0</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>arrayMember</em> = <code>0</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>faceNumber</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
@@ -593,16 +1267,16 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Raw pointer to a location in the texture.</dd></dl>
-<p>The data is contiguous so that the entire texture (all mips, array members and faces) can always be accessed from any pointer. Equivalent to getDataPointer(mipMapLevel, arrayMember, faceNumber) + [byte offset of pixel (x,y,z)]</p>
+<p>The data is contiguous so that the entire texture (all mips, array members and faces) can always be accessed from any pointer. Equivalent to getDataPointer(mipMapLevel, arrayMember, faceNumber) + [char offset of pixel (x,y,z)]</p>
 
 </div>
 </div>
-<a class="anchor" id="a13cfd0852221a1853911c112655f551f"></a>
+<a class="anchor" id="a381d806b509c4b07cdb9229924fdf468"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> pvr::Texture::getPixelSize </td>
+          <td class="memname">uint8_t pvr::Texture::getPixelSize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -610,12 +1284,12 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
       </table>
 </div><div class="memdoc">
 
-<p>Get the number of bits size of each pixel in the texture. Not accurate for many compressed textures (e.g. ASTC)</p>
-<dl class="section return"><dt>Returns</dt><dd>he number of bits size of each pixel in the texture. May return zero for some compressed formats. </dd></dl>
+<p>Get the number of bytes size of each pixel in the texture. Not accurate for many compressed textures (e.g. ASTC)</p>
+<dl class="section return"><dt>Returns</dt><dd>he number of bytes size of each pixel in the texture. May return zero for some compressed formats. </dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a8f67d1a139861e8f91f11d4fc913dfaa"></a>
+<a class="anchor" id="a45e62a80b7ab6a069327509a38d54316"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -623,21 +1297,80 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structpvr_1_1types_1_1_image_area_size.html">types::ImageAreaSize</a> pvr::Texture::getTotalDimensions </td>
+          <td class="memname">uint32_t pvr::TextureHeader::getTextureSize </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>mipMapLevel</em> = <code>pvrTextureAllMipMaps</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>allSurfaces</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>allFaces</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the size in PIXELS of the texture, given various input parameters.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mipMapLevel</td><td>Specifies a MIP level to check, 'c_pvrTextureAllMIPMapLevels' can be passed to Get the size of all MIP levels.</td></tr>
+    <tr><td class="paramname">allSurfaces</td><td>The Size of all surfaces is calculated if true, only a single surface if false. </td></tr>
+    <tr><td class="paramname">allFaces</td><td>The Size of all faces is calculated if true, only a single face if false.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Return the size in PIXELS of the specified texture area.</dd></dl>
+<p>User can retrieve the total size of either all surfaces or a single surface, all faces or a single face and all MIP-Maps or a single specified MIP level. All of these</p>
+
+</div>
+</div>
+<a class="anchor" id="ade2e6da795c11aefc2bc8ae98f95ba25"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::TextureHeader::getWidth </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>uiMipMapLevel</em> = <code>0</code></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Return the entire size of the image as an ImageAreaSize (height, width, depth, miplevels, arraylayers) </p>
-<dl class="section return"><dt>Returns</dt><dd>The entire size of the image as an ImageAreaSize (height, width, depth, miplevels, arraylayers) </dd></dl>
+<p>Gets the width of the user specified MIP-Map level for the texture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uiMipMapLevel</td><td>MIP level that user is interested in.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Return the width of the specified MIP-Map level.</dd></dl>
 
 </div>
 </div>
@@ -663,6 +1396,545 @@ std::map&lt; <a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4e
   </dd>
 </dl>
 <p>Creates a new texture based on a texture header, pre-allocating the correct amount of memory.</p>
+
+</div>
+</div>
+<a class="anchor" id="a65e47c2529adeb18f7f6c78dc7133598"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::TextureHeader::isBumpMap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check if this texture is bumpmap</p>
+<dl class="section return"><dt>Returns</dt><dd>Return true if the texture is bumpmap</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="af5cff2e66e9eb6b951ec397bded48228"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::TextureHeader::isFileCompressed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether or not the texture is compressed using PVRTexLib's FILE compression - this is independent of any texture compression.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return true if it is file compressed.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="add4b350aeddec1229aadbe6d4f62c3dc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::TextureHeader::isPreMultiplied </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check whether or not the texture's color has been pre-multiplied by the alpha values.</p>
+<dl class="section return"><dt>Returns</dt><dd>Return true if texture is premultiplied.</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a28a015fac0ee35f2dbb69e079487309a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setBumpMap </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bumpScale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>bumpOrder</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets a texture's bump map data.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bumpScale</td><td>Floating point "height" value to scale the bump map.</td></tr>
+    <tr><td class="paramname">bumpOrder</td><td>Up to 4 character std::string, with values x,y,z,h in some combination.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>For <em>bumpOrder</em> Not all values need to be present. Denotes channel order; x,y,z refer to the corresponding axes, h indicates presence of the original height map. It is possible to have only some of these values rather than all. For example if 'h' is present alone it will be considered a height map. The values should be presented in RGBA order, regardless of the texture format, so a zyxh order in a bgra texture should still be passed as 'xyzh'. Capitals are allowed. Any character stored here that is not one of x,y,z,h or a NULL character will be ignored when PVRTexLib reads the data, but will be preserved. This is useful if you wish to define a custom data channel for instance. In these instances PVRTexLib will assume it is simply color data.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2b159d430023c0b9d1f3cf0b62164cfb"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setChannelType </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a6f7777c11dfff8fcf4a03d85e5ab0b98">VariableType</a>&#160;</td>
+          <td class="paramname"><em>channelType</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the channel type of this texture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">channelType</td><td><a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a>'s channel type</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="af5740a75eaa57573a398d9c9fd48b99a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setColorSpace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacepvr.html#a1b94afe6b8a7c21e8f8ddee1f7b5cb91">ColorSpace</a>&#160;</td>
+          <td class="paramname"><em>colorSpace</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the color space for this texture. Default is lRGB.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">colorSpace</td><td>A color space of the texture.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a6ae0add42744eb80a320819c7a30ceba"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setCubeMapOrder </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>cubeMapOrder</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets a texture's bump map data.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cubeMapOrder</td><td>Up to 6 character std::string, with values x,X,y,Y,z,Z in some combination.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>for <em>cubmapOrder</em> Not all values need to be present. Denotes face order; Capitals refer to positive axis positions and small letters refer to negative axis positions. E.g. x=X-Negative, X=X-Positive. It is possible to have only some of these values rather than all, as long as they are NULL terminated. NB: Values past the 6th character are not read.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2b7469359ed22b4c6bb41495d2fa2f4e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setDepth </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>newDepth</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the texture depth.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newDepth</td><td>The new depth.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a2fa1c1b7885a83633003f9bc88d5b218"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setHeight </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>newHeight</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the texture height.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newHeight</td><td>The new height.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a2cee1199768def6a9748792eb5b0ccc3"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setIsFileCompressed </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isFileCompressed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets whether or not the texture is compressed using PVRTexLib's FILE compression - this is independent of any texture compression. Currently unsupported.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">isFileCompressed</td><td>Sets file compression to true/false.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a3edb013521dccb80f92759ab1c45f61b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setIsPreMultiplied </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isPreMultiplied</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets whether or not the texture's color has been pre-multiplied by the alpha values.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">isPreMultiplied</td><td>Sets if texture is premultiplied.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a746d4244f009e9e13318710b5842fe9a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setNumArrayMembers </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>numNewMembers</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the number of arrays in this texture</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">numNewMembers</td><td>The new number of members in this array.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a9525ab8947e88b614c6e81b575d5c3c9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setNumFaces </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>numNewFaces</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the number of faces stored in this texture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">numNewFaces</td><td>New number of faces for this texture.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a0c6fe8d132b26659e9072282dd037054"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setNumMipMapLevels </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>numNewMipMapLevels</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the number of MIP-Map levels in this texture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">numNewMipMapLevels</td><td>New number of MIP-Map levels.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aaafee0c616f4217ebc193b0a4082a72f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setOrientation </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpvr_1_1_texture_meta_data.html#a5acad07c0f0cc281a017cb56e7a92f5a">TextureMetaData::AxisOrientation</a>&#160;</td>
+          <td class="paramname"><em>axisOrientation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the data orientation for a given axis in this texture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">axisOrientation</td><td>Specifying axis and orientation.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ac843ef8bfde1ea52d0aad891807c4ea2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setPixelFormat </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classpvr_1_1_pixel_format.html">PixelFormat</a>&#160;</td>
+          <td class="paramname"><em>uPixelFormat</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the pixel format for this texture.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">uPixelFormat</td><td>The format of the pixel.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a4b546b020e47df211588a983cc9872e7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::TextureHeader::setWidth </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>newWidth</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">inherited</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the texture width.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">newWidth</td><td>The new width.</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

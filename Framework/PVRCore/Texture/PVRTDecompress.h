@@ -5,6 +5,7 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
+#include <stdint.h>
 namespace pvr {
 
 /// <summary>Decompresses PVRTC to RGBA 8888.</summary>
@@ -14,14 +15,14 @@ namespace pvr {
 /// <param name="yDim">Y dimension of the texture</param>
 /// <param name="outResultImage">The decompressed texture data</param>
 /// <returns>Return the amount of data that was decompressed.</returns>
-int PVRTDecompressPVRTC(const void* compressedData, int do2bitMode, int xDim, int yDim, unsigned char* outResultImage);
+int PVRTDecompressPVRTC(const void* compressedData, int do2bitMode, int xDim, int yDim, uint8_t* outResultImage);
 
 /// <summary>Decompresses ETC to RGBA 8888.</summary>
 /// <param name="srcData">The ETC texture data to decompress</param>
 /// <param name="xDim">X dimension of the texture</param>
 /// <param name="yDim">Y dimension of the texture</param>
-/// <param name="destData">The decompressed texture data</param>
+/// <param name="dstData">The decompressed texture data</param>
 /// <param name="mode">The format of the data</param>
 /// <returns>Return The number of bytes of ETC data decompressed</returns>
-int PVRTDecompressETC(const void* srcData, unsigned int xDim, unsigned int yDim, void* destData, int mode);
+int PVRTDecompressETC(const void* srcData, unsigned int xDim, unsigned int yDim, void* dstData, int mode);
 }

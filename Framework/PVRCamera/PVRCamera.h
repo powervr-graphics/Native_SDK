@@ -6,7 +6,7 @@
 */
 
 #pragma once
-#include "PVRCamera/CameraInterfacePVRApi.h"
+#include "PVRCamera/CameraInterface.h"
 
 /*****************************************************************************/
 /*! \mainpage PVRCamera
@@ -22,7 +22,7 @@ Except for linking to the native library, PVRCamera requires a few lines of Java
 
 PVRCamera source can be found in the <a href="../../">PVRCamera</a> folder in the SDK package.
 
-\section usage Using PVRApi
+\section usage Using PVRCamera
 *****************************
 
 To use PVRCamera:

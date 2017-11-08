@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -85,183 +85,288 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <a href="_log_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="_console_messenger_8h.html">PVRCore/Logging/ConsoleMessenger.h</a>&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>pvr {</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html">   15</a></span>&#160;<span class="keyword">class </span><a class="code" href="classpvr_1_1_logger.html">Logger</a></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;{</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">static</span> <a class="code" href="classpvr_1_1platform_1_1_console_messenger.html">platform::ConsoleMessenger</a> _defaultMessageHandler;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="classpvr_1_1platform_1_1_messenger.html">platform::Messenger</a>* _messageHandler;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">   22</a></span>&#160;    <span class="keyword">enum</span> <a class="code" href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">Severity</a></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        None = platform::Messenger::None,</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        Debug = platform::Messenger::Debug,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        Verbose = platform::Messenger::Verbose,</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        Information = platform::Messenger::Information,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        Warning = platform::Messenger::Warning,</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        Error = platform::Messenger::Error,</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        Critical = platform::Messenger::Critical,</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    };</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#aac74d048d717683d73c4b641b0188816">   36</a></span>&#160;    <a class="code" href="classpvr_1_1_logger.html#aac74d048d717683d73c4b641b0188816">Logger</a>() : _messageHandler(&amp;_defaultMessageHandler) {}</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#ab7fb180155cf18d5502774bcb5e03d07">   44</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_logger.html#ab7fb180155cf18d5502774bcb5e03d07">operator()</a>(<a class="code" href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">Severity</a> severity, <span class="keyword">const</span> <a class="code" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a>* <span class="keyword">const</span> formatString, ...)</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        va_list argumentList;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        va_start(argumentList, formatString);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <a class="code" href="classpvr_1_1_logger.html#ada19872dcec828d4188d752afbcdbb11">vaOutput</a>(severity, formatString, argumentList);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        va_end(argumentList);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#addfb9d4a6c3251aab0182682f06b5760">   56</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_logger.html#addfb9d4a6c3251aab0182682f06b5760">operator()</a>(<span class="keyword">const</span> <a class="code" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a>* <span class="keyword">const</span> formatString, ...)</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        va_list argumentList;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        va_start(argumentList, formatString);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <a class="code" href="classpvr_1_1_logger.html#ada19872dcec828d4188d752afbcdbb11">vaOutput</a>(Error, formatString, argumentList);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        va_end(argumentList);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    }</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#ad5483730d0f449cd6dc4aec9d20bb3d5">   69</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_logger.html#ad5483730d0f449cd6dc4aec9d20bb3d5">output</a>(<a class="code" href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">Severity</a> severity, <span class="keyword">const</span> <a class="code" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a>* <span class="keyword">const</span> formatString, ...)</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        va_list argumentList;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        va_start(argumentList, formatString);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <a class="code" href="classpvr_1_1_logger.html#ada19872dcec828d4188d752afbcdbb11">vaOutput</a>(severity, formatString, argumentList);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        va_end(argumentList);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    }</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#aee7ec6b3908c15a64dd11258de7381dc">   81</a></span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_logger.html#aee7ec6b3908c15a64dd11258de7381dc">static_output</a>(<a class="code" href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">Severity</a> severity, <span class="keyword">const</span> <a class="code" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a>* <span class="keyword">const</span> formatString, ...)</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    {</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        va_list argumentList;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        va_start(argumentList, formatString);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        <a class="code" href="classpvr_1_1_logger.html#adca085e80fb6b92dff911c6ed1cd980c">static_vaOutput</a>(severity, formatString, argumentList);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;        va_end(argumentList);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    }</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#ada19872dcec828d4188d752afbcdbb11">   90</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_logger.html#ada19872dcec828d4188d752afbcdbb11">vaOutput</a>(<a class="code" href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">Severity</a> severity, <span class="keyword">const</span> <a class="code" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a>* <span class="keyword">const</span> formatString, va_list argumentList)</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    {</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keywordflow">if</span> (_messageHandler)</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        {</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;            _messageHandler-&gt;<a class="code" href="classpvr_1_1platform_1_1_messenger.html#a8b667ed261b1a7ae99c80e6eb0ed72a9">output</a>(static_cast&lt;platform::Messenger::Severity&gt;(severity), formatString, argumentList);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        }</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    }</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00099"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#adca085e80fb6b92dff911c6ed1cd980c">   99</a></span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_logger.html#adca085e80fb6b92dff911c6ed1cd980c">static_vaOutput</a>(<a class="code" href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">Severity</a> severity, <span class="keyword">const</span> <a class="code" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a>* <span class="keyword">const</span> formatString, va_list argumentList)</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    {</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        _defaultMessageHandler.<a class="code" href="classpvr_1_1platform_1_1_messenger.html#a8b667ed261b1a7ae99c80e6eb0ed72a9">output</a>(static_cast&lt;platform::Messenger::Severity&gt;(severity), formatString, argumentList);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    }</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#aaf17704672fa4ecbf5ac0107a716a2e6">  106</a></span>&#160;    <span class="keyword">const</span> <a class="code" href="classpvr_1_1platform_1_1_messenger.html">platform::Messenger</a>* <a class="code" href="classpvr_1_1_logger.html#aaf17704672fa4ecbf5ac0107a716a2e6">getMessageHandler</a>()</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    {</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        <span class="keywordflow">return</span> _messageHandler;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    }</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#a84db60d4e970aaff8a317da46a815e25">  113</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_logger.html#a84db60d4e970aaff8a317da46a815e25">setMessageHandler</a>(<a class="code" href="classpvr_1_1platform_1_1_messenger.html">platform::Messenger</a>* messageHandler)</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    {</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        Logger::_messageHandler = messageHandler;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    }</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00120"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#ad30249db37a015014a39d96eb1214df2">  120</a></span>&#160;    <a class="code" href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">Severity</a> <a class="code" href="classpvr_1_1_logger.html#ad30249db37a015014a39d96eb1214df2">getVerbosity</a>()</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    {</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><a class="code" href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">Logger::Severity</a><span class="keyword">&gt;</span>(_messageHandler-&gt;<a class="code" href="classpvr_1_1platform_1_1_messenger.html#a507214fb9658e01cb687e64f275c145d">getVerbosity</a>());</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    }</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
-<div class="line"><a name="l00127"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#a987fc07529c3075b6cc55f894ffa5495">  127</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classpvr_1_1_logger.html#a987fc07529c3075b6cc55f894ffa5495">setVerbosity</a>(<span class="keyword">const</span> <a class="code" href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">Severity</a> verbosity)</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    {</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        _messageHandler-&gt;<a class="code" href="classpvr_1_1platform_1_1_messenger.html#a9cf15da091cc06ff752c80a1c8fce3da">setVerbosity</a>((platform::Messenger::Severity)verbosity);</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    }</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno"><a class="line" href="classpvr_1_1_logger.html#af0dd04ad87bd0bca6a6b72aec68d470a">  134</a></span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="classpvr_1_1_logger.html#af0dd04ad87bd0bca6a6b72aec68d470a">getResultCodeString</a>(<a class="code" href="namespacepvr.html#a1c5fa1488e4ba61dd568718646a8c73d">Result</a> result)</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    {</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        <span class="keywordflow">switch</span> (result)</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        {</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        <span class="keywordflow">case</span> Result::Success: <span class="keywordflow">return</span> <span class="stringliteral">&quot;Success&quot;</span>;</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        <span class="keywordflow">case</span> Result::UnknownError: <span class="keywordflow">return</span><span class="stringliteral">&quot;Unknown Error&quot;</span>;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        <span class="keywordflow">case</span> Result::OutOfMemory: <span class="keywordflow">return</span><span class="stringliteral">&quot;Out Of Memory&quot;</span>;</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        <span class="keywordflow">case</span> Result::InvalidArgument: <span class="keywordflow">return</span><span class="stringliteral">&quot;Invalid Argument&quot;</span>;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;        <span class="keywordflow">case</span> Result::AlreadyInitialized: <span class="keywordflow">return</span><span class="stringliteral">&quot;Already Initialized&quot;</span>;</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        <span class="keywordflow">case</span> Result::NotInitialized: <span class="keywordflow">return</span><span class="stringliteral">&quot;Not Initialized&quot;</span>;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        <span class="keywordflow">case</span> Result::UnsupportedRequest: <span class="keywordflow">return</span><span class="stringliteral">&quot;Unsupported Request&quot;</span>;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        <span class="keywordflow">case</span> Result::FileVersionMismatch: <span class="keywordflow">return</span><span class="stringliteral">&quot;File Version Mismatch&quot;</span>;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        <span class="keywordflow">case</span> Result::NotReadable: <span class="keywordflow">return</span><span class="stringliteral">&quot;Not Readable&quot;</span>;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;        <span class="keywordflow">case</span> Result::NotWritable: <span class="keywordflow">return</span><span class="stringliteral">&quot;Not Writable&quot;</span>;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        <span class="keywordflow">case</span> Result::EndOfStream: <span class="keywordflow">return</span><span class="stringliteral">&quot;End Of Stream&quot;</span>;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        <span class="keywordflow">case</span> Result::UnableToOpen: <span class="keywordflow">return</span><span class="stringliteral">&quot;Unable To Open&quot;</span>;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keywordflow">case</span> Result::NoData: <span class="keywordflow">return</span><span class="stringliteral">&quot;No Data&quot;</span>;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        <span class="keywordflow">case</span> Result::OutOfBounds: <span class="keywordflow">return</span><span class="stringliteral">&quot;Out Of Bounds&quot;</span>;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        <span class="keywordflow">case</span> Result::NotFound: <span class="keywordflow">return</span><span class="stringliteral">&quot;Not Found&quot;</span>;</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        <span class="keywordflow">case</span> Result::KeyAlreadyExists: <span class="keywordflow">return</span><span class="stringliteral">&quot;Key Already Exists&quot;</span>;</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <span class="keywordflow">case</span> Result::ExitRenderFrame: <span class="keywordflow">return</span><span class="stringliteral">&quot;Exit Render Scene&quot;</span>;</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        <span class="keywordflow">case</span> Result::InvalidData: <span class="keywordflow">return</span><span class="stringliteral">&quot;Invalid Data&quot;</span>;</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        <span class="keywordflow">default</span>: <span class="keywordflow">return</span><span class="stringliteral">&quot;UNRECOGNIZED CODE&quot;</span>;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        }</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    }</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    <span class="keywordtype">void</span> initializeMessenger() { _messageHandler-&gt;initialize(); }</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;};</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
-<div class="line"><a name="l00164"></a><span class="lineno"><a class="line" href="namespacepvr.html#a3c0ab02bcc448423ae5efc03f357d75c">  164</a></span>&#160;extern ::pvr::Logger <a class="code" href="namespacepvr.html#a3c0ab02bcc448423ae5efc03f357d75c">Log</a>;</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef _PVR_LOG_H</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _PVR_LOG_H</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;assert.h&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;cstdlib&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;cstdarg&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;cstdio&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#if defined(_WIN32)</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#ifndef WIN32_LEAN_AND_MEAN</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define WIN32_LEAN_AND_MEAN</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NOMINMAX</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;Windows.h&gt;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#define vsnprintf _vsnprintf</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#if defined(__ANDROID__)</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;android/log.h&gt;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> android_LogPriority messageTypes[] =</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;{</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    ANDROID_LOG_VERBOSE,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    ANDROID_LOG_DEBUG,</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    ANDROID_LOG_INFO,</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    ANDROID_LOG_WARN,</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    ANDROID_LOG_ERROR,</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    ANDROID_LOG_FATAL,</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;};</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#elif defined(__QNXNTO__)</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;sys/slog.h&gt;</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span> messageTypes[] =</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;{</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    _SLOG_DEBUG1,</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    _SLOG_DEBUG1,</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    _SLOG_INFO,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    _SLOG_WARNING,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    _SLOG_ERROR,</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    _SLOG_CRITICAL</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;};</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor"></span><span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* messageTypes[] =</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="stringliteral">&quot;VERBOSE: &quot;</span>,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="stringliteral">&quot;DEBUG: &quot;</span>,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="stringliteral">&quot;INFORMATION: &quot;</span>,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="stringliteral">&quot;WARNING: &quot;</span>,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="stringliteral">&quot;ERROR: &quot;</span>,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="stringliteral">&quot;CRITICAL: &quot;</span>,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;};</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor">#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR) || defined(__ANDROID__)</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PVR_PLATFORM_IS_MOBILE 1</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PVR_PLATFORM_IS_DESKTOP 1</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">   71</a></span>&#160;<span class="keyword">enum class</span> <a class="code" href="_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;{</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    Verbose = 0,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    Debug = 1,</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    Information = 2,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    Warning = 3,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    Error = 4,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    Critical = 5,</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    None = 100,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;};</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="class_logger.html">   84</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_logger.html">Logger</a></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;{</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="class_logger.html#abc4ee465dff407cc4353b90ca768cd69">   92</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_logger.html#abc4ee465dff407cc4353b90ca768cd69">setVerbosity</a>(<span class="keyword">const</span> <a class="code" href="_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a> minimumLevelToOutput) { _verbosityThreshold = minimumLevelToOutput; }</div>
+<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="class_logger.html#adb175f20790834faa84b27f5c662d493">   98</a></span>&#160;    <a class="code" href="_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a> <a class="code" href="class_logger.html#adb175f20790834faa84b27f5c662d493">getVerbosity</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _verbosityThreshold; }</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <a class="code" href="class_logger.html">Logger</a>()</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="preprocessor">#if defined(PVR_PLATFORM_IS_DESKTOP) &amp;&amp; !defined(TARGET_OS_MAC)</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor"></span>        FILE* truncateme = fopen(<span class="stringliteral">&quot;log.txt&quot;</span>, <span class="stringliteral">&quot;w&quot;</span>);</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        <span class="keywordflow">if</span> (truncateme)</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        {</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;            fclose(truncateme);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        }</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="preprocessor"></span>    }</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00119"></a><span class="lineno"><a class="line" href="class_logger.html#a96c3f59ed09d1895fa3f1082d93153ae">  119</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_logger.html#a96c3f59ed09d1895fa3f1082d93153ae">operator()</a>(<a class="code" href="_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a> severity, <span class="keyword">const</span> <span class="keywordtype">char</span>* <span class="keyword">const</span> formatString, ...)<span class="keyword">const</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <span class="keywordflow">if</span> (severity &lt; _verbosityThreshold) { <span class="keywordflow">return</span>; }</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        va_list argumentList;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        va_start(argumentList, formatString);</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        <a class="code" href="class_logger.html#a1fda7c73b5be3dbe93d1930ed551b766">vaOutput</a>(severity, formatString, argumentList);</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        va_end(argumentList);</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    }</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00132"></a><span class="lineno"><a class="line" href="class_logger.html#a4a1f79900fa75a168e61201302b07918">  132</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_logger.html#a4a1f79900fa75a168e61201302b07918">operator()</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <span class="keyword">const</span> formatString, ...)<span class="keyword">const</span></div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        <span class="keywordflow">if</span> (LogLevel::Error &lt; _verbosityThreshold) { <span class="keywordflow">return</span>; }</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        va_list argumentList;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        va_start(argumentList, formatString);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        <a class="code" href="class_logger.html#a1fda7c73b5be3dbe93d1930ed551b766">vaOutput</a>(LogLevel::Error, formatString, argumentList);</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        va_end(argumentList);</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    }</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;</div>
+<div class="line"><a name="l00146"></a><span class="lineno"><a class="line" href="class_logger.html#a067b3fc78ea1178214f543694698530d">  146</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_logger.html#a067b3fc78ea1178214f543694698530d">output</a>(<a class="code" href="_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a> severity, <span class="keyword">const</span> <span class="keywordtype">char</span>* formatString, ...)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        <span class="keywordflow">if</span> (severity &lt; _verbosityThreshold) { <span class="keywordflow">return</span>; }</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        va_list argumentList;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        va_start(argumentList, formatString);</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        <a class="code" href="class_logger.html#a1fda7c73b5be3dbe93d1930ed551b766">vaOutput</a>(severity, formatString, argumentList);</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        va_end(argumentList);</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    }</div>
+<div class="line"><a name="l00157"></a><span class="lineno"><a class="line" href="class_logger.html#ae716f887ba2f0317d9807a5dd9665018">  157</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_logger.html#ae716f887ba2f0317d9807a5dd9665018">output</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* formatString, ...)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        <span class="keywordflow">if</span> (LogLevel::Error &lt; _verbosityThreshold) { <span class="keywordflow">return</span>; }</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        va_list argumentList;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        va_start(argumentList, formatString);</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        <a class="code" href="class_logger.html#a1fda7c73b5be3dbe93d1930ed551b766">vaOutput</a>(LogLevel::Error, formatString, argumentList);</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        va_end(argumentList);</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    }</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
-<div class="line"><a name="l00168"></a><span class="lineno"><a class="line" href="namespacepvr.html#ac81f0f5584b71ee5b8cd3b28f16bd390">  168</a></span>&#160;<span class="keyword">typedef</span> void(*<a class="code" href="namespacepvr.html#ac81f0f5584b71ee5b8cd3b28f16bd390">ErrorLogger</a>)(<a class="code" href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">Logger::Severity</a> severity, <span class="keyword">const</span> <a class="code" href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">char8</a>*, ...);</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> assertion(<span class="keywordtype">bool</span> condition, <span class="keyword">const</span> <a class="code" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">std::string</a>&amp; message)</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;{</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <span class="keywordflow">if</span> (!condition)</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    {</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;        <a class="code" href="namespacepvr.html#a3c0ab02bcc448423ae5efc03f357d75c">Log</a>(<a class="code" href="namespacepvr.html#a3c0ab02bcc448423ae5efc03f357d75c">Log</a>.Critical, (<span class="stringliteral">&quot;ASSERTION FAILED: &quot;</span> + message).c_str());</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;        PVR_ASSERTION(0);</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    }</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;}</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="preprocessor">#define SLASH(s) /##s</span></div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define COMMENT SLASH(/)</span></div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="preprocessor">#ifdef DEBUG</span></div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define debug_assertion(condition, message) assertion(condition, message)</span></div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define debug_assertion(condition, message) ((void)0)</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="preprocessor"></span><span class="keyword">inline</span> <span class="keywordtype">void</span> assertion(<span class="keywordtype">bool</span> condition, <span class="keyword">const</span> <span class="keywordtype">char</span>* msg)</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;{</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="keywordflow">if</span> (!condition)</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    {</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        assertion(condition, <a class="code" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">std::string</a>(msg));</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    }</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;}</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> assertion(<span class="keywordtype">bool</span> condition)</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;{</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    assertion(condition, <span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;}</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;}</div>
-<div class="ttc" id="classpvr_1_1_logger_html_a987fc07529c3075b6cc55f894ffa5495"><div class="ttname"><a href="classpvr_1_1_logger.html#a987fc07529c3075b6cc55f894ffa5495">pvr::Logger::setVerbosity</a></div><div class="ttdeci">void setVerbosity(const Severity verbosity)</div><div class="ttdoc">Sets the Verbosity threshold of this Logger.</div><div class="ttdef"><b>Definition:</b> Log.h:127</div></div>
-<div class="ttc" id="namespacepvr_html_ac81f0f5584b71ee5b8cd3b28f16bd390"><div class="ttname"><a href="namespacepvr.html#ac81f0f5584b71ee5b8cd3b28f16bd390">pvr::ErrorLogger</a></div><div class="ttdeci">void(* ErrorLogger)(Logger::Severity severity, const char8 *,...)</div><div class="ttdoc">Callback used for some classes to allow them to log errors. static_output follows this signature...</div><div class="ttdef"><b>Definition:</b> Log.h:168</div></div>
-<div class="ttc" id="namespacepvr_html_a1ed002df805fdbdb1a5840f9cca51b4d"><div class="ttname"><a href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">pvr::string</a></div><div class="ttdeci">std::basic_string&lt; char &gt; string</div><div class="ttdoc">String of basic characters.</div><div class="ttdef"><b>Definition:</b> Types.h:79</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_aac74d048d717683d73c4b641b0188816"><div class="ttname"><a href="classpvr_1_1_logger.html#aac74d048d717683d73c4b641b0188816">pvr::Logger::Logger</a></div><div class="ttdeci">Logger()</div><div class="ttdoc">Default constructor. Will construct a logger using the Default message handler. The default message h...</div><div class="ttdef"><b>Definition:</b> Log.h:36</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_ae5ff101ab323f688c2a3887e4e2e70c2"><div class="ttname"><a href="classpvr_1_1_logger.html#ae5ff101ab323f688c2a3887e4e2e70c2">pvr::Logger::Severity</a></div><div class="ttdeci">Severity</div><div class="ttdoc">Enumerates possible severities from Critical down to Debug.</div><div class="ttdef"><b>Definition:</b> Log.h:22</div></div>
-<div class="ttc" id="classpvr_1_1platform_1_1_messenger_html_a507214fb9658e01cb687e64f275c145d"><div class="ttname"><a href="classpvr_1_1platform_1_1_messenger.html#a507214fb9658e01cb687e64f275c145d">pvr::platform::Messenger::getVerbosity</a></div><div class="ttdeci">Severity getVerbosity() const </div><div class="ttdoc">Get the verbosity threshold below which messages will not be output.</div><div class="ttdef"><b>Definition:</b> Messenger.h:61</div></div>
-<div class="ttc" id="classpvr_1_1platform_1_1_messenger_html_a9cf15da091cc06ff752c80a1c8fce3da"><div class="ttname"><a href="classpvr_1_1platform_1_1_messenger.html#a9cf15da091cc06ff752c80a1c8fce3da">pvr::platform::Messenger::setVerbosity</a></div><div class="ttdeci">void setVerbosity(const Messenger::Severity minimumLevelToOutput)</div><div class="ttdoc">Set the verbosity threshold below which messages will not be output.</div><div class="ttdef"><b>Definition:</b> Messenger.h:55</div></div>
-<div class="ttc" id="namespacepvr_html_ac3509eed37537ef511f3ae29ee9ad3fc"><div class="ttname"><a href="namespacepvr.html#ac3509eed37537ef511f3ae29ee9ad3fc">pvr::char8</a></div><div class="ttdeci">char char8</div><div class="ttdoc">Character type. 8-bit integer signed type on all currently supported platforms.</div><div class="ttdef"><b>Definition:</b> Types.h:73</div></div>
-<div class="ttc" id="namespacepvr_html_a3c0ab02bcc448423ae5efc03f357d75c"><div class="ttname"><a href="namespacepvr.html#a3c0ab02bcc448423ae5efc03f357d75c">pvr::Log</a></div><div class="ttdeci">extern::pvr::Logger Log</div><div class="ttdoc">— GLOBAL OBJECT THAT IS NORMALLY THE DEFAULT LOG — Use to log your issues.</div><div class="ttdef"><b>Definition:</b> Log.h:164</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_af0dd04ad87bd0bca6a6b72aec68d470a"><div class="ttname"><a href="classpvr_1_1_logger.html#af0dd04ad87bd0bca6a6b72aec68d470a">pvr::Logger::getResultCodeString</a></div><div class="ttdeci">static const char * getResultCodeString(Result result)</div><div class="ttdoc">Use this function to convert a Result into a string that is suitable for outputting.</div><div class="ttdef"><b>Definition:</b> Log.h:134</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html"><div class="ttname"><a href="classpvr_1_1_logger.html">pvr::Logger</a></div><div class="ttdoc">Represents an object capable of providing Logging functionality. This class is normally instantiated ...</div><div class="ttdef"><b>Definition:</b> Log.h:15</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_ada19872dcec828d4188d752afbcdbb11"><div class="ttname"><a href="classpvr_1_1_logger.html#ada19872dcec828d4188d752afbcdbb11">pvr::Logger::vaOutput</a></div><div class="ttdeci">void vaOutput(Severity severity, const char8 *const formatString, va_list argumentList)</div><div class="ttdoc">Varargs version of the &quot;output&quot; function.</div><div class="ttdef"><b>Definition:</b> Log.h:90</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_addfb9d4a6c3251aab0182682f06b5760"><div class="ttname"><a href="classpvr_1_1_logger.html#addfb9d4a6c3251aab0182682f06b5760">pvr::Logger::operator()</a></div><div class="ttdeci">void operator()(const char8 *const formatString,...)</div><div class="ttdoc">Functor operator used to allow an instance of this class to be called as a function. Logs a message using this logger&#39;s message handler. Severity is fixed to &quot;Error&quot;.</div><div class="ttdef"><b>Definition:</b> Log.h:56</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_aee7ec6b3908c15a64dd11258de7381dc"><div class="ttname"><a href="classpvr_1_1_logger.html#aee7ec6b3908c15a64dd11258de7381dc">pvr::Logger::static_output</a></div><div class="ttdeci">static void static_output(Severity severity, const char8 *const formatString,...)</div><div class="ttdoc">Logs a message using the Default message handler.</div><div class="ttdef"><b>Definition:</b> Log.h:81</div></div>
-<div class="ttc" id="_console_messenger_8h_html"><div class="ttname"><a href="_console_messenger_8h.html">ConsoleMessenger.h</a></div><div class="ttdoc">An implementation of the Messenger interface outputting to the Console window. </div></div>
-<div class="ttc" id="classpvr_1_1platform_1_1_messenger_html_a8b667ed261b1a7ae99c80e6eb0ed72a9"><div class="ttname"><a href="classpvr_1_1platform_1_1_messenger.html#a8b667ed261b1a7ae99c80e6eb0ed72a9">pvr::platform::Messenger::output</a></div><div class="ttdeci">virtual void output(Severity severity, const char8 *formatString, va_list argumentList) const </div><div class="ttdoc">Abstract class defining a messaging interface. This class implements the printing/messaging capabilit...</div><div class="ttdef"><b>Definition:</b> Messenger.h:42</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_ab7fb180155cf18d5502774bcb5e03d07"><div class="ttname"><a href="classpvr_1_1_logger.html#ab7fb180155cf18d5502774bcb5e03d07">pvr::Logger::operator()</a></div><div class="ttdeci">void operator()(Severity severity, const char8 *const formatString,...)</div><div class="ttdoc">Functor operator used to allow an instance of this class to be called as a function. Logs a message using this logger&#39;s message handler.</div><div class="ttdef"><b>Definition:</b> Log.h:44</div></div>
-<div class="ttc" id="classpvr_1_1platform_1_1_console_messenger_html"><div class="ttname"><a href="classpvr_1_1platform_1_1_console_messenger.html">pvr::platform::ConsoleMessenger</a></div><div class="ttdoc">The ConsoleMessenger is an implementation of Messenger that outputs to the Console window...</div><div class="ttdef"><b>Definition:</b> ConsoleMessenger.h:19</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_adca085e80fb6b92dff911c6ed1cd980c"><div class="ttname"><a href="classpvr_1_1_logger.html#adca085e80fb6b92dff911c6ed1cd980c">pvr::Logger::static_vaOutput</a></div><div class="ttdeci">static void static_vaOutput(Severity severity, const char8 *const formatString, va_list argumentList)</div><div class="ttdoc">Varargs version of the &quot;static_output&quot; function.</div><div class="ttdef"><b>Definition:</b> Log.h:99</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_ad5483730d0f449cd6dc4aec9d20bb3d5"><div class="ttname"><a href="classpvr_1_1_logger.html#ad5483730d0f449cd6dc4aec9d20bb3d5">pvr::Logger::output</a></div><div class="ttdeci">void output(Severity severity, const char8 *const formatString,...)</div><div class="ttdoc">Logs a message using this logger&#39;s message handler.</div><div class="ttdef"><b>Definition:</b> Log.h:69</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_aaf17704672fa4ecbf5ac0107a716a2e6"><div class="ttname"><a href="classpvr_1_1_logger.html#aaf17704672fa4ecbf5ac0107a716a2e6">pvr::Logger::getMessageHandler</a></div><div class="ttdeci">const platform::Messenger * getMessageHandler()</div><div class="ttdoc">Get the Messenger object that acts as this Logger&#39;s message handler.</div><div class="ttdef"><b>Definition:</b> Log.h:106</div></div>
-<div class="ttc" id="namespacepvr_html_a1c5fa1488e4ba61dd568718646a8c73d"><div class="ttname"><a href="namespacepvr.html#a1c5fa1488e4ba61dd568718646a8c73d">pvr::Result</a></div><div class="ttdeci">Result</div><div class="ttdoc">Pre-defined Result codes (success and generic errors).</div><div class="ttdef"><b>Definition:</b> Types.h:1381</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_a84db60d4e970aaff8a317da46a815e25"><div class="ttname"><a href="classpvr_1_1_logger.html#a84db60d4e970aaff8a317da46a815e25">pvr::Logger::setMessageHandler</a></div><div class="ttdeci">void setMessageHandler(platform::Messenger *messageHandler)</div><div class="ttdoc">Sets the Messenger object that acts as this Logger&#39;s message handler.</div><div class="ttdef"><b>Definition:</b> Log.h:113</div></div>
-<div class="ttc" id="classpvr_1_1platform_1_1_messenger_html"><div class="ttname"><a href="classpvr_1_1platform_1_1_messenger.html">pvr::platform::Messenger</a></div><div class="ttdoc">Abstract class defining a messaging interface. This class implements the printing/messaging capabilit...</div><div class="ttdef"><b>Definition:</b> Messenger.h:15</div></div>
-<div class="ttc" id="classpvr_1_1_logger_html_ad30249db37a015014a39d96eb1214df2"><div class="ttname"><a href="classpvr_1_1_logger.html#ad30249db37a015014a39d96eb1214df2">pvr::Logger::getVerbosity</a></div><div class="ttdeci">Severity getVerbosity()</div><div class="ttdoc">Get the Verbosity threshold of this Logger.</div><div class="ttdef"><b>Definition:</b> Log.h:120</div></div>
+<div class="line"><a name="l00171"></a><span class="lineno"><a class="line" href="class_logger.html#a1fda7c73b5be3dbe93d1930ed551b766">  171</a></span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_logger.html#a1fda7c73b5be3dbe93d1930ed551b766">vaOutput</a>(<a class="code" href="_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a> severity, <span class="keyword">const</span> <span class="keywordtype">char</span>* formatString, va_list argumentList)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="preprocessor">#ifndef DEBUG</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;<span class="preprocessor"></span>        <span class="keywordflow">if</span> (severity &gt; LogLevel::Debug)</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;<span class="preprocessor"></span>        {</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="preprocessor">#if defined(__ANDROID__)</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="preprocessor"></span>            <span class="comment">// Note: There may be issues displaying 64bits values with this function</span></div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;            <span class="comment">// Note: This function will truncate long messages</span></div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;            __android_log_vprint(messageTypes[(<span class="keywordtype">int</span>)severity], <span class="stringliteral">&quot;com.powervr.Example&quot;</span>, formatString, argumentList);</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="preprocessor">#elif defined(__QNXNTO__)</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="preprocessor"></span>            vslogf(1, messageTypes[(<span class="keywordtype">int</span>)severity], formatString, argumentList);</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="preprocessor">#else //Not android Not QNX</span></div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="preprocessor"></span>            <span class="keyword">static</span> <span class="keywordtype">char</span> buffer[4096];</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;            va_list tempList;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;            memset(buffer, 0, <span class="keyword">sizeof</span>(buffer));</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="preprocessor">#if (defined _MSC_VER) // Pre VS2013</span></div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="preprocessor"></span>            tempList = argumentList;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<span class="preprocessor"></span>            va_copy(tempList, argumentList);</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="preprocessor"></span>            vsnprintf(buffer, 4095, formatString, argumentList);</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="preprocessor">#if defined(_WIN32) &amp;&amp; !defined(_CONSOLE)</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;<span class="preprocessor"></span>            <span class="keywordflow">if</span> (IsDebuggerPresent())</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;            {</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;                OutputDebugString(messageTypes[static_cast&lt;int&gt;(severity)]);</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;                OutputDebugString(buffer);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;                OutputDebugString(<span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;            }</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="preprocessor"></span>            vprintf(formatString, tempList);</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;            printf(<span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#if defined(PVR_PLATFORM_IS_DESKTOP) &amp;&amp; !defined(TARGET_OS_MAC)</span></div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="preprocessor"></span>            {</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                FILE* file = fopen(<span class="stringliteral">&quot;log.txt&quot;</span>, <span class="stringliteral">&quot;a&quot;</span>);</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;                <span class="keywordflow">if</span> (file)</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;                {</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;                    fwrite(messageTypes[static_cast&lt;int&gt;(severity)], 1, strlen(messageTypes[static_cast&lt;int&gt;(severity)]), file);</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;                    fwrite(buffer, 1, strlen(buffer), file);</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;                    fwrite(<span class="stringliteral">&quot;\n&quot;</span>, 1, 1, file);</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;                    fclose(file);</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;                }</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;            }</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="preprocessor"></span>        }</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    }</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <a class="code" href="_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a> _verbosityThreshold;</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;};</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;</div>
+<div class="line"><a name="l00227"></a><span class="lineno"><a class="line" href="_log_8h.html#af8b206cccb21f7ba85169485444fb03c">  227</a></span>&#160;<span class="keyword">inline</span> <a class="code" href="class_logger.html">Logger</a> <a class="code" href="_log_8h.html#af8b206cccb21f7ba85169485444fb03c">DefaultLogger</a>()</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;{</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <span class="keyword">static</span> <a class="code" href="class_logger.html">Logger</a> logger;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="keywordflow">return</span> logger;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;}</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;</div>
+<div class="line"><a name="l00239"></a><span class="lineno"><a class="line" href="_log_8h.html#a49209d4079b083831638df881b307b68">  239</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="_log_8h.html#a49209d4079b083831638df881b307b68">Log</a>(<a class="code" href="_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a> severity, <span class="keyword">const</span> <span class="keywordtype">char</span>* formatString, ...)</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;{</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    va_list argumentList;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    va_start(argumentList, formatString);</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <a class="code" href="_log_8h.html#af8b206cccb21f7ba85169485444fb03c">DefaultLogger</a>().<a class="code" href="class_logger.html#a1fda7c73b5be3dbe93d1930ed551b766">vaOutput</a>(severity, formatString, argumentList);</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    va_end(argumentList);</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;}</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;</div>
+<div class="line"><a name="l00250"></a><span class="lineno"><a class="line" href="_log_8h.html#a397ae6459e32606af3ee5c88d02b011a">  250</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="_log_8h.html#a49209d4079b083831638df881b307b68">Log</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* formatString, ...)</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;{</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    va_list argumentList;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    va_start(argumentList, formatString);</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    <a class="code" href="_log_8h.html#af8b206cccb21f7ba85169485444fb03c">DefaultLogger</a>().<a class="code" href="class_logger.html#a1fda7c73b5be3dbe93d1930ed551b766">vaOutput</a>(LogLevel::Error, formatString, argumentList);</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    va_end(argumentList);</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;}</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;</div>
+<div class="line"><a name="l00259"></a><span class="lineno"><a class="line" href="_log_8h.html#a2046b948dfc473b62d74e7b9f4ef399b">  259</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="_log_8h.html#a2046b948dfc473b62d74e7b9f4ef399b">debuggerBreak</a>()</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;{</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="preprocessor">#ifdef _MSC_VER</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="preprocessor"></span>    __debugbreak();</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="preprocessor"></span>}</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;</div>
+<div class="line"><a name="l00270"></a><span class="lineno"><a class="line" href="_log_8h.html#a554ee68704a464078482a0ea51bb3015">  270</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="_log_8h.html#a554ee68704a464078482a0ea51bb3015">assertion</a>(<span class="keywordtype">bool</span> condition, <span class="keyword">const</span> std::string&amp; message)</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;{</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    <span class="keywordflow">if</span> (!condition)</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    {</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        <a class="code" href="_log_8h.html#a49209d4079b083831638df881b307b68">Log</a>(LogLevel::Critical, (<span class="stringliteral">&quot;ASSERTION FAILED: &quot;</span> + message).c_str());</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;        <a class="code" href="_log_8h.html#a2046b948dfc473b62d74e7b9f4ef399b">debuggerBreak</a>();</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;        assert(0);</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    }</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;}</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="preprocessor">#define SLASH(s) /##s</span></div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define COMMENT SLASH(/)</span></div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="preprocessor">#ifdef DEBUG</span></div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="preprocessor">#define DebugLog(message) Log(LogLevel::Debug, message)</span></div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define DebugLog(message) void(0)</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="preprocessor">#ifdef DEBUG</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define debug_assertion(condition, message) assertion(condition, message)</span></div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define debug_assertion(condition, message) ((void)0)</span></div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#ifdef DEBUG</span></div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define debug_warning(condition, message) assert_warning(condition, message)</span></div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define debug_warning(condition, message) ((void)0)</span></div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;</div>
+<div class="line"><a name="l00337"></a><span class="lineno"><a class="line" href="_log_8h.html#ac426cc4c4003d299f2b94245229ef813">  337</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="_log_8h.html#ac426cc4c4003d299f2b94245229ef813">assert_warning</a>(<span class="keywordtype">bool</span> condition, <span class="keyword">const</span> <span class="keywordtype">char</span>* msg)</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;{</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <span class="keywordflow">if</span> (!condition)</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;    {</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        <a class="code" href="_log_8h.html#a49209d4079b083831638df881b307b68">Log</a>(LogLevel::Warning, msg);</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    }</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;}</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;</div>
+<div class="line"><a name="l00349"></a><span class="lineno"><a class="line" href="_log_8h.html#a61a18ccf513c5a0f15271bf40c54ee46">  349</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="_log_8h.html#a554ee68704a464078482a0ea51bb3015">assertion</a>(<span class="keywordtype">bool</span> condition, <span class="keyword">const</span> <span class="keywordtype">char</span>* msg)</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;{</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keywordflow">if</span> (!condition)</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    {</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;        <a class="code" href="_log_8h.html#a49209d4079b083831638df881b307b68">Log</a>(LogLevel::Critical, <span class="stringliteral">&quot;ASSERTION FAILED: &quot;</span>, msg);</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;        <a class="code" href="_log_8h.html#a2046b948dfc473b62d74e7b9f4ef399b">debuggerBreak</a>();</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;        assert(0);</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    }</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;}</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
+<div class="line"><a name="l00364"></a><span class="lineno"><a class="line" href="_log_8h.html#ae2fb9742413063e506de3b8b869765e1">  364</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="_log_8h.html#a554ee68704a464078482a0ea51bb3015">assertion</a>(<span class="keywordtype">bool</span> condition)</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;{</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    <a class="code" href="_log_8h.html#a554ee68704a464078482a0ea51bb3015">assertion</a>(condition, <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;}</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="class_logger_html"><div class="ttname"><a href="class_logger.html">Logger</a></div><div class="ttdoc">Represents an object capable of providing Logging functionality. This class is normally instantiated ...</div><div class="ttdef"><b>Definition:</b> Log.h:84</div></div>
+<div class="ttc" id="_log_8h_html_a2046b948dfc473b62d74e7b9f4ef399b"><div class="ttname"><a href="_log_8h.html#a2046b948dfc473b62d74e7b9f4ef399b">debuggerBreak</a></div><div class="ttdeci">void debuggerBreak()</div><div class="ttdoc">If supported on the platform, makes the debugger break at this line. Used for Assertions on Visual St...</div><div class="ttdef"><b>Definition:</b> Log.h:259</div></div>
+<div class="ttc" id="_log_8h_html_a49209d4079b083831638df881b307b68"><div class="ttname"><a href="_log_8h.html#a49209d4079b083831638df881b307b68">Log</a></div><div class="ttdeci">void Log(LogLevel severity, const char *formatString,...)</div><div class="ttdoc">Logs a message using the default logger.</div><div class="ttdef"><b>Definition:</b> Log.h:239</div></div>
+<div class="ttc" id="class_logger_html_abc4ee465dff407cc4353b90ca768cd69"><div class="ttname"><a href="class_logger.html#abc4ee465dff407cc4353b90ca768cd69">Logger::setVerbosity</a></div><div class="ttdeci">void setVerbosity(const LogLevel minimumLevelToOutput)</div><div class="ttdoc">Set the verbosity threshold below which messages will not be output.</div><div class="ttdef"><b>Definition:</b> Log.h:92</div></div>
+<div class="ttc" id="class_logger_html_a067b3fc78ea1178214f543694698530d"><div class="ttname"><a href="class_logger.html#a067b3fc78ea1178214f543694698530d">Logger::output</a></div><div class="ttdeci">void output(LogLevel severity, const char *formatString,...) const </div><div class="ttdoc">Logs a message using this logger&#39;s message handler.</div><div class="ttdef"><b>Definition:</b> Log.h:146</div></div>
+<div class="ttc" id="_log_8h_html_aca1fd1d8935433e6ba2e3918214e07f9"><div class="ttname"><a href="_log_8h.html#aca1fd1d8935433e6ba2e3918214e07f9">LogLevel</a></div><div class="ttdeci">LogLevel</div><div class="ttdoc">Enumerates possible severities from Critical down to Debug.</div><div class="ttdef"><b>Definition:</b> Log.h:71</div></div>
+<div class="ttc" id="class_logger_html_a4a1f79900fa75a168e61201302b07918"><div class="ttname"><a href="class_logger.html#a4a1f79900fa75a168e61201302b07918">Logger::operator()</a></div><div class="ttdeci">void operator()(const char *const formatString,...) const </div><div class="ttdoc">Functor operator used to allow an instance of this class to be called as a function. Logs a message using this logger&#39;s message handler. Severity is fixed to &quot;Error&quot;.</div><div class="ttdef"><b>Definition:</b> Log.h:132</div></div>
+<div class="ttc" id="_log_8h_html_af8b206cccb21f7ba85169485444fb03c"><div class="ttname"><a href="_log_8h.html#af8b206cccb21f7ba85169485444fb03c">DefaultLogger</a></div><div class="ttdeci">Logger DefaultLogger()</div><div class="ttdoc">Returns the default logger object. This is the only way to get that object. Is global.</div><div class="ttdef"><b>Definition:</b> Log.h:227</div></div>
+<div class="ttc" id="class_logger_html_a96c3f59ed09d1895fa3f1082d93153ae"><div class="ttname"><a href="class_logger.html#a96c3f59ed09d1895fa3f1082d93153ae">Logger::operator()</a></div><div class="ttdeci">void operator()(LogLevel severity, const char *const formatString,...) const </div><div class="ttdoc">Functor operator used to allow an instance of this class to be called as a function. Logs a message using this logger&#39;s message handler.</div><div class="ttdef"><b>Definition:</b> Log.h:119</div></div>
+<div class="ttc" id="class_logger_html_adb175f20790834faa84b27f5c662d493"><div class="ttname"><a href="class_logger.html#adb175f20790834faa84b27f5c662d493">Logger::getVerbosity</a></div><div class="ttdeci">LogLevel getVerbosity() const </div><div class="ttdoc">Get the verbosity threshold below which messages will not be output.</div><div class="ttdef"><b>Definition:</b> Log.h:98</div></div>
+<div class="ttc" id="class_logger_html_ae716f887ba2f0317d9807a5dd9665018"><div class="ttname"><a href="class_logger.html#ae716f887ba2f0317d9807a5dd9665018">Logger::output</a></div><div class="ttdeci">void output(const char *formatString,...) const </div><div class="ttdoc">Logs a message using this logger&#39;s message handler.</div><div class="ttdef"><b>Definition:</b> Log.h:157</div></div>
+<div class="ttc" id="_log_8h_html_ac426cc4c4003d299f2b94245229ef813"><div class="ttname"><a href="_log_8h.html#ac426cc4c4003d299f2b94245229ef813">assert_warning</a></div><div class="ttdeci">void assert_warning(bool condition, const char *msg)</div><div class="ttdoc">If condition is false, logs a warning.</div><div class="ttdef"><b>Definition:</b> Log.h:337</div></div>
+<div class="ttc" id="class_logger_html_a1fda7c73b5be3dbe93d1930ed551b766"><div class="ttname"><a href="class_logger.html#a1fda7c73b5be3dbe93d1930ed551b766">Logger::vaOutput</a></div><div class="ttdeci">void vaOutput(LogLevel severity, const char *formatString, va_list argumentList) const </div><div class="ttdoc">Varargs version of the &quot;output&quot; function.</div><div class="ttdef"><b>Definition:</b> Log.h:171</div></div>
+<div class="ttc" id="_log_8h_html_a554ee68704a464078482a0ea51bb3015"><div class="ttname"><a href="_log_8h.html#a554ee68704a464078482a0ea51bb3015">assertion</a></div><div class="ttdeci">void assertion(bool condition, const std::string &amp;message)</div><div class="ttdoc">If condition is false, logs a critical error, debug breaks if possible, and - on debug builds - throw...</div><div class="ttdef"><b>Definition:</b> Log.h:270</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.4-->
 <!-- start footer part (NON TREEVIEW ONLY!!) -->

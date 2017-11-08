@@ -22,16 +22,20 @@ WS_LIBS = -L$(DRMROOT)/lib -ldrm -lgbm -ludev -ldl -Wl,--rpath-link,$(DRMROOT)/l
 WS_INC = $(DRMROOT)/include $(DRMROOT)/include/libdrm $(DRMROOT)/include/gbm
 WS=DRM
 
-else
+  else
+   ifeq "$(WAYLANDBUILD)" "1"
 
-WS_LIBS =
-WS_INC  =
-WS = NullWS
-
-endif
-
-endif
-
+    WS_LIBS = -L$(WAYLANDROOT)/lib -lwayland-egl -lwayland-client -lffi
+    WS_INC  = $(WAYLANDROOT)/include
+    WS = Wayland
+    PLAT_CFLAGS += -DWAYLAND
+   else
+    WS_LIBS =
+    WS_INC  =
+    WS = NullWS
+   endif
+  endif
+ endif
 endif
 
 PLAT_LINK += $(WS_LIBS)

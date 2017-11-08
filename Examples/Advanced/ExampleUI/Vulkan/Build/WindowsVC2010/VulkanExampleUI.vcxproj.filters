@@ -146,28 +146,22 @@
   <None Include="..\..\..\ProcessedAssets\battery.pvr">
       <Filter>Content Files\Textures</Filter>
   </None>
-  <None Include="..\..\TexColShader_vk.fsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\TexColShader_vk.vsh">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
   <None Include="..\..\ColShader_vk.fsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
   <None Include="..\..\ColShader_vk.vsh">
       <Filter>Content Files\Shaders</Filter>
   </None>
-  <None Include="..\..\TexColShader_vk.fsh.spv">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
-  <None Include="..\..\TexColShader_vk.vsh.spv">
-      <Filter>Content Files\Shaders</Filter>
-  </None>
   <None Include="..\..\ColShader_vk.fsh.spv">
       <Filter>Content Files\Shaders</Filter>
   </None>
   <None Include="..\..\ColShader_vk.vsh.spv">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\recompile.sh">
+      <Filter>Content Files\Shaders</Filter>
+  </None>
+  <None Include="..\..\recompile.bat">
       <Filter>Content Files\Shaders</Filter>
   </None>
   </ItemGroup>

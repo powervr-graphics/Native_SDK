@@ -31,14 +31,14 @@ public:
 
 	/// <summary>Returns the number of dependencies referenced by this node.</summary>
 	/// <returns>Return number of dependencies</returns>
-	uint32 getNumDependencies() const { return (uint32)_apDependencies.size(); }
+	uint32_t getNumDependencies() const { return static_cast<uint32_t>(_apDependencies.size()); }
 
 	/// <summary>Get given dependency.</summary>
 	/// <param name="id">dependency id</param>
 	/// <returns>Return a reference to dependency</returns>
-	SkipGraphNode& getDependency(uint32 id) const
+	SkipGraphNode& getDependency(uint32_t id) const
 	{
-		assertion(id < (uint32)_apDependencies.size(), "SkipGraph::getDependency id out of range");
+		assertion(id < static_cast<uint32_t>(_apDependencies.size()), "SkipGraph::getDependency id out of range");
 		return *_apDependencies[id];
 	}
 
@@ -48,7 +48,7 @@ public:
 	/// <returns>Return true if dependency is added</returns>
 	bool addDependency(SkipGraphNode* pDependentNode)
 	{
-		uint32 ui(0);
+		uint32_t ui(0);
 
 		if (pDependentNode == this)
 		{
@@ -61,7 +61,7 @@ public:
 		}
 
 		//Check the dependency doesn't already exist
-		for (ui = 0; ui < (uint32)_apDependencies.size(); ++ui)
+		for (ui = 0; ui < static_cast<uint32_t>(_apDependencies.size()); ++ui)
 		{
 			if (_apDependencies[ui] == pDependentNode)
 			{
@@ -86,11 +86,11 @@ private:
 	/// <returns>Return true if dependent added</returns>
 	bool addDependent(SkipGraphNode* pDependencyNode)
 	{
-		uint32 ui(0);
+		uint32_t ui(0);
 		if (!pDependencyNode) { return false; }
 
 		//  Check the dependency doesn't already exist.
-		for (ui = 0; ui < (uint32)_apDependents.size(); ++ui)
+		for (ui = 0; ui < static_cast<uint32_t>(_apDependents.size()); ++ui)
 		{
 			if (_apDependencies[ui] == pDependencyNode) { return true;  }
 		}
@@ -151,7 +151,7 @@ public:
 	/// <returns>Return true if the node was found or was created successfully.</returns>
 	bool addNode(const T& data)
 	{
-		size_t hashed = hash<string>()(data->toString());
+		size_t hashed = hash<std::string>()(data->toString());
 
 		//  First, search the hash table to see
 		//  if the node already exists.
@@ -193,7 +193,7 @@ public:
 
 	/// <summary>Get the total number of nodes in the skip graph.</summary>
 	/// <returns>Return the total number of nodes</returns>
-	uint32 getNumNodes() const {  return (uint32)_aHashTable.size();  }
+	uint32_t getNumNodes() const {  return static_cast<uint32_t>(_aHashTable.size());  }
 
 	/// <summary>Returns a sorted list of dependencies for the specified node. The list is ordered with the leaf nodes at
 	/// the front, followed by nodes that depend on them and so forth until the root node is reached and added at the
@@ -201,19 +201,21 @@ public:
 	/// <param name="aOutputArray">The dynamic array to store the sorted results in</param>
 	/// <param name="nodeID">The ID of the root node for the dependency search</param>
 	void RetreiveSortedDependencyList(std::vector<T>& aOutputArray,
-	                                  const uint32 nodeID)
+	                                  const uint32_t nodeID)
 	{
-		assertion(nodeID < (uint32)_aHashTable.size(), "SkipGraph::RetreiveSortedDependencyList nodeId out of range");
+		assertion(nodeID < static_cast<uint32_t>(_aHashTable.size()), "SkipGraph::RetreiveSortedDependencyList nodeId out of range");
 		recursiveSortedListAdd(aOutputArray, _aHashTable[nodeID].getNode());
 	}
 
 	/// <summary>Overloads operator[] to returns a handle to the node data for the specified ID.</summary>
+	/// <param name="nodeId">The index of the node to retrieve</param>
 	/// <returns>Return handle to the node data</returns>
-	T& operator[](const uint32 ui32NodeID) {  return *(getNodeData(ui32NodeID));  }
+	T& operator[](uint32_t nodeId) {  return *(getNodeData(nodeId));  }
 
 	/// <summary>Overloads operator[] to returns a const handle to the node data for the specified ID.</summary>
+	/// <param name="nodeId">The index of the node to retrieve</param>
 	/// <returns>Return handle to the node data</returns>
-	const T& operator[](const uint32 ui32NodeID) const {  return *(getNodeData(ui32NodeID));    }
+	const T& operator[](uint32_t nodeId) const {  return *(getNodeData(nodeId)); }
 
 //-------------------------------------------------------------------------//
 private:
@@ -223,7 +225,7 @@ private:
 	/// <param name="currentNode">The current node to process</param>
 	void recursiveSortedListAdd(std::vector<T>& aOutputArray, SkipGraphNode<T>& currentNode)
 	{
-		uint32 ui(0);
+		uint32_t ui(0);
 
 		//  Recursively add dependancies first
 		for (ui = 0; ui < currentNode.getNumDependencies(); ++ui)
@@ -238,9 +240,9 @@ private:
 	/// <summary>Retrieve a handle to the specified node's data.</summary>
 	/// <param name="nodeID">The node's ID</param>
 	/// <returns>Return a handle to node's data, else return NULL if node not found</returns>
-	T* getNodeData(uint32 nodeID)
+	T* getNodeData(uint32_t nodeID)
 	{
-		assertion(nodeID < (uint32)_aHashTable.size(), "SkipGraph::getNodeData nodeId out of range");
+		assertion(nodeID < static_cast<uint32_t>(_aHashTable.size()), "SkipGraph::getNodeData nodeId out of range");
 		return &_aHashTable[nodeID].getNode().getData();
 	}
 
@@ -251,7 +253,7 @@ private:
 	SkipGraphNode<T>* findNode(const size_t hash)
 	{
 		int i(0);
-		int i32HashTableSize((int32)_aHashTable.size());
+		int i32HashTableSize(static_cast<int32_t>(_aHashTable.size()));
 
 		//  A NULL hash means the node has not initialized
 		//  correctly.
@@ -279,7 +281,7 @@ private:
 	/// <returns>Return a handle to the found node, else return NULL</returns>
 	SkipGraphNode<T>* findNode(const T& data)
 	{
-		return findNode(hash<string>()(data->toString()));
+		return findNode(hash<std::string>()(data->toString()));
 	}
 };
 }

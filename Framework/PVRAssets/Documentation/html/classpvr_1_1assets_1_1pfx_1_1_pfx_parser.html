@@ -90,8 +90,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p>PFX reader. 
  <a href="classpvr_1_1assets_1_1pfx_1_1_pfx_parser.html#details">More...</a></p>
-
-<p>Inherits AssetReader&lt; effect::Effect &gt;.</p>
+<div class="dynheader">
+Inheritance diagram for pvr::assets::pfx::PfxParser:</div>
+<div class="dyncontent">
+<div class="center"><img src="classpvr_1_1assets_1_1pfx_1_1_pfx_parser__inherit__graph.png" border="0" usemap="#pvr_1_1assets_1_1pfx_1_1_pfx_parser_inherit__map" alt="Inheritance graph"/></div>
+<map name="pvr_1_1assets_1_1pfx_1_1_pfx_parser_inherit__map" id="pvr_1_1assets_1_1pfx_1_1_pfx_parser_inherit__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -99,7 +104,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae1a0eb8d7bbf478832a3cfbc50fe7c1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. The OSManager is used to load files in a platform-specific way. If the OSManager is NULL, then only a FileStreams from the current directory will be attempted to be loaded. <a href="#ae1a0eb8d7bbf478832a3cfbc50fe7c1d">More...</a><br/></td></tr>
 <tr class="separator:ae1a0eb8d7bbf478832a3cfbc50fe7c1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae33a50665c2cd340893bd6c04dcdd28d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1pfx_1_1_pfx_parser.html#ae33a50665c2cd340893bd6c04dcdd28d">PfxParser</a> (Stream::ptr_type pfxStream, IAssetProvider *assetsProvider)</td></tr>
-<tr class="memdesc:ae33a50665c2cd340893bd6c04dcdd28d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. The OSManager is used to load pfxFilename and any shader files in a platform-specific way. If the OSManager is NULL, then only FileStreams will be attempted to be loaded. <a href="#ae33a50665c2cd340893bd6c04dcdd28d">More...</a><br/></td></tr>
+<tr class="memdesc:ae33a50665c2cd340893bd6c04dcdd28d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. The OSManager is used to load any shader files in a platform-specific way. If the OSManager is NULL, then only FileStreams will be attempted to be loaded. <a href="#ae33a50665c2cd340893bd6c04dcdd28d">More...</a><br/></td></tr>
 <tr class="separator:ae33a50665c2cd340893bd6c04dcdd28d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2b237882a093e25d9b63c3184b4ddcf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1pfx_1_1_pfx_parser.html#aa2b237882a093e25d9b63c3184b4ddcf">~PfxParser</a> ()</td></tr>
 <tr class="memdesc:aa2b237882a093e25d9b63c3184b4ddcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <a href="#aa2b237882a093e25d9b63c3184b4ddcf">More...</a><br/></td></tr>
@@ -113,7 +118,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7d384ea19998b8d6129595cd17f73d68"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1pfx_1_1_pfx_parser.html#a7d384ea19998b8d6129595cd17f73d68">hasAssetsLeftToLoad</a> ()</td></tr>
 <tr class="memdesc:a7d384ea19998b8d6129595cd17f73d68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if there any assets left to load <a href="#a7d384ea19998b8d6129595cd17f73d68">More...</a><br/></td></tr>
 <tr class="separator:a7d384ea19998b8d6129595cd17f73d68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe65e50e7f1a584c062701a96d39ddf9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1pfx_1_1_pfx_parser.html#abe65e50e7f1a584c062701a96d39ddf9">readNextAsset</a> (effect::Effect &amp;asset)</td></tr>
+<tr class="memitem:abe65e50e7f1a584c062701a96d39ddf9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1pfx_1_1_pfx_parser.html#abe65e50e7f1a584c062701a96d39ddf9">readNextAsset</a> (<a class="el" href="structpvr_1_1assets_1_1effect_1_1_effect.html">effect::Effect</a> &amp;asset)</td></tr>
 <tr class="memdesc:abe65e50e7f1a584c062701a96d39ddf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">AssetReader implementation. Read an asset from the stream. <a href="#abe65e50e7f1a584c062701a96d39ddf9">More...</a><br/></td></tr>
 <tr class="separator:abe65e50e7f1a584c062701a96d39ddf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -145,6 +150,13 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Constructor. The OSManager is used to load files in a platform-specific way. If the OSManager is NULL, then only a FileStreams from the current directory will be attempted to be loaded.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pfxFilename</td><td>The filename (or resource identifier) to read</td></tr>
+    <tr><td class="paramname">assetsProvider</td><td>The object providing the "getAssetStream" function to read the stream</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -172,7 +184,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructor. The OSManager is used to load pfxFilename and any shader files in a platform-specific way. If the OSManager is NULL, then only FileStreams will be attempted to be loaded.</p>
+<p>Constructor. The OSManager is used to load any shader files in a platform-specific way. If the OSManager is NULL, then only FileStreams will be attempted to be loaded.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pfxStream</td><td>The stream to read</td></tr>
+    <tr><td class="paramname">assetsProvider</td><td>The object providing the "getAssetStream" function to read streams, and which will be used to read any shader files referenced in the PFX</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -290,7 +309,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual bool pvr::assets::pfx::PfxParser::readNextAsset </td>
           <td>(</td>
-          <td class="paramtype">effect::Effect &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structpvr_1_1assets_1_1effect_1_1_effect.html">effect::Effect</a> &amp;&#160;</td>
           <td class="paramname"><em>asset</em></td><td>)</td>
           <td></td>
         </tr>

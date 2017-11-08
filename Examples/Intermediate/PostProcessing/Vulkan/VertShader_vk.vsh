@@ -15,7 +15,7 @@ layout(std140, set = 1, binding = 0) uniform PerMesh
 	mediump vec3 LightDirection;
 };
 
-layout(set = 2, binding = 0) uniform Static
+layout(std140, set = 2, binding = 0) uniform Static
 {
 	highp float Shininess;
 };
@@ -34,7 +34,9 @@ void main()
 	// if the light is behind no specular reflection
 	if (dot(normalize(inNormal), -LightDirection) > 0.0)
 	{
-		vec3 viewDir = vec3(normalize((MVInv * vec4(0, 0, 0, 1)) - vec4(inVertex, 1.0)));
+		highp vec3 v = (mat4x3(MVInv) * vec4(0, 0, 0, 1)).xyz;
+	
+		vec3 viewDir = normalize(v - inVertex);
 		LightIntensity += Shininess * 2. * pow(max(0.0, dot(reflect(-LightDirection, inNormal), viewDir)), 32.0);
 	}
 }

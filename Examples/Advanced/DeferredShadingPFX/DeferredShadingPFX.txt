@@ -2,17 +2,15 @@
 DeferredShading
 
 :ShortDescription:
-Demonstrates deferred shading using Pixel Local Storage (PLS), or Multiple Render Targets(MRT).
+Duplicates the DeferredShading example using simple PFX scene description to describe this complex rendering scenario
 
-:FullDescription:	
-Traditional rendering algorithms submit geometry and immediately apply shading effects to the rasterized primitives. Complex shading effects may require multiple render passes to produce the final pixel color, with the geometry submitted every pass. Deferred shading is an alternative rendering technique that submits the scene geometry once, storing per-pixel attributes into local video memory to be used in the subsequent rendering passes. 
-In these later passes, light volume primitives are rendered, and the per-pixel attributes contained in the buffer are retrieved at a 1:1 mapping ratio so that each pixel is shaded individually.
-In the PowerVR architecture, the user can use fast on-chip memory instead of Multiple Render Targets, by utilising the Pixel Local Storage extension.
-If running from a command line, add -forcemrt to force Multiple Render Targets rendering.
-Requires at least OpenGL ES 3.0 capability for either MRT or PLS. Requires the extension GL_EXT_shader_pixel_local_storage for PLS.
+:FullDescription:
+The DeferredShading example uses a multi-subpass technique (in Vulkan) or Pixel Local Storage (in OpenGL ES) to implement a Deferred Shading technique. In
+this example, this exact same technique is described in a PFX file, and rendered with the RenderManager, effectively avoiding almost all the code in the example
+except the most basics, demonstrating the power of the RenderManager combined with PFX files as a scene description.
 
 :APIS:
-OpenGL ES 3.0
+Vulkan
 
 :Controls:
 	-	Action1	-	Pause

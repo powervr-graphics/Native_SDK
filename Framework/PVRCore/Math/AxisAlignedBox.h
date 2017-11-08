@@ -5,7 +5,6 @@
 \copyright Copyright (c) Imagination Technologies Limited.
 */
 #pragma once
-#include "../External/glm/glm.hpp"
 #include "PVRCore/Base/Types.h"
 #include <cfloat>
 
@@ -16,34 +15,34 @@ namespace math {
 
 /// <summary>This class provides functionality to handle the volume enclosed by 6 planes, normally the viewing
 /// frustum. The planes are represented in Hessian Normal Form (normal, distance) as vec4( (xyz):[normal],
-/// w:[distance from 0,0,0] ) In order to optimize the frustum, the following are assumed: A "frustum part" of a
-/// plane means "the quadrilateral of the plane that is enclosed by the 4 other planes not opposite to it" 1)
-/// Frustum parts opposite each other do not intersect 2) Any point of a positive(negative) part of the frustum has
-/// a larger(smaller) corresponding coordinate than its opposite part 3) The frustum is "opening" accross the z
-/// axis accross al direction, meaning that the positive Z part of the frustum completely encloses the projection
-/// of the negative z part on it. These optimizations allow us to</summary>
+/// w:[distance from 0,0,0] )</summary>
 struct Frustum
 {
-	glm::vec4 minusX;
-	glm::vec4 plusX;
-	glm::vec4 minusY;
-	glm::vec4 plusY;
-	glm::vec4 minusZ;
-	glm::vec4 plusZ;
+	glm::vec4 minusX; //!< The minimum X (left) plane expressed as normal-distance
+	glm::vec4 plusX;  //!< The maximum X (right) plane expressed as normal-distance
+	glm::vec4 minusY; //!< The minimum Y (bottom) plane expressed as normal-distance
+	glm::vec4 plusY;  //!< The maximum Y (top) plane expressed as normal-distance
+	glm::vec4 minusZ; //!< The minimum Z (near) plane expressed as normal-distance
+	glm::vec4 plusZ;  //!< The maximum Z (far) plane expressed as normal-distance
 };
 
 /// <summary>This class provides specialized functionality for when a frustum is a "normal"viewing frustum, that
 /// is, the following conditions hold (The conditions ARE NOT checked) Note: A "frustum side" of a plane means "the
 /// quadrilateral of the plane that is enclosed by the 4 other planes not opposite to it" "Opposite" means the
-/// "other" side of the frustum (minusX is opposit plusX). 1) Opposite Frustum sides do not intersect (their planes
-/// may do so outside the frustum) 2) The frustum is "opening", or at least not "closing" accross the z axis
-/// accross al direction, meaning that the any point of the projection of the negative Z side of the frustum on the
-/// positive Z plane, is inside or on the positive Z side of the frustum. 3) Any point of a positive(negative) part
-/// of the frustum has a larger(smaller) corresponding coordinate than its opposite part These optimizations allow
-/// us to greatly reduce the calculations for a viewing frustum. 4) All plane normals point INTO of the frustum
+/// "other" side of the frustum (minusX is opposit plusX).
+/// 1) Opposite Frustum sides do not intersect (their planes may do so outside the frustum)
+/// 2) The frustum is "opening", or at least not "closing" accross the z axis accross all directions, meaning that
+/// the any point of the projection of the negative Z side of the frustum on the positive Z plane, is inside or
+/// on the positive Z side of the frustum.
+/// 3) Any point of a positive(negative) part of the frustum has a larger(smaller) corresponding coordinate than
+/// its opposite part
+/// 4) All plane normals point INTO of the frustum
+/// These optimizations allow us to greatly reduce the calculations for a viewing frustum.
 /// </summary>
 struct ViewingFrustum : public Frustum
 {
+	/// <summary>Check if a Viewing Frustum is valid (the viewing frustum conditions hold)</summary>
+	/// <returns>True if a Viewing Frustum, otherwise False</returns>
 	bool isFrustum() const
 	{
 		bool xopp = (glm::dot(glm::vec3(minusX), glm::vec3(plusX)) < 0);
@@ -53,15 +52,29 @@ struct ViewingFrustum : public Frustum
 	};
 };
 
+/// <summary>Calculate the signed (in regards to the plane's normal) distance from a point to a plane</summary>
+/// <param name="point">The point</param>
+/// <param name="plane">The plane, defined as a vector4, where (xyz: Normal, w: Distance from the origin)</param>
+/// <returns>The distance from the point to the plane (along the normal). Positive if on the side of the normal,
+/// otherwise false</returns>
 inline float distancePointToPlane(const glm::vec3& point, const glm::vec4& plane)
 {
 	return glm::dot(point, glm::vec3(plane.x, plane.y, plane.z)) + plane.w;
 }
+
+/// <summary>Calculate if the point is in the positive half-space defined by the plane (i.e. if it is lying on the
+/// same side as the normal points</summary>
+/// <param name="point">The point</param>
+/// <param name="plane">The plane, defined as a vector4, where (xyz: Normal, w: Distance from the origin)</param>
+/// <returns>True if the point is on the plane or on the same side as the normal, otherwise false</returns>
 inline bool pointOnSide(const glm::vec3& point, const glm::vec4& plane)
 {
 	return distancePointToPlane(point, plane) >= 0.0f;
 }
 
+/// <summary>Retrieve the viewing frustum from a projection matrix</summary>
+/// <param name="projection_from_world">The projection matrix</param>
+/// <param name="frustum_out">The viewing frustum</param>
 inline void getFrustumPlanes(const glm::mat4& projection_from_world, ViewingFrustum& frustum_out)
 {
 	const glm::vec4 row0 = glm::row(projection_from_world, 0);
@@ -82,15 +95,6 @@ inline void getFrustumPlanes(const glm::mat4& projection_from_world, ViewingFrus
 	frustum_out.plusY = frustum_out.plusY * (1 / glm::length(glm::vec3(frustum_out.plusY)));
 	frustum_out.minusZ = frustum_out.minusZ * (1 / glm::length(glm::vec3(frustum_out.minusZ)));
 	frustum_out.plusZ = frustum_out.plusZ * (1 / glm::length(glm::vec3(frustum_out.plusZ)));
-
-	//frustum_out.plusY = frustum_out.plusY * (1.f - 2.f * signbit(frustum_out.plusY.w));
-	//frustum_out.minusY = frustum_out.minusY * (1.f - 2.f * signbit(frustum_out.minusY.w));
-	//frustum_out.minusX = frustum_out.minusX * (1.f - 2.f * signbit(frustum_out.minusX.w));
-	//frustum_out.minusZ = frustum_out.minusZ * (1.f - 2.f * signbit(frustum_out.minusZ.w));
-	//frustum_out.plusX = frustum_out.plusX * (1.f - 2.f * signbit(frustum_out.plusX.w));
-	//frustum_out.plusZ = frustum_out.plusZ * (1.f - 2.f * signbit(frustum_out.plusZ.w));
-
-
 }
 
 
@@ -98,10 +102,12 @@ inline void getFrustumPlanes(const glm::mat4& projection_from_world, ViewingFrus
 /// representation.</summary>
 class AxisAlignedBox
 {
-	glm::vec3	_center;
-	glm::vec3	_halfExtent;
+	glm::vec3 _center;
+	glm::vec3 _halfExtent;
 public:
 	/// <summary>Constructor center/halfextent.</summary>
+	/// <param name="center">The center of the box</param>
+	/// <param name="halfExtent">A vector containing the half-lengths on each axis</param>
 	AxisAlignedBox(const glm::vec3& center = glm::vec3(0.0f), const glm::vec3& halfExtent = glm::vec3(0.f))
 	{
 		set(center, halfExtent);
@@ -115,6 +121,8 @@ public:
 	}
 
 	/// <summary>Sets from min and max. All components of min must be than all components in max.</summary>
+	/// <param name="min">Minimum coordinates. Must each be less than the corresponding max coordinate.</param>
+	/// <param name="max">Maximum coordinates. Must each be greater than the corresponding min coordinate.</param>
 	void setMinMax(const glm::vec3& min, const glm::vec3& max)
 	{
 		// compute the center.
@@ -123,30 +131,39 @@ public:
 	}
 
 	/// <summary>Sets from center and half extent.</summary>
-	void set(const glm::vec3& centerPoint, const glm::vec3& halfExtent)
+	/// <param name="center">The center of the box</param>
+	/// <param name="halfExtent">A vector containing the half-lengths on each axis</param>
+	void set(const glm::vec3& center, const glm::vec3& halfExtent)
 	{
-		_center = centerPoint;
+		_center = center;
 		_halfExtent = halfExtent;
 	}
 
-	void remove(float32 x, float32 y, float32 z)
+	//!\cond NO_DOXYGEN
+	/// <summary>DEPRECATED - do not use</summary>
+	void remove(float x, float y, float z)
 	{
 		remove(glm::vec3(x, y, z));
 	}
 
-	void remove(const glm::vec3& point)
-	{
-		setMinMax(glm::max(point, getMin()), glm::min(point, getMax()));
-	}
-
+	/// <summary>DEPRECATED - do not use</summary>
 	void remove(const AxisAlignedBox& aabb)
 	{
 		remove(aabb.getMin());
 		remove(aabb.getMax());
 	}
 
+	/// <summary>DEPRECATED - do not use</summary>
+	void remove(const glm::vec3& point)
+	{
+		Log("Remove function of AABB is deprecated and must be replaced");
+		setMinMax(glm::max(point, getMin()), glm::min(point, getMax()));
+	}
+	//!\endcond NO_DOXYGEN
+
 	/// <summary>Add a new point to the box. The new box will be the minimum box containing the old box and the new
 	/// point.</summary>
+	/// <param name="point">The point which to add</param>
 	void add(const glm::vec3& point)
 	{
 		setMinMax(glm::min(point, getMin()), glm::max(point, getMax()));
@@ -154,6 +171,7 @@ public:
 
 	/// <summary>Merge two axis aligned boxes. The new box will be the minimum box containing both the old and the new
 	/// box.</summary>
+	/// <param name="aabb">The aabb which to add</param>
 	void add(const AxisAlignedBox& aabb)
 	{
 		add(aabb.getMin());
@@ -162,15 +180,20 @@ public:
 
 	/// <summary>Add a new point to the box. The new box will be the minimum box containing the old box and the new
 	/// point.</summary>
-	void add(float32 x, float32 y, float32 z)
+	/// <param name="x">The x-coord of the point which to add</param>
+	/// <param name="y">The y-coord of the point which to add</param>
+	/// <param name="z">The z-coord of the point which to add</param>
+	void add(float x, float y, float z)
 	{
 		add(glm::vec3(x, y, z));
 	}
 
 	/// <summary>Return a point consisting of the smallest (minimum) coordinate in each axis.</summary>
+	/// <returns>A point consisting of the smallest (minimum) coordinate in each axis</returns>
 	glm::vec3 getMin() const { return _center - _halfExtent; }
 
 	/// <summary>Return a point consisting of the largest (maximum) coordinate in each axis.</summary>
+	/// <returns>A point consisting of the largest (maximum) coordinate in each axis</returns>
 	glm::vec3 getMax() const { return _center + _halfExtent; }
 
 	/// <summary>Return the min and the max.</summary>
@@ -184,7 +207,7 @@ public:
 	/// <summary>Get the local bounding box transformed by a provided matrix.</summary>
 	/// <param name="m">An affine transformation matrix. Skew will be ignored.</param>
 	/// <param name="outAABB">The transformed AABB will be stored here. Previous contents ignored.</param>
-	void transform(const glm::mat4& m, AxisAlignedBox& outAABB)
+	void transform(const glm::mat4& m, AxisAlignedBox& outAABB)const
 	{
 		outAABB._center = glm::vec3(m[3]) + (glm::mat3(m) * this->center());
 
@@ -193,140 +216,168 @@ public:
 		absModelMatrix[1] = glm::vec3(fabs(m[1][0]), fabs(m[1][1]), fabs(m[1][2]));
 		absModelMatrix[2] = glm::vec3(fabs(m[2][0]), fabs(m[2][1]), fabs(m[2][2]));
 
-		
+
 		outAABB._halfExtent = glm::vec3(absModelMatrix * this->getHalfExtent());
 	}
 
 	/// <summary>Get the size (width, height, depth) of the AABB.</summary>
+	/// <returns>The size of the AABB.</returns>
 	glm::vec3 getSize()const { return _halfExtent + _halfExtent;}
 
 	/// <summary>Get the half-size (half-width, half-height, half-depth) of the AABB.</summary>
+	/// <returns>A vector whose coordinates are each half the size of the coresponding axis.</returns>
 	glm::vec3 getHalfExtent()const { return _halfExtent; }
 
-	/// <summary>Get the -x +y +z corner of the box.</summary>
+	/// <summary>Get the (-x +y +z) corner of the box.</summary>
+	/// <returns>A vector containing (min x, max y, max z)</returns>
 	glm::vec3 topLeftFar()const
 	{
 		return _center + glm::vec3(-_halfExtent.x, _halfExtent.y, _halfExtent.z);
 	}
 
-	/// <summary>Get the center-x +y +z point of the box.</summary>
+	/// <summary>Get the center of the (+y +z) edge of the box.</summary>
+	/// <returns>A vector containing (center x, max y, max z)</returns>
 	glm::vec3 topCenterFar()const
 	{
 		return _center + glm::vec3(0, _halfExtent.y, _halfExtent.z);
 	}
 
 	/// <summary>Get the +x +y +z corner of the box.</summary>
+	/// <returns>A vector containing (max x, max y, max z)</returns>
 	glm::vec3 topRightFar()const
 	{
 		return _center + _halfExtent;
 	}
 
 	/// <summary>Get the -x +y -z corner of the box.</summary>
+	/// <returns>A vector containing (min x, max y, min z)</returns>
 	glm::vec3 topLeftNear()const
 	{
 		return _center + glm::vec3(-_halfExtent.x, _halfExtent.y, _halfExtent.z);
 	}
 
-	/// <summary>Get the center-x +y -z point of the box.</summary>
+	/// <summary>Get the center of the edge with ( +y , -z).</summary>
+	/// <returns>A vector containing (center of x, max y, min z)</returns>
 	glm::vec3 topCenterNear()const
 	{
 		return _center + glm::vec3(0., _halfExtent.y, -_halfExtent.z);
 	}
 
 	/// <summary>Get the +x +y -z corner of the box.</summary>
+	/// <returns>A vector containing (max x, max y, min z)</returns>
 	glm::vec3 topRightNear()const
 	{
 		return _center + glm::vec3(_halfExtent.x, _halfExtent.y, -_halfExtent.z);
 	}
 
-	/// <summary>Get the center-x center-y center-z corner of the box.</summary>
+	/// <summary>Get the center the box.</summary>
+	/// <returns>A vector containing (center x, center y, center z)</returns>
 	glm::vec3 center()const
 	{
 		return _center;
 	}
 
-	/// <summary>Get the -x center-y -z corner of the box.</summary>
+	/// <summary>Get the center of the (-x -z) edge of the box.</summary>
+	/// <returns>A vector containing (min x, center y, min z)</returns>
 	glm::vec3 centerLeftNear()const
 	{
 		return _center + glm::vec3(-_halfExtent.x, 0, -_halfExtent.z);
 	}
-	/// <summary>Get the center-x center-y -z corner of the box.</summary>
+	/// <summary>Get the center of the (-z) face of the box.</summary>
+	/// <returns>A vector containing (center x, center y, min z)</returns>
 	glm::vec3 centerNear()const
 	{
 		return _center + glm::vec3(0, 0, -_halfExtent.z);
 	}
 
-	/// <summary>Get the +x center-y -z corner of the box.</summary>
+	/// <summary>Get the center of the (+x -z) edge of the box.</summary>
+	/// <returns>A vector containing (max x, center y, min z)</returns>
 	glm::vec3 centerRightNear()const
 	{
 		return _center + glm::vec3(_halfExtent.x, 0, -_halfExtent.z);
 	}
 
-	/// <summary>Get the -x center-y +z corner of the box.</summary>
+	/// <summary>Get the center of the (-x +z) edge of the box.</summary>
+	/// <returns>A vector containing (min x, center y, max z)</returns>
 	glm::vec3 centerLeftFar()const
 	{
 		return _center + glm::vec3(-_halfExtent.x, 0, _halfExtent.z);
 	}
 
-	/// <summary>Get the center-x center-y +z corner of the box.</summary>
+	/// <summary>Get the center of the (+z) face of the box.</summary>
+	/// <returns>A vector containing (center x, center y, max z)</returns>
 	glm::vec3 centerFar()const
 	{
 		return _center + glm::vec3(0, 0, _halfExtent.z);
 	}
 
-	/// <summary>Get the +x center-y +z corner of the box.</summary>
+	/// <summary>Get the center of the (+x +z) edge of the box.</summary>
+	/// <returns>A vector containing (max x, center y, max z)</returns>
 	glm::vec3 centerRightFar()const
 	{
 		return _center + glm::vec3(_halfExtent.x, 0, _halfExtent.z);
 	}
 
-	/// <summary>Get the -x -y -z corner of the box.</summary>
+	/// <summary>Get the (-x -y -z) corner of the box.</summary>
+	/// <returns>A vector containing (min x, min y, min z)</returns>
 	glm::vec3 bottomLeftNear()const
 	{
 		return _center + glm::vec3(-_halfExtent.x, -_halfExtent.y, _halfExtent.z);
 	}
 
-	/// <summary>Get the center-x -y -z corner of the box.</summary>
+	/// <summary>Get the center of the (-x -z) edge of the box.</summary>
+	/// <returns>A vector containing (center x, min y, min z)</returns>
 	glm::vec3 bottomCenterNear()const
 	{
 		return _center + glm::vec3(0, -_halfExtent.y, _halfExtent.z);
 	}
 
-	/// <summary>Get the +x -y -z corner of the box.</summary>
+	/// <summary>Get the (+x -y -z) corner of the box.</summary>
+	/// <returns>A vector containing (max x, min y, min z)</returns>
 	glm::vec3 bottomRightNear()const
 	{
 		return _center + glm::vec3(_halfExtent.x, -_halfExtent.y, _halfExtent.z);
 	}
 
-	/// <summary>Get the -x -y +z corner of the box.</summary>
+	/// <summary>Get the (-x -y +z) corner of the box.</summary>
+	/// <returns>A vector containing (min x, min y, max z)</returns>
 	glm::vec3 bottomLeftFar()const
 	{
 		return _center + glm::vec3(-_halfExtent.x, -_halfExtent.y, _halfExtent.z);
 	}
 
-	/// <summary>Get the center-x -y +z corner of the box.</summary>
+	/// <summary>Get the center of the (-y +z) edge of the box.</summary>
+	/// <returns>A vector containing (center x, min y, max z)</returns>
 	glm::vec3 bottomCenterFar()const
 	{
 		return _center + glm::vec3(0, -_halfExtent.y, _halfExtent.z);
 	}
 
-	/// <summary>Get the +x -y +z corner of the box.</summary>
+	/// <summary>Get the (+x -y +z) corner of the box.</summary>
+	/// <returns>A vector containing (max x, min y, max z)</returns>
 	glm::vec3 bottomRightFar()const
 	{
 		return _center + glm::vec3(_halfExtent.x, -_halfExtent.y, _halfExtent.z);
 	}
 
 	/// <summary>Set this AABB as the minimum AABB that contains itself and the AABB provided.</summary>
+	/// <param name="rhs">The AABB to merge with.</param>
 	void mergeBox(const AxisAlignedBox& rhs)
 	{
 		setMinMax(glm::min(getMin(), rhs.getMin()), glm::max(getMax(), rhs.getMax()));
 	}
 
+	/// <summary>Equality operator. AABBS are equal when center and size the same (equivalently all vertices coincide)</summary>
+	/// <param name="rhs">The right hand side.</param>
+	/// <returns>True if the AABBs completely coincide, otherwise false</returns>
 	bool operator==(const AxisAlignedBox& rhs)const
 	{
 		return _center == rhs._center && _halfExtent == rhs._halfExtent;
 	}
 
+	/// <summary>Inequality operator. AABBS are equal when either center or size are not the same (equivalently at least one vertex does not)</summary>
+	/// <param name="rhs">The right hand side.</param>
+	/// <returns>True if the AABBs completely coincide, otherwise false</returns>
 	bool operator!=(const AxisAlignedBox& rhs)const
 	{
 		return !(*this == rhs);
@@ -337,6 +388,18 @@ public:
 
 
 namespace {
+/// <summary>Test if none of 8 points are in the positive side of the plane.</summary>
+/// <param name="blf">Point 0.</summary>
+/// <param name="tlf">Point 1.</summary>
+/// <param name="brf">Point 2.</summary>
+/// <param name="trf">Point 3.</summary>
+/// <param name="bln">Point 0.</summary>
+/// <param name="tln">Point 1.</summary>
+/// <param name="brn">Point 2.</summary>
+/// <param name="trn">Point 3.</summary>
+/// <param name="plane">The plane, expressed as Normal(xyz) plus Distance from Origin (w)</summary>
+/// <returns>True if none of the 8 points are on the plane or towards the positive side, otherwise
+/// false.</returns>
 inline bool noPointsOnSide(glm::vec3 blf, glm::vec3 tlf, glm::vec3 brf, glm::vec3 trf,
                            glm::vec3 bln, glm::vec3 tln, glm::vec3 brn, glm::vec3 trn,
                            glm::vec4 plane)
@@ -354,44 +417,14 @@ inline bool noPointsOnSide(glm::vec3 blf, glm::vec3 tlf, glm::vec3 brf, glm::vec
 	}
 	return true;
 }
-
 }
 
+/// <summary>Test if an AABB intersects or is inside a frustum.</summary>
+/// <param name="box">A box</param>
+/// <param name="frustum">A frustum</param>
+/// <returns>False if the AABB is completely outside the frustum, otherwise true</returns>
 inline bool aabbInFrustum(const AxisAlignedBox& box, const ViewingFrustum& frustum)
 {
-	//return !(
-	//	//Is the whole frustum on internal side of +Z? (far)
-	//	pointOnSide(box.bottomLeftFar(), frustum.plusZ) ||
-	//	pointOnSide(box.bottomRightFar(), frustum.plusZ) ||
-	//	pointOnSide(box.topLeftFar(), frustum.plusZ) ||
-	//	pointOnSide(box.topRightFar(), frustum.plusZ) ||
-
-	//	//Is the whole frustum on internal side of -Z? (near)
-	//	pointOnSide(box.bottomLeftNear(), frustum.minusZ) ||
-	//	pointOnSide(box.bottomRightNear(), frustum.minusZ) ||
-	//	pointOnSide(box.topLeftNear(), frustum.minusZ) ||
-	//	pointOnSide(box.topRightNear(), frustum.minusZ) ||
-
-	//	// Since frustum is "closing" or "parallel", and the box is "axis aligned"
-	//	// it can be proven that we can only test the "near" objects for the sides.
-	//	//and then only the two on the right side. So we only test:
-	//	//That the "near left" points are inside -X
-	//	pointOnSide(box.bottomLeftNear(), frustum.minusX) ||
-	//	pointOnSide(box.topLeftNear(), frustum.plusX) ||
-	//	//That the "near right" points are inside +X
-	//	pointOnSide(box.bottomRightNear(), frustum.minusX) ||
-	//	pointOnSide(box.topRightNear(), frustum.plusX) ||
-
-	//	//That the "near bottom" points are inside -Y
-	//	pointOnSide(box.bottomLeftNear(), frustum.minusY) ||
-	//	pointOnSide(box.bottomRightNear(), frustum.minusY) ||
-
-	//	//And That the "near top" points are inside +Y
-	//	pointOnSide(box.topLeftNear(), frustum.plusY) ||
-	//	pointOnSide(box.topRightNear(), frustum.plusY));
-
-	//OPTIMIZED VERSION : Move reused calcs together
-
 	glm::vec3 blf = box.bottomLeftFar();
 	glm::vec3 tlf = box.topLeftFar();
 	glm::vec3 brf = box.bottomRightFar();
@@ -414,19 +447,29 @@ inline bool aabbInFrustum(const AxisAlignedBox& box, const ViewingFrustum& frust
 	return true;
 }
 
-
-
 /// <summary>An AABB with a min-max representation.</summary>
 class AxisAlignedBoxMinMax
 {
-	glm::vec3	_min;
-	glm::vec3	_max;
+	glm::vec3 _min;
+	glm::vec3 _max;
 public:
+	/// <summary>Set the minimum corner.</summary>
+	/// <param name="min">The minimum corner</param>
 	void setMin(const glm::vec3& min) { _min = min; }
+	/// <summary>Set the maximum corner.</summary>
+	/// <param name="max">The maximum corner</param>
 	void setMax(const glm::vec3& max) { _max = max; }
+	/// <summary>Get the minimum corner.</summary>
+	/// <returns>The minumum corner</param>
 	const glm::vec3& getMin() { return _min; }
+	/// <summary>Get the maximum corner.</summary>
+	/// <returns>The maximum corner</param>
 	const glm::vec3& getMax() { return _max; }
 
+	/// <summary>Ensure a point is contained in the AABB. If already in the AABB, do nothing.
+	/// If not in the AABB, expand the AABB to exactly contain it.</summary>
+	/// <param name="point">The point to add</param>
+	/// <returns>The new point.</param>
 	void add(const glm::vec3& point)
 	{
 		_min = glm::min(_min, point);

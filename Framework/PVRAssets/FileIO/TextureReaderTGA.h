@@ -10,6 +10,7 @@
 #include "PVRCore/Texture/FileDefinesTGA.h"
 #include "PVRCore/IO/AssetReader.h"
 
+//!\cond NO_DOXYGEN
 namespace pvr {
 namespace assets {
 namespace assetReaders {
@@ -24,7 +25,7 @@ public:
 	virtual bool canHaveMultipleAssets();
 
 	virtual bool isSupportedFile(Stream& assetStream);
-	virtual std::vector<string> getSupportedFileExtensions();
+	virtual std::vector<std::string> getSupportedFileExtensions();
 private:
 	virtual bool readNextAsset(Texture& asset);
 	bool _texturesToLoad;
@@ -35,10 +36,11 @@ private:
 	bool initializeFile();
 	bool readFileHeader(texture_tga::FileHeader& fileheader);
 	bool loadImageFromFile(Texture& asset);
-	bool loadIndexed(Texture& asset, uint32 bytesPerPaletteEntry, uint32 bytesPerDataEntry);
-	bool loadRunLength(Texture& asset, uint32 bytesPerDataEntry);
-	bool loadRunLengthIndexed(Texture& asset, uint32 bytesPerPaletteEntry, uint32 bytesPerDataEntry);
+	bool loadIndexed(Texture& asset, uint32_t bytesPerPaletteEntry, uint32_t bytesPerDataEntry);
+	bool loadRunLength(Texture& asset, uint32_t bytesPerDataEntry);
+	bool loadRunLengthIndexed(Texture& asset, uint32_t bytesPerPaletteEntry, uint32_t bytesPerDataEntry);
 };
 }
 }
 }
+//!\endcond

@@ -9,23 +9,24 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESParticleSystem
-DEPENDS =  PVRCore PVRAssets PVRNativeGles PVRGles PVRShell PVREngineUtils
-LIBRARIES =  PVREngineUtils PVRShell PVRGles PVRNativeGles PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRShell PVRUtilsGles
+LIBRARIES =  PVRUtilsGles PVRShell PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
-           OGLES/OGLESParticleSystem.o	\
-           OGLES/ParticleSystemGPU.o
+           OGLES/OGLESParticleSystem.o
 
 RESOURCES += \
-           FragShader_ES31.fsh\
-           VertShader_ES31.vsh\
-           ParticleFragShader_ES31.fsh\
-           ParticleVertShader_ES31.vsh\
-           ParticleSolver_ES31.csh\
+           FragShader.fsh\
+           VertShader.vsh\
+           ParticleFragShader.fsh\
+           ParticleVertShader.vsh\
+           ParticleSolver.csh\
 
 COMMON_RESOURCES += \
            sphere.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

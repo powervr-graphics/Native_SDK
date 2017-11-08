@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-/*!*********************************************************************************************************************
-\file         PVRShell\OS\NullWS\ShellOS.cpp
-\author       PowerVR by Imagination, Developer Technology Team
-\copyright    Copyright (c) Imagination Technologies Limited.
-\brief     	  Contains the implementation for the pvr::platform::ShellOS class on Null Windowing System platforms (Linux & Neutrino).
-***********************************************************************************************************************/
-=======
 /*!
 \brief Contains the implementation for the pvr::platform::ShellOS class on Null Windowing System platforms (Linux &
 Neutrino).
@@ -13,7 +5,6 @@ Neutrino).
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
->>>>>>> 1776432f... 4.3
 //!\cond NO_DOXYGEN
 #include "PVRShell/OS/ShellOS.h"
 #include "PVRCore/IO/FilePath.h"
@@ -43,13 +34,12 @@ Neutrino).
 #else
 #include <windows.h>
 #endif
-using namespace pvr::types;
 namespace pvr {
 namespace platform {
 struct InternalOS
 {
 	bool isInitialized;
-	uint32 display;
+	uint32_t display;
 
 #if defined(__linux__)
 	int devfd;
@@ -105,11 +95,11 @@ void ShellOS::updatePointingDeviceLocation()
 	}
 }
 
-Result ShellOS::init(DisplayAttributes& data)
+bool ShellOS::init(DisplayAttributes& data)
 {
 	if (!_OSImplementation)
 	{
-		return Result::OutOfMemory;
+		return false;
 	}
 
 #if defined(__linux__)
@@ -120,7 +110,7 @@ Result ShellOS::init(DisplayAttributes& data)
 	// Keyboard handling.
 	if ((_OSImplementation->devfd = open(CONNAME, O_RDWR | O_NDELAY)) <= 0)
 	{
-		Log(Log.Warning, "Can't open tty '" CONNAME "'");
+		Log(LogLevel::Warning, "Can't open tty '" CONNAME "'");
 	}
 	else
 	{
@@ -133,14 +123,14 @@ Result ShellOS::init(DisplayAttributes& data)
 
 		if (tcsetattr(_OSImplementation->devfd, TCSANOW, &_OSImplementation->termio) == -1)
 		{
-			Log(Log.Warning, "Can't set tty attributes for '" CONNAME "'");
+			Log(LogLevel::Warning, "Can't set tty attributes for '" CONNAME "'");
 		}
 	}
 
 	// Keypad handling.
 	if ((_OSImplementation->keypad_fd = open(KEYPAD_INPUT, O_RDONLY | O_NDELAY)) <= 0)
 	{
-		Log(Log.Warning, "Can't open keypad input device (%s)\n", KEYPAD_INPUT);
+		Log(LogLevel::Warning, "Can't open keypad input device (%s)\n", KEYPAD_INPUT);
 	}
 
 	// Keyboard handling.
@@ -156,7 +146,7 @@ Result ShellOS::init(DisplayAttributes& data)
 	FILE* pipe = popen(command, "r");
 	if (pipe == NULL)
 	{
-		Log(Log.Warning, "Can't find keyboard input device\n");
+		Log(LogLevel::Warning, "Can't find keyboard input device\n");
 	}
 
 	char devFilePath[20] = "/dev/input/";
@@ -170,7 +160,7 @@ Result ShellOS::init(DisplayAttributes& data)
 	_OSImplementation->keyboard_fd = open(keyboardDeviceFileName, O_RDONLY | O_NDELAY);
 	if (_OSImplementation->keyboard_fd <= 0)
 	{
-		Log(Log.Warning, "Can't open keyboard input device (%s)  -- (Code : %i - %s)\n", keyboardDeviceFileName, errno, strerror(errno));
+		Log(LogLevel::Warning, "Can't open keyboard input device (%s)  -- (Code : %i - %s)\n", keyboardDeviceFileName, errno, strerror(errno));
 	}
 
 	// Construct our read and write path.
@@ -191,7 +181,7 @@ Result ShellOS::init(DisplayAttributes& data)
 
 		if (res < 0)
 		{
-			Log(Log.Warning, "Readlink %s failed. The application name, read path and write path have not been set.\n", exePath);
+			Log(LogLevel::Warning, "Readlink %s failed. The application name, read path and write path have not been set.\n", exePath);
 			break;
 		}
 	}
@@ -237,16 +227,16 @@ Result ShellOS::init(DisplayAttributes& data)
 		fclose(tty);
 	}
 #endif
-	return Result::Success;
+	return true;
 }
 
-Result ShellOS::initializeWindow(DisplayAttributes& data)
+bool ShellOS::initializeWindow(DisplayAttributes& data)
 {
 	_OSImplementation->isInitialized = true;
 	data.fullscreen = true;
 	data.x = data.y = 0;
 	data.width = data.height = 0; //no way of getting the monitor resolution.
-	return Result::Success;
+	return true;
 }
 
 void ShellOS::releaseWindow()
@@ -310,7 +300,7 @@ struct SpecialKeyCode
 
 // Some codes for F-keys can differ, depending on whether we are reading a
 // /dev/tty from within X or from a text console.
-// Some keys (e.g. Home, Delete) have multiple codes;
+// Some keys (e.g. Home, Delete) have multiple codes
 // one for the standard version and one for the numpad version.
 SpecialKeyCode terminalSpecialKeyMap[] =
 {
@@ -447,7 +437,7 @@ Keys InternalOS::getSpecialKey(Keys firstCharacter) const
 	}
 }
 
-Result ShellOS::handleOSEvents()
+bool ShellOS::handleOSEvents()
 {
 	// Check user input from the available input devices.
 
@@ -456,11 +446,7 @@ Result ShellOS::handleOSEvents()
 	if (_OSImplementation->devfd > 0)
 	{
 		unsigned char initialKey;
-<<<<<<< HEAD
-		int bytesRead = read(m_OSImplementation->devfd, &initialKey, 1);
-=======
 		int bytesRead = read(_OSImplementation->devfd, &initialKey, 1);
->>>>>>> 1776432f... 4.3
 		Keys key = Keys::Unknown;
 		if ((bytesRead > 0) && initialKey)
 		{
@@ -500,11 +486,7 @@ Result ShellOS::handleOSEvents()
 			}
 
 			// Select standard or shifted key map.
-<<<<<<< HEAD
-			Keys* keyMap = m_OSImplementation->keyboardShiftHeld ? keyboardShiftedKeyMap : keyboardKeyMap;
-=======
 			Keys* keyMap = _OSImplementation->keyboardShiftHeld ? keyboardShiftedKeyMap : keyboardKeyMap;
->>>>>>> 1776432f... 4.3
 
 			if (keyinfo.value == 0)
 			{
@@ -536,12 +518,6 @@ Result ShellOS::handleOSEvents()
 			switch (keyinfo.code)
 			{
 			case 22: case 64: case 107: key = Keys::Escape; break;// End call button on Zoom2
-			//case 37:
-			//case 65:
-			//{
-			//	_shell->onSystemEvent(SystemEvent::Screenshot);
-			//	break;
-			//}
 			case 28: key = Keys::Space; break; // Old Select
 			case 46: case 59: key = Keys::Key1; break;
 			case 60: key = Keys::Key2; break;
@@ -627,7 +603,7 @@ Result ShellOS::handleOSEvents()
 	}
 #endif
 
-	return Result::Success;
+	return true;
 }
 
 bool ShellOS::isInitialized()
@@ -635,24 +611,20 @@ bool ShellOS::isInitialized()
 	return _OSImplementation && _OSImplementation->isInitialized;
 }
 
-<<<<<<< HEAD
-Result ShellOS::popUpMessage(const tchar* title, const tchar* message, ...) const
-=======
-Result ShellOS::popUpMessage(const char8* title, const char8* message, ...) const
->>>>>>> 1776432f... 4.3
+bool ShellOS::popUpMessage(const char* title, const char* message, ...) const
 {
 	if (!message)
 	{
-		return Result::NoData;
+		return false;
 	}
 
 	va_list arg;
 
 	va_start(arg, message);
-	Log.vaOutput(Log.Information, message, arg);
+	Log(LogLevel::Information, message, arg);
 	va_end(arg);
 
-	return Result::Success;
+	return true;
 }
 }
 }

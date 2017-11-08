@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['osapplication',['OSApplication',['../namespacepvr_1_1platform.html#a4e66494665615871b2101e8a3d54191e',1,'pvr::platform']]],
-  ['osdata',['OSDATA',['../namespacepvr_1_1platform.html#a489051a8948186fd4bc6d3ca278ee91e',1,'pvr::platform']]],
-  ['osdisplay',['OSDisplay',['../namespacepvr_1_1platform.html#a4beb66550bdc8a29e34b9a1742c40e99',1,'pvr::platform']]],
-  ['oswindow',['OSWindow',['../namespacepvr_1_1platform.html#a3192dfd224eb111d61b3ce71b7587621',1,'pvr::platform']]]
+  ['offset2d',['Offset2D',['../namespacepvr.html#a3c68f9a2f58eb4afee65dee64a84ec60',1,'pvr']]],
+  ['offset3d',['Offset3D',['../namespacepvr.html#a9c82b565cdd75fbf396893a67ce24f4d',1,'pvr']]],
+  ['osapplication',['OSApplication',['../namespacepvr.html#aedeecfbbd5f300d790a94b7f47277582',1,'pvr']]],
+  ['osdata',['OSDATA',['../namespacepvr.html#ac6f2b93a38b04d593e40fb33ac919de9',1,'pvr']]],
+  ['osdisplay',['OSDisplay',['../namespacepvr.html#aeb92095259cdb0e0a5013d243b8cdcad',1,'pvr']]],
+  ['oswindow',['OSWindow',['../namespacepvr.html#a4a3c2268d5e5b11e1bc9cf97d7c337e8',1,'pvr']]]
 ];

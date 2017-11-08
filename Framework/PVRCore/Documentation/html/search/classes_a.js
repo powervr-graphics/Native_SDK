@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['nativelibrary',['NativeLibrary',['../structpvr_1_1native_1_1_native_library.html',1,'pvr::native']]],
-  ['normalisedinteger',['NormalisedInteger',['../classpvr_1_1_normalised_integer.html',1,'pvr']]]
+  ['pixelformat',['PixelFormat',['../classpvr_1_1_pixel_format.html',1,'pvr']]],
+  ['plane3d',['Plane3d',['../classpvr_1_1_plane3d.html',1,'pvr']]]
 ];

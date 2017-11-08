@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpvr_1_1assets_1_1_shader_file-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -93,6 +94,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a5d846aa0b7e2f65066374f41a3edc398"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_shader_file.html#a5d846aa0b7e2f65066374f41a3edc398">ShaderFile</a> ()</td></tr>
+<tr class="memdesc:a5d846aa0b7e2f65066374f41a3edc398"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor, empty shader <a href="#a5d846aa0b7e2f65066374f41a3edc398">More...</a><br/></td></tr>
+<tr class="separator:a5d846aa0b7e2f65066374f41a3edc398"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af10384559fc108de3e8b3f0a9668351d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_shader_file.html#af10384559fc108de3e8b3f0a9668351d">ShaderFile</a> (const std::string &amp;filename, IAssetProvider &amp;assetProvider)</td></tr>
+<tr class="memdesc:af10384559fc108de3e8b3f0a9668351d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct which immediately populates the specified filename <a href="#af10384559fc108de3e8b3f0a9668351d">More...</a><br/></td></tr>
+<tr class="separator:af10384559fc108de3e8b3f0a9668351d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa566f4bf43491f6c5513c84364954b7a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair<br class="typebreak"/>
 &lt; pvr::Api, std::string &gt;&gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_shader_file.html#aa566f4bf43491f6c5513c84364954b7a">getAllFiles</a> ()</td></tr>
 <tr class="memdesc:aa566f4bf43491f6c5513c84364954b7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get list of all supported api files for this shader <a href="#aa566f4bf43491f6c5513c84364954b7a">More...</a><br/></td></tr>
@@ -106,9 +113,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5b6396d00c6fe42e1ab896af835d7a41"><td class="memItemLeft" align="right" valign="top">Stream::ptr_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_shader_file.html#a5b6396d00c6fe42e1ab896af835d7a41">getBestStreamForApi</a> (Api api=Api::OpenGLESMaxVersion) const </td></tr>
 <tr class="memdesc:a5b6396d00c6fe42e1ab896af835d7a41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a best stream for the given api. <a href="#a5b6396d00c6fe42e1ab896af835d7a41">More...</a><br/></td></tr>
 <tr class="separator:a5b6396d00c6fe42e1ab896af835d7a41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5690cf99e2ad39ffcf1e249f8d5cc87"><td class="memItemLeft" align="right" valign="top">Stream::ptr_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_shader_file.html#af5690cf99e2ad39ffcf1e249f8d5cc87">getBestStreamForContext</a> (const GraphicsContext &amp;context) const </td></tr>
-<tr class="memdesc:af5690cf99e2ad39ffcf1e249f8d5cc87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a best stream for the given context <a href="#af5690cf99e2ad39ffcf1e249f8d5cc87">More...</a><br/></td></tr>
-<tr class="separator:af5690cf99e2ad39ffcf1e249f8d5cc87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae91336759b112143e0ab101b181039a5"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_shader_file.html#ae91336759b112143e0ab101b181039a5">getFilenameForSpecificApi</a> (Api api) const </td></tr>
 <tr class="memdesc:ae91336759b112143e0ab101b181039a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the file name of this shader for specific api <a href="#ae91336759b112143e0ab101b181039a5">More...</a><br/></td></tr>
 <tr class="separator:ae91336759b112143e0ab101b181039a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -127,7 +131,76 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classpvr_1_1assets_1_1_shader_file.html" title="The ShaderFile class wraps the number of shader files of a specific shader for different apis...">ShaderFile</a> class wraps the number of shader files of a specific shader for different apis. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a5d846aa0b7e2f65066374f41a3edc398"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::assets::ShaderFile::ShaderFile </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor, empty shader</p>
+
+</div>
+</div>
+<a class="anchor" id="af10384559fc108de3e8b3f0a9668351d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::assets::ShaderFile::ShaderFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">IAssetProvider &amp;&#160;</td>
+          <td class="paramname"><em>assetProvider</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct which immediately populates the specified filename</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>The filename to use to populate</td></tr>
+    <tr><td class="paramname">assetProvider</td><td>The assetProvider to use to get asset streams for the filename</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="aa566f4bf43491f6c5513c84364954b7a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -209,7 +282,7 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Return a string of a file name for given api, else empty string if the shader is not supported for the given api</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Return a std::string of a file name for given api, else empty std::string if the shader is not supported for the given api</dd></dl>
 <p>The return file name may not be the exact one for the given api, but the one still supported by the api.</p>
 
 </div>
@@ -248,40 +321,6 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="af5690cf99e2ad39ffcf1e249f8d5cc87"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Stream::ptr_type pvr::assets::ShaderFile::getBestStreamForContext </td>
-          <td>(</td>
-          <td class="paramtype">const GraphicsContext &amp;&#160;</td>
-          <td class="paramname"><em>context</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get a best stream for the given context</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">context</td><td>Specific context requested for this shader file</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Return stream object of this shader, else NULL object if no valid shader is found for given context </dd></dl>
-<p>The return stream may not be the exact one for the given context, but the one still supported by the context.</p>
-
-</div>
-</div>
 <a class="anchor" id="ae91336759b112143e0ab101b181039a5"></a>
 <div class="memitem">
 <div class="memproto">
@@ -311,7 +350,7 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Return a string of a file name for given api, else empty string if the shader is not supported for the given api</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Return a std::string of a file name for given api, else empty std::string if the shader is not supported for the given api</dd></dl>
 
 </div>
 </div>

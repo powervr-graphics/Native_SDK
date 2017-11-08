@@ -8,11 +8,13 @@
 #import <AVFoundation/AVFoundation.h>
 #include "CameraInterface.h"
 #import <OpenGLES/EAGL.h>
-#include "PVRNativeApi/OGLES/OpenGLESBindings.h"
-#include "PVRNativeApi/OGLES/NativeObjectsGles.h"
-#include "PVRCore/Interfaces/IGraphicsContext.h"
-#include "PVRApi/ApiObjects/Texture.h"
-#include "PVRApi/OGLES/TextureGles.h"
+
+struct Texture
+{
+    GLuint handle;
+    GLenum target;
+    Texture () : handle(0), target(0){}
+};
 
 //Description  Delegate Obj-C class required by AVCaptureVideoDataOutput
 @interface CameraInterfaceImpl : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>
@@ -28,8 +30,8 @@
     CVOpenGLESTextureRef	lumaTexture;
     CVOpenGLESTextureRef	chromaTexture;
 
-    pvr::native::HTexture_	hLumaTexture;
-	pvr::native::HTexture_	hChromaTexture;
+    Texture	hLumaTexture;
+	Texture	hChromaTexture;
     glm::mat4               cameraTransformation;
 }
 @end
@@ -40,7 +42,7 @@
 - (BOOL) intialiseCaptureSessionFromCamera:(pvr::HWCamera::Enum)cam withError:(NSString**)error
 {
 	pAVSessionPreset = AVCaptureSessionPresetHigh;
-    cameraTransformation = glm::translate(glm::vec3(1.0f,0.0f,0.0f)) * glm::scale(glm::vec3(-1.0f,-1.0f,1.0f)) * glm::rotate(glm::pi<pvr::float32>()*-.5f,glm::vec3(0.0f,0.0f,1.0f));
+    cameraTransformation = glm::translate(glm::vec3(1.0f,0.0f,0.0f)) * glm::scale(glm::vec3(-1.0f,-1.0f,1.0f)) * glm::rotate(glm::pi<float>()*-.5f,glm::vec3(0.0f,0.0f,1.0f));
 	// Get the current context.
 	EAGLContext* pContext = [EAGLContext currentContext];
 
@@ -283,10 +285,9 @@ void pvr::CameraInterface::destroySession()
 	[impl destroySession];
 }
 
-const pvr::native::HTexture_& pvr::CameraInterface::getRgbTexture()
+GLuint pvr::CameraInterface::getRgbTexture()
 {
-    static pvr::native::HTexture_ dummy_texture(0,0);
-	return dummy_texture;
+    return 0;
 }
 
 
@@ -295,14 +296,14 @@ bool pvr::CameraInterface::hasRgbTexture()
 	return false;
 }
 
-const pvr::native::HTexture_& pvr::CameraInterface::getLuminanceTexture()
+GLuint pvr::CameraInterface::getLuminanceTexture()
 {
-    return static_cast<CameraInterfaceImpl*>(pImpl)->hLumaTexture;
+    return static_cast<CameraInterfaceImpl*>(pImpl)->hLumaTexture.handle;
 }
 
-const pvr::native::HTexture_& pvr::CameraInterface::getChrominanceTexture()
+GLuint pvr::CameraInterface::getChrominanceTexture()
 {
-	return static_cast<CameraInterfaceImpl*>(pImpl)->hChromaTexture;
+	return static_cast<CameraInterfaceImpl*>(pImpl)->hChromaTexture.handle;
 }
 
 bool pvr::CameraInterface::hasLumaChromaTextures()
@@ -310,13 +311,13 @@ bool pvr::CameraInterface::hasLumaChromaTextures()
 	return true;
 }
 namespace pvr{
-pvr::api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& context, const pvr::native::HTexture_& cameraTexture)
-{
-	pvr::Log(pvr::Log.Verbose, "Camera interface util: Handle %d, Target 0x%08X", cameraTexture.handle, cameraTexture.target);
-	api::TextureStore texStore = context->createTexture();
-	static_cast<native::HTexture_&>(api::native_cast(*texStore)) = cameraTexture;
-    
-    return context->createTextureView(texStore, types::ImageSubresourceRange(types::ImageLayersSize(1,1),types::ImageSubresource(0,0)));
-}
+//pvr::api::TextureView getTextureFromPVRCameraHandle(pvr::GraphicsContext& context, const pvr::native::HTexture_& cameraTexture)
+//{
+//	(LogLevel::Verbose, "Camera interface util: Handle %d, Target 0x%08X", cameraTexture.handle, cameraTexture.target);
+//	api::TextureStore texStore = context->createTexture();
+//	static_cast<native::HTexture_&>(api::native_cast(*texStore)) = cameraTexture;
+//    
+//    return context->createTextureView(texStore, ImageSubresourceRange(ImageLayersSize(1,1),ImageSubresource(0,0)));
+//}
 }
 //!\endcond

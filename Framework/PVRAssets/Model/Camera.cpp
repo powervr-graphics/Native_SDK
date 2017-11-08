@@ -10,14 +10,14 @@
 #include "PVRAssets/Model/Camera.h"
 namespace pvr {
 namespace assets {
-float32 Camera::getFOV(uint32 frame, float32 interp)  const
+float Camera::getFOV(uint32_t frame, float interp)  const
 {
 	if (getNumFrames())
 	{
 		if (getNumFrames() > 1)
 		{
 			assertion(frame < getNumFrames() - 1);
-			const float32* fov = &_data.FOVs[frame];
+			const float* fov = &_data.FOVs[frame];
 			return fov[0] + interp * (fov[1] - fov[0]);
 		}
 		else
@@ -31,12 +31,12 @@ float32 Camera::getFOV(uint32 frame, float32 interp)  const
 	}
 }
 
-void Camera::setFOV(float32 fov)
+void Camera::setFOV(float fov)
 {
 	return setFOV(1, &fov);
 }
 
-void Camera::setFOV(uint32 frames, const float32* const fovs)
+void Camera::setFOV(uint32_t frames, const float* const fovs)
 {
 	_data.FOVs.resize(frames);
 

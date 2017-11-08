@@ -1,5 +1,9 @@
 var searchData=
 [
-  ['pixelformat',['PixelFormat',['../classpvr_1_1_pixel_format.html',1,'pvr']]],
-  ['plane3d',['Plane3d',['../classpvr_1_1_plane3d.html',1,'pvr']]]
+  ['sizedpointer',['SizedPointer',['../classpvr_1_1_sized_pointer.html',1,'pvr']]],
+  ['stencilstate',['StencilState',['../structpvr_1_1_stencil_state.html',1,'pvr']]],
+  ['stream',['Stream',['../classpvr_1_1_stream.html',1,'pvr']]],
+  ['stridedbuffer',['StridedBuffer',['../classpvr_1_1_strided_buffer.html',1,'pvr']]],
+  ['stringhash',['StringHash',['../classpvr_1_1_string_hash.html',1,'pvr']]],
+  ['swizzlechannels',['SwizzleChannels',['../structpvr_1_1_swizzle_channels.html',1,'pvr']]]
 ];

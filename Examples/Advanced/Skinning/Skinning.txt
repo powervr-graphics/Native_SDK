@@ -4,14 +4,12 @@ Skinning
 :ShortDescription:
 This demo shows a scene with a combination of a skinned, bumpmapped character with non-skinned, non-bumpmapped objects.
 
-:FullDescription:	
+:FullDescription:
 The Skinning demo shows a Skinned Character in combination with bump mapping. Skinning is the act of animating a vertex over time given a set (palette) of matrices and a known set of blend weights assigned to those matrices. For each frame the Matrix Palette is recomputed based on time. PVRAssets and POD files support skinning. either full transformation Matrices, or Quaternion rotation with Scaling and Translation vectors. The provided POD file contains matrix animation.
-This example is using BoneBatching, which separates the mesh in smaller matrix palettes (Bone Batches) so that they can fit in the maximum number of allowed Uniform variables.
-Up to 4 matrices  from the palette, along with 4 weights can used for each vertext by the vertex shader to update the position to obtain the current animation frame position.
-Versions provided for Vulkan, OpenGL ES 2.0 and OpenGL ES 3.0
+Up to 4 matrices  from the palette, along with 4 weights can used for each vertex by the vertex shader to update the position to obtain the current animation frame position.
 
 :APIS:
-Vulkan 1.0, OpenGL ES 2.0/3.0
+Vulkan, OpenGL ES 3.0
 
 :Controls:
 	-	Action1/2/3	-	Pause

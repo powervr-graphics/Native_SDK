@@ -7,10 +7,7 @@ bottom of this file or of any Demo file for the newDemo function the user must i
 */
 #pragma once
 #include "PVRShell/CommandLine.h"
-#include "PVRCore/Base/NativeLibrary.h"
-
 #include <bitset>
-
 
 /// <summary>Main namespace for the PowerVR Framework</summary>
 namespace pvr {
@@ -18,15 +15,15 @@ namespace pvr {
 //!\cond NO_DOXYGEN
 struct PointerLocationStore
 {
-	int16 x; int16 y;
+	int16_t x; int16_t y;
 	PointerLocationStore operator +(const PointerLocationStore& rhs)
 	{
-		return PointerLocationStore{ static_cast<int16>(x + rhs.x), static_cast<int16>(y + rhs.y)};
+		return PointerLocationStore{ static_cast<int16_t>(x + rhs.x), static_cast<int16_t>(y + rhs.y)};
 	}
 
 	PointerLocationStore operator -(const PointerLocationStore& rhs)
 	{
-		return PointerLocationStore{ static_cast<int16>(x - rhs.x), static_cast<int16>(y - rhs.y)};
+		return PointerLocationStore{ static_cast<int16_t>(x - rhs.x), static_cast<int16_t>(y - rhs.y)};
 	}
 
 	void operator +=(const PointerLocationStore& rhs)
@@ -46,20 +43,21 @@ struct PointerLocationStore
 class PointerLocation : public PointerLocationStore
 {
 public:
+	/// <summary>Constructor</summary>
 	PointerLocation() { }
+
+	/// <summary>Copy Constructor</summary>
+	/// <param name="st">Copy source</param>
 	PointerLocation(const PointerLocationStore& st) : PointerLocationStore(st) { }
-	PointerLocation(int16 x, int16 y) { this->x = x; this->y = y; }
+
+	/// <summary>Constructor</summary>
+	/// <param name="x">X coordinate</param>
+	/// <param name="y">Y coordinate</param>
+	PointerLocation(int16_t x, int16_t y) { this->x = x; this->y = y; }
 };
 
-<<<<<<< HEAD
-/*!*********************************************************************************************************************
-\brief        Enumeration representing a simplified, unified input event designed to unify simple actions across different
-devices.
-***********************************************************************************************************************/
-=======
 /// <summary>Enumeration representing a simplified, unified input event designed to unify simple actions across different
 /// devices.</summary>
->>>>>>> 1776432f... 4.3
 enum class SimplifiedInput
 {
 	NONE = 0,  //!<No action - avoid using
@@ -68,37 +66,23 @@ enum class SimplifiedInput
 	Up = 3,   //!<Up arrow, Swipe left
 	Down = 4, //!<Down arrow, Swipe left
 	ActionClose = 5, //!<Esc, Q, Android back, iOS home
-<<<<<<< HEAD
-	Action1 = 6,	 //!<Space, Enter, Touch screen center
-	Action2 = 7,	//!<Key 1, Touch screen left side
-	Action3 = 8,	//!<Key 2, Touch screen right side
-};
-
-/*!*********************************************************************************************************************
-\brief        Enumeration representing a System Event (quit, Gain focus, Lose focus).
-***********************************************************************************************************************/
-=======
 	Action1 = 6,   //!<Space, Enter, Touch screen center
 	Action2 = 7,  //!<Key 1, Touch screen left side
 	Action3 = 8,  //!<Key 2, Touch screen right side
 };
 
 /// <summary>Enumeration representing a System Event (quit, Gain focus, Lose focus).</summary>
->>>>>>> 1776432f... 4.3
 enum class SystemEvent
 {
-	SystemEvent_Quit, SystemEvent_LoseFocus, SystemEvent_GainFocus
+	SystemEvent_Quit,///< Fired when the application is quitting
+	SystemEvent_LoseFocus,  ///< Fired when the application loses focus
+	SystemEvent_GainFocus ///< Fired when the application gains forcus
 };
 
-<<<<<<< HEAD
-/*!*********************************************************************************************************************
-\brief        Enumeration representing a Keyboard Key.
-***********************************************************************************************************************/
-=======
 /// <summary>Enumeration representing a Keyboard Key.</summary>
->>>>>>> 1776432f... 4.3
-enum class Keys : byte
+enum class Keys : uint8_t
 {
+	//!\cond NO_DOXYGEN
 //Whenever possible, keys get ASCII values of their default (non-shifted) values of a default US keyboard.
 	Backspace = 0x08,
 	Tab = 0x09,
@@ -145,29 +129,19 @@ enum class Keys : byte
 
 	SquareBracketLeft = 0xDB, SquareBracketRight = 0xDD, Quote = 0xDE, Backslash = 0xDC,
 
-	MaxNumberOfKeyCodes,
+	MaxNumKeyCodes,
 	Unknown = 0xFF
-<<<<<<< HEAD
+	          //!\endcond
 };
 
-class Stream;
-/*!*********************************************************************************************************************
-\brief       Contains system/platform related classes and namespaces. Main namespace for the PowerVR Shell.
-***********************************************************************************************************************/
-namespace platform {
-
-/*!****************************************************************************************************************
-\brief  Contains all data of a system event.
-*******************************************************************************************************************/
-=======
-};
-
-
+/// <summary> A window configuration event (e.g. resize)</summary>
 struct ConfigureEvent
 {
-	int x, y;
-	int width, height;
-	int border_width;
+	int x; ///< x coordinate of the left of the window
+	int y; ///< y coordinate of the bottom of the window
+	int width; ///< Width
+	int height; ///< Height
+	int border_width; ///< Border
 };
 
 class Stream;
@@ -175,42 +149,32 @@ class Stream;
 namespace platform {
 
 /// <summary>Contains all data of a system event.</summary>
->>>>>>> 1776432f... 4.3
 struct ShellEvent
 {
-	enum
+	/// <summary>The type of the shell event</summary>
+	enum ShellEventType
 	{
-		SystemEvent,
-		PointingDeviceDown,
-		PointingDeviceUp,
-		PointingDeviceMove,
-		KeyDown,
-		KeyUp
-	} type;
+		SystemEvent, ///< Fired on any system event
+		PointingDeviceDown, ///< Fired when a mouse button or touch is first held down
+		PointingDeviceUp, ///< Fired when the mouse button or touch is lifted
+		PointingDeviceMove, ///< Fired when the mouse or a touch is moved
+		KeyDown, ///< Fired when a key is first pushed down
+		KeyUp ///< Fired when a key is lifted
+	} type; ///< The type of the event
 
+	/// <summary> Unnamed union storing the event data. Depending on event type, different
+	/// members can/should be accessed </summary>
 	union
 	{
-		PointerLocationStore location;
-		uint8 buttonIdx;
-		pvr::SystemEvent systemEvent;
-		Keys key;
+		PointerLocationStore location; ///< The location of the mouse/touch, if a mouse/touch event
+		uint8_t buttonIdx; ///< The button id, if a mouse/touch event
+		pvr::SystemEvent systemEvent; ///< The type of the event
+		Keys key; ///< The keyboard key, if a keyboard event
 	};
 };
 
 struct ShellData;
 class ShellOS;
-<<<<<<< HEAD
-/*!****************************************************************************************************************
-\brief        The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from.
-\description  This class abstracts the platform for the user and provides a unified interface to it. The user will
-              normally write his application as a class inheriting from the Shell. This way the user can have
-			  specific and easy to use places to write his code - Application start, window initialisation, per
-			  frame, cleanup. All platform queries and settings can be done on the shell (set the required Graphics
-			  API required, window size etc.). Specific callbacks and queries are provided for system events
-			  (keyboard, mouse, touch) as well as a unified simplified input interface provided such abstracted
-			  input events as "Left", "Right", "Action1", "Quit" across different platforms.
-*******************************************************************************************************************/
-=======
 /// <summary>The PowerVR Shell (pvr::Shell) is the main class that the user will inherit his application from.
 /// </summary>
 /// <remarks>This class abstracts the platform for the user and provides a unified interface to it. The user will
@@ -220,152 +184,77 @@ class ShellOS;
 /// etc.). Specific callbacks and queries are provided for system events (keyboard, mouse, touch) as well as a
 /// unified simplified input interface provided such abstracted input events as "Left", "Right", "Action1", "Quit"
 /// across different platforms.</remarks>
->>>>>>> 1776432f... 4.3
-class Shell : public IPlatformProvider
+class Shell : public IAssetProvider
 {
 	friend class ShellOS;
 	friend class StateMachine;
+
 public:
-	/// <summary>Contains a pointer location in normalised coordinates.</summary>
+	/// <summary>Contains a pointer location in unsigned normalised coordinates (0..1).</summary>
 	struct PointerNormalisedLocation
 	{
+		/// <summary>Constructor. Undefined values.</summary>
 		PointerNormalisedLocation() {}
-		PointerNormalisedLocation(const PointerLocation& location) { x = location.x; y = location.y; }
 
-		float32 x; float32 y;
+		/// <summary>The x location of the cursor, where 0=left and 1=right</summary>
+		float x;
+		/// <summary>The y location of the cursor, where 0=top and 1=bottom</summary>
+		float y;
 	};
 
 	/// <summary>Contains the state of a pointing device (mouse, touch screen).</summary>
 	struct PointingDeviceState
 	{
 	protected:
-		PointerLocation pointerLocation;    //!< Location of the pointer
-		PointerLocation dragStartLocation;  //!< Location of a drag starting point
-		int8 buttons;                       //!< Buttons pressed
+		PointerLocation _pointerLocation;    //!< Location of the pointer
+		PointerLocation _dragStartLocation;  //!< Location of a drag starting point
+		int8_t _buttons;                     //!< Buttons pressed
 	public:
 		/// <summary>Constructor.</summary>
-		PointingDeviceState() : pointerLocation(0, 0), dragStartLocation(0, 0), buttons(0) {}
+		PointingDeviceState() : _pointerLocation(0, 0), _dragStartLocation(0, 0), _buttons(0) {}
 		/// <summary>Get the current (i.e. last known) location of the mouse/pointing device pointer.</summary>
 		/// <returns>The location of the pointer.</returns>
-		PointerLocation position() { return pointerLocation; }
+		PointerLocation position() { return _pointerLocation; }
 
 		/// <summary>Get the location of the mouse/pointing device pointer when the last drag started.</summary>
 		/// <returns>The location of a drag action's starting point.</returns>
-		PointerLocation dragStartPosition() { return dragStartLocation; }
+		PointerLocation dragStartPosition() { return _dragStartLocation; }
 
 		/// <summary>Query if a specific button is pressed.</summary>
 		/// <param name="buttonIndex">The index of the button (0 up to 6).</param>
 		/// <returns>True if the button exists and is pressed. False otherwise.</returns>
-		bool isPressed(int8 buttonIndex)
+		bool isPressed(int8_t buttonIndex)
 		{
-			return (buttons & (1 << buttonIndex)) != 0;
+			return (_buttons & (1 << buttonIndex)) != 0;
 		}
 		/// <summary>Check if a drag action has started.</summary>
 		/// <returns>True if during a dragging action.</returns>
 		bool isDragging()
 		{
-			return (buttons & 0x80) != 0;
+			return (_buttons & 0x80) != 0;
 		}
 
 	};
-
-	/// <summary>Internal class of the pvr::Shell.</summary>
+private:
 	struct PrivatePointerState : public PointingDeviceState
 	{
-		void startDragging() { buttons |= 0x80; dragStartLocation = pointerLocation; }
-		void endDragging() { buttons &= 0x7F; }
+		void startDragging() { _buttons |= 0x80; _dragStartLocation = _pointerLocation; }
+		void endDragging() { _buttons &= 0x7F; }
 
-		void setButton(int8 buttonIndex, bool pressed)
+		void setButton(int8_t buttonIndex, bool pressed)
 		{
-			buttons = (buttons & ~(1 << buttonIndex)) | (pressed << buttonIndex);
+			_buttons = (_buttons & ~(1 << buttonIndex)) | (pressed << buttonIndex);
 		}
 		void setPointerLocation(PointerLocation pointerLocation)
 		{
-			this->pointerLocation = pointerLocation;
+			this->_pointerLocation = pointerLocation;
 		}
 
 	};
 
+
 protected:
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief        IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents application start.
-	\description  This function must be implemented in the user's application class. It will be fired once, on start,
-	              before any other callback and before  Graphics Context aquisition. It is suitable to do per-run
-				  initialisation, load assets files and similar tasks.
-				  A context does not exist yet, hence if the user tries to create API objects, they will
-				  fail and the behaviour is undefined.
-	\return       When implementing, return a suitable error code to signify failure. If pvr::Result::Success is not
-	              returned , the Shell will detect that, clean up, and exit.
-	*******************************************************************************************************************/
-	virtual Result initApplication() = 0;
-
-	/*!****************************************************************************************************************
-	\brief        IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents successful context aquisition.
-	\description  This function must be implemented in the user's application class. It will be fired once after every
-	              time the main Graphics Context (the one the Application Window is using) is initialized. This is
-				  usually once per application run, but in some cases (context lost) it may be called more than once.
-				  If the context is lost, the releaseView() callback will be fired, and if it is reaquired this function
-				  will be called again.
-	              This callback is suitable to do all do-once tasks that require a graphics context, such as creating
-				  an On-Screen FBO, and for simple applications creating the graphics objects.
-	\return       When implementing, return a suitable error code to signify failure. If pvr::Result::Success is not
-	              returned , the Shell will detect that, clean up, and exit.
-	*******************************************************************************************************************/
-	virtual Result initView() = 0;
-
-	/*!****************************************************************************************************************
-	\brief        IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents every frame.
-	\description  This function must be implemented in the user's application class. It will be fired once every frame.
-	              The user should use this callback as his main callback to start rendering and per-frame code.
-	              This callback is suitable to do all per-frame task. In multithreaded environments, it should be used
-				  to mark the start and signal the end of frames.
-	\return       When implementing, return a suitable error code to signify failure. Return pvr::Success to signify
-	              success and allow the Shell to do all actions necessary to render the frame (swap buffers etc.).
-	              If pvr::Result::Success is not returned, the Shell will detect that, clean up, and exit.
-				  Return pvr::Result::ExitRenderFrame to signify a clean, non-error exit for the application.
-				  Any other error code will be logged.
-	*******************************************************************************************************************/
-	virtual Result renderFrame() = 0;
-
-	/*!****************************************************************************************************************
-	\brief        IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents graphics context released.
-	\description  This function must be implemented in the user's application class. It will be fired once before the
-	              main Graphics Context is lost.
-				  The user should use this callback as his main callback to release all API objects as they will be
-				  invalid afterwards. In simple applications where all objects are created in initView, it should
-				  release all objects acquired in initView.
-				  This callback will be called when the application is exiting, but not only then - losing (and later
-				  re-acquiring) the Graphics Context will lead to this callback being fired, followed by an initView
-				  callback, renderFrame etc.
-	\return       When implementing, return a suitable error code to signify failure. If pvr::Result::Success is not
-	              returned, the Shell will detect that, clean up, and exit. If the shell was exiting, this will happen
-				  anyway.
-	*******************************************************************************************************************/
-	virtual Result releaseView() = 0;
-
-	/*!****************************************************************************************************************
-	\brief        IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents application exit.
-	\description  This function must be implemented in the user's application class. It will be fired once before the
-	              application exits, after the Graphics Context is torn down.
-				  The user should use this callback as his main callback to release all objects that need to. The
-				  application will exit shortly after this callback is fired.
-				  In effect, the user should release all objects that were acquired during initApplication.
-				  Do NOT use this to release API objects - these should already have been released during releaseView.
-	\return       When implementing, return a suitable error code to signify a failure that will be logged.
-	*******************************************************************************************************************/
-	virtual Result quitApplication() = 0;
-
-	/*!****************************************************************************************************************
-	\brief       Override in your class to handle the "Click" or "Touch" event of the main input device (mouse
-	             or touchscreen).
-	\description This event will be fired on releasing the button, when the mouse pointer has not moved more than a
-	              few pixels since the button was pressed (otherwise a drag will register instead of a click).
-	\param buttonIdx The index of the button (LMB:0, RMB:1, MMB:2, Touch:0)
-	\param location The location of the click.
-	******************************************************************************************************************/
-=======
 	/// <summary>IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event represents application start.</summary>
 	/// <returns>When implementing, return a suitable error code to signify failure. If pvr::Result::Success is not
 	/// returned , the Shell will detect that, clean up, and exit.</returns>
@@ -384,7 +273,7 @@ protected:
 	/// per application run, but in some cases (context lost) it may be called more than once. If the context is lost,
 	/// the releaseView() callback will be fired, and if it is reaquired this function will be called again. This
 	/// callback is suitable to do all do-once tasks that require a graphics context, such as creating an On-Screen
-	/// FBO, and for simple applications creating the graphics objects.</remarks>
+	/// Framebuffer, and for simple applications creating the graphics objects.</remarks>
 	virtual Result initView() = 0;
 
 	/// <summary>IMPLEMENT THIS FUNCTION IN YOUR APPLICATION CLASS. This event is called every frame.</summary>
@@ -427,7 +316,6 @@ protected:
 	/// <param name="location">The location of the click.</param>
 	/// <remarks>This event will be fired on releasing the button, when the mouse pointer has not moved more than a few
 	/// pixels since the button was pressed (otherwise a drag will register instead of a click).</remarks>
->>>>>>> 1776432f... 4.3
 	virtual void eventClick(int buttonIdx, PointerLocation location) { (void)buttonIdx; (void)location; }
 
 	/// <summary>Override in your class to handle the finish of a "Drag" event of the main input device (mouse,
@@ -457,43 +345,6 @@ protected:
 	/// <remarks>This event will be fired on releasing any button.</remarks>
 	virtual void eventButtonUp(int buttonIdx) { (void)buttonIdx; }
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief Override in your class to handle the press of a key of the keyboard.
-	\description This event will be fired on pressing any key.
-	\param key The key pressed
-	******************************************************************************************************************/
-	virtual void eventKeyDown(Keys key) { (void)key; }
-
-	/*!****************************************************************************************************************
-	\brief Override in your class to handle a keystroke of the keyboard.
-	\description This event will normally be fired multiple times during a key press, as controlled by the key repeat
-	             of the operating system.
-	\param key The key pressed
-	******************************************************************************************************************/
-	virtual void eventKeyStroke(Keys key) { (void)key; }
-
-	/*!****************************************************************************************************************
-	\brief Override in your class to handle the release (up) of a key of of the keyboard.
-	\description This event will be fired once, when releasing a key.
-	\param key The key released
-	******************************************************************************************************************/
-	virtual void eventKeyUp(Keys key) { (void)key; }
-
-	/*!****************************************************************************************************************
-	\brief       Override in your class to handle a unified interface for input across different platforms and devices.
-	\description This event abstracts, maps and unifies several input devices, in a way with a mind to unify several
-	             platforms and input devices.
-				 The Left/Right/Up/Down keyboard key, Swipe Left/Right/Up/Down both cause Left/Right/Up/Down events.
-				 Left Click at Center, Space key, Enter key, Touch at Center cause Action1.
-				 Left Click at Left, Right Click, One Key, Touch at the Left cause Action2.
-				 Left Click at Right, Middle Click, Two Key, Touch at the Right cause Action3.
-				 Escape, Q key, Back button cause Quit.
-				 Default behaviour is Quit action calls exitShell. In order to retain Quit button functionality,
-				 this behaviour should be mirrored (exitShell called on ActionClose).
-	\param key The Simplified Unified Event
-	******************************************************************************************************************/
-=======
 	/// <summary>Override in your class to handle the press of a key of the keyboard.</summary>
 	/// <param name="key">The key pressed</param>
 	/// <remarks>This event will be fired on pressing any key.</remarks>
@@ -520,7 +371,6 @@ protected:
 	/// Key, Touch at the Right cause Action3. Escape, Q key, Back button cause Quit. Default behaviour is Quit action
 	/// calls exitShell. In order to retain Quit button functionality, this behaviour should be mirrored (exitShell
 	/// called on ActionClose).</remarks>
->>>>>>> 1776432f... 4.3
 	virtual void eventMappedInput(SimplifiedInput key)
 	{
 		switch (key)
@@ -532,14 +382,12 @@ protected:
 		}
 	}
 
+	/// <summary>Default constructor. Do not instantiate a Shell class directly - extend as your application and then
+	/// provide the newDemo() function returning your application instance. See bottom of this file.</summary>
+	Shell();
 public:
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief       Used externally to signify events to the Shell. Do not use.
-	******************************************************************************************************************/
-=======
 	/// <summary>Used externally to signify events to the Shell. Do not use.</summary>
->>>>>>> 1776432f... 4.3
+	/// <param name="key">The key for this event.</param>
 	void onKeyDown(Keys key)
 	{
 		ShellEvent evt;
@@ -548,13 +396,8 @@ public:
 		eventQueue.push(evt);
 	}
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief       Used externally to signify events to the Shell. Do not use.
-	******************************************************************************************************************/
-=======
 	/// <summary>Used externally to signify events to the Shell. Do not use.</summary>
->>>>>>> 1776432f... 4.3
+	/// <param name="key">The key for this event.</param>
 	void onKeyUp(Keys key)
 	{
 		ShellEvent evt;
@@ -564,7 +407,8 @@ public:
 	}
 
 	/// <summary>Used externally to signify events to the Shell. Do not use.</summary>
-	void onPointingDeviceDown(uint8 buttonIdx)
+	/// <param name="buttonIdx">The button ID for this event.</param>
+	void onPointingDeviceDown(uint8_t buttonIdx)
 	{
 		ShellEvent evt;
 		evt.type = ShellEvent::PointingDeviceDown;
@@ -573,7 +417,8 @@ public:
 	}
 
 	/// <summary>Used externally to signify events to the Shell. Do not use.</summary>
-	void onPointingDeviceUp(uint8 buttonIdx)
+	/// <param name="buttonIdx">The button ID for this event.</param>
+	void onPointingDeviceUp(uint8_t buttonIdx)
 	{
 		ShellEvent evt;
 		evt.type = ShellEvent::PointingDeviceUp;
@@ -581,13 +426,8 @@ public:
 		eventQueue.push(evt);
 	}
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief       Used externally to signify events to the Shell. Do not use.
-	******************************************************************************************************************/
-=======
 	/// <summary>Used externally to signify events to the Shell. Do not use.</summary>
->>>>>>> 1776432f... 4.3
+	/// <param name="systemEvent">The type of the system event.</param>
 	void onSystemEvent(SystemEvent systemEvent)
 	{
 		ShellEvent evt;
@@ -596,6 +436,8 @@ public:
 		eventQueue.push(evt);
 	}
 
+	/// <summary>Called by some OS (X11) to record the movement of the mouse.</summary>
+	/// <param name="configureEvent">Mouse data.</param>
 	void onConfigureEvent(const ConfigureEvent& configureEvent)
 	{
 		_configureEvent = configureEvent;
@@ -607,28 +449,15 @@ private:
 	void updatePointerPosition(PointerLocation location);
 	void implKeyDown(Keys key);
 	void implKeyUp(Keys key);
-	void implPointingDeviceDown(uint8 buttonIdx);
-	void implPointingDeviceUp(uint8 buttonIdx);
+	void implPointingDeviceDown(uint8_t buttonIdx);
+	void implPointingDeviceUp(uint8_t buttonIdx);
 	void implSystemEvent(SystemEvent systemEvent);
 
 	std::queue<ShellEvent> eventQueue;
-	std::auto_ptr<native::NativeLibrary> pvrapi;
 
 	void processShellEvents();
 
 public:
-	/// <summary>Default constructor. Do not instantiate a Shell class directly - extend as your application and then
-	/// provide the newDemo() function returning your application instance. See bottom of this file.</summary>
-	Shell();
-
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief       Called at the appropriate time by the state machine.
-	******************************************************************************************************************/
-=======
-	/// <summary>Called at the appropriate time by the state machine.</summary>
->>>>>>> 1776432f... 4.3
-	Result init(ShellData* data);
 
 	/// <summary>Destructor.</summary>
 	virtual ~Shell();
@@ -652,6 +481,8 @@ public:
 
 private:
 	/* called by our friend the State Machine */
+
+	bool init(ShellData* data);
 	Result shellInitApplication();
 	Result shellQuitApplication();
 	Result shellInitView();
@@ -659,32 +490,6 @@ private:
 	Result shellRenderFrame();
 
 public:
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief     Query if a key is pressed.
-	\param     key The key to check
-	\return    True if a keyboard exists and the key is pressed
-	******************************************************************************************************************/
-	bool isKeyPressed(Keys key) { return isKeyPressedVal(key); }
-
-	/*!****************************************************************************************************************
-	\brief     Query if a key is pressed.
-	\param     buttonIndex The number of the button to check (LMB:0, RMB:1, MMB:2)
-	\return    True if a mouse/touchscreen exists and the button with this is index pressed. Simple touch is 0.
-	******************************************************************************************************************/
-	bool isButtonPressed(int8 buttonIndex) { return buttonIndex > 7 ? false : m_pointerState.isPressed(buttonIndex); }
-
-	/*!****************************************************************************************************************
-	\brief     Query the pointer location in pixels.
-	\return    The location of the pointer in pixels.
-	******************************************************************************************************************/
-	PointerLocation getPointerAbsolutePosition() { return m_pointerState.position(); }
-
-	/*!****************************************************************************************************************
-	\brief     Query the pointer location in normalised coordinates (0..1).
-	\return    The location of the pointer in normalised coordinates (0..1).
-	******************************************************************************************************************/
-=======
 	/// <summary>Query if a key is pressed.</summary>
 	/// <param name="key">The key to check</param>
 	/// <returns>True if a keyboard exists and the key is pressed</returns>
@@ -694,29 +499,29 @@ public:
 	/// <param name="buttonIndex">The number of the button to check (LMB:0, RMB:1, MMB:2)</param>
 	/// <returns>True if a mouse/touchscreen exists and the button with this is index pressed. Simple touch is 0.
 	/// </returns>
-	bool isButtonPressed(int8 buttonIndex) { return buttonIndex > 7 ? false : _pointerState.isPressed(buttonIndex); }
+	bool isButtonPressed(int8_t buttonIndex) { return buttonIndex > 7 ? false : _pointerState.isPressed(buttonIndex); }
 
 	/// <summary>Query the pointer location in pixels.</summary>
 	/// <returns>The location of the pointer in pixels.</returns>
 	PointerLocation getPointerAbsolutePosition() { return _pointerState.position(); }
 
+	/// <summary>Query the pointer relative position.</summary>
+	/// <returns>The relative pointer location in pixels.</returns>
 	PointerLocation getPointerRelativePosition()
 	{
 		PointerLocation pointerloc = getPointerAbsolutePosition();
-		pointerloc.x -= _configureEvent.x;
-		pointerloc.y -= _configureEvent.y;
+		pointerloc.x -= static_cast<uint16_t>(_configureEvent.x);
+		pointerloc.y -= static_cast<uint16_t>(_configureEvent.y);
 		return pointerloc;
 	}
 
-
 	/// <summary>Query the pointer location in normalised coordinates (0..1).</summary>
 	/// <returns>The location of the pointer in normalised coordinates (0..1).</returns>
->>>>>>> 1776432f... 4.3
 	PointerNormalisedLocation getPointerNormalisedPosition()
 	{
 		PointerNormalisedLocation pos;
-		pos.x = _pointerState.position().x / (float)getWidth();
-		pos.y = _pointerState.position().y / (float)getHeight();
+		pos.x = _pointerState.position().x / static_cast<float>(getWidth());
+		pos.y = _pointerState.position().y / static_cast<float>(getHeight());
 		return pos;
 	}
 
@@ -728,32 +533,27 @@ public:
 	/// <summary>Get the total time (from the same arbitrary starting point as getTimeAtInitApplication ), in
 	/// milliseconds.</summary>
 	/// <returns>The total time in milliseconds.</returns>
-	uint64 getTime();
+	uint64_t getTime();
 
 	/// <summary>The duration of the last frame to pass, in milliseconds. This is the time to use to advance app
 	/// logic.</summary>
 	/// <returns>The duration of the last frame, in milliseconds.</returns>
-	uint64 getFrameTime();
+	uint64_t getFrameTime();
 
 	/// <summary>Get the total time (from the same arbitrary starting point as getTime ), in milliseconds.</summary>
 	/// <returns>The time at init application, in milliseconds.</returns>
-	uint64 getTimeAtInitApplication() const;
+	uint64_t getTimeAtInitApplication() const;
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\return    A pvr::platform::CommandLine::Options object containing the command line options passed at app launch.
-	******************************************************************************************************************/
-=======
 	/// <summary>Get the command line options that were passed at application launch.</summary>
 	/// <returns>A pvr::platform::CommandLineParser::ParsedCommandLine object containing all options passed at app
 	/// launch.</returns>
->>>>>>> 1776432f... 4.3
 	const platform::CommandLineParser::ParsedCommandLine& getCommandLine() const;
 
 	/// <summary>ONLY EFFECTIVE AT INIT APPLICATION. Set the application to run at full screen mode. Not all platforms
 	/// support this option.</summary>
 	/// <param name="fullscreen">Set to true for fullscreen, false for windowed</param>
 	void setFullscreen(const bool fullscreen);
+
 	/// <summary>Get if the application is running in full screen.</summary>
 	/// <returns>True if the application is running in full screen. False otherwise.</returns>
 	bool isFullScreen() const;
@@ -761,118 +561,71 @@ public:
 	/// <summary>Get the width of the application area (window width for windowed, or screen width for full screen).
 	/// </summary>
 	/// <returns>The width of the application area.</returns>
-	uint32 getWidth() const;
+	uint32_t getWidth() const;
 
 	/// <summary>Get the height of the application area (window height for windowed, or screen height for full
 	/// screen).</summary>
 	/// <returns>The height of the application area.</returns>
-	uint32 getHeight() const;
+	uint32_t getHeight() const;
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief    ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window size.
-	\param    w The width of the window
-	\param    h The height of the window
-	\return   pvr::Result::Success if successful. pvr::Result::UnsupportedRequest if unsuccessful.
-	******************************************************************************************************************/
-	Result setDimensions(uint32 w, uint32 h);
+	/// <summary>Get the screenshot capture scale to be applied to any saved screenshot.</summary>
+	/// <returns>The screenshot capture scaling factor.</returns>
+	uint32_t getCaptureFrameScale() const;
 
-	/*!****************************************************************************************************************
-	\return   The window position X coordinate.
-	******************************************************************************************************************/
-=======
+	/// <summary>Get the maximum api type requested.</summary>
+	/// <returns>The maximum api type requested.</returns>
+	Api getMaxApi() const;
+
+	/// <summary>Get the minimum api type requested.</summary>
+	/// <returns>The minimum api type requested.</returns>
+	Api getMinApi() const;
+
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window size, or resolution for fullscreen.
 	/// </summary>
 	/// <param name="w">The width of the window / horizontal resolution</param>
 	/// <param name="h">The height of the window / vertical resolution</param>
 	/// <returns>pvr::Result::Success if successful. pvr::Result::UnsupportedRequest if unsuccessful.</returns>
-	Result setDimensions(uint32 w, uint32 h);
+	Result setDimensions(uint32_t w, uint32_t h);
 
 	/// <summary>Get the window position X coordinate.</summary>
 	/// <returns>The window position X coordinate. (0 for fullscreen)</returns>
->>>>>>> 1776432f... 4.3
-	uint32 getPositionX() const;
+	uint32_t getPositionX() const;
 
 	/// <summary>Get the window position Y coordinate.</summary>
 	/// <returns>The window position Y coordinate. (0 for fullscreen)</returns>
-	uint32 getPositionY() const;
+	uint32_t getPositionY() const;
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief    ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window position. Not supported in all
-	          platforms.
-	\return   pvr::Result::Success if successful. pvr::Result::UnsupportedRequest if unsuccessful.
-	******************************************************************************************************************/
-=======
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the window position. Not supported in all platforms.
 	/// </summary>
+	/// <param name="x">x-coordinate (Distance of the left of the window to the left of the screen)</param>
+	/// <param name="y">y-coordinate (Distance of the top of the window to the top of the screen)</param>
 	/// <returns>pvr::Result::Success if successful. pvr::Result::UnsupportedRequest if unsuccessful.</returns>
->>>>>>> 1776432f... 4.3
-	Result setPosition(uint32 x, uint32 y);
+	Result setPosition(uint32_t x, uint32_t y);
 
 	/// <summary>Return the frame after which the application is set to automatically quit. If QuitAfterFrame was not
 	/// set, returns -1</summary>
 	/// <returns>The frame after which the application is set to quit. If not set, returns -1</returns>
-	int32 getQuitAfterFrame() const;
+	int32_t getQuitAfterFrame() const;
+
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a frame after which the application will quit.
 	/// </summary>
 	/// <param name="value">The frame after which the application is set to quit. Set to -1 to disable.</param>
-	void setQuitAfterFrame(uint32 value);
+	void setQuitAfterFrame(uint32_t value);
 
 	/// <summary>Get the time after which the application is set to automatically quit.If QuitAfterTime was not set,
 	/// returns -1</summary>
 	/// <returns>The time after which the application will quit. If not set, returns -1</returns>
-	float32 getQuitAfterTime() const;
+	float getQuitAfterTime() const;
+
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a time after which the application will quit.
 	/// </summary>
 	/// <param name="value">The time (seconds) after which the application will quit. Set to -1 to disable.</param>
-	void setQuitAfterTime(float32 value);
+	void setQuitAfterTime(float value);
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\return   The vertical synchronisation swap interval. 0 is immediate.
-	******************************************************************************************************************/
-=======
 	/// <summary>Get the vertical synchronization mode.</summary>
 	/// <returns>The vertical synchronisation mode.</returns>
->>>>>>> 1776432f... 4.3
 	VsyncMode getVsyncMode() const;
 
-	/// <summary>Get the number of explicit, logical framebuffer images accessible to user code. OpenGL ES will always
-	/// return 1 as the buffer swapping is hidden in the driver and images not explicitly handled by the user.
-	/// </summary>
-	/// <returns>The number of logical swap chain images. This number is one greater than the max number returned by
-	/// getSwapChainIndex().</returns>
-	uint32 getSwapChainLength() const;
-
-	/// <summary>Get the logical framebuffer image that the application currently owns and can render to. OpenGL ES
-	/// will always return 0 as the backbuffer images imlementation are hidden in the driver and not exposed to the
-	/// user.</summary>
-	/// <returns>The index of the logical backbuffer image that the application currently owns and should render to.
-	/// It is undefined behaviour to render to an Off Screen FBO that points to any swap image other than the one
-	/// whose index is this number.</returns>
-	uint32 getSwapChainIndex() const;
-
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the swap interval (vertical sync).
-	\param   mode The swap interval. 0 is no interval (no vsync). 1 is default.
-	******************************************************************************************************************/
-	void setVsyncMode(VsyncMode mode);
-
-	/*!****************************************************************************************************************
-	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set a desired number of swap images (number of framebuffers).
-	This number will be clamped between the minimum and the maximum number supported by the platform, so that if a small
-	(0-1) or large (8+) number is requested, the minimum/maximum of the platform will always be providedd
-	\param   swapChainLength The desired number of swap images. Default is 3.
-	******************************************************************************************************************/
-	void setPreferredSwapChainLength(uint32 swapChainLength);
-
-	/*!****************************************************************************************************************
-	\brief   EFFECTIVE IF CALLED during RenderFrame. Force the shell to ReleaseView and then InitView again after this
-			frame.
-	******************************************************************************************************************/
-=======
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the Vertical Syncchronization mode(vertical sync).
 	/// Default is On(Fifo).</summary>
 	/// <param name="mode">The Vertical Synchronization mode. <para>On : VerticalSync (no tearing, some possible input
@@ -888,58 +641,35 @@ public:
 	/// platform, so that if a small (0-1) or large (8+) number is requested, the minimum/maximum of the platform will
 	/// always be providedd</summary>
 	/// <param name="swapChainLength">The desired number of swap images. Default is 3 for Mailbox, 2 for On.</param>
-	void setPreferredSwapChainLength(uint32 swapChainLength);
+	void setPreferredSwapChainLength(uint32_t swapChainLength);
 
 	/// <summary>EFFECTIVE IF CALLED DURING RenderFrame. Force the shell to ReleaseView and then InitView again after this
 	/// frame.</summary>
->>>>>>> 1776432f... 4.3
 	void forceReinitView();
 
 	/// <summary>Get the number of anti-aliasing samples.</summary>
 	/// <returns>The number of anti-aliasing samples.</returns>
-	uint32 getAASamples() const;
+	uint32_t getAASamples() const;
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the Anti-Aliasing samples.</summary>
 	/// <param name="value">The anti-aliasing samples.</param>
-	void setAASamples(uint32 value);
+	void setAASamples(uint32_t value);
 
 	/// <returns>Get the total number of color bits per pixel (sum of all channels' bits per pixel)</returns>
 	/// <returns>The number of total color bits per pixel.</returns>
-	uint32 getColorBitsPerPixel() const;
+	uint32_t getColorBitsPerPixel() const;
 
 	/// <summary>Get the number of framebuffer depth bits per pixel.</summary>
 	/// <returns>The number of depth bits per pixel.</returns>
-	uint32 getDepthBitsPerPixel() const;
+	uint32_t getDepthBitsPerPixel() const;
 
 	/// <summary>Get the number of framebuffer stencil bits per pixel.</summary>
 	/// <returns>The number of stencil bits per pixel.</returns>
-	uint32 getStencilBitsPerPixel() const;
+	uint32_t getStencilBitsPerPixel() const;
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\return   The Colorspace of the main window backbuffer (linear RGB or sRGB).
-	******************************************************************************************************************/
-	types::ColorSpace getBackBufferColorspace();
-
-	/*!****************************************************************************************************************
-	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Specify the colorspace of the backbuffer. Default is a
-	(linear) RGB BackBuffer. Use this to specifically request an sRGB backbuffer. Since the support of backbuffer
-	colorspace is an extension in many implementations, if you use this function, you must call getBackBufferColorspace
-	after initApplication (in initView) to determine the actual backBuffer colorspace that was obtained.
-	******************************************************************************************************************/
-	void setBackBufferColorspace(types::ColorSpace colorSpace);
-
-	/*!****************************************************************************************************************
-	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of color bits per pixel.
-	\param   r The Red channel color bits
-	\param   g The Green channel color bits
-	\param   b The Blue channel color bits
-	\param   a The Alpha channel color bits
-	******************************************************************************************************************/
-=======
 	/// <summary>Get the Colorspace of the main window framebuffer (linear RGB or sRGB).</summary>
 	/// <returns>The Colorspace of the main window framebuffer (linear RGB or sRGB).</returns>
-	types::ColorSpace getBackBufferColorspace();
+	ColorSpace getBackBufferColorspace();
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Specify the colorspace of the backbuffer. Default is a
 	/// (linear) RGB BackBuffer. Use this to specifically request an sRGB backbuffer. Since the support of backbuffer
@@ -947,7 +677,7 @@ public:
 	/// getBackBufferColorspace after initApplication (in initView) to determine the actual backBuffer colorspace that
 	/// was obtained.</summary>
 	/// <param name="colorSpace">the desired framebuffer colorspace (either lRgb or sRgb)</param>
-	void setBackBufferColorspace(types::ColorSpace colorSpace);
+	void setBackBufferColorspace(ColorSpace colorSpace);
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer color bits per pixel.
 	/// </summary>
@@ -957,21 +687,20 @@ public:
 	/// <param name="a">The Alpha framebuffer channel color bits</param>
 	/// <remarks>Actual number obtained may vary per implementation. Query with getColorBitsPerPixel after initView to
 	/// check the actual number obtained</remarks>
->>>>>>> 1776432f... 4.3
-	void setColorBitsPerPixel(uint32 r, uint32 g, uint32 b, uint32 a);
+	void setColorBitsPerPixel(uint32_t r, uint32_t g, uint32_t b, uint32_t a);
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of framebuffer Depth bits per pixel.
 	/// </summary>
 	/// <param name="value">The desired framebuffer Depth channel bits.</param>
 	/// <remarks>Actual number obtained may vary per implementation. Query with getDepthBitsPerPixel after initView to
 	/// check the actual number obtained</remarks>
-	void setDepthBitsPerPixel(uint32 value);
+	void setDepthBitsPerPixel(uint32_t value);
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Set the number of Stencil bits per pixel.</summary>
 	/// <param name="value">The Stencil channel bits.</param>
 	/// <remarks>Actual number obtained may vary per implementation. Query with getStencilBitsPerPixel after initView to
 	/// check the actual number obtained</remarks>
-	void setStencilBitsPerPixel(uint32 value);
+	void setStencilBitsPerPixel(uint32_t value);
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Forces frame time to always be reported as 1/60th of a
 	/// second.</summary>
@@ -986,183 +715,58 @@ public:
 	/// <returns>True if screen is Landscape (height > width), false otherwise</returns>
 	bool isScreenRotated()const;
 
-	/// <summary>return true if present backbuffer is enabled</summary>
-	/// <returns>true if presenting backbuffer</returns>
-	bool isPresentingBackBuffer();
-
-	/// <summary>enable or disable presenting back-buffer</summary>
-	/// <param name="value">Set to true to present, false to disable actual backbuffer swapping/presentation.</param>
-	void setPresentBackBuffer(const bool value);
-
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Sets a specific Graphics API type (version) that the user
-	wants to use. The context creation will fail if this precise version cannot be created.
-	\param   contextType The context type requested.
-	******************************************************************************************************************/
-	void setApiTypeRequired(Api contextType);
-
-	/*!****************************************************************************************************************
-	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Sets the minimum Graphics API type (version) that the user
-	intends to use. The context creation will fail if at least this context version cannot be created. The latest
-	context version supported will be created.
-	\param   contextType The context type requested.
-	******************************************************************************************************************/
-	void setMinApiType(Api contextType);
-
-	/*!****************************************************************************************************************
-	\brief  Gets the minimum Graphics API type (version) that the user has set. See setMinApiType.
-	\return  The api type and version that the user has set as the minimum acceptable.
-	******************************************************************************************************************/
-	Api getMinApiTypeRequired();
-
-	/*!****************************************************************************************************************
-	\brief   Gets the maximum supported Graphics API type.
-	\return  The api type and maximum version that the implementation can provide.
-	******************************************************************************************************************/
-	Api getMaxApiLevel();
-
-	/*!****************************************************************************************************************
-	\brief   Queries if a particular Graphics API type/version is supported.
-	\param   api The context type queried.
-	\return   True if api is supported
-	******************************************************************************************************************/
-	bool isApiSupported(Api api);
-
-	/*!****************************************************************************************************************
-	\return   The context type that will be requested from PVRApi.
-	******************************************************************************************************************/
-	Api  getApiTypeRequired();
-
-	/*!****************************************************************************************************************
-	\return   Return the actual API level of the existing Graphics Context. If called before initView, results are
-	          undefined.
-	******************************************************************************************************************/
-	Api  getApiType();
-
-	/*!****************************************************************************************************************
-	\brief   ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Sets the Device Queue types that the user may
-	         require (Graphics, Compute etc.).
-	\param   queueType The DeviceQueueType requested.
-	******************************************************************************************************************/
-	void setDeviceQueueTypesRequired(DeviceQueueType queueType);
-
-	/*!****************************************************************************************************************
-	\return   The DeviceQueueTypes that have been set as required.
-	******************************************************************************************************************/
-	DeviceQueueType getDeviceQueueTypesRequired();
-
-	/*!****************************************************************************************************************
-	\brief   Prints out general information about this Shell (application name, sdk version, cmd line etc.
-	******************************************************************************************************************/
-=======
-	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Sets a specific Graphics API type (version) that the
-	/// user wants to use. The context creation will fail if this precise version cannot be created.</summary>
-	/// <param name="contextType">The context type requested.</param>
-	void setApiTypeRequired(Api contextType);
-
-	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. ONLY EFFECTIVE IF PVRAPI IS LINKED DYNAMICALLY. If PVRApi
-	/// is linked statically, this option is ignored. Sets a specific Graphics API type (version) that the
-	/// user wants to use. The context creation will fail if this precise version cannot be created.</summary>
-	/// <param name="contextType">The context type requested.</param>
-	void setApiTypeBase(BaseApi contextType);
-
-	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Sets the minimum Graphics API type (version) that the
-	/// user intends to use. The context creation will fail if at least this context version cannot be created. The
-	/// latest context version supported will be created.</summary>
-	/// <param name="contextType">The context type requested.</param>
-	void setMinApiType(Api contextType);
-
-	/// <summary>Gets the minimum Graphics API type (version) that the user has set. See setMinApiType.</summary>
-	/// <returns>The api type and version that the user has set as the minimum acceptable.</returns>
-	Api getMinApiTypeRequired();
-
-	/// <summary>Gets the maximum supported Graphics API type.</summary>
-	/// <returns>The api type and maximum version that the implementation can provide.</returns>
-	Api getMaxApiLevel();
-
-	/// <summary>Queries if a particular Graphics API type/version is supported.</summary>
-	/// <param name="api">The context type queried.</param>
-	/// <returns>True if api is supported</returns>
-	bool isApiSupported(Api api);
-
-	/// <summary>Get the context type/version (if any) that will be requested</summary>
-	/// <returns>The context type that will be requested from PVRApi.</returns>
-	Api  getApiTypeRequired();
-
-	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT VIEW OR AFTER. Get the actual API version created.</summary>
-	/// <returns>Return the actual API level of the existing Graphics Context. If called before initView, results are
-	/// undefined.</returns>
-	Api  getApiType()const;
-
-	/// <summary>Get the context type/version (if any) that will be/was requested. Before init view, returns the
-	/// requested base api type (OpenGL ES/ Vulkan). After init application, it returns the Created api type. This
-	/// only makes sense if the PVRApi library is loaded Dynamically (in which case it controls the PVRApi library
-	/// that the Shell will attempt to load, otherwise the Base api type is fixed to the linked-in library. Default:
-	/// BaseApi::Unspecified. If unspecified, the application will try Vulkan first, then OpenGL ES, then will set
-	/// it to whichever one succeeded first.</summary>
-	/// <returns>The context type that will be requested from PVRApi, OR the context that was created (if it was
-	/// unspecified.</returns>
-	BaseApi  getApiTypeBase();
-
-	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Sets the Device Queue types that the user may require
-	/// (Graphics, Compute etc.).</summary>
-	/// <param name="queueType">The DeviceQueueType requested.</param>
-	void setDeviceQueueTypesRequired(DeviceQueueType queueType);
-
-	/// <summary>Get the DeviceQueueTypes that have been set as required.</summary>
-	/// <returns>The DeviceQueueTypes that have been set as required.</returns>
-	DeviceQueueType getDeviceQueueTypesRequired();
-
 	/// <summary>Print out general information about this Shell (application name, sdk version, cmd line etc.</summary>
->>>>>>> 1776432f... 4.3
 	void showOutputInfo();
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Captures the frames between start and stop and saves
 	/// them as TGA screenshots.</summary>
 	/// <param name="start">First frame to be captured</param>
 	/// <param name="stop">Last frame to be captured</param>
-	void setCaptureFrames(uint32 start, uint32 stop);
+	void setCaptureFrames(uint32_t start, uint32_t stop);
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. Sets the upscale factor of the screenshots. Upscaling
 	/// only.</summary>
 	/// <param name="value">Upscaling of the screenshots</param>
-	void setCaptureFrameScale(uint32 value);
+	void setCaptureFrameScale(uint32_t value);
 
 	/// <summary>If capturing frames, get the first frame to be captured.</summary>
 	/// <returns>If capturing frames, the first frame to be captured.</returns>
-	uint32 getCaptureFrameStart() const;
+	uint32_t getCaptureFrameStart() const;
 
 	/// <summary>If capturing frames, get the last frame to be captured.</summary>
 	/// <returns>If capturing frames, the last frame to be captured.</returns>
-	uint32 getCaptureFrameStop() const;
+	uint32_t getCaptureFrameStop() const;
+
+	/// <summary>Returns the current frame number. Incremented each time renderFrame is called.</summary>
+	/// <returns>The current frame number maintained by the Shell.</returns>
+	uint32_t getFrameNumber() const;
 
 	/// <summary>Get the requested context priority.0=Low,1=Medium, 2+ = High. Initial value: High.</summary>
 	/// <returns>If supported, the priority of the main Graphics Context used by the application.</returns>
-	uint32 getContextPriority() const;
+	uint32_t getContextPriority() const;
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. If supported, sets a ContextPriority that the shell will
 	/// attempt to use when creating the main Graphics Context used for the window. Initial value:High.</summary>
 	/// <param name="value">The context priority requested. 0=Low, 1=Medium, 2+=High.</param>
-	void setContextPriority(uint32 value);
+	void setContextPriority(uint32_t value);
 
 	/// <summary>If setDesiredConfig was called, get the desired ConfigID.</summary>
 	/// <returns>If setDesiredConfig was called, the desired ConfigID.</returns>
-	uint32 getDesiredConfig() const;
+	uint32_t getDesiredConfig() const;
 
 	/// <summary>ONLY EFFECTIVE IF CALLED AT INIT APPLICATION. If supported by the platform/API, sets a specific
 	/// Context Configuration ID to be used.</summary>
 	/// <param name="value">The ConfigID that will be requested.</param>
-	void setDesiredConfig(uint32 value);
+	void setDesiredConfig(uint32_t value);
 
 	/// <summary>Get the artificial frame time that has been set. 0 means unset.</summary>
 	/// <returns>The artificial frame time that has been set. 0 means unset.</returns>
-	uint32 getFakeFrameTime() const;
+	uint32_t getFakeFrameTime() const;
 
 	/// <summary>Sets a time delta that will be used as frame time to increment the application clock instead of real
 	/// time. This number will be returned as the frame time.</summary>
 	/// <param name="value">The number of milliseconds of the frame.</param>
-	void setFakeFrameTime(uint32 value);
+	void setFakeFrameTime(uint32_t value);
 
 	/// <summary>Check if FPS are being printed out.</summary>
 	/// <returns>True if FPS are being printed out.</returns>
@@ -1176,80 +780,47 @@ public:
 	/// <returns>An Frames-Per-Second value calculated periodically by the application.</returns>
 	float getFPS() const;
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\return  The current version of the PowerVR SDK.
-	******************************************************************************************************************/
-	static const char8* getSDKVersion() { return PVRSDK_VERSION; }
-
-	/*!****************************************************************************************************************
-	\brief  Set a message to be displayed on application exit. Normally used to display critical error messages that
-	        might be missed if displayed as just logs.
-	\param  format A printf-style format string
-	\param  ... Printf-style variable arguments
-	******************************************************************************************************************/
-	void setExitMessage(const tchar* const format, ...);
-
-	/*!****************************************************************************************************************
-	\brief  Sets the application name.
-	******************************************************************************************************************/
-	void setApplicationName(const tchar* const format, ...);
-
-	/*!****************************************************************************************************************
-	\brief  Sets the window title. Will only be actually displayed If used on or before initApplication.
-	******************************************************************************************************************/
-	void setTitle(const tchar* const format, ...);
-
-	/*!****************************************************************************************************************
-	\return  The exit message set by the user.
-	******************************************************************************************************************/
-=======
 	/// <summary>Get the current version of the PowerVR SDK.</summary>
 	/// <returns>The current version of the PowerVR SDK.</returns>
-	static const char8* getSDKVersion() { return PVRSDK_BUILD; }
+	static const char* getSDKVersion() { return PVRSDK_BUILD; }
 
 	/// <summary>Set a message to be displayed on application exit. Normally used to display critical error messages
 	/// that might be missed if displayed as just logs.</summary>
-	/// <param name="format">A printf-style format string</param>
+	/// <param name="format">A printf-style format std::string</param>
 	/// <param name="...">Printf-style variable arguments</param>
-	void setExitMessage(const char8* const format, ...);
+	void setExitMessage(const char* const format, ...);
 
 	/// <summary>Sets the application name.</summary>
-	/// <param name="format">A printf-style format string</param>
+	/// <param name="format">A printf-style format std::string</param>
 	/// <param name="...">Printf-style variable parameters</param>
-	void setApplicationName(const char8* const format, ...);
+	void setApplicationName(const char* const format, ...);
 
 	/// <summary>Sets the window title. Will only be actually displayed If used on or before initApplication.
 	/// </summary>
-	/// <param name="format">A printf-style format string</param>
+	/// <param name="format">A printf-style format std::string</param>
 	/// <param name="...">Printf-style variable parameters</param>
-	void setTitle(const char8* const format, ...);
+	void setTitle(const char* const format, ...);
 
 	/// <summary>Get the exit message set by the user.</summary>
 	/// <returns>The exit message set by the user.</returns>
->>>>>>> 1776432f... 4.3
-	const string& getExitMessage() const;
-
-	/// <summary>Get the window title.</summary>
-	/// <returns>The window title.</returns>
-	const string& getTitle() const;
+	const std::string& getExitMessage() const;
 
 	/// <summary>Get application name.</summary>
 	/// <returns>The application name.</returns>
-	const string& getApplicationName() const;
+	const std::string& getApplicationName() const;
 
 	/// <summary>Get the default read path.</summary>
 	/// <returns>The first (default) read path. Normally, current directory.</returns>
-	const string& getDefaultReadPath() const;
+	const std::string& getDefaultReadPath() const;
 
 	/// <summary>Get a list of all paths that will be tried when looking for loading files.</summary>
 	/// <returns>The a list of all the read paths that will successively be tried when looking to read a file.
 	/// </returns>
-	const std::vector<string>& getReadPaths() const;
+	const std::vector<std::string>& getReadPaths() const;
 
 	/// <summary>Get the path where any files will be saved.</summary>
 	/// <returns>The path where any files saved (screenshots, logs) will be output to.</returns>
-	const string& getWritePath() const;
+	const std::string& getWritePath() const;
 
 	/// <summary>Signifies the application to clean up and exit. Will go through the normal StateMachine cycle and exit
 	/// cleanly, exactly like returning ExitRenderFrame from RenderFrame. Will skip the next RenderFrame execution.
@@ -1266,75 +837,26 @@ public:
 	/// errors.</param>
 	/// <returns>A unique pointer to the Stream returned if successful, an Empty unique pointer if failed.
 	/// </returns>
-	Stream::ptr_type getAssetStream(const string& filename, bool logFileNotFound = true);
+	Stream::ptr_type getAssetStream(const std::string& filename, bool logFileNotFound = true);
 
 	/// <summary>Gets the ShellOS object owned by this shell.</summary>
 	/// <returns>The ShellOS object owned by this shell.</returns>
 	ShellOS& getOS() const;
 
-	/// <summary>Get the GraphicsContext utilized by this shell. If operating without a context, it will be empty.
-	/// </summary>
-	/// <returns>The GraphicsContext utilized by this shell.</returns>
-	GraphicsContext& getGraphicsContext();
+	/// <summary>Returns whether a screenshot should be taken for the current frame making use of command line arguments.</summary>
+	/// <returns>True if a screenshot was requested for this frame, otherwise returns false</returns>
+	bool shouldTakeScreenshot() { return getFrameNumber() >= getCaptureFrameStart() && getFrameNumber() <= getCaptureFrameStop(); }
 
-<<<<<<< HEAD
-	/*!****************************************************************************************************************
-	\return  Gets the ShellOS object owned by this shell.
-	******************************************************************************************************************/
-	const GraphicsContext& getGraphicsContext() const;
+	/// <summary>Generates and returns a potential screenshot name based on the shell write path, frame number and appication name</summary>
+	/// <returns>Returns a potential screenshot name based on the shell write path, frame number and application name.</returns>
+	std::string getScreenshotFileName();
 
-	/*!****************************************************************************************************************
-	\return  Gets the ShellOS object owned by this shell.
-	******************************************************************************************************************/
-	GraphicsContext& context() { return getGraphicsContext(); }
-
-	/*!****************************************************************************************************************
-	\return  Gets the ShellOS object owned by this shell.
-	******************************************************************************************************************/
-	const GraphicsContext& context() const { return getGraphicsContext(); }
-
-	/*!****************************************************************************************************************
-	\return  Gets the Platform Context class used by this shell.
-	******************************************************************************************************************/
-=======
-	/// <summary>Get the GraphicsContext utilized by this shell. If operating without a context, it will be empty.
-	/// </summary>
-	/// <returns>The GraphicsContext utilized by this shell.</returns>
-	const GraphicsContext& getGraphicsContext() const;
-
-	/// <summary>Get the GraphicsContext utilized by this shell. If operating without a context, it will be empty.
-	/// </summary>
-	/// <returns>The GraphicsContext utilized by this shell.</returns>
-	GraphicsContext& context() { return getGraphicsContext(); }
-
-	/// <summary>Get the GraphicsContext utilized by this shell. If operating without a context, it will be empty.
-	/// </summary>
-	/// <returns>The GraphicsContext utilized by this shell.</returns>
-	const GraphicsContext& context() const { return getGraphicsContext(); }
-
-	/// <summary>Get the Platform Context class used by this shell.</summary>
-	/// <returns>The Platform Context class used by this shell.</returns>
->>>>>>> 1776432f... 4.3
-	IPlatformContext& getPlatformContext();
-
-	/// <summary>Get the Platform Context class used by this shell.</summary>
-	/// <returns>The Platform Context class used by this shell.</returns>
-	const IPlatformContext& getPlatformContext() const;
-
-	/// <summary>Save a screenshot of the current display.</summary>
-	void takeScreenshot() const;
-
-	void prepareSharedContexts(const std::vector<SharedContextCapabilities>& contextList);
-
-<<<<<<< HEAD
-=======
 private:
 	bool _dragging;
 	std::bitset<256> _keystate;
 	PrivatePointerState _pointerState;
 	ShellData* _data;
 	ConfigureEvent _configureEvent;
->>>>>>> 1776432f... 4.3
 	SimplifiedInput MapKeyToMainInput(Keys key)
 	{
 		switch (key)
@@ -1353,22 +875,13 @@ private:
 	}
 	bool setKeyPressedVal(Keys key, char val)
 	{
-<<<<<<< HEAD
-		bool temp = m_keystate[(uint32)key];
-		m_keystate[(uint32)key] = (val != 0);
-=======
-		bool temp = _keystate[(uint32)key];
-		_keystate[(uint32)key] = (val != 0);
->>>>>>> 1776432f... 4.3
+		bool temp = _keystate[static_cast<uint32_t>(key)];
+		_keystate[static_cast<uint32_t>(key)] = (val != 0);
 		return temp;
 	}
 	bool isKeyPressedVal(Keys key)
 	{
-<<<<<<< HEAD
-		return m_keystate[(uint32)key];
-=======
-		return _keystate[(uint32)key];
->>>>>>> 1776432f... 4.3
+		return _keystate[static_cast<uint32_t>(key)];
 	}
 	SimplifiedInput MapPointingDeviceButtonToSimpleInput(int buttonIdx)
 	{
@@ -1385,22 +898,10 @@ private:
 
 }
 using pvr::platform::Shell;
-<<<<<<< HEAD
-/*!****************************************************************************************************************
-\brief         ---IMPLEMENT THIS FUNCTION IN YOUR MAIN CODE FILE TO POWER YOUR APPLICATION---
-\description   You must return an std::auto_ptr to pvr::Shell, that will be wrapping a pointer to an instance of
-               your Application class. The implementation is usually trivial.
-\returns       The implementation of this function is typically a single, simple line:
-               return std::auto_ptr<pvr::Shell>(new MyApplicationClass());
-******************************************************************************************************************/
-=======
 /// <summary>---IMPLEMENT THIS FUNCTION IN YOUR MAIN CODE FILE TO POWER YOUR APPLICATION---</summary>
 /// <returns>The implementation of this function is typically a single, simple line: return
-/// std::auto_ptr<pvr::Shell>(new MyApplicationClass());</returns>
-/// <remarks>You must return an std::auto_ptr to pvr::Shell, that will be wrapping a pointer to an instance of
+/// std::unique_ptr<pvr::Shell>(new MyApplicationClass());</returns>
+/// <remarks>You must return an std::unique_ptr to pvr::Shell, that will be wrapping a pointer to an instance of
 /// your Application class. The implementation is usually trivial.</remarks>
->>>>>>> 1776432f... 4.3
-std::auto_ptr<pvr::Shell> newDemo();
-
-#include "PVRShell/PVRShellDllImpls.h"
+std::unique_ptr<pvr::Shell> newDemo();
 }

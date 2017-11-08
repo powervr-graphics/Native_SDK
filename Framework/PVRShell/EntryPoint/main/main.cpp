@@ -8,6 +8,11 @@
 #include "PVRShell/StateMachine.h"
 #include "PVRShell/CommandLine.h"
 
+/// <summary>The entry point for "typical" operating systems (e.g. linux based).
+/// Follows C/C++ standards.
+/// <param name="argc">The number of command line arguments passed + 1</param>
+/// <param name="argv">0: The executable name  1+:The command line arguments</param>
+/// <returns>0 on no error, otherwise 1</returns>
 int main(int argc, char** argv)
 {
 	pvr::platform::CommandLineParser commandLine;

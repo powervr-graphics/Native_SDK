@@ -12,28 +12,17 @@ namespace pvr {
 namespace assets {
 class Model;
 
-<<<<<<< HEAD
-/*!*********************************************************************************************************************
-\brief    This class creates pvr::assets::Model object from Streams of POD Model data. Use the readAsset method to
-         create Model objects from the data in your stream.
-***********************************************************************************************************************/
-=======
 /// <summary>This class creates pvr::assets::Model object from Streams of POD Model data. Use the readAsset method
 /// to create Model objects from the data in your stream.</summary>
->>>>>>> 1776432f... 4.3
 class PODReader : public AssetReader<Model>
 {
 public:
 	/// <summary>Construct empty reader.</summary>
 	PODReader();
-<<<<<<< HEAD
-	/*!******************************************************************************************************************
-	\brief    Construct reader from the specified stream.
-	********************************************************************************************************************/
-=======
+
 	/// <summary>Construct reader from the specified stream.</summary>
->>>>>>> 1776432f... 4.3
-	PODReader(Stream::ptr_type assetStream) : AssetReader<Model>(assetStream) { }
+	/// <param name="assetStream">The stream to read from</param>
+	PODReader(Stream::ptr_type assetStream) : AssetReader<Model>(std::move(assetStream)) { }
 
 	/// <summary>Check if there more assets in the stream.</summary>
 	/// <returns>True if the readAsset() method can be called again to read another asset</returns>
@@ -44,6 +33,7 @@ public:
 	virtual bool canHaveMultipleAssets();
 
 	/// <summary>Check if this reader supports the particular assetStream.</summary>
+	/// <param name="assetStream">The stream to check</param>
 	/// <returns>True if this reader supports the particular assetStream</returns>
 	virtual bool isSupportedFile(Stream& assetStream);
 
@@ -52,10 +42,6 @@ public:
 	virtual std::vector<std::string> getSupportedFileExtensions();
 private:
 	bool readNextAsset(Model& asset);
-<<<<<<< HEAD
-	static Result getInformation(Stream& stream, std::string* history, std::string* options);
-=======
->>>>>>> 1776432f... 4.3
 
 	bool _modelsToLoad;
 };

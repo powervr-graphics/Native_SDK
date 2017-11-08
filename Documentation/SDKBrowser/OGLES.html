@@ -46,9 +46,7 @@
 	</div>
 
 <!--API_TAB-->
-<div id="SubNavContainer"><nav><div class="subnavlink"><a href="./OGLES.html">OpenGL ES 2.0, 3.x</a></div>
-<div class="subnavlink"><a href="./Vulkan.html">Vulkan 1.0</a></div>
-</nav></div>
+
     <div class="content">
         <div id="Section" class="section">
 <!--API_DESCRIPTION-->
@@ -60,7 +58,7 @@ OpenGL ES is a cross-platform API for 2D and 3D graphics on embedded systems suc
 <p>The descriptions below specify the minimum API version the demo has been written for. When more than one version are listed, there is differentiated code for each of them. For example, OpenGL ES 2.0/3.0 will have two different versions, one of them will make use of OpenGL ES 3.0 specific features.</p>
 </p>
 </OGLES>
-		<p><a href="#Beginner" class="link">Beginner</a>  |  <a href="#Intermediate" class="link">Intermediate</a>  |  <a href="#Advanced" class="link">Advanced</a></p>
+		<p><a href="#Beginner" class="link">Beginner</a>  |  <a href="#Intermediate" class="link">Intermediate</a>  |  <a href="#Advanced" class="link">Advanced</a>|  <a href="#Advanced" class="link">Navigation</a></p>
 <!--EXAMPLE_TEMPLATE-->
 <div id="Beginner""><h2>Beginner</h2><ul class="accordion">
 				<li id="HelloAPI">
@@ -68,13 +66,13 @@ OpenGL ES is a cross-platform API for 2D and 3D graphics on embedded systems suc
 						<a href="../../Examples/Beginner/01_HelloAPI/HelloAPI.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/01_HelloAPI/HelloAPI.png" alt="HelloAPI" /></a>
 						<input type="checkbox" id="HelloAPIFull2">
 							<label for="HelloAPIFull2" title="Click for more information"><h3>HelloAPI</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>Draw a triangle to the screen using hardware acceleration.
-</p><small><b>Vulkan 1.0, OpenGL ES 2.0
+							<div class="ShortDescription" id="TexturingShort"><p>Draw a basic triangle to the screen.
+</p><small><b>Vulkan, OpenGL ES 2.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>A basic tutorial that guides the user, step-by-step, through the process of initializing a window using the "raw" API, (Vulkan or OpenGL ES 2), drawing a triangle with a simple shader, and then terminating the window.
+								<p>A basic tutorial that guides the user, step-by-step, through the process of initializing a window using the "raw" API, (Vulkan or OpenGL ES 2), drawing a triangle with a simple shader, and then terminating the window (depending on the platform, either after a few seconds, or when the user closes the window).
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
@@ -90,12 +88,12 @@ OpenGL ES is a cross-platform API for 2D and 3D graphics on embedded systems suc
 						<input type="checkbox" id="IntroducingPVRShellFull2">
 							<label for="IntroducingPVRShellFull2" title="Click for more information"><h3>IntroducingPVRShell</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>This training course introduces the PVRShell library.
-</p><small><b>Vulkan 1.0, OpenGL ES 2.0
+</p><small><b>Vulkan, OpenGL ES 2.0+
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This demo deals with the PVRShell library.  The PowerVR shell handles all OS specific initialisation code, and has several built in command line features which allow for the specifying of attributes. When using the PVR Shell, the application uses the class 'pvr::Shell' as its base class, and is constructed and returned from a 'pvr::newDemo' function.
+								<p>This demo shows basic use of the PVRShell library.  The PowerVR Shell handles all OS specific initialisation code, and has several built in command line features which allow for the specifying of attributes such as window width/height, quitting after a number of frames, taking screenshots and others. When using the PVR Shell, the application uses the class 'pvr::Shell' as its base class, and is constructed and returned from a 'pvr::newDemo' function.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
@@ -105,133 +103,135 @@ OpenGL ES is a cross-platform API for 2D and 3D graphics on embedded systems suc
 						</input>
 					</div>
 				</li>
-				<li id="IntroducingPVRAssets">
+				<li id="IntroducingPVRUtils">
 					<div class="title">
-						<a href="../../Examples/Beginner/03_IntroducingPVRAssets/IntroducingPVRAssets.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/03_IntroducingPVRAssets/IntroducingPVRAssets.png" alt="IntroducingPVRAssets" /></a>
-						<input type="checkbox" id="IntroducingPVRAssetsFull2">
-							<label for="IntroducingPVRAssetsFull2" title="Click for more information"><h3>IntroducingPVRAssets</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>Load a scene in POD format using the PVRAssets library, and render it using native API calls.
-</p><small><b>Vulkan 1.0, OpenGL ES 2.0
+						<a href="../../Examples/Beginner/03_IntroducingPVRUtils/IntroducingPVRUtils.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/03_IntroducingPVRUtils/IntroducingPVRUtils.png" alt="IntroducingPVRUtils" /></a>
+						<input type="checkbox" id="IntroducingPVRUtilsFull2">
+							<label for="IntroducingPVRUtilsFull2" title="Click for more information"><h3>IntroducingPVRUtils</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>Render a .pod scene using a a simple vertex and fragment shader making use of the PVRUtils library for various utility functions.
+</p><small><b>Vulkan, OpenGL ES 2.0+
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This training course introduces the PowerVR Framework PVRAssets library, and shows how to use it to read a PowerVR Object Data (.pod) file and textures.  It goes into detail on how to open .pod files, .pvr files that have been referenced by it, and set up the cameras and lights from the .pod file. This demo also demonstrates the use of PVRNativeApi (either Vulkan or OpenGL ES), which is the API binding used in the native parts of this this SDK.
+								<p>This training course demonstrates how to make the most of the PVRUtils library for handling various api agnostic utility functions such as loading shaders and creating buffers. Various api specific utility functions are also provided such as the OGLES specific EGL context creation and Vulkan swapchain and instance creation helper. The PVRUtils library is also used to display simple text on screen.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
 								<p><strong>Links:</strong></p>
-								<p class="source"><a href="../../Examples/Beginner/03_IntroducingPVRAssets/OGLES/OGLESIntroducingPVRAssets.cpp" target="_blank">OGLESIntroducingPVRAssets.cpp</a>  |  <a href="../../Examples/Beginner/03_IntroducingPVRAssets/OGLES/Build/" target="_blank">Projects</a></p>
-							</div>
-						</input>
-					</div>
-				</li>
-				<li id="IntroducingPVRApi">
-					<div class="title">
-						<a href="../../Examples/Beginner/04_IntroducingPVRApi/IntroducingPVRApi.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/04_IntroducingPVRApi/IntroducingPVRApi.png" alt="IntroducingPVRApi" /></a>
-						<input type="checkbox" id="IntroducingPVRApiFull2">
-							<label for="IntroducingPVRApiFull2" title="Click for more information"><h3>IntroducingPVRApi</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>Render a .pod scene using a .pfx effect file with automatic shader versioning using the PVRApi library.
-</p><small><b>Vulkan 1.0, OpenGL ES 2.0/3.0
-</small></b></div>
-							<br>
-							<div class="FullDescription" id="TexturingFull">
-								<p><strong>Description:</strong></p>
-								<p>This training course demonstrates how to use the PVRApi library to render a scene from a pod file, using a .pfx effect file. PFX is both a file format and an API, and stands for PowerVR Effects. The library loads the POD file and the PFX file separately, creates a PVRAssets Model from the POD and a PVRApi Effect from the PFX file, and combines them to render the scene using the PVRApi necessary objects. Uses the PVREngineUtils library to display simple text on screen. Provided for Vulkan (with SpirV shaders) and OpenGL ES(version 2.x and 3.x shaders).
-</p>
-								<p><strong>Controls:</strong></p>
-								<p><p>	Quit	:	Close the application</p></p>
-								<p><strong>Links:</strong></p>
-								<p class="source"><a href="../../Examples/Beginner/04_IntroducingPVRApi/OGLES/OGLESIntroducingPVRApi.cpp" target="_blank">OGLESIntroducingPVRApi.cpp</a>  |  <a href="../../Examples/Beginner/04_IntroducingPVRApi/OGLES/Build/" target="_blank">Projects</a></p>
+								<p class="source"><a href="../../Examples/Beginner/03_IntroducingPVRUtils/OGLES/OGLESIntroducingPVRUtils.cpp" target="_blank">OGLESIntroducingPVRUtils.cpp</a>  |  <a href="../../Examples/Beginner/03_IntroducingPVRUtils/OGLES/Build/" target="_blank">Projects</a></p>
 							</div>
 						</input>
 					</div>
 				</li>
 				<li id="IntroducingUIRenderer">
 					<div class="title">
-						<a href="../../Examples/Beginner/05_IntroducingUIRenderer/IntroducingUIRenderer.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/05_IntroducingUIRenderer/IntroducingUIRenderer.png" alt="IntroducingUIRenderer" /></a>
+						<a href="../../Examples/Beginner/04_IntroducingUIRenderer/IntroducingUIRenderer.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/04_IntroducingUIRenderer/IntroducingUIRenderer.png" alt="IntroducingUIRenderer" /></a>
 						<input type="checkbox" id="IntroducingUIRendererFull2">
 							<label for="IntroducingUIRendererFull2" title="Click for more information"><h3>IntroducingUIRenderer</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>This training course introduces the PVREngineUtils library to do advanced Text tasks.
-</p><small><b>Vulkan 1.0, OpenGL ES 2.0
+							<div class="ShortDescription" id="TexturingShort"><p>This example introduces the UIRenderer from the PVRUtils library to do advanced Text tasks.
+</p><small><b>Vulkan, OpenGL ES 2.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This training course introduces the PVREngineUtils framework library.The user can create "Sprites" (2D elements) which can be grouped in 2D and/or 3D groups to be displayed as UI's or world text. 2D transformations (pixel and/or NDC coordinates) both single and in a group, anchoring on different parts of the screen or the group and 3D transformations of groups of sprites are all possible.
+								<p>The UIRenderer allows the user to create "Sprites" (2D elements) which can be grouped in 2D and/or 3D groups to be displayed
+as UI's or world text. 2D transformations (pixel and/or NDC coordinates) both single and in a group, anchoring on different 
+parts of the screen or the group and 3D transformations of groups of sprites are all possible.
 In this example, UIRendererer is used to display images and Unicode text, screen aligned and with 3D transformations. 
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
 								<p><strong>Links:</strong></p>
-								<p class="source"><a href="../../Examples/Beginner/05_IntroducingUIRenderer/OGLES/OGLESIntroducingUIRenderer.cpp" target="_blank">OGLESIntroducingUIRenderer.cpp</a>  |  <a href="../../Examples/Beginner/05_IntroducingUIRenderer/OGLES/Build/" target="_blank">Projects</a></p>
+								<p class="source"><a href="../../Examples/Beginner/04_IntroducingUIRenderer/OGLES/OGLESIntroducingUIRenderer.cpp" target="_blank">OGLESIntroducingUIRenderer.cpp</a>  |  <a href="../../Examples/Beginner/04_IntroducingUIRenderer/OGLES/Build/" target="_blank">Projects</a></p>
 							</div>
 						</input>
 					</div>
 				</li>
 				<li id="IntroducingPVRCamera">
 					<div class="title">
-						<a href="../../Examples/Beginner/06_IntroducingPVRCamera/IntroducingPVRCamera.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/06_IntroducingPVRCamera/IntroducingPVRCamera.png" alt="IntroducingPVRCamera" /></a>
+						<a href="../../Examples/Beginner/05_IntroducingPVRCamera/IntroducingPVRCamera.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Beginner/05_IntroducingPVRCamera/IntroducingPVRCamera.png" alt="IntroducingPVRCamera" /></a>
 						<input type="checkbox" id="IntroducingPVRCameraFull2">
 							<label for="IntroducingPVRCameraFull2" title="Click for more information"><h3>IntroducingPVRCamera</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>Use the PVRCamera library to get the hardware camera of a device, and apply a simple color inversion shader to it.
-</p><small><b>OpenGL ES 2.0
+</p><small><b>OpenGL ES 2.0+
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>The PVRCamera library gives a very simple, unified API to access the video feed of an iOS or Android device as a PVRApi (or OpenGL ES) texture. This demo displays this texture on the screen using a very simple shader that inverts the colours.
-Note: On android N, the Camera permission must be given to the application.
+								<p>The PVRCamera library gives a very simple, unified API to access the video feed of an iOS or Android device as an OpenGL ES texture. This demo displays this texture on the screen using a very simple shader that inverts the colours.
+Note: On desctop platforms, the camera interface returns a dummy static texture to facilitate development. On android N, the Camera permission must be given to the application.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
 								<p><strong>Links:</strong></p>
-								<p class="source"><a href="../../Examples/Beginner/06_IntroducingPVRCamera/OGLES/OGLESIntroducingPVRCamera.cpp" target="_blank">OGLESIntroducingPVRCamera.cpp</a>  |  <a href="../../Examples/Beginner/06_IntroducingPVRCamera/OGLES/Build/" target="_blank">Projects</a></p>
+								<p class="source"><a href="../../Examples/Beginner/05_IntroducingPVRCamera/OGLES/OGLESIntroducingPVRCamera.cpp" target="_blank">OGLESIntroducingPVRCamera.cpp</a>  |  <a href="../../Examples/Beginner/05_IntroducingPVRCamera/OGLES/Build/" target="_blank">Projects</a></p>
 							</div>
 						</input>
 					</div>
 				</li></div></ul><div id="Intermediate""><h2>Intermediate</h2><ul class="accordion">
-				<li id="Bumpmap">
+				<li id="GaussianBlur">
 					<div class="title">
-						<a href="../../Examples/Intermediate/Bumpmap/Bumpmap.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/Bumpmap/Bumpmap.png" alt="Bumpmap" /></a>
-						<input type="checkbox" id="BumpmapFull2">
-							<label for="BumpmapFull2" title="Click for more information"><h3>Bumpmap</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>This training course demonstrates using a normal map to implement bump mapping using the PowerVR Framework.
-</p><small><b>Vulkan 1.0, OpenGL ES 2.0
+						<a href="../../Examples/Intermediate/GaussianBlur/GaussianBlur.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/GaussianBlur/GaussianBlur.png" alt="GaussianBlur" /></a>
+						<input type="checkbox" id="GaussianBlurFull2">
+							<label for="GaussianBlurFull2" title="Click for more information"><h3>GaussianBlur</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>Shows how to perform a extremely wide, highly optimized Gaussian Blur using Compute shaders.
+</p><small><b>Vulkan, OpenGL ES 3.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>Bump mapping is a technique for simulating bumps and wrinkles on the surface of an object. This is achieved by perturbing the surface normals of the object and using the perturbed normal during the illumination calculations. The result is an apparently bumpy surface rather than a perfectly smooth surface although the surface of the underlying object is not actually changed. This technique is used extensively in graphics applications to add perceived detail to models without adding further geometry.
-This example can be used as the baseline for rendering an object. Implemented for Vulkan and OpenGL ES 2.0/3.0.
+								<p>This training course demonstrates how to perform a 19x19 Gaussian Blur leveraging every input and output step
+to blur an image by reading from an input using compute while blurring in one direction, and then writing to 
+the output with a Fragment shader while blurring in the other direction.
+This technique used has been highly optimized for PowerVR and is highly suitable for very large convolution width.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
 								<p><strong>Links:</strong></p>
-								<p class="source"><a href="../../Examples/Intermediate/Bumpmap/OGLES/OGLESBumpmap.cpp" target="_blank">OGLESBumpmap.cpp</a>  |  <a href="../../Examples/Intermediate/Bumpmap/OGLES/Build/" target="_blank">Projects</a></p>
+								<p class="source"><a href="../../Examples/Intermediate/GaussianBlur/OGLES/OGLESGaussianBlur.cpp" target="_blank">OGLESGaussianBlur.cpp</a>  |  <a href="../../Examples/Intermediate/GaussianBlur/OGLES/Build/" target="_blank">Projects</a></p>
 							</div>
 						</input>
 					</div>
 				</li>
-				<li id="Multithreading">
+				<li id="IMGFramebufferDownsample">
 					<div class="title">
-						<a href="../../Examples/Intermediate/Multithreading/Multithreading.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/Multithreading/Multithreading.png" alt="Multithreading" /></a>
-						<input type="checkbox" id="MultithreadingFull2">
-							<label for="MultithreadingFull2" title="Click for more information"><h3>Multithreading</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>This training course demonstrates using the PowerVR Framework to stream assets asynchronously into an application
-</p><small><b>Vulkan 1.0, OpenGL ES 2.0
+						<a href="../../Examples/Intermediate/IMGFramebufferDownsample/IMGFramebufferDownsample.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/IMGFramebufferDownsample/IMGFramebufferDownsample.png" alt="IMGFramebufferDownsample" /></a>
+						<input type="checkbox" id="IMGFramebufferDownsampleFull2">
+							<label for="IMGFramebufferDownsampleFull2" title="Click for more information"><h3>IMGFramebufferDownsample</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>Demonstrates the power of the extension GL_IMG_framebuffer_downsample which enables automatic downsampling of textures.
+</p><small><b>OpenGL ES 2.0+
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This training course will display a loading screen while assets are being loaded in, and then 
-switch to displaying the bust from the BumpMap demo.
-Implemented for Vulkan and OpenGL ES 2.0/3.0.
+								<p>Demonstrates the advantages of using the extension GL_IMG_framebuffer_downsample. A triangle is first rendered to a special FBO with a texture of half size set as a downsampled texture using glFramebufferTexture2DDownsampleIMG and a full size texture set as normal. The application then renders to both the full size texture and half size texture and the GPU automatically downsamples the color attachment render. The left hand side of the rendered image has been sampled from the full size texture while the right hand side samples from the half size texture. This extension can be tremendously useful for various post processing techniques where it is desirable to generate downsamples images efficiently.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
 								<p><strong>Links:</strong></p>
-								<p class="source"><a href="../../Examples/Intermediate/Multithreading/OGLES/OGLESMultithreading.cpp" target="_blank">OGLESMultithreading.cpp</a>  |  <a href="../../Examples/Intermediate/Multithreading/OGLES/Build/" target="_blank">Projects</a></p>
+								<p class="source"><a href="../../Examples/Intermediate/IMGFramebufferDownsample/OGLES/OGLESIMGFramebufferDownsample.cpp" target="_blank">OGLESIMGFramebufferDownsample.cpp</a>  |  <a href="../../Examples/Intermediate/IMGFramebufferDownsample/OGLES/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="IMGTextureFilterCubic">
+					<div class="title">
+						<a href="../../Examples/Intermediate/IMGTextureFilterCubic/IMGTextureFilterCubic.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/IMGTextureFilterCubic/IMGTextureFilterCubic.png" alt="IMGTextureFilterCubic" /></a>
+						<input type="checkbox" id="IMGTextureFilterCubicFull2">
+							<label for="IMGTextureFilterCubicFull2" title="Click for more information"><h3>IMGTextureFilterCubic</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>Demonstrate the advantages of using the extension for cubic texture filtering
+</p><small><b>OpenGL ES 2.0+
+</small></b></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p>Demonstrates the advantages of using cubic texture filtering using the extension GL_IMG_texture_filter_cubic. The left side of the image is rendered using traditional bilinear texture filtering with mipmapping and then right side of the image is rendered using cubic texture filtering.
+</p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Quit	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/IMGTextureFilterCubic/OGLES/OGLESIMGTextureFilterCubic.cpp" target="_blank">OGLESIMGTextureFilterCubic.cpp</a>  |  <a href="../../Examples/Intermediate/IMGTextureFilterCubic/OGLES/Build/" target="_blank">Projects</a></p>
 							</div>
 						</input>
 					</div>
@@ -241,18 +241,41 @@ Implemented for Vulkan and OpenGL ES 2.0/3.0.
 						<a href="../../Examples/Intermediate/MultiviewVR/MultiviewVR.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/MultiviewVR/MultiviewVR.png" alt="MultiviewVR" /></a>
 						<input type="checkbox" id="MultiviewVRFull2">
 							<label for="MultiviewVRFull2" title="Click for more information"><h3>MultiviewVR</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>Load a scene in POD format using the PVRAssets library, and render it using OVR_multi_view extension.
-</p><small><b>ES 3.0
+							<div class="ShortDescription" id="TexturingShort"><p>Render a scene stereoscopically intended for VR hardware it using the GL_OVR_multiview extension.
+</p><small><b>OpenGL ES 3.0+
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This training course introduces the OVR_multi_view extension, and shows how to use the extension to render the scene from two different eye locations. 
+								<p>This training course introduces the GL_OVR_multiview extension, and shows how to use the extension to render the scene from two different eye locations.
+Additionally, two sets of FBOs are being used (one low and one high resolution), with the intent of rendering the center of the screen in high res, and
+the edges of the screen (which will be distorted by the VR lenses anyway) in lower resolution. The end result is a split screen suitable for VR.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close the application</p></p>
 								<p><strong>Links:</strong></p>
 								<p class="source"><a href="../../Examples/Intermediate/MultiviewVR/OGLES/OGLESMultiviewVR.cpp" target="_blank">OGLESMultiviewVR.cpp</a>  |  <a href="../../Examples/Intermediate/MultiviewVR/OGLES/Build/" target="_blank">Projects</a></p>
+							</div>
+						</input>
+					</div>
+				</li>
+				<li id="OpenCLExample">
+					<div class="title">
+						<a href="../../Examples/Intermediate/OpenCLExample/OpenCLExample.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Intermediate/OpenCLExample/OpenCLExample.png" alt="OpenCLExample" /></a>
+						<input type="checkbox" id="OpenCLExampleFull2">
+							<label for="OpenCLExampleFull2" title="Click for more information"><h3>OpenCLExample</h3></label>
+							<div class="ShortDescription" id="TexturingShort"><p>This training course demonstrates using small image convolution OpenCL kernels.
+</p><small><b>OpenGL ES 2.0+ with OpenCL
+</small></b></div>
+							<br>
+							<div class="FullDescription" id="TexturingFull">
+								<p><strong>Description:</strong></p>
+								<p>This training course shows how to structure an application with OpenCL / OpenGL interoperability or, if necessary, CPU fallback for it, to process images on the GPU using OpenCL. Several 3x3 convolution filters are shown (Gaussian Blur, erode/dilate, edge detection, emboss).
+</p>
+								<p><strong>Controls:</strong></p>
+								<p><p>	Left/Right	:	Change the convolution filter</p><p>	Quit	:	Close the application</p></p>
+								<p><strong>Links:</strong></p>
+								<p class="source"><a href="../../Examples/Intermediate/OpenCLExample/OGLES/OGLESOpenCLExample.cpp" target="_blank">OGLESOpenCLExample.cpp</a>  |  <a href="../../Examples/Intermediate/OpenCLExample/OGLES/Build/" target="_blank">Projects</a></p>
 							</div>
 						</input>
 					</div>
@@ -263,12 +286,14 @@ Implemented for Vulkan and OpenGL ES 2.0/3.0.
 						<input type="checkbox" id="PostProcessingFull2">
 							<label for="PostProcessingFull2" title="Click for more information"><h3>PostProcessing</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>This training course demonstrates a simple implementation of a 'bloom' post processing effect.
-</p><small><b>OpenGL ES 2.0
+</p><small><b>Vulkan , OpenGL ES 2.0+
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This training course demonstrates a simple implementation of a 'bloom' post processing effect, using multiple PVRApi Render Passes to apply the postprocessing. The bright parts of the picture are extracted in lower resolution in a post processing step, blurred and then added over the final image to create a glow around the object's borders.
+								<p>This training course demonstrates a simple implementation of a 'bloom' post processing effect, using Render Passes (Vulkan)/ Render To Texture (OpenGL ES)
+to render an intermediate scene and use it for postprocessing. The bright parts of the picture are extracted in lower resolution in a post processing step,
+blurred and then added over the final image to create a glow around the object's borders.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Left/Right	:	Change the rendering mode (Object with bloom, object w/o bloom, bloom textures)</p><p>	Up/Down	:	Increase/Decrease bloom intensity</p><p>	Any Action	:	Pause</p><p>	Quit	:	Close the application</p></p>
@@ -283,64 +308,21 @@ Implemented for Vulkan and OpenGL ES 2.0/3.0.
 						<a href="../../Examples/Advanced/DeferredShading/DeferredShading.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/DeferredShading/DeferredShading.png" alt="DeferredShading" /></a>
 						<input type="checkbox" id="DeferredShadingFull2">
 							<label for="DeferredShadingFull2" title="Click for more information"><h3>DeferredShading</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>Demonstrates deferred shading using Pixel Local Storage (PLS), or Multiple Render Targets(MRT).
-</p><small><b>OpenGL ES 3.0
+							<div class="ShortDescription" id="TexturingShort"><p>Demonstrates optimal deferred shading using Pixel Local Storage (PLS), or Subpasses with Transient Attachments (Vulkan)
+</p><small><b>Vulkan, OpenGL ES 3.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>Traditional rendering algorithms submit geometry and immediately apply shading effects to the rasterized primitives. Complex shading effects may require multiple render passes to produce the final pixel color, with the geometry submitted every pass. Deferred shading is an alternative rendering technique that submits the scene geometry once, storing per-pixel attributes into local video memory to be used in the subsequent rendering passes. 
+								<p>Traditional rendering algorithms submit geometry and immediately apply shading effects to the rasterized primitives. Complex shading effects may require multiple draw calls (one per object per light) or render passes to produce the final pixel color, with the geometry submitted every pass. Deferred shading is an alternative rendering technique that submits the scene geometry once, storing per-pixel attributes into local video memory to be used in the subsequent rendering passes. 
 In these later passes, light volume primitives are rendered, and the per-pixel attributes contained in the buffer are retrieved at a 1:1 mapping ratio so that each pixel is shaded individually.
-In the PowerVR architecture, the user can use fast on-chip memory instead of Multiple Render Targets, by utilising the Pixel Local Storage extension.
-If running from a command line, add -forcemrt to force Multiple Render Targets rendering.
-Requires at least OpenGL ES 3.0 capability for either MRT or PLS. Requires the extension GL_EXT_shader_pixel_local_storage for PLS.
+In the PowerVR architecture, the user can use fast on-chip memory instead of the render target, by utilising the Pixel Local Storage OpenGL ES extension, or correctly defining Subpasses for those operations.
+Requires the extension GL_EXT_shader_pixel_local_storage for PLS.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Action1	:	Pause</p><p>	Action2	:	Orbit camera</p><p>	Quit	:	Close the application</p></p>
 								<p><strong>Links:</strong></p>
 								<p class="source"><a href="../../Examples/Advanced/DeferredShading/OGLES/OGLESDeferredShading.cpp" target="_blank">OGLESDeferredShading.cpp</a>  |  <a href="../../Examples/Advanced/DeferredShading/OGLES/Build/" target="_blank">Projects</a></p>
-							</div>
-						</input>
-					</div>
-				</li>
-				<li id="ExampleUI">
-					<div class="title">
-						<a href="../../Examples/Advanced/ExampleUI/ExampleUI.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/ExampleUI/ExampleUI.png" alt="ExampleUI" /></a>
-						<input type="checkbox" id="ExampleUIFull2">
-							<label for="ExampleUIFull2" title="Click for more information"><h3>ExampleUI</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>Use the PVREngineUtils to efficiently render sprites to form a comples User Interface.
-</p><small><b>OpenGL ES 2.0, OpenGL ES 3.0
-</small></b></div>
-							<br>
-							<div class="FullDescription" id="TexturingFull">
-								<p><strong>Description:</strong></p>
-								<p>Rendering graphical user interfaces can quickly become overly complex. The PVREngineUtils can assist in rendering a lot of sprites with different complicated transformations, while remaining crisp and responsive. Usability and performance optimizations can both be foun in this example, such as UIRenderer transformation groups and texture atlases. Shaders available for OpenGL ES 2.x and 3.x.
-</p>
-								<p><strong>Controls:</strong></p>
-								<p><p>	Left/Right	:	Change UI Page</p><p>	Quit	:	Close the application</p></p>
-								<p><strong>Links:</strong></p>
-								<p class="source"><a href="../../Examples/Advanced/ExampleUI/OGLES/OGLESExampleUI.cpp" target="_blank">OGLESExampleUI.cpp</a>  |  <a href="../../Examples/Advanced/ExampleUI/OGLES/Build/" target="_blank">Projects</a></p>
-							</div>
-						</input>
-					</div>
-				</li>
-				<li id="Glass">
-					<div class="title">
-						<a href="../../Examples/Advanced/Glass/Glass.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../Examples/Advanced/Glass/Glass.png" alt="Glass" /></a>
-						<input type="checkbox" id="GlassFull2">
-							<label for="GlassFull2" title="Click for more information"><h3>Glass</h3></label>
-							<div class="ShortDescription" id="TexturingShort"><p>Demonstrates dynamic reflection and refraction using a dual paraboloid environment map.
-</p><small><b>OpenGL ES 2.0/3.0
-</small></b></div>
-							<br>
-							<div class="FullDescription" id="TexturingFull">
-								<p><strong>Description:</strong></p>
-								<p>This example shows a technique to maintain a dynamic environment map by rendering both hemispheres of the scene to two halves of a single rectangular texture. In addition, this also demonstrates rendering skyboxes with a full screen quad, reflection and refraction with chromatic dispersion. Shaders available for OpenGL ES 2.x and 3.x.
-</p>
-								<p><strong>Controls:</strong></p>
-								<p><p>	Quit	:	Close the application</p><p>	Left/Right : Change the effect between combinations of Reflection and Refraction/Chromatic Dispersion</p><p>	Up/Down	:	Look up or down.</p></p>
-								<p><strong>Links:</strong></p>
-								<p class="source"><a href="../../Examples/Advanced/Glass/OGLES/OGLESGlass.cpp" target="_blank">OGLESGlass.cpp</a>  |  <a href="../../Examples/Advanced/Glass/OGLES/Build/" target="_blank">Projects</a></p>
 							</div>
 						</input>
 					</div>
@@ -351,12 +333,12 @@ Requires at least OpenGL ES 3.0 capability for either MRT or PLS. Requires the e
 						<input type="checkbox" id="PVRScopeExampleFull2">
 							<label for="PVRScopeExampleFull2" title="Click for more information"><h3>PVRScopeExample</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>Demonstrates the use of PVRScope and the example graphing code.
-</p><small><b>OpenGL ES 2.0, OpenGL ES 3.0
+</p><small><b>OpenGL ES 2.0+
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This demo uses a simple PBR-style shader and shows the use of PVRScope that allows an application to return performance statistics from the GPU in real time. It uses the example graphing code to render a graph of the selected counters on the screen. For further details, refer to the PVRScope User Manual. 
+								<p>This demo uses a simple PBR-style shader and shows the use of PVRScope to allow an application to return performance statistics from the GPU in real time. It uses the example graphing code to render a graph of the selected counters on the screen. For further details, refer to the PVRScope User Manual. 
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close demo</p><p>	Up/Down	:	Select a counter from the available list of HW counters</p><p>	Action1	:	Add/remove selected counter to the graph</p></p>
@@ -372,12 +354,13 @@ Requires at least OpenGL ES 3.0 capability for either MRT or PLS. Requires the e
 						<input type="checkbox" id="PVRScopeRemoteFull2">
 							<label for="PVRScopeRemoteFull2" title="Click for more information"><h3>PVRScopeRemote</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>Demonstrates the use of PVRScope's remote communication features.
-</p><small><b>OpenGL ES 2.0, OpenGL ES 3.0
+</p><small><b>OpenGL ES 2.0+
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>This example shows how to use the editable data and custom mark functionality of PVRScope. PVRTune must be running and connected to an instance of PVRPerfServer running on the target device for this demo to function. You can then edit from the PVRTune GUI any variables that the application has exposed, in this case the shaders and material properties of the statue displayed.
+								<p>This example shows how to use the editable data and custom mark functionality of PVRScope. PVRTune must be running and connected to an instance of PVRPerfServer running on the target device for this demo to function. 
+A simple Physically Based shader is provided with properties of Albedo, Metallicity and Glossines, all of which - together with the shaders - can be edited from the PVRTune GUI immediately modifying the appearance of the statue.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close demo</p><p>	PVRTune	:	Control demo variables through PVRTune</p></p>
@@ -393,13 +376,13 @@ Requires at least OpenGL ES 3.0 capability for either MRT or PLS. Requires the e
 						<input type="checkbox" id="ParticleSystemFull2">
 							<label for="ParticleSystemFull2" title="Click for more information"><h3>ParticleSystem</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>Shows how to implement a simple particle system using GPGPU.
-</p><small><b>OpenGL ES 3.1
+</p><small><b>Vulkan, OpenGL ES 3.1
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
-								<p>The demo utilises GPGPU (GPU Compute) to implement a particle system, which advanced and then rendered every frame, without any CPU editing of the data. Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques. Furthermore, it also highlights the interaction between the Compute and the Rendering part of a simulation.
-Requires OpenGL ES 3.1 capable platform.
+								<p>The demo utilises GPGPU (GPU Compute) to implement a particle system, a simple integration-based simulation which is advanced and then rendered every frame strictly on the GPU, without any CPU access of that data. Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques. Furthermore, it also highlights the interaction between the Compute and the Rendering part of a simulation.
+Requires OpenGL ES 3.1 or Vulkan capable platform.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Quit	:	Close demo</p><p> 	Left/Right	:	Decrease/increase number of particles</p><p>	Up/Down	:	Switch between GPU Compute and CPU Particle System implementation.</p></p>
@@ -415,15 +398,13 @@ Requires OpenGL ES 3.1 capable platform.
 						<input type="checkbox" id="SkinningFull2">
 							<label for="SkinningFull2" title="Click for more information"><h3>Skinning</h3></label>
 							<div class="ShortDescription" id="TexturingShort"><p>This demo shows a scene with a combination of a skinned, bumpmapped character with non-skinned, non-bumpmapped objects.
-</p><small><b>Vulkan 1.0, OpenGL ES 2.0/3.0
+</p><small><b>Vulkan, OpenGL ES 3.0
 </small></b></div>
 							<br>
 							<div class="FullDescription" id="TexturingFull">
 								<p><strong>Description:</strong></p>
 								<p>The Skinning demo shows a Skinned Character in combination with bump mapping. Skinning is the act of animating a vertex over time given a set (palette) of matrices and a known set of blend weights assigned to those matrices. For each frame the Matrix Palette is recomputed based on time. PVRAssets and POD files support skinning. either full transformation Matrices, or Quaternion rotation with Scaling and Translation vectors. The provided POD file contains matrix animation.
-This example is using BoneBatching, which separates the mesh in smaller matrix palettes (Bone Batches) so that they can fit in the maximum number of allowed Uniform variables.
-Up to 4 matrices  from the palette, along with 4 weights can used for each vertext by the vertex shader to update the position to obtain the current animation frame position.
-Versions provided for Vulkan, OpenGL ES 2.0 and OpenGL ES 3.0
+Up to 4 matrices  from the palette, along with 4 weights can used for each vertex by the vertex shader to update the position to obtain the current animation frame position.
 </p>
 								<p><strong>Controls:</strong></p>
 								<p><p>	Action1/2/3	:	Pause</p><p>	Esc	:	Close</p></p>

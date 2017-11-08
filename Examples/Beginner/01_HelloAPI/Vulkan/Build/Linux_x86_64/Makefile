@@ -33,6 +33,16 @@ endif
 WS_LIBS = -L$(X11ROOT)/lib -lX11 -lXau
 WS_INC  = $(X11ROOT)/include
 WS = X11
+PLAT_CPPFLAGS+=-DBUILD_XLIB
+else
+ifeq "$(WAYLANDBUILD)" "1"
+ifndef WAYLANDROOT
+$(error When building an WAYLAND BUILD you must set WAYLANDROOT to point at the location where your WAYLAND headers and libs can be found.)
+endif
+WS_LIBS = -L$(WAYLANDROOT)/lib -lwayland-client -lwayland-client -lffi
+WS_INC  = $(WAYLANDROOT)/include
+WS = Wayland
+PLAT_CPPFLAGS+=-DBUILD_WAYLAND
 else
 ifeq "$(EWSBUILD)" "1"
 PLAT_CFLAGS += -DEWS
@@ -43,6 +53,7 @@ else
 WS_LIBS =
 WS_INC  =
 WS = NullWS
+endif
 endif
 endif
 
@@ -76,22 +87,20 @@ PLAT_OBJPATH = $(DEBUG_RELEASE)$(WS)
 PLAT_LINK = $(LIBDIR_FLAGS) -m64 -ldl $(WS_LIBS) -L$(TOOLCHAIN)/lib
 
 ifeq "$(WS)" "X11"
-SRCNAME = VulkanHelloAPI_LinuxX11
+OBJECTS = $(PLAT_OBJPATH)/../../vk_getProcAddrs.o $(PLAT_OBJPATH)/../../VulkanHelloAPI.o $(PLAT_OBJPATH)/../../MainLinuxX11.o
 else
-ifeq "$(WS)" "EWS"
-SRCNAME = VulkanHelloAPI_EWS
+ifeq "$(WS)" "Wayland"
+OBJECTS = $(PLAT_OBJPATH)/../../vk_getProcAddrs.o $(PLAT_OBJPATH)/../../VulkanHelloAPI.o $(PLAT_OBJPATH)/../../MainLinuxWayland.o
 else
-SRCNAME = VulkanHelloAPI_NullWS
+OBJECTS = $(PLAT_OBJPATH)/../../vk_getProcAddrs.o $(PLAT_OBJPATH)/../../VulkanHelloAPI.o $(PLAT_OBJPATH)/../../MainLinuxNullWS.o
 endif
 endif
 
 OUTNAME = VulkanHelloAPI
 
-OBJECTS = $(PLAT_OBJPATH)/$(SRCNAME).o
-
 COMMON_INCLUDES = $(addprefix -I, $(PLAT_INC))
 
-$(PLAT_OBJPATH)/$(OUTNAME) : $(OBJECTS) 
+$(PLAT_OBJPATH)/$(OUTNAME) : $(OBJECTS)
 	mkdir -p $(PLAT_OBJPATH)
 	$(PLAT_CPP) -o $(PLAT_OBJPATH)/$(OUTNAME) $(OBJECTS) $(LINK) $(PLAT_LINK)
 

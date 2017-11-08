@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -81,6 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpvr_1_1_texture_meta_data-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -91,39 +92,239 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>The <a class="el" href="classpvr_1_1_texture_meta_data.html" title="The TextureMetaData class contains metadata of a texture. Metadata is any information that a texture ...">TextureMetaData</a> class contains metadata of a texture. Metadata is any information that a texture could be correctly loaded from file without. In most cases, metadata may still be necessary to actually USE the texture, such as winding orders, paddings, atlas information and others. 
  <a href="classpvr_1_1_texture_meta_data.html#details">More...</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:ae6062237be958135b6d9cfc9fe0fb883"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#ae6062237be958135b6d9cfc9fe0fb883">Axis</a> { <b>AxisAxisX</b> = 0, 
+<b>AxisAxisY</b> = 1, 
+<b>AxisAxisZ</b> = 2
+ }</td></tr>
+<tr class="memdesc:ae6062237be958135b6d9cfc9fe0fb883"><td class="mdescLeft">&#160;</td><td class="mdescRight">Axes, used to query orientations. <a href="classpvr_1_1_texture_meta_data.html#ae6062237be958135b6d9cfc9fe0fb883">More...</a><br/></td></tr>
+<tr class="separator:ae6062237be958135b6d9cfc9fe0fb883"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5acad07c0f0cc281a017cb56e7a92f5a"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a5acad07c0f0cc281a017cb56e7a92f5a">AxisOrientation</a> { <br/>
+&#160;&#160;<b>AxisOrientationLeft</b> = 1 &lt;&lt; AxisAxisX, 
+<b>AxisOrientationRight</b> = 0, 
+<b>AxisOrientationUp</b> = 1 &lt;&lt; AxisAxisY, 
+<b>AxisOrientationDown</b> = 0, 
+<br/>
+&#160;&#160;<b>AxisOrientationOut</b> = 1 &lt;&lt; AxisAxisZ, 
+<b>AxisOrientationIn</b> = 0
+<br/>
+ }</td></tr>
+<tr class="memdesc:a5acad07c0f0cc281a017cb56e7a92f5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orientations of various axes. <a href="classpvr_1_1_texture_meta_data.html#a5acad07c0f0cc281a017cb56e7a92f5a">More...</a><br/></td></tr>
+<tr class="separator:a5acad07c0f0cc281a017cb56e7a92f5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86754f36bb408dacd5ab1a22a7076f27"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a86754f36bb408dacd5ab1a22a7076f27">Identifier</a> { <br/>
+&#160;&#160;<b>IdentifierTextureAtlasCoords</b> = 0, 
+<b>IdentifierBumpData</b>, 
+<b>IdentifierCubeMapOrder</b>, 
+<b>IdentifierTextureOrientation</b>, 
+<br/>
+&#160;&#160;<b>IdentifierBorderData</b>, 
+<b>IdentifierPadding</b>, 
+<b>IdentifierNumMetaDataTypes</b>
+<br/>
+ }</td></tr>
+<tr class="memdesc:a86754f36bb408dacd5ab1a22a7076f27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Values for each meta data type that we know about. <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> arrays hinge on each surface being identical in all but content, including meta data. If the meta data varies even slightly then a new texture should be used. It is possible to write your own extension to get around this however. <a href="classpvr_1_1_texture_meta_data.html#a86754f36bb408dacd5ab1a22a7076f27">More...</a><br/></td></tr>
+<tr class="separator:a86754f36bb408dacd5ab1a22a7076f27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a877f514889115d29caae40427012ddd0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a877f514889115d29caae40427012ddd0">getData</a> () const </td></tr>
-<tr class="memdesc:a877f514889115d29caae40427012ddd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the data, can be absolutely anything, the loader needs to know how to handle it based on fourCC and key. <a href="#a877f514889115d29caae40427012ddd0">More...</a><br/></td></tr>
-<tr class="separator:a877f514889115d29caae40427012ddd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e56649f885650c30cdd058ff2553032"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a0e56649f885650c30cdd058ff2553032">getDataSize</a> () const </td></tr>
-<tr class="memdesc:a0e56649f885650c30cdd058ff2553032"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the data size of this meta data <a href="#a0e56649f885650c30cdd058ff2553032">More...</a><br/></td></tr>
-<tr class="separator:a0e56649f885650c30cdd058ff2553032"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fd194033e123c70eecb9b84c496da55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a7fd194033e123c70eecb9b84c496da55">getFourCC</a> () const </td></tr>
-<tr class="memdesc:a7fd194033e123c70eecb9b84c496da55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the 4cc descriptor of the data type's creator. Values equating to values between 'P' 'V' 'R' 0 and 'P' 'V' 'R' 255 will be used by our headers. <a href="#a7fd194033e123c70eecb9b84c496da55">More...</a><br/></td></tr>
-<tr class="separator:a7fd194033e123c70eecb9b84c496da55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8173e29a1f137c8fce35a44713ce982f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a8173e29a1f137c8fce35a44713ce982f">getKey</a> () const </td></tr>
-<tr class="memdesc:a8173e29a1f137c8fce35a44713ce982f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the enumeration key identifying the data type. <a href="#a8173e29a1f137c8fce35a44713ce982f">More...</a><br/></td></tr>
-<tr class="separator:a8173e29a1f137c8fce35a44713ce982f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14a95e731b49347e1ad729184513fbcb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a14a95e731b49347e1ad729184513fbcb">getTotalSizeInMemory</a> () const </td></tr>
-<tr class="memdesc:a14a95e731b49347e1ad729184513fbcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the data total size in memory <a href="#a14a95e731b49347e1ad729184513fbcb">More...</a><br/></td></tr>
-<tr class="separator:a14a95e731b49347e1ad729184513fbcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a375fc7dbc565fedeacf027719b3d1f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a4a375fc7dbc565fedeacf027719b3d1f">TextureMetaData</a> ()</td></tr>
+<tr class="memdesc:a4a375fc7dbc565fedeacf027719b3d1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor <a href="#a4a375fc7dbc565fedeacf027719b3d1f">More...</a><br/></td></tr>
+<tr class="separator:a4a375fc7dbc565fedeacf027719b3d1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61a8617ba4f9f548841c9b49eddc2014"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a61a8617ba4f9f548841c9b49eddc2014">TextureMetaData</a> (uint32_t fourCC, uint32_t key, uint32_t dataSize, const char *data)</td></tr>
+<tr class="memdesc:a61a8617ba4f9f548841c9b49eddc2014"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor <a href="#a61a8617ba4f9f548841c9b49eddc2014">More...</a><br/></td></tr>
+<tr class="separator:a61a8617ba4f9f548841c9b49eddc2014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9ce023c42f15b58c952ebc844931953"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#aa9ce023c42f15b58c952ebc844931953">TextureMetaData</a> (const <a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> &amp;rhs)</td></tr>
+<tr class="memdesc:aa9ce023c42f15b58c952ebc844931953"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy Constructor <a href="#aa9ce023c42f15b58c952ebc844931953">More...</a><br/></td></tr>
+<tr class="separator:aa9ce023c42f15b58c952ebc844931953"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a184ed6141e8e3c48ced9fbae27ba5f6a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a184ed6141e8e3c48ced9fbae27ba5f6a">~TextureMetaData</a> ()</td></tr>
+<tr class="memdesc:a184ed6141e8e3c48ced9fbae27ba5f6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor <a href="#a184ed6141e8e3c48ced9fbae27ba5f6a">More...</a><br/></td></tr>
+<tr class="separator:a184ed6141e8e3c48ced9fbae27ba5f6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4751244a86e313a2340d26367bed4bbb"><td class="memItemLeft" align="right" valign="top">const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a4751244a86e313a2340d26367bed4bbb">getData</a> () const </td></tr>
+<tr class="memdesc:a4751244a86e313a2340d26367bed4bbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the data, can be absolutely anything, the loader needs to know how to handle it based on fourCC and key. <a href="#a4751244a86e313a2340d26367bed4bbb">More...</a><br/></td></tr>
+<tr class="separator:a4751244a86e313a2340d26367bed4bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a181ff51514fcc826c16968a453a90c8a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a181ff51514fcc826c16968a453a90c8a">getDataSize</a> () const </td></tr>
+<tr class="memdesc:a181ff51514fcc826c16968a453a90c8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the data size of this meta data <a href="#a181ff51514fcc826c16968a453a90c8a">More...</a><br/></td></tr>
+<tr class="separator:a181ff51514fcc826c16968a453a90c8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d84609864da0fc91c92710f8e4d291a"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a8d84609864da0fc91c92710f8e4d291a">getFourCC</a> () const </td></tr>
+<tr class="memdesc:a8d84609864da0fc91c92710f8e4d291a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the 4cc descriptor of the data type's creator. Values equating to values between 'P' 'V' 'R' 0 and 'P' 'V' 'R' 255 will be used by our headers. <a href="#a8d84609864da0fc91c92710f8e4d291a">More...</a><br/></td></tr>
+<tr class="separator:a8d84609864da0fc91c92710f8e4d291a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7ebe460c1b506cbadade4e7b417c894"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#ae7ebe460c1b506cbadade4e7b417c894">getKey</a> () const </td></tr>
+<tr class="memdesc:ae7ebe460c1b506cbadade4e7b417c894"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the enumeration key identifying the data type. <a href="#ae7ebe460c1b506cbadade4e7b417c894">More...</a><br/></td></tr>
+<tr class="separator:ae7ebe460c1b506cbadade4e7b417c894"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a909f5aef3c3969e7c09da4190683a95c"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a909f5aef3c3969e7c09da4190683a95c">getTotalSizeInMemory</a> () const </td></tr>
+<tr class="memdesc:a909f5aef3c3969e7c09da4190683a95c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the data total size in memory <a href="#a909f5aef3c3969e7c09da4190683a95c">More...</a><br/></td></tr>
+<tr class="separator:a909f5aef3c3969e7c09da4190683a95c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31c6215b0bf174ea486eb61bcdd6f582"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a31c6215b0bf174ea486eb61bcdd6f582">loadFromStream</a> (<a class="el" href="classpvr_1_1_stream.html">Stream</a> &amp;stream)</td></tr>
 <tr class="memdesc:a31c6215b0bf174ea486eb61bcdd6f582"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load the this texture meta data from a stream <a href="#a31c6215b0bf174ea486eb61bcdd6f582">More...</a><br/></td></tr>
 <tr class="separator:a31c6215b0bf174ea486eb61bcdd6f582"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5071fb43da17aeacc3fc54783a820fb1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a5071fb43da17aeacc3fc54783a820fb1">operator=</a> (const <a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> &amp;rhs)</td></tr>
+<tr class="memdesc:a5071fb43da17aeacc3fc54783a820fb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy assignment operator <a href="#a5071fb43da17aeacc3fc54783a820fb1">More...</a><br/></td></tr>
+<tr class="separator:a5071fb43da17aeacc3fc54783a820fb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f22b09bc917284fcf5bf57ff9dd94a6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_texture_meta_data.html#a8f22b09bc917284fcf5bf57ff9dd94a6">writeToStream</a> (<a class="el" href="classpvr_1_1_stream.html">Stream</a> &amp;stream) const </td></tr>
 <tr class="memdesc:a8f22b09bc917284fcf5bf57ff9dd94a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write this texture meta data in to a stream <a href="#a8f22b09bc917284fcf5bf57ff9dd94a6">More...</a><br/></td></tr>
 <tr class="separator:a8f22b09bc917284fcf5bf57ff9dd94a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classpvr_1_1_texture_meta_data.html" title="The TextureMetaData class contains metadata of a texture. Metadata is any information that a texture ...">TextureMetaData</a> class contains metadata of a texture. Metadata is any information that a texture could be correctly loaded from file without. In most cases, metadata may still be necessary to actually USE the texture, such as winding orders, paddings, atlas information and others.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a877f514889115d29caae40427012ddd0"></a>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a class="anchor" id="ae6062237be958135b6d9cfc9fe0fb883"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespacepvr.html#a693aadd10412283ed1afd703dc83560a">uint8</a>* pvr::TextureMetaData::getData </td>
+          <td class="memname">enum <a class="el" href="classpvr_1_1_texture_meta_data.html#ae6062237be958135b6d9cfc9fe0fb883">pvr::TextureMetaData::Axis</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Axes, used to query orientations.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5acad07c0f0cc281a017cb56e7a92f5a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classpvr_1_1_texture_meta_data.html#a5acad07c0f0cc281a017cb56e7a92f5a">pvr::TextureMetaData::AxisOrientation</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Orientations of various axes.</p>
+
+</div>
+</div>
+<a class="anchor" id="a86754f36bb408dacd5ab1a22a7076f27"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classpvr_1_1_texture_meta_data.html#a86754f36bb408dacd5ab1a22a7076f27">pvr::TextureMetaData::Identifier</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Values for each meta data type that we know about. <a class="el" href="classpvr_1_1_texture.html" title="A 2D Texture asset, together with Information, Metadata and actual Pixel data. Only represents the ac...">Texture</a> arrays hinge on each surface being identical in all but content, including meta data. If the meta data varies even slightly then a new texture should be used. It is possible to write your own extension to get around this however.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a4a375fc7dbc565fedeacf027719b3d1f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::TextureMetaData::TextureMetaData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor</p>
+
+</div>
+</div>
+<a class="anchor" id="a61a8617ba4f9f548841c9b49eddc2014"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::TextureMetaData::TextureMetaData </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>fourCC</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>dataSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fourCC</td><td>FourCC of the metadata</td></tr>
+    <tr><td class="paramname">key</td><td>Key of the metadata</td></tr>
+    <tr><td class="paramname">dataSize</td><td>The total size of the payload of the metadata</td></tr>
+    <tr><td class="paramname">data</td><td>A pointer to the actual data</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aa9ce023c42f15b58c952ebc844931953"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::TextureMetaData::TextureMetaData </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy Constructor</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rhs</td><td>Copy from this object</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a184ed6141e8e3c48ced9fbae27ba5f6a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::TextureMetaData::~TextureMetaData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Destructor</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a4751244a86e313a2340d26367bed4bbb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t* pvr::TextureMetaData::getData </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -136,12 +337,12 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a0e56649f885650c30cdd058ff2553032"></a>
+<a class="anchor" id="a181ff51514fcc826c16968a453a90c8a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pvr::TextureMetaData::getDataSize </td>
+          <td class="memname">uint32_t pvr::TextureMetaData::getDataSize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -154,12 +355,12 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a7fd194033e123c70eecb9b84c496da55"></a>
+<a class="anchor" id="a8d84609864da0fc91c92710f8e4d291a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pvr::TextureMetaData::getFourCC </td>
+          <td class="memname">uint32_t pvr::TextureMetaData::getFourCC </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -172,12 +373,12 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a8173e29a1f137c8fce35a44713ce982f"></a>
+<a class="anchor" id="ae7ebe460c1b506cbadade4e7b417c894"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pvr::TextureMetaData::getKey </td>
+          <td class="memname">uint32_t pvr::TextureMetaData::getKey </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -190,12 +391,12 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a14a95e731b49347e1ad729184513fbcb"></a>
+<a class="anchor" id="a909f5aef3c3969e7c09da4190683a95c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacepvr.html#a02a97b530ff9cb298a9077ad7b4ee556">uint32</a> pvr::TextureMetaData::getTotalSizeInMemory </td>
+          <td class="memname">uint32_t pvr::TextureMetaData::getTotalSizeInMemory </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -230,6 +431,31 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Return true on success</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a5071fb43da17aeacc3fc54783a820fb1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a>&amp; pvr::TextureMetaData::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1_texture_meta_data.html">TextureMetaData</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy assignment operator</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rhs</td><td>Copy from this object</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>This object</dd></dl>
 
 </div>
 </div>

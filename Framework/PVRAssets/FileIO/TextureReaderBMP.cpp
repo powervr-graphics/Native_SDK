@@ -18,7 +18,7 @@ namespace assetReaders {
 TextureReaderBMP::TextureReaderBMP() : _texturesToLoad(true)
 {
 }
-TextureReaderBMP::TextureReaderBMP(Stream::ptr_type assetStream) : AssetReader<Texture>(assetStream), _texturesToLoad(true)
+TextureReaderBMP::TextureReaderBMP(Stream::ptr_type assetStream) : AssetReader<Texture>(std::move(assetStream)), _texturesToLoad(true)
 { }
 
 bool TextureReaderBMP::readNextAsset(Texture& asset)
@@ -39,7 +39,7 @@ bool TextureReaderBMP::readNextAsset(Texture& asset)
 	}
 	// Check the Result
 
-	long streamPosition = (long)_assetStream->getPosition();
+	long streamPosition = static_cast<long>(_assetStream->getPosition());
 	if (result)
 	{
 		result = loadImageFromFile(asset);
@@ -80,7 +80,7 @@ bool TextureReaderBMP::isSupportedFile(Stream& assetStream)
 	}
 
 	// Read the magic identifier
-	uint16 magic;
+	uint16_t magic;
 	size_t dataRead;
 	result = assetStream.read(sizeof(magic), 1, &magic, dataRead);
 
@@ -103,11 +103,11 @@ bool TextureReaderBMP::isSupportedFile(Stream& assetStream)
 	return true;
 }
 
-vector<string> TextureReaderBMP::getSupportedFileExtensions()
+vector<std::string> TextureReaderBMP::getSupportedFileExtensions()
 {
-	vector<string> extensions;
+	vector<std::string> extensions;
 	extensions.push_back("bmp");
-	return vector<string>(extensions);
+	return vector<std::string>(extensions);
 }
 
 bool TextureReaderBMP::initializeFile()
@@ -134,7 +134,7 @@ bool TextureReaderBMP::loadImageFromFile(Texture& asset)
 	}
 
 	// Read the size of the description header, then the rest of the header.
-	uint32 headerSize = 0;
+	uint32_t headerSize = 0;
 	_assetStream->read(sizeof(headerSize), 1, &headerSize, dataRead);
 
 	switch (headerSize)
@@ -154,9 +154,8 @@ bool TextureReaderBMP::loadImageFromFile(Texture& asset)
 	}
 	case texture_bmp::HeaderSize::Core2:
 	{
-		Log(Log.Error, "Reading from \"%s\" - Version 2 Core Headers are not supported.",
+		Log(LogLevel::Error, "Reading from \"%s\" - Version 2 Core Headers are not supported.",
 		    _assetStream->getFileName().c_str());
-		// break;
 		return false;
 	}
 	case texture_bmp::HeaderSize::Info1:
@@ -178,7 +177,7 @@ bool TextureReaderBMP::loadImageFromFile(Texture& asset)
 	}
 	default:
 	{
-		Log(Log.Error, "Reading from \"%s\" - Undefined image header size.", _assetStream->getFileName().c_str());
+		Log(LogLevel::Error, "Reading from \"%s\" - Undefined image header size.", _assetStream->getFileName().c_str());
 		// Invalid header size, unrecognised format!
 		return false;
 	}
@@ -225,7 +224,7 @@ bool TextureReaderBMP::readFileHeader(texture_bmp::FileHeader& fileheader)
 	return result;
 }
 
-bool TextureReaderBMP::readCoreHeader(uint32 headerSize, texture_bmp::CoreHeader& coreHeader)
+bool TextureReaderBMP::readCoreHeader(uint32_t headerSize, texture_bmp::CoreHeader& coreHeader)
 {
 	// Data Size check
 	size_t dataRead = 0;
@@ -243,11 +242,11 @@ bool TextureReaderBMP::readCoreHeader(uint32 headerSize, texture_bmp::CoreHeader
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the number of planes
-	result = _assetStream->read(sizeof(coreHeader.numberOfPlanes), 1, &coreHeader.numberOfPlanes, dataRead);
+	result = _assetStream->read(sizeof(coreHeader.numPlanes), 1, &coreHeader.numPlanes, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Make sure the number of planes is one
-	if (coreHeader.numberOfPlanes != 1)
+	if (coreHeader.numPlanes != 1)
 	{
 		return false;
 	}
@@ -259,7 +258,7 @@ bool TextureReaderBMP::readCoreHeader(uint32 headerSize, texture_bmp::CoreHeader
 	return result;
 }
 
-bool TextureReaderBMP::readInfoHeader(uint32 headerSize, texture_bmp::InfoHeader5& infoHeader)
+bool TextureReaderBMP::readInfoHeader(uint32_t headerSize, texture_bmp::InfoHeader5& infoHeader)
 {
 	// Data Size check
 	size_t dataRead = 0;
@@ -277,11 +276,11 @@ bool TextureReaderBMP::readInfoHeader(uint32 headerSize, texture_bmp::InfoHeader
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the number of planes
-	result = _assetStream->read(sizeof(infoHeader.numberOfPlanes), 1, &infoHeader.numberOfPlanes, dataRead);
+	result = _assetStream->read(sizeof(infoHeader.numPlanes), 1, &infoHeader.numPlanes, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Make sure the number of planes is one
-	if (infoHeader.numberOfPlanes != 1)
+	if (infoHeader.numPlanes != 1)
 	{
 		return false;
 	}
@@ -307,11 +306,11 @@ bool TextureReaderBMP::readInfoHeader(uint32 headerSize, texture_bmp::InfoHeader
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the number of colors in the table
-	result = _assetStream->read(sizeof(infoHeader.numberOfColorsInTable), 1, &infoHeader.numberOfColorsInTable, dataRead);
+	result = _assetStream->read(sizeof(infoHeader.numColorsInTable), 1, &infoHeader.numColorsInTable, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	// Read the number of important colors in the table
-	result = _assetStream->read(sizeof(infoHeader.numberOfImportantColors), 1, &infoHeader.numberOfImportantColors, dataRead);
+	result = _assetStream->read(sizeof(infoHeader.numImportantColors), 1, &infoHeader.numImportantColors, dataRead);
 	if (!result || dataRead != 1) { return result; }
 
 	if (headerSize >= texture_bmp::HeaderSize::Info1)
@@ -383,7 +382,7 @@ bool TextureReaderBMP::readInfoHeader(uint32 headerSize, texture_bmp::InfoHeader
 
 bool TextureReaderBMP::translateInfoHeader(const texture_bmp::InfoHeader5& infoHeader, TextureHeader& header)
 {
-	uint32 orientation = 0;
+	uint32_t orientation = 0;
 
 	// Set the width and height
 	if (infoHeader.width < 0)
@@ -414,12 +413,12 @@ bool TextureReaderBMP::translateInfoHeader(const texture_bmp::InfoHeader5& infoH
 	if (infoHeader.compressionType == texture_bmp::CompressionMethod::Bitfields &&
 	    infoHeader.headerSize >= texture_bmp::HeaderSize::Info2)
 	{
-		assertion(false ,  "Check for gaps in the bitfields, these are invalid. A single gap at the end is ok - shove in an X channel.");
+		assertion(false,  "Check for gaps in the bitfields, these are invalid. A single gap at the end is ok - shove in an X channel.");
 	}
 	else if (infoHeader.compressionType == texture_bmp::CompressionMethod::AlphaBitfields &&
 	         infoHeader.headerSize >= texture_bmp::HeaderSize::Info3)
 	{
-		assertion(false ,  " Check for gaps in the bitfields, and that the scheme can be represented by PVRTexTool. An X channel can't be put in at the end as above if there's already 4 channels.");
+		assertion(false,  " Check for gaps in the bitfields, and that the scheme can be represented by PVRTexTool. An X channel can't be put in at the end as above if there's already 4 channels.");
 	}
 	else
 	{
@@ -484,7 +483,7 @@ bool TextureReaderBMP::translateInfoHeader(const texture_bmp::InfoHeader5& infoH
 		case texture_bmp::ColorSpace::sRGB:
 		case texture_bmp::ColorSpace::Windows:
 		{
-			header.setColorSpace(types::ColorSpace::lRGB);
+			header.setColorSpace(ColorSpace::lRGB);
 			break;
 		}
 		case texture_bmp::ColorSpace::ProfileLinked:
@@ -587,14 +586,14 @@ bool TextureReaderBMP::readImageInfoHeader(const texture_bmp::InfoHeader5& infoH
 		case 8:
 		{
 			// Work out the number of colors in the palette
-			uint32 numberOfPaletteEntries = infoHeader.numberOfColorsInTable;
-			if (numberOfPaletteEntries == 0)
+			uint32_t numPaletteEntries = infoHeader.numColorsInTable;
+			if (numPaletteEntries == 0)
 			{
-				numberOfPaletteEntries = 1 << infoHeader.bitsPerPixel;
+				numPaletteEntries = 1 << infoHeader.bitsPerPixel;
 			}
 
 			// Try to load the data
-			result = loadIndexed(texture, texture.getBitsPerPixel() / 8, infoHeader.bitsPerPixel, numberOfPaletteEntries, 4);
+			result = loadIndexed(texture, texture.getBitsPerPixel() / 8, infoHeader.bitsPerPixel, numPaletteEntries, 4);
 			if (!result) { return result; }
 
 			break;
@@ -623,19 +622,19 @@ bool TextureReaderBMP::readImageInfoHeader(const texture_bmp::InfoHeader5& infoH
 	return result;
 }
 
-bool TextureReaderBMP::loadRowAligned(Texture& asset, uint32 bytesPerDataEntry, uint32 rowAlignment)
+bool TextureReaderBMP::loadRowAligned(Texture& asset, uint32_t bytesPerDataEntry, uint32_t rowAlignment)
 {
 	bool result = true;
 	size_t dataRead = 0;
 
 	// Calculate the number of bytes to skip in each row
-	uint32 bytesPerScanline = asset.getWidth() * bytesPerDataEntry;
-	uint32 scanlinePadding = ((-1 * bytesPerScanline) % rowAlignment);
+	uint32_t bytesPerScanline = asset.getWidth() * bytesPerDataEntry;
+	uint32_t scanlinePadding = ((-1 * bytesPerScanline) % rowAlignment);
 
 	// Start reading data
-	byte* outputPixel = asset.getDataPointer();
+	unsigned char* outputPixel = asset.getDataPointer();
 
-	for (uint32 y = 0; y < (asset.getHeight()); ++y)
+	for (uint32_t y = 0; y < (asset.getHeight()); ++y)
 	{
 		// Read the next scan line
 		result = _assetStream->read(bytesPerDataEntry, asset.getWidth(), outputPixel, dataRead);
@@ -652,22 +651,22 @@ bool TextureReaderBMP::loadRowAligned(Texture& asset, uint32 bytesPerDataEntry, 
 	return result;
 }
 
-bool TextureReaderBMP::loadIndexed(Texture& asset, uint32 bytesPerPaletteEntry, uint32 bitsPerDataEntry,
-                                   uint32 numberOfPaletteEntries, uint32 rowAlignment)
+bool TextureReaderBMP::loadIndexed(Texture& asset, uint32_t bytesPerPaletteEntry, uint32_t bitsPerDataEntry,
+                                   uint32_t numPaletteEntries, uint32_t rowAlignment)
 {
 	bool result = true;
 	size_t dataRead = 0;
 
 	// Work out the size of the palette data entries
-	uint32 paletteSize = numberOfPaletteEntries * bytesPerPaletteEntry;
+	uint32_t paletteSize = numPaletteEntries * bytesPerPaletteEntry;
 
 	// Allocate data to read the palette into.
-	vector<byte> paletteData;
+	vector<unsigned char> paletteData;
 	paletteData.resize(paletteSize);
 
 	// Read the palette
-	result = _assetStream->read(bytesPerPaletteEntry, numberOfPaletteEntries, &paletteData[0], dataRead);
-	if (!result || dataRead != numberOfPaletteEntries) { return result; }
+	result = _assetStream->read(bytesPerPaletteEntry, numPaletteEntries, &paletteData[0], dataRead);
+	if (!result || dataRead != numPaletteEntries) { return result; }
 
 	// Create the palette helper class
 	PaletteExpander paletteLookup(&paletteData[0], paletteSize, bytesPerPaletteEntry);
@@ -679,41 +678,41 @@ bool TextureReaderBMP::loadIndexed(Texture& asset, uint32 bytesPerPaletteEntry, 
 	// Make sure that there are a POT number of bits.
 	if (!((bitsPerDataEntry != 0) && (!(bitsPerDataEntry & (bitsPerDataEntry - 1)))))
 	{
-		Log(Log.Error, "Reading from \"%s\" - Non-Power of two number of bits specified, unable to load.",
+		Log(LogLevel::Error, "Reading from \"%s\" - Non-Power of two number of bits specified, unable to load.",
 		    _assetStream->getFileName().c_str());
 		return false;
 	}
 
-	// Work out the number of indices per byte, and bytes per index
-	uint32 indicesPerByte = 8 / bitsPerDataEntry;
+	// Work out the number of indices per char, and bytes per index
+	uint32_t indicesPerByte = 8 / bitsPerDataEntry;
 
 	// Calculate the number of bytes to skip in each row
-	uint32 bytesPerScanline = (asset.getWidth() + (indicesPerByte - 1)) / indicesPerByte;
-	uint32 scanlinePadding = (((-1 * bytesPerScanline) % rowAlignment) * 8) / 8;
+	uint32_t bytesPerScanline = (asset.getWidth() + (indicesPerByte - 1)) / indicesPerByte;
+	uint32_t scanlinePadding = (((-1 * bytesPerScanline) % rowAlignment) * 8) / 8;
 
 	// Work out the bit mask of the index value
-	uint8 indexMask = 0xffu >> (8 - bitsPerDataEntry);
+	uint8_t indexMask = 0xffu >> (8 - bitsPerDataEntry);
 
 	// Start reading data
-	byte* outputPixel = asset.getDataPointer();
-	uint8 currentIndexData = 0;
-	for (uint32 y = 0; y < (asset.getHeight()); ++y)
+	unsigned char* outputPixel = asset.getDataPointer();
+	uint8_t currentIndexData = 0;
+	for (uint32_t y = 0; y < (asset.getHeight()); ++y)
 	{
-		for (uint32 x = 0; x < (asset.getWidth()); x += indicesPerByte)
+		for (uint32_t x = 0; x < (asset.getWidth()); x += indicesPerByte)
 		{
-			// Read the next byte of indices
+			// Read the next char of indices
 			result = _assetStream->read(1, 1, &currentIndexData, dataRead);
 			if (!result || dataRead != 1) { return result; }
 
-			// Loop through all the indices in the byte
-			for (uint32 indexPosition = 0; indexPosition < indicesPerByte; ++indexPosition)
+			// Loop through all the indices in the char
+			for (uint32_t indexPosition = 0; indexPosition < indicesPerByte; ++indexPosition)
 			{
 				if ((x + indexPosition) < asset.getWidth())
 				{
 					// Mask out the actual index from the current index data
-					uint8 bitShift = (8 - (bitsPerDataEntry * (indexPosition + 1)));
+					uint8_t bitShift = static_cast<uint8_t>(8 - (bitsPerDataEntry * (indexPosition + 1)));
 
-					uint8 actualIndex = (currentIndexData & (indexMask << (bitShift))) >> (bitShift);
+					uint8_t actualIndex = static_cast<uint8_t>((currentIndexData & (indexMask << (bitShift))) >> (bitShift));
 
 					// Get the color output - don't need to check for errors, as the out of bounds condition is impossible due to the mask.
 					paletteLookup.getColorFromIndex(actualIndex, outputPixel);

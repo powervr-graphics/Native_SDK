@@ -65,7 +65,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -88,95 +88,92 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
-<p>Implementation of a hashed string with functionality for fast compares. 
+<p>Implementation of a hashed std::string with functionality for fast compares. 
  <a href="classpvr_1_1_string_hash.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8fe39312ebdc058d196bb34c18fe9b69"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a8fe39312ebdc058d196bb34c18fe9b69">StringHash</a> (const char *<a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a>)</td></tr>
-<tr class="memdesc:a8fe39312ebdc058d196bb34c18fe9b69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Initialize with c-style string, which will be copied. Automatically calculates hash. <a href="#a8fe39312ebdc058d196bb34c18fe9b69">More...</a><br/></td></tr>
+<tr class="memitem:a8fe39312ebdc058d196bb34c18fe9b69"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a8fe39312ebdc058d196bb34c18fe9b69">StringHash</a> (const char *<a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a>)</td></tr>
+<tr class="memdesc:a8fe39312ebdc058d196bb34c18fe9b69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Initialize with c-style std::string, which will be copied. Automatically calculates hash. <a href="#a8fe39312ebdc058d196bb34c18fe9b69">More...</a><br/></td></tr>
 <tr class="separator:a8fe39312ebdc058d196bb34c18fe9b69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2af6ce7321e423ed31859aa94e1561ed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a2af6ce7321e423ed31859aa94e1561ed">StringHash</a> (const std::string &amp;right)</td></tr>
-<tr class="memdesc:a2af6ce7321e423ed31859aa94e1561ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Initialize with c++style string, which will be copied. Automatically calculates hash. <a href="#a2af6ce7321e423ed31859aa94e1561ed">More...</a><br/></td></tr>
+<tr class="memdesc:a2af6ce7321e423ed31859aa94e1561ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Initialize with c++style std::string, which will be copied. Automatically calculates hash. <a href="#a2af6ce7321e423ed31859aa94e1561ed">More...</a><br/></td></tr>
 <tr class="separator:a2af6ce7321e423ed31859aa94e1561ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2105b5962d5c2fcd1b4bfe1ae37e3ebe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a2105b5962d5c2fcd1b4bfe1ae37e3ebe">StringHash</a> ()</td></tr>
-<<<<<<< HEAD
-<tr class="memdesc:a2105b5962d5c2fcd1b4bfe1ae37e3ebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">ctor. Default constructor  <a href="#a2105b5962d5c2fcd1b4bfe1ae37e3ebe">More...</a><br/></td></tr>
-=======
-<tr class="memdesc:a2105b5962d5c2fcd1b4bfe1ae37e3ebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">ctor. Default constructor. Empty string. <a href="#a2105b5962d5c2fcd1b4bfe1ae37e3ebe">More...</a><br/></td></tr>
->>>>>>> 1776432f... 4.3
+<tr class="memdesc:a2105b5962d5c2fcd1b4bfe1ae37e3ebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. Empty std::string. <a href="#a2105b5962d5c2fcd1b4bfe1ae37e3ebe">More...</a><br/></td></tr>
 <tr class="separator:a2105b5962d5c2fcd1b4bfe1ae37e3ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dd7ad102691cf96acec37c4d319a953"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a1dd7ad102691cf96acec37c4d319a953">StringHash</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;other)</td></tr>
+<tr class="memdesc:a1dd7ad102691cf96acec37c4d319a953"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy Constructor. <a href="#a1dd7ad102691cf96acec37c4d319a953">More...</a><br/></td></tr>
+<tr class="separator:a1dd7ad102691cf96acec37c4d319a953"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d4d901faa1e769bd8b83562f82774a6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a1d4d901faa1e769bd8b83562f82774a6">~StringHash</a> ()</td></tr>
+<tr class="memdesc:a1d4d901faa1e769bd8b83562f82774a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dtor. <a href="#a1d4d901faa1e769bd8b83562f82774a6">More...</a><br/></td></tr>
+<tr class="separator:a1d4d901faa1e769bd8b83562f82774a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43e16f06ee8664202b7dd718fc20e0a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a43e16f06ee8664202b7dd718fc20e0a4">append</a> (const char *ptr)</td></tr>
-<tr class="memdesc:a43e16f06ee8664202b7dd718fc20e0a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a string to the end of this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a>, recalculates hash. <a href="#a43e16f06ee8664202b7dd718fc20e0a4">More...</a><br/></td></tr>
+<tr class="memdesc:a43e16f06ee8664202b7dd718fc20e0a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a std::string to the end of this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a>, recalculates hash. <a href="#a43e16f06ee8664202b7dd718fc20e0a4">More...</a><br/></td></tr>
 <tr class="separator:a43e16f06ee8664202b7dd718fc20e0a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c105cc03273e2498d42d740bf955198"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a3c105cc03273e2498d42d740bf955198">append</a> (const <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a>)</td></tr>
-<tr class="memdesc:a3c105cc03273e2498d42d740bf955198"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a string. <a href="#a3c105cc03273e2498d42d740bf955198">More...</a><br/></td></tr>
-<tr class="separator:a3c105cc03273e2498d42d740bf955198"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94fd40086e2e4890ebbf35a163aa5090"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a94fd40086e2e4890ebbf35a163aa5090">append</a> (const std::string &amp;<a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a>)</td></tr>
+<tr class="memdesc:a94fd40086e2e4890ebbf35a163aa5090"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a std::string. <a href="#a94fd40086e2e4890ebbf35a163aa5090">More...</a><br/></td></tr>
+<tr class="separator:a94fd40086e2e4890ebbf35a163aa5090"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f7c64bc24f4deb04c1a29f903e678bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a7f7c64bc24f4deb04c1a29f903e678bb">assign</a> (const char *ptr)</td></tr>
-<tr class="memdesc:a7f7c64bc24f4deb04c1a29f903e678bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns the string to the string ptr. <a href="#a7f7c64bc24f4deb04c1a29f903e678bb">More...</a><br/></td></tr>
+<tr class="memdesc:a7f7c64bc24f4deb04c1a29f903e678bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns the std::string to the std::string ptr. <a href="#a7f7c64bc24f4deb04c1a29f903e678bb">More...</a><br/></td></tr>
 <tr class="separator:a7f7c64bc24f4deb04c1a29f903e678bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbd49c7cdbfd5e04ae2117d1803fd666"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#abbd49c7cdbfd5e04ae2117d1803fd666">assign</a> (const <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a>)</td></tr>
-<tr class="memdesc:abbd49c7cdbfd5e04ae2117d1803fd666"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns the string to the string str. <a href="#abbd49c7cdbfd5e04ae2117d1803fd666">More...</a><br/></td></tr>
-<tr class="separator:abbd49c7cdbfd5e04ae2117d1803fd666"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01a265f92429bbbec77b3937fb6d9306"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a01a265f92429bbbec77b3937fb6d9306">assign</a> (const std::string &amp;<a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a>)</td></tr>
+<tr class="memdesc:a01a265f92429bbbec77b3937fb6d9306"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns the std::string to the std::string str. <a href="#a01a265f92429bbbec77b3937fb6d9306">More...</a><br/></td></tr>
+<tr class="separator:a01a265f92429bbbec77b3937fb6d9306"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aceb558af80b2e1f1c845e55d5a95d057"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#aceb558af80b2e1f1c845e55d5a95d057">c_str</a> () const </td></tr>
-<tr class="memdesc:aceb558af80b2e1f1c845e55d5a95d057"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a> object <a href="#aceb558af80b2e1f1c845e55d5a95d057">More...</a><br/></td></tr>
+<tr class="memdesc:aceb558af80b2e1f1c845e55d5a95d057"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> object <a href="#aceb558af80b2e1f1c845e55d5a95d057">More...</a><br/></td></tr>
 <tr class="separator:aceb558af80b2e1f1c845e55d5a95d057"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ac0edabf30b1cf430527c0b66e5e3be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a6ac0edabf30b1cf430527c0b66e5e3be">clear</a> ()</td></tr>
-<tr class="memdesc:a6ac0edabf30b1cf430527c0b66e5e3be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear this string hash <a href="#a6ac0edabf30b1cf430527c0b66e5e3be">More...</a><br/></td></tr>
+<tr class="memdesc:a6ac0edabf30b1cf430527c0b66e5e3be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear this std::string hash <a href="#a6ac0edabf30b1cf430527c0b66e5e3be">More...</a><br/></td></tr>
 <tr class="separator:a6ac0edabf30b1cf430527c0b66e5e3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bf9a89cb3efdaac68cb40f48e0fe5a2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a1bf9a89cb3efdaac68cb40f48e0fe5a2">empty</a> () const </td></tr>
-<tr class="memdesc:a1bf9a89cb3efdaac68cb40f48e0fe5a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return if the string is empty <a href="#a1bf9a89cb3efdaac68cb40f48e0fe5a2">More...</a><br/></td></tr>
+<tr class="memdesc:a1bf9a89cb3efdaac68cb40f48e0fe5a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return if the std::string is empty <a href="#a1bf9a89cb3efdaac68cb40f48e0fe5a2">More...</a><br/></td></tr>
 <tr class="separator:a1bf9a89cb3efdaac68cb40f48e0fe5a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e1aa9ac51d5a6457fbe4294c0bfcf64"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a6e1aa9ac51d5a6457fbe4294c0bfcf64">getHash</a> () const </td></tr>
-<tr class="memdesc:a6e1aa9ac51d5a6457fbe4294c0bfcf64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a> object <a href="#a6e1aa9ac51d5a6457fbe4294c0bfcf64">More...</a><br/></td></tr>
+<tr class="memdesc:a6e1aa9ac51d5a6457fbe4294c0bfcf64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> object <a href="#a6e1aa9ac51d5a6457fbe4294c0bfcf64">More...</a><br/></td></tr>
 <tr class="separator:a6e1aa9ac51d5a6457fbe4294c0bfcf64"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32d343d415346fbda328d08f6b4ff24e"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a32d343d415346fbda328d08f6b4ff24e">length</a> () const </td></tr>
-<<<<<<< HEAD
-<tr class="memdesc:a32d343d415346fbda328d08f6b4ff24e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the length of this string hash.  <a href="#a32d343d415346fbda328d08f6b4ff24e">More...</a><br/></td></tr>
+<tr class="memdesc:a32d343d415346fbda328d08f6b4ff24e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the length of this std::string hash <a href="#a32d343d415346fbda328d08f6b4ff24e">More...</a><br/></td></tr>
 <tr class="separator:a32d343d415346fbda328d08f6b4ff24e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adbd60ca7719e38e99580a55b6b3c2b87"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#adbd60ca7719e38e99580a55b6b3c2b87">operator const std::string &amp;</a> () const </td></tr>
-<tr class="memdesc:adbd60ca7719e38e99580a55b6b3c2b87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert to string.  <a href="#adbd60ca7719e38e99580a55b6b3c2b87">More...</a><br/></td></tr>
-=======
-<tr class="memdesc:a32d343d415346fbda328d08f6b4ff24e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the length of this string hash <a href="#a32d343d415346fbda328d08f6b4ff24e">More...</a><br/></td></tr>
-<tr class="separator:a32d343d415346fbda328d08f6b4ff24e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbd60ca7719e38e99580a55b6b3c2b87"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#adbd60ca7719e38e99580a55b6b3c2b87">operator const std::string &amp;</a> () const </td></tr>
-<tr class="memdesc:adbd60ca7719e38e99580a55b6b3c2b87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conversion to string reference. No-op. <a href="#adbd60ca7719e38e99580a55b6b3c2b87">More...</a><br/></td></tr>
->>>>>>> 1776432f... 4.3
+<tr class="memdesc:adbd60ca7719e38e99580a55b6b3c2b87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conversion to std::string reference. No-op. <a href="#adbd60ca7719e38e99580a55b6b3c2b87">More...</a><br/></td></tr>
 <tr class="separator:adbd60ca7719e38e99580a55b6b3c2b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60b94edc791b56326474ee694a527291"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a60b94edc791b56326474ee694a527291">operator!=</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a>) const </td></tr>
+<tr class="memitem:a60b94edc791b56326474ee694a527291"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a60b94edc791b56326474ee694a527291">operator!=</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a>) const </td></tr>
 <tr class="memdesc:a60b94edc791b56326474ee694a527291"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inequality Operator. Compares hash values. Extremely fast. <a href="#a60b94edc791b56326474ee694a527291">More...</a><br/></td></tr>
 <tr class="separator:a60b94edc791b56326474ee694a527291"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a94d84467efb626f19ab6a6f1bdce0d81"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a94d84467efb626f19ab6a6f1bdce0d81">operator&lt;=</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a>) const </td></tr>
+<tr class="memitem:a4386b029bb05c083dc4c88e594572657"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a4386b029bb05c083dc4c88e594572657">operator&lt;</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a>) const </td></tr>
+<tr class="memdesc:a4386b029bb05c083dc4c88e594572657"><td class="mdescLeft">&#160;</td><td class="mdescRight">Less than Operator. Compares hash values, except on debug builds where it checks for collisions. Extremely fast. <a href="#a4386b029bb05c083dc4c88e594572657">More...</a><br/></td></tr>
+<tr class="separator:a4386b029bb05c083dc4c88e594572657"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94d84467efb626f19ab6a6f1bdce0d81"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a94d84467efb626f19ab6a6f1bdce0d81">operator&lt;=</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a>) const </td></tr>
 <tr class="memdesc:a94d84467efb626f19ab6a6f1bdce0d81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Less-than or equal operator <a href="#a94d84467efb626f19ab6a6f1bdce0d81">More...</a><br/></td></tr>
 <tr class="separator:a94d84467efb626f19ab6a6f1bdce0d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63dfc9559429fada538961c136dd7b79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a63dfc9559429fada538961c136dd7b79">operator==</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a>) const </td></tr>
+<tr class="memitem:a658b0d734a8caafa2b870efa18b17a1a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a658b0d734a8caafa2b870efa18b17a1a">operator=</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> other)</td></tr>
+<tr class="memdesc:a658b0d734a8caafa2b870efa18b17a1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy assignment operator. <a href="#a658b0d734a8caafa2b870efa18b17a1a">More...</a><br/></td></tr>
+<tr class="separator:a658b0d734a8caafa2b870efa18b17a1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63dfc9559429fada538961c136dd7b79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a63dfc9559429fada538961c136dd7b79">operator==</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a>) const </td></tr>
 <tr class="memdesc:a63dfc9559429fada538961c136dd7b79"><td class="mdescLeft">&#160;</td><td class="mdescRight">== Operator. Compares hash values. Extremely fast. <a href="#a63dfc9559429fada538961c136dd7b79">More...</a><br/></td></tr>
 <tr class="separator:a63dfc9559429fada538961c136dd7b79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc8537b57ed3c15693de5a54e653c1cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#adc8537b57ed3c15693de5a54e653c1cc">operator==</a> (const char *<a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a>) const </td></tr>
-<tr class="memdesc:adc8537b57ed3c15693de5a54e653c1cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Equality Operator. This function performs a strcmp(), so it is orders of magnitude slower than comparing to another <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a>, but still much faster than creating a temporary <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a> for one comparison.  <a href="#adc8537b57ed3c15693de5a54e653c1cc">More...</a><br/></td></tr>
+<tr class="memitem:adc8537b57ed3c15693de5a54e653c1cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#adc8537b57ed3c15693de5a54e653c1cc">operator==</a> (const char *<a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a>) const </td></tr>
+<tr class="memdesc:adc8537b57ed3c15693de5a54e653c1cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Equality Operator. This function performs a strcmp(), so it is orders of magnitude slower than comparing to another <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a>, but still much faster than creating a temporary <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> for one comparison.  <a href="#adc8537b57ed3c15693de5a54e653c1cc">More...</a><br/></td></tr>
 <tr class="separator:adc8537b57ed3c15693de5a54e653c1cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fd534a38871a952542cc386412f7190"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a8fd534a38871a952542cc386412f7190">operator==</a> (const std::string &amp;<a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a>) const </td></tr>
-<tr class="memdesc:a8fd534a38871a952542cc386412f7190"><td class="mdescLeft">&#160;</td><td class="mdescRight">Equality Operator. This function performs a string comparison so it is orders of magnitude slower than comparing to another <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a>, but still much faster than creating a temporary <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a> for one comparison. <a href="#a8fd534a38871a952542cc386412f7190">More...</a><br/></td></tr>
+<tr class="memitem:a8fd534a38871a952542cc386412f7190"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a8fd534a38871a952542cc386412f7190">operator==</a> (const std::string &amp;<a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a>) const </td></tr>
+<tr class="memdesc:a8fd534a38871a952542cc386412f7190"><td class="mdescLeft">&#160;</td><td class="mdescRight">Equality Operator. This function performs a std::string comparison so it is orders of magnitude slower than comparing to another <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a>, but still much faster than creating a temporary <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> for one comparison. <a href="#a8fd534a38871a952542cc386412f7190">More...</a><br/></td></tr>
 <tr class="separator:a8fd534a38871a952542cc386412f7190"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a342eead2a861f2fd64932baadbb302d0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a342eead2a861f2fd64932baadbb302d0">operator&gt;</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a>) const </td></tr>
+<tr class="memitem:a342eead2a861f2fd64932baadbb302d0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a342eead2a861f2fd64932baadbb302d0">operator&gt;</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a>) const </td></tr>
 <tr class="memdesc:a342eead2a861f2fd64932baadbb302d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Greater-than operator <a href="#a342eead2a861f2fd64932baadbb302d0">More...</a><br/></td></tr>
 <tr class="separator:a342eead2a861f2fd64932baadbb302d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f20dc32e9481ef4cb0bdade6cdcdb79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a3f20dc32e9481ef4cb0bdade6cdcdb79">operator&gt;=</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a>) const </td></tr>
+<tr class="memitem:a3f20dc32e9481ef4cb0bdade6cdcdb79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a3f20dc32e9481ef4cb0bdade6cdcdb79">operator&gt;=</a> (const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;<a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a>) const </td></tr>
 <tr class="memdesc:a3f20dc32e9481ef4cb0bdade6cdcdb79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Greater-than or equal operator <a href="#a3f20dc32e9481ef4cb0bdade6cdcdb79">More...</a><br/></td></tr>
 <tr class="separator:a3f20dc32e9481ef4cb0bdade6cdcdb79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb6de3ef007116291a04caa802ab436f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#afb6de3ef007116291a04caa802ab436f">size</a> () const </td></tr>
-<<<<<<< HEAD
-<tr class="memdesc:afb6de3ef007116291a04caa802ab436f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the length of this string hash.  <a href="#afb6de3ef007116291a04caa802ab436f">More...</a><br/></td></tr>
-=======
-<tr class="memdesc:afb6de3ef007116291a04caa802ab436f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the length of this string hash <a href="#afb6de3ef007116291a04caa802ab436f">More...</a><br/></td></tr>
->>>>>>> 1776432f... 4.3
+<tr class="memdesc:afb6de3ef007116291a04caa802ab436f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the length of this std::string hash <a href="#afb6de3ef007116291a04caa802ab436f">More...</a><br/></td></tr>
 <tr class="separator:afb6de3ef007116291a04caa802ab436f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16211981b40fff2b4955f2da11b7e36d"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#a16211981b40fff2b4955f2da11b7e36d">str</a> () const </td></tr>
-<tr class="memdesc:a16211981b40fff2b4955f2da11b7e36d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a> object <a href="#a16211981b40fff2b4955f2da11b7e36d">More...</a><br/></td></tr>
-<tr class="separator:a16211981b40fff2b4955f2da11b7e36d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef49a4a192aef6f3724905811b85084b"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1_string_hash.html#aef49a4a192aef6f3724905811b85084b">str</a> () const </td></tr>
+<tr class="memdesc:aef49a4a192aef6f3724905811b85084b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> object <a href="#aef49a4a192aef6f3724905811b85084b">More...</a><br/></td></tr>
+<tr class="separator:aef49a4a192aef6f3724905811b85084b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Implementation of a hashed string with functionality for fast compares.</p>
+<div class="textblock"><p>Implementation of a hashed std::string with functionality for fast compares.</p>
 <p>In most cases, can be used as a drop-in replacement for std::strings to take advantage of fast hashed comparisons. On debug builds, tests for hash collisions are performed (Assertion + error log if collision found)</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a8fe39312ebdc058d196bb34c18fe9b69"></a>
@@ -201,10 +198,10 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Constructor. Initialize with c-style string, which will be copied. Automatically calculates hash.</p>
+<p>Constructor. Initialize with c-style std::string, which will be copied. Automatically calculates hash.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>A c-style string. Will be copied internaly.</td></tr>
+    <tr><td class="paramname">str</td><td>A c-style std::string. Will be copied internaly.</td></tr>
   </table>
   </dd>
 </dl>
@@ -233,10 +230,10 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Constructor. Initialize with c++style string, which will be copied. Automatically calculates hash.</p>
+<p>Constructor. Initialize with c++style std::string, which will be copied. Automatically calculates hash.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">right</td><td>The string to initialize with.</td></tr>
+    <tr><td class="paramname">right</td><td>The std::string to initialize with.</td></tr>
   </table>
   </dd>
 </dl>
@@ -264,14 +261,65 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<<<<<<< HEAD
-<p>ctor. Default constructor </p>
-<hr/>
- 
-=======
-<p>ctor. Default constructor. Empty string.</p>
+<p>Default constructor. Empty std::string.</p>
 
->>>>>>> 1776432f... 4.3
+</div>
+</div>
+<a class="anchor" id="a1dd7ad102691cf96acec37c4d319a953"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::StringHash::StringHash </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy Constructor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>String hash from which to copy.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a1d4d901faa1e769bd8b83562f82774a6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">pvr::StringHash::~StringHash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Dtor.</p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -297,10 +345,10 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Appends a string to the end of this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a>, recalculates hash.</p>
+<p>Appends a std::string to the end of this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a>, recalculates hash.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ptr</td><td>A string</td></tr>
+    <tr><td class="paramname">ptr</td><td>A std::string</td></tr>
   </table>
   </dd>
 </dl>
@@ -308,7 +356,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a3c105cc03273e2498d42d740bf955198"></a>
+<a class="anchor" id="a94fd40086e2e4890ebbf35a163aa5090"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -318,7 +366,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="classpvr_1_1_string_hash.html">StringHash</a>&amp; pvr::StringHash::append </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a> &amp;&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>str</em></td><td>)</td>
           <td></td>
         </tr>
@@ -330,10 +378,10 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Appends a string.</p>
+<p>Appends a std::string.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>A string</td></tr>
+    <tr><td class="paramname">str</td><td>A std::string</td></tr>
   </table>
   </dd>
 </dl>
@@ -363,10 +411,10 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Assigns the string to the string ptr.</p>
+<p>Assigns the std::string to the std::string ptr.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ptr</td><td>A string</td></tr>
+    <tr><td class="paramname">ptr</td><td>A std::string</td></tr>
   </table>
   </dd>
 </dl>
@@ -374,7 +422,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="abbd49c7cdbfd5e04ae2117d1803fd666"></a>
+<a class="anchor" id="a01a265f92429bbbec77b3937fb6d9306"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -384,7 +432,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="classpvr_1_1_string_hash.html">StringHash</a>&amp; pvr::StringHash::assign </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a> &amp;&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>str</em></td><td>)</td>
           <td></td>
         </tr>
@@ -396,10 +444,10 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Assigns the string to the string str.</p>
+<p>Assigns the std::string to the std::string str.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>A string</td></tr>
+    <tr><td class="paramname">str</td><td>A std::string</td></tr>
   </table>
   </dd>
 </dl>
@@ -428,8 +476,8 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a> object</p>
-<dl class="section return"><dt>Returns</dt><dd>A c-string representation of the contained string.</dd></dl>
+<p>Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> object</p>
+<dl class="section return"><dt>Returns</dt><dd>A c-string representation of the contained std::string.</dd></dl>
 
 </div>
 </div>
@@ -454,7 +502,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Clear this string hash</p>
+<p>Clear this std::string hash</p>
 
 </div>
 </div>
@@ -479,8 +527,8 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Return if the string is empty</p>
-<dl class="section return"><dt>Returns</dt><dd>true if the string is emtpy (length=0), false otherwise</dd></dl>
+<p>Return if the std::string is empty</p>
+<dl class="section return"><dt>Returns</dt><dd>true if the std::string is emtpy (length=0), false otherwise</dd></dl>
 
 </div>
 </div>
@@ -505,8 +553,8 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a> object</p>
-<dl class="section return"><dt>Returns</dt><dd>The hash value of this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a>.</dd></dl>
+<p>Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> object</p>
+<dl class="section return"><dt>Returns</dt><dd>The hash value of this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a>.</dd></dl>
 
 </div>
 </div>
@@ -531,14 +579,8 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<<<<<<< HEAD
-<p>Return the length of this string hash. </p>
-<hr/>
- <dl class="section return"><dt>Returns</dt><dd>Length of this string hash </dd></dl>
-=======
-<p>Return the length of this string hash</p>
-<dl class="section return"><dt>Returns</dt><dd>Length of this string hash</dd></dl>
->>>>>>> 1776432f... 4.3
+<p>Return the length of this std::string hash</p>
+<dl class="section return"><dt>Returns</dt><dd>Length of this std::string hash</dd></dl>
 
 </div>
 </div>
@@ -563,14 +605,8 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<<<<<<< HEAD
-<p>Convert to string. </p>
-<hr/>
- <dl class="section return"><dt>Returns</dt><dd>A string representatation of this hash </dd></dl>
-=======
-<p>Conversion to string reference. No-op.</p>
-<dl class="section return"><dt>Returns</dt><dd>A string representatation of this hash</dd></dl>
->>>>>>> 1776432f... 4.3
+<p>Conversion to std::string reference. No-op.</p>
+<dl class="section return"><dt>Returns</dt><dd>A std::string representatation of this hash</dd></dl>
 
 </div>
 </div>
@@ -599,11 +635,44 @@ Public Member Functions</h2></td></tr>
 <p>Inequality Operator. Compares hash values. Extremely fast.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>A <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a> to compare with</td></tr>
+    <tr><td class="paramname">str</td><td>A <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> to compare with</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if they don't match</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a4386b029bb05c083dc4c88e594572657"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool pvr::StringHash::operator&lt; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a> &amp;&#160;</td>
+          <td class="paramname"><em>str</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Less than Operator. Compares hash values, except on debug builds where it checks for collisions. Extremely fast.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">str</td><td>A <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> to compare with</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if this should be considered less than str, otherwise false.</dd></dl>
 
 </div>
 </div>
@@ -632,11 +701,44 @@ Public Member Functions</h2></td></tr>
 <p>Less-than or equal operator</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>Right hand side of the operator (<a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a>)</td></tr>
+    <tr><td class="paramname">str</td><td>Right hand side of the operator (<a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a>)</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Return true if left-hand side is less than or equal to the right-hand side</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a658b0d734a8caafa2b870efa18b17a1a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpvr_1_1_string_hash.html">StringHash</a>&amp; pvr::StringHash::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpvr_1_1_string_hash.html">StringHash</a>&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy assignment operator.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td>String hash from which to copy.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>this object</dd></dl>
 
 </div>
 </div>
@@ -665,7 +767,7 @@ Public Member Functions</h2></td></tr>
 <p>== Operator. Compares hash values. Extremely fast.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>A hashed string to compare with</td></tr>
+    <tr><td class="paramname">str</td><td>A hashed std::string to compare with</td></tr>
   </table>
   </dd>
 </dl>
@@ -696,10 +798,10 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Equality Operator. This function performs a strcmp(), so it is orders of magnitude slower than comparing to another <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a>, but still much faster than creating a temporary <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a> for one comparison. </p>
+<p>Equality Operator. This function performs a strcmp(), so it is orders of magnitude slower than comparing to another <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a>, but still much faster than creating a temporary <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> for one comparison. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>A string to compare with</td></tr>
+    <tr><td class="paramname">str</td><td>A std::string to compare with</td></tr>
   </table>
   </dd>
 </dl>
@@ -729,10 +831,10 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Equality Operator. This function performs a string comparison so it is orders of magnitude slower than comparing to another <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a>, but still much faster than creating a temporary <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a> for one comparison.</p>
+<p>Equality Operator. This function performs a std::string comparison so it is orders of magnitude slower than comparing to another <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a>, but still much faster than creating a temporary <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> for one comparison.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>A string to compare with</td></tr>
+    <tr><td class="paramname">str</td><td>A std::string to compare with</td></tr>
   </table>
   </dd>
 </dl>
@@ -765,7 +867,7 @@ Public Member Functions</h2></td></tr>
 <p>Greater-than operator</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>Right hand side of the operator (<a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a>)</td></tr>
+    <tr><td class="paramname">str</td><td>Right hand side of the operator (<a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a>)</td></tr>
   </table>
   </dd>
 </dl>
@@ -798,7 +900,7 @@ Public Member Functions</h2></td></tr>
 <p>Greater-than or equal operator</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">str</td><td>Right hand side of the operator (<a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a>)</td></tr>
+    <tr><td class="paramname">str</td><td>Right hand side of the operator (<a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a>)</td></tr>
   </table>
   </dd>
 </dl>
@@ -827,18 +929,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<<<<<<< HEAD
-<p>Return the length of this string hash. </p>
-<hr/>
- <dl class="section return"><dt>Returns</dt><dd>Length of this string hash </dd></dl>
-=======
-<p>Return the length of this string hash</p>
-<dl class="section return"><dt>Returns</dt><dd>Length of this string hash</dd></dl>
->>>>>>> 1776432f... 4.3
+<p>Return the length of this std::string hash</p>
+<dl class="section return"><dt>Returns</dt><dd>Length of this std::string hash</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a16211981b40fff2b4955f2da11b7e36d"></a>
+<a class="anchor" id="aef49a4a192aef6f3724905811b85084b"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -846,7 +942,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="namespacepvr.html#a1ed002df805fdbdb1a5840f9cca51b4d">string</a>&amp; pvr::StringHash::str </td>
+          <td class="memname">const std::string&amp; pvr::StringHash::str </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -859,8 +955,8 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed string with functionality for fast compares.">StringHash</a> object</p>
-<dl class="section return"><dt>Returns</dt><dd>The base string object contained in this string hash.</dd></dl>
+<p>Get the base string object used by this <a class="el" href="classpvr_1_1_string_hash.html" title="Implementation of a hashed std::string with functionality for fast compares.">StringHash</a> object</p>
+<dl class="section return"><dt>Returns</dt><dd>The base string object contained in this std::string hash.</dd></dl>
 
 </div>
 </div>

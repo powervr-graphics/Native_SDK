@@ -43,5 +43,6 @@ COMPILE_ALL_CPP_IN_DIRECTORIES := 1
            # FileIO/TextureReaderBMP.o \
            # FileIO/TextureReaderTGA.o \
            # ShadowVolume.o \
+		   # Volume.o \
 
 include $(SDKDIR)/Builds/Linux/make_framework.mak

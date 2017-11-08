@@ -3,28 +3,22 @@
 \Title        Introducing the POD 3D file format
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
-\brief        Shows how to load POD files and play the animation with basic  lighting
+\brief        Shows how to load POD files and play the animation with basic lighting
 ***********************************************************************************************************************/
-//Main include file for the PVRShell library. Use this file when you will not be linking the PVRApi library.
-#include "PVRShell/PVRShellNoPVRApi.h"
-//Main include file for the PVRAssets library.
+#include "PVRShell/PVRShell.h"
 #include "PVRAssets/PVRAssets.h"
-//The OpenGL ES bindings used throughout this SDK. Use by calling gl::initGL and then using all the OpenGL ES functions from the gl::namespace.
-// (So, glTextImage2D becomes gl::TexImage2D)
-#include "PVRNativeApi/NativeGles.h"
+#include "PVRUtils/PVRUtilsGles.h"
 
-using namespace pvr;
-using namespace pvr::types;
 // Index to bind the attributes to vertex shaders
-const pvr::uint32 VertexArray = 0;
-const pvr::uint32 NormalArray = 1;
-const pvr::uint32 TexCoordArray = 2;
-const pvr::uint32 NumArraysPerView = 4;
+const uint32_t VertexArray = 0;
+const uint32_t NormalArray = 1;
+const uint32_t TexCoordArray = 2;
+const uint32_t NumArraysPerView = 4;
 //Shader files
-const char FragShaderSrcFile[] = "FragShader.fsh";
-const char VertShaderSrcFile[] = "VertShader.vsh";
-const char TexQuadFragShaderSrcFile[] = "TexQuadFragShader.fsh";
-const char TexQuadVertShaderSrcFile[] = "TexQuadVertShader.vsh";
+const char FragShaderSrcFile[] = "FragShader_ES3.fsh";
+const char VertShaderSrcFile[] = "VertShader_ES3.vsh";
+const char TexQuadFragShaderSrcFile[] = "TexQuadFragShader_ES3.fsh";
+const char TexQuadVertShaderSrcFile[] = "TexQuadVertShader_ES3.vsh";
 //POD scene file
 const char SceneFile[] = "GnomeToy.pod";
 
@@ -42,49 +36,57 @@ glm::vec3 viewOffset(1.5f, 0.0f, 0.0f);
 ***********************************************************************************************************************/
 class MultiviewVR : public pvr::Shell
 {
+	pvr::EglContext _context;
+
 	// 3D Model
-	pvr::assets::ModelHandle  scene;
+	pvr::assets::ModelHandle _scene;
 
 	// OpenGL handles for shaders, textures and VBOs
-	pvr::uint32 vertShader;
-	pvr::uint32 fragShader;
-	std::vector<GLuint> vbo;
-	std::vector<GLuint> indexVbo;
-	std::vector<GLuint> texDiffuse;
+	uint32_t _vertShader;
+	uint32_t _fragShader;
+	std::vector<GLuint> _vbo;
+	std::vector<GLuint> _indexVbo;
+	std::vector<GLuint> _texDiffuse;
 
-	uint32 width_high;
-	uint32 height_high;
+	uint32_t _widthHigh;
+	uint32_t _heightHigh;
 
-	GLuint vboQuad;
-	GLuint iboQuad;
+	GLuint _vboQuad;
+	GLuint _iboQuad;
+
+	// UIRenderer class used to display text
+	pvr::ui::UIRenderer _uiRenderer;
+
 	// Group shader programs and their uniform locations together
 	struct
 	{
 		GLuint handle;
-		pvr::uint32 uiMVPMatrixLoc;
-		pvr::uint32 uiLightDirLoc;
-		pvr::uint32 uiWorldViewITLoc;
-	} multiViewProgram;
+		uint32_t uiMVPMatrixLoc;
+		uint32_t uiLightDirLoc;
+		uint32_t uiWorldViewITLoc;
+	} _multiViewProgram;
+
 	struct
 	{
 		GLuint handle;
-		pvr::uint32 layerIndexLoc;
+		uint32_t layerIndexLoc;
 
-	} texQuadProgram;
+	} _texQuadProgram;
 
-	struct MultiViewFbo
+	struct
 	{
-		native::HFbo_ fbo;
-		native::HTexture_ color;
-		native::HTexture_ depth;
-	};
-	MultiViewFbo multiViewFbo;
+		GLuint fbo;
+		GLuint colorTexture;
+		GLuint depthTexture;
+	} _multiViewFbo;
+
 	// Variables to handle the animation in a time-based manner
-	pvr::float32 frame;
-	glm::mat4 projection[NumArraysPerView];
-	glm::mat4 mvp[NumArraysPerView];
-	glm::mat4 worldViewIT[NumArraysPerView];
-	glm::vec3 lightDir[NumArraysPerView];
+	float _frame;
+	glm::mat4 _projection[NumArraysPerView];
+	glm::mat4 _mvp[NumArraysPerView];
+	glm::mat4 _worldViewIT[NumArraysPerView];
+	glm::vec3 _lightDir[NumArraysPerView];
+
 public:
 	//pvr::Shell implementation.
 	virtual pvr::Result initApplication();
@@ -97,48 +99,40 @@ public:
 	bool loadShaders();
 	bool LoadVbos();
 	bool createMultiViewFbo();
-	pvr::Result renderToMultiViewFbo();
-	Result loadTexturePVR(const StringHash& filename, GLuint& outTexHandle,
-	                      pvr::Texture* outTexture, TextureHeader* outDescriptor);
-
+	bool renderToMultiViewFbo();
 	void drawHighLowResQuad();
-
 	void drawMesh(int i32NodeIndex);
 };
 
-
 bool MultiviewVR::createMultiViewFbo()
 {
-	width_high = getWidth() / 4;
-	height_high = getHeight() / 2;
-
+	_widthHigh = getWidth() / 4;
+	_heightHigh = getHeight() / 2;
 
 	// generate the color texture
 	{
-		gl::GenTextures(1, &multiViewFbo.color.handle);
-		gl::BindTexture(GL_TEXTURE_2D_ARRAY, multiViewFbo.color.handle);
+		gl::GenTextures(1, &_multiViewFbo.colorTexture);
+		gl::BindTexture(GL_TEXTURE_2D_ARRAY, _multiViewFbo.colorTexture);
 		gl::TexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		gl::TexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		gl::TexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, width_high, height_high, 4);
+		gl::TexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, _widthHigh, _heightHigh, 4);
 	}
 	// generate the depth texture
 	{
-		gl::GenTextures(1, &multiViewFbo.depth.handle);
-		gl::BindTexture(GL_TEXTURE_2D_ARRAY, multiViewFbo.depth.handle);
+		gl::GenTextures(1, &_multiViewFbo.depthTexture);
+		gl::BindTexture(GL_TEXTURE_2D_ARRAY, _multiViewFbo.depthTexture);
 		gl::TexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		gl::TexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		gl::TexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_DEPTH_COMPONENT24, width_high, height_high, 4);
+		gl::TexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_DEPTH_COMPONENT24, _widthHigh, _heightHigh, 4);
 	}
 
 	// generate the fbo
 	{
-		gl::GenFramebuffers(1, &multiViewFbo.fbo.handle);
-		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, multiViewFbo.fbo.handle);
+		gl::GenFramebuffers(1, &_multiViewFbo.fbo);
+		gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, _multiViewFbo.fbo);
 		// Attach texture to the framebuffer.
-		glext::FramebufferTextureMultiviewOVR(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-		                                      multiViewFbo.color.handle, 0, 0, 4);
-		glext::FramebufferTextureMultiviewOVR(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-		                                      multiViewFbo.depth.handle, 0, 0, 4);
+		gl::ext::FramebufferTextureMultiviewOVR(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _multiViewFbo.colorTexture, 0, 0, 4);
+		gl::ext::FramebufferTextureMultiviewOVR(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _multiViewFbo.depthTexture, 0, 0, 4);
 
 		GLenum result = gl::CheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
 		if (result != GL_FRAMEBUFFER_COMPLETE)
@@ -153,7 +147,7 @@ bool MultiviewVR::createMultiViewFbo()
 			case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: errorStr = "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE"; break;
 			}
 
-			pvr::Log("Failed to create Multi view fbo %s", errorStr);
+			("Failed to create Multi view fbo %s", errorStr);
 			// Unbind the  framebuffer.
 			gl::BindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 			return false;
@@ -163,140 +157,27 @@ bool MultiviewVR::createMultiViewFbo()
 	return true;
 }
 
-
-/*!*********************************************************************************************************************
-\brief  Create Shader program from vertex and fragment shader. Logs error if one occurs. (Code Extracted from PVRApi.)
-\return Return pvr::Result::Success on success
-\param  shaders[] An array of OpenGL ES compiled shaders that will be combined into a shader program
-\param  count The number of shaders into shaders
-\param  attribs An array of attribute names, which will each be assigned successive attribute locations.
-\param  attribCount The number of attributes in attribs
-\param[out] shaderProg The shader program, if successful.
-***********************************************************************************************************************/
-Result createShaderProgram(native::HShader_ shaders[], uint32 count, const char** attribs, uint32 attribCount, GLuint& shaderProg)
-{
-	shaderProg = gl::CreateProgram();
-	for (uint32 i = 0; i < count; ++i) { gl::AttachShader(shaderProg, shaders[i]); }
-
-	if (attribs && attribCount)
-	{
-		for (uint32 i = 0; i < attribCount; ++i) { gl::BindAttribLocation(shaderProg, i, attribs[i]); }
-	}
-	gl::LinkProgram(shaderProg);
-	//check for link success
-	GLint glStatus;
-	gl::GetProgramiv(shaderProg, GL_LINK_STATUS, &glStatus);
-	if (!glStatus)
-	{
-		std::string infolog;
-		int32 infoLogLength, charWriten;
-		gl::GetProgramiv(shaderProg, GL_INFO_LOG_LENGTH, &infoLogLength);
-		infolog.resize(infoLogLength);
-		if (infoLogLength)
-		{
-			gl::GetProgramInfoLog(shaderProg, infoLogLength, &charWriten, &(infolog)[0]);
-			Log(Log.Debug, infolog.c_str());
-		}
-		return Result::InvalidData;
-	}
-	return Result::Success;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-// Example specific methods
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/*!*********************************************************************************************************************
-\brief  load pvr texture
-\return Result::Success on success
-\param  const StringHash & filename
-\param  GLuint & outTexHandle
-\param  pvr::Texture * outTexture
-\param  assets::TextureHeader * outDescriptor
-***********************************************************************************************************************/
-Result MultiviewVR::loadTexturePVR(const StringHash& filename, GLuint& outTexHandle, pvr::Texture* outTexture,
-                                   TextureHeader* outDescriptor)
-{
-	Texture tempTexture;
-	pvr::nativeGles::TextureUploadResults results;
-	Stream::ptr_type assetStream = this->getAssetStream(filename);
-
-	if (!assetStream.get())
-	{
-		Log(Log.Error, "AssetStore.loadTexture error for filename %s : File not found", filename.c_str());
-		return Result::NotFound;
-	}
-	results.result = assets::textureLoad(assetStream, TextureFileFormat::PVR, tempTexture);
-	if (results.result == Result::Success)
-	{
-		bool isDecompressed;
-		types::ImageAreaSize areaSize; PixelFormat pixelFmt;
-		results = pvr::nativeGles::textureUpload(getPlatformContext(), tempTexture);
-	}
-	if (results.result != Result::Success)
-	{
-		Log(Log.Error, "AssetStore.loadTexture error for filename %s : Failed to load texture with code %s.",
-		    filename.c_str(), Log.getResultCodeString(results.result));
-		return results.result;
-	}
-	if (outTexture) { *outTexture = tempTexture; }
-	outTexHandle = results.image;
-	return results.result;
-}
-
-/*!*********************************************************************************************************************
-\brief  Load model
-\return Return Result::Success on success
-\param  assetProvider Assets stream provider
-\param  filename Name of the model file
-\param  outModel Returned loaded model
-***********************************************************************************************************************/
-Result loadModel(pvr::IAssetProvider* assetProvider, const char* filename, assets::ModelHandle& outModel)
-{
-	Stream::ptr_type assetStream = assetProvider->getAssetStream(filename);
-	if (!assetStream.get())
-	{
-		Log(Log.Error, "AssetStore.loadModel  error for filename %s : File not found", filename);
-		return Result::NotFound;
-	}
-
-	assets::PODReader reader(assetStream);
-	assets::ModelHandle handle = assets::Model::createWithReader(reader);
-
-	if (handle.isNull())
-	{
-		Log(Log.Error, "AssetStore.loadModel error : Failed to load model %s.", filename);
-		return pvr::Result::UnableToOpen;
-	}
-	else
-	{
-		outModel = handle;
-	}
-	return Result::Success;
-}
-
 /*!*********************************************************************************************************************
 \brief  Load the material's textures
 \return Return true if success
 ***********************************************************************************************************************/
 bool MultiviewVR::loadTextures()
 {
-	pvr::uint32 numMaterials = scene->getNumMaterials();
-	texDiffuse.resize(numMaterials);
-	for (pvr::uint32 i = 0; i < numMaterials; ++i)
+	uint32_t numMaterials = _scene->getNumMaterials();
+	_texDiffuse.resize(numMaterials);
+	for (uint32_t i = 0; i < numMaterials; ++i)
 	{
-		const pvr::assets::Model::Material& material = scene->getMaterial(i);
+		const pvr::assets::Model::Material& material = _scene->getMaterial(i);
 		if (material.defaultSemantics().getDiffuseTextureIndex() != -1)
 		{
 			// Load the diffuse texture map
-			if (loadTexturePVR(scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName(),
-			                   texDiffuse[i], NULL, 0) != pvr::Result::Success)
+			if (!pvr::utils::textureUpload(*this, _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str(), _texDiffuse[i]))
 			{
-				Log("Failed to load texture %s", scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
-				return false;
+				this->setExitMessage("Error: Couldn't load the %s file\n", _scene->getTexture(material.defaultSemantics().getDiffuseTextureIndex()).getName().c_str());
+				return true;
 			}
-			gl::BindTexture(GL_TEXTURE_2D, texDiffuse[i]);
+
+			gl::BindTexture(GL_TEXTURE_2D, _texDiffuse[i]);
 			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			gl::TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -315,67 +196,38 @@ bool MultiviewVR::loadShaders()
 	// Load and compile the shaders from files.
 	{
 		const char* attributes[] = { "inVertex", "inNormal", "inTexCoord" };
-		pvr::assets::ShaderFile fileVersioning;
-		fileVersioning.populateValidVersions(VertShaderSrcFile, *this);
-		native::HShader_ shaders[2];
-		if (!pvr::nativeGles::loadShader(*fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3), ShaderType::VertexShader, 0, 0, shaders[0]))
+		const uint16_t attribIndices[] = { 0, 1, 2 };
+		if (!(_multiViewProgram.handle = pvr::utils::createShaderProgram(*this, VertShaderSrcFile, FragShaderSrcFile, attributes, attribIndices, 3)))
 		{
-			return false;
-		}
-
-		fileVersioning.populateValidVersions(FragShaderSrcFile, *this);
-		if (!pvr::nativeGles::loadShader(*fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3), ShaderType::FragmentShader, 0, 0, shaders[1]))
-		{
-			return false;
-		}
-		
-		if (createShaderProgram(shaders, 2, attributes, sizeof(attributes) / sizeof(attributes[0]), multiViewProgram.handle) != pvr::Result::Success)
-		{
+			setExitMessage("Unable to create default program (%s, %s)", VertShaderSrcFile, FragShaderSrcFile);
 			return false;
 		}
 
 		// Set the sampler2D variable to the first texture unit
-		gl::UseProgram(multiViewProgram.handle);
-		gl::Uniform1i(gl::GetUniformLocation(multiViewProgram.handle, "sTexture"), 0);
+		gl::UseProgram(_multiViewProgram.handle);
+		gl::Uniform1i(gl::GetUniformLocation(_multiViewProgram.handle, "sTexture"), 0);
 
 		// Store the location of uniforms for later use
-		multiViewProgram.uiMVPMatrixLoc = gl::GetUniformLocation(multiViewProgram.handle, "MVPMatrix");
-		multiViewProgram.uiLightDirLoc = gl::GetUniformLocation(multiViewProgram.handle, "LightDirection");
-		multiViewProgram.uiWorldViewITLoc = gl::GetUniformLocation(multiViewProgram.handle, "WorldViewIT");
-		gl::DeleteShader(shaders[0]);
-		gl::DeleteShader(shaders[1]);
+		_multiViewProgram.uiMVPMatrixLoc = gl::GetUniformLocation(_multiViewProgram.handle, "MVPMatrix");
+		_multiViewProgram.uiLightDirLoc = gl::GetUniformLocation(_multiViewProgram.handle, "LightDirection");
+		_multiViewProgram.uiWorldViewITLoc = gl::GetUniformLocation(_multiViewProgram.handle, "WorldViewIT");
 	}
 
 	// texture Quad program
 	{
 		const char* attributes[] = { "inVertex", "HighResTexCoord", "LowResTexCoord" };
-		pvr::assets::ShaderFile fileVersioning;
-		fileVersioning.populateValidVersions(TexQuadVertShaderSrcFile, *this);
-		native::HShader_ shaders[2];
-		if (!pvr::nativeGles::loadShader(*fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3),
-		                                 ShaderType::VertexShader, 0, 0, shaders[0]))
-		{
-			return false;
-		}
+		const uint16_t attribIndices[] = { 0, 1, 2 };
 
-		fileVersioning.populateValidVersions(TexQuadFragShaderSrcFile, *this);
-		if (!pvr::nativeGles::loadShader(*fileVersioning.getStreamForSpecificApi(pvr::Api::OpenGLES3),
-		                                 ShaderType::FragmentShader, 0, 0, shaders[1]))
+		if (!(_texQuadProgram.handle = pvr::utils::createShaderProgram(*this, TexQuadVertShaderSrcFile, TexQuadFragShaderSrcFile, attributes, attribIndices, 3)))
 		{
-			return false;
-		}
-		if (createShaderProgram(shaders, 2, attributes, sizeof(attributes) / sizeof(attributes[0]),
-		                        texQuadProgram.handle) != pvr::Result::Success)
-		{
+			setExitMessage("Unable to create default program (%s, %s)", TexQuadVertShaderSrcFile, TexQuadFragShaderSrcFile);
 			return false;
 		}
 
 		// Set the sampler2D variable to the first texture unit
-		gl::UseProgram(texQuadProgram.handle);
-		gl::Uniform1i(gl::GetUniformLocation(texQuadProgram.handle, "sTexture"), 0);
-		texQuadProgram.layerIndexLoc =  gl::GetUniformLocation(texQuadProgram.handle, "layerIndex");
-		gl::DeleteShader(shaders[0]);
-		gl::DeleteShader(shaders[1]);
+		gl::UseProgram(_texQuadProgram.handle);
+		gl::Uniform1i(gl::GetUniformLocation(_texQuadProgram.handle, "sTexture"), 0);
+		_texQuadProgram.layerIndexLoc =  gl::GetUniformLocation(_texQuadProgram.handle, "layerIndex");
 	}
 	return true;
 }
@@ -386,40 +238,40 @@ bool MultiviewVR::loadShaders()
 ***********************************************************************************************************************/
 bool MultiviewVR::LoadVbos()
 {
-	vbo.resize(scene->getNumMeshes());
-	indexVbo.resize(scene->getNumMeshes());
-	gl::GenBuffers(scene->getNumMeshes(), &vbo[0]);
+	_vbo.resize(_scene->getNumMeshes());
+	_indexVbo.resize(_scene->getNumMeshes());
+	gl::GenBuffers(_scene->getNumMeshes(), &_vbo[0]);
 
-	// Load vertex data of all meshes in the scene into VBOs
+	// Load vertex data of all meshes in the _scene into VBOs
 	// The meshes have been exported with the "Interleave Vectors" option,
 	// so all data is interleaved in the buffer at pMesh->pInterleaved.
 	// Interleaving data improves the memory access pattern and cache efficiency,
 	// thus it can be read faster by the hardware.
 
-	for (uint32 i = 0; i < scene->getNumMeshes(); ++i)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); ++i)
 	{
 		// Load vertex data into buffer object
-		const pvr::assets::Mesh& mesh = scene->getMesh(i);
+		const pvr::assets::Mesh& mesh = _scene->getMesh(i);
 		size_t size = mesh.getDataSize(0);
-		gl::BindBuffer(GL_ARRAY_BUFFER, vbo[i]);
+		gl::BindBuffer(GL_ARRAY_BUFFER, _vbo[i]);
 		gl::BufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(size), mesh.getData(0), GL_STATIC_DRAW);
 
 		// Load index data into buffer object if available
-		indexVbo[i] = 0;
+		_indexVbo[i] = 0;
 		if (mesh.getFaces().getData())
 		{
-			gl::GenBuffers(1, &indexVbo[i]);
+			gl::GenBuffers(1, &_indexVbo[i]);
 			size = mesh.getFaces().getDataSize();
-			gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVbo[i]);
+			gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo[i]);
 			gl::BufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(size), mesh.getFaces().getData(), GL_STATIC_DRAW);
 		}
 	}
 
 	{
-		// generate the quad vbo and ibo
-		const pvr::float32 halfDim = 1.f;
+		// generate the quad _vbo and ibo
+		const float halfDim = 1.f;
 		// create quad vertices..
-		const pvr::float32 vertexData[] =
+		const float vertexData[] =
 		{
 			-halfDim, halfDim, // top left
 			-halfDim, -halfDim,// bottom left
@@ -433,15 +285,15 @@ bool MultiviewVR::LoadVbos()
 			1.0f, 1.0f,
 		};
 
-		pvr::uint16 indices[] = { 1, 2, 0, 0, 2, 3 };
+		uint16_t indices[] = { 1, 2, 0, 0, 2, 3 };
 
-		gl::GenBuffers(1, &vboQuad);
-		gl::GenBuffers(1, &iboQuad);
+		gl::GenBuffers(1, &_vboQuad);
+		gl::GenBuffers(1, &_iboQuad);
 
-		gl::BindBuffer(GL_ARRAY_BUFFER, vboQuad);
+		gl::BindBuffer(GL_ARRAY_BUFFER, _vboQuad);
 		gl::BufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
-		gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboQuad);
+		gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _iboQuad);
 		gl::BufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 		// unbind the buffers
 		gl::BindBuffer(GL_ARRAY_BUFFER, 0);
@@ -458,32 +310,30 @@ bool MultiviewVR::LoadVbos()
 ***********************************************************************************************************************/
 pvr::Result MultiviewVR::initApplication()
 {
-	// Load the scene
-	pvr::Result rslt = pvr::Result::Success;
-	setMinApiType(pvr::Api::OpenGLES3);
-	if ((rslt = loadModel(this, SceneFile, scene)) != pvr::Result::Success)
+	// Load the _scene
+	if (!pvr::utils::loadModel(*this, SceneFile, _scene))
 	{
-		this->setExitMessage("ERROR: Couldn't load the .pod file\n");
-		return rslt;
+		this->setExitMessage("Error: Couldn't load the %s file\n", SceneFile);
+		return pvr::Result::UnknownError;
 	}
 
 	// The cameras are stored in the file. We check it contains at least one.
-	if (scene->getNumCameras() == 0)
+	if (_scene->getNumCameras() == 0)
 	{
-		this->setExitMessage("ERROR: The scene does not contain a camera. Please add one and re-export.\n");
-		return pvr::Result::InvalidData;
+		this->setExitMessage("ERROR: The _scene does not contain a camera. Please add one and re-export.\n");
+		return pvr::Result::InitializationError;
 	}
 
-	// We also check that the scene contains at least one light
-	if (scene->getNumLights() == 0)
+	// We also check that the _scene contains at least one light
+	if (_scene->getNumLights() == 0)
 	{
-		this->setExitMessage("ERROR: The scene does not contain a light. Please add one and re-export.\n");
-		return pvr::Result::InvalidData;
+		this->setExitMessage("ERROR: The _scene does not contain a light. Please add one and re-export.\n");
+		return pvr::Result::InitializationError;
 	}
 
 	// Initialize variables used for the animation
-	frame = 0;
-	return rslt;
+	_frame = 0;
+	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
@@ -500,11 +350,18 @@ pvr::Result MultiviewVR::quitApplication() {  return pvr::Result::Success; }
 ***********************************************************************************************************************/
 pvr::Result MultiviewVR::initView()
 {
-	pvr::string ErrorStr;
+	if (this->getMinApi() < pvr::Api::OpenGLES3)
+	{
+		Log(LogLevel::Information, "This demo requires a minimum api of OpenGLES3.");
+	}
+
+	// create an OGLES context
+	_context = pvr::createEglContext();
+	_context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES3, this->getMaxApi());
+
+	std::string ErrorStr;
 	//Initialize the PowerVR OpenGL bindings. Must be called before using any of the gl:: commands.
-	gl::initGl();
-	glext::initGlext();
-	if (glext::FramebufferTextureMultiviewOVR == NULL)
+	if (!gl::isGlExtensionSupported("GL_OVR_multiview"))
 	{
 		this->setExitMessage("ERROR: Required extension GL_OVR_multiview extension not supported.");
 		return pvr::Result::UnsupportedRequest;
@@ -513,7 +370,7 @@ pvr::Result MultiviewVR::initView()
 	if (!createMultiViewFbo())
 	{
 		this->setExitMessage("Failed to create multiview fbo");
-		return pvr::Result::UnableToOpen;
+		return pvr::Result::UnknownError;
 	}
 
 	//  Initialize VBO data
@@ -542,51 +399,58 @@ pvr::Result MultiviewVR::initView()
 	gl::CullFace(GL_BACK);
 	gl::Enable(GL_CULL_FACE);
 	gl::Enable(GL_DEPTH_TEST);
-	//gl::Disable(GL_CULL_FACE);
 	gl::DepthFunc(GL_LEQUAL);
 
-	// Calculate the projection matrix
+	// Calculate the _projection matrix
 	bool isRotated = this->isScreenRotated() && this->isFullScreen();
 
-
-	// Set up the projection matrices for each view. For each eye the scene is rendered twice with different fov.
+	// Set up the _projection matrices for each view. For each eye the _scene is rendered twice with different fov.
 	// The narrower field of view gives half the size near plane of the wider fov in order to
-	// render the center of the scene at a higher resolution. The high and low resolution
+	// render the center of the _scene at a higher resolution. The high and low resolution
 	// images will then be interpolated in the fragment shader to create an image with higher resolutions for
 	// pixel that are center of the screen and lower resolutions for pixels outside the center of the screen
 	// 90 degrees.
 	// 53.1301024 degrees.  half the size for the near plane. tan(90/2) == (tan(53.13 / 2) * 2)
-	pvr::float32 fovWide = glm::radians(90.f);
-	pvr::float32 fovNarrow = glm::radians(53.1301024f);
+	float fovWide = glm::radians(90.f);
+	float fovNarrow = glm::radians(53.1301024f);
 
 	if (isRotated)
 	{
-		projection[0] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovWide, (float)height_high,
-		                (float)width_high, scene->getCamera(0).getNear(), scene->getCamera(0).getFar(),
-		                glm::pi<pvr::float32>() * .5f);// rotate by 90 degree
+		_projection[0] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovWide, (float)_heightHigh,
+		                 (float)_widthHigh, _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(),
+		                 glm::pi<float>() * .5f);// rotate by 90 degree
 
-		projection[1] = projection[0];
+		_projection[1] = _projection[0];
 
-		projection[2] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovNarrow, (float)height_high,
-		                (float)width_high, scene->getCamera(0).getNear(), scene->getCamera(0).getFar(),
-		                glm::pi<pvr::float32>() * .5f);// rotate by 90 degree
+		_projection[2] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovNarrow, (float)_heightHigh,
+		                 (float)_widthHigh, _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar(),
+		                 glm::pi<float>() * .5f);// rotate by 90 degree
 
-		projection[3] = projection[2];
+		_projection[3] = _projection[2];
 
 	}
 	else
 	{
-		projection[0] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovWide, (float)width_high,
-		                (float)height_high, scene->getCamera(0).getNear(), scene->getCamera(0).getFar());// rotate by 90 degree
+		_projection[0] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovWide, (float)_widthHigh,
+		                 (float)_heightHigh, _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar());// rotate by 90 degree
 
-		projection[1] = projection[0];
+		_projection[1] = _projection[0];
 
-		projection[2] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovNarrow, (float)width_high,
-		                (float)height_high, scene->getCamera(0).getNear(), scene->getCamera(0).getFar());// rotate by 90 degree
+		_projection[2] = pvr::math::perspectiveFov(pvr::Api::OpenGLES3, fovNarrow, (float)_widthHigh,
+		                 (float)_heightHigh, _scene->getCamera(0).getNear(), _scene->getCamera(0).getFar());// rotate by 90 degree
 
-		projection[3] = projection[2];
-
+		_projection[3] = _projection[2];
 	}
+
+	if (!_uiRenderer.init(getWidth(), getHeight(), isFullScreen()))
+	{
+		setExitMessage("Error: Failed to initialize the UIRenderer\n");
+		return pvr::Result::NotInitialized;
+	}
+
+	_uiRenderer.getDefaultTitle()->setText("MultiviewVR");
+	_uiRenderer.getDefaultTitle()->commitUpdates();
+
 	return pvr::Result::Success;
 }
 
@@ -597,74 +461,78 @@ pvr::Result MultiviewVR::initView()
 pvr::Result MultiviewVR::releaseView()
 {
 	// Deletes the textures
-	gl::DeleteTextures(static_cast<GLuint>(texDiffuse.size()), texDiffuse.data());
+	gl::DeleteTextures(static_cast<GLuint>(_texDiffuse.size()), _texDiffuse.data());
 
 	// Delete program and shader objects
-	gl::DeleteProgram(multiViewProgram.handle);
-	gl::DeleteProgram(texQuadProgram.handle);
+	gl::DeleteProgram(_multiViewProgram.handle);
+	gl::DeleteProgram(_texQuadProgram.handle);
 
 	// Delete buffer objects
-	scene->destroy();
-	gl::DeleteBuffers(static_cast<GLuint>(vbo.size()), vbo.data());
-	gl::DeleteBuffers(static_cast<GLuint>(indexVbo.size()), indexVbo.data());
-	gl::DeleteBuffers(static_cast<GLuint>(vbo.size()), &vboQuad);
-	gl::DeleteBuffers(static_cast<GLuint>(indexVbo.size()), &iboQuad);
+	_scene->destroy();
+	gl::DeleteBuffers(static_cast<GLuint>(_vbo.size()), _vbo.data());
+	gl::DeleteBuffers(static_cast<GLuint>(_indexVbo.size()), _indexVbo.data());
+	gl::DeleteBuffers(static_cast<GLuint>(_vbo.size()), &_vboQuad);
+	gl::DeleteBuffers(static_cast<GLuint>(_indexVbo.size()), &_iboQuad);
+
+	_uiRenderer.release();
+
+	_context->release();
 
 	return pvr::Result::Success;
 }
 
-pvr::Result MultiviewVR::renderToMultiViewFbo()
+bool MultiviewVR::renderToMultiViewFbo()
 {
-	pvr::nativeGles::logApiError("renderFrame begin");
-	gl::Viewport(0, 0, width_high, height_high);
+	debugLogApiError("renderFrame begin");
+	gl::Viewport(0, 0, _widthHigh, _heightHigh);
 	// Clear the color and depth buffer
-	gl::BindFramebuffer(GL_FRAMEBUFFER, multiViewFbo.fbo.handle);
+	gl::BindFramebuffer(GL_FRAMEBUFFER, _multiViewFbo.fbo);
 	gl::ClearColor(0.00, 0.70, 0.67, 1.0f); // Use a nice bright blue as clear color
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Use shader program
-	gl::UseProgram(multiViewProgram.handle);
+	gl::UseProgram(_multiViewProgram.handle);
 
-	// Calculates the frame number to animate in a time-based manner.
+	// Calculates the _frame number to animate in a time-based manner.
 	// get the time in milliseconds.
-	frame += (float)getFrameTime() / 30.f; /*design-time target fps for animation*/
+	_frame += (float)getFrameTime() / 30.f; /*design-time target fps for animation*/
 
-	if (frame > scene->getNumFrames() - 1) { frame = 0; }
+	if (_frame > _scene->getNumFrames() - 1) { _frame = 0; }
 
-	// Sets the scene animation to this frame
-	scene->setCurrentFrame(frame);
+	// Sets the _scene animation to this _frame
+	_scene->setCurrentFrame(_frame);
 
-	// Get the direction of the first light from the scene.
+	// Get the direction of the first light from the _scene.
 	glm::vec3 lightDirVec3;
-	scene->getLightDirection(0, lightDirVec3);
+	_scene->getLightDirection(0, lightDirVec3);
 	// For direction vectors, w should be 0
 	glm::vec4 lightDirVec4(glm::normalize(lightDirVec3), 1.f);
 
-	// Set up the view and projection matrices from the camera
+	// Set up the view and _projection matrices from the camera
 	glm::mat4 viewLeft, viewRight;
 	glm::vec3 vFrom, vTo, vUp;
 	float fFOV;
 
 	// Camera nodes are after the mesh and light nodes in the array
-	scene->getCameraProperties(0, fFOV, vFrom, vTo, vUp);
+	_scene->getCameraProperties(0, fFOV, vFrom, vTo, vUp);
 
 	// We can build the model view matrix from the camera position, target and an up vector.
 	// For this we use glm::lookAt()
-	viewLeft = glm::lookAt(vFrom - viewOffset , vTo, vUp);
+	viewLeft = glm::lookAt(vFrom - viewOffset, vTo, vUp);
 	viewRight = glm::lookAt(vFrom + viewOffset, vTo, vUp);
 
 	// left
-	lightDir[0] = glm::vec3(viewLeft * lightDirVec4);
-	lightDir[0] = lightDir[2] = glm::normalize(lightDir[0]);
+	_lightDir[0] = glm::vec3(viewLeft * lightDirVec4);
+	_lightDir[0] = _lightDir[2] = glm::normalize(_lightDir[0]);
 
 	//right
-	lightDir[1] = glm::vec3(viewRight * lightDirVec4);
-	lightDir[1] = lightDir[3] = glm::normalize(lightDir[1]);
+	_lightDir[1] = glm::vec3(viewRight * lightDirVec4);
+	_lightDir[1] = _lightDir[3] = glm::normalize(_lightDir[1]);
 
 	// Pass the light direction in view space to the shader
-	gl::Uniform3fv(multiViewProgram.uiLightDirLoc, NumArraysPerView, glm::value_ptr(lightDir[0]));
+	gl::Uniform3fv(_multiViewProgram.uiLightDirLoc, NumArraysPerView, glm::value_ptr(_lightDir[0]));
 
-	//  A scene is composed of nodes. There are 3 types of nodes:
+	//  A _scene is composed of nodes. There are 3 types of nodes:
 	//  - MeshNodes :
 	//    references a mesh in the pMesh[].
 	//    These nodes are at the beginning of the pNode[] array.
@@ -673,74 +541,95 @@ pvr::Result MultiviewVR::renderToMultiViewFbo()
 	//    with different attributes.
 	//  - lights
 	//  - cameras
-	//  To draw a scene, you must go through all the MeshNodes and draw the referenced meshes.
-	for (pvr::uint32 i = 0; i < scene->getNumMeshNodes(); ++i)
+	//  To draw a _scene, you must go through all the MeshNodes and draw the referenced meshes.
+	for (uint32_t i = 0; i < _scene->getNumMeshNodes(); ++i)
 	{
 		// Get the node model matrix
-		glm::mat4 mWorld = scene->getWorldMatrix(i);
+		glm::mat4 mWorld = _scene->getWorldMatrix(i);
 		glm::mat4 worldViewLeft = viewLeft *  mWorld;
 		glm::mat4 worldViewRight = viewRight * mWorld;
 
-		worldViewIT[0] = worldViewIT[2] = glm::inverseTranspose(worldViewLeft);
-		worldViewIT[1] = worldViewIT[3] = glm::inverseTranspose(worldViewRight);
+		_worldViewIT[0] = _worldViewIT[2] = glm::inverseTranspose(worldViewLeft);
+		_worldViewIT[1] = _worldViewIT[3] = glm::inverseTranspose(worldViewRight);
 
 
-		// Pass the model-view-projection matrix (MVP) to the shader to transform the vertice
-		mvp[0] = projection[0] * worldViewLeft;
-		mvp[1] = projection[1] * worldViewRight;
-		mvp[2] = projection[2] * worldViewLeft;
-		mvp[3] = projection[3] * worldViewRight;
+		// Pass the model-view-_projection matrix (MVP) to the shader to transform the vertice
+		_mvp[0] = _projection[0] * worldViewLeft;
+		_mvp[1] = _projection[1] * worldViewRight;
+		_mvp[2] = _projection[2] * worldViewLeft;
+		_mvp[3] = _projection[3] * worldViewRight;
 
-		pvr::nativeGles::logApiError("renderFrame before mvp");
-		gl::UniformMatrix4fv(multiViewProgram.uiMVPMatrixLoc, 4, GL_FALSE, glm::value_ptr(mvp[0]));
-		gl::UniformMatrix4fv(multiViewProgram.uiWorldViewITLoc, 4, GL_FALSE, glm::value_ptr(worldViewIT[0]));
-		pvr::nativeGles::logApiError("renderFrame after mvp");
+		debugLogApiError("renderFrame before _mvp");
+		gl::UniformMatrix4fv(_multiViewProgram.uiMVPMatrixLoc, 4, GL_FALSE, glm::value_ptr(_mvp[0]));
+		gl::UniformMatrix4fv(_multiViewProgram.uiWorldViewITLoc, 4, GL_FALSE, glm::value_ptr(_worldViewIT[0]));
+		debugLogApiError("renderFrame after _mvp");
 
 		//  Now that the model-view matrix is set and the materials are ready,
 		//  call another function to actually draw the mesh.
-		pvr::nativeGles::logApiError("renderFrame before draw");
+		debugLogApiError("renderFrame before draw");
 		drawMesh(i);
-		pvr::nativeGles::logApiError("renderFrame after draw");
+		debugLogApiError("renderFrame after draw");
 	}
-	pvr::nativeGles::logApiError("renderFrame end");
-	return pvr::Result::Success;
+
+	debugLogApiError("renderFrame end");
+	return true;
 }
 
 /*!*********************************************************************************************************************
 \return Result::Success if no error occurred
-\brief  Main rendering loop function of the program. The shell will call this function every frame.
+\brief  Main rendering loop function of the program. The shell will call this function every _frame.
 ***********************************************************************************************************************/
 pvr::Result MultiviewVR::renderFrame()
 {
 	renderToMultiViewFbo();
 
-	gl::BindFramebuffer(GL_FRAMEBUFFER, 0);
+	gl::BindFramebuffer(GL_FRAMEBUFFER, _context->getOnScreenFbo());
 	gl::ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	gl::Viewport(0, 0, getWidth(), getHeight());
 	// Clear the color and depth buffer
 	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	// Use shader program
-	gl::UseProgram(texQuadProgram.handle);
-	pvr::nativeGles::logApiError("TexQuad DrawArrays begin");
-	gl::BindTexture(GL_TEXTURE_2D_ARRAY, multiViewFbo.color.handle);
-	pvr::nativeGles::logApiError("TexQuad DrawArrays begin");
-	uint32 offset = sizeof(pvr::float32) * 8;
-	for (pvr::uint32 i = 0; i < 2; ++i)
+	gl::UseProgram(_texQuadProgram.handle);
+	debugLogApiError("TexQuad DrawArrays begin");
+	gl::BindTexture(GL_TEXTURE_2D_ARRAY, _multiViewFbo.colorTexture);
+	debugLogApiError("TexQuad DrawArrays begin");
+	uint32_t offset = sizeof(float) * 8;
+	for (uint32_t i = 0; i < 2; ++i)
 	{
 		gl::Viewport(getWidth() / 2 * i, 0, getWidth() / 2, getHeight());
 
-		pvr::nativeGles::logApiError("TexQuad DrawArrays begin");
+		debugLogApiError("TexQuad DrawArrays begin");
 		// Draw the quad
-		gl::Uniform1i(texQuadProgram.layerIndexLoc, i);
+		gl::Uniform1i(_texQuadProgram.layerIndexLoc, i);
 		drawHighLowResQuad();
-		pvr::nativeGles::logApiError("TexQuad DrawArrays after");
+		debugLogApiError("TexQuad DrawArrays after");
 	}
 	gl::DisableVertexAttribArray(0);
 	gl::DisableVertexAttribArray(1);
 
+	// reset the viewport to render the UI in the correct position in the screen
+	gl::Viewport(0, 0, getWidth(), getHeight());
+
+	//UIRENDERER
+	{
+		// render UI
+		_uiRenderer.beginRendering();
+		_uiRenderer.getSdkLogo()->render();
+		_uiRenderer.getDefaultTitle()->render();
+		_uiRenderer.endRendering();
+	}
+
+	if (this->shouldTakeScreenshot())
+	{
+		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
+	}
+
 	GLenum attach = GL_DEPTH;
 	gl::InvalidateFramebuffer(GL_FRAMEBUFFER, 1, &attach);
-	return Result::Success;
+
+	_context->swapBuffers();
+
+	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
@@ -749,32 +638,32 @@ pvr::Result MultiviewVR::renderFrame()
 ***********************************************************************************************************************/
 void MultiviewVR::drawMesh(int nodeIndex)
 {
-	int meshIndex = scene->getMeshNode(nodeIndex).getObjectId();
-	const pvr::assets::Mesh& mesh = scene->getMesh(meshIndex);
-	const pvr::int32 matId = scene->getMeshNode(nodeIndex).getMaterialIndex();
-	pvr::nativeGles::logApiError("before BindTexture");
-	gl::BindTexture(GL_TEXTURE_2D, texDiffuse[matId]);
-	pvr::nativeGles::logApiError("after  BindTexture");
+	int meshIndex = _scene->getMeshNode(nodeIndex).getObjectId();
+	const pvr::assets::Mesh& mesh = _scene->getMesh(meshIndex);
+	const int32_t matId = _scene->getMeshNode(nodeIndex).getMaterialIndex();
+	debugLogApiError("before BindTexture");
+	gl::BindTexture(GL_TEXTURE_2D, _texDiffuse[matId]);
+	debugLogApiError("after  BindTexture");
 	// bind the VBO for the mesh
 
-	gl::BindBuffer(GL_ARRAY_BUFFER, vbo[meshIndex]);
+	gl::BindBuffer(GL_ARRAY_BUFFER, _vbo[meshIndex]);
 	// bind the index buffer, won't hurt if the handle is 0
-	gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVbo[meshIndex]);
+	gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo[meshIndex]);
 
 	// Enable the vertex attribute arrays
-	pvr::nativeGles::logApiError("before EnableVertexAttribArray");
+	debugLogApiError("before EnableVertexAttribArray");
 	gl::EnableVertexAttribArray(VertexArray);
 	gl::EnableVertexAttribArray(NormalArray);
 	gl::EnableVertexAttribArray(TexCoordArray);
-	pvr::nativeGles::logApiError("after EnableVertexAttribArray");
+	debugLogApiError("after EnableVertexAttribArray");
 	// Set the vertex attribute offsets
 	const pvr::assets::VertexAttributeData* posAttrib = mesh.getVertexAttributeByName(AttribNames[0]);
 	const pvr::assets::VertexAttributeData* normalAttrib = mesh.getVertexAttributeByName(AttribNames[1]);
 	const pvr::assets::VertexAttributeData* texCoordAttrib = mesh.getVertexAttributeByName(AttribNames[2]);
 
-	gl::VertexAttribPointer(VertexArray, posAttrib->getN(), GL_FLOAT, GL_FALSE, mesh.getStride(0), (void*)(size_t)posAttrib->getOffset());
-	gl::VertexAttribPointer(NormalArray, normalAttrib->getN(), GL_FLOAT, GL_FALSE, mesh.getStride(0), (void*)(size_t)normalAttrib->getOffset());
-	gl::VertexAttribPointer(TexCoordArray, texCoordAttrib->getN(), GL_FLOAT, GL_FALSE, mesh.getStride(0), (void*)(size_t)texCoordAttrib->getOffset());
+	gl::VertexAttribPointer(VertexArray, posAttrib->getN(), GL_FLOAT, GL_FALSE, mesh.getStride(0), reinterpret_cast<const void*>(static_cast<uintptr_t>(posAttrib->getOffset())));
+	gl::VertexAttribPointer(NormalArray, normalAttrib->getN(), GL_FLOAT, GL_FALSE, mesh.getStride(0), reinterpret_cast<const void*>(static_cast<uintptr_t>(normalAttrib->getOffset())));
+	gl::VertexAttribPointer(TexCoordArray, texCoordAttrib->getN(), GL_FLOAT, GL_FALSE, mesh.getStride(0), reinterpret_cast<const void*>(static_cast<uintptr_t>(texCoordAttrib->getOffset())));
 
 	//  The geometry can be exported in 4 ways:
 	//  - Indexed Triangle list
@@ -783,45 +672,45 @@ void MultiviewVR::drawMesh(int nodeIndex)
 	//  - Non-Indexed Triangle strips
 	if (mesh.getNumStrips() == 0)
 	{
-		if (indexVbo[meshIndex])
+		if (_indexVbo[meshIndex])
 		{
 			// Indexed Triangle list
 			// Are our face indices unsigned shorts? If they aren't, then they are unsigned ints
-			GLenum type = (mesh.getFaces().getDataType() == IndexType::IndexType16Bit) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-			pvr::nativeGles::logApiError("before DrawElements");
+			GLenum type = (mesh.getFaces().getDataType() == pvr::IndexType::IndexType16Bit) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+			debugLogApiError("before DrawElements");
 			gl::DrawElements(GL_TRIANGLES, mesh.getNumFaces() * 3, type, 0);
-			pvr::nativeGles::logApiError("after DrawElements");
+			debugLogApiError("after DrawElements");
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			pvr::nativeGles::logApiError("before DrawArrays");
+			debugLogApiError("before DrawArrays");
 			gl::DrawArrays(GL_TRIANGLES, 0, mesh.getNumFaces() * 3);
-			pvr::nativeGles::logApiError("after DrawArrays");
+			debugLogApiError("after DrawArrays");
 		}
 	}
 	else
 	{
-		pvr::uint32 offset = 0;
+		uint32_t offset = 0;
 		// Are our face indices unsigned shorts? If they aren't, then they are unsigned ints
-		GLenum type = (mesh.getFaces().getDataType() == IndexType::IndexType16Bit) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+		GLenum type = (mesh.getFaces().getDataType() == pvr::IndexType::IndexType16Bit) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
 		for (int i = 0; i < (int)mesh.getNumStrips(); ++i)
 		{
-			if (indexVbo[meshIndex])
+			if (_indexVbo[meshIndex])
 			{
 				// Indexed Triangle strips
-				pvr::nativeGles::logApiError("before DrawElements");
+				debugLogApiError("before DrawElements");
 				gl::DrawElements(GL_TRIANGLE_STRIP, mesh.getStripLength(i) + 2, type,
-				                 (void*)(size_t)(offset * mesh.getFaces().getDataSize()));
-				pvr::nativeGles::logApiError("after DrawElements");
+				                 reinterpret_cast<const void*>(static_cast<uintptr_t>(offset * mesh.getFaces().getDataSize())));
+				debugLogApiError("after DrawElements");
 			}
 			else
 			{
 				// Non-Indexed Triangle strips
-				pvr::nativeGles::logApiError("before DrawArrays");
+				debugLogApiError("before DrawArrays");
 				gl::DrawArrays(GL_TRIANGLE_STRIP, offset, mesh.getStripLength(i) + 2);
-				pvr::nativeGles::logApiError("after DrawArrays");
+				debugLogApiError("after DrawArrays");
 			}
 			offset += mesh.getStripLength(i) + 2;
 		}
@@ -845,7 +734,7 @@ void MultiviewVR::drawMesh(int nodeIndex)
 void MultiviewVR::drawHighLowResQuad()
 {
 	// high res texture coord
-	static const float32 texHighRes[] =
+	static const float texHighRes[] =
 	{
 		-.5f, -.5f,// lower left
 		1.5f, -.5f,// lower right
@@ -853,7 +742,7 @@ void MultiviewVR::drawHighLowResQuad()
 		1.5f, 1.5f// upper right
 	};
 	// low res texture coord
-	static const float32 texLowRes[] =
+	static const float texLowRes[] =
 	{
 		0.f, 0.f,// lower left
 		1.f, 0.f,// lower right
@@ -886,4 +775,4 @@ void MultiviewVR::drawHighLowResQuad()
 \brief  This function must be implemented by the user of the shell.
     The user should return its Shell object defining the behaviour of the application.
 ***********************************************************************************************************************/
-std::auto_ptr<pvr::Shell> pvr::newDemo() {  return std::auto_ptr<pvr::Shell>(new MultiviewVR()); }
+std::unique_ptr<pvr::Shell> pvr::newDemo() {  return std::unique_ptr<pvr::Shell>(new MultiviewVR()); }

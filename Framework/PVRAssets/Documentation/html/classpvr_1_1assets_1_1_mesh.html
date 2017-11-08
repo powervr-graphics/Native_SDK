@@ -82,6 +82,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classpvr_1_1assets_1_1_mesh-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -98,7 +99,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This class is used to break meshes into different batches in order to avoid overflowing the number of uniforms that would otherwise be required to load all the bones into. <a href="structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html">FaceData</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html" title="The FaceData class contains the information of the Indexes that defines the Faces of a Mesh...">FaceData</a> class contains the information of the Indexes that defines the Faces of a <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>.  <a href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#details">More...</a><br/></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html" title="The FaceData class contains the information of the Indices that defines the Faces of a Mesh...">FaceData</a> class contains the information of the Indices that defines the Faces of a <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>.  <a href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_internal_data.html">InternalData</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Raw internal structure of the <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. <a href="structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#details">More...</a><br/></td></tr>
@@ -110,47 +111,52 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Definition of a single VertexAttribute. <a href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a4722749d8d5bfa2c811074f83a109169"><td class="memItemLeft" align="right" valign="top">typedef IndexedArray<br class="typebreak"/>
+&lt; <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a>, <br class="typebreak"/>
+StringHash &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4722749d8d5bfa2c811074f83a109169">VertexAttributeContainer</a></td></tr>
+<tr class="memdesc:a4722749d8d5bfa2c811074f83a109169"><td class="mdescLeft">&#160;</td><td class="mdescRight">This container is automatically kept sorted. <a href="#a4722749d8d5bfa2c811074f83a109169">More...</a><br/></td></tr>
+<tr class="separator:a4722749d8d5bfa2c811074f83a109169"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8be02a689e083b47c7a888840000837f"><td class="memItemLeft" align="right" valign="top">int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a8be02a689e083b47c7a888840000837f">addData</a> (const byte *const data, uint32 size, uint32 stride)</td></tr>
-<tr class="memdesc:a8be02a689e083b47c7a888840000837f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implicitly append a block of vertex data to the mesh and (optionally) populate it with data. <a href="#a8be02a689e083b47c7a888840000837f">More...</a><br/></td></tr>
-<tr class="separator:a8be02a689e083b47c7a888840000837f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a244117049a6b62bd8c905195283e4d66"><td class="memItemLeft" align="right" valign="top">int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a244117049a6b62bd8c905195283e4d66">addData</a> (const byte *const data, uint32 size, uint32 stride, uint32 index)</td></tr>
-<tr class="memdesc:a244117049a6b62bd8c905195283e4d66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a block of vertex data to the mesh at the specified index and (optionally) populate it with data.  <a href="#a244117049a6b62bd8c905195283e4d66">More...</a><br/></td></tr>
-<tr class="separator:a244117049a6b62bd8c905195283e4d66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc68f8428adf26a0ac6ea2d54e597869"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#adc68f8428adf26a0ac6ea2d54e597869">addFaces</a> (const byte *data, uint32 size, const types::IndexType indexType)</td></tr>
-<tr class="memdesc:adc68f8428adf26a0ac6ea2d54e597869"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add face information to the mesh. <a href="#adc68f8428adf26a0ac6ea2d54e597869">More...</a><br/></td></tr>
-<tr class="separator:adc68f8428adf26a0ac6ea2d54e597869"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3acc66fd2bc4e68f7134ff477d23daf"><td class="memItemLeft" align="right" valign="top">int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ad3acc66fd2bc4e68f7134ff477d23daf">addVertexAttribute</a> (const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a> &amp;element, bool forceReplace=false)</td></tr>
-<tr class="memdesc:ad3acc66fd2bc4e68f7134ff477d23daf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a vertex attribute to the mesh. <a href="#ad3acc66fd2bc4e68f7134ff477d23daf">More...</a><br/></td></tr>
-<tr class="separator:ad3acc66fd2bc4e68f7134ff477d23daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2b3464908e91d06c7b2f7d9d1ba8ada"><td class="memItemLeft" align="right" valign="top">int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#af2b3464908e91d06c7b2f7d9d1ba8ada">addVertexAttribute</a> (const StringHash &amp;semanticName, const types::DataType &amp;type, uint32 width, uint32 offset, uint32 dataIndex, bool forceReplace=false)</td></tr>
-<tr class="memdesc:af2b3464908e91d06c7b2f7d9d1ba8ada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a vertex attribute to the mesh. <a href="#af2b3464908e91d06c7b2f7d9d1ba8ada">More...</a><br/></td></tr>
-<tr class="separator:af2b3464908e91d06c7b2f7d9d1ba8ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad86f903670f1604c60460197a75bb9ef"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ad86f903670f1604c60460197a75bb9ef">addData</a> (const uint8_t *data, uint32_t size, uint32_t stride)</td></tr>
+<tr class="memdesc:ad86f903670f1604c60460197a75bb9ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implicitly append a block of vertex data to the mesh and (optionally) populate it with data. <a href="#ad86f903670f1604c60460197a75bb9ef">More...</a><br/></td></tr>
+<tr class="separator:ad86f903670f1604c60460197a75bb9ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70a29004239651b6c879a912bd347c2f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a70a29004239651b6c879a912bd347c2f">addData</a> (const uint8_t *data, uint32_t size, uint32_t stride, uint32_t index)</td></tr>
+<tr class="memdesc:a70a29004239651b6c879a912bd347c2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a block of vertex data to the mesh at the specified index and (optionally) populate it with data.  <a href="#a70a29004239651b6c879a912bd347c2f">More...</a><br/></td></tr>
+<tr class="separator:a70a29004239651b6c879a912bd347c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeba19b4f7de6dc15ef164950b7f9b893"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aeba19b4f7de6dc15ef164950b7f9b893">addFaces</a> (const uint8_t *data, uint32_t size, const IndexType indexType)</td></tr>
+<tr class="memdesc:aeba19b4f7de6dc15ef164950b7f9b893"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add face information to the mesh. <a href="#aeba19b4f7de6dc15ef164950b7f9b893">More...</a><br/></td></tr>
+<tr class="separator:aeba19b4f7de6dc15ef164950b7f9b893"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe1c6afb7857d5a2a55ad1df8a94fac4"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#abe1c6afb7857d5a2a55ad1df8a94fac4">addVertexAttribute</a> (const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a> &amp;element, bool forceReplace=false)</td></tr>
+<tr class="memdesc:abe1c6afb7857d5a2a55ad1df8a94fac4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a vertex attribute to the mesh. <a href="#abe1c6afb7857d5a2a55ad1df8a94fac4">More...</a><br/></td></tr>
+<tr class="separator:abe1c6afb7857d5a2a55ad1df8a94fac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22dd8fec1aacd0e21644e68b3da5eece"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a22dd8fec1aacd0e21644e68b3da5eece">addVertexAttribute</a> (const StringHash &amp;semanticName, const DataType &amp;type, uint32_t width, uint32_t offset, uint32_t dataIndex, bool forceReplace=false)</td></tr>
+<tr class="memdesc:a22dd8fec1aacd0e21644e68b3da5eece"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a vertex attribute to the mesh. <a href="#a22dd8fec1aacd0e21644e68b3da5eece">More...</a><br/></td></tr>
+<tr class="separator:a22dd8fec1aacd0e21644e68b3da5eece"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae320f2a19d317b96675e82d626482cfc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ae320f2a19d317b96675e82d626482cfc">clearAllData</a> ()</td></tr>
 <tr class="memdesc:ae320f2a19d317b96675e82d626482cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all data blocks. <a href="#ae320f2a19d317b96675e82d626482cfc">More...</a><br/></td></tr>
 <tr class="separator:ae320f2a19d317b96675e82d626482cfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5ac09658bb980d98264aa24ba4ea2c5"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ad5ac09658bb980d98264aa24ba4ea2c5">getBatchBone</a> (uint32 batch, uint32 bone) const </td></tr>
-<tr class="memdesc:ad5ac09658bb980d98264aa24ba4ea2c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the global index of a bone from its batch and index in the batch. <a href="#ad5ac09658bb980d98264aa24ba4ea2c5">More...</a><br/></td></tr>
-<tr class="separator:ad5ac09658bb980d98264aa24ba4ea2c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d0b21997e46995390861d6faf73d947"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a9d0b21997e46995390861d6faf73d947">getBatchBoneCount</a> (uint32 batch) const </td></tr>
-<tr class="memdesc:a9d0b21997e46995390861d6faf73d947"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get how many bones the specified bone batch has. <a href="#a9d0b21997e46995390861d6faf73d947">More...</a><br/></td></tr>
-<tr class="separator:a9d0b21997e46995390861d6faf73d947"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d5a3318c1e6bf3562e4c84b448cf5fb"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a6d5a3318c1e6bf3562e4c84b448cf5fb">getBatchFaceOffset</a> (uint32 batch) const </td></tr>
-<tr class="memdesc:a6d5a3318c1e6bf3562e4c84b448cf5fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the offset in the Faces data that the specified batch begins at. <a href="#a6d5a3318c1e6bf3562e4c84b448cf5fb">More...</a><br/></td></tr>
-<tr class="separator:a6d5a3318c1e6bf3562e4c84b448cf5fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39020e9ed21a2bb78563f62032310b64"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a39020e9ed21a2bb78563f62032310b64">getBoneCount</a> () const </td></tr>
-<tr class="memdesc:a39020e9ed21a2bb78563f62032310b64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the information of a VertexAttribute by its SemanticName. <a href="#a39020e9ed21a2bb78563f62032310b64">More...</a><br/></td></tr>
-<tr class="separator:a39020e9ed21a2bb78563f62032310b64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab633f33dc3b433f01cf3715bc8cfbfdf"><td class="memItemLeft" align="right" valign="top">const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ab633f33dc3b433f01cf3715bc8cfbfdf">getData</a> (uint32 index) const </td></tr>
-<tr class="memdesc:ab633f33dc3b433f01cf3715bc8cfbfdf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the data of a specified Data block. Read only overload. <a href="#ab633f33dc3b433f01cf3715bc8cfbfdf">More...</a><br/></td></tr>
-<tr class="separator:ab633f33dc3b433f01cf3715bc8cfbfdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a381b15359ce21c93a64b72e6d892cbcf"><td class="memItemLeft" align="right" valign="top">byte *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a381b15359ce21c93a64b72e6d892cbcf">getData</a> (uint32 index)</td></tr>
-<tr class="memdesc:a381b15359ce21c93a64b72e6d892cbcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the data of a specified Data block. Read/write overload. <a href="#a381b15359ce21c93a64b72e6d892cbcf">More...</a><br/></td></tr>
-<tr class="separator:a381b15359ce21c93a64b72e6d892cbcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae94e3df292306ef0dafdd90dc6147100"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ae94e3df292306ef0dafdd90dc6147100">getDataSize</a> (uint32 index) const </td></tr>
-<tr class="memdesc:ae94e3df292306ef0dafdd90dc6147100"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the size of the specified Data block. <a href="#ae94e3df292306ef0dafdd90dc6147100">More...</a><br/></td></tr>
-<tr class="separator:ae94e3df292306ef0dafdd90dc6147100"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed6ea457b436fc57266d14d8fddf407c"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aed6ea457b436fc57266d14d8fddf407c">getBatchBone</a> (uint32_t batch, uint32_t bone) const </td></tr>
+<tr class="memdesc:aed6ea457b436fc57266d14d8fddf407c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the global index of a bone from its batch and index in the batch. <a href="#aed6ea457b436fc57266d14d8fddf407c">More...</a><br/></td></tr>
+<tr class="separator:aed6ea457b436fc57266d14d8fddf407c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad547fc0fe2790736db4839bd70052962"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ad547fc0fe2790736db4839bd70052962">getBatchFaceOffset</a> (uint32_t batch) const </td></tr>
+<tr class="memdesc:ad547fc0fe2790736db4839bd70052962"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the offset in the Faces data that the specified batch begins at. <a href="#ad547fc0fe2790736db4839bd70052962">More...</a><br/></td></tr>
+<tr class="separator:ad547fc0fe2790736db4839bd70052962"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7719d5ec94e1a6deca30103f0234c52f"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a7719d5ec94e1a6deca30103f0234c52f">getBatchFaceOffsetBytes</a> (uint32_t batch) const </td></tr>
+<tr class="memdesc:a7719d5ec94e1a6deca30103f0234c52f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the offset in the Faces data that the specified batch begins at. <a href="#a7719d5ec94e1a6deca30103f0234c52f">More...</a><br/></td></tr>
+<tr class="separator:a7719d5ec94e1a6deca30103f0234c52f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6f9fe4b4705e6dfead28b9b87e27116"><td class="memItemLeft" align="right" valign="top">const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ab6f9fe4b4705e6dfead28b9b87e27116">getData</a> (uint32_t index) const </td></tr>
+<tr class="memdesc:ab6f9fe4b4705e6dfead28b9b87e27116"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the data of a specified Data block. Read only overload. <a href="#ab6f9fe4b4705e6dfead28b9b87e27116">More...</a><br/></td></tr>
+<tr class="separator:ab6f9fe4b4705e6dfead28b9b87e27116"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add38ffc4f6966aa5a7d9ba73b6aa12bc"><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#add38ffc4f6966aa5a7d9ba73b6aa12bc">getData</a> (uint32_t index)</td></tr>
+<tr class="memdesc:add38ffc4f6966aa5a7d9ba73b6aa12bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the data of a specified Data block. Read/write overload. <a href="#add38ffc4f6966aa5a7d9ba73b6aa12bc">More...</a><br/></td></tr>
+<tr class="separator:add38ffc4f6966aa5a7d9ba73b6aa12bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6e6b2798652d73515aa84d2fe630bd7"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ad6e6b2798652d73515aa84d2fe630bd7">getDataSize</a> (uint32_t index) const </td></tr>
+<tr class="memdesc:ad6e6b2798652d73515aa84d2fe630bd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the size of the specified Data block. <a href="#ad6e6b2798652d73515aa84d2fe630bd7">More...</a><br/></td></tr>
+<tr class="separator:ad6e6b2798652d73515aa84d2fe630bd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5e14d52dd4f491e9fdc743c8fb68fba"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_face_data.html">FaceData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#af5e14d52dd4f491e9fdc743c8fb68fba">getFaces</a> () const </td></tr>
 <tr class="memdesc:af5e14d52dd4f491e9fdc743c8fb68fba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all face data of this mesh. <a href="#af5e14d52dd4f491e9fdc743c8fb68fba">More...</a><br/></td></tr>
 <tr class="separator:af5e14d52dd4f491e9fdc743c8fb68fba"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -163,121 +169,157 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0bd59376ff32b82b6eebba0c8c135ace"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html">MeshInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a0bd59376ff32b82b6eebba0c8c135ace">getMeshInfo</a> () const </td></tr>
 <tr class="memdesc:a0bd59376ff32b82b6eebba0c8c135ace"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information on this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. <a href="#a0bd59376ff32b82b6eebba0c8c135ace">More...</a><br/></td></tr>
 <tr class="separator:a0bd59376ff32b82b6eebba0c8c135ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74ff57d9ea62f78992d512de2d19a74d"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a74ff57d9ea62f78992d512de2d19a74d">getNumBoneBatches</a> () const </td></tr>
-<tr class="memdesc:a74ff57d9ea62f78992d512de2d19a74d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of <a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html" title="This class is used to break meshes into different batches in order to avoid overflowing the number of...">BoneBatches</a> the bones of this mesh are organised into. <a href="#a74ff57d9ea62f78992d512de2d19a74d">More...</a><br/></td></tr>
-<tr class="separator:a74ff57d9ea62f78992d512de2d19a74d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ebb8d9f03e96b36a8d9f1503444a9f7"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a3ebb8d9f03e96b36a8d9f1503444a9f7">getNumDataElements</a> () const </td></tr>
-<tr class="memdesc:a3ebb8d9f03e96b36a8d9f1503444a9f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of vertex data blocks that this mesh has. <a href="#a3ebb8d9f03e96b36a8d9f1503444a9f7">More...</a><br/></td></tr>
-<tr class="separator:a3ebb8d9f03e96b36a8d9f1503444a9f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e4434f8feed9dfd9f863f385dbb7db1"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a6e4434f8feed9dfd9f863f385dbb7db1">getNumElements</a> () const </td></tr>
-<tr class="memdesc:a6e4434f8feed9dfd9f863f385dbb7db1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of different vertex attributes that this mesh has. <a href="#a6e4434f8feed9dfd9f863f385dbb7db1">More...</a><br/></td></tr>
-<tr class="separator:a6e4434f8feed9dfd9f863f385dbb7db1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cca157f7540416c6df397645d8a0b5d"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a7cca157f7540416c6df397645d8a0b5d">getNumFaces</a> () const </td></tr>
-<tr class="memdesc:a7cca157f7540416c6df397645d8a0b5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of faces that comprise this mesh. <a href="#a7cca157f7540416c6df397645d8a0b5d">More...</a><br/></td></tr>
-<tr class="separator:a7cca157f7540416c6df397645d8a0b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90cd7cac6d250b30bc3611477d3571d0"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a90cd7cac6d250b30bc3611477d3571d0">getNumFaces</a> (uint32 boneBatch) const </td></tr>
-<tr class="memdesc:a90cd7cac6d250b30bc3611477d3571d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of faces that comprise the designated bonebatch. <a href="#a90cd7cac6d250b30bc3611477d3571d0">More...</a><br/></td></tr>
-<tr class="separator:a90cd7cac6d250b30bc3611477d3571d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae0e6c6c6e25de772c3e50cd55ac9c22"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aae0e6c6c6e25de772c3e50cd55ac9c22">getNumIndices</a> () const </td></tr>
-<tr class="memdesc:aae0e6c6c6e25de772c3e50cd55ac9c22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of indexes that comprise this mesh. Takes TriangleStrips into consideration.  <a href="#aae0e6c6c6e25de772c3e50cd55ac9c22">More...</a><br/></td></tr>
-<tr class="separator:aae0e6c6c6e25de772c3e50cd55ac9c22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4fb70f25ccb66289de67ceb1ccb508fb"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4fb70f25ccb66289de67ceb1ccb508fb">getNumStrips</a> () const </td></tr>
-<tr class="memdesc:a4fb70f25ccb66289de67ceb1ccb508fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of Triangle Strips (if any) that comprise this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. <a href="#a4fb70f25ccb66289de67ceb1ccb508fb">More...</a><br/></td></tr>
-<tr class="separator:a4fb70f25ccb66289de67ceb1ccb508fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07ea400aafce31fa6fd01f598fb9f897"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a07ea400aafce31fa6fd01f598fb9f897">getNumVertices</a> () const </td></tr>
-<tr class="memdesc:a07ea400aafce31fa6fd01f598fb9f897"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of vertices that comprise this mesh. <a href="#a07ea400aafce31fa6fd01f598fb9f897">More...</a><br/></td></tr>
-<tr class="separator:a07ea400aafce31fa6fd01f598fb9f897"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade75d7bb0402ce62d72dabaaa5cc39dd"><td class="memItemLeft" align="right" valign="top">types::PrimitiveTopology&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ade75d7bb0402ce62d72dabaaa5cc39dd">getPrimitiveType</a> () const </td></tr>
-<tr class="memdesc:ade75d7bb0402ce62d72dabaaa5cc39dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the primitive topology that the data in this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a> represent. <a href="#ade75d7bb0402ce62d72dabaaa5cc39dd">More...</a><br/></td></tr>
-<tr class="separator:ade75d7bb0402ce62d72dabaaa5cc39dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31c989caab8003ca1e352b02d8a31951"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a31c989caab8003ca1e352b02d8a31951">getStride</a> (uint32 index) const </td></tr>
-<tr class="memdesc:a31c989caab8003ca1e352b02d8a31951"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get distance in bytes from vertex in an array to the next. <a href="#a31c989caab8003ca1e352b02d8a31951">More...</a><br/></td></tr>
-<tr class="separator:a31c989caab8003ca1e352b02d8a31951"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee5c46600177511d9260d88c550aefcd"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aee5c46600177511d9260d88c550aefcd">getStripLength</a> (uint32 strip) const </td></tr>
-<tr class="memdesc:aee5c46600177511d9260d88c550aefcd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the length of the specified triangle strip. <a href="#aee5c46600177511d9260d88c550aefcd">More...</a><br/></td></tr>
-<tr class="separator:aee5c46600177511d9260d88c550aefcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a589bf2d541e4b60c4000093a6809da01"><td class="memItemLeft" align="right" valign="top">const uint32 *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a589bf2d541e4b60c4000093a6809da01">getStripLengths</a> () const </td></tr>
-<tr class="memdesc:a589bf2d541e4b60c4000093a6809da01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an array containing the Triangle Strip lengths. <a href="#a589bf2d541e4b60c4000093a6809da01">More...</a><br/></td></tr>
-<tr class="separator:a589bf2d541e4b60c4000093a6809da01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e178e1f82eef52d6c4ee5e91ca2990a"><td class="memItemLeft" align="right" valign="top">const FreeValue *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a6e178e1f82eef52d6c4ee5e91ca2990a">getMeshSemantic</a> (const StringHash &amp;semantic) const </td></tr>
+<tr class="memdesc:a6e178e1f82eef52d6c4ee5e91ca2990a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the value of a Per-Mesh semantic as a FreeValue, null if it does not exist. <a href="#a6e178e1f82eef52d6c4ee5e91ca2990a">More...</a><br/></td></tr>
+<tr class="separator:a6e178e1f82eef52d6c4ee5e91ca2990a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4631a8b4fb8bfa0888efd0da743f1150"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4631a8b4fb8bfa0888efd0da743f1150">getNumBatchBones</a> (uint32_t batch) const </td></tr>
+<tr class="memdesc:a4631a8b4fb8bfa0888efd0da743f1150"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get how many bones the specified bone batch has. <a href="#a4631a8b4fb8bfa0888efd0da743f1150">More...</a><br/></td></tr>
+<tr class="separator:a4631a8b4fb8bfa0888efd0da743f1150"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaed956628770c5a5d268ad6575d97cba"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aaed956628770c5a5d268ad6575d97cba">getNumBoneBatches</a> () const </td></tr>
+<tr class="memdesc:aaed956628770c5a5d268ad6575d97cba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of <a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html" title="This class is used to break meshes into different batches in order to avoid overflowing the number of...">BoneBatches</a> the bones of this mesh are organised into. <a href="#aaed956628770c5a5d268ad6575d97cba">More...</a><br/></td></tr>
+<tr class="separator:aaed956628770c5a5d268ad6575d97cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2b00633fc96e0ca805715c91f670abb"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#af2b00633fc96e0ca805715c91f670abb">getNumBones</a> () const </td></tr>
+<tr class="memdesc:af2b00633fc96e0ca805715c91f670abb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the information of a VertexAttribute by its SemanticName. <a href="#af2b00633fc96e0ca805715c91f670abb">More...</a><br/></td></tr>
+<tr class="separator:af2b00633fc96e0ca805715c91f670abb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a343b45c267531da7378f4372a55caff8"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a343b45c267531da7378f4372a55caff8">getNumDataElements</a> () const </td></tr>
+<tr class="memdesc:a343b45c267531da7378f4372a55caff8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of vertex data blocks that this mesh has. <a href="#a343b45c267531da7378f4372a55caff8">More...</a><br/></td></tr>
+<tr class="separator:a343b45c267531da7378f4372a55caff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dd3ad8c738c550d282f627ce7814884"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a3dd3ad8c738c550d282f627ce7814884">getNumElements</a> () const </td></tr>
+<tr class="memdesc:a3dd3ad8c738c550d282f627ce7814884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of different vertex attributes that this mesh has. <a href="#a3dd3ad8c738c550d282f627ce7814884">More...</a><br/></td></tr>
+<tr class="separator:a3dd3ad8c738c550d282f627ce7814884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f92999bddcef4351a470309b287af91"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a1f92999bddcef4351a470309b287af91">getNumFaces</a> () const </td></tr>
+<tr class="memdesc:a1f92999bddcef4351a470309b287af91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of faces that comprise this mesh. <a href="#a1f92999bddcef4351a470309b287af91">More...</a><br/></td></tr>
+<tr class="separator:a1f92999bddcef4351a470309b287af91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a104eceb0cca8c21cc7b1f437af60781d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a104eceb0cca8c21cc7b1f437af60781d">getNumFaces</a> (uint32_t boneBatch) const </td></tr>
+<tr class="memdesc:a104eceb0cca8c21cc7b1f437af60781d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of faces that comprise the designated bonebatch. <a href="#a104eceb0cca8c21cc7b1f437af60781d">More...</a><br/></td></tr>
+<tr class="separator:a104eceb0cca8c21cc7b1f437af60781d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a563f695e4cd8d361859ae1d6529e29f7"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a563f695e4cd8d361859ae1d6529e29f7">getNumIndices</a> () const </td></tr>
+<tr class="memdesc:a563f695e4cd8d361859ae1d6529e29f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of indices that comprise this mesh. Takes TriangleStrips into consideration.  <a href="#a563f695e4cd8d361859ae1d6529e29f7">More...</a><br/></td></tr>
+<tr class="separator:a563f695e4cd8d361859ae1d6529e29f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5345259d234d0ec6a86cddda321b76d0"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a5345259d234d0ec6a86cddda321b76d0">getNumStrips</a> () const </td></tr>
+<tr class="memdesc:a5345259d234d0ec6a86cddda321b76d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of Triangle Strips (if any) that comprise this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. <a href="#a5345259d234d0ec6a86cddda321b76d0">More...</a><br/></td></tr>
+<tr class="separator:a5345259d234d0ec6a86cddda321b76d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ad5165623e8cf72138ee941b6fa96fe"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a9ad5165623e8cf72138ee941b6fa96fe">getNumVertices</a> () const </td></tr>
+<tr class="memdesc:a9ad5165623e8cf72138ee941b6fa96fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of vertices that comprise this mesh. <a href="#a9ad5165623e8cf72138ee941b6fa96fe">More...</a><br/></td></tr>
+<tr class="separator:a9ad5165623e8cf72138ee941b6fa96fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad44274c2f282635815af77085e05ae0"><td class="memItemLeft" align="right" valign="top">PrimitiveTopology&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aad44274c2f282635815af77085e05ae0">getPrimitiveType</a> () const </td></tr>
+<tr class="memdesc:aad44274c2f282635815af77085e05ae0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the primitive topology that the data in this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a> represent. <a href="#aad44274c2f282635815af77085e05ae0">More...</a><br/></td></tr>
+<tr class="separator:aad44274c2f282635815af77085e05ae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b8b165ab2fb7b8e3c0d76c1b243a7e4"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a0b8b165ab2fb7b8e3c0d76c1b243a7e4">getStride</a> (uint32_t index) const </td></tr>
+<tr class="memdesc:a0b8b165ab2fb7b8e3c0d76c1b243a7e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get distance in bytes from vertex in an array to the next. <a href="#a0b8b165ab2fb7b8e3c0d76c1b243a7e4">More...</a><br/></td></tr>
+<tr class="separator:a0b8b165ab2fb7b8e3c0d76c1b243a7e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a722fd34a8c4d3f576902cb60af47b709"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a722fd34a8c4d3f576902cb60af47b709">getStripLength</a> (uint32_t strip) const </td></tr>
+<tr class="memdesc:a722fd34a8c4d3f576902cb60af47b709"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the length of the specified triangle strip. <a href="#a722fd34a8c4d3f576902cb60af47b709">More...</a><br/></td></tr>
+<tr class="separator:a722fd34a8c4d3f576902cb60af47b709"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96068e0b13badc70fe76b632838caa5a"><td class="memItemLeft" align="right" valign="top">const uint32_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a96068e0b13badc70fe76b632838caa5a">getStripLengths</a> () const </td></tr>
+<tr class="memdesc:a96068e0b13badc70fe76b632838caa5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an array containing the Triangle Strip lengths. <a href="#a96068e0b13badc70fe76b632838caa5a">More...</a><br/></td></tr>
+<tr class="separator:a96068e0b13badc70fe76b632838caa5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc0eda8a17f910099b4580b4c5fde0da"><td class="memItemLeft" align="right" valign="top">const glm::mat4x4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#acc0eda8a17f910099b4580b4c5fde0da">getUnpackMatrix</a> () const </td></tr>
 <tr class="memdesc:acc0eda8a17f910099b4580b4c5fde0da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Unpack Matrix of this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. The unpack matrix is used for some exotic types of vertex position compression. <a href="#acc0eda8a17f910099b4580b4c5fde0da">More...</a><br/></td></tr>
 <tr class="separator:acc0eda8a17f910099b4580b4c5fde0da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeef44784e79b46ca05b2d2b0d9f89efe"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aeef44784e79b46ca05b2d2b0d9f89efe">getVertexAttribute</a> (int32 idx) const </td></tr>
-<tr class="memdesc:aeef44784e79b46ca05b2d2b0d9f89efe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the information of a VertexAttribute by its SemanticName. <a href="#aeef44784e79b46ca05b2d2b0d9f89efe">More...</a><br/></td></tr>
-<tr class="separator:aeef44784e79b46ca05b2d2b0d9f89efe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf477d4772b1d169050032d3ed8af003"><td class="memItemLeft" align="right" valign="top">const RefCountedResource&lt; void &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#abf477d4772b1d169050032d3ed8af003">getUserDataPtr</a> () const </td></tr>
+<tr class="memdesc:abf477d4772b1d169050032d3ed8af003"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the UserData of this mesh, if such user data exist. <a href="#abf477d4772b1d169050032d3ed8af003">More...</a><br/></td></tr>
+<tr class="separator:abf477d4772b1d169050032d3ed8af003"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2031f8467bf23a6167dd5c89db41224"><td class="memItemLeft" align="right" valign="top">RefCountedResource&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ac2031f8467bf23a6167dd5c89db41224">getUserDataPtr</a> ()</td></tr>
+<tr class="memdesc:ac2031f8467bf23a6167dd5c89db41224"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the UserData of this mesh, if such user data exist. <a href="#ac2031f8467bf23a6167dd5c89db41224">More...</a><br/></td></tr>
+<tr class="separator:ac2031f8467bf23a6167dd5c89db41224"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcc66af649bcb8770241fc30ca34a1b8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#afcc66af649bcb8770241fc30ca34a1b8">getVertexAttribute</a> (int32_t idx) const </td></tr>
+<tr class="memdesc:afcc66af649bcb8770241fc30ca34a1b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the information of a VertexAttribute by its SemanticName. <a href="#afcc66af649bcb8770241fc30ca34a1b8">More...</a><br/></td></tr>
+<tr class="separator:afcc66af649bcb8770241fc30ca34a1b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d7592cc303be36e0648a6197923f450"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a7d7592cc303be36e0648a6197923f450">getVertexAttributeByName</a> (const StringHash &amp;semanticName) const </td></tr>
-<tr class="memdesc:a7d7592cc303be36e0648a6197923f450"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the information of a VertexAttribute by its SemanticName. <a href="#a7d7592cc303be36e0648a6197923f450">More...</a><br/></td></tr>
+<tr class="memdesc:a7d7592cc303be36e0648a6197923f450"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the information of a VertexAttribute by its SemanticName (return NULL if not exist) <a href="#a7d7592cc303be36e0648a6197923f450">More...</a><br/></td></tr>
 <tr class="separator:a7d7592cc303be36e0648a6197923f450"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f0411ee754f51bf97f02360358752d3"><td class="memItemLeft" align="right" valign="top">int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a5f0411ee754f51bf97f02360358752d3">getVertexAttributeIndex</a> (const char8 *semanticName) const </td></tr>
-<tr class="memdesc:a5f0411ee754f51bf97f02360358752d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Index of a VertexAttribute by its SemanticName. <a href="#a5f0411ee754f51bf97f02360358752d3">More...</a><br/></td></tr>
-<tr class="separator:a5f0411ee754f51bf97f02360358752d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a40407ad5da4c5bf49064b979f3efe7d9"><td class="memItemLeft" align="right" valign="top">VertexAttributeContainer &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a40407ad5da4c5bf49064b979f3efe7d9">getVertexAttributes</a> ()</td></tr>
+<tr class="memitem:a514add6ba80930e469334ca641ad3f17"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a514add6ba80930e469334ca641ad3f17">getVertexAttributeIndex</a> (const char *semanticName) const </td></tr>
+<tr class="memdesc:a514add6ba80930e469334ca641ad3f17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Index of a VertexAttribute by its SemanticName. <a href="#a514add6ba80930e469334ca641ad3f17">More...</a><br/></td></tr>
+<tr class="separator:a514add6ba80930e469334ca641ad3f17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40407ad5da4c5bf49064b979f3efe7d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4722749d8d5bfa2c811074f83a109169">VertexAttributeContainer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a40407ad5da4c5bf49064b979f3efe7d9">getVertexAttributes</a> ()</td></tr>
 <tr class="memdesc:a40407ad5da4c5bf49064b979f3efe7d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all the vertex attributes. <a href="#a40407ad5da4c5bf49064b979f3efe7d9">More...</a><br/></td></tr>
 <tr class="separator:a40407ad5da4c5bf49064b979f3efe7d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1728791103eaec595819ca93b7918fff"><td class="memItemLeft" align="right" valign="top">const VertexAttributeContainer &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a1728791103eaec595819ca93b7918fff">getVertexAttributes</a> () const </td></tr>
+<tr class="memitem:a1728791103eaec595819ca93b7918fff"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4722749d8d5bfa2c811074f83a109169">VertexAttributeContainer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a1728791103eaec595819ca93b7918fff">getVertexAttributes</a> () const </td></tr>
 <tr class="memdesc:a1728791103eaec595819ca93b7918fff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all the vertex attributes. <a href="#a1728791103eaec595819ca93b7918fff">More...</a><br/></td></tr>
 <tr class="separator:a1728791103eaec595819ca93b7918fff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7cc6e028ce4003fe1f5b82da55f0c78"><td class="memItemLeft" align="right" valign="top">uint32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ac7cc6e028ce4003fe1f5b82da55f0c78">getVertexAttributesSize</a> () const </td></tr>
-<tr class="memdesc:ac7cc6e028ce4003fe1f5b82da55f0c78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of vertex attributes. <a href="#ac7cc6e028ce4003fe1f5b82da55f0c78">More...</a><br/></td></tr>
-<tr class="separator:ac7cc6e028ce4003fe1f5b82da55f0c78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6ffee1763b8400c47ca017425d47953"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ae6ffee1763b8400c47ca017425d47953">getVertexAttributesSize</a> () const </td></tr>
+<tr class="memdesc:ae6ffee1763b8400c47ca017425d47953"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of vertex attributes. <a href="#ae6ffee1763b8400c47ca017425d47953">More...</a><br/></td></tr>
+<tr class="separator:ae6ffee1763b8400c47ca017425d47953"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a489d5d9e5a2a54127623b756e78c4315"><td class="memItemLeft" align="right" valign="top">const std::vector<br class="typebreak"/>
 &lt; StridedBuffer &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a489d5d9e5a2a54127623b756e78c4315">getVertexData</a> () const </td></tr>
 <tr class="memdesc:a489d5d9e5a2a54127623b756e78c4315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all DataBlocks of this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. <a href="#a489d5d9e5a2a54127623b756e78c4315">More...</a><br/></td></tr>
 <tr class="separator:a489d5d9e5a2a54127623b756e78c4315"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa152493dd41858114743bff0f435ae8a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aa152493dd41858114743bff0f435ae8a">removeAllVertexAttributes</a> (void)</td></tr>
-<tr class="memdesc:aa152493dd41858114743bff0f435ae8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all vertex attribute to the mesh. <a href="#aa152493dd41858114743bff0f435ae8a">More...</a><br/></td></tr>
-<tr class="separator:aa152493dd41858114743bff0f435ae8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ae1cb101e4555f20cbaacb1f5b1af50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a6ae1cb101e4555f20cbaacb1f5b1af50">removeData</a> (uint32 index)</td></tr>
-<tr class="memdesc:a6ae1cb101e4555f20cbaacb1f5b1af50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete a block of data. <a href="#a6ae1cb101e4555f20cbaacb1f5b1af50">More...</a><br/></td></tr>
-<tr class="separator:a6ae1cb101e4555f20cbaacb1f5b1af50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12bcecb68bbf030852edd91a31498160"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a12bcecb68bbf030852edd91a31498160">mergeBoneBatches</a> (uint32_t boneIndexAttributeId)</td></tr>
+<tr class="memdesc:a12bcecb68bbf030852edd91a31498160"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merge all bone batches into one, effectively re-merging the mesh into one draw call <a href="#a12bcecb68bbf030852edd91a31498160">More...</a><br/></td></tr>
+<tr class="separator:a12bcecb68bbf030852edd91a31498160"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e2ba13eaed9b97ac1975af18dcfd421"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a1e2ba13eaed9b97ac1975af18dcfd421">removeAllVertexAttributes</a> ()</td></tr>
+<tr class="memdesc:a1e2ba13eaed9b97ac1975af18dcfd421"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all vertex attribute to the mesh. <a href="#a1e2ba13eaed9b97ac1975af18dcfd421">More...</a><br/></td></tr>
+<tr class="separator:a1e2ba13eaed9b97ac1975af18dcfd421"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf2f385432d65c533b61618aa0b01bb5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#adf2f385432d65c533b61618aa0b01bb5">removeData</a> (uint32_t index)</td></tr>
+<tr class="memdesc:adf2f385432d65c533b61618aa0b01bb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete a block of data. <a href="#adf2f385432d65c533b61618aa0b01bb5">More...</a><br/></td></tr>
+<tr class="separator:adf2f385432d65c533b61618aa0b01bb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aede8af714093e8affa635c468a791730"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#aede8af714093e8affa635c468a791730">removeVertexAttribute</a> (const StringHash &amp;semanticName)</td></tr>
 <tr class="memdesc:aede8af714093e8affa635c468a791730"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a vertex attribute to the mesh. <a href="#aede8af714093e8affa635c468a791730">More...</a><br/></td></tr>
 <tr class="separator:aede8af714093e8affa635c468a791730"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a491971d497f5470e068d0fbd1b8cc73c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a491971d497f5470e068d0fbd1b8cc73c">setNumFaces</a> (uint32 numFaces)</td></tr>
-<tr class="memdesc:a491971d497f5470e068d0fbd1b8cc73c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the total number of faces. Will not change the actual Face Data. <a href="#a491971d497f5470e068d0fbd1b8cc73c">More...</a><br/></td></tr>
-<tr class="separator:a491971d497f5470e068d0fbd1b8cc73c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a782720861f50d8183ec4e4b3a0bb92a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a782720861f50d8183ec4e4b3a0bb92a9">setNumVertices</a> (uint32 numVertices)</td></tr>
-<tr class="memdesc:a782720861f50d8183ec4e4b3a0bb92a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the total number of vertices. Will not change the actual Vertex Data. <a href="#a782720861f50d8183ec4e4b3a0bb92a9">More...</a><br/></td></tr>
-<tr class="separator:a782720861f50d8183ec4e4b3a0bb92a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a129e2fa3ca3cea44b9bcf903a7b44cbf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a129e2fa3ca3cea44b9bcf903a7b44cbf">setPrimitiveType</a> (const types::PrimitiveTopology &amp;type)</td></tr>
-<tr class="memdesc:a129e2fa3ca3cea44b9bcf903a7b44cbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the primitive topology that the data in this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a> represent. <a href="#a129e2fa3ca3cea44b9bcf903a7b44cbf">More...</a><br/></td></tr>
-<tr class="separator:a129e2fa3ca3cea44b9bcf903a7b44cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af248081335ce77eaebb2c2459fc67f62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#af248081335ce77eaebb2c2459fc67f62">setStride</a> (uint32 index, uint32 stride)</td></tr>
-<tr class="memdesc:af248081335ce77eaebb2c2459fc67f62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the stride of a Data block. <a href="#af248081335ce77eaebb2c2459fc67f62">More...</a><br/></td></tr>
-<tr class="separator:af248081335ce77eaebb2c2459fc67f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c9cd367a2eaf161086d5c05f781047f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a2c9cd367a2eaf161086d5c05f781047f">setStripData</a> (uint32 numStrips, const uint32 *lengths)</td></tr>
-<tr class="memdesc:a2c9cd367a2eaf161086d5c05f781047f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the TriangleStrip number and lengths. <a href="#a2c9cd367a2eaf161086d5c05f781047f">More...</a><br/></td></tr>
-<tr class="separator:a2c9cd367a2eaf161086d5c05f781047f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dd580700ba77baa5451ab23cad67f7d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a1dd580700ba77baa5451ab23cad67f7d">setNumFaces</a> (uint32_t numFaces)</td></tr>
+<tr class="memdesc:a1dd580700ba77baa5451ab23cad67f7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the total number of faces. Will not change the actual Face Data. <a href="#a1dd580700ba77baa5451ab23cad67f7d">More...</a><br/></td></tr>
+<tr class="separator:a1dd580700ba77baa5451ab23cad67f7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6f35f211c34039ffee592af24b7d1c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ad6f35f211c34039ffee592af24b7d1c7">setNumVertices</a> (uint32_t numVertices)</td></tr>
+<tr class="memdesc:ad6f35f211c34039ffee592af24b7d1c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the total number of vertices. Will not change the actual Vertex Data. <a href="#ad6f35f211c34039ffee592af24b7d1c7">More...</a><br/></td></tr>
+<tr class="separator:ad6f35f211c34039ffee592af24b7d1c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a511cf5eb1381ebb0b46c188dfc19b76d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a511cf5eb1381ebb0b46c188dfc19b76d">setPrimitiveType</a> (const PrimitiveTopology &amp;type)</td></tr>
+<tr class="memdesc:a511cf5eb1381ebb0b46c188dfc19b76d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the primitive topology that the data in this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a> represent. <a href="#a511cf5eb1381ebb0b46c188dfc19b76d">More...</a><br/></td></tr>
+<tr class="separator:a511cf5eb1381ebb0b46c188dfc19b76d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc3ae0aff3ae49e0bb969b076415bc3a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#adc3ae0aff3ae49e0bb969b076415bc3a">setStride</a> (uint32_t index, uint32_t stride)</td></tr>
+<tr class="memdesc:adc3ae0aff3ae49e0bb969b076415bc3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the stride of a Data block. <a href="#adc3ae0aff3ae49e0bb969b076415bc3a">More...</a><br/></td></tr>
+<tr class="separator:adc3ae0aff3ae49e0bb969b076415bc3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a3b53368879dea40e0afe52cd207258"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a2a3b53368879dea40e0afe52cd207258">setStripData</a> (uint32_t numStrips, const uint32_t *lengths)</td></tr>
+<tr class="memdesc:a2a3b53368879dea40e0afe52cd207258"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the TriangleStrip number and lengths. <a href="#a2a3b53368879dea40e0afe52cd207258">More...</a><br/></td></tr>
+<tr class="separator:a2a3b53368879dea40e0afe52cd207258"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6511bf2b294ecaf38ebf6f6668b9a4e4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a6511bf2b294ecaf38ebf6f6668b9a4e4">setUnpackMatrix</a> (const glm::mat4x4 &amp;unpackMatrix)</td></tr>
 <tr class="memdesc:a6511bf2b294ecaf38ebf6f6668b9a4e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Unpack Matrix of this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. The unpack matrix is used for some exotic types of vertex position compression. <a href="#a6511bf2b294ecaf38ebf6f6668b9a4e4">More...</a><br/></td></tr>
 <tr class="separator:a6511bf2b294ecaf38ebf6f6668b9a4e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c901debed7dab92c980c1a5961de874"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a8c901debed7dab92c980c1a5961de874">setUserDataPtr</a> (const RefCountedResource&lt; void &gt; &amp;ptr)</td></tr>
+<tr class="memdesc:a8c901debed7dab92c980c1a5961de874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the UserData of this mesh (wrap the data into a RefCountedResource and cast to Ref Counted void pointer. <a href="#a8c901debed7dab92c980c1a5961de874">More...</a><br/></td></tr>
+<tr class="separator:a8c901debed7dab92c980c1a5961de874"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae96a1c1ff722b758f6c8940b61289d4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#ae96a1c1ff722b758f6c8940b61289d4b">setVertexAttributeIndex</a> (const char *attributeName, size_t userIndex)</td></tr>
 <tr class="memdesc:ae96a1c1ff722b758f6c8940b61289d4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Locate the specified Attribute in a specific position in the vertex attribute array. Can be used to sort the vertex attributes according to a specific order. <a href="#ae96a1c1ff722b758f6c8940b61289d4b">More...</a><br/></td></tr>
 <tr class="separator:ae96a1c1ff722b758f6c8940b61289d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a> class. Represent a <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh's is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a8be02a689e083b47c7a888840000837f"></a>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="a4722749d8d5bfa2c811074f83a109169"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32 pvr::assets::Mesh::addData </td>
+          <td class="memname">typedef IndexedArray&lt;<a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a>, StringHash&gt; <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4722749d8d5bfa2c811074f83a109169">pvr::assets::Mesh::VertexAttributeContainer</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This container is automatically kept sorted.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ad86f903670f1604c60460197a75bb9ef"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t pvr::assets::Mesh::addData </td>
           <td>(</td>
-          <td class="paramtype">const byte *const&#160;</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
           <td class="paramname"><em>data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>stride</em>&#160;</td>
         </tr>
         <tr>
@@ -304,32 +346,32 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a244117049a6b62bd8c905195283e4d66"></a>
+<a class="anchor" id="a70a29004239651b6c879a912bd347c2f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32 pvr::assets::Mesh::addData </td>
+          <td class="memname">int32_t pvr::assets::Mesh::addData </td>
           <td>(</td>
-          <td class="paramtype">const byte *const&#160;</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
           <td class="paramname"><em>data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>stride</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>index</em>&#160;</td>
         </tr>
         <tr>
@@ -355,26 +397,26 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="adc68f8428adf26a0ac6ea2d54e597869"></a>
+<a class="anchor" id="aeba19b4f7de6dc15ef164950b7f9b893"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::assets::Mesh::addFaces </td>
           <td>(</td>
-          <td class="paramtype">const byte *&#160;</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
           <td class="paramname"><em>data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const types::IndexType&#160;</td>
+          <td class="paramtype">const IndexType&#160;</td>
           <td class="paramname"><em>indexType</em>&#160;</td>
         </tr>
         <tr>
@@ -397,12 +439,12 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ad3acc66fd2bc4e68f7134ff477d23daf"></a>
+<a class="anchor" id="abe1c6afb7857d5a2a55ad1df8a94fac4"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32 pvr::assets::Mesh::addVertexAttribute </td>
+          <td class="memname">int32_t pvr::assets::Mesh::addVertexAttribute </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a> &amp;&#160;</td>
           <td class="paramname"><em>element</em>, </td>
@@ -433,12 +475,12 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="af2b3464908e91d06c7b2f7d9d1ba8ada"></a>
+<a class="anchor" id="a22dd8fec1aacd0e21644e68b3da5eece"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int32 pvr::assets::Mesh::addVertexAttribute </td>
+          <td class="memname">int32_t pvr::assets::Mesh::addVertexAttribute </td>
           <td>(</td>
           <td class="paramtype">const StringHash &amp;&#160;</td>
           <td class="paramname"><em>semanticName</em>, </td>
@@ -446,25 +488,25 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const types::DataType &amp;&#160;</td>
+          <td class="paramtype">const DataType &amp;&#160;</td>
           <td class="paramname"><em>type</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>width</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>offset</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>dataIndex</em>, </td>
         </tr>
         <tr>
@@ -522,7 +564,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ad5ac09658bb980d98264aa24ba4ea2c5"></a>
+<a class="anchor" id="aed6ea457b436fc57266d14d8fddf407c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -530,15 +572,15 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getBatchBone </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getBatchBone </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>batch</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>bone</em>&#160;</td>
         </tr>
         <tr>
@@ -566,7 +608,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a9d0b21997e46995390861d6faf73d947"></a>
+<a class="anchor" id="ad547fc0fe2790736db4839bd70052962"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -574,42 +616,9 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getBatchBoneCount </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getBatchFaceOffset </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
-          <td class="paramname"><em>batch</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get how many bones the specified bone batch has.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">batch</td><td>The index of a BoneBatch</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The number of bones in the batch with index (batch)</dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="a6d5a3318c1e6bf3562e4c84b448cf5fb"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getBatchFaceOffset </td>
-          <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>batch</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -632,7 +641,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a39020e9ed21a2bb78563f62032310b64"></a>
+<a class="anchor" id="a7719d5ec94e1a6deca30103f0234c52f"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -640,9 +649,10 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getBoneCount </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getBatchFaceOffsetBytes </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>batch</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -653,13 +663,18 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the information of a VertexAttribute by its SemanticName.</p>
-<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html" title="Definition of a single VertexAttribute.">VertexAttributeData</a> object with information on this attribute. (layout, index etc.) Null if failed</dd></dl>
-<p>This method does lookup in O(logN) time. Prefer to call the getVertexAttributeID and then use the constant-time O(1) getVertexAttribute(int32) method</p>
+<p>Get the offset in the Faces data that the specified batch begins at.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">batch</td><td>The index of a BoneBatch</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The offset, in bytes, in the Faces data that the specified batch begins at.</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ab633f33dc3b433f01cf3715bc8cfbfdf"></a>
+<a class="anchor" id="ab6f9fe4b4705e6dfead28b9b87e27116"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -669,7 +684,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">const void* pvr::assets::Mesh::getData </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>index</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -682,11 +697,17 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get a pointer to the data of a specified Data block. Read only overload.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>The index of the data block</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>A const pointer to the specified data block.</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a381b15359ce21c93a64b72e6d892cbcf"></a>
+<a class="anchor" id="add38ffc4f6966aa5a7d9ba73b6aa12bc"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -694,9 +715,9 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">byte* pvr::assets::Mesh::getData </td>
+          <td class="memname">uint8_t* pvr::assets::Mesh::getData </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>index</em></td><td>)</td>
           <td></td>
         </tr>
@@ -709,11 +730,17 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get a pointer to the data of a specified Data block. Read/write overload.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>The index of the data block</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>A pointer to the specified data block.</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ae94e3df292306ef0dafdd90dc6147100"></a>
+<a class="anchor" id="ad6e6b2798652d73515aa84d2fe630bd7"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -723,7 +750,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">size_t pvr::assets::Mesh::getDataSize </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>index</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -736,6 +763,12 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the size of the specified Data block.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>The index of the data block</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>The size in bytes of the specified Data block.</dd></dl>
 
 </div>
@@ -762,6 +795,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get all face data of this mesh.</p>
+<dl class="section return"><dt>Returns</dt><dd>A reference to the face data object of this mesh</dd></dl>
 
 </div>
 </div>
@@ -787,6 +821,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get all face data of this mesh.</p>
+<dl class="section return"><dt>Returns</dt><dd>A reference to the face data object of this mesh</dd></dl>
 
 </div>
 </div>
@@ -812,6 +847,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get a reference to the internal representation and data of this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. Handle with care.</p>
+<dl class="section return"><dt>Returns</dt><dd>The internal representation of this object.</dd></dl>
 
 </div>
 </div>
@@ -841,7 +877,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a74ff57d9ea62f78992d512de2d19a74d"></a>
+<a class="anchor" id="a6e178e1f82eef52d6c4ee5e91ca2990a"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -849,7 +885,73 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getNumBoneBatches </td>
+          <td class="memname">const FreeValue* pvr::assets::Mesh::getMeshSemantic </td>
+          <td>(</td>
+          <td class="paramtype">const StringHash &amp;&#160;</td>
+          <td class="paramname"><em>semantic</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the value of a Per-Mesh semantic as a FreeValue, null if it does not exist.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">semantic</td><td>The semantic name to retrieve</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to a FreeValue containing the value of the semantic. If the semantic does not exist, return NULL</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a4631a8b4fb8bfa0888efd0da743f1150"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::assets::Mesh::getNumBatchBones </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>batch</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get how many bones the specified bone batch has.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">batch</td><td>The index of a BoneBatch</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of bones in the batch with index (batch)</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aaed956628770c5a5d268ad6575d97cba"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::assets::Mesh::getNumBoneBatches </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -863,10 +965,11 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the number of <a class="el" href="structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html" title="This class is used to break meshes into different batches in order to avoid overflowing the number of...">BoneBatches</a> the bones of this mesh are organised into.</p>
+<dl class="section return"><dt>Returns</dt><dd>The number of bone batches</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a3ebb8d9f03e96b36a8d9f1503444a9f7"></a>
+<a class="anchor" id="af2b00633fc96e0ca805715c91f670abb"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -874,7 +977,34 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getNumDataElements </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getNumBones </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the information of a VertexAttribute by its SemanticName.</p>
+<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html" title="Definition of a single VertexAttribute.">VertexAttributeData</a> object with information on this attribute. (layout, index etc.) Null if failed</dd></dl>
+<p>This method does lookup in O(logN) time. Prefer to call the getVertexAttributeID and then use the constant-time O(1) getVertexAttribute(int32_t) method</p>
+
+</div>
+</div>
+<a class="anchor" id="a343b45c267531da7378f4372a55caff8"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t pvr::assets::Mesh::getNumDataElements </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -888,10 +1018,11 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the number of vertex data blocks that this mesh has.</p>
+<dl class="section return"><dt>Returns</dt><dd>The number of data blocks</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a6e4434f8feed9dfd9f863f385dbb7db1"></a>
+<a class="anchor" id="a3dd3ad8c738c550d282f627ce7814884"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -899,7 +1030,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getNumElements </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getNumElements </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -913,10 +1044,11 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the number of different vertex attributes that this mesh has.</p>
+<dl class="section return"><dt>Returns</dt><dd>The number of vertex attributes</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a7cca157f7540416c6df397645d8a0b5d"></a>
+<a class="anchor" id="a1f92999bddcef4351a470309b287af91"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -924,7 +1056,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getNumFaces </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getNumFaces </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -938,17 +1070,18 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the number of faces that comprise this mesh.</p>
+<dl class="section return"><dt>Returns</dt><dd>The number of faces</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a90cd7cac6d250b30bc3611477d3571d0"></a>
+<a class="anchor" id="a104eceb0cca8c21cc7b1f437af60781d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getNumFaces </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getNumFaces </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>boneBatch</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -956,10 +1089,17 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the number of faces that comprise the designated bonebatch.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">boneBatch</td><td>The bone batch id</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of faces</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="aae0e6c6c6e25de772c3e50cd55ac9c22"></a>
+<a class="anchor" id="a563f695e4cd8d361859ae1d6529e29f7"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -967,7 +1107,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getNumIndices </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getNumIndices </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -980,11 +1120,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the number of indexes that comprise this mesh. Takes TriangleStrips into consideration. </p>
+<p>Get the number of indices that comprise this mesh. Takes TriangleStrips into consideration. </p>
+<dl class="section return"><dt>Returns</dt><dd>The number of indexes</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a4fb70f25ccb66289de67ceb1ccb508fb"></a>
+<a class="anchor" id="a5345259d234d0ec6a86cddda321b76d0"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -992,7 +1133,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getNumStrips </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getNumStrips </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1010,7 +1151,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a07ea400aafce31fa6fd01f598fb9f897"></a>
+<a class="anchor" id="a9ad5165623e8cf72138ee941b6fa96fe"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1018,7 +1159,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getNumVertices </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getNumVertices </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1032,10 +1173,11 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the number of vertices that comprise this mesh.</p>
+<dl class="section return"><dt>Returns</dt><dd>The number of vertices</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="ade75d7bb0402ce62d72dabaaa5cc39dd"></a>
+<a class="anchor" id="aad44274c2f282635815af77085e05ae0"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1043,7 +1185,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">types::PrimitiveTopology pvr::assets::Mesh::getPrimitiveType </td>
+          <td class="memname">PrimitiveTopology pvr::assets::Mesh::getPrimitiveType </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1061,7 +1203,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a31c989caab8003ca1e352b02d8a31951"></a>
+<a class="anchor" id="a0b8b165ab2fb7b8e3c0d76c1b243a7e4"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1069,9 +1211,9 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getStride </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getStride </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>index</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1084,11 +1226,17 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get distance in bytes from vertex in an array to the next.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>The index of the data block whose stride to get</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>The distance in bytes from one array entry to the next.</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="aee5c46600177511d9260d88c550aefcd"></a>
+<a class="anchor" id="a722fd34a8c4d3f576902cb60af47b709"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1096,9 +1244,9 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getStripLength </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getStripLength </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>strip</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1111,11 +1259,17 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the length of the specified triangle strip.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">strip</td><td>The index of the strip of which to return the length</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>The length of the TriangleStrip with index (strip)</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a589bf2d541e4b60c4000093a6809da01"></a>
+<a class="anchor" id="a96068e0b13badc70fe76b632838caa5a"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1123,7 +1277,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const uint32* pvr::assets::Mesh::getStripLengths </td>
+          <td class="memname">const uint32_t* pvr::assets::Mesh::getStripLengths </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1163,10 +1317,63 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the Unpack Matrix of this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. The unpack matrix is used for some exotic types of vertex position compression.</p>
+<dl class="section return"><dt>Returns</dt><dd>The unpack matrix</dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="aeef44784e79b46ca05b2d2b0d9f89efe"></a>
+<a class="anchor" id="abf477d4772b1d169050032d3ed8af003"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const RefCountedResource&lt;void&gt;&amp; pvr::assets::Mesh::getUserDataPtr </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the UserData of this mesh, if such user data exist.</p>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the UserData, as a Reference Counted Void pointer. Cast to appropriate (ref counted)type</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac2031f8467bf23a6167dd5c89db41224"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">RefCountedResource&lt;void&gt; pvr::assets::Mesh::getUserDataPtr </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the UserData of this mesh, if such user data exist.</p>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the UserData, as a Reference Counted Void pointer. Cast to appropriate (ref counted)type</dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="afcc66af649bcb8770241fc30ca34a1b8"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1176,7 +1383,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">const <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html">VertexAttributeData</a>* pvr::assets::Mesh::getVertexAttribute </td>
           <td>(</td>
-          <td class="paramtype">int32&#160;</td>
+          <td class="paramtype">int32_t&#160;</td>
           <td class="paramname"><em>idx</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1189,7 +1396,13 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the information of a VertexAttribute by its SemanticName.</p>
-<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html" title="Definition of a single VertexAttribute.">VertexAttributeData</a> object with information on this attribute. (layout, data index etc.) Null if failed</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">idx</td><td>A semantic id with which to retrieve a vertex attribute.<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html" title="Definition of a single VertexAttribute.">VertexAttributeData</a> object with information on this attribute. (layout, data index etc.) Null if failed</dd></dl>
+</td></tr>
+  </table>
+  </dd>
+</dl>
 <p>This method does lookup in constant O(1) time. Use the getVertexAttributeID to get the index to use this method</p>
 
 </div>
@@ -1216,13 +1429,19 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get the information of a VertexAttribute by its SemanticName.</p>
-<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html" title="Definition of a single VertexAttribute.">VertexAttributeData</a> object with information on this attribute. (layout, index etc.) Null if failed</dd></dl>
-<p>This method does lookup in O(logN) time. Prefer to call the getVertexAttributeID and then use the constant-time O(1) getVertexAttribute(int32) method</p>
+<p>Get the information of a VertexAttribute by its SemanticName (return NULL if not exist)</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">semanticName</td><td>A semantic name with which to look for a vertex attribute.<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="classpvr_1_1assets_1_1_mesh_1_1_vertex_attribute_data.html" title="Definition of a single VertexAttribute.">VertexAttributeData</a> object with information on this attribute. (layout, index etc.) Null if failed</dd></dl>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This method does lookup in O(logN) time. Prefer to call the getVertexAttributeID and then use the constant-time O(1) getVertexAttribute(int32_t) method</p>
 
 </div>
 </div>
-<a class="anchor" id="a5f0411ee754f51bf97f02360358752d3"></a>
+<a class="anchor" id="a514add6ba80930e469334ca641ad3f17"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1230,9 +1449,9 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int32 pvr::assets::Mesh::getVertexAttributeIndex </td>
+          <td class="memname">int32_t pvr::assets::Mesh::getVertexAttributeIndex </td>
           <td>(</td>
-          <td class="paramtype">const char8 *&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
           <td class="paramname"><em>semanticName</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -1245,7 +1464,13 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the Index of a VertexAttribute by its SemanticName.</p>
-<dl class="section return"><dt>Returns</dt><dd>The Index of the vertexAttribute.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">semanticName</td><td>A semantic name with which to look for a vertex attribute.<dl class="section return"><dt>Returns</dt><dd>The Index of the vertexAttribute.</dd></dl>
+</td></tr>
+  </table>
+  </dd>
+</dl>
 <p>Use this method to get the Index of a vertex attribute in O(logN) time and then be able to retrieve it by index with getVertexAttribute in constant time</p>
 
 </div>
@@ -1258,7 +1483,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">VertexAttributeContainer&amp; pvr::assets::Mesh::getVertexAttributes </td>
+          <td class="memname"><a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4722749d8d5bfa2c811074f83a109169">VertexAttributeContainer</a>&amp; pvr::assets::Mesh::getVertexAttributes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1284,7 +1509,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const VertexAttributeContainer&amp; pvr::assets::Mesh::getVertexAttributes </td>
+          <td class="memname">const <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a4722749d8d5bfa2c811074f83a109169">VertexAttributeContainer</a>&amp; pvr::assets::Mesh::getVertexAttributes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1302,7 +1527,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ac7cc6e028ce4003fe1f5b82da55f0c78"></a>
+<a class="anchor" id="ae6ffee1763b8400c47ca017425d47953"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1310,7 +1535,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32 pvr::assets::Mesh::getVertexAttributesSize </td>
+          <td class="memname">uint32_t pvr::assets::Mesh::getVertexAttributesSize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -1324,6 +1549,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get number of vertex attributes.</p>
+<dl class="section return"><dt>Returns</dt><dd>The number of vertex attributes</dd></dl>
 
 </div>
 </div>
@@ -1350,18 +1576,41 @@ Public Member Functions</h2></td></tr>
 
 <p>Get all DataBlocks of this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd>The datablocks, as an std::vector of StridedBuffers that additionally have a stride member. </dd></dl>
-<p>Use as byte arrays and additionally use the <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a31c989caab8003ca1e352b02d8a31951" title="Get distance in bytes from vertex in an array to the next.">getStride()</a> method to get the element stride</p>
+<p>Use as char arrays and additionally use the <a class="el" href="classpvr_1_1assets_1_1_mesh.html#a0b8b165ab2fb7b8e3c0d76c1b243a7e4" title="Get distance in bytes from vertex in an array to the next.">getStride()</a> method to get the element stride</p>
 
 </div>
 </div>
-<a class="anchor" id="aa152493dd41858114743bff0f435ae8a"></a>
+<a class="anchor" id="a12bcecb68bbf030852edd91a31498160"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::assets::Mesh::mergeBoneBatches </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>boneIndexAttributeId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Merge all bone batches into one, effectively re-merging the mesh into one draw call</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">boneIndexAttributeId</td><td>The Attribute ID of the Bone Index attribute of this mesh</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a1e2ba13eaed9b97ac1975af18dcfd421"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::assets::Mesh::removeAllVertexAttributes </td>
           <td>(</td>
-          <td class="paramtype">void&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -1372,14 +1621,14 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a6ae1cb101e4555f20cbaacb1f5b1af50"></a>
+<a class="anchor" id="adf2f385432d65c533b61618aa0b01bb5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::assets::Mesh::removeData </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>index</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1420,7 +1669,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a491971d497f5470e068d0fbd1b8cc73c"></a>
+<a class="anchor" id="a1dd580700ba77baa5451ab23cad67f7d"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1430,7 +1679,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::assets::Mesh::setNumFaces </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>numFaces</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1443,10 +1692,16 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set the total number of faces. Will not change the actual Face Data.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">numFaces</td><td>Set the number of faces</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a class="anchor" id="a782720861f50d8183ec4e4b3a0bb92a9"></a>
+<a class="anchor" id="ad6f35f211c34039ffee592af24b7d1c7"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1456,7 +1711,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::assets::Mesh::setNumVertices </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>numVertices</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1469,10 +1724,16 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set the total number of vertices. Will not change the actual Vertex Data.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">numVertices</td><td>Set the number of vertices</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<a class="anchor" id="a129e2fa3ca3cea44b9bcf903a7b44cbf"></a>
+<a class="anchor" id="a511cf5eb1381ebb0b46c188dfc19b76d"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1482,7 +1743,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::assets::Mesh::setPrimitiveType </td>
           <td>(</td>
-          <td class="paramtype">const types::PrimitiveTopology &amp;&#160;</td>
+          <td class="paramtype">const PrimitiveTopology &amp;&#160;</td>
           <td class="paramname"><em>type</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1504,20 +1765,20 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="af248081335ce77eaebb2c2459fc67f62"></a>
+<a class="anchor" id="adc3ae0aff3ae49e0bb969b076415bc3a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void pvr::assets::Mesh::setStride </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>index</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>stride</em>&#160;</td>
         </tr>
         <tr>
@@ -1539,7 +1800,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a2c9cd367a2eaf161086d5c05f781047f"></a>
+<a class="anchor" id="a2a3b53368879dea40e0afe52cd207258"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -1549,13 +1810,13 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void pvr::assets::Mesh::setStripData </td>
           <td>(</td>
-          <td class="paramtype">uint32&#160;</td>
+          <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>numStrips</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const uint32 *&#160;</td>
+          <td class="paramtype">const uint32_t *&#160;</td>
           <td class="paramname"><em>lengths</em>&#160;</td>
         </tr>
         <tr>
@@ -1605,6 +1866,44 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set the Unpack Matrix of this <a class="el" href="classpvr_1_1assets_1_1_mesh.html" title="Mesh class. Represent a Mesh, a collection of primitives (usually, but not necessarily, triangles) together with their per-vertex information. A mesh&#39;s is a grouping where all vertices/primitives will have the same basic transformation (but can then be skinned) and material applied.">Mesh</a>. The unpack matrix is used for some exotic types of vertex position compression.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">unpackMatrix</td><td>An unpack matrix</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a8c901debed7dab92c980c1a5961de874"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pvr::assets::Mesh::setUserDataPtr </td>
+          <td>(</td>
+          <td class="paramtype">const RefCountedResource&lt; void &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the UserData of this mesh (wrap the data into a RefCountedResource and cast to Ref Counted void pointer.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ptr</td><td>The UserData. Must be wrapped in an appropriate RefCountedResource, and then cast into a RefCountedResource to void</td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1644,7 +1943,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">attributeName</td><td>The name of an attribute</td></tr>
-    <tr><td class="paramname">userIndex</td><td>The index to put this attribute to. If another attribute is there, indexes will be swapped.</td></tr>
+    <tr><td class="paramname">userIndex</td><td>The index to put this attribute to. If another attribute is there, indices will be swapped.</td></tr>
   </table>
   </dd>
 </dl>

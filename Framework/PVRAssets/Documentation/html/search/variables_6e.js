@@ -1,18 +1,17 @@
 var searchData=
 [
-  ['name',['name',['../structpvr_1_1assets_1_1_effect_texture.html#aa05023a647daf7fdf5277d280c7e7fc0',1,'pvr::assets::EffectTexture::name()'],['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#af76d8f173d35b7a999da2373a798da57',1,'pvr::assets::Model::Node::InternalData::name()'],['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#ac5b4bf55af616ee87ffed52fb056cbc5',1,'pvr::assets::Model::Material::InternalData::name()']]],
-  ['nearclip',['nearClip',['../structpvr_1_1assets_1_1_camera_1_1_internal_data.html#aaea2a4f74c55bb6bf2653eeff96694e6',1,'pvr::assets::Camera::InternalData']]],
+  ['name',['name',['../structpvr_1_1assets_1_1effect_1_1_subpass_group.html#acd78b6bb41dd5f9224f96f96ec35d34f',1,'pvr::assets::effect::SubpassGroup::name()'],['../structpvr_1_1assets_1_1effect_1_1_pass.html#ae1f97d1cf5f8367aac765d6314bf012e',1,'pvr::assets::effect::Pass::name()'],['../structpvr_1_1assets_1_1effect_1_1_effect.html#a5ed6ce4bc21469515f1d960a944f0da5',1,'pvr::assets::effect::Effect::name()'],['../structpvr_1_1assets_1_1_model_1_1_node_1_1_internal_data.html#af76d8f173d35b7a999da2373a798da57',1,'pvr::assets::Model::Node::InternalData::name()'],['../structpvr_1_1assets_1_1_model_1_1_material_1_1_internal_data.html#ac5b4bf55af616ee87ffed52fb056cbc5',1,'pvr::assets::Model::Material::InternalData::name()']]],
+  ['nearclip',['nearClip',['../structpvr_1_1assets_1_1_camera_1_1_internal_data.html#ad8da6724a9dc37d690a90f695247fcd0',1,'pvr::assets::Camera::InternalData']]],
   ['nodes',['nodes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a59eadc7de3f46e45f1d22eba27314bad',1,'pvr::assets::Model::InternalData']]],
-  ['number',['number',['../structpvr_1_1assets_1_1_effect_texture.html#a334ec471563d3721bbacd31931427420',1,'pvr::assets::EffectTexture']]],
-  ['numcameranodes',['numCameraNodes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#af54a19d8015012ae4a414ce1e0d856cf',1,'pvr::assets::Model::InternalData']]],
-  ['numcontrolpointsperpatch',['numControlPointsPerPatch',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a7f871ac7b7b073ad6cb97b067fb5edd4',1,'pvr::assets::Mesh::MeshInfo']]],
-  ['numdataitems',['numDataItems',['../structpvr_1_1assets_1_1_effect_semantic_default_data_type_info.html#ae16269bf643be533fb6e24e64230541b',1,'pvr::assets::EffectSemanticDefaultDataTypeInfo']]],
-  ['numdefaultsemantics',['numDefaultSemantics',['../structpvr_1_1assets_1_1_effect.html#a3ae20708472380288a206b5264a29bb5',1,'pvr::assets::Effect']]],
-  ['numfaces',['numFaces',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a186087f86d64c3b2a48879dc716ffd19',1,'pvr::assets::Mesh::MeshInfo']]],
-  ['numframes',['numFrames',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a127844b1e5e1f047c9b8e5312ec03e0b',1,'pvr::assets::Model::InternalData']]],
-  ['numlightnodes',['numLightNodes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a740fba18e45f24c757bcba2aeaba0a51',1,'pvr::assets::Model::InternalData']]],
-  ['nummeshnodes',['numMeshNodes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#ab29e50de5df891d998115983a8485966',1,'pvr::assets::Model::InternalData']]],
-  ['numpatches',['numPatches',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#ae1e5fd8cb23e504933f6ced52d31b8b5',1,'pvr::assets::Mesh::MeshInfo']]],
-  ['numpatchsubdivisions',['numPatchSubdivisions',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a194eb29c8d351c3fa3dbce19f40b0d66',1,'pvr::assets::Mesh::MeshInfo']]],
-  ['numvertices',['numVertices',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a902db92debaad9e9fcafa72ed1ba6453',1,'pvr::assets::Mesh::MeshInfo']]]
+  ['normal',['normal',['../structpvr_1_1_volume_1_1_volume_triangle.html#a7bae53ef7d3bfacf1449d762943188d1',1,'pvr::Volume::VolumeTriangle']]],
+  ['numbones',['numBones',['../structpvr_1_1assets_1_1_mesh_1_1_bone_batches.html#a65ffc2905855a70e7d9a468897979e01',1,'pvr::assets::Mesh::BoneBatches::numBones()'],['../structpvr_1_1assets_1_1_mesh_1_1_internal_data.html#a0343ebfab17908834c2923ee15feafc8',1,'pvr::assets::Mesh::InternalData::numBones()']]],
+  ['numcameranodes',['numCameraNodes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#afa94dfff060c93411c09c5c807c964ea',1,'pvr::assets::Model::InternalData']]],
+  ['numcontrolpointsperpatch',['numControlPointsPerPatch',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#ac522a5d6e6a216eed270f967f957e19f',1,'pvr::assets::Mesh::MeshInfo']]],
+  ['numfaces',['numFaces',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a4db0abee571be59fa86dda17c5fe99f5',1,'pvr::assets::Mesh::MeshInfo']]],
+  ['numframes',['numFrames',['../structpvr_1_1assets_1_1_animation_1_1_internal_data.html#ac2bcc07d903b8485fdd9ca761a027d9a',1,'pvr::assets::Animation::InternalData::numFrames()'],['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#ad7161f7634c89425d9a0154582116932',1,'pvr::assets::Model::InternalData::numFrames()']]],
+  ['numlightnodes',['numLightNodes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#a21cde74923d452f388256c49fde6d28e',1,'pvr::assets::Model::InternalData']]],
+  ['nummeshnodes',['numMeshNodes',['../structpvr_1_1assets_1_1_model_1_1_internal_data.html#ace0007bfde237ba7cee91a8788815177',1,'pvr::assets::Model::InternalData']]],
+  ['numpatches',['numPatches',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a0db2ab39a1bd78f2e235e0dccde0f722',1,'pvr::assets::Mesh::MeshInfo']]],
+  ['numpatchsubdivisions',['numPatchSubdivisions',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#a77e5a3819705babce9a095147d762f8f',1,'pvr::assets::Mesh::MeshInfo']]],
+  ['numvertices',['numVertices',['../structpvr_1_1assets_1_1_mesh_1_1_mesh_info.html#ab8b2fe8133670ffe2ef55833b3a0a7cd',1,'pvr::assets::Mesh::MeshInfo']]]
 ];

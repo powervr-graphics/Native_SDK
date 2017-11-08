@@ -3,52 +3,105 @@
 \Title        ParticleSystem
 \Author       PowerVR by Imagination, Developer Technology Team
 \Copyright    Copyright (c) Imagination Technologies Limited.
-\brief		  Particle animation system using Compute Shaders. Requires the PVRShell.
+\brief      Particle animation system using Compute Shaders. Requires the PVRShell.
 ***********************************************************************************************************************/
-#include "ParticleSystemGPU.h"
 #include "PVRShell/PVRShell.h"
-#include "PVRApi/PVRApi.h"
-#include "PVREngineUtils/PVREngineUtils.h"
-using namespace pvr::types;
+#include "PVRUtils/PVRUtilsGles.h"
+
+// === Objects that have corresponding representations in Shader Code (Ubo, SSBO)
+// We are using PRAGMA PACK to remove all compiler-generated padding and hence only add our own explicit
+// padding, following the std140 rules (http://www.opengl.org/registry/doc/glspec45.core.pdf#page=159)
+// This is not strictly 100% necessary as std140 is actually "stricter" (has more padding) than all "common"
+// architectures (the example will still run fine without the pragma pack in x86/x64 and armvX architectures
+// compiled with any tested VS, GCC or Clang version) but it is the right thing to do.
+#pragma pack(push)
+#pragma pack(1)
+
+//The particle structure will be kept packed. We follow the STD140 spec to explicitly add the paddings
+//so that we can be sure of the layout.
+struct Particle
+{
+	glm::vec3 vPosition; //vec3
+	float _padding;
+	glm::vec3 vVelocity;  //vec4.xyz
+	float fTimeToLive;  //vec4/w
+};//SIZE:32 bytes
+
+//All the following will all be used in uniforms/ssbos, so we will mimic the alignment of std140 glsl
+//layout spec in order to make their use simpler
+struct Sphere
+{
+	glm::vec3 vPosition; //vec4: xyz
+	float fRadius;      //vec4: w
+	Sphere(const glm::vec3& pos, float radius) : vPosition(pos), fRadius(radius) {}
+};
+
+struct Emitter
+{
+	glm::mat4 mTransformation;  //mat4
+	float   fHeight;      //float
+	float   fRadius;      //float
+	Emitter(const glm::mat4& trans, float height, float radius) : mTransformation(trans), fHeight(height), fRadius(radius) {}
+	Emitter() {}
+};
+
+struct ParticleConfig
+{
+	Emitter   emitter;			//18 floats //Emitter will need 2 floats padding to be a multiple of 16 (vec4 size).
+	float   _padding1_[2];		//20 floats //These are non-reclaimable as emitter is a struct.
+	glm::vec3 gravity;			//23 floats //vec3 will be aligned to 4 floats, but the last element can be filled with a float
+	float   dt;					//24 floats //simple float
+	float   totalTime;			//25 floats //simple float
+	float dragCoeffLinear;		//26 floats //simple float
+	float dragCoeffQuadratic;	//27 floats //simple float
+	float inwardForceCoeff;		//28 floats //simple float
+	float inwardForceRadius;	//29 floats //simple float
+	float bounciness;			//30 floats //simple float
+	float minLifespan;			//31 floats //simple float
+	float maxLifespan;			//32 floats //simple float
+	//float   _padding2_[2];	// Luckily this struct is a multiple of 16. Otherwise, we would have used padding defensively as std140
+	//dictates that the size of the whole ubo will be aligned to the size of vec4. (i.e. 4floats/16 bytes : we would pad 30 to 32, 33 to 48 etc)
+	ParticleConfig() {}
+};
+#pragma pack(pop)
 
 namespace Files {
 // Asset files
-const char SphereModelFile[] = "sphere.pod";
-
-const char FragShaderSrcFile[] = "FragShader.fsh";
-const char VertShaderSrcFile[] = "VertShader.vsh";
-const char ParticleShaderFragSrcFile[] = "ParticleFragShader.fsh";
-const char ParticleShaderVertSrcFile[] = "ParticleVertShader.vsh";
+const char SphereModel[] = "sphere.pod";
+const char FragShader[] = "FragShader.fsh";
+const char VertShader[] = "VertShader.vsh";
+const char ParticleFragShader[] = "ParticleFragShader.fsh";
+const char ParticleVertShader[] = "ParticleVertShader.vsh";
+const char ParticleComputeShader[] = "ParticleSolver.csh";
 }
 
 namespace Configuration {
 enum
 {
 	MinNoParticles = 128,
-	MaxNoParticles = 131072 * 64,
-	InitialNoParticles = 32768,
+	MaxNoParticles = 262144,
+	InitialNoParticles = 4096,
 	NumberOfSpheres = 8,
 };
 
 const float CameraNear = .1f;
 const float CameraFar = 1000.0f;
-const glm::vec3 LightPosition(0.0f, 10.0f, 0.0f);
-
-const Sphere Spheres[] =
+const glm::vec3 LightPosition(0.0f, 40.0f, 0.0f);
+const uint32_t workgroupSize = 32;
+const Sphere SpheresData[] =
 {
-	Sphere(glm::vec3(-20.0f, 6.0f, -20.0f), 5.f) ,
-	Sphere(glm::vec3(-20.0f, 6.0f,   0.0f), 5.f) ,
-	Sphere(glm::vec3(-20.0f, 6.0f,  20.0f), 5.f) ,
-	Sphere(glm::vec3(0.0f, 6.0f, -20.0f), 5.f) ,
-	Sphere(glm::vec3(0.0f, 6.0f,  20.0f), 5.f) ,
-	Sphere(glm::vec3(20.0f, 6.0f, -20.0f), 5.f) ,
-	Sphere(glm::vec3(20.0f, 6.0f,   0.0f), 5.f) ,
-	Sphere(glm::vec3(20.0f, 6.0f,  20.0f), 5.f) ,
+	Sphere(glm::vec3(-20.0f, 6.0f, -20.0f), 5.f),
+	Sphere(glm::vec3(-20.0f, 6.0f,   0.0f), 5.f),
+	Sphere(glm::vec3(-20.0f, 6.0f,  20.0f), 5.f),
+	Sphere(glm::vec3(0.0f, 6.0f, -20.0f), 5.f),
+	Sphere(glm::vec3(0.0f, 6.0f,  20.0f), 5.f),
+	Sphere(glm::vec3(20.0f, 6.0f, -20.0f), 5.f),
+	Sphere(glm::vec3(20.0f, 6.0f,   0.0f), 5.f),
+	Sphere(glm::vec3(20.0f, 6.0f,  20.0f), 5.f),
 };
 }
 
 // Index to bind the attributes to vertex shaders
-
 namespace Attributes {
 enum Enum
 {
@@ -58,21 +111,22 @@ enum Enum
 };
 }
 
+enum BufferBindingPoint
+{
+	SPHERES_UBO_BINDING_INDEX = 1,
+	PARTICLE_CONFIG_UBO_BINDING_INDEX = 2,
+	PARTICLES_SSBO_BINDING_INDEX_IN = 3,
+	PARTICLES_SSBO_BINDING_INDEX_OUT = 4,
+};
+
+const uint32_t NumBuffers(2);
+
 /*!*********************************************************************************************************************
 Class implementing the PVRShell functions.
 ***********************************************************************************************************************/
 class OGLESParticleSystem : public pvr::Shell
 {
 private:
-	pvr::assets::ModelHandle scene;
-	bool isCameraPaused;
-	pvr::uint8 currentBufferIdx;
-
-	// View matrix
-	glm::mat4 viewMtx, projMtx, viewProjMtx;
-	glm::mat3 viewIT;
-	glm::mat4 mLightView, mBiasMatrix;
-	glm::vec3 lightPos;
 	struct DrawPass
 	{
 		glm::mat4 model;
@@ -81,54 +135,72 @@ private:
 		glm::mat3 modelViewIT;
 		glm::vec3 lightPos;
 	};
-	std::vector<DrawPass> passSphere;
-	struct ApiObjects
+
+	struct DeviceResources
 	{
-		// UIRenderer class used to display text
+		pvr::EglContext context;
+
+		GLuint sphereVbo;
+		GLuint sphereIbo;
+		GLuint sphereVao;
+
+		GLuint floorVao;
+		GLuint floorVbo;
+
+		//OPENGL BUFFER OBJECTS
+		GLuint particleBuffers[NumBuffers];
+		GLuint particleVaos[NumBuffers];
+		GLuint particleConfigUbo, spheresUbo;
+
+		// UIRenderer used to display text
 		pvr::ui::UIRenderer uiRenderer;
 
-		pvr::api::TextureView  particleTex;
-		pvr::api::Buffer sphereVbo;
-		pvr::api::Buffer sphereIbo;
-
-		pvr::api::Buffer floorVbo;
-		pvr::api::Buffer particleVbos[NumBuffers];
-
-		pvr::api::CommandBuffer commandBuffers[NumBuffers];
-		pvr::GraphicsContext context;
-		pvr::api::Fbo onscreenFbo;
-
-		struct
+		struct ParticleProgram
 		{
-			pvr::api::GraphicsPipeline pipe;
-			pvr::uint32 iPositionArrayLoc;
-			pvr::uint32 iLifespanArrayLoc;
-			pvr::uint32 mvpMatrixLoc;
-		} pipeParticle;
+			GLuint program;
+			GLint positionArrayLoc;
+			GLint lifespanArrayLoc;
+			GLint mvpMatrixLoc;
+			ParticleProgram() : program(0), positionArrayLoc(-1), lifespanArrayLoc(-1), mvpMatrixLoc(-1) {}
+		} programParticle;
 
-		struct
+		struct Program
 		{
-			pvr::api::GraphicsPipeline pipe;
-			pvr::uint32 mvMatrixLoc;
-			pvr::uint32 mvITMatrixLoc;
-			pvr::uint32 mvpMatrixLoc;
-			pvr::uint32 lightPosition;
-		}
-		pipelineSimple;
+			GLuint program;
+			GLint mvMatrixLoc;
+			GLint mvITMatrixLoc;
+			GLint mvpMatrixLoc;
+			GLint lightPositionLoc;
+			Program() : program(0), mvMatrixLoc(-1), mvITMatrixLoc(-1), mvpMatrixLoc(-1), lightPositionLoc(-1) {}
+		};
+		Program programSimple;
+		Program programFloor;
 
-		struct
-		{
-			pvr::api::GraphicsPipeline pipe;
-			pvr::int32 mvMatrixLoc;
-			pvr::int32 mvITMatrixLoc;
-			pvr::int32 mvpMatrixLoc;
-			pvr::int32 lightPosition;
-		} pipelineFloor;
+		struct ComputeProgram { GLuint program; ComputeProgram() : program(0) {} } programParticlesCompute;
 
-		ParticleSystemGPU particleSystemGPU;
-		ApiObjects(OGLESParticleSystem& thisApp) : particleSystemGPU(thisApp) { }
+		DeviceResources() : sphereVbo(0), sphereIbo(0), floorVbo(0) { memset(particleBuffers, 0, sizeof(particleBuffers)); }
 	};
-	std::auto_ptr<ApiObjects> apiObj;
+	std::unique_ptr<DeviceResources> _deviceResources;
+
+	pvr::assets::ModelHandle _scene;
+	bool _isCameraPaused;
+	uint8_t _currentBufferIdx;
+
+	// View matrix
+	glm::mat4 _viewMtx, _projMtx, _viewProjMtx;
+	glm::mat3 _viewIT;
+	glm::vec3 _lightPos;
+	DrawPass _passSphere[Configuration::NumberOfSpheres];
+
+	//SIMULATION DATA
+	uint32_t _numParticles;
+	uint32_t _maxWorkgroupSize;
+
+	ParticleConfig _particleConfigData;
+	std::vector<Particle> _particleArrayData;
+
+	bool _blendModeAdditive;
+
 public:
 	OGLESParticleSystem();
 
@@ -140,24 +212,23 @@ public:
 	virtual void eventMappedInput(pvr::SimplifiedInput key);
 
 	bool createBuffers();
-	bool createPipelines();
-	void recordCommandBuffers();
-	void recordCommandBuffer(pvr::uint8 idx);
-	void recordCmdDrawFloor(pvr::uint8 idx);
-	void recordCmdDrawParticles(pvr::uint8 idx);
-	void recordCmdDrawSphere(DrawPass& passSphere, pvr::uint8 idx);
-	void respecifyParticleBuffer(pvr::uint32 numberOfParticles);
-
-	void updateFloor();
-	void updateSpheres(const glm::mat4& proj, const glm::mat4& view);
-	void renderParticles(const glm::mat4& proj, const glm::mat4& view);
-
+	bool createPrograms();
+	void updateFloorProgramUniforms();
+	void updateSphereProgramUniforms(const glm::mat4& proj, const glm::mat4& view);
 	void updateParticleUniforms();
-	bool SetCollisionSpheres(const Sphere* pSpheres, unsigned int uiNumSpheres);
+	void useSimplePipelineProgramAndSetState();
+	void useFloorPipelineProgramAndSetState();
+	void useComputePassProgram();
+	void useParticleRenderingProgramAndSetState();
+	void executeComputePass(uint32_t idx);
+	void executeSceneRenderingPass();
+	void executeParticlesRenderingPass(uint32_t idx);
+	void bindParticleBuffers(uint32_t idx);
+	void initializeParticles(uint32_t _numParticles);
 };
 
 /*!*********************************************************************************************************************
-\brief	Handles user input and updates live variables accordingly.
+\brief  Handles user input and updates live variables accordingly.
 \param key Input key to handle
 ***********************************************************************************************************************/
 void OGLESParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
@@ -166,61 +237,58 @@ void OGLESParticleSystem::eventMappedInput(pvr::SimplifiedInput key)
 	{
 	case pvr::SimplifiedInput::Left:
 	{
-		unsigned int numParticles = apiObj->particleSystemGPU.getNumberOfParticles();
-		if (numParticles / 2 >= Configuration::MinNoParticles)
+		if (_numParticles / 2 >= Configuration::MinNoParticles)
 		{
-			respecifyParticleBuffer(numParticles / 2);
-			apiObj->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", numParticles / 2));
-			apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
-			recordCommandBuffers();
+			_numParticles /= 2;
+			initializeParticles(_numParticles);
+			_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", _numParticles));
+			_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 		}
 	} break;
 	case pvr::SimplifiedInput::Right:
 	{
-		unsigned int numParticles = apiObj->particleSystemGPU.getNumberOfParticles();
-		if (numParticles * 2 <= Configuration::MaxNoParticles)
+		if (_numParticles * 2 <= Configuration::MaxNoParticles)
 		{
-			respecifyParticleBuffer(numParticles * 2);
-			apiObj->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", numParticles * 2));
-			apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
-			recordCommandBuffers();
+			_numParticles *= 2;
+			initializeParticles(_numParticles);
+			_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", _numParticles));
+			_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
 		}
 	} break;
-	case pvr::SimplifiedInput::Action1: isCameraPaused = !isCameraPaused; break;
+	case pvr::SimplifiedInput::Action1: _isCameraPaused = !_isCameraPaused; break;
+	case pvr::SimplifiedInput::Action2: _blendModeAdditive = !_blendModeAdditive; break;
 	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
 	}
 }
 
 /*!*********************************************************************************************************************
-\brief Resize the particle buffer size
-\param numberOfParticles Number of particles to allocate in the buffer
+\brief ctor
 ***********************************************************************************************************************/
-void OGLESParticleSystem::respecifyParticleBuffer(pvr::uint32 numberOfParticles)
+OGLESParticleSystem::OGLESParticleSystem() : _isCameraPaused(0), _numParticles(Configuration::InitialNoParticles), _particleArrayData(0), _blendModeAdditive(true)
 {
-	//We do not need to update a descriptor set as VBOs are set directly in the Command Buffer
-	//We DO need to notify the ParticleSystemGpu of our buffer re-specification as the SSBO view
-	//of our buffer will also need to be respecified.
-	for (pvr::uint32 i = 0; i < NumBuffers; ++i)
-	{
-		apiObj->particleVbos[i] = apiObj->context->createBuffer(sizeof(Particle) * numberOfParticles,
-		                          BufferBindingUse(BufferBindingUse::VertexBuffer | BufferBindingUse::StorageBuffer));
-	}
-	apiObj->particleSystemGPU.setParticleVboBuffers(apiObj->particleVbos);
-	apiObj->particleSystemGPU.setNumberOfParticles(numberOfParticles);
+	memset(&_particleConfigData, 0, sizeof(ParticleConfig));
 }
 
 /*!*********************************************************************************************************************
-\brief ctor
-***********************************************************************************************************************/
-OGLESParticleSystem::OGLESParticleSystem() : isCameraPaused(0) { }
-
-/*!*********************************************************************************************************************
-\brief	Loads the mesh data required for this training course into vertex buffer objects
+\brief  Loads the mesh data required for this training course into vertex buffer objects
 \return Return true on success
 ***********************************************************************************************************************/
 bool OGLESParticleSystem::createBuffers()
 {
-	pvr::utils::createSingleBuffersFromMesh(getGraphicsContext(), scene->getMesh(0), apiObj->sphereVbo, apiObj->sphereIbo);
+	//Create the VBO for the Sphere model
+	pvr::utils::createSingleBuffersFromMesh(_scene->getMesh(0), _deviceResources->sphereVbo, _deviceResources->sphereIbo);
+
+	gl::GenVertexArrays(1, &_deviceResources->sphereVao);
+	gl::BindVertexArray(_deviceResources->sphereVao);
+	gl::BindVertexBuffer(0, _deviceResources->sphereVbo, 0, _scene->getMesh(0).getStride(0));
+	gl::BindBuffer(GL_ELEMENT_ARRAY_BUFFER, _deviceResources->sphereIbo);
+	gl::EnableVertexAttribArray(0);
+	gl::EnableVertexAttribArray(1);
+	gl::VertexAttribBinding(0, 0);
+	gl::VertexAttribBinding(1, 0);
+	gl::VertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, _scene->getMesh(0).getVertexAttributeByName("POSITION")->getOffset());
+	gl::VertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, _scene->getMesh(0).getVertexAttributeByName("NORMAL")->getOffset());
+
 
 	//Initialize the vertex buffer data for the floor - 3*Position data, 3* normal data
 	glm::vec2 maxCorner(40, 40);
@@ -231,278 +299,359 @@ bool OGLESParticleSystem::createBuffers()
 		maxCorner.x, 0.0f, -maxCorner.y, 0.0f, 1.0f, 0.0f,
 		maxCorner.x, 0.0f, maxCorner.y, 0.0f, 1.0f, 0.0f
 	};
+	gl::GenBuffers(1, &_deviceResources->floorVbo);
+	gl::BindBuffer(GL_ARRAY_BUFFER, _deviceResources->floorVbo);
+	gl::BufferData(GL_ARRAY_BUFFER, sizeof(afVertexBufferData), afVertexBufferData, GL_STATIC_DRAW);
 
-	apiObj->floorVbo = apiObj->context->createBuffer(sizeof(afVertexBufferData), BufferBindingUse::VertexBuffer);
-	apiObj->floorVbo->update(afVertexBufferData, 0, sizeof(afVertexBufferData));
+	gl::GenVertexArrays(1, &_deviceResources->floorVao);
+	gl::BindVertexArray(_deviceResources->floorVao);
+	gl::BindVertexBuffer(0, _deviceResources->floorVbo, 0, 6 * sizeof(float));
+	gl::EnableVertexAttribArray(0);
+	gl::EnableVertexAttribArray(1);
+	gl::VertexAttribBinding(0, 0);
+	gl::VertexAttribBinding(1, 0);
+	gl::VertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
+	gl::VertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float));
+
+	// Create the (VBO/SSBO) Particles buffer
+	gl::GenBuffers(NumBuffers, _deviceResources->particleBuffers);
+	gl::GenVertexArrays(NumBuffers, _deviceResources->particleVaos);
 	for (int i = 0; i < NumBuffers; ++i)
 	{
-		apiObj->particleVbos[i] = apiObj->context->createBuffer(sizeof(Particle) * Configuration::InitialNoParticles,
-		                          BufferBindingUse(BufferBindingUse::VertexBuffer | BufferBindingUse::StorageBuffer));
+		gl::BindBuffer(GL_ARRAY_BUFFER, _deviceResources->particleBuffers[i]);
+		gl::BufferData(GL_ARRAY_BUFFER, sizeof(Particle) * _numParticles, nullptr, GL_DYNAMIC_COPY);
+		gl::BindVertexArray(_deviceResources->particleVaos[i]);
+		gl::BindVertexBuffer(0, _deviceResources->particleBuffers[i], 0, sizeof(Particle));
+		gl::EnableVertexAttribArray(0);
+		gl::EnableVertexAttribArray(1);
+		gl::VertexAttribBinding(0, 0);
+		gl::VertexAttribBinding(1, 0);
+		gl::VertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
+		gl::VertexAttribFormat(1, 1, GL_FLOAT, GL_FALSE, sizeof(glm::vec4));
 	}
+
+	gl::BindVertexArray(0);
+
+	// Create the "Physical" collision spheres UBO (Sphere center and radius, used for the Compute collisions)
+
+	gl::GenBuffers(1, &_deviceResources->spheresUbo);
+	gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->spheresUbo);
+	gl::BufferData(GL_UNIFORM_BUFFER, sizeof(Sphere) * Configuration::NumberOfSpheres, Configuration::SpheresData, GL_STATIC_DRAW);
+
+
+	gl::GenBuffers(1, &_deviceResources->particleConfigUbo);
+	gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->particleConfigUbo);
+	gl::BufferData(GL_UNIFORM_BUFFER, sizeof(ParticleConfig), &_particleConfigData, GL_STATIC_DRAW);
+
 	return true;
 }
 
-/*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occured
-\brief	Loads and compiles the shaders and links the shader programs required for this training course
-***********************************************************************************************************************/
-bool OGLESParticleSystem::createPipelines()
+void OGLESParticleSystem::useSimplePipelineProgramAndSetState()
 {
-	const pvr::assets::Mesh& mesh = scene->getMesh(0);
-	//No textures etc. for our rendering...
-	pvr::api::PipelineLayout pipeLayout = apiObj->context->createPipelineLayout(pvr::api::PipelineLayoutCreateParam());
-	pvr::assets::ShaderFile fileVersioning;
+	gl::UseProgram(_deviceResources->programSimple.program);
+	// NO BLENDING, BACK FACE CULLING, DEPTH TEST ENABLED, DEPTH WRITE ENABLED, TRIANGLE LIST.
+	// SIMPLE_PIPE
+	gl::Disable(GL_BLEND);
+	gl::Enable(GL_CULL_FACE);
+	gl::CullFace(GL_BACK);
+	gl::FrontFace(GL_CCW);
+	gl::Enable(GL_DEPTH_TEST);
+	gl::DepthMask(GL_TRUE);
+	// ENABLE
+}
 
+void OGLESParticleSystem::useFloorPipelineProgramAndSetState()
+{
+	gl::UseProgram(_deviceResources->programSimple.program);
+	// NO BLENDING, BACK FACE CULLING, DEPTH TEST ENABLED, DEPTH WRITE ENABLED, TRIANGLE LIST.
+	// SIMPLE_PIPE
+	gl::Disable(GL_BLEND);
+	// ENABLE
+}
+
+void OGLESParticleSystem::useParticleRenderingProgramAndSetState()
+{
+	gl::UseProgram(_deviceResources->programParticle.program);
+	gl::Enable(GL_BLEND);
+	gl::DepthMask(GL_FALSE);
+	gl::BlendFunc(GL_SRC_ALPHA, _blendModeAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
+	gl::BlendEquation(GL_FUNC_ADD);
+}
+
+
+void OGLESParticleSystem::bindParticleBuffers(uint32_t idx)
+{
+	int id_in = idx % NumBuffers;
+	int id_out = (idx + 1) % NumBuffers;
+
+	gl::BindBufferBase(GL_UNIFORM_BUFFER, PARTICLE_CONFIG_UBO_BINDING_INDEX, _deviceResources->particleConfigUbo);
+	gl::BindBufferBase(GL_UNIFORM_BUFFER, SPHERES_UBO_BINDING_INDEX, _deviceResources->spheresUbo);
+	gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, PARTICLES_SSBO_BINDING_INDEX_IN, _deviceResources->particleBuffers[id_in]);
+	gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, PARTICLES_SSBO_BINDING_INDEX_OUT, _deviceResources->particleBuffers[id_out]);
+}
+
+void OGLESParticleSystem::useComputePassProgram()
+{
+	gl::UseProgram(_deviceResources->programParticlesCompute.program);
+}
+
+
+/*!*********************************************************************************************************************
+\return Return pvr::Result::Success if no error occured
+\brief  Loads and compiles the shaders and links the shader programs required for this training course
+***********************************************************************************************************************/
+bool OGLESParticleSystem::createPrograms()
+{
+	const pvr::assets::Mesh& mesh = _scene->getMesh(0);
 	// Simple Pipeline
 	{
-		pvr::api::VertexAttributeInfo attributes[] =
-		{
-			pvr::api::VertexAttributeInfo(Attributes::VertexArray, DataType::Float32, 3, 0, "inVertex"),
-			pvr::api::VertexAttributeInfo(Attributes::NormalArray, DataType::Float32, 3, 3 * sizeof(float), "inNormal")
-		};
+		pvr::utils::VertexAttributeInfoGles attributes[2];
+		//"inVertex"
+		attributes[0].format = GL_FLOAT;
+		attributes[0].index = 0;
+		attributes[0].offset = 0;
+		attributes[0].size = 3;
+		attributes[0].stride = sizeof(float) * (3 + 3);
+		attributes[0].vboIndex = 0;
+		//"inNormal"
+		attributes[1] = attributes[0];
+		attributes[1].index = 1;
+		attributes[1].offset = reinterpret_cast<void*>(sizeof(float) * 3);
+
 		const char* simplePipeAttributes[] = { "inVertex", "inNormal" };
-		const unsigned int numSimpleAttribs = sizeof(simplePipeAttributes) / sizeof(simplePipeAttributes[0]);
+		const uint16_t simplePipeAttributeIndices[] = { Attributes::VertexArray, Attributes::NormalArray };
+		const unsigned int numSimpleAttribs = 2;
 
-		pvr::api::GraphicsPipelineCreateParam pipeCreateInfo;
-		fileVersioning.populateValidVersions(Files::VertShaderSrcFile, *this);
-		pipeCreateInfo.vertexShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES31), ShaderType::VertexShader));
+		_deviceResources->programSimple.program = pvr::utils::createShaderProgram(*this, Files::VertShader, Files::FragShader, simplePipeAttributes, simplePipeAttributeIndices, 2);
 
-		fileVersioning.populateValidVersions(Files::FragShaderSrcFile, *this);
-		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForApi(pvr::Api::OpenGLES31), ShaderType::FragmentShader));
+		useSimplePipelineProgramAndSetState();
 
-		pipeCreateInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
-
-		pipeCreateInfo.vertexInput.addVertexAttribute(0, attributes[0]).addVertexAttribute(0, attributes[1])
-		.setInputBinding(0, mesh.getStride(0));
-
-		pipeCreateInfo.rasterizer.setCullFace(pvr::types::Face::Back);
-		pipeCreateInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
-
-		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleList);
-		pipeCreateInfo.pipelineLayout = pipeLayout;
-		apiObj->pipelineSimple.pipe = apiObj->context->createGraphicsPipeline(pipeCreateInfo);
-		apiObj->pipelineSimple.mvMatrixLoc = apiObj->pipelineSimple.pipe->getUniformLocation("uModelViewMatrix");
-		apiObj->pipelineSimple.mvITMatrixLoc = apiObj->pipelineSimple.pipe->getUniformLocation("uModelViewITMatrix");
-		apiObj->pipelineSimple.mvpMatrixLoc = apiObj->pipelineSimple.pipe->getUniformLocation("uModelViewProjectionMatrix");
-		apiObj->pipelineSimple.lightPosition = apiObj->pipelineSimple.pipe->getUniformLocation("uLightPosition");
+		_deviceResources->programSimple.mvMatrixLoc = gl::GetUniformLocation(_deviceResources->programSimple.program, "uModelViewMatrix");
+		_deviceResources->programSimple.mvITMatrixLoc = gl::GetUniformLocation(_deviceResources->programSimple.program, "uModelViewITMatrix");
+		_deviceResources->programSimple.mvpMatrixLoc = gl::GetUniformLocation(_deviceResources->programSimple.program, "uModelViewProjectionMatrix");
+		_deviceResources->programSimple.lightPositionLoc = gl::GetUniformLocation(_deviceResources->programSimple.program, "uLightPosition");
 	}
 
-	//	Floor Pipeline
+	//  Floor Pipeline
 	{
-		pvr::api::VertexAttributeInfo attributes[] =
-		{
-			pvr::api::VertexAttributeInfo(Attributes::VertexArray, DataType::Float32, 3, 0, "inVertex"),
-			pvr::api::VertexAttributeInfo(Attributes::NormalArray, DataType::Float32, 3, 3 * sizeof(float), "inNormal")
-		};
-
 		const char* floorPipeAttributes[] = { "inVertex", "inNormal" };
-		const unsigned int numFloorAttribs = sizeof(floorPipeAttributes) / sizeof(floorPipeAttributes[0]);
-		pvr::api::GraphicsPipelineCreateParam pipeCreateInfo;
-		pipeCreateInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
+		const uint16_t floorPipeAttributeIndices[] = { Attributes::VertexArray, Attributes::NormalArray };
+		const unsigned int numFloorAttribs = 2;
 
-		pipeCreateInfo.rasterizer.setCullFace(pvr::types::Face::Back);
-		pipeCreateInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
+		_deviceResources->programFloor.program = pvr::utils::createShaderProgram(*this, Files::VertShader, Files::FragShader, floorPipeAttributes, floorPipeAttributeIndices, 2);
 
-		fileVersioning.populateValidVersions(Files::VertShaderSrcFile, *this);
-		pipeCreateInfo.vertexShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), ShaderType::VertexShader));
-
-		fileVersioning.populateValidVersions(Files::FragShaderSrcFile, *this);
-		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), ShaderType::FragmentShader));
-		pipeCreateInfo.vertexInput.addVertexAttribute(0, attributes[0]).addVertexAttribute(0, attributes[1]).setInputBinding(0, 6 * sizeof(float));
-
-		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::TriangleStrip);
-		pipeCreateInfo.pipelineLayout = pipeLayout;
-		apiObj->pipelineFloor.pipe = apiObj->context->createGraphicsPipeline(pipeCreateInfo);
-		apiObj->pipelineFloor.mvMatrixLoc = apiObj->pipelineFloor.pipe->getUniformLocation("uModelViewMatrix");
-		apiObj->pipelineFloor.mvITMatrixLoc = apiObj->pipelineFloor.pipe->getUniformLocation("uModelViewITMatrix");
-		apiObj->pipelineFloor.mvpMatrixLoc = apiObj->pipelineFloor.pipe->getUniformLocation("uModelViewProjectionMatrix");
-		apiObj->pipelineFloor.lightPosition = apiObj->pipelineFloor.pipe->getUniformLocation("uLightPosition");
+		_deviceResources->programFloor.mvMatrixLoc = gl::GetUniformLocation(_deviceResources->programFloor.program, "uModelViewMatrix");
+		_deviceResources->programFloor.mvITMatrixLoc = gl::GetUniformLocation(_deviceResources->programFloor.program, "uModelViewITMatrix");
+		_deviceResources->programFloor.mvpMatrixLoc = gl::GetUniformLocation(_deviceResources->programFloor.program, "uModelViewProjectionMatrix");
+		_deviceResources->programFloor.lightPositionLoc = gl::GetUniformLocation(_deviceResources->programFloor.program, "uLightPosition");
 	}
 
 	//  Particle Pipeline
 	{
 		const char* particleAttribs[] = { "inPosition", "inLifespan" };
-		pvr::api::VertexAttributeInfo attributes[] =
-		{
-			pvr::api::VertexAttributeInfo(Attributes::ParticlePoisitionArray, DataType::Float32, 3, 0, "inPosition"),
-			pvr::api::VertexAttributeInfo(Attributes::ParticleLifespanArray, DataType::Float32, 1, (sizeof(float) * 7), "inLifespan")
-		};
+		const uint16_t particleAttribIndices[] = { 0, 1 };
+
 		const unsigned int numParticleAttribs = sizeof(particleAttribs) / sizeof(particleAttribs[0]);
-		pvr::ImageDataFormat colorFmt;
-		pvr::api::GraphicsPipelineCreateParam pipeCreateInfo;
-		pipeCreateInfo.colorBlend.setAttachmentState(0,
-		    pvr::types::BlendingConfig(
-		      true, BlendFactor::SrcAlpha, BlendFactor::One, BlendOp::Add));
-		pipeCreateInfo.rasterizer.setCullFace(pvr::types::Face::Back);
-		pipeCreateInfo.depthStencil.setDepthWrite(true).setDepthTestEnable(true);
-		fileVersioning.populateValidVersions(Files::ParticleShaderVertSrcFile, *this);
 
-		pipeCreateInfo.vertexShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), ShaderType::VertexShader));
-
-		fileVersioning.populateValidVersions(Files::ParticleShaderFragSrcFile, *this);
-		pipeCreateInfo.fragmentShader.setShader(apiObj->context->createShader(*fileVersioning.getBestStreamForContext(apiObj->context), ShaderType::FragmentShader));
-
-		pipeCreateInfo.vertexInput.addVertexAttribute(0, attributes[0]).addVertexAttribute(0, attributes[1])
-		.setInputBinding(0, sizeof(Particle));
-
-		pipeCreateInfo.inputAssembler.setPrimitiveTopology(PrimitiveTopology::PointList);
-		pipeCreateInfo.pipelineLayout = pipeLayout;
-		apiObj->pipeParticle.pipe = apiObj->context->createGraphicsPipeline(pipeCreateInfo);
-		apiObj->pipeParticle.mvpMatrixLoc = apiObj->pipeParticle.pipe->getUniformLocation("uModelViewProjectionMatrix");
+		_deviceResources->programParticle.program = pvr::utils::createShaderProgram(*this, Files::ParticleVertShader, Files::ParticleFragShader, particleAttribs, particleAttribIndices, 2);
+		_deviceResources->programParticle.mvpMatrixLoc = gl::GetUniformLocation(_deviceResources->programParticle.program, "uModelViewProjectionMatrix");
 	}
+
+	//  Particle Compute Pipeline
+	{
+		gl::BindBufferBase(GL_UNIFORM_BUFFER, PARTICLE_CONFIG_UBO_BINDING_INDEX, _deviceResources->particleConfigUbo);
+		gl::BindBufferBase(GL_UNIFORM_BUFFER, SPHERES_UBO_BINDING_INDEX, _deviceResources->spheresUbo);
+
+		bool pingpong = 0;
+		gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, PARTICLES_SSBO_BINDING_INDEX_IN, _deviceResources->particleBuffers[pingpong]);
+		gl::BindBufferBase(GL_SHADER_STORAGE_BUFFER, PARTICLES_SSBO_BINDING_INDEX_OUT, _deviceResources->particleBuffers[pingpong]);
+
+		std::string defines("WORKGROUP_SIZE               ", 30);
+		sprintf(&defines[16], "%d", Configuration::workgroupSize);
+		const char* defines_buffer[1] = { &defines[0] };
+
+		_deviceResources->programParticlesCompute.program = pvr::utils::createComputeShaderProgram(*this, Files::ParticleComputeShader, defines_buffer, 1);
+	}
+
+	//GLOBAL STATE ALL CONFIGS USE
+	gl::Enable(GL_DEPTH_TEST);
+	gl::DepthMask(GL_TRUE);
+	gl::Enable(GL_CULL_FACE);
+	gl::CullFace(GL_BACK);
+	gl::FrontFace(GL_CCW);
+
 	return true;
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in initApplication() will be called by the Shell once per run, before the rendering context is created.
-		Used to initialize variables that are not dependent on it  (e.g. external modules, loading meshes, etc.)
-		If the rendering context is lost, InitApplication() will not be called again.
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in initApplication() will be called by the Shell once per run, before the rendering context is created.
+  Used to initialize variables that are not dependent on it  (e.g. external modules, loading meshes, etc.)
+  If the rendering context is lost, InitApplication() will not be called again.
 ***********************************************************************************************************************/
 pvr::Result OGLESParticleSystem::initApplication()
 {
-	setDeviceQueueTypesRequired(pvr::DeviceQueueType::Compute);
-	setMinApiType(pvr::Api::OpenGLES31);
-	// Load the scene
-	scene.construct();
-	pvr::assets::PODReader(getAssetStream(Files::SphereModelFile)).readAsset(*scene);
+	// Load the _scene
+	_scene.construct();
+	pvr::assets::PODReader(getAssetStream(Files::SphereModel)).readAsset(*_scene);
 
-	for (pvr::uint32 i = 0; i < scene->getNumMeshes(); ++i)
+	for (uint32_t i = 0; i < _scene->getNumMeshes(); ++i)
 	{
-		scene->getMesh(i).setVertexAttributeIndex("POSITION0", Attributes::VertexArray);
-		scene->getMesh(i).setVertexAttributeIndex("NORMAL0", Attributes::NormalArray);
-		scene->getMesh(i).setVertexAttributeIndex("UV0", Attributes::TexCoordArray);
+		_scene->getMesh(i).setVertexAttributeIndex("POSITION0", Attributes::VertexArray);
+		_scene->getMesh(i).setVertexAttributeIndex("NORMAL0", Attributes::NormalArray);
+		_scene->getMesh(i).setVertexAttributeIndex("UV0", Attributes::TexCoordArray);
 	}
 
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in quitApplication() will be called by the Shell once per run, just before exiting the program.
-	    If the rendering context is lost, QuitApplication() will not be called.
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in quitApplication() will be called by the Shell once per run, just before exiting the program.
+  If the rendering context is lost, QuitApplication() will not be called.
 ***********************************************************************************************************************/
 pvr::Result OGLESParticleSystem::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in initView() will be called by the Shell upon initialization or after a change in the rendering context.
-		Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in initView() will be called by the Shell upon initialization or after a change in the rendering context.
+  Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
 pvr::Result OGLESParticleSystem::initView()
 {
-	srand((unsigned int)this->getTime());
+	if (this->getMinApi() < pvr::Api::OpenGLES31)
+	{
+		Log(LogLevel::Information, "This demo requires a minimum api of OpenGLES31.");
+	}
 
-	apiObj.reset(new ApiObjects(*this));
-	apiObj->context = getGraphicsContext();
+	_deviceResources.reset(new DeviceResources());
+	_deviceResources->context = pvr::createEglContext();
+	_deviceResources->context->init(getWindow(), getDisplay(), getDisplayAttributes(), pvr::Api::OpenGLES31);
 
-	for (pvr::uint8 i = 0; i < NumBuffers; ++i)	{	apiObj->commandBuffers[i] = apiObj->context->createCommandBufferOnDefaultPool();	}
+	if (this->isForcingFrameTime())
+	{
+		1000; //For
+	}
+	else
+	{
+		srand((unsigned int)this->getTime());
+	}
 
-	apiObj->onscreenFbo = apiObj->context->createOnScreenFbo(0);
-
-	// Initialize Print3D textures
-	if (apiObj->uiRenderer.init(apiObj->onscreenFbo->getRenderPass(), 0) != pvr::Result::Success)
+	// Initialize UIRenderer textures
+	if (!_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen()))
 	{
 		setExitMessage("Could not initialize UIRenderer");
 		return pvr::Result::UnknownError;
 	}
 
-	//	Create the Buffers
-	if (!createBuffers()) {	return pvr::Result::UnknownError;	}
+	//  Create the Buffers
+	if (!createBuffers()) { return pvr::Result::UnknownError; }
 
-	//	Load and compile the shaders & link programs
-	if (!createPipelines())	{	return pvr::Result::UnknownError;	}
+	//  Load and compile the shaders & link programs
+	if (!createPrograms()) { return pvr::Result::UnknownError; }
 
-	// Create view matrices
-	mLightView = glm::lookAt(glm::vec3(0.0f, 80.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+
+	// Set the gravity
+	_particleConfigData.gravity = glm::vec3(0.f, -9.81f, 0.f);
+	_particleConfigData.dragCoeffLinear = 0;
+	_particleConfigData.dragCoeffQuadratic = 0;
+	_particleConfigData.inwardForceCoeff = 0;
+	_particleConfigData.inwardForceRadius = .001;
+	_particleConfigData.bounciness = .9;
+	_particleConfigData.minLifespan = .5;
+	_particleConfigData.maxLifespan = 1.5;
+
+	initializeParticles(_numParticles);
 
 	// Creates the projection matrix.
-	projMtx = glm::perspectiveFov(glm::pi<pvr::float32>() / 3.0f, (pvr::float32)getWidth(),
-	                              (pvr::float32)getHeight(), Configuration::CameraNear, Configuration::CameraFar);
+	_projMtx = glm::perspectiveFov(glm::pi<float>() / 3.0f, (float)getWidth(),
+	                               (float)getHeight(), Configuration::CameraNear, Configuration::CameraFar);
 
-	// Create a bias matrix
-	mBiasMatrix = glm::mat4(0.5f, 0.0f, 0.0f, 0.0f,
-	                        0.0f, 0.5f, 0.0f, 0.0f,
-	                        0.0f, 0.0f, 0.5f, 0.0f,
-	                        0.5f, 0.5f, 0.5f, 1.0f);
-
-	std::string errorStr;
-	if (!apiObj->particleSystemGPU.init(errorStr))
-	{
-		pvr::Log(errorStr.c_str());
-		return pvr::Result::UnknownError;
-	}
-
-	apiObj->particleSystemGPU.setGravity(glm::vec3(0.f, -9.81f, 0.f));
-	apiObj->particleSystemGPU.setCollisionSpheres(Configuration::Spheres, Configuration::NumberOfSpheres);
-	apiObj->particleSystemGPU.setParticleVboBuffers(apiObj->particleVbos);
-	apiObj->particleSystemGPU.setNumberOfParticles(Configuration::InitialNoParticles);
-
-	apiObj->uiRenderer.getDefaultTitle()->setText("OpenGL ES 3.1 Compute Particle System");
-	apiObj->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", Configuration::InitialNoParticles));
-	apiObj->uiRenderer.getDefaultControls()->setText("Action1: Pause rotation\nLeft: Decrease particles\nRight: Increase particles");
-	apiObj->uiRenderer.getDefaultTitle()->commitUpdates();
-	apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
-	apiObj->uiRenderer.getDefaultControls()->commitUpdates();
-
-	recordCommandBuffers();
-
+	_deviceResources->uiRenderer.getDefaultTitle()->setText("OpenGL ES 3.1 Compute Particle System");
+	_deviceResources->uiRenderer.getDefaultDescription()->setText(pvr::strings::createFormatted("No. of Particles: %d", _numParticles));
+	_deviceResources->uiRenderer.getDefaultControls()->setText("Action1: Pause rotation\nLeft: Decrease particles\nRight: Increase particles");
+	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
+	gl::ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Code in releaseView() will be called by pvr::Shell when the application quits or before a change in the rendering context.
+\return Return pvr::Result::Success if no error occurred
+\brief  Code in releaseView() will be called by pvr::Shell when the application quits or before a change in the rendering context.
 ***********************************************************************************************************************/
 pvr::Result OGLESParticleSystem::releaseView()
 {
-	apiObj.reset();
-	scene.reset();
+	_deviceResources.reset();
+	_scene.reset();
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-\return	Return pvr::Result::Success if no error occurred
-\brief	Main rendering loop function of the program. The shell will call this function every frame.
+\return Return pvr::Result::Success if no error occurred
+\brief  Main rendering loop function of the program. The shell will call this function every frame.
 ***********************************************************************************************************************/
 pvr::Result OGLESParticleSystem::renderFrame()
 {
-	currentBufferIdx++;
-	if (currentBufferIdx >= NumBuffers) { currentBufferIdx = 0;}
-
+	gl::DepthMask(GL_TRUE);
+	gl::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	_currentBufferIdx++;
+	if (_currentBufferIdx >= NumBuffers) { _currentBufferIdx = 0; }
+	debugLogApiError("OGLESParticleSystem::renderFrame Enter");
 	updateParticleUniforms();
 
-	if (!isCameraPaused)
+	if (!_isCameraPaused)
 	{
 		static float angle = 0;
 		angle += getFrameTime() / 5000.0f;
 		glm::vec3 vFrom = glm::vec3(sinf(angle) * 50.0f, 30.0f, cosf(angle) * 50.0f);
 
-		viewMtx = glm::lookAt(vFrom, glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		viewProjMtx = projMtx * viewMtx;
+		_viewMtx = glm::lookAt(vFrom, glm::vec3(0.0f, 15.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		_viewProjMtx = _projMtx * _viewMtx;
+	}
+	// Render floor
+	updateFloorProgramUniforms();
+	updateSphereProgramUniforms(_projMtx, _viewMtx);
+
+	executeComputePass(_currentBufferIdx);
+	gl::MemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
+
+	executeSceneRenderingPass();
+	executeParticlesRenderingPass(_currentBufferIdx);
+
+	gl::BindVertexArray(0);
+
+	_deviceResources->uiRenderer.beginRendering();
+	_deviceResources->uiRenderer.getDefaultTitle()->render();
+	_deviceResources->uiRenderer.getDefaultDescription()->render();
+	_deviceResources->uiRenderer.getDefaultControls()->render();
+	_deviceResources->uiRenderer.getSdkLogo()->render();
+	_deviceResources->uiRenderer.endRendering();
+	debugLogApiError("OGLESParticleSystem::renderFrame Exit");
+
+	if (this->shouldTakeScreenshot())
+	{
+		pvr::utils::takeScreenshot(this->getScreenshotFileName(), this->getWidth(), this->getHeight());
 	}
 
-	// Render floor
-	updateFloor();
-	updateSpheres(projMtx, viewMtx);
+	_deviceResources->context->swapBuffers();
 
-	// Render particles
-	apiObj->commandBuffers[currentBufferIdx]->submit();
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
-\brief	Updates the memory from where the command buffer will read the values to update the uniforms for the spheres
+\brief  Updates the memory from where the command buffer will read the values to update the uniforms for the spheres
 \param[in] proj projection matrix
 \param[in] view view matrix
 ***********************************************************************************************************************/
-void OGLESParticleSystem::updateSpheres(const glm::mat4& proj, const glm::mat4& view)
+void OGLESParticleSystem::updateSphereProgramUniforms(const glm::mat4& proj, const glm::mat4& view)
 {
 	for (int i = 0; i < Configuration::NumberOfSpheres; ++i)
 	{
-		const glm::vec3& position = Configuration::Spheres[i].vPosition;
-		float radius = Configuration::Spheres[i].fRadius;
-		DrawPass& pass = passSphere[i];
+		const glm::vec3& position = Configuration::SpheresData[i].vPosition;
+		float radius = Configuration::SpheresData[i].fRadius;
+		DrawPass& pass = _passSphere[i];
 
 		const glm::mat4 mModel = glm::translate(position) * glm::scale(glm::vec3(radius, radius, radius));
 		pass.modelView = view * mModel;
@@ -513,136 +662,113 @@ void OGLESParticleSystem::updateSpheres(const glm::mat4& proj, const glm::mat4& 
 }
 
 /*!*********************************************************************************************************************
-\brief	Updates the memory from where the commandbuffer will read the values to update the uniforms for the floor
+\brief  Updates the memory from where the commandbuffer will read the values to update the uniforms for the floor
 ***********************************************************************************************************************/
-void OGLESParticleSystem::updateFloor()
+void OGLESParticleSystem::updateFloorProgramUniforms()
 {
-	viewIT = glm::inverseTranspose(glm::mat3(viewMtx));
-	lightPos = glm::vec3(viewMtx * glm::vec4(Configuration::LightPosition, 1.0f));
-	viewProjMtx = projMtx * viewMtx;
+	_viewIT = glm::inverseTranspose(glm::mat3(_viewMtx));
+	_lightPos = glm::vec3(_viewMtx * glm::vec4(Configuration::LightPosition, 1.0f));
+	_viewProjMtx = _projMtx * _viewMtx;
 }
 
 /*!*********************************************************************************************************************
-\brief	Updates particle positions and attributes, e.g. lifespan, position, velocity etc.
-		Will update the buffer that was "just used" as the Input, as output, so that we can exploit more GPU parallelization.
+\brief  Updates particle positions and attributes, e.g. lifespan, position, velocity etc.
+  Will update the buffer that was "just used" as the Input, as output, so that we can exploit more GPU parallelization.
 ************************************************************************************************************************/
 void OGLESParticleSystem::updateParticleUniforms()
 {
-	float step = (float)getFrameTime();
+	float dt = (float)getFrameTime();
 
-	static pvr::float32 rot_angle = 0.0f;
-	rot_angle += step / 500.0f;
-	pvr::float32 el_angle = (sinf(rot_angle / 4.0f) + 1.0f) * 0.2f + 0.2f;
+	static float rot_angle = 0.0f;
+	rot_angle += dt / 500.0f;
+	float el_angle = (sinf(rot_angle / 4.0f) + 1.0f) * 0.2f + 0.2f;
 
 	glm::mat4 rot = glm::rotate(rot_angle, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 skew = glm::rotate(el_angle, glm::vec3(0.0f, 0.0f, 1.0f));
 
-	Emitter sEmitter(rot * skew, 1.3f, 1.0f);
+	_particleConfigData.emitter = Emitter(rot * skew, 1.3f, 1.0f);
 
-	apiObj->particleSystemGPU.setEmitter(sEmitter);
-	apiObj->particleSystemGPU.updateUniforms(step);
+	if (dt == 0) { return; }
+	dt *= 0.001f;
+	_particleConfigData.dt = dt;
+	_particleConfigData.totalTime += dt;
+	debugLogApiError("OGLESParticleSystem::updateParticleUniforms Enter");
+	gl::BindBuffer(GL_UNIFORM_BUFFER, _deviceResources->particleConfigUbo);
+	gl::BufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(_particleConfigData), &_particleConfigData);
+	debugLogApiError("OGLESParticleSystem::updateParticleUniforms Exit");
 }
 
-/*!*********************************************************************************************************************
-\brief	Pre record the rendering commands
-***********************************************************************************************************************/
-void OGLESParticleSystem::recordCommandBuffers()
+void OGLESParticleSystem::executeComputePass(uint32_t idx)
 {
-	for (pvr::uint8 i = 0; i < NumBuffers; ++i) { recordCommandBuffer(i); }
+	debugLogApiError("OGLESParticleSystem::executeComputePass Enter");
+	useComputePassProgram();
+	bindParticleBuffers(idx);
+	gl::DispatchCompute(_numParticles / Configuration::workgroupSize, 1, 1);
+	debugLogApiError("OGLESParticleSystem::executeComputePass Exit");
 }
 
-/*!*********************************************************************************************************************
-\brief	Record the commands buffer
-\param	idx Commandbuffer index
-***********************************************************************************************************************/
-void OGLESParticleSystem::recordCommandBuffer(pvr::uint8 idx)
+void OGLESParticleSystem::executeSceneRenderingPass()
 {
-	apiObj->commandBuffers[idx]->beginRecording();
-	apiObj->commandBuffers[idx]->beginRenderPass(apiObj->onscreenFbo, pvr::Rectanglei(0, 0, getWidth(), getHeight()), true);
-	const char* err = 0;
+	debugLogApiError("OGLESParticleSystem::executeSceneRenderingPass Enter");
+	static const pvr::assets::Mesh& mesh = _scene->getMesh(0);
+	// Render Spheres
+	useSimplePipelineProgramAndSetState();
+	gl::BindVertexArray(_deviceResources->sphereVao);
 
-	// Render floor
-	recordCmdDrawFloor(idx);
-	passSphere.resize(Configuration::NumberOfSpheres);
-	for (pvr::uint32 i = 0; i < Configuration::NumberOfSpheres; i++) { recordCmdDrawSphere(passSphere[i], idx); }
+	for (uint32_t i = 0; i < Configuration::NumberOfSpheres; i++)
+	{
+		gl::UniformMatrix4fv(_deviceResources->programSimple.mvpMatrixLoc, 1, GL_FALSE, glm::value_ptr(_passSphere[i].modelViewProj));
+		gl::UniformMatrix4fv(_deviceResources->programSimple.mvMatrixLoc, 1, GL_FALSE, glm::value_ptr(_passSphere[i].modelView));
+		gl::UniformMatrix3fv(_deviceResources->programSimple.mvITMatrixLoc, 1, GL_FALSE, glm::value_ptr(_passSphere[i].modelViewIT));
+		gl::Uniform3fv(_deviceResources->programSimple.lightPositionLoc, 1, glm::value_ptr(_passSphere[i].lightPos));
+		auto gltype = pvr::utils::convertToGles(_scene->getMesh(0).getFaces().getDataType());
+		gl::DrawElements(GL_TRIANGLES, mesh.getNumFaces() * 3, gltype, nullptr);
+	}
 
-	// Render particles
-	recordCmdDrawParticles(idx);
-	pvr::api::SecondaryCommandBuffer uicmd = apiObj->context->createSecondaryCommandBufferOnDefaultPool();
-	apiObj->uiRenderer.beginRendering(uicmd);
-	apiObj->uiRenderer.getDefaultTitle()->render();
-	apiObj->uiRenderer.getDefaultDescription()->render();
-	apiObj->uiRenderer.getDefaultControls()->render();
-	apiObj->uiRenderer.getSdkLogo()->render();
-	apiObj->uiRenderer.endRendering();
-	apiObj->commandBuffers[idx]->enqueueSecondaryCmds(uicmd);
-	apiObj->commandBuffers[idx]->endRenderPass();
-
-	apiObj->particleSystemGPU.recordCommandBuffer(apiObj->commandBuffers[idx], idx);
-
-	pvr::api::MemoryBarrierSet memBarrierSet;
-	memBarrierSet.addBarrier(pvr::api::MemoryBarrier(pvr::types::AccessFlags::ShaderWrite, pvr::types::AccessFlags::VertexAttributeRead));
-
-	apiObj->commandBuffers[idx]->pipelineBarrier(pvr::types::PipelineStageFlags::ComputeShader, pvr::types::PipelineStageFlags::VertexShader, memBarrierSet);
-	apiObj->commandBuffers[idx]->endRecording();
-}
-
-/*!*********************************************************************************************************************
-\brief	Record the draw particles commands
-\param	idx Commandbuffer index
-***********************************************************************************************************************/
-void OGLESParticleSystem::recordCmdDrawParticles(pvr::uint8 idx)
-{
-	apiObj->commandBuffers[idx]->bindPipeline(apiObj->pipeParticle.pipe);
-	apiObj->commandBuffers[idx]->bindVertexBuffer(apiObj->particleVbos[idx], 0, 0);
-	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipeParticle.mvpMatrixLoc, 1, &viewProjMtx);
-	apiObj->commandBuffers[idx]->drawArrays(0, apiObj->particleSystemGPU.getNumberOfParticles(), 0, 1);
-}
-
-/*!*********************************************************************************************************************
-\brief	Renders a sphere at the specified position.
-\param[in] passSphere Sphere draw pass
-\param[in] idx Commandbuffer index
-***********************************************************************************************************************/
-void OGLESParticleSystem::recordCmdDrawSphere(DrawPass& passSphere, pvr::uint8 idx)
-{
-	apiObj->commandBuffers[idx]->bindPipeline(apiObj->pipelineSimple.pipe);
-	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineSimple.mvpMatrixLoc, 1, &passSphere.modelViewProj);
-	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineSimple.mvMatrixLoc, 1, &passSphere.modelView);
-	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineSimple.mvITMatrixLoc, 1, &passSphere.modelViewIT);
-	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineSimple.lightPosition, 1, &passSphere.lightPos);
-
-	static const pvr::assets::Mesh& mesh = scene->getMesh(0);
-	apiObj->commandBuffers[idx]->bindVertexBuffer(apiObj->sphereVbo, 0, 0);
-	apiObj->commandBuffers[idx]->bindIndexBuffer(apiObj->sphereIbo, 0, mesh.getFaces().getDataType());
-	// Indexed Triangle list
-	apiObj->commandBuffers[idx]->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
-}
-
-/*!*********************************************************************************************************************
-\brief	Renders the floor as a quad.
-\param idx Commandbuffer index
-***********************************************************************************************************************/
-void OGLESParticleSystem::recordCmdDrawFloor(pvr::uint8 idx)
-{
 	// Enables depth testing
-	// We need to calculate the texture projection matrix. This matrix takes the pixels from world space to previously rendered light projection space
-	// where we can look up values from our saved depth buffer. The matrix is constructed from the light view and projection matrices as used for the previous render and
-	// then multiplied by the inverse of the current view matrix.
-	apiObj->commandBuffers[idx]->bindPipeline(apiObj->pipelineFloor.pipe);
+	useFloorPipelineProgramAndSetState();
+	gl::BindVertexArray(_deviceResources->floorVao);
+	gl::UniformMatrix4fv(_deviceResources->programFloor.mvpMatrixLoc, 1, GL_FALSE, glm::value_ptr(_viewProjMtx));
+	gl::UniformMatrix4fv(_deviceResources->programFloor.mvMatrixLoc, 1, GL_FALSE, glm::value_ptr(_viewMtx));
+	gl::UniformMatrix3fv(_deviceResources->programFloor.mvITMatrixLoc, 1, GL_FALSE, glm::value_ptr(_viewIT));
+	gl::Uniform3fv(_deviceResources->programFloor.lightPositionLoc, 1, glm::value_ptr(_lightPos));
 
-	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineFloor.mvpMatrixLoc, 1, &viewProjMtx);
-	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineFloor.mvMatrixLoc, 1, &viewMtx);
-	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineFloor.mvITMatrixLoc, 1, &viewIT);
-	apiObj->commandBuffers[idx]->setUniformPtr(apiObj->pipelineFloor.lightPosition, 1, &lightPos);
+	gl::DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	debugLogApiError("OGLESParticleSystem::executeSceneRenderingPass Exit");
 
-	apiObj->commandBuffers[idx]->bindVertexBuffer(apiObj->floorVbo, 0, 0);
-	// Draw the quad
-	apiObj->commandBuffers[idx]->drawArrays(0, 4);
+}
+
+void OGLESParticleSystem::executeParticlesRenderingPass(uint32_t idx)
+{
+	debugLogApiError("OGLESParticleSystem::executeParticlesRenderingPass Enter");
+	useParticleRenderingProgramAndSetState();
+	gl::BindVertexArray(_deviceResources->particleVaos[idx]);
+	gl::UniformMatrix4fv(_deviceResources->programParticle.mvpMatrixLoc, 1, GL_FALSE, glm::value_ptr(_viewProjMtx));
+	gl::DrawArrays(GL_POINTS, 0, _numParticles);
+	debugLogApiError("OGLESParticleSystem::executeParticlesRenderingPass Exit");
+}
+
+void OGLESParticleSystem::initializeParticles(uint32_t _numParticles)
+{
+	_particleArrayData.resize(_numParticles);
+
+	for (uint32_t i = 0; i < _numParticles; ++i)
+	{
+		_particleArrayData[i].fTimeToLive = pvr::randomrange(0, _particleConfigData.maxLifespan);
+		_particleArrayData[i].vPosition.x = 0;
+		_particleArrayData[i].vPosition.y = 0;
+		_particleArrayData[i].vPosition.z = 1;
+		_particleArrayData[i].vVelocity = glm::vec3();
+	}
+	for (int i = 0; i < NumBuffers; ++i)
+	{
+		gl::BindBuffer(GL_SHADER_STORAGE_BUFFER, _deviceResources->particleBuffers[i]);
+		gl::BufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Particle) * _numParticles, _particleArrayData.data(), GL_DYNAMIC_COPY);
+	}
 }
 
 /*!*********************************************************************************************************************
 \return Return a smart pointer to the application class.
-\brief	This function must be implemented by the user of the shell. It should return the Application class (a class inheriting from pvr::Shell.
+\brief  This function must be implemented by the user of the shell. It should return the Application class (a class inheriting from pvr::Shell.
 ***********************************************************************************************************************/
-std::auto_ptr<pvr::Shell> pvr::newDemo() {	return std::auto_ptr<pvr::Shell>(new OGLESParticleSystem());  }
+std::unique_ptr<pvr::Shell> pvr::newDemo() { return std::unique_ptr<pvr::Shell>(new OGLESParticleSystem()); }

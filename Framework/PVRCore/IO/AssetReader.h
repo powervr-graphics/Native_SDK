@@ -26,20 +26,23 @@ public:
 	/// <summary>Asset reader which will take ownership of the provided Stream object and read Assets from it.
 	/// </summary>
 	/// <param name="assetStream">stream to read</param>
-	AssetReader(Stream::ptr_type assetStream) : _assetStream(assetStream), _hasNewAssetStream(true) {}
+	AssetReader(Stream::ptr_type assetStream) : _assetStream(std::move(assetStream)), _hasNewAssetStream(true) {}
 
-
+	/// <summary>Destructor. Virtual, as this class will be used polymorphically.</summary>
 	virtual ~AssetReader() {}
+	
+	/// <summary>A smart, reference counted, pointer type for the Assets. This will be the typical type that
+	/// readers will use to wrapping the Asset read and return it to the application.</summary>
 	typedef pvr::RefCountedResource<AssetType> AssetHandle;
 public:
 
-	/// <summary>Open new asset stream.</summary>
+	/// <summary>Initialize with a new asset stream without open it. </summary>
 	/// <param name="assetStream">stream to load</param>
-	/// <returns>true</returns>
+	/// <returns>True if successful, otherwise false (if the stream is invalid or not readable)</returns>
 	bool newAssetStream(Stream::ptr_type assetStream)
 	{
 		closeAssetStream();
-		_assetStream = assetStream;
+		_assetStream = std::move(assetStream);
 
 		if (_assetStream.get() && (*_assetStream).isReadable())
 		{
@@ -49,8 +52,9 @@ public:
 		return false;
 	}
 
-	/// <summary>Open the asset stream.</summary>
-	/// <returns>true if successful</returns>
+	/// <summary>Open the (Already set) asset stream.</summary>
+	/// <returns>True if successful, otherwise false (if the stream is invalid, not readable
+	/// or was unable to open)</returns>
 	bool openAssetStream()
 	{
 		closeAssetStream();
@@ -63,9 +67,10 @@ public:
 		return false;
 	}
 
-	/// <summary>Open new asset stream.</summary>
-	/// <param name="assetStream">stream to load</param>
-	/// <returns>true</returns>
+	/// <summary>Initialize with a new asset stream and open it.</summary>
+	/// <param name="assetStream">The stream to load</param>
+	/// <returns>True if successful, otherwise false (if the stream is invalid, not readable
+	/// or was unable to open)</returns>
 	bool openAssetStream(Stream::ptr_type assetStream)
 	{
 		if (newAssetStream(assetStream))
@@ -79,6 +84,7 @@ public:
 	void closeAssetStream() { if (_assetStream.get()) { _assetStream->close(); } }
 
 	/// <summary>Return true if this AssetReader assets stream is loaded.</summary>
+	/// <returns>True if has an assetstream otherwise false</returns>
 	bool hasAssetStream() { return _assetStream.get() != 0; }
 
 	/// <summary>Read asset. Asset stream has to be opended before reading asset.</summary>
@@ -88,7 +94,7 @@ public:
 	{
 		if (!hasAssetStream())
 		{
-			Log(Log.Warning, "AssetReader::readAsset Attempted to read without an assetStream");
+			Log(LogLevel::Warning, "AssetReader::readAsset Attempted to read without an assetStream");
 			assertion(0);
 			return false;
 		}
@@ -98,32 +104,37 @@ public:
 		}
 		if (!_assetStream->isReadable())
 		{
-			Log(Log.Error, "AssetReader::readAsset Attempted to read a non-readable assetStream");
+			Log(LogLevel::Error, "AssetReader::readAsset Attempted to read a non-readable assetStream");
 			assertion(0);
 			return false;
 		}
 		return readNextAsset(asset);
 	}
 
-	/// <summary>Return true if assets are left to read. Implement this function in your AssetReader.</summary>
+	/// <summary>Implement this function: Query if this object has assets to read (other has not been used yet, has been
+	/// reset, or is reading a stream with multiple assets .</summary>
+	/// <returns> Implement this to return true "readNextAsset" can be called, otherwise return false</returns>
 	virtual bool hasAssetsLeftToLoad() = 0;
 
-	/// <summary>Return true if this AssetReader supports multiple assets. Implement this function in your AssetReader.
-	/// </summary>
-	virtual bool canHaveMultipleAssets() { return false; }
-
-	/// <summary>Return a list of supported file extensions. Implement this function in your AssetReader.</summary>
+	/// <summary>Implement this to return a list of all supported file extensions. Implement this function in your AssetReader.</summary>
+	/// <returns> Return a list of all supported file extensions (without the dot).</returns>
 	virtual std::vector<std::string>  getSupportedFileExtensions() = 0;
 
-	/// <summary>Read the asset in a new Asset wrapped in a Framework smart handle.</summary>
+	/// <summary>Create a new Asset. Uses the (static) AssetType::createWithReader function to create a new
+	/// asset that will be wrapped in a RefCountedResource to that asset.</summary>
+	/// <returns>A RefCountedResource to the handle read with this readed.</returns>
 	AssetHandle getAssetHandle() { return AssetType::createWithReader(*this); }
 protected:
+	/// <summary>The stream that this reader is reading</summary>
 	Stream::ptr_type _assetStream;
+	/// <summary>Use this field to detect if the asset stream has a new stream, which might require initialization</summary>
 	bool _hasNewAssetStream;
 private:
 	/// <summary>Implement this function in your class. Provides the main functionality of reading assets.</summary>
-	/// <param name="asset">The asset will be read into this object. Any state of the object may be overwritten.
-	/// </param>
+	/// <param name="asset">The asset will be read into this object. You should not make any assumptions of the state of 
+	/// this object, so you should initialize it completely.</param>
+	/// <returns>When overriding this funciton, return true if the read was successful, otherwise return false to signify
+	/// any failure.</returns>
 	virtual bool readNextAsset(AssetType& asset) = 0;
 };
 }

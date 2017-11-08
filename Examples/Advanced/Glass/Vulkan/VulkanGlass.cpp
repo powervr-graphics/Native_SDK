@@ -5,11 +5,9 @@
 \Copyright    Copyright (c) Imagination Technologies Limited.
 \brief		  Demonstrates dynamic reflection and refraction by rendering two halves of the scene to a single rectangular texture.
 ***********************************************************************************************************************/
+#include "PVRCore/PVRCore.h"
 #include "PVRShell/PVRShell.h"
-#include "PVRApi/PVRApi.h"
-#include "PVREngineUtils/PVREngineUtils.h"
-#include "PVRAssets/Shader.h"
-#include <limits.h>
+#include "PVRUtils/PVRUtilsVk.h"
 
 // vertex bindings
 const pvr::utils::VertexBindings_Name VertexBindings[] =
@@ -29,12 +27,12 @@ enum
 };
 
 // paraboloid texture size
-const pvr::uint32 ParaboloidTexSize = 1024;
+const uint32_t ParaboloidTexSize = 1024;
 
 // camera constants
-const pvr::float32 CamNear = 1.0f;
-const pvr::float32 CamFar = 5000.0f;
-const pvr::float32 CamFov = glm::pi<pvr::float32>() * 0.41f;
+const float CamNear = 1.0f;
+const float CamFar = 5000.0f;
+const float CamFov = glm::pi<float>() * 0.41f;
 
 // textures
 const char* BalloonTexFile[2] = { "BalloonTex.pvr", "BalloonTex2.pvr" };
@@ -46,23 +44,23 @@ const char BalloonFile[] = "Balloon.pod";
 
 // shaders
 namespace Shaders {
-const std::pair<const char*, pvr::types::ShaderType> Names[] =
+const char* Names[] =
 {
-	{"DefaultVertShader_vk.vsh.spv", pvr::types::ShaderType::VertexShader},
-	{"DefaultFragShader_vk.fsh.spv", pvr::types::ShaderType::FragmentShader},
-	{"ParaboloidVertShader_vk.vsh.spv", pvr::types::ShaderType::VertexShader},
-	{"SkyboxVertShader_vk.vsh.spv", pvr::types::ShaderType::VertexShader},
-	{"SkyboxFragShader_vk.fsh.spv", pvr::types::ShaderType::FragmentShader},
-	{"EffectReflectVertShader_vk.vsh.spv", pvr::types::ShaderType::VertexShader},
-	{"EffectReflectFragShader_vk.fsh.spv", pvr::types::ShaderType::FragmentShader},
-	{"EffectRefractVertShader_vk.vsh.spv", pvr::types::ShaderType::VertexShader},
-	{"EffectRefractFragShader_vk.fsh.spv", pvr::types::ShaderType::FragmentShader},
-	{"EffectChromaticDispersion_vk.vsh.spv", pvr::types::ShaderType::VertexShader},
-	{"EffectChromaticDispersion_vk.fsh.spv", pvr::types::ShaderType::FragmentShader},
-	{"EffectReflectionRefraction_vk.vsh.spv", pvr::types::ShaderType::VertexShader},
-	{"EffectReflectionRefraction_vk.fsh.spv", pvr::types::ShaderType::FragmentShader},
-	{"EffectReflectChromDispersion_vk.vsh.spv", pvr::types::ShaderType::VertexShader},
-	{"EffectReflectChromDispersion_vk.fsh.spv", pvr::types::ShaderType::FragmentShader},
+	"DefaultVertShader_vk.vsh.spv",
+	"DefaultFragShader_vk.fsh.spv",
+	"ParaboloidVertShader_vk.vsh.spv",
+	"SkyboxVertShader_vk.vsh.spv",
+	"SkyboxFragShader_vk.fsh.spv",
+	"EffectReflectVertShader_vk.vsh.spv",
+	"EffectReflectFragShader_vk.fsh.spv",
+	"EffectRefractVertShader_vk.vsh.spv",
+	"EffectRefractFragShader_vk.fsh.spv",
+	"EffectChromaticDispersion_vk.vsh.spv",
+	"EffectChromaticDispersion_vk.fsh.spv",
+	"EffectReflectionRefraction_vk.vsh.spv",
+	"EffectReflectionRefraction_vk.fsh.spv",
+	"EffectReflectChromDispersion_vk.vsh.spv",
+	"EffectReflectChromDispersion_vk.fsh.spv",
 };
 
 enum Enum
@@ -101,108 +99,114 @@ const glm::vec4 ClearSkyColor(glm::vec4(.6f, 0.8f, 1.0f, 0.0f));
 struct Model
 {
 	pvr::assets::ModelHandle handle;
-	std::vector<pvr::api::Buffer> vbos;
-	std::vector<pvr::api::Buffer> ibos;
+	std::vector<pvrvk::Buffer> vbos;
+	std::vector<pvrvk::Buffer> ibos;
 };
 
-static inline pvr::api::Sampler createTrilinearImageSampler(pvr::GraphicsContext& context)
+static inline pvrvk::Sampler createTrilinearImageSampler(pvrvk::Device& device)
 {
-	pvr::assets::SamplerCreateParam samplerInfo;
-	samplerInfo.wrapModeU = pvr::types::SamplerWrap::Clamp;
-	samplerInfo.wrapModeV = pvr::types::SamplerWrap::Clamp;
-
-	samplerInfo.minificationFilter = pvr::types::SamplerFilter::Linear;
-	samplerInfo.magnificationFilter = pvr::types::SamplerFilter::Linear;
-
-	samplerInfo.mipMappingFilter = pvr::types::SamplerFilter::Linear;
-
-	return context->createSampler(samplerInfo);
+	pvrvk::SamplerCreateInfo samplerInfo;
+	samplerInfo.wrapModeU = VkSamplerAddressMode::e_CLAMP_TO_EDGE;
+	samplerInfo.wrapModeV = VkSamplerAddressMode::e_CLAMP_TO_EDGE;
+	samplerInfo.wrapModeW = VkSamplerAddressMode::e_CLAMP_TO_EDGE;
+	samplerInfo.minFilter = VkFilter::e_LINEAR;
+	samplerInfo.magFilter = VkFilter::e_LINEAR;
+	samplerInfo.mipMapMode = VkSamplerMipmapMode::e_LINEAR;
+	return device->createSampler(samplerInfo);
 }
 
-// an abstract base for a rendering pass - handles the drawing of different pvr::types of meshes
+// an abstract base for a rendering pass - handles the drawing of different types of meshes
 struct IModelPass
 {
 private:
-	void drawMesh(pvr::api::CommandBufferBase& cmd, const Model& model, pvr::uint32 nodeIndex)
+	void drawMesh(pvrvk::CommandBufferBase& command, const Model& model, uint32_t nodeIndex)
 	{
-		pvr::int32 meshId = model.handle->getNode(nodeIndex).getObjectId();
+		int32_t meshId = model.handle->getNode(nodeIndex).getObjectId();
 		const pvr::assets::Mesh& mesh = model.handle->getMesh(meshId);
 
 		// bind the VBO for the mesh
-		cmd->bindVertexBuffer(model.vbos[meshId], 0, 0);
+		command->bindVertexBuffer(model.vbos[meshId], 0, 0);
 		if (mesh.getFaces().getDataSize() != 0)
 		{
 			// Indexed Triangle list
-			cmd->bindIndexBuffer(model.ibos[meshId], 0, mesh.getFaces().getDataType());
-			cmd->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
+			command->bindIndexBuffer(model.ibos[meshId], 0, pvr::utils::convertToVk(mesh.getFaces().getDataType()));
+			command->drawIndexed(0, mesh.getNumFaces() * 3, 0, 0, 1);
 		}
 		else
 		{
 			// Non-Indexed Triangle list
-			cmd->drawArrays(0, mesh.getNumFaces() * 3, 0, 1);
+			command->draw(0, mesh.getNumFaces() * 3, 0, 1);
 		}
 	}
 
 protected:
 
-	void drawMesh(pvr::api::SecondaryCommandBuffer& cmd, const Model& model, pvr::uint32 nodeIndex)
+	void drawMesh(pvrvk::SecondaryCommandBuffer& command, const Model& model, uint32_t nodeIndex)
 	{
-		drawMesh((pvr::api::CommandBufferBase&)cmd, model, nodeIndex);
+		drawMesh((pvrvk::CommandBufferBase&)command, model, nodeIndex);
 	}
 
-	void drawMesh(pvr::api::CommandBuffer& cmd, const Model& model, pvr::uint32 nodeIndex)
+	void drawMesh(pvrvk::CommandBuffer& command, const Model& model, uint32_t nodeIndex)
 	{
-		drawMesh((pvr::api::CommandBufferBase&)cmd, model, nodeIndex);
+		drawMesh((pvrvk::CommandBufferBase&)command, model, nodeIndex);
 	}
 };
 
 // skybox pass
 struct PassSkyBox
 {
-	pvr::utils::StructuredMemoryView _bufferMemoryView;
-	pvr::api::GraphicsPipeline _pipeline;
-	pvr::api::Buffer _vbo;
-	pvr::api::DescriptorSetLayout _descriptorSetLayout;
-	pvr::Multi<pvr::api::DescriptorSet> _descriptorSets;
-	pvr::api::TextureView _skyboxTex;
-	pvr::api::Sampler _trilinearSampler;
-	pvr::Multi<pvr::api::SecondaryCommandBuffer> secondaryCommandBuffers;
+	pvr::utils::StructuredBufferView _bufferMemoryView;
+	pvrvk::Buffer _buffer;
+	pvrvk::GraphicsPipeline _pipeline;
+	pvrvk::Buffer _vbo;
+	pvrvk::DescriptorSetLayout _descriptorSetLayout;
+	pvr::Multi<pvrvk::DescriptorSet> _descriptorSets;
+	pvrvk::ImageView _skyboxTex;
+	pvrvk::Sampler _trilinearSampler;
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> secondaryCommandBuffers;
 
 	enum {UboInvViewProj, UboEyePos, UboElementCount};
 
-	void update(pvr::uint32 swapChain, const glm::mat4& invViewProj, const glm::vec3& eyePos)
+	void update(uint32_t swapchain, const glm::mat4& invViewProj, const glm::vec3& eyePos)
 	{
-		_bufferMemoryView.map(swapChain);
-		_bufferMemoryView.setValue(UboInvViewProj, invViewProj);
-		_bufferMemoryView.setValue(UboEyePos, glm::vec4(eyePos, 0.0f));
-		_bufferMemoryView.unmap(swapChain);
+		void* memory;
+		_buffer->getDeviceMemory()->map(&memory, _bufferMemoryView.getDynamicSliceOffset(swapchain), _bufferMemoryView.getDynamicSliceSize());
+		_bufferMemoryView.pointToMappedMemory(memory, swapchain);
+		_bufferMemoryView.getElement(UboInvViewProj, 0, swapchain).setValue(invViewProj);
+		_bufferMemoryView.getElement(UboEyePos, 0, swapchain).setValue(glm::vec4(eyePos, 0.0f));
+		_buffer->getDeviceMemory()->unmap();
 	}
 
-	pvr::api::TextureView getSkyBox()
+	pvrvk::ImageView getSkyBox()
 	{
 		return _skyboxTex;
 	}
 
-	pvr::api::GraphicsPipeline getPipeline() { return _pipeline; }
+	pvrvk::GraphicsPipeline getPipeline() { return _pipeline; }
 
-	bool initDescriptorSetLayout(pvr::GraphicsContext& context)
+	bool initDescriptorSetLayout(pvrvk::Device& device)
 	{
 		// create skybox descriptor set layout
-		pvr::api::DescriptorSetLayoutCreateParam descSetLayout;
+		pvrvk::DescriptorSetLayoutCreateInfo descSetLayout;
 
 		// combined image sampler descriptor
-		descSetLayout.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
+		descSetLayout.setBinding(0, VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, 1,
+		                         VkShaderStageFlags::e_FRAGMENT_BIT);
 		// uniform buffer
-		descSetLayout.setBinding(1, pvr::types::DescriptorType::UniformBuffer, 1, pvr::types::ShaderStageFlags::Vertex);
+		descSetLayout.setBinding(1, VkDescriptorType::e_UNIFORM_BUFFER, 1,
+		                         VkShaderStageFlags::e_VERTEX_BIT);
 
-		_descriptorSetLayout = context->createDescriptorSetLayout(descSetLayout);
+		_descriptorSetLayout = device->createDescriptorSetLayout(descSetLayout);
 
 		return true;
 	}
 
-	bool initPipeline(pvr::Shell& shell, pvr::GraphicsContext& context, const pvr::api::RenderPass& renderpass)
+	bool initPipeline(pvr::Shell& shell,
+	                  pvrvk::Device& device,
+	                  const pvrvk::RenderPass& renderpass,
+	                  const pvrvk::Extent2D& viewportDim, pvrvk::PipelineCache& pipeCache)
 	{
-		pvr::api::GraphicsPipelineCreateParam pipeInfo;
+		pvrvk::GraphicsPipelineCreateInfo pipeInfo;
 
 		// on screen renderpass
 		pipeInfo.renderPass = renderpass;
@@ -210,50 +214,53 @@ struct PassSkyBox
 		// load, create and set the shaders for rendering the skybox
 		auto& vertexShader = Shaders::Names[Shaders::SkyboxVS];
 		auto& fragmentShader = Shaders::Names[Shaders::SkyboxFS];
-		pvr::Stream::ptr_type vertexShaderSource = shell.getAssetStream(vertexShader.first);
-		pvr::Stream::ptr_type fragmentShaderSource = shell.getAssetStream(fragmentShader.first);
+		pvr::Stream::ptr_type vertexShaderSource = shell.getAssetStream(vertexShader);
+		pvr::Stream::ptr_type fragmentShaderSource = shell.getAssetStream(fragmentShader);
 
-		pipeInfo.vertexShader.setShader(context->createShader(*vertexShaderSource, vertexShader.second));
-		pipeInfo.fragmentShader.setShader(context->createShader(*fragmentShaderSource, fragmentShader.second));
+		pipeInfo.vertexShader.setShader(device->createShader(vertexShaderSource->readToEnd<uint32_t>()));
+		pipeInfo.fragmentShader.setShader(device->createShader(fragmentShaderSource->readToEnd<uint32_t>()));
 
 		// create the pipeline layout
-		pvr::api::PipelineLayoutCreateParam pipelineLayout;
+		pvrvk::PipelineLayoutCreateInfo pipelineLayout;
 		pipelineLayout.setDescSetLayout(0, _descriptorSetLayout);
 
-		pipeInfo.pipelineLayout = context->createPipelineLayout(pipelineLayout);
+		pipeInfo.pipelineLayout = device->createPipelineLayout(pipelineLayout);
 
 		// depth stencil state
-		pipeInfo.depthStencil.setDepthWrite(false);
-		pipeInfo.depthStencil.setDepthTestEnable(false);
+		pipeInfo.depthStencil.enableDepthWrite(false);
+		pipeInfo.depthStencil.enableDepthTest(false);
 
 		// rasterizer state
-		pipeInfo.rasterizer.setCullFace(pvr::types::Face::Front);
+		pipeInfo.rasterizer.setCullMode(VkCullModeFlags::e_FRONT_BIT);
 
 		// blend state
-		pipeInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
+		pipeInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
 
 		// input assembler
-		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::TriangleList);
+		pipeInfo.inputAssembler.setPrimitiveTopology(VkPrimitiveTopology::e_TRIANGLE_LIST);
 
 		// vertex attributes and bindings
 		pipeInfo.vertexInput.clear();
-		pipeInfo.vertexInput.setInputBinding(0, sizeof(pvr::float32) * 3);
-		pipeInfo.vertexInput.addVertexAttribute(0, 0, pvr::assets::VertexAttributeLayout(pvr::types::DataType::Float32, 3, 0), VertexBindings[0].variableName.c_str());
+		pipeInfo.vertexInput.addInputBinding(pvrvk::VertexInputBindingDescription(0, sizeof(float) * 3));
+		pipeInfo.vertexInput.addInputAttribute(pvrvk::VertexInputAttributeDescription(0, 0, VkFormat::e_R32G32B32_SFLOAT, 0));
 
-		_pipeline = context->createGraphicsPipeline(pipeInfo);
+		pipeInfo.viewport.setViewportAndScissor(0, pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(viewportDim.width), static_cast<float>(viewportDim.height)),
+		                                        pvrvk::Rect2Di(0, 0, viewportDim.width, viewportDim.height));
+
+		_pipeline = device->createGraphicsPipeline(pipeInfo, pipeCache);
 		if (!_pipeline.isValid())
 		{
-			pvr::Log("Failed to create the skybox pipeline");
+			Log("Failed to create the skybox pipeline");
 			return false;
 		}
 		return true;
 	}
 
-	void createBuffers(pvr::GraphicsContext& context)
+	void createBuffers(pvrvk::Device& device, uint32_t numSwapchain)
 	{
 		{
 			// create the sky box vbo
-			static pvr::float32 quadVertices[] =
+			static float quadVertices[] =
 			{
 				-1,  1, 0.9999f,// upper left
 				-1, -1, 0.9999f,// lower left
@@ -263,91 +270,103 @@ struct PassSkyBox
 				1, -1, 0.9999f// lower right
 			};
 
-			_vbo = context->createBuffer(sizeof(quadVertices), pvr::types::BufferBindingUse::VertexBuffer, true);
-			_vbo->update(quadVertices, 0, sizeof(quadVertices));
+			_vbo = pvr::utils::createBuffer(device, sizeof(quadVertices),
+			                            VkBufferUsageFlags::e_VERTEX_BUFFER_BIT, VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT);
+			pvr::utils::updateBuffer(device, _vbo, quadVertices, 0, sizeof(quadVertices), true);
 		}
 
 		{
-			const std::pair<pvr::StringHash, pvr::types::GpuDatatypes::Enum> uboEntriesStr[PassSkyBox::UboElementCount] =
-			{
-				{ "InvVPMatrix", pvr::types::GpuDatatypes::mat4x4 },
-				{ "EyePos", pvr::types::GpuDatatypes::vec4 }
-			};
-
 			// create the structured memory view
-			_bufferMemoryView.addEntriesPacked(uboEntriesStr, UboElementCount);
-			_bufferMemoryView.finalize(context, 1, pvr::types::BufferBindingUse::UniformBuffer, false, false);
-			_bufferMemoryView.createConnectedBuffers(context->getSwapChainLength(), context);
+			pvr::utils::StructuredMemoryDescription desc;
+			desc.addElement("InvVPMatrix", pvr::GpuDatatypes::mat4x4);
+			desc.addElement("EyePos", pvr::GpuDatatypes::vec4);
+
+			_bufferMemoryView.initDynamic(desc, numSwapchain, pvr::BufferUsageFlags::UniformBuffer,
+			                              static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().limits.minUniformBufferOffsetAlignment));
+
+			_buffer = pvr::utils::createBuffer(device, _bufferMemoryView.getSize(), VkBufferUsageFlags::e_UNIFORM_BUFFER_BIT,
+			                               VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT | VkMemoryPropertyFlags::e_HOST_COHERENT_BIT);
 		}
 	}
 
-	bool createDescriptorSets(pvr::GraphicsContext& context, pvr::api::Sampler& sampler)
+	bool createDescriptorSets(pvrvk::Device& device,
+	                          pvrvk::DescriptorPool& descriptorPool,
+	                          pvrvk::Sampler& sampler, uint32_t numSwapchain)
 	{
+		pvrvk::WriteDescriptorSet writeDescSets[pvrvk::FrameworkCaps::MaxSwapChains * 2];
 		// create a descriptor set per swapchain
-		for (pvr::uint32 i = 0; i < context->getSwapChainLength(); ++i)
+		for (uint32_t i = 0; i < numSwapchain; ++i)
 		{
-			_descriptorSets.add(context->createDescriptorSetOnDefaultPool(_descriptorSetLayout));
+			_descriptorSets.add(descriptorPool->allocateDescriptorSet(_descriptorSetLayout));
+			writeDescSets[i * numSwapchain]
+			.set(VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, _descriptorSets[i], 0)
+			.setImageInfo(0, pvrvk::DescriptorImageInfo(_skyboxTex, sampler,
+			              VkImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
-			pvr::api::DescriptorSetUpdate descSetUpdate;
-			descSetUpdate.setCombinedImageSampler(0, _skyboxTex, sampler);
-			descSetUpdate.setUbo(1, _bufferMemoryView.getConnectedBuffer(i));
-
-			if (!_descriptorSets[i]->update(descSetUpdate))
-			{
-				pvr::Log("Failed to update the skybox descritpor set");
-				return false;
-			}
+			writeDescSets[i * numSwapchain + 1]
+			.set(VkDescriptorType::e_UNIFORM_BUFFER, _descriptorSets[i], 1)
+			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer, 0, _bufferMemoryView.getDynamicSliceSize()));
 		}
-
+		device->updateDescriptorSets(writeDescSets, numSwapchain * 2, nullptr, 0);
 		return true;
 	}
 
-	bool init(pvr::Shell& shell, pvr::utils::AssetStore& assetsLoader, pvr::GraphicsContext& context, pvr::Multi<pvr::api::Fbo>& fbos, const pvr::api::RenderPass& renderpass)
+	bool init(pvr::Shell& shell, pvrvk::Device& device,
+	          pvr::Multi<pvrvk::Framebuffer>& framebuffers, const pvrvk::RenderPass& renderpass,
+	          pvrvk::CommandBuffer setupCommandBuffer, pvrvk::DescriptorPool& descriptorPool,
+	          pvrvk::CommandPool& commandPool,
+	          std::vector<pvr::utils::ImageUploadResults>& outImageUpload,
+	          pvrvk::PipelineCache& pipeCache)
 	{
-		_trilinearSampler = createTrilinearImageSampler(context);
-		initDescriptorSetLayout(context);
-		createBuffers(context);
+		_trilinearSampler = createTrilinearImageSampler(device);
+		initDescriptorSetLayout(device);
+		createBuffers(device, static_cast<uint32_t>(framebuffers.size()));
 
 		// load the  skybox texture
-		if (!assetsLoader.getTextureWithCaching(context, CubeTexFile, &_skyboxTex, NULL))
+		outImageUpload.push_back(pvr::utils::loadAndUploadImage(device, CubeTexFile,
+		                         true, setupCommandBuffer, shell));
+		_skyboxTex = outImageUpload.back().getImageView();
+		if (_skyboxTex.isNull())
 		{
-			pvr::Log("Failed to load Skybox texture");
+			Log("Failed to load Skybox texture");
 			return false;
 		}
 
-		if (!createDescriptorSets(context, _trilinearSampler))
+		if (!createDescriptorSets(device, descriptorPool, _trilinearSampler, static_cast<uint32_t>(framebuffers.size())))
 		{
 			return false;
 		}
-		if (!initPipeline(shell, context, renderpass))
+		if (!initPipeline(shell, device, renderpass, framebuffers[0]->getDimensions(), pipeCache))
 		{
 			return false;
 		}
 
-		recordCommands(context, fbos);
+		recordCommands(device, framebuffers, commandPool);
 
 		return true;
 	}
 
-	pvr::api::SecondaryCommandBuffer& getSecondaryCommandBuffer(pvr::uint32 swapchain)
+	pvrvk::SecondaryCommandBuffer& getSecondaryCommandBuffer(uint32_t swapchain)
 	{
 		return secondaryCommandBuffers[swapchain];
 	}
 
-	void recordCommands(pvr::GraphicsContext& context, pvr::Multi<pvr::api::Fbo>& fbos)
+	void recordCommands(pvrvk::Device& device,
+	                    pvr::Multi<pvrvk::Framebuffer>& framebuffers, pvrvk::CommandPool& commandPool)
 	{
-		for (pvr::uint32 i = 0; i < context->getSwapChainLength(); ++i)
+		for (uint32_t i = 0; i < framebuffers.size(); ++i)
 		{
-			secondaryCommandBuffers[i] = context->createSecondaryCommandBufferOnDefaultPool();
-
-			secondaryCommandBuffers[i]->beginRecording(fbos[i], 0);
-
+			secondaryCommandBuffers[i] = commandPool->allocateSecondaryCommandBuffer();
+			secondaryCommandBuffers[i]->begin(framebuffers[i], 0);
 			secondaryCommandBuffers[i]->bindPipeline(_pipeline);
 			secondaryCommandBuffers[i]->bindVertexBuffer(_vbo, 0, 0);
-			secondaryCommandBuffers[i]->bindDescriptorSet(_pipeline->getPipelineLayout(), 0, _descriptorSets[i]);
-			secondaryCommandBuffers[i]->drawArrays(0, 6, 0, 1);
+			secondaryCommandBuffers[i]->bindDescriptorSet(
+			  VkPipelineBindPoint::e_GRAPHICS,
+			  _pipeline->getPipelineLayout(), 0, _descriptorSets[i]);
 
-			secondaryCommandBuffers[i]->endRecording();
+			secondaryCommandBuffers[i]->draw(0, 6, 0, 1);
+
+			secondaryCommandBuffers[i]->end();
 		}
 	}
 };
@@ -359,115 +378,117 @@ struct PassBalloon : public IModelPass
 	enum {NumBalloon = 2};
 
 	// structured memory view with entries for each balloon
-	pvr::utils::StructuredMemoryView _bufferMemoryView;
+	pvr::utils::StructuredBufferView _bufferMemoryView;
+	pvrvk::Buffer _buffer;
 
 	// descriptor set layout and per swap chain descriptor set
-	pvr::api::DescriptorSetLayout _matrixBufferDescriptorSetLayout;
-	pvr::Multi<pvr::api::DescriptorSet> _matrixDescriptorSets;
+	pvrvk::DescriptorSetLayout _matrixBufferDescriptorSetLayout;
+	pvr::Multi<pvrvk::DescriptorSet> _matrixDescriptorSets;
 
-	pvr::api::DescriptorSetLayout _textureBufferDescriptorSetLayout;
-	pvr::api::DescriptorSet _textureDescriptorSets[NumBalloon];
+	pvrvk::DescriptorSetLayout _textureBufferDescriptorSetLayout;
+	pvrvk::DescriptorSet _textureDescriptorSets[NumBalloon];
 
 	// texture for each balloon
-	pvr::api::TextureView _balloonTexures[NumBalloon];
+	pvrvk::ImageView _balloonTexures[NumBalloon];
 	enum UboElement { UboElementModelViewProj, UboElementLightDir, UboElementEyePos, UboElementCount };
 	enum UboBalloonIdElement { UboBalloonId };
 
 	// graphics pipeline used for rendering the balloons
-	pvr::api::GraphicsPipeline _pipeline;
+	pvrvk::GraphicsPipeline _pipeline;
 
 	// container for the balloon model
 	Model _balloonModel;
 
-	pvr::api::Sampler _trilinearSampler;
+	pvrvk::Sampler _trilinearSampler;
 
 	const glm::vec3 EyePos;
 	const glm::vec3 LightDir;
 
-	pvr::Multi<pvr::api::SecondaryCommandBuffer> _secondaryCommandBuffers;
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> _secondaryCommandBuffers;
 
 	PassBalloon() : EyePos(0.0f, 0.0f, 0.0f), LightDir(19.0f, 22.0f, -50.0f) {}
 
-	bool initDescriptorSetLayout(pvr::GraphicsContext& context)
+	bool initDescriptorSetLayout(pvrvk::Device& device)
 	{
 		{
-			pvr::api::DescriptorSetLayoutCreateParam descSetLayout;
+			pvrvk::DescriptorSetLayoutCreateInfo descSetLayout;
 			// uniform buffer
-			descSetLayout.setBinding(0, pvr::types::DescriptorType::UniformBufferDynamic, 1, pvr::types::ShaderStageFlags::Vertex);
-			_matrixBufferDescriptorSetLayout = context->createDescriptorSetLayout(descSetLayout);
+			descSetLayout.setBinding(0, VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1,
+			                         VkShaderStageFlags::e_VERTEX_BIT);
+			_matrixBufferDescriptorSetLayout = device->createDescriptorSetLayout(descSetLayout);
 		}
 
 		{
-			pvr::api::DescriptorSetLayoutCreateParam descSetLayout;
+			pvrvk::DescriptorSetLayoutCreateInfo descSetLayout;
 			// combined image sampler descriptor
-			descSetLayout.setBinding(0, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
-			_textureBufferDescriptorSetLayout = context->createDescriptorSetLayout(descSetLayout);
+			descSetLayout.setBinding(0, VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, 1,
+			                         VkShaderStageFlags::e_FRAGMENT_BIT);
+			_textureBufferDescriptorSetLayout = device->createDescriptorSetLayout(descSetLayout);
 		}
-
 		return true;
 	}
 
-	void createBuffers(pvr::GraphicsContext& context)
+	void createBuffers(pvrvk::Device& device, uint32_t swapchainLength)
 	{
-		pvr::utils::appendSingleBuffersFromModel(context, *_balloonModel.handle, _balloonModel.vbos, _balloonModel.ibos);
-
-		// ubo entries
-		const std::pair<pvr::StringHash, pvr::types::GpuDatatypes::Enum> UboMapping[UboElementCount] =
-		{
-			{ "UboElementModelViewProj", pvr::types::GpuDatatypes::mat4x4 },
-			{ "UboElementLightDir", pvr::types::GpuDatatypes::vec4 },
-			{ "UboElementEyePos", pvr::types::GpuDatatypes::vec4 },
-		};
+		pvr::utils::appendSingleBuffersFromModel(device, *_balloonModel.handle,
+		    _balloonModel.vbos, _balloonModel.ibos);
 
 		// create the structured memory view
-		_bufferMemoryView.addEntriesPacked(UboMapping, UboElementCount);
-		_bufferMemoryView.finalize(context, NumBalloon, pvr::types::BufferBindingUse::UniformBuffer, true, false);
-		_bufferMemoryView.createConnectedBuffers(context->getSwapChainLength(), context);
+		pvr::utils::StructuredMemoryDescription desc;
+		desc.addElement("UboElementModelViewProj", pvr::GpuDatatypes::mat4x4);
+		desc.addElement("UboElementLightDir", pvr::GpuDatatypes::vec4);
+		desc.addElement("UboElementEyePos", pvr::GpuDatatypes::vec4);
+
+		_bufferMemoryView.initDynamic(desc, NumBalloon * swapchainLength, pvr::BufferUsageFlags::UniformBuffer,
+		                              static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().limits.minUniformBufferOffsetAlignment));
+		_buffer = pvr::utils::createBuffer(device,_bufferMemoryView.getSize(), VkBufferUsageFlags::e_UNIFORM_BUFFER_BIT,
+		                               VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT | VkMemoryPropertyFlags::e_HOST_COHERENT_BIT);
 	}
 
-	bool createDescriptorSets(pvr::GraphicsContext& context, pvr::api::Sampler& sampler)
+	bool createDescriptorSets(pvrvk::Device& device,
+	                          pvrvk::Sampler& sampler, pvrvk::DescriptorPool& descpool,
+	                          uint32_t numSwapchain)
 	{
+		pvrvk::WriteDescriptorSet writeDescSet[pvrvk::FrameworkCaps::MaxSwapChains + NumBalloon];
+		uint32_t writeIndex = 0;
 		// create a descriptor set per swapchain
-		for (pvr::uint32 i = 0; i < context->getSwapChainLength(); ++i)
+		for (uint32_t i = 0; i < numSwapchain; ++i, ++writeIndex)
 		{
-			_matrixDescriptorSets.add(context->createDescriptorSetOnDefaultPool(_matrixBufferDescriptorSetLayout));
+			_matrixDescriptorSets.add(
+			  descpool->allocateDescriptorSet(_matrixBufferDescriptorSetLayout));
 
-			pvr::api::DescriptorSetUpdate descSetUpdate;
-			// set both of the balloon textures at their array indices
-			descSetUpdate.setDynamicUbo(0, _bufferMemoryView.getConnectedBuffer(i));
-
-			if (!_matrixDescriptorSets[i]->update(descSetUpdate))
-			{
-				pvr::Log("Failed to update the matrix descritpor set");
-				return false;
-			}
+			writeDescSet[writeIndex]
+			.set(VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _matrixDescriptorSets[i])
+			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer, 0, _bufferMemoryView.getDynamicSliceSize()));
 		}
 
-		for (pvr::uint32 i = 0; i < NumBalloon; ++i)
+		for (uint32_t i = 0; i < NumBalloon; ++i, ++writeIndex)
 		{
-			_textureDescriptorSets[i] = context->createDescriptorSetOnDefaultPool(_textureBufferDescriptorSetLayout);
+			_textureDescriptorSets[i] = descpool->allocateDescriptorSet(
+			                              _textureBufferDescriptorSetLayout);
 
-			pvr::api::DescriptorSetUpdate descSetUpdate;
-			descSetUpdate.setCombinedImageSampler(0, _balloonTexures[i], sampler);
-
-			if (!_textureDescriptorSets[i]->update(descSetUpdate))
-			{
-				pvr::Log("Failed to update the texture descritpor set");
-				return false;
-			}
+			writeDescSet[writeIndex]
+			.set(VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, _textureDescriptorSets[i])
+			.setImageInfo(0, pvrvk::DescriptorImageInfo(_balloonTexures[i], sampler,
+			              VkImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 		}
+		device->updateDescriptorSets(writeDescSet, numSwapchain + NumBalloon, nullptr, 0);
 
 		return true;
 	}
 
-	void setPipeline(pvr::api::GraphicsPipeline& pipeline)
+	void setPipeline(pvrvk::GraphicsPipeline& pipeline)
 	{
 		_pipeline = pipeline;
 	}
 
-	bool initPipeline(pvr::Shell& shell, pvr::GraphicsContext& context, const pvr::api::RenderPass& renderpass)
+	bool initPipeline(pvr::Shell& shell,
+	                  pvrvk::Device& device,
+	                  const pvrvk::RenderPass& renderpass,
+	                  const pvrvk::Extent2D& viewportDim,
+	                  pvrvk::PipelineCache& pipeCache)
 	{
-		pvr::api::GraphicsPipelineCreateParam pipeInfo;
+		pvrvk::GraphicsPipelineCreateInfo pipeInfo;
 
 		// on screen renderpass
 		pipeInfo.renderPass = renderpass;
@@ -475,117 +496,148 @@ struct PassBalloon : public IModelPass
 		// load, create and set the shaders for rendering the skybox
 		auto& vertexShader = Shaders::Names[Shaders::DefaultVS];
 		auto& fragmentShader = Shaders::Names[Shaders::DefaultFS];
-		pvr::Stream::ptr_type vertexShaderSource = shell.getAssetStream(vertexShader.first);
-		pvr::Stream::ptr_type fragmentShaderSource = shell.getAssetStream(fragmentShader.first);
+		pvr::Stream::ptr_type vertexShaderSource = shell.getAssetStream(vertexShader);
+		pvr::Stream::ptr_type fragmentShaderSource = shell.getAssetStream(fragmentShader);
 
-		pipeInfo.vertexShader.setShader(context->createShader(*vertexShaderSource, vertexShader.second));
-		pipeInfo.fragmentShader.setShader(context->createShader(*fragmentShaderSource, fragmentShader.second));
+		pipeInfo.vertexShader.setShader(device->createShader(vertexShaderSource->readToEnd<uint32_t>()));
+		pipeInfo.fragmentShader.setShader(device->createShader(fragmentShaderSource->readToEnd<uint32_t>()));
 
 		// create the pipeline layout
-		pvr::api::PipelineLayoutCreateParam pipelineLayout;
+		pvrvk::PipelineLayoutCreateInfo pipelineLayout;
 		pipelineLayout.setDescSetLayout(0, _matrixBufferDescriptorSetLayout);
 		pipelineLayout.setDescSetLayout(1, _textureBufferDescriptorSetLayout);
 
-		pipeInfo.pipelineLayout = context->createPipelineLayout(pipelineLayout);
+		pipeInfo.pipelineLayout = device->createPipelineLayout(pipelineLayout);
 
 		// depth stencil state
-		pipeInfo.depthStencil.setDepthWrite(true);
-		pipeInfo.depthStencil.setDepthTestEnable(true);
+		pipeInfo.depthStencil.enableDepthWrite(true);
+		pipeInfo.depthStencil.enableDepthTest(true);
 
 		// rasterizer state
-		pipeInfo.rasterizer.setCullFace(pvr::types::Face::Back);
+		pipeInfo.rasterizer.setCullMode(VkCullModeFlags::e_BACK_BIT);
 
 		// blend state
-		pipeInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
+		pipeInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
 
 		// input assembler
-		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::TriangleList);
-		pvr::utils::createInputAssemblyFromMesh(_balloonModel.handle->getMesh(0), VertexBindings,
-		                                        sizeof(VertexBindings) / sizeof(VertexBindings[0]), pipeInfo);
+		pipeInfo.inputAssembler.setPrimitiveTopology(VkPrimitiveTopology::e_TRIANGLE_LIST);
+		pvr::utils::populateInputAssemblyFromMesh(_balloonModel.handle->getMesh(0), VertexBindings,
+		    sizeof(VertexBindings) / sizeof(VertexBindings[0]), pipeInfo.vertexInput, pipeInfo.inputAssembler);
 
-		_pipeline = context->createGraphicsPipeline(pipeInfo);
+		pipeInfo.viewport.setViewportAndScissor(0, pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(viewportDim.width),
+		                                        static_cast<float>(viewportDim.height)), pvrvk::Rect2Di(0, 0, viewportDim.width, viewportDim.height));
+
+		_pipeline = device->createGraphicsPipeline(pipeInfo, pipeCache);
 		if (!_pipeline.isValid())
 		{
-			pvr::Log("Failed to create the balloon pipeline");
+			Log("Failed to create the balloon pipeline");
 			return false;
 		}
 		return true;
 	}
 
-	bool init(pvr::Shell& shell, pvr::utils::AssetStore& assetManager, pvr::GraphicsContext& context, const Model& modelBalloon, pvr::Multi<pvr::api::Fbo>& fbos, const pvr::api::RenderPass& renderpass)
+	bool init(
+	  pvr::Shell& shell,
+	  pvrvk::Device& device,
+	  pvr::Multi<pvrvk::Framebuffer>& framebuffers,
+	  const pvrvk::RenderPass& renderpass,
+	  pvrvk::CommandBuffer& setupCmdBuffer,
+	  pvrvk::DescriptorPool& descriptorPool,
+	  pvrvk::CommandPool& commandPool,
+	  std::vector<pvr::utils::ImageUploadResults>& imageUploads,
+	  const Model& modelBalloon,
+	  pvrvk::PipelineCache& pipeCache)
 	{
 		_balloonModel = modelBalloon;
 
-		_trilinearSampler = createTrilinearImageSampler(context);
-		initDescriptorSetLayout(context);
-		createBuffers(context);
+		_trilinearSampler = createTrilinearImageSampler(device);
+		initDescriptorSetLayout(device);
+		createBuffers(device, static_cast<uint32_t>(framebuffers.size()));
 
-		for (pvr::uint32 i = 0; i < NumBalloon; ++i)
+		for (uint32_t i = 0; i < NumBalloon; ++i)
 		{
-			if (!assetManager.getTextureWithCaching(context, BalloonTexFile[i], &_balloonTexures[i], NULL))
+			imageUploads.push_back(pvr::utils::loadAndUploadImage(
+			                         device, BalloonTexFile[i], true, setupCmdBuffer, shell));
+			_balloonTexures[i] = imageUploads.back().getImageView();
+			if (!_balloonTexures[i].isValid())
 			{
 				return false;
 			}
 		}
 
-		if (!createDescriptorSets(context, _trilinearSampler))
+		if (!createDescriptorSets(device, _trilinearSampler, descriptorPool, static_cast<uint32_t>(framebuffers.size())))
 		{
 			return false;
 		}
 
 		// create the pipeline
-		if (!initPipeline(shell, context, renderpass)) { return false; }
-
-		recordCommands(context, fbos);
-
+		if (!initPipeline(shell, device, renderpass, framebuffers[0]->getDimensions(), pipeCache))
+		{
+			return false;
+		}
+		recordCommands(device, framebuffers, commandPool);
 		return true;
 	}
 
-	void recordCommands(pvr::GraphicsContext& context, pvr::Multi<pvr::api::Fbo>& fbos)
+	void recordCommands(pvrvk::Device& device,
+	                    pvr::Multi<pvrvk::Framebuffer>& framebuffers, pvrvk::CommandPool& commandPool)
 	{
-		for (pvr::uint32 i = 0; i < context->getSwapChainLength(); ++i)
+		for (uint32_t i = 0; i < framebuffers.size(); ++i)
 		{
-			_secondaryCommandBuffers[i] = context->createSecondaryCommandBufferOnDefaultPool();
+			_secondaryCommandBuffers[i] = commandPool->allocateSecondaryCommandBuffer();
+			_secondaryCommandBuffers[i]->begin(framebuffers[i], 0);
 
-			_secondaryCommandBuffers[i]->beginRecording(fbos[i], 0);
-			recordCommandsIntoSecondary(_secondaryCommandBuffers[i], _bufferMemoryView, _matrixDescriptorSets[i], 0);
-			_secondaryCommandBuffers[i]->endRecording();
+			recordCommandsIntoSecondary(_secondaryCommandBuffers[i],
+			                            _bufferMemoryView, _matrixDescriptorSets[i], 0);
+
+			_secondaryCommandBuffers[i]->end();
 		}
 	}
 
-	void recordCommandsIntoSecondary(pvr::api::SecondaryCommandBuffer& cmd, pvr::utils::StructuredBufferView& bufferView, pvr::api::DescriptorSet& matrixDescriptorSet, pvr::uint32 baseOffset)
+	void recordCommandsIntoSecondary(pvrvk::SecondaryCommandBuffer& command,
+	                                 pvr::utils::StructuredBufferView& bufferView,
+	                                 pvrvk::DescriptorSet& matrixDescriptorSet, uint32_t baseOffset)
 	{
-		cmd->bindPipeline(_pipeline);
-		for (pvr::uint32 i = 0; i < NumBalloon; ++i)
+		command->bindPipeline(_pipeline);
+		for (uint32_t i = 0; i < NumBalloon; ++i)
 		{
-			pvr::uint32 offset = bufferView.getAlignedElementArrayOffset(i) + baseOffset;
+			const uint32_t offset = bufferView.getDynamicSliceOffset(i) + baseOffset;
 
-			cmd->bindDescriptorSet(_pipeline->getPipelineLayout(), 0, matrixDescriptorSet, &offset, 1);
-			cmd->bindDescriptorSet(_pipeline->getPipelineLayout(), 1, _textureDescriptorSets[i]);
-			drawMesh(cmd, _balloonModel, 0);
+			command->bindDescriptorSet(VkPipelineBindPoint::e_GRAPHICS,
+			                           _pipeline->getPipelineLayout(), 0, matrixDescriptorSet, &offset, 1);
+
+			command->bindDescriptorSet(VkPipelineBindPoint::e_GRAPHICS,
+			                           _pipeline->getPipelineLayout(), 1, _textureDescriptorSets[i]);
+			drawMesh(command, _balloonModel, 0);
 		}
 	}
 
-	pvr::api::SecondaryCommandBuffer& getSecondaryCommandBuffer(pvr::uint32 swapChain)
+	pvrvk::SecondaryCommandBuffer& getSecondaryCommandBuffer(uint32_t swapchain)
 	{
-		return _secondaryCommandBuffers[swapChain];
+		return _secondaryCommandBuffers[swapchain];
 	}
 
-	void update(pvr::uint32 swapChain, const glm::mat4 model[NumBalloon], const glm::mat4& view, const glm::mat4& proj)
+	void update(uint32_t swapchain, const glm::mat4 model[NumBalloon],
+	            const glm::mat4& view, const glm::mat4& proj)
 	{
-		_bufferMemoryView.mapMultipleArrayElements(swapChain, 0, NumBalloon);
+		void* memory;
+		uint32_t mappedDynamicSlice = swapchain * NumBalloon;
+		_buffer->getDeviceMemory()->map(&memory, _bufferMemoryView.getDynamicSliceOffset(mappedDynamicSlice), _bufferMemoryView.getDynamicSliceSize() * NumBalloon);
+		_bufferMemoryView.pointToMappedMemory(memory, mappedDynamicSlice);
 
-		for (pvr::uint32 i = 0; i < NumBalloon; ++i)
+		for (uint32_t i = 0; i < NumBalloon; ++i)
 		{
 			const glm::mat4 modelView = view * model[i];
-			_bufferMemoryView.setArrayValue(UboElementModelViewProj, i, proj * modelView);
+			uint32_t dynamicSlice = i + mappedDynamicSlice;
+
+			_bufferMemoryView.getElement(UboElementModelViewProj, 0, dynamicSlice).setValue(proj * modelView);
 			// Calculate and set the model space light direction
-			_bufferMemoryView.setArrayValue(UboElementLightDir, i, glm::normalize(glm::inverse(model[i]) * glm::vec4(LightDir, 1.0f)));
+			_bufferMemoryView.getElement(UboElementLightDir, 0, dynamicSlice).setValue(glm::normalize(glm::inverse(model[i]) * glm::vec4(LightDir, 1.0f)));
 			// Calculate and set the model space eye position
-			_bufferMemoryView.setArrayValue(UboElementEyePos, i, glm::inverse(modelView) * glm::vec4(EyePos, 0.0f));
+			_bufferMemoryView.getElement(UboElementEyePos, 0, dynamicSlice).setValue(glm::inverse(modelView) * glm::vec4(EyePos, 0.0f));
 		}
 
-		_bufferMemoryView.unmap(swapChain);
+		_buffer->getDeviceMemory()->unmap();
 	}
 };
 
@@ -596,424 +648,492 @@ struct PassParabloid
 private:
 	enum { UboMV, UboLightDir, UboEyePos, UboNear, UboFar, UboCount };
 	enum UboBalloonIdElement { UboBalloonId };
-	const static std::pair<pvr::StringHash, pvr::types::GpuDatatypes::Enum> UboElementMap[UboCount];
+	const static std::pair<pvr::StringHash, pvr::GpuDatatypes> UboElementMap[UboCount];
 
 	PassBalloon _passes[NumParabloid];
-	pvr::api::GraphicsPipeline _pipelines[2];
-	pvr::Multi<pvr::api::Fbo> _fbo;
-	pvr::Multi<pvr::api::TextureView> _paraboloidTextures;
-	pvr::api::RenderPass _renderPass;
-	pvr::api::Sampler _trilinearSampler;
-	pvr::api::DescriptorSetLayout _descriptorSetLayout;
-	pvr::utils::StructuredMemoryView _bufferMemoryView;
-	pvr::Multi<pvr::api::DescriptorSet> _matrixDescriptorSets;
-	pvr::api::DescriptorSet _textureDescriptorSets[PassBalloon::NumBalloon];
+	pvrvk::GraphicsPipeline _pipelines[2];
+	pvr::Multi<pvrvk::Framebuffer> _framebuffer;
+	pvr::Multi<pvrvk::ImageView> _paraboloidTextures;
+	pvrvk::RenderPass _renderPass;
+	pvrvk::Sampler _trilinearSampler;
+	pvrvk::DescriptorSetLayout _descriptorSetLayout;
+	pvr::utils::StructuredBufferView _bufferMemoryView;
+	pvrvk::Buffer _buffer;
+	pvr::Multi<pvrvk::DescriptorSet> _matrixDescriptorSets;
+	pvrvk::DescriptorSet _textureDescriptorSets[PassBalloon::NumBalloon];
 
-	pvr::Multi<pvr::api::SecondaryCommandBuffer> _secondaryCommandBuffers;
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> _secondaryCommandBuffers;
 
-	bool initPipeline(pvr::Shell& shell, pvr::GraphicsContext& context, const Model& modelBalloon)
+	bool initPipeline(pvr::Shell& shell, pvrvk::Device& device, const Model& modelBalloon,  pvrvk::PipelineCache& pipeCache)
 	{
-		pvr::Rectanglei parabolidViewport[] =
+		pvrvk::Rect2Di parabolidViewport[] =
 		{
-			pvr::Rectanglei(0, 0, ParaboloidTexSize, ParaboloidTexSize),				// first parabolid (Viewport left)
-			pvr::Rectanglei(ParaboloidTexSize, 0, ParaboloidTexSize, ParaboloidTexSize) // second paraboloid (Viewport right)
+			pvrvk::Rect2Di(0, 0, ParaboloidTexSize, ParaboloidTexSize),				// first parabolid (Viewport left)
+			pvrvk::Rect2Di(ParaboloidTexSize, 0, ParaboloidTexSize, ParaboloidTexSize) // second paraboloid (Viewport right)
 		};
 
 		//create the first pipeline for the left viewport
-		pvr::api::GraphicsPipelineCreateParam pipeInfo;
+		pvrvk::GraphicsPipelineCreateInfo pipeInfo;
 
 		pipeInfo.renderPass = _renderPass;
 
-		pipeInfo.vertexShader.setShader(context->createShader(*shell.getAssetStream(Shaders::Names[Shaders::ParaboloidVS].first), Shaders::Names[Shaders::ParaboloidVS].second));
-		pipeInfo.fragmentShader.setShader(context->createShader(*shell.getAssetStream(Shaders::Names[Shaders::DefaultFS].first), Shaders::Names[Shaders::DefaultFS].second));
+		pipeInfo.vertexShader.setShader(device->createShader(
+		                                  shell.getAssetStream(Shaders::Names[Shaders::ParaboloidVS])->readToEnd<uint32_t>()));
+
+		pipeInfo.fragmentShader.setShader(device->createShader(
+		                                    shell.getAssetStream(Shaders::Names[Shaders::DefaultFS])->readToEnd<uint32_t>()));
 
 		// create the pipeline layout
-		pvr::api::PipelineLayoutCreateParam pipelineLayout;
+		pvrvk::PipelineLayoutCreateInfo pipelineLayout;
 		pipelineLayout.setDescSetLayout(0, _descriptorSetLayout);
 		pipelineLayout.setDescSetLayout(1, _passes[0]._textureBufferDescriptorSetLayout);
 
-		pipeInfo.pipelineLayout = context->createPipelineLayout(pipelineLayout);
+		pipeInfo.pipelineLayout = device->createPipelineLayout(pipelineLayout);
 
 		// blend state
-		pipeInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
+		pipeInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
 
 		// input assembler
-		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::TriangleList);
+		pipeInfo.inputAssembler.setPrimitiveTopology(VkPrimitiveTopology::e_TRIANGLE_LIST);
 
-		pvr::utils::createInputAssemblyFromMesh(modelBalloon.handle->getMesh(0), VertexBindings,
-		                                        sizeof(VertexBindings) / sizeof(VertexBindings[0]), pipeInfo);
+		pvr::utils::populateInputAssemblyFromMesh(modelBalloon.handle->getMesh(0),
+		    VertexBindings, sizeof(VertexBindings) / sizeof(VertexBindings[0]),
+		    pipeInfo.vertexInput, pipeInfo.inputAssembler);
 
 		// depth stencil state
-		pipeInfo.depthStencil.setDepthWrite(true);
-		pipeInfo.depthStencil.setDepthTestEnable(true);
+		pipeInfo.depthStencil.enableDepthWrite(true);
+		pipeInfo.depthStencil.enableDepthTest(true);
 
 		// rasterizer state
-		pipeInfo.rasterizer.setCullFace(pvr::types::Face::Front);
+		pipeInfo.rasterizer.setCullMode(VkCullModeFlags::e_FRONT_BIT);
 
 		// set the viewport to render to the left paraboloid
-		pipeInfo.viewport.setViewportAndScissor(0, pvr::api::Viewport(parabolidViewport[0]), parabolidViewport[0], glm::ivec2(ParaboloidTexSize * 2, ParaboloidTexSize));
+		pipeInfo.viewport.setViewportAndScissor(0,
+		                                        pvrvk::Viewport(parabolidViewport[0]),
+		                                        pvrvk::Rect2Di(0, 0, ParaboloidTexSize * 2, ParaboloidTexSize));
 
 		// create the left paraboloid graphics pipeline
-		_pipelines[0] = context->createGraphicsPipeline(pipeInfo);
+		_pipelines[0] = device->createGraphicsPipeline(pipeInfo, pipeCache);
 
 		// clear viewport/scissors before resetting them
 		pipeInfo.viewport.clear();
 
 		// create the second pipeline for the right viewport
-		pipeInfo.viewport.setViewportAndScissor(0, pvr::api::Viewport(parabolidViewport[1]), parabolidViewport[1], glm::ivec2(ParaboloidTexSize * 2, ParaboloidTexSize));
-		pipeInfo.rasterizer.setCullFace(pvr::types::Face::Back);
+		pipeInfo.viewport.setViewportAndScissor(0, pvrvk::Viewport(
+		    parabolidViewport[1]), pvrvk::Rect2Di(0, 0, ParaboloidTexSize * 2, ParaboloidTexSize));
+		pipeInfo.rasterizer.setCullMode(VkCullModeFlags::e_BACK_BIT);
 
 		// create the right paraboloid graphics pipeline
-		_pipelines[1] = context->createGraphicsPipeline(pipeInfo);
+		_pipelines[1] = device->createGraphicsPipeline(pipeInfo, pipeCache);
 
 		// validate paraboloid pipeline creation
 		if (!_pipelines[0].isValid() || !_pipelines[1].isValid())
 		{
-			pvr::Log("Faild to create paraboild pipelines");
+			("Faild to create paraboild pipelines");
 			return false;
 		}
 		return true;
 	}
 
-	bool initFbo(pvr::GraphicsContext& context)
+	bool initFramebuffer(pvrvk::Device& device,
+	                     pvrvk::CommandBuffer& setupCmdBuffer, uint32_t numSwapchain)
 	{
 		// create the paraboloid subpass
-		pvr::api::SubPass subPass(pvr::types::PipelineBindPoint::Graphics);
+		pvrvk::SubPassDescription subpass(VkPipelineBindPoint::e_GRAPHICS);
 		// uses a single color attachment
-		subPass.setColorAttachment(0, 0);
+		subpass.setColorAttachmentReference(0, pvrvk::AttachmentReference(0, VkImageLayout::e_COLOR_ATTACHMENT_OPTIMAL));
 		// subpass uses depth stencil attachment
-		subPass.enableDepthStencilAttachment(true);
-		subPass.setDepthStencilAttachment(0);
+		subpass.setDepthStencilAttachmentReference(pvrvk::AttachmentReference(1, VkImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
 
-		pvr::ImageStorageFormat depthStencilFormat(pvr::PixelFormat::Depth16, 1, pvr::types::ColorSpace::lRGB, pvr::VariableType::Float);
-		pvr::ImageStorageFormat colorFormat = pvr::ImageStorageFormat(pvr::PixelFormat::RGBA_8888, 1, pvr::types::ColorSpace::lRGB, pvr::VariableType::UnsignedByteNorm);
+
+		VkFormat depthStencilFormat = VkFormat::e_D16_UNORM;
+		VkFormat colorFormat = VkFormat::e_R8G8B8A8_UNORM;
 
 		//create the renderpass
 		// set the final layout to ShaderReadOnlyOptimal so that the image can be bound as a texture in following passes.
-		pvr::api::RenderPassCreateParam renderPassInfo;
+		pvrvk::RenderPassCreateInfo renderPassInfo;
 		// clear the image at the beginning of the renderpass and store it at the end
 		// the images initial layout will be color attachment optimal and the final layout will be shader read only optimal
-		renderPassInfo.setColorInfo(0, pvr::api::RenderPassColorInfo(colorFormat, pvr::types::LoadOp::Clear, pvr::types::StoreOp::Store, 1,
-		                            pvr::types::ImageLayout::ColorAttachmentOptimal, pvr::types::ImageLayout::ShaderReadOnlyOptimal));
+		renderPassInfo.setAttachmentDescription(0,
+		                                        pvrvk::AttachmentDescription::createColorDescription(colorFormat,
+		                                            VkImageLayout::e_UNDEFINED, VkImageLayout::e_SHADER_READ_ONLY_OPTIMAL,
+		                                            VkAttachmentLoadOp::e_CLEAR));
 
 		// clear the depth stencil image at the beginning of the renderpass and ignore at the end
-		renderPassInfo.setDepthStencilInfo(pvr::api::RenderPassDepthStencilInfo(depthStencilFormat, pvr::types::LoadOp::Clear,
-		                                   pvr::types::StoreOp::Ignore, pvr::types::LoadOp::Ignore, pvr::types::StoreOp::Ignore));
-		renderPassInfo.setSubPass(0, subPass);
+		renderPassInfo.setAttachmentDescription(1, pvrvk::AttachmentDescription::createDepthStencilDescription(
+		    depthStencilFormat, VkImageLayout::e_UNDEFINED,
+		    VkImageLayout::e_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+		    VkAttachmentLoadOp::e_CLEAR, VkAttachmentStoreOp::e_DONT_CARE,
+		    VkAttachmentLoadOp::e_DONT_CARE, VkAttachmentStoreOp::e_DONT_CARE));
+
+		renderPassInfo.setSubPass(0, subpass);
 
 		// create the renderpass to use when rendering into the paraboloid
-		_renderPass = context->createRenderPass(renderPassInfo);
+		_renderPass = device->createRenderPass(renderPassInfo);
 
 		// the paraboloid will be split up into left and right sections when rendering
-		const pvr::uint32 fboWidth = ParaboloidTexSize * 2;
-		const pvr::uint32 fboHeight = ParaboloidTexSize;
+		const pvrvk::Extent2D framebufferDim(ParaboloidTexSize * 2, ParaboloidTexSize);
+		const pvrvk::Extent3D textureDim(framebufferDim, 1u);
+		_framebuffer.resize(numSwapchain);
 
-		_fbo.resize(context->getSwapChainLength());
-
-		for (pvr::uint32 i = 0; i < context->getSwapChainLength(); ++i)
+		for (uint32_t i = 0; i < numSwapchain; ++i)
 		{
-			// create the render-target color texture
-			pvr::api::TextureStore colorTexture = context->createTexture();
-			// allocate the color atatchment and transform to shader read layout so that the layout transformtion
+			//---------------
+			// create the render-target color texture and transform to
+			// shader read layout so that the layout transformtion
 			// works properly durring the command buffer recording.
-			colorTexture->allocate2D(colorFormat, fboWidth, fboHeight, pvr::types::ImageUsageFlags::ColorAttachment | pvr::types::ImageUsageFlags::Sampled,
-			                         pvr::types::ImageLayout::ShaderReadOnlyOptimal);
+			pvrvk::Image colorTexture = pvr::utils::createImage(device, VkImageType::e_2D, colorFormat,
+			                            textureDim, VkImageUsageFlags::e_COLOR_ATTACHMENT_BIT | VkImageUsageFlags::e_SAMPLED_BIT,
+			                            VkImageCreateFlags(0), pvrvk::ImageLayersSize(), VkSampleCountFlags::e_1_BIT,
+			                            VkMemoryPropertyFlags::e_DEVICE_LOCAL_BIT);
 
-			_paraboloidTextures[i] = context->createTextureView(colorTexture);
+			_paraboloidTextures[i] = device->createImageView(colorTexture);
 
+			//---------------
 			// create the render-target depth-stencil texture
-			pvr::api::TextureStore depthTexture = context->createTexture();
 			// make depth stencil attachment transient as it is only used within this renderpass
-			depthTexture->allocateTransient(depthStencilFormat, fboWidth, fboHeight,
-			                                pvr::types::ImageUsageFlags::DepthStencilAttachment | pvr::types::ImageUsageFlags::TransientAttachment,
-			                                pvr::types::ImageLayout::DepthStencilAttachmentOptimal);
+			pvrvk::Image depthTexture = pvr::utils::createImage(device, VkImageType::e_2D,
+			                            depthStencilFormat, textureDim, VkImageUsageFlags::e_DEPTH_STENCIL_ATTACHMENT_BIT |
+			                            VkImageUsageFlags::e_TRANSIENT_ATTACHMENT_BIT, VkImageCreateFlags(0), pvrvk::ImageLayersSize(),
+			                            VkSampleCountFlags::e_1_BIT, VkMemoryPropertyFlags::e_LAZILY_ALLOCATED_BIT);
 
-			// create the fbo
-			pvr::api::FboCreateParam fboInfo;
-			fboInfo.setRenderPass(_renderPass);
-			fboInfo.setColor(0, _paraboloidTextures[i]);
-			fboInfo.setDepthStencil(context->createTextureView(depthTexture));
-			fboInfo.setDimensions(fboWidth, fboHeight);
+			//---------------
+			// create the framebuffer
+			pvrvk::FramebufferCreateInfo framebufferInfo;
+			framebufferInfo.setRenderPass(_renderPass);
+			framebufferInfo.setAttachment(0, _paraboloidTextures[i]);
+			framebufferInfo.setAttachment(1, device->createImageView(depthTexture));
+			framebufferInfo.setDimensions(framebufferDim);
 
-			_fbo[i] = context->createFbo(fboInfo);
-			if (!_fbo[i].isValid())
+			_framebuffer[i] = device->createFramebuffer(framebufferInfo);
+			if (!_framebuffer[i].isValid())
 			{
-				pvr::Log("failed to create the paraboloid fbo");
+				("failed to create the paraboloid framebuffer");
 				return false;
 			}
 		}
 		return true;
 	}
 
-	void createBuffers(pvr::GraphicsContext& context)
+	void createBuffers(pvrvk::Device& device, uint32_t numSwapchain)
 	{
 		// create the structured memory view
-		_bufferMemoryView.addEntriesPacked(UboElementMap, UboCount);
-		_bufferMemoryView.finalize(context, PassBalloon::NumBalloon * NumParabloid, pvr::types::BufferBindingUse::UniformBuffer, true, false);
-		_bufferMemoryView.createConnectedBuffers(context->getSwapChainLength(), context);
+		pvr::utils::StructuredMemoryDescription desc;
+		desc.addElement(UboElementMap[PassParabloid::UboMV].first, UboElementMap[PassParabloid::UboMV].second);
+		desc.addElement(UboElementMap[PassParabloid::UboLightDir].first, UboElementMap[PassParabloid::UboLightDir].second);
+		desc.addElement(UboElementMap[PassParabloid::UboEyePos].first, UboElementMap[PassParabloid::UboEyePos].second);
+		desc.addElement(UboElementMap[PassParabloid::UboNear].first, UboElementMap[PassParabloid::UboNear].second);
+		desc.addElement(UboElementMap[PassParabloid::UboFar].first, UboElementMap[PassParabloid::UboFar].second);
+
+		_bufferMemoryView.initDynamic(desc, PassBalloon::NumBalloon * NumParabloid * numSwapchain, pvr::BufferUsageFlags::UniformBuffer,
+		                              static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().limits.minUniformBufferOffsetAlignment));
+		_buffer = pvr::utils::createBuffer(device,_bufferMemoryView.getSize(), VkBufferUsageFlags::e_UNIFORM_BUFFER_BIT,
+		                               VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT | VkMemoryPropertyFlags::e_HOST_COHERENT_BIT);
 	}
 
-	bool initDescriptorSetLayout(pvr::GraphicsContext& context)
+	bool initDescriptorSetLayout(pvrvk::Device& device)
 	{
 		// create skybox descriptor set layout
-		pvr::api::DescriptorSetLayoutCreateParam descSetLayout;
+		pvrvk::DescriptorSetLayoutCreateInfo descSetLayout;
 
 		// uniform buffer
-		descSetLayout.setBinding(0, pvr::types::DescriptorType::UniformBufferDynamic, 1, pvr::types::ShaderStageFlags::Vertex);
+		descSetLayout.setBinding(0, VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, VkShaderStageFlags::e_VERTEX_BIT);
 
-		_descriptorSetLayout = context->createDescriptorSetLayout(descSetLayout);
+		_descriptorSetLayout = device->createDescriptorSetLayout(descSetLayout);
 
 		return true;
 	}
 
-	bool createDescriptorSets(pvr::GraphicsContext& context, pvr::api::Sampler& sampler)
+	bool createDescriptorSets(pvrvk::Device& device,
+	                          pvrvk::DescriptorPool& descriptorPool, uint32_t numSwapchain)
 	{
+		pvrvk::WriteDescriptorSet descSetWrites[pvrvk::FrameworkCaps::MaxSwapChains];
+
 		// create a descriptor set per swapchain
-		for (pvr::uint32 i = 0; i < context->getSwapChainLength(); ++i)
+		for (uint32_t i = 0; i < numSwapchain; ++i)
 		{
-			_matrixDescriptorSets.add(context->createDescriptorSetOnDefaultPool(_descriptorSetLayout));
-
-			pvr::api::DescriptorSetUpdate descSetUpdate;
-			descSetUpdate.setDynamicUbo(0, _bufferMemoryView.getConnectedBuffer(i));
-			if (!_matrixDescriptorSets[i]->update(descSetUpdate))
-			{
-				pvr::Log("Failed to update the paraboloid descritpor set");
-				return false;
-			}
+			_matrixDescriptorSets.add(descriptorPool->allocateDescriptorSet(_descriptorSetLayout));
+			descSetWrites[i]
+			.set(VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _matrixDescriptorSets[i], 0)
+			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer, 0, _bufferMemoryView.getDynamicSliceSize()));
 		}
-
+		device->updateDescriptorSets(descSetWrites, numSwapchain, nullptr, 0);
 		return true;
 	}
 
 public:
-	pvr::api::Fbo& getFbo(pvr::uint32 swapchainIndex)
+	pvrvk::Framebuffer& getFramebuffer(uint32_t swapchainIndex)
 	{
-		return _fbo[swapchainIndex];
+		return _framebuffer[swapchainIndex];
 	}
 
-	const pvr::api::TextureView& getParaboloid(pvr::uint32 swapchainIndex)
+	const pvrvk::ImageView& getParaboloid(uint32_t swapchainIndex)
 	{
 		return _paraboloidTextures[swapchainIndex];
 	}
 
-	bool init(pvr::Shell& shell, pvr::utils::AssetStore& assetManager, pvr::GraphicsContext& context, const Model& modelBalloon)
+	bool init(pvr::Shell& shell, pvrvk::Device& device,
+	          const Model& modelBalloon, pvrvk::CommandBuffer& setupCmdBuffer,
+	          pvrvk::CommandPool& commandPool, pvrvk::DescriptorPool& descriptorPool,
+	          uint32_t numSwapchain, std::vector<pvr::utils::ImageUploadResults>& outResults,
+	          pvrvk::PipelineCache& pipeCache)
 	{
-		if (!initFbo(context)) { return false; }
+		if (!initFramebuffer(device, setupCmdBuffer, numSwapchain)) { return false; }
 
-		for (pvr::uint32 i = 0; i < NumParabloid; i++)
+		for (uint32_t i = 0; i < NumParabloid; i++)
 		{
-			_passes[i].init(shell, assetManager, context, modelBalloon, _fbo, _renderPass);
+			_passes[i].init(shell, device, _framebuffer, _renderPass, setupCmdBuffer,
+			                descriptorPool, commandPool, outResults, modelBalloon, pipeCache);
 		}
 
-		_trilinearSampler = createTrilinearImageSampler(context);
-		initDescriptorSetLayout(context);
-		createBuffers(context);
-		if (!createDescriptorSets(context, _trilinearSampler))
+		_trilinearSampler = createTrilinearImageSampler(device);
+		initDescriptorSetLayout(device);
+		createBuffers(device, numSwapchain);
+		if (!createDescriptorSets(device, descriptorPool, numSwapchain))
 		{
 			return false;
 		}
 
 		// create the pipeline
-		if (!initPipeline(shell, context, modelBalloon)) { return false; }
+		if (!initPipeline(shell, device, modelBalloon, pipeCache)) { return false; }
 
-		for (pvr::uint32 i = 0; i < NumParabloid; i++)
+		for (uint32_t i = 0; i < NumParabloid; i++)
 		{
 			_passes[i].setPipeline(_pipelines[i]);
 		}
 
-		recordCommands(context);
+		recordCommands(device, commandPool, numSwapchain);
 
 		return true;
 	}
 
-	void update(pvr::uint32 swapChain, const glm::mat4 balloonModelMatrices[PassBalloon::NumBalloon], const glm::vec3& position)
+	void update(uint32_t swapchain,
+	            const glm::mat4 balloonModelMatrices[PassBalloon::NumBalloon],
+	            const glm::vec3& position)
 	{
 		//--- Create the first view matrix and make it flip the X coordinate
-		glm::mat4 mViewLeft = glm::lookAt(position, position + glm::vec3(0, 0, 1), glm::vec3(0, 1, 0));
+		glm::mat4 mViewLeft = glm::lookAt(position, position +
+		                                  glm::vec3(0, 0, 1), glm::vec3(0, 1, 0));
 		mViewLeft = glm::scale(glm::vec3(-1.0f, 1.0f, 1.0f)) * mViewLeft;
 
-		glm::mat4 mViewRight = glm::lookAt(position, position - glm::vec3(0, 0, 1), glm::vec3(0, 1, 0));
+		glm::mat4 mViewRight = glm::lookAt(position, position -
+		                                   glm::vec3(0, 0, 1), glm::vec3(0, 1, 0));
 		glm::mat4 modelView;
 
+		void* memory;
+		uint32_t mappedDynamicSlice = swapchain * PassBalloon::NumBalloon * NumParabloid;
 		// map the whole of the current swap chain buffer
-		_bufferMemoryView.mapMultipleArrayElements(swapChain, 0, PassBalloon::NumBalloon * NumParabloid);
+		_buffer->getDeviceMemory()->map(&memory, _bufferMemoryView.getDynamicSliceOffset(mappedDynamicSlice),
+		                                _bufferMemoryView.getDynamicSliceSize() * PassBalloon::NumBalloon * NumParabloid);
+		_bufferMemoryView.pointToMappedMemory(memory, mappedDynamicSlice);
 
 		// [LeftParaboloid_balloon0, LeftParaboloid_balloon1, RightParaboloid_balloon0, RightParaboloid_balloon1]
-
-		for (pvr::uint32 i = 0; i < PassBalloon::NumBalloon; ++i)
+		for (uint32_t i = 0; i < PassBalloon::NumBalloon; ++i)
 		{
 			// left paraboloid
 			{
+				uint32_t dynamicSlice = i + mappedDynamicSlice;
 				modelView = mViewLeft * balloonModelMatrices[i];
-				_bufferMemoryView.setArrayValue(UboMV, i, modelView);
-				_bufferMemoryView.setArrayValue(UboLightDir, i, glm::normalize(glm::inverse(balloonModelMatrices[i]) * glm::vec4(_passes[i].LightDir, 1.0f)));
+				_bufferMemoryView.getElement(UboMV, 0, dynamicSlice).setValue(modelView);
+				_bufferMemoryView.getElement(UboLightDir, 0, dynamicSlice).setValue(glm::normalize(glm::inverse(balloonModelMatrices[i]) * glm::vec4(_passes[i].LightDir, 1.0f)));
 
 				// Calculate and set the model space eye position
-				_bufferMemoryView.setArrayValue(UboEyePos, i, glm::inverse(modelView) * glm::vec4(_passes[i].EyePos, 0.0f));
-				_bufferMemoryView.setArrayValue(UboNear, i, CamNear);
-				_bufferMemoryView.setArrayValue(UboFar, i, CamFar);
+				_bufferMemoryView.getElement(UboEyePos, 0, dynamicSlice).setValue(glm::inverse(modelView) *
+				    glm::vec4(_passes[i].EyePos, 0.0f));
+				_bufferMemoryView.getElement(UboNear, 0, dynamicSlice).setValue(CamNear);
+				_bufferMemoryView.getElement(UboFar, 0, dynamicSlice).setValue(CamFar);
 			}
 			// right paraboloid
 			{
+				uint32_t dynamicSlice = NumParabloid + i + swapchain * PassBalloon::NumBalloon;
 				modelView = mViewRight * balloonModelMatrices[i];
-				_bufferMemoryView.setArrayValue(UboMV, NumParabloid + i, modelView);
-				_bufferMemoryView.setArrayValue(UboLightDir, NumParabloid + i, glm::normalize(glm::inverse(balloonModelMatrices[i]) * glm::vec4(_passes[i].LightDir, 1.0f)));
+				_bufferMemoryView.getElement(UboMV, 0, dynamicSlice).setValue(modelView);
+				_bufferMemoryView.getElement(UboLightDir, 0, dynamicSlice).setValue(glm::normalize(glm::inverse(balloonModelMatrices[i]) *
+				    glm::vec4(_passes[i].LightDir, 1.0f)));
 
 				// Calculate and set the model space eye position
-				_bufferMemoryView.setArrayValue(UboEyePos, NumParabloid + i, glm::inverse(modelView) * glm::vec4(_passes[i].EyePos, 0.0f));
-				_bufferMemoryView.setArrayValue(UboNear, NumParabloid + i, CamNear);
-				_bufferMemoryView.setArrayValue(UboFar, NumParabloid + i, CamFar);
+				_bufferMemoryView.getElement(UboEyePos, 0, dynamicSlice).setValue(glm::inverse(modelView) * glm::vec4(_passes[i].EyePos, 0.0f));
+				_bufferMemoryView.getElement(UboNear, 0, dynamicSlice).setValue(CamNear);
+				_bufferMemoryView.getElement(UboFar, 0, dynamicSlice).setValue(CamFar);
 			}
 		}
 
-		_bufferMemoryView.unmap(swapChain);
+		_buffer->getDeviceMemory()->unmap();
 	}
 
-	pvr::api::SecondaryCommandBuffer& getSecondaryCommandBuffer(pvr::uint32 swapChain)
+	pvrvk::SecondaryCommandBuffer& getSecondaryCommandBuffer(uint32_t swapchain)
 	{
-		return _secondaryCommandBuffers[swapChain];
+		return _secondaryCommandBuffers[swapchain];
 	}
 
-	void recordCommands(pvr::GraphicsContext& context)
+	void recordCommands(pvrvk::Device& device,
+	                    pvrvk::CommandPool& commandPool, uint32_t swapchain)
 	{
-		for (pvr::uint32 i = 0; i < context->getSwapChainLength(); ++i)
+		for (uint32_t i = 0; i < swapchain; ++i)
 		{
-			_secondaryCommandBuffers[i] = context->createSecondaryCommandBufferOnDefaultPool();
+			_secondaryCommandBuffers[i] = commandPool->allocateSecondaryCommandBuffer();
 
-			_secondaryCommandBuffers[i]->beginRecording(_fbo[i], 0);
+			_secondaryCommandBuffers[i]->begin(_framebuffer[i], 0);
 
 			// left paraboloid
-			_passes[ParabolidLeft].recordCommandsIntoSecondary(_secondaryCommandBuffers[i], _bufferMemoryView, _matrixDescriptorSets[i], 0);
+			_passes[ParabolidLeft].recordCommandsIntoSecondary(_secondaryCommandBuffers[i],
+			    _bufferMemoryView, _matrixDescriptorSets[i], 0);
 			// right paraboloid
-			pvr::uint32 baseOffset = _bufferMemoryView.getAlignedElementArrayOffset(2);
-			_passes[ParabolidRight].recordCommandsIntoSecondary(_secondaryCommandBuffers[i], _bufferMemoryView, _matrixDescriptorSets[i], baseOffset);
+			uint32_t baseOffset = _bufferMemoryView.getDynamicSliceOffset(NumParabloid);
+			_passes[ParabolidRight].recordCommandsIntoSecondary(_secondaryCommandBuffers[i],
+			    _bufferMemoryView, _matrixDescriptorSets[i], baseOffset);
 
-			_secondaryCommandBuffers[i]->endRecording();
+			_secondaryCommandBuffers[i]->end();
 		}
 	}
 };
 
-const std::pair<pvr::StringHash, pvr::types::GpuDatatypes::Enum> PassParabloid::UboElementMap[PassParabloid::UboCount] =
+const std::pair<pvr::StringHash, pvr::GpuDatatypes>
+PassParabloid::UboElementMap[PassParabloid::UboCount] =
 {
-	{ "MVMatrix", pvr::types::GpuDatatypes::mat4x4 },
-	{ "LightDir", pvr::types::GpuDatatypes::vec4 },
-	{ "EyePos", pvr::types::GpuDatatypes::vec4 },
-	{ "Near", pvr::types::GpuDatatypes::float32 },
-	{ "Far", pvr::types::GpuDatatypes::float32 },
+	{ "MVMatrix", pvr::GpuDatatypes::mat4x4 },
+	{ "LightDir", pvr::GpuDatatypes::vec4 },
+	{ "EyePos", pvr::GpuDatatypes::vec4 },
+	{ "Near", pvr::GpuDatatypes::Float },
+	{ "Far", pvr::GpuDatatypes::Float },
 };
 
 struct PassStatue : public IModelPass
 {
-	pvr::api::GraphicsPipeline _effectPipelines[Effects::NumEffects];
+	pvrvk::GraphicsPipeline _effectPipelines[Effects::NumEffects];
 
-	pvr::utils::StructuredMemoryView _bufferMemoryView;
-	pvr::api::DescriptorSetLayout _descriptorSetLayout;
-	pvr::Multi<pvr::api::DescriptorSet> _descriptorSets;
-	pvr::api::Sampler _trilinearSampler;
+	pvr::utils::StructuredBufferView _bufferMemoryView;
+	pvrvk::Buffer _buffer;
+	pvrvk::DescriptorSetLayout _descriptorSetLayout;
+	pvr::Multi<pvrvk::DescriptorSet> _descriptorSets;
+	pvrvk::Sampler _trilinearSampler;
 
 	struct Model _modelStatue;
 
-	pvr::Multi<pvr::api::SecondaryCommandBuffer> _secondaryCommandBuffers;
+	pvr::Multi<pvrvk::SecondaryCommandBuffer> _secondaryCommandBuffers;
 
 	enum { DescSetUbo, DescSetParabolid, DescSetSkybox,};
 	enum UboElements { MVP, Model, EyePos, Count };
-	static  const std::pair<pvr::StringHash, pvr::types::GpuDatatypes::Enum> UboElementsNames[UboElements::Count];
+	static  const std::pair<pvr::StringHash, pvr::GpuDatatypes> UboElementsNames[UboElements::Count];
 
-	bool initDescriptorSetLayout(pvr::GraphicsContext& context)
+	bool initDescriptorSetLayout(pvrvk::Device& device)
 	{
 		// create skybox descriptor set layout
-		pvr::api::DescriptorSetLayoutCreateParam descSetLayout;
+		pvrvk::DescriptorSetLayoutCreateInfo descSetLayout;
 
 		// combined image sampler descriptors
-		descSetLayout.setBinding(1, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
-		descSetLayout.setBinding(2, pvr::types::DescriptorType::CombinedImageSampler, 1, pvr::types::ShaderStageFlags::Fragment);
-		// uniform buffer
-		descSetLayout.setBinding(0, pvr::types::DescriptorType::UniformBufferDynamic, 1, pvr::types::ShaderStageFlags::Vertex);
+		descSetLayout.setBinding(1, VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, VkShaderStageFlags::e_FRAGMENT_BIT);
 
-		_descriptorSetLayout = context->createDescriptorSetLayout(descSetLayout);
+		descSetLayout.setBinding(2, VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, 1, VkShaderStageFlags::e_FRAGMENT_BIT);
+
+		// uniform buffer
+		descSetLayout.setBinding(0, VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 1, VkShaderStageFlags::e_VERTEX_BIT);
+
+		_descriptorSetLayout = device->createDescriptorSetLayout(descSetLayout);
 
 		return true;
 	}
 
-	void createBuffers(pvr::GraphicsContext& context)
+	void createBuffers(pvrvk::Device& device, uint32_t numSwapchain)
 	{
 		// create the vbo & ibos
-		pvr::utils::appendSingleBuffersFromModel(context, *this->_modelStatue.handle, this->_modelStatue.vbos, this->_modelStatue.ibos);
+		pvr::utils::appendSingleBuffersFromModel(device,
+		    *this->_modelStatue.handle, this->_modelStatue.vbos, this->_modelStatue.ibos);
 
 		{
 			// create the structured memory view
-			_bufferMemoryView.addEntriesPacked(UboElementsNames, UboElements::Count);
-			_bufferMemoryView.finalize(context, _modelStatue.handle->getNumMeshNodes(), pvr::types::BufferBindingUse::UniformBuffer, true, false);
-			_bufferMemoryView.createConnectedBuffers(context->getSwapChainLength(), context);
+			pvr::utils::StructuredMemoryDescription desc;
+			desc.addElement(UboElementsNames[UboElements::MVP].first, UboElementsNames[UboElements::MVP].second);
+			desc.addElement(UboElementsNames[UboElements::Model].first, UboElementsNames[UboElements::Model].second);
+			desc.addElement(UboElementsNames[UboElements::EyePos].first, UboElementsNames[UboElements::EyePos].second);
+
+			_bufferMemoryView.initDynamic(desc, _modelStatue.handle->getNumMeshNodes() * numSwapchain, pvr::BufferUsageFlags::UniformBuffer,
+			                              static_cast<uint32_t>(device->getPhysicalDevice()->getProperties().limits.minUniformBufferOffsetAlignment));
+			_buffer = pvr::utils::createBuffer(device,_bufferMemoryView.getSize(),
+			                               VkBufferUsageFlags::e_UNIFORM_BUFFER_BIT, VkMemoryPropertyFlags::e_HOST_VISIBLE_BIT | VkMemoryPropertyFlags::e_HOST_COHERENT_BIT);
 		}
 	}
 
-	bool createDescriptorSets(pvr::GraphicsContext& context, PassParabloid& passParabloid, PassSkyBox& passSkybox, pvr::api::Sampler& sampler)
+	bool createDescriptorSets(pvrvk::Device& device,
+	                          PassParabloid& passParabloid, PassSkyBox& passSkybox,
+	                          pvrvk::Sampler& sampler, pvrvk::DescriptorPool& descriptorPool,
+	                          uint32_t numSwapchain)
 	{
+		pvrvk::WriteDescriptorSet writeDescSets[pvrvk::FrameworkCaps::MaxSwapChains * 3];
 		// create a descriptor set per swapchain
-		for (pvr::uint32 i = 0; i < context->getSwapChainLength(); ++i)
+		for (uint32_t i = 0; i < numSwapchain; ++i)
 		{
-			_descriptorSets.add(context->createDescriptorSetOnDefaultPool(_descriptorSetLayout));
+			_descriptorSets.add(descriptorPool->allocateDescriptorSet(_descriptorSetLayout));
+			writeDescSets[i * 3]
+			.set(VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, _descriptorSets[i], 0)
+			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer, 0, _bufferMemoryView.getDynamicSliceSize()));
 
-			pvr::api::DescriptorSetUpdate descSetUpdate;
-			descSetUpdate.setCombinedImageSampler(1, passParabloid.getParaboloid(i), sampler);
-			descSetUpdate.setCombinedImageSampler(2, passSkybox.getSkyBox(), sampler);
-			descSetUpdate.setDynamicUbo(0, _bufferMemoryView.getConnectedBuffer(i));
+			writeDescSets[i * 3 + 1]
+			.set(VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, _descriptorSets[i], 1)
+			.setImageInfo(0, pvrvk::DescriptorImageInfo(passParabloid.getParaboloid(i), sampler,
+			              VkImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 
-			if (!_descriptorSets[i]->update(descSetUpdate))
-			{
-				pvr::Log("Failed to update the skybox descritpor set");
-				return false;
-			}
+			writeDescSets[i * 3 + 2]
+			.set(VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, _descriptorSets[i], 2)
+			.setImageInfo(0, pvrvk::DescriptorImageInfo(passSkybox.getSkyBox(), sampler,
+			              VkImageLayout::e_SHADER_READ_ONLY_OPTIMAL));
 		}
-
+		device->updateDescriptorSets(writeDescSets, numSwapchain * 3, nullptr, 0);
 		return true;
 	}
 
-	bool initEffectPipelines(pvr::Shell& shell, pvr::GraphicsContext& context, const pvr::api::RenderPass& renderpass)
+	bool initEffectPipelines(pvr::Shell& shell,
+	                         pvrvk::Device& device,
+	                         const pvrvk::RenderPass& renderpass,
+	                         const pvrvk::Extent2D& viewportDim,
+	                         pvrvk::PipelineCache& pipeCache)
 	{
-		pvr::api::GraphicsPipelineCreateParam pipeInfo;
+		pvrvk::GraphicsPipelineCreateInfo pipeInfo;
 
 		// on screen renderpass
 		pipeInfo.renderPass = renderpass;
 
 		// create the pipeline layout
-		pvr::api::PipelineLayoutCreateParam pipelineLayout;
+		pvrvk::PipelineLayoutCreateInfo pipelineLayout;
 		pipelineLayout.setDescSetLayout(0, _descriptorSetLayout);
 
-		pipeInfo.pipelineLayout = context->createPipelineLayout(pipelineLayout);
+		pipeInfo.pipelineLayout = device->createPipelineLayout(pipelineLayout);
 
 		// depth stencil state
-		pipeInfo.depthStencil.setDepthWrite(true);
-		pipeInfo.depthStencil.setDepthTestEnable(true);
+		pipeInfo.depthStencil.enableDepthWrite(true);
+		pipeInfo.depthStencil.enableDepthTest(true);
 
 		// rasterizer state
-		pipeInfo.rasterizer.setCullFace(pvr::types::Face::Back);
+		pipeInfo.rasterizer.setCullMode(VkCullModeFlags::e_BACK_BIT);
 
 		// blend state
-		pipeInfo.colorBlend.setAttachmentState(0, pvr::types::BlendingConfig());
+		pipeInfo.colorBlend.setAttachmentState(0, pvrvk::PipelineColorBlendAttachmentState());
 
 		// input assembler
-		pipeInfo.inputAssembler.setPrimitiveTopology(pvr::types::PrimitiveTopology::TriangleList);
+		pipeInfo.inputAssembler.setPrimitiveTopology(VkPrimitiveTopology::e_TRIANGLE_LIST);
 
-		pvr::utils::createInputAssemblyFromMesh(_modelStatue.handle->getMesh(0), VertexBindings, 2, pipeInfo);
+		pvr::utils::populateInputAssemblyFromMesh(_modelStatue.handle->getMesh(0),
+		    VertexBindings, 2, pipeInfo.vertexInput, pipeInfo.inputAssembler);
 
 		// load, create and set the shaders for rendering the skybox
 		auto& vertexShader = Shaders::Names[Shaders::SkyboxVS];
 		auto& fragmentShader = Shaders::Names[Shaders::SkyboxFS];
-		pvr::Stream::ptr_type vertexShaderSource = shell.getAssetStream(vertexShader.first);
-		pvr::Stream::ptr_type fragmentShaderSource = shell.getAssetStream(fragmentShader.first);
+		pvr::Stream::ptr_type vertexShaderSource = shell.getAssetStream(vertexShader);
+		pvr::Stream::ptr_type fragmentShaderSource = shell.getAssetStream(fragmentShader);
 
-		pipeInfo.vertexShader.setShader(context->createShader(*vertexShaderSource, vertexShader.second));
-		pipeInfo.fragmentShader.setShader(context->createShader(*fragmentShaderSource, fragmentShader.second));
+		pipeInfo.vertexShader.setShader(device->createShader(vertexShaderSource->readToEnd<uint32_t>()));
+		pipeInfo.fragmentShader.setShader(device->createShader(fragmentShaderSource->readToEnd<uint32_t>()));
 
-		pvr::api::Shader shaders[Shaders::NumShaders];
-		for (pvr::uint32 i = 0; i < Shaders::NumShaders; ++i)
+		pipeInfo.viewport.setViewportAndScissor(0, pvrvk::Viewport(0.0f, 0.0f, static_cast<float>(viewportDim.width), static_cast<float>(viewportDim.height)),
+		                                        pvrvk::Rect2Di(0, 0, viewportDim.width, viewportDim.height));
+
+		pvrvk::Shader shaders[Shaders::NumShaders];
+		for (uint32_t i = 0; i < Shaders::NumShaders; ++i)
 		{
-			shaders[i] = context->createShader(*shell.getAssetStream(Shaders::Names[i].first), Shaders::Names[i].second);
+			shaders[i] = device->createShader(shell.getAssetStream(Shaders::Names[i])->readToEnd<uint32_t>());
 			if (!shaders[i].isValid())
 			{
-				pvr::Log("Failed to create the demo effect shaders");
+				("Failed to create the demo effect shaders");
 				return false;
 			}
 		}
@@ -1028,14 +1148,14 @@ struct PassStatue : public IModelPass
 			{ Shaders::EffectRefractionVS, Shaders::EffectRefractionFS }// Refraction
 		};
 
-		for (pvr::uint32 i = 0; i < Effects::NumEffects; ++i)
+		for (uint32_t i = 0; i < Effects::NumEffects; ++i)
 		{
 			pipeInfo.vertexShader.setShader(shaders[effectShaders[i].first]);
 			pipeInfo.fragmentShader.setShader(shaders[effectShaders[i].second]);
-			_effectPipelines[i] = context->createGraphicsPipeline(pipeInfo);
+			_effectPipelines[i] = device->createGraphicsPipeline(pipeInfo, pipeCache);
 			if (!_effectPipelines[i].isValid())
 			{
-				pvr::Log("Failed to create the effects pipelines");
+				Log("Failed to create the effects pipelines");
 				return false;
 			}
 		}
@@ -1043,18 +1163,25 @@ struct PassStatue : public IModelPass
 		return true;
 	}
 
-	bool init(pvr::Shell& shell, pvr::GraphicsContext& context, const struct Model& modelStatue, PassParabloid& passParabloid, PassSkyBox& passSkybox, const pvr::api::RenderPass& renderpass)
+	bool init(pvr::Shell& shell, pvrvk::Device& device,
+	          pvrvk::CommandBuffer& setupCmdBuffer, pvrvk::DescriptorPool& descriptorPool,
+	          std::vector<pvr::utils::ImageUploadResults>& imageUploads,
+	          uint32_t numSwapchain, const struct Model& modelStatue,
+	          PassParabloid& passParabloid, PassSkyBox& passSkybox,
+	          const pvrvk::RenderPass& renderpass,
+	          const pvrvk::Extent2D& viewportDim, pvrvk::PipelineCache& pipeCache)
 	{
 		_modelStatue = modelStatue;
 
-		_trilinearSampler = createTrilinearImageSampler(context);
-		initDescriptorSetLayout(context);
-		createBuffers(context);
-		if (!createDescriptorSets(context, passParabloid, passSkybox, _trilinearSampler))
+		_trilinearSampler = createTrilinearImageSampler(device);
+		initDescriptorSetLayout(device);
+		createBuffers(device, numSwapchain);
+		if (!createDescriptorSets(device, passParabloid, passSkybox,
+		                          _trilinearSampler, descriptorPool, numSwapchain))
 		{
 			return false;
 		}
-		if (!initEffectPipelines(shell, context, renderpass))
+		if (!initEffectPipelines(shell, device, renderpass, viewportDim, pipeCache))
 		{
 			return false;
 		}
@@ -1062,62 +1189,73 @@ struct PassStatue : public IModelPass
 		return true;
 	}
 
-	void recordCommands(pvr::GraphicsContext& context, pvr::uint32 pipeEffect, pvr::api::Fbo& fbo, pvr::uint32 swapChain)
+	void recordCommands(pvrvk::Device& device,
+	                    pvrvk::CommandPool& commandPool, uint32_t pipeEffect,
+	                    pvrvk::Framebuffer& framebuffer, uint32_t swapchain)
 	{
 		// create the command buffer if it does not already exist
-		if (!_secondaryCommandBuffers[swapChain].isValid())
+		if (!_secondaryCommandBuffers[swapchain].isValid())
 		{
-			_secondaryCommandBuffers[swapChain] = context->createSecondaryCommandBufferOnDefaultPool();
+			_secondaryCommandBuffers[swapchain] = commandPool->allocateSecondaryCommandBuffer();
 		}
 
-		_secondaryCommandBuffers[swapChain]->beginRecording(fbo, 0);
+		_secondaryCommandBuffers[swapchain]->begin(framebuffer, 0);
 
-		_secondaryCommandBuffers[swapChain]->bindPipeline(_effectPipelines[pipeEffect]);
+		_secondaryCommandBuffers[swapchain]->bindPipeline(_effectPipelines[pipeEffect]);
 		// bind the texture and samplers and the ubos
 
-		for (pvr::uint32 i = 0; i < _modelStatue.handle->getNumMeshNodes(); i++)
+		for (uint32_t i = 0; i < _modelStatue.handle->getNumMeshNodes(); i++)
 		{
-			pvr::uint32 offsets = _bufferMemoryView.getAlignedElementArrayOffset(i);
-			_secondaryCommandBuffers[swapChain]->bindDescriptorSet(_effectPipelines[pipeEffect]->getPipelineLayout(), 0, _descriptorSets[swapChain], &offsets, 1);
-			drawMesh(_secondaryCommandBuffers[swapChain], _modelStatue, 0);
+			uint32_t offsets = _bufferMemoryView.getDynamicSliceOffset(i + swapchain * _modelStatue.handle->getNumMeshNodes());
+			_secondaryCommandBuffers[swapchain]->bindDescriptorSet(VkPipelineBindPoint::e_GRAPHICS,
+			    _effectPipelines[pipeEffect]->getPipelineLayout(), 0, _descriptorSets[swapchain], &offsets, 1);
+			drawMesh(_secondaryCommandBuffers[swapchain], _modelStatue, 0);
 		}
 
-		_secondaryCommandBuffers[swapChain]->endRecording();
+		_secondaryCommandBuffers[swapchain]->end();
 	}
 
-	pvr::api::SecondaryCommandBuffer& getSecondaryCommandBuffer(pvr::uint32 swapChain)
+	pvrvk::SecondaryCommandBuffer& getSecondaryCommandBuffer(uint32_t swapchain)
 	{
-		return _secondaryCommandBuffers[swapChain];
+		return _secondaryCommandBuffers[swapchain];
 	}
 
-	void update(pvr::uint32 swapChain, const glm::mat4& view, const glm::mat4& proj)
+	void update(uint32_t swapchain, const glm::mat4& view, const glm::mat4& proj)
 	{
 		// The final statue transform brings him with 0.0.0 coordinates at his feet.
 		// For this model we want 0.0.0 to be the around the center of the statue, and the statue to be smaller.
 		// So, we apply a transformation, AFTER all transforms that have brought him to the center,
 		// that will shrink him and move him downwards.
-		_bufferMemoryView.mapMultipleArrayElements(swapChain, 0, _modelStatue.handle->getNumMeshNodes());
+		void* memory;
+		uint32_t mappedDynamicSlice = swapchain * _modelStatue.handle->getNumMeshNodes();
+		_buffer->getDeviceMemory()->map(&memory, _bufferMemoryView.getDynamicSliceOffset(mappedDynamicSlice),
+		                                _bufferMemoryView.getDynamicSliceSize() * _modelStatue.handle->getNumMeshNodes());
+		_bufferMemoryView.pointToMappedMemory(memory, mappedDynamicSlice);
 		static const glm::vec3 scale = glm::vec3(0.25f, 0.25f, 0.25f);
 		static const glm::vec3 offset = glm::vec3(0.f, -2.f, 0.f);
 		static const glm::mat4 local_transform = glm::translate(offset) * glm::scale(scale);
 
-		for (pvr::uint32 i = 0; i < _modelStatue.handle->getNumMeshNodes(); ++i)
+		for (uint32_t i = 0; i < _modelStatue.handle->getNumMeshNodes(); ++i)
 		{
+			uint32_t dynamicSlice = i + mappedDynamicSlice;
 			const glm::mat4& modelMat = local_transform * _modelStatue.handle->getWorldMatrix(i);
+			const glm::mat3 modelMat3x3 = glm::mat3(modelMat);
+
 			const glm::mat4& modelView = view * modelMat;
-			_bufferMemoryView.setArrayValue(UboElements::MVP, i, proj * modelView);
-			_bufferMemoryView.setArrayValue(UboElements::Model, i, glm::mat3(modelMat));
-			_bufferMemoryView.setArrayValue(UboElements::EyePos, i, glm::inverse(modelView) * glm::vec4(0, 0, 0, 1));
+			_bufferMemoryView.getElement(UboElements::MVP, 0, dynamicSlice).setValue(proj * modelView);
+			_bufferMemoryView.getElement(UboElements::Model, 0, dynamicSlice).setValue(modelMat3x3);
+			_bufferMemoryView.getElement(UboElements::EyePos, 0, dynamicSlice).setValue(glm::inverse(modelView) * glm::vec4(0, 0, 0, 1));
 		}
-		_bufferMemoryView.unmap(swapChain);
+		_buffer->getDeviceMemory()->unmap();
 	}
 };
 
-const std::pair<pvr::StringHash, pvr::types::GpuDatatypes::Enum> PassStatue::UboElementsNames[PassStatue::UboElements::Count]
+const std::pair<pvr::StringHash, pvr::GpuDatatypes>
+PassStatue::UboElementsNames[PassStatue::UboElements::Count]
 {
-	{ "MVPMatrix", pvr::types::GpuDatatypes::mat4x4 },
-	{ "MMatrix", pvr::types::GpuDatatypes::mat3x3 },
-	{ "EyePos", pvr::types::GpuDatatypes::vec4 },
+	{ "MVPMatrix", pvr::GpuDatatypes::mat4x4 },
+	{ "MMatrix", pvr::GpuDatatypes::mat3x3 },
+	{ "EyePos", pvr::GpuDatatypes::vec4 },
 };
 
 /*!*********************************************************************************************************************
@@ -1125,15 +1263,20 @@ const std::pair<pvr::StringHash, pvr::types::GpuDatatypes::Enum> PassStatue::Ubo
 ***********************************************************************************************************************/
 class VulkanGlass : public pvr::Shell
 {
-	struct ApiObjects
+	struct DeviceResources
 	{
+		pvrvk::Instance instance;
+		pvrvk::Device device;
+
+		pvrvk::PipelineCache pipeCache;
+
 		// UIRenderer used to display text
 		pvr::ui::UIRenderer uiRenderer;
 
 		Model balloon;
 		Model statue;
 
-		pvr::Multi<pvr::api::Fbo> fboOnScreen;
+		pvr::Multi<pvrvk::Framebuffer> onScreenFramebuffer;
 
 		// related sets of drawing commands are grouped into "passes"
 		PassSkyBox passSkyBox;
@@ -1141,27 +1284,34 @@ class VulkanGlass : public pvr::Shell
 		PassStatue  passStatue;
 		PassBalloon passBalloon;
 
-		pvr::Multi<pvr::api::CommandBuffer> sceneCommandBuffers;
-		pvr::Multi<pvr::api::SecondaryCommandBuffer> uiSecondaryCommandBuffers;
+		pvr::Multi<pvrvk::CommandBuffer> sceneCommandBuffers;
+		pvr::Multi<pvrvk::SecondaryCommandBuffer> uiSecondaryCommandBuffers;
+		pvr::Multi<pvrvk::ImageView> depthStencilImages;
+		pvrvk::Sampler samplerTrilinear;
 
-		pvr::api::Sampler samplerTrilinear;
-		pvr::GraphicsContext device;
+		pvrvk::CommandPool commandPool;
+		pvrvk::DescriptorPool descriptorPool;
+		pvrvk::Swapchain swapchain;
+		pvrvk::Surface surface;
+		pvrvk::Queue queue;
+		pvrvk::Semaphore semaphoreAcquire[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
+		pvrvk::Semaphore semaphoreSubmit[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
+		pvrvk::Fence perFrameFence[uint32_t(pvrvk::FrameworkCaps::MaxSwapChains)];
 	};
 
-	std::auto_ptr<ApiObjects> _apiObj;
-	pvr::utils::AssetStore _assetManager;
+	std::unique_ptr<DeviceResources> _deviceResources;
 
 	// Projection, view and model matrices
 	glm::mat4 _projectionMatrix;
 	glm::mat4 _viewMatrix;
 
 	// Rotation angle for the model
-	pvr::float32 _cameraAngle;
-	pvr::float32 _balloonAngle[PassBalloon::NumBalloon];
-	pvr::int32 _currentEffect;
-	pvr::float32 _tilt;
-	pvr::float32 _currentTilt;
-
+	float _cameraAngle;
+	float _balloonAngle[PassBalloon::NumBalloon];
+	int32_t _currentEffect;
+	float _tilt;
+	float _currentTilt;
+	uint32_t _frameId;
 public:
 	VulkanGlass() : _tilt(0), _currentTilt(0) {}
 	virtual pvr::Result initApplication();
@@ -1171,7 +1321,7 @@ public:
 	virtual pvr::Result renderFrame();
 private:
 	void eventMappedInput(pvr::SimplifiedInput action);
-	void UpdateScene();
+	void updateScene(uint32_t swapchainIndex);
 	void recordCommands();
 };
 
@@ -1182,9 +1332,9 @@ void VulkanGlass::eventMappedInput(pvr::SimplifiedInput action)
 	case pvr::SimplifiedInput::Left:
 		_currentEffect -= 1;
 		_currentEffect = (_currentEffect + Effects::NumEffects) % Effects::NumEffects;
-		_apiObj->uiRenderer.getDefaultDescription()->setText(Effects::Names[_currentEffect]);
-		_apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
-		_apiObj->device->waitIdle();// make sure the command buffer is finished before re-recording
+		_deviceResources->uiRenderer.getDefaultDescription()->setText(Effects::Names[_currentEffect]);
+		_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
+		_deviceResources->device->waitIdle();// make sure the command buffer is finished before re-recording
 		recordCommands();
 		break;
 	case pvr::SimplifiedInput::Up:
@@ -1196,9 +1346,9 @@ void VulkanGlass::eventMappedInput(pvr::SimplifiedInput action)
 	case pvr::SimplifiedInput::Right:
 		_currentEffect += 1;
 		_currentEffect = (_currentEffect + Effects::NumEffects) % Effects::NumEffects;
-		_apiObj->uiRenderer.getDefaultDescription()->setText(Effects::Names[_currentEffect]);
-		_apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
-		_apiObj->device->waitIdle();// make sure the command buffer is finished before re-recording
+		_deviceResources->uiRenderer.getDefaultDescription()->setText(Effects::Names[_currentEffect]);
+		_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
+		_deviceResources->device->waitIdle();// make sure the command buffer is finished before re-recording
 		recordCommands();
 		break;
 	case pvr::SimplifiedInput::ActionClose: exitShell(); break;
@@ -1207,30 +1357,29 @@ void VulkanGlass::eventMappedInput(pvr::SimplifiedInput action)
 
 /*!*********************************************************************************************************************
 \return	Return Result::Success if no error occurred
-\brief	Code in initApplication() will be called by PVRShell once perrun, before the rendering context is created.
+\brief	Code in initApplication() will be called by PVRShell once perrun, before the rendering device is created.
         Used to initialize variables that are not dependent on it (e.g. external modules, loading meshes, etc.)
-        If the rendering context is lost, initApplication() will not be called again.
+        If the rendering device is lost, initApplication() will not be called again.
 ***********************************************************************************************************************/
 pvr::Result VulkanGlass::initApplication()
 {
-	_apiObj.reset(new ApiObjects());
-	_assetManager.init(*this);
+	_deviceResources.reset(new DeviceResources());
 
-	_cameraAngle =  glm::pi<pvr::float32>() - .6f;
+	_cameraAngle =  glm::pi<float>() - .6f;
 
-	for (int i = 0; i < PassBalloon::NumBalloon; ++i) { _balloonAngle[i] = glm::pi<pvr::float32>() * i / 5.f;	}
+	for (int i = 0; i < PassBalloon::NumBalloon; ++i) { _balloonAngle[i] = glm::pi<float>() * i / 5.f;	}
 
 	_currentEffect = 0;
 
 	// load the balloon
-	if (!_assetManager.loadModel(BalloonFile, _apiObj->balloon.handle))
+	if (!pvr::assets::helper::loadModel(*this, BalloonFile, _deviceResources->balloon.handle))
 	{
 		setExitMessage("ERROR: Couldn't load the %s file\n", BalloonFile);
 		return pvr::Result::UnknownError;
 	}
 
 	// load the statue
-	if (!_assetManager.loadModel(StatueFile, _apiObj->statue.handle))
+	if (!pvr::assets::helper::loadModel(*this, StatueFile, _deviceResources->statue.handle))
 	{
 		setExitMessage("ERROR: Couldn't load the %s file", StatueFile);
 		return pvr::Result::UnknownError;
@@ -1242,73 +1391,181 @@ pvr::Result VulkanGlass::initApplication()
 
 /*!*********************************************************************************************************************
 \return	Return Result::Success if no error occurred
-\brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.If the rendering context
+\brief	Code in quitApplication() will be called by PVRShell once per run, just before exiting the program.If the rendering device
         is lost, quitApplication() will not be called.
 ***********************************************************************************************************************/
 pvr::Result VulkanGlass::quitApplication() { return pvr::Result::Success; }
 
 /*!*********************************************************************************************************************
 \return	Return Result::Success if no error occurred
-\brief	Code in lPVREgl() will be called by PVRShell upon initialization or after a change in the rendering context.
-        Used to initialize variables that are dependent on the rendering context (e.g. textures, vertex buffers, etc.)
+\brief	Code in lPVREgl() will be called by PVRShell upon initialization or after a change in the rendering device.
+        Used to initialize variables that are dependent on the rendering device (e.g. textures, vertex buffers, etc.)
 ***********************************************************************************************************************/
 pvr::Result VulkanGlass::initView()
 {
-	// get the graphics context
-	_apiObj->device = getGraphicsContext();
+	_frameId = 0;
+	// create the vk instance
+	if (!pvr::utils::createInstanceAndSurface(this->getApplicationName(), this->getWindow(), this->getDisplay(), _deviceResources->instance, _deviceResources->surface))
+	{
+		return pvr::Result::UnknownError;
+	}
 
-	// create the onscreen fbo set (per swap chain)
-	_apiObj->fboOnScreen = _apiObj->device->createOnScreenFboSet();
+	// create the logical device and the queues
+	const pvr::utils::QueuePopulateInfo populateInfo =
+	{
+		VkQueueFlags::e_GRAPHICS_BIT, _deviceResources->surface
+	};
+	pvr::utils::QueueAccessInfo queueAccessInfo;
+	_deviceResources->device = pvr::utils::createDeviceAndQueues(
+	                             _deviceResources->instance->getPhysicalDevice(0), &populateInfo, 1, &queueAccessInfo);
+
+	// Get the queue
+	_deviceResources->queue = _deviceResources->device->getQueue(queueAccessInfo.familyId, queueAccessInfo.queueId);
+
+	pvrvk::SurfaceCapabilitiesKHR surfaceCapabilities = _deviceResources->instance->getPhysicalDevice(0)->getSurfaceCapabilities(_deviceResources->surface);
+
+	// validate the supported swapchain image usage
+	VkImageUsageFlags swapchainImageUsage = VkImageUsageFlags::e_COLOR_ATTACHMENT_BIT;
+	if (pvr::utils::isImageUsageSupportedBySurface(surfaceCapabilities, VkImageUsageFlags::e_TRANSFER_SRC_BIT))
+	{
+		swapchainImageUsage |= VkImageUsageFlags::e_TRANSFER_SRC_BIT;
+	}
+
+	//---------------
+	// create the swapchain
+	if (!pvr::utils::createSwapchainAndDepthStencilImageView(_deviceResources->device,
+	    _deviceResources->surface, getDisplayAttributes(), _deviceResources->swapchain, _deviceResources->depthStencilImages, swapchainImageUsage))
+	{
+		return pvr::Result::UnknownError;
+	}
+
+	//---------------
+	// create the framebuffer
+	if (!pvr::utils::createOnscreenFramebufferAndRenderpass(_deviceResources->swapchain,
+	    &_deviceResources->depthStencilImages[0], _deviceResources->onScreenFramebuffer))
+	{
+		setExitMessage("Failed to create onscreen framebuffer");
+		return pvr::Result::UnknownError;
+	}
+
+	//---------------
+	// Create the commandpool
+	_deviceResources->commandPool = _deviceResources->device->createCommandPool(_deviceResources->queue->getQueueFamilyId(),
+	                                VkCommandPoolCreateFlags::e_RESET_COMMAND_BUFFER_BIT);
+
+	//---------------
+	// Create the DescriptorPool
+	pvrvk::DescriptorPoolCreateInfo descPoolInfo; descPoolInfo
+	.addDescriptorInfo(VkDescriptorType::e_COMBINED_IMAGE_SAMPLER, 32)
+	.addDescriptorInfo(VkDescriptorType::e_UNIFORM_BUFFER_DYNAMIC, 32)
+	.addDescriptorInfo(VkDescriptorType::e_UNIFORM_BUFFER, 32)
+	.setMaxDescriptorSets(32);
+
+	_deviceResources->descriptorPool = _deviceResources->device->createDescriptorPool(descPoolInfo);
+
+	_deviceResources->sceneCommandBuffers[0] = _deviceResources->commandPool->allocateCommandBuffer();
+	// Prepare the per swapchain resources
+	// set Swapchain and depthstencil attachment image initial layout
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	{
+		_deviceResources->sceneCommandBuffers[i] = _deviceResources->commandPool->allocateCommandBuffer();
+		_deviceResources->uiSecondaryCommandBuffers[i] = _deviceResources->commandPool->allocateSecondaryCommandBuffer();
+		if (i == 0)
+		{
+			_deviceResources->sceneCommandBuffers[0]->begin();
+		}
+
+		_deviceResources->semaphoreSubmit[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->semaphoreAcquire[i] = _deviceResources->device->createSemaphore();
+		_deviceResources->perFrameFence[i] = _deviceResources->device->createFence(VkFenceCreateFlags::e_SIGNALED_BIT);
+	}
+
+	// Create the pipeline cache
+	_deviceResources->pipeCache = _deviceResources->device->createPipelineCache(0, 0, 0);
+
+
+	std::vector<pvr::utils::ImageUploadResults> imageUploads;
 
 	// set up the passes
-	if (!_apiObj->passSkyBox.init(*this, _assetManager, _apiObj->device, _apiObj->fboOnScreen, _apiObj->fboOnScreen[0]->getRenderPass()))
+	if (!_deviceResources->passSkyBox.init(*this, _deviceResources->device,
+	                                       _deviceResources->onScreenFramebuffer, _deviceResources->onScreenFramebuffer[0]->getRenderPass(),
+	                                       _deviceResources->sceneCommandBuffers[0], _deviceResources->descriptorPool, _deviceResources->commandPool,
+	                                       imageUploads, _deviceResources->pipeCache))
 	{
-		setExitMessage("Failed to initialize the Skybox pass"); return pvr::Result::UnknownError;
+		setExitMessage("Failed to initialize the Skybox pass");
+		return pvr::Result::UnknownError;
 	}
 
-	if (!_apiObj->passBalloon.init(*this, _assetManager, _apiObj->device, _apiObj->balloon, _apiObj->fboOnScreen, _apiObj->fboOnScreen[0]->getRenderPass()))
+	if (!_deviceResources->passBalloon.init(*this, _deviceResources->device,
+	                                        _deviceResources->onScreenFramebuffer, _deviceResources->onScreenFramebuffer[0]->getRenderPass(),
+	                                        _deviceResources->sceneCommandBuffers[0], _deviceResources->descriptorPool, _deviceResources->commandPool,
+	                                        imageUploads, _deviceResources->balloon, _deviceResources->pipeCache))
 	{
-		setExitMessage("Failed to initialize Balloon pass"); return pvr::Result::UnknownError;
+		setExitMessage("Failed to initialize Balloon pass");
+		return pvr::Result::UnknownError;
 	}
 
-	if (!_apiObj->passParaboloid.init(*this, _assetManager, _apiObj->device, _apiObj->balloon))
+	if (!_deviceResources->passParaboloid.init(*this, _deviceResources->device, _deviceResources->balloon,
+	    _deviceResources->sceneCommandBuffers[0], _deviceResources->commandPool, _deviceResources->descriptorPool,
+	    _deviceResources->swapchain->getSwapchainLength(), imageUploads,
+	    _deviceResources->pipeCache))
 	{
-		setExitMessage("Failed to initialize Paraboloid pass"); return pvr::Result::UnknownError;
+		setExitMessage("Failed to initialize Paraboloid pass");
+		return pvr::Result::UnknownError;
 	}
 
-	if (!_apiObj->passStatue.init(*this, _apiObj->device, _apiObj->statue, _apiObj->passParaboloid, _apiObj->passSkyBox, _apiObj->fboOnScreen[0]->getRenderPass()))
+	if (!_deviceResources->passStatue.init(*this, _deviceResources->device,
+	                                       _deviceResources->sceneCommandBuffers[0], _deviceResources->descriptorPool,
+	                                       imageUploads, _deviceResources->swapchain->getSwapchainLength(),
+	                                       _deviceResources->statue, _deviceResources->passParaboloid, _deviceResources->passSkyBox,
+	                                       _deviceResources->onScreenFramebuffer[0]->getRenderPass(),
+	                                       _deviceResources->onScreenFramebuffer[0]->getDimensions(),
+	                                       _deviceResources->pipeCache))
 	{
 		setExitMessage("Failed to initialize Statue pass"); return pvr::Result::UnknownError;
 	}
 
 	// Initialize UIRenderer
-	if (_apiObj->uiRenderer.init(_apiObj->fboOnScreen[0]->getRenderPass(), 0) != pvr::Result::Success)
+	if (!_deviceResources->uiRenderer.init(getWidth(), getHeight(), isFullScreen(),
+	                                       _deviceResources->onScreenFramebuffer[0]->getRenderPass(), 0, _deviceResources->commandPool,
+	                                       _deviceResources->queue))
 	{
 		this->setExitMessage("ERROR: Cannot initialize UIRenderer\n");
 		return pvr::Result::UnknownError;
 	}
 
-	_apiObj->uiRenderer.getDefaultTitle()->setText("Glass");
-	_apiObj->uiRenderer.getDefaultTitle()->commitUpdates();
-	_apiObj->uiRenderer.getDefaultDescription()->setText(Effects::Names[_currentEffect]);
-	_apiObj->uiRenderer.getDefaultDescription()->commitUpdates();
-	_apiObj->uiRenderer.getDefaultControls()->setText("Left / Right : Change the effect\nUp / Down  : Tilt camera");
-	_apiObj->uiRenderer.getDefaultControls()->commitUpdates();
+	//---------------
+	// Submit the inital commands
+	_deviceResources->sceneCommandBuffers[0]->end();
+	pvrvk::SubmitInfo submitInfo;
+	submitInfo.commandBuffers = &_deviceResources->sceneCommandBuffers[0];
+	submitInfo.numCommandBuffers = 1;
+	_deviceResources->queue->submit(&submitInfo, 1);
+	_deviceResources->queue->waitIdle();// make sure all the uploads are finished
+
+	_deviceResources->uiRenderer.getDefaultTitle()->setText("Glass");
+	_deviceResources->uiRenderer.getDefaultTitle()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultDescription()->setText(Effects::Names[_currentEffect]);
+	_deviceResources->uiRenderer.getDefaultDescription()->commitUpdates();
+	_deviceResources->uiRenderer.getDefaultControls()->setText("Left / Right : Change the"
+	    " effect\nUp / Down  : Tilt camera");
+	_deviceResources->uiRenderer.getDefaultControls()->commitUpdates();
 	//Calculate the projection and view matrices
-	_projectionMatrix = pvr::math::perspectiveFov(getApiType(), CamFov, (float)this->getWidth(), (float)this->getHeight(),
-	                    CamNear, CamFar, (isScreenRotated() ? glm::pi<pvr::float32>() * .5f : 0.0f));
+	_projectionMatrix = pvr::math::perspectiveFov(pvr::Api::Vulkan, CamFov,
+	                    (float)this->getWidth(), (float)this->getHeight(),
+	                    CamNear, CamFar, (isScreenRotated() ? glm::pi<float>() * .5f : 0.0f));
 	recordCommands();
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
 \return	Result::Success if no error occurred
-\brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering context.
+\brief	Code in releaseView() will be called by Shell when the application quits or before a change in the rendering device.
 ***********************************************************************************************************************/
 pvr::Result VulkanGlass::releaseView()
 {
-	_apiObj.reset();
-	_assetManager.releaseAll();
+	_deviceResources->device->waitIdle();
+	_deviceResources.reset();
 	return pvr::Result::Success;
 }
 
@@ -1318,47 +1575,91 @@ pvr::Result VulkanGlass::releaseView()
 ***********************************************************************************************************************/
 pvr::Result VulkanGlass::renderFrame()
 {
-	UpdateScene();
-	_apiObj->sceneCommandBuffers[getSwapChainIndex()]->submit();
+	// make sure the commandbuffer and the semaphore are free to use.
+	_deviceResources->perFrameFence[_frameId]->wait();
+	_deviceResources->perFrameFence[_frameId]->reset();
+	_deviceResources->swapchain->acquireNextImage(uint64_t(-1), _deviceResources->semaphoreAcquire[_frameId]);
+	const uint32_t swapchainIndex = _deviceResources->swapchain->getSwapchainIndex();
+	updateScene(swapchainIndex);
 
+	//--------------------
+	// Submit the graphics Commands
+	pvrvk::SubmitInfo submitInfo;
+	VkPipelineStageFlags waitStage = VkPipelineStageFlags::e_TRANSFER_BIT;
+	submitInfo.commandBuffers = &_deviceResources->sceneCommandBuffers[swapchainIndex];
+	submitInfo.numCommandBuffers = 1;
+	submitInfo.numWaitSemaphores = 1;
+	submitInfo.waitSemaphores = &_deviceResources->semaphoreAcquire[_frameId];
+	submitInfo.waitDestStages = &waitStage;
+	submitInfo.signalSemaphores = &_deviceResources->semaphoreSubmit[_frameId];
+	submitInfo.numSignalSemaphores = 1;
+	_deviceResources->queue->submit(&submitInfo, 1, _deviceResources->perFrameFence[_frameId]);
+
+	if (this->shouldTakeScreenshot())
+	{
+		if (_deviceResources->swapchain->supportsUsage(VkImageUsageFlags::e_TRANSFER_SRC_BIT))
+		{
+			pvr::utils::takeScreenshot(_deviceResources->swapchain, swapchainIndex, _deviceResources->commandPool, _deviceResources->queue, this->getScreenshotFileName());
+		}
+		else
+		{
+			Log(LogLevel::Warning, "Could not take screenshot as the swapchain does not support TRANSFER_SRC_BIT");
+		}
+	}
+
+	//--------------------
+	// Present
+	pvrvk::PresentInfo presentInfo;
+	presentInfo.swapchains = &_deviceResources->swapchain;
+	presentInfo.numWaitSemaphores = 1;
+	presentInfo.waitSemaphores = &_deviceResources->semaphoreSubmit[_frameId];
+	presentInfo.imageIndices = &swapchainIndex;
+	presentInfo.numSwapchains = 1;
+
+	_deviceResources->queue->present(presentInfo);
+
+	++_frameId;
+	_frameId %= _deviceResources->swapchain->getSwapchainLength();
 	return pvr::Result::Success;
 }
 
 /*!*********************************************************************************************************************
 \brief	Update the scene
 ***********************************************************************************************************************/
-void VulkanGlass::UpdateScene()
+void VulkanGlass::updateScene(uint32_t swapchainIndex)
 {
 	// Fetch current time and make sure the previous time isn't greater
-	pvr::uint64 timeDifference = getFrameTime();
+	uint64_t timeDifference = getFrameTime();
 	// Store the current time for the next frame
 	_cameraAngle += timeDifference * 0.00005f;
-	for (pvr::int32 i = 0; i < PassBalloon::NumBalloon; ++i)
+	for (int32_t i = 0; i < PassBalloon::NumBalloon; ++i)
 	{
-		_balloonAngle[i] += timeDifference * 0.0002f * (pvr::float32(i) * .5f + 1.f);
+		_balloonAngle[i] += timeDifference * 0.0002f * (float(i) * .5f + 1.f);
 	}
 
 	static const glm::vec3 rotateAxis(0.0f, 1.0f, 0.0f);
-	pvr::float32 diff = fabs(_tilt - _currentTilt);
-	pvr::float32 diff2 = timeDifference / 20.f;
+	float diff = fabs(_tilt - _currentTilt);
+	float diff2 = timeDifference / 20.f;
 	_currentTilt += glm::sign(_tilt - _currentTilt) * (std::min)(diff, diff2);
 
 	// Rotate the camera
-	_viewMatrix = glm::lookAt(glm::vec3(0, -4, -10), glm::vec3(0, _currentTilt - 3, 0), glm::vec3(0, 1, 0))
-	              * glm::rotate(_cameraAngle, rotateAxis);
+	_viewMatrix = glm::lookAt(glm::vec3(0, -4, -10), glm::vec3(0, _currentTilt - 3, 0),
+	                          glm::vec3(0, 1, 0)) * glm::rotate(_cameraAngle, rotateAxis);
 
 	static glm::mat4 balloonModelMatrices[PassBalloon::NumBalloon];
-	for (pvr::int32 i = 0; i < PassBalloon::NumBalloon; ++i)
+	for (int32_t i = 0; i < PassBalloon::NumBalloon; ++i)
 	{
 		// Rotate the balloon model matrices
-		balloonModelMatrices[i] = glm::rotate(_balloonAngle[i], rotateAxis) * glm::translate(glm::vec3(120.f + i * 40.f,
-		                          sin(_balloonAngle[i] * 3.0f) * 20.0f, 0.0f)) * glm::scale(glm::vec3(3.0f, 3.0f, 3.0f));
+		balloonModelMatrices[i] = glm::rotate(_balloonAngle[i], rotateAxis) *
+		                          glm::translate(glm::vec3(120.f + i * 40.f,
+		                              sin(_balloonAngle[i] * 3.0f) * 20.0f, 0.0f)) *
+		                          glm::scale(glm::vec3(3.0f, 3.0f, 3.0f));
 	}
-	_apiObj->passParaboloid.update(getSwapChainIndex(), balloonModelMatrices, glm::vec3(0, 0, 0));
-	_apiObj->passStatue.update(getSwapChainIndex(), _viewMatrix, _projectionMatrix);
-	_apiObj->passBalloon.update(getSwapChainIndex(), balloonModelMatrices, _viewMatrix, _projectionMatrix);
-	_apiObj->passSkyBox.update(getSwapChainIndex(), glm::inverse(_projectionMatrix * _viewMatrix), glm::vec3(glm::inverse(_viewMatrix)
-	                           * glm::vec4(0, 0, 0, 1)));
+	_deviceResources->passParaboloid.update(swapchainIndex, balloonModelMatrices, glm::vec3(0, 0, 0));
+	_deviceResources->passStatue.update(swapchainIndex, _viewMatrix, _projectionMatrix);
+	_deviceResources->passBalloon.update(swapchainIndex, balloonModelMatrices, _viewMatrix, _projectionMatrix);
+	_deviceResources->passSkyBox.update(swapchainIndex, glm::inverse(_projectionMatrix * _viewMatrix),
+	                                    glm::vec3(glm::inverse(_viewMatrix) * glm::vec4(0, 0, 0, 1)));
 }
 
 /*!*********************************************************************************************************************
@@ -1366,53 +1667,58 @@ void VulkanGlass::UpdateScene()
 ***********************************************************************************************************************/
 void VulkanGlass::recordCommands()
 {
-	for (pvr::uint32 i = 0; i < getSwapChainLength(); ++i)
+	pvrvk::ClearValue paraboloidPassClearValues[8];
+	pvr::utils::populateClearValues(_deviceResources->passParaboloid.getFramebuffer(0)->getRenderPass(),
+	                                pvrvk::ClearValue(ClearSkyColor.r, ClearSkyColor.g, ClearSkyColor.b, ClearSkyColor.a),
+	                                pvrvk::ClearValue::createDefaultDepthStencilClearValue(), paraboloidPassClearValues);
+
+	const pvrvk::ClearValue onScreenClearValues[2] =
 	{
-		if (!_apiObj->sceneCommandBuffers[i].isValid())
-		{
-			_apiObj->sceneCommandBuffers[i] = _apiObj->device->createCommandBufferOnDefaultPool();
-		}
+		pvrvk::ClearValue(ClearSkyColor.r, ClearSkyColor.g, ClearSkyColor.b, ClearSkyColor.a),
+		pvrvk::ClearValue::createDefaultDepthStencilClearValue()
+	};
 
-		if (!_apiObj->uiSecondaryCommandBuffers[i].isValid())
-		{
-			_apiObj->uiSecondaryCommandBuffers[i] = _apiObj->device->createSecondaryCommandBufferOnDefaultPool();
-		}
+	for (uint32_t i = 0; i < _deviceResources->swapchain->getSwapchainLength(); ++i)
+	{
+		//---------------
+		// Render the UIRenderer
+		_deviceResources->uiRenderer.beginRendering(_deviceResources->uiSecondaryCommandBuffers[i], _deviceResources->onScreenFramebuffer[i]);
+		_deviceResources->uiRenderer.getSdkLogo()->render();
+		_deviceResources->uiRenderer.getDefaultTitle()->render();
+		_deviceResources->uiRenderer.getDefaultDescription()->render();
+		_deviceResources->uiRenderer.getDefaultControls()->render();
+		_deviceResources->uiRenderer.endRendering();
 
-		_apiObj->uiRenderer.beginRendering(_apiObj->uiSecondaryCommandBuffers[i], _apiObj->fboOnScreen[i]);
-		_apiObj->uiRenderer.getSdkLogo()->render();
-		_apiObj->uiRenderer.getDefaultTitle()->render();
-		_apiObj->uiRenderer.getDefaultDescription()->render();
-		_apiObj->uiRenderer.getDefaultControls()->render();
-		_apiObj->uiRenderer.endRendering();
+		// record the statue pass with the current effect
+		_deviceResources->passStatue.recordCommands(_deviceResources->device, _deviceResources->commandPool,
+		    _currentEffect, _deviceResources->onScreenFramebuffer[i], i);
 
-		// rerecord the statue pass with the current effect
-		_apiObj->passStatue.recordCommands(_apiObj->device, _currentEffect, _apiObj->fboOnScreen[i], i);
-
-		_apiObj->sceneCommandBuffers[i]->beginRecording();
-
-		pvr::api::MemoryBarrierSet membarriers;
-		// prepare the fbo color attachment for rendering
-		// image transition: ShaderReadOnly -> ColorAttachment
-		membarriers.addBarrier(pvr::api::ImageAreaBarrier(pvr::types::AccessFlags::ShaderRead, pvr::types::AccessFlags::ColorAttachmentWrite,
-		                       _apiObj->passParaboloid.getParaboloid(i)->getResource(), pvr::types::ImageSubresourceRange(), pvr::types::ImageLayout::ShaderReadOnlyOptimal,
-		                       pvr::types::ImageLayout::ColorAttachmentOptimal));
-
-		_apiObj->sceneCommandBuffers[i]->pipelineBarrier(pvr::types::PipelineStageFlags::FragmentShader, pvr::types::PipelineStageFlags::FragmentShader, membarriers);
+		_deviceResources->sceneCommandBuffers[i]->begin();
 
 		// Render into the paraboloid
-		_apiObj->sceneCommandBuffers[i]->beginRenderPass(_apiObj->passParaboloid.getFbo(i), pvr::Rectanglei(0, 0, 2 * ParaboloidTexSize, ParaboloidTexSize), false, ClearSkyColor);
-		_apiObj->sceneCommandBuffers[i]->enqueueSecondaryCmds(_apiObj->passParaboloid.getSecondaryCommandBuffer(i));
-		_apiObj->sceneCommandBuffers[i]->endRenderPass();
+		_deviceResources->sceneCommandBuffers[i]->beginRenderPass(_deviceResources->passParaboloid.getFramebuffer(i),
+		    pvrvk::Rect2Di(0, 0, 2 * ParaboloidTexSize, ParaboloidTexSize), false,
+		    paraboloidPassClearValues, _deviceResources->passParaboloid.getFramebuffer(i)->getNumAttachments());
 
+		_deviceResources->sceneCommandBuffers[i]->executeCommands(_deviceResources->passParaboloid.getSecondaryCommandBuffer(i));
+
+		_deviceResources->sceneCommandBuffers[i]->endRenderPass();
+
+		// Create the final commandbuffer
 		// make use of the paraboloid and render the other elements of the scene
-		_apiObj->sceneCommandBuffers[i]->beginRenderPass(_apiObj->fboOnScreen[i], pvr::Rectanglei(0, 0, getWidth(), getHeight()), false, ClearSkyColor);
-		_apiObj->sceneCommandBuffers[i]->enqueueSecondaryCmds(_apiObj->passSkyBox.getSecondaryCommandBuffer(i));
-		_apiObj->sceneCommandBuffers[i]->enqueueSecondaryCmds(_apiObj->passBalloon.getSecondaryCommandBuffer(i));
-		_apiObj->sceneCommandBuffers[i]->enqueueSecondaryCmds(_apiObj->passStatue.getSecondaryCommandBuffer(i));
-		_apiObj->sceneCommandBuffers[i]->enqueueSecondaryCmds(_apiObj->uiSecondaryCommandBuffers[i]);
-		_apiObj->sceneCommandBuffers[i]->endRenderPass();
+		_deviceResources->sceneCommandBuffers[i]->beginRenderPass(_deviceResources->onScreenFramebuffer[i],
+		    pvrvk::Rect2Di(0, 0, getWidth(), getHeight()), false, onScreenClearValues, ARRAY_SIZE(onScreenClearValues));
 
-		_apiObj->sceneCommandBuffers[i]->endRecording();
+		_deviceResources->sceneCommandBuffers[i]->executeCommands(_deviceResources->passSkyBox.getSecondaryCommandBuffer(i));
+
+		_deviceResources->sceneCommandBuffers[i]->executeCommands(_deviceResources->passBalloon.getSecondaryCommandBuffer(i));
+
+		_deviceResources->sceneCommandBuffers[i]->executeCommands(_deviceResources->passStatue.getSecondaryCommandBuffer(i));
+
+		_deviceResources->sceneCommandBuffers[i]->executeCommands(_deviceResources->uiSecondaryCommandBuffers[i]);
+
+		_deviceResources->sceneCommandBuffers[i]->endRenderPass();
+		_deviceResources->sceneCommandBuffers[i]->end();
 	}
 }
 
@@ -1421,4 +1727,4 @@ void VulkanGlass::recordCommands()
 \brief	This function must be implemented by the user of the shell. The user should return its PVRShell object defining the
         behaviour of the application.
 ***********************************************************************************************************************/
-std::auto_ptr<pvr::Shell> pvr::newDemo() {	return std::auto_ptr<pvr::Shell>(new VulkanGlass()); }
+std::unique_ptr<pvr::Shell> pvr::newDemo() {	return std::unique_ptr<pvr::Shell>(new VulkanGlass()); }

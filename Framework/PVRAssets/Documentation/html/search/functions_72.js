@@ -1,10 +1,10 @@
 var searchData=
 [
   ['readnextasset',['readNextAsset',['../classpvr_1_1assets_1_1pfx_1_1_pfx_parser.html#abe65e50e7f1a584c062701a96d39ddf9',1,'pvr::assets::pfx::PfxParser']]],
-  ['releasevolume',['releaseVolume',['../classpvr_1_1_shadow_volume.html#aef5e0374e52909a6b8838aa5e7ee732c',1,'pvr::ShadowVolume']]],
-  ['removeallvertexattributes',['removeAllVertexAttributes',['../classpvr_1_1assets_1_1_mesh.html#aa152493dd41858114743bff0f435ae8a',1,'pvr::assets::Mesh']]],
-  ['removedata',['removeData',['../classpvr_1_1assets_1_1_mesh.html#a6ae1cb101e4555f20cbaacb1f5b1af50',1,'pvr::assets::Mesh']]],
+  ['releasevertexdata',['releaseVertexData',['../classpvr_1_1assets_1_1_model.html#a3c8ecaa16bf1b9544d460227dd7492b2',1,'pvr::assets::Model::releaseVertexData()'],['../classpvr_1_1assets_1_1_model.html#a1298c521df10bdb803e0fbdf7a7ac654',1,'pvr::assets::Model::releaseVertexData(uint32_t meshId)']]],
+  ['releasevolume',['releaseVolume',['../classpvr_1_1_shadow_volume.html#aa96594ef8c6eee78c2f9945215281f3d',1,'pvr::ShadowVolume']]],
+  ['removeallvertexattributes',['removeAllVertexAttributes',['../classpvr_1_1assets_1_1_mesh.html#a1e2ba13eaed9b97ac1975af18dcfd421',1,'pvr::assets::Mesh']]],
+  ['removedata',['removeData',['../classpvr_1_1assets_1_1_mesh.html#adf2f385432d65c533b61618aa0b01bb5',1,'pvr::assets::Mesh']]],
   ['removevertexattribute',['removeVertexAttribute',['../classpvr_1_1assets_1_1_mesh.html#aede8af714093e8affa635c468a791730',1,'pvr::assets::Mesh']]],
-  ['retreivesorteddependencylist',['RetreiveSortedDependencyList',['../classpvr_1_1_skip_graph_root.html#a83f4087d4362366e89b0d471598475f1',1,'pvr::SkipGraphRoot']]],
-  ['retrieverenderpassdependencies',['retrieveRenderPassDependencies',['../classpvr_1_1assets_1_1_pfx_reader.html#a341235db655e1839a8794de38d4d10f0',1,'pvr::assets::PfxReader']]]
+  ['retreivesorteddependencylist',['RetreiveSortedDependencyList',['../classpvr_1_1_skip_graph_root.html#aa8844d21059d1c291150b6411f97b30a',1,'pvr::SkipGraphRoot']]]
 ];

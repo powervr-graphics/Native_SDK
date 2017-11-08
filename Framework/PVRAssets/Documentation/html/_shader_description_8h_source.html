@@ -96,9 +96,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    std::string file(shaderName);</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keywordtype">size_t</span> period = file.rfind(<span class="stringliteral">&quot;.&quot;</span>);</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordflow">if</span> (period != string::npos)</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordflow">if</span> (period != std::string::npos)</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        <span class="keywordtype">string</span> s = file.substr(period + 1);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        std::string s = file.substr(period + 1);</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        std::transform(s.begin(), s.end(), s.begin(), tolower);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        <span class="keywordflow">if</span> (!s.compare(<span class="stringliteral">&quot;vsh&quot;</span>)) { <span class="keywordflow">return</span> ShaderType::VertexShader; }</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <span class="keywordflow">if</span> (!s.compare(<span class="stringliteral">&quot;vs&quot;</span>)) { <span class="keywordflow">return</span> ShaderType::VertexShader; }</div>

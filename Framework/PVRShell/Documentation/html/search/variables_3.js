@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['dragstartlocation',['dragStartLocation',['../structpvr_1_1platform_1_1_shell_1_1_pointing_device_state.html#a873f27bc240190598dd611bc1504eaa8',1,'pvr::platform::Shell::PointingDeviceState']]]
+  ['cmdshow',['cmdShow',['../structpvr_1_1platform_1_1_windows_o_s_data.html#a15897ef51469eb6f639247c4ab42b071',1,'pvr::platform::WindowsOSData']]],
+  ['commandline',['commandLine',['../interface_app_controller.html#aee150b1673f4b49b56ef2bd3d3f536fc',1,'AppController']]]
 ];

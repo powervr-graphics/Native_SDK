@@ -2,7 +2,7 @@
 #define __eglplatform_h_
 
 /*
-** Copyright (c) 2007-2013 The Khronos Group Inc.
+** Copyright (c) 2007-2016 The Khronos Group Inc.
 **
 ** Permission is hereby granted, free of charge, to any person obtaining a
 ** copy of this software and/or associated documentation files (the
@@ -34,7 +34,7 @@
  * by filing a bug against product "EGL" component "Registry".
  */
 
-#include <KHR/khrplatform.h>
+#include "KHR/khrplatform.h"
 
 /* Macros used in EGL function prototype declarations.
  *
@@ -77,16 +77,11 @@ typedef HDC     EGLNativeDisplayType;
 typedef HBITMAP EGLNativePixmapType;
 typedef HWND    EGLNativeWindowType;
 
-#elif defined(SUPPORT_X11)
+#elif defined(__APPLE__) || defined(__WINSCW__) || defined(__SYMBIAN32__)  /* Symbian */
 
-/* X11 (tentative)  */
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
-typedef Display *EGLNativeDisplayType;
-typedef Pixmap   EGLNativePixmapType;
-typedef Window   EGLNativeWindowType;
-
+typedef int   EGLNativeDisplayType;
+typedef void *EGLNativeWindowType;
+typedef void *EGLNativePixmapType;
 
 #elif defined(__ANDROID__) || defined(ANDROID)
 
@@ -98,6 +93,16 @@ typedef struct ANativeWindow*           EGLNativeWindowType;
 typedef struct egl_native_pixmap_t*     EGLNativePixmapType;
 typedef void*                           EGLNativeDisplayType;
 
+#elif defined(SUPPORT_X11)
+
+/* X11 (tentative)  */
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
+typedef Display *EGLNativeDisplayType;
+typedef Pixmap   EGLNativePixmapType;
+typedef Window   EGLNativeWindowType;
+
 #else
 
 #if defined(_WIN64) ||  __WORDSIZE == 64
@@ -108,6 +113,7 @@ typedef int EGLNativeDisplayType;
 
 typedef void *EGLNativeWindowType;
 typedef void *EGLNativePixmapType;
+
 
 #endif
 
@@ -125,5 +131,13 @@ typedef EGLNativeWindowType  NativeWindowType;
  * integer type.
  */
 typedef khronos_int32_t EGLint;
+
+
+/* C++ / C typecast macros for special EGL handle values */
+#if defined(__cplusplus)
+#define EGL_CAST(type, value) (static_cast<type>(value))
+#else
+#define EGL_CAST(type, value) ((type) (value))
+#endif
 
 #endif /* __eglplatform_h */

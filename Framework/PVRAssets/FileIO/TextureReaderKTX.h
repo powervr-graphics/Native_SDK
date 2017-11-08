@@ -9,6 +9,7 @@
 #include "PVRCore/Texture.h"
 #include "PVRCore/IO/AssetReader.h"
 
+//!\cond NO_DOXYGEN
 namespace pvr {
 namespace assets {
 namespace assetReaders {
@@ -31,3 +32,4 @@ private:
 }
 }
 }
+//!\endcond

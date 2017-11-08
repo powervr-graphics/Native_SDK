@@ -9,13 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = VulkanSkinning
-<<<<<<< HEAD
-DEPENDS =  PVRCore PVRAssets PVRVulkanGlue PVRNativeVulkan PVRVulkan PVRShell PVRUIRenderer
-LIBRARIES =  PVRUIRenderer PVRShell PVRVulkan PVRNativeVulkan PVRVulkanGlue PVRAssets PVRCore
-=======
-DEPENDS =  PVRCore PVRAssets PVRNativeVulkan PVRVulkan PVRShell PVREngineUtils
-LIBRARIES =  PVREngineUtils PVRShell PVRVulkan PVRNativeVulkan PVRAssets PVRCore
->>>>>>> 1776432f... 4.3
+DEPENDS =  PVRCore PVRAssets PVRVk PVRShell PVRUtilsVk
+LIBRARIES =  PVRUtilsVk PVRShell PVRVk PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
@@ -30,7 +25,7 @@ RESOURCES += \
            DefaultFragShader_vk.spv\
            SkinnedVertShader_vk.spv\
            SkinnedFragShader_vk.spv\
-           Skinning_vk.pfx\
+           Skinning.pfx\
 
 COMMON_RESOURCES += \
            Arm.pvr\
@@ -40,6 +35,8 @@ COMMON_RESOURCES += \
            RobotNormal.pvr\
            Tiles.pvr\
            Robot.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

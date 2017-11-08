@@ -9,8 +9,8 @@
 
 SDKDIR  = ../../../../../..
 OUTNAME = OGLESMultiviewVR
-DEPENDS =  PVRCore PVRAssets PVRNativeGles PVRShell
-LIBRARIES =  PVRShell PVRNativeGles PVRAssets PVRCore
+DEPENDS =  PVRCore PVRAssets PVRShell PVRUtilsGles
+LIBRARIES =  PVRUtilsGles PVRShell PVRAssets PVRCore
 LIBPATHS =  ../../../../../../Framework/Bin/Linux_$(PLAT_SUFFIX)/$(DEBUG_RELEASE)$(WS)
 
 OBJECTS +=	\
@@ -27,6 +27,8 @@ COMMON_RESOURCES += \
            DarkWood.pvr\
            ClearWood.pvr\
            GnomeToy.pod\
+
+
 
 
 include $(SDKDIR)/Builds/Linux/make_example.mak

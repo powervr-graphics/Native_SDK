@@ -51,7 +51,7 @@
 <div class="subnavlink"><a href="./Windows.html">Windows</a></div>
 <div class="subnavlink"><a href="./OSX.html">OS X</a></div>
 <div class="subnavlink"><a href="./Linux.html">Linux</a></div>
-<div class="subnavlink"><a href="./WebGL_gs.html">WebGL</a></div>
+<div class="subnavlink"><a href="./WebGL.html">WebGL</a></div>
 </nav></div>
     <div class="content">
         <h1>Getting Started</h1>
@@ -68,16 +68,13 @@
 					<td>[AndroidSDK]</td><td>Path to the Android PowerVR Graphics SDK.</td>
 				</tr>
 				<tr>
-					<td>[API]</td><td>Shorthand for the targeted Application Programming Interface, e.g., OGLES2 for OpenGL ES 2.0. This placeholder is regularly used for directory and project/makefile names in the SDK.</td>
-				</tr>
-				<tr>
-					<td>[GlueAPI]</td><td>Shorthand for the targeted Application Programming Interface's platform connection API, e.g., EGL for any OpenGL ES API. This placeholder is regularly used for directory and project/makefile names in the SDK.</td>
+					<td>[API]</td><td>Shorthand for the targeted graphics Application Programming Interface, e.g., OGLES for OpenGL ES 2.0+, or Vulkan. This placeholder is regularly used for directory and project/makefile names in the SDK.</td>
 				</tr>
 				<tr>
 					<td>[ExampleName]</td><td>The name of the example application that you are building.</td>
 				</tr>
 				<tr>
-					<td>[ExampleLevel]</td><td>The name of the folder the examples are sorted into according to their complexity. These folders are named either Beginner, Intermediate or Advanced.</td>
+					<td>[ExampleLevel]</td><td>The name of the folder into which the examples are sorted. These folders are named either Beginner, Intermediate, Advanced or Navigation.</td>
 				</tr>
 				<tr>
 					<td>[Platform]</td><td>The targeted Application Binary Interface, e.g., x86.</td>
@@ -115,10 +112,8 @@
 				<ul>
 					<li><span class="code">PVRCore</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRCore/Builds/OSX/PVRCore.xcodeproj</span>)</li>
 					<li><span class="code">PVRShell</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRShell/Builds/OSX/PVRShell.xcodeproj</span>)</li>
-					<li><span class="code">PVR[GlueAPI]</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRPlatformGlue/<abbr title=" Shorthand for the targeted Platform Conntection Application Programming Interface.">[GlueAPI]</abbr>/Builds/OSX/PVR<abbr title=" Shorthand for the targeted Application Programming Interface.">[GlueAPI]</abbr>.xcodeproj</span>)</li>
-					<li><span class="code">PVR[API]</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRApi/<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>/Builds/OSX/PVR<abbr title=" Shorthand for the targeted Application Programming Interface.">[API]</abbr>.xcodeproj</span>)</li>
-					<li>(Optional)<span class="code">PVRUIRenderer</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRUIRenderer/Builds/OSX/PVRUIRenderer.xcodeproj</span>)</li>
-					<li>(Optional)<span class="code">PVRCamera</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRCamera/Builds/OSX/PVRUIRenderer.xcodeproj</span>)</li>
+					<li><span class="code">PVRUtils</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRUtils/OGLES/Builds/OSX/PVRUtilsGles.xcodeproj</span>)</li>
+					<li>(Optional)<span class="code">PVRCamera</span> (from <span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/PVRCamera/Builds/OSX/PVRCamera.xcodeproj</span>)</li>
 				</ul>
 				</li>
 				<li>
@@ -145,7 +140,6 @@
 				<ul>
 					<li><span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/Builds/Include</span></li>
 					<li><span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/Framework</span></li>
-					<li><span class="code"><abbr title="This is the root directory where the SDK is installed.">[sdk-installation-directory]</abbr>/Tools</span></li>
 				</ul>
 				<p>Add these following paths to the Library Search Paths:</p>
 				<ul>

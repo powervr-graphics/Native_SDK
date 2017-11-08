@@ -10,16 +10,11 @@
 #include "PVRCore/Texture/FileDefinesXNB.h"
 #include "PVRCore/IO/AssetReader.h"
 
+//!\cond NO_DOXYGEN
 namespace pvr {
 namespace assets {
 namespace assetReaders {
-<<<<<<< HEAD
-/*!*********************************************************************************************************************
-\brief Experimental XNB Texture reader
-***********************************************************************************************************************/
-=======
 /// <summary>Experimental XNB Texture reader</summary>
->>>>>>> 1776432f... 4.3
 class TextureReaderXNB : public AssetReader <Texture>
 {
 public:
@@ -28,27 +23,27 @@ public:
 	virtual bool canHaveMultipleAssets();
 
 	virtual bool isSupportedFile(Stream& assetStream);
-	virtual std::vector<string> getSupportedFileExtensions();
+	virtual std::vector<std::string> getSupportedFileExtensions();
 private:
 	virtual bool readNextAsset(Texture& asset);
 
 	bool initializeFile();
-	uint64 getPVRFormatFromXNBFormat(uint32 xnbFormat);
-	VariableType getPVRTypeFromXNBFormat(uint32 xnbFormat);
-	bool read7BitEncodedInt(int32& decodedInteger);
+	uint64_t getPVRFormatFromXNBFormat(uint32_t xnbFormat);
+	VariableType getPVRTypeFromXNBFormat(uint32_t xnbFormat);
+	bool read7BitEncodedInt(int32_t& decodedInteger);
 	bool readFileHeader(texture_xnb::FileHeader& xnbFileHeader);
-	bool readString(string& sstringToRead);
+	bool readString(std::string& sstringToRead);
 	bool read2DTexture(texture_xnb::Texture2DHeader& assetHeader, Texture& asset);
 	bool read3DTexture(texture_xnb::Texture3DHeader& assetHeader, Texture& asset);
 	bool readCubeTexture(texture_xnb::TextureCubeHeader& assetHeader, Texture& asset);
 
 private:
-	texture_xnb::FileHeader     _xnbFileHeader;
-	uint32                    _nextAssetToLoad;
-	//uint32                    _totalTextureCount;
-	std::vector<string>       _objectsStrings;
-	bool                           _fileHeaderLoaded;
+	texture_xnb::FileHeader _xnbFileHeader;
+	uint32_t _nextAssetToLoad;
+	std::vector<std::string> _objectsStrings;
+	bool _fileHeaderLoaded;
 };
 }
 }
 }
+//!\endcond

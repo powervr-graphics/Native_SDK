@@ -68,7 +68,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_type.html"><span>Typedefs</span></a></li>
       <li><a href="functions_enum.html"><span>Enumerations</span></a></li>
       <li><a href="functions_eval.html"><span>Enumerator</span></a></li>
-      <li><a href="functions_rela.html"><span>Related&#160;Functions</span></a></li>
     </ul>
   </div>
   <div id="navrow4" class="tabs3">
@@ -102,7 +101,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -116,13 +115,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <h3><a class="anchor" id="index_b"></a>- b -</h3><ul>
 <li>back()
-: <a class="el" href="classpvr_1_1_ring_buffer.html#a3b229191afebf6b8e59e374e469a6b15">pvr::RingBuffer&lt; typename &gt;</a>
+: <a class="el" href="classpvr_1_1_multi.html#ae0aad7120f2ddb6a72f4df862ecaf401">pvr::Multi&lt; T_, MAX_ITEMS &gt;</a>
+, <a class="el" href="classpvr_1_1_ring_buffer.html#a712316a069ae587cd1eb44e5224d3481">pvr::RingBuffer&lt; typename &gt;</a>
 </li>
 <li>begin()
-: <a class="el" href="classpvr_1_1_indexed_array.html#a0f4031ce181adc3a49e6e56465aff061">pvr::IndexedArray&lt; ValueType_, IndexType_ &gt;</a>
+: <a class="el" href="classpvr_1_1_contiguous_map.html#ab877ef05a89005c455d498ba8771f40e">pvr::ContiguousMap&lt; Key_, Value_, Comparator &gt;</a>
+, <a class="el" href="classpvr_1_1_indexed_array.html#a0f4031ce181adc3a49e6e56465aff061">pvr::IndexedArray&lt; ValueType_, IndexType_ &gt;</a>
 </li>
 <li>BlendingConfig()
-: <a class="el" href="structpvr_1_1types_1_1_blending_config.html#ad5bec72537f4d066dd93f4a3a87b075b">pvr::types::BlendingConfig</a>
+: <a class="el" href="structpvr_1_1_blending_config.html#afc2c8807a8da23181f4a7f2f006b938d">pvr::BlendingConfig</a>
 </li>
 <li>bottomCenterFar()
 : <a class="el" href="classpvr_1_1math_1_1_axis_aligned_box.html#a405b93de6b08da8fda12e9cb621fb661">pvr::math::AxisAlignedBox</a>
@@ -142,11 +143,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>bottomRightNear()
 : <a class="el" href="classpvr_1_1math_1_1_axis_aligned_box.html#abacef833075d392355c71bea19663fe7">pvr::math::AxisAlignedBox</a>
 </li>
-<li>BufferImageCopy()
-: <a class="el" href="structpvr_1_1types_1_1_buffer_image_copy.html#acef54d08da4181378d11df24113d92c9">pvr::types::BufferImageCopy</a>
+<li>BoundingSphere()
+: <a class="el" href="classpvr_1_1math_1_1_bounding_sphere.html#ad2b8e67968b5339a79a498ddbeab9fbb">pvr::math::BoundingSphere</a>
 </li>
 <li>BufferStream()
-: <a class="el" href="classpvr_1_1_buffer_stream.html#a0eb03cba257142af4e225f01c5a09ae9">pvr::BufferStream</a>
+: <a class="el" href="classpvr_1_1_buffer_stream.html#abeb590311c1560195e280b05319ec39c">pvr::BufferStream</a>
 </li>
 </ul>
 </div><!-- contents -->

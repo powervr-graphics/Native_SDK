@@ -8,13 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		49068F5D13DDA30C00C8DC21 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49068F5C13DDA30C00C8DC21 /* Cocoa.framework */; };
-		49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */; };
-		DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
-		DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
-		DB3A55CC15C937F1004CE8F1 /* libGLESv2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */; };
-		DB3A55CD15C9380E004CE8F1 /* libGLESv2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */; };
 		495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0013E2EE09000FD6B4 /* MainMenu.xib */; };
 		495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 495B9D0413E2EE16000FD6B4 /* InfoPlist.strings */; };
+		49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */; };
+		DB3A55C915C92668004CE8F1 /* libEGL.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55C715C92647004CE8F1 /* libEGL.dylib */; };
+		DB3A55CD15C9380E004CE8F1 /* libGLESv2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */; };
 		DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */ = {isa = PBXBuildFile; fileRef = DB3A55D015C938EC004CE8F1 /* IMG.icns */; };
 		F838719A6D9E34D9252E93DF /* OGLESHelloAPI_OSX.mm in Sources */ = {isa = PBXBuildFile; fileRef = F84A2FF8B83459EF3CD3A6EB /* OGLESHelloAPI_OSX.mm */; };
 /* End PBXBuildFile section */
@@ -34,19 +32,19 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		49068F5813DDA30C00C8DC21 /* OGLESHelloAPI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLESHelloAPI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49068F5C13DDA30C00C8DC21 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		49068F5F13DDA30C00C8DC21 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		49068F6013DDA30C00C8DC21 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		49068F6113DDA30C00C8DC21 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		49068F5813DDA30C00C8DC21 /* OGLESHelloAPI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OGLESHelloAPI.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		49FE311813E2CEE900B32DAC /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
-		DB3A55C715C92647004CE8F1 /* libEGL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libEGL.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libEGL.dylib"; sourceTree = "<group>"; };
-		DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLESv2.dylib; path = "../../../../../../Builds/OSX/x86/Lib/libGLESv2.dylib"; sourceTree = "<group>"; };
-		DB3A55CE15C938D4004CE8F1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
-		DB3A55D015C938EC004CE8F1 /* IMG.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = IMG.icns; path = "../../../../../../Builds/OSX/Resources/IMG.icns"; sourceTree = "<group>"; };
 		495B9D0113E2EE09000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
 		495B9D0513E2EE16000FD6B4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
+		49BB0EDB13DEB66200B228C5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		49FE311813E2CEE900B32DAC /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
+		DB3A55C715C92647004CE8F1 /* libEGL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libEGL.dylib; path = ../../../../../../Builds/OSX/x86/Lib/libEGL.dylib; sourceTree = "<group>"; };
+		DB3A55CB15C937F1004CE8F1 /* libGLESv2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLESv2.dylib; path = ../../../../../../Builds/OSX/x86/Lib/libGLESv2.dylib; sourceTree = "<group>"; };
+		DB3A55CE15C938D4004CE8F1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		DB3A55D015C938EC004CE8F1 /* IMG.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = IMG.icns; path = ../../../../../../Builds/OSX/Resources/IMG.icns; sourceTree = "<group>"; };
 		F84A2FF8B83459EF3CD3A6EB /* OGLESHelloAPI_OSX.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = OGLESHelloAPI_OSX.mm; path = ../../OGLESHelloAPI_OSX.mm; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -57,8 +55,6 @@
 			files = (
 				49BB0EDC13DEB66200B228C5 /* QuartzCore.framework in Frameworks */,
 				49068F5D13DDA30C00C8DC21 /* Cocoa.framework in Frameworks */,
-				DB3A55C815C92647004CE8F1 /* libEGL.dylib in Frameworks */,
-				DB3A55CC15C937F1004CE8F1 /* libGLESv2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,13 +111,6 @@
 				F84A2FF8B83459EF3CD3A6EB /* OGLESHelloAPI_OSX.mm */,
 			);
 			name = Source;
-			sourceTree = "<group>";
-		};
-		DB5C329915C7F19D00B1A208 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		DB5C32AE15C7F50500B1A208 /* Resources */ = {
@@ -221,28 +210,12 @@
 			mainGroup = 49068F4D13DDA30C00C8DC21;
 			productRefGroup = 49068F5913DDA30C00C8DC21 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = DB5C329915C7F19D00B1A208 /* Products */;
-					ProjectRef = DBE6ED1B15C2A1D300275129 /* OGLES2Tools.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				49068F5713DDA30C00C8DC21 /* OGLESHelloAPI */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		DB5C32AC15C7F32B00B1A208 /* libOGLES2Tools.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libOGLES2Tools.a;
-			remoteRef = DB5C32AB15C7F32B00B1A208 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		49068F5613DDA30C00C8DC21 /* Resources */ = {
@@ -251,7 +224,6 @@
 			files = (
 				495B9D0213E2EE09000FD6B4 /* MainMenu.xib in Resources */,
 				495B9D0613E2EE16000FD6B4 /* InfoPlist.strings in Resources */,
-				DB3A55CF15C938D4004CE8F1 /* Info.plist in Resources */,
 				DBC1C92915D004BF00D6A9CC /* IMG.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -293,7 +265,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -320,7 +291,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -340,6 +310,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -348,10 +320,13 @@
 				);
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = ("$(inherited)","../../../../../../Builds/OSX/x86/Lib");
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					../../../../../../Builds/OSX/x86/Lib,
+				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include";
+				USER_HEADER_SEARCH_PATHS = ../../../../../../Builds/Include;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -360,15 +335,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = BUILD_OGLES2;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = ("$(inherited)","../../../../../../Builds/OSX/x86/Lib");
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					../../../../../../Builds/OSX/x86/Lib,
+				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "../../../../../../Builds/Include";
+				USER_HEADER_SEARCH_PATHS = ../../../../../../Builds/Include;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

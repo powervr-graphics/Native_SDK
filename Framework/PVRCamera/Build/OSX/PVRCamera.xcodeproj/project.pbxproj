@@ -7,17 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0E35042E1BF6512800EC0B4E /* PVRCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E35042D1BF6512800EC0B4E /* PVRCamera.h */; settings = {ASSET_TAGS = (); }; };
+		0E35042E1BF6512800EC0B4E /* PVRCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E35042D1BF6512800EC0B4E /* PVRCamera.h */; };
 		0E48321F1BA821EF00E79409 /* CameraInterface_Dummy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0E48321C1BA821EF00E79409 /* CameraInterface_Dummy.cpp */; };
 		0E4832201BA821EF00E79409 /* CameraInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E48321D1BA821EF00E79409 /* CameraInterface.h */; };
-		0E4832211BA821EF00E79409 /* CameraInterfacePVRApi.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E48321E1BA821EF00E79409 /* CameraInterfacePVRApi.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0E35042D1BF6512800EC0B4E /* PVRCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PVRCamera.h; path = ../../PVRCamera.h; sourceTree = "<group>"; };
 		0E48321C1BA821EF00E79409 /* CameraInterface_Dummy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CameraInterface_Dummy.cpp; path = ../../CameraInterface_Dummy.cpp; sourceTree = "<group>"; };
 		0E48321D1BA821EF00E79409 /* CameraInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraInterface.h; path = ../../CameraInterface.h; sourceTree = "<group>"; };
-		0E48321E1BA821EF00E79409 /* CameraInterfacePVRApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraInterfacePVRApi.h; path = ../../CameraInterfacePVRApi.h; sourceTree = "<group>"; };
 		3E82A09819AC98B100EC7AEE /* libPVRCamera.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPVRCamera.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -37,7 +35,6 @@
 			children = (
 				0E48321C1BA821EF00E79409 /* CameraInterface_Dummy.cpp */,
 				0E48321D1BA821EF00E79409 /* CameraInterface.h */,
-				0E48321E1BA821EF00E79409 /* CameraInterfacePVRApi.h */,
 				0E35042D1BF6512800EC0B4E /* PVRCamera.h */,
 				3E82A09919AC98B100EC7AEE /* Products */,
 			);
@@ -60,7 +57,6 @@
 			files = (
 				0E35042E1BF6512800EC0B4E /* PVRCamera.h in Headers */,
 				0E4832201BA821EF00E79409 /* CameraInterface.h in Headers */,
-				0E4832211BA821EF00E79409 /* CameraInterfacePVRApi.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

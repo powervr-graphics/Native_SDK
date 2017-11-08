@@ -15,24 +15,24 @@ namespace texture_legacy {
 // Version 1 of the PVR file format
 struct HeaderV1
 {
-	uint32  headerSize;	//!< size of the structure 
-	uint32  height;		 //!< height of surface to be created 
-	uint32  width;		//!< width of input surface 
-	uint32  mipMapCount;	//!< number of mip-map levels requested 
-	uint32  pixelFormatAndFlags; //!< pixel format flags 
-	uint32  dataSize;		//!< Size of the compress data 
-	uint32  bitCount;		//!< number of bits per pixel  
-	uint32  redBitMask;		//!< mask for red bit 
-	uint32  greenBitMask;	//!< mask for green bits 
-	uint32  blueBitMask;	//!< mask for blue bits 
-	uint32  alphaBitMask;	//!< mask for alpha channel 
+	uint32_t  headerSize;	//!< size of the structure
+	uint32_t  height;		 //!< height of surface to be created
+	uint32_t  width;		//!< width of input surface
+	uint32_t  numMipMaps;	//!< number of mip-map levels requested
+	uint32_t  pixelFormatAndFlags; //!< pixel format flags
+	uint32_t  dataSize;		//!< Size of the compress data
+	uint32_t  bitCount;		//!< number of bits per pixel
+	uint32_t  redBitMask;		//!< mask for red bit
+	uint32_t  greenBitMask;	//!< mask for green bits
+	uint32_t  blueBitMask;	//!< mask for blue bits
+	uint32_t  alphaBitMask;	//!< mask for alpha channel
 };
 
 // Version 2 of the PVR file format
 struct HeaderV2 : public HeaderV1
 {
-	uint32 pvrMagic;				/*!< magic number identifying pvr file */
-	uint32 numberOfSurfaces;			/*!< the number of surfaces present in the pvr */
+	uint32_t pvrMagic;				/*!< magic number identifying pvr file */
+	uint32_t numSurfaces;			/*!< the number of surfaces present in the pvr */
 };
 
 ////////////////////////// Legacy enumerations //////////////////////////
@@ -230,26 +230,22 @@ enum API
 ///////////////////////////// Legacy constants /////////////////////////////
 
 // Flags for Legacy TextureHeader versions
-static const uint32 c_flagMIPMap          = (1 << 8);  // Texture has MIP Map levels
-//	static const uint32 c_flagTwiddled        = (1<<9);    // Texture data is twiddled
-static const uint32 c_flagBumpMap         = (1 << 10); // Texture has normals encoded for a bump map
-//	static const uint32 c_flagTiledPVRTC      = (1<<11);   // Texture is bordered for tiled PVRTC
-static const uint32 c_flagCubeMap         = (1 << 12); // Texture is a cubemap/skybox
-//	static const uint32 c_flagFalseColorMIPs = (1<<13);   // Texture has false colored MIP Map levels
-static const uint32 c_flagVolumeTexture   = (1 << 14); // Texture is a 3D texture
-static const uint32 c_flagHasAlpha        = (1 << 15); // Texture has transparency
-static const uint32 c_flagVerticalFlip    = (1 << 16); // Texture is vertically flipped
+static const uint32_t c_flagMipMap          = (1 << 8);  // Texture has MIP Map levels
+static const uint32_t c_flagBumpMap         = (1 << 10); // Texture has normals encoded for a bump map
+static const uint32_t c_flagCubeMap         = (1 << 12); // Texture is a cubemap/skybox
+static const uint32_t c_flagVolumeTexture   = (1 << 14); // Texture is a 3D texture
+static const uint32_t c_flagHasAlpha        = (1 << 15); // Texture has transparency
+static const uint32_t c_flagVerticalFlip    = (1 << 16); // Texture is vertically flipped
 
 // Mask for the pixel type - always in the last 16bits of the flags in legacy headers.
-static const uint32 c_pixelTypeMask       = 0xff;
+static const uint32_t c_pixelTypeMask       = 0xff;
 
 // The old PVR header identifier is the characters 'PVR!', V2 only. Usually ignored...
-static const uint32 c_identifierV2        = 0x21525650;
+static const uint32_t c_identifierV2        = 0x21525650;
 
 // Header sizes, used as identifiers for previous versions of the header.
-static const uint32 c_headerSizeV1        = 44;
-static const uint32 c_headerSizeV2        = 52;
-
+static const uint32_t c_headerSizeV1        = 44;
+static const uint32_t c_headerSizeV2        = 52;
 }
 }
 //!\endcond

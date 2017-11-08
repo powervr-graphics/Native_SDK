@@ -95,34 +95,33 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>pvr {</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>assets {</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">inline</span> Result textureLoad(Stream::ptr_type textureStream, TextureFileFormat type, Texture&amp; outTex)</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;{</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keywordflow">if</span> (!textureStream.get() || !textureStream-&gt;open())</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        <span class="keywordflow">return</span> Result::UnableToOpen;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    }</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    Result rslt = Result::Success;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    std::auto_ptr&lt;AssetReader&lt;Texture&gt;&gt; assetRd;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordflow">switch</span> (type)</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keywordflow">case</span> TextureFileFormat::KTX: assetRd.reset(<span class="keyword">new</span> assetReaders::TextureReaderKTX(textureStream)); <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keywordflow">case</span> TextureFileFormat::PVR: assetRd.reset(<span class="keyword">new</span> assetReaders::TextureReaderPVR(textureStream)); <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordflow">case</span> TextureFileFormat::TGA: assetRd.reset(<span class="keyword">new</span> assetReaders::TextureReaderTGA(textureStream)); <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordflow">case</span> TextureFileFormat::BMP: assetRd.reset(<span class="keyword">new</span> assetReaders::TextureReaderBMP(textureStream)); <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordflow">case</span> TextureFileFormat::DDS: assetRd.reset(<span class="keyword">new</span> assetReaders::TextureReaderDDS(textureStream)); <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordflow">default</span>: assertion(0); <span class="keywordflow">return</span> Result::UnsupportedRequest; <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    }</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    rslt = (assetRd-&gt;readAsset(outTex) ? Result::Success : Result::NotFound);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    assetRd-&gt;closeAssetStream();</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordflow">return</span> rslt;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="namespacepvr_1_1assets.html#ac88dc0e4cd5f3ddc4df51bef91e2f418">   17</a></span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code" href="namespacepvr_1_1assets.html#ac88dc0e4cd5f3ddc4df51bef91e2f418">textureLoad</a>(Stream::ptr_type&amp; textureStream, TextureFileFormat type, Texture&amp; outTex)</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;{</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keywordflow">if</span> (!textureStream.get() || !textureStream-&gt;open())</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    }</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    std::unique_ptr&lt;AssetReader&lt;Texture&gt;&gt; assetRd;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keywordflow">switch</span> (type)</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordflow">case</span> TextureFileFormat::KTX: assetRd.reset(<span class="keyword">new</span> assetReaders::TextureReaderKTX(std::move(textureStream))); <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordflow">case</span> TextureFileFormat::PVR: assetRd.reset(<span class="keyword">new</span> assetReaders::TextureReaderPVR(std::move(textureStream))); <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <span class="keywordflow">case</span> TextureFileFormat::TGA: assetRd.reset(<span class="keyword">new</span> assetReaders::TextureReaderTGA(std::move(textureStream))); <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordflow">case</span> TextureFileFormat::BMP: assetRd.reset(<span class="keyword">new</span> assetReaders::TextureReaderBMP(std::move(textureStream))); <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    <span class="keywordflow">case</span> TextureFileFormat::DDS: assetRd.reset(<span class="keyword">new</span> assetReaders::TextureReaderDDS(std::move(textureStream))); <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordflow">default</span>: assertion(0); <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    }</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordtype">bool</span> rslt = assetRd-&gt;readAsset(outTex);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    assetRd-&gt;closeAssetStream();</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">return</span> rslt;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}<span class="comment">// namespace helper</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}<span class="comment">// namespace assets</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}<span class="comment">// namespace pvr</span></div>
 <div class="ttc" id="_texture_reader_b_m_p_8h_html"><div class="ttname"><a href="_texture_reader_b_m_p_8h.html">TextureReaderBMP.h</a></div><div class="ttdoc">An experimental BMP texture reader. </div></div>
 <div class="ttc" id="_texture_reader_p_v_r_8h_html"><div class="ttname"><a href="_texture_reader_p_v_r_8h.html">TextureReaderPVR.h</a></div><div class="ttdoc">An AssetReader that reads pvr::asset::Texture objects from a PVR stream(file). Used extensively in th...</div></div>
 <div class="ttc" id="_texture_reader_t_g_a_8h_html"><div class="ttname"><a href="_texture_reader_t_g_a_8h.html">TextureReaderTGA.h</a></div><div class="ttdoc">An experimental AssetReader that reads pvr::asset::Texture objects from an TGA file. </div></div>
+<div class="ttc" id="namespacepvr_1_1assets_html_ac88dc0e4cd5f3ddc4df51bef91e2f418"><div class="ttname"><a href="namespacepvr_1_1assets.html#ac88dc0e4cd5f3ddc4df51bef91e2f418">pvr::assets::textureLoad</a></div><div class="ttdeci">bool textureLoad(Stream::ptr_type &amp;textureStream, TextureFileFormat type, Texture &amp;outTex)</div><div class="ttdoc">Load a texture from binary data. Synchronous.</div><div class="ttdef"><b>Definition:</b> TextureLoad.h:17</div></div>
 <div class="ttc" id="_asset_includes_8h_html"><div class="ttname"><a href="_asset_includes_8h.html">AssetIncludes.h</a></div><div class="ttdoc">Includes files commonly required for PVRAssets code files. Include PVRAssets.h instead to use PVRAsse...</div></div>
 <div class="ttc" id="_texture_reader_k_t_x_8h_html"><div class="ttname"><a href="_texture_reader_k_t_x_8h.html">TextureReaderKTX.h</a></div><div class="ttdoc">An experimental KTX texture reader. </div></div>
 <div class="ttc" id="_texture_reader_d_d_s_8h_html"><div class="ttname"><a href="_texture_reader_d_d_s_8h.html">TextureReaderDDS.h</a></div><div class="ttdoc">An experimental DDS texture reader. </div></div>

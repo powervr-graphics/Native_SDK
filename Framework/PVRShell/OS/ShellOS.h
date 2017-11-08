@@ -14,7 +14,7 @@ namespace platform {
 //Forward declaration of internal implementation.
 struct InternalOS;
 
-/// <summary>Implements a lot of the functionality and forwards to the platform from PVRShell. Users don't use directly,
+/// <summary>Internal class Implements a lot of the functionality and forwards to the platform from PVRShell. Don't use directly,
 /// instead use the pvr::Shell class.</summary>
 class ShellOS
 {
@@ -22,17 +22,18 @@ public:
 	/// <summary>Capabilities that may be different between platforms.</summary>
 	struct Capabilities
 	{
-		types::Capability resizable;
-		types::Capability movable;
+		Capability resizable; //!< A window with this capability can be resized while the program is running (e.g windows, X11, but not Android)
+		Capability movable; //!< A window with this capability can be moved while the program is running (e.g windows and X11, but not Android)
 	};
 
+	//!\cond NO_DOXYGEN
 	ShellData _shellData;
 	ShellOS(OSApplication instance, OSDATA osdata);
 
 	virtual ~ShellOS();
 
-	Result init(DisplayAttributes& data); // Accepts a data struct so it can overide default values
-	Result initializeWindow(DisplayAttributes& data);
+	bool init(DisplayAttributes& data); // Accepts a data struct so it can overide default values
+	bool initializeWindow(DisplayAttributes& data);
 	bool isInitialized();
 	void releaseWindow();
 
@@ -45,39 +46,35 @@ public:
 	const std::string& getWritePath() const;
 	const std::string& getApplicationName() const;
 	void setApplicationName(const std::string&);
-	Result handleOSEvents();
+	bool handleOSEvents();
 
-	static const Capabilities&	getCapabilities()
+	static const Capabilities& getCapabilities()
 	{
 		return _capabilities;
 	}
 
-	Stream* getFileStream(const std::string filename);
-<<<<<<< HEAD
-	Result popUpMessage(const tchar* const title, const tchar* const message, ...) const;
-=======
-	Result popUpMessage(const char8* const title, const char8* const message, ...) const;
->>>>>>> 1776432f... 4.3
+	bool popUpMessage(const char* const title, const char* const message, ...) const;
 
 	Shell* getShell() { return _shell.get(); }
 
 
 	void updatePointingDeviceLocation();
 protected:
-	std::auto_ptr<Shell> _shell;
+	std::unique_ptr<Shell> _shell;
 	std::string _AppName;
 	std::vector<std::string> _ReadPaths;
 	std::string _WritePath;
 
 private:
 	OSApplication _instance;
-	InternalOS*	_OSImplementation;
+	InternalOS* _OSImplementation;
 	static const Capabilities _capabilities;
+	//!\endcond
 };
-
-inline const string& ShellOS::getApplicationName() const { return _AppName; }
+//!\cond NO_DOXYGEN
+inline const std::string& ShellOS::getApplicationName() const { return _AppName; }
 inline void ShellOS::setApplicationName(const std::string& appName) { _AppName = appName; }
-inline const string& ShellOS::getDefaultReadPath() const
+inline const std::string& ShellOS::getDefaultReadPath() const
 {
 	assertion(_ReadPaths.size() != 0);
 	return _ReadPaths[0];
@@ -86,9 +83,11 @@ inline const std::vector<std::string>& ShellOS::getReadPaths() const
 {
 	return _ReadPaths;
 }
-inline const string& ShellOS::getWritePath() const
+inline const std::string& ShellOS::getWritePath() const
 {
 	return _WritePath;
 }
+//!\endcond
+
 }
 }

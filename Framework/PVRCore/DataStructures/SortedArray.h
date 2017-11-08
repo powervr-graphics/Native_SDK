@@ -1,7 +1,7 @@
 /*!
 \brief Contains a very lightweight but not automatically-growing resizeable array, and helpers to insert items sorted
 into containers.
-\file PVRCore/Base/SortedArray.h
+\file PVRCore/DataStructures/SortedArray.h
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -9,7 +9,6 @@ into containers.
 //!\cond NO_DOXYGEN
 #pragma once
 #include "PVRCore/Base/Types.h"
-#include "PVRCore/Base/Assert_.h"
 
 namespace pvr {
 
@@ -22,49 +21,65 @@ namespace pvr {
 template<typename T> class DynamicArray
 {
 	T* mydata;
-	uint32 mysize;
+	uint32_t mysize;
 public:
-	typedef T* iterator;
-	typedef const T* const_iterator;
+	typedef T* iterator;//!< An iterator to an item in the array
+	typedef const T* const_iterator;//!< A const iterator to an item in the array
 
+	/// <summary>Copy all elements between two iterators into the array. Previous contents overwritten.</summary>
+	/// <typeparam name="myiterator">Type of the iterators.</summary>
+	/// <param name="beginIt">Start iterator.</param>
+	/// <param name="endIt">End iterator.</param>
 	template<typename myiterator>
 	void assign(myiterator beginIt, myiterator endIt)
 	{
-		resize((uint32)(endIt - beginIt));
-		uint32 count = 0;
+		resize(static_cast<uint32_t>(endIt - beginIt));
+		uint32_t count = 0;
 		for (auto it = beginIt; it != endIt; ++it)
 		{
 			mydata[count++] = *it;
 		}
 	}
 
-    DynamicArray(uint32 initialsize = 0) :mydata(0), mysize(0) { if (initialsize) { resize(initialsize); } }
-    DynamicArray(const DynamicArray& rhs) : mydata(0), mysize(0)
+	/// <summary>Constructor.</summary>
+	DynamicArray(uint32_t initialsize = 0) : mydata(0), mysize(0) { if (initialsize) { resize(initialsize); } }
+	/// <summary>Copy constructor.</summary>
+	/// <param name="rhs">Item to copy.</rhs>
+	DynamicArray(const DynamicArray& rhs) : mydata(0), mysize(0)
 	{
 		resize(rhs.size());
-		for (uint32 i = 0; i < rhs.size(); ++i)
+		for (uint32_t i = 0; i < rhs.size(); ++i)
 		{
 			mydata[i] = rhs[i];
 		}
 	}
-    DynamicArray(DynamicArray&& rhs): mydata(rhs.mydata), mysize(rhs.mysize)
+	/// <summary>Move constructor.</summary>
+	/// <param name="rhs">Item to move. May be in an invalid state after this call.</rhs>
+	DynamicArray(DynamicArray&& rhs): mydata(rhs.mydata), mysize(rhs.mysize)
 	{
 		rhs.mysize = 0;
 		rhs.mydata = 0;
 	}
 
+	/// <summary>Destructor.</summary>
 	~DynamicArray() { resize(0); }
-	T& operator[](uint32 index)
+	T& operator[](uint32_t index)
 	{
-		PVR_ASSERTION(index < mysize);
+		assert(index < mysize);
 		return mydata[index];
 	}
-	const T& operator[](uint32 index) const
+	/// <summary>Indexing Operator.</summary>
+	/// <param name="index">Index</param>
+	/// <returns>Reference to the item</returns>
+	const T& operator[](uint32_t index) const
 	{
-		PVR_ASSERTION(index < mysize);
+		assert(index < mysize);
 		return mydata[index];
 	}
 
+	/// <summary>Copy Assignment Operator.</summary>
+	/// <param name="rhs">Item to copy</param>
+	/// <returns>This item</returns>
 	DynamicArray& operator=(const DynamicArray& rhs)
 	{
 		DynamicArray temp(rhs);
@@ -72,6 +87,9 @@ public:
 		return *this;
 	}
 
+	/// <summary>Move Assignment Operator.</summary>
+	/// <param name="rhs">Item to move. May be in an invalid state after this call.</param>
+	/// <returns>This item</returns>
 	DynamicArray& operator=(DynamicArray&& rhs)
 	{
 		resize(0);
@@ -79,15 +97,19 @@ public:
 		return *this;
 	}
 
+	/// <summary>Swap the contents of this dynamic array with another one.</summary>
+	/// <param name="rhs">Array with which to swap the items.
 	void swap(DynamicArray& rhs)
 	{
 		std::swap(mysize, rhs.mysize);
 		std::swap(mydata, rhs.mydata);
 	}
 
+	/// <summary>Empty this array.</summary>
 	void clear() { resize(0);}
 
-	void resize(uint32 newSize)
+	/// <summary>Resize this array. Existing items will be copied, others will be default constructed.</summary>
+	void resize(uint32_t newSize)
 	{
 		if (newSize != mysize)
 		{
@@ -96,7 +118,7 @@ public:
 			{
 				t = new T[newSize];
 			}
-			for (uint32 idx = 0; idx < newSize && idx < mysize; ++idx)
+			for (uint32_t idx = 0; idx < newSize && idx < mysize; ++idx)
 			{
 				t[idx] = std::move(mydata[idx]);
 			}
@@ -106,14 +128,28 @@ public:
 		}
 	}
 
+	/// <summary>Pointer to the underlying C-array.</summary>
+	/// <returns>The underlying C-array</returns>
 	T* data() { return mydata; }
+	/// <summary>Pointer to the underlying C-array.</summary>
+	/// <returns>The underlying C-array</returns>
 	const T* data() const { return mydata; }
+	/// <summary>Get an iterator to the first item of this array</summary>
+	/// <returns>An iterator to the first item of the array</returns>
 	iterator begin() { return mydata; }
+	/// <summary>Get an iterator to the first item of this array</summary>
+	/// <returns>An iterator to the first item of the array</returns>
 	const_iterator begin() const { return mydata; }
+	/// <summary>Get an iterator to after the last item of this array</summary>
+	/// <returns>An iterator to to after the last item of the array</returns>
 	iterator end() { return mydata + mysize; }
+	/// <summary>Get an iterator to after the last item of this array</summary>
+	/// <returns>An iterator to to after the last item of the array</returns>
 	const_iterator end() const { return mydata + mysize; }
 
-	uint32 size() const { return mysize; }
+	/// <summary>Get the number of items in the array</summary>
+	/// <returns>The number of items in the array</returns>
+	uint32_t size() const { return mysize; }
 };
 
 
@@ -130,9 +166,9 @@ size_t insertSorted(container& cont, typename container::iterator begin, typenam
                     const val& item, const cmp& compare)
 {
 	typename container::iterator it = std::upper_bound(begin, end, item, compare);
-	int64 offset = int64(it - begin);
+	int64_t offset = static_cast<int64_t>(it - begin);
 	cont.insert(it, item);
-	return (size_t)offset;
+	return static_cast<size_t>(offset);
 }
 
 /// <summary>Insert sorted element in to the container</summary>
@@ -174,7 +210,7 @@ template<typename container, typename val, typename cmp>
 size_t insertSorted_overwrite(container& cont, typename container::iterator begin, typename container::iterator end, const val& item, const cmp& compare)
 {
 	typename container::iterator it = std::lower_bound(begin, end, item, compare);
-	int64 offset = int64(it - begin);
+	int64_t offset = static_cast<int64_t>(it - begin);
 	if (it != end && !(compare(*it, item) || compare(item, *it)))
 	{
 		*it = item;
@@ -183,7 +219,7 @@ size_t insertSorted_overwrite(container& cont, typename container::iterator begi
 	{
 		cont.insert(it, item);
 	}
-	return (size_t)offset;
+	return static_cast<size_t>(offset);
 }
 
 /// <summary>Insert sorted element, Overwrite if element exist in the container</summary>

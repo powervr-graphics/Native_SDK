@@ -1,6 +1,6 @@
 /*!
 \brief Implementation of the FileStream class.
-\file PVRCore/FileStream.cpp
+\file PVRCore/IO/FileStream.cpp
 \author PowerVR by Imagination, Developer Technology Team
 \copyright Copyright (c) Imagination Technologies Limited.
 */
@@ -11,7 +11,7 @@
 #include "PVRCore/Log.h"
 using std::string;
 namespace pvr {
-FileStream::FileStream(const string& filePath, const string& flags)
+FileStream::FileStream(const std::string& filePath, const std::string& flags)
 	: Stream(filePath), _file(NULL), _flags(flags)
 {
 	if (_flags.find('r') != _flags.npos || _flags.find('+') != _flags.npos)
@@ -67,12 +67,12 @@ void FileStream::close()
 {
 	if (_file && fclose(_file) == EOF)
 	{
-		Log(Log.Warning, "[Filestream::close] Failure closing file.");
+		Log(LogLevel::Warning, "[Filestream::close] Failure closing file.");
 	}
 	_file = 0;
 }
 
-bool FileStream::read(size_t elementSize, size_t elementCount, void* const outBuffer, size_t& outDataRead) const
+bool FileStream::read(size_t elementSize, size_t numElements, void* const outBuffer, size_t& outDataRead) const
 {
 	bool result = true;
 	outDataRead = 0;
@@ -80,12 +80,12 @@ bool FileStream::read(size_t elementSize, size_t elementCount, void* const outBu
 	{
 		if (_isReadable)
 		{
-			outDataRead = fread(outBuffer, elementSize, elementCount, _file);
-			if (outDataRead != elementCount)
+			outDataRead = fread(outBuffer, elementSize, numElements, _file);
+			if (outDataRead != numElements)
 			{
 				if (feof(_file) != 0)
 				{
-					Log(Log.Debug, "[Filestream::read] Was attempting to read past the end of stream ");
+					Log(LogLevel::Debug, "[Filestream::read] Was attempting to read past the end of stream ");
 					result = true;
 				}
 				else
@@ -126,7 +126,7 @@ bool FileStream::write(size_t size, size_t count, const void* data, size_t& data
 			{
 				if (feof(_file) != 0)
 				{
-					Log(Log.Debug, "[Filestream::read] Was attempting to write past the end of stream ");
+					Log(LogLevel::Debug, "[Filestream::read] Was attempting to write past the end of stream ");
 					result = false;
 				}
 				else
@@ -161,7 +161,7 @@ bool FileStream::seek(long offset, SeekOrigin origin) const
 	{
 		if (offset)
 		{
-			Log(Log.Error, "[FileStream::seek] Attempt to seek from empty stream");
+			Log(LogLevel::Error, "[FileStream::seek] Attempt to seek from empty stream");
 			result = false;
 		}
 
@@ -170,7 +170,7 @@ bool FileStream::seek(long offset, SeekOrigin origin) const
 	{
 		if (fseek(_file, offset, static_cast<int>(origin)) != 0)
 		{
-			Log(Log.Debug, "[Filestream::read] Was attempting to seek past the end of stream ");
+			Log(LogLevel::Debug, "[Filestream::read] Was attempting to seek past the end of stream ");
 			result = false;
 		}
 	}

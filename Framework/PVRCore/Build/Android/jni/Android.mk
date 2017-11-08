@@ -6,12 +6,6 @@ include $(CLEAR_VARS)
 LOCAL_MODULE      := PVRCore
 LOCAL_SRC_FILES := 	$(notdir $(wildcard $(LOCAL_PATH)/*.cpp)) \
                     $(addprefix Android/, $(notdir $(wildcard $(LOCAL_PATH)/Android/*.cpp))) \
-<<<<<<< HEAD
-                    ../../External/pugixml/pugixml.cpp
-
-LOCAL_CFLAGS := $(SDK_BUILD_FLAGS) -DPUGIXML_NO_EXCEPTIONS
-LOCAL_C_INCLUDES := $(PVRFRAMEWORKDIR) $(PVRFRAMEWORKDIR)/../Builds/Include/
-=======
                     $(addprefix Base/, $(notdir $(wildcard $(LOCAL_PATH)/Base/*.cpp))) \
                     $(addprefix DataStructures/, $(notdir $(wildcard $(LOCAL_PATH)/DataStructures/*.cpp))) \
                     $(addprefix Interfaces/, $(notdir $(wildcard $(LOCAL_PATH)/Interfaces/*.cpp))) \
@@ -24,6 +18,5 @@ LOCAL_C_INCLUDES := $(PVRFRAMEWORKDIR) $(PVRFRAMEWORKDIR)/../Builds/Include/
 
 LOCAL_CFLAGS := $(SDK_BUILD_FLAGS) -DPUGIXML_NO_EXCEPTIONS
 LOCAL_C_INCLUDES := $(PVRSDKDIR)/Framework/ $(PVRSDKDIR)/Builds/Include/
->>>>>>> 1776432f... 4.3
 
 include $(BUILD_STATIC_LIBRARY)

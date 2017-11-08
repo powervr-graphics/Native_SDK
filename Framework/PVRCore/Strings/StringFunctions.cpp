@@ -9,7 +9,7 @@
 
 namespace pvr {
 namespace strings {
-void ignoreWhitespace(char8** pszString)
+void ignoreWhitespace(char** pszString)
 {
 	while (*pszString[0] == '\t' ||
 	       *pszString[0] == '\n' ||
@@ -20,7 +20,7 @@ void ignoreWhitespace(char8** pszString)
 	}
 }
 
-char8* readEOLToken(char8* pToken)
+char* readEOLToken(char* pToken)
 {
 	char* pReturn = NULL;
 
@@ -34,7 +34,7 @@ char8* readEOLToken(char8* pToken)
 	return pReturn;
 }
 
-bool concatenateLinesUntil(string& Out, int& nLine, const std::vector<string>& ppszLines, unsigned int nLimit,
+bool concatenateLinesUntil(std::string& Out, int& nLine, const std::vector<std::string>& ppszLines, unsigned int nLimit,
                            const char* pszEnd)
 {
 	unsigned int	i, j;
