@@ -68,7 +68,7 @@ struct SurfaceData
 	wl_pointer*			wlPointer;
 	wl_shell_surface*   wlShellSurface;
 
-	SurfaceData() {}
+	SurfaceData(){}
 };
 #endif
 
