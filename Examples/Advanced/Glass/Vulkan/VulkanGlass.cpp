@@ -305,7 +305,9 @@ struct PassSkyBox
 
 			writeDescSets[i * numSwapchain + 1]
 			.set(VkDescriptorType::e_UNIFORM_BUFFER, _descriptorSets[i], 1)
-			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer, 0, _bufferMemoryView.getDynamicSliceSize()));
+			.setBufferInfo(0, pvrvk::DescriptorBufferInfo(_buffer,
+			    _bufferMemoryView.getDynamicSliceOffset(i),
+			    _bufferMemoryView.getDynamicSliceSize()));
 		}
 		device->updateDescriptorSets(writeDescSets, numSwapchain * 2, nullptr, 0);
 		return true;
@@ -580,7 +582,7 @@ struct PassBalloon : public IModelPass
 	}
 
 	void recordCommands(pvrvk::Device& device,
-	                    pvr::Multi<pvrvk::Framebuffer>& framebuffers, pvrvk::CommandPool& commandPool)
+	    pvr::Multi<pvrvk::Framebuffer>& framebuffers, pvrvk::CommandPool& commandPool)
 	{
 		for (uint32_t i = 0; i < framebuffers.size(); ++i)
 		{
@@ -588,7 +590,8 @@ struct PassBalloon : public IModelPass
 			_secondaryCommandBuffers[i]->begin(framebuffers[i], 0);
 
 			recordCommandsIntoSecondary(_secondaryCommandBuffers[i],
-			                            _bufferMemoryView, _matrixDescriptorSets[i], 0);
+			    _bufferMemoryView, _matrixDescriptorSets[i],
+			    _bufferMemoryView.getDynamicSliceOffset(i * NumBalloon));
 
 			_secondaryCommandBuffers[i]->end();
 		}
@@ -902,7 +905,7 @@ public:
 			_passes[i].setPipeline(_pipelines[i]);
 		}
 
-		recordCommands(device, commandPool, numSwapchain);
+		recordCommands(commandPool, numSwapchain);
 
 		return true;
 	}
@@ -932,10 +935,12 @@ public:
 		{
 			// left paraboloid
 			{
-				uint32_t dynamicSlice = i + mappedDynamicSlice;
+				const uint32_t dynamicSlice = i + mappedDynamicSlice;
 				modelView = mViewLeft * balloonModelMatrices[i];
 				_bufferMemoryView.getElement(UboMV, 0, dynamicSlice).setValue(modelView);
-				_bufferMemoryView.getElement(UboLightDir, 0, dynamicSlice).setValue(glm::normalize(glm::inverse(balloonModelMatrices[i]) * glm::vec4(_passes[i].LightDir, 1.0f)));
+				_bufferMemoryView.getElement(UboLightDir, 0, dynamicSlice).setValue(
+				    glm::normalize(glm::inverse(balloonModelMatrices[i]) *
+				    glm::vec4(_passes[i].LightDir, 1.0f)));
 
 				// Calculate and set the model space eye position
 				_bufferMemoryView.getElement(UboEyePos, 0, dynamicSlice).setValue(glm::inverse(modelView) *
@@ -945,7 +950,7 @@ public:
 			}
 			// right paraboloid
 			{
-				uint32_t dynamicSlice = NumParabloid + i + swapchain * PassBalloon::NumBalloon;
+				const uint32_t dynamicSlice = i + PassBalloon::NumBalloon + mappedDynamicSlice;
 				modelView = mViewRight * balloonModelMatrices[i];
 				_bufferMemoryView.getElement(UboMV, 0, dynamicSlice).setValue(modelView);
 				_bufferMemoryView.getElement(UboLightDir, 0, dynamicSlice).setValue(glm::normalize(glm::inverse(balloonModelMatrices[i]) *
@@ -966,8 +971,7 @@ public:
 		return _secondaryCommandBuffers[swapchain];
 	}
 
-	void recordCommands(pvrvk::Device& device,
-	                    pvrvk::CommandPool& commandPool, uint32_t swapchain)
+	void recordCommands(pvrvk::CommandPool& commandPool, uint32_t swapchain)
 	{
 		for (uint32_t i = 0; i < swapchain; ++i)
 		{
@@ -976,10 +980,14 @@ public:
 			_secondaryCommandBuffers[i]->begin(_framebuffer[i], 0);
 
 			// left paraboloid
+			uint32_t baseOffset = _bufferMemoryView.getDynamicSliceOffset(
+			    i * PassBalloon::NumBalloon * NumParabloid);
 			_passes[ParabolidLeft].recordCommandsIntoSecondary(_secondaryCommandBuffers[i],
-			    _bufferMemoryView, _matrixDescriptorSets[i], 0);
+			    _bufferMemoryView, _matrixDescriptorSets[i], baseOffset);
 			// right paraboloid
-			uint32_t baseOffset = _bufferMemoryView.getDynamicSliceOffset(NumParabloid);
+
+			baseOffset = _bufferMemoryView.getDynamicSliceOffset(
+			    i * PassBalloon::NumBalloon * NumParabloid + PassBalloon::NumBalloon);
 			_passes[ParabolidRight].recordCommandsIntoSecondary(_secondaryCommandBuffers[i],
 			    _bufferMemoryView, _matrixDescriptorSets[i], baseOffset);
 
@@ -1484,7 +1492,7 @@ pvr::Result VulkanGlass::initView()
 	_deviceResources->pipeCache = _deviceResources->device->createPipelineCache(0, 0, 0);
 
 
-	std::vector<pvr::utils::ImageUploadResults> imageUploads;
+	std::vector<pvr::utils::ImageUploadResults> imageUploads(0);
 
 	// set up the passes
 	if (!_deviceResources->passSkyBox.init(*this, _deviceResources->device,
