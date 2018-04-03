@@ -361,9 +361,7 @@ libraries, but you can choose to use them differently, if desired.
 PVRCore
 -------
 
-.. rubric:: **`View source code
-   documentation <./Framework/PVRCore/Documentation/Index.html>`__**
-   :name: view-source-code-documentation
+`View source code <./Framework/PVRCore/>`__
 
 This is the supporting code of the library to leverage for your own use.
 PVRCore is also used by the rest of the Framework and because of that,
@@ -373,9 +371,7 @@ PVRCore.
 PVRAssets
 ---------
 
-.. rubric:: **`View source code
-   documentation <./Framework/PVRAssets/Documentation/Index.html>`__**
-   :name: view-source-code-documentation-1
+`View source code <./Framework/PVRAssets/>`__
 
 This is the Framework’s asset code. It includes classes and helpers for
 scene representation, asset loading code, etc. PVRAssets supports the
@@ -385,9 +381,7 @@ support for a number of texture formats.
 PVRShell
 --------
 
-.. rubric:: **`View source code
-   documentation <./Framework/PVRShell/Documentation/Index.html>`__**
-   :name: view-source-code-documentation-2
+`View source code <./Framework/PVRShell/>`__
 
 This is the native system abstraction (event loops, surfaces, windows,
 etc.) which greatly simplifies cross-platform compatibility.
@@ -397,9 +391,7 @@ cross-platform development.
 PVRVk
 -----
 
-.. rubric:: **`View source code
-   documentation <./Framework/PVRVk/Documentation/Index.html>`__**
-   :name: view-source-code-documentation-3
+`View source code <./Framework/PVRVk/>`__
 
 This is a Vulkan C++ wrapper sporting reference-counted objects with
 lifetime management, strongly typed enums and other niceties.
@@ -407,9 +399,7 @@ lifetime management, strongly typed enums and other niceties.
 PVRUtils
 --------
 
-.. rubric:: **`View source code
-   documentation <../../Framework/PVRUtils/Documentation/Index.html>`__**
-   :name: view-source-code-documentation-4
+`View source code <./Framework/PVRUtils/>`__
 
 This is actually two libraries (the OpenGL ES version and the Vulkan
 version) providing very convenient helpers and wrappers, simplifying
@@ -423,9 +413,7 @@ differences of the two APIs.
 PVRCamera
 ---------
 
-.. rubric:: **`View source code
-   documentation <./Framework/PVRCamera/Documentation/Index.html>`__**
-   :name: view-source-code-documentation-5
+`View source code <./Framework/PVRCamera/>`__
 
 This is the code for interfacing with the camera of mobile platforms. A
 "dummy" desktop version is provided to ease development.
