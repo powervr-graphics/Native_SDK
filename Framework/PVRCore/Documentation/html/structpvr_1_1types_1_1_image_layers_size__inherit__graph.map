@@ -1,5 +1,0 @@
-<map id="pvr::types::ImageLayersSize" name="pvr::types::ImageLayersSize">
-<area shape="rect" id="node2" href="$structpvr_1_1types_1_1_image_area_size.html" title="Represents the geometric size (number of rows/columns/slices in x&#45;y&#45;z) and number of array and mipmap..." alt="" coords="5,88,181,115"/>
-<area shape="rect" id="node4" href="$structpvr_1_1types_1_1_image_subresource_range.html" title="Represents a subresource range: A specified range of Array Layers and Mipmap levels of specific aspec..." alt="" coords="207,81,404,122"/>
-<area shape="rect" id="node3" href="$structpvr_1_1types_1_1_image_area.html" title="Represents an exact range on an image: both a range of array and mipmap layers, and a geometric range..." alt="" coords="18,171,168,197"/>
-</map>

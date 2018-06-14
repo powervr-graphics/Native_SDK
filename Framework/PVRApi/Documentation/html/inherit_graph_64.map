@@ -1,8 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<<<<<<< HEAD
-<area shape="rect" id="node1" href="$structpvr_1_1api_1_1pipeline_creation_1_1_input_assembler_state_create_param.html" title="Add Input Assembler configuration to this buffer object (primitive topology, vertex restart..." alt="" coords="5,5,232,46"/>
-=======
-<area shape="rect" id="node1" href="$structpvr_1_1api_1_1_vertex_attribute_info.html" title="Contains a full description of a Vertex Attribute: Index, format, number of elements, offset in the buffer, optionally name. All values (except attributeName) must be set explicitly." alt="" coords="6,12,189,39"/>
-<area shape="rect" id="node2" href="$structpvr_1_1api_1_1_vertex_attribute_info_with_binding.html" title="A container struct carrying Vertex Attribute information (vertex layout, plus binding point) ..." alt="" coords="237,5,397,46"/>
->>>>>>> 1776432f... 4.3
-</map>

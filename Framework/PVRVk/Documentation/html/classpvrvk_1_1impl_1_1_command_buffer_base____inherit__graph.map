@@ -1,4 +1,0 @@
-<map id="pvrvk::impl::CommandBufferBase_" name="pvrvk::impl::CommandBufferBase_">
-<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_command_buffer__.html" title="Contains all the commands and states that need to be recorded for later submission to the gpu includi..." alt="" coords="5,104,200,131"/>
-<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_secondary_command_buffer__.html" title="Contains all the commands and states that need to be submitted to the gpu, including pipeline..." alt="" coords="225,97,441,138"/>
-</map>

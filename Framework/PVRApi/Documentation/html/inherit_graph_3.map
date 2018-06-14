@@ -1,8 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<<<<<<< HEAD
-<area shape="rect" id="node1" href="$classpvr_1_1api_1_1_api_command.html" title="Interface for Dynamic commands which can be queued into a CommandBuffer. In specific implementations..." alt="" coords="5,5,155,32"/>
-<area shape="rect" id="node2" href="$classpvr_1_1api_1_1_pipeline_barrier.html" title="A memory barrier into the command stream. Used to signify that some types of pending operations from ..." alt="" coords="203,5,357,32"/>
-=======
-<area shape="rect" id="node1" href="$classpvr_1_1api_1_1_compute_pipeline__.html" title="A configuration of the Compute Pipeline which must be bound before launching a Compute operation..." alt="" coords="5,5,184,32"/>
->>>>>>> 1776432f... 4.3
-</map>

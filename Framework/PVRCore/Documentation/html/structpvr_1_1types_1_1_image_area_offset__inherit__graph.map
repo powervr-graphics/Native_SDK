@@ -1,6 +1,0 @@
-<map id="pvr::types::ImageAreaOffset" name="pvr::types::ImageAreaOffset">
-<area shape="rect" id="node5" href="$structpvr_1_1types_1_1_image_area.html" title="Represents an exact range on an image: both a range of array and mipmap layers, and a geometric range..." alt="" coords="109,245,259,272"/>
-<area shape="rect" id="node2" href="$structpvr_1_1types_1_1_image_subresource.html" title="Describes a single &quot;layer&quot; of an image: a single array layer of a single mip level, or the offset of a layer range." alt="" coords="5,96,203,123"/>
-<area shape="rect" id="node3" href="$structpvr_1_1types_1_1_generic_offset3_d.html" title="The GenericOffset3D contains the offsets in 3 dimension (offsetX, offsetY, offsetZ)" alt="" coords="227,96,300,123"/>
-<area shape="rect" id="node4" href="$structpvr_1_1types_1_1_generic_offset2_d.html" title="pvr::types::GenericOffset2\lD\&lt; Txy \&gt;" alt="" coords="176,6,352,47"/>
-</map>

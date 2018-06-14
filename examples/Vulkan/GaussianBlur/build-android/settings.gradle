@@ -1,0 +1,14 @@
+rootProject.name='VulkanGaussianBlur'
+if (!hasProperty('NO_FRAMEWORK_BUILD')) {
+	print "=== VulkanGaussianBlur: Building framework projects. Pass -PNO_FRAMEWORK_BUILD to the gradle command line to skip building ==="
+	include('PVRCore')
+	project(':PVRCore').projectDir=file('../../../../framework/PVRCore/build-android')
+	include('PVRAssets')
+	project(':PVRAssets').projectDir=file('../../../../framework/PVRAssets/build-android')
+	include('PVRVk')
+	project(':PVRVk').projectDir=file('../../../../framework/PVRVk/build-android')
+	include('PVRShell')
+	project(':PVRShell').projectDir=file('../../../../framework/PVRShell/build-android')
+	include('PVRUtilsVk')
+	project(':PVRUtilsVk').projectDir=file('../../../../framework/PVRUtils/Vulkan/build-android')
+}

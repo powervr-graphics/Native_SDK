@@ -1,5 +1,0 @@
-<map id="pvr::BufferStream" name="pvr::BufferStream">
-<area shape="rect" id="node3" href="$classpvr_1_1_file_wrap_stream.html" title="Represents a stream that can be created from a file on which the FileWrap utility has been used to cr..." alt="" coords="5,155,147,181"/>
-<area shape="rect" id="node4" href="$classpvr_1_1_windows_resource_stream.html" title="A Stream implementation that is used to access resources built in a MS Windows executable. " alt="" coords="171,155,369,181"/>
-<area shape="rect" id="node2" href="$classpvr_1_1_stream.html" title="This class is used to abstract streams of data (files, blocks of memory, resources etc..." alt="" coords="128,5,219,32"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="pvr::types::ImageAreaSize" name="pvr::types::ImageAreaSize">
-<area shape="rect" id="node5" href="$structpvr_1_1types_1_1_image_area.html" title="Represents an exact range on an image: both a range of array and mipmap layers, and a geometric range..." alt="" coords="98,245,248,272"/>
-<area shape="rect" id="node2" href="$structpvr_1_1types_1_1_generic_extent3_d.html" title="Contains a 3D integer size (width, height, depth)" alt="" coords="56,96,132,123"/>
-<area shape="rect" id="node3" href="$structpvr_1_1types_1_1_generic_extent2_d.html" title="pvr::types::GenericExtent2\lD\&lt; Txy \&gt;" alt="" coords="5,6,184,47"/>
-<area shape="rect" id="node4" href="$structpvr_1_1types_1_1_image_layers_size.html" title="Structure describes the number of array levels and mip levels an image contains" alt="" coords="157,96,347,123"/>
-</map>

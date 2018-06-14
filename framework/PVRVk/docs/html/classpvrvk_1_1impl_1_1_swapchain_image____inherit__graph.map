@@ -1,0 +1,6 @@
+<map id="pvrvk::impl::SwapchainImage_" name="pvrvk::impl::SwapchainImage_">
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_image__.html" title="ImageVk implementation that wraps the Vulkan Texture object" alt="" coords="449,45,586,72"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkImage \&gt;" alt="" coords="227,5,400,46"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkImage \&gt;" alt="" coords="5,5,179,46"/>
+<area shape="rect" id="node5" href="$classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; Image_ \&gt;" alt="" coords="227,70,400,111"/>
+</map>

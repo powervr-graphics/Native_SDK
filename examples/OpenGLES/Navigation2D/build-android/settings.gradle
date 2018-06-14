@@ -1,0 +1,12 @@
+rootProject.name='OpenGLESNavigation2D'
+if (!hasProperty('NO_FRAMEWORK_BUILD')) {
+	print "=== OpenGLESNavigation2D: Building framework projects. Pass -PNO_FRAMEWORK_BUILD to the gradle command line to skip building ==="
+	include('PVRCore')
+	project(':PVRCore').projectDir=file('../../../../framework/PVRCore/build-android')
+	include('PVRAssets')
+	project(':PVRAssets').projectDir=file('../../../../framework/PVRAssets/build-android')
+	include('PVRShell')
+	project(':PVRShell').projectDir=file('../../../../framework/PVRShell/build-android')
+	include('PVRUtilsGles')
+	project(':PVRUtilsGles').projectDir=file('../../../../framework/PVRUtils/OpenGLES/build-android')
+}

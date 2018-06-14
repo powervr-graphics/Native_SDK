@@ -1,4 +1,0 @@
-<map id="pvrvk::ImageAreaOffset" name="pvrvk::ImageAreaOffset">
-<area shape="rect" id="node2" href="$structpvrvk_1_1_image_subresource.html" title="Describes a portion of an image (aspectmask, mip level and array level)" alt="" coords="5,80,176,107"/>
-<area shape="rect" id="node4" href="$structpvrvk_1_1_offset3_d.html" title="Structure containing 3&#45;dimensional offset data, x, y and z" alt="" coords="200,80,315,107"/>
-</map>

@@ -1,0 +1,5 @@
+<map id="pvrvk::impl::DisplayPlaneSurface_" name="pvrvk::impl::DisplayPlaneSurface_">
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_surface__.html" title="A surface represents a renderable part of the &quot;screen&quot;, e.g. the inside part of the window..." alt="" coords="23,187,169,213"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_instance_object_handle.html" title="pvrvk::impl::InstanceObject\lHandle\&lt; VkSurfaceKHR \&gt;" alt="" coords="5,97,187,138"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkSurfaceKHR \&gt;" alt="" coords="9,6,183,47"/>
+</map>

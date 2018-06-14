@@ -1,0 +1,5 @@
+<map id="pvrvk::impl::IDeviceMemory_" name="pvrvk::impl::IDeviceMemory_">
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_memory__.html" title="VkDeviceMemory wrapper" alt="" coords="7,261,196,288"/>
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkDeviceMemory \&gt;" alt="" coords="6,97,196,138"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkDeviceMemory \&gt;" alt="" coords="15,6,188,47"/>
+</map>
