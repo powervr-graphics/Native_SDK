@@ -2,7 +2,7 @@
 DeferredShadingPFX
 ==================
 
-.. figure:: ./DeferredShading.png
+.. figure:: ./DeferredShadingPFX.png
 
 Duplicates the DeferredShading example using simple PFX scene description to describe this complex rendering scenario
 
