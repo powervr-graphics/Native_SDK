@@ -1,0 +1,13 @@
+<map id="/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRShell/EntryPoint" name="/usr/buildxl/buildroot/sdk/branch/SDK/framework/PVRShell/EntryPoint">
+<area shape="rect" id="node2" href="dir_8f964c45febcc1be9f690b8be6dc8647.html" title="android_main" alt="" coords="541,63,640,111"/>
+<area shape="rect" id="node7" href="dir_4d81804326609fe38d4f3708fe803a67.html" title="OS" alt="" coords="445,159,517,207"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000004_000009.html" title="1" alt="" coords="523,146,531,161"/>
+<area shape="rect" id="node3" href="dir_1af1b71a6a869f2c8dada24e504f707b.html" title="main" alt="" coords="445,63,517,111"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000005_000009.html" title="1" alt="" coords="486,133,494,148"/>
+<area shape="rect" id="node4" href="dir_e3ea69f77f2139521fc384f8e6a3a41d.html" title="NSApplicationMain" alt="" coords="288,63,421,111"/>
+<area shape="rect" id="node5" href="dir_3752b1f0234bd2b57d50f8e30ecc5b32.html" title="UIApplicationMain" alt="" coords="136,63,264,111"/>
+<area shape="rect" id="node6" href="dir_27cfba9a583289bb99dceaebbb8de208.html" title="WinMain" alt="" coords="38,63,111,111"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000006_000009.html" title="2" alt="" coords="424,162,432,177"/>
+<area shape="rect" id="clust2" href="dir_025b79e313285bab853f36b07cf652e9.html" alt="" coords="27,52,757,121"/>
+<area shape="rect" id="clust1" href="dir_d34444663f62b3aba055917734708fc7.html" title="PVRShell" alt="" coords="16,16,768,132"/>
+</map>

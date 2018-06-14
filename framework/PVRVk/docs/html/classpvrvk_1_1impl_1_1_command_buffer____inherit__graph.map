@@ -1,0 +1,6 @@
+<map id="pvrvk::impl::CommandBuffer_" name="pvrvk::impl::CommandBuffer_">
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_command_buffer_base__.html" title="Contains all the commands and states that need to be recorded for later submission to the gpu includi..." alt="" coords="531,38,720,79"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkCommandBuffer \&gt;" alt="" coords="255,5,454,46"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkCommandBuffer \&gt;" alt="" coords="5,5,179,46"/>
+<area shape="rect" id="node5" href="$classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; CommandBufferBase_ \&gt;" alt="" coords="227,70,483,111"/>
+</map>

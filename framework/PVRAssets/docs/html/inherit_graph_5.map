@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$structpvr_1_1assets_1_1effect_1_1_buffer_definition.html" title="Information about a Buffer" alt="" coords="183,5,311,46"/>
+<area shape="rect" id="node3" href="$structpvr_1_1assets_1_1effect_1_1_pipeline_definition.html" title="A definition of a pipeline object/configuration." alt="" coords="181,70,312,111"/>
+<area shape="rect" id="node4" href="$structpvr_1_1assets_1_1effect_1_1_shader.html" title="Store effect data from the shader block." alt="" coords="183,135,311,177"/>
+<area shape="rect" id="node5" href="$structpvr_1_1assets_1_1effect_1_1_texture_definition.html" title="Stores effect texture information." alt="" coords="182,201,311,242"/>
+</map>

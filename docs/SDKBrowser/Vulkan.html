@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>The PowerVR SDK Browser</title>
+	<meta charset="UTF-8" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="image/png" href="./images/img-icon.png">
+</head>
+
+<body>
+	<div id="GlobalHeaderContainer">
+		<div id="GlobalHeader">
+			<div class="logo">
+				<a href="http://www.powervrinsider.com" target="_blank"><img src="./images/PVRlogo.png" width="40%" height="40%" /></a>
+            </div>
+			<div class="sitetitle">PowerVR SDK Browser</div>
+		</div>
+	</div>
+	<div id="NavContainer">
+		<nav>
+			<div class="navlink">
+				<a href="Home.html">Home</a>
+			</div>
+			<div class="navlink">
+				<a href="GettingStarted.html">Getting Started</a>
+			</div>
+			<div class="navlink">
+				<a href="Examples.html" class="current">Examples</a>
+			</div>
+			<div class="navlink">
+				<a href="Framework.html">Framework</a>
+			</div>
+			<div class="navlink">
+				<a href="Documentation.html">Documentation</a>
+			</div>
+			<div class="navlink">
+				<a href="PowerVRTools.html">PowerVR Tools</a>
+			</div>
+			<div class="navlink">
+				<a href="Licence.html">EULA</a>
+			</div>
+			<div class="navlink">
+				<a href="Contact.html">Contact Us</a>
+			</div>
+		</nav>
+	</div>
+
+<!--API_TAB-->
+<div id="SubNavContainer"><nav><div class="subnavlink"><a href="./OpenGLES.html">OpenGL ES 2.0, 3.x</a></div>
+<div class="subnavlink"><a href="./Vulkan.html">Vulkan</a></div>
+</nav></div>
+    <div class="content">
+        <div id="Section" class="section">
+<!--API_DESCRIPTION-->
+<h1>Vulkan Examples</h1>
+<p>
+Vulkan is a new API designed for portability across multiple platforms including desktop and mobile GPU architectures. Vulkan minimizes driver overhead to produce optimal graphics and compute performance, all whilst providing the direct GPU control that modern advanced game applications require. It also generates GPU work in parallel using numerous CPU cores, giving it a distinct advantage over OpenGL, and making it particularly useful for eliminating bottlenecks. The layered design of Vulkan enables a common, extensible architecture to install tool layers for code validation, debugging and profiling, without impacting production performance. 
+</p>
+</Vulkan>
+
+<!--EXAMPLE_TEMPLATE-->
+
+<p id="HelloAPI">
+	<div class="title">
+		<a href="../../examples/Vulkan/01_HelloAPI/HelloAPI.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/01_HelloAPI/HelloAPI.png" alt="HelloAPI" /></a>
+		<input type="checkbox" id="HelloAPIFull2">
+			<label for="HelloAPIFull2" title="Click for more information"><h3>HelloAPI</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Draw a basic triangle to the screen.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>A basic tutorial that guides the user, step-by-step, through the process of initializing a window using the "raw" API, (Vulkan or OpenGL ES 2), drawing a triangle with a simple shader, and then terminating the window (depending on the platform, either after a few seconds, or when the user closes the window).
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/01_HelloAPI/Vulkan" target="_blank">HelloAPI Source</a>  |  <a href="../../examples/Vulkan/01_HelloAPI/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="IntroducingPVRShell">
+	<div class="title">
+		<a href="../../examples/Vulkan/02_IntroducingPVRShell/IntroducingPVRShell.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/02_IntroducingPVRShell/IntroducingPVRShell.png" alt="IntroducingPVRShell" /></a>
+		<input type="checkbox" id="IntroducingPVRShellFull2">
+			<label for="IntroducingPVRShellFull2" title="Click for more information"><h3>IntroducingPVRShell</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>This training course introduces the PVRShell library.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>This demo shows basic use of the PVRShell library. The PowerVR Shell handles all OS specific initialisation code, and has several built in command line features which allow for the specifying of attributes such as window width/height, quitting after a number of frames, and others. When using the PVR Shell, the application uses the class 'pvr::Shell' as its base class, and is constructed and returned from a 'pvr::newDemo' function.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/02_IntroducingPVRShell//VulkanIntroducingPVRShell.cpp" target="_blank">VulkanIntroducingPVRShell.cpp</a>  |  <a href="../../examples/Vulkan/02_IntroducingPVRShell/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="IntroducingPVRUtils">
+	<div class="title">
+		<a href="../../examples/Vulkan/03_IntroducingPVRUtils/IntroducingPVRUtils.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/03_IntroducingPVRUtils/IntroducingPVRUtils.png" alt="IntroducingPVRUtils" /></a>
+		<input type="checkbox" id="IntroducingPVRUtilsFull2">
+			<label for="IntroducingPVRUtilsFull2" title="Click for more information"><h3>IntroducingPVRUtils</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Render a .pod scene using a a simple vertex and fragment shader making use of the PVRUtils library for various utility functions.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>This training course demonstrates how to make the most of the PVRUtils library for handling various api agnostic utility functions such as loading shaders and creating buffers. Various api specific utility functions are also provided such as the OGLES specific EGL context creation and Vulkan swapchain and instance creation helper. The PVRUtils library is also used to display simple text on screen.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/03_IntroducingPVRUtils//VulkanIntroducingPVRUtils.cpp" target="_blank">VulkanIntroducingPVRUtils.cpp</a>  |  <a href="../../examples/Vulkan/03_IntroducingPVRUtils/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="IntroducingUIRenderer">
+	<div class="title">
+		<a href="../../examples/Vulkan/04_IntroducingUIRenderer/IntroducingUIRenderer.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/04_IntroducingUIRenderer/IntroducingUIRenderer.png" alt="IntroducingUIRenderer" /></a>
+		<input type="checkbox" id="IntroducingUIRendererFull2">
+			<label for="IntroducingUIRendererFull2" title="Click for more information"><h3>IntroducingUIRenderer</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>This example introduces the UIRenderer from the PVRUtils library to do advanced Text tasks.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>The UIRenderer allows the user to create "Sprites" (2D elements) which can be grouped in 2D and/or 3D groups to be displayed
+as UI's or world text. 2D transformations (pixel and/or NDC coordinates) both single and in a group, anchoring on different 
+parts of the screen or the group and 3D transformations of groups of sprites are all possible.
+In this example, UIRendererer is used to display images and Unicode text, screen aligned and with 3D transformations. 
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/04_IntroducingUIRenderer//VulkanIntroducingUIRenderer.cpp" target="_blank">VulkanIntroducingUIRenderer.cpp</a>  |  <a href="../../examples/Vulkan/04_IntroducingUIRenderer/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="Bumpmap">
+	<div class="title">
+		<a href="../../examples/Vulkan/Bumpmap/Bumpmap.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/Bumpmap/Bumpmap.png" alt="Bumpmap" /></a>
+		<input type="checkbox" id="BumpmapFull2">
+			<label for="BumpmapFull2" title="Click for more information"><h3>Bumpmap</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>This training course demonstrates using a normal map to implement bump mapping using the PowerVR Framework.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>Bump mapping is a technique for simulating bumps and wrinkles on the surface of an object. This is achieved by perturbing the surface normals of the object and using the perturbed normal during the illumination calculations. The result is an apparently bumpy surface rather than a perfectly smooth surface although the surface of the underlying object is not actually changed. This technique is used extensively in graphics applications to add perceived detail to models without adding further geometry, and could be considered the baseline for rendering nowadays.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/Bumpmap//VulkanBumpmap.cpp" target="_blank">VulkanBumpmap.cpp</a>  |  <a href="../../examples/Vulkan/Bumpmap/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="DeferredShading">
+	<div class="title">
+		<a href="../../examples/Vulkan/DeferredShading/DeferredShading.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/DeferredShading/DeferredShading.png" alt="DeferredShading" /></a>
+		<input type="checkbox" id="DeferredShadingFull2">
+			<label for="DeferredShadingFull2" title="Click for more information"><h3>DeferredShading</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Demonstrates optimal deferred shading using Pixel Local Storage (PLS), or Subpasses with Transient Attachments (Vulkan)
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>Traditional rendering algorithms submit geometry and immediately apply shading effects to the rasterized primitives. Complex shading effects may require multiple draw calls (one per object per light) or render passes to produce the final pixel color, with the geometry submitted every pass. Deferred shading is an alternative rendering technique that submits the scene geometry once, storing per-pixel attributes into local video memory to be used in the subsequent rendering passes. 
+In these later passes, light volume primitives are rendered, and the per-pixel attributes contained in the buffer are retrieved at a 1:1 mapping ratio so that each pixel is shaded individually.
+In the PowerVR architecture, the user can use fast on-chip memory instead of the render target, by utilising the Pixel Local Storage OpenGL ES extension, or correctly defining Subpasses for those operations.
+Requires the extension GL_EXT_shader_pixel_local_storage for PLS.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Action1: Pause</p><p> Action2: Orbit camera</p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/DeferredShading//VulkanDeferredShading.cpp" target="_blank">VulkanDeferredShading.cpp</a>  |  <a href="../../examples/Vulkan/DeferredShading/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="DeferredShadingPFX">
+	<div class="title">
+		<a href="../../examples/Vulkan/DeferredShadingPFX/DeferredShadingPFX.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/DeferredShadingPFX/DeferredShadingPFX.png" alt="DeferredShadingPFX" /></a>
+		<input type="checkbox" id="DeferredShadingPFXFull2">
+			<label for="DeferredShadingPFXFull2" title="Click for more information"><h3>DeferredShadingPFX</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Duplicates the DeferredShading example using simple PFX scene description to describe this complex rendering scenario
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>The DeferredShading example uses a multi-subpass technique (in Vulkan) or Pixel Local Storage (in OpenGL ES) to implement a Deferred Shading technique. In
+this example, this exact same technique is described in a PFX file, and rendered with the RenderManager, effectively avoiding almost all the code in the example
+except the most basics, demonstrating the power of the RenderManager combined with PFX files as a scene description.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Action1: Pause</p><p> Action2: Orbit camera</p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/DeferredShadingPFX//VulkanDeferredShadingPFX.cpp" target="_blank">VulkanDeferredShadingPFX.cpp</a>  |  <a href="../../examples/Vulkan/DeferredShadingPFX/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="ExampleUI">
+	<div class="title">
+		<a href="../../examples/Vulkan/ExampleUI/ExampleUI.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/ExampleUI/ExampleUI.png" alt="ExampleUI" /></a>
+		<input type="checkbox" id="ExampleUIFull2">
+			<label for="ExampleUIFull2" title="Click for more information"><h3>ExampleUI</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Use the PVRUtils to efficiently render sprites to form a comples User Interface.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>Rendering graphical user interfaces can quickly become overly complex. The PVRUtils can assist in rendering a lot of sprites with different complicated transformations, while remaining crisp and responsive. Usability and performance optimizations can both be found in this example, such as UIRenderer transformation groups.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Left/Right: Change UI Page</p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/ExampleUI//VulkanExampleUI.cpp" target="_blank">VulkanExampleUI.cpp</a>  |  <a href="../../examples/Vulkan/ExampleUI/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="GaussianBlur">
+	<div class="title">
+		<a href="../../examples/Vulkan/GaussianBlur/GaussianBlur.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/GaussianBlur/GaussianBlur.png" alt="GaussianBlur" /></a>
+		<input type="checkbox" id="GaussianBlurFull2">
+			<label for="GaussianBlurFull2" title="Click for more information"><h3>GaussianBlur</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Shows how to perform a extremely wide, highly optimized Gaussian Blur using Compute shaders.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>This training course demonstrates how to perform a 19x19 Gaussian Blur leveraging every input and output step
+to blur an image by reading from an input using compute while blurring in one direction, and then writing to 
+the output with a Fragment shader while blurring in the other direction.
+This technique used has been highly optimized for PowerVR and is highly suitable for very large convolution width.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/GaussianBlur//VulkanGaussianBlur.cpp" target="_blank">VulkanGaussianBlur.cpp</a>  |  <a href="../../examples/Vulkan/GaussianBlur/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="Glass">
+	<div class="title">
+		<a href="../../examples/Vulkan/Glass/Glass.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/Glass/Glass.png" alt="Glass" /></a>
+		<input type="checkbox" id="GlassFull2">
+			<label for="GlassFull2" title="Click for more information"><h3>Glass</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Demonstrates dynamic reflection and refraction using a dual paraboloid environment map.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>This example shows a technique to maintain a dynamic environment map by rendering both hemispheres of the scene to two halves of a single rectangular texture. In addition, this also demonstrates rendering skyboxes with a full screen quad, reflection and refraction with chromatic dispersion.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close the application</p><p> Left/Right : Change the effect between combinations of Reflection and Refraction/Chromatic Dispersion</p><p> Up/Down: Look up or down.</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/Glass//VulkanGlass.cpp" target="_blank">VulkanGlass.cpp</a>  |  <a href="../../examples/Vulkan/Glass/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="GnomeHorde">
+	<div class="title">
+		<a href="../../examples/Vulkan/GnomeHorde/GnomeHorde.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/GnomeHorde/GnomeHorde.png" alt="GnomeHorde" /></a>
+		<input type="checkbox" id="GnomeHordeFull2">
+			<label for="GnomeHordeFull2" title="Click for more information"><h3>GnomeHorde</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>This demo shows a very efficient technique for multithreaded command buffer generation and rendering.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>The GnomeHorde divides its world into tiles, each containing a small number of objects.
+It uses 3 groups of threads - the Main thread, which kicks all other tasks and does the
+actual command buffer submisison (rendering), a number of Visibility threads, each of 
+which processes large groups of tiles, and a number of Tile Processing threads, each of
+which generate command buffers for a tile. Command buffers are created (when the tile has
+just become visible), recalculated (when the tile's Level Of Detail has changed) or 
+recycled (when the tile has just become nonvisible) as required.
+The communication of the threads is abstracted using Producer-Consumer Queues passing the
+coordinates of tiles as parameters.
+When all generation is done, the main thread collects all secondary command buffers and
+submits them to the GPU rendering Queue.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Esc: Close</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/GnomeHorde//VulkanGnomeHorde.cpp" target="_blank">VulkanGnomeHorde.cpp</a>  |  <a href="../../examples/Vulkan/GnomeHorde/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="MultiSampling">
+	<div class="title">
+		<a href="../../examples/Vulkan/MultiSampling/MultiSampling.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/MultiSampling/MultiSampling.png" alt="MultiSampling" /></a>
+		<input type="checkbox" id="MultiSamplingFull2">
+			<label for="MultiSamplingFull2" title="Click for more information"><h3>MultiSampling</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Render a scene to a multisampling frame buffer object.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>This training course demonstrates how to use the framework to render a scene using multisampling feature. Provided for Vulkan (with SpirV shaders) and OpenGL ES 2.0+.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/MultiSampling//VulkanMultiSampling.cpp" target="_blank">VulkanMultiSampling.cpp</a>  |  <a href="../../examples/Vulkan/MultiSampling/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="Multithreading">
+	<div class="title">
+		<a href="../../examples/Vulkan/Multithreading/Multithreading.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/Multithreading/Multithreading.png" alt="Multithreading" /></a>
+		<input type="checkbox" id="MultithreadingFull2">
+			<label for="MultithreadingFull2" title="Click for more information"><h3>Multithreading</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>This training course demonstrates using the PowerVR Framework to stream assets asynchronously into an application
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>This training course will display a loading screen (using UIRenderer) while assets are being loaded in, and then 
+switch to displaying the statue from the BumpMap demo.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/Multithreading//VulkanMultithreading.cpp" target="_blank">VulkanMultithreading.cpp</a>  |  <a href="../../examples/Vulkan/Multithreading/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="Navigation2D">
+	<div class="title">
+		<a href="../../examples/Vulkan/Navigation2D/Navigation2D.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/Navigation2D/Navigation2D.png" alt="Navigation2D" /></a>
+		<input type="checkbox" id="Navigation2DFull2">
+			<label for="Navigation2DFull2" title="Click for more information"><h3>Navigation2D</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Demonstrates parsing, processing and rendering of raw OSM data as a 2D navigational map.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>The 2D navigation example demonstrates the entire process of creating a navigational map from raw data, in this 
+case the Open Street Map data. The example demonstrates loading and parsing of the XML, the processing of the raw 
+data, triangulation with the ear clipping algorithm to generate triangles, defining the roads, and batching all 
+of that into tiles as renderable polygons.
+This example also shows several rendering techniques such as; anti-aliased lines with outline for roads, 
+UI elements for road names and places of interest and an effective tile based approach to batching 
+and culling the geometry. 
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/Navigation2D//VulkanNavigation2D.cpp" target="_blank">VulkanNavigation2D.cpp</a>  |  <a href="../../examples/Vulkan/Navigation2D/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="Navigation3D">
+	<div class="title">
+		<a href="../../examples/Vulkan/Navigation3D/Navigation3D.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/Navigation3D/Navigation3D.png" alt="Navigation3D" /></a>
+		<input type="checkbox" id="Navigation3DFull2">
+			<label for="Navigation3DFull2" title="Click for more information"><h3>Navigation3D</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Demonstrates parsing, processing and rendering of raw OSM data as a 3D navigational map.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>The 3D navigation example demonstrates the entire process of creating a navigational map from raw XML data,
+in this case the example is using Open Street Map data. The example demonstrates loading and parsing of the XML,
+it also shows the processing of the raw data into render-able polygons which can be used by the GPU, this is 
+achieved through triangulation which uses the ear clipping algorithm to generate triangles from lists of points.
+This example also shows several rendering techniques such as; anti-aliased lines with GRLAA for road outlines, 
+handling of UI elements for road names and places of interest, and an effective tile based approach to batching 
+and culling the geometry. 
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/Navigation3D//VulkanNavigation3D.cpp" target="_blank">VulkanNavigation3D.cpp</a>  |  <a href="../../examples/Vulkan/Navigation3D/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="ParticleSystem">
+	<div class="title">
+		<a href="../../examples/Vulkan/ParticleSystem/ParticleSystem.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/ParticleSystem/ParticleSystem.png" alt="ParticleSystem" /></a>
+		<input type="checkbox" id="ParticleSystemFull2">
+			<label for="ParticleSystemFull2" title="Click for more information"><h3>ParticleSystem</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Shows how to implement a simple particle system using GPGPU.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>The demo utilises GPGPU (GPU Compute) to implement a particle system, a simple integration-based simulation which is advanced and then rendered every frame strictly on the GPU, without any CPU access of that data. Particle systems are techniques that use a large amount of sprites to simulate phenomena that would be difficult to reproduce with conventional rendering techniques. Furthermore, it also highlights the interaction between the Compute and the Rendering part of a simulation.
+Requires OpenGL ES 3.1 or Vulkan capable platform.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close demo</p><p> 	Left/Right: Decrease/increase number of particles</p><p> Up/Down: Switch between GPU Compute and CPU Particle System implementation.</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/ParticleSystem//VulkanParticleSystem.cpp" target="_blank">VulkanParticleSystem.cpp</a>  |  <a href="../../examples/Vulkan/ParticleSystem/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="PostProcessing">
+	<div class="title">
+		<a href="../../examples/Vulkan/PostProcessing/PostProcessing.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/PostProcessing/PostProcessing.png" alt="PostProcessing" /></a>
+		<input type="checkbox" id="PostProcessingFull2">
+			<label for="PostProcessingFull2" title="Click for more information"><h3>PostProcessing</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>This training course demonstrates a simple implementation of a 'bloom' post processing effect.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>This training course demonstrates a simple implementation of a 'bloom' post processing effect, using Render Passes (Vulkan)/ Render To Texture (OpenGL ES)
+to render an intermediate scene and use it for postprocessing. The bright parts of the picture are extracted in lower resolution in a post processing step,
+blurred and then added over the final image to create a glow around the object's borders.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Left/Right: Change the rendering mode (Object with bloom, object w/o bloom, bloom textures)</p><p> Up/Down: Increase/Decrease bloom intensity</p><p> Any Action: Pause</p><p> Quit: Close the application</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/PostProcessing//VulkanPostProcessing.cpp" target="_blank">VulkanPostProcessing.cpp</a>  |  <a href="../../examples/Vulkan/PostProcessing/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="PVRScopeExample">
+	<div class="title">
+		<a href="../../examples/Vulkan/PVRScopeExample/PVRScopeExample.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/PVRScopeExample/PVRScopeExample.png" alt="PVRScopeExample" /></a>
+		<input type="checkbox" id="PVRScopeExampleFull2">
+			<label for="PVRScopeExampleFull2" title="Click for more information"><h3>PVRScopeExample</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Demonstrates the use of PVRScope and the example graphing code.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>This demo uses a simple PBR-style shader and shows the use of PVRScope to allow an application to return performance statistics from the GPU in real time. It uses the example graphing code to render a graph of the selected counters on the screen. For further details, refer to the PVRScope User Manual. 
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close demo</p><p> Up/Down: Select a counter from the available list of HW counters</p><p> Action1: Add/remove selected counter to the graph</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/PVRScopeExample//VulkanPVRScopeExample.cpp" target="_blank">VulkanPVRScopeExample.cpp</a>  |  <a href="../../examples/Vulkan/PVRScopeExample/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="PVRScopeRemote">
+	<div class="title">
+		<a href="../../examples/Vulkan/PVRScopeRemote/PVRScopeRemote.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/PVRScopeRemote/PVRScopeRemote.png" alt="PVRScopeRemote" /></a>
+		<input type="checkbox" id="PVRScopeRemoteFull2">
+			<label for="PVRScopeRemoteFull2" title="Click for more information"><h3>PVRScopeRemote</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>Demonstrates the use of PVRScope's remote communication features.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>This example shows how to use the editable data and custom mark functionality of PVRScope. PVRTune must be running and connected to an instance of PVRPerfServer running on the target device for this demo to function. 
+A simple Physically Based shader is provided with properties of Albedo, Metallicity and Glossines, all of which - together with the shaders - can be edited from the PVRTune GUI immediately modifying the appearance of the statue.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Quit: Close demo</p><p> PVRTune: Control demo variables through PVRTune</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/PVRScopeRemote//VulkanPVRScopeRemote.cpp" target="_blank">VulkanPVRScopeRemote.cpp</a>  |  <a href="../../examples/Vulkan/PVRScopeRemote/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+
+<p id="Skinning">
+	<div class="title">
+		<a href="../../examples/Vulkan/Skinning/Skinning.png" title="Click to view image" target="_blank"><img class="examplesmall" src="../../examples/Vulkan/Skinning/Skinning.png" alt="Skinning" /></a>
+		<input type="checkbox" id="SkinningFull2">
+			<label for="SkinningFull2" title="Click for more information"><h3>Skinning</h3></label>
+			<div class="ShortDescription" id="TexturingShort"><p>This demo shows a scene with a combination of a skinned, bumpmapped character with non-skinned, non-bumpmapped objects.
+</p></div>
+			<br>
+			<div class="FullDescription" id="TexturingFull">
+				<p><strong>Description:</strong></p>
+				<p>The Skinning demo shows a Skinned Character in combination with bump mapping. Skinning is the act of animating a vertex over time given a set (palette) of matrices and a known set of blend weights assigned to those matrices. For each frame the Matrix Palette is recomputed based on time. The provided POD file contains matrix animation (PVRAssets and POD files support skinning with either transformation Matrices, or separate Quaternion rotation with Scaling and Translation vectors).
+Uses persistently mapped buffers for the bones.
+</p>
+				<p><strong>Controls:</strong></p>
+				<p><p> Action1/2/3: Pause</p><p> Esc: Close</p></p>
+				<p><strong>Links:</strong></p>
+				<p class="source"><a href="../../examples/Vulkan/Skinning//VulkanSkinning.cpp" target="_blank">VulkanSkinning.cpp</a>  |  <a href="../../examples/Vulkan/Skinning/CMakeLists.txt" target="_blank">CMake</a></p>
+			</div>
+		</input>
+	</div>
+</p>
+</div></ul>		</div>
+	</div>
+	
+	<div id="FooterMainContainer">
+		<div id="FooterContainer">
+			<div class="footerlogo">
+				<a href="http://www.imgtec.com" target="_blank"><img src="./images/img-footer-logo-grey.png" width="100%" height="100%" /></a>
+			</div>
+			<div class="copyright">&copy; Imagination Technologies Limited<br> All rights reserved</div>
+		</div>
+	</div>
+	
+</body>
+
+</html>

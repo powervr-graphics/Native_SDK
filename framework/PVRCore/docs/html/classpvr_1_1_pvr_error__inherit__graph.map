@@ -1,0 +1,9 @@
+<map id="pvr::PvrError" name="pvr::PvrError">
+<area shape="rect" id="node3" href="$classpvr_1_1_file_i_o_error.html" title="A simple std::runtime_error wrapper for throwing exceptions when undertaking File IO operations..." alt="" coords="357,5,467,32"/>
+<area shape="rect" id="node4" href="$classpvr_1_1_index_out_of_range.html" title="A simple std::runtime_error wrapper for throwing exceptions when attempting to use index out of range..." alt="" coords="335,56,489,83"/>
+<area shape="rect" id="node5" href="$classpvr_1_1_invalid_argument_error.html" title="A simple std::runtime_error wrapper for throwing exceptions when invalid arguments are provided..." alt="" coords="327,107,497,133"/>
+<area shape="rect" id="node6" href="$classpvr_1_1_invalid_data_error.html" title="A simple std::runtime_error wrapper for throwing exceptions when invalid data is provided" alt="" coords="341,157,483,184"/>
+<area shape="rect" id="node7" href="$classpvr_1_1_invalid_operation_error.html" title="A simple std::runtime_error wrapper for throwing exceptions when invalid operations are attempted..." alt="" coords="327,208,497,235"/>
+<area shape="rect" id="node8" href="$classpvr_1_1_operation_failed_error.html" title="A simple std::runtime_error wrapper for throwing exceptions when operations fail" alt="" coords="329,259,495,285"/>
+<area shape="rect" id="node9" href="$classpvr_1_1_unsupported_operation_error.html" title="A simple std::runtime_error wrapper for throwing exceptions when unsupported operations are attempted..." alt="" coords="323,310,501,351"/>
+</map>

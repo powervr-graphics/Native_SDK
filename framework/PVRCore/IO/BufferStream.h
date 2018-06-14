@@ -1,0 +1,96 @@
+/*!
+\brief A Stream wrapping a block of memory.
+\file PVRCore/IO/BufferStream.h
+\author PowerVR by Imagination, Developer Technology Team
+\copyright Copyright (c) Imagination Technologies Limited.
+*/
+#pragma once
+#include "PVRCore/Stream.h"
+
+namespace pvr {
+/// <summary>This class is used to access a block of memory as a Stream.</summary>
+class BufferStream : public Stream
+{
+public:
+	/// <summary>The pointer type normally used to wrap a Stream interface.</summary>
+	typedef std::unique_ptr<BufferStream> ptr_type;
+	/// <summary>Create a BufferStream from a buffer and associate it with an (arbitrary) filename.</summary>
+	/// <param name="fileName">The created stream will have this filename. Arbitrary - not used to access anything.
+	/// </param>
+	/// <param name="buffer">Pointer to the memory that this stream will be used to access. Must be kept live from the
+	/// point the stream is opened until the stream is closed</param>
+	/// <param name="bufferSize">The size, in bytes, of the buffer</param>
+	/// <param name="setWritable">Allow writing for this stream. Default true.</param>
+	/// <param name="setReadable">Allow reading for this stream. Default true.</param>
+	BufferStream(const std::string& fileName, void* buffer, size_t bufferSize, bool setWritable = true, bool setReadable = true);
+
+	~BufferStream()
+	{
+		close();
+	}
+
+	/// <summary>Create a BufferStream from a read only buffer and associate it with an (arbitrary) filename. Read only.
+	/// </summary>
+	/// <param name="fileName">The created stream will have this filename. Arbitrary - not used to access anything.
+	/// </param>
+	/// <param name="buffer">Pointer to the memory that this stream will be used to access. Must be kept live from the
+	/// point the stream is opened until the stream is closed</param>
+	/// <param name="bufferSize">The size, in bytes, of the buffer</param>
+	BufferStream(const std::string& fileName, const void* buffer, size_t bufferSize);
+
+	/// <summary>Main read function. Read up to a specified amount of items into the provided buffer.</summary>
+	/// <param name="elementSize">The size of each element that will be read.</param>
+	/// <param name="numElements">The maximum number of elements to read.</param>
+	/// <param name="buffer">The buffer into which to write the data.</param>
+	/// <param name="dataRead">After returning, will contain the number of items that were actually read</param>
+	virtual void read(size_t elementSize, size_t numElements, void* buffer, size_t& dataRead) const;
+
+	/// <summary>Main write function. Write into the stream the specified amount of items from a provided buffer.
+	/// </summary>
+	/// <param name="elementSize">The size of each element that will be written.</param>
+	/// <param name="numElements">The number of elements to write.</param>
+	/// <param name="buffer">The buffer from which to read the data. If the buffer is smaller than elementSize *
+	/// numElements bytes, result is undefined.</param>
+	/// <param name="dataWritten">After returning, will contain the number of items that were actually written. Will
+	/// contain numElements unless an error has occured.</param>
+	virtual void write(size_t elementSize, size_t numElements, const void* buffer, size_t& dataWritten);
+
+	/// <summary>Seek a specific point for random access streams. After successful call, subsequent operation will
+	/// happen in the specified point.</summary>
+	/// <param name="offset">The offset to seec from "origin"</param>
+	/// <param name="origin">Beginning of stream, End of stream or Current position</param>
+	virtual void seek(long offset, SeekOrigin origin) const;
+
+	/// <summary>Prepares the stream for read / write / seek operations.</summary>
+	virtual void open() const;
+
+	/// <summary>Closes the stream.</summary>
+	virtual void close();
+
+	/// <summary>Check if the stream is open and ready for operations</summary>
+	/// <returns>True if the stream is open and ready for other operations.</returns>
+	virtual bool isopen() const;
+
+	/// <summary>If suppored, check the current position in the stream.</summary>
+	/// <returns>If suppored, returns the current position in the stream.</returns>
+	virtual size_t getPosition() const;
+
+	/// <summary>If suppored, get the total data in the stream.</summary>
+	/// <returns>If suppored, return the total amount of data in the stream.</returns>
+	virtual size_t getSize() const;
+
+protected:
+	/// <summary>Constructor. Constructs with a specified resource identifier.</summary>
+	/// <param name="resourceName">A resource identifier (conceptually, a "Filename" without a file)</param>
+	explicit BufferStream(const std::string& resourceName);
+	const void* _originalData; //!< The original pointer of the memory this stream accesses
+	mutable void* _currentPointer; //!< Pointer to the current position in the stream
+	mutable size_t _bufferSize; //!< The size of this stream
+	mutable size_t _bufferPosition; //!< Offset of the current position in the stream
+
+private:
+	// Disable copy and assign.
+	void operator=(const BufferStream&);
+	BufferStream(const BufferStream&);
+};
+} // namespace pvr
