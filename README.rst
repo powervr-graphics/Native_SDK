@@ -1,4 +1,4 @@
-.. figure:: ./Documentation/SDKBrowser/images/WelcomeGraphic.png
+.. figure:: ./docs/SDKBrowser/images/WelcomeGraphic.png
 
 ===============
 The PowerVR SDK
