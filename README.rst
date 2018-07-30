@@ -1,4 +1,4 @@
-.. figure:: ./Documentation/SDKBrowser/images/WelcomeGraphic.png
+.. figure:: ./docs/SDKBrowser/images/WelcomeGraphic.png
 
 ===============
 The PowerVR SDK
@@ -25,7 +25,7 @@ The examples themselves are mostly code samples intended to:
 The examples are built on top of the framework in such a way so that only the relevant code is left.
 
 Developers can join the PowerVR Insider programme and interact with our
-online Community at `www.powervrinsider.com <http://www.powervrinsider.com>`_. Also visit
+online Community at `http://www.imgtec.com/developers/ <http://http://www.imgtec.com/developers/>`_. Also visit
 our `Contact <./Contact.html>`_ page for further details on how to get
 in touch with us.
 
@@ -34,7 +34,7 @@ Release Notes
 
 For the latest version of the Release Notes detailing what's changed in
 this release of the PowerVR Tools and SDK. please visit
-`Release Notes <https://community.imgtec.com/download-notes/>`_.
+`Release Notes <https://www.imgtec.com/developers/powervr-sdk-tools/whats-new/>`_.
 
 Building
 --------
@@ -42,7 +42,7 @@ Building
 The PowerVR SDK uses CMake for building for any platform, and additionally Gradle for Android.
 Navigate to the root of the SDK or any example and run cmake from a folder you create.
 For android, navigate to a the build-android folder of the item you wish to build and use gradle.
-** For detailed instructions for building the SDK, see `BUILD.rst <BUILD.rst>`_ **
+*For detailed instructions for building the SDK, see `BUILD.rst <BUILD.rst>`_*
 
 Platform Setup
 --------------
