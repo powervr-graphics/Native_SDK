@@ -42,7 +42,7 @@ Building
 The PowerVR SDK uses CMake for building for any platform, and additionally Gradle for Android.
 Navigate to the root of the SDK or any example and run cmake from a folder you create.
 For android, navigate to a the build-android folder of the item you wish to build and use gradle.
-*For detailed instructions for building the SDK, see `BUILD.rst <BUILD.rst>`_*
+** For detailed instructions for building the SDK, see `BUILD.rst <BUILD.rst>`_ **
 
 Platform Setup
 --------------
