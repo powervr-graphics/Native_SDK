@@ -2,7 +2,7 @@
 Bumpmap
 =======
 
-.. figure:: ./Bumpmap.png
+.. figure:: ./Multithreading.png
 
 This training course demonstrates using the PowerVR Framework to stream assets asynchronously into an application
 
