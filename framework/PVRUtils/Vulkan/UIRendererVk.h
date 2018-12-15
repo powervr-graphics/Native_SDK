@@ -275,6 +275,7 @@ public:
 		_uboMaterialLayout.reset();
 		_pipelineLayout.reset();
 		_pipeline.reset();
+		_pipelineCache.reset();
 		_samplerBilinear.reset();
 		_samplerTrilinear.reset();
 		_activeCommandBuffer.reset();
