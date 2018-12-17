@@ -1,0 +1,5 @@
+<map id="pvrvk::impl::Swapchain_" name="pvrvk::impl::Swapchain_">
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkSwapchainKHR \&gt;" alt="" coords="227,5,423,46"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkSwapchainKHR \&gt;" alt="" coords="5,5,179,46"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; Swapchain_ \&gt;" alt="" coords="228,70,423,111"/>
+</map>

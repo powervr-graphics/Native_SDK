@@ -1,0 +1,16 @@
+var searchData=
+[
+  ['init',['init',['../classpvr_1_1platform_1_1_egl_context__.html#a6363818b15a58d30e23a4d13b71a61e4',1,'pvr::platform::EglContext_::init()'],['../classpvr_1_1utils_1_1_model_gles.html#af17858f0d5e8add478c523e30a2a23f3',1,'pvr::utils::ModelGles::init()'],['../classpvr_1_1ui_1_1_u_i_renderer.html#a53ae00864425bc747c8e924584979860',1,'pvr::ui::UIRenderer::init()'],['../classpvr_1_1utils_1_1_structured_memory_entry.html#af7adb3728640b63083b73a7a7c42cb40',1,'pvr::utils::StructuredMemoryEntry::init()'],['../classpvr_1_1utils_1_1_structured_buffer_view.html#a0bbf63c16faffe7d6d48a19063689dc6',1,'pvr::utils::StructuredBufferView::init()'],['../classpvr_1_1_image_api_async_uploader.html#a80f650f3fa6b83f561ca27c94d65e4c9',1,'pvr::ImageApiAsyncUploader::init()'],['../classpvr_1_1ui_1_1_u_i_renderer.html#a6fab5a241ee9426413c0d64fc97acb55',1,'pvr::ui::UIRenderer::init()']]],
+  ['initdynamic',['initDynamic',['../classpvr_1_1utils_1_1_structured_memory_entry.html#a093c2f6755ffd85bebeb08e1245e96da',1,'pvr::utils::StructuredMemoryEntry::initDynamic()'],['../classpvr_1_1utils_1_1_structured_buffer_view.html#af7acfccdef1dc06ae8a3aebe0d5b5e2e',1,'pvr::utils::StructuredBufferView::initDynamic()']]],
+  ['instanceextensions',['InstanceExtensions',['../structpvr_1_1utils_1_1_instance_extensions.html#a3578abfc0e4e90921df30baa73dd2194',1,'pvr::utils::InstanceExtensions']]],
+  ['instancelayers',['InstanceLayers',['../structpvr_1_1utils_1_1_instance_layers.html#a847198ad122769b11e33da68c05725cd',1,'pvr::utils::InstanceLayers']]],
+  ['isalpharendering',['isAlphaRendering',['../classpvr_1_1ui_1_1impl_1_1_font__.html#aeec06a20f61ceeaaa0ba4996d17b7cda',1,'pvr::ui::impl::Font_::isAlphaRendering() const '],['../classpvr_1_1ui_1_1impl_1_1_font__.html#aeec06a20f61ceeaaa0ba4996d17b7cda',1,'pvr::ui::impl::Font_::isAlphaRendering() const ']]],
+  ['isapisupported',['isApiSupported',['../classpvr_1_1platform_1_1_egl_context__.html#a8c3b27c07bc5f12f29fe961c5303d0b3',1,'pvr::platform::EglContext_']]],
+  ['isformatdepthstencil',['isFormatDepthStencil',['../namespacepvr_1_1utils.html#a7151c7b74ff657fc17ff09c0ab114a07',1,'pvr::utils']]],
+  ['isimageusagesupportedbysurface',['isImageUsageSupportedBySurface',['../namespacepvr_1_1utils.html#a59222cc49624a76fab4d4f65e3337ac3',1,'pvr::utils']]],
+  ['isinitialized',['isInitialized',['../classpvr_1_1platform_1_1_egl_context__.html#ab0e5d2f431f33de4c076478e46340191',1,'pvr::platform::EglContext_']]],
+  ['isprimitive',['isPrimitive',['../classpvr_1_1utils_1_1_structured_memory_entry.html#a0bc1c5af8430ce3a77d4bf6b656e28b3',1,'pvr::utils::StructuredMemoryEntry']]],
+  ['isrendering',['isRendering',['../classpvr_1_1ui_1_1_u_i_renderer.html#a568e8cbdba7da1d65793ae1625c4df9b',1,'pvr::ui::UIRenderer']]],
+  ['isspritenamedirty',['isSpriteNameDirty',['../classpvr_1_1ui_1_1impl_1_1_sprite__.html#a5aa47f7b7f3a6032fa45312fea2a0394',1,'pvr::ui::impl::Sprite_::isSpriteNameDirty()'],['../classpvr_1_1ui_1_1impl_1_1_text__.html#a2dc563b38c5f34153f13693ac776a088',1,'pvr::ui::impl::Text_::isSpriteNameDirty()']]],
+  ['isstructure',['isStructure',['../classpvr_1_1utils_1_1_structured_memory_entry.html#a5277211de2b31b1abc8d3c2143215b0c',1,'pvr::utils::StructuredMemoryEntry']]]
+];

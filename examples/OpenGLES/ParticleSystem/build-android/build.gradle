@@ -1,0 +1,174 @@
+// Applies the Android plugin for Gradle to this build and makes the android block available to specify Android-specific build options
+apply plugin: 'com.android.application'
+
+def hasSigningDefined = project.hasProperty('KEYSTORE_FILE') &&  project.hasProperty('KEYSTORE_PASSWORD') &&  project.hasProperty('KEY_ALIAS') && project.hasProperty('KEY_PASSWORD')
+def binOutput = hasProperty('BUILD_ENTIRE_SDK') ? '../../../../build-android/bin' : 'bin'
+// The set of framework projects on which this application is dependent
+def framework_projects = ["PVRCore", "PVRAssets", "PVRShell", "PVRUtilsGles"]
+
+// This block configures the repositories and dependencies for Gradle itself. Here we add a dependency for the Android plugin for Gradle as it provides
+// the additional instructions Gradle needs to build Android app modules
+buildscript {
+	repositories {
+		google()
+		jcenter()
+	}
+
+	// Adds the Android plugin for Gradle version 3.1.0 as a classpath dependency
+	dependencies {
+		classpath 'com.android.tools.build:gradle:3.1.0'
+	}
+}
+
+// This block configures the repositories and dependencies used by all modules in the project
+allprojects {
+	repositories {
+		google()
+		jcenter()
+	}
+}
+
+android {
+	compileSdkVersion 26
+	defaultConfig {
+		applicationId "com.powervr.OpenGLESParticleSystem"
+		minSdkVersion 21
+		targetSdkVersion 24
+		externalNativeBuild {
+			cmake {
+				cppFlags "-fexceptions"
+				arguments "-DANDROID_STL=c++_static"
+			}
+		}
+		ndk
+		{
+			abiFilters "$ANDROID_ABI".replace(" ", "").split(",")
+		}
+	}
+	
+	if (!project.hasProperty('NOSIGN') && hasSigningDefined) {
+		signingConfigs {
+			release {
+				storeFile file(project['KEYSTORE_FILE'])
+				storePassword project['KEYSTORE_PASSWORD']
+				keyAlias project['KEY_ALIAS']
+				keyPassword project['KEY_PASSWORD']
+			}
+		}
+	}
+
+	// This block configures our build types
+	buildTypes {
+		release {
+			minifyEnabled false
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+			zipAlignEnabled true
+			if (!project.hasProperty('NOSIGN') && hasSigningDefined) {
+				signingConfig signingConfigs.release
+			}
+		}
+
+	}
+	externalNativeBuild {
+		cmake {
+			path "../CMakeLists.txt"
+		}
+	}
+
+	// Ensure that the icons are copied early - we do this by making the preBuild task depends on the copyIcons task
+	task copyIcons(type: Copy) {
+		from file("${project.projectDir}/../../../../res/Android/OpenGLES")
+		into sourceSets.main.res.srcDirs[0]
+		fileMode = 0664
+	}
+	preBuild.dependsOn copyIcons
+
+	// Add to this list files that will need to be read at runtime here: Textures, shaders, text files etc.
+	FileCollection assetFiles = files(
+	"${project.projectDir}/../../../assets/ParticleSystem/sphere.pod",
+	"${project.projectDir}/../FragShader.fsh",
+	"${project.projectDir}/../VertShader.vsh",
+	"${project.projectDir}/../ParticleFragShader.fsh",
+	"${project.projectDir}/../ParticleVertShader.vsh",
+	"${project.projectDir}/../ParticleSolver.csh",
+	)
+
+	// Add a task for copying our assets from "project.projectDir}/.." to the assets/ folder
+	task copyAssets(type: Copy) {
+		from assetFiles
+		into sourceSets.main.assets.srcDirs[0]
+		fileMode = 0664
+	}
+	
+	clean {
+		doLast() { delete "bin" }
+	}
+}
+
+// This block specifies dependencies required to build only the module itself
+dependencies {
+	// Dependency on local binaries
+	implementation fileTree(dir: 'libs', include: ['*.jar'])
+	if (!project.hasProperty('NO_FRAMEWORK_BUILD'))
+	{// Add the dependencies to the framework to guarantee build order. If the framework is prebuilt, this is not necessary
+		framework_projects.each { s-> implementation project(":${s}")}
+	}
+}
+
+// For release builds ensure that signing has taken place appropriately
+task checkReleaseSigning() {
+	doLast{
+		if (!hasSigningDefined && !project.hasProperty('NOSIGN')) {
+			throw new InvalidUserDataException("*** ERROR *** No signing parameters and no 'NOSIGN' parameter for *Release* build *** ERROR ***\n"+
+	"You must pass the parameters 'KEYSTORE_FILE', 'KEYSTORE_PASSWORD', 'KEY_ALIAS' and 'KEY_PASSWORD', or 'NOSIGN'.\n"+
+	"These parameters can be passed several ways:\n" +
+	" - Via command line ('-PRELEASE_STORE_FILE=myfile.jks....'), \n" +
+	" - Defined locally in the build.gradle or settings.gradle (ext['KEYSTORE_FILE'] ='myfile.jks'. \n"+
+	" - Defined globally in a gradle.properties file (ensure you have the GRADLE_USER_HOME variable set) : (KEYSTORE_FILE=myfile.jks etc.).\n"+
+	'Otherwise, execute a *Debug* build, or pass the parameter NOSIGN. Otherwise, hardcode or disable signing completely by changing/removing the \'signingConfigs\' section and the line \'signingConfig signingConfigs.release\' from the \'buildTypes { release { ... } }\' section.');
+		}
+	}
+}
+
+//Copy outputs to the bin/ folder
+task copyToBinDebug(type: Copy) {
+	from 'build/outputs/apk/debug'
+	into "${binOutput}"
+	include('*.apk')
+}
+// Copy outputs to the bin/ folder and remove the "-release" suffix
+task copyToBinRelease(type: Copy) {
+	from 'build/outputs/apk/release'
+	into "${binOutput}"
+	include('*.apk')
+	rename('(.*)-release.apk', '$1.apk')
+}
+
+tasks.whenTaskAdded { task -> 	
+	// Ensure the assets folder is appropriately copied to the apk
+	if (task.name == 'externalNativeBuildRelease' || task.name == 'externalNativeBuildDebug') {
+		copyAssets.dependsOn task
+	}
+	if (task.name == 'mergeReleaseAssets' || task.name == 'mergeDebugAssets') {
+		task.dependsOn copyAssets
+	}
+
+	// Workaround library native code dependency issue in gradle 3.0.0.
+	// This should normally be handled by the dependencies above: (implementation project(':...'))
+	// refer to https://issuetracker.google.com/issues/69616088  . If these lines are removed, the framework is not built as it should be.
+	if (task.name == 'externalNativeBuildRelease') {
+		if (!project.hasProperty('NO_FRAMEWORK_BUILD')) { framework_projects.each {s -> task.dependsOn ":${s}:externalNativeBuildRelease" } }
+	} else if (task.name == 'externalNativeBuildDebug') {
+		if (!project.hasProperty('NO_FRAMEWORK_BUILD')) { framework_projects.each {s -> task.dependsOn ":${s}:externalNativeBuildDebug" } }
+	}
+	
+
+	// Copy the binary to the final bin folder.
+	if (task.name == 'packageRelease') {
+		task.dependsOn(checkReleaseSigning)
+		task.finalizedBy copyToBinRelease
+	}
+	if (task.name == 'packageDebug') {
+		task.finalizedBy copyToBinDebug
+	}
+}

@@ -1,0 +1,115 @@
+//Microsoft eMbedded Visual C++ generated resource script.
+//
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        118
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+	"\r\n"
+	"\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+/////////////////////////////////////////////////////////////////////////////
+// RCDATA: Assets (scenes,  effects, textures...)
+MarbleNormalMap.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\MarbleNormalMap.pvr"
+Marble.pvr		RCDATA		"..\\..\\..\\assets\\Satyr\\Marble.pvr"
+MonValley_baked_lightmap.pvr		RCDATA		"..\\..\\..\\assets\\MonValley\\MonValley_baked_lightmap.pvr"
+DiffuseIrradianceMap.pvr		RCDATA		"..\\..\\..\\assets\\MonValley\\DiffuseIrradianceMap.pvr"
+Satyr.pod		RCDATA		"..\\..\\..\\assets\\Satyr\\Satyr.pod"
+// RCDATA: Vulkan Spir-V shaders(glsl)
+Downsample2x2FragShader.fsh.spv		RCDATA		"..\\Downsample2x2FragShader.fsh.spv"
+Downsample4x4FragShader.fsh.spv		RCDATA		"..\\Downsample4x4FragShader.fsh.spv"
+Downsample2x2VertShader.vsh.spv		RCDATA		"..\\Downsample2x2VertShader.vsh.spv"
+Downsample4x4VertShader.vsh.spv		RCDATA		"..\\Downsample4x4VertShader.vsh.spv"
+DualFilterDownSampleFragShader.fsh.spv		RCDATA		"..\\DualFilterDownSampleFragShader.fsh.spv"
+DualFilterDownVertShader.vsh.spv		RCDATA		"..\\DualFilterDownVertShader.vsh.spv"
+DualFilterUpSampleFragShader.fsh.spv		RCDATA		"..\\DualFilterUpSampleFragShader.fsh.spv"
+DualFilterUpSampleMergedFinalPassFragShader.fsh.spv		RCDATA		"..\\DualFilterUpSampleMergedFinalPassFragShader.fsh.spv"
+DualFilterUpVertShader.vsh.spv		RCDATA		"..\\DualFilterUpVertShader.vsh.spv"
+TentFilterFirstUpSampleFragShader.fsh.spv		RCDATA		"..\\TentFilterFirstUpSampleFragShader.fsh.spv"
+TentFilterUpSampleFragShader.fsh.spv		RCDATA		"..\\TentFilterUpSampleFragShader.fsh.spv"
+TentFilterUpSampleMergedFinalPassFragShader.fsh.spv		RCDATA		"..\\TentFilterUpSampleMergedFinalPassFragShader.fsh.spv"
+TentFilterUpSampleVertShader.vsh.spv		RCDATA		"..\\TentFilterUpSampleVertShader.vsh.spv"
+FragShader.fsh.spv		RCDATA		"..\\FragShader.fsh.spv"
+GaussianCompHorizontalShader16f.csh.spv		RCDATA		"..\\GaussianCompHorizontalShader16f.csh.spv"
+GaussianCompHorizontalShader16frgba.csh.spv		RCDATA		"..\\GaussianCompHorizontalShader16frgba.csh.spv"
+GaussianCompVerticalShader16f.csh.spv		RCDATA		"..\\GaussianCompVerticalShader16f.csh.spv"
+GaussianCompVerticalShader16frgba.csh.spv		RCDATA		"..\\GaussianCompVerticalShader16frgba.csh.spv"
+GaussianHorizontalFragShader.fsh.spv		RCDATA		"..\\GaussianHorizontalFragShader.fsh.spv"
+GaussianVerticalFragShader.fsh.spv		RCDATA		"..\\GaussianVerticalFragShader.fsh.spv"
+GaussianVertShader.vsh.spv		RCDATA		"..\\GaussianVertShader.vsh.spv"
+KawaseFragShader.fsh.spv		RCDATA		"..\\KawaseFragShader.fsh.spv"
+KawaseVertShader.vsh.spv		RCDATA		"..\\KawaseVertShader.vsh.spv"
+LinearGaussianEvenSamplesFragShader.fsh.spv		RCDATA		"..\\LinearGaussianEvenSamplesFragShader.fsh.spv"
+LinearGaussianEvenSamplesHorizontalVertShader.vsh.spv		RCDATA		"..\\LinearGaussianEvenSamplesHorizontalVertShader.vsh.spv"
+LinearGaussianEvenSamplesVerticalVertShader.vsh.spv		RCDATA		"..\\LinearGaussianEvenSamplesVerticalVertShader.vsh.spv"
+LinearGaussianOddSamplesFragShader.fsh.spv		RCDATA		"..\\LinearGaussianOddSamplesFragShader.fsh.spv"
+LinearGaussianOddSamplesHorizontalVertShader.vsh.spv		RCDATA		"..\\LinearGaussianOddSamplesHorizontalVertShader.vsh.spv"
+LinearGaussianOddSamplesVerticalVertShader.vsh.spv		RCDATA		"..\\LinearGaussianOddSamplesVerticalVertShader.vsh.spv"
+PostBloomFragShader.fsh.spv		RCDATA		"..\\PostBloomFragShader.fsh.spv"
+PostBloomVertShader.vsh.spv		RCDATA		"..\\PostBloomVertShader.vsh.spv"
+VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
+SkyboxFragShader.fsh.spv		RCDATA		"..\\SkyboxFragShader.fsh.spv"
+SkyboxVertShader.vsh.spv		RCDATA		"..\\SkyboxVertShader.vsh.spv"
+
+#endif    // English (United Kingdom) resources
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

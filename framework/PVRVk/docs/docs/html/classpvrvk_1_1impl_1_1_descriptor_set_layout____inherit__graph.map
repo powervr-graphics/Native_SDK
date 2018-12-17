@@ -1,0 +1,5 @@
+<map id="pvrvk::impl::DescriptorSetLayout_" name="pvrvk::impl::DescriptorSetLayout_">
+<area shape="rect" id="node2" href="$classpvrvk_1_1impl_1_1_device_object_handle.html" title="pvrvk::impl::DeviceObject\lHandle\&lt; VkDescriptorSetLayout \&gt;" alt="" coords="249,5,471,46"/>
+<area shape="rect" id="node3" href="$classpvrvk_1_1impl_1_1_object_handle.html" title="pvrvk::impl::ObjectHandle\l\&lt; VkDescriptorSetLayout \&gt;" alt="" coords="5,5,187,46"/>
+<area shape="rect" id="node4" href="$classpvrvk_1_1impl_1_1_device_object_debug_marker.html" title="pvrvk::impl::DeviceObject\lDebugMarker\&lt; DescriptorSetLayout_ \&gt;" alt="" coords="235,70,485,111"/>
+</map>

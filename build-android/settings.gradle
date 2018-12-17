@@ -1,0 +1,88 @@
+rootProject.name='PowerVR_SDK'
+
+ext['BUILD_ENTIRE_SDK'] = 1
+
+if (!hasProperty('BUILD_OPENGLES_EXAMPLES') && !hasProperty('BUILD_VULKAN_EXAMPLES')) {
+	ext['BUILD_OPENGLES_EXAMPLES'] = 1
+	ext['BUILD_VULKAN_EXAMPLES'] = 1
+}
+
+def OPENGLES_EXAMPLES = [ 
+	'01_HelloAPI',
+	'02_IntroducingPVRShell',
+	'03_IntroducingPVRUtils',
+	'04_IntroducingUIRenderer',
+	'05_IntroducingPVRCamera',
+	'MultiviewVR',
+	'PostProcessing',
+	'OpenCLExample',
+	'Skinning',
+	'ParticleSystem',
+	'GaussianBlur',
+	'Navigation2D',
+	'Navigation3D',
+	'DeferredShading',
+	'PVRScopeExample',
+	'PVRScopeRemote',
+	'IMGFramebufferDownsample',
+	'IMGTextureFilterCubic',
+	'ImageBasedLighting'
+]
+
+def VULKAN_EXAMPLES = [ 
+	'01_HelloAPI',
+	'02_IntroducingPVRShell',
+	'03_IntroducingPVRVk',
+	'04_IntroducingPVRUtils',
+	'05_IntroducingUIRenderer',
+	'Skinning',
+	'MultiSampling',
+	'PostProcessing',
+	'GnomeHorde',
+	'ParticleSystem',
+	'Bumpmap',
+	'GaussianBlur',
+	'Navigation2D',
+	'Navigation3D',
+	'Multithreading',
+	'ExampleUI',
+	'DeferredShading',
+	'DeferredShadingPFX',
+	'Glass',
+	'PVRScopeExample',
+	'PVRScopeRemote',
+	'ImageBasedLighting'
+]
+
+include('PVRCore')
+project(':PVRCore').projectDir=file('../framework/PVRCore/build-android')
+include('PVRAssets')
+project(':PVRAssets').projectDir=file('../framework/PVRAssets/build-android')
+include('PVRShell')
+project(':PVRShell').projectDir=file('../framework/PVRShell/build-android')
+
+if (hasProperty('BUILD_OPENGLES_EXAMPLES')) {
+	include('PVRCamera')
+	project(':PVRCamera').projectDir=file('../framework/PVRCamera/build-android')
+	include('PVRUtilsGles')
+	project(':PVRUtilsGles').projectDir=file('../framework/PVRUtils/OpenGLES/build-android')
+
+	OPENGLES_EXAMPLES.each { example ->
+		include(":OpenGLES${example.indexOf('_') == 2 ? example.substring(3) : example}")
+		project(":OpenGLES${example.indexOf('_') == 2 ? example.substring(3) : example}").projectDir=file("../examples/OpenGLES/${example}/build-android")
+	}
+}
+
+if (hasProperty('BUILD_VULKAN_EXAMPLES')) {
+	include(':PVRVk')
+	project(':PVRVk').projectDir=file('../framework/PVRVk/build-android')
+	include(':PVRUtilsVk')
+	project(':PVRUtilsVk').projectDir=file('../framework/PVRUtils/Vulkan/build-android')
+	include(':PVRPfx')
+	project(':PVRPfx').projectDir=file('../framework/PVRPfx/build-android')
+
+	VULKAN_EXAMPLES.each { example ->
+		include(":Vulkan${example.indexOf('_') == 2 ? example.substring(3) : example}")
+		project(":Vulkan${example.indexOf('_') == 2 ? example.substring(3) : example}").projectDir=file("../examples/Vulkan/${example}/build-android")
+	}
+}

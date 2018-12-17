@@ -1,0 +1,112 @@
+//Microsoft eMbedded Visual C++ generated resource script.
+//
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        118
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+	"\r\n"
+	"\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+/////////////////////////////////////////////////////////////////////////////
+// RCDATA: Assets (scenes,  effects, textures...)
+container-corner.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\container-corner.pvr"
+container-filler.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\container-filler.pvr"
+container-vertical.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\container-vertical.pvr"
+container-horizontal.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\container-horizontal.pvr"
+topbar.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\topbar.pvr"
+background.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\background.pvr"
+clock-face.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\clock-face.pvr"
+clock-face-small.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\clock-face-small.pvr"
+hand.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\hand.pvr"
+hand-small.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\hand-small.pvr"
+battery.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\battery.pvr"
+internet-web-browser.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\internet-web-browser.pvr"
+mail-message-new.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\mail-message-new.pvr"
+network-wireless.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\network-wireless.pvr"
+office-calendar.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\office-calendar.pvr"
+weather-sun-cloud.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\weather-sun-cloud.pvr"
+weather-storm.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\weather-storm.pvr"
+weather-rain.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\weather-rain.pvr"
+text1.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\text1.pvr"
+text2.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\text2.pvr"
+text-weather.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\text-weather.pvr"
+text-fri.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\text-fri.pvr"
+text-sat.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\text-sat.pvr"
+text-sun.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\text-sun.pvr"
+text-mon.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\text-mon.pvr"
+weather-sun-cloud-big.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\weather-sun-cloud-big.pvr"
+window-bottom.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\window-bottom.pvr"
+window-bottomcorner.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\window-bottomcorner.pvr"
+window-side.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\window-side.pvr"
+window-top.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\window-top.pvr"
+window-topleft.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\window-topleft.pvr"
+window-topright.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\window-topright.pvr"
+loremipsum.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\loremipsum.pvr"
+vertical-bar.pvr		RCDATA		"..\\..\\..\\assets\\ExampleUI\\vertical-bar.pvr"
+// RCDATA: Vulkan Spir-V shaders(glsl)
+ColShader.fsh.spv		RCDATA		"..\\ColShader.fsh.spv"
+ColShader.vsh.spv		RCDATA		"..\\ColShader.vsh.spv"
+
+#endif    // English (United Kingdom) resources
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

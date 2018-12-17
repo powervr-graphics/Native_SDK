@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['uirenderer',['UIRenderer',['../classpvr_1_1ui_1_1_u_i_renderer.html',1,'pvr::ui']]],
+  ['uirenderer',['UIRenderer',['../classpvr_1_1ui_1_1_u_i_renderer.html#ab299f307c02ca5625f130394cdfaaf05',1,'pvr::ui::UIRenderer::UIRenderer()'],['../classpvr_1_1ui_1_1_u_i_renderer.html#a250a5492ac864d8e129a0c5f64c9b6a0',1,'pvr::ui::UIRenderer::UIRenderer(UIRenderer &amp;&amp;rhs)'],['../classpvr_1_1ui_1_1_u_i_renderer.html#ab299f307c02ca5625f130394cdfaaf05',1,'pvr::ui::UIRenderer::UIRenderer()'],['../classpvr_1_1ui_1_1_u_i_renderer.html#a250a5492ac864d8e129a0c5f64c9b6a0',1,'pvr::ui::UIRenderer::UIRenderer(UIRenderer &amp;&amp;rhs)']]],
+  ['uirenderererror',['UIRendererError',['../classpvr_1_1ui_1_1_u_i_renderer_error.html',1,'pvr::ui']]],
+  ['uirenderererror',['UIRendererError',['../classpvr_1_1ui_1_1_u_i_renderer_error.html#ad77bb52e1d5302645fe8281d2adaf97a',1,'pvr::ui::UIRendererError']]],
+  ['uirenderergles_2ecpp',['UIRendererGles.cpp',['../_u_i_renderer_gles_8cpp.html',1,'']]],
+  ['uirenderergles_2eh',['UIRendererGles.h',['../_u_i_renderer_gles_8h.html',1,'']]],
+  ['uirendererinstancemaxerror',['UIRendererInstanceMaxError',['../classpvr_1_1ui_1_1_u_i_renderer_instance_max_error.html#a5bbb57184b608bb1c8f78bcff71b10e2',1,'pvr::ui::UIRendererInstanceMaxError']]],
+  ['uirendererinstancemaxerror',['UIRendererInstanceMaxError',['../classpvr_1_1ui_1_1_u_i_renderer_instance_max_error.html',1,'pvr::ui']]],
+  ['uirenderershaders_5fes_2eh',['UIRendererShaders_ES.h',['../_u_i_renderer_shaders___e_s_8h.html',1,'']]],
+  ['uirenderervk_2ecpp',['UIRendererVk.cpp',['../_u_i_renderer_vk_8cpp.html',1,'']]],
+  ['uirenderervk_2eh',['UIRendererVk.h',['../_u_i_renderer_vk_8h.html',1,'']]],
+  ['ul',['ul',['../structpvr_1_1ui_1_1impl_1_1_font___1_1_character_u_v.html#a479520cba15dc4e8a9e9218ff2cc03a4',1,'pvr::ui::impl::Font_::CharacterUV']]],
+  ['uniform',['Uniform',['../structpvr_1_1ui_1_1_u_i_renderer_1_1_program_data.html#adf2fe6cdca6a99f43e91e0cdd9333f36',1,'pvr::ui::UIRenderer::ProgramData::Uniform()'],['../structpvr_1_1ui_1_1_u_i_renderer_1_1_program_data.html#adf2fe6cdca6a99f43e91e0cdd9333f36',1,'pvr::ui::UIRenderer::ProgramData::Uniform()']]],
+  ['uniforms',['uniforms',['../structpvr_1_1ui_1_1_u_i_renderer_1_1_program_data.html#aec512ff2c1eda37a456f4e02c3ad01cc',1,'pvr::ui::UIRenderer::ProgramData']]],
+  ['updatebufferusingstagingbuffer',['updateBufferUsingStagingBuffer',['../namespacepvr_1_1utils.html#ac885b6f537cb86c114be6696c3dc2fb6',1,'pvr::utils']]],
+  ['updatehostvisiblebuffer',['updateHostVisibleBuffer',['../namespacepvr_1_1utils.html#a618e4160bd8c24d9e0d394dc9511f4a3',1,'pvr::utils']]],
+  ['updateimage',['updateImage',['../namespacepvr_1_1utils.html#a71cc4019e6c6315a8a714f4103bfe503',1,'pvr::utils']]],
+  ['uploadimage',['uploadImage',['../namespacepvr_1_1utils.html#a94564335e1a4bb4afe501e4b90c9c25e',1,'pvr::utils']]],
+  ['uploadimageandview',['uploadImageAndView',['../namespacepvr_1_1utils.html#a0bd6e8b8a62c678202323873aeda6115',1,'pvr::utils::uploadImageAndView(pvrvk::Device &amp;device, const Texture &amp;texture, bool allowDecompress, pvrvk::SecondaryCommandBuffer &amp;commandBuffer, pvrvk::ImageUsageFlags usageFlags=pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout=pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, vma::Allocator *stagingBufferAllocator=nullptr, vma::Allocator *imageAllocator=nullptr, vma::AllocationCreateFlags imageAllocationCreateFlags=vma::AllocationCreateFlags::e_NONE)'],['../namespacepvr_1_1utils.html#aaabab7a3b0f9d671f39fd5d6cb9e5fad',1,'pvr::utils::uploadImageAndView(pvrvk::Device &amp;device, const Texture &amp;texture, bool allowDecompress, pvrvk::CommandBuffer &amp;commandBuffer, pvrvk::ImageUsageFlags usageFlags=pvrvk::ImageUsageFlags::e_SAMPLED_BIT, pvrvk::ImageLayout finalLayout=pvrvk::ImageLayout::e_SHADER_READ_ONLY_OPTIMAL, vma::Allocator *stagingBufferAllocator=nullptr, vma::Allocator *imageAllocator=nullptr, vma::AllocationCreateFlags imageAllocationCreateFlags=vma::AllocationCreateFlags::e_NONE)']]],
+  ['uploadimageandviewsubmit',['uploadImageAndViewSubmit',['../namespacepvr_1_1utils.html#a5ca384f4d2465e5f979e0d1c10f70394',1,'pvr::utils']]],
+  ['uploadingcontext',['uploadingContext',['../structpvr_1_1platform_1_1_native_shared_platform_handles__.html#a332526490df7af5f59da00490af5c8d0',1,'pvr::platform::NativeSharedPlatformHandles_']]],
+  ['uploadtextureasync',['uploadTextureAsync',['../classpvr_1_1_image_api_async_uploader.html#a5580d78c5efd1f5385a90c80f3c9fada',1,'pvr::ImageApiAsyncUploader']]],
+  ['ur',['ur',['../structpvr_1_1ui_1_1impl_1_1_font___1_1_character_u_v.html#a7a2deef545d68ee455947a4402f980f2',1,'pvr::ui::impl::Font_::CharacterUV']]],
+  ['usage',['usage',['../structpvr_1_1utils_1_1vma_1_1_allocation_create_info.html#ab25cfd70aa08b35872e7c6e6f0295986',1,'pvr::utils::vma::AllocationCreateInfo']]]
+];

@@ -1,0 +1,117 @@
+//Microsoft eMbedded Visual C++ generated resource script.
+//
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        118
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+	"\r\n"
+	"\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+/////////////////////////////////////////////////////////////////////////////
+// RCDATA: Assets (scenes,  effects, textures...)
+ATM.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\ATM.pvr"
+bank.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\bank.pvr"
+bar.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\bar.pvr"
+butcher.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\butcher.pvr"
+cafe.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\cafe.pvr"
+casino.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\casino.pvr"
+cinema.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\cinema.pvr"
+college.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\college.pvr"
+courthouse.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\courthouse.pvr"
+dentist.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\dentist.pvr"
+doctors.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\doctors.pvr"
+embassy.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\embassy.pvr"
+fastfood.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\fastfood.pvr"
+fire.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\fire.pvr"
+florist.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\florist.pvr"
+font.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\font.pvr"
+hairdresser.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\hairdresser.pvr"
+hospital.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\hospital.pvr"
+library.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\library.pvr"
+optician.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\optician.pvr"
+other.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\other.pvr"
+parking.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\parking.pvr"
+petrol.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\petrol.pvr"
+pharmacy.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\pharmacy.pvr"
+police.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\police.pvr"
+postbox.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\postbox.pvr"
+postoffice.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\postoffice.pvr"
+pub.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\pub.pvr"
+restaurant.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\restaurant.pvr"
+Road.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\Road.pvr"
+shop.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\shop.pvr"
+theatre.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\theatre.pvr"
+toilets.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\toilets.pvr"
+university.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\university.pvr"
+vets.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\vets.pvr"
+worship.pvr		RCDATA		"..\\..\\..\\assets\\Navigation2D\\worship.pvr"
+map.osm		RCDATA		"..\\..\\..\\assets\\Navigation2D\\map.osm"
+// RCDATA: Vulkan Spir-V shaders(glsl)
+AA_VertShader.vsh.spv		RCDATA		"..\\AA_VertShader.vsh.spv"
+AA_FragShader.fsh.spv		RCDATA		"..\\AA_FragShader.fsh.spv"
+VertShader.vsh.spv		RCDATA		"..\\VertShader.vsh.spv"
+FragShader.fsh.spv		RCDATA		"..\\FragShader.fsh.spv"
+
+#endif    // English (United Kingdom) resources
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
